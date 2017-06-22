@@ -28,39 +28,34 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
-using Microsoft.CodeAnalysis.Completion.Providers;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.LanguageServices;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
 
-namespace ICSharpCode.NRefactory6.CSharp.Completion
+namespace MonoDevelop.CSharp.Completion.Provider
 {
 	[ExportCompletionProvider ("FormatItemCompletionProvider", LanguageNames.CSharp)]
 	class FormatItemCompletionProvider : CommonCompletionProvider
 	{
 		public override bool ShouldTriggerCompletion (SourceText text, int position, CompletionTrigger trigger, Microsoft.CodeAnalysis.Options.OptionSet options)
 		{
-			if (trigger.Character == ':')
-				return true;
-			return false;
+			return trigger.Character == ':';
 		}
 
-		public override async Task ProvideCompletionsAsync (Microsoft.CodeAnalysis.Completion.CompletionContext completionContext)
+		public override async Task ProvideCompletionsAsync (Microsoft.CodeAnalysis.Completion.CompletionContext context)
 		{
-			var document = completionContext.Document;
-			var position = completionContext.Position;
-			var cancellationToken = completionContext.CancellationToken;
+			var document = context.Document;
+			var position = context.Position;
+			var cancellationToken = context.CancellationToken;
 
 			var semanticModel = await document.GetSemanticModelForSpanAsync (new TextSpan (position, 0), cancellationToken).ConfigureAwait (false);
 
@@ -69,10 +64,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			if (ctx.TargetToken.Parent != null && ctx.TargetToken.Parent.Parent != null &&
 				ctx.TargetToken.Parent.Parent.IsKind (SyntaxKind.Argument)) {
 				SourceText text;
-				if (!completionContext.Document.TryGetText (out text)) {
-					text = await completionContext.Document.GetTextAsync ();
+				if (!context.Document.TryGetText (out text)) {
+					text = await context.Document.GetTextAsync ();
 				}
-				var currentChar = text [completionContext.Position - 1];
+				var currentChar = text [context.Position - 1];
 				if (ctx.TargetToken.Parent == null || !ctx.TargetToken.Parent.IsKind (SyntaxKind.StringLiteralExpression) ||
 					ctx.TargetToken.Parent.Parent == null || !ctx.TargetToken.Parent.Parent.IsKind (SyntaxKind.Argument) ||
 					ctx.TargetToken.Parent.Parent.Parent == null || !ctx.TargetToken.Parent.Parent.Parent.IsKind (SyntaxKind.ArgumentList) ||
@@ -81,7 +76,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 				var formatArgument = GetFormatItemNumber (document, position);
 				var invocationExpression = ctx.TargetToken.Parent.Parent.Parent.Parent as InvocationExpressionSyntax;
-				GetFormatCompletionData (completionContext, semanticModel, invocationExpression, formatArgument, currentChar);
+				GetFormatCompletionData (context, semanticModel, invocationExpression, formatArgument, currentChar);
 			}
 		}
 
@@ -187,14 +182,17 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			}
 		}
 
-		static CompletionItem CreateCompletionItem (string completionText, string description, object example)
+		internal static CompletionItem CreateCompletionItem (string completionText, string description, object example)
 		{
 			var pDict = ImmutableDictionary<string, string>.Empty;
-			pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + description + "</span>");
-			try {
-				pDict = pDict.Add ("RightSideMarkup", "<span size='small'>" + string.Format ("{0:" + completionText + "}", example) + "</span>");
-			} catch (Exception e) {
-				LoggingService.LogError ("Format error.", e);
+			if (description != null)
+				pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + description + "</span>");
+			if (example != null) {
+				try {
+					pDict = pDict.Add ("RightSideMarkup", "<span size='small'>" + string.Format ("{0:" + completionText + "}", example) + "</span>");
+				} catch (Exception e) {
+					LoggingService.LogError ("Format error.", e);
+				}
 			}
 			return CompletionItem.Create (completionText, properties: pDict);
 		}

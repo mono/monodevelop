@@ -24,31 +24,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Shared.Extensions;
-using MonoDevelop.Ide.CodeCompletion;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.TypeSystem;
 
-namespace ICSharpCode.NRefactory6.CSharp.Completion
-{
-	class CastCompletionContextHandler : CompletionContextHandler
+namespace MonoDevelop.CSharp.Completion.Provider
+{/*
+	[ExportCompletionProvider ("CastCompletionProvider", LanguageNames.CSharp)]
+	class CastCompletionProvider : CommonCompletionProvider
 	{
 		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var position = completionContext.Position;
 			var document = completionContext.Document;
 			var syntaxTree = ctx.SyntaxTree;
-			if (syntaxTree.IsInNonUserCode(position, cancellationToken) ||
-				syntaxTree.IsPreProcessorDirectiveContext(position, cancellationToken))
+			if (syntaxTree.IsInNonUserCode (position, cancellationToken) ||
+				syntaxTree.IsPreProcessorDirectiveContext (position, cancellationToken))
 				return Task.FromResult (Enumerable.Empty<CompletionData> ());
-			if (!syntaxTree.IsRightOfDotOrArrowOrColonColon(position, cancellationToken))
+			if (!syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken))
 				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			var ma = ctx.LeftToken.Parent as MemberAccessExpressionSyntax;
 			if (ma == null)
@@ -61,7 +67,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 
 			var list = new List<CompletionData> ();
-			var within = model.GetEnclosingNamedTypeOrAssembly(position, cancellationToken);
+			var within = model.GetEnclosingNamedTypeOrAssembly (position, cancellationToken);
 			var addedSymbols = new HashSet<string> ();
 			SyntaxNode ancestor = ma.Expression;
 			while (ancestor != null) {
@@ -98,7 +104,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 						var condition = SkipParens (ifStmt.Condition);
 						bool wasNegated = false;
 						if (condition.IsKind (SyntaxKind.LogicalNotExpression)) {
-							condition = SkipParens(((PrefixUnaryExpressionSyntax)condition).Operand);
+							condition = SkipParens (((PrefixUnaryExpressionSyntax)condition).Operand);
 							wasNegated = true;
 						}
 						if (condition == null || !condition.IsKind (SyntaxKind.IsExpression))
@@ -107,8 +113,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 						if (stmt is BlockSyntax) {
 							stmt = ((BlockSyntax)stmt).Statements.LastOrDefault ();
 						}
-						if (!wasNegated || 
-						    stmt == null ||
+						if (!wasNegated ||
+							stmt == null ||
 							!stmt.IsKind (SyntaxKind.ReturnStatement) && !stmt.IsKind (SyntaxKind.ContinueStatement) && !stmt.IsKind (SyntaxKind.BreakStatement) && !stmt.IsKind (SyntaxKind.ThrowStatement))
 							goto loop;
 
@@ -125,7 +131,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 				var binOp = ancestor as BinaryExpressionSyntax;
 				if (binOp != null && binOp.IsKind (SyntaxKind.LogicalAndExpression)) {
-					if (SkipParens(binOp.Left).IsKind (SyntaxKind.IsExpression)) {
+					if (SkipParens (binOp.Left).IsKind (SyntaxKind.IsExpression)) {
 						var isExpr = (BinaryExpressionSyntax)SkipParens (binOp.Left);
 						var leftSymbol = model.GetSymbolInfo (isExpr.Left);
 
@@ -138,7 +144,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					}
 				}
 
-				loop: ancestor = ancestor.Parent;
+			loop: ancestor = ancestor.Parent;
 			}
 
 			return Task.FromResult ((IEnumerable<CompletionData>)list);
@@ -177,6 +183,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				type = type.BaseType;
 			}
 		}
-	}
+	}*/
 }
 

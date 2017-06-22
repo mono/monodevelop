@@ -322,7 +322,6 @@
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\FormattingOptionsFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\Indent.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionContext.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\EditorBrowsableBehavior.cs" />
     <Compile Include="MonoDevelop.CSharp\DeclaredSymbolInfo.cs" />
     <Compile Include="MonoDevelop.CSharp\ProjectSearchCategory.cs" />
     <Compile Include="Util\7BitEncodedInts.cs" />
@@ -389,6 +388,8 @@
     <Compile Include="Util\PortingExtensions.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\FormatItemCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\CastCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\RegexCompletionProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -398,8 +399,6 @@
     <None Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
     <None Include="packages.config" />
-    <None Include="MonoDevelop.CSharp.Completion\CompletionProvider\CastCompletionContextHandler.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\CompletionProvider\RegexContextHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTests" />
@@ -418,6 +417,5 @@
     <Folder Include="icons\" />
     <Folder Include="MonoDevelop.CSharp.NRefactoryWrapper\" />
     <Folder Include="MonoDevelop.CSharp.Completion\CompletionProvider\" />
-    <Folder Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\" />
   </ItemGroup>
 </Project>
