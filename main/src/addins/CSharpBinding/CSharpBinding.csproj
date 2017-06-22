@@ -170,6 +170,14 @@
       <HintPath>..\..\..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Data">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Text.Data.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.CoreUtility">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\ConsoleProject.xpt.xml">

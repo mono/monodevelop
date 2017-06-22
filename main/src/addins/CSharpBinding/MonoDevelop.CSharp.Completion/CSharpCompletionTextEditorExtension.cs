@@ -57,6 +57,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Refactoring;
 using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.Host.Mef;
+using Microsoft.VisualStudio.Platform;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -448,7 +449,7 @@ namespace MonoDevelop.CSharp.Completion
 				kind = CompletionTriggerKind.Insertion;
 				break;
 			}
-
+			var triggerBuffer = Editor.GetPlatformTextBuffer ();
 			var trigger = new CompletionTrigger (kind, triggerInfo.TriggerCharacter.HasValue ? triggerInfo.TriggerCharacter.Value : '\0');
 			if (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CharTyped) {
 				if (!cs.ShouldTriggerCompletion (sourceText, completionContext.TriggerOffset, trigger, null)) {
@@ -466,7 +467,7 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (var data in completionList.Items) {
 				if (string.IsNullOrEmpty (data.DisplayText))
 					continue;
-				result.Add (new RoslynCompletionData (analysisDocument, cs, data));
+				result.Add (new RoslynCompletionData (analysisDocument, triggerBuffer, cs, data));
 			}
 
 			result.AutoCompleteUniqueMatch = (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand);

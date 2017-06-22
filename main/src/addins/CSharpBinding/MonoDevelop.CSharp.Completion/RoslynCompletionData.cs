@@ -35,21 +35,39 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide;
+using Microsoft.CodeAnalysis.CSharp.Completion;
+using MonoDevelop.Ide.Gui;
+using Microsoft.VisualStudio.Platform;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	class RoslynCompletionData : CompletionData
 	{
-		readonly Document doc;
+		readonly Microsoft.CodeAnalysis.Document doc;
+		readonly ITextSnapshot triggerBuffer;
 		readonly CompletionService completionService;
 	
 		public CompletionItem CompletionItem { get; private set; }
 
-		public RoslynCompletionData (Document document, CompletionService completionService, CompletionItem completionItem)
+		Lazy<CompletionProvider> provider;
+
+		public CompletionProvider Provider {
+			get {
+				return provider.Value;
+			}
+		}
+
+		public RoslynCompletionData (Microsoft.CodeAnalysis.Document document, ITextBuffer triggerBuffer, CompletionService completionService, CompletionItem completionItem)
 		{
 			this.doc = document;
+			this.triggerBuffer = triggerBuffer.CurrentSnapshot;
 			this.completionService = completionService;
 			CompletionItem = completionItem;
+			provider = new Lazy<CompletionProvider> (delegate {
+				return ((CSharpCompletionService)completionService).GetProvider (CompletionItem);
+			});
 		}
 
 		public override bool MuteCharacter (char keyChar, string partialWord)
@@ -98,6 +116,25 @@ namespace MonoDevelop.CSharp.Completion
 			return null;
 		}
 
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
+		{
+			var editor = IdeApp.Workbench.ActiveDocument?.Editor;
+			if (editor == null || Provider == null) {
+				base.InsertCompletionText (window, ref ka, descriptor);
+				return;
+			}
+
+			var completionChange = Provider.GetChangeAsync (doc, CompletionItem, null, default (CancellationToken)).WaitAndGetResult (default (CancellationToken));
+			var currentBuffer = editor.GetPlatformTextBuffer ();
+
+			var textChange = completionChange.TextChange;
+			var triggerSnapshotSpan = new SnapshotSpan (triggerBuffer, new Microsoft.VisualStudio.Text.Span (textChange.Span.Start, textChange.Span.Length));
+			var mappedSpan = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
+			window.CompletionWidget.Replace (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
+
+			if (completionChange.NewPosition.HasValue)
+				window.CompletionWidget.CaretOffset = completionChange.NewPosition.Value;
+		}
 
 		static Dictionary<string, string> roslynCompletionTypeTable = new Dictionary<string, string> {
 			{ "Field", "field" },

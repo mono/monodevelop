@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis;
@@ -42,31 +43,35 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion.Provider
-{/*
+{
 	[ExportCompletionProvider ("CastCompletionProvider", LanguageNames.CSharp)]
 	class CastCompletionProvider : CommonCompletionProvider
 	{
-		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
+		public override async Task ProvideCompletionsAsync (Microsoft.CodeAnalysis.Completion.CompletionContext context)
 		{
-			var position = completionContext.Position;
-			var document = completionContext.Document;
+			var document = context.Document;
+			var position = context.Position;
+			var cancellationToken = context.CancellationToken;
+
+			var model = await document.GetSemanticModelForSpanAsync (new TextSpan (position, 0), cancellationToken).ConfigureAwait (false);
+
+			var workspace = document.Project.Solution.Workspace;
+			var ctx = CSharpSyntaxContext.CreateContext (workspace, model, position, cancellationToken);
+
 			var syntaxTree = ctx.SyntaxTree;
 			if (syntaxTree.IsInNonUserCode (position, cancellationToken) ||
 				syntaxTree.IsPreProcessorDirectiveContext (position, cancellationToken))
-				return Task.FromResult (Enumerable.Empty<CompletionData> ());
+				return;
 			if (!syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken))
-				return Task.FromResult (Enumerable.Empty<CompletionData> ());
+				return;
 			var ma = ctx.LeftToken.Parent as MemberAccessExpressionSyntax;
 			if (ma == null)
-				return Task.FromResult (Enumerable.Empty<CompletionData> ());
-
-			var model = ctx.CSharpSyntaxContext.SemanticModel;
+				return;
 
 			var symbolInfo = model.GetSymbolInfo (ma.Expression);
 			if (symbolInfo.Symbol == null)
-				return Task.FromResult (Enumerable.Empty<CompletionData> ());
+				return;
 
-			var list = new List<CompletionData> ();
 			var within = model.GetEnclosingNamedTypeOrAssembly (position, cancellationToken);
 			var addedSymbols = new HashSet<string> ();
 			SyntaxNode ancestor = ma.Expression;
@@ -82,7 +87,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 						if (leftSymbol.Symbol == symbolInfo.Symbol) {
 							var type = model.GetTypeInfo (isExpr.Right).Type;
 							if (type != null) {
-								Analyze (engine, ma.Expression, type, model.GetTypeInfo (isExpr.Left).Type, within, list, addedSymbols, cancellationToken);
+								Analyze (context, model, ma.Expression, type, model.GetTypeInfo (isExpr.Left).Type, within, addedSymbols, cancellationToken);
 							}
 						}
 					}
@@ -123,7 +128,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 						if (leftSymbol.Symbol == symbolInfo.Symbol) {
 							var type = model.GetTypeInfo (isExpr.Right).Type;
 							if (type != null) {
-								Analyze (engine, ma.Expression, type, model.GetTypeInfo (isExpr.Left).Type, within, list, addedSymbols, cancellationToken);
+								Analyze (context, model, ma.Expression, type, model.GetTypeInfo (isExpr.Left).Type, within, addedSymbols, cancellationToken);
 							}
 						}
 					}
@@ -138,7 +143,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 						if (leftSymbol.Symbol == symbolInfo.Symbol) {
 							var type = model.GetTypeInfo (isExpr.Right).Type;
 							if (type != null) {
-								Analyze (engine, ma.Expression, type, model.GetTypeInfo (isExpr.Left).Type, within, list, addedSymbols, cancellationToken);
+								Analyze (context, model, ma.Expression, type, model.GetTypeInfo (isExpr.Left).Type, within, addedSymbols, cancellationToken);
 							}
 						}
 					}
@@ -146,8 +151,12 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 			loop: ancestor = ancestor.Parent;
 			}
+		}
 
-			return Task.FromResult ((IEnumerable<CompletionData>)list);
+		protected override Task<TextChange?> GetTextChangeAsync (CompletionItem selectedItem, char? ch, CancellationToken cancellationToken)
+		{
+			var node = selectedItem.Properties ["NodeString"];
+			return Task.FromResult<TextChange?> (new TextChange (new TextSpan (selectedItem.Span.Start - node.Length - 1, selectedItem.Span.Length + node.Length + 1), "((" + selectedItem.Properties ["CastTypeString"] + ")" + node + ")." + selectedItem.DisplayText));
 		}
 
 		static ExpressionSyntax SkipParens (ExpressionSyntax expression)
@@ -160,10 +169,15 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			return expression;
 		}
 
-		void Analyze (CompletionEngine engine, SyntaxNode node, ITypeSymbol type, ITypeSymbol stopAt, ISymbol within, List<CompletionData> list, HashSet<string> addedSymbols, CancellationToken cancellationToken)
+		void Analyze (Microsoft.CodeAnalysis.Completion.CompletionContext context, SemanticModel model, SyntaxNode node, ITypeSymbol type, ITypeSymbol stopAt, ISymbol within, HashSet<string> addedSymbols, CancellationToken cancellationToken)
 		{
 			var startType = type;
-
+			var typeString = CSharpAmbience.SafeMinimalDisplayString (type, model, context.CompletionListSpan.Start, Ambience.LabelFormat);
+			var pDict = ImmutableDictionary<string, string>.Empty;
+			if (typeString != null)
+				pDict = pDict.Add ("CastTypeString", typeString);
+			pDict = pDict.Add ("NodeString", node.ToString ());
+			
 			while (type != null && type.SpecialType != SpecialType.System_Object && type != stopAt) {
 				foreach (var member in type.GetMembers ()) {
 					cancellationToken.ThrowIfCancellationRequested ();
@@ -171,18 +185,17 @@ namespace MonoDevelop.CSharp.Completion.Provider
 						continue;
 					if (member.IsOrdinaryMethod () || member.Kind == SymbolKind.Field || member.Kind == SymbolKind.Property) {
 						if (member.IsAccessibleWithin (within)) {
-							var completionData = engine.Factory.CreateCastCompletionData (this, member, node, startType);
+							var completionData = CompletionItem.Create (member.Name, properties: pDict);
 							if (addedSymbols.Contains (completionData.DisplayText))
 								continue;
 							addedSymbols.Add (completionData.DisplayText);
-							list.Add (completionData);
+							context.AddItem (completionData);
 						}
 					}
 				}
-
 				type = type.BaseType;
 			}
 		}
-	}*/
+	}
 }
 
