@@ -24,9 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.PackageManagement.Tests.Helpers;
+using NuGet.Commands;
 using NuGet.PackageManagement;
+using NuGet.Packaging.Core;
+using NuGet.ProjectManagement;
+using NuGet.ProjectModel;
+using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -55,6 +62,21 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageManager = action.PackageManager;
 
 			action.AddPackageIds (packageIds);
+		}
+
+		BuildIntegratedProjectAction CreateBuildIntegratedProjectAction ()
+		{
+			var sources = new List<SourceRepository> ();
+			var actions = new List<NuGetProjectAction> ();
+			return new BuildIntegratedProjectAction (
+				nugetProject,
+				new PackageIdentity ("Test", NuGetVersion.Parse ("1.0")),
+				NuGetProjectActionType.Install,
+				new LockFile (),
+				new RestoreResultPair (null, null),
+				sources.AsReadOnly (),
+				actions.AsReadOnly (),
+				new BuildIntegratedInstallationContext (null, null, null));
 		}
 
 		[Test]
@@ -91,13 +113,15 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Execute_TwoPackageIds_ExecutesBuilldIntegratedActionReturnedFromNuGetPackageManager ()
+		public void Execute_TwoPackageIds_ExecutesBuildIntegratedActionReturnedFromNuGetPackageManager ()
 		{
 			CreateAction ("Test1", "Test2");
+			var projectAction = CreateBuildIntegratedProjectAction ();
+			packageManager.BuildIntegratedProjectAction = projectAction;
 
 			action.Execute ();
 
-			Assert.AreEqual (packageManager.BuildIntegratedProjectAction, packageManager.ExecutedActions[0]);
+			Assert.AreEqual (projectAction, packageManager.ExecutedActions[0]);
 			Assert.AreEqual (1, packageManager.ExecutedActions.Count);
 			Assert.AreEqual (nugetProject, packageManager.ExecutedNuGetProject);
 			Assert.AreEqual (action.ProjectContext, packageManager.ExecutedProjectContext);
