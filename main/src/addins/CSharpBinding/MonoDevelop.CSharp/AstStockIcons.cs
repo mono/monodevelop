@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.FindSymbols;
 using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.CSharp
@@ -209,9 +210,9 @@ namespace MonoDevelop.CSharp
 			return MonoDevelop.Ide.TypeSystem.Stock.GetAccess (acc);
 		}
 
-		internal static IconId GetStockIconForSymbolInfo (this DeclaredSymbolInfo symbol)
+		internal static IconId GetStockIconForSymbolInfo (this DeclaredSymbolInfoWrapper symbol)
 		{
-			switch (symbol.Kind) {
+			switch (symbol.SymbolInfo.Kind) {
 			case DeclaredSymbolInfoKind.Class:
 				return AstStockIcons.Class;
 			case DeclaredSymbolInfoKind.Constant:
@@ -226,6 +227,8 @@ namespace MonoDevelop.CSharp
 				return AstStockIcons.Field;
 			case DeclaredSymbolInfoKind.Event:
 				return AstStockIcons.Event;
+			case DeclaredSymbolInfoKind.ExtensionMethod:
+				return AstStockIcons.Method;
 			case DeclaredSymbolInfoKind.Field:
 				return AstStockIcons.Field;
 			case DeclaredSymbolInfoKind.Indexer:
