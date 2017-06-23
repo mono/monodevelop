@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -34,8 +35,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	{
 		public TestablePackageManagementEventsMonitor (
 			ProgressMonitor progressMonitor,
-			IPackageManagementEvents packageManagementEvents)
-			: base (progressMonitor, packageManagementEvents)
+			IPackageManagementEvents packageManagementEvents,
+			TaskCompletionSource<bool> taskCompletionSource)
+			: base (progressMonitor, packageManagementEvents, taskCompletionSource)
 		{
 		}
 

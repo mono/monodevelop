@@ -49,8 +49,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		void Init ()
 		{
-			CreateEventMonitorAction = (monitor, packageManagementEvents) => {
-				EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents);
+			CreateEventMonitorAction = (monitor, packageManagementEvents, completionSource) => {
+				EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents, completionSource);
 				return EventsMonitor;
 			};
 		}
@@ -81,6 +81,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public Func<ProgressMonitor,
 			IPackageManagementEvents,
+			TaskCompletionSource<bool>,
 			PackageManagementEventsMonitor> CreateEventMonitorAction;
 
 		protected override PackageManagementEventsMonitor CreateEventMonitor (
@@ -88,7 +89,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			IPackageManagementEvents packageManagementEvents,
 			TaskCompletionSource<bool> taskCompletionSource)
 		{
-			return CreateEventMonitorAction (monitor, packageManagementEvents);
+			return CreateEventMonitorAction (monitor, packageManagementEvents, taskCompletionSource);
 		}
 
 		public TestablePackageManagementEventsMonitor EventsMonitor;

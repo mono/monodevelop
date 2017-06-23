@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NUnit.Framework;
 using NuGet.PackageManagement;
@@ -70,6 +71,18 @@ namespace MonoDevelop.PackageManagement.Tests
 		void RunWithoutBackgroundDispatch (bool clearConsole = true)
 		{
 			runner.Run (progressMessage, actions, clearConsole);
+		}
+
+		Task RunAsyncWithoutBackgroundDispatch (bool clearConsole = true)
+		{
+			return runner.RunAsync (progressMessage, actions, clearConsole);
+		}
+
+		Task RunAsync (bool clearConsole = true)
+		{
+			Task task = RunAsyncWithoutBackgroundDispatch (clearConsole);
+			runner.ExecuteBackgroundDispatch ();
+			return task;
 		}
 
 		TestableInstallNuGetPackageAction AddInstallAction ()
@@ -471,7 +484,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateRunner ();
 			AddUninstallAction ();
-			runner.CreateEventMonitorAction = (monitor, packageManagementEvents) => {
+			runner.CreateEventMonitorAction = (monitor, packageManagementEvents, completionSource) => {
 				throw new ApplicationException ("Error");
 			};
 
@@ -592,6 +605,67 @@ namespace MonoDevelop.PackageManagement.Tests
 			runner.ExecuteBackgroundDispatch ();
 
 			Assert.IsFalse (runner.EventsMonitor.IsPackageConsoleShown);
+		}
+
+		[Test]
+		public void RunAsync_OneActionSuccessfully_TaskIsCompleted ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+
+			Task task = RunAsync ();
+
+			Assert.IsNull (task.Exception);
+			Assert.IsFalse (task.IsFaulted);
+			Assert.IsTrue (task.IsCompleted);
+		}
+
+		[Test]
+		public void RunAsync_OneActionStartedButNotFinished_TaskIsNotCompleted ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+
+			Task task = RunAsyncWithoutBackgroundDispatch ();
+
+			Assert.IsFalse (task.IsCompleted);
+		}
+
+		[Test]
+		public void RunAsync_ExceptionThrownRunningBackgroundDispatcher_TaskIsFaulted ()
+		{
+			CreateRunner ();
+			var action = AddInstallAction ();
+			action.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				throw new ApplicationException ("Error");
+			};
+
+			Task task = RunAsync ();
+
+			Assert.IsNotNull (task.Exception);
+			Assert.IsTrue (task.IsFaulted);
+		}
+
+		[Test]
+		public void RunAsync_ClearConsoleIsTrue_ProgressMonitorWillClearConsole ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+
+			RunAsync (clearConsole: true);
+
+			Assert.IsTrue (progressMonitorFactory.ClearConsole);
+		}
+
+		[Test]
+		public void RunAsync_ClearConsoleIsFalse_ProgressMonitorWillNotClearConsole ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+
+			RunAsync (clearConsole: false);
+
+			Assert.IsFalse (progressMonitorFactory.ClearConsole);
 		}
 	}
 }
