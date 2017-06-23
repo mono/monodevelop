@@ -62,6 +62,9 @@ namespace MonoDevelop.DotNetCore
 
 		public static IEnumerable<TargetFramework> GetNetStandardTargetFrameworks ()
 		{
+			if (DotNetCoreRuntime.IsNetCore20Installed ())
+				yield return CreateTargetFramework (".NETStandard", "2.0");
+
 			if (DotNetCoreRuntime.IsNetCore20Installed () || DotNetCoreRuntime.IsNetCore1xInstalled ()) {
 				foreach (var targetFramework in GetTargetFrameworksVersion1x (".NETStandard", HighestNetStandard1xMinorVersionSupported).Reverse ())
 					yield return targetFramework;
@@ -94,15 +97,11 @@ namespace MonoDevelop.DotNetCore
 			}
 		}
 
-		/// <summary>
-		/// Ignores .NET Core 2.0 since it is currently in preview.
-		/// </summary>
 		static IEnumerable<Version> GetMajorRuntimeVersions ()
 		{
 			return DotNetCoreRuntime.Versions
 				.Select (version => new Version (version.Major, version.Minor))
-				.Distinct ()
-				.Where (version => version.Major < 2);
+				.Distinct ();
 		}
 
 		static TargetFramework CreateTargetFramework (string identifier, string version)
