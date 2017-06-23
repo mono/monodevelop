@@ -746,6 +746,9 @@
     </Compile>
     <Compile Include="MonoDevelop.Projects.MSBuild\SdkVersion.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectConfigurationItem.cs" />
+    <Compile Include="MonoDevelop.Core\StringInternPool.cs" />
+    <Compile Include="MonoDevelop.Core\Hash.cs" />
+    <Compile Include="MonoDevelop.Core\StringTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
