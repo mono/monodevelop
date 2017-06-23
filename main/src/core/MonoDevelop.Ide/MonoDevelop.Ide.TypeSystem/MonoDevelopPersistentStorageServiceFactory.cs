@@ -61,13 +61,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 	}
 
-	// HACK: This won't be needed once Desktop is added into the composition.
-	[Export(typeof(SolutionSizeTracker))]
-	class MDSolutionSizeTracker : SolutionSizeTracker
-	{
-	}
-
-	[ExportWorkspaceService (typeof (IPersistentStorageLocationService), MonoDevelopWorkspace.ServiceLayer), Shared]
+	[ExportWorkspaceService (typeof (IPersistentStorageLocationService), ServiceLayer.Host), Shared]
 	class PersistentStorageLocationService : IPersistentStorageLocationService
 	{
 		public bool IsSupported (Workspace workspace) => workspace is MonoDevelopWorkspace;

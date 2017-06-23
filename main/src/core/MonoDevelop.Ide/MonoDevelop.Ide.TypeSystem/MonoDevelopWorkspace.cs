@@ -73,8 +73,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static string[] mefHostServices = new [] {
 			"Microsoft.CodeAnalysis.Workspaces",
-			//FIXME: this does not load yet. We should provide alternate implementations of its services.
-			//"Microsoft.CodeAnalysis.Workspaces.Desktop",
+			"Microsoft.CodeAnalysis.Workspaces.Desktop",
 			"Microsoft.CodeAnalysis.Features",
 			"Microsoft.CodeAnalysis.CSharp",
 			"Microsoft.CodeAnalysis.CSharp.Workspaces",
