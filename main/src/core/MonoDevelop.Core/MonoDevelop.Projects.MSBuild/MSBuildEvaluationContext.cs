@@ -458,7 +458,7 @@ namespace MonoDevelop.Projects.MSBuild
 				while (i != -1);
 
 				sb.Append (str, last, str.Length - last);
-				return sb.ToString ();
+				return project.Pool.Add (sb);
 			} finally {
 				evaluationSbs.Enqueue (sb);
 			}
