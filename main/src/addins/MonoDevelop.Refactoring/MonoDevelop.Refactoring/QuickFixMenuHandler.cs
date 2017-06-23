@@ -41,27 +41,24 @@ namespace MonoDevelop.Refactoring
 			var ext = editor?.GetContent<CodeActionEditorExtension> ();
 			if (ext == null)
 				return;
-			var quickFixMenu = new CommandInfoSet ();
-			quickFixMenu.Text = GettextCatalog.GetString ("Quick Fix");
-			quickFixMenu.CommandInfos.Add (new CommandInfo (GettextCatalog.GetString ("Loading..."), false, false), null);
-			info.Add (quickFixMenu);
 			try {
+				info.Add (new CommandInfo (GettextCatalog.GetString ("Loading..."), false, false), null);
 				var currentFixes = await ext.GetCurrentFixesAsync (cancelToken);
 				var menu = await CodeFixMenuService.CreateFixMenu (editor, currentFixes, cancelToken);
-				quickFixMenu.CommandInfos.Clear ();
+				info.Clear ();
 				foreach (var item in menu.Items) {
-					AddItem (quickFixMenu, item);
+					AddItem (info, item);
 				}
 				if (menu.Items.Count == 0) {
-					quickFixMenu.CommandInfos.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
+					info.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
 				}
 				info.NotifyChanged ();
 			} catch (OperationCanceledException) {
 				
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while creating quick fix menu.", e); 
-				quickFixMenu.CommandInfos.Clear ();
-				quickFixMenu.CommandInfos.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
+				info.Clear ();
+				info.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
 				info.NotifyChanged ();
 			}
 		}
@@ -71,28 +68,28 @@ namespace MonoDevelop.Refactoring
 			var cis = new CommandInfoSet ();
 			cis.Text = menu.Label;
 			foreach (var item in menu.Items) {
-				AddItem (cis, item);
+				AddItem (cis.CommandInfos, item);
 			}
 			return cis;
 		}
 
-		void AddItem (CommandInfoSet cis, CodeFixMenuEntry item)
+		void AddItem (CommandArrayInfo cis, CodeFixMenuEntry item)
 		{
 			if (item == CodeFixMenuEntry.Separator) {
-				if (cis.CommandInfos.Count == 0)
+				if (cis.Count == 0)
 					return;
-				cis.CommandInfos.AddSeparator ();
+				cis.AddSeparator ();
 			} else if (item is CodeFixMenu)  {
 				var menu = (CodeFixMenu)item;
 				var submenu = new CommandInfoSet {
 					Text = menu.Label
 				};
 				foreach (var subItem in menu.Items) {
-					AddItem (submenu, subItem);
+					AddItem (submenu.CommandInfos, subItem);
 				}
-				cis.CommandInfos.Add (submenu, item.Action);
+				cis.Add (submenu, item.Action);
 			} else { 
-				cis.CommandInfos.Add (new CommandInfo (item.Label), item.Action);
+				cis.Add (new CommandInfo (item.Label), item.Action);
 			}
 		}
 
