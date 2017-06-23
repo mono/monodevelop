@@ -94,8 +94,8 @@
 
 		{ "name": "Comment(Line)", "fore": "base01" },
 		{ "name": "Comment(Block)", "fore": "base01" },
-		{ "name": "Comment(Doc)", "fore": "#59764a" },
-		{ "name": "Comment(DocTag)", "fore": "#796a2d" },
+		{ "name": "Comment(Doc)", "fore": "base01" },
+		{ "name": "Comment(DocTag)", "fore": "base01" },
 		{ "name": "Comment Tag", "fore": "#fd01fd" },
 
 		{ "name": "Excluded Code", "fore": "base01" },

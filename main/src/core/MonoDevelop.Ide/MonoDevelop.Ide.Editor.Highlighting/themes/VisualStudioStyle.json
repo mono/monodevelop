@@ -39,8 +39,8 @@
 
 		{ "name": "Comment(Line)", "fore": "comment-green" },
 		{ "name": "Comment(Block)", "fore": "comment-green" },
-		{ "name": "Comment(Doc)", "fore": "#3d5a2e" },
-		{ "name": "Comment(DocTag)", "fore": "#5d4e11" },
+		{ "name": "Comment(Doc)", "fore": "comment-green" },
+		{ "name": "Comment(DocTag)", "fore": "comment-green" },
 		{ "name": "Comment Tag", "fore": "#b901b9" },
 
 		{ "name": "Excluded Code", "fore": "comment-green" },
