@@ -113,7 +113,7 @@
 		{ "name": "Link Color", "color": "#41e2cb" },
 		{ "name": "Link Color(Active)", "color": "#41e2cb" }
 	],
-    
+
 	"text": [
 		{ "name": "Plain Text", "fore": "NormalVim", "back": "BlackVim" },
 		{ "name": "Selected Text", "back": "#2647DD" },
@@ -128,8 +128,8 @@
 
 		{ "name": "Comment(Line)", "fore": "CommentVim" },
 		{ "name": "Comment(Block)", "fore": "CommentVim" },
-		{ "name": "Comment(Doc)", "fore": "#6d8a5e" },
-		{ "name": "Comment(DocTag)", "fore": "#8d7e41" },
+		{ "name": "Comment(Doc)", "fore": "CommentVim" },
+		{ "name": "Comment(DocTag)", "fore": "CommentVim" },
 		{ "name": "Comment Tag", "fore": "#ff21ff" },
 
 		{ "name": "Excluded Code", "fore": "CommentVim" },
