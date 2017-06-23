@@ -91,7 +91,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					var doNotify = !AreEqual (highlightTree, newTree, token);
 
 					if (!token.IsCancellationRequested) {
-						Gtk.Application.Invoke (delegate {
+						Gtk.Application.Invoke ((o, args) => {
 							if (token.IsCancellationRequested)
 								return;
 							if (highlightTree != null) {

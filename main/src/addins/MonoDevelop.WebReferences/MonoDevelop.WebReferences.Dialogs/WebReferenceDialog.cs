@@ -377,14 +377,14 @@ namespace MonoDevelop.WebReferences.Dialogs
 				return;
 			}
 			
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				UpdateService (service, url);
 			});
 		}
 		
 		void ShowError (string error)
 		{
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				if (docLabel != null) {
 					docLabel.Text = error;
 					docLabel.LineWrapMode = Pango.WrapMode.Word;

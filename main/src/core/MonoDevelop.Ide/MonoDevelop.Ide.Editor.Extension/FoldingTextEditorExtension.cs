@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				if (firstTime) {
 					Editor.SetFoldings (foldSegments);
 				} else {
-					Application.Invoke (delegate {
+					Application.Invoke ((o, args) => {
 						if (!token.IsCancellationRequested)
 							Editor.SetFoldings (foldSegments);
 					});

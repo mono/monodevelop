@@ -106,7 +106,7 @@ namespace MonoDevelop.Components.DockNotebook
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				titleWindow.Destroy ();
 			});
 			IdeApp.Workbench.UnlockActiveWindowChangeEvent ();
@@ -465,7 +465,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public void Close ()
 		{
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				placeholder.Destroy ();
 			});
 		}

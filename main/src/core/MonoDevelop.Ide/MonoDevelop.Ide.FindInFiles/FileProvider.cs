@@ -58,21 +58,21 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public override void BeginReplace (string content, Encoding encoding)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				undoGroup = editor.OpenUndoGroup ();
 			});
 		}
 
 		public override void Replace (int offset, int length, string replacement)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				editor.ReplaceText (offset, length, replacement);
 			});
 		}
 
 		public override void EndReplace ()
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				if (undoGroup != null) {
 					undoGroup.Dispose ();
 					undoGroup = null;
@@ -182,7 +182,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			document = await SearchDocument ();
 			this.encoding = encoding; 
 			if (document != null) {
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					undoGroup = document.Editor.OpenUndoGroup ();
 				});
 				return;
@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			buffer.Remove (offset, length);
 			buffer.Insert (offset, replacement);
 			if (document != null) {
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					document.Editor.ReplaceText (offset, length, replacement);
 				});
 				return;
@@ -205,7 +205,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		public virtual void EndReplace ()
 		{
 			if (document != null) {
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					if (undoGroup != null) {
 						undoGroup.Dispose ();
 						undoGroup = null;

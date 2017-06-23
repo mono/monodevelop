@@ -53,14 +53,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			new System.Threading.Thread (() => {
 				try {
 					var info = SystemInformation.GetDescription ().ToArray ();
-					Gtk.Application.Invoke (delegate {
+					Gtk.Application.Invoke ((o, args) => {
 						if (destroyed)
 							return;
 						SetText (info);
 					});
 				} catch (Exception ex) {
 					LoggingService.LogError ("Failed to load version information", ex);
-					Gtk.Application.Invoke (delegate {
+					Gtk.Application.Invoke ((o, args) => {
 						if (destroyed)
 							return;
 						SetLabel (GettextCatalog.GetString ("Failed to load version information."));

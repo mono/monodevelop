@@ -432,7 +432,7 @@ namespace MonoDevelop.Ide.CustomTools
 			FileService.NotifyFileChanged (result.GeneratedFilePath);
 
 			// add file to project, update file properties, etc
-			Gtk.Application.Invoke (async delegate {
+			Gtk.Application.Invoke (async (o, args) => {
 				bool projectChanged = false;
 				if (genFile == null) {
 					genFile = file.Project.AddFile (result.GeneratedFilePath, result.OverrideBuildAction);

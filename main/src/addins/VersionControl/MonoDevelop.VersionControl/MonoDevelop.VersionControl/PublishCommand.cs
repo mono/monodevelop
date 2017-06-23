@@ -101,7 +101,7 @@ namespace MonoDevelop.VersionControl
 					return;
 				}
 
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
 				});
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Publish operation completed."));

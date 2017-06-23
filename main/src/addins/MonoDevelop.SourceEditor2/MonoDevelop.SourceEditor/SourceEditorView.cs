@@ -432,7 +432,7 @@ namespace MonoDevelop.SourceEditor
 				int x, y;
 				widget.TextEditor.TextArea.GetTopLevelWidgetPosition (w, out x, out y);
 				var size = w.SizeRequest ();
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					widget.TextEditor.ScrollTo (new Gdk.Rectangle (x, y, size.Width, size.Height));
 				});
 			}
@@ -639,7 +639,7 @@ namespace MonoDevelop.SourceEditor
 			}).ContinueWith (t => {
 				if (token.IsCancellationRequested)
 					return;
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					if (token.IsCancellationRequested)
 						return;
 					var newErrorMarkers = new List<MessageBubbleTextMarker> ();

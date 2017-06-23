@@ -206,7 +206,7 @@ namespace MonoDevelop.CodeActions
 						return CodeActionContainer.Empty;
 
 					var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions, diagnosticsAtCaret);
-					Application.Invoke (delegate {
+					Application.Invoke ((o, args) => {
 						if (cancellationToken.IsCancellationRequested)
 							return;
 						if (codeActionContainer.IsEmpty) {

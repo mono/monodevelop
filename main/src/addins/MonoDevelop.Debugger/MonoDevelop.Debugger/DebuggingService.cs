@@ -700,7 +700,7 @@ namespace MonoDevelop.Debugger
 
 		static bool ExceptionHandler (Exception ex)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				if (ex is DebuggerException)
 					MessageService.ShowError (ex.Message, ex);
 				else
@@ -1288,14 +1288,14 @@ namespace MonoDevelop.Debugger
 
 		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				IdeApp.Workbench.StatusBar.ShowMessage (Ide.Gui.Stock.StatusConnecting, message);
 			});
 		}
 
 		public void Dispose ()
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				IdeApp.Workbench.StatusBar.ShowReady ();
 			});
 		}
@@ -1318,7 +1318,7 @@ namespace MonoDevelop.Debugger
 			cts = new System.Threading.CancellationTokenSource ();
 
 			//MessageService is threadsafe but we want this to be async
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				RunDialog (message);
 			});
 		}

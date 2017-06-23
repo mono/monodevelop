@@ -62,7 +62,7 @@ namespace Stetic
 		public void NotifyWidgetActivated (object ob, string widgetName, string widgetType)
 		{
 			Gtk.Application.Invoke (
-				delegate {
+				(o, args) => {
 					if (disposed) return;
 					Component c = app.GetComponent (ob, widgetName, widgetType);
 					if (c != null && ComponentActivated != null)
@@ -74,7 +74,7 @@ namespace Stetic
 		public void NotifySelectionChanged (object ob, string widgetName, string widgetType)
 		{
 			Gtk.Application.Invoke (
-				delegate {
+				(o, args) => {
 					if (disposed) return;
 					Component c = ob != null ? app.GetComponent (ob, widgetName, widgetType) : null;
 					if (SelectionChanged != null)
