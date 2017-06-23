@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ProjectSearchCategory.cs
 //  
 // Author:
@@ -31,10 +31,12 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.FindSymbols;
+using Microsoft.CodeAnalysis.LanguageServices;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Instrumentation;
@@ -105,10 +107,10 @@ namespace MonoDevelop.CSharp
 		{
 			public static readonly SymbolCache Empty = new SymbolCache ();
 
-			List<Microsoft.CodeAnalysis.Workspace> workspaces = new List<Microsoft.CodeAnalysis.Workspace> ();
-			ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>>> documentInfos = new ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>>> ();
+			List<Workspace> workspaces = new List<Workspace> ();
+			ConcurrentDictionary<DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfoWrapper>>> documentInfos = new ConcurrentDictionary<DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfoWrapper>>> ();
 
-			public void AddWorkspace (Microsoft.CodeAnalysis.Workspace ws, CancellationToken token)
+			public void AddWorkspace (Workspace ws, CancellationToken token)
 			{
 				workspaces.Add (ws);
 				ws.WorkspaceChanged += Ws_WorkspaceChanged;
@@ -127,6 +129,7 @@ namespace MonoDevelop.CSharp
 					yield return DeclaredSymbolInfoKind.Delegate;
 					yield return DeclaredSymbolInfoKind.Enum;
 					yield return DeclaredSymbolInfoKind.EnumMember;
+					yield return DeclaredSymbolInfoKind.ExtensionMethod;
 					yield return DeclaredSymbolInfoKind.Event;
 					yield return DeclaredSymbolInfoKind.Field;
 					yield return DeclaredSymbolInfoKind.Interface;
@@ -191,7 +194,7 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			public IEnumerable<DeclaredSymbolInfo> GetAllTypes(string tag, CancellationToken token)
+			public IEnumerable<DeclaredSymbolInfoWrapper> GetAllTypes(string tag, CancellationToken token)
 			{
 				var kinds = TagToKinds (tag).ToArray ();
 
@@ -208,7 +211,7 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			static async void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
+			static async void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfoWrapper>>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
 			{
 				if (project == null)
 					throw new ArgumentNullException (nameof (project));
@@ -223,33 +226,32 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			static async Task UpdateDocument (ConcurrentDictionary<DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>>> result, Microsoft.CodeAnalysis.Document document, CancellationToken cancellationToken)
+			static async Task UpdateDocument (ConcurrentDictionary<DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfoWrapper>>> result, Microsoft.CodeAnalysis.Document document, CancellationToken cancellationToken)
 			{
+				var syntaxFactsService = document.GetLanguageService<ISyntaxFactsService> ();
 				var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
-				var infos = new Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>> ();
+				var infos = new Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfoWrapper>> ();
 				foreach (var kind in AllKinds) {
-					infos [kind] = new List<DeclaredSymbolInfo> ();
+					infos [kind] = new List<DeclaredSymbolInfoWrapper> ();
 				}
 				foreach (var current in root.DescendantNodesAndSelf (n => !(n is BlockSyntax))) {
 					cancellationToken.ThrowIfCancellationRequested ();
-					DeclaredSymbolInfo declaredSymbolInfo;
-					if (current.TryGetDeclaredSymbolInfo (out declaredSymbolInfo)) {
-						var kind = declaredSymbolInfo.Kind;
-						if (kind == DeclaredSymbolInfoKind.Constructor ||
-							kind == DeclaredSymbolInfoKind.Module ||
-							kind == DeclaredSymbolInfoKind.Indexer)
-							continue;
-						declaredSymbolInfo.DocumentId = document.Id;
-						infos[kind].Add (declaredSymbolInfo);
+					var kind = current.Kind ();
+					if (kind == SyntaxKind.ConstructorDeclaration ||
+						kind == SyntaxKind.IndexerDeclaration)
+						continue;
+					if (syntaxFactsService.TryGetDeclaredSymbolInfo (current, out DeclaredSymbolInfo info)) {
+						var declaredSymbolInfo = new DeclaredSymbolInfoWrapper (current, document.Id, info);
+						infos[info.Kind].Add (declaredSymbolInfo);
 					}
 				}
 				RemoveDocument (result, document.Id);
 				result.TryAdd (document.Id, infos);
 			}
 
-			static void RemoveDocument (ConcurrentDictionary<DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>>> result, Microsoft.CodeAnalysis.DocumentId documentId)
+			static void RemoveDocument (ConcurrentDictionary<DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfoWrapper>>> result, DocumentId documentId)
 			{
-				result.TryRemove (documentId, out Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>> val);
+				result.TryRemove (documentId, out Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfoWrapper>> val);
 			}
 
 			public void Dispose ()
@@ -415,10 +417,10 @@ namespace MonoDevelop.CSharp
 			return oldLastResult.pattern != null && newResult.pattern.StartsWith (oldLastResult.pattern, StringComparison.Ordinal) && oldLastResult.filteredSymbols != null;
 		}
 
-		void AllResults (ISearchResultCallback searchResultCallback, WorkerResult lastResult, WorkerResult newResult, IEnumerable<DeclaredSymbolInfo> completeTypeList, CancellationToken token)
+		void AllResults (ISearchResultCallback searchResultCallback, WorkerResult lastResult, WorkerResult newResult, IEnumerable<DeclaredSymbolInfoWrapper> completeTypeList, CancellationToken token)
 		{
 			// Search Types
-			newResult.filteredSymbols = new List<DeclaredSymbolInfo> ();
+			newResult.filteredSymbols = new List<DeclaredSymbolInfoWrapper> ();
 			bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredSymbols != null;
 			var allTypes = startsWithLastFilter ? lastResult.filteredSymbols : completeTypeList;
 			foreach (var type in allTypes) {
@@ -441,7 +443,7 @@ namespace MonoDevelop.CSharp
 				set;
 			}
 
-			public List<DeclaredSymbolInfo> filteredSymbols;
+			public List<DeclaredSymbolInfoWrapper> filteredSymbols;
 
 			string pattern2;
 			char firstChar;
@@ -469,18 +471,18 @@ namespace MonoDevelop.CSharp
 			{
 			}
 
-			internal SearchResult CheckType (DeclaredSymbolInfo symbol)
+			internal SearchResult CheckType (DeclaredSymbolInfoWrapper symbol)
 			{
 				int rank;
-				var name = symbol.Name;
+				var name = symbol.SymbolInfo.Name;
 				if (MatchName(name, out rank)) {
 //					if (type.ContainerDisplayName != null)
 //						rank--;
-					return new DeclaredSymbolInfoResult (pattern, symbol.Name, rank, symbol, false);
+					return new DeclaredSymbolInfoResult (pattern, name, rank, symbol, false);
 				}
 				if (!FullSearch)
 					return null;
-				name = symbol.FullyQualifiedContainerName;
+				name = symbol.SymbolInfo.FullyQualifiedContainerName;
 				if (MatchName(name, out rank)) {
 //					if (type.ContainingType != null)
 //						rank--;
