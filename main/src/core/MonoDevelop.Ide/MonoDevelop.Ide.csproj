@@ -9288,7 +9288,6 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Results\NSObjectResult.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopTemporaryStorageServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\WorkspaceId.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\SolutionSizeTracker.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkNotebookResult.cs" />
     <Compile Include="MonoDevelop.Ide\TaskUtil.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\CodeAnalysisPanel.cs" />
