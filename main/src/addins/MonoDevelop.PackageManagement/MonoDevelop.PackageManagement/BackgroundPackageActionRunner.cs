@@ -167,7 +167,8 @@ namespace MonoDevelop.PackageManagement
 						eventMonitor.ReportResult (progressMessage);
 					} catch (Exception ex) {
 						RemoveInstallActions (installPackageActions);
-						eventMonitor.ReportError (progressMessage, ex);
+						bool showPackageConsole = !monitor.CancellationToken.IsCancellationRequested;
+						eventMonitor.ReportError (progressMessage, ex, showPackageConsole);
 					} finally {
 						monitor.EndTask ();
 						GuiDispatch (() => {

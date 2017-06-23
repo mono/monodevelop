@@ -122,6 +122,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public bool IsDisposed;
+
+		public void Cancel ()
+		{
+			CancellationTokenSource.Cancel ();
+		}
 	}
 }
 

@@ -165,6 +165,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageManager.InstallActions.Add (projectAction);
 		}
 
+		void CancelCurrentAction ()
+		{
+			progressMonitorFactory.ProgressMonitor.Cancel ();
+		}
+
 		[Test]
 		public void Run_OneInstallActionAndOneUninstallActionAndRunNotCompleted_InstallActionMarkedAsPending ()
 		{
@@ -566,6 +571,27 @@ namespace MonoDevelop.PackageManagement.Tests
 			Run (clearConsole: false);
 
 			Assert.IsFalse (progressMonitorFactory.ClearConsole);
+		}
+
+		/// <summary>
+		/// Do not open the package console window after the package action is cancelled.
+		/// This is done when other exceptions occur during package processing since it is
+		/// done in the background and just showing an error in the status bar may not bring
+		/// the error enough attention. However if the user cancels the action there is no
+		/// need to show the package console after the install fails. This is also a workaround
+		/// to prevent any open dialogs from being closed when the package console window is
+		/// opened after the NuGet action is cancelled by the user.
+		/// </summary>
+		[Test]
+		public void Run_OneInstallActionThatIsCancelledByUser_PackageConsoleNotDisplayed ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+			RunWithoutBackgroundDispatch ();
+			CancelCurrentAction ();
+			runner.ExecuteBackgroundDispatch ();
+
+			Assert.IsFalse (runner.EventsMonitor.IsPackageConsoleShown);
 		}
 	}
 }
