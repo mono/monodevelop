@@ -1,10 +1,10 @@
 ﻿//
-// MonoDevelopPersistentStorageServiceFactory.cs
+// MonoDevelopPersistentStorageLocationService.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -43,34 +43,17 @@ using System.Security.Cryptography;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	[ExportWorkspaceServiceFactory(typeof(IPersistentStorageService), MonoDevelopWorkspace.ServiceLayer), Shared]
-	class PersistenceStorageServiceFactory : IWorkspaceServiceFactory
-	{
-		SolutionSizeTracker solutionSizeTracker;
-
-		[ImportingConstructor]
-		public PersistenceStorageServiceFactory (SolutionSizeTracker solutionSizeTracker)
-		{
-			this.solutionSizeTracker = solutionSizeTracker;
-		}
-
-		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
-		{
-			var optionService = workspaceServices.GetService<IOptionService> ();
-			return new SQLitePersistentStorageService (optionService, solutionSizeTracker);
-		}
-	}
-
 	[ExportWorkspaceService (typeof (IPersistentStorageLocationService), ServiceLayer.Host), Shared]
-	class PersistentStorageLocationService : IPersistentStorageLocationService
+	class MonoDevelopPersistentStorageLocationService : IPersistentStorageLocationService
 	{
 		public bool IsSupported (Workspace workspace) => workspace is MonoDevelopWorkspace;
 
 		public string GetStorageLocation (Solution solution)
 		{
-			var vsWorkspace = solution.Workspace as MonoDevelopWorkspace;
-			return solution.FilePath != null ? Path.GetDirectoryName (solution.FilePath) : null;
+			if (solution.FilePath == null)
+				return null;
+			var solutionDirectory = Path.GetDirectoryName(solution.FilePath);
+			return Path.Combine (solutionDirectory, ".vs", "v15-mac");
 		}
-
 	}
 }
