@@ -1,4 +1,4 @@
-﻿//
+//
 // MonoDevelopWorkspace.cs
 //
 // Author:
