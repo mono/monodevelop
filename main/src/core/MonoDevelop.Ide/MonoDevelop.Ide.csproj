@@ -8643,6 +8643,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\StartupInfo.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ProgressMonitors.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopPersistentStorageLocationService.cs" />
+    <Compile Include="MonoDevelop.Ide\RoslynLogger.cs" />
     <Compile Include="MonoDevelop.Ide\Services.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\TasksOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\FileViewer.cs" />

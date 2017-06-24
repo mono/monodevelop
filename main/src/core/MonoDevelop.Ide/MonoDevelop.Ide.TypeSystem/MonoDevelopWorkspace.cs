@@ -47,12 +47,12 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using Mono.Addins;
 using MonoDevelop.Core.AddIns;
+using Microsoft.CodeAnalysis.Internal.Log;
 using Microsoft.CodeAnalysis.Shared.Utilities;
 using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-
 	public class MonoDevelopWorkspace : Workspace
 	{
 		public const string ServiceLayer = nameof(MonoDevelopWorkspace);
@@ -77,6 +77,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		static MonoDevelopWorkspace ()
+		{
+			Logger.SetLogger (AggregateLogger.Create (
+				new RoslynLogger (),
+				Logger.GetLogger ()
+			));
+		}
+
 		/// <summary>
 		/// This bypasses the type system service. Use with care.
 		/// </summary>
@@ -86,13 +94,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			OnSolutionAdded (sInfo);
 		}
 
-		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (HostServices, "MonoDevelop")
+		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (HostServices, WorkspaceKind.Host)
 		{
 			this.monoDevelopSolution = solution;
 			this.Id = WorkspaceId.Next ();
 			if (IdeApp.Workspace != null && solution != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
+			if (IdeApp.Preferences.EnableSourceAnalysis)
+				DiagnosticProvider.Enable (this, DiagnosticProvider.Options.Syntax);
 		}
 
 		protected override void Dispose (bool finalize)
@@ -100,6 +110,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			base.Dispose (finalize);
 			if (disposed)
 				return;
+			DiagnosticProvider.Disable (this);
 			disposed = true;
 			CancelLoad ();
 			if (IdeApp.Workspace != null) {
