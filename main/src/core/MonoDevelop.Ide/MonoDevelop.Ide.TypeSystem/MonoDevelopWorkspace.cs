@@ -133,13 +133,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			OnSolutionAdded (sInfo);
 		}
 
-		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (services, "Host")
+		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (services, WorkspaceKind.Host)
 		{
 			this.monoDevelopSolution = solution;
 			this.Id = WorkspaceId.Next ();
 			if (IdeApp.Workspace != null && solution != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
+			// TODO: Verify the source analysis options of the user.
 			DiagnosticProvider.Enable (this, DiagnosticProvider.Options.Syntax);
 		}
 

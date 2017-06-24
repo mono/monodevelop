@@ -217,10 +217,12 @@ namespace MonoDevelop.CodeActions
 
 		static async Task<ImmutableArray<Diagnostic>> GetDiagnosticsForDocument (ImmutableArray<DiagnosticAnalyzer> analyzers, Microsoft.CodeAnalysis.Document doc, ImmutableHashSet<string> diagnostics, CancellationToken token)
 		{
+			var solution = doc.Project.Solution;
 			var options = new CompilationWithAnalyzersOptions (
 				new WorkspaceAnalyzerOptions (
 					new AnalyzerOptions (ImmutableArray<AdditionalText>.Empty),
-					doc.Project.Solution.Workspace),
+					solution.Options,
+					solution),
 				delegate (Exception exception, DiagnosticAnalyzer analyzer, Diagnostic diag) {
 					LoggingService.LogError ("Exception in diagnostic analyzer " + diag.Id + ":" + diag.GetMessage (), exception);
 				},

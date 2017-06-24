@@ -99,10 +99,12 @@ namespace MonoDevelop.CodeIssues
 				var analyzers = ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange (providers);
 				var diagnosticList = new List<Diagnostic> ();
 				try {
+					var solution = analysisDocument.DocumentContext.AnalysisDocument.Project.Solution;
 					var options = new CompilationWithAnalyzersOptions (
 						new WorkspaceAnalyzerOptions (
 							new AnalyzerOptions (ImmutableArray<AdditionalText>.Empty),
-							analysisDocument.DocumentContext.RoslynWorkspace),
+							solution.Options,
+							solution),
 						delegate (Exception exception, DiagnosticAnalyzer analyzer, Diagnostic diag) {
 							LoggingService.LogError ("Exception in diagnostic analyzer " + diag.Id + ":" + diag.GetMessage (), exception);
 						},
