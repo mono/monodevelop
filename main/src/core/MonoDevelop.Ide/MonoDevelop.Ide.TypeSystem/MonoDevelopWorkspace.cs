@@ -48,10 +48,10 @@ using System.ComponentModel;
 using Mono.Addins;
 using MonoDevelop.Core.AddIns;
 using Microsoft.CodeAnalysis.Shared.Utilities;
+using Microsoft.CodeAnalysis.Internal.Log;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-
 	public class MonoDevelopWorkspace : Workspace
 	{
 		public const string ServiceLayer = nameof(MonoDevelopWorkspace);
@@ -118,6 +118,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 			services = MefHostServices.Create (assemblies);
+			Logger.SetLogger (AggregateLogger.Create (
+				new RoslynLogger (),
+				Logger.GetLogger ()
+			));
 		}
 
 		/// <summary>
