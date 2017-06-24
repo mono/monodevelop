@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			OnSolutionAdded (sInfo);
 		}
 
-		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (services, "MonoDevelop")
+		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (services, "Host")
 		{
 			this.monoDevelopSolution = solution;
 			this.Id = WorkspaceId.Next ();
