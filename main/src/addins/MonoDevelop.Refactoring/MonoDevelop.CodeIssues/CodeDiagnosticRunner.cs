@@ -1,6 +1,6 @@
 // 
 // CodeAnalysisRunner.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
@@ -115,7 +115,7 @@ namespace MonoDevelop.CodeIssues
 					compilationWithAnalyzer = compilation.WithAnalyzers (analyzers, options);
 					if (input.ParsedDocument == null || cancellationToken.IsCancellationRequested)
 						return Enumerable.Empty<Result> ();
-					
+
 					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, cancellationToken).ConfigureAwait (false));
 					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSyntaxDiagnosticsAsync (model.SyntaxTree, cancellationToken).ConfigureAwait (false));
 				} catch (OperationCanceledException) {
