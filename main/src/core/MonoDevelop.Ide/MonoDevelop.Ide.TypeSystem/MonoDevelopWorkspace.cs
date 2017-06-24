@@ -140,6 +140,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.Workspace != null && solution != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
+			DiagnosticProvider.Enable (this, DiagnosticProvider.Options.Syntax);
 		}
 
 		protected override void Dispose (bool finalize)
@@ -147,6 +148,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			base.Dispose (finalize);
 			if (disposed)
 				return;
+			DiagnosticProvider.Disable (this);
 			disposed = true;
 			CancelLoad ();
 			if (IdeApp.Workspace != null) {
