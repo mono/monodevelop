@@ -75,7 +75,7 @@ namespace Stetic
 		public void NotifySignalActivated ()
 		{
 			Gtk.Application.Invoke (
-				delegate {
+				(o, args) => {
 					if (!disposed) editor.NotifySignalActivated ();
 				}
 			);

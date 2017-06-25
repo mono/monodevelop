@@ -926,7 +926,7 @@ namespace MonoDevelop.Components
 
 			// Delay the call to the leave handler since the pointer may be
 			// entering a child widget, in which case the event doesn't have to be fired
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o2, a2) => {
 				if (!Inside)
 					LeaveHandler ();
 			});

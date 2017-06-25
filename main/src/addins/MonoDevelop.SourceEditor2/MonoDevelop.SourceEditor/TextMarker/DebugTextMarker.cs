@@ -76,7 +76,7 @@ namespace MonoDevelop.SourceEditor
 				if (CanDrawForeground (margin))
 					// update tooltip during the next ui loop run,
 					// otherwise Gtk will not update the position of the tooltip
-					Gtk.Application.Invoke (delegate {
+					Gtk.Application.Invoke ((o2, a2) => {
 						args.Editor.TooltipText = Tooltip;
 					});
 				else if (args.Editor.TooltipText == Tooltip)

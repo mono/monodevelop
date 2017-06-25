@@ -1264,7 +1264,7 @@ namespace MonoDevelop.AssemblyBrowser
 		internal void Open (string url, AssemblyLoader currentAssembly = null, bool expandNode = true)
 		{
 			Task.WhenAll (this.definitions.Select (d => d.LoadingTask).ToArray ()).ContinueWith (d => {
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					suspendNavigation = false;
 					ITreeNavigator nav = SearchMember (url, expandNode);
 					if (definitions == null) // we've been disposed
@@ -1310,7 +1310,7 @@ namespace MonoDevelop.AssemblyBrowser
 				result.LoadingTask.ContinueWith (t2 => {
 					if (definitions == null) // disposed
 						return;
-					Application.Invoke (delegate {
+					Application.Invoke ((o, args) => {
 						var nav = SearchMember (url, expandNode);
 						if (nav == null) {
 							if (++i == references.Count)
@@ -1361,7 +1361,7 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 				if (definitions == null) // disposed
 					return;
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					var nav = SearchMember (url);
 					if (nav == null) {
 						LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
@@ -1373,7 +1373,7 @@ namespace MonoDevelop.AssemblyBrowser
 		internal void SelectAssembly (AssemblyLoader loader)
 		{
 			AssemblyDefinition cu = loader.CecilLoader.GetCecilObject (loader.UnresolvedAssembly);
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				ITreeNavigator nav = TreeView.GetRootNode ();
 				if (nav == null)
 					return;
@@ -1517,7 +1517,7 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			definitions.Add (result);
 			result.LoadingTask = result.LoadingTask.ContinueWith (task => {
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					if (definitions == null)
 						return;
 					try {
@@ -1603,7 +1603,7 @@ namespace MonoDevelop.AssemblyBrowser
 			foreach (var def in definitions) {
 				if (!this.definitions.Contains (def)) {
 					this.definitions.Add (def);
-					Application.Invoke (delegate {
+					Application.Invoke ((o, args) => {
 						if (definitions.Count + projects.Count == 1) {
 							TreeView.LoadTree (def.LoadingTask.Result);
 						} else {

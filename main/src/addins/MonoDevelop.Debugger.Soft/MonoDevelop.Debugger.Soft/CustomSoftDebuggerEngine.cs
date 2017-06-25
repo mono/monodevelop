@@ -86,7 +86,7 @@ namespace MonoDevelop.Debugger.Soft
 			var ev = new System.Threading.ManualResetEvent (false);
 			T val = default (T);
 			Exception caught = null;
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				try {
 					val = func ();
 				} catch (Exception ex) {

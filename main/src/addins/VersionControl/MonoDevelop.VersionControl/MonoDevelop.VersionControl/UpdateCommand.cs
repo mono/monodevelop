@@ -33,7 +33,7 @@ namespace MonoDevelop.VersionControl
 				foreach (VersionControlItemList list in items.SplitByRepository ()) {
 					list[0].Repository.Update (list.Paths, true, Monitor);
 				}
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Update operation completed."));

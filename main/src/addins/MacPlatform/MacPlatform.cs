@@ -198,14 +198,14 @@ namespace MonoDevelop.MacIntegration
 
 		internal static void OpenUrl (string url)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				NSWorkspace.SharedWorkspace.OpenUrl (new NSUrl (url));
 			});
 		}
 
 		public override void OpenFile (string filename)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				NSWorkspace.SharedWorkspace.OpenFile (filename);
 			});
 		}

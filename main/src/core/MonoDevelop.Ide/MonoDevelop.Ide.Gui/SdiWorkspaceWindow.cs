@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide.Gui
 			tabControl.CurrentTabIndex = tab.Index;
 
 			// Focus the tab in the next iteration since presenting the window may take some time
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				DockNotebook.ActiveNotebook = tabControl;
 				DeepGrabFocus (this.ActiveViewContent.Control);
 			});

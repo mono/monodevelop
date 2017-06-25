@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				}
 				if (token.IsCancellationRequested)
 					return;
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					if (token.IsCancellationRequested)
 						return;
 					Editor.UpdateBraceMatchingResult (result);
