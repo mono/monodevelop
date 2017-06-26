@@ -180,7 +180,7 @@ namespace MonoDevelop.DotNetCore.Templating
 		/// </summary>
 		static bool IncludeNetCore20TargetFrameworks ()
 		{
-			return DotNetCoreSdk.Versions.Any (version => version.ToString () == "2.0.0-preview2-006479");
+			return DotNetCoreSdk.Versions.Any (version => version.ToString () == "2.0.0-preview2-006497");
 		}
 	}
 }
