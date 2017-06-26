@@ -55,6 +55,7 @@ namespace MonoDevelop.CodeIssues
 			return (ctx.IsAdHocProject || !(ctx.Project is MonoDevelop.Projects.DotNetProject));
 		}
 
+		// Old code, until we get EditorFeatures into composition so we can switch code fix service.
 		public static async Task<IEnumerable<Result>> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken)
 		{
 			var input = analysisDocument.DocumentContext;
@@ -151,6 +152,41 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
+		public static async Task<IEnumerable<Result>> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken, ImmutableArray<DiagnosticData> results)
+		{
+			var input = analysisDocument.DocumentContext;
+			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
+				return Enumerable.Empty<Result> ();
+			if (SkipContext (input))
+				return Enumerable.Empty<Result> ();
+			try {
+#if DEBUG
+				Debug.Listeners.Add (consoleTraceListener);
+#endif
+
+				var resultList = new List<Result> ();
+				foreach (var data in results) {
+					if (data.Id.StartsWith ("CS", StringComparison.Ordinal))
+						continue;
+
+					var diagnostic = await data.ToDiagnosticAsync (input.AnalysisDocument.Project, cancellationToken);
+					if (DiagnosticResult.DescriptorHasTag (diagnostic.Descriptor, WellKnownDiagnosticTags.EditAndContinue))
+						continue;
+					
+					resultList.Add (new DiagnosticResult (diagnostic));
+
+				}
+				return resultList;
+			} catch (OperationCanceledException) {
+				return Enumerable.Empty<Result> ();
+			} catch (AggregateException ae) {
+				ae.Flatten ().Handle (ix => ix is OperationCanceledException);
+				return Enumerable.Empty<Result> ();
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while running diagnostics.", e);
+				return Enumerable.Empty<Result> ();
+			}
+		}
 
 	}
 }
