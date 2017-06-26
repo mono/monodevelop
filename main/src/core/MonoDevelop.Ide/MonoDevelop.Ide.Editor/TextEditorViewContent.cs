@@ -121,11 +121,11 @@ namespace MonoDevelop.Ide.Editor
 				return;
 			RemoveAutoSaveTimer ();
 			autoSaveTimer = GLib.Timeout.Add (500, delegate {
+				autoSaveTimer = 0;
 				if (autoSaveTask != null && !autoSaveTask.IsCompleted)
 					return false;
 
 				autoSaveTask = AutoSave.InformAutoSaveThread (textEditor.CreateSnapshot (), textEditor.FileName, IsDirty);
-				autoSaveTimer = 0;
 				return false;
 			});
 		}

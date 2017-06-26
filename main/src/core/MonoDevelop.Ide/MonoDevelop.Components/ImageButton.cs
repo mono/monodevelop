@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using Gdk;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide;
 
@@ -98,6 +99,16 @@ namespace MonoDevelop.Components
 			}
 		}
 
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			if (HasFocus && image != null) {
+				Gtk.Style.PaintFocus (Style, GdkWindow, State, Allocation, this, "button",
+				                      Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+			}
+
+			return base.OnExposeEvent (evnt);
+		}
+
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
 			hover = true;
@@ -128,6 +139,39 @@ namespace MonoDevelop.Components
 				return true;
 			}
 			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
+		{
+			pressed = image != null;
+			return base.OnKeyPressEvent (evnt);
+		}
+
+		protected override bool OnKeyReleaseEvent (Gdk.EventKey evnt)
+		{
+			if (pressed && evnt.Key == Gdk.Key.space) {
+				LoadImage ();
+				Clicked?.Invoke (this, EventArgs.Empty);
+				return true;
+			}
+
+			return base.OnKeyReleaseEvent (evnt);
+		}
+
+		protected override bool OnFocusInEvent (Gdk.EventFocus evnt)
+		{
+			hover = true;
+			LoadImage ();
+			QueueDraw ();
+			return base.OnFocusInEvent (evnt);
+		}
+
+		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
+		{
+			hover = false;
+			LoadImage ();
+			QueueDraw ();
+			return base.OnFocusOutEvent (evnt);
 		}
 
 		void HandlePress (object o, EventArgs args)

@@ -58,37 +58,32 @@ namespace MonoDevelop.CSharp.Project
 
 		void SetupAccessibility ()
 		{
-			generateOverflowChecksCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.OverflowChecks", null, 
+			generateOverflowChecksCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.OverflowChecks", "", 
 			                                                                    GettextCatalog.GetString ("Check this to enable overflow checking"));
-			enableOptimizationCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.Optimizations", null,
+			enableOptimizationCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.Optimizations", "",
 			                                                                GettextCatalog.GetString ("Check this to enable optimizations"));
-			generateXmlOutputCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.XmlDoc", null,
+			generateXmlOutputCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.XmlDoc", "",
 			                                                               GettextCatalog.GetString ("Check this to generate XML documentation"));
 			xmlDocsEntry.EntryAccessible.Name = "CompilerOptions.XmlEntry";
 			xmlDocsEntry.EntryAccessible.SetLabel (GettextCatalog.GetString ("XML Filename"));
 			xmlDocsEntry.EntryAccessible.Description = GettextCatalog.GetString ("Enter the filename for the generated XML documentation");
 
-			comboDebug.SetCommonAccessibilityAttributes ("CompilerOptions.DebugCombo", GettextCatalog.GetString ("Debug Information"),
+			comboDebug.SetCommonAccessibilityAttributes ("CompilerOptions.DebugCombo", label2,
 			                                             GettextCatalog.GetString ("Select the level of debugging information to be generated"));
-			comboDebug.SetAccessibilityLabelRelationship (label2);
 
-			symbolsEntry.SetCommonAccessibilityAttributes ("CompilerOptions.SymbolsEntry", GettextCatalog.GetString ("Define Symbols"),
+			symbolsEntry.SetCommonAccessibilityAttributes ("CompilerOptions.SymbolsEntry", label87,
 			                                               GettextCatalog.GetString ("Enter the symbols the compiler should define"));
-			symbolsEntry.SetAccessibilityLabelRelationship (label87);
 
-			comboPlatforms.SetCommonAccessibilityAttributes ("CompilerOptions.Platforms", GettextCatalog.GetString ("Platform Target"),
+			comboPlatforms.SetCommonAccessibilityAttributes ("CompilerOptions.Platforms", label1,
 			                                                 GettextCatalog.GetString ("Select the platform to target"));
-			comboPlatforms.SetAccessibilityLabelRelationship (label1);
 
-			warningLevelSpinButton.SetCommonAccessibilityAttributes ("CompilerOptions.WarningsLevel", GettextCatalog.GetString ("Warning Level"),
+			warningLevelSpinButton.SetCommonAccessibilityAttributes ("CompilerOptions.WarningsLevel", label85,
 			                                                         GettextCatalog.GetString ("Select the warning level to use"));
-			warningLevelSpinButton.SetAccessibilityLabelRelationship (label85);
 
-			ignoreWarningsEntry.SetCommonAccessibilityAttributes ("CompilerOptions.IgnoreWarnings", GettextCatalog.GetString ("Ignore Warnings"),
+			ignoreWarningsEntry.SetCommonAccessibilityAttributes ("CompilerOptions.IgnoreWarnings", label86,
 			                                                      GettextCatalog.GetString ("Enter the warning numbers separated by a comma that the compile should ignore"));
-			ignoreWarningsEntry.SetAccessibilityLabelRelationship (label86);
 
-			warningsAsErrorsCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.WarningsAsErrors", null,
+			warningsAsErrorsCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.WarningsAsErrors", "",
 			                                                              GettextCatalog.GetString ("Check to treat warnings as errors"));
 		}
 

@@ -117,10 +117,10 @@
 		{ "name": "Punctuation", "fore": "aluminium1" },
 		{ "name": "Punctuation(Brackets)", "fore": "aluminium1" },
 
-		{ "name": "Comment(Line)", "fore": "aluminium4" },
-		{ "name": "Comment(Block)", "fore": "aluminium4" },
+		{ "name": "Comment(Line)", "fore": "#7a976b" },
+		{ "name": "Comment(Block)", "fore": "#7a976b" },
 		{ "name": "Comment(Doc)", "fore": "#7a976b" },
-		{ "name": "Comment(DocTag)", "fore": "#9a8b4e" },
+		{ "name": "Comment(DocTag)", "fore": "aluminium4" },
 		{ "name": "Comment Tag", "fore": "#ff37ff" },
 
 		{ "name": "Excluded Code", "fore": "aluminium4" },

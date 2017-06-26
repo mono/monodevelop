@@ -83,7 +83,7 @@ namespace Mono.TextEditor
 
 		void HandleFoldTreeUpdated (object sender, EventArgs e)
 		{
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				Rebuild ();
 			});
 		}

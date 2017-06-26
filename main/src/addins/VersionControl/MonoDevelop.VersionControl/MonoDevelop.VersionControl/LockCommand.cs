@@ -61,7 +61,7 @@ namespace MonoDevelop.VersionControl
 					list[0].Repository.Lock (Monitor, list.Paths);
 				
 				
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Lock operation completed."));

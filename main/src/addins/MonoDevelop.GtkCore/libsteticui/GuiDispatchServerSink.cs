@@ -124,7 +124,7 @@ namespace Stetic
 			else {
 				object wo = new object ();
 				lock (wo) {
-					Gtk.Application.Invoke (delegate {
+					Gtk.Application.Invoke ((o, args) => {
 						try {
 							h (null, null);
 						} finally {

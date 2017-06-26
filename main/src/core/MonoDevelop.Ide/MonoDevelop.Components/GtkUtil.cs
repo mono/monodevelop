@@ -605,15 +605,20 @@ namespace MonoDevelop.Components
 
 		public static Gdk.EventKey CreateKeyEvent (uint keyval, Gdk.ModifierType state, Gdk.EventType eventType, Gdk.Window win)
 		{
-			return CreateKeyEvent (keyval, -1, state, eventType, win);
+			return CreateKeyEvent (keyval, -1, state, eventType, win, null);
 		}
 
 		public static Gdk.EventKey CreateKeyEventFromKeyCode (ushort keyCode, Gdk.ModifierType state, Gdk.EventType eventType, Gdk.Window win)
 		{
-			return CreateKeyEvent (0, keyCode, state, eventType, win);
+			return CreateKeyEvent (0, keyCode, state, eventType, win, null);
 		}
 
-		static Gdk.EventKey CreateKeyEvent (uint keyval, int keyCode, Gdk.ModifierType state, Gdk.EventType eventType, Gdk.Window win)
+		public static Gdk.EventKey CreateKeyEventFromKeyCode (ushort keyCode, Gdk.ModifierType state, Gdk.EventType eventType, Gdk.Window win, uint time)
+		{
+			return CreateKeyEvent (0, keyCode, state, eventType, win, time);
+		}
+
+		static Gdk.EventKey CreateKeyEvent (uint keyval, int keyCode, Gdk.ModifierType state, Gdk.EventType eventType, Gdk.Window win, uint? time)
 		{
 			int effectiveGroup, level;
 			Gdk.ModifierType cmods;
@@ -633,7 +638,7 @@ namespace MonoDevelop.Components
 				group = (byte)keyms [0].Group,
 				hardware_keycode = keyCode == -1 ? (ushort)keyms [0].Keycode : (ushort)keyCode,
 				length = 0,
-				time = Gtk.Global.CurrentEventTime
+				time = time ?? Gtk.Global.CurrentEventTime
 			};
 
 			IntPtr ptr = GLib.Marshaller.StructureToPtrAlloc (nativeEvent); 
@@ -921,7 +926,7 @@ namespace MonoDevelop.Components
 
 			// Delay the call to the leave handler since the pointer may be
 			// entering a child widget, in which case the event doesn't have to be fired
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o2, a2) => {
 				if (!Inside)
 					LeaveHandler ();
 			});

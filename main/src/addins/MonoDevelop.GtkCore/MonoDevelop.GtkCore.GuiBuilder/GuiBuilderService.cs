@@ -537,7 +537,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				
 				// Make sure the generated files are added to the project
 				if (info.UpdateGtkFolder ()) {
-					Gtk.Application.Invoke (delegate {
+					Gtk.Application.Invoke ((o, args) => {
 						IdeApp.ProjectOperations.SaveAsync (project);
 					});
 				}

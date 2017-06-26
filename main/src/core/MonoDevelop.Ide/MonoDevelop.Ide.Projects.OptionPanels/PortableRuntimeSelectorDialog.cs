@@ -231,7 +231,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		IEnumerable<TargetFramework> GetPortableTargetFrameworks ()
 		{
 			return Runtime.SystemAssemblyService.GetTargetFrameworks ().Where (fx =>
-				!fx.Hidden &&
 				fx.Id.Identifier == ".NETPortable" &&
 				fx.SupportedFrameworks.Count > 0
 			);

@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void OnWindowChanged (object ob, EventArgs args)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o2, a2) => {
 				SelectActiveFile ();
 			});
 		}

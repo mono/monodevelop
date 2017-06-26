@@ -155,7 +155,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Mono.TextTemplating">
-      <HintPath>..\..\..\packages\Mono.TextTemplating.1.3.0\lib\net45\Mono.TextTemplating.dll</HintPath>
+      <HintPath>..\..\..\packages\Mono.TextTemplating.1.3.1\lib\net45\Mono.TextTemplating.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -595,6 +595,45 @@
     <None Include="Templates\AspNetCore\WebApiControllerTemplate.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Templates\AspNetCore\RazorPageWithPageModel.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\AspNetCore\RazorPage.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\AspNetCore\MVCViewImportsPage.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\AspNetCore\MVCViewStartPage.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\AspNetCore\MVCViewLayoutPage.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\AspNetCore\MVCViewPage.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\AspNetCore\RazorPageWithPageModel.cshtml.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\AspNetCore\MVCViewImportsPage.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\AspNetCore\MVCViewLayoutPage.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\AspNetCore\MVCViewPage.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\AspNetCore\MVCViewStartPage.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\AspNetCore\RazorPage.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\AspNetCore\RazorPageWithPageModel.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Html\Schemas\readme.txt">
@@ -645,5 +684,4 @@
     <Folder Include="Templates\images\" />
     <Folder Include="WebForms\CSharp\" />
   </ItemGroup>
-  <Import Project="..\..\..\packages\StrongNamer.0.0.3\build\StrongNamer.targets" Condition="Exists('..\..\..\packages\StrongNamer.0.0.3\build\StrongNamer.targets')" />
 </Project>

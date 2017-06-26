@@ -31,9 +31,11 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public static SdkResolution GetResolver (TargetRuntime runtime)
 		{
-			if (!runtimeResolvers.TryGetValue (runtime, out var resolution))
-				runtimeResolvers [runtime] = resolution = new SdkResolution (runtime);
-			return resolution;
+			lock (runtimeResolvers) {
+				if (!runtimeResolvers.TryGetValue (runtime, out var resolution))
+					runtimeResolvers [runtime] = resolution = new SdkResolution (runtime);
+				return resolution;
+			}
 		}
 
 		/// <summary>

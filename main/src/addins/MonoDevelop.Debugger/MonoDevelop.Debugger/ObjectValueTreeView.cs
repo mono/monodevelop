@@ -642,7 +642,7 @@ namespace MonoDevelop.Debugger
 
 			if (tval != valueCol.FixedWidth) {
 				valueCol.FixedWidth = tval;
-				Application.Invoke (delegate { QueueResize (); });
+				Application.Invoke ((o, args) => { QueueResize (); });
 			}
 			
 			columnSizesUpdating = false;
@@ -1030,7 +1030,7 @@ namespace MonoDevelop.Debugger
 
 		void OnValueUpdated (object o, EventArgs a)
 		{
-			Application.Invoke (delegate {
+			Application.Invoke ((o2, a2) => {
 				if (disposed)
 					return;
 

@@ -16,7 +16,7 @@ type TestTooltipProvider() =
          .Replace("&gt;", ">")
          .Replace("&apos;", "'")
 
-    let getTooltip (source: string) =
+    let getSymbol (source: string) =
         let offset = source.IndexOf("$")
         let source = source.Replace("$", "")
 
@@ -24,6 +24,10 @@ type TestTooltipProvider() =
         let line, col, lineStr = doc.Editor.GetLineInfoFromOffset offset
 
         let symbolUse = doc.Ast.GetSymbolAtLocation(line, col - 1, lineStr) |> Async.RunSynchronously
+        lineStr, col, symbolUse, doc.Editor
+
+    let getTooltip source =
+        let _, _, symbolUse, _ = getSymbol source
         symbolUse |> Option.bind SymbolTooltips.getTooltipFromSymbolUse
 
     let getTooltipSignature (source: string) =
@@ -43,6 +47,13 @@ type TestTooltipProvider() =
         match getTooltip source with
         | Some(_,summary,_) -> SymbolTooltips.formatSummary summary
         | _ ->  ""
+
+    [<Test>]
+    member this.``Namespace has correct segment``() =
+        let line, col, symbolUse, editor = getSymbol "open Sys$tem"
+        let segment = Symbols.getTextSegment editor symbolUse.Value col line
+        segment.Offset |> should equal 5
+        segment.EndOffset |> should equal 11
 
     [<Test>]
     member this.``Tooltip arrows are right aligned``() =

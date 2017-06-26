@@ -74,7 +74,7 @@ namespace MonoDevelop.Components
 
 			parent.GrabFocus ();
 
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
 				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
 				var nsview = MonoDevelop.Components.Mac.GtkMacInterop.GetNSView (parent);

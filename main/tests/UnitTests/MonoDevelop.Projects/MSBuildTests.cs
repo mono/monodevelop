@@ -32,6 +32,7 @@ using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.CSharp.Project;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.CustomTools;
 using MonoDevelop.Ide.Projects;
 using System.Linq;
 using MonoDevelop.Projects.MSBuild;
@@ -1646,6 +1647,44 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// As above but the build action is changed to None, then back to Compile,
+		/// then back to None again. The project is saved on each change.
+		/// </summary>
+		[Test]
+		public async Task CSharpFileBuildActionChangedToNoneBackToCompileBackToNoneAgain ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesDotNetProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-none-wildcard.csproj");
+
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+				mp.UseAdvancedGlobSupport = true;
+
+				var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Program.cs");
+				f.BuildAction = BuildAction.None;
+				await p.SaveAsync (Util.GetMonitor ());
+
+				f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Program.cs");
+				f.BuildAction = BuildAction.Compile;
+				await p.SaveAsync (Util.GetMonitor ());
+
+				f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Program.cs");
+				f.BuildAction = BuildAction.None;
+				await p.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved1"), Util.ReadAllWithWindowsEndings (p.FileName));
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 		[Test]
 		//[Ignore ("xbuild bug: RecursiveDir metadata returns the wrong value")]
 		public async Task LoadProjectWithWildcardLinks ()
@@ -2640,6 +2679,54 @@ namespace MonoDevelop.Projects
 
 			Assert.That (capabilities, Contains.Item ("TestCapabilityNetStandard"));
 			Assert.That (capabilities, Has.None.EqualTo ("TestCapabilityNetCoreApp"));
+
+			sol.Dispose ();
+		}
+
+		/// <summary>
+		/// Tests that files generated from .resx files for .NET Core and .NET Standard
+		/// projects use "typeof(Resources).GetTypeInfo().Assembly" instead of
+		/// "typeof(Resources).Assembly". Without the GetTypeInfo the project will not
+		/// compile with NET Core below version 2.0
+		/// </summary>
+		[Test]
+		[TestCase ("DotNetCoreProject")]
+		[TestCase ("NetStandardProject")]
+		[Platform (Exclude = "Win")]
+		public async Task BuildDotNetCoreProjectAfterGeneratingResources (string projectName)
+		{
+			FilePath solFile = Util.GetSampleProject ("DotNetCoreResources", "DotNetCoreResources.sln");
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject)sol.Items.FirstOrDefault (item => item.Name == projectName);
+			p.RequiresMicrosoftBuild = true;
+
+			var resourceFile = p.Files.FirstOrDefault (f => f.FilePath.FileName == "Resources.resx");
+
+			var customToolResult = new SingleFileCustomToolResult ();
+			await ResXFileCodeGenerator.GenerateFile (resourceFile, customToolResult, true);
+			Assert.IsTrue (customToolResult.Success);
+
+			// Running a restore for a .NET Core project can take a long time if
+			// no packages are cached. So instead we just check the generated resource file.
+			//var res = await p.RunTarget (Util.GetMonitor (), "Restore", ConfigurationSelector.Default);
+			//Assert.AreEqual (0, res.BuildResult.Errors.Count);
+
+			//res = await p.RunTarget (Util.GetMonitor (), "Build", ConfigurationSelector.Default);
+			//Assert.AreEqual (0, res.BuildResult.Errors.Count);
+
+			var generatedResourceFile = resourceFile.FilePath.ChangeExtension (".Designer.cs");
+
+			bool foundLine = false;
+			foreach (string line in File.ReadAllLines (generatedResourceFile)) {
+				if (line.Contains ("typeof")) {
+					string lineWithoutSpaces = line.Replace (" ", "");
+					foundLine = lineWithoutSpaces.EndsWith ("typeof(Resources).GetTypeInfo().Assembly);", StringComparison.Ordinal);
+					break;
+				}
+			}
+
+			Assert.IsTrue (foundLine);
 
 			sol.Dispose ();
 		}

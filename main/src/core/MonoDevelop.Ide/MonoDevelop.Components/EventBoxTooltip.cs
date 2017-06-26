@@ -125,6 +125,8 @@ namespace MonoDevelop.Components
 			HideTooltip ();
 			eventBox.EnterNotifyEvent -= HandleEnterNotifyEvent;
 			eventBox.LeaveNotifyEvent -= HandleLeaveNotifyEvent;
+			eventBox.FocusInEvent -= HandleFocusInEvent;
+			eventBox.FocusOutEvent -= HandleFocusOutEvent;
 		}
 
 		public string ToolTip {

@@ -1276,7 +1276,7 @@ namespace Mono.TextEditor
 				if (!startTask) {
 					var newFoldedSegments = UpdateFoldSegmentWorker (newSegments, out update);
 					if (useApplicationInvoke) {
-						Gtk.Application.Invoke (delegate {
+						Gtk.Application.Invoke ((o, args) => {
 							foldedSegments = newFoldedSegments;
 							InformFoldTreeUpdated ();
 						});
@@ -1294,7 +1294,7 @@ namespace Mono.TextEditor
 					if (token.IsCancellationRequested)
 						return;
 					foldedSegments = segments;
-					Gtk.Application.Invoke (delegate {
+					Gtk.Application.Invoke ((o, args) => {
 						if (token.IsCancellationRequested)
 							return;
 						InformFoldTreeUpdated ();
@@ -1606,6 +1606,13 @@ namespace Mono.TextEditor
 			if (line == null)
 				return Enumerable.Empty<TextLineMarker> ();
 			return GetTextSegmentMarkersAt (line).OfType<DocumentLineTextSegmentMarker> ().Select (m => m.Marker);
+		}
+
+		public IEnumerable<TextLineMarker> GetMarkersOrderedByInsertion (DocumentLine line)
+		{
+			if (line == null)
+				return Enumerable.Empty<TextLineMarker> ();
+			return OrderTextSegmentMarkersByInsertion(GetTextSegmentMarkersAt (line)).OfType<DocumentLineTextSegmentMarker> ().Select (m => m.Marker);
 		}
 
 		public void ClearMarkers (DocumentLine line)

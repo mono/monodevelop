@@ -59,7 +59,7 @@ namespace MonoDevelop.VersionControl
 				foreach (VersionControlItemList list in items.SplitByRepository ())
 					list[0].Repository.Revert (list.Paths, true, Monitor);
 				
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					foreach (VersionControlItem item in items) {
 						if (!item.IsDirectory) {
 							FileService.NotifyFileChanged (item.Path);

@@ -138,6 +138,8 @@ namespace MonoDevelop.Components
 
 			NoShowAll = true;
 			GtkWorkarounds.SetTransparentBgHint (this, true);
+
+			Accessible.SetShouldIgnore (true);
 		}
 
 		public Xwt.Drawing.Image FilterButtonPixbuf {
@@ -161,6 +163,7 @@ namespace MonoDevelop.Components
 			entry = new FramelessEntry (this);
 			entry.UseNativeContextMenus ();
 			entry.Accessible.SetSubRole ("AXSearchField");
+			entry.Accessible.SetLabel (GettextCatalog.GetString ("Search"));
 
 			filter_button = new HoverImageButton (IconSize.Menu, "md-searchbox-search");
 			filter_button.Accessible.SetRole (AtkCocoa.Roles.AXMenuButton);
@@ -310,6 +313,7 @@ namespace MonoDevelop.Components
 
 			if (changed_timeout_id > 0) {
 				GLib.Source.Remove (changed_timeout_id);
+				changed_timeout_id = 0;
 			}
 
 			if (Ready)
@@ -318,6 +322,7 @@ namespace MonoDevelop.Components
 
 		private bool OnChangedTimeout ()
 		{
+			changed_timeout_id = 0;
 			OnChanged ();
 			return false;
 		}

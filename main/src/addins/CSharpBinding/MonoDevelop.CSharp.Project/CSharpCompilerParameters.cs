@@ -195,6 +195,7 @@ namespace MonoDevelop.CSharp.Project
 				}
 
 				langVersion = LanguageVersionToString (value);
+				NotifyChange ();
 			}
 		}
 
@@ -228,7 +229,10 @@ namespace MonoDevelop.CSharp.Project
 				return definesymbols;
 			}
 			set {
+				if (definesymbols == (value ?? string.Empty))
+					return;
 				definesymbols = value ?? string.Empty;
+				NotifyChange ();
 			}
 		}
 
@@ -237,8 +241,10 @@ namespace MonoDevelop.CSharp.Project
 				return optimize ?? false;
 			}
 			set {
-				if (value != Optimize)
-					optimize = value;
+				if (value == Optimize)
+					return;
+				optimize = value;
+				NotifyChange ();
 			}
 		}
 
@@ -247,7 +253,10 @@ namespace MonoDevelop.CSharp.Project
 				return unsafecode;
 			}
 			set {
+				if (unsafecode == value)
+					return;
 				unsafecode = value;
+				NotifyChange ();
 			}
 		}
 
@@ -256,7 +265,10 @@ namespace MonoDevelop.CSharp.Project
 				return generateOverflowChecks;
 			}
 			set {
+				if (generateOverflowChecks == value)
+					return;
 				generateOverflowChecks = value;
+				NotifyChange ();
 			}
 		}
 
@@ -265,7 +277,10 @@ namespace MonoDevelop.CSharp.Project
 				return documentationFile;
 			}
 			set {
+				if (documentationFile == value)
+					return;
 				documentationFile = value;
+				NotifyChange ();
 			}
 		}
 
@@ -274,7 +289,10 @@ namespace MonoDevelop.CSharp.Project
 				return platformTarget;
 			}
 			set {
+				if (platformTarget == (value ?? string.Empty))
+					return;
 				platformTarget = value ?? string.Empty;
+				NotifyChange ();
 			}
 		}
 
@@ -286,12 +304,17 @@ namespace MonoDevelop.CSharp.Project
 				return warninglevel ?? 4;
 			}
 			set {
+				int? newLevel = warninglevel ;
 				if (warninglevel.HasValue) {
-					warninglevel = value;
+					newLevel = value;
 				} else {
 					if (value != 4)
-						warninglevel = value;
+						newLevel = value;
 				}
+				if (warninglevel == newLevel)
+					return;
+				warninglevel = newLevel;
+				NotifyChange ();
 			}
 		}
 
@@ -300,7 +323,10 @@ namespace MonoDevelop.CSharp.Project
 				return noWarnings;
 			}
 			set {
+				if (noWarnings == value)
+					return;
 				noWarnings = value;
+				NotifyChange ();
 			}
 		}
 
@@ -309,7 +335,10 @@ namespace MonoDevelop.CSharp.Project
 				return noStdLib;
 			}
 			set {
+				if (noStdLib == value)
+					return;
 				noStdLib = value;
+				NotifyChange ();
 			}
 		}
 
@@ -318,7 +347,10 @@ namespace MonoDevelop.CSharp.Project
 				return treatWarningsAsErrors;
 			}
 			set {
+				if (treatWarningsAsErrors == value)
+					return;
 				treatWarningsAsErrors = value;
+				NotifyChange ();
 			}
 		}
 
@@ -327,7 +359,10 @@ namespace MonoDevelop.CSharp.Project
 				return warningsNotAsErrors;
 			}
 			set {
+				if (warningsNotAsErrors == value)
+					return;
 				warningsNotAsErrors = value;
+				NotifyChange ();
 			}
 		}
 		#endregion
@@ -339,6 +374,7 @@ namespace MonoDevelop.CSharp.Project
 			case LanguageVersion.Latest: return "Latest";
 			case LanguageVersion.CSharp1: return "ISO-1";
 			case LanguageVersion.CSharp2: return "ISO-2";
+			case LanguageVersion.CSharp7_1: return "7.1";
 			default: return ((int)value).ToString ();
 			}
 		}
@@ -363,6 +399,10 @@ namespace MonoDevelop.CSharp.Project
 
 			case "7":
 				version = LanguageVersion.CSharp7;
+				return true;
+
+			case "7.1":
+				version = LanguageVersion.CSharp7_1;
 				return true;
 
 			case "default":
@@ -392,6 +432,11 @@ namespace MonoDevelop.CSharp.Project
 				version = LanguageVersion.Default;
 				return false;
 			}
+		}
+
+		void NotifyChange ()
+		{
+			ParentProject?.NotifyModified ("CompilerParameters");
 		}
 	}
 }

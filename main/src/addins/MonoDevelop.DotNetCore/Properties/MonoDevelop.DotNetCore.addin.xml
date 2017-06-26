@@ -8,16 +8,16 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
-		<Category id="netcore" name=".NET Core" icon="md-platform-netcore" insertbefore="other">
-			<Category id="app" name="App">
-				<Category id="general" name="General" />
-				<Category id="aspnet" name="ASP.NET Core" />
+		<Category id="netcore" _name=".NET Core" icon="md-platform-netcore" insertbefore="other">
+			<Category id="app" _name="App">
+				<Category id="general" _name="General" />
+				<Category id="aspnet" _name="ASP.NET Core" />
 			</Category>
-			<Category id="library" name="Library">
-				<Category id="general" name="General" />
+			<Category id="library" _name="Library">
+				<Category id="general" _name="General" />
 			</Category>
-			<Category id="test" name="Tests">
-				<Category id="general" name="General" />
+			<Category id="test" _name="Tests">
+				<Category id="general" _name="General" />
 			</Category>
 		</Category>
 	</Extension>
@@ -32,7 +32,7 @@
 			id="Microsoft.Common.Console.CSharp"
 			_overrideName="Console Application"
 			_overrideDescription="Creates a new .NET Core console project."
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-console-project"
 			imageId="md-netcore-console-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -42,7 +42,7 @@
 			id="Microsoft.Common.Console.FSharp"
 			_overrideName="Console Application"
 			_overrideDescription="Creates a new .NET Core console project."
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-console-project"
 			imageId="md-netcore-console-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -55,7 +55,7 @@
 			templateId="Microsoft.Common.Console.CSharp.2.0"
 			_overrideName="Console Application"
 			_overrideDescription="Creates a new .NET Core console project."
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-console-project"
 			imageId="md-netcore-console-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -66,7 +66,7 @@
 			templateId="Microsoft.Common.Console.FSharp.2.0"
 			_overrideName="Console Application"
 			_overrideDescription="Creates a new .NET Core console project."
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-console-project"
 			imageId="md-netcore-console-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -84,7 +84,7 @@
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.CSharp"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-crossplatform-library-project"
 			imageId="md-crossplatform-library-project"
 			supportedParameters="NetStandard"
@@ -95,7 +95,7 @@
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.FSharp"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-crossplatform-library-project"
 			imageId="md-crossplatform-library-project"
 			supportedParameters="NetStandard;FSharpNetStandard"
@@ -109,7 +109,7 @@
 			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.CSharp"
 			templateId="Microsoft.Common.Library.CSharp.2.0"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-crossplatform-library-project"
 			imageId="md-crossplatform-library-project"
 			supportedParameters="NetStandard"
@@ -121,7 +121,7 @@
 			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.FSharp"
 			templateId="Microsoft.Common.Library.FSharp.2.0"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-crossplatform-library-project"
 			imageId="md-crossplatform-library-project"
 			supportedParameters="NetStandard;FSharpNetStandard"
@@ -139,7 +139,7 @@
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.CSharp"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-projectt"
 			supportedParameters="NetStandard"
@@ -150,7 +150,7 @@
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.FSharp"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			supportedParameters="NetStandard;FSharpNetStandard"
@@ -164,7 +164,7 @@
 			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.CSharp"
 			templateId="Microsoft.Common.Library.CSharp.2.0"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			supportedParameters="NetStandard"
@@ -176,7 +176,7 @@
 			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.FSharp"
 			templateId="Microsoft.Common.Library.FSharp.2.0"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			supportedParameters="NetStandard;FSharpNetStandard"
@@ -200,9 +200,10 @@
 			id="Microsoft.Common.Library.CSharp-netcoreapp"
 			templateId="Microsoft.Common.Library.CSharp"
 			groupId="Microsoft.Common.Library-netcoreapp"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
+			supportedParameters="NetCoreLibrary"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore1x=true"
 			category="netcore/library/general" />
@@ -214,9 +215,10 @@
 			id="Microsoft.Common.Library.CSharp-netcoreapp"
 			templateId="Microsoft.Common.Library.CSharp.2.0"
 			groupId="Microsoft.Common.Library-netcoreapp"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
+			supportedParameters="NetCoreLibrary"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore20=true"
 			category="netcore/library/general" />
@@ -226,10 +228,10 @@
 			id="Microsoft.Common.Library.FSharp-netcoreapp"
 			templateId="Microsoft.Common.Library.FSharp.2.0"
 			groupId="Microsoft.Common.Library-netcoreapp"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
-			supportedParameters="FSharpNetCoreLibrary"
+			supportedParameters="FSharpNetCoreLibrary;NetCoreLibrary"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore20=true"
 			category="netcore/library/general" />
@@ -238,7 +240,7 @@
 		<Template
 			id="Microsoft.Test.xUnit.CSharp"
 			_overrideDescription="Creates a new xUnit test project."
-			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -247,7 +249,7 @@
 		<Template
 			id="Microsoft.Test.xUnit.FSharp"
 			_overrideDescription="Creates a new xUnit test project."
-			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -257,7 +259,7 @@
 			id="Microsoft.Test.MSTest.CSharp"
 			_overrideName="MSTest Project"
 			_overrideDescription="Creates a new MSTest project."
-			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -267,7 +269,7 @@
 			id="Microsoft.Test.MSTest.FSharp"
 			_overrideName="MSTest Project"
 			_overrideDescription="Creates a new MSTest project."
-			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -276,39 +278,43 @@
 		<Template
 			id="Microsoft.Web.Empty.CSharp"
 			_overrideDescription="Creates a new ASP.NET Core web project."
-			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore1x=true"
-			category="netcore/app/aspnet" />
+			category="netcore/app/aspnet"
+			defaultParameters="IncludeLaunchSettings=true" />
 		<Template
 			id="Microsoft.Web.Mvc.CSharp"
 			_overrideDescription="Creates a new ASP.NET MVC Core web project."
-			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore1x=true"
-			category="netcore/app/aspnet" />
+			category="netcore/app/aspnet"
+			defaultParameters="IncludeLaunchSettings=true" />
 		<Template
 			id="Microsoft.Web.Mvc.FSharp"
 			_overrideDescription="Creates a new ASP.NET MVC Core web project."
-			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore1x=true"
-			category="netcore/app/aspnet" />
+			category="netcore/app/aspnet"
+			defaultParameters="IncludeLaunchSettings=true" />
 		<Template
 			id="Microsoft.Web.WebApi.CSharp"
 			_overrideDescription="Creates a new ASP.NET Web API Core web project."
-			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore1x=true"
-			category="netcore/app/aspnet" />
+			category="netcore/app/aspnet"
+			defaultParameters="IncludeLaunchSettings=true" />
 		</Condition>
 		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
 		<Template
@@ -316,7 +322,7 @@
 			templateId="Microsoft.Test.xUnit.CSharp.2.0"
 			_overrideName="xUnit Test Project"
 			_overrideDescription="Creates a new xUnit test project."
-			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -327,7 +333,7 @@
 			templateId="Microsoft.Test.xUnit.FSharp.2.0"
 			_overrideName="xUnit Test Project"
 			_overrideDescription="Creates a new xUnit test project."
-			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -338,7 +344,7 @@
 			templateId="Microsoft.Test.MSTest.CSharp.2.0"
 			_overrideName="MSTest Project"
 			_overrideDescription="Creates a new MSTest project."
-			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -349,7 +355,7 @@
 			templateId="Microsoft.Test.MSTest.FSharp.2.0"
 			_overrideName="MSTest Project"
 			_overrideDescription="Creates a new MSTest project."
-			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -360,55 +366,60 @@
 			templateId="Microsoft.Web.Empty.CSharp.2.0"
 			_overrideName="ASP.NET Core Empty"
 			_overrideDescription="Creates a new ASP.NET Core web project."
-			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore20=true"
-			category="netcore/app/aspnet" />
+			category="netcore/app/aspnet"
+			defaultParameters="IncludeLaunchSettings=true" />
 		<Template
 			id="Microsoft.Web.Mvc.CSharp"
 			templateId="Microsoft.Web.Mvc.CSharp.2.0"
 			_overrideName="ASP.NET Core Web App"
 			_overrideDescription="Creates a new ASP.NET MVC Core web project."
-			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore20=true"
-			category="netcore/app/aspnet" />
+			category="netcore/app/aspnet"
+			defaultParameters="IncludeLaunchSettings=true" />
 		<Template
 			id="Microsoft.Web.Mvc.FSharp"
 			templateId="Microsoft.Web.Mvc.FSharp.2.0"
 			_overrideName="ASP.NET Core Web App"
 			_overrideDescription="Creates a new ASP.NET MVC Core web project."
-			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore20=true"
-			category="netcore/app/aspnet" />
+			category="netcore/app/aspnet"
+			defaultParameters="IncludeLaunchSettings=true" />
 		<Template
 			id="Microsoft.Web.RazorPages.CSharp.2.0"
 			_overrideDescription="Creates a new ASP.NET Web API Core web project using Razor Pages."
-			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			supportedParameters="RazorPages"
 			condition="UseNetCore20=true"
-			category="netcore/app/aspnet" />
+			category="netcore/app/aspnet"
+			defaultParameters="IncludeLaunchSettings=true" />
 		<Template
 			id="Microsoft.Web.WebApi.CSharp"
 			templateId="Microsoft.Web.WebApi.CSharp.2.0"
 			_overrideName="ASP.NET Core Web Api"
 			_overrideDescription="Creates a new ASP.NET Web API Core web project."
-			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore20=true"
-			category="netcore/app/aspnet" />
+			category="netcore/app/aspnet"
+			defaultParameters="IncludeLaunchSettings=true" />
 		</Condition>
 	</Extension>
 
@@ -536,5 +547,11 @@
 		<StockIcon stockid="md-netcore-library-project" resource="project-netcore-library-32.png" size="Dnd" />
 		<StockIcon stockid="md-netcore-test-project" resource="project-netcore-test-32.png" size="Dnd" />
 		<StockIcon stockid="md-crossplatform-library-project" resource="project-crossplatform-library-32.png" size="Dnd" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders">
+		<Type
+			id="DotNetCoreMSBuildSdksPathPropertyProvider"
+			class="MonoDevelop.DotNetCore.MSBuildSdksPathGlobalPropertyProvider" />
 	</Extension>
 </ExtensionModel>

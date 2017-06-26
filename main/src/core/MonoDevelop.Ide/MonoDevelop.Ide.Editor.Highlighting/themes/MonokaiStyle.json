@@ -115,8 +115,8 @@
 
 		{ "name": "Comment(Line)", "fore": "monokai-comment" },
 		{ "name": "Comment(Block)", "fore": "monokai-comment" },
-		{ "name": "Comment(Doc)", "fore": "#617e52" },
-		{ "name": "Comment(DocTag)", "fore": "#817235" },
+		{ "name": "Comment(Doc)", "fore": "monokai-comment" },
+		{ "name": "Comment(DocTag)", "fore": "monokai-comment" },
 		{ "name": "Comment Tag", "fore": "#ff0dff" },
 
 		{ "name": "Excluded Code", "fore": "monokai-comment" },

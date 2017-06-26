@@ -544,8 +544,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				} else {
 					xpos = iconTextSpacing;
 				}
+				bool drawIconAsSelected = SelectionEnabled && item == SelectedItemIndex;
 				string markup = win.DataProvider.HasMarkup (item) ? (win.DataProvider.GetMarkup (item) ?? "&lt;null&gt;") : GLib.Markup.EscapeText (win.DataProvider.GetText (item) ?? "<null>");
-				string description = win.DataProvider.GetDescription (item, item == SelectedItemIndex);
+				string description = win.DataProvider.GetDescription (item, drawIconAsSelected);
 
 				if (string.IsNullOrEmpty (description)) {
 					layout.SetMarkup (markup);
@@ -582,7 +583,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Xwt.Drawing.Image icon = win.DataProvider.GetIcon (item);
 				int iconHeight, iconWidth;
 				if (icon != null) {
-					if (item == SelectedItemIndex)
+					if (drawIconAsSelected)
 						icon = icon.WithStyles ("sel");
 					iconWidth = (int)icon.Width;
 					iconHeight = (int)icon.Height;
@@ -600,17 +601,24 @@ namespace MonoDevelop.Ide.CodeCompletion
 				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 				if (item == SelectedItemIndex) {
 					var barStyle = SelectionEnabled ? Styles.CodeCompletion.SelectionBackgroundColor : Styles.CodeCompletion.SelectionBackgroundInactiveColor;
-
-					context.Rectangle (0, ypos, Allocation.Width, rowHeight);
 					context.SetSourceColor (barStyle.ToCairoColor ());
-					context.Fill ();
+
+					if (SelectionEnabled) {
+						context.Rectangle (0, ypos, Allocation.Width, rowHeight);
+						context.Fill ();
+					} else {
+						context.LineWidth++;
+						context.Rectangle (0.5, ypos + 0.5, Allocation.Width - 1, rowHeight - 1);
+						context.Stroke ();
+						context.LineWidth--;
+					}
 				}
 
 				if (icon != null) {
 					context.DrawImage (this, icon, xpos, iypos);
 					xpos += iconTextSpacing;
 				}
-				context.SetSourceColor ((item == SelectedItemIndex ? Styles.CodeCompletion.SelectionTextColor : Styles.CodeCompletion.TextColor).ToCairoColor ());
+				context.SetSourceColor ((drawIconAsSelected ? Styles.CodeCompletion.SelectionTextColor : Styles.CodeCompletion.TextColor).ToCairoColor ());
 				var textXPos = xpos + iconWidth + 2;
 				context.MoveTo (textXPos, typos);
 				layout.Width = (int)((Allocation.Width - textXPos) * Pango.Scale.PangoScale);
@@ -627,7 +635,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					layout.Attributes = null;
 				}
 
-				string rightText = win.DataProvider.GetRightSideDescription (item, item == SelectedItemIndex);
+				string rightText = win.DataProvider.GetRightSideDescription (item, drawIconAsSelected);
 					if (!string.IsNullOrEmpty (rightText)) {
 						layout.SetMarkup (rightText);
 
@@ -727,35 +735,39 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
-			filteredItems.Sort (delegate (int left, int right) {
-				var data1 = dataList [left];
-				var data2 = dataList [right];
-				if (data1 != null && data2 == null)
-					return -1;
-				if (data1 == null && data2 != null)
-					return 1;
-				if (data1 == null && data2 == null)
+			try {
+				filteredItems.Sort (delegate (int left, int right) {
+					var data1 = dataList [left];
+					var data2 = dataList [right];
+					if (data1 != null && data2 == null)
+						return -1;
+					if (data1 == null && data2 != null)
+						return 1;
+					if (data1 == null && data2 == null)
+						return left.CompareTo (right);
+
+					if (data1.PriorityGroup != data2.PriorityGroup)
+						return data2.PriorityGroup.CompareTo (data1.PriorityGroup);
+
+					if (string.IsNullOrEmpty (CompletionString))
+						return CompareTo (dataList, left, right);
+
+					int rank1, rank2;
+					bool hasRank1 = matcher.CalcMatchRank (data1.CompletionText, out rank1);
+					bool hasRank2 = matcher.CalcMatchRank (data2.CompletionText, out rank2);
+					if (!hasRank1 && hasRank2)
+						return 1;
+					if (hasRank1 && !hasRank2)
+						return -1;
+
+					if (rank1 != rank2)
+						return rank2.CompareTo (rank1);
+
 					return left.CompareTo (right);
-
-				if (data1.PriorityGroup != data2.PriorityGroup)
-					return data2.PriorityGroup.CompareTo (data1.PriorityGroup);
-
-				if (string.IsNullOrEmpty (CompletionString))
-					return CompareTo (dataList, left, right);
-
-				int rank1, rank2;
-				bool hasRank1 = matcher.CalcMatchRank (data1.CompletionText, out rank1);
-				bool hasRank2 = matcher.CalcMatchRank (data2.CompletionText, out rank2);
-				if (!hasRank1 && hasRank2)
-					return 1;
-				if (hasRank1 && !hasRank2)
-					return -1;
-
-				if (rank1 != rank2)
-					return rank2.CompareTo (rank1);
-
-				return left.CompareTo (right);
-			});
+				});
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while filtering completion items.", e);
+			}
 
 			// put the item from a lower priority group with the highest match rank always to position #2
 			if (filteredItems.Count > 0) {

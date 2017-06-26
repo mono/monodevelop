@@ -126,8 +126,8 @@ namespace MonoDevelop.Core.Assemblies
 					fxKey.Close ();
 				}
 
-				string clrVer = MsNetFrameworkBackend.GetClrVersion (fx.ClrVersion);
-				if (clrVer.StartsWith ("v" + fx.Id.Version, StringComparison.Ordinal)) {
+				string clrVer = GetClrVersion (fx.Id);
+				if (clrVer != null && clrVer.StartsWith ("v" + fx.Id.Version, StringComparison.Ordinal)) {
 					// Several frameworks can share the same clr version. Make sure only one registers the assemblies.
 					fxKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\" + clrVer + @"\AssemblyFoldersEx", false);
 					if (fxKey != null) {
@@ -135,6 +135,21 @@ namespace MonoDevelop.Core.Assemblies
 						fxKey.Close ();
 					}
 				}
+			}
+		}
+		
+		static string GetClrVersion (TargetFrameworkMoniker id)
+		{
+			if (id.Identifier != TargetFrameworkMoniker.ID_NET_FRAMEWORK) {
+				return null;
+			}
+
+			switch (id.Version) {
+				case "2.0": return "v2.0.50727";
+				// The 4.5 binaries have the same version as the 4.0 binaries
+				case "4.0":
+				case "4.5": return "v4.0.30319";
+				default: return null;
 			}
 		}
 

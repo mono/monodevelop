@@ -111,7 +111,7 @@ namespace MonoDevelop.DesignerSupport
 				}
 				FileService.SystemRename (tempPath, path);
 				//mark the file as changed so it gets reparsed
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					FileService.NotifyFileChanged (path);
 				});
 				WrittenCount++;
@@ -146,7 +146,7 @@ namespace MonoDevelop.DesignerSupport
 				File.WriteAllText (tempPath, contents);
 				FileService.SystemRename (tempPath, path);
 				//mark the file as changed so it gets reparsed
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					FileService.NotifyFileChanged (path);
 				});
 				WrittenCount++;

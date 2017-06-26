@@ -841,14 +841,14 @@ namespace MonoDevelop.Ide.FindInFiles
 					searchMonitor.PathMode = scope.PathMode;
 
 					if (UpdateResultPad != null) {
-						Application.Invoke (delegate {
+						Application.Invoke ((o, args) => {
 							UpdateResultPad (searchMonitor.ResultPad);
 						});
 					}
 
 					searchMonitor.ReportStatus (scope.GetDescription (options, pattern, null));
 					if (UpdateStopButton != null) {
-						Application.Invoke (delegate {
+						Application.Invoke ((o, args) => {
 							UpdateStopButton ();
 						});
 					}
@@ -884,7 +884,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
 				}
 				if (UpdateStopButton != null) {
-					Application.Invoke (delegate {
+					Application.Invoke ((o, args) => {
 						UpdateStopButton ();
 					});
 				}

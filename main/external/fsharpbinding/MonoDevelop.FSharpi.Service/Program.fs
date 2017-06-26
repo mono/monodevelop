@@ -74,13 +74,13 @@ module CompletionServer =
 
         let writeOutput (s:string) =
             async {
-                do! outStream.WriteLineAsync s |> Async.AwaitTask
+                do! outStream.WriteLineAsync s
             }
 
         let writeData commandType obj =
             async {
                 let json = JsonConvert.SerializeObject obj
-                do! Console.Error.WriteLineAsync (commandType + " " + json) |> Async.AwaitTask
+                do! Console.Error.WriteLineAsync (commandType + " " + json)
             }
 
         let renderImage (image:Image) =
@@ -110,7 +110,7 @@ module CompletionServer =
 
             let parseInput() =
                 async {
-                    let! command = inStream.ReadLineAsync() |> Async.AwaitTask
+                    let! command = inStream.ReadLineAsync()
 
                     match command with
                     | Input input ->

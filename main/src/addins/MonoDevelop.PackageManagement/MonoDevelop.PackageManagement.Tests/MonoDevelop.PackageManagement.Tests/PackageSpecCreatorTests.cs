@@ -71,10 +71,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			project.PackageReferences.Add (packageReference);
 		}
 
-		FakeDotNetProject AddProjectReference (string projectName, string fileName, string include)
+		FakeDotNetProject AddProjectReference (string projectName, string fileName, string include, bool referenceOutputAssembly = true)
 		{
 			fileName = fileName.ToNativePath ();
 			var projectReference = ProjectReference.CreateCustomReference (ReferenceType.Project, include);
+			projectReference.ReferenceOutputAssembly = referenceOutputAssembly;
 			project.References.Add (projectReference);
 
 			var fakeOtherProject = new FakeDotNetProject (fileName);
@@ -274,50 +275,27 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("portable-net45+win8", runtimeGraph.Supports["portable-net45+win8"].Name);
 		}
 
-		/// <summary>
-		/// Tests that workaround for netcoreapp2.0 and netstandard2.0 projects where
-		/// PackageTargetFallback for net461 is added. This should be added by the SDK
-		/// imports but currently that requires a sdk resolver to be used.
-		/// </summary>
-		[TestCase ("netcoreapp2.0", ".NETCoreApp,Version=v2.0")]
-		[TestCase ("netstandard2.0", ".NETStandard,Version=v2.0")]
-		public void CreatePackageSpec_NetCore20PackageTargetFallback_Net461ImportsAddedToTargetFramework (
-			string shortTargetFramework,
-			string fullTargetFramework)
+		[Test]
+		public void CreatePackageSpec_OneProjectReferenceWithReferenceAssemblyIsFalse_ProjectReferencedNotAddedToPackageSpec ()
 		{
 			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
-			AddTargetFramework (shortTargetFramework);
+			AddTargetFramework ("netcoreapp1.0");
+			string referencedProjectFileName = @"d:\projects\MyProject\Lib\Lib.csproj".ToNativePath ();
+			string include = @"Lib\Lib.csproj".ToNativePath ();
+			var referencedProject = AddProjectReference ("Lib", referencedProjectFileName, include, referenceOutputAssembly: false);
+			solution.OnResolveProject = pr => {
+				if (pr.Include == include)
+					return referencedProject;
+				return null;
+			};
 			CreatePackageSpec ();
 
-			var targetFramework = spec.TargetFrameworks.Single ();
-			var fallbackFramework = targetFramework.FrameworkName as FallbackFramework;
-			Assert.AreEqual (1, targetFramework.Imports.Count);
-			Assert.AreEqual ("net461", targetFramework.Imports[0].GetShortFolderName ());
-			Assert.IsNotNull (fallbackFramework);
-			Assert.AreEqual (fullTargetFramework, targetFramework.FrameworkName.ToString ());
-			Assert.AreEqual (1, fallbackFramework.Fallback.Count);
-			Assert.AreEqual ("net461", fallbackFramework.Fallback[0].GetShortFolderName ());
-		}
-
-		/// <summary>
-		/// Tests that workaround for netcoreapp2.0 and netstandard2.0 projects where
-		/// PackageTargetFallback for net461 is not added for 1.x target frameworks.
-		/// </summary>
-		[TestCase ("netcoreapp1.1", ".NETCoreApp,Version=v1.1")]
-		[TestCase ("netstandard1.1", ".NETStandard,Version=v1.1")]
-		public void CreatePackageSpec_NetCore1xPackageTargetFallback_NoImportsAddedToTargetFramework (
-			string shortTargetFramework,
-			string fullTargetFramework)
-		{
-			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
-			AddTargetFramework (shortTargetFramework);
-			CreatePackageSpec ();
-
-			var targetFramework = spec.TargetFrameworks.Single ();
-			var fallbackFramework = targetFramework.FrameworkName as FallbackFramework;
-			Assert.AreEqual (0, targetFramework.Imports.Count);
-			Assert.IsNull (fallbackFramework);
-			Assert.AreEqual (fullTargetFramework, targetFramework.FrameworkName.ToString ());
+			var targetFramework = spec.RestoreMetadata.TargetFrameworks.Single ();
+			Assert.AreEqual ("MyProject", spec.Name);
+			Assert.AreEqual ("MyProject", spec.RestoreMetadata.ProjectName);
+			Assert.AreEqual ("netcoreapp1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
+			Assert.AreEqual (".NETCoreApp,Version=v1.0", targetFramework.FrameworkName.ToString ());
+			Assert.AreEqual (0, targetFramework.ProjectReferences.Count);
 		}
 	}
 }

@@ -84,14 +84,8 @@ namespace MonoDevelop.CodeActions
 			}
 
 			int mnemonic = 1;
-			bool addedSeparator = false;
 
 			foreach (var fix in fixes.CodeFixActions.OrderByDescending (i => GetUsage (i.CodeAction.EquivalenceKey))) {
-				if (!addedSeparator) {
-					menu.Add (CodeFixMenuEntry.Separator);
-					addedSeparator = true;
-				}
-
 				AddFixMenuItem (editor, menu, ref mnemonic, fix.CodeAction);
 			}
 

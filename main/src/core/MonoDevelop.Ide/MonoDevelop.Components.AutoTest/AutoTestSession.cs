@@ -98,7 +98,7 @@ namespace MonoDevelop.Components.AutoTest
 
 		public void ExecuteCommand (object cmd, object dataItem = null, CommandSource source = CommandSource.Unknown)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				AutoTestService.CommandManager.DispatchCommand (cmd, dataItem, null, source);
 			});
 		}
@@ -114,7 +114,7 @@ namespace MonoDevelop.Components.AutoTest
 			}
 
 			syncEvent.Reset ();
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				try {
 					res = del ();
 				} catch (Exception ex) {

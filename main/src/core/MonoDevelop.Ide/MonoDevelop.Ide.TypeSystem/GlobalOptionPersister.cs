@@ -80,7 +80,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public bool TryPersist (OptionKey optionKey, object value)
 		{
-			value = null;
 			return false;
 		}
 
@@ -101,11 +100,20 @@ namespace MonoDevelop.Ide.TypeSystem
 				case LocalUserProfileStorageLocation local:
 					Console.WriteLine ($"    local: {local.KeyName}");
 					break;
-				case EditorConfigStorageLocation edconf:
+				case EditorConfigStorageLocation<int> edconf:
+					Console.WriteLine ($"    editorconfig: {edconf.KeyName}");
+					break;
+				case EditorConfigStorageLocation<string> edconf:
+					Console.WriteLine ($"    editorconfig: {edconf.KeyName}");
+					break;
+				case EditorConfigStorageLocation<bool> edconf:
+					Console.WriteLine ($"    editorconfig: {edconf.KeyName}");
+					break;
+				case EditorConfigStorageLocation<Microsoft.CodeAnalysis.CodeStyle.CodeStyleOption<bool>> edconf:
 					Console.WriteLine ($"    editorconfig: {edconf.KeyName}");
 					break;
 				default:
-					Console.WriteLine ($"    unknown: {loc.GetType()}");
+					Console.WriteLine ($"    unknown: {loc.GetType ()}");
 					break;
 				}
 			}

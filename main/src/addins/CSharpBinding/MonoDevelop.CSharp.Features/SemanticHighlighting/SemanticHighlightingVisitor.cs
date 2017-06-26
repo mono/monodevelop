@@ -530,7 +530,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 		}
 
 		static readonly HashSet<string> contextualKeywords = new HashSet<string> {
-			"add", "async", "await", "get", "partial", "remove", "set", "where", "yield", "from", "select", "group", "into", "orderby", "join", "let", "on", "equals", "by", "ascending", "descending", "global"
+			"add", "async", "await", "get", "partial", "remove", "set", "where", "yield", "from", "select", "group", "into", "orderby", "join", "let", "on", "equals", "by", "ascending", "descending", "global", "value"
 		};
 
 		public override void VisitVariableDeclarator (VariableDeclaratorSyntax node)

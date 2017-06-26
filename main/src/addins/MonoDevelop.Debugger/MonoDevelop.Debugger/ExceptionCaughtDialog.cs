@@ -520,7 +520,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 				}
 			});
 			exception.Changed += delegate {
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					InnerExceptionsStore.EmitRowChanged (InnerExceptionsStore.GetPath (iter), iter);
 					updateInnerExceptions ();
 					InnerExceptionsTreeView.ExpandRow (InnerExceptionsStore.GetPath (iter), true);
@@ -631,7 +631,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 		void ExceptionChanged (object sender, EventArgs e)
 		{
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				if (hadInnerException != HasInnerException ())
 					Build ();
 				UpdateDisplay ();
@@ -1014,7 +1014,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			box.PackStart (vb, false, false, 0);
 
 			exception.Changed += delegate {
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					LoadData ();
 				});
 			};

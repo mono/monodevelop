@@ -174,15 +174,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		void SetupAccessibility ()
 		{
 			checkAssociateNamespacesDirectories.SetCommonAccessibilityAttributes ("NamespaceOptions.AssociateNamespace",
-			                                                                      null,
+			                                                                      "",
 			                                                                      GettextCatalog.GetString ("Check to associate namespaces with directory names"));
-			checkDefaultAsRoot.SetCommonAccessibilityAttributes ("NamespaceOptions.DefaultRoot", null,
+			checkDefaultAsRoot.SetCommonAccessibilityAttributes ("NamespaceOptions.DefaultRoot", "",
 			                                                     GettextCatalog.GetString ("Check to use the default namespace as the root of all namespaces"));
-			radioFlat.SetCommonAccessibilityAttributes ("NamespaceOptions.Flat", null,
+			radioFlat.SetCommonAccessibilityAttributes ("NamespaceOptions.Flat", "",
 			                                            GettextCatalog.GetString ("Check to use a flat folder structure"));
-			radioHierarch.SetCommonAccessibilityAttributes ("NamespaceOptions.Hierarchy", null,
+			radioHierarch.SetCommonAccessibilityAttributes ("NamespaceOptions.Hierarchy", "",
 			                                                GettextCatalog.GetString ("Check to use a hierarchical folder structure"));
-			checkVSStyleResourceNames.SetCommonAccessibilityAttributes ("NamespaceOptions.VSNames", null,
+			checkVSStyleResourceNames.SetCommonAccessibilityAttributes ("NamespaceOptions.VSNames", "",
 			                                                            GettextCatalog.GetString ("Check to use Visual Studio style resource names"));
 		}
 

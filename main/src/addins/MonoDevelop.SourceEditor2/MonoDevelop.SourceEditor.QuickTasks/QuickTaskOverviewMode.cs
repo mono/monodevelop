@@ -43,6 +43,7 @@ using System.Threading;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -109,6 +110,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			private set;
 		}
 
+		// These caches are updated when the bar is redrawn
+		internal int taskIterator = 0;
+		internal int usageIterator = 0;
+		internal List<QuickTask> taskCache;
+		internal List<Usage> usageCache;
+
 		public IEnumerable<QuickTask> AllTasks {
 			get {
 				return parentStrip.AllTasks;
@@ -156,6 +163,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			fadeOutStage.Iteration += (sender, e) => QueueDraw ();
 
 			fadeInStage.UpdateFrequency = fadeOutStage.UpdateFrequency = 10;
+
+			CanFocus = true;
 		}
 
 		void HandleHighlightSearchPatternChanged (object sender, EventArgs e)
@@ -249,6 +258,35 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		internal Mono.TextEditor.CodeSegmentPreviewWindow previewWindow;
 
+		bool ShowPreview (double y)
+		{
+			int line = YToLine (y);
+
+			line = Math.Max (1, line - 2);
+			int lastLine = Math.Min (TextEditor.LineCount, line + 5);
+			var start = TextEditor.GetLine (line);
+			var end = TextEditor.GetLine (lastLine);
+			if (start == null || end == null) {
+				return false;
+			}
+			var showSegment = new TextSegment (start.Offset, end.Offset + end.Length - start.Offset);
+
+			if (previewWindow != null) {
+				previewWindow.SetSegment (showSegment, false);
+				PositionPreviewWindow ((int)y);
+			} else {
+				var popup = new PreviewPopup (this, showSegment, TextEditor.Allocation.Width * 4 / 7, (int)y);
+				previewPopupTimeout = GLib.Timeout.Add (450, new GLib.TimeoutHandler (popup.Run));
+			}
+			return true;
+		}
+
+		void HidePreview ()
+		{
+			RemovePreviewPopupTimeout ();
+			DestroyPreviewWindow ();
+		}
+
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
 			RemovePreviewPopupTimeout ();
@@ -263,27 +301,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			const ModifierType buttonMask = ModifierType.Button1Mask | ModifierType.Button2Mask |
 				ModifierType.Button3Mask | ModifierType.Button4Mask | ModifierType.Button5Mask;
 			if ((evnt.State & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
-				int line = YToLine (evnt.Y);
-
-				line = Math.Max (1, line - 2);
-				int lastLine = Math.Min (TextEditor.LineCount, line + 5);
-				var start = TextEditor.GetLine (line);
-				var end = TextEditor.GetLine (lastLine);
-				if (start == null || end == null) {
+				if (!ShowPreview (evnt.Y)) {
 					return base.OnMotionNotifyEvent (evnt);
 				}
-				var showSegment = new TextSegment (start.Offset, end.Offset + end.Length - start.Offset);
-
-				if (previewWindow != null) {
-					previewWindow.SetSegment (showSegment, false);
-					PositionPreviewWindow ((int)evnt.Y);
-				} else {
-					var popup = new PreviewPopup (this, showSegment, TextEditor.Allocation.Width * 4 / 7, (int)evnt.Y);
-					previewPopupTimeout = GLib.Timeout.Add (450, new GLib.TimeoutHandler (popup.Run));
-				}
 			} else {
-				RemovePreviewPopupTimeout ();
-				DestroyPreviewWindow ();
+				HidePreview ();
 			}
 			return base.OnMotionNotifyEvent (evnt);
 		}
@@ -430,6 +452,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			public bool Run ()
 			{
+				strip.previewPopupTimeout = 0;
 				strip.previewWindow = new Mono.TextEditor.CodeSegmentPreviewWindow (strip.TextEditor, true, segment, w, -1, false);
 				strip.previewWindow.WidthRequest = w;
 				strip.previewWindow.Show ();
@@ -722,13 +745,17 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (allUsages.MoveNext ()) {
 				var usage = allUsages.Current;
 				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (usage.Offset));
-				if (lineCache [0].Contains (y))
+				bool isFocusedUsage = (HasFocus && currentFocus == FocusWidget.Usages && usageIterator == focusedUsageIndex);
+
+				if (lineCache [0].Contains (y) && !isFocusedUsage)
 					return;
-				lineCache[0].Add (y);
+				lineCache [0].Add (y);
 				var usageColor = (Cairo.Color)SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Foreground);
 				usageColor.A = 0.4;
 				HslColor color;
-				if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Declaration) != 0) {
+				if (isFocusedUsage) {
+					color = Styles.FocusColor.ToCairoColor ();
+				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Declaration) != 0) {
 					color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.ChangingUsagesRectangle);
 					if (color.Alpha == 0.0)
 						color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.UsagesRectangle);
@@ -749,19 +776,33 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.LineTo (0, y - 3);
 				cr.ClosePath ();
 				cr.Fill ();
+
+				usageCache.Add (usage);
+				usageIterator++;
 			} else if (allTasks.MoveNext ()) {
 				var task = allTasks.Current;
 				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (task.Location));
-				if (!lineCache[1].Contains (y) && task.Severity != DiagnosticSeverity.Hidden) {
-					lineCache[1].Add (y);
-					cr.SetSourceColor (GetBarColor (task.Severity));
+				bool isFocusedTask = (HasFocus && currentFocus == FocusWidget.Tasks && taskIterator == focusedTaskIndex);
+				if ((!lineCache [1].Contains (y) && task.Severity != DiagnosticSeverity.Hidden) || isFocusedTask) {
+					lineCache [1].Add (y);
+					Cairo.Color color;
+					if (HasFocus && currentFocus == FocusWidget.Tasks && taskIterator == focusedTaskIndex) {
+						color = Styles.FocusColor.ToCairoColor ();
+					} else {
+						color = GetBarColor (task.Severity);
+					}
+					cr.SetSourceColor (color);
 					cr.Rectangle (1, y - 1, Allocation.Width - 1, 2);
 					cr.Fill ();
 				}
+
 				if (task.Severity == DiagnosticSeverity.Error)
 					severity = DiagnosticSeverity.Error;
 				else if (task.Severity == DiagnosticSeverity.Warning && severity != DiagnosticSeverity.Error)
 					severity = DiagnosticSeverity.Warning;
+
+				taskCache.Add (task);
+				taskIterator++;
 			} else {
 				nextStep = true;
 			}
@@ -884,6 +925,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				return true;
 
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
+
+				cr.Save ();
 				var allocation = Allocation;
 				var displayScale = Core.Platform.IsMac ? GtkWorkarounds.GetScaleFactor (this) : 1.0;
 				cr.Scale (1 / displayScale, 1 / displayScale);
@@ -892,9 +935,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					cr.Paint ();
 				} else {
 					CachedDraw (cr,
-					            ref backgroundSurface,
-					            allocation,
-					            draw: (c, o) => DrawBackground (c, allocation), forceScale: displayScale);
+								ref backgroundSurface,
+								allocation,
+								draw: (c, o) => DrawBackground (c, allocation), forceScale: displayScale);
 				}
 				if (TextEditor == null)
 					return true;
@@ -903,9 +946,30 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 				if (QuickTaskStrip.MergeScrollBarAndQuickTasks)
 					DrawBar (cr);
+
+				cr.Restore ();
+
+				if (HasFocus) {
+					switch (currentFocus) {
+					case FocusWidget.Indicator:
+						cr.LineWidth = 1.0;
+
+						cr.SetSourceColor (Styles.FocusColor.ToCairoColor ());
+						cr.Rectangle (1, 1, Allocation.Width - 2, Allocation.Width - 2);
+						cr.SetDash (new double [] { 1, 1 }, 0.5);
+						cr.Stroke ();
+						break;
+
+					case FocusWidget.Tasks:
+						break;
+
+					case FocusWidget.Usages:
+						break;
+					}
+				}
 			}
 
-			return true;
+			return false;
 		}
 
 		CancellationTokenSource src;
@@ -975,6 +1039,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					var displayScale = Core.Platform.IsMac ? GtkWorkarounds.GetScaleFactor (mode) : 1.0;
 					mode.DrawBackground (cr, allocation);
 					drawingStep++;
+
+					mode.taskIterator = 0;
+					mode.usageIterator = 0;
+					mode.taskCache = new List<QuickTask> ();
+					mode.usageCache = new List<Usage> ();
 					return true;
 				case 1:
 					for (int i = 0; i < 10 && !nextStep; i++) {
@@ -1113,6 +1182,221 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			DestroyIndicatorSurface ();
 
 			DrawIndicatorSurface (0);
+		}
+
+		protected override bool OnFocusInEvent (EventFocus evnt)
+		{
+			QueueDraw ();
+			return base.OnFocusInEvent (evnt);
+		}
+
+		protected override bool OnFocusOutEvent (EventFocus evnt)
+		{
+			QueueDraw ();
+			currentFocus = FocusWidget.None;
+			return base.OnFocusOutEvent (evnt);
+		}
+
+		enum FocusWidget
+		{
+			None,
+			Indicator,
+			Tasks,
+			Usages,
+		};
+		FocusWidget currentFocus = FocusWidget.None;
+		int focusedUsageIndex = -1;
+		int focusedTaskIndex = -1;
+
+		bool FocusNextTaskOrUsage (DirectionType direction)
+		{
+			if (direction == DirectionType.Down) {
+				if (currentFocus == FocusWidget.Tasks) {
+					focusedTaskIndex++;
+					if (focusedTaskIndex >= taskCache.Count) {
+						focusedTaskIndex = taskCache.Count - 1;
+					}
+				} else if (currentFocus == FocusWidget.Usages) {
+					focusedUsageIndex++;
+					if (focusedUsageIndex >= usageCache.Count) {
+						focusedUsageIndex = usageCache.Count - 1;
+					}
+				}
+			} else if (direction == DirectionType.Up) {
+				if (currentFocus == FocusWidget.Tasks) {
+					focusedTaskIndex--;
+					if (focusedTaskIndex < 0) {
+						focusedTaskIndex = 0;
+					}
+				} else if (currentFocus == FocusWidget.Usages) {
+					focusedUsageIndex--;
+					if (focusedUsageIndex < 0) {
+						focusedUsageIndex = 0;
+					}
+				}
+			}
+
+			return true;
+		}
+
+		bool FocusNextArea (DirectionType direction)
+		{
+			var hasUsages = usageCache.Count > 0;
+			var hasTasks = taskCache.Count > 0;
+
+			switch (currentFocus) {
+			case FocusWidget.None:
+				if (direction == DirectionType.TabForward) {
+					currentFocus = FocusWidget.Indicator;
+				} else if (direction == DirectionType.TabBackward) {
+					if (hasUsages) {
+						focusedUsageIndex = usageCache.Count - 1;
+						currentFocus = FocusWidget.Usages;
+					} else if (hasTasks) {
+						focusedTaskIndex = taskCache.Count - 1;
+						currentFocus = FocusWidget.Tasks;
+					} else {
+						currentFocus = FocusWidget.Indicator;
+					}
+				}
+				break;
+
+			case FocusWidget.Indicator:
+				if (direction == DirectionType.TabForward) {
+					if (hasTasks) {
+						focusedTaskIndex = 0;
+						currentFocus = FocusWidget.Tasks;
+					} else if (hasUsages) {
+						focusedUsageIndex = 0;
+						currentFocus = FocusWidget.Usages;
+					} else {
+						currentFocus = FocusWidget.None;
+					}
+				} else if (direction == DirectionType.TabBackward) {
+					currentFocus = FocusWidget.None;
+				}
+				break;
+
+			case FocusWidget.Tasks:
+				if (direction == DirectionType.TabForward) {
+					if (hasUsages) {
+						focusedUsageIndex = 0;
+						currentFocus = FocusWidget.Usages;
+					} else {
+						currentFocus = FocusWidget.None;
+					}
+				} else if (direction == DirectionType.TabBackward) {
+					currentFocus = FocusWidget.Indicator;
+				}
+				break;
+
+			case FocusWidget.Usages:
+				if (direction == DirectionType.TabForward) {
+					currentFocus = FocusWidget.None;
+				} else if (direction == DirectionType.TabBackward) {
+					if (hasTasks) {
+						focusedTaskIndex = 0;
+						currentFocus = FocusWidget.Tasks;
+					} else {
+						currentFocus = FocusWidget.Indicator;
+					}
+				}
+
+				break;
+			}
+
+			return (currentFocus != FocusWidget.None);
+		}
+
+		protected override bool OnFocused (DirectionType direction)
+		{
+			bool ret = true;
+
+			switch (direction) {
+			case DirectionType.TabForward:
+			case DirectionType.TabBackward:
+				ret = FocusNextArea (direction);
+				break;
+			case DirectionType.Left:
+			case DirectionType.Right:
+				ret = false;
+				break;
+
+			case DirectionType.Up:
+			case DirectionType.Down:
+				if (currentFocus == FocusWidget.None) {
+					ret = false;
+					break;
+				} else if (currentFocus == FocusWidget.Indicator) {
+					// Up from the indicator moves the focus out of the widget
+					if (direction == DirectionType.Up) {
+						ret = false;
+						break;
+					} else {
+						// Focus either the tasks or usages if they are available
+						ret = FocusNextArea (DirectionType.TabForward);
+						break;
+					}
+				}
+
+				ret = FocusNextTaskOrUsage (direction);
+				break;
+			}
+
+			if (ret) {
+				GrabFocus ();
+
+				double y = -1;
+				if (currentFocus == FocusWidget.Tasks) {
+					var t = taskCache [focusedTaskIndex];
+					parentStrip.GotoTask (t, false);
+					y = GetYPosition (TextEditor.OffsetToLineNumber (t.Location));
+				} else if (currentFocus == FocusWidget.Usages) {
+					var u = usageCache [focusedUsageIndex];
+					parentStrip.GotoUsage (u, false);
+					y = (int)GetYPosition (TextEditor.OffsetToLineNumber (u.Offset));
+				}
+
+				if (y > -1) {
+					ShowPreview (y);
+				}
+			} else {
+				currentFocus = FocusWidget.None;
+				HidePreview ();
+			}
+
+			if (currentFocus == FocusWidget.None || currentFocus == FocusWidget.Indicator) {
+				HidePreview ();
+				QueueDraw ();
+			} else {
+				DrawIndicatorSurface (10);
+			}
+			return ret;
+		}
+
+		protected override void OnActivate ()
+		{
+			HidePreview ();
+
+			if (currentFocus == FocusWidget.Tasks) {
+				var t = taskCache [focusedTaskIndex];
+				parentStrip.GotoTask (t, true);
+			} else if (currentFocus == FocusWidget.Usages) {
+				var u = usageCache [focusedUsageIndex];
+				parentStrip.GotoUsage (u, false);
+			} else if (currentFocus == FocusWidget.Indicator) {
+				parentStrip.GotoTask (parentStrip.SearchNextTask (GetHoverMode ()));
+			}
+			base.OnActivate ();
+		}
+
+		protected override bool OnKeyPressEvent (EventKey evnt)
+		{
+			if (evnt.Key == Gdk.Key.Escape) {
+				HidePreview ();
+				return true;
+			}
+			return base.OnKeyPressEvent (evnt);
 		}
 
 #region Accessibility

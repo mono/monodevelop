@@ -28,13 +28,13 @@ using Microsoft.TemplateEngine.Abstractions;
 using Microsoft.TemplateEngine.Edge.Settings;
 using System.Linq;
 using MonoDevelop.Ide.Codons;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Templates
 {
 	class MicrosoftTemplateEngineSolutionTemplate : SolutionTemplate
 	{
 		internal readonly ITemplateInfo templateInfo;
-		//TemplateExtensionNode template;
 
 		internal MicrosoftTemplateEngineSolutionTemplate (TemplateExtensionNode template, ITemplateInfo templateInfo)
 			: base (template.Id, template.OverrideName ?? templateInfo.Name, template.Icon)
@@ -53,12 +53,34 @@ namespace MonoDevelop.Ide.Templates
 			//ProjectFileExtension = template.FileExtension;
 			Wizard = template.Wizard;
 			SupportedParameters = template.SupportedParameters;
-			DefaultParameters = template.DefaultParameters;
+			DefaultParameters = MergeDefaultParameters (template.DefaultParameters);
 			ImageId = template.ImageId;
 			//ImageFile = template.ImageFile;
 			//Visibility = GetVisibility (template.Visibility);
 
 			//HasProjects = (template.SolutionDescriptor.EntryDescriptors.Length > 0);
+		}
+
+		string MergeDefaultParameters (string defaultParameters)
+		{
+			List<TemplateParameter> priorityParameters = null;
+			var parameters = new List<string> ();
+			var cacheParameters = templateInfo.CacheParameters.Where (m => !string.IsNullOrEmpty (m.Value.DefaultValue));
+
+			if (!cacheParameters.Any ())
+				return defaultParameters;
+
+			if (!string.IsNullOrEmpty (defaultParameters)) {
+				priorityParameters = TemplateParameter.CreateParameters (defaultParameters).ToList ();
+				defaultParameters += ",";
+			}
+
+			foreach (var p in cacheParameters) {
+				if (priorityParameters != null && !priorityParameters.Exists (t => t.Name == p.Key))
+					parameters.Add ($"{p.Key}={p.Value.DefaultValue}");
+			}
+
+			return defaultParameters += string.Join (",", parameters);
 		}
 	}
 }

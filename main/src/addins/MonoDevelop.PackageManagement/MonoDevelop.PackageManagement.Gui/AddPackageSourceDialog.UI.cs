@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Components.AtkCocoaHelper;
 using Xwt;
 
 namespace MonoDevelop.PackageManagement
@@ -47,10 +48,12 @@ namespace MonoDevelop.PackageManagement
 			int labelWidth = 80;
 
 			var mainVBox = new VBox ();
+			mainVBox.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			Content = mainVBox;
 
 			// Package source name.
 			var packageSourceNameHBox = new HBox ();
+			packageSourceNameHBox.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			mainVBox.PackStart (packageSourceNameHBox);
 
 			var packageSourceNameLabel = new Label ();
@@ -60,10 +63,13 @@ namespace MonoDevelop.PackageManagement
 			packageSourceNameHBox.PackStart (packageSourceNameLabel);
 
 			packageSourceNameTextEntry = new TextEntry ();
+			packageSourceNameTextEntry.SetCommonAccessibilityAttributes ("PackageSourceDialog.name", packageSourceNameLabel,
+			                                                             GettextCatalog.GetString ("Enter the name for this package source"));
 			packageSourceNameHBox.PackEnd (packageSourceNameTextEntry, true);
 
 			// Package source URL.
 			var packageSourceUrlHBox = new HBox ();
+			packageSourceUrlHBox.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			mainVBox.PackStart (packageSourceUrlHBox);
 
 			var packageSourceUrlLabel = new Label ();
@@ -73,6 +79,8 @@ namespace MonoDevelop.PackageManagement
 			packageSourceUrlHBox.PackStart (packageSourceUrlLabel);
 
 			packageSourceUrlTextEntry = new TextEntry ();
+			packageSourceUrlTextEntry.SetCommonAccessibilityAttributes ("PackageSourceDialog.url", packageSourceUrlLabel,
+			                                                            GettextCatalog.GetString ("Enter the URL for this package source"));
 			packageSourceUrlTextEntry.PlaceholderText = GettextCatalog.GetString ("URL or folder");
 			packageSourceUrlHBox.PackStart (packageSourceUrlTextEntry, true);
 
@@ -82,6 +90,7 @@ namespace MonoDevelop.PackageManagement
 
 			// Package source username.
 			var packageSourceUserNameHBox = new HBox ();
+			packageSourceUserNameHBox.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			mainVBox.PackStart (packageSourceUserNameHBox);
 
 			var packageSourceUserNameLabel = new Label ();
@@ -91,11 +100,14 @@ namespace MonoDevelop.PackageManagement
 			packageSourceUserNameHBox.PackStart (packageSourceUserNameLabel);
 
 			packageSourceUserNameTextEntry = new TextEntry ();
+			packageSourceUserNameTextEntry.SetCommonAccessibilityAttributes ("PackageSourceDialog.username", packageSourceUserNameLabel,
+			                                                                 GettextCatalog.GetString ("Enter the username (if required) for this package source"));
 			packageSourceUserNameTextEntry.PlaceholderText = GettextCatalog.GetString ("Private sources only");
 			packageSourceUserNameHBox.PackEnd (packageSourceUserNameTextEntry, true);
 
 			// Package source password.
 			var packageSourcePasswordHBox = new HBox ();
+			packageSourcePasswordHBox.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			mainVBox.PackStart (packageSourcePasswordHBox);
 
 			var packageSourcePasswordLabel = new Label ();
@@ -105,6 +117,8 @@ namespace MonoDevelop.PackageManagement
 			packageSourcePasswordHBox.PackStart (packageSourcePasswordLabel);
 
 			packageSourcePasswordTextEntry = new PasswordEntry ();
+			packageSourcePasswordTextEntry.SetCommonAccessibilityAttributes ("PackageSourceDialog.password", packageSourcePasswordLabel,
+			                                                                 GettextCatalog.GetString ("Enter the password (if required) for this package source"));
 			packageSourcePasswordTextEntry.PlaceholderText = GettextCatalog.GetString ("Private sources only");
 			packageSourcePasswordHBox.PackEnd (packageSourcePasswordTextEntry, true);
 

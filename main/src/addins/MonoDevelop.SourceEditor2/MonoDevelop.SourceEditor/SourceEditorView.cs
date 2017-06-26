@@ -154,8 +154,10 @@ namespace MonoDevelop.SourceEditor
 
 		void RemoveMarkerQueue ()
 		{
-			if (removeMarkerTimeout != 0)
+			if (removeMarkerTimeout != 0) {
 				GLib.Source.Remove (removeMarkerTimeout);
+				removeMarkerTimeout = 0;
+			}
 		}
 
 		void ResetRemoveMarker ()
@@ -430,7 +432,7 @@ namespace MonoDevelop.SourceEditor
 				int x, y;
 				widget.TextEditor.TextArea.GetTopLevelWidgetPosition (w, out x, out y);
 				var size = w.SizeRequest ();
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					widget.TextEditor.ScrollTo (new Gdk.Rectangle (x, y, size.Width, size.Height));
 				});
 			}
@@ -637,7 +639,7 @@ namespace MonoDevelop.SourceEditor
 			}).ContinueWith (t => {
 				if (token.IsCancellationRequested)
 					return;
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					if (token.IsCancellationRequested)
 						return;
 					var newErrorMarkers = new List<MessageBubbleTextMarker> ();
@@ -3134,7 +3136,7 @@ namespace MonoDevelop.SourceEditor
 						}
 					}
 				} catch (Exception e) {
-					LoggingService.LogError ($"Error while drawing bracket matcher ({this}) startOffset={startOffset} lineCharLength={metrics.Layout.LineChars.Length}", e);
+					LoggingService.LogError ($"Error while drawing bracket matcher ({this}) startOffset={startOffset} lineCharLength={metrics.Layout.Text.Length}", e);
 				}
 			}
 
@@ -3146,13 +3148,13 @@ namespace MonoDevelop.SourceEditor
 				int end = this.EndOffset;
 
 				uint curIndex = 0, byteIndex = 0;
-				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)Math.Min (start - startOffset, metrics.Layout.LineChars.Length), ref curIndex, ref byteIndex);
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.Text, (uint)Math.Min (start - startOffset, metrics.Layout.Text.Length), ref curIndex, ref byteIndex);
 
 				int x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				fromX = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 
-				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)Math.Min (end - startOffset, metrics.Layout.LineChars.Length), ref curIndex, ref byteIndex);
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.Text, (uint)Math.Min (end - startOffset, metrics.Layout.Text.Length), ref curIndex, ref byteIndex);
 				x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				toX = startXPos + (int)(x_pos / Pango.Scale.PangoScale);

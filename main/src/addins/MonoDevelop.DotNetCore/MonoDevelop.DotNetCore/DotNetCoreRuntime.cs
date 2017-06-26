@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Linq;
 using MonoDevelop.Core;
 
@@ -42,8 +41,6 @@ namespace MonoDevelop.DotNetCore
 				.OrderByDescending (version => version)
 				.ToArray ();
 
-			GetPreviewNetCore20AppVersion ();
-
 			if (!IsInstalled)
 				LoggingService.LogInfo (".NET Core runtime not found.");
 		}
@@ -57,21 +54,6 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		internal static DotNetCoreVersion[] Versions { get; private set; }
-
-		internal static string PreviewNetCore20AppVersion { get; private set; }
-
-		static void GetPreviewNetCore20AppVersion ()
-		{
-			var latestInstalledVersion = Versions.FirstOrDefault ();
-			if (latestInstalledVersion == null)
-				return;
-
-			if (latestInstalledVersion.Major == 2 &&
-			    latestInstalledVersion.Minor == 0 &&
-			    latestInstalledVersion.IsPrerelease) {
-				PreviewNetCore20AppVersion = latestInstalledVersion.OriginalString;
-			}
-		}
 
 		internal static bool IsNetCore1xInstalled ()
 		{

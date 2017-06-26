@@ -1,7 +1,7 @@
 // ATTENTION - THIS DIRECTORY CONTAINS THIRD PARTY OPEN SOURCE MATERIALS:
 [{
 	"name": "Benvie/JavaScriptNext.tmLanguage",
+	"version": "0.0.0",
 	"license": "MIT",
-	"repositoryURL": "https://github.com/Benvie/JavaScriptNext.tmLanguage",
-	"repositoryRevision": "8f0d074"
+	"repositoryURL": "https://github.com/Benvie/JavaScriptNext.tmLanguage"
 }]

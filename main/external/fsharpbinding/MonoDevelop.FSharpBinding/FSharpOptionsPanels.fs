@@ -87,6 +87,22 @@ type CodeGenerationPanel() =
         | 1 -> "pdbonly"
         | _ -> "full"
 
+    let platformInformationToIndex (item:string) =
+        match item.ToLower() with
+        | "anycpu" -> 0
+        | "x86" -> 1
+        | "x64" -> 2
+        | "Itanium" -> 3
+        | _ -> 0
+
+    let indexToPlatformInformation i =
+        match i with
+        | 0 -> "anycpu"
+        | 1 -> "x86"
+        | 2 -> "x64"
+        | 3 -> "Itanium"
+        | _ -> "anycpu"
+
     override x.Dispose () =
         if widget <> null then
             widget.Dispose ()
@@ -109,6 +125,10 @@ type CodeGenerationPanel() =
         widget.CheckXmlDocumentation.Active <- not (String.IsNullOrEmpty fsconfig.DocumentationFile)
         widget.EntryCommandLine.Text <- if String.IsNullOrWhiteSpace fsconfig.OtherFlags then "" else fsconfig.OtherFlags
         widget.EntryDefines.Text <- fsconfig.DefineConstants
+        widget.ComboPlatforms.Active <- platformInformationToIndex fsconfig.PlatformTarget
+        widget.CheckWarningsAsErrors.Active <- fsconfig.TreatWarningsAsErrors
+        widget.WarningLevelSpinButton.Value <- float fsconfig.WarningLevel
+        widget.EntryWarnings.Text <- if String.IsNullOrWhiteSpace fsconfig.NoWarn then "" else fsconfig.NoWarn
 
         if fsconfig.ParentConfiguration.DebugSymbols then
             widget.CheckDebugInformation.Active <- true
@@ -121,6 +141,10 @@ type CodeGenerationPanel() =
 
         fsconfig.Optimize <- widget.CheckOptimize.Active
         fsconfig.GenerateTailCalls <- widget.CheckTailCalls.Active
+        fsconfig.PlatformTarget <- indexToPlatformInformation widget.ComboPlatforms.Active
+        fsconfig.TreatWarningsAsErrors <- widget.CheckWarningsAsErrors.Active
+        fsconfig.WarningLevel <- widget.WarningLevelSpinButton.ValueAsInt
+        fsconfig.NoWarn <- widget.EntryWarnings.Text
 
         if widget.CheckXmlDocumentation.Active then
             // We use '\' because that's what Visual Studio uses.

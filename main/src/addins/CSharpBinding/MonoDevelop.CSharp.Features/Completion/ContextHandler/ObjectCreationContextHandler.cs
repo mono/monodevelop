@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return ch == ' ' || ch == '(' || ch == '{' || ch == '[';
 		}
 
-		static string[] primitiveTypesKeywords = {
+		internal static string[] primitiveTypesKeywords = {
 			// "void",
 			"object",
 			"bool",

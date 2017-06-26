@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide
 		{
 			public override void Post (SendOrPostCallback d, object state)
 			{
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					d (state);
 				});
 			}
@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide
 				}
 				var ob = new object ();
 				lock (ob) {
-					Gtk.Application.Invoke (delegate {
+					Gtk.Application.Invoke ((o, args) => {
 						try {
 							d (state);
 						} finally {

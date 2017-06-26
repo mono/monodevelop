@@ -11,7 +11,7 @@
     <RootNamespace>MonoDevelop.DotNetCore</RootNamespace>
     <AssemblyName>MonoDevelop.DotNetCore</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TemplatesVersion>1.0.0-beta2-20170505-222</TemplatesVersion>
+    <TemplatesVersion>1.0.0-beta2-20170523-241</TemplatesVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -146,6 +146,7 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Gui\GtkDotNetCoreProjectTemplateWizardPageWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.DotNetCore.Gui.GtkDotNetCoreProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\MSBuildSdksPathGlobalPropertyProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />

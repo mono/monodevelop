@@ -96,7 +96,7 @@ namespace MonoDevelop.PackageManagement
 			var licenses = await GetPackagesWithLicences (actions, cancellationToken);
 			licenses = RemovePackagesAlreadyInstalled (licenses);
 			if (licenses.Any ()) {
-				if (!licenseAcceptanceService.AcceptLicenses (licenses)) {
+				if (!await licenseAcceptanceService.AcceptLicenses (licenses)) {
 					throw new ApplicationException (GettextCatalog.GetString ("Licenses not accepted."));
 				}
 			}

@@ -417,6 +417,7 @@
     <Compile Include="NuGet.CommandLine\SettingsCredentialProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UninstallNuGetPackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageReferenceNuGetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\HasNuGetPackageOrReferenceFileTemplateCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -615,7 +616,7 @@
   <ItemGroup>
     <None Include="..\..\..\external\nuget-binary\NuGet-LICENSE.txt">
       <Link>NuGet-LICENSE.txt</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

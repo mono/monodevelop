@@ -168,7 +168,6 @@ namespace MonoDevelop.Packaging.Gui
 			// Container child generalTable.Gtk.Table+TableChild
 			this.packageDescriptionScrolledWindow = new global::Gtk.ScrolledWindow();
 			this.packageDescriptionScrolledWindow.Name = "packageDescriptionScrolledWindow";
-			this.packageDescriptionScrolledWindow.HscrollbarPolicy = ((global::Gtk.PolicyType)(2));
 			this.packageDescriptionScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
 			// Container child packageDescriptionScrolledWindow.Gtk.Container+ContainerChild
 			this.packageDescriptionTextView = new global::Gtk.TextView();

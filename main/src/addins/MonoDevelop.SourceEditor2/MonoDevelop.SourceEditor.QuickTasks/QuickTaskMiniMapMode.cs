@@ -300,10 +300,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 							cr = null;
 							mode.curUpdate = null;
 							mode.QueueDraw ();
+							handler = 0;
 							return false;
 						}
 					} catch (Exception e) {
 						LoggingService.LogError ("Error in background buffer drawer.", e);
+						handler = 0;
 						return false;
 					}
 					return true;

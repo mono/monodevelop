@@ -278,7 +278,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			};
 
-			defaultSettingsButton.SetCommonAccessibilityAttributes ("MimePanel.DefaultCheckbox", null,
+			defaultSettingsButton.SetCommonAccessibilityAttributes ("MimePanel.DefaultCheckbox", "",
 			                                                        GettextCatalog.GetString ("Check to use the default settings from '{0}'", baseType));
 			defaultSettingsButton.Accessible.AddLinkedUIElement (panelWidget.Accessible);
 

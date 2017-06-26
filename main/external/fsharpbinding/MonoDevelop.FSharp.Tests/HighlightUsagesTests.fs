@@ -1,13 +1,9 @@
 ﻿namespace MonoDevelopTests
-open System.Text.RegularExpressions
-open System.Threading
 open NUnit.Framework
 open FsUnit
-open MonoDevelop.FSharp.MonoDevelop
 open MonoDevelop.FSharp
-open ExtCore
-open ExtCore.Control
-open ExtCore.Control.Collections
+open MonoDevelop.FSharp.MonoDevelop
+
 [<TestFixture>]
 type HighlightUsagesTests() =
     let assertUsages (source:string, expectedCount) =

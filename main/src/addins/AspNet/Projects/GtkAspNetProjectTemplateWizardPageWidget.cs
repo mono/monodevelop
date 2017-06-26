@@ -59,10 +59,15 @@ namespace MonoDevelop.AspNet.Projects
 				includeUnitTestProjectDescriptionLeftHandPadding.WidthRequest = leftPaddingWidth;
 			}
 
+			// Do not use a width request for the configuration box so the left hand side of the
+			// wizard page can expand to fit its contents.
+			configurationVBox.WidthRequest = -1;
+
 			backgroundImage = Xwt.Drawing.Image.FromResource ("aspnet-wizard-page.png");
 			backgroundImageView = new ImageView (backgroundImage);
 			backgroundImageView.Xalign = 1.0f;
 			backgroundImageView.Yalign = 1.0f;
+			backgroundImageView.SizeRequested += BackgroundImageViewSizeRequested;
 			backgroundLargeImageVBox.PackStart (backgroundImageView, true, true, 0);
 
 			var separatorColor = Ide.Gui.Styles.NewProjectDialog.ProjectConfigurationSeparatorColor.ToGdkColor ();
@@ -84,6 +89,7 @@ namespace MonoDevelop.AspNet.Projects
 
 		public override void Dispose ()
 		{
+			backgroundImageView.SizeRequested -= BackgroundImageViewSizeRequested;
 			Dispose (backgroundImage);
 		}
 
@@ -144,6 +150,18 @@ namespace MonoDevelop.AspNet.Projects
 		bool IsYosemiteOrHigher ()
 		{
 			return Platform.OSVersion >= MacSystemInformation.Yosemite;
+		}
+
+		void BackgroundImageViewSizeRequested (object o, SizeRequestedArgs args)
+		{
+			if (args.Requisition.Width <= backgroundImage.Width) {
+				// Ensure there is a gap between the image and the left hand side of the wizard
+				// if the labels have expanded to fit their text.
+				args.Requisition = new Requisition {
+					Height = args.Requisition.Height,
+					Width = args.Requisition.Width + 30
+				};
+			}
 		}
 	}
 }

@@ -34,7 +34,10 @@ module CompilerArguments =
       elif targetFramework = TargetFrameworkMoniker.NET_2_0 then FSharpTargetFramework.NET_2_0
       elif targetFramework = TargetFrameworkMoniker.NET_4_0 then FSharpTargetFramework.NET_4_0
       elif targetFramework = TargetFrameworkMoniker.NET_4_5 then FSharpTargetFramework.NET_4_5
-      else FSharpTargetFramework.NET_4_5
+      elif targetFramework = TargetFrameworkMoniker.NET_4_6 then FSharpTargetFramework.NET_4_6
+      elif targetFramework = TargetFrameworkMoniker.NET_4_6_1 then FSharpTargetFramework.NET_4_6_1
+      elif targetFramework = TargetFrameworkMoniker.NET_4_6_2 then FSharpTargetFramework.NET_4_6_2
+      else FSharpTargetFramework.NET_4_6_2
 
   module Project =
       ///Use the IdeApp.Workspace active configuration failing back to proj.DefaultConfiguration then ConfigurationSelector.Default
@@ -85,11 +88,15 @@ module CompilerArguments =
                       | Some asm -> [asm.Location]
                       | None -> []
                   else
-                      reference.Package.Assemblies
+                      let package = reference.Package
+                      package.Assemblies
                       |> Seq.choose (fun a -> match a.Name with
                                               | "FSharp.Core"
                                               | "mscorlib" -> None
-                                              | _ -> Some a.Location)
+                                              | _ -> if package.IsGacPackage then
+                                                         Some a.Name
+                                                     else
+                                                         Some a.Location)
                       |> List.ofSeq
 
           | ReferenceType.Project ->
@@ -266,28 +273,17 @@ module CompilerArguments =
         // If 'mscorlib.dll' or 'FSharp.Core.dll' is not in the set of references, we try to resolve and add them.
         match find "FSharp.Core", find "mscorlib", Project.isDotNetCoreProject project with
         | None, Some mscorlib, false ->
-            // if mscorlib is founbd without FSharp.Core yield fsharp.core in the same base dir as mscorlib
+            // if mscorlib is found without FSharp.Core yield fsharp.core in the same base dir as mscorlib
             // falling back to one of the default directories
             let extraPath = Some (Path.GetDirectoryName (mscorlib))
             match ReferenceResolution.tryGetDefaultReference langVersion targetFramework "FSharp.Core" extraPath with
             | Some ref -> yield "-r:" + wrapf(ref)
             | None -> LoggingService.LogWarning(resolutionFailedMessage "FSharp.Core")
-
-        | Some fsharpCore, None, false ->
-            // If FSharp.Core is found without mscorlib yield an mscorlib thats referenced from FSharp.core
-            match ReferenceResolution.tryGetReferenceFromAssembly fsharpCore "mscorlib" with
-            | Some resolved -> yield "-r:" + wrapf(resolved)
-            | None -> LoggingService.LogWarning(resolutionFailedMessage "mscorlib")
-
         | None, None, false ->
-            // If neither are found yield the default fsharp.core and mscorlib
+            // If neither are found yield the default fsharp.core
             match ReferenceResolution.tryGetDefaultReference langVersion targetFramework "FSharp.Core" None with
             | Some ref -> yield "-r:" + wrapf(ref)
             | None -> LoggingService.LogWarning(resolutionFailedMessage "FSharp.Core")
-
-            match ReferenceResolution.tryGetDefaultReference langVersion targetFramework "mscorlib" None with
-            | Some ref -> yield "-r:" + wrapf(ref)
-            | None -> LoggingService.LogWarning(resolutionFailedMessage "mscorlib")
         | _ -> () // found them both, no action needed
 
         for file in projectReferences do
@@ -323,6 +319,9 @@ module CompilerArguments =
   let generateCompilerOptions (project:DotNetProject, projectAssemblyReferences: AssemblyReference seq, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
     let dashr = generateReferences (project, projectAssemblyReferences, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
 
+    let splitByChars (chars: char array) (s:string) =
+        s.Split(chars, StringSplitOptions.RemoveEmptyEntries)
+
     let defines = fsconfig.GetDefineSymbols()
     [
        yield "--simpleresolution"
@@ -330,19 +329,26 @@ module CompilerArguments =
        yield "--out:" + project.GetOutputFileName(configSelector).ToString()
        if Project.isPortable project || Project.isDotNetCoreProject project then
            yield "--targetprofile:netcore"
-       yield "--platform:anycpu" //?
+       if not (String.IsNullOrWhiteSpace fsconfig.PlatformTarget) then
+           yield "--platform:" + fsconfig.PlatformTarget
        yield "--fullpaths"
        yield "--flaterrors"
        for symbol in defines do yield "--define:" + symbol
        yield if fsconfig.HasDefineSymbol "DEBUG" then  "--debug+" else  "--debug-"
        yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
        yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
+
        yield match project.CompileTarget with
              | CompileTarget.Library -> "--target:library"
              | CompileTarget.Module -> "--target:module"
              | _ -> "--target:exe"
+       yield if fsconfig.TreatWarningsAsErrors then "--warnaserror+" else "--warnaserror-"
+       yield sprintf "--warn:%d" fsconfig.WarningLevel
+       if not (String.IsNullOrWhiteSpace fsconfig.NoWarn) then
+           for arg in fsconfig.NoWarn |> splitByChars [|';'; ','|] do
+               yield "--nowarn:" + arg
        // TODO: This currently ignores escaping using "..."
-       for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
+       for arg in fsconfig.OtherFlags |> splitByChars [|' '|] do
          yield arg
        yield! dashr
        yield! (getCompiledFiles project)]
@@ -402,6 +408,7 @@ module CompilerArguments =
 
   /// Get full path to tool
   let getEnvironmentToolPath (runtime:TargetRuntime) (framework:TargetFramework) (extensions:seq<string>) (toolName:string) =
+
       let pathsToSearch = runtime.GetToolsPaths(framework)
       getToolPath pathsToSearch extensions toolName
 

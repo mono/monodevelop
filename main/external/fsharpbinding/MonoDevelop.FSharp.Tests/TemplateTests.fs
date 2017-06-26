@@ -100,8 +100,8 @@ type ``Template tests``() =
             let projects = sln.Items |> Seq.filter(fun i -> i :? DotNetProject) |> Seq.cast<DotNetProject> |> List.ofSeq
 
 
-            do! NuGetPackageInstaller.InstallPackages (sln, projectTemplate.PackageReferencesForCreatedProjects) |> Async.AwaitTask
-            do! sln.SaveAsync(monitor) |> Async.AwaitTask
+            do! NuGetPackageInstaller.InstallPackages (sln, projectTemplate.PackageReferencesForCreatedProjects)
+            do! sln.SaveAsync(monitor)
 
             let getErrorsForProject (projects: DotNetProject list) =
                 asyncSeq {
