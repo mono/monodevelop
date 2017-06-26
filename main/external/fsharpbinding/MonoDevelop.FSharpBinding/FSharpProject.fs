@@ -283,8 +283,6 @@ type FSharpProject() as self =
             do! task |> Async.AwaitTask
 
             MDLanguageService.invalidateProjectFile self.FileName
-            let! refs = x.GetReferencedAssemblies (CompilerArguments.getConfig()) |> Async.AwaitTask
-            referencedAssemblies <- Some refs
         }
 
     override x.OnReevaluateProject(monitor) =
