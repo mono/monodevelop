@@ -185,7 +185,7 @@ namespace MonoDevelop.CSharp.Completion
 				replaceLength = partialWordLength;
 			}
 			int endOffset = Math.Min (window.StartOffset + replaceLength, window.CompletionWidget.TextLength);
-			if (descriptor.KeyChar == '(' && IdeApp.Preferences.AddParenthesesAfterCompletion) {
+			if (descriptor.KeyChar == '(' && DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket) {
 				endOffset++;
 				if (DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket) 
 					endOffset++;
@@ -201,8 +201,7 @@ namespace MonoDevelop.CSharp.Completion
 			bool runCompletionCompletionCommand = false;
 			var method = Symbol as IMethodSymbol;
 
-			bool addParens = IdeApp.Preferences.AddParenthesesAfterCompletion;
-			bool addOpeningOnly = IdeApp.Preferences.AddOpeningOnly;
+			bool addParens = DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket;
 			var Editor = ext.Editor;
 			var Policy = ext.FormattingPolicy;
 			var ctx = window.CodeCompletionContext;
@@ -231,66 +230,56 @@ namespace MonoDevelop.CSharp.Completion
 				var keys = new [] { SpecialKey.Return, SpecialKey.Tab, SpecialKey.Space };
 				if (keys.Contains (descriptor.SpecialKey) || descriptor.KeyChar == '.' || descriptor.KeyChar == '(') {
 					if (HasAnyOverloadWithParameters (method)) {
-						if (addOpeningOnly) {
-							insertionText += RequireGenerics (method) ? "<|" : (addSpace ? " (|" : "(|");
+						if (descriptor.KeyChar == '.') {
+							if (RequireGenerics (method)) {
+								insertionText += addSpace ? "<> ()" : "<>()";
+							} else {
+								insertionText += addSpace ? " ()" : "()";
+							}
 							skipChars = 0;
 						} else {
-							if (descriptor.KeyChar == '.') {
+							if (insertSemicolon) {
 								if (RequireGenerics (method)) {
-									insertionText += addSpace ? "<> ()" : "<>()";
+									insertionText += addSpace ? "<|> ();" : "<|>();";
+									skipChars = addSpace ? 5 : 4;
 								} else {
-									insertionText += addSpace ? " ()" : "()";
+									insertionText += addSpace ? " (|);" : "(|);";
+									skipChars = 2;
 								}
-								skipChars = 0;
 							} else {
-								if (insertSemicolon) {
-									if (RequireGenerics (method)) {
-										insertionText += addSpace ? "<|> ();" : "<|>();";
-										skipChars = addSpace ? 5 : 4;
-									} else {
-										insertionText += addSpace ? " (|);" : "(|);";
-										skipChars = 2;
-									}
+								if (RequireGenerics (method)) {
+									insertionText += addSpace ? "<|> ()" :  "<|>()";
+									skipChars = addSpace ? 4 : 3;
 								} else {
-									if (RequireGenerics (method)) {
-										insertionText += addSpace ? "<|> ()" :  "<|>()";
-										skipChars = addSpace ? 4 : 3;
-									} else {
-										insertionText += addSpace ? " (|)" : "(|)";
-										skipChars = 1;
-									}
+									insertionText += addSpace ? " (|)" : "(|)";
+									skipChars = 1;
 								}
 							}
 						}
 						runParameterCompletionCommand = true;
 					} else {
-						if (addOpeningOnly) {
-							insertionText += RequireGenerics (method) ? "<|" : (addSpace ? " (|" : "(|");
+						if (descriptor.KeyChar == '.') {
+							if (RequireGenerics (method)) {
+								insertionText += addSpace ? "<> ()" : "<>()";
+							} else {
+								insertionText += addSpace ? " ()" : "()";
+							}
 							skipChars = 0;
 						} else {
-							if (descriptor.KeyChar == '.') {
+							if (insertSemicolon) {
 								if (RequireGenerics (method)) {
-									insertionText += addSpace ? "<> ()" : "<>()";
+									insertionText += addSpace ? "<|> ();" : "<|>();";
 								} else {
-									insertionText += addSpace ? " ()" : "()";
+									insertionText += addSpace ? " ();|" : "();|";
 								}
-								skipChars = 0;
+
 							} else {
-								if (insertSemicolon) {
-									if (RequireGenerics (method)) {
-										insertionText += addSpace ? "<|> ();" : "<|>();";
-									} else {
-										insertionText += addSpace ? " ();|" : "();|";
-									}
-
+								if (RequireGenerics (method)) {
+									insertionText += addSpace ? "<|> ()" : "<|>()";
 								} else {
-									if (RequireGenerics (method)) {
-										insertionText += addSpace ? "<|> ()" : "<|>()";
-									} else {
-										insertionText += addSpace ? " ()|" : "()|";
-									}
-
+									insertionText += addSpace ? " ()|" : "()|";
 								}
+
 							}
 						}
 					}
@@ -303,7 +292,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 
 			if ((DisplayFlags & DisplayFlags.NamedArgument) == DisplayFlags.NamedArgument &&
-				IdeApp.Preferences.AddParenthesesAfterCompletion &&
+				DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket &&
 				(descriptor.SpecialKey == SpecialKey.Tab ||
 					descriptor.SpecialKey == SpecialKey.Return ||
 					descriptor.SpecialKey == SpecialKey.Space)) {
