@@ -447,6 +447,16 @@ typedef struct
 		}
 
 
+		[Test]
+		public void TestMarkdownBugs ()
+		{
+			Assert.AreEqual (@"a*", Sublime3Format.CompileRegex (@"a?+"));
+		}
+
+
+
+
+
 
 		[Test]
 		public void TestGroupNameCorrection_Case2 ()

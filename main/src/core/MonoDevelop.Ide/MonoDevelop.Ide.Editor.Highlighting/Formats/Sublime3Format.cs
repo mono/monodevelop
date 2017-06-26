@@ -790,6 +790,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						groupNumber--;
 						skipRecordChar = true;
 					}
+					if (i + 1 >= regex.Length)
+						break;
+					next = regex [i + 1];
+					if (next == '+' || next == '*') {
+						result.Append ("*");
+						i++;
+						continue;
+					}
 					break;
 				case ')':
 					if (escape)
