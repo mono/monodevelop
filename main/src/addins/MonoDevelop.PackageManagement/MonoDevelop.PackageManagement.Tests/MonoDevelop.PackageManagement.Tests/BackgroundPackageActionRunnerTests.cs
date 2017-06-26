@@ -667,6 +667,102 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsFalse (progressMonitorFactory.ClearConsole);
 		}
+
+		[Test]
+		public void Run_OneInstallActionThatIsCancelledByUser_CancelledMessageLogged ()
+		{
+			CreateRunner ();
+			var action = AddInstallAction ();
+			RunWithoutBackgroundDispatch ();
+			action.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				CancelCurrentAction ();
+			};
+			runner.ExecuteBackgroundDispatch ();
+
+			progressMonitor.AssertMessageIsLogged ("A task was canceled");
+		}
+
+		[Test]
+		public void Cancel_OneInstallActionCancelledDuringProcessing_ErrorReported ()
+		{
+			CreateRunner ();
+			var action = AddInstallAction ();
+			action.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				runner.Cancel ();
+			};
+
+			Run ();
+
+			progressMonitor.AssertMessageIsLogged ("A task was canceled");
+			Assert.IsFalse (runner.EventsMonitor.IsPackageConsoleShown);
+		}
+
+		[Test]
+		public void Cancel_ThreeInstallActionsQueuedIndividuallyAndFirstCancelledDuringProcessing_QueuedActionsAreCleared ()
+		{
+			CreateRunner ();
+			var action1 = AddInstallAction ();
+			action1.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				runner.Cancel ();
+			};
+			RunWithoutBackgroundDispatch ();
+			actions.Clear ();
+			var action2 = AddInstallAction ();
+			RunWithoutBackgroundDispatch ();
+			actions.Clear ();
+			var action3 = AddInstallAction ();
+			RunWithoutBackgroundDispatch ();
+
+			runner.ExecuteSingleBackgroundDispatch ();
+
+			progressMonitor.AssertMessageIsLogged ("A task was canceled");
+			Assert.AreEqual (0, runner.BackgroundActionsQueued.Count);
+			Assert.IsFalse (runner.IsRunning);
+		}
+
+		[Test]
+		public void IsRunning_CancelledButBackgroundDispatcherStillRunning_ReturnsTrue ()
+		{
+			CreateRunner ();
+			var action = AddInstallAction ();
+			action.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				runner.Cancel ();
+			};
+			runner.DispatcherIsDispatchingReturns = true;
+
+			Run ();
+
+			Assert.IsTrue (runner.IsRunning);
+		}
+
+		[Test]
+		public void Cancel_ThreeRunAsyncActionsQueuedIndividuallyAndFirstCancelledDuringProcessing_QueuedTasksAreCancelled ()
+		{
+			CreateRunner ();
+			var action = AddInstallAction ();
+			action.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				runner.Cancel ();
+			};
+			var action1 = AddInstallAction ();
+			action1.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				runner.Cancel ();
+			};
+			Task task1 = RunAsyncWithoutBackgroundDispatch ();
+			actions.Clear ();
+			var action2 = AddInstallAction ();
+			Task task2 = RunAsyncWithoutBackgroundDispatch ();
+			actions.Clear ();
+			var action3 = AddInstallAction ();
+			Task task3 = RunAsyncWithoutBackgroundDispatch ();
+
+			runner.ExecuteSingleBackgroundDispatch ();
+
+			Assert.IsNotNull (task1.Exception);
+			Assert.IsTrue (task1.IsFaulted);
+			Assert.IsTrue (task2.IsCanceled);
+			Assert.IsTrue (task3.IsCanceled);
+			Assert.IsFalse (runner.IsRunning);
+		}
 	}
 }
 

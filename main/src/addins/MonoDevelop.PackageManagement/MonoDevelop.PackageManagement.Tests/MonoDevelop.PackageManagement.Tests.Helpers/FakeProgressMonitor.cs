@@ -127,6 +127,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			CancellationTokenSource.Cancel ();
 		}
+
+		public void SetCancellationTokenSource (CancellationTokenSource cancellationTokenSource)
+		{
+			CancellationTokenSource = cancellationTokenSource;
+		}
 	}
 }
 

@@ -46,7 +46,11 @@ namespace MonoDevelop.PackageManagement
 			get { return consoleMonitor.Console; }
 		}
 
-		public PackageManagementProgressMonitor (OutputProgressMonitor consoleMonitor, ProgressMonitor statusMonitor)
+		public PackageManagementProgressMonitor (
+			OutputProgressMonitor consoleMonitor,
+			ProgressMonitor statusMonitor,
+			CancellationTokenSource cancellationTokenSource)
+			: base (cancellationTokenSource)
 		{
 			AddFollowerMonitor (statusMonitor);
 			this.consoleMonitor = consoleMonitor;
