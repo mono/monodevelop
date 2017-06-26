@@ -45,7 +45,7 @@ module highlightUnusedCode =
         match entOpt with
         | Some ent ->
             if ent.IsFSharpModule then
-                [Some ent.QualifiedName; Some ent.LogicalName; Some ent.AccessPath]
+                [Some ent.FullName; Some ent.LogicalName; Some ent.AccessPath]
             else
                 [ yield ent.Namespace
                   yield Some ent.AccessPath
