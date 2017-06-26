@@ -1568,7 +1568,7 @@ namespace MonoDevelop.Projects
 		/// <summary>Whether to use the MSBuild engine for the specified item.</summary>
 		internal bool CheckUseMSBuildEngine (ConfigurationSelector sel)
 		{
-			return !MSBuildEngineSupport.HasFlag (MSBuildSupport.NotSupported);
+			return MSBuildEngineSupport != MSBuildSupport.NotSupported;
 		}
 
 		[Obsolete]
