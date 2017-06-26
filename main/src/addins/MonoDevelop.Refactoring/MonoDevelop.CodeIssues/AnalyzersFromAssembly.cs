@@ -58,12 +58,7 @@ namespace MonoDevelop.CodeIssues
 			Refactorings = new List<CodeRefactoringDescriptor> ();
 		}
 
-		internal static AnalyzersFromAssembly CreateFrom (System.Reflection.Assembly asm, bool force = false)
-		{
-			var result = new AnalyzersFromAssembly ();
-			result.AddAssembly (asm, force);
-			return result;
-		}
+		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
 
 		internal void AddAssembly (System.Reflection.Assembly asm, bool force = false)
 		{
@@ -94,10 +89,6 @@ namespace MonoDevelop.CodeIssues
 
 			try {
 				foreach (var type in asm.GetTypes ()) {
-					var notPortedYetAttribute = (NotPortedYetAttribute)type.GetCustomAttributes (typeof(NotPortedYetAttribute), false).FirstOrDefault ();
-					if (notPortedYetAttribute!= null) {
-						continue;
-					}
 
 					var analyzerAttr = (DiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof (DiagnosticAnalyzerAttribute), false).FirstOrDefault ();
 					if (analyzerAttr != null) {
@@ -135,8 +126,6 @@ namespace MonoDevelop.CodeIssues
 				throw;
 			}
 		}
-
-		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
 
 		static bool IsDiagnosticSupported (DiagnosticDescriptor diag)
 		{
