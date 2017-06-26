@@ -9,6 +9,7 @@
     <RootNamespace>MonoDevelop.AspNetCore</RootNamespace>
     <AssemblyName>MonoDevelop.AspNetCore</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <Templates1xVersion>1.0.0-beta2-20170430-208</Templates1xVersion>
     <TemplatesVersion>1.0.0-beta2-20170620-266</TemplatesVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -168,7 +169,7 @@
   <Target Name="BeforeBuild">
      <ItemGroup>
        <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.1.x">
-         <Version>$(TemplatesVersion)</Version>
+         <Version>$(Templates1xVersion)</Version>
        </NuGetPackage>
        <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.2.0">
          <Version>$(TemplatesVersion)</Version>
