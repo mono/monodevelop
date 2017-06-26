@@ -9,7 +9,7 @@
     <RootNamespace>MonoDevelop.AspNetCore</RootNamespace>
     <AssemblyName>MonoDevelop.AspNetCore</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TemplatesVersion>1.0.0-beta2-20170523-241</TemplatesVersion>
+    <TemplatesVersion>1.0.0-beta2-20170620-266</TemplatesVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

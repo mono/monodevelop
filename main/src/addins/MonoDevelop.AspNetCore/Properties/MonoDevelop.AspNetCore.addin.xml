@@ -74,7 +74,7 @@
 			<Template
 				id="Microsoft.Web.Empty.CSharp"
 				_overrideDescription="Creates a new ASP.NET Core web project."
-				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170620-266.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -84,7 +84,7 @@
 			<Template
 				id="Microsoft.Web.Mvc.CSharp"
 				_overrideDescription="Creates a new ASP.NET MVC Core web project."
-				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170620-266.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -94,7 +94,7 @@
 			<Template
 				id="Microsoft.Web.Mvc.FSharp"
 				_overrideDescription="Creates a new ASP.NET MVC Core web project."
-				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170620-266.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -104,7 +104,7 @@
 			<Template
 				id="Microsoft.Web.WebApi.CSharp"
 				_overrideDescription="Creates a new ASP.NET Web API Core web project."
-				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170620-266.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -112,13 +112,13 @@
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
 		</Condition>
-		<Condition id="AspNetCoreSdkInstalled" sdkVersion="2.*">
+		<Condition id="AspNetCoreSdkInstalled" sdkVersion="2.0.0-preview2-006497">
 			<Template
 				id="Microsoft.Web.Empty.CSharp"
 				templateId="Microsoft.Web.Empty.CSharp.2.0"
 				_overrideName="ASP.NET Core Empty"
 				_overrideDescription="Creates a new ASP.NET Core web project."
-				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170620-266.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -130,7 +130,7 @@
 				templateId="Microsoft.Web.Mvc.CSharp.2.0"
 				_overrideName="ASP.NET Core Web App"
 				_overrideDescription="Creates a new ASP.NET MVC Core web project."
-				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170620-266.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -142,7 +142,7 @@
 				templateId="Microsoft.Web.Mvc.FSharp.2.0"
 				_overrideName="ASP.NET Core Web App"
 				_overrideDescription="Creates a new ASP.NET MVC Core web project."
-				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170620-266.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -152,7 +152,7 @@
 			<Template
 				id="Microsoft.Web.RazorPages.CSharp.2.0"
 				_overrideDescription="Creates a new ASP.NET Web API Core web project using Razor Pages."
-				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170620-266.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
@@ -165,7 +165,7 @@
 				templateId="Microsoft.Web.WebApi.CSharp.2.0"
 				_overrideName="ASP.NET Core Web Api"
 				_overrideDescription="Creates a new ASP.NET Web API Core web project."
-				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170620-266.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
