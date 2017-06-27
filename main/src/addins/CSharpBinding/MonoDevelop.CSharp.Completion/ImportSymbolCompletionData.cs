@@ -70,6 +70,11 @@ namespace MonoDevelop.CSharp.Completion
 			insertNamespace = useFullName;
 		}
 
+		public override string GetDisplayTextMarkup ()
+		{
+			return useFullName ? type.ToDisplayString (Ambience.NameFormat) : type.Name;
+		}
+
 		static string GetDefaultDisplaySelection (string description, bool isSelected)
 		{
 			if (!isSelected)

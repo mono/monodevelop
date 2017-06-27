@@ -9315,7 +9315,6 @@
     <Compile Include="MonoDevelop.Components\ButtonEvent.cs" />
     <Compile Include="MonoDevelop.Components\Window.cs" />
     <Compile Include="MonoDevelop.Components\Dialog.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopSourceText.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\DataTransferObjects.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectCreateInformationExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\FoldingTextEditorExtension.cs" />
@@ -9434,6 +9433,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\RoslynClassificationHighlighting.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\LanguageCellRenderer.cs" />
     <Compile Include="MonoDevelop.Components\RestartPanel.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopSourceText.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
