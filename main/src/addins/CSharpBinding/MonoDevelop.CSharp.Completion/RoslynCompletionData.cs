@@ -40,6 +40,8 @@ using Microsoft.CodeAnalysis.CSharp.Completion;
 using MonoDevelop.Ide.Gui;
 using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text;
+using MonoDevelop.Ide.CodeTemplates;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -96,6 +98,11 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override IconId Icon {
 			get {
+				if (CompletionItem.Tags.Contains ("Snippet")) {
+					var template = CodeTemplateService.GetCodeTemplates (CSharp.Formatting.CSharpFormatter.MimeType).FirstOrDefault (t => t.Shortcut == CompletionItem.DisplayText);
+					if (template != null)
+						return template.Icon;
+				}
 				var modifier = GetItemModifier ();
 				var type = GetItemType ();
 				return "md-" + modifier + type;
@@ -114,6 +121,11 @@ namespace MonoDevelop.CSharp.Completion
 			if (CompletionItem.Properties.TryGetValue ("RightSideMarkup", out string result))
 				return result;
 			return null;
+		}
+
+		public override bool IsCommitCharacter (char keyChar, string partialWord)
+		{
+			return base.IsCommitCharacter (keyChar, partialWord);
 		}
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
@@ -173,7 +185,9 @@ namespace MonoDevelop.CSharp.Completion
 
 			{ "Struct", "struct" },
 
-			{ "Keyword", "keyword" }
+			{ "Keyword", "keyword" },
+
+			{ "Snippet", "template"}
 		};
 
 		string GetItemType ()
@@ -182,6 +196,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (roslynCompletionTypeTable.TryGetValue (tag, out string result))
 					return result;
 			}
+			LoggingService.LogWarning ("RoslynCompletionData: Can't find item type ' "+ string.Join (",", CompletionItem.Tags) + "'");
 			return "literal";
 		}
 
