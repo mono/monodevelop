@@ -933,7 +933,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, ProjectInfo pinfo, MSBuildProject project, MSBuildItem sourceItem, string include, string evaluatedFile = null, string recursiveDir = null)
 		{
-			include = EngineManager.Pool.Add (include);
+			lock (EngineManager.Pool)
+				include = EngineManager.Pool.Add (include);
 
 			var it = new MSBuildItemEvaluated (project, sourceItem.Name, sourceItem.Include, include);
 			var md = new Dictionary<string,IMSBuildPropertyEvaluated> ();
