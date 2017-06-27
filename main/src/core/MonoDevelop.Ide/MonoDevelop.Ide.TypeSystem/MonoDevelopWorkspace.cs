@@ -48,6 +48,7 @@ using System.ComponentModel;
 using Mono.Addins;
 using MonoDevelop.Core.AddIns;
 using Microsoft.CodeAnalysis.Shared.Utilities;
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -56,7 +57,6 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		public const string ServiceLayer = nameof(MonoDevelopWorkspace);
 
-		readonly static HostServices services;
 		internal readonly WorkspaceId Id;
 
 		CancellationTokenSource src = new CancellationTokenSource ();
@@ -71,53 +71,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static string[] mefHostServices = new [] {
-			"Microsoft.CodeAnalysis.Workspaces",
-			//FIXME: this does not load yet. We should provide alternate implementations of its services.
-			//"Microsoft.CodeAnalysis.Workspaces.Desktop",
-			"Microsoft.CodeAnalysis.Features",
-			"Microsoft.CodeAnalysis.CSharp",
-			"Microsoft.CodeAnalysis.CSharp.Workspaces",
-			"Microsoft.CodeAnalysis.CSharp.Features",
-			"Microsoft.CodeAnalysis.VisualBasic",
-			"Microsoft.CodeAnalysis.VisualBasic.Workspaces",
-			"Microsoft.CodeAnalysis.VisualBasic.Features",
-		};
-
 		internal static HostServices HostServices {
 			get {
-				return services;
+				return CompositionManager.Instance.HostServices;
 			}
-		}
-
-		static MonoDevelopWorkspace ()
-		{
-			List<Assembly> assemblies = new List<Assembly> ();
-			assemblies.Add (typeof (MonoDevelopWorkspace).Assembly);
-			foreach (var asmName in mefHostServices) {
-				try {
-					var asm = Assembly.Load (asmName);
-					if (asm == null)
-						continue;
-					assemblies.Add (asm);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error - can't load host service assembly: " + asmName, ex);
-				}
-			}
-			foreach (var node in AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/TypeService/MefHostServices")) {
-				var assemblyNode = node as AssemblyExtensionNode;
-				if (assemblyNode == null)
-					continue;
-				try {
-					var assemblyFilePath = assemblyNode.Addin.GetFilePath(assemblyNode.FileName);
-					var assembly = Assembly.LoadFrom(assemblyFilePath);
-					assemblies.Add (assembly);
-				} catch (Exception e) {
-					LoggingService.LogError ("Workspace can't load assembly " + assemblyNode.FileName + " to host mef services.", e);
-					continue;
-				}
-			}
-			services = MefHostServices.Create (assemblies);
 		}
 
 		/// <summary>
@@ -129,7 +86,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			OnSolutionAdded (sInfo);
 		}
 
-		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (services, "MonoDevelop")
+		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (HostServices, "MonoDevelop")
 		{
 			this.monoDevelopSolution = solution;
 			this.Id = WorkspaceId.Next ();
