@@ -819,7 +819,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 							text += "\n\u2022 " + cmd.Category + " \u2013 " + cmd.DisplayName;
 					}
 
-					tooltipWindow.Text = text;
+					tooltipWindow.Markup = text;
 					tooltipWindow.Severity = hasConflict ? Tasks.TaskSeverity.Error : Tasks.TaskSeverity.Warning;
 
 					tooltipWindow.ShowPopup (keyBindingsTree, hit.ButtonBounds, PopupPosition.Top);
