@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public override SourceText CurrentText {
 			get {
 				if (currentText == null) {
-					currentText = new MonoDevelopSourceText (editor.CreateDocumentSnapshot (), this);
+					currentText = MonoDevelopSourceText.Create (editor, this);
 				}
 				return currentText;
 			}
