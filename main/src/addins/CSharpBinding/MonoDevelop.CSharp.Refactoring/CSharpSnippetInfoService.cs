@@ -54,7 +54,11 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		bool ISnippetInfoService.SnippetShortcutExists_NonBlocking (string shortcut)
 		{
-			return true;
+			foreach (var template in CodeTemplateService.GetCodeTemplates (CSharp.Formatting.CSharpFormatter.MimeType)) {
+				if (template.Shortcut == shortcut)
+					return true;
+			}
+			return false;
 		}
 	}
 }

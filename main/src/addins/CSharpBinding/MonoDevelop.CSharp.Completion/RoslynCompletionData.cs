@@ -42,6 +42,8 @@ using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text;
 using MonoDevelop.Ide.CodeTemplates;
 using System.Linq;
+using System.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -85,7 +87,8 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override string Description {
 			get {
-				return completionService.GetDescriptionAsync (doc, CompletionItem).Result.Text;
+				var description = completionService.GetDescriptionAsync (doc, CompletionItem).Result;
+				return description.Text;
 			}
 		}
 
@@ -227,6 +230,91 @@ namespace MonoDevelop.CSharp.Completion
 
 				return result;
 			}
+		}
+
+		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
+		{
+			var tt = new TooltipInformation ();
+			var description = await completionService.GetDescriptionAsync (doc, CompletionItem);
+			var markup = new StringBuilder ();
+			var theme = DefaultSourceEditorOptions.Instance.GetEditorTheme ();
+
+			foreach (var part in description.TaggedParts) {
+				markup.Append ("<span foreground=\"");
+				markup.Append (GetThemeColor (theme, GetThemeColor (part.Tag)));
+				markup.Append ("\">");
+				markup.Append (part.Text);
+				markup.Append ("</span>");
+			}
+
+			tt.SignatureMarkup = markup.ToString ();
+			return tt;
+		}
+
+		static string GetThemeColor (string tag)
+		{
+			switch (tag) {
+			case TextTags.Keyword:
+				return "keyword";
+
+			case TextTags.Class:
+				return EditorThemeColors.UserTypes;
+			case TextTags.Delegate:
+				return EditorThemeColors.UserTypesDelegates;
+			case TextTags.Enum:
+				return EditorThemeColors.UserTypesEnums;
+			case TextTags.Interface:
+				return EditorThemeColors.UserTypesInterfaces;
+			case TextTags.Module:
+				return EditorThemeColors.UserTypes;
+			case TextTags.Struct:
+				return EditorThemeColors.UserTypesValueTypes;
+			case TextTags.TypeParameter:
+				return EditorThemeColors.UserTypesTypeParameters;
+
+			case TextTags.Alias:
+			case TextTags.Assembly:
+			case TextTags.Field:
+			case TextTags.ErrorType:
+			case TextTags.Event:
+			case TextTags.Label:
+			case TextTags.Local:
+			case TextTags.Method:
+			case TextTags.Namespace:
+			case TextTags.Parameter:
+			case TextTags.Property:
+			case TextTags.RangeVariable:
+				return "source.cs";
+
+			case TextTags.NumericLiteral:
+				return "constant.numeric";
+
+			case TextTags.StringLiteral:
+				return "string.quoted";
+
+			case TextTags.Space:
+			case TextTags.LineBreak:
+				return "source.cs";
+
+			case TextTags.Operator:
+				return "keyword.source";
+
+			case TextTags.Punctuation:
+				return "punctuation";
+
+			case TextTags.AnonymousTypeIndicator:
+			case TextTags.Text:
+				return "source.cs";
+
+			default:
+				LoggingService.LogWarning ("Warning unexpected text tag: " + tag);
+				return "source.cs";
+			}
+		}
+
+		static string GetThemeColor (EditorTheme theme, string scope)
+		{
+			return SyntaxHighlightingService.GetColorFromScope (theme, scope, EditorThemeColors.Foreground).ToPangoString ();
 		}
 	}
 }
