@@ -283,7 +283,6 @@
     <Compile Include="MonoDevelop.CSharp.Project\PortableCSharpProjectFlavor.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynSymbolCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynCodeCompletionFactory.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\RoslynParameterHintingFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\CSharpOutlineTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineSortingPreferencesDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.ClassOutline.OutlineSortingPreferencesDialog.cs" />
@@ -328,8 +327,6 @@
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\NullIStateMachineIndentEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\TextPasteIndentEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\IParameterHintingData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\IParameterHintingDataFactory.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\ParameterHintingEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\ParameterHintingResult.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\ParameterUtil.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\SemanticHighlighting\SemanticHighlightingVisitor.cs" />

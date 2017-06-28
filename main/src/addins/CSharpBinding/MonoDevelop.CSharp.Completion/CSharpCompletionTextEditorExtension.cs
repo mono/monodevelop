@@ -663,7 +663,7 @@ namespace MonoDevelop.CSharp.Completion
 			return InternalHandleParameterCompletionCommand (completionContext, completionChar, SignatureHelpTriggerReason.TypeCharCommand, token);
 		}
 
-		static Lazy<ISignatureHelpProvider[]> signatureProviders = new Lazy<ISignatureHelpProvider[]> (() => {
+		internal static Lazy<ISignatureHelpProvider[]> signatureProviders = new Lazy<ISignatureHelpProvider[]> (() => {
 			var workspace = TypeSystemService.Workspace;
 			var mefExporter = (IMefHostExportProvider)workspace.Services.HostServices;
 			var helpProviders = mefExporter.GetExports<ISignatureHelpProvider, LanguageMetadata> ()

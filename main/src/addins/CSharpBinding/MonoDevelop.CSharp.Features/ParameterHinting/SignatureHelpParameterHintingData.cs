@@ -2,10 +2,9 @@
 
 namespace MonoDevelop.CSharp.Completion
 {
-
 	class SignatureHelpParameterHintingData : Ide.CodeCompletion.ParameterHintingData
 	{
-		public SignatureHelpParameterHintingData(SignatureHelpItem item) : base(null)
+		public SignatureHelpParameterHintingData(SignatureHelpItem item)
 		{
 			Item = item;
 		}
@@ -17,5 +16,14 @@ namespace MonoDevelop.CSharp.Completion
 		public override bool IsParameterListAllowed => Item.IsVariadic;
 
 		public override string GetParameterName (int parameter) => Item.Parameters[parameter].Name;
+
+
+		public override bool Equals (object obj)
+		{
+			var other = obj as SignatureHelpParameterHintingData;
+			if (other == null)
+				return false;
+			return Item.ToString () == other.Item.ToString ();
+		}
 	}
 }
