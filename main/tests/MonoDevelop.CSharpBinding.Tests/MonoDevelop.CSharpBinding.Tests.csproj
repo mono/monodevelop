@@ -42,6 +42,9 @@
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Composition.Runtime">
       <HintPath>..\..\build\bin\System.Composition.Runtime.dll</HintPath>
     </Reference>
@@ -67,6 +70,9 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
       <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Features">
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
