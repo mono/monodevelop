@@ -39,14 +39,17 @@ namespace MonoDevelop.PackageManagement.Gui
 			Resizable = false;
 
 			var mainVBox = new VBox ();
+			mainVBox.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			Content = mainVBox;
 
 			var label = new Label ();
 			label.Margin = new WidgetSpacing (10, 10, 10, 0);
 			label.Text = GettextCatalog.GetString ("Unable to close the solution when NuGet packages are being processed.");
+
 			mainVBox.PackStart (label);
 
 			var middleHBox = new HBox ();
+			middleHBox.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			mainVBox.PackStart (middleHBox);
 
 			var questionLabel = new Label ();
@@ -56,23 +59,30 @@ namespace MonoDevelop.PackageManagement.Gui
 
 			spinner = new Spinner ();
 			middleHBox.PackStart (spinner);
+			spinner.Accessible.Identifier = "busySpinner";
+			spinner.Accessible.Description =  GettextCatalog.GetString ("Busy indicator shown whilst waiting stopping for NuGet package processing to stop");
 			spinner.Visible = false;
 
 			var bottomHBox = new HBox ();
 			bottomHBox.Margin = new WidgetSpacing (5, 10, 5, 0);
 			bottomHBox.Spacing = 10;
+			bottomHBox.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			mainVBox.PackStart (bottomHBox);
 
 			yesButton = new Button ();
 			yesButton.MinWidth = 120;
 			yesButton.MinHeight = 25;
 			yesButton.Label = GettextCatalog.GetString ("Yes");
+			yesButton.Accessible.Identifier = "yesButton";
+			yesButton.Accessible.Description = GettextCatalog.GetString ("Stops the current NuGet package processing");
 			bottomHBox.PackEnd (yesButton);
 
 			var noButton = new Button ();
 			noButton.MinWidth = 120;
 			noButton.MinHeight = 25;
 			noButton.Label = GettextCatalog.GetString ("No");
+			noButton.Accessible.Identifier = "noButton";
+			noButton.Accessible.Description = GettextCatalog.GetString ("Closes the dialog without stopping the NuGet package processing");
 			noButton.Clicked += (sender, e) => Close ();
 			bottomHBox.PackEnd (noButton);
 		}
