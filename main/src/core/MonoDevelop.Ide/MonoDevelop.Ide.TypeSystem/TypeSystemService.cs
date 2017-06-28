@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.TypeSystem
 								w.UpdateFileContent (file, text);
 						}
 
-						Gtk.Application.Invoke (delegate {
+						Gtk.Application.Invoke ((o, args) => {
 							if (IdeApp.Workbench != null)
 								foreach (var w in IdeApp.Workbench.Documents)
 									w.StartReparseThread ();

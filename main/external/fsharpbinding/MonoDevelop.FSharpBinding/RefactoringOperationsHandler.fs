@@ -172,7 +172,6 @@ module Refactoring =
         async {
             do! Async.SwitchToContext(Runtime.MainSynchronizationContext)
             let! jumped = RefactoringService.TryJumpToDeclarationAsync(symbol.XmlDocSig, ctx.Project)
-                          |> Async.AwaitTask
 
             if not jumped then
                 match symbol.Assembly.FileName with

@@ -34,6 +34,8 @@ namespace MonoDevelop.Projects.MSBuild
 		object localLock = new object ();
 		bool disposed;
 
+		internal Core.StringInternPool Pool { get; } = new Core.StringInternPool ();
+
 		public MSBuildEngine GetEngine (bool supportsMSBuild)
 		{
 /*			if (supportsMSBuild) {

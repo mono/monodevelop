@@ -2,7 +2,6 @@
 
 open NUnit.Framework
 open MonoDevelop.FSharp
-open FsUnit
 
 [<TestFixture>]
 module ``Highlight unused opens`` =
@@ -151,5 +150,20 @@ module ``Highlight unused opens`` =
             """
             open FSharp.Reflection
             module test=FSharpType.IsFunction typeof<int> |> ignore
+            """
+        assertUnusedOpens source []
+
+    [<Test>]
+    let ``Type extension``() =
+        let source =
+            """
+            namespace TypeExtension
+            module ExtensionModule =
+                type System.String with
+                    member x.SomeExtensionMethod () = ()
+            namespace namespace1
+            open TypeExtension.ExtensionModule
+            module myModule =
+                let x = "".SomeExtensionMethod()
             """
         assertUnusedOpens source []

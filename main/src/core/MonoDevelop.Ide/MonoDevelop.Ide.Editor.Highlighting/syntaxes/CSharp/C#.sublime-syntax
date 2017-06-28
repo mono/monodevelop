@@ -101,7 +101,7 @@ contexts:
   numbers:
     - match: '((\b\d+\.?\d+)|(\.\d+))([eE][+-]?\d*)?(F|f|D|d|M|m)?\b'
       scope: constant.numeric.float.source.cs
-    - match: '\d+(([eE][+-]?\d*)?(F|f|D|d|M|m)|([eE][+-]?\d*))\b'
+    - match: '\b\d+(([eE][+-]?\d*)?(F|f|D|d|M|m)|([eE][+-]?\d*))\b'
       scope: constant.numeric.float.source.cs
     - match: '\b0[bB][01_]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b'
       scope: constant.numeric.binary.source.cs

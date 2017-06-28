@@ -394,6 +394,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("00065535.0", p.EvaluatedProperties.GetValue ("DoubleNumber"));
 			Assert.AreEqual ("56735", p.EvaluatedProperties.GetValue ("DoubleNumberComplex"));
 
+			Assert.AreEqual (Path.Combine ("a", "b", "c", "d", "e", "f"), p.EvaluatedProperties.GetValue ("ParamsPathCombine"));
 			p.Dispose ();
 		}
 

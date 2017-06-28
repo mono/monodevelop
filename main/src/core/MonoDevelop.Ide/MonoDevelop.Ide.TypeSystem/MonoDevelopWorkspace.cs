@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void HideStatusIcon ()
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				workspacesLoading--;
 				if (workspacesLoading == 0 && statusIcon != null) {
 					statusIcon.Dispose ();
@@ -194,7 +194,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void ShowStatusIcon ()
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				workspacesLoading++;
 				if (statusIcon != null)
 					return;

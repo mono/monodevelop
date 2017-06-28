@@ -88,7 +88,7 @@ namespace MonoDevelop.Xml.Editor
 			// Delay the execution of UpdateOwnerProjects since it may end calling Document.AttachToProject,
 			// which shouldn't be called while the extension chain is being initialized.
 			// TODO: Move handling of owner projects to Document
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				UpdateOwnerProjects ();
 			});
 

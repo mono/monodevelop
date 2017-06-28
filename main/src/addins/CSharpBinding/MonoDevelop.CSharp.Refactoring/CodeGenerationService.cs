@@ -171,7 +171,7 @@ namespace MonoDevelop.Refactoring
 
 			var node = root.GetAnnotatedNodes (insertedMemberAnnotation).Single ();
 
-			Application.Invoke (async delegate {
+			Application.Invoke (async (o, args) => {
 				var insertionPoints = InsertionPointService.GetInsertionPoints (
 					doc.Editor,
 					await doc.UpdateParseDocument (),

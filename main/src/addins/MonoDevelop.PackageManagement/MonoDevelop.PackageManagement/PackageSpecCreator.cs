@@ -166,6 +166,9 @@ namespace MonoDevelop.PackageManagement
 			if (projectReference.ReferenceType != ReferenceType.Project)
 				return false;
 
+			if (!projectReference.ReferenceOutputAssembly)
+				return false;
+
 			if (projectReference.Include != null)
 				return !projectReference.Include.EndsWith (".shproj", StringComparison.OrdinalIgnoreCase);
 

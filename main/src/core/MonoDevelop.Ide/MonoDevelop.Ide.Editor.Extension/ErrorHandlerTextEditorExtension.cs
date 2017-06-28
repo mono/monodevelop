@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return;
 			try {
 				var errors = await parsedDocument.GetErrorsAsync(token).ConfigureAwait (false);
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					if (token.IsCancellationRequested || isDisposed)
 						return;
 					RemoveErrorUndelinesResetTimerId ();
@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			}
 			if (token.IsCancellationRequested)
 				return;
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				if (token.IsCancellationRequested || isDisposed)
 					return;
 				tasks = newTasks.ToImmutable ();

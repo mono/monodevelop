@@ -188,7 +188,7 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			
 			worker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					var result = (KeyValuePair<Revision, string>)e.Result;
 					var box = toEditor == editors[0] ? diffComboBox : originalComboBox;
 					RemoveLocal (toEditor.GetTextEditorData ());

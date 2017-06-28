@@ -203,6 +203,7 @@
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
+			supportedParameters="NetCoreLibrary"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore1x=true"
 			category="netcore/library/general" />
@@ -217,6 +218,7 @@
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
+			supportedParameters="NetCoreLibrary"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore20=true"
 			category="netcore/library/general" />
@@ -229,7 +231,7 @@
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
-			supportedParameters="FSharpNetCoreLibrary"
+			supportedParameters="FSharpNetCoreLibrary;NetCoreLibrary"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore20=true"
 			category="netcore/library/general" />

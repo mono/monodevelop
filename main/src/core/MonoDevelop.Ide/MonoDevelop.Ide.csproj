@@ -8372,6 +8372,9 @@
     <EmbeddedResource Include="icons\prefs-metadata-16~sel%402x.png">
       <LogicalName>prefs-metadata-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Markdown\Markdown.sublime-syntax">
+      <LogicalName>Markdown.sublime-syntax</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -9479,6 +9482,7 @@
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Components\Xwt\" />
     <Folder Include="MonoDevelop.Components.AtkCocoaHelper\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Markdown\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

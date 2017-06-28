@@ -47,9 +47,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 		static CommandSearchCategory ()
 		{
-			allCommands = IdeApp.CommandService.GetCommands ().Select(cmd =>
-				Tuple.Create (cmd, cmd.DisplayName)
-			).ToList();
+			var hiddenCategory = GettextCatalog.GetString ("Hidden");
+			allCommands = IdeApp.CommandService.GetCommands ()
+			                    .Where (cmd => (cmd as ActionCommand)?.CommandArray != true && cmd.Category != hiddenCategory)
+			                    .Select(cmd => Tuple.Create (cmd, cmd.DisplayName))
+			                    .ToList();
 		}
 
 		public CommandSearchCategory () : base (GettextCatalog.GetString("Commands"))

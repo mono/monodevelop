@@ -458,7 +458,9 @@ namespace MonoDevelop.Projects.MSBuild
 				while (i != -1);
 
 				sb.Append (str, last, str.Length - last);
-				return sb.ToString ();
+				lock (project.Pool) {
+					return project.Pool.Add (sb);
+				}
 			} finally {
 				evaluationSbs.Enqueue (sb);
 			}
@@ -715,9 +717,9 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 
 				if (paramsArgType != null) {
-					var argsArray = new object [parameterValues.Length - numArgs];
+					var argsArray = Array.CreateInstance (paramsArgType, parameterValues.Length - numArgs);
 					for (int m = 0; m < argsArray.Length; m++)
-						argsArray [m] = ConvertArg (method, n, parameterValues [n++], paramsArgType);
+						argsArray.SetValue (ConvertArg (method, n, parameterValues [n++], paramsArgType), m);
 					convertedArgs [convertedArgs.Length - 1] = argsArray;
 				}
 

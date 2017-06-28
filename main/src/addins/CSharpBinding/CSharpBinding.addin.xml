@@ -286,8 +286,10 @@
 
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
 		<Condition id="FileType" mimeTypes="text/x-csharp">
-			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFixMenu"  insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
-			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
+			<ItemSet id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFixMenu" _label = "Quick Fix" autohide = "true" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator">
+				<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFixMenu" />
+			</ItemSet>
+			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" />
 
 			<ItemSet id = "Navigate" _label = "Navigate">
 				<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences"/>

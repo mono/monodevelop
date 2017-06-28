@@ -939,7 +939,7 @@ namespace MonoDevelop.Ide
 				NotifyItemAddedGui (item, IsReloading);
 			else {
 				bool reloading = IsReloading;
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					NotifyItemAddedGui (item, reloading);
 				});
 			}
@@ -973,7 +973,7 @@ namespace MonoDevelop.Ide
 				NotifyItemRemovedGui (item, IsReloading);
 			else {
 				bool reloading = IsReloading;
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					NotifyItemRemovedGui (item, reloading);
 				});
 			}
@@ -1093,7 +1093,7 @@ namespace MonoDevelop.Ide
 			// Delay the notification of this event to ensure that the new project is properly
 			// registered in the parser database when it is fired
 			
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o2, a2) => {
 				if (ItemAddedToSolution != null)
 					ItemAddedToSolution (sender, args);
 			});

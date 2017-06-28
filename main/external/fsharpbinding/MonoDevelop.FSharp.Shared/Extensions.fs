@@ -1,6 +1,7 @@
 ﻿namespace MonoDevelop.FSharp.Shared
 open System
 open System.Text
+open System.Threading.Tasks
 open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open ExtCore
@@ -240,3 +241,16 @@ module AsyncChoiceCE =
 module Async =
     let inline startAsPlainTask (work : Async<unit>) =
         System.Threading.Tasks.Task.Factory.StartNew(fun () -> work |> Async.RunSynchronously)
+
+    let inline awaitPlainTask (task: Task) = 
+        let continuation (t : Task) : unit =
+            if t.IsFaulted then raise t.Exception
+        task.ContinueWith continuation |> Async.AwaitTask
+
+[<AutoOpen>]
+module AsyncTaskBind =
+    type Microsoft.FSharp.Control.AsyncBuilder with
+        member x.Bind(computation:Task<'T>, binder:'T -> Async<'R>) =  x.Bind(Async.AwaitTask computation, binder)
+        member x.ReturnFrom(computation:Task<'T>) = x.ReturnFrom(Async.AwaitTask computation)
+        member x.Bind(computation:Task, binder:unit -> Async<unit>) =  x.Bind(Async.awaitPlainTask computation, binder)
+        member x.ReturnFrom(computation:Task) = x.ReturnFrom(Async.awaitPlainTask computation)

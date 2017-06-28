@@ -132,7 +132,7 @@ namespace MonoDevelop.CSharp
 			isPathSet = false;
 			// Delay the execution of UpdateOwnerProjects since it may end calling DocumentContext.AttachToProject,
 			// which shouldn't be called while the extension chain is being initialized.
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				UpdateOwnerProjects ();
 				Editor_CaretPositionChanged (null, null);
 			});
@@ -773,7 +773,7 @@ namespace MonoDevelop.CSharp
 
 				var regionEntry = await GetRegionEntry (DocumentContext.ParsedDocument, loc).ConfigureAwait (false);
 
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					var result = new List<PathEntry>();
 
 					if (curProject != null) {

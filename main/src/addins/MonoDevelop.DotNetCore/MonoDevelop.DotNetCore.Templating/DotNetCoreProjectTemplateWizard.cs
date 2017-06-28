@@ -132,6 +132,24 @@ namespace MonoDevelop.DotNetCore.Templating
 						Parameters ["UseNetCore1x"] = "true";
 					}
 				}
+				ConfigureDefaultNetCoreAppFramework ();
+			}
+		}
+
+		/// <summary>
+		/// Framework needs to be specified for .NET Core library projects if only one runtime/sdk
+		/// is available. Otherwise .NETStandard will be used for the target framework of the project.
+		/// </summary>
+		void ConfigureDefaultNetCoreAppFramework ()
+		{
+			if (!IsSupportedParameter ("NetCoreLibrary"))
+				return;
+
+			var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
+			if (highestFramework != null) {
+				Parameters ["framework"] = highestFramework.Id.GetShortFrameworkName ();
+			} else {
+				Parameters ["framework"] = "netcoreapp1.1";
 			}
 		}
 	}

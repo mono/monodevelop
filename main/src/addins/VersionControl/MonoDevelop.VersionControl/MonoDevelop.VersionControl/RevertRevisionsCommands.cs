@@ -115,7 +115,7 @@ namespace MonoDevelop.VersionControl
 				if (!(isDir || Directory.Exists (path)))
 					isDir = false;
 				
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					if (!isDir) {
 						// Reload reverted files
 						Document doc = IdeApp.Workbench.GetDocument (path);

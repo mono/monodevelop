@@ -339,7 +339,7 @@ namespace MonoDevelop.VersionControl.Views
 						ddata.diffRequested = true;
 						ddata.diffRunning = false;
 						if (null != DiffDataLoaded) {
-							Gtk.Application.Invoke (delegate {
+							Gtk.Application.Invoke ((o, args) => {
 								DiffDataLoaded (ddata);
 								DiffDataLoaded = null;
 							});

@@ -244,28 +244,28 @@ namespace Stetic
 		public void NotifyBindField ()
 		{
 			Gtk.Application.Invoke (
-				delegate { if (!disposed) designer.NotifyBindField (); }
+				(o, args) => { if (!disposed) designer.NotifyBindField (); }
 			);
 		}
 		
 		public void NotifyModified ()
 		{
 			Gtk.Application.Invoke (
-				delegate { if (!disposed) designer.NotifyModified (); }
+				(o, args) => { if (!disposed) designer.NotifyModified (); }
 			);
 		}
 
 		public void NotifySignalAdded (Wrapper.Action action, string name, Signal signal)
 		{
 			Gtk.Application.Invoke (
-				delegate { if (!disposed) designer.NotifySignalAdded (action, name, signal); }
+				(o, args) => { if (!disposed) designer.NotifySignalAdded (action, name, signal); }
 			);
 		}
 		
 		public void NotifySignalChanged (Wrapper.Action action, string name, Signal oldSignal, Signal signal)
 		{
 			Gtk.Application.Invoke (
-				delegate { if (!disposed) designer.NotifySignalChanged (action, name, oldSignal, signal); }
+				(o, args) => { if (!disposed) designer.NotifySignalChanged (action, name, oldSignal, signal); }
 			);
 		}
 		

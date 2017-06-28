@@ -425,7 +425,7 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			Application.Invoke (delegate {
+			Application.Invoke ((o2, a2) => {
 				this.selectedRegions = newRegions;
 				if (updateLines != null) {
 					var document = textEditor.Document;
