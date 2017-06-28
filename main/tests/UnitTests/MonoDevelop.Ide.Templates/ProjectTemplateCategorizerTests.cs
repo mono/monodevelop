@@ -547,6 +547,41 @@ namespace MonoDevelop.Ide.Templates
 			Assert.That (testsCategory.Templates.ToList (), Contains.Item (secondTemplateProviderTemplate));
 			Assert.AreEqual (2, appCategory.Categories.Count ());
 		}
+
+		/// <summary>
+		/// Tests that the SolutionTemplate's GroupedTemplates are cleared when the template is
+		/// categorized again. This allows the templating provider to cache the templates and
+		/// prevents the grouped template list from increasing every time the new project dialog
+		/// is opened.
+		/// </summary>
+		[Test]
+		public void GetCategorizedTemplates_CategorizeTwoGroupedConsoleProjectTemplatesMultipleTimes_GroupedTemplatesDoesNotGrow ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template1 = AddTemplate ("template-id1", "android/app/general");
+			template1.GroupId = "console";
+			template1.Language = "C#";
+			SolutionTemplate template2 = AddTemplate ("template-id2", "android/app/general");
+			template2.GroupId = "console";
+			template2.Language = "F#";
+
+			CategorizeTemplates ();
+
+			// Categorize the templates again after re-creating the categorizer but not
+			// recreating the templates.
+			CreateCategorizer ();
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate template = generalCategory.Templates.FirstOrDefault ();
+			int templateCount = 0;
+			template.GetTemplate (t => {
+				templateCount++;
+				return false;
+			});
+			Assert.AreEqual (2, templateCount);
+		}
 	}
 }
 

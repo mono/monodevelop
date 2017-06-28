@@ -233,8 +233,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		void RemoveTimer ()
 		{
-			if (timerId != 0)
+			if (timerId != 0) {
 				GLib.Source.Remove (timerId);
+				timerId = 0;
+			}
 		}
 
 		public override void Dispose ()

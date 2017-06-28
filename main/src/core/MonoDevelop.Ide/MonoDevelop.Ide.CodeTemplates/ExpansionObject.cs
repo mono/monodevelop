@@ -38,6 +38,7 @@ using System.Linq;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Web.SessionState;
+using System.Threading;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -50,10 +51,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public SemanticModel Compilation {
 			get {
-				var analysisDocument = DocumentContext.ParsedDocument;
-				if (analysisDocument == null)
-					return null;
-				return analysisDocument.GetAst<SemanticModel> ();
+				return DocumentContext.AnalysisDocument.GetSemanticModelAsync (default (CancellationToken)).WaitAndGetResult (default (CancellationToken));
 			}
 		}
 
@@ -61,6 +59,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 			get;
 			set;
 		}
+
+		public int InsertOffset { get; set; }
 		
 		public string SelectedText {
 			get;
@@ -251,7 +251,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var metadataName = string.IsNullOrEmpty (ns) ? name : ns + "." + name;
 			var type = compilation.Compilation.GetTypeByMetadataName (metadataName);
 			if (type != null) {
-				var minimalName = type.ToMinimalDisplayString (compilation, CurrentContext.Editor.CaretOffset);
+				var minimalName = type.ToMinimalDisplayString (compilation, CurrentContext.InsertOffset);
 				return string.IsNullOrEmpty (member) ? minimalName :  minimalName + "." + member;
 			}
 			return fullTypeName.Replace ("#", ".");

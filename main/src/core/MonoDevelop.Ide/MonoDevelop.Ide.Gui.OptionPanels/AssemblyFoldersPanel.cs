@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -55,6 +56,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.Build ();
 			label1.LabelProp = MonoDevelop.Core.BrandingService.BrandApplicationName (label1.LabelProp);
 			selector.Directories = new List<string> (Runtime.SystemAssemblyService.UserAssemblyContext.Directories);
+
+			SetupAccessibility ();
+		}
+
+		void SetupAccessibility ()
+		{
+			selector.EntryAccessible.SetCommonAttributes (null, null,
+			                                              GettextCatalog.GetString ("Enter a folder to search for assemblies and packages"));
+			selector.EntryAccessible.SetTitleUIElement (label1.Accessible);
+			label1.Accessible.SetTitleFor (selector.EntryAccessible);
 		}
 		
 		public void Store ()

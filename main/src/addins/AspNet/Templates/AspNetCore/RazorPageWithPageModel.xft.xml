@@ -1,0 +1,25 @@
+﻿<?xml version="1.0"?>
+<Template
+	originator="David Karlaš"
+	created="2017/06/01"
+	lastModified="2017/06/01">
+
+	<TemplateConfiguration>
+		<_Name>Razor Page (with page model)</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET Core</_Category>
+		<LanguageName>C#</LanguageName>
+		<DefaultFilename>Index</DefaultFilename>
+		<_Description>A Razor page with a page model</_Description>
+	</TemplateConfiguration>
+
+	<Conditions>
+		<AspNetCore minVersion="2.0" />
+	</Conditions>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="${Name}.cshtml" src="RazorPageWithPageModel.cshtml" />
+		<File name="${Name}.cshtml.cs" src="RazorPageWithPageModel.cshtml.cs" DependsOn="${Name}.cshtml"  />
+	</TemplateFiles>
+</Template>

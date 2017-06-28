@@ -40,7 +40,8 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	sealed class MonoDevelopSourceTextContainer : SourceTextContainer, IDisposable
 	{
-		readonly ITextDocument document;
+		readonly MonoDevelopWorkspace workspace;
+		readonly TextEditor document;
 		bool isDisposed;
 		SourceText currentText;
 
@@ -49,12 +50,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			private set;
 		}
 
-		public MonoDevelopSourceTextContainer (DocumentId documentId, ITextDocument document) : this (document)
+		public MonoDevelopSourceTextContainer (MonoDevelopWorkspace workspace, DocumentId documentId, TextEditor document) : this (document)
 		{
+			this.workspace = workspace;
 			Id = documentId;
 		}
 
-		public MonoDevelopSourceTextContainer (ITextDocument document)
+		public MonoDevelopSourceTextContainer (TextEditor document)
 		{
 			this.document = document;
 			this.document.TextChanging += HandleTextReplacing;
@@ -66,17 +68,24 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (handler != null) {
 				lock (replaceLock) {
 					var oldText = CurrentText;
-					var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
-					var changeRanges = new List<TextChangeRange> ();
-					foreach (var c in e.TextChanges) {
+					var changes = new Microsoft.CodeAnalysis.Text.TextChange[e.TextChanges.Count];
+					var changeRanges = new TextChangeRange[e.TextChanges.Count];
+					for (int i = 0; i < e.TextChanges.Count; ++i) {
+						var c = e.TextChanges[i];
 						var span = new TextSpan (c.Offset, c.RemovalLength);
-						changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (span, c.InsertedText.Text));
-						changeRanges.Add (new TextChangeRange (span, c.InsertionLength));
+						changes[i] = new Microsoft.CodeAnalysis.Text.TextChange (span, c.InsertedText.Text);
+						changeRanges[i] = new TextChangeRange (span, c.InsertionLength);
 					}
 					var newText = oldText.WithChanges (changes);
 					currentText = newText;
 					try {
 						handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, changeRanges));
+					} catch (ArgumentException ae) {
+						LoggingService.LogWarning (ae.Message + " re opening " + document.FileName + " as roslyn source text.");
+						workspace.InformDocumentClose (Id, document.FileName);
+						Dispose (); // 100% ensure that this object is disposed
+						if (workspace.GetDocument (Id) != null)
+							TypeSystemService.InformDocumentOpen (Id, document);
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error while text replacing", ex);
 					}

@@ -50,6 +50,7 @@ namespace MonoDevelop.Projects.MSBuild
 		bool isShared;
 		ConditionedPropertyCollection conditionedProperties = new ConditionedPropertyCollection ();
 		Dictionary<string, string[]> knownItemAttributes;
+		Dictionary<string,string> globalProperties = new Dictionary<string, string> ();
 
 		MSBuildEngineManager engineManager;
 		bool engineManagerIsLocal;
@@ -86,7 +87,18 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return file.ParentDirectory; }
 		}
 
-		public FilePath SolutionDirectory { get; set; }
+		FilePath solutionDirectory;
+
+		public FilePath SolutionDirectory {
+			get { return solutionDirectory; }
+			set {
+				solutionDirectory = value;
+				if (!solutionDirectory.IsNullOrEmpty)
+					SetGlobalProperty ("SolutionDir", solutionDirectory.ToString () + Path.DirectorySeparatorChar);
+				else
+					RemoveGlobalProperty ("SolutionDir");
+			}
+		}
 
 		public MSBuildFileFormat Format
 		{
@@ -1048,8 +1060,10 @@ namespace MonoDevelop.Projects.MSBuild
 				g.RemoveItem (item);
 				if (removeEmptyParentGroup && !g.Items.Any ()) {
 					Remove (g);
-					if (bestGroups != null)
-						bestGroups.Remove (item.Name);
+					if (bestGroups != null) {
+						string groupId = GetBestGroupId (item);
+						bestGroups.Remove (groupId);
+					}
 				}
 			}
 		}
@@ -1076,6 +1090,22 @@ namespace MonoDevelop.Projects.MSBuild
 
 			return MSBuildItem.KnownAttributes;
 		}
+
+		internal void SetGlobalProperty (string property, string value)
+		{
+			globalProperties [property] = value;
+		}
+
+		internal void RemoveGlobalProperty (string property)
+		{
+			globalProperties.Remove (property);
+		}
+
+		internal Dictionary<string, string> GlobalProperties {
+			get { return globalProperties; }
+		}
+
+		internal StringInternPool Pool => engineManager.Pool;
 	}
 
 	static class XmlUtil

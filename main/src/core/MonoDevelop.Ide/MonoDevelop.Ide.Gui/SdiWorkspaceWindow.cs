@@ -70,8 +70,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		bool show_notification = false;
 
-		uint present_timeout = 0;
-
 		ViewCommandHandlers commandHandler;
 
 		public event EventHandler ViewsChanged;
@@ -285,7 +283,7 @@ namespace MonoDevelop.Ide.Gui
 			tabControl.CurrentTabIndex = tab.Index;
 
 			// Focus the tab in the next iteration since presenting the window may take some time
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				DockNotebook.ActiveNotebook = tabControl;
 				DeepGrabFocus (this.ActiveViewContent.Control);
 			});
@@ -480,10 +478,6 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override void OnDestroyed ()
 		{
-			if (present_timeout != 0) {
-				GLib.Source.Remove (present_timeout);
-			}
-
 			if (viewContents != null) {
 				foreach (BaseViewContent sv in SubViewContents) {
 					sv.Dispose ();

@@ -179,9 +179,10 @@ namespace MonoDevelop.VersionControl.Git
 						PasswordService.AddWebUserNameAndPassword (uri, upcred.Username, upcred.Password);
 					}
 				}
+				return cred;
 			}
 
-			return cred;
+			throw new VersionControlException (GettextCatalog.GetString ("Operation cancelled by the user"));
 		}
 
 		static bool KeyHasPassphrase (string key)

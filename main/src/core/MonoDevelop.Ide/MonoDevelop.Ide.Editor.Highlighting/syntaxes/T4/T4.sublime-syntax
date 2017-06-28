@@ -33,30 +33,38 @@ contexts:
   main:
     - include: directives
   directives:
-    - match: '(<#@)'
+    - match: '(<#@)\s*([-_[:alnum:]]+)?'
       captures:
-        1: meta.tag.source.tt
+        1: punctuation.definition.tag.source.tt
+        2: entity.name.tag.source.tt
       push:
         - match: "'"
-          scope: string.quoted.single.source.cs
+          scope: string.quoted.single.source.tt
           push:
             - match: "('|$\n?)"
               pop: true
-        - match: '@"'
-          scope: string.quoted.other.verbatim.source.cs
+        - match: '"'
+          scope: string.quoted.double.source.tt
           push:
-            - match: '"'
+            - match: '("|$\n?)'
               pop: true
         - match: '(#>)'
           captures:
-            1: meta.tag.source.tt
+            1: punctuation.definition.tag.source.tt
           pop: true
+        - match: '(?x)(?:^|\s+)((?:([-_[:alnum:]]+)(:))?([-_[:alnum:]]+))(=)'
+          captures:
+            1: entity.other.attribute-name.source.tt
+            2: entity.other.attribute-name.namespace.source.tt
+            3: punctuation.separator.colon.source.tt
+            4: entity.other.attribute-name.localname.source.tt
+            5: punctuation.separator.equals.source.tt
     - match: '(<#[=+]?)'
       captures:
-        1: meta.tag.source.tt
+        1: punctuation.definition.tag.source.tt
       push: C#
       with_prototype:
         - match: '(#>)'
           captures:
-            1: meta.tag.source.tt
+            1: punctuation.definition.tag.source.tt
           pop: true

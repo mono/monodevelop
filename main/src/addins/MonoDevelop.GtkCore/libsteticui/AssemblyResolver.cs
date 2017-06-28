@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text;
@@ -40,7 +41,7 @@ namespace Stetic {
 
 	internal class AssemblyResolver : BaseAssemblyResolver {
 
-		Hashtable _assemblies;
+		Dictionary<string, AssemblyDefinition> _assemblies;
 		ApplicationBackend app;
 
 		public IDictionary AssemblyCache {
@@ -50,7 +51,7 @@ namespace Stetic {
 		public AssemblyResolver (ApplicationBackend app)
 		{
 			this.app = app;
-			_assemblies = new Hashtable ();
+			_assemblies = new Dictionary<string, AssemblyDefinition> ();
 		}
 
 		public StringCollection Directories = new StringCollection ();
@@ -62,8 +63,7 @@ namespace Stetic {
 	
 		public AssemblyDefinition Resolve (AssemblyNameReference name, string basePath)
 		{
-			AssemblyDefinition asm = (AssemblyDefinition) _assemblies [name.FullName];
-			if (asm == null) {
+			if (_assemblies.TryGetValue (name.FullName, out var asm)) {
 				if (app != null) {
 					string ares = app.ResolveAssembly (name.Name);
 					if (ares != null) {
@@ -85,6 +85,9 @@ namespace Stetic {
 		
 		public void ClearCache ()
 		{
+			foreach (AssemblyDefinition asm in _assemblies.Values) {
+				asm.Dispose ();
+			}
 			_assemblies.Clear ();
 		}
 

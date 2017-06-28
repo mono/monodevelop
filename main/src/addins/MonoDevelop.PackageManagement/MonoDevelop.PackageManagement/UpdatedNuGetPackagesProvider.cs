@@ -49,14 +49,13 @@ namespace MonoDevelop.PackageManagement
 
 		public UpdatedNuGetPackagesProvider (
 			IDotNetProject dotNetProject,
-			IMonoDevelopSolutionManager solutionManager,
+			ISourceRepositoryProvider sourceRepositoryProvider,
 			NuGetProject project,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
 			this.dotNetProject = dotNetProject;
 			this.project = project;
 
-			var sourceRepositoryProvider = solutionManager.CreateSourceRepositoryProvider ();
 			this.sourceRepositories = sourceRepositoryProvider.GetRepositories ().ToList ();
 
 			this.cancellationToken = cancellationToken;

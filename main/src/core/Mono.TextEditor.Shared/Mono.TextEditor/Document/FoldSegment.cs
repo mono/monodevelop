@@ -72,7 +72,7 @@ namespace Mono.TextEditor
 			this.FoldingType = foldingType;
 		}
 		
-		public FoldSegment (FoldSegment foldSegment) : base (foldSegment.Offset, foldSegment.Length)
+		public FoldSegment (IFoldSegment foldSegment) : base (foldSegment.Offset, foldSegment.Length)
 		{
 			this.isFolded = foldSegment.IsCollapsed;
 			this.CollapsedText = foldSegment.CollapsedText;

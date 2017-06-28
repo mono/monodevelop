@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Templates
 			fileTemplate.LastModified = xmlDocument.DocumentElement.GetAttribute ("LastModified");
 
 			if (xmlNodeConfig ["_Name"] != null) {
-				fileTemplate.Name = xmlNodeConfig ["_Name"].InnerText;
+				fileTemplate.Name = Localize (addin, xmlNodeConfig ["_Name"].InnerText);
 			} else {
 				throw new InvalidOperationException (string.Format ("Missing element '_Name' in file template: {0}", templateId));
 			}
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			if (xmlNodeConfig ["_Description"] != null) {
-				fileTemplate.Description = xmlNodeConfig ["_Description"].InnerText;
+				fileTemplate.Description = Localize (addin, xmlNodeConfig ["_Description"].InnerText);
 			}
 
 			if (xmlNodeConfig ["Icon"] != null) {
@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.Templates
 			var list = new List<FileTemplate> ();
 			foreach (var node in extensionContext.GetExtensionNodes<ProjectTemplateCodon> (EXTENSION_PATH)) {
 				var template = LoadTemplate (node); 
-				if (template.IsValidForProject (project, projectPath)) {
+				if (template != null && template.IsValidForProject (project, projectPath)) {
 					list.Add (template);
 				}
 			}
@@ -450,6 +450,17 @@ namespace MonoDevelop.Ide.Templates
 					list.Remove ("*");
 				}
 			}
+		}
+
+		/// <summary>
+		/// The addin may be null if the file template is loaded by a unit test.
+		/// </summary>
+		static string Localize (RuntimeAddin addin, string s)
+		{
+			if (addin != null)
+				return addin.Localizer.GetString (s);
+
+			return GettextCatalog.GetString (s);
 		}
 	}
 }

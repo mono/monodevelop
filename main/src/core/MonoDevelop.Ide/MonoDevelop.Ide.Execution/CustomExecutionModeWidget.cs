@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Execution;
 using MonoDevelop.Projects;
 
@@ -39,6 +40,17 @@ namespace MonoDevelop.Ide.Execution
 		public CustomExecutionModeWidget ()
 		{
 			this.Build ();
+
+			folderEntry.EntryAccessible.SetCommonAttributes ("CustomExecutionMode.WorkingDirectory", null, 
+			                                                 GettextCatalog.GetString ("Select the working directory for execution"));
+			folderEntry.EntryAccessible.SetTitleUIElement (label2.Accessible);
+			label2.Accessible.SetTitleFor (folderEntry.EntryAccessible);
+
+			entryArgs.SetCommonAccessibilityAttributes ("CustomExecutionMode.Arguments", label4,
+			                                            GettextCatalog.GetString ("Enter any custom arguments to be passed to the executable"));
+
+			envVarList.SetCommonAccessibilityAttributes ("CustomExecutionMode.Variables", label3,
+			                                             GettextCatalog.GetString ("Enter any custom environment variables"));
 		}
 		
 		#region IExecutionModeEditor implementation

@@ -72,7 +72,7 @@ namespace Mono.TextEditor.Tests
 		public void TestSpans ()
 		{
 			TestOutput ("/* TestMe */",
-			            "<span foreground=\"#888a85\">/* TestMe */</span>");
+			            "<span foreground=\"#789769\">/* TestMe */</span>");
 		}
 		
 		[Test]
@@ -134,7 +134,7 @@ namespace Mono.TextEditor.Tests
 		public void TestBug603 ()
 		{
 			TestOutput ("///<summary>foo bar</summary>",
-			            "<span foreground=\"#888a85\">///&lt;summary&gt;foo bar&lt;/summary&gt;</span>");
+			            "<span foreground=\"#789769\">///</span><span foreground=\"#888a85\">&lt;</span><span foreground=\"#719dcf\">summary</span><span foreground=\"#888a85\">&gt;</span><span foreground=\"#789769\">foo bar</span><span foreground=\"#888a85\">&lt;/</span><span foreground=\"#719dcf\">summary</span><span foreground=\"#888a85\">&gt;</span>");
 		}
 
 		[Test]
@@ -174,7 +174,7 @@ namespace Mono.TextEditor.Tests
 		public void Test55462 ()
 		{
 			TestOutput ("$@\"test\" // test",
-			  			"<span foreground=\"#e5da73\">$@\"test\"</span><span foreground=\"#eeeeec\"> </span><span foreground=\"#888a85\">// test</span>");
+			  			"<span foreground=\"#e5da73\">$@\"test\"</span><span foreground=\"#eeeeec\"> </span><span foreground=\"#789769\">// test</span>");
 		}
 
 		/// <summary>
@@ -196,6 +196,20 @@ namespace Mono.TextEditor.Tests
 		{
 			TestOutput ("0b1111_0000",
 			  			"<span foreground=\"#8ae232\">0b1111_0000</span>");
+		}
+
+		[Test]
+		public void TestBug56747 ()
+		{
+			TestOutput ("$\"{{foo}}\"",
+			  			"<span foreground=\"#e5da73\">$\"{{foo}}\"</span>");
+		}
+
+		[Test]
+		public void TestBug57033 ()
+		{
+			TestOutput ("$\"{foo}\"",
+			  			"<span foreground=\"#e5da73\">$\"{</span><span foreground=\"#eeeeec\">foo</span><span foreground=\"#e5da73\">}\"</span>");
 		}
 
 	}

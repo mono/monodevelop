@@ -270,7 +270,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 			documentationScrolledWindow.PackStart (inspectEditor, true, true, 0);
 
-			this.hpaned1.ExposeEvent += HPaneExpose;
+			this.ExposeEvent += HPaneExpose;
 			hpaned1 = hpaned1.ReplaceWithWidget (new HPanedThin (), true);
 			hpaned1.Position = 271;
 
@@ -1264,7 +1264,7 @@ namespace MonoDevelop.AssemblyBrowser
 		internal void Open (string url, AssemblyLoader currentAssembly = null, bool expandNode = true)
 		{
 			Task.WhenAll (this.definitions.Select (d => d.LoadingTask).ToArray ()).ContinueWith (d => {
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					suspendNavigation = false;
 					ITreeNavigator nav = SearchMember (url, expandNode);
 					if (definitions == null) // we've been disposed
@@ -1310,7 +1310,7 @@ namespace MonoDevelop.AssemblyBrowser
 				result.LoadingTask.ContinueWith (t2 => {
 					if (definitions == null) // disposed
 						return;
-					Application.Invoke (delegate {
+					Application.Invoke ((o, args) => {
 						var nav = SearchMember (url, expandNode);
 						if (nav == null) {
 							if (++i == references.Count)
@@ -1361,7 +1361,7 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 				if (definitions == null) // disposed
 					return;
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					var nav = SearchMember (url);
 					if (nav == null) {
 						LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
@@ -1373,7 +1373,7 @@ namespace MonoDevelop.AssemblyBrowser
 		internal void SelectAssembly (AssemblyLoader loader)
 		{
 			AssemblyDefinition cu = loader.CecilLoader.GetCecilObject (loader.UnresolvedAssembly);
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				ITreeNavigator nav = TreeView.GetRootNode ();
 				if (nav == null)
 					return;
@@ -1394,20 +1394,34 @@ namespace MonoDevelop.AssemblyBrowser
 			});
 		}
 		
-		void Dispose (ITreeNavigator nav)
+		void Dispose<T> (ITreeNavigator nav) where T:class, IDisposable
 		{
 			if (nav == null)
 				return;
-			IDisposable d = nav.DataItem as IDisposable;
+			T d = nav.DataItem as T;
 			if (d != null) 
 				d.Dispose ();
 			if (nav.HasChildren ()) {
 				nav.MoveToFirstChild ();
 				do {
-					Dispose (nav);
+					Dispose<T> (nav);
 				} while (nav.MoveNext ());
 				nav.MoveToParent ();
 			}
+		}
+
+		void DisposeAssemblyDefinitions (ITreeNavigator nav)
+		{
+			// Dispose top level nodes
+			if (nav == null || !nav.HasChildren ())
+				return;
+			
+			nav.MoveToFirstChild ();
+			do {
+				if (nav.DataItem is AssemblyDefinition d)
+					d.Dispose ();
+			} while (nav.MoveNext ());
+			nav.MoveToParent ();
 		}
 		
 		protected override void OnDestroyed ()
@@ -1416,7 +1430,8 @@ namespace MonoDevelop.AssemblyBrowser
 			searchTokenSource.Cancel ();
 
 			if (this.TreeView != null) {
-				//	Dispose (TreeView.GetRootNode ());
+				//	Dispose<IDisposable> (TreeView.GetRootNode ());
+				DisposeAssemblyDefinitions (TreeView.GetRootNode ());
 				TreeView.SelectionChanged -= HandleCursorChanged;
 				this.TreeView.Clear ();
 				this.TreeView = null;
@@ -1453,15 +1468,6 @@ namespace MonoDevelop.AssemblyBrowser
 			this.searchTreeview.RowActivated -= SearchTreeviewhandleRowActivated;
 			hpaned1.ExposeEvent -= HPaneExpose;
 			base.OnDestroyed ();
-		}
-		
-		static AssemblyDefinition ReadAssembly (string fileName)
-		{
-			ReaderParameters parameters = new ReaderParameters ();
-//			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
-			using (var stream = new System.IO.MemoryStream (System.IO.File.ReadAllBytes (fileName))) {
-				return AssemblyDefinition.ReadAssembly (stream, parameters);
-			}
 		}
 		
 
@@ -1511,7 +1517,7 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			definitions.Add (result);
 			result.LoadingTask = result.LoadingTask.ContinueWith (task => {
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					if (definitions == null)
 						return;
 					try {
@@ -1597,7 +1603,7 @@ namespace MonoDevelop.AssemblyBrowser
 			foreach (var def in definitions) {
 				if (!this.definitions.Contains (def)) {
 					this.definitions.Add (def);
-					Application.Invoke (delegate {
+					Application.Invoke ((o, args) => {
 						if (definitions.Count + projects.Count == 1) {
 							TreeView.LoadTree (def.LoadingTask.Result);
 						} else {

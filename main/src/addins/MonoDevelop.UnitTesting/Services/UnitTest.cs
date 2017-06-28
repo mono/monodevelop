@@ -404,7 +404,7 @@ namespace MonoDevelop.UnitTesting
 		
 		protected virtual void OnTestChanged ()
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				// Run asynchronously in the UI thread
 				if (TestChanged != null)
 					TestChanged (this, EventArgs.Empty);
@@ -413,7 +413,7 @@ namespace MonoDevelop.UnitTesting
 		
 		protected virtual void OnTestStatusChanged ()
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				// Run asynchronously in the UI thread
 				if (TestStatusChanged != null)
 					TestStatusChanged (this, EventArgs.Empty);

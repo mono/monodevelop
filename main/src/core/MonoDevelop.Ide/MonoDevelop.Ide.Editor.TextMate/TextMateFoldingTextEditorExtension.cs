@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			return foldings;
 		}
 
-		class FoldSegment : AbstractSegment, IFoldSegment
+		class FoldSegment : AbstractSegment, IFoldSegment, IComparable
 		{
 			public string CollapsedText {
 				get {
@@ -202,6 +202,12 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 			public FoldSegment (int offset, int length) : base (offset, length)
 			{
+			}
+
+			int IComparable.CompareTo (object obj)
+			{
+				var segment = (IFoldSegment)obj;
+				return this.Offset != segment.Offset ? this.Offset.CompareTo (segment.Offset) : 0;
 			}
 		}
 	}

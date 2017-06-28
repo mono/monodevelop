@@ -1,6 +1,6 @@
 {
 	"name": "Solarized Light",
-	"version": "1.2.1",
+	"version": "1.2.3",
 	"description": "An artful, light scheme that's easy on the eyes",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -27,8 +27,8 @@
 	"colors": [
 		{ "name": "Background(Read Only)", "color": "base02" },
 
-		{ "name": "Search result background", "color": "base3" },
-		{ "name": "Search result background (highlighted)", "color": "base3" },
+		{ "name": "Search result background", "color": "#ffefc1" },
+		{ "name": "Search result background (highlighted)", "color": "#ffefc1" },
 
 		{ "name": "Column Ruler", "color": "#eae4d3" },
 
@@ -71,12 +71,12 @@
 		{ "name": "Message Bubble Error Marker", "color": "#b28d37" },
 		{ "name": "Message Bubble Error Tag", "color": "#e3a6a1", "secondcolor": "black" },
 		{ "name": "Message Bubble Error Counter", "color": "black", "secondcolor": "#e3a6a1" },
-		{ "name": "Message Bubble Error Line", "color": "#7b645c" },
+		{ "name": "Message Bubble Error Line", "color": "#ffdfd9" },
 		{ "name": "Message Bubble Error Tooltip", "color": "#e3a6a1" },
 
 		{ "name": "Message Bubble Warning Tag", "color": "#efe89d", "secondcolor": "black" },
 		{ "name": "Message Bubble Warning Counter", "color": "black", "secondcolor": "#efe89d" },
-		{ "name": "Message Bubble Warning Line", "color": "#807e5c" },
+		{ "name": "Message Bubble Warning Line", "color": "#fbe7c0" },
 		{ "name": "Message Bubble Warning Tooltip", "color": "#efe89d" }
 	],
 
@@ -96,6 +96,7 @@
 		{ "name": "Comment(Block)", "fore": "base01" },
 		{ "name": "Comment(Doc)", "fore": "base01" },
 		{ "name": "Comment(DocTag)", "fore": "base01" },
+		{ "name": "Comment Tag", "fore": "#fd01fd" },
 
 		{ "name": "Excluded Code", "fore": "base01" },
 

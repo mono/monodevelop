@@ -118,17 +118,19 @@ namespace MonoDevelop.Core
 			LoggingService.LogError ("Unable to set GTK# dll directory");
 		}
 
-		public static Assembly AssemblyLoad (string asmPath) {
+		[Obsolete ("Use Runtime.SystemAssemblyService.LoadAssemblyFrom()")]
+		public static Assembly AssemblyLoad (string asmPath)
+		{
 			if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 				// MEF composition under Win32 requires that all assemblies be loaded in the
 				// Assembly.Load() context so use Assembly.Load() after getting the AssemblyName
 				// (which, on Win32, also contains the full path information so Assembly.Load()
 				// will work).
-				var asmName = AssemblyName.GetAssemblyName(asmPath);
-				return Assembly.Load(asmName);
+				var asmName = AssemblyName.GetAssemblyName (asmPath);
+				return Assembly.Load (asmName);
 			}
 
-			return Assembly.LoadFrom(asmPath);
+			return Assembly.LoadFrom (asmPath);
 		}
 	}
 }

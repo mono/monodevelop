@@ -142,6 +142,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		internal void ShowStyles ()
 		{
+			// This GetString calls are dummy just to make sure they are inserted into .po file so it can be translated
+			// They are actually used few lines lower in this method
+			// Only this 4 are translated because rest are names, but this 4 are exceptions because names have actual meaning
+			// so it makes sense to translate them 
+			GettextCatalog.GetString ("Light");
+			GettextCatalog.GetString ("Dark");
+			GettextCatalog.GetString ("High Contrast Dark");
+			GettextCatalog.GetString ("High Contrast Light");
 			styleStore.Clear ();
 			bool error;
 			var defaultStyle = LoadStyle (MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultThemeName, out error);

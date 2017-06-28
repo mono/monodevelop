@@ -69,6 +69,11 @@ namespace MonoDevelop.Ide.CustomTools
 					break;
 				}
 			});
+
+			// Allow CustomToolService to be used when running unit tests that do not initialize the workspace.
+			if (IdeApp.Workspace == null)
+				return;
+
 			IdeApp.Workspace.FileChangedInProject += delegate (object sender, ProjectFileEventArgs args) {
 				foreach (ProjectFileEventInfo e in args)
 					Update (e.ProjectFile, e.Project, false);
@@ -427,7 +432,7 @@ namespace MonoDevelop.Ide.CustomTools
 			FileService.NotifyFileChanged (result.GeneratedFilePath);
 
 			// add file to project, update file properties, etc
-			Gtk.Application.Invoke (async delegate {
+			Gtk.Application.Invoke (async (o, args) => {
 				bool projectChanged = false;
 				if (genFile == null) {
 					genFile = file.Project.AddFile (result.GeneratedFilePath, result.OverrideBuildAction);

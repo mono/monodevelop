@@ -170,7 +170,7 @@ namespace Stetic {
 			Cancel ();
 			Gtk.Drag.Finish (ctx, true, true, time);
 			
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((args, e) => {
 				IProject project = targetWrapper.Project;
 				string uid = targetWrapper.UndoId;
 				string tname = ((Wrapper.Widget)targetWrapper).GetTopLevel ().Wrapped.Name;

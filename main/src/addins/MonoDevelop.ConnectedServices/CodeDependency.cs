@@ -98,7 +98,9 @@ namespace MonoDevelop.ConnectedServices
 
 					this.InitLookupTypes (token, this.lookupTypes.Keys.ToArray ());
 
-					var result = await this.AddCodeToProject (token).ConfigureAwait (false);
+					var result = await Runtime.RunInMainThread<bool> (
+						() => this.AddCodeToProject (token)
+					);
 
 					LoggingService.LogInfo (result ? "Code dependency added." : "Code dependency was not added.");
 					return result;

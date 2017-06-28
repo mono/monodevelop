@@ -304,7 +304,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			var name = (dictionary ["name"] as PString)?.Value;
 			var scope = (dictionary ["scopeName"] as PString)?.Value;
-
 			var fileTypesArray = dictionary ["fileTypes"] as PArray;
 			if (fileTypesArray != null) {
 				foreach (var type in fileTypesArray.OfType<PString> ()) {
@@ -322,30 +321,41 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			var repository = dictionary ["repository"] as PDictionary;
 			if (repository != null) {
-				foreach (var kv in repository) {
-					string contextName = kv.Key;
-					var includes = new List<object> ();
-
-					var contents = kv.Value as PDictionary;
-					if (contents != null) {
-						var newMatch = ReadMatch (contents);
-						if (newMatch != null) {
-							includes.Add (newMatch);
-						} else {
-							patternsArray = contents ["patterns"] as PArray;
-							if (patternsArray != null) {
-								ReadPatterns (patternsArray, includes);
-							}
-						}
-					}
-
-					contexts.Add (new SyntaxContext (contextName, includes));
-				}
+				ReadRepository (repository, contexts);
 			}
 
 			// var uuid = (dictionary ["uuid"] as PString)?.Value;
 			var hideFromUser = (dictionary ["hideFromUser"] as PBoolean)?.Value;
 			return new SyntaxHighlightingDefinition (name, scope, firstLineMatch, hideFromUser == true, extensions, contexts);
+		}
+
+		private static void ReadRepository (PDictionary repository, List<SyntaxContext> contexts)
+		{
+			foreach (var kv in repository) {
+				string contextName = kv.Key;
+				var includes = new List<object> ();
+				var contents = kv.Value as PDictionary;
+				if (contents != null) {
+					var newMatch = ReadMatch (contents);
+					if (newMatch != null) {
+						includes.Add (newMatch);
+					} else {
+						var patternsArray = contents ["patterns"] as PArray;
+						if (patternsArray != null) {
+							ReadPatterns (patternsArray, includes);
+						}
+
+						var repository2 = contents ["repository"] as PDictionary;
+						if (repository2 != null)
+							ReadRepository (repository2, contexts);
+
+					}
+				}
+				 
+				contexts.Add (new SyntaxContext (contextName, includes));
+
+
+			}
 		}
 
 		static void ReadPatterns (PArray patternsArray, List<object> includesAndMatches)
@@ -370,6 +380,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				var newMatch = ReadMatch (dict);
 				if (newMatch != null)
 					includesAndMatches.Add (newMatch);
+
 			}
 		}
 
@@ -422,12 +433,40 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 				}
 
+				var whileLoop = (dict ["while"] as PString)?.Value;
+				endCaptures = null;
+				endScope = new List<string> ();
+				if (whileLoop != null) {
+					captureDict = dict ["endCaptures"] as PDictionary;
+					if (captureDict != null)
+						endCaptures = ReadCaptureDictionary (captureDict);
+
+					var list = new List<object> ();
+					if (whileLoop != null)
+						list.Add (new SyntaxMatch ("^(?!" + Sublime3Format.CompileRegex (whileLoop) +")", endScope, endCaptures ?? captures, null, true, null, null));
+					var patternsArray = dict ["patterns"] as PArray;
+					if (patternsArray != null) {
+						ReadPatterns (patternsArray, list);
+					}
+
+					List<string> metaContent = null;
+					var contentScope = (dict ["contentName"] as PString)?.Value;
+					if (contentScope != null) {
+						metaContent = new List<string> { contentScope };
+					}
+
+					var ctx = new SyntaxContext ("__generated begin/while capture context", list, metaScope: metaContent);
+
+					pushContext = new AnonymousMatchContextReference (ctx);
+				}
+				 
 				return new SyntaxMatch (Sublime3Format.CompileRegex (begin), matchScope, beginCaptures ?? captures, pushContext, false, null, null);
 			}
 
 			var match = (dict ["match"] as PString)?.Value;
 			if (match == null)
 				return null;
+
 			return new SyntaxMatch (Sublime3Format.CompileRegex (match), matchScope, captures, pushContext, false, null, null);
 		}
 
@@ -476,16 +515,22 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			switch (type) {
 			case "string":
 				return new PString (f.Value);
+			case "boolean":
+				return new PBoolean (string.Equals ("true", f.Value, StringComparison.OrdinalIgnoreCase));
 			case "array":
 				return new PArray (new List<PObject> (f.Elements ().Select (Convert)));
 			case "object":
 				var val = new PDictionary ();
 				foreach (var subElement in f.Elements ()) {
 					var name = subElement.Name.LocalName;
+					if (string.IsNullOrEmpty (name))
+						continue;
 					if (name == "item")
 						name = subElement.Attribute ("item").Value;
 					if (!val.ContainsKey (name)) {
-						val.Add (name, Convert (subElement));
+						var converted = Convert (subElement);
+						if (converted != null)
+							val.Add (name, converted);
 					} else {
 						LoggingService.LogWarning ("Warning while converting json highlighting to textmate 'key' " + name + " is duplicated in : " + f);
 					}

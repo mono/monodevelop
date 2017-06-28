@@ -94,14 +94,14 @@ namespace MonoDevelop.Components.Docking
 				tab.Page.Hide ();
 			}
 			
-			tab.ButtonPressEvent += OnTabPress;
+			tab.TabPressed += OnTabPress;
 			UpdateAccessibilityTabs ();
 		}
 
 		void HandleRemoved (object o, RemovedArgs args)
 		{
-			Gtk.Widget w = args.Widget;
-			w.ButtonPressEvent -= OnTabPress;
+			var w = (DockItemTitleTab)args.Widget;
+			w.TabPressed -= OnTabPress;
 			if (currentTab >= box.Children.Length)
 				currentTab = box.Children.Length - 1;
 
@@ -198,13 +198,12 @@ namespace MonoDevelop.Components.Docking
 				box.Remove (w);
 		}
 		
-		void OnTabPress (object s, Gtk.ButtonPressEventArgs args)
+		void OnTabPress (object s, EventArgs args)
 		{
 			CurrentTab = Array.IndexOf (box.Children, s);
 			DockItemTitleTab t = (DockItemTitleTab) s;
 			DockItem.SetFocus (t.Page);
 			QueueDraw ();
-			args.RetVal = true;
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)

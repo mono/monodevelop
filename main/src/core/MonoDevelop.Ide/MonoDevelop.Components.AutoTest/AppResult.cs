@@ -203,7 +203,7 @@ namespace MonoDevelop.Components.AutoTest
 			if (exact) {
 				return haystack == needle;
 			} else {
-				return (haystack.IndexOf (needle, StringComparison.Ordinal) > -1);
+				return haystack != null && (haystack.IndexOf (needle, StringComparison.Ordinal) > -1);
 			}
 		}
 	}

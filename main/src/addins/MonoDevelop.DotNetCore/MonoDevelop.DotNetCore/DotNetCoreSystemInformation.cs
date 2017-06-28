@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Linq;
 using System.Text;
 using MonoDevelop.Core;
 
@@ -46,7 +48,9 @@ namespace MonoDevelop.DotNetCore
 			var description = new StringBuilder ();
 
 			description.AppendLine (GettextCatalog.GetString ("Runtime: {0}", GetDotNetRuntimeLocation ()));
+			AppendDotNetCoreRuntimeVersions (description);
 			description.AppendLine (GettextCatalog.GetString ("SDK: {0}", GetDotNetSdkLocation ()));
+			AppendDotNetCoreSdkVersions (description);
 			description.AppendLine (GettextCatalog.GetString ("MSBuild SDKs: {0}", GetMSBuildSdksLocation ()));
 
 			return description.ToString ();
@@ -79,6 +83,45 @@ namespace MonoDevelop.DotNetCore
 				return MSBuildSdks.MSBuildSDKsPath;
 
 			return GetNotInstalledString ();
+		}
+
+		static void AppendDotNetCoreRuntimeVersions (StringBuilder description)
+		{
+			AppendVersions (
+				description,
+				DotNetCoreRuntime.Versions,
+				version => GettextCatalog.GetString ("Runtime Version: {0}", version),
+				() => GettextCatalog.GetString ("Runtime Versions:"));
+		}
+
+		static void AppendDotNetCoreSdkVersions (StringBuilder description)
+		{
+			AppendVersions (
+				description,
+				DotNetCoreSdk.Versions,
+				version => GettextCatalog.GetString ("SDK Version: {0}", version),
+				() => GettextCatalog.GetString ("SDK Versions:"));
+		}
+
+		static void AppendVersions (
+			StringBuilder description,
+			DotNetCoreVersion[] versions,
+			Func<DotNetCoreVersion, string> getSingleVersionString,
+			Func<string> getMultipleVersionsString)
+		{
+			if (!versions.Any ())
+				return;
+
+			if (versions.Count () == 1) {
+				description.AppendLine (getSingleVersionString (versions[0]));
+			} else {
+				description.AppendLine (getMultipleVersionsString ());
+
+				foreach (var version in versions) {
+					description.Append ('\t');
+					description.AppendLine (version.OriginalString);
+				}
+			}
 		}
 	}
 }

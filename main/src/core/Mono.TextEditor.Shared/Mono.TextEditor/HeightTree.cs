@@ -67,7 +67,8 @@ namespace Mono.TextEditor
 		void Document_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			Rebuild ();
-			foreach (var change in e.TextChanges) {
+			for (int i = 0; i < e.TextChanges.Count; ++i) {
+				var change = e.TextChanges[i];
 				var lineNumber = this.editor.OffsetToLineNumber (change.NewOffset);
 				OnLineUpdateFrom (new HeightChangedEventArgs (lineNumber - 1));
 			}
@@ -82,7 +83,7 @@ namespace Mono.TextEditor
 
 		void HandleFoldTreeUpdated (object sender, EventArgs e)
 		{
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				Rebuild ();
 			});
 		}

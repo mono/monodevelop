@@ -1,6 +1,6 @@
 {
 	"name": "",
-	"version": "1.4.4",
+	"version": "1.4.5",
 	"description": "DO NOT REMOVE - REQUIRED FOR FORMAT CONVERSION",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -116,9 +116,9 @@
 
 		{ "name": "Comment(Line)", "fore": "comment-gray" },
 		{ "name": "Comment(Block)", "fore": "comment-gray" },
-		{ "name": "Comment(Doc)", "fore": "#97b488" },
-		{ "name": "Comment(DocTag)", "fore": "#c8b97c" },
-		{ "name": "Comment Tag", "fore": "#ff00ff" },
+		{ "name": "Comment(Doc)", "fore": "comment-gray" },
+		{ "name": "Comment(DocTag)", "fore": "comment-gray" },
+		{ "name": "Comment Tag", "fore": "comment-gray" },
 
 		{ "name": "Excluded Code", "fore": "comment-gray" },
 

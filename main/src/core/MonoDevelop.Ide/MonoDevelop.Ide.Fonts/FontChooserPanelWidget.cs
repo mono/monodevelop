@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Components.AtkCocoaHelper;
 using Gtk;
 using System.Diagnostics;
 
@@ -80,6 +81,9 @@ namespace MonoDevelop.Ide.Fonts
 				var hBox = new HBox ();
 				var setFontButton = new Button ();
 				setFontButton.Label = FontService.FilterFontName (GetFont (desc.Name));
+
+				var descStr = GettextCatalog.GetString ("Set the font options for {0}", GettextCatalog.GetString (desc.DisplayName));
+				setFontButton.Accessible.Description = descStr;
 				setFontButton.Clicked += delegate {
 					var selectionDialog = new FontSelectionDialog (GettextCatalog.GetString ("Select Font")) {
 						Modal = true,

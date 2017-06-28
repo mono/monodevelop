@@ -75,9 +75,6 @@
     <EmbeddedResource Include="MonoDevelopNUnit.addin.xml">
       <LogicalName>MonoDevelopNUnit.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\NUnitAssemblyGroup.xpt.xml">
-      <LogicalName>NUnitAssemblyGroup.xpt.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="templates\NUnitProject.xpt.xml">
       <LogicalName>NUnitProject.xpt.xml</LogicalName>
     </EmbeddedResource>

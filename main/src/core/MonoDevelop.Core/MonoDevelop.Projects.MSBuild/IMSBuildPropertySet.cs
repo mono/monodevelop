@@ -31,12 +31,8 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Text;
 
-using Microsoft.Build.BuildEngine;
 using MonoDevelop.Core;
-using System.Xml.Linq;
-using System.Reflection;
 using MonoDevelop.Core.Serialization;
-using System.Globalization;
 
 namespace MonoDevelop.Projects.MSBuild
 {

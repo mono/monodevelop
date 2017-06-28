@@ -31,6 +31,10 @@ namespace PerformanceDiagnosticsAddIn
 	public static class Options
 	{
 		public static readonly ConfigurationProperty<string> OutputPath = ConfigurationProperty.Create ("PerformanceDiagnosticsAddIn.OutputPath", System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "Desktop"));
+		//public static readonly ConfigurationProperty<bool> ShowUICounters = ConfigurationProperty.Create ("PerformanceDiagnosticsAddIn.ShowUICounters", false);
+
+		public static readonly bool HasMemoryLeakFeature = System.IO.File.Exists (System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "xs-enable-leak-check"));
+		public static readonly bool HasMemoryLeakFeaturePad = HasMemoryLeakFeature && System.IO.File.Exists (System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "xs-enable-leak-check-pad"));
 	}
 }
 

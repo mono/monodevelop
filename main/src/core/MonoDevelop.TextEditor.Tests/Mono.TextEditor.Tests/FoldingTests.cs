@@ -267,11 +267,11 @@ namespace Mono.TextEditor.Tests
 			data.Document.UpdateFoldSegments (segments);
 			
 			Assert.AreEqual (2, data.Document.FoldSegments.Count ());
-			Assert.AreEqual (17, data.LogicalToVisualLine (25));
+			Assert.AreEqual (9, data.LogicalToVisualLine (25));
 			segments.RemoveAt (1);
 			data.Document.UpdateFoldSegments (segments);
 			Assert.AreEqual (1, data.Document.FoldSegments.Count ());
-			Assert.AreEqual (25, data.LogicalToVisualLine (25));
+			Assert.AreEqual (17, data.LogicalToVisualLine (25));
 		}
 		
 		/// <summary>

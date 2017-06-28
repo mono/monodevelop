@@ -5,10 +5,7 @@ open System.IO
 open MonoDevelop.Core
 open MonoDevelop.Projects
 open MonoDevelop.Projects.MSBuild
-open MonoDevelop.Ide
 open System.Xml
-open System.Xml.Linq
-open System.Xml.XPath
 open MonoDevelop.Core.Assemblies
 open ExtCore.Control
 
@@ -29,7 +26,7 @@ module Project =
 type FSharpProject() as self =
     inherit DotNetProject()
     // Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
-    let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "itanium" |]
+    let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "Itanium" |]
 
     let oldFSharpProjectGuid   = "{4925A630-B079-445D-BCD4-3A9C94FE9307}"
     let supportedPortableProfiles = ["Profile7";"Profile47";"Profile78";"Profile259"]
@@ -42,20 +39,7 @@ type FSharpProject() as self =
                   "Profile259", ("3.259.3.1", true) ]
 
     let mutable initialisedAsPortable = false
-
-    let invalidateProjectFile() =
-        try
-            if File.Exists (self.FileName.ToString()) then
-                languageService.TryGetProjectCheckerOptionsFromCache(self.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
-                |> Option.iter(fun options ->
-                    languageService.InvalidateConfiguration(options)
-                    languageService.ClearProjectInfoCache())
-        with ex -> LoggingService.LogError ("Could not invalidate configuration", ex)
-
-    let invalidateFiles (args:#ProjectFileEventInfo seq) =
-        for projectFileEvent in args do
-            if FileService.supportedFileName (projectFileEvent.ProjectFile.FilePath.ToString()) then
-                invalidateProjectFile()
+    let mutable referencedAssemblies = None
 
     let isPortable (project:MSBuildProject) =
         project.EvaluatedProperties.Properties
@@ -204,10 +188,12 @@ type FSharpProject() as self =
         with exn -> LoggingService.LogWarning("Failed to remove old F# guid", exn)
 
     override x.OnCompileSources(items, config, configSel, monitor) =
-        CompilerService.Compile(items, config, configSel, monitor)
+        CompilerService.Compile(items, config, x.ReferencedAssemblies, configSel, monitor)
 
     override x.OnCreateCompilationParameters(config, kind) =
         let pars = new FSharpCompilerParameters()
+        config.CompilationParameters <- pars
+
         // Set up the default options
         if supportedPlatforms |> Array.exists (fun x -> x.Contains(config.Platform)) then pars.PlatformTarget <- config.Platform
         match kind with
@@ -227,27 +213,27 @@ type FSharpProject() as self =
 
     override x.OnFileAddedToProject(e) =
         base.OnFileAddedToProject(e)
-        if not self.Loading then invalidateFiles(e)
+        if not self.Loading then MDLanguageService.invalidateFiles e
 
     override x.OnFileRemovedFromProject(e) =
         base.OnFileRemovedFromProject(e)
-        if not self.Loading then invalidateFiles(e)
+        if not self.Loading then MDLanguageService.invalidateFiles e
 
     override x.OnFileRenamedInProject(e) =
         base.OnFileRenamedInProject(e)
-        if not self.Loading then invalidateFiles(e)
+        if not self.Loading then MDLanguageService.invalidateFiles e
 
     override x.OnFilePropertyChangedInProject(e) =
         base.OnFilePropertyChangedInProject(e)
-        if not self.Loading then invalidateFiles(e)
+        if not self.Loading then MDLanguageService.invalidateFiles e
 
     override x.OnReferenceAddedToProject(e) =
         base.OnReferenceAddedToProject(e)
-        if not self.Loading then invalidateProjectFile()
+        if not self.Loading then MDLanguageService.invalidateProjectFile self.FileName
 
     override x.OnReferenceRemovedFromProject(e) =
         base.OnReferenceRemovedFromProject(e)
-        if not self.Loading then invalidateProjectFile()
+        if not self.Loading then MDLanguageService.invalidateProjectFile self.FileName
 
     //override x.OnFileRenamedInProject(e)=
     //    base.OnFileRenamedInProject(e)
@@ -255,23 +241,54 @@ type FSharpProject() as self =
 
     override x.OnNameChanged(e)=
         base.OnNameChanged(e)
-        if not self.Loading then invalidateProjectFile()
+        if not self.Loading then MDLanguageService.invalidateProjectFile self.FileName
 
     override x.OnGetDefaultResourceId(projectFile) =
         projectFile.FilePath.FileName
 
     override x.OnModified(e) =
         base.OnModified(e)
-        if not self.Loading && not self.IsReevaluating then invalidateProjectFile()
+        if not self.Loading && not self.IsReevaluating then MDLanguageService.invalidateProjectFile self.FileName
 
-    override x.OnReevaluateProject(e) =
+    member x.ReferencedAssemblies
+        with get() =
+            match referencedAssemblies with
+            | Some assemblies -> assemblies
+            | None ->
+                let assemblies = (x.GetReferencedAssemblies (CompilerArguments.getConfig())).Result
+                referencedAssemblies <- Some assemblies
+                assemblies
+
+    member x.GetOrderedReferences() =
+        let references =
+            let args =
+                CompilerArguments.getReferencesFromProject x x.ReferencedAssemblies
+                |> Seq.choose (fun ref -> if (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll")
+                                          then None
+                                          else
+                                              let ref = ref |> String.replace "-r:" ""
+                                              if File.Exists ref then Some ref
+                                              else None )
+                |> Seq.distinct
+                |> Seq.toArray
+            args
+
+        let orderAssemblyReferences = MonoDevelop.FSharp.OrderAssemblyReferences()
+        orderAssemblyReferences.Order references
+
+    member x.ReevaluateProject(e) =
         let task = base.OnReevaluateProject (e)
 
         async {
-            do! task |> Async.AwaitTask
-            invalidateProjectFile()
-        } |> Async.startAsPlainTask    
-            
+            do! task
+            MDLanguageService.invalidateProjectFile self.FileName
+            let! refs = x.GetReferencedAssemblies (CompilerArguments.getConfig())
+            referencedAssemblies <- Some refs
+        }
+
+    override x.OnReevaluateProject(monitor) =
+        x.ReevaluateProject monitor |> Async.startAsPlainTask
+
     override x.OnDispose () =
         //if not self.Loading then invalidateProjectFile()
 

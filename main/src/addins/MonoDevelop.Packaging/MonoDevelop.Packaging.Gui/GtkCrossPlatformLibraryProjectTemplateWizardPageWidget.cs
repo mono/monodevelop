@@ -48,6 +48,12 @@ namespace MonoDevelop.Packaging.Gui
 		{
 			this.Build ();
 
+			// Do not use a width request for the configuration box so the left hand side of the
+			// wizard page can expand to fit its contents. Also specify a width for the name
+			// text box to use more of the left hand side of the wizard.
+			configurationVBox.WidthRequest = -1;
+			nameTextBox.WidthRequest = 280;
+
 			backgroundImage = Xwt.Drawing.Image.FromResource ("preview-multiplatform-library.png");
 			backgroundImageView = new ImageView (backgroundImage);
 			backgroundImageView.Xalign = 1.0f;
@@ -115,6 +121,10 @@ namespace MonoDevelop.Packaging.Gui
 
 		void NameTextChanged (object sender, EventArgs e)
 		{
+			// Use name as description by default.
+			if (wizardPage.LibraryName == wizardPage.Description)
+				descriptionTextBox.Text = nameTextBox.Text;
+
 			wizardPage.LibraryName = nameTextBox.Text;
 
 			if (wizardPage.HasLibraryNameError ()) {

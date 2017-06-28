@@ -103,14 +103,14 @@ namespace MonoDevelop.CSharp.Parser
 				this.cancellationToken = cancellationToken;
 			}
 
-			static DocumentRegion GetRegion (SyntaxTrivia trivia)
+			DocumentRegion GetRegion (SyntaxTrivia trivia)
 			{
 				var fullSpan = trivia.FullSpan;
-				var text = trivia.ToString ();
-				if (text.Length > 2) {
-					if (text [text.Length - 2] == '\r' && text [text.Length - 1] == '\n')
+				if (fullSpan.Length > 2) {
+					var text = trivia.SyntaxTree.GetText (cancellationToken);
+					if (text [fullSpan.End - 2] == '\r' && text [fullSpan.End - 1] == '\n')
 						fullSpan = new Microsoft.CodeAnalysis.Text.TextSpan (fullSpan.Start, fullSpan.Length - 2);
-					else if (NewLine.IsNewLine (text [text.Length - 1]))
+					else if (NewLine.IsNewLine (text [fullSpan.End - 1]))
 						fullSpan = new Microsoft.CodeAnalysis.Text.TextSpan (fullSpan.Start, fullSpan.Length - 1);
 				}
 				try {
@@ -149,12 +149,34 @@ namespace MonoDevelop.CSharp.Parser
 				return true;
 			}
 
-			static string CropStart (string text, string crop)
+			string CropStart (SyntaxTrivia trivia, string crop)
 			{
-				text = text.Trim ();
-				if (text.StartsWith (crop))
-					return text.Substring (crop.Length).TrimStart ();
-				return text;
+				var sourceText = trivia.SyntaxTree.GetText (cancellationToken);
+				var span = trivia.Span;
+				int i = span.Start;
+				int end = span.End;
+
+				// Trim leading whitespace.
+				while (char.IsWhiteSpace (sourceText[i]) && i < end)
+					i++;
+				
+				while (char.IsWhiteSpace (sourceText[end - 1]) && end - 1 > i)
+					end--;
+
+				// Poor man's allocation-less offset-ed startswith
+				int j;
+				for (j = 0; j < crop.Length && i < end; ++j)
+					if (sourceText[i] == crop[j])
+						i++;
+
+				// Go back if we didn't do a full match, else trim leading whitespace again
+				if (j != crop.Length)
+					i -= j;
+				else
+					while (char.IsWhiteSpace (sourceText[i]) && i < end)
+						i++;
+
+				return sourceText.ToString (new Microsoft.CodeAnalysis.Text.TextSpan (i, end - i));
 			}
 
 			public override void VisitTrivia (SyntaxTrivia trivia)
@@ -165,7 +187,7 @@ namespace MonoDevelop.CSharp.Parser
 				case SyntaxKind.MultiLineCommentTrivia:
 				case SyntaxKind.MultiLineDocumentationCommentTrivia:
 					{
-						var cmt = new Comment (CropStart (trivia.ToString (), "/*"));
+						var cmt = new Comment (CropStart (trivia, "/*"));
 						cmt.CommentStartsLine = StartsLine(trivia);
 						cmt.CommentType = CommentType.Block;
 						cmt.OpenTag = "/*";
@@ -176,7 +198,7 @@ namespace MonoDevelop.CSharp.Parser
 					}
 				case SyntaxKind.SingleLineCommentTrivia:
 					{
-						var cmt = new Comment (CropStart (trivia.ToString (), "//"));
+						var cmt = new Comment (CropStart (trivia, "//"));
 						cmt.CommentStartsLine = StartsLine(trivia);
 						cmt.CommentType = CommentType.SingleLine;
 						cmt.OpenTag = "//";
@@ -186,12 +208,12 @@ namespace MonoDevelop.CSharp.Parser
 					}
 				case SyntaxKind.SingleLineDocumentationCommentTrivia:
 					{
-						var cmt = new Comment (CropStart (trivia.ToString (), "///"));
+						var cmt = new Comment (CropStart (trivia, "///"));
 						cmt.CommentStartsLine = StartsLine(trivia);
 						cmt.IsDocumentation = true;
 						cmt.CommentType = CommentType.Documentation;
 						cmt.OpenTag = "///";
-						cmt.ClosingTag = "*/";
+						cmt.ClosingTag = "///";
 						cmt.Region = GetRegion (trivia);
 						Comments.Add (cmt);
 						break;

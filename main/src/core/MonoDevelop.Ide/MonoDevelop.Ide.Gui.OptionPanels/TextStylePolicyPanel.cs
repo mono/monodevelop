@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Projects;
@@ -71,8 +72,32 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			lineEndingCombo.AppendText (GettextCatalog.GetString ("Mac Classic"));
 			lineEndingCombo.AppendText (GettextCatalog.GetString ("Unix / Mac"));
 			lineEndingCombo.AppendText (GettextCatalog.GetString ("Microsoft Windows")); // Using "Windows" is too short, otherwise the translation get's confused. Mike
+
+			SetupAccessibility ();
 		}
-		
+
+		void SetupAccessibility ()
+		{
+			columnWidthSpin.SetCommonAccessibilityAttributes ("Textpolicy.WidthSpinner", label1,
+			                                                  GettextCatalog.GetString ("The desired width of the file in columns"));
+
+			lineEndingCombo.SetCommonAccessibilityAttributes ("Textpolicy.LineEndings", label6,
+			                                                  GettextCatalog.GetString ("Select the type of line endings the file should have"));
+
+			tabWidthSpin.SetCommonAccessibilityAttributes ("Textpolicy.TabWidth", label7,
+			                                               GettextCatalog.GetString ("Select the width of tab stops"));
+
+			indentWidthSpin.SetCommonAccessibilityAttributes ("Textpolicy.IndentWidth", label9,
+			                                                  GettextCatalog.GetString ("Select the width of indents"));
+
+			tabsToSpaceCheck.SetCommonAccessibilityAttributes ("Textpolicy.TabsToSpaces", "",
+			                                                   GettextCatalog.GetString ("Check to automatically convert tabs to spaces"));
+			tabsAfterNonTabsCheck.SetCommonAccessibilityAttributes ("Textpolicy.TabsAfterSpaces", "",
+			                                                        GettextCatalog.GetString ("Check to allow tabs after non-tabs"));
+			removeTrailingWhitespaceCheck.SetCommonAccessibilityAttributes ("Textpolicy.TrailingWhitespace", "",
+			                                                                GettextCatalog.GetString ("Check to automatically remove trailing whitespace from a line"));
+		}
+
 		protected virtual void UpdateState (object sender, System.EventArgs e)
 		{
 			panel.UpdateSelectedNamedPolicy ();

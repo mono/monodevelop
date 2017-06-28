@@ -42,21 +42,17 @@ namespace MonoDevelop.CSharp.UnitTests
 			if (cls == null)
 				return null;
 			if (cls.Name != testName) {
-				foreach (var met in cls.GetMembers ().OfType<IMethodSymbol> ()) {
-					if (met.Name == testName) {
-						var loc = met.Locations.FirstOrDefault (l => l.IsInSource);
-						return ConvertToSourceCodeLocation (loc);
-					}
+				foreach (var met in cls.GetMembers (testName).OfType<IMethodSymbol> ()) {
+					var loc = met.Locations.FirstOrDefault (l => l.IsInSource);
+					return ConvertToSourceCodeLocation (loc);
 				}
 
 				int idx = testName != null ? testName.IndexOf ('(') : -1;
 				if (idx > 0) {
 					testName = testName.Substring (0, idx);
-					foreach (var met in cls.GetMembers ().OfType<IMethodSymbol> ()) {
-						if (met.Name == testName){
-							var loc = met.Locations.FirstOrDefault (l => l.IsInSource);
-							return ConvertToSourceCodeLocation (loc);
-						}
+					foreach (var met in cls.GetMembers (testName).OfType<IMethodSymbol> ()) {
+						var loc = met.Locations.FirstOrDefault (l => l.IsInSource);
+						return ConvertToSourceCodeLocation (loc);
 					}
 				}
 			}

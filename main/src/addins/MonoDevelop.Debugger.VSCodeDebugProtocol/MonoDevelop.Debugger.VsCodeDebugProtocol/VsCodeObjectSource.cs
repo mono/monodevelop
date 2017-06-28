@@ -25,6 +25,9 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			this.type = type ?? string.Empty;
 			this.frameId = frameId;
 			this.evalName = evalName;
+			var indexOfType = name.LastIndexOf (" [", StringComparison.Ordinal);
+			if (indexOfType != -1)
+				name = name.Remove (indexOfType);
 			this.name = name;
 			this.vsCodeDebuggerSession = vsCodeDebuggerSession;
 			this.variablesReference = variablesReference;
@@ -35,10 +38,14 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		public ObjectValue [] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
 			if (objValChildren == null) {
-				var children = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (
-					variablesReference
-				)).Variables;
-				objValChildren = children.Select (c => VSCodeDebuggerBacktrace.VsCodeVariableToObjectValue (vsCodeDebuggerSession, c.Name, c.EvaluateName, c.Type, c.Value, c.VariablesReference, variablesReference, frameId)).ToArray ();
+				if (variablesReference <= 0) {
+					objValChildren = new ObjectValue [0];
+				} else {
+					var children = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (
+						variablesReference
+					)).Variables;
+					objValChildren = children.Select (c => VSCodeDebuggerBacktrace.VsCodeVariableToObjectValue (vsCodeDebuggerSession, c.Name, c.EvaluateName, c.Type, c.Value, c.VariablesReference, variablesReference, frameId)).ToArray ();
+				}
 			}
 			return objValChildren;
 		}

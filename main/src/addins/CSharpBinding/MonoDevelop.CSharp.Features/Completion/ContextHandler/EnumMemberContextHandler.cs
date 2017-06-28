@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				return Enumerable.Empty<CompletionData> ();
 
 			var token = tree.FindTokenOnLeftOfPosition (completionContext.Position, cancellationToken);
-			if (token.IsMandatoryNamedParameterPosition ())
+			if (token.IsKind (SyntaxKind.DotToken) || token.IsMandatoryNamedParameterPosition ())
 				return Enumerable.Empty<CompletionData> ();
 			var result = new List<CompletionData> ();
 
@@ -121,10 +121,11 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					completionResult.AutoCompleteEmptyMatch = true;
 
 				}
-				if (!IsReachable (model,  type, token.Parent))
+				if (!IsReachable (model, type, token.Parent)) {
 					result.Add (engine.Factory.CreateSymbolCompletionData (this, type, displayString));
+				}
 				foreach (IFieldSymbol field in type.GetMembers ().OfType<IFieldSymbol> ()) {
-					if (field.DeclaredAccessibility == Accessibility.Public && (field.IsConst || field.IsStatic)) {
+					if (field.DeclaredAccessibility == Accessibility.Public && (field.IsConst || field.IsStatic)) { 
 						result.Add (engine.Factory.CreateEnumMemberCompletionData (this, alias, field));
 					}
 				}

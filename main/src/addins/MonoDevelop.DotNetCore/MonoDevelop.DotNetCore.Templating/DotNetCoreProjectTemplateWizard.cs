@@ -24,243 +24,133 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using MonoDevelop.Core;
-using MonoDevelop.Core.StringParsing;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Templates;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.DotNetCore.Templating
 {
 	class DotNetCoreProjectTemplateWizard : TemplateWizard
 	{
-		bool createDotNetCoreProject;
+		List<TargetFramework> targetFrameworks;
 
 		public override WizardPage GetPage (int pageNumber)
 		{
-			return null;
+			var page = new DotNetCoreProjectTemplateWizardPage (this, targetFrameworks);
+			targetFrameworks = null;
+			return page;
 		}
 
 		public override int TotalPages {
-			get { return 0; }
+			get { return GetTotalPages (); }
 		}
 
 		public override string Id {
 			get { return "MonoDevelop.DotNetCore.ProjectTemplateWizard"; }
 		}
 
-		public override void ConfigureWizard ()
+		/// <summary>
+		/// When only .NET Core 2.0 is installed there is only one option in the drop down
+		/// list for the target framework for .NET Core projects so there is no point in displaying
+		/// the wizard since nothing can be changed. If .NET Core 1.0 is installed then there is at
+		/// least two options available. If the .NET Standard project template is selected then there
+		/// are multiple options available. So here a check is made to see if more than one target
+		/// framework is available. If not then the wizard will not be displayed.
+		/// </summary>
+		int GetTotalPages ()
 		{
-			createDotNetCoreProject = !Parameters.GetBoolValue ("CreateSolution");
-			Parameters["CreateDotNetCoreProject"] = createDotNetCoreProject.ToString ();
+			GetTargetFrameworks ();
+			if (targetFrameworks.Count > 1)
+				return 1;
+
+			ConfigureDefaultParameters ();
+
+			return 0;
 		}
 
-		public override async void ItemsCreated (IEnumerable<IWorkspaceFileObject> items)
+		void GetTargetFrameworks ()
 		{
-			try {
-				using (var progressMonitor = CreateProgressMonitor ()) {
-					await CreateDotNetCoreProject (items).ConfigureAwait (false);
+			if (IsSupportedParameter ("NetStandard")) {
+				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().ToList ();
+
+				// Use 1.x target frameworks by default if none are available from the .NET Core sdk.
+				if (!targetFrameworks.Any ())
+					targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetDefaultNetStandard1xTargetFrameworks ().ToList ();
+
+				if (IsSupportedParameter ("FSharpNetStandard")) {
+					RemoveUnsupportedNetStandardTargetFrameworksForFSharp (targetFrameworks);
 				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("Failed to create project.", ex);
+			} else {
+				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
+
+				if (IsSupportedParameter ("FSharpNetCoreLibrary") || IsSupportedParameter ("RazorPages")) {
+					RemoveUnsupportedNetCoreApp1xTargetFrameworks (targetFrameworks);
+				}
 			}
 		}
 
-		ProgressMonitor CreateProgressMonitor ()
+		/// <summary>
+		/// The F# project templates do not support .NET Standard below 1.6 so do not allow them to
+		/// be selected.
+		/// </summary>
+		static void RemoveUnsupportedNetStandardTargetFrameworksForFSharp (List<TargetFramework> targetFrameworks)
 		{
-			return IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
-				GettextCatalog.GetString ("Creating project..."),
-				Stock.StatusSolutionOperation,
-				false,
-				false,
-				false);
+			targetFrameworks.RemoveAll (framework => framework.IsLowerThanNetStandard16 ());
 		}
 
-		Task CreateDotNetCoreProject (IEnumerable<IWorkspaceFileObject> items)
+		/// <summary>
+		/// FSharp class library project template and the Razor Pages project template do not support
+		/// targeting 1.x versions so remove these frameworks.
+		/// </summary>
+		static void RemoveUnsupportedNetCoreApp1xTargetFrameworks (List<TargetFramework> targetFrameworks)
 		{
-			Solution solution = GetCreatedSolution (items);
-			if (solution != null) {
-				if (IsWebProject ()) {
-					SolutionFolder srcFolder = AddSolutionFoldersToSolution (solution);
-					return CreateProject (solution, srcFolder);
+			targetFrameworks.RemoveAll (framework => framework.IsNetCoreApp1x ());
+		}
+
+		/// <summary>
+		/// Set default parameter values if no wizard will be displayed.
+		/// </summary>
+		void ConfigureDefaultParameters ()
+		{
+			if (IsSupportedParameter ("NetStandard")) {
+				var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().FirstOrDefault ();
+
+				if (highestFramework != null && highestFramework.IsNetStandard20 ()) {
+					Parameters ["UseNetStandard20"] = "true";
 				} else {
-					return CreateProject (solution);
+					Parameters ["UseNetStandard1x"] = "true";
 				}
-			}
-
-			DotNetProject project = GetCreatedProject (items);
-			solution = project.ParentSolution;
-			RemoveProjectFromSolution (project);
-
-			if (IsWebProject ()) {
-				SolutionFolder existingSrcFolder = GetSrcSolutionFolder (solution);
-				return CreateProject (solution, existingSrcFolder, false);
 			} else {
-				return CreateProject (solution, false);
-			}
-		}
-
-		bool IsWebProject ()
-		{
-			return Parameters.GetBoolValue ("IsWebProject");
-		}
-
-		SolutionFolder GetSrcSolutionFolder (Solution solution)
-		{
-			return solution.RootFolder.Items.OfType<SolutionFolder> ()
-				.FirstOrDefault (item => item.Name == "src");
-		}
-
-		static Solution GetCreatedSolution (IEnumerable<IWorkspaceFileObject> items)
-		{
-			if (items.Count () == 1) {
-				return items.OfType<Solution> ().FirstOrDefault ();
-			}
-			return null;
-		}
-
-		static DotNetProject GetCreatedProject (IEnumerable<IWorkspaceFileObject> items)
-		{
-			return items.OfType<DotNetProject> ()
-				.FirstOrDefault ();
-		}
-
-		Task CreateProject (Solution solution, bool newSolution = true)
-		{
-			return CreateProject (solution, solution.RootFolder, newSolution);
-		}
-
-		async Task<DotNetProject> CreateProject (Solution solution, string projectName)
-		{
-			string projectTemplateName = Parameters["Template"];
-			FilePath templateDirectory = FileTemplateProcessor.GetTemplateDirectory (projectTemplateName);
-			FilePath templateFileName = templateDirectory.Combine (projectTemplateName + ".csproj");
-
-			string projectFileName = GenerateNewProjectFileName (solution, projectName);
-			var msbuildProject = new MSBuildProject ();
-			msbuildProject.Load (templateFileName);
-
-			UpdatePackageReferenceVersions (msbuildProject);
-
-			string projectDirectory = Path.GetDirectoryName (projectFileName);
-			Directory.CreateDirectory (projectDirectory);
-			msbuildProject.Save (projectFileName);
-
-			// Create files here so they are loaded from wildcards when the project is loaded.
-			CreateFilesFromTemplate (projectDirectory, projectName, solution);
-
-			return await IdeApp.Services.ProjectService.ReadSolutionItem (new ProgressMonitor (), projectFileName) as DotNetProject;
-		}
-
-		string GenerateNewProjectFileName (Solution solution, string projectName)
-		{
-			string subDirectory = Path.Combine (projectName, projectName + ".csproj");
-			if (IsWebProject ())
-				return solution.BaseDirectory.Combine ("src", subDirectory);
-
-			return solution.BaseDirectory.Combine (subDirectory);
-		}
-
-		void UpdatePackageReferenceVersions (MSBuildProject project)
-		{
-			foreach (MSBuildItem packageReference in project.GetAllItems ().Where (item => item.Name == "PackageReference")) {
-				string version = packageReference.Metadata.GetValue ("Version");
-				if (version != null) {
-					version = StringParserService.Parse (version, Parameters);
-					packageReference.Metadata.SetValue ("Version", version);
+				if (IsSupportedParameter ("FSharpNetCoreLibrary") || IsSupportedParameter ("RazorPages")) {
+					Parameters ["UseNetCore20"] = "true";
+				} else {
+					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
+					if (highestFramework != null && highestFramework.IsNetCoreApp20 ()) {
+						Parameters ["UseNetCore20"] = "true";
+					} else {
+						Parameters ["UseNetCore1x"] = "true";
+					}
 				}
+				ConfigureDefaultNetCoreAppFramework ();
 			}
 		}
 
-		void CreateFilesFromTemplate (string projectDirectory, string projectName, Solution solution)
+		/// <summary>
+		/// Framework needs to be specified for .NET Core library projects if only one runtime/sdk
+		/// is available. Otherwise .NETStandard will be used for the target framework of the project.
+		/// </summary>
+		void ConfigureDefaultNetCoreAppFramework ()
 		{
-			string projectTemplateName = Parameters["Template"];
-
-			string[] files = Parameters["Files"].Split ('|');
-
-			var project = new DummyProject (projectName) {
-				BaseDirectory = projectDirectory
-			};
-			FileTemplateProcessor.CreateFilesFromTemplate (project, solution.RootFolder, projectTemplateName, files);
-		}
-
-		void RemoveProjectFromSolution (DotNetProject project)
-		{
-			project.ParentFolder.Items.Remove (project);
-			project.Dispose ();
-		}
-
-		SolutionFolder AddSolutionFoldersToSolution (Solution solution)
-		{
-			return solution.AddSolutionFolder ("src");
-		}
-
-		async Task CreateProject (Solution solution, SolutionFolder srcFolder, bool newSolution = true)
-		{
-			string projectName = Parameters["UserDefinedProjectName"];
-			DotNetProject project = await CreateProject (solution, projectName);
-			srcFolder.AddItem (project);
-
-			if (newSolution) {
-				solution.StartupItem = project;
-				solution.GenerateDefaultProjectConfigurations (project);
-			} else {
-				solution.EnsureConfigurationHasBuildEnabled (project);
-			}
-
-			UpdateDefaultRunConfiguration (project);
-
-			if (Parameters.GetBoolValue ("CreateWebRoot")) {
-				FilePath webRootDirectory = project.BaseDirectory.Combine ("wwwroot");
-				Directory.CreateDirectory (webRootDirectory);
-			}
-
-			if (IsWebProject ())
-				RemoveProjectDirectoryCreatedByNewProjectDialog (solution.BaseDirectory, projectName);
-
-			await IdeApp.ProjectOperations.SaveAsync (solution);
-
-			OpenProjectFile (project);
-
-			RestorePackages (project);
-		}
-
-		void UpdateDefaultRunConfiguration (DotNetProject project)
-		{
-			if (!Parameters.GetBoolValue ("ExternalConsole"))
+			if (!IsSupportedParameter ("NetCoreLibrary"))
 				return;
 
-			var runConfig = project.GetDefaultRunConfiguration () as ProcessRunConfiguration;
-			if (runConfig != null)
-				runConfig.ExternalConsole = true;
-		}
-
-		void RemoveProjectDirectoryCreatedByNewProjectDialog (FilePath parentDirectory, string projectName)
-		{
-			FilePath projectDirectory = parentDirectory.Combine (projectName);
-			EmptyDirectoryRemover.Remove (projectDirectory);
-		}
-
-		void OpenProjectFile (DotNetProject project)
-		{
-			FilePath fileName = project.BaseDirectory.Combine (Parameters["OpenFile"]);
-			IdeApp.Workbench.OpenDocument (fileName, project, true);
-		}
-
-		void RestorePackages (DotNetProject project)
-		{
-			ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
-			var action = new RestoreNuGetPackagesInDotNetCoreProject (project);
-			action.ReloadProject = true;
-			PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
+			var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
+			if (highestFramework != null) {
+				Parameters ["framework"] = highestFramework.Id.GetShortFrameworkName ();
+			} else {
+				Parameters ["framework"] = "netcoreapp1.1";
+			}
 		}
 	}
 }

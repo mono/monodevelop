@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.DotNetCore
@@ -38,6 +37,7 @@ namespace MonoDevelop.DotNetCore
 
 			MSBuildSDKsPath = sdkPaths.MSBuildSDKsPath;
 			IsInstalled = !string.IsNullOrEmpty (MSBuildSDKsPath);
+			Versions = sdkPaths.SdkVersions ?? new DotNetCoreVersion [0];
 
 			if (!IsInstalled)
 				LoggingService.LogInfo (".NET Core SDK not found.");
@@ -45,6 +45,8 @@ namespace MonoDevelop.DotNetCore
 
 		public static bool IsInstalled { get; private set; }
 		public static string MSBuildSDKsPath { get; private set; }
+
+		internal static DotNetCoreVersion[] Versions { get; private set; }
 
 		internal static void EnsureInitialized ()
 		{

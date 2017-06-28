@@ -252,12 +252,7 @@ namespace MonoDevelop.Core.Assemblies
 				TargetFrameworkBackend backend;
 				if (frameworkBackends.TryGetValue (fx.Id, out backend))
 					return backend;
-				backend = fx.CreateBackendForRuntime (this);
-				if (backend == null) {
-					backend = CreateBackend (fx);
-					if (backend == null)
-						backend = new NotSupportedFrameworkBackend ();
-				}
+				backend = CreateBackend (fx) ?? new NotSupportedFrameworkBackend ();
 				backend.Initialize (this, fx);
 				frameworkBackends[fx.Id] = backend;
 				return backend;

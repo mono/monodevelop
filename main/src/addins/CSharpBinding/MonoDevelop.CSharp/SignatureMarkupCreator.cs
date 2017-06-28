@@ -118,6 +118,22 @@ namespace MonoDevelop.CSharp
 			}
 			if (type.TypeKind == TypeKind.Pointer)
 				return GetTypeReferenceString (((IPointerTypeSymbol)type).PointedAtType, highlight) + "*";
+			if (type.IsTupleType ()) {
+				var sb = new StringBuilder ();
+				sb.Append ("(");
+				foreach (var member in type.GetMembers ().OfType<IFieldSymbol> ()) {
+					if (member.CorrespondingTupleField == null ||
+						member.CorrespondingTupleField == member)
+						continue;
+					if (sb.Length > 1)
+						sb.Append (", ");
+					sb.Append (GetTypeReferenceString (member.Type));
+					sb.Append (" ");
+					sb.Append (Ambience.EscapeText (member.Name));
+				}
+				sb.Append (")");
+				return sb.ToString ();
+			}
 			string displayString;
 			if (ctx != null) {
 				SemanticModel model = SemanticModel;
@@ -136,6 +152,9 @@ namespace MonoDevelop.CSharp
 			} else {
 				displayString = type.ToDisplayString (MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat);
 			}
+
+			if (ICSharpCode.NRefactory6.CSharp.Completion.ObjectCreationContextHandler.primitiveTypesKeywords.Contains (displayString))
+				return Highlight (displayString, GetThemeColor (keywordType));
 			var text = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (displayString);
 			return highlight ? HighlightSemantically (text, GetThemeColor (userTypes)) : text;
 		}
@@ -236,6 +255,7 @@ namespace MonoDevelop.CSharp
 		const string modifierColor      = "storage.modifier.source.cs";
 		const string keywordDeclaration = "storage.type.source.cs";
 		const string keywordOther       = "keyword.other.source.cs";
+		const string keywordType        = "keyword.type.source.cs";
 		const string keywordOperator    = "keyword.operator.source.cs";
 		const string keywordConstant    = "constant.language.source.cs";
 		const string userTypes = "entity.name.type.class.source.cs";
@@ -481,7 +501,7 @@ namespace MonoDevelop.CSharp
 				return GetDelegateMarkup ((INamedTypeSymbol)t);
 			if (t.TypeKind == TypeKind.TypeParameter)
 				return GetTypeParameterMarkup (t);
-			if (t.TypeKind == TypeKind.Array || t.TypeKind == TypeKind.Pointer)
+			if (t.TypeKind == TypeKind.Array || t.TypeKind == TypeKind.Pointer || t.IsTupleType)
 				return GetTypeReferenceString (t);
 			if (t.IsNullable ())
 				return GetNullableMarkup (t);

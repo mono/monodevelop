@@ -37,6 +37,7 @@ namespace MonoDevelop.PackageManagement
 		public void Run (string initialSearch = null)
 		{
 			try {
+				PackageManagementCredentialService.Reset ();
 				bool configurePackageSources = false;
 				do {
 					using (AddPackagesDialog dialog = CreateDialog (initialSearch)) {

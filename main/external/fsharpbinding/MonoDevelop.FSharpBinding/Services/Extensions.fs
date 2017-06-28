@@ -2,6 +2,7 @@
 open System
 open System.Text
 open System.IO
+open System.Threading.Tasks
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Core
 open ExtCore
@@ -238,10 +239,6 @@ module AsyncChoiceCE =
                 | Success x -> return! binder x
             }
 
-module Async =
-    let inline startAsPlainTask (work : Async<unit>) =
-        System.Threading.Tasks.Task.Factory.StartNew(fun () -> work |> Async.RunSynchronously)
-
 module LoggingService =
     let inline private log f = Printf.kprintf f
     //let logDebug format = log (log LoggingService.LogDebug "[F# Addin] %s") format
@@ -249,3 +246,34 @@ module LoggingService =
     let logError format = log LoggingService.LogError format
     let logInfo format = log LoggingService.LogInfo format
     let logWarning format = log LoggingService.LogWarning format
+
+type RetryBuilder(max) = 
+  member x.Return(a) = a               // Enable 'return'
+  member x.Delay(f) = f                // Gets wrapped body and returns it (as it is)
+                                       // so that the body is passed to 'Run'
+  member x.Zero() = failwith "Zero"    // Support if .. then 
+  member x.Run(f) =                    // Gets function created by 'Delay'
+    let rec loop(n) = 
+      if n = 0 then failwith "Failed"  // Number of retries exceeded
+      else try f() with _ -> loop(n-1)
+    loop max
+
+[<AutoOpen>]
+module Retry =
+    let retry = RetryBuilder(3)
+
+module Async =
+    let inline startAsPlainTask (work : Async<unit>) =
+        System.Threading.Tasks.Task.Factory.StartNew(fun () -> work |> Async.RunSynchronously)
+
+    let inline awaitPlainTask (task: Task) = 
+        task.ContinueWith (fun task -> if task.IsFaulted then raise task.Exception)
+        |> Async.AwaitTask
+
+[<AutoOpen>]
+module AsyncTaskBind =
+    type Microsoft.FSharp.Control.AsyncBuilder with
+        member x.Bind(computation:Task<'T>, binder:'T -> Async<'R>) =  x.Bind(Async.AwaitTask computation, binder)
+        member x.ReturnFrom(computation:Task<'T>) = x.ReturnFrom(Async.AwaitTask computation)
+        member x.Bind(computation:Task, binder:unit -> Async<unit>) =  x.Bind(Async.awaitPlainTask computation, binder)
+        member x.ReturnFrom(computation:Task) = x.ReturnFrom(Async.awaitPlainTask computation)

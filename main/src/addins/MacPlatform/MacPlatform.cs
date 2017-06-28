@@ -198,14 +198,14 @@ namespace MonoDevelop.MacIntegration
 
 		internal static void OpenUrl (string url)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				NSWorkspace.SharedWorkspace.OpenUrl (new NSUrl (url));
 			});
 		}
 
 		public override void OpenFile (string filename)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				NSWorkspace.SharedWorkspace.OpenFile (filename);
 			});
 		}
@@ -912,7 +912,11 @@ namespace MonoDevelop.MacIntegration
 			var toplevels = GtkQuartz.GetToplevels ();
 
 			// Check GtkWindow's Modal flag or for a visible NSPanel
-			return toplevels.Any (t => (t.Value != null && t.Value.Modal && t.Value.Visible) || (t.Key.IsVisible && (t.Key is NSPanel)));
+			var ret = toplevels
+				.Where (x => !x.Key.DebugDescription.StartsWith ("<_NSFullScreenTileDividerWindow", StringComparison.Ordinal))
+				.Any (t => (t.Value != null && t.Value.Modal && t.Value.Visible));
+
+			return ret;
 		}
 
 		internal override void AddChildWindow (Gtk.Window parent, Gtk.Window child)

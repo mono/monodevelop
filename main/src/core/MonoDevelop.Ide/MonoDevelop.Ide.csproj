@@ -132,6 +132,10 @@
     <Reference Include="System.Design" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\packages\System.Threading.Tasks.Dataflow.4.7.0\lib\netstandard1.0\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
@@ -141,6 +145,10 @@
     <Reference Include="WindowsBase" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="WindowsFormsIntegration" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="System.Xaml" />
+    <Reference Include="Microsoft.VisualStudio.Composition, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Composition.15.3.38\lib\net45\Microsoft.VisualStudio.Composition.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.CoreUtility">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.CoreUtility.15.0.26201\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
     </Reference>
@@ -152,6 +160,10 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.UI">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.UI.15.0.26201\lib\net45\Microsoft.VisualStudio.Text.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Validation, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Validation.15.3.15\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="ICSharpCode.SharpZipLib">
@@ -172,14 +184,22 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.2.3.0-beta1\lib\net46\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.EditorFeatures.Text">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.EditorFeatures.Text.2.3.0-beta1\lib\net46\Microsoft.CodeAnalysis.EditorFeatures.Text.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="System.Composition.AttributedModel">
-      <HintPath>..\..\..\build\bin\System.Composition.AttributedModel.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Composition.AttributedModel.1.0.31\lib\netstandard1.0\System.Composition.AttributedModel.dll</HintPath>
     </Reference>
     <Reference Include="System.Composition.Runtime">
-      <HintPath>..\..\..\build\bin\System.Composition.Runtime.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Composition.Runtime.1.0.31\lib\netstandard1.0\System.Composition.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="YamlDotNet">
       <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
@@ -190,22 +210,22 @@
     </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="Microsoft.TemplateEngine.Abstractions">
-      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Abstractions.1.0.0-beta1-20170223-126\lib\net45\Microsoft.TemplateEngine.Abstractions.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Abstractions.1.0.0-beta2-20170523-241\lib\net45\Microsoft.TemplateEngine.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TemplateEngine.Core.Contracts">
-      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Core.Contracts.1.0.0-beta1-20170223-126\lib\net45\Microsoft.TemplateEngine.Core.Contracts.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Core.Contracts.1.0.0-beta2-20170523-241\lib\net45\Microsoft.TemplateEngine.Core.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TemplateEngine.Utils">
-      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Utils.1.0.0-beta1-20170223-126\lib\net45\Microsoft.TemplateEngine.Utils.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Utils.1.0.0-beta2-20170523-241\lib\net45\Microsoft.TemplateEngine.Utils.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TemplateEngine.Core">
-      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Core.1.0.0-beta1-20170223-126\lib\net45\Microsoft.TemplateEngine.Core.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Core.1.0.0-beta2-20170523-241\lib\net45\Microsoft.TemplateEngine.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TemplateEngine.Orchestrator.RunnableProjects">
-      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Orchestrator.RunnableProjects.1.0.0-beta1-20170223-126\lib\net45\Microsoft.TemplateEngine.Orchestrator.RunnableProjects.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Orchestrator.RunnableProjects.1.0.0-beta2-20170523-241\lib\net45\Microsoft.TemplateEngine.Orchestrator.RunnableProjects.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TemplateEngine.Edge">
-      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Edge.1.0.0-beta1-20170223-126\lib\net45\Microsoft.TemplateEngine.Edge.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Edge.1.0.0-beta2-20170523-241\lib\net45\Microsoft.TemplateEngine.Edge.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -248,17 +268,9 @@
       <Project>{FEC19BDA-4904-4005-8C09-68E82E8BEF6A}</Project>
       <Name>Mono.Addins.Gui</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\cecil\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
       <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
       <Name>Mono.Debugging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\ikvm\reflect\IKVM.Reflection.csproj">
-      <Project>{4CB170EF-DFE6-4A56-9E1B-A85449E827A7}</Project>
-      <Name>IKVM.Reflection</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
       <Project>{2B8F4F83-C2B3-4E84-A27B-8DEE1BE0E006}</Project>
@@ -8231,6 +8243,12 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\VisualStudioStyle.json">
       <LogicalName>VisualStudioStyle.json</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\HCLightStyle.json">
+      <LogicalName>HCLightStyle.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\HCDarkStyle.json">
+      <LogicalName>HCDarkStyle.json</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\C#.sublime-syntax">
       <LogicalName>C#.sublime-syntax</LogicalName>
     </EmbeddedResource>
@@ -8354,6 +8372,9 @@
     <EmbeddedResource Include="icons\prefs-metadata-16~sel%402x.png">
       <LogicalName>prefs-metadata-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Markdown\Markdown.sublime-syntax">
+      <LogicalName>Markdown.sublime-syntax</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -8365,6 +8386,7 @@
     <Compile Include="MonoDevelop.Ide.Commands\ToolsCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\ViewCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\WindowCommands.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBindingService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\BackgroundProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StatusProgressMonitor.cs" />
@@ -9413,6 +9435,8 @@
     <Compile Include="MonoDevelop.Ide.Codons\TemplateExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\HasReferenceFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\RoslynClassificationHighlighting.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\LanguageCellRenderer.cs" />
+    <Compile Include="MonoDevelop.Components\RestartPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9453,11 +9477,12 @@
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\language-configuration.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\package.json" />
   </ItemGroup>
-  <Import Project="..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems" Label="Shared" Condition="Exists('..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems')" />
+  <Import Project="..\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems" Label="Shared" Condition="Exists('..\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems')" />
   <ItemGroup>
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Components\Xwt\" />
     <Folder Include="MonoDevelop.Components.AtkCocoaHelper\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Markdown\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

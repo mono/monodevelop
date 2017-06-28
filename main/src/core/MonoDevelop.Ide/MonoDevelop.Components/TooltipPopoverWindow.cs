@@ -135,8 +135,7 @@ namespace MonoDevelop.Components
 			if (label == null)
 				return;
 			
-			string msg = hasMarkup ? text : GLib.Markup.EscapeText (text);
-			if (string.IsNullOrEmpty (msg)) {
+			if (string.IsNullOrEmpty (text)) {
 				label.Text = String.Empty;
 				return;
 			}
@@ -160,9 +159,9 @@ namespace MonoDevelop.Components
 				label.TextColor = Styles.PopoverWindow.DefaultTextColor;
 
 			if (hasMarkup)
-				label.Markup = msg;
+				label.Markup = text;
 			else
-				label.Text = msg;
+				label.Text = text;
 		}
 
 		void AdjustSize ()

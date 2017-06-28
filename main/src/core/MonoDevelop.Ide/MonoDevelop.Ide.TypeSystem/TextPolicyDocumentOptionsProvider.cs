@@ -93,6 +93,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				value = null;
 				return false;
 			}
+
+			public bool TryGetDocumentOption (Document document, OptionKey option, OptionSet underlyingOptions, out object value)
+			{
+				return TryGetDocumentOption (document, option, out value);
+			}
 		}
 	}
 }

@@ -30,8 +30,6 @@ using System.Collections.Generic;
 using System.Xml;
 
 using MonoDevelop.Core;
-using System.Xml.Linq;
-using Microsoft.Build.BuildEngine;
 using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects.MSBuild

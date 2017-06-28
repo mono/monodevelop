@@ -315,7 +315,7 @@ namespace MonoDevelop.Ide
 		}
 		
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
-		public static void OpenFiles (IEnumerable<FileOpenInformation> files)
+		public static async void OpenFiles (IEnumerable<FileOpenInformation> files)
 		{
 			if (!files.Any ())
 				return;
@@ -331,37 +331,39 @@ namespace MonoDevelop.Ide
 			}
 			
 			var filteredFiles = new List<FileOpenInformation> ();
-			
-			//open the firsts sln/workspace file, and remove the others from the list
-		 	//FIXME: can we handle multiple slns?
-			bool foundSln = false;
+			bool closeCurrent = true;
+
 			foreach (var file in files) {
 				if (Services.ProjectService.IsWorkspaceItemFile (file.FileName) ||
 				    Services.ProjectService.IsSolutionItemFile (file.FileName)) {
-					if (!foundSln) {
-						try {
-							Workspace.OpenWorkspaceItem (file.FileName);
-							foundSln = true;
-						} catch (Exception ex) {
-							MessageService.ShowError (GettextCatalog.GetString ("Could not load solution: {0}", file.FileName), ex);
-						}
+					try {
+						// Close the current solution, but only for the first solution we open.
+						// If more than one solution is specified in the list we want to open all them together.
+						await Workspace.OpenWorkspaceItem (file.FileName, closeCurrent);
+						closeCurrent = false;
+					} catch (Exception ex) {
+						MessageService.ShowError (GettextCatalog.GetString ("Could not load solution: {0}", file.FileName), ex);
 					}
 				} else {
 					filteredFiles.Add (file);
 				}
 			}
-			
+
+			// Wait for active load operations to be finished (there might be a solution already being loaded
+			// when OpenFiles was called). This will ensure that files opened as part of the solution status
+			// restoration won't steal the focus from the files we are explicitly loading here.
+			await Workspace.CurrentWorkspaceLoadTask;
+
 			foreach (var file in filteredFiles) {
-				try {
-					Workbench.OpenDocument (file.FileName, null, file.Line, file.Column, file.Options);
-				} catch (Exception ex) {
-					MessageService.ShowError (GettextCatalog.GetString ("Could not open file: {0}", file.FileName), ex);
-				}
+				Workbench.OpenDocument (file.FileName, null, file.Line, file.Column, file.Options).ContinueWith (t => {
+					if (t.IsFaulted)
+						MessageService.ShowError (GettextCatalog.GetString ("Could not open file: {0}", file.FileName), t.Exception);
+				}, TaskScheduler.FromCurrentSynchronizationContext ()).Ignore ();
 			}
-			
+
 			Workbench.Present ();
 		}
-		
+
 		static bool FileServiceErrorHandler (string message, Exception ex)
 		{
 			MessageService.ShowError (message, ex);
@@ -429,6 +431,96 @@ namespace MonoDevelop.Ide
 			}
 			return false;
 		}
+
+		static int idleActionsDisabled = 0;
+		static Queue<Action> idleActions = new Queue<Action> ();
+
+		/// <summary>
+		/// Runs an action when the IDE is idle, that is, when the user is not performing any action.
+		/// </summary>
+		/// <param name="action">Action to execute</param>
+		/// <remarks>
+		/// This method should be used, for example, to show a notification to the user. The method will ensure
+		/// that the dialog is shown when the user is not interacting with the IDE.
+		/// </remarks>
+		public static void RunWhenIdle (Action action)
+		{
+			Runtime.AssertMainThread ();
+			idleActions.Enqueue (action);
+
+			if (idleActionsDisabled == 0)
+				DispatchIdleActions ();
+		}
+
+		/// <summary>
+		/// Prevents the execution of idle actions
+		/// </summary>
+		public static void DisableIdleActions ()
+		{
+			Runtime.AssertMainThread ();
+			idleActionsDisabled++;
+		}
+
+		/// <summary>
+		/// Resumes the execution of idle actions
+		/// </summary>
+		public static void EnableIdleActions ()
+		{
+			Runtime.AssertMainThread ();
+
+			if (idleActionsDisabled == 0) {
+				LoggingService.LogError ("EnableIdleActions() call without corresponding DisableIdleActions() call");
+				return;
+			}
+
+			if (--idleActionsDisabled == 0 && idleActions.Count > 0) {
+				// After enabling idle actions, run them after a short pause, so for example if they were disabled
+				// by the main menu, the actions won't execute right away after closing
+				DispatchIdleActions (500);
+			}
+		}
+
+		static void DispatchIdleActions (int withMsDelay = 0)
+		{
+			if (withMsDelay > 0) {
+				Xwt.Application.TimeoutInvoke (withMsDelay, () => { DispatchIdleActions (0); return false; });
+				return;
+			}
+
+			// If idle actions are disabled, this method will be called again when they are re-enabled.
+			if (idleActionsDisabled > 0 || idleActions.Count == 0)
+				return;
+
+			// If a modal dialog is open, try again later
+			if (DesktopService.IsModalDialogRunning ()) {
+				DispatchIdleActions (1000);
+				return;
+			}
+
+			// If the user interacted with the IDE just a moment ago, wait a bit more time before
+			// running the action
+			var interactionSpan = (int)(DateTime.Now - commandService.LastUserInteraction).TotalMilliseconds;
+			if (interactionSpan < 500) {
+				DispatchIdleActions (500 - interactionSpan);
+				return;
+			}
+
+			var action = idleActions.Dequeue ();
+
+			// Disable idle actions while running an idle action
+			idleActionsDisabled++;
+			try {
+				action ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Idle action execution failed", ex);
+			}
+			idleActionsDisabled--;
+
+			// If there are more actions to execute, do it after a short pause
+			if (idleActions.Count > 0)
+				DispatchIdleActions (500);
+		}
+
 		
 		internal static bool OnExit ()
 		{

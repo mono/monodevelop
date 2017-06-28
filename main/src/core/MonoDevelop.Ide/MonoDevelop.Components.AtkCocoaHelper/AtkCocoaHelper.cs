@@ -40,15 +40,65 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 	{
 		public static void SetCommonAttributes (this Atk.Object o, string name, string label, string help)
 		{
-			o.Name = name;
-			o.Description = help;
-			o.SetLabel (label);
+			if (!string.IsNullOrEmpty (name)) {
+				o.Name = name;
+			}
+			if (!string.IsNullOrEmpty (help)) {
+				o.Description = help;
+			}
+			if (!string.IsNullOrEmpty (label)) {
+				o.SetLabel (label);
+			}
+		}
+
+		public static void SetCommonAttributes (this Xwt.Accessibility.Accessible o, string name, string label, string help)
+		{
+			if (!string.IsNullOrEmpty (name)) {
+				o.Identifier = name;
+			}
+
+			if (!string.IsNullOrEmpty (label)) {
+				o.Label = label;
+			}
+
+			if (!string.IsNullOrEmpty (help)) {
+				o.Description = help;
+			}
+		}
+
+		public static void SetCommonAccessibilityAttributes (this Xwt.Widget w, string name, Xwt.Widget label, string help)
+		{
+			w.Accessible.SetCommonAttributes (name, null, help);
+			if (label != null) {
+				// FIXME Add relationship to Xwt
+			}
+		}
+
+		public static void SetCommonAccessibilityAttributes (this Xwt.Widget w, string name, string label, string help)
+		{
+			w.Accessible.SetCommonAttributes (name, label, help);
 		}
 
 		public static void SetCommonAccessibilityAttributes (this Gtk.Widget w, string name, string label, string help)
 		{
 			var accessible = w.Accessible;
 			accessible.SetCommonAttributes (name, label, help);
+		}
+
+		public static void SetCommonAccessibilityAttributes (this Gtk.Widget w, string name, Gtk.Widget label, string help)
+		{
+			var accessible = w.Accessible;
+			accessible.SetCommonAttributes (name, null, help);
+
+			if (label != null) {
+				w.SetAccessibilityLabelRelationship (label);
+			}
+		}
+
+		public static void SetAccessibilityLabelRelationship (this Gtk.Widget w, Gtk.Widget label)
+		{
+			w.Accessible.SetTitleUIElement (label.Accessible);
+			label.Accessible.SetTitleFor (w.Accessible);
 		}
 	}
 
@@ -77,7 +127,9 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			AXColumn,
 			AXGroup,
 			AXImage,
+			AXLink,
 			AXMenuButton,
+			AXPopUpButton,
 			AXRadioButton,
 			AXRow,
 			AXRuler,

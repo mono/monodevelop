@@ -278,14 +278,6 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
 
     member x.Checker = checker
 
-    member x.RemoveFromProjectInfoCache(projFilename:string, ?properties) =
-        let properties = defaultArg properties ["Configuration", "Debug"]
-        let key = (projFilename, properties)
-        LoggingService.logDebug "LanguageService: Removing %s from projectInfoCache" projFilename
-        match (!projectInfoCache).TryExtract(key) with
-        | Some _extractee, cache -> projectInfoCache := cache
-        | None, _unchangedCache -> ()
-
     member x.ClearProjectInfoCache() =
         LoggingService.logDebug "LanguageService: Clearing ProjectInfoCache"
         projectInfoCache := ExtCore.Caching.LruCache.create 50u
@@ -332,7 +324,11 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
         Some opts
 
-    member x.GetProjectOptionsFromProjectFile(project:DotNetProject) =
+    member x.GetProjectOptionsFromProjectFile(project:DotNetProject, ?referencedAssemblies) =
+        let getReferencedAssemblies() =
+            retry { return (project.GetReferencedAssemblies(CompilerArguments.getConfig())).Result }
+
+        let referencedAssemblies = defaultArg referencedAssemblies (getReferencedAssemblies())
         let config =
             match IdeApp.Workspace with
             | null -> ConfigurationSelector.Default
@@ -344,9 +340,8 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         let getReferencedProjects (project:DotNetProject) =
             project.GetReferencedAssemblyProjects config
             |> Seq.filter (fun p -> p <> project && p.SupportedLanguages |> Array.contains "F#")
-
         let rec getOptions referencedProject =
-            let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject
+            let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject referencedAssemblies
             match projectOptions with
             | Some projOptions ->
                 let referencedProjectOptions =
@@ -363,14 +358,14 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         projectOptions
                 
     member x.TryGetProjectCheckerOptionsFromCache(projFilename, ?properties) : FSharpProjectOptions option =
-        let properties = defaultArg properties ["Configuration", "Debug"]
+        let properties = defaultArg properties ["Configuration", IdeApp.Workspace.ActiveConfigurationId]
         let key = (projFilename, properties)
         let entry, _ = (!projectInfoCache).TryFind (key)
         entry
 
     /// Constructs options for the interactive checker for a project under the given configuration.
     member x.GetProjectCheckerOptions(projFilename, ?properties) : FSharpProjectOptions option =
-        let properties = defaultArg properties ["Configuration", "Debug"]
+        let properties = defaultArg properties ["Configuration", IdeApp.Workspace.ActiveConfigurationId]
         let key = (projFilename, properties)
 
         lock projectInfoCache (fun () ->

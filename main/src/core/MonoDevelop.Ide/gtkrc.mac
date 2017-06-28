@@ -83,6 +83,9 @@ style "default" {
 
     GtkCheckButton::indicator-size = 14
     GtkCheckButton::indicator-spacing = 4
+    GtkCheckButton::interior-focus = 0
+
+    GtkRadioButton::interior-focus = 0
 
     GtkTreeView::odd-row-color = "#fafafa"
 

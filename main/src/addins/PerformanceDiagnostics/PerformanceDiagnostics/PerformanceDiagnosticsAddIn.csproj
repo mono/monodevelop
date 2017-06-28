@@ -34,6 +34,14 @@
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Xamarin.Mac">
+      <HintPath>..\..\..\..\external\Xamarin.Mac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -42,6 +50,10 @@
     <Compile Include="Commands.cs" />
     <Compile Include="Properties\AddinInfo.cs" />
     <Compile Include="Options.cs" />
+    <Compile Include="LeakHelpers.cs" />
+    <Compile Include="LeakTrackerPad.cs" />
+    <Compile Include="LeakTrackerEnabledCondition.cs" />
+    <Compile Include="LeakSummaryService.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\PerformanceDiagnostics.addin.xml">
@@ -68,6 +80,9 @@
       <Project>{3FDB97B5-916E-4817-8098-41659687A8FF}</Project>
       <Name>UIThreadMonitorDaemon</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

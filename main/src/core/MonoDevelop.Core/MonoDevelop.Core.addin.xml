@@ -68,16 +68,6 @@
 		<ExtensionNode name = "Class" objectType = "MonoDevelop.Core.IWebCertificateProvider" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/Core/Frameworks">
-		<Description>Target frameworks.</Description>
-		<ExtensionNode name="Framework" type="MonoDevelop.Core.AddIns.TargetFrameworkNode" objectType="MonoDevelop.Core.Assemblies.TargetFramework">
-			<Description>Definition of a framework. The list of assemblies of the framework is defined in the referenced resource file.</Description>
-			<ExtensionNode name="Backend" objectType="MonoDevelop.Core.Assemblies.TargetFrameworkBackend">
-				<Description>A framework backend. Provides support for a framework for a runtime.</Description>
-			</ExtensionNode>
-		</ExtensionNode>
-	</ExtensionPoint>
-	
 	<ExtensionPoint path = "/MonoDevelop/Core/UserDataMigration">
 		<Description>Defines data to be migrated from the previous version of MonoDevelop.</Description>
 		<ExtensionNode name="Migration" type="MonoDevelop.Core.AddIns.UserDataMigrationNode" />
@@ -179,17 +169,6 @@
 	<Extension path = "/MonoDevelop/Core/Runtimes">
 		<Class class="MonoDevelop.Core.Assemblies.MsNetTargetRuntimeFactory"/>
 		<Class class="MonoDevelop.Core.Assemblies.MonoTargetRuntimeFactory"/>
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Core/Frameworks">
-		<Framework id="Net_1.1" resource="framework_NET_1_1.xml"/>
-		<Framework id="Net_2.0" resource="framework_NET_2_0.xml"/>
-		<Framework id="Net_3.0" resource="framework_NET_3_0.xml"/>
-		<Framework id="Net_3.5" resource="framework_NET_3_5.xml"/>
-		<Framework id="Net_3.5_client" resource="framework_NET_3_5_client.xml"/>
-		<Framework id="Net_4.0" resource="framework_NET_4_0.xml"/>
-		<Framework id="Net_4.0_client" resource="framework_NET_4_0_client.xml"/>
-		<Framework id="Net_4.5" resource="framework_NET_4_5.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">

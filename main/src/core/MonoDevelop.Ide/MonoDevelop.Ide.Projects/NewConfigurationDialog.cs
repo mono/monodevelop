@@ -66,19 +66,14 @@ namespace MonoDevelop.Ide.Projects
 
 		void SetupAccessibility ()
 		{
-			comboName.SetCommonAccessibilityAttributes ("NewConfiguration.Name",
-			                                            GettextCatalog.GetString ("Name"),
+			comboName.SetCommonAccessibilityAttributes ("NewConfiguration.Name", label1,
 			                                            GettextCatalog.GetString ("Select or enter the name of the new configuration"));
-			comboName.Accessible.SetTitleUIElement (label1.Accessible);
-			label1.Accessible.SetTitleFor (comboName.Accessible);
 
 			comboPlatform.SetCommonAccessibilityAttributes ("NewConfiguration.Platform",
-			                                                GettextCatalog.GetString ("Platform"),
+			                                                label2,
 			                                                GettextCatalog.GetString ("Select or enter the platform for the new configuration"));
-			comboPlatform.Accessible.SetTitleUIElement (label2.Accessible);
-			label2.Accessible.SetTitleFor (comboPlatform.Accessible);
 
-			createChildrenCheck.SetCommonAccessibilityAttributes ("NewConfiguration.CreateCheck", null,
+			createChildrenCheck.SetCommonAccessibilityAttributes ("NewConfiguration.CreateCheck", "",
 			                                                      GettextCatalog.GetString ("Check to create configurations for all the solution items"));
 		}
 

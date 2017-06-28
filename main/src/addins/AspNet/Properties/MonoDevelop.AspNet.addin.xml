@@ -59,7 +59,7 @@
 		<Import file = "Templates/JsonFileTemplate.json"/>
 		<Import file = "Templates/PreprocessedRazorTemplate.xft.xml" />
 		<Import file = "Templates/RouteConfig.cs"/>
-		<Import file = "Templates/StyleSheetTemplate.css"/>
+		<Import file = "Templates/StylesheetTemplate.css"/>
 		<Import file = "Templates/WebApiConfig.cs"/>
 		<Import file = "Templates/WebConfig-Application.xft.xml"/>
 		<Import file = "Templates/WebConfig-SubDir.xft.xml"/>
@@ -68,12 +68,26 @@
 		<Import file = "Templates/AspNetCore/MiddlewareClassTemplate.cs" />
 		<Import file = "Templates/AspNetCore/MvcController.xft.xml" />
 		<Import file = "Templates/AspNetCore/MvcControllerTemplate.cs" />
-		<Import file = "Templates/AspNetCore/RazorTaghelper.xft.xml" />
+		<Import file = "Templates/AspNetCore/RazorTagHelper.xft.xml" />
 		<Import file = "Templates/AspNetCore/RazorTagHelperTemplate.cs" />
 		<Import file = "Templates/AspNetCore/StartupClass.xft.xml" />
 		<Import file = "Templates/AspNetCore/StartupClassTemplate.cs" />
 		<Import file = "Templates/AspNetCore/WebApiController.xft.xml"/>
 		<Import file = "Templates/AspNetCore/WebApiControllerTemplate.cs" />
+
+		<Import file = "Templates/AspNetCore/MVCViewImportsPage.cshtml" />
+		<Import file = "Templates/AspNetCore/MVCViewImportsPage.xft.xml" />
+		<Import file = "Templates/AspNetCore/MVCViewLayoutPage.cshtml" />
+		<Import file = "Templates/AspNetCore/MVCViewLayoutPage.xft.xml" />
+		<Import file = "Templates/AspNetCore/MVCViewPage.cshtml" />
+		<Import file = "Templates/AspNetCore/MVCViewPage.xft.xml" />
+		<Import file = "Templates/AspNetCore/MVCViewStartPage.cshtml" />
+		<Import file = "Templates/AspNetCore/MVCViewStartPage.xft.xml" />
+		<Import file = "Templates/AspNetCore/RazorPage.cshtml" />
+		<Import file = "Templates/AspNetCore/RazorPage.xft.xml" />
+		<Import file = "Templates/AspNetCore/RazorPageWithPageModel.xft.xml" />
+		<Import file = "Templates/AspNetCore/RazorPageWithPageModel.cshtml" />
+		<Import file = "Templates/AspNetCore/RazorPageWithPageModel.cshtml.cs" />
 
 		<Import file = "CodeTemplates/CSharp/AddController/ControllerWithEmptyReadAndWriteActions.tt" />
 		<Import file = "CodeTemplates/CSharp/AddController/Empty.tt" />
@@ -184,6 +198,20 @@
 		              file = "Templates/AspNetCore/StartupClass.xft.xml"/>
 		<FileTemplate id   = "AspNetCoreWebApiController"
 		              file = "Templates/AspNetCore/WebApiController.xft.xml"/>
+
+		<FileTemplate id   = "AspNetCoreMVCViewImportsPage"
+		              file = "Templates/AspNetCore/MVCViewImportsPage.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreMVCViewLayoutPage"
+		              file = "Templates/AspNetCore/MVCViewLayoutPage.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreMVCViewPage"
+		              file = "Templates/AspNetCore/MVCViewPage.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreMVCViewStartPage"
+		              file = "Templates/AspNetCore/MVCViewStartPage.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreRazorPage"
+		              file = "Templates/AspNetCore/RazorPage.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreRazorPageWithPageModel"
+		              file = "Templates/AspNetCore/RazorPageWithPageModel.xft.xml"/>
+		
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">

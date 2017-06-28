@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -65,6 +66,11 @@ namespace MonoDevelop.PackageManagement
 
 		public void CheckForUpdates (ISolution solution)
 		{
+			CheckForUpdates (solution, null);
+		}
+
+		public void CheckForUpdates (ISolution solution, ISourceRepositoryProvider sourceRepositoryProvider)
+		{
 			GuiDispatch (() => {
 
 				if (taskRunner.IsRunning) {
@@ -72,7 +78,7 @@ namespace MonoDevelop.PackageManagement
 					return;
 				}
 
-				taskRunner.Start (GetProjects (solution));
+				taskRunner.Start (GetProjects (solution), sourceRepositoryProvider);
 			});
 		}
 

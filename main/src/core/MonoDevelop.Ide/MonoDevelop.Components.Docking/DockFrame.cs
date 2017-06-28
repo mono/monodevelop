@@ -1147,6 +1147,17 @@ namespace MonoDevelop.Components.Docking
 		{
 			return new Cairo.Color (color.Red / (double) ushort.MaxValue, color.Green / (double) ushort.MaxValue, color.Blue / (double) ushort.MaxValue);
 		}
+
+		protected override bool OnFocused (DirectionType direction)
+		{
+			// If there's an overlay widget, that's all we can focus
+			if (overlayWidget != null && overlayWidget.Visible) {
+				overlayWidget.ChildFocus (direction);
+				return true;
+			}
+
+			return base.OnFocused (direction);
+		}
 	}
 
 	public class DockStyle

@@ -22,7 +22,7 @@ open CompilerArguments
 // FSharp.Build.dll which finds the F# compiler and builds the compilation arguments.
 module CompilerService =
     /// Generate various command line arguments for the project
-    let private generateCmdArgs (config:DotNetProjectConfiguration, regLangVersion, configSel) =
+    let private generateCmdArgs (config:DotNetProjectConfiguration, projReferencedAssemblies, regLangVersion, configSel) =
       [ match config.CompileTarget with
         | CompileTarget.Library  -> yield "--target:library"
         | CompileTarget.Module   -> yield "--target:module"
@@ -41,7 +41,7 @@ module CompilerService =
 
         let shouldWrap = true// The compiler argument paths should always be wrapped, since some paths (ie. on Windows) may contain spaces.
         let proj = config.ParentItem
-        yield! CompilerArguments.generateCompilerOptions (proj, fsconfig, regLangVersion, CompilerArguments.getTargetFramework config.TargetFramework.Id, configSel, shouldWrap) ]
+        yield! CompilerArguments.generateCompilerOptions (proj, projReferencedAssemblies, fsconfig, regLangVersion, CompilerArguments.getTargetFramework config.TargetFramework.Id, configSel, shouldWrap) ]
 
 
     let private regParseFsOutput = Regex(@"(?<file>[^\(]*)\((?<line>[0-9]*),(?<col>[0-9]*)\):\s(?<type>[^:]*)\s(?<err>[^:]*):\s(?<msg>.*)", RegexOptions.Compiled);
@@ -49,7 +49,7 @@ module CompilerService =
     let private regParseFsOutputNoLocation = Regex(@"(?<type>[^:]*)\s(?<err>[^:]*):\s(?<msg>.*)", RegexOptions.Compiled);
 
     /// Process a single message emitted by the F# compiler
-    let private processMsg msg =
+    let processMsg msg =
         let m =
             let t1 = regParseFsOutput.Match(msg)
             if t1.Success then t1 else
@@ -164,13 +164,13 @@ module CompilerService =
 
     // ------------------------------------------------------------------------------------
     /// Compiles the specified F# project using the current configuration
-    let Compile(items, config:DotNetProjectConfiguration, configSel, monitor) : BuildResult =
+    let Compile(items, config:DotNetProjectConfiguration, projReferencedAssemblies, configSel, monitor) : BuildResult =
         let runtime = config.TargetRuntime
         let framework = config.TargetFramework
         let root = Path.GetDirectoryName(config.ParentItem.FileName.FullPath.ToString())
         let args =
             [ yield! [ "--noframework --nologo" ]
-              yield! generateCmdArgs(config, None, configSel)
+              yield! generateCmdArgs(config, projReferencedAssemblies, None, configSel)
               yield! CompilerArguments.generateOtherItems items
 
               // Generate source files
