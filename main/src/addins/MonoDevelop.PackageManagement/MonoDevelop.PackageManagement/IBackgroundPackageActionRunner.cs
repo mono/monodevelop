@@ -43,6 +43,8 @@ namespace MonoDevelop.PackageManagement
 		Task RunAsync (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions);
 		Task RunAsync (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions, bool clearConsole);
 
+		void Cancel ();
+
 		void ShowError (ProgressMonitorStatusMessage progressMessage, Exception exception);
 		void ShowError (ProgressMonitorStatusMessage progressMessage, string message);
 

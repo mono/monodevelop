@@ -39,36 +39,39 @@ namespace MonoDevelop.PackageManagement.Gui
 			Resizable = false;
 
 			var mainVBox = new VBox ();
-			mainVBox.Margin = 14;
 			Content = mainVBox;
 
 			var label = new Label ();
+			label.Margin = new WidgetSpacing (10, 10, 10, 0);
 			label.Text = GettextCatalog.GetString ("Unable to close the solution when NuGet packages are being processed.");
 			mainVBox.PackStart (label);
 
+			var middleHBox = new HBox ();
+			mainVBox.PackStart (middleHBox);
+
 			var questionLabel = new Label ();
-			questionLabel.Text = "Stop processing NuGet packages?";
-			mainVBox.PackStart (questionLabel);
+			questionLabel.Margin = 10;
+			questionLabel.Text = GettextCatalog.GetString ("Stop processing NuGet packages?");
+			middleHBox.PackStart (questionLabel);
 
 			spinner = new Spinner ();
-			mainVBox.PackStart (spinner);
+			middleHBox.PackStart (spinner);
 			spinner.Visible = false;
 
 			var bottomHBox = new HBox ();
-			bottomHBox.Margin = 0;
-			//bottomHBox.Margin = new WidgetSpacing (8, 5, 14, 10);
-			bottomHBox.Spacing = 5;
+			bottomHBox.Margin = new WidgetSpacing (5, 10, 5, 0);
+			bottomHBox.Spacing = 10;
 			mainVBox.PackStart (bottomHBox);
 
 			yesButton = new Button ();
-			//stopButton.MinWidth = 120;
-			//stopButton.MinHeight = 25;
+			yesButton.MinWidth = 120;
+			yesButton.MinHeight = 25;
 			yesButton.Label = GettextCatalog.GetString ("Yes");
 			bottomHBox.PackEnd (yesButton);
 
 			var noButton = new Button ();
-			//cancelButton.MinWidth = 120;
-			//cancelButton.MinHeight = 25;
+			noButton.MinWidth = 120;
+			noButton.MinHeight = 25;
 			noButton.Label = GettextCatalog.GetString ("No");
 			noButton.Clicked += (sender, e) => Close ();
 			bottomHBox.PackEnd (noButton);

@@ -25,14 +25,15 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.PackageManagement.Gui;
 using MonoDevelop.Projects;
 using NuGet.Common;
-using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -131,8 +132,10 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			try {
 				if (PackageManagementServices.BackgroundPackageActionRunner.IsRunning) {
-					MessageService.ShowMessage (GettextCatalog.GetString ("Unable to close the solution when NuGet packages are being processed."));
-					e.Cancel = true;
+					using (var dialog = new SolutionClosingDialog ()) {
+						dialog.ShowWithParent ();
+						e.Cancel = dialog.KeepSolutionOpen;
+					}
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error on unloading workspace item.", ex);

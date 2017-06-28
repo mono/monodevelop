@@ -59,13 +59,9 @@ namespace MonoDevelop.PackageManagement.Gui
 			timer = CreateTimer ();
 		}
 
-		int count; 
-
 		void CloseIfNotRunningNuGetActions ()
 		{
 			if (!PackageManagementServices.BackgroundPackageActionRunner.IsRunning) {
-			//++count;
-			//if (count > 10) {
 				KeepSolutionOpen = false;
 				Close ();
 			}
