@@ -27,6 +27,10 @@ namespace MonoDevelop.CSharp.Completion
 			var hintingData = new ConcurrentBag<ParameterHintingData> ();
 			foreach (var provider in providers) {
 				try {
+					if (triggerInfo.TriggerReason == SignatureHelpTriggerReason.TypeCharCommand && !provider.IsTriggerCharacter (triggerInfo.TriggerCharacter.Value))
+						continue;
+					if (triggerInfo.TriggerReason == SignatureHelpTriggerReason.RetriggerCommand && !provider.IsRetriggerCharacter (triggerInfo.TriggerCharacter.Value))
+						continue;
 					var signatureHelpItems = await provider.GetItemsAsync (document, position, triggerInfo, token).ConfigureAwait (false);
 					if (signatureHelpItems == null)
 						continue;

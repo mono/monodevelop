@@ -326,8 +326,6 @@
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\ITextPasteHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\NullIStateMachineIndentEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\TextPasteIndentEngine.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\IParameterHintingData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\ParameterHintingResult.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\ParameterUtil.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\SemanticHighlighting\SemanticHighlightingVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\CSharpEditorFormattingService.cs" />
