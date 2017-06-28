@@ -42,24 +42,24 @@ namespace MonoDevelop.CSharp.Completion
 			var tt = new TooltipInformation ();
 			var markup = new StringBuilder ();
 			var theme = DefaultSourceEditorOptions.Instance.GetEditorTheme ();
-			AppendTaggedText (markup, theme, Item.PrefixDisplayParts);
+			markup.AppendTaggedText (theme, Item.PrefixDisplayParts);
 			for (int i = 0; i < Item.Parameters.Length; i++) {
 				if (i > 0) {
-					AppendTaggedText (markup, theme, Item.SeparatorDisplayParts);
+					markup.AppendTaggedText (theme, Item.SeparatorDisplayParts);
 				}
 				var p = Item.Parameters [i];
 				if (i == currentParameter)
 					markup.Append ("<b>");
-				AppendTaggedText (markup, theme, p.DisplayParts);
+				markup.AppendTaggedText (theme, p.DisplayParts);
 				if (i == currentParameter)
 					markup.Append ("</b>");
 			}
-			AppendTaggedText (markup, theme, Item.SuffixDisplayParts);
+			markup.AppendTaggedText (theme, Item.SuffixDisplayParts);
 
 			var documentation = Item.DocumentationFactory (cancelToken).ToList ();
 			if (documentation.Count > 0) {
 				var summaryMarkup = new StringBuilder ();
-				AppendTaggedText (summaryMarkup, theme, documentation);
+				summaryMarkup.AppendTaggedText (theme, documentation);
 				tt.SummaryMarkup = summaryMarkup.ToString ();
 			}
 
@@ -67,82 +67,8 @@ namespace MonoDevelop.CSharp.Completion
 			return Task.FromResult (tt);
 		}
 
-		void AppendTaggedText (StringBuilder markup, EditorTheme theme, IEnumerable<TaggedText> text)
-		{
-			foreach (var part in text) {
-				markup.Append ("<span foreground=\"");
-				markup.Append (GetThemeColor (theme, GetThemeColor (part.Tag)));
-				markup.Append ("\">");
-				markup.Append (part.Text);
-				markup.Append ("</span>");
-			}
-		}
 
-		static string GetThemeColor (EditorTheme theme, string scope)
-		{
-			return SyntaxHighlightingService.GetColorFromScope (theme, scope, EditorThemeColors.Foreground).ToPangoString ();
-		}
 
-		static string GetThemeColor (string tag)
-		{
-			switch (tag) {
-			case TextTags.Keyword:
-				return "keyword";
-
-			case TextTags.Class:
-				return EditorThemeColors.UserTypes;
-			case TextTags.Delegate:
-				return EditorThemeColors.UserTypesDelegates;
-			case TextTags.Enum:
-				return EditorThemeColors.UserTypesEnums;
-			case TextTags.Interface:
-				return EditorThemeColors.UserTypesInterfaces;
-			case TextTags.Module:
-				return EditorThemeColors.UserTypes;
-			case TextTags.Struct:
-				return EditorThemeColors.UserTypesValueTypes;
-			case TextTags.TypeParameter:
-				return EditorThemeColors.UserTypesTypeParameters;
-
-			case TextTags.Alias:
-			case TextTags.Assembly:
-			case TextTags.Field:
-			case TextTags.ErrorType:
-			case TextTags.Event:
-			case TextTags.Label:
-			case TextTags.Local:
-			case TextTags.Method:
-			case TextTags.Namespace:
-			case TextTags.Parameter:
-			case TextTags.Property:
-			case TextTags.RangeVariable:
-				return "source.cs";
-
-			case TextTags.NumericLiteral:
-				return "constant.numeric";
-
-			case TextTags.StringLiteral:
-				return "string.quoted";
-
-			case TextTags.Space:
-			case TextTags.LineBreak:
-				return "source.cs";
-
-			case TextTags.Operator:
-				return "keyword.source";
-
-			case TextTags.Punctuation:
-				return "punctuation";
-
-			case TextTags.AnonymousTypeIndicator:
-			case TextTags.Text:
-				return "source.cs";
-
-			default:
-				LoggingService.LogWarning ("Warning unexpected text tag: " + tag);
-				return "source.cs";
-			}
-		}
 
 
 	}

@@ -396,6 +396,7 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpSnippetInfoService.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ParameterUtil.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\SignatureHelpParameterHintingData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\TaggedTextUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
