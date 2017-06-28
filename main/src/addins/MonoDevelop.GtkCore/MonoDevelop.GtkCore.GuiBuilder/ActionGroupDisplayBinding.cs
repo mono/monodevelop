@@ -28,7 +28,6 @@
 
 
 using System.Collections;
-using System.CodeDom;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -40,9 +39,6 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using ICSharpCode.NRefactory6.CSharp.Completion;
-using ICSharpCode.NRefactory6.CSharp;
-using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Refactoring;
 
 

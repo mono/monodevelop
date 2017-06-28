@@ -39,7 +39,6 @@ using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.TypeSystem;
 

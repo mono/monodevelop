@@ -60,23 +60,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public override bool Equals (object obj)
 		{
-			if (ReferenceEquals (this, obj))
-				return true;
-			var other = obj as ParameterHintingResult;
-			if (other == null)
-				return false;
-			foreach (var thisData in this.data) {
-				var found = false;
-				foreach (var otherData in other.data) {
-					if (thisData.Symbol.Equals (otherData.Symbol)) {
-						found = true;
-						break;
-					}
-				}
-				if (!found)
-					return false;
-			}
-			return true;
+			return ReferenceEquals (this, obj);
 		}
 
 		#region IEnumerable implementation

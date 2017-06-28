@@ -35,7 +35,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
 

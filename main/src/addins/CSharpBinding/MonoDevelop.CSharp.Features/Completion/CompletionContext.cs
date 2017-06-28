@@ -28,7 +28,6 @@ using Microsoft.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using System.Linq;
 
 namespace ICSharpCode.NRefactory6.CSharp
