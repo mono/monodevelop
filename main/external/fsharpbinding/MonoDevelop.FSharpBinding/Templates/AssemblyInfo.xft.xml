@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <Template
     Originator="Ihor Sihuta"
     Created="2012/08/14"
@@ -20,7 +20,7 @@
 
     <!-- Template Content -->
     <TemplateFiles>
-        <UnformattedFile name="AssemblyInfo.fs" AddStandardHeader="True">
+        <File name="AssemblyInfo.fs" AddStandardHeader="True">
             <![CDATA[namespace ${Namespace}
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -40,6 +40,6 @@ open System.Runtime.CompilerServices
 //[<assembly: AssemblyDelaySign(false)>]
 //[<assembly: AssemblyKeyFile("")>]
 
-()]]></UnformattedFile>
+()]]></File>
     </TemplateFiles>
 </Template>
