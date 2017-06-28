@@ -500,12 +500,15 @@ namespace MonoDevelop.Projects.MSBuild
 			i += 2;
 			int j = FindClosingChar (str, i, ')');
 			if (j == -1) {
-				val = str.Substring (start);
+				lock (project.Pool)
+					val = project.Pool.Add (str, start, str.Length - start);
 				i = str.Length;
 				return false;
 			}
 
-			string prop = str.Substring (i, j - i).Trim ();
+			string prop;
+			lock (project.Pool)
+				prop = project.Pool.Add (str, i, j - i).Trim ();
 			i = j + 1;
 
 			bool res = false;
@@ -529,7 +532,10 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 			if (!res)
-				val = str.Substring (start, j - start + 1);
+				lock (project.Pool) {
+					val = project.Pool.Add (str, start, j - start + 1);
+				}
+
 			return res;
 		}
 
