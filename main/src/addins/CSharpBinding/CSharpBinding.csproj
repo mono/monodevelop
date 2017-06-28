@@ -228,7 +228,6 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynParameterHintingEngine.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\SignatureHelpParameterHintingData.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\CSharpSyntaxMode.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextEditorIndentation.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.cs" />
@@ -322,12 +321,10 @@
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\ITextPasteHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\NullIStateMachineIndentEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\TextPasteIndentEngine.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\ParameterUtil.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\SemanticHighlighting\SemanticHighlightingVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\CSharpEditorFormattingService.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\FormattingOptionsFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\Indent.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionContext.cs" />
     <Compile Include="MonoDevelop.CSharp\DeclaredSymbolInfo.cs" />
     <Compile Include="MonoDevelop.CSharp\ProjectSearchCategory.cs" />
     <Compile Include="Util\7BitEncodedInts.cs" />
@@ -397,13 +394,11 @@
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\CastCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\RegexCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpSnippetInfoService.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ParameterUtil.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\SignatureHelpParameterHintingData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="MonoDevelop.CSharp.Completion\MethodParameterDataProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
     <None Include="packages.config" />
   </ItemGroup>

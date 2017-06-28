@@ -310,7 +310,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 
-		internal void AddImportCompletionData (SyntaxContext ctx, CompletionDataList result, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
+		internal void AddImportCompletionData (CSharpSyntaxContext ctx, CompletionDataList result, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (result.Count == 0)
 				return;
@@ -474,8 +474,8 @@ namespace MonoDevelop.CSharp.Completion
 
 			var partialDoc = await analysisDocument.WithFrozenPartialSemanticsAsync (token).ConfigureAwait (false);
 			var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
-			var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (analysisDocument, completionContext.TriggerOffset, semanticModel);
-			var syntaxContext = await ctx.GetSyntaxContextAsync (DocumentContext.RoslynWorkspace, token);
+			var syntaxContext = CSharpSyntaxContext.CreateContext (DocumentContext.RoslynWorkspace, semanticModel, completionContext.TriggerOffset, token);
+
 			if (forceSymbolCompletion || !syntaxContext.LeftToken.IsKind (SyntaxKind.DotToken)) {
 				AddImportCompletionData (syntaxContext, result, semanticModel, completionContext.TriggerOffset, token);
 			}
