@@ -29,6 +29,11 @@ using System.Xml;
 using MonoDevelop.Core;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Host;
+using Microsoft.CodeAnalysis.Host.Mef;
+using System.Composition;
+using System.Globalization;
+using System.Threading;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -37,11 +42,77 @@ namespace MonoDevelop.Ide.TypeSystem
 		static bool hadError;
 		static Dictionary<string, string> commentCache = new Dictionary<string, string> ();
 
+		public static string GetDocumentation (string idString)
+		{
+			// If we had an exception while getting the help xml the monodoc help provider
+			// shouldn't try it again. A corrupt .zip file could cause long tooltip delays otherwise.
+			if (hadError)
+				return null;
+			string result;
+			if (commentCache.TryGetValue (idString, out result))
+				return result;
+			XmlDocument doc = null;
+			try {
+				var helpTree = MonoDevelop.Projects.HelpService.HelpTree;
+				if (helpTree == null)
+					return null;
+#pragma warning disable 618
+				switch (idString[0]) {
+				case 'T':
+					doc = helpTree.GetHelpXml (idString);
+					if (doc == null)
+						return null;
+					return doc.SelectSingleNode ("/Type/Docs").OuterXml;
+				case 'M':
+					var openIdx = idString.LastIndexOf ('(');
+					var idx = idString.LastIndexOf ('.', openIdx < 0 ? idString.Length - 1 : openIdx);
+					var typeId = "T:" + idString.Substring (2, idx - 2);
+					doc = helpTree.GetHelpXml (typeId);
+					if (doc == null)
+						return null;
+					string memberName;
+					if (openIdx < 0) {
+						memberName = idString.Substring (idx + 1);
+						return doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + memberName + "']").OuterXml;
+					}
+					string parameterString = idString.Substring (openIdx + 1, idString.Length - openIdx - 2);
+					var parameterTypes = parameterString.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+					memberName = idString.Substring (idx + 1, openIdx - idx - 1);
+					foreach (var o in doc.SelectNodes ("/Type/Members/Member[@MemberName='" + memberName + "']")) {
+						var curNode = o as XmlElement;
+						if (curNode == null)
+							continue;
+						var paramList = curNode.SelectNodes ("Parameters/*");
+						if (paramList.Count == 0)
+							continue;
+						if (parameterTypes.Length != paramList.Count)
+							continue;
+						bool matched = true;
+						for (int i = 0; i < parameterTypes.Length; i++) {
+							if (parameterTypes[i] != paramList [i].Attributes ["Type"].Value) {
+								matched = false;
+								break;
+							}
+						}
+						if (matched)
+							return curNode.OuterXml;
+					}
+					return null;
+				}
+
+				return helpTree.GetHelpXml (idString).SelectSingleNode ("/Type/Docs").OuterXml;
+			} catch (Exception e) {
+				hadError = true;
+				LoggingService.LogError ("Error while reading monodoc file.", e);
+			}
+			return null;
+		}
+
 		public static string GetDocumentation (ISymbol entity)
 		{
 			if (entity == null)
 				throw new System.ArgumentNullException ("entity");
-			
+
 			// If we had an exception while getting the help xml the monodoc help provider
 			// shouldn't try it again. A corrupt .zip file could cause long tooltip delays otherwise.
 			if (hadError)
@@ -59,7 +130,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return null;
 #pragma warning disable 618
 				if (entity.Kind == SymbolKind.NamedType) {
-				doc = helpTree.GetHelpXml (idString);
+					doc = helpTree.GetHelpXml (idString);
 				} else {
 					var containingType = entity.ContainingType;
 					if (containingType == null)

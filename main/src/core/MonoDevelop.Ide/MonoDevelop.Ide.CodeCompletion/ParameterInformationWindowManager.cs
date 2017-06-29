@@ -34,6 +34,7 @@ using Gdk;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Threading;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -152,7 +153,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 				// Refresh.
 				UpdateWindow (ext, widget);
-			} catch (OperationCanceledException) { }
+			}
+			catch (OperationCanceledException) { 
+			}
+			catch(Exception e) {
+				LoggingService.LogError ("Error while updating cursor position for parameter info window.", e);
+			}
 		}
 
 		internal static void RepositionWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)

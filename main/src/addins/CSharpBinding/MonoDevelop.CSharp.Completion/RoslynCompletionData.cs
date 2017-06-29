@@ -44,6 +44,7 @@ using MonoDevelop.Ide.CodeTemplates;
 using System.Linq;
 using System.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -187,6 +188,7 @@ namespace MonoDevelop.CSharp.Completion
 			{ "Interface", "interface" },
 
 			{ "Struct", "struct" },
+			{ "Structure", "struct" },
 
 			{ "Keyword", "keyword" },
 
@@ -199,7 +201,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (roslynCompletionTypeTable.TryGetValue (tag, out string result))
 					return result;
 			}
-			LoggingService.LogWarning ("RoslynCompletionData: Can't find item type ' "+ string.Join (",", CompletionItem.Tags) + "'");
+			LoggingService.LogWarning ("RoslynCompletionData: Can't find item type '"+ string.Join (",", CompletionItem.Tags) + "'");
 			return "literal";
 		}
 
@@ -238,7 +240,23 @@ namespace MonoDevelop.CSharp.Completion
 			var description = await completionService.GetDescriptionAsync (doc, CompletionItem);
 			var markup = new StringBuilder ();
 			var theme = DefaultSourceEditorOptions.Instance.GetEditorTheme ();
-			markup.AppendTaggedText (theme, description.TaggedParts);
+			var tp = description.TaggedParts;
+			int i = 0;
+			while (i < tp.Length) {
+				if (tp [i].Tag == "LineBreak")
+					break;
+				i++;
+			}
+			if (i + 1 >= tp.Length) {
+				markup.AppendTaggedText (theme, tp);
+			} else {
+				markup.AppendTaggedText (theme, tp.Take (i));
+				markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+				markup.AppendLine ();
+				markup.AppendLine ();
+				markup.AppendTaggedText (theme, tp.Skip (i + 1), 0, 50);
+				markup.Append ("</span>");
+			}
 			tt.SignatureMarkup = markup.ToString ();
 			return tt;
 		}

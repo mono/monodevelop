@@ -37,11 +37,55 @@ namespace MonoDevelop.CSharp.Completion
 		public static void AppendTaggedText (this StringBuilder markup, EditorTheme theme, IEnumerable<TaggedText> text)
 		{
 			foreach (var part in text) {
-				markup.Append ("<span foreground=\"");
-				markup.Append (GetThemeColor (theme, GetThemeColor (part.Tag)));
-				markup.Append ("\">");
+				if (part.Tag != TextTags.Text) {
+					markup.Append ("<span foreground=\"");
+					markup.Append (GetThemeColor (theme, GetThemeColor (part.Tag)));
+					markup.Append ("\">");
+				}
 				markup.Append (part.Text);
-				markup.Append ("</span>");
+				if (part.Tag != TextTags.Text) {
+					markup.Append ("</span>");
+				}
+			}
+		}
+
+		public static void AppendTaggedText (this StringBuilder markup, EditorTheme theme, IEnumerable<TaggedText> text, int col, int maxColumn)
+		{
+			foreach (var part in text) {
+				if (part.Tag != TextTags.Text) {
+					markup.Append ("<span foreground=\"");
+					markup.Append (GetThemeColor (theme, GetThemeColor (part.Tag)));
+					markup.Append ("\">");
+				}
+				if (maxColumn >= 0 && col + part.Text.Length > maxColumn) {
+					AppendAndBreakText (markup, part.Text, col, maxColumn);
+					col = 0;
+				} else {
+					markup.Append (part.Text);
+					var lineBreak = part.Text.LastIndexOfAny (new [] { '\n', '\r' });
+					if (lineBreak >= 0) {
+						col += part.Text.Length - lineBreak;
+					} else {
+						col += part.Text.Length;
+					}
+				}
+				if (part.Tag != TextTags.Text) {
+					markup.Append ("</span>");
+				}
+			}
+		}
+
+		static void AppendAndBreakText (StringBuilder markup, string text, int col, int maxColumn)
+		{
+			var idx = maxColumn - col > 0 && maxColumn - col < text.Length ? text.IndexOf (' ', maxColumn - col) : -1;
+			if (idx < 0) {
+				markup.Append (text);
+			} else {
+				markup.Append (text.Substring (0, idx));
+				if (idx + 1 >= text.Length)
+					return;
+				markup.AppendLine ();
+				AppendAndBreakText (markup, text.Substring (idx + 1), 0, maxColumn);
 			}
 		}
 
