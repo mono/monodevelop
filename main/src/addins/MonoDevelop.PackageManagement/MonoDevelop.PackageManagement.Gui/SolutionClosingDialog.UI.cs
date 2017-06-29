@@ -31,13 +31,11 @@ namespace MonoDevelop.PackageManagement.Gui
 {
 	partial class SolutionClosingDialog : Dialog
 	{
-		Button yesButton;
+		DialogButton yesButton;
 		Spinner spinner;
 
 		void Build ()
 		{
-			Resizable = false;
-
 			var mainVBox = new VBox ();
 			mainVBox.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			Content = mainVBox;
@@ -63,28 +61,20 @@ namespace MonoDevelop.PackageManagement.Gui
 			spinner.Accessible.Description =  GettextCatalog.GetString ("Busy indicator shown whilst waiting stopping for NuGet package processing to stop");
 			spinner.Visible = false;
 
-			var bottomHBox = new HBox ();
-			bottomHBox.Margin = new WidgetSpacing (5, 10, 5, 0);
-			bottomHBox.Spacing = 10;
-			bottomHBox.Accessible.Role = Xwt.Accessibility.Role.Filler;
-			mainVBox.PackStart (bottomHBox);
+			var noButton = new DialogButton (Command.No);
+			yesButton = new DialogButton (Command.Yes);
+			Buttons.Add (noButton);
+			Buttons.Add (yesButton);
+		}
 
-			yesButton = new Button ();
-			yesButton.MinWidth = 120;
-			yesButton.MinHeight = 25;
-			yesButton.Label = GettextCatalog.GetString ("Yes");
-			yesButton.Accessible.Identifier = "yesButton";
-			yesButton.Accessible.Description = GettextCatalog.GetString ("Stops the current NuGet package processing");
-			bottomHBox.PackEnd (yesButton);
-
-			var noButton = new Button ();
-			noButton.MinWidth = 120;
-			noButton.MinHeight = 25;
-			noButton.Label = GettextCatalog.GetString ("No");
-			noButton.Accessible.Identifier = "noButton";
-			noButton.Accessible.Description = GettextCatalog.GetString ("Closes the dialog without stopping the NuGet package processing");
-			noButton.Clicked += (sender, e) => Close ();
-			bottomHBox.PackEnd (noButton);
+		/// <summary>
+		/// Do not immediately close the dialog if the Yes button is clicked.
+		/// The dialog will wait until the NuGet package action has stopped.
+		/// </summary>
+		protected override void OnCommandActivated (Command cmd)
+		{
+			if (cmd != Command.Yes)
+				base.OnCommandActivated (cmd);
 		}
 	}
 }
