@@ -116,6 +116,22 @@ namespace MonoDevelop.CSharp.Completion
 				markup.AppendTaggedText (theme, documentation, 0, MaxParamColumnCount);
 				markup.Append ("</span>");
 			}
+
+			if (currentParameter >= 0 && currentParameter < Item.Parameters.Length) {
+				var p = Item.Parameters [currentParameter];
+				documentation = p.DocumentationFactory (cancelToken).ToList ();
+				if (documentation.Count > 0) {
+					markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+					markup.AppendLine ();
+					markup.AppendLine ();
+					markup.Append ("<b>");
+					markup.Append (p.Name);
+					markup.Append (": </b>");
+					markup.AppendTaggedText (theme, documentation, p.Name.Length + 2, MaxParamColumnCount);
+					markup.Append ("</span>");
+				}
+			}
+
 			tt.SignatureMarkup = markup.ToString ();
 			return Task.FromResult (tt);
 		}
