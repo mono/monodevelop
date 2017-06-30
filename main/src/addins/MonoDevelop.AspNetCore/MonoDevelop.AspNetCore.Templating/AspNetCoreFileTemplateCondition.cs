@@ -1,6 +1,4 @@
-﻿using System;
-using System.Xml;
-//
+﻿//
 // AspNetCoreFileTemplateCondition.cs
 //
 // Author:
@@ -26,12 +24,14 @@ using System.Xml;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Xml;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.AspNet.Projects
+namespace MonoDevelop.AspNetCore.Templating
 {
 	class AspNetCoreFileTemplateCondition : FileTemplateCondition
 	{
