@@ -1,5 +1,5 @@
 ﻿//
-// SolutionClosingDialog.cs
+// PendingPackageActionsHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,67 +24,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using Xwt;
+using MonoDevelop.PackageManagement.Gui;
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.PackageManagement.Gui
+namespace MonoDevelop.PackageManagement
 {
-	partial class SolutionClosingDialog
+	class PendingPackageActionsHandler
 	{
-		const int timeout = 250; // ms
-		IDisposable timer;
-
-		public SolutionClosingDialog (bool installing)
+		/// <summary>
+		/// Returns true if the solution can be closed.
+		/// </summary>
+		public static bool OnSolutionClosing ()
 		{
-			Build (installing);
+			if (!PackageManagementServices.BackgroundPackageActionRunner.IsRunning)
+				return true;
 
-			yesButton.Clicked += StopButtonClicked;
-		}
+			var pendingInfo = PackageManagementServices.BackgroundPackageActionRunner.GetPendingActionsInfo ();
+			if (pendingInfo.IsInstallPending)
+				return AskToStopCurrentPackageActions (true);
+			else if (pendingInfo.IsUninstallPending)
+				return AskToStopCurrentPackageActions (false);
+			else if (pendingInfo.IsRestorePending)
+				PackageManagementServices.BackgroundPackageActionRunner.Cancel ();
 
-		public bool KeepSolutionOpen { get; private set; } = true;
-
-		void StopButtonClicked (object sender, EventArgs e)
-		{
-			yesButton.Sensitive = false;
-
-			CloseIfNotRunningNuGetActions ();
-
-			PackageManagementServices.BackgroundPackageActionRunner.Cancel ();
-
-			CloseIfNotRunningNuGetActions ();
-
-			spinner.Visible = true;
-			spinner.Animate = true;
-
-			timer = CreateTimer ();
-		}
-
-		void CloseIfNotRunningNuGetActions ()
-		{
-			if (!PackageManagementServices.BackgroundPackageActionRunner.IsRunning) {
-				KeepSolutionOpen = false;
-				Close ();
-			}
-		}
-
-		IDisposable CreateTimer ()
-		{
-			return Application.TimeoutInvoke (timeout, CheckNuGetActionsStillRunning);
-		}
-
-		bool CheckNuGetActionsStillRunning ()
-		{
-			CloseIfNotRunningNuGetActions ();
 			return true;
 		}
 
-		protected override void Dispose (bool disposing)
+		static bool AskToStopCurrentPackageActions (bool installing)
 		{
-			base.Dispose (disposing);
-
-			if (timer != null) {
-				timer.Dispose ();
-				timer = null;
+			using (var dialog = new SolutionClosingDialog (installing)) {
+				dialog.ShowWithParent ();
+				return !dialog.KeepSolutionOpen;
 			}
 		}
 	}

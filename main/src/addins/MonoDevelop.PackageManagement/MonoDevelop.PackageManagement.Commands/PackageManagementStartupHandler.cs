@@ -31,7 +31,6 @@ using System.Threading.Tasks;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.PackageManagement.Gui;
 using MonoDevelop.Projects;
 using NuGet.Common;
 
@@ -131,12 +130,7 @@ namespace MonoDevelop.PackageManagement.Commands
 		void WorkspaceItemUnloading (object sender, ItemUnloadingEventArgs e)
 		{
 			try {
-				if (PackageManagementServices.BackgroundPackageActionRunner.IsRunning) {
-					using (var dialog = new SolutionClosingDialog ()) {
-						dialog.ShowWithParent ();
-						e.Cancel = dialog.KeepSolutionOpen;
-					}
-				}
+				e.Cancel = !PendingPackageActionsHandler.OnSolutionClosing ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error on unloading workspace item.", ex);
 			}

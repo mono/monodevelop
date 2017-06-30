@@ -91,6 +91,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 		}
 
+		public PendingPackageActionsInformation GetPendingActionsInfo ()
+		{
+			throw new NotImplementedException ();
+		}
+
 		public ProgressMonitorStatusMessage ShowErrorProgressMessage;
 		public string ShowErrorMessage;
 		public Exception ShowErrorException;

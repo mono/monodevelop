@@ -34,7 +34,7 @@ namespace MonoDevelop.PackageManagement.Gui
 		DialogButton yesButton;
 		Spinner spinner;
 
-		void Build ()
+		void Build (bool installing)
 		{
 			var mainVBox = new VBox ();
 			mainVBox.Accessible.Role = Xwt.Accessibility.Role.Filler;
@@ -42,7 +42,7 @@ namespace MonoDevelop.PackageManagement.Gui
 
 			var label = new Label ();
 			label.Margin = new WidgetSpacing (10, 10, 10, 0);
-			label.Text = GettextCatalog.GetString ("Unable to close the solution when NuGet packages are being processed.");
+			label.Text = GetMainLabelText (installing);
 
 			mainVBox.PackStart (label);
 
@@ -52,7 +52,7 @@ namespace MonoDevelop.PackageManagement.Gui
 
 			var questionLabel = new Label ();
 			questionLabel.Margin = 10;
-			questionLabel.Text = GettextCatalog.GetString ("Stop processing NuGet packages?");
+			questionLabel.Text = GetQuestionLabelText (installing);
 			middleHBox.PackStart (questionLabel);
 
 			spinner = new Spinner ();
@@ -65,6 +65,22 @@ namespace MonoDevelop.PackageManagement.Gui
 			yesButton = new DialogButton (Command.Yes);
 			Buttons.Add (noButton);
 			Buttons.Add (yesButton);
+		}
+
+		static string GetMainLabelText (bool installing)
+		{
+			if (installing)
+				return GettextCatalog.GetString ("Unable to close the solution when NuGet packages are being installed.");
+
+			return  GettextCatalog.GetString ("Unable to close the solution when NuGet packages are being uninstalled.");
+		}
+
+		static string GetQuestionLabelText (bool installing)
+		{
+			if (installing)
+				return GettextCatalog.GetString ("Stop installing NuGet packages?");
+
+			return GettextCatalog.GetString ("Stop uninstalling NuGet packages?");
 		}
 
 		/// <summary>

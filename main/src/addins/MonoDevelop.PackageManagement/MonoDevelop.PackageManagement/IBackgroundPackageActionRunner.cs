@@ -35,6 +35,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		IEnumerable<IInstallNuGetPackageAction> PendingInstallActions { get; }
 		IEnumerable<IInstallNuGetPackageAction> PendingInstallActionsForProject (DotNetProject project);
+		PendingPackageActionsInformation GetPendingActionsInfo ();
 
 		void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action);
 		void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action, bool clearConsole);

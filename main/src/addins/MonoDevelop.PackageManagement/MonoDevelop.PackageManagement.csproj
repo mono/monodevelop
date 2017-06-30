@@ -424,6 +424,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Gui\SolutionClosingDialog.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PendingPackageActionsInformation.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageActionType.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PendingPackageActionsHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
