@@ -35,6 +35,7 @@ using Gtk;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Ide.Gui;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CSharp
 {
@@ -71,10 +72,15 @@ namespace MonoDevelop.CSharp
 
 		public override Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
 		{
-			return Task.FromResult (new TooltipInformation {
-				SignatureMarkup = result.Name,
-				SummaryMarkup = result.Summary,
-				FooterMarkup = result.AdditionalInformation,
+			return Task.Run (async () => {
+				var document = result.NavigableItem.Document;
+				var span = result.NavigableItem.SourceSpan;
+
+				var root = await document.GetSyntaxRootAsync (token).ConfigureAwait (false);
+				var node = root.FindNode (span);
+				var semanticModel = await document.GetSemanticModelAsync (token).ConfigureAwait (false);
+				var symbol = semanticModel.GetDeclaredSymbol (node, token);
+				return await Ambience.GetTooltip (token, symbol);
 			});
 		}
 
