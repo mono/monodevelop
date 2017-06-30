@@ -423,12 +423,6 @@
        <NuGetPackage Include="Microsoft.DotNet.Test.ProjectTemplates.2.0">
          <Version>$(TemplatesVersion)</Version>
        </NuGetPackage>
-       <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.1.x">
-         <Version>$(TemplatesVersion)</Version>
-       </NuGetPackage>
-       <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.2.0">
-         <Version>$(TemplatesVersion)</Version>
-       </NuGetPackage>
      </ItemGroup>
      <Copy SourceFiles="..\..\..\packages\%(NuGetPackage.Identity).%(NuGetPackage.Version)\%(NuGetPackage.Identity).%(NuGetPackage.Version).nupkg" DestinationFolder="$(OutputPath)\Templates" />
    </Target>
