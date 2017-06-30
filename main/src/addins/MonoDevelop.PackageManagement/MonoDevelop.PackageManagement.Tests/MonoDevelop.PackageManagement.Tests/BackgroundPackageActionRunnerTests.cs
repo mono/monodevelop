@@ -183,6 +183,14 @@ namespace MonoDevelop.PackageManagement.Tests
 			progressMonitorFactory.ProgressMonitor.Cancel ();
 		}
 
+		void AddRestoreAction ()
+		{
+			var action = new FakeNuGetPackageAction ();
+			action.ActionType = PackageActionType.Restore;
+
+			actions.Add (action);
+		}
+
 		[Test]
 		public void Run_OneInstallActionAndOneUninstallActionAndRunNotCompleted_InstallActionMarkedAsPending ()
 		{
@@ -762,6 +770,58 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (task2.IsCanceled);
 			Assert.IsTrue (task3.IsCanceled);
 			Assert.IsFalse (runner.IsRunning);
+		}
+
+		[Test]
+		public void GetPendingActionsInfo_InstallActionBeingRun_InstallPending ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+			RunWithoutBackgroundDispatch ();
+
+			var info = runner.GetPendingActionsInfo ();
+
+			Assert.IsTrue (info.IsInstallPending);
+		}
+
+		[Test]
+		public void GetPendingActionsInfo_UninstallActionBeingRun_UninstallPending ()
+		{
+			CreateRunner ();
+			AddUninstallAction ();
+			RunWithoutBackgroundDispatch ();
+
+			var info = runner.GetPendingActionsInfo ();
+
+			Assert.IsTrue (info.IsUninstallPending);
+		}
+
+		[Test]
+		public void GetPendingActionsInfo_RestoreActionBeingRun_RestorePending ()
+		{
+			CreateRunner ();
+			AddRestoreAction ();
+			RunWithoutBackgroundDispatch ();
+
+			var info = runner.GetPendingActionsInfo ();
+
+			Assert.IsTrue (info.IsRestorePending);
+		}
+
+		[Test]
+		public void GetPendingActionsInfo_InstallAndUninstallActions_InstallAndUninstallPending ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+			AddUninstallAction ();
+
+			RunWithoutBackgroundDispatch ();
+
+			var info = runner.GetPendingActionsInfo ();
+
+			Assert.IsTrue (info.IsInstallPending);
+			Assert.IsTrue (info.IsUninstallPending);
+			Assert.IsFalse (info.IsRestorePending);
 		}
 	}
 }

@@ -43,6 +43,7 @@ namespace MonoDevelop.PackageManagement
 		Queue<ActionContext> pendingQueue = new Queue<ActionContext> ();
 
 		struct ActionContext {
+			public List<IPackageAction> Actions;
 			public CancellationTokenSource CancellationTokenSource;
 			public TaskCompletionSource<bool> TaskCompletionSource;
 		};
@@ -110,10 +111,10 @@ namespace MonoDevelop.PackageManagement
 			bool clearConsole)
 		{
 			AddInstallActionsToPendingQueue (actions);
-			CancellationTokenSource cancellationTokenSource = AddCancellationTokenSource (taskCompletionSource);
+			List<IPackageAction> actionsList = actions.ToList ();
+			CancellationTokenSource cancellationTokenSource = CreateCancellationTokenForPendingActions (taskCompletionSource, actionsList);
 			packageManagementEvents.OnPackageOperationsStarting ();
 
-			List<IPackageAction> actionsList = actions.ToList ();
 			BackgroundDispatch (() => {
 				PackageManagementCredentialService.Reset ();
 				TryRunActionsWithProgressMonitor (progressMessage, actionsList, taskCompletionSource, clearConsole, cancellationTokenSource);
@@ -145,9 +146,12 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		CancellationTokenSource AddCancellationTokenSource (TaskCompletionSource<bool> taskCompletionSource)
+		CancellationTokenSource CreateCancellationTokenForPendingActions (
+			TaskCompletionSource<bool> taskCompletionSource,
+			List<IPackageAction> actions)
 		{
 			var context = new ActionContext {
+				Actions = actions,
 				CancellationTokenSource = new CancellationTokenSource (),
 				TaskCompletionSource = taskCompletionSource
 			};
@@ -276,6 +280,17 @@ namespace MonoDevelop.PackageManagement
 
 				context.CancellationTokenSource.Dispose ();
 			}
+		}
+
+		/// <summary>
+		/// Returns information about the actions being run or queued to run.
+		/// </summary>
+		public PendingPackageActionsInformation GetPendingActionsInfo ()
+		{
+			var info = new PendingPackageActionsInformation ();
+			foreach (ActionContext context in pendingQueue)
+				info.Add (context.Actions);
+			return info;
 		}
 
 		protected virtual void BackgroundDispatch (Action action)

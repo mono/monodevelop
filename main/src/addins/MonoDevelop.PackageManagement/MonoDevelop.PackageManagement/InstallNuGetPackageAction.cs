@@ -111,6 +111,10 @@ namespace MonoDevelop.PackageManagement
 		public bool PreserveLocalCopyReferences { get; set; }
 		public bool OpenReadmeFile { get; set; }
 
+		public PackageActionType ActionType {
+			get { return PackageActionType.Install; }
+		}
+
 		public void Execute ()
 		{
 			Execute (CancellationToken.None);
