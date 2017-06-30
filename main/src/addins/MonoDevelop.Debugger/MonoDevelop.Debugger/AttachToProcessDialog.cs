@@ -43,10 +43,11 @@ namespace MonoDevelop.Debugger
 	{
 		List<DebuggerEngine> debugEngines = new List<DebuggerEngine> ();
 		DebuggerEngine selectedEngine;
-		List<ProcessInfo> procs;
+		ProcessInfo [] procs;
 		Gtk.ListStore store;
 		TreeViewState state;
-		bool closed;
+		ProcessAttacher processAttacher;
+		CancellationTokenSource refreshLoopTokenSource = new CancellationTokenSource ();
 
 		public AttachToProcessDialog ()
 		{
@@ -55,15 +56,11 @@ namespace MonoDevelop.Debugger
 			store = new Gtk.ListStore (typeof (ProcessInfo), typeof (string), typeof (string));
 			tree.Model = store;
 			tree.AppendColumn ("PID", new Gtk.CellRendererText (), "text", 1);
-			tree.AppendColumn (GettextCatalog.GetString ("Process Name"), new Gtk.CellRendererText (), "text", 2);
+			tree.AppendColumn (GettextCatalog.GetString ("Name"), new Gtk.CellRendererText (), "text", 2);
 			tree.AppendColumn (GettextCatalog.GetString ("Description"), new Gtk.CellRendererText (), "text", 3);
 			tree.RowActivated += OnRowActivated;
 
 			state = new TreeViewState (tree, 1);
-
-			var refreshThread = new Thread (new ThreadStart (Refresh));
-			refreshThread.IsBackground = true;
-			refreshThread.Start ();
 
 			buttonOk.Sensitive = false;
 			tree.Selection.UnselectAll ();
@@ -83,39 +80,77 @@ namespace MonoDevelop.Debugger
 					executionCommand = dnp.CreateExecutionCommand (IdeApp.Workspace.ActiveConfiguration, config, runProjectConfiguration);
 				}
 			}
-
+			DebuggerEngine defaultEngine = null;
 			foreach (DebuggerEngine de in DebuggingService.GetDebuggerEngines ()) {
 				if ((de.SupportedFeatures & DebuggerFeatures.Attaching) == 0)
 					continue;
 				if (de.CanDebugCommand (executionCommand))
-					selectedEngine = de;
+					defaultEngine = de;
 				debugEngines.Add (de);
 				comboDebs.AppendText (de.Name);
 			}
-			var defaultEngineIndex = debugEngines.IndexOf (selectedEngine);
-			comboDebs.Active = defaultEngineIndex == -1 ? 0 : defaultEngineIndex;
+			if (!debugEngines.Any ())
+				return;
+			if (defaultEngine == null)
+				defaultEngine = debugEngines.First ();
+			comboDebs.Active = debugEngines.IndexOf (defaultEngine);
+			ChangeEngine (defaultEngine);
+			comboDebs.Changed += delegate {
+				ChangeEngine (debugEngines [comboDebs.Active]);
+			};
+		}
+
+		private void ChangeEngine (DebuggerEngine newEngine)
+		{
+			if (selectedEngine == newEngine)
+				return;
+			selectedEngine = newEngine;
+
+			refreshLoopTokenSource.Cancel ();
+			refreshLoopTokenSource = new CancellationTokenSource ();
+
+			if (processAttacher != null) {
+				processAttacher.AttachableProcessesChanged -= ProcessAttacher_AttachableProcessesChanged;
+				processAttacher.Dispose ();
+			}
+
+			processAttacher = selectedEngine.GetProcessAttacher ();
+			if (processAttacher != null) {
+				processAttacher.AttachableProcessesChanged += ProcessAttacher_AttachableProcessesChanged;
+				this.procs = processAttacher.GetAttachableProcesses ();
+				Runtime.RunInMainThread (new Action (FillList)).Ignore ();
+			} else {
+				var refreshThread = new Thread (new ParameterizedThreadStart (Refresh));
+				refreshThread.IsBackground = true;
+				refreshThread.Start (refreshLoopTokenSource.Token);
+			}
+		}
+
+		void ProcessAttacher_AttachableProcessesChanged (Debugger.ProcessAttacher sender, ProcessInfo [] processes)
+		{
+			this.procs = processes;
+			Runtime.RunInMainThread (new Action (FillList)).Ignore ();
 		}
 
 		public override void Destroy ()
 		{
-			closed = true;
+			if (processAttacher != null) {
+				processAttacher.AttachableProcessesChanged -= ProcessAttacher_AttachableProcessesChanged;
+				processAttacher.Dispose ();
+			}
+			refreshLoopTokenSource.Cancel ();
 			base.Destroy ();
 		}
 
-		void Refresh ()
+		void Refresh (object tokenObject)
 		{
-			while (!closed) {
-				var procs = new List<ProcessInfo> ();
-
+			var token = (CancellationToken)tokenObject;
+			while (!token.IsCancellationRequested) {
 				try {
-					var infos = selectedEngine.GetAttachableProcesses ();
-					foreach (ProcessInfo pi in infos) {
-						procs.Add (pi);
-					}
+					this.procs = selectedEngine.GetAttachableProcesses ();
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not get attachable processes.", ex);
 				}
-				this.procs = procs;
 				Runtime.RunInMainThread (new Action (FillList)).Ignore ();
 				Thread.Sleep (3000);
 			}
