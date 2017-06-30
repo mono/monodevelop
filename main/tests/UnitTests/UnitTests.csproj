@@ -234,7 +234,6 @@
     <Compile Include="MonoDevelop.Core\BacktrackingStringMatcherTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\SearchPopupWindowTests.cs" />
     <Compile Include="MonoDevelop.Core\LaneStringMatcherTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\NamedArgumentCompletionTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugTooltipTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\UnitTesteditorIntegrationTests.cs" />
