@@ -397,6 +397,9 @@
     <Compile Include="MonoDevelop.CSharp.Completion\ParameterUtil.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\SignatureHelpParameterHintingData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\TaggedTextUtil.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\DelegateCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\EnumMemberCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\EventSenderCompletionProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
