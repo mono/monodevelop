@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 
 <Template originator="Ihor Sihuta" created="2012/08/05">
 
@@ -44,7 +44,7 @@
 			<!-- A window template -->
 
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-                <UnformattedFile name="MainWindow.fs">
+                <File name="MainWindow.fs">
 <![CDATA[namespace ${Namespace}
 
     module MainWindow =
@@ -62,9 +62,9 @@
             member this.OnDeleteEvent(o,e:DeleteEventArgs) = 
                 Application.Quit ()
                 e.RetVal <- true]]>
-				</UnformattedFile>
+				</File>
              
-             <UnformattedFile name="Main.fs">
+             <File name="Main.fs">
                 <![CDATA[namespace ${ProjectName}
     module Main =
         
@@ -79,7 +79,7 @@
             Application.Run()
             0
 ]]>
-             </UnformattedFile>
+             </File>
 			</Files>
 		</Project>
 	</Combine>

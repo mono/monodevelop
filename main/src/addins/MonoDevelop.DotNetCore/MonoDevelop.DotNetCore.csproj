@@ -401,6 +401,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.AspNetCore" />
     <InternalsVisibleTo Include="DotNetCore.Debugger" />
     <InternalsVisibleTo Include="MonoDevelop.DotNetCore.Tests" />
   </ItemGroup>
@@ -420,12 +421,6 @@
          <Version>$(TemplatesVersion)</Version>
        </NuGetPackage>
        <NuGetPackage Include="Microsoft.DotNet.Test.ProjectTemplates.2.0">
-         <Version>$(TemplatesVersion)</Version>
-       </NuGetPackage>
-       <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.1.x">
-         <Version>$(TemplatesVersion)</Version>
-       </NuGetPackage>
-       <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.2.0">
          <Version>$(TemplatesVersion)</Version>
        </NuGetPackage>
      </ItemGroup>

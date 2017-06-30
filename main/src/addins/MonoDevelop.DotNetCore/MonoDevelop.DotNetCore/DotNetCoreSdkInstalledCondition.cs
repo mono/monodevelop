@@ -30,7 +30,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreSdkInstalledCondition : ConditionType
+	internal class DotNetCoreSdkInstalledCondition : ConditionType
 	{
 		/// <summary>
 		/// The SDK version check is not quite correct. It currently only checks the

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <Template originator = "Dave Thomas">
 	
 	<!-- Template Header -->
@@ -39,7 +39,7 @@
 			</Packages>
 
 			<Files>
-				<UnformattedFile name="Test.fs">
+				<File name="Test.fs">
 <![CDATA[namespace ${Namespace}
 open System
 open NUnit.Framework
@@ -51,7 +51,7 @@ type Test() =
     member x.TestCase() =
         Assert.IsTrue(true)
 ]]>
-             	</UnformattedFile>
+             	</File>
 			</Files>
 		</Project>
 	</Combine>

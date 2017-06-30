@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <Template Originator="Dave Thomas" Created="14/3/2014" LastModified="14/3/2014">
 	
 	<TemplateConfiguration>
@@ -11,7 +11,7 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<UnformattedFile AddStandardHeader="True">
+		<File AddStandardHeader="True">
 <![CDATA[namespace ${Namespace}
 open System
 open NUnit.Framework
@@ -23,7 +23,7 @@ type Test() =
     member x.TestCase() =
         Assert.IsTrue(true)
 ]]>
-             	</UnformattedFile>
+             	</File>
 	</TemplateFiles>
 	
 	<FileOptions/>

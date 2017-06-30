@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <Template originator   = "Dave Thomas"
           created      = "29/10/2015"
           lastModified = "29/10/2015">
@@ -24,12 +24,12 @@
 	<Combine name = "${ProjectName}" directory = ".">
 		<Project name = "${ProjectName}" directory = "." type = "SharedAssetsProject">
 			<Files>
-				 <UnformattedFile name = "MyType.fs" AddStandardHeader="True">
+				 <File name = "MyType.fs" AddStandardHeader="True">
 <![CDATA[namespace ${Namespace}
 
 type Class1() = 
     member this.X = "F#"
-]]></UnformattedFile>
+]]></File>
 			</Files>
 		</Project>
 	</Combine>

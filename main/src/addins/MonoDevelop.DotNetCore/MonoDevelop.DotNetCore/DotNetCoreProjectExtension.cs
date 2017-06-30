@@ -55,6 +55,11 @@ namespace MonoDevelop.DotNetCore
 
 		protected override bool SupportsObject (WorkspaceObject item)
 		{
+			return DotNetCoreSupportsObject(item) && !IsWebProject ((DotNetProject)item);
+		}
+
+		protected bool DotNetCoreSupportsObject (WorkspaceObject item)
+		{
 			return base.SupportsObject (item) && IsSdkProject ((DotNetProject)item);
 		}
 
@@ -157,9 +162,11 @@ namespace MonoDevelop.DotNetCore
 				EnvironmentVariables = dotnetCoreRunConfiguration?.EnvironmentVariables,
 				PauseConsoleOutput = dotnetCoreRunConfiguration?.PauseConsoleOutput ?? false,
 				ExternalConsole = dotnetCoreRunConfiguration?.ExternalConsole ?? false,
+#pragma warning disable CS0618 // Type or member is obsolete
 				LaunchBrowser = dotnetCoreRunConfiguration?.LaunchBrowser ?? false,
 				LaunchURL = dotnetCoreRunConfiguration?.LaunchUrl,
 				ApplicationURL = dotnetCoreRunConfiguration?.ApplicationURL,
+#pragma warning restore CS0618 // Type or member is obsolete
 				PipeTransport = dotnetCoreRunConfiguration?.PipeTransport
 			};
 		}
@@ -186,7 +193,7 @@ namespace MonoDevelop.DotNetCore
 			return FilePath.Null;
 		}
 
-		FilePath GetOutputFileName (DotNetProjectConfiguration configuration)
+		protected FilePath GetOutputFileName (DotNetProjectConfiguration configuration)
 		{
 			FilePath outputDirectory = GetOutputDirectory (configuration);
 			string assemblyName = Project.Name;
@@ -375,8 +382,13 @@ namespace MonoDevelop.DotNetCore
 			get { return dotNetCoreMSBuildProject.HasSdk; }
 		}
 
+		protected bool IsWebProject (DotNetProject project)
+		{
+			return (project.MSBuildProject.Sdk?.IndexOf ("Microsoft.NET.Sdk.Web", System.StringComparison.OrdinalIgnoreCase) ?? -1) != -1;
+		}
+
 		public bool IsWeb {
-			get { return (dotNetCoreMSBuildProject.Sdk?.IndexOf ("Microsoft.NET.Sdk.Web", System.StringComparison.OrdinalIgnoreCase) ?? -1) != -1; }
+			get { return IsWebProject (Project);  }
 		}
 
 		protected override void OnPrepareForEvaluation (MSBuildProject project)
