@@ -505,7 +505,7 @@ namespace MonoDevelop.SourceEditor
 
 			if (reloadSettings) {
 				reloadSettings = false;
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					if (isDisposed)
 						return;
 					view.LoadSettings ();

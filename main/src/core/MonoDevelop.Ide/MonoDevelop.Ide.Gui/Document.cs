@@ -974,7 +974,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			RunWhenRealized (() => {
 				string currentParseFile = GetCurrentParseFileName ();
-				if (string.IsNullOrEmpty (currentParseFile) || Editor.IsDisposed)
+				var editor = Editor;
+				if (string.IsNullOrEmpty (currentParseFile) || editor == null || editor.IsDisposed == true)
 					return;
 				lock (reparseTimeoutLock) {
 					CancelParseTimeout ();
@@ -1028,7 +1029,7 @@ namespace MonoDevelop.Ide.Gui
 					TypeSystemService.ParseProjection (options, mimeType, token).ContinueWith (task => {
 						if (token.IsCancellationRequested)
 							return;
-						Application.Invoke (delegate {
+						Application.Invoke ((o, args) => {
 							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 							var taskResult = task.Result;
 							if (isClosed || taskResult == null || token.IsCancellationRequested)
@@ -1045,7 +1046,7 @@ namespace MonoDevelop.Ide.Gui
 					TypeSystemService.ParseFile (options, mimeType, token).ContinueWith (task => {
 						if (token.IsCancellationRequested)
 							return;
-						Application.Invoke (delegate {
+						Application.Invoke ((o, args) => {
 							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 							if (isClosed || task.Result == null || token.IsCancellationRequested)
 								return;

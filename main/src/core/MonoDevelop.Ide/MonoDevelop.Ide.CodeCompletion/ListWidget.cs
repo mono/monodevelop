@@ -544,8 +544,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				} else {
 					xpos = iconTextSpacing;
 				}
+				bool drawIconAsSelected = SelectionEnabled && item == SelectedItemIndex;
 				string markup = win.DataProvider.HasMarkup (item) ? (win.DataProvider.GetMarkup (item) ?? "&lt;null&gt;") : GLib.Markup.EscapeText (win.DataProvider.GetText (item) ?? "<null>");
-				string description = win.DataProvider.GetDescription (item, item == SelectedItemIndex);
+				string description = win.DataProvider.GetDescription (item, drawIconAsSelected);
 
 				if (string.IsNullOrEmpty (description)) {
 					layout.SetMarkup (markup);
@@ -582,7 +583,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Xwt.Drawing.Image icon = win.DataProvider.GetIcon (item);
 				int iconHeight, iconWidth;
 				if (icon != null) {
-					if (item == SelectedItemIndex)
+					if (drawIconAsSelected)
 						icon = icon.WithStyles ("sel");
 					iconWidth = (int)icon.Width;
 					iconHeight = (int)icon.Height;
@@ -617,7 +618,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					context.DrawImage (this, icon, xpos, iypos);
 					xpos += iconTextSpacing;
 				}
-				context.SetSourceColor ((item == SelectedItemIndex ? Styles.CodeCompletion.SelectionTextColor : Styles.CodeCompletion.TextColor).ToCairoColor ());
+				context.SetSourceColor ((drawIconAsSelected ? Styles.CodeCompletion.SelectionTextColor : Styles.CodeCompletion.TextColor).ToCairoColor ());
 				var textXPos = xpos + iconWidth + 2;
 				context.MoveTo (textXPos, typos);
 				layout.Width = (int)((Allocation.Width - textXPos) * Pango.Scale.PangoScale);
@@ -634,7 +635,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					layout.Attributes = null;
 				}
 
-				string rightText = win.DataProvider.GetRightSideDescription (item, item == SelectedItemIndex);
+				string rightText = win.DataProvider.GetRightSideDescription (item, drawIconAsSelected);
 					if (!string.IsNullOrEmpty (rightText)) {
 						layout.SetMarkup (rightText);
 

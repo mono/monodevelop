@@ -1104,6 +1104,8 @@ namespace MonoDevelop.Projects.MSBuild
 		internal Dictionary<string, string> GlobalProperties {
 			get { return globalProperties; }
 		}
+
+		internal StringInternPool Pool => engineManager.Pool;
 	}
 
 	static class XmlUtil

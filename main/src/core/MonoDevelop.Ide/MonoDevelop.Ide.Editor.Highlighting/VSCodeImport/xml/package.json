@@ -84,5 +84,8 @@
 			"scopeName": "text.xml.xsl",
 			"path": "./syntaxes/xsl.json"
 		}]
+	},
+	"scripts": {
+		"update-grammar": "node ../../build/npm/update-grammar.js atom/language-xml grammars/xml.cson ./syntaxes/xml.json grammars/xsl.cson ./syntaxes/xsl.json"
 	}
 }

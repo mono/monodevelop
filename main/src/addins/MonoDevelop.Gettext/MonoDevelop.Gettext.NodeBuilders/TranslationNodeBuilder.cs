@@ -132,7 +132,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 			{
 				try {
 					project.UpdateTranslations (monitor, translation);
-					Gtk.Application.Invoke (delegate {
+					Gtk.Application.Invoke ((o, args) => {
 						POEditorWidget.ReloadWidgets ();
 					});
 				} catch (Exception ex) {

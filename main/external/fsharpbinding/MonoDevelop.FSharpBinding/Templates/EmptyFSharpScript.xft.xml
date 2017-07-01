@@ -10,8 +10,8 @@
   </TemplateConfiguration>
 
   <TemplateFiles>
-    <UnformattedFile DefaultExtension=".fsx" DefaultName="source" AddStandardHeader="True" BuildAction="None">
-    </UnformattedFile>
+    <File DefaultExtension=".fsx" DefaultName="source" AddStandardHeader="True" BuildAction="None">
+    </File>
   </TemplateFiles>
 
   <FileOptions/>

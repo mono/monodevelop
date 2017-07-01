@@ -139,7 +139,7 @@ namespace MonoDevelop.CSharp.Completion
 					}
 
 					if (runCompletionCompletionCommand && IdeApp.Workbench != null) {
-						Application.Invoke (delegate {
+						Application.Invoke ((o, args) => {
 							ext.RunCompletionCommand ();
 						});
 					}

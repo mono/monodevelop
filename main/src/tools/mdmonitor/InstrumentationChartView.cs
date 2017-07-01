@@ -500,14 +500,14 @@ namespace Mono.Instrumentation.Monitor
 
 		public void SaveAs ()
 		{
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				parent.NewView (view);
 			});
 		}
 
 		public void Delete ()
 		{
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				parent.DeleteView (originalView);
 			});
 		}

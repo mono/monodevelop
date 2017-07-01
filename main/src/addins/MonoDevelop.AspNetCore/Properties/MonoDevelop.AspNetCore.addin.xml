@@ -1,0 +1,182 @@
+<ExtensionModel>
+	
+	<Runtime>
+		<Import file = "Templates/MiddlewareClass.xft.xml" />
+		<Import file = "Templates/MiddlewareClassTemplate.cs" />
+		<Import file = "Templates/MvcController.xft.xml" />
+		<Import file = "Templates/MvcControllerTemplate.cs" />
+		<Import file = "Templates/RazorTagHelper.xft.xml" />
+		<Import file = "Templates/RazorTagHelperTemplate.cs" />
+		<Import file = "Templates/StartupClass.xft.xml" />
+		<Import file = "Templates/StartupClassTemplate.cs" />
+		<Import file = "Templates/WebApiController.xft.xml"/>
+		<Import file = "Templates/WebApiControllerTemplate.cs" />
+
+		<Import file = "Templates/MVCViewImportsPage.cshtml" />
+		<Import file = "Templates/MVCViewImportsPage.xft.xml" />
+		<Import file = "Templates/MVCViewLayoutPage.cshtml" />
+		<Import file = "Templates/MVCViewLayoutPage.xft.xml" />
+		<Import file = "Templates/MVCViewPage.cshtml" />
+		<Import file = "Templates/MVCViewPage.xft.xml" />
+		<Import file = "Templates/MVCViewStartPage.cshtml" />
+		<Import file = "Templates/MVCViewStartPage.xft.xml" />
+		<Import file = "Templates/RazorPage.cshtml" />
+		<Import file = "Templates/RazorPage.xft.xml" />
+		<Import file = "Templates/RazorPageWithPageModel.xft.xml" />
+		<Import file = "Templates/RazorPageWithPageModel.cshtml" />
+		<Import file = "Templates/RazorPageWithPageModel.cshtml.cs" />
+	</Runtime>
+
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+
+		<FileTemplate id   = "AspNetCoreMiddlewareClass"
+		              file = "Templates/MiddlewareClass.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreMvcController"
+		              file = "Templates/MvcController.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreRazorTagHelper"
+		              file = "Templates/RazorTagHelper.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreStartupClass"
+		              file = "Templates/StartupClass.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreWebApiController"
+		              file = "Templates/WebApiController.xft.xml"/>
+
+		<FileTemplate id   = "AspNetCoreMVCViewImportsPage"
+		              file = "Templates/MVCViewImportsPage.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreMVCViewLayoutPage"
+		              file = "Templates/MVCViewLayoutPage.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreMVCViewPage"
+		              file = "Templates/MVCViewPage.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreMVCViewStartPage"
+		              file = "Templates/MVCViewStartPage.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreRazorPage"
+		              file = "Templates/RazorPage.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreRazorPageWithPageModel"
+		              file = "Templates/RazorPageWithPageModel.xft.xml"/>
+		
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/netcore/app">
+		<Category id="aspnet" _name="ASP.NET Core" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Core/ExecutionHandlers">
+		<ExecutionHandler id="AspNetCore" class="MonoDevelop.AspNetCore.AspNetCoreExecutionHandler" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/RunConfigurationEditors">
+		<Class class="MonoDevelop.AspNetCore.AspNetCoreRunConfigurationEditor" runConfigurationType="MonoDevelop.AspNetCore.AspNetCoreRunConfiguration" />
+	</Extension>
+	
+	<ConditionType id="AspNetCoreSdkInstalled" type="MonoDevelop.AspNetCore.AspNetCoreSdkInstalledCondition" />
+
+	<Extension path="/MonoDevelop/Ide/Templates">
+		<Condition id="AspNetCoreSdkInstalled" sdkVersion="1.*">
+			<Template
+				id="Microsoft.Web.Empty.CSharp"
+				_overrideDescription="Creates a new ASP.NET Core web project."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore1x=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Mvc.CSharp"
+				_overrideDescription="Creates a new ASP.NET MVC Core web project."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore1x=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Mvc.FSharp"
+				_overrideDescription="Creates a new ASP.NET MVC Core web project."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore1x=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.WebApi.CSharp"
+				_overrideDescription="Creates a new ASP.NET Web API Core web project."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170523-241.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore1x=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+		</Condition>
+		<Condition id="AspNetCoreSdkInstalled" sdkVersion="2.*">
+			<Template
+				id="Microsoft.Web.Empty.CSharp"
+				templateId="Microsoft.Web.Empty.CSharp.2.0"
+				_overrideName="ASP.NET Core Empty"
+				_overrideDescription="Creates a new ASP.NET Core web project."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore20=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Mvc.CSharp"
+				templateId="Microsoft.Web.Mvc.CSharp.2.0"
+				_overrideName="ASP.NET Core Web App"
+				_overrideDescription="Creates a new ASP.NET MVC Core web project."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore20=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Mvc.FSharp"
+				templateId="Microsoft.Web.Mvc.FSharp.2.0"
+				_overrideName="ASP.NET Core Web App"
+				_overrideDescription="Creates a new ASP.NET MVC Core web project."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore20=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.RazorPages.CSharp.2.0"
+				_overrideDescription="Creates a new ASP.NET Web API Core web project using Razor Pages."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				supportedParameters="RazorPages"
+				condition="UseNetCore20=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.WebApi.CSharp"
+				templateId="Microsoft.Web.WebApi.CSharp.2.0"
+				_overrideName="ASP.NET Core Web Api"
+				_overrideDescription="Creates a new ASP.NET Web API Core web project."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170523-241.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore20=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+		</Condition>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/FileTemplateConditionTypes">
+		<FileTemplateConditionType name = "AspNetCore" class = "MonoDevelop.AspNetCore.Templating.AspNetCoreFileTemplateCondition" />
+	</Extension>
+
+</ExtensionModel>

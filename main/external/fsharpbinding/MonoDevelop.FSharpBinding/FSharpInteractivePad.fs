@@ -478,8 +478,8 @@ type FSharpFsiEditorCompletion() =
                         |> List.iter(fun (lineStr) ->
                             fsi.SendCommandAndStore lineStr)
 
-                        let line = editor.GetLine editor.CaretLine
-                        let lineStr = getLineText editor line
+                        let line = x.Editor.GetLine x.Editor.CaretLine
+                        let lineStr = getLineText x.Editor line
                         x.Editor.CaretOffset <- line.EndOffset
                         x.Editor.InsertAtCaret "\n"
                         if not (lineStr.TrimEnd().EndsWith(";;")) then

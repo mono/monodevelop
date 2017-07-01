@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <Template Originator="Community" Created="10/6/2010" LastModified="10/6/2010">
 
   <!-- Template Header -->
@@ -36,19 +36,19 @@
       </Packages>
       <Files>
         <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-        <UnformattedFile name = "Component1.fs" AddStandardHeader="True">
+        <File name = "Component1.fs" AddStandardHeader="True">
         <![CDATA[namespace ${Namespace}
 
 type Class1() = 
     member this.X = "F#"
-]]></UnformattedFile>
-	<UnformattedFile name = "Script.fsx" AddStandardHeader="True">
+]]></File>
+	<File name = "Script.fsx" AddStandardHeader="True">
 	<![CDATA[// Learn more about F# at http://fsharp.org. See the 'F# Tutorial' project
 // for more guidance on F# programming.
 
 #load "Component1.fs"
 open ${Namespace}
-]]></UnformattedFile>
+]]></File>
       </Files>
     </Project>
   </Combine>

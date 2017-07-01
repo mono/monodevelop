@@ -255,6 +255,9 @@
     <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Features">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.Features.2.3.0-beta1\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.Features.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.EditorFeatures">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.EditorFeatures.2.3.0-beta1\lib\net46\Microsoft.CodeAnalysis.EditorFeatures.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis.EditorFeatures.Text">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.EditorFeatures.Text.2.3.0-beta1\lib\net46\Microsoft.CodeAnalysis.EditorFeatures.Text.dll</HintPath>
     </Reference>
@@ -743,6 +746,9 @@
     </Compile>
     <Compile Include="MonoDevelop.Projects.MSBuild\SdkVersion.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectConfigurationItem.cs" />
+    <Compile Include="MonoDevelop.Core\StringInternPool.cs" />
+    <Compile Include="MonoDevelop.Core\Hash.cs" />
+    <Compile Include="MonoDevelop.Core\StringTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
