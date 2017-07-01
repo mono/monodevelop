@@ -259,7 +259,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					return null;
 				var modifiedWhileLoading = modifiedProjects;
 				modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
-				var solutionInfo = SolutionInfo.Create (GetSolutionId (solution), VersionStamp.Create (), solution.FileName, projects);
+				var solutionId = GetSolutionId (solution);
+				var solutionInfo = SolutionInfo.Create (solutionId, VersionStamp.Create (), solution.FileName, projects);
 				foreach (var project in modifiedWhileLoading) {
 					if (solution.ContainsItem (project)) {
 						return await CreateSolutionInfo (solution, token).ConfigureAwait (false);
@@ -269,11 +270,33 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (addLock) {
 					if (!added) {
 						added = true;
+						// HACK: https://github.com/dotnet/roslyn/issues/20581
+						RegisterPrimarySolutionForPersistentStorage (solutionId);
 						OnSolutionAdded (solutionInfo);
 					}
 				}
 				return solutionInfo;
 			});
+		}
+
+		void RegisterPrimarySolutionForPersistentStorage (SolutionId solutionId)
+		{
+			var service = Services.GetService<IPersistentStorageService> () as Microsoft.CodeAnalysis.Storage.AbstractPersistentStorageService;
+			if (service == null) {
+				return;
+			}
+
+			service.RegisterPrimarySolution (solutionId);
+		}
+
+		void UnregisterPrimarySolutionForPersistentStorage (SolutionId solutionId, bool synchronousShutdown)
+		{
+			var service = Services.GetService<IPersistentStorageService> () as Microsoft.CodeAnalysis.Storage.AbstractPersistentStorageService;
+			if (service == null) {
+				return;
+			}
+
+			service.UnregisterPrimarySolution (solutionId, synchronousShutdown);
 		}
 
 		internal Task<SolutionInfo> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
@@ -283,7 +306,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void UnloadSolution ()
 		{
-			OnSolutionRemoved (); 
+			OnSolutionRemoved ();
+			UnregisterPrimarySolutionForPersistentStorage (CurrentSolution.Id, synchronousShutdown: false);
 		}
 
 		Dictionary<MonoDevelop.Projects.Solution, SolutionId> solutionIdMap = new Dictionary<MonoDevelop.Projects.Solution, SolutionId> ();
