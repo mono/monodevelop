@@ -1,4 +1,4 @@
-﻿// BaseDirectoryPanel.cs
+﻿﻿// BaseDirectoryPanel.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -44,9 +44,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			var a = folderentry.EntryAccessible;
 			a.SetTitleUIElement (label3.Accessible);
 			label3.Accessible.SetTitleFor (a);
+			SetupAccessibility ();
+		}
+
+		private void SetupAccessibility ()
+		{
 			folderentry.SetEntryAccessibilityAttributes ("BaseDirectory.FolderEntry",
-			                                             GettextCatalog.GetString ("Root Directory"),
-			                                             GettextCatalog.GetString ("Entry the root directory for the project"));
+														 GettextCatalog.GetString ("Root Directory"),
+														 GettextCatalog.GetString ("Entry the root directory for the project"));
+			folderentry.SetAccessibilityLabelRelationship (label3);
 		}
 		
 		public string BaseDirectory {
