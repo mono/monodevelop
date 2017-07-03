@@ -23,55 +23,85 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-/*using System;
-namespace CompletionProvider
-{ 
-	class EnumMemberCompletionProvider : CompletionContextHandler
+using System;
+
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading.Tasks;
+using ICSharpCode.NRefactory6.CSharp;
+using ICSharpCode.NRefactory6.CSharp.Analysis;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Completion;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis.CSharp.Completion.Providers;
+
+namespace MonoDevelop.CSharp.Completion.Provider
+{
+	[ExportCompletionProvider ("EnumMemberCompletionProvider", LanguageNames.CSharp)]
+	class EnumMemberCompletionProvider : CommonCompletionProvider
 	{
-		public override bool IsCommitCharacter (CompletionData completionItem, char ch, string textTypedSoFar)
+		public override bool ShouldTriggerCompletion (SourceText text, int position, CompletionTrigger trigger, Microsoft.CodeAnalysis.Options.OptionSet options)
 		{
 			// Only commit on dot.
-			return ch == '.';
+			return trigger.Character == '.';
 		}
 
-		public override bool IsTriggerCharacter (SourceText text, int position)
+		internal override bool IsInsertionTrigger (SourceText text, int insertedCharacterPosition, Microsoft.CodeAnalysis.Options.OptionSet options)
 		{
+			
 			// Bring up on space or at the start of a word, or after a ( or [.
 			//
 			// Note: we don't want to bring this up after traditional enum operators like & or |.
 			// That's because we don't like the experience where the enum appears directly after the
 			// operator.  Instead, the user normally types <space> and we will bring up the list
 			// then.
-			var ch = text [position];
+			var ch = text [insertedCharacterPosition];
 			return
 				ch == ' ' ||
 				ch == '[' ||
 				ch == '(' ||
-				(IsStartingNewWord (text, position));
+				(CompletionUtilities.IsStartingNewWord (text, insertedCharacterPosition));
 		}
+		static readonly ImmutableArray<string> tags = ImmutableArray<string>.Empty.AddRange (new [] { "EnumMember", "Public" });
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
+		public override async Task ProvideCompletionsAsync (Microsoft.CodeAnalysis.Completion.CompletionContext context)
 		{
-			var model = ctx.SemanticModel;
-			var tree = ctx.SyntaxTree;
-			if (tree.IsInNonUserCode (completionContext.Position, cancellationToken))
-				return Enumerable.Empty<CompletionData> ();
+			var document = context.Document;
+			var position = context.Position;
+			var cancellationToken = context.CancellationToken;
 
-			var token = tree.FindTokenOnLeftOfPosition (completionContext.Position, cancellationToken);
+			var model = await document.GetSemanticModelForSpanAsync (new TextSpan (position, 0), cancellationToken).ConfigureAwait (false);
+
+			var workspace = document.Project.Solution.Workspace;
+			var ctx = CSharpSyntaxContext.CreateContext (workspace, model, position, cancellationToken);
+
+			var tree = ctx.SyntaxTree;
+			if (tree.IsInNonUserCode (context.Position, cancellationToken))
+				return;
+
+			var token = tree.FindTokenOnLeftOfPosition (context.Position, cancellationToken);
 			if (token.IsKind (SyntaxKind.DotToken) || token.IsMandatoryNamedParameterPosition ())
-				return Enumerable.Empty<CompletionData> ();
-			var result = new List<CompletionData> ();
+				return;
 
 			// check if it's the first parameter and set autoselect == false if a parameterless version exists.
 			if (token.IsKind (SyntaxKind.OpenParenToken)) {
 				var parent = token.Parent?.Parent;
 				if (parent == null)
-					return Enumerable.Empty<CompletionData> ();
+					return;
 				var symbolInfo = model.GetSymbolInfo (parent);
 				foreach (var symbol in new [] { symbolInfo.Symbol }.Concat (symbolInfo.CandidateSymbols)) {
 					if (symbol != null && symbol.IsKind (SymbolKind.Method)) {
 						if (symbol.GetParameters ().Length == 0) {
-							completionResult.AutoSelect = false;
+							// completionResult.AutoSelect = false;
 							break;
 						}
 					}
@@ -92,24 +122,24 @@ namespace CompletionProvider
 					continue;
 
 				// Does type have any aliases?
-				ISymbol alias = await type.FindApplicableAlias (completionContext.Position, model, cancellationToken).ConfigureAwait (false);
+				ISymbol alias = await type.FindApplicableAlias (context.Position, model, cancellationToken).ConfigureAwait (false);
 
-				var displayString = RoslynCompletionData.SafeMinimalDisplayString (type, model, completionContext.Position, SymbolDisplayFormat.CSharpErrorMessageFormat);
-				if (string.IsNullOrEmpty (completionResult.DefaultCompletionString)) {
-					completionResult.DefaultCompletionString = displayString;
-					completionResult.AutoCompleteEmptyMatch = true;
-
-				}
 				if (!IsReachable (model, type, token.Parent)) {
-					result.Add (engine.Factory.CreateSymbolCompletionData (this, type, displayString));
+					var pDict = ImmutableDictionary<string, string>.Empty;
+					var displayString = CSharpAmbience.SafeMinimalDisplayString (type, model, context.Position, SymbolDisplayFormat.CSharpErrorMessageFormat);
+					var item = CompletionItem.Create (displayString, properties: pDict, tags: tags);
+					context.AddItem (item);
+					context.SuggestionModeItem = item;
 				}
+
 				foreach (IFieldSymbol field in type.GetMembers ().OfType<IFieldSymbol> ()) {
 					if (field.DeclaredAccessibility == Accessibility.Public && (field.IsConst || field.IsStatic)) {
-						result.Add (engine.Factory.CreateEnumMemberCompletionData (this, alias, field));
+						var displayString = CSharpAmbience.SafeMinimalDisplayString (alias ?? field.Type, model, context.Position, SymbolDisplayFormat.CSharpErrorMessageFormat) + "." + field.Name;
+						var pDict = ImmutableDictionary<string, string>.Empty;
+						context.AddItem (CompletionItem.Create (displayString, properties: pDict, tags: tags));
 					}
 				}
 			}
-			return result;
 		}
 
 		bool IsReachable (SemanticModel model, ITypeSymbol type, SyntaxNode node)
@@ -117,6 +147,4 @@ namespace CompletionProvider
 			return type.ToMinimalDisplayString (model, node.SpanStart).IndexOf ('.') < 0;
 		}
 	}
-
 }
-*/

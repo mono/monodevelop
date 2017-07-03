@@ -192,7 +192,9 @@ namespace MonoDevelop.CSharp.Completion
 
 			{ "Keyword", "keyword" },
 
-			{ "Snippet", "template"}
+			{ "Snippet", "template"},
+
+			{ "EnumMember", "literal" }
 		};
 
 		string GetItemType ()
