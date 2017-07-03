@@ -27,6 +27,8 @@ using System;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
+using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
@@ -54,7 +56,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			Build ();
 			this.solution = solution;
 			folderEntry.Path = solution.OutputDirectory;
-<<<<<<< HEAD
 			SetupAccessibility ();
 		}
 
@@ -65,8 +66,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			                                              "", 
 			                                              GettextCatalog.GetString ("Enter the output directory"));
 			folderEntry.SetAccessibilityLabelRelationship (this.label73);
-=======
->>>>>>> parent of c4787d2... Bug 53532 "Solution Options" empty "Label" for edit fields
 		}
 		
 		public void Store()
