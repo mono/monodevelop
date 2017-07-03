@@ -125,6 +125,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			return vbox;
 		}
+
+
+
 		
 		void LoadPolicy (T policy)
 		{

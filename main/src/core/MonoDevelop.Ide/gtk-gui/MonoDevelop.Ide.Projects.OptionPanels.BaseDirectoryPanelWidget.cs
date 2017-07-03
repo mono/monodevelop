@@ -5,10 +5,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	public partial class BaseDirectoryPanelWidget
 	{
 		private global::Gtk.VBox vbox2;
+
 		private global::Gtk.Label label1;
+
 		private global::Gtk.HBox hbox1;
+
 		private global::Gtk.Label label2;
+
 		private global::Gtk.Label label3;
+
 		private global::MonoDevelop.Components.FolderEntry folderentry;
 
 		protected virtual void Build ()

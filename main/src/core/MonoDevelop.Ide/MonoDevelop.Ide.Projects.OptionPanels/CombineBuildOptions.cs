@@ -27,6 +27,9 @@ using System;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Components.AtkCocoaHelper;
+
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
@@ -54,11 +57,21 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			Build ();
 			this.solution = solution;
 			folderEntry.Path = solution.OutputDirectory;
+			SetupAccessibility ();
+		}
+
+		private void SetupAccessibility ()
+		{
+			var label = GettextCatalog.GetString ("Enter the output directory");
+			folderEntry.SetCommonAccessibilityAttributes ("CombineBuildOptions.folderEntry", "", label);
+			folderEntry.SetAccessibilityLabelRelationship (this.label73);
 		}
 		
 		public void Store()
 		{
 			solution.OutputDirectory = folderEntry.Path;
 		}
+
+
 	}
 }

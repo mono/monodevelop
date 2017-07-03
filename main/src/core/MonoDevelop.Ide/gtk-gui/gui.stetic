@@ -1871,7 +1871,6 @@ Diagnostic</property>
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Every hour</property>
-                    <property name="Active">True</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -1979,7 +1978,6 @@ Diagnostic</property>
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">Beta updates (weekly)</property>
-                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
@@ -7494,7 +7492,6 @@ All solutions</property>
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Projects.OptionPanels.CombineBuildOptionsWidget" design-size="249 74">
     <property name="MemberName" />
-    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox68">
         <property name="MemberName" />
@@ -8206,7 +8203,6 @@ All solutions</property>
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Projects.OptionPanels.CombineInformationWidget" design-size="434 143">
     <property name="MemberName" />
-    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox86">
         <property name="MemberName" />
@@ -8623,7 +8619,6 @@ All solutions</property>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanelWidget" design-size="463 44">
     <property name="MemberName" />
     <property name="Visible">False</property>
-    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
