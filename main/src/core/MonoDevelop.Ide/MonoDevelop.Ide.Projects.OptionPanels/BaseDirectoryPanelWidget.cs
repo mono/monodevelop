@@ -44,9 +44,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			var a = folderentry.EntryAccessible;
 			a.SetTitleUIElement (label3.Accessible);
 			label3.Accessible.SetTitleFor (a);
-			//folderentry.SetEntryAccessibilityAttributes ("BaseDirectory.FolderEntry",
-			//                                             GettextCatalog.GetString ("Root Directory"),
-			//                                             GettextCatalog.GetString ("Entry the root directory for the project"));
 			SetupAccessibility ();
 		}
 

@@ -62,8 +62,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		private void SetupAccessibility ()
 		{
-			var label = GettextCatalog.GetString ("Enter the output directory");
-			folderEntry.SetCommonAccessibilityAttributes ("CombineBuildOptions.folderEntry", "", label);
+			
+			folderEntry.SetCommonAccessibilityAttributes ("CombineBuildOptions.folderEntry", 
+			                                              "", 
+			                                              GettextCatalog.GetString ("Enter the output directory"));
 			folderEntry.SetAccessibilityLabelRelationship (this.label73);
 		}
 		
