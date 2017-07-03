@@ -23,51 +23,80 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-/*using System;
-namespace CompletionProvider
+using System;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Completion;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.CSharp.Completion.Providers;
+using System.Collections.Generic;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Threading;
+using MonoDevelop.Ide.TypeSystem;
+
+namespace MonoDevelop.CSharp.Completion.Provider
 {
-	class EventSenderCompletionProvider : CompletionContextHandler
+	[ExportCompletionProvider ("EventSenderCompletionProvider", LanguageNames.CSharp)]
+	class EventSenderCompletionProvider : CommonCompletionProvider
 	{
-		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
+		public override async Task ProvideCompletionsAsync (Microsoft.CodeAnalysis.Completion.CompletionContext context)
 		{
-			var position = completionContext.Position;
-			var document = completionContext.Document;
+			var document = context.Document;
+			var position = context.Position;
+			var cancellationToken = context.CancellationToken;
+
+			var model = await document.GetSemanticModelForSpanAsync (new TextSpan (position, 0), cancellationToken).ConfigureAwait (false);
+
+			var workspace = document.Project.Solution.Workspace;
+			var ctx = CSharpSyntaxContext.CreateContext (workspace, model, position, cancellationToken);
 			var syntaxTree = ctx.SyntaxTree;
 			if (syntaxTree.IsInNonUserCode (position, cancellationToken) ||
 				syntaxTree.IsPreProcessorDirectiveContext (position, cancellationToken))
-				return Task.FromResult (Enumerable.Empty<CompletionData> ());
+				return;
 			if (!syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken))
-				return Task.FromResult (Enumerable.Empty<CompletionData> ());
+				return;
 			var ma = ctx.LeftToken.Parent as MemberAccessExpressionSyntax;
 			if (ma == null)
-				return Task.FromResult (Enumerable.Empty<CompletionData> ());
-
-			var model = ctx.CSharpSyntaxContext.SemanticModel;
-
+				return;
 			var symbolInfo = model.GetSymbolInfo (ma.Expression);
 			if (symbolInfo.Symbol == null || symbolInfo.Symbol.Kind != SymbolKind.Parameter)
-				return Task.FromResult (Enumerable.Empty<CompletionData> ());
-			var list = new List<CompletionData> ();
+				return;
 			var within = model.GetEnclosingNamedTypeOrAssembly (position, cancellationToken);
 			var addedSymbols = new HashSet<string> ();
 
 			foreach (var ano in ma.AncestorsAndSelf ().OfType<AnonymousMethodExpressionSyntax> ()) {
-				Analyze (engine, model, ma.Expression, within, list, ano.ParameterList, symbolInfo.Symbol, addedSymbols, cancellationToken);
+				Analyze (context, model, ma.Expression, within, ano.ParameterList, symbolInfo.Symbol, addedSymbols, cancellationToken);
 			}
 
 			foreach (var ano in ma.AncestorsAndSelf ().OfType<ParenthesizedLambdaExpressionSyntax> ()) {
-				Analyze (engine, model, ma.Expression, within, list, ano.ParameterList, symbolInfo.Symbol, addedSymbols, cancellationToken);
+				Analyze (context, model, ma.Expression, within, ano.ParameterList, symbolInfo.Symbol, addedSymbols, cancellationToken);
 			}
-
-			return Task.FromResult ((IEnumerable<CompletionData>)list);
 		}
 
-		void Analyze (CompletionEngine engine, SemanticModel model, SyntaxNode node, ISymbol within, List<CompletionData> list, ParameterListSyntax parameterList, ISymbol symbol, HashSet<string> addedSymbols, CancellationToken cancellationToken)
+		protected override Task<TextChange?> GetTextChangeAsync (CompletionItem selectedItem, char? ch, CancellationToken cancellationToken)
+		{
+			var node = selectedItem.Properties ["NodeString"];
+			return Task.FromResult<TextChange?> (new TextChange (new TextSpan (selectedItem.Span.Start - node.Length - 1, selectedItem.Span.Length + node.Length + 1), "((" + selectedItem.Properties ["CastTypeString"] + ")" + node + ")." + selectedItem.DisplayText));
+		}
+
+		void Analyze (CompletionContext context, SemanticModel model, SyntaxNode node, ISymbol within, ParameterListSyntax parameterList, ISymbol symbol, HashSet<string> addedSymbols, CancellationToken cancellationToken)
 		{
 			var type = CheckParameterList (model, parameterList, symbol, cancellationToken);
 			if (type == null)
 				return;
 			var startType = type;
+
+			var typeString = CSharpAmbience.SafeMinimalDisplayString (type, model, context.CompletionListSpan.Start, Ambience.LabelFormat);
+			var pDict = ImmutableDictionary<string, string>.Empty;
+			if (typeString != null)
+				pDict = pDict.Add ("CastTypeString", typeString);
+			pDict = pDict.Add ("NodeString", node.ToString ());
 
 			while (type.SpecialType != SpecialType.System_Object) {
 				foreach (var member in type.GetMembers ()) {
@@ -75,11 +104,11 @@ namespace CompletionProvider
 						continue;
 					if (member.IsOrdinaryMethod () || member.Kind == SymbolKind.Field || member.Kind == SymbolKind.Property) {
 						if (member.IsAccessibleWithin (within)) {
-							var completionData = engine.Factory.CreateCastCompletionData (this, member, node, startType);
+							var completionData = CompletionItem.Create (member.Name, properties: pDict);
 							if (addedSymbols.Contains (completionData.DisplayText))
 								continue;
 							addedSymbols.Add (completionData.DisplayText);
-							list.Add (completionData);
+							context.AddItem (completionData);
 						}
 					}
 				}
@@ -109,5 +138,3 @@ namespace CompletionProvider
 		}
 	}
 }
-
-*/

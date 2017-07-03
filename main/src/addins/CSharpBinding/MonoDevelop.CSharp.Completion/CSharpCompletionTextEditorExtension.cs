@@ -480,6 +480,9 @@ namespace MonoDevelop.CSharp.Completion
 				AddImportCompletionData (syntaxContext, result, semanticModel, completionContext.TriggerOffset, token);
 			}
 
+			if (completionList.SuggestionModeItem != null)
+				result.DefaultCompletionString = completionList.SuggestionModeItem.DisplayText;
+
 			return result;
 		}
 

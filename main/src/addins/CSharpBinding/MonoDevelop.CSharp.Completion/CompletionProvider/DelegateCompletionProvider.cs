@@ -23,7 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-/*using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -41,12 +41,39 @@ using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis.ExtractMethod;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Completion.Provider
 {
 	[ExportCompletionProvider ("DelegateCompletionProvider", LanguageNames.CSharp)]
 	class DelegateCompletionProvider : CommonCompletionProvider
 	{
+		internal static readonly SymbolDisplayFormat NameFormat =
+		new SymbolDisplayFormat (
+			globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
+			typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+			propertyStyle: SymbolDisplayPropertyStyle.NameOnly,
+			genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters | SymbolDisplayGenericsOptions.IncludeVariance,
+			memberOptions: SymbolDisplayMemberOptions.IncludeParameters | SymbolDisplayMemberOptions.IncludeExplicitInterface,
+			parameterOptions:
+			SymbolDisplayParameterOptions.IncludeParamsRefOut |
+			SymbolDisplayParameterOptions.IncludeExtensionThis |
+			SymbolDisplayParameterOptions.IncludeType |
+			SymbolDisplayParameterOptions.IncludeName,
+			miscellaneousOptions:
+			SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
+			SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+
+		internal static readonly SymbolDisplayFormat overrideNameFormat = NameFormat.WithParameterOptions (
+			SymbolDisplayParameterOptions.IncludeDefaultValue |
+			SymbolDisplayParameterOptions.IncludeExtensionThis |
+			SymbolDisplayParameterOptions.IncludeType |
+			SymbolDisplayParameterOptions.IncludeName |
+			SymbolDisplayParameterOptions.IncludeParamsRefOut);
+
 		public override bool ShouldTriggerCompletion (SourceText text, int position, CompletionTrigger trigger, Microsoft.CodeAnalysis.Options.OptionSet options)
 		{
 			return trigger.Character == '(' || trigger.Character == '[' || trigger.Character == ',' || base.ShouldTriggerCompletion (text, position, trigger, options);
@@ -78,10 +105,10 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				string delegateName = null;
 
 				if (ctx.TargetToken.IsKind (SyntaxKind.PlusEqualsToken)) {
-					delegateName = GuessEventHandlerBaseName (ctx.LeftToken.Parent, ctx.ContainingTypeDeclaration);
+					delegateName = GuessEventHandlerBaseName (ctx.TargetToken.Parent, ctx.ContainingTypeDeclaration);
 				}
 
-				AddDelegateHandlers (ctx.TargetToken.Parent, model, engine, result, type, position, delegateName, cancellationToken);
+				AddDelegateHandlers (context, ctx.TargetToken.Parent, model, type, position, delegateName, cancellationToken);
 			}
 		}
 
@@ -153,40 +180,37 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		void AddDelegateHandlers (CompletionContext context, SyntaxNode parent, SemanticModel semanticModel, ITypeSymbol delegateType, int position, string optDelegateName, CancellationToken cancellationToken)
 		{
 			var delegateMethod = delegateType.GetDelegateInvokeMethod ();
-			result.PossibleDelegates.Add (delegateMethod);
+			var editor = IdeApp.Workbench.ActiveDocument.Editor;
 
-			var thisLineIndent = "";
+			var thisLineIndent = editor.IndentationTracker.GetIndentationString (editor.OffsetToLineNumber (position));
+			var oneIndent = editor.Options.TabsToSpaces ? new string (' ', editor.Options.TabSize) : "\t";
 			string EolMarker = "\n";
 			bool addSemicolon = true;
 			bool addDefault = true;
 
 			string delegateEndString = EolMarker + thisLineIndent + "}" + (addSemicolon ? ";" : "");
-			//bool containsDelegateData = completionList.Result.Any(d => d.DisplayText.StartsWith("delegate("));
-			CompletionData item;
+			CompletionItem item;
 			if (addDefault) {
-				item = engine.Factory.CreateAnonymousMethod (
-					this,
-					"delegate",
-					"Creates anonymous delegate.",
-					"delegate {" + EolMarker + thisLineIndent,
-					delegateEndString
-				);
-				item.CompletionCategory = category;
-				if (!completionList.Any (i => i.DisplayText == item.DisplayText))
-					completionList.Add (item);
+				item = CreateCompletionItem (
+				   "delegate",
+				   "Creates anonymous delegate.",
+				   "delegate {" + EolMarker + thisLineIndent + oneIndent,
+				   delegateEndString
+			   );
+
+				if (!context.Items.Any (i => i.DisplayText == item.DisplayText))
+					context.AddItem (item);
 
 				//if (LanguageVersion.Major >= 5)
 
-				item = engine.Factory.CreateAnonymousMethod (
-					this,
+				item = CreateCompletionItem (
 					"async delegate",
 					"Creates anonymous async delegate.",
-					"async delegate {" + EolMarker + thisLineIndent,
+					"async delegate {" + EolMarker + thisLineIndent + oneIndent,
 					delegateEndString
 				);
-				item.CompletionCategory = category;
-				if (!completionList.Any (i => i.DisplayText == item.DisplayText))
-					completionList.Add (item);
+				if (!context.Items.Any (i => i.DisplayText == item.DisplayText))
+					context.AddItem (item);
 			}
 
 			var sb = new StringBuilder ("(");
@@ -196,7 +220,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					sb.Append (", ");
 					sbWithoutTypes.Append (", ");
 				}
-				sb.Append (RoslynCompletionData.SafeMinimalDisplayString (delegateMethod.Parameters [k], semanticModel, position, overrideNameFormat));
+				sb.Append (CSharpAmbience.SafeMinimalDisplayString (delegateMethod.Parameters [k], semanticModel, position, overrideNameFormat));
 				sbWithoutTypes.Append (delegateMethod.Parameters [k].Name);
 			}
 
@@ -206,75 +230,164 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				.Replace (", params ", ", ")
 				.Replace ("(params ", "(");
 
-			if (completionList.All (data => data.DisplayText != signature)) {
-				item = engine.Factory.CreateAnonymousMethod (
-					this,
+			if (context.Items.All (data => data.DisplayText != signature)) {
+				item = CreateCompletionItem (
 					signature + " =>",
 					"Creates typed lambda expression.",
 					signature + " => ",
 					(addSemicolon ? ";" : "")
 				);
-				item.CompletionCategory = category;
-				if (!completionList.Any (i => i.DisplayText == item.DisplayText))
-					completionList.Add (item);
+				//item.CompletionCategory = category;
+				if (!context.Items.Any (i => i.DisplayText == item.DisplayText))
+					context.AddItem (item);
 
 				// if (LanguageVersion.Major >= 5) {
 
-				item = engine.Factory.CreateAnonymousMethod (
-					this,
+				item = CreateCompletionItem (
 					"async " + signature + " =>",
 					"Creates typed async lambda expression.",
 					"async " + signature + " => ",
 					(addSemicolon ? ";" : "")
 				);
-				item.CompletionCategory = category;
-				if (!completionList.Any (i => i.DisplayText == item.DisplayText))
-					completionList.Add (item);
+				//item.CompletionCategory = category;
+				if (!context.Items.Any (i => i.DisplayText == item.DisplayText))
+					context.AddItem (item);
 
 				var signatureWithoutTypes = sbWithoutTypes.ToString ();
-				if (!delegateMethod.Parameters.Any (p => p.RefKind != RefKind.None) && completionList.All (data => data.DisplayText != signatureWithoutTypes)) {
-					item = engine.Factory.CreateAnonymousMethod (
-						this,
+				if (!delegateMethod.Parameters.Any (p => p.RefKind != RefKind.None) && context.Items.All (data => data.DisplayText != signatureWithoutTypes)) {
+					item = CreateCompletionItem (
 						signatureWithoutTypes + " =>",
 						"Creates typed lambda expression.",
 						signatureWithoutTypes + " => ",
 						(addSemicolon ? ";" : "")
 					);
-					item.CompletionCategory = category;
-					if (!completionList.Any (i => i.DisplayText == item.DisplayText)) {
-						completionList.Add (item);
-						result.DefaultCompletionString = item.DisplayText;
+					//item.CompletionCategory = category;
+					if (!context.Items.Any (i => i.DisplayText == item.DisplayText)) {
+						context.AddItem (item);
+						context.SuggestionModeItem = item;
 					}
 
 					//if (LanguageVersion.Major >= 5) {
-					item = engine.Factory.CreateAnonymousMethod (
-						this,
+					item = CreateCompletionItem (
 						"async " + signatureWithoutTypes + " =>",
 						"Creates typed async lambda expression.",
 						"async " + signatureWithoutTypes + " => ",
 						(addSemicolon ? ";" : "")
 					);
-					item.CompletionCategory = category;
-					if (!completionList.Any (i => i.DisplayText == item.DisplayText))
-						completionList.Add (item);
+					//item.CompletionCategory = category;
+					if (!context.Items.Any (i => i.DisplayText == item.DisplayText))
+						context.AddItem (item);
 
 					//}
 				}
 			}
-			string varName = optDelegateName ?? "Handle" + delegateType.Name;
-
-
-			var curType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (position, cancellationToken);
-			var uniqueName = new UniqueNameGenerator (semanticModel).CreateUniqueMethodName (parent, varName);
-			item = engine.Factory.CreateNewMethodDelegate (this, delegateType, uniqueName, curType);
-			item.CompletionCategory = category;
-			if (!completionList.Any (i => i.DisplayText == item.DisplayText)) {
-				completionList.Add (item);
-				if (string.IsNullOrEmpty (result.DefaultCompletionString))
-					result.DefaultCompletionString = item.DisplayText;
+			item = CreateNewMethodCreationItem (parent, semanticModel, delegateType, position, optDelegateName, delegateMethod, cancellationToken);
+			// item.CompletionCategory = category;
+			if (!context.Items.Any (i => i.DisplayText == item.DisplayText)) {
+				context.AddItem (item);
+				context.SuggestionModeItem = item;
 			}
 		}
 
+		CompletionItem CreateNewMethodCreationItem (SyntaxNode parent, SemanticModel semanticModel, ITypeSymbol delegateType, int position, string optDelegateName, IMethodSymbol delegateMethod, CancellationToken cancellationToken)
+		{
+			var sb = new StringBuilder ();
+			string varName = optDelegateName ?? "Handle" + delegateType.Name;
+
+			var editor = IdeApp.Workbench.ActiveDocument.Editor;
+			var curType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (position, cancellationToken);
+			var uniqueName = new UniqueNameGenerator (semanticModel).CreateUniqueMethodName (parent, varName);
+			var pDict = ImmutableDictionary<string, string>.Empty;
+			pDict = pDict.Add ("RightSideMarkup", "<span size='small'>" + GettextCatalog.GetString ("Creates new method") + "</span>");
+			var indent = "\t";
+			sb = new StringBuilder ();
+			var enclosingSymbol = semanticModel.GetEnclosingSymbol (position, default (CancellationToken));
+			if (enclosingSymbol != null && enclosingSymbol.IsStatic)
+				sb.Append ("static ");
+			sb.Append ("void ");
+			int pos2 = sb.Length;
+			sb.Append (uniqueName);
+			sb.Append (' ');
+			sb.Append ("(");
+
+			for (int k = 0; k < delegateMethod.Parameters.Length; k++) {
+				if (k > 0) {
+					sb.Append (", ");
+				}
+				sb.Append (CSharpAmbience.SafeMinimalDisplayString (delegateMethod.Parameters [k], semanticModel, position, MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat));
+			}
+			sb.Append (")");
+
+			sb.Append (editor.EolMarker);
+			sb.Append (indent);
+			sb.Append ("{");
+			sb.Append (editor.EolMarker);
+			sb.Append (indent);
+			sb.Append (editor.Options.GetIndentationString ());
+			//int cursorPos = pos + sb.Length;
+			sb.Append (indent);
+			sb.Append ("}");
+			sb.Append (editor.EolMarker);
+			pDict = pDict.Add ("NewMethod", sb.ToString ());
+			pDict = pDict.Add ("MethodName", varName);
+
+			return CompletionItem.Create (uniqueName, properties: pDict);
+		}
+
+		CompletionItem CreateCompletionItem (string displayString, string description, string insertBefore, string insertAfter)
+		{
+			var pDict = ImmutableDictionary<string, string>.Empty;
+			if (description != null)
+				pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + description + "</span>");
+			pDict = pDict.Add ("InsertBefore", insertBefore);
+			pDict = pDict.Add ("InsertAfter", insertAfter);
+
+			return CompletionItem.Create (displayString, properties: pDict);
+		}
+
+		public override async Task<CompletionChange> GetChangeAsync (Document doc, CompletionItem item, char? commitKey = default (char?), CancellationToken cancellationToken = default (CancellationToken))
+		{
+			TextChange change;
+			if (item.Properties.ContainsKey ("NewMethod")) {
+				change = new TextChange (new TextSpan (item.Span.Start, item.Span.Length), item.Properties ["MethodName"] + ";");
+				var document = IdeApp.Workbench.ActiveDocument;
+				var editor = document.Editor;
+				var parsedDocument = document.ParsedDocument;
+				var semanticModel = await doc.GetSemanticModelAsync (cancellationToken);
+				var declaringType = semanticModel.GetEnclosingSymbolMD<INamedTypeSymbol> (item.Span.Start, default (CancellationToken));
+				var insertionPoints = InsertionPointService.GetInsertionPoints (
+					document.Editor,
+					parsedDocument,
+					declaringType,
+					editor.CaretOffset
+				);
+				var options = new InsertionModeOptions (
+					GettextCatalog.GetString ("Create new method"),
+					insertionPoints,
+					point => {
+						if (!point.Success)
+							return;
+						point.InsertionPoint.Insert (document.Editor, document, item.Properties ["NewMethod"]);
+					}
+				);
+
+				editor.StartInsertionMode (options);
+
+				return CompletionChange.Create (change);
+			}
+			var beforeText = item.Properties ["InsertBefore"];
+			var afterText = item.Properties ["InsertAfter"];
+			change = new TextChange (new TextSpan (item.Span.Start, item.Span.Length), beforeText + afterText);
+
+			return CompletionChange.Create (change, item.Span.Start + beforeText.Length);
+		}
+
+		protected override Task<TextChange?> GetTextChangeAsync (CompletionItem selectedItem, char? ch, CancellationToken cancellationToken)
+		{
+			var beforeText = selectedItem.Properties ["InsertBefore"];
+			var afterText = selectedItem.Properties ["InsertAfter"];
+			var change = new TextChange (new TextSpan (selectedItem.Span.Start, selectedItem.Span.Length), beforeText + afterText);
+			return Task.FromResult<TextChange?> (change);
+		}
 	}
 }
-*/
