@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.Projects
 				return;
 			}
 
-			if (!Template.AvailableLanguages.Any () || !IsTemplateRowSelected (widget, flags)) {
+			if (!RenderRecentTemplate && (!Template.AvailableLanguages.Any () || !IsTemplateRowSelected (widget, flags))) {
 				return;
 			}
 
