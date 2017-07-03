@@ -27,6 +27,8 @@ using System;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
+using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
