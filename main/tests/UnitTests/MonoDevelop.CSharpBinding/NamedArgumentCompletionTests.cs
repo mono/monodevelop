@@ -217,7 +217,7 @@ namespace MonoDevelop.CSharpBinding
 			return widget.CompletedWord;
 		}
 
-		
+		[Ignore ("Changed in roslyn completion.")]
 		[Test]
 		public async Task TestSimpleCase ()
 		{
