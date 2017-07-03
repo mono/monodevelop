@@ -34,7 +34,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Gtk;
 using MonoDevelop.Components;
-using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
@@ -64,15 +63,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			versEntry.Text = solution.Version;
 			descView.Buffer.Text = solution.Description;
-		}
-
-		private void SetupAccessibility ()
-		{
-			versEntry.SetCommonAccessibilityAttributes ("CombineInformationPanel.versEntry",
-														 "",
-														 GettextCatalog.GetString ("Entry version"));
-			versEntry.SetAccessibilityLabelRelationship (versLabel);
-		}
+		}			
 		
 		public void Store (Solution solution)
 		{
