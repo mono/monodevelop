@@ -44,14 +44,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			var a = folderentry.EntryAccessible;
 			a.SetTitleUIElement (label3.Accessible);
 			label3.Accessible.SetTitleFor (a);
-<<<<<<< HEAD
 			SetupAccessibility ();
 		}
 
 		private void SetupAccessibility ()
 		{
-=======
->>>>>>> parent of c4787d2... Bug 53532 "Solution Options" empty "Label" for edit fields
 			folderentry.SetEntryAccessibilityAttributes ("BaseDirectory.FolderEntry",
 			                                             GettextCatalog.GetString ("Root Directory"),
 			                                             GettextCatalog.GetString ("Entry the root directory for the project"));
