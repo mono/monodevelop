@@ -54,7 +54,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			Build ();
 			this.solution = solution;
 			folderEntry.Path = solution.OutputDirectory;
-<<<<<<< HEAD
 			SetupAccessibility ();
 		}
 
@@ -65,8 +64,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			                                              "", 
 			                                              GettextCatalog.GetString ("Enter the output directory"));
 			folderEntry.SetAccessibilityLabelRelationship (this.label73);
-=======
->>>>>>> parent of c4787d2... Bug 53532 "Solution Options" empty "Label" for edit fields
 		}
 		
 		public void Store()
