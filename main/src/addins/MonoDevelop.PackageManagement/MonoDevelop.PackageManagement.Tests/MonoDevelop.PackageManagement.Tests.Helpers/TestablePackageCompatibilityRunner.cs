@@ -58,7 +58,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			ProgressMonitor monitor,
 			IPackageManagementEvents packageManagementEvents)
 		{
-			EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents);
+			EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents, null);
 			return EventsMonitor;
 		}
 

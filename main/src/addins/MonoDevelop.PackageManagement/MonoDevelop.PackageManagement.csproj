@@ -418,6 +418,13 @@
     <Compile Include="MonoDevelop.PackageManagement\UninstallNuGetPackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageReferenceNuGetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\HasNuGetPackageOrReferenceFileTemplateCondition.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\SolutionClosingDialog.UI.cs">
+      <DependentUpon>SolutionClosingDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.PackageManagement.Gui\SolutionClosingDialog.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PendingPackageActionsInformation.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageActionType.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PendingPackageActionsHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

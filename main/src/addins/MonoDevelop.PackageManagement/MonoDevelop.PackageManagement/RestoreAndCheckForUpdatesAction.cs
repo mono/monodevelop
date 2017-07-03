@@ -107,6 +107,10 @@ namespace MonoDevelop.PackageManagement
 			return nugetAwareProjects.Any ();
 		}
 
+		public PackageActionType ActionType {
+			get { return PackageActionType.Restore; }
+		}
+
 		public bool CheckForUpdatesAfterRestore { get; set; }
 
 		public async Task<bool> HasMissingPackages (CancellationToken cancellationToken = default(CancellationToken))

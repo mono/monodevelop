@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Core;
+using System.Threading;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -41,8 +42,17 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public ProgressMonitor CreateProgressMonitor (string statusText, bool clearConsole)
 		{
+			return CreateProgressMonitor (statusText, clearConsole, null);
+		}
+
+		public ProgressMonitor CreateProgressMonitor (
+			string statusText,
+			bool clearConsole,
+			CancellationTokenSource cancellationTokenSource)
+		{
 			StatusText = statusText;
 			ClearConsole = clearConsole;
+			ProgressMonitor.SetCancellationTokenSource (cancellationTokenSource);
 			return ProgressMonitor;
 		}
 	}

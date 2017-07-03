@@ -39,6 +39,7 @@ namespace MonoDevelop.PackageManagement
 		static Queue<Action> backgroundQueue = new Queue<Action> ();
 		static ManualResetEvent backgroundThreadWait = new ManualResetEvent (false);
 		static Thread backgroundThread;
+		static Action action;
 
 		public static void Initialize ()
 		{
@@ -53,7 +54,7 @@ namespace MonoDevelop.PackageManagement
 		static void RunDispatcher ()
 		{
 			while (true) {
-				Action action = null;
+				action = null;
 				bool wait = false;
 				lock (backgroundQueue) {
 					if (backgroundQueue.Count == 0) {
@@ -90,6 +91,18 @@ namespace MonoDevelop.PackageManagement
 				if (backgroundQueue.Count == 1)
 					backgroundThreadWait.Set ();
 			}
+		}
+
+		public static void Clear ()
+		{
+			lock (backgroundQueue) {
+				backgroundQueue.Clear ();
+			}
+		}
+
+		public static bool IsDispatching ()
+		{
+			return backgroundQueue.Count > 0 || action != null;
 		}
 	}
 }
