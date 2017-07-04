@@ -251,7 +251,6 @@ namespace MonoDevelop.Ide.FindInFiles
 												"File Mask",
 												GettextCatalog.GetString ("Enter the file mask"));
 			searchentryFileMask.SetAccessibilityLabelRelationship (labelFileMask);
-
 		}
 
 		void SetupAccessibilityForReplace ()
@@ -260,7 +259,6 @@ namespace MonoDevelop.Ide.FindInFiles
 											"Replace",
 											GettextCatalog.GetString ("Enter string to replace"));
 			comboboxentryReplace.SetAccessibilityLabelRelationship (labelReplace);
-			
 		}
 
 
@@ -270,7 +268,6 @@ namespace MonoDevelop.Ide.FindInFiles
 												"Path",
 												GettextCatalog.GetString ("Enter the Path"));
 			comboboxentryPath.SetAccessibilityLabelRelationship (labelPath);
-
 		}
 
 
