@@ -241,7 +241,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		}
 
-		private void SetupAccessibility ()
+		void SetupAccessibility ()
 		{
 			comboboxentryFind.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryFind",
 												"Find",
@@ -258,7 +258,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		}
 
-		private void SetupAccessibilityForReplace ()
+		void SetupAccessibilityForReplace ()
 		{
 			comboboxentryReplace.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryReplace",
 											"Replace",
@@ -268,7 +268,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 
-		private void SetupAccessibilityForPath ()
+		void SetupAccessibilityForPath ()
 		{
 			comboboxentryPath.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryPath",
 												"Path",
