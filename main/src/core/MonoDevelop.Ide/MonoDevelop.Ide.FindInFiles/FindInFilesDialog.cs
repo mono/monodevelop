@@ -247,10 +247,6 @@ namespace MonoDevelop.Ide.FindInFiles
 												"Find",
 												GettextCatalog.GetString ("Enter string to find"));
 			comboboxentryFind.SetAccessibilityLabelRelationship (labelFind);
-
-
-
-
 			searchentryFileMask.SetCommonAccessibilityAttributes ("FindInFilesDialog.searchentryFileMask",
 												"File Mask",
 												GettextCatalog.GetString ("Enter the file mask"));
