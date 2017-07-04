@@ -142,6 +142,44 @@ namespace NuGet.Credentials
 		}
 
 		/// <summary>
+		/// Attempts to retrieve last known good credentials for a URI from a credentials cache.
+		/// </summary>
+		/// <remarks>
+		/// When the return value is <c>true</c>, <paramref name="credentials" /> will have last known
+		/// good credentials from the credentials cache.  These credentials may have become invalid
+		/// since their last use, so there is no guarantee that the credentials are currently valid.
+		/// </remarks>
+		/// <param name="uri">The URI for which cached credentials should be retrieved.</param>
+		/// <param name="isProxy"><c>true</c> for proxy credentials; otherwise, <c>false</c>.</param>
+		/// <param name="credentials">Cached credentials or <c>null</c>.</param>
+		/// <returns><c>true</c> if a result is returned from the cache; otherwise, false.</returns>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="uri" /> is <c>null</c>.</exception>
+		public bool TryGetLastKnownGoodCredentialsFromCache (
+			Uri uri,
+			bool isProxy,
+			out ICredentials credentials)
+		{
+			if (uri == null) {
+				throw new ArgumentNullException (nameof (uri));
+			}
+
+			credentials = null;
+
+			var rootUri = GetRootUri (uri);
+			var ending = $"_{isProxy}_{rootUri}";
+
+			foreach (var entry in _providerCredentialCache) {
+				if (entry.Value.Status == CredentialStatus.Success && entry.Key.EndsWith (ending)) {
+					credentials = entry.Value.Credentials;
+
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
 		/// Gets the currently configured providers.
 		/// </summary>
 		IEnumerable<ICredentialProvider> Providers { get; }
@@ -172,10 +210,15 @@ namespace NuGet.Credentials
 			return GetUriKey (uri, type, provider);
 		}
 
-		static string CredentialCacheKey (Uri uri, CredentialRequestType type, ICredentialProvider provider)
+		static string CredentialCacheKey(Uri uri, CredentialRequestType type, ICredentialProvider provider)
 		{
-			var rootUri = new Uri (uri.GetComponents (UriComponents.SchemeAndServer, UriFormat.SafeUnescaped));
+			var rootUri = GetRootUri (uri);
 			return GetUriKey (rootUri, type, provider);
+		}
+
+		static Uri GetRootUri (Uri uri)
+		{
+			return new Uri (uri.GetComponents (UriComponents.SchemeAndServer, UriFormat.SafeUnescaped));
 		}
 
 		static string GetUriKey (Uri uri, CredentialRequestType type, ICredentialProvider provider)

@@ -28,8 +28,10 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.Commands;
 using NuGet.Common;
+using NuGet.Configuration;
 using NuGet.Frameworks;
 using NuGet.LibraryModel;
+using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
 using NuGet.RuntimeModel;
 using NuGet.Versioning;
@@ -38,21 +40,21 @@ namespace MonoDevelop.PackageManagement
 {
 	static class PackageSpecCreator
 	{
-		public static PackageSpec CreatePackageSpec (DotNetProject project, ILogger logger)
+		public static PackageSpec CreatePackageSpec (DotNetProject project, DependencyGraphCacheContext context)
 		{
-			return CreatePackageSpec (new DotNetProjectProxy (project), logger);
+			return CreatePackageSpec (new DotNetProjectProxy (project), context);
 		}
 
-		public static PackageSpec CreatePackageSpec (IDotNetProject project, ILogger logger)
+		public static PackageSpec CreatePackageSpec (IDotNetProject project, DependencyGraphCacheContext context)
 		{
 			var packageSpec = new PackageSpec (GetTargetFrameworks (project));
 			packageSpec.FilePath = project.FileName;
 			packageSpec.Name = project.Name;
 			packageSpec.Version = GetVersion (project);
 
-			packageSpec.RestoreMetadata = CreateRestoreMetadata (packageSpec, project);
+			packageSpec.RestoreMetadata = CreateRestoreMetadata (packageSpec, project, context.Settings);
 			packageSpec.RuntimeGraph = GetRuntimeGraph (project);
-			AddProjectReferences (packageSpec, project, logger);
+			AddProjectReferences (packageSpec, project, context.Logger);
 			AddPackageReferences (packageSpec, project);
 			AddPackageTargetFallbacks (packageSpec, project);
 
@@ -90,9 +92,10 @@ namespace MonoDevelop.PackageManagement
 			return NuGetVersion.Parse (versionString);
 		}
 
-		static ProjectRestoreMetadata CreateRestoreMetadata (PackageSpec packageSpec, IDotNetProject project)
+		static ProjectRestoreMetadata CreateRestoreMetadata (PackageSpec packageSpec, IDotNetProject project, ISettings settings)
 		{
 			return new ProjectRestoreMetadata {
+				PackagesPath = SettingsUtility.GetGlobalPackagesFolder (settings),
 				ProjectStyle = ProjectStyle.PackageReference,
 				ProjectPath = project.FileName,
 				ProjectName = packageSpec.Name,

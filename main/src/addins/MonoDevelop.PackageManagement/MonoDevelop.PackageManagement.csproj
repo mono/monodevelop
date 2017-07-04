@@ -75,9 +75,6 @@
     <Reference Include="NuGet.Frameworks">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Frameworks.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.Packaging.Core.Types">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Packaging.Core.Types.dll</HintPath>
-    </Reference>
     <Reference Include="NuGet.Packaging.Core">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Packaging.Core.dll</HintPath>
     </Reference>
@@ -89,38 +86,17 @@
     <Reference Include="NuGet.Configuration">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.Protocol.Core.Types">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.Core.Types.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http" />
-    <Reference Include="NuGet.Protocol.Core.v3">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.Core.v3.dll</HintPath>
-    </Reference>
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="NuGet.Repositories">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Repositories.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.RuntimeModel">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.RuntimeModel.dll</HintPath>
-    </Reference>
     <Reference Include="NuGet.DependencyResolver.Core">
       <HintPath>..\..\..\external\nuget-binary\NuGet.DependencyResolver.Core.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.ProjectModel">
       <HintPath>..\..\..\external\nuget-binary\NuGet.ProjectModel.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.ProjectManagement">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.ProjectManagement.dll</HintPath>
-    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="NuGet.ContentModel">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.ContentModel.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Client">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Client.dll</HintPath>
-    </Reference>
     <Reference Include="NuGet.Commands">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Commands.dll</HintPath>
     </Reference>
@@ -135,8 +111,8 @@
     <Reference Include="NuGet.Common">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Common.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.Protocol.VisualStudio">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.VisualStudio.dll</HintPath>
+    <Reference Include="NuGet.Protocol">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Indexing">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Indexing.dll</HintPath>
@@ -315,7 +291,7 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCommonOperations.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopNuGetProjectFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopMSBuildNuGetProjectSystem.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ProjectJsonBuildIntegratedProjectSystem.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectJsonBuildIntegratedNuGetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\INuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UninstallNuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdateNuGetPackageAction.cs" />
@@ -425,6 +401,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PendingPackageActionsInformation.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageActionType.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PendingPackageActionsHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopMSBuildNuGetProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

@@ -28,11 +28,12 @@ using System.Linq;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
+using NuGet.Configuration;
+using NUnit.Framework;
 using NuGet.Frameworks;
 using NuGet.LibraryModel;
 using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
-using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -44,11 +45,13 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakeSolution solution;
 		PackageManagementEvents packageManagementEvents;
 		PackageManagementLogger logger;
+		FakeNuGetSettings settings;
 
 		void CreateProject (string name, string fileName = @"d:\projects\MyProject\MyProject.csproj")
 		{
 			packageManagementEvents = new PackageManagementEvents ();
 			logger = new PackageManagementLogger (packageManagementEvents);
+			settings = new FakeNuGetSettings ();
 			solution = new FakeSolution ();
 			project = new FakeDotNetProject (fileName.ToNativePath ());
 			project.ParentSolution = solution;
@@ -62,7 +65,8 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreatePackageSpec ()
 		{
-			spec = PackageSpecCreator.CreatePackageSpec (project, logger);
+			var context = new DependencyGraphCacheContext (logger, settings);
+			spec = PackageSpecCreator.CreatePackageSpec (project, context);
 		}
 
 		void AddPackageReference (string id, string version)
@@ -88,6 +92,11 @@ namespace MonoDevelop.PackageManagement.Tests
 		void AddPackageTargetFallback (string packageTargetFallback)
 		{
 			project.AddPackageTargetFallback (packageTargetFallback);
+		}
+
+		void AddPackagesPath (string path)
+		{
+			settings.SetValue (SettingsUtility.ConfigSection, "globalPackagesFolder", path);
 		}
 
 		[Test]
@@ -296,6 +305,20 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("netcoreapp1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
 			Assert.AreEqual (".NETCoreApp,Version=v1.0", targetFramework.FrameworkName.ToString ());
 			Assert.AreEqual (0, targetFramework.ProjectReferences.Count);
+		}
+
+		[Test]
+		public void CreatePackageSpec_NewProject_RestoreMetadataHasPackagesPathTakenFromSettings ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			project.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
+			AddTargetFramework ("netcoreapp1.0");
+			string packagesPath = @"c:\users\test\packages".ToNativePath ();
+			AddPackagesPath (packagesPath);
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (packagesPath, spec.RestoreMetadata.PackagesPath);
 		}
 	}
 }
