@@ -29,7 +29,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.PackageManagement.Tests.Helpers;
-using MonoDevelop.Packaging.Templating;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Projects.SharedAssetsProjects;
@@ -46,9 +45,9 @@ namespace MonoDevelop.Packaging.Tests
 			Simulate ();
 
 			#pragma warning disable 219
-			// Ensure NuGet.ProjectManagement assembly is loaded otherwise creating
-			// a PackagingProject will fail.
-			string binDirectory = NuGet.ProjectManagement.Constants.BinDirectory;
+			// Ensure MSBuildSdksPath is registered otherwise the project builders are recycled
+			// when we try to build the packaging project which breaks the tests.
+			string directory = DotNetCore.DotNetCoreSdk.MSBuildSDKsPath;
 			#pragma warning restore 219
 		}
 

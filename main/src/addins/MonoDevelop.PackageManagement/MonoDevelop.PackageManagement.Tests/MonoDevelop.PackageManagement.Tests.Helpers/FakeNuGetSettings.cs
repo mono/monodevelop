@@ -77,8 +77,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			throw new NotImplementedException ();
 		}
 
+		public Dictionary<string, string> Values = new Dictionary<string, string> ();
+
 		public string GetValue (string section, string key, bool isPath = false)
 		{
+			string value = null;
+			if (Values.TryGetValue (GetKey (section, key), out value))
+				return value;
 			return null;
 		}
 
@@ -89,7 +94,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void SetValue (string section, string key, string value)
 		{
-			throw new NotImplementedException ();
+			Values [GetKey (section, key)] = value;
 		}
 
 		public void SetValues (string section, IReadOnlyList<SettingValue> values)
@@ -100,6 +105,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void UpdateSections (string section, IReadOnlyList<SettingValue> values)
 		{
 			throw new NotImplementedException ();
+		}
+
+		static string GetKey (string section, string key)
+		{
+			return $"{section}-{key}";
 		}
 	}
 }

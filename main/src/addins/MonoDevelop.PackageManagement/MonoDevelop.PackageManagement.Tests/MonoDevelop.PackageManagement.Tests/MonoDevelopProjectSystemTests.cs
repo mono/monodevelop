@@ -34,9 +34,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
-using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
-using NuGet.Versioning;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -315,104 +313,104 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void ReferenceExists_ProjectHasReferenceAndFullPathToAssemblyPassedToMethod_ReturnsTrue ()
+		public async Task ReferenceExists_ProjectHasReferenceAndFullPathToAssemblyPassedToMethod_ReturnsTrue ()
 		{
 			CreateTestProject (@"D:\Projects\Test\MyProject.csproj");
 			ProjectHelper.AddReference (project, "MyAssembly", @"d:\Projects\Test\MyAssembly.dll".ToNativePath ());
 			CreateProjectSystem (project);
 			string fileName = @"D:\Projects\Test\MyAssembly.dll".ToNativePath ();
 
-			bool result = projectSystem.ReferenceExists (fileName);
+			bool result = await projectSystem.ReferenceExistsAsync (fileName);
 
 			Assert.IsTrue (result);
 		}
 
 		[Test]
-		public void ReferenceExists_ProjectHasNoReferences_ReturnsFalse ()
+		public async Task ReferenceExists_ProjectHasNoReferences_ReturnsFalse ()
 		{
 			CreateTestProject ();
 			CreateProjectSystem (project);
 			string fileName = @"D:\Projects\Test\MyAssembly.dll".ToNativePath ();
 
-			bool result = projectSystem.ReferenceExists (fileName);
+			bool result = await projectSystem.ReferenceExistsAsync (fileName);
 
 			Assert.IsFalse (result);
 		}
 
 		[Test]
-		public void ReferenceExists_ProjectReferenceNameHasDifferentCase_ReturnsTrue ()
+		public async Task ReferenceExistsAsync_ProjectReferenceNameHasDifferentCase_ReturnsTrue ()
 		{
 			CreateTestProject (@"D:\Projects\Test\MyProject.csproj");
 			ProjectHelper.AddReference (project, "myassembly", @"d:\Projects\Test\myassembly.dll".ToNativePath ());
 			CreateProjectSystem (project);
 			string fileName = @"D:\Projects\Test\MYASSEMBLY.dll".ToNativePath ();
 
-			bool result = projectSystem.ReferenceExists (fileName);
+			bool result = await projectSystem.ReferenceExistsAsync (fileName);
 
 			Assert.IsTrue (result);
 		}
 
 		[Test]
-		public void ReferenceExists_ReferenceNamePassedIsInProjectAndIsReferenceNameWithNoFileExtension_ReturnsTrue ()
+		public async Task ReferenceExistsAsync_ReferenceNamePassedIsInProjectAndIsReferenceNameWithNoFileExtension_ReturnsTrue ()
 		{
 			CreateTestProject ();
 			ProjectHelper.AddGacReference (project, "System.ComponentModel.Composition");
 			CreateProjectSystem (project);
 			string referenceName = "System.ComponentModel.Composition";
 
-			bool result = projectSystem.ReferenceExists (referenceName);
+			bool result = await projectSystem.ReferenceExistsAsync (referenceName);
 
 			Assert.IsTrue (result);
 		}
 
 		[Test]
-		public void ReferenceExists_ReferenceIsInProjectAndProjectReferenceSearchedForHasExeFileExtension_ReturnsTrue ()
+		public async Task ReferenceExistsAsync_ReferenceIsInProjectAndProjectReferenceSearchedForHasExeFileExtension_ReturnsTrue ()
 		{
 			CreateTestProject (@"D:\Projects\Test\MyProject.csproj");
 			ProjectHelper.AddReference (project, "myassembly", @"d:\Projects\Test\myassembly.exe".ToNativePath ());
 			CreateProjectSystem (project);
 			string fileName = @"D:\Projects\Test\myassembly.exe".ToNativePath ();
 
-			bool result = projectSystem.ReferenceExists (fileName);
+			bool result = await projectSystem.ReferenceExistsAsync (fileName);
 
 			Assert.IsTrue (result);
 		}
 
 		[Test]
-		public void ReferenceExists_ReferenceIsInProjectAndProjectReferenceSearchedForHasExeFileExtensionInUpperCase_ReturnsTrue ()
+		public async Task ReferenceExistsAsync_ReferenceIsInProjectAndProjectReferenceSearchedForHasExeFileExtensionInUpperCase_ReturnsTrue ()
 		{
 			CreateTestProject (@"D:\Projects\Test\MyProject.csproj");
 			ProjectHelper.AddReference (project, "myassembly", @"d:\Projects\Test\myassembly.exe".ToNativePath ());
 			CreateProjectSystem (project);
 			string fileName = @"D:\Projects\Test\MYASSEMBLY.EXE".ToNativePath ();
 
-			bool result = projectSystem.ReferenceExists (fileName);
+			bool result = await projectSystem.ReferenceExistsAsync (fileName);
 
 			Assert.IsTrue (result);
 		}
 
 		[Test]
-		public void AddReference_AddReferenceToNUnitFramework_ProjectIsSavedAfterAddingReference ()
+		public async Task AddReferenceAsync_AddReferenceToNUnitFramework_ProjectIsSavedAfterAddingReference ()
 		{
 			CreateTestProject ();
 			CreateProjectSystem (project);
 			project.IsSaved = false;
 
 			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
-			projectSystem.AddReference (fileName);
+			await projectSystem.AddReferenceAsync (fileName);
 
 			Assert.AreEqual (1, project.ReferencesWhenSavedCount);
 		}
 
 		[Test]
-		public void AddReference_AddReferenceToNUnitFramework_ReferenceAddedToProject ()
+		public async Task AddReferenceAsync_AddReferenceToNUnitFramework_ReferenceAddedToProject ()
 		{
 			CreateTestProject ();
 			CreateProjectSystem (project);
 			project.IsSaved = false;
 
 			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
-			projectSystem.AddReference (fileName);
+			await projectSystem.AddReferenceAsync (fileName);
 
 			ProjectReference actualReference = project.References [0];
 			Assert.AreEqual ("nunit.framework", actualReference.Reference);
@@ -420,14 +418,14 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void AddReference_ReferenceFileNameIsRelativePath_ReferenceAddedToProject ()
+		public async Task AddReferenceAsync_ReferenceFileNameIsRelativePath_ReferenceAddedToProject ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
 			project.IsSaved = false;
 			string relativeFileName = @"packages\nunit\nunit.framework.dll".ToNativePath ();
 			string fullFileName = @"d:\projects\MyProject\packages\nunit\nunit.framework.dll".ToNativePath ();
-			projectSystem.AddReference (relativeFileName);
+			await projectSystem.AddReferenceAsync (relativeFileName);
 
 			ProjectReference actualReference = project.References [0];
 			Assert.AreEqual ("nunit.framework", actualReference.Reference);
@@ -435,14 +433,14 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void AddReference_AddReferenceToNUnitFramework_AddingReferenceIsLogged ()
+		public async Task AddReferenceAsync_AddReferenceToNUnitFramework_AddingReferenceIsLogged ()
 		{
 			CreateTestProject ();
 			CreateProjectSystem (project);
 			project.Name = "MyTestProject";
 
 			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
-			projectSystem.AddReference (fileName);
+			await projectSystem.AddReferenceAsync (fileName);
 
 			var expectedReferenceAndProjectName = new ReferenceAndProjectName () {
 				Reference = "nunit.framework",
@@ -453,14 +451,14 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void RemoveReference_ReferenceBeingRemovedHasFileExtension_ReferenceRemovedFromProject ()
+		public async Task RemoveReferenceAsync_ReferenceBeingRemovedHasFileExtension_ReferenceRemovedFromProject ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
 			string fileName = @"d:\projects\MyProject\packages\nunit\nunit.framework.dll".ToNativePath ();
 			ProjectHelper.AddReference (project, fileName);
 			CreateProjectSystem (project);
 
-			projectSystem.RemoveReference (fileName);
+			await projectSystem.RemoveReferenceAsync (fileName);
 
 			ProjectReference referenceItem = ProjectHelper.GetReference (project, "nunit.framework");
 
@@ -468,14 +466,14 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void RemoveReference_ReferenceCaseAddedToProjectDifferentToReferenceNameBeingRemoved_ReferenceRemovedFromProject ()
+		public async Task RemoveReferenceAsync_ReferenceCaseAddedToProjectDifferentToReferenceNameBeingRemoved_ReferenceRemovedFromProject ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
 			ProjectHelper.AddReference (project, @"d:\projects\MyProject\packages\nunit\nunit.framework.dll".ToNativePath ());
 			CreateProjectSystem (project);
 
 			string fileName = @"NUNIT.FRAMEWORK.DLL";
-			projectSystem.RemoveReference (fileName);
+			await projectSystem.RemoveReferenceAsync (fileName);
 
 			ProjectReference referenceItem = ProjectHelper.GetReference (project, "nunit.framework");
 
@@ -483,30 +481,34 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void RemoveReference_ProjectHasNoReference_ArgumentNullExceptionNotThrown ()
+		public async Task RemoveReferenceAsync_ProjectHasNoReference_ArgumentNullExceptionNotThrown ()
 		{
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
 			string fileName = @"NUNIT.FRAMEWORK.DLL";
-			Assert.DoesNotThrow (() => projectSystem.RemoveReference (fileName));
+			try {
+				await projectSystem.RemoveReferenceAsync (fileName);
+			} catch (Exception ex) {
+				Assert.Fail ("Exception thrown: {0}", ex);
+			}
 		}
 
 		[Test]
-		public void RemoveReference_ReferenceExistsInProject_ProjectIsSavedAfterReferenceRemoved ()
+		public async Task RemoveReferenceAsync_ReferenceExistsInProject_ProjectIsSavedAfterReferenceRemoved ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
 			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
 			ProjectHelper.AddReference (project, fileName);
 			CreateProjectSystem (project);
 
-			projectSystem.RemoveReference (fileName);
+			await projectSystem.RemoveReferenceAsync (fileName);
 
 			Assert.AreEqual (0, project.ReferencesWhenSavedCount);
 		}
 
 		[Test]
-		public void RemoveReference_ReferenceBeingRemovedHasFileExtension_ReferenceRemovalIsLogged ()
+		public async Task RemoveReferenceAsync_ReferenceBeingRemovedHasFileExtension_ReferenceRemovalIsLogged ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
 			project.Name = "MyTestProject";
@@ -514,7 +516,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			ProjectHelper.AddReference (project, fileName);
 			CreateProjectSystem (project);
 
-			projectSystem.RemoveReference (fileName);
+			await projectSystem.RemoveReferenceAsync (fileName);
 
 			var expectedReferenceAndProjectName = new ReferenceAndProjectName {
 				Reference = "nunit.framework",
@@ -813,12 +815,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void AddFrameworkReference_SystemXmlToBeAdded_ReferenceAddedToProject ()
+		public async Task AddFrameworkReferenceAsync_SystemXmlToBeAdded_ReferenceAddedToProject ()
 		{
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
-			projectSystem.AddFrameworkReference ("System.Xml", "MyPackage");
+			await projectSystem.AddFrameworkReferenceAsync ("System.Xml", "MyPackage");
 
 			ProjectReference referenceItem = ProjectHelper.GetReference (project, "System.Xml");
 
@@ -827,12 +829,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void AddFrameworkReference_SystemXmlToBeAdded_ProjectIsSaved ()
+		public async Task AddFrameworkReferenceAsync_SystemXmlToBeAdded_ProjectIsSaved ()
 		{
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
-			projectSystem.AddFrameworkReference ("System.Xml", "MyPackage");
+			await projectSystem.AddFrameworkReferenceAsync ("System.Xml", "MyPackage");
 
 			bool saved = project.IsSaved;
 
@@ -840,13 +842,13 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void AddFrameworkReference_SystemXmlToBeAdded_AddedReferenceIsLogged ()
+		public async Task AddFrameworkReferenceAsync_SystemXmlToBeAdded_AddedReferenceIsLogged ()
 		{
 			CreateTestProject ();
 			CreateProjectSystem (project);
 			project.Name = "MyTestProject";	
 
-			projectSystem.AddFrameworkReference ("System.Xml", "MyPackage");
+			await projectSystem.AddFrameworkReferenceAsync ("System.Xml", "MyPackage");
 
 			var expectedReferenceAndProjectName = new ReferenceAndProjectName () {
 				Reference = "System.Xml",
@@ -1064,7 +1066,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void ReferenceExists_ReferenceIsInProjectButIncludesAssemblyVersion_ReturnsTrue ()
+		public async Task ReferenceExistsAsync_ReferenceIsInProjectButIncludesAssemblyVersion_ReturnsTrue ()
 		{
 			CreateTestProject ();
 			string include = "MyAssembly, Version=0.1.0.0, Culture=neutral, PublicKeyToken=8cc8392e8503e009";
@@ -1072,13 +1074,13 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateProjectSystem (project);
 			string fileName = @"D:\Projects\Test\myassembly.dll".ToNativePath ();
 
-			bool result = projectSystem.ReferenceExists (fileName);
+			bool result = await projectSystem.ReferenceExistsAsync (fileName);
 
 			Assert.IsTrue (result);
 		}
 
 		[Test]
-		public void RemoveReference_ReferenceBeingRemovedHasFileExtensionAndProjectHasReferenceIncludingAssemblyVersion_ReferenceRemovedFromProject ()
+		public async Task RemoveReferenceAsync_ReferenceBeingRemovedHasFileExtensionAndProjectHasReferenceIncludingAssemblyVersion_ReferenceRemovedFromProject ()
 		{
 			CreateTestProject ();
 			string include = "nunit.framework, Version=2.6.2.0, Culture=neutral, PublicKeyToken=8cc8392e8503e009";
@@ -1086,7 +1088,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateProjectSystem (project);
 			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
 
-			projectSystem.RemoveReference (fileName);
+			await projectSystem.RemoveReferenceAsync (fileName);
 
 			ProjectReference referenceItem = ProjectHelper.GetReference (project, "nunit.framework");
 			Assert.IsNull (referenceItem);
@@ -1172,7 +1174,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void AddReference_AddReferenceToNUnitFramework_ReferenceAddingEventIsFired ()
+		public async Task AddReferenceAsync_AddReferenceToNUnitFramework_ReferenceAddingEventIsFired ()
 		{
 			CreateTestProject ();
 			CreateProjectSystem (project);
@@ -1182,14 +1184,14 @@ namespace MonoDevelop.PackageManagement.Tests
 			};
 
 			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
-			projectSystem.AddReference (fileName);
+			await projectSystem.AddReferenceAsync (fileName);
 
 			Assert.AreEqual (fileName, referenceBeingAdded.HintPath.ToString ());
 			Assert.IsTrue (referenceBeingAdded.LocalCopy);
 		}
 
 		[Test]
-		public void RemoveReference_RemoveReferenceToNUnitFramework_ReferenceRemovingEventIsFired ()
+		public async Task RemoveReferenceAsync_RemoveReferenceToNUnitFramework_ReferenceRemovingEventIsFired ()
 		{
 			CreateTestProject ();
 			CreateProjectSystem (project);
@@ -1202,7 +1204,7 @@ namespace MonoDevelop.PackageManagement.Tests
 				projectIsSaved = project.IsSaved;
 			};
 
-			projectSystem.RemoveReference (fileName);
+			await projectSystem.RemoveReferenceAsync (fileName);
 
 			Assert.AreEqual (fileName, referenceBeingRemoved.HintPath.ToString ());
 			Assert.IsFalse (projectIsSaved);
@@ -1237,21 +1239,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsNull (projectSystem.PathPassedToPhysicalFileSystemAddFile);
 			Assert.IsTrue (project.IsSaved);
 			Assert.AreEqual (1, project.FilesAddedWhenSavedCount);
-		}
-
-		[Test]
-		public async Task ExecuteScriptAsync_InitPowerShellScript_WarningLogged ()
-		{
-			CreateTestProject ();
-			CreateProjectSystem (project);
-			string scriptPath = @"init.ps1".ToNativePath ();
-			var package = new PackageIdentity ("Test", new NuGetVersion ("1.2"));
-			string expectedLogMessage = "WARNING: Test Package contains PowerShell script 'init.ps1' which will not be run.";
-
-			await projectSystem.ExecuteScriptAsync (package, null, scriptPath, false);
-
-			Assert.AreEqual (MessageLevel.Info, projectSystem.FakeNuGetProjectContext.LastLogLevel);
-			Assert.AreEqual (expectedLogMessage, projectSystem.FakeNuGetProjectContext.LastMessageLogged);
 		}
 
 		[Test]
