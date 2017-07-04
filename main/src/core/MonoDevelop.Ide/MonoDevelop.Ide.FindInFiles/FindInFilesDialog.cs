@@ -245,7 +245,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			comboboxentryFind.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryFind",
 												"Find",
-												GettextCatalog.GetString ("Enter string for find"));
+												GettextCatalog.GetString ("Enter string to find"));
 			comboboxentryFind.SetAccessibilityLabelRelationship (labelFind);
 
 
@@ -262,7 +262,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			comboboxentryReplace.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryReplace",
 											"Replace",
-											GettextCatalog.GetString ("Enter string for replace"));
+											GettextCatalog.GetString ("Enter string to replace"));
 			comboboxentryReplace.SetAccessibilityLabelRelationship (labelReplace);
 			
 		}
