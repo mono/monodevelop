@@ -31,7 +31,9 @@ type CompilerArgumentsTests() =
 
 
             let! _ = testProject.SaveAsync monitor |> Async.AwaitTask
-            do! testProject.ReevaluateProject(monitor)
+            do! testProject.ReevaluateProject(monitor) |> ignore
+                testProject.GetReferences()
+            let! refs = testProject.GetReferencedAssemblies (CompilerArguments.getConfig()) |> Async.AwaitTask
             return testProject
         }
 
@@ -47,7 +49,7 @@ type CompilerArgumentsTests() =
                                                      FSharpTargetFramework.NET_4_5,
                                                      ConfigurationSelector.Default,
                                                      true) 
-    
+
             //The two paths for mscorlib and FSharp.Core should match
             let testPaths = references |> List.map makeTestableReference
             match testPaths |> List.map Path.GetDirectoryName with

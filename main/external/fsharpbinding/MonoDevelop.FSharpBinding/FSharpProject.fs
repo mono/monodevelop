@@ -276,6 +276,12 @@ type FSharpProject() as self =
         let orderAssemblyReferences = MonoDevelop.FSharp.OrderAssemblyReferences()
         orderAssemblyReferences.Order references
 
+    member x.GetReferences() =
+        async {
+            let! refs = x.GetReferencedAssemblies (CompilerArguments.getConfig()) |> Async.AwaitTask
+            referencedAssemblies <- Some refs
+        }
+
     member x.ReevaluateProject(e) =
         let task = base.OnReevaluateProject (e)
 
@@ -283,8 +289,6 @@ type FSharpProject() as self =
             do! task |> Async.AwaitTask
 
             MDLanguageService.invalidateProjectFile self.FileName
-            let! refs = x.GetReferencedAssemblies (CompilerArguments.getConfig()) |> Async.AwaitTask
-            referencedAssemblies <- Some refs
         }
 
     override x.OnReevaluateProject(monitor) =
