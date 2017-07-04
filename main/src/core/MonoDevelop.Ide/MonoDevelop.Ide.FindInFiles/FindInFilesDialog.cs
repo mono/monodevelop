@@ -237,7 +237,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				return true;
 			});
 
-			//SetupAccessibility ();
+			SetupAccessibility ();
 
 		}
 
@@ -249,23 +249,35 @@ namespace MonoDevelop.Ide.FindInFiles
 			comboboxentryFind.SetAccessibilityLabelRelationship (labelFind);
 
 
-			comboboxentryPath.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryPath",
-												"Path",
-												GettextCatalog.GetString ("Enter the Path"));
-			comboboxentryPath.SetAccessibilityLabelRelationship (labelPath);
+
 
 			searchentryFileMask.SetCommonAccessibilityAttributes ("FindInFilesDialog.searchentryFileMask",
 												"File Mask",
 												GettextCatalog.GetString ("Enter the file mask"));
 			searchentryFileMask.SetAccessibilityLabelRelationship (labelFileMask);
 
+		}
 
+		private void SetupAccessibilityForReplace ()
+		{
 			comboboxentryReplace.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryReplace",
-												"Replace",
-												GettextCatalog.GetString ("Enter string for replace"));
+											"Replace",
+											GettextCatalog.GetString ("Enter string for replace"));
 			comboboxentryReplace.SetAccessibilityLabelRelationship (labelReplace);
+			
+		}
+
+
+		private void SetupAccessibilityForPath ()
+		{
+			comboboxentryPath.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryPath",
+												"Path",
+												GettextCatalog.GetString ("Enter the Path"));
+			comboboxentryPath.SetAccessibilityLabelRelationship (labelPath);
 
 		}
+
+
 
 		static void TableAddRow (Table table, uint row, Widget column1, Widget column2)
 		{
@@ -356,7 +368,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			LoadHistory ("MonoDevelop.FindReplaceDialogs.ReplaceHistory", comboboxentryReplace);
 			comboboxentryReplace.Show ();
 			labelReplace.Show ();
-			
+			SetupAccessibilityForReplace ();
+
 			TableAddRow (tableFindAndReplace, 1, labelReplace, comboboxentryReplace);
 			
 			buttonReplace = new Button () {
@@ -426,6 +439,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			hboxPath.PackStart (comboboxentryPath);
 			
 			labelPath.MnemonicWidget = comboboxentryPath;
+
+			SetupAccessibilityForPath ();
 			
 			buttonBrowsePaths = new Button { Label = "..." };
 			buttonBrowsePaths.Clicked += ButtonBrowsePathsClicked;
