@@ -35,6 +35,7 @@ using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
 using System.Threading.Tasks;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -235,8 +236,37 @@ namespace MonoDevelop.Ide.FindInFiles
 				UpdateSensitivity ();
 				return true;
 			});
+
+			//SetupAccessibility ();
+
 		}
-		
+
+		private void SetupAccessibility ()
+		{
+			comboboxentryFind.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryFind",
+												"Find",
+												GettextCatalog.GetString ("Enter string for find"));
+			comboboxentryFind.SetAccessibilityLabelRelationship (labelFind);
+
+
+			comboboxentryPath.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryPath",
+												"Path",
+												GettextCatalog.GetString ("Enter the Path"));
+			comboboxentryPath.SetAccessibilityLabelRelationship (labelPath);
+
+			searchentryFileMask.SetCommonAccessibilityAttributes ("FindInFilesDialog.searchentryFileMask",
+												"File Mask",
+												GettextCatalog.GetString ("Enter the file mask"));
+			searchentryFileMask.SetAccessibilityLabelRelationship (labelFileMask);
+
+
+			comboboxentryReplace.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryReplace",
+												"Replace",
+												GettextCatalog.GetString ("Enter string for replace"));
+			comboboxentryReplace.SetAccessibilityLabelRelationship (labelReplace);
+
+		}
+
 		static void TableAddRow (Table table, uint row, Widget column1, Widget column2)
 		{
 			uint rows = table.NRows;
