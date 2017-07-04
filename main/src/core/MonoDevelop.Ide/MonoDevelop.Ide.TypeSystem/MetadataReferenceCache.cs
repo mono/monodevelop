@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							if (File.Exists (xmlName)) {
 								provider = Microsoft.CodeAnalysis.XmlDocumentationProvider.CreateFromFile (xmlName);
 							} else {
-								provider = RoslynDocumenentationProvider.Instance;
+								provider = RoslynDocumentationProvider.Instance;
 							}
 						} catch (Exception e) {
 							LoggingService.LogError ("Error while creating xml documentation provider for: " + path, e);
@@ -189,11 +189,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 
-			class RoslynDocumenentationProvider : DocumentationProvider
+			class RoslynDocumentationProvider : DocumentationProvider
 			{
-				internal static readonly DocumentationProvider Instance = new RoslynDocumenentationProvider ();
+				internal static readonly DocumentationProvider Instance = new RoslynDocumentationProvider ();
 
-				RoslynDocumenentationProvider ()
+				RoslynDocumentationProvider ()
 				{
 				}
 

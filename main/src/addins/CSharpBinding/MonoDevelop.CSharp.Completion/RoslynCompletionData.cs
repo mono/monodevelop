@@ -238,29 +238,29 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{
-			var tt = new TooltipInformation ();
 			var description = await completionService.GetDescriptionAsync (doc, CompletionItem);
 			var markup = new StringBuilder ();
 			var theme = DefaultSourceEditorOptions.Instance.GetEditorTheme ();
-			var tp = description.TaggedParts;
+			var taggedParts = description.TaggedParts;
 			int i = 0;
-			while (i < tp.Length) {
-				if (tp [i].Tag == "LineBreak")
+			while (i < taggedParts.Length) {
+				if (taggedParts [i].Tag == "LineBreak")
 					break;
 				i++;
 			}
-			if (i + 1 >= tp.Length) {
-				markup.AppendTaggedText (theme, tp);
+			if (i + 1 >= taggedParts.Length) {
+				markup.AppendTaggedText (theme, taggedParts);
 			} else {
-				markup.AppendTaggedText (theme, tp.Take (i));
+				markup.AppendTaggedText (theme, taggedParts.Take (i));
 				markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
 				markup.AppendLine ();
 				markup.AppendLine ();
-				markup.AppendTaggedText (theme, tp.Skip (i + 1), 0, 50);
+				markup.AppendTaggedText (theme, taggedParts.Skip (i + 1), 0, 50);
 				markup.Append ("</span>");
 			}
-			tt.SignatureMarkup = markup.ToString ();
-			return tt;
+			return new TooltipInformation {
+				SignatureMarkup = markup.ToString () 
+			};
 		}
 	}
 }

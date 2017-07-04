@@ -44,6 +44,8 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		public SignatureHelpParameterHintingData (SignatureHelpItem item)
 		{
+			if (item == null)
+				throw new System.ArgumentNullException (nameof (item));
 			Item = item;
 		}
 

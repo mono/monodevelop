@@ -30,7 +30,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public async Task<ParameterHintingResult> GetParameterDataProviderAsync (List<ISignatureHelpProvider> providers, Document document, int position, SignatureHelpTriggerInfo triggerInfo, CancellationToken token = default (CancellationToken))
 		{
-			var hintingData = new ConcurrentBag<ParameterHintingData> ();
+			var hintingData = new List<ParameterHintingData> ();
 			foreach (var provider in providers) {
 				try {
 					if (triggerInfo.TriggerReason == SignatureHelpTriggerReason.TypeCharCommand && !provider.IsTriggerCharacter (triggerInfo.TriggerCharacter.Value))
@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp.Completion
 					var tokenLeftOfPosition = tree.GetRoot(token).FindTokenOnLeftOfPosition (position);
 					var syntaxNode = tokenLeftOfPosition.Parent;
 					var node = syntaxNode?.FirstAncestorOrSelf<ArgumentListSyntax> ();
-					return new ParameterHintingResult (hintingData.ToList ()) {
+					return new ParameterHintingResult (hintingData) {
 						ApplicableSpan = signatureHelpItems.ApplicableSpan,
 						SelectedItemIndex = signatureHelpItems.SelectedItemIndex,
 						ParameterListStart = node != null ? node.SpanStart : signatureHelpItems.ApplicableSpan.Start

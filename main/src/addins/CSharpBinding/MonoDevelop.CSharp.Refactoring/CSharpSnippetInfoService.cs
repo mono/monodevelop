@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		IEnumerable<SnippetInfo> ISnippetInfoService.GetSnippetsIfAvailable ()
 		{
 			foreach (var template in CodeTemplateService.GetCodeTemplates (CSharp.Formatting.CSharpFormatter.MimeType)) {
-				yield return new SnippetInfo (template.Shortcut, template.Shortcut, template.Description, "Path!"); 	
+				yield return new SnippetInfo (template.Shortcut, template.Shortcut, template.Description, template.Group);
 			}
 		}
 

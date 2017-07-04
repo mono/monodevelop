@@ -153,30 +153,12 @@ namespace MonoDevelop.CSharp
 				displayString = type.ToDisplayString (MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat);
 			}
 
-			if (primitiveTypesKeywords.Contains (displayString))
+			if (SyntaxFacts.IsPredefinedType(SyntaxFacts.GetKeywordKind (displayString)))
 				return Highlight (displayString, GetThemeColor (keywordType));
 			var text = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (displayString);
 			return highlight ? HighlightSemantically (text, GetThemeColor (userTypes)) : text;
 		}
 
-		static string [] primitiveTypesKeywords = new string [] {
-			"void",
-			"object",
-			"bool",
-			"byte",
-			"sbyte",
-			"char",
-			"short",
-			"int",
-			"long",
-			"ushort",
-			"uint",
-			"ulong",
-			"float",
-			"double",
-			"decimal",
-			"string"
-		};
 		//		static ICompilation GetCompilation (IType type)
 		//		{
 		//			var def = type.GetDefinition ();
