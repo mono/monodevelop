@@ -147,6 +147,9 @@ namespace MonoDevelop.Ide.Templates
 			var parameters = GetParameters (solutionTemplate, config);
 			var templateInfo = solutionTemplate.templateInfo;
 			var workspaceItems = new List<IWorkspaceFileObject> ();
+
+			var filesBeforeCreation = Directory.GetFiles (config.ProjectLocation, "*", SearchOption.AllDirectories);
+
 			var result = await templateCreator.InstantiateAsync (
 				templateInfo,
 				config.ProjectName,
@@ -174,10 +177,10 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			//TODO: Once templates support "D396686C-DE0E-4DE6-906D-291CD29FC5DE" use that to load projects
-			foreach (var path in Directory.GetFiles (config.ProjectLocation, "*.*proj", SearchOption.AllDirectories)) {
-				if (path.EndsWith (".csproj", StringComparison.OrdinalIgnoreCase) || path.EndsWith (".fsproj", StringComparison.OrdinalIgnoreCase) || path.EndsWith (".vbproj", StringComparison.OrdinalIgnoreCase)) {
-					workspaceItems.Add (await MonoDevelop.Projects.Services.ProjectService.ReadSolutionItem (new Core.ProgressMonitor (), path));
-				}
+			foreach (var path in result.ResultInfo.PrimaryOutputs) {
+				var fullPath = Path.Combine (config.ProjectLocation, path.Path);
+				if (Services.ProjectService.IsSolutionItemFile (fullPath))
+					workspaceItems.Add (await MonoDevelop.Projects.Services.ProjectService.ReadSolutionItem (new Core.ProgressMonitor (), fullPath));
 			}
 
 			var metadata = new Dictionary<string, string> ();
@@ -215,7 +218,8 @@ namespace MonoDevelop.Ide.Templates
 			// Format all source files generated during the project creation
 			foreach (var p in workspaceItems.OfType<Project> ()) {
 				foreach (var file in p.Files)
-					await FormatFile (p, file.FilePath);
+					if (!filesBeforeCreation.Contains ((string)file.FilePath)) //Format only newly created files
+						await FormatFile (p, file.FilePath);
 			}
 			processResult.SetFilesToOpen (filesToOpen);
 			return processResult;
