@@ -236,9 +236,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				UpdateSensitivity ();
 				return true;
 			});
-
 			SetupAccessibility ();
-
 		}
 
 		void SetupAccessibility ()
