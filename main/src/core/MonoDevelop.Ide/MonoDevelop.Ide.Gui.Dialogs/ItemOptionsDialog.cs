@@ -31,6 +31,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -56,17 +57,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				extensionContext.RegisterCondition ("ProjectTypeId", new ProjectTypeIdCondition ((Project)DataObject));
 				extensionContext.RegisterCondition ("SupportsTarget", new SupportsTargetCondition ((Project)DataObject));
 			} else {
-				extensionContext.RegisterCondition ("AppliesTo", new FalseCondition ());
-				extensionContext.RegisterCondition ("FlavorType", new FalseCondition ());
-				extensionContext.RegisterCondition ("ProjectTypeId", new FalseCondition ());
-			}
-		}
-
-		class FalseCondition: ConditionType
-		{
-			public override bool Evaluate (NodeElement conditionNode)
-			{
-				return false;
+				extensionContext.RegisterCondition ("AppliesTo", FalseCondition.Instance);
+				extensionContext.RegisterCondition ("FlavorType", FalseCondition.Instance);
+				extensionContext.RegisterCondition ("ProjectTypeId", FalseCondition.Instance);
 			}
 		}
 	}
