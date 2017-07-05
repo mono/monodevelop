@@ -341,28 +341,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			var data = DataProvider.GetCompletionData (SelectedItemIndex);
 
-			if (data.IsCommitCharacter (keyChar, PartialWord)) {
-				var curword = PartialWord;
-				var match = FindMatchedEntry (curword).Index;
-				if (match >= 0 && System.Char.IsPunctuation (keyChar)) {
-					string text = DataProvider.GetCompletionText (FilteredItems [match]);
-					if (!text.StartsWith (curword, StringComparison.OrdinalIgnoreCase))
-						match = -1;	 
-				}
-				//if (match >= 0 && keyChar != '<' && keyChar != ' ') {
-				//	ResetSizes ();
-				//	UpdateWordSelection ();
-				//	return KeyActions.CloseWindow | KeyActions.Process;
-				//}
-
-				if (list.SelectionEnabled && CompletionCharacters.CompleteOn (keyChar)) {
-					if (keyChar == '{' && !list.AutoCompleteEmptyMatchOnCurlyBrace && string.IsNullOrEmpty (list.CompletionString))
-					    return KeyActions.CloseWindow | KeyActions.Process;
-					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
-				}
-				return KeyActions.CloseWindow | KeyActions.Process;
-			}
-
 			if (char.IsPunctuation (descriptor.KeyChar) && descriptor.KeyChar != '_') {
 				if (descriptor.KeyChar == ':') {
 					foreach (var item in FilteredItems) {
@@ -542,17 +520,39 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
+			if (data.IsCommitCharacter (descriptor.KeyChar, PartialWord)) {
+				var curword = PartialWord;
+				var match = FindMatchedEntry (curword).Index;
+				if (match >= 0 && System.Char.IsPunctuation (descriptor.KeyChar)) {
+					string text = DataProvider.GetCompletionText (FilteredItems [match]);
+					if (!text.StartsWith (curword, StringComparison.OrdinalIgnoreCase))
+						match = -1;
+				}
+				//if (match >= 0 && keyChar != '<' && keyChar != ' ') {
+				//	ResetSizes ();
+				//	UpdateWordSelection ();
+				//	return KeyActions.CloseWindow | KeyActions.Process;
+				//}
 
-	/*		//don't input letters/punctuation etc when non-shift modifiers are active
-			bool nonShiftModifierActive = ((Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask
-				| Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask)
-				& modifier) != 0;
-			if (nonShiftModifierActive) {
-				if (modifier.HasFlag (Gdk.ModifierType.ControlMask) && char.IsLetterOrDigit ((char)key))
-					return KeyActions.Process | KeyActions.CloseWindow;
-				return KeyActions.Ignore;
-			}*/
-			
+				if (list.SelectionEnabled && CompletionCharacters.CompleteOn (descriptor.KeyChar)) {
+					if (descriptor.KeyChar == '{' && !list.AutoCompleteEmptyMatchOnCurlyBrace && string.IsNullOrEmpty (list.CompletionString))
+						return KeyActions.CloseWindow | KeyActions.Process;
+					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
+				}
+				return KeyActions.CloseWindow | KeyActions.Process;
+			}
+
+
+			/*		//don't input letters/punctuation etc when non-shift modifiers are active
+					bool nonShiftModifierActive = ((Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask
+						| Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask)
+						& modifier) != 0;
+					if (nonShiftModifierActive) {
+						if (modifier.HasFlag (Gdk.ModifierType.ControlMask) && char.IsLetterOrDigit ((char)key))
+							return KeyActions.Process | KeyActions.CloseWindow;
+						return KeyActions.Ignore;
+					}*/
+
 
 			return KeyActions.Process;
 		}
