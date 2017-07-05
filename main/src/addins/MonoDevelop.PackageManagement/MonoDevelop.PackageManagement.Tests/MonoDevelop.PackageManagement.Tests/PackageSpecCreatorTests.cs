@@ -71,10 +71,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			spec = PackageSpecCreator.CreatePackageSpec (project, context);
 		}
 
-		void AddPackageReference (string id, string version)
+		TestableProjectPackageReference AddPackageReference (string id, string version)
 		{
 			var packageReference = new TestableProjectPackageReference (id, version);
 			project.PackageReferences.Add (packageReference);
+			return packageReference;
 		}
 
 		FakeDotNetProject AddProjectReference (string projectName, string fileName, string include, bool referenceOutputAssembly = true)
@@ -451,6 +452,28 @@ namespace MonoDevelop.PackageManagement.Tests
 			var ex = Assert.Throws<RestoreCommandException> (CreatePackageSpec);
 			string expectedMessage = "PackageTargetFallback and AssetTargetFallback cannot be used together. Remove PackageTargetFallback(deprecated) references from the project environment.";
 			Assert.AreEqual (expectedMessage, ex.Message);
+		}
+
+		[Test]
+		public void CreatePackageSpec_OneImplicitlyDefinedPackageReference_PackageReferencedAddedMarkedAsAutoReferenced ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			var packageReference = AddPackageReference ("Test", "1.2.3");
+			packageReference.IsImplicit = true;
+
+			CreatePackageSpec ();
+
+			var targetFramework = spec.TargetFrameworks.Single ();
+			var dependency = targetFramework.Dependencies.Single ();
+			Assert.AreEqual ("Test", dependency.Name);
+			Assert.IsTrue (dependency.AutoReferenced);
+			Assert.AreEqual (LibraryDependencyType.Default, dependency.Type);
+			Assert.AreEqual (LibraryIncludeFlags.All, dependency.IncludeType);
+			Assert.AreEqual (LibraryIncludeFlagUtils.DefaultSuppressParent, dependency.SuppressParent);
+			Assert.AreEqual ("[1.2.3, )", dependency.LibraryRange.VersionRange.ToString ());
+			Assert.AreEqual (LibraryDependencyTarget.Package, dependency.LibraryRange.TypeConstraint);
+			Assert.AreEqual ("Test", dependency.LibraryRange.Name);
 		}
 	}
 }
