@@ -31,6 +31,11 @@ using NUnit.Framework;
 using UnitTests;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Core.Text;
+using System;
 
 namespace MonoDevelop.Ide
 {
@@ -91,6 +96,69 @@ namespace MonoDevelop.Ide
 				.OfType<SharedAssetsProject> ().Single ();
 			var myclassFile = sharedAssetsProject.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 			Assert.AreEqual ("Compile", myclassFile.BuildAction);
+		}
+
+		async Task FormatFile (Project p, FilePath file)
+		{
+			string mime = DesktopService.GetMimeTypeForUri (file);
+			if (mime == null)
+				return;
+
+			var formatter = CodeFormatterService.GetFormatter (mime);
+			if (formatter != null) {
+				try {
+					var content = await TextFileUtility.ReadAllTextAsync (file);
+					var formatted = formatter.FormatText (p.Policies, content.Text);
+					if (formatted != null)
+						TextFileUtility.WriteText (file, formatted, content.Encoding);
+				} catch (Exception ex) {
+					LoggingService.LogError ("File formatting failed", ex);
+				}
+			}
+		}
+
+		[Test ()]
+		public async Task Bug57840 ()
+		{
+			var templatingService = new TemplatingService ();
+			var mutliplatformLibraryCategory = templatingService.GetProjectTemplateCategories ().Single (c => c.Id == "multiplat")
+																	   .Categories.Single (c => c.Id == "library")
+																	   .Categories.Single (c => c.Id == "general");
+			var pclTemplate = mutliplatformLibraryCategory.Templates.Single (t => t.Id == "MonoDevelop.CSharp.PortableLibrary");
+
+			var standardTemplate = mutliplatformLibraryCategory.Templates.Single (t => t.Id == "Microsoft.Common.Library.CSharp");
+
+			var tempDirectory = Util.CreateTmpDir ("Bug57840Test");
+			var result = await templatingService.ProcessTemplate (pclTemplate, new Ide.Projects.NewProjectConfiguration () {
+				CreateSolution = true,
+				Location = tempDirectory,
+				SolutionName = "Bug57840Test",
+				ProjectName = "Bug57840PclTestProject",
+				CreateProjectDirectoryInsideSolutionDirectory = false
+			}, null);
+
+			var solution = result.WorkspaceItems.OfType<Solution> ().Single ();
+
+			await solution.SaveAsync (Util.GetMonitor ());
+			var project = solution.GetAllProjects ().Single ();
+			project.Policies.Set<TextStylePolicy> (new TextStylePolicy (1, 1, 1, true, true, true, EolMarker.Mac), "text/x-csharp");
+
+			var file = project.Files.Single (f => f.FilePath.FileName == "MyClass.cs").FilePath;
+			var fileContentBeforeFormat = await TextFileUtility.ReadAllTextAsync (file);
+			await FormatFile (project, file);
+			var fileContentAfterFormat = await TextFileUtility.ReadAllTextAsync (file);
+
+			Assert.AreNotEqual (fileContentBeforeFormat.Text, fileContentAfterFormat.Text);//Make sure our weird formatting applied
+
+			var result2 = await templatingService.ProcessTemplate (standardTemplate, new Ide.Projects.NewProjectConfiguration () {
+				CreateSolution = false,
+				Location = solution.BaseDirectory,
+				ProjectName = "Bug57840StandardTestProject",
+				CreateProjectDirectoryInsideSolutionDirectory = false
+			}, solution.RootFolder);
+			await solution.SaveAsync (Util.GetMonitor ());
+			var fileContentAfterSecondProject = await TextFileUtility.ReadAllTextAsync (file);
+			Assert.AreEqual (fileContentAfterSecondProject.Text, fileContentAfterFormat.Text);//Mkae sure our weird formatting is preserved
 		}
 	}
 }
