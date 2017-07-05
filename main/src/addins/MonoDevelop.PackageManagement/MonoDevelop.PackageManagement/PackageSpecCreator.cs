@@ -334,17 +334,21 @@ namespace MonoDevelop.PackageManagement
 
 		static void AddPackageTargetFallbacks (PackageSpec packageSpec, IDotNetProject project)
 		{
-			var fallbackList = GetPackageTargetFallbackList (project)
+			var packageTargetFallback = GetPackageTargetFallbackList (project)
 				.Select (NuGetFramework.Parse)
 				.ToList ();
-			if (!fallbackList.Any ())
+
+			var assetTargetFallback = GetAssetTargetFallbackList (project)
+				.Select (NuGetFramework.Parse)
+				.ToList ();
+
+			if (!packageTargetFallback.Any () && !assetTargetFallback.Any ())
 				return;
 
 			var frameworks = GetProjectFrameworks (project);
 			foreach (var framework in frameworks) {
 				var frameworkInfo = packageSpec.GetTargetFramework (framework);
-				frameworkInfo.Imports = fallbackList;
-				frameworkInfo.FrameworkName = new FallbackFramework (frameworkInfo.FrameworkName, fallbackList);
+				AssetTargetFallbackUtility.ApplyFramework (frameworkInfo, packageTargetFallback, assetTargetFallback);
 			}
 		}
 
@@ -356,6 +360,13 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return new string[0];
+		}
+
+		static IEnumerable<string> GetAssetTargetFallbackList (IDotNetProject project)
+		{
+			return MSBuildStringUtility.Split (
+				project.EvaluatedProperties.GetValue (AssetTargetFallbackUtility.AssetTargetFallback)
+			);
 		}
 
 		static RuntimeGraph GetRuntimeGraph (IDotNetProject project)
