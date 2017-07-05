@@ -20,6 +20,7 @@
 // limitations under the License.
 //
 // Based on parts of src/NuGet.Core/NuGet.Commands/RestoreCommand/Utility/MSBuildRestoreUtility.cs
+// and src/NuGet.Clients/NuGet.PackageManagement.VisualStudio/Projects/LegacyPackageReferenceProject.cs
 
 using System;
 using System.Collections.Generic;
@@ -95,13 +96,17 @@ namespace MonoDevelop.PackageManagement
 		static ProjectRestoreMetadata CreateRestoreMetadata (PackageSpec packageSpec, IDotNetProject project, ISettings settings)
 		{
 			return new ProjectRestoreMetadata {
+				ConfigFilePaths = SettingsUtility.GetConfigFilePaths (settings).ToList (),
+				FallbackFolders = SettingsUtility.GetFallbackPackageFolders (settings).ToList (),
 				PackagesPath = SettingsUtility.GetGlobalPackagesFolder (settings),
 				ProjectStyle = ProjectStyle.PackageReference,
 				ProjectPath = project.FileName,
 				ProjectName = packageSpec.Name,
 				ProjectUniqueName = project.FileName,
+				ProjectWideWarningProperties = GetWarningProperties (project),
 				OutputPath = project.BaseIntermediateOutputPath,
-				OriginalTargetFrameworks = GetOriginalTargetFrameworks (project).ToList ()
+				OriginalTargetFrameworks = GetOriginalTargetFrameworks (project).ToList (),
+				Sources = SettingsUtility.GetEnabledSources (settings).ToList ()
 			};
 		}
 
@@ -366,6 +371,15 @@ namespace MonoDevelop.PackageManagement
 				.ToList ();
 
 			return new RuntimeGraph (runtimes, supports);
+		}
+
+		static WarningProperties GetWarningProperties (IDotNetProject project)
+		{
+			return MSBuildRestoreUtility.GetWarningProperties (
+				project.EvaluatedProperties.GetValue ("TreatWarningsAsErrors"),
+				project.EvaluatedProperties.GetValue ("WarningsAsErrors"),
+				project.EvaluatedProperties.GetValue ("NoWarn")
+			);
 		}
 	}
 }
