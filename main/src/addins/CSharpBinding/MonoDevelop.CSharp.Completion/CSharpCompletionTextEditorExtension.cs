@@ -463,10 +463,16 @@ namespace MonoDevelop.CSharp.Completion
 			var result = new CompletionDataList ();
 			result.TriggerWordLength = triggerWordLength;
 
-			foreach (var data in completionList.Items) {
-				if (string.IsNullOrEmpty (data.DisplayText))
+			var priority = 0;
+			foreach (var item in completionList.Items) {
+				if (string.IsNullOrEmpty (item.DisplayText))
 					continue;
-				result.Add (new RoslynCompletionData (analysisDocument, triggerBuffer, cs, data));
+				var data = new RoslynCompletionData (analysisDocument, triggerBuffer, cs, item);
+				if (item.Rules.MatchPriority > priority) {
+					priority = item.Rules.MatchPriority;
+					result.DefaultCompletionString = data.DisplayText;
+				}
+				result.Add (data);
 			}
 
 			result.AutoCompleteUniqueMatch = (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand);
@@ -479,8 +485,10 @@ namespace MonoDevelop.CSharp.Completion
 				AddImportCompletionData (syntaxContext, result, semanticModel, completionContext.TriggerOffset, token);
 			}
 
-			if (completionList.SuggestionModeItem != null)
+			if (completionList.SuggestionModeItem != null) {
 				result.DefaultCompletionString = completionList.SuggestionModeItem.DisplayText;
+				result.AutoSelect = false;
+			}
 
 			return result;
 		}
