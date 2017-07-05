@@ -29,6 +29,7 @@ using System.Linq;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
+using NuGet.Commands;
 using NuGet.Configuration;
 using NUnit.Framework;
 using NuGet.Frameworks;
@@ -437,6 +438,19 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("portable-net45+win8", fallbackFramework.Fallback[1].GetShortFolderName ());
 			Assert.IsTrue (targetFramework.Warn);
 			Assert.IsTrue (targetFramework.AssetTargetFallback);
+		}
+
+		[Test]
+		public void CreatePackageSpec_AssetTargetFallbackAndPackageTargetFallbackBothDefined_ExceptionThrown ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			AddAssetTargetFallback (";dotnet5.6;portable-net45+win8;");
+			AddPackageTargetFallback (";dotnet5.5;portable-net45+win8;");
+
+			var ex = Assert.Throws<RestoreCommandException> (CreatePackageSpec);
+			string expectedMessage = "PackageTargetFallback and AssetTargetFallback cannot be used together. Remove PackageTargetFallback(deprecated) references from the project environment.";
+			Assert.AreEqual (expectedMessage, ex.Message);
 		}
 	}
 }

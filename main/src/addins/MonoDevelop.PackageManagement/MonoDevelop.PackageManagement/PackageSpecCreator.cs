@@ -345,6 +345,11 @@ namespace MonoDevelop.PackageManagement
 			if (!packageTargetFallback.Any () && !assetTargetFallback.Any ())
 				return;
 
+			AssetTargetFallbackUtility.EnsureValidFallback (
+				packageTargetFallback,
+				assetTargetFallback,
+				packageSpec.FilePath);
+
 			var frameworks = GetProjectFrameworks (project);
 			foreach (var framework in frameworks) {
 				var frameworkInfo = packageSpec.GetTargetFramework (framework);
