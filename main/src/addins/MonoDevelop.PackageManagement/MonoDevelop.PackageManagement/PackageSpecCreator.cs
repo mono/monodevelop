@@ -201,7 +201,7 @@ namespace MonoDevelop.PackageManagement
 				ProjectUniqueName = referencedProject.FileName,
 			};
 
-			ApplyIncludeFlags (
+			MSBuildRestoreUtility.ApplyIncludeFlags (
 				reference,
 				item.Metadata.GetValue ("IncludeAssets"),
 				item.Metadata.GetValue ("ExcludeAssets"),
@@ -214,6 +214,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			foreach (var packageReference in project.GetPackageReferences ()) {
 				var dependency = new LibraryDependency ();
+
+				dependency.AutoReferenced = packageReference.IsImplicit;
 
 				dependency.LibraryRange = new LibraryRange (
 					name: packageReference.Include,
@@ -247,33 +249,11 @@ namespace MonoDevelop.PackageManagement
 
 		static void ApplyIncludeFlags (LibraryDependency dependency, ProjectPackageReference packageReference)
 		{
-			var includeFlags = GetIncludeFlags (packageReference.Metadata.GetValue ("IncludeAssets"), LibraryIncludeFlags.All);
-			var excludeFlags = GetIncludeFlags (packageReference.Metadata.GetValue ("ExcludeAssets"), LibraryIncludeFlags.None);
-
-			dependency.IncludeType = includeFlags & ~excludeFlags;
-			dependency.SuppressParent = GetIncludeFlags (packageReference.Metadata.GetValue ("PrivateAssets"), LibraryIncludeFlagUtils.DefaultSuppressParent);
-		}
-
-		static void ApplyIncludeFlags (
-			ProjectRestoreReference dependency,
-			string includeAssets,
-			string excludeAssets,
-			string privateAssets)
-		{
-			dependency.IncludeAssets = GetIncludeFlags (includeAssets, LibraryIncludeFlags.All);
-			dependency.ExcludeAssets = GetIncludeFlags (excludeAssets, LibraryIncludeFlags.None);
-			dependency.PrivateAssets = GetIncludeFlags (privateAssets, LibraryIncludeFlagUtils.DefaultSuppressParent);
-		}
-
-		static LibraryIncludeFlags GetIncludeFlags (string value, LibraryIncludeFlags defaultValue)
-		{
-			var parts = MSBuildStringUtility.Split (value);
-
-			if (parts.Length > 0) {
-				return LibraryIncludeFlagUtils.GetFlags (parts);
-			} else {
-				return defaultValue;
-			}
+			MSBuildRestoreUtility.ApplyIncludeFlags (
+				dependency,
+				packageReference.Metadata.GetValue ("IncludeAssets"),
+				packageReference.Metadata.GetValue ("ExcludeAssets"),
+				packageReference.Metadata.GetValue ("PrivateAssets"));
 		}
 
 		static HashSet<NuGetFramework> GetProjectFrameworks (IDotNetProject project)
