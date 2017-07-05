@@ -32,23 +32,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	class FakeNuGetSettings : ISettings
 	{
-		public string FileName {
-			get {
-				throw new NotImplementedException ();
-			}
-		}
+		public string FileName { get; set; } = "NuGet.Config";
 
 		public IEnumerable<ISettings> Priority {
-			get {
-				throw new NotImplementedException ();
-			}
+			get { yield return this; }
 		}
 
-		public string Root {
-			get {
-				throw new NotImplementedException ();
-			}
-		}
+		public string Root { get; set; } = string.Empty;
 
 		public event EventHandler SettingsChanged;
 
@@ -69,12 +59,17 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public IList<KeyValuePair<string, string>> GetNestedValues (string section, string subSection)
 		{
-			throw new NotImplementedException ();
+			return new List<KeyValuePair<string, string>> ();
 		}
+
+		public Dictionary<string, List<SettingValue>> SettingValues = new Dictionary<string, List<SettingValue>> ();
 
 		public IList<SettingValue> GetSettingValues (string section, bool isPath = false)
 		{
-			throw new NotImplementedException ();
+			List<SettingValue> settings = null;
+			if (SettingValues.TryGetValue (section, out settings))
+				return settings;
+			return new List<SettingValue> ();
 		}
 
 		public Dictionary<string, string> Values = new Dictionary<string, string> ();
@@ -95,6 +90,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void SetValue (string section, string key, string value)
 		{
 			Values [GetKey (section, key)] = value;
+		}
+
+		public void SetValues (string section, List<SettingValue> values)
+		{
+			SettingValues [section] = values;
 		}
 
 		public void SetValues (string section, IReadOnlyList<SettingValue> values)
