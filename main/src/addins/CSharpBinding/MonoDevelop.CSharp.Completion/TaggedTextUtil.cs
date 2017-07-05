@@ -29,6 +29,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -42,7 +43,7 @@ namespace MonoDevelop.CSharp.Completion
 					markup.Append (GetThemeColor (theme, GetThemeColor (part.Tag)));
 					markup.Append ("\">");
 				}
-				markup.Append (part.Text);
+				markup.Append (Ambience.EscapeText (part.Text));
 				if (part.Tag != TextTags.Text) {
 					markup.Append ("</span>");
 				}
@@ -61,7 +62,7 @@ namespace MonoDevelop.CSharp.Completion
 					AppendAndBreakText (markup, part.Text, col, maxColumn);
 					col = 0;
 				} else {
-					markup.Append (part.Text);
+					markup.Append (Ambience.EscapeText (part.Text));
 					var lineBreak = part.Text.LastIndexOfAny (new [] { '\n', '\r' });
 					if (lineBreak >= 0) {
 						col += part.Text.Length - lineBreak;
@@ -79,9 +80,9 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var idx = maxColumn - col > 0 && maxColumn - col < text.Length ? text.IndexOf (' ', maxColumn - col) : -1;
 			if (idx < 0) {
-				markup.Append (text);
+				markup.Append (Ambience.EscapeText (text));
 			} else {
-				markup.Append (text.Substring (0, idx));
+				markup.Append (Ambience.EscapeText (text.Substring (0, idx)));
 				if (idx + 1 >= text.Length)
 					return;
 				markup.AppendLine ();
