@@ -45,6 +45,7 @@ using System.Linq;
 using System.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -134,7 +135,8 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
-			var editor = IdeApp.Workbench.ActiveDocument?.Editor;
+			var document = IdeApp.Workbench.ActiveDocument;
+			var editor = document?.Editor;
 			if (editor == null || Provider == null) {
 				base.InsertCompletionText (window, ref ka, descriptor);
 				return;
@@ -149,6 +151,10 @@ namespace MonoDevelop.CSharp.Completion
 
 			if (completionChange.NewPosition.HasValue)
 				window.CompletionWidget.CaretOffset = completionChange.NewPosition.Value;
+			if (CompletionItem.Rules.FormatOnCommit) {
+				var endOffset = mappedSpan.Start + completionChange.TextChange.NewText.Length;
+				OnTheFlyFormatter.Format (editor, document, mappedSpan.Start, endOffset);
+			}
 		}
 
 		static Dictionary<string, string> roslynCompletionTypeTable = new Dictionary<string, string> {
