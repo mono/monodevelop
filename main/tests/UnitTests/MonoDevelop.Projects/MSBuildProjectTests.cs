@@ -32,6 +32,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using ValueSet = MonoDevelop.Projects.ConditionedPropertyCollection.ValueSet;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
@@ -1459,6 +1460,35 @@ namespace MonoDevelop.Projects
 				"</Project>";
 			Assert.AreEqual (expectedXml, xml);
 			p.Dispose ();
+		}
+
+		[Test]
+		public void GlobalPropertyProvider ()
+		{
+			var prov = new CustomGlobalPropertyProvider ();
+			MSBuildProjectService.RegisterGlobalPropertyProvider (prov);
+			try {
+				var p = LoadProject ();
+				p.Evaluate ();
+
+				var pg = p.EvaluatedProperties;
+				Assert.AreEqual ("Works!", pg.GetValue ("TEST_GLOBAL"));
+
+			} finally {
+				MSBuildProjectService.UnregisterGlobalPropertyProvider (prov);
+			}
+		}
+	}
+
+	class CustomGlobalPropertyProvider : IMSBuildGlobalPropertyProvider
+	{
+		public event EventHandler GlobalPropertiesChanged;
+
+		public IDictionary<string, string> GetGlobalProperties ()
+		{
+			var props = new Dictionary<string, string> ();
+			props ["TEST_GLOBAL"] = "Works!";
+			return props;
 		}
 	}
 }
