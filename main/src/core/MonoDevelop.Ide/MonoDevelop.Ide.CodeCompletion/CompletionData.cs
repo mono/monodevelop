@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Completion;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Extension;
 
@@ -44,6 +45,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual string DisplayText { get; set; }
 		public virtual string Description { get; set; }
 		public virtual string CompletionText { get; set; }
+		public virtual CompletionItemRules Rules { get { return CompletionItemRules.Default; } }
 
 		/// <summary>
 		/// int.MaxValue == highest prioriy,

@@ -416,6 +416,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (completionDataList == null || completionDataList.Count == 0)
 					return KeyActions.CloseWindow;
 				WasShiftPressed = (descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift;
+
+				if (SelectedItem != null) {
+					switch (SelectedItem.Rules.EnterKeyRule) {
+					case Microsoft.CodeAnalysis.Completion.EnterKeyRule.Always:
+						return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
+					case Microsoft.CodeAnalysis.Completion.EnterKeyRule.AfterFullyTypedWord:
+						if (PartialWord.Length == SelectedItem.CompletionText.Length)
+							return KeyActions.Complete | KeyActions.Ignore | KeyActions.CloseWindow;
+						return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
+					case Microsoft.CodeAnalysis.Completion.EnterKeyRule.Never:
+					case Microsoft.CodeAnalysis.Completion.EnterKeyRule.Default:
+					default:
+						return KeyActions.Complete | KeyActions.Ignore | KeyActions.CloseWindow;
+					}
+				}
 				return KeyActions.Complete | KeyActions.Ignore | KeyActions.CloseWindow;
 			case SpecialKey.Down:
 				if ((descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift) {

@@ -57,6 +57,8 @@ namespace MonoDevelop.CSharp.Completion
 
 		public CompletionItem CompletionItem { get; private set; }
 
+		public override CompletionItemRules Rules { get { return CompletionItem.Rules; } }
+
 		Lazy<CompletionProvider> provider;
 
 		public CompletionProvider Provider {
