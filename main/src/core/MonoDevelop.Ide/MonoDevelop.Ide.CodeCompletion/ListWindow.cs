@@ -520,7 +520,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
-			if (data.IsCommitCharacter (descriptor.KeyChar, PartialWord)) {
+			if (data != null && data.IsCommitCharacter (descriptor.KeyChar, PartialWord)) {
 				var curword = PartialWord;
 				var match = FindMatchedEntry (curword).Index;
 				if (match >= 0 && System.Char.IsPunctuation (descriptor.KeyChar)) {
