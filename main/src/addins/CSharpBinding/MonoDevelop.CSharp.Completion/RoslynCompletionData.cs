@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Completion
 		readonly Microsoft.CodeAnalysis.Document doc;
 		readonly ITextSnapshot triggerBuffer;
 		readonly CompletionService completionService;
-	
+
 		public CompletionItem CompletionItem { get; private set; }
 
 		Lazy<CompletionProvider> provider;
@@ -139,12 +139,11 @@ namespace MonoDevelop.CSharp.Completion
 				base.InsertCompletionText (window, ref ka, descriptor);
 				return;
 			}
-
 			var completionChange = Provider.GetChangeAsync (doc, CompletionItem, null, default (CancellationToken)).WaitAndGetResult (default (CancellationToken));
-			var currentBuffer = editor.GetPlatformTextBuffer ();
 
+			var currentBuffer = editor.GetPlatformTextBuffer ();
 			var textChange = completionChange.TextChange;
-			var triggerSnapshotSpan = new SnapshotSpan (triggerBuffer, new Microsoft.VisualStudio.Text.Span (textChange.Span.Start, textChange.Span.Length));
+			var triggerSnapshotSpan = new SnapshotSpan (triggerBuffer, new Span (textChange.Span.Start, textChange.Span.Length));
 			var mappedSpan = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
 			window.CompletionWidget.Replace (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
 
@@ -203,7 +202,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (roslynCompletionTypeTable.TryGetValue (tag, out string result))
 					return result;
 			}
-			LoggingService.LogWarning ("RoslynCompletionData: Can't find item type '"+ string.Join (",", CompletionItem.Tags) + "'");
+			LoggingService.LogWarning ("RoslynCompletionData: Can't find item type '" + string.Join (",", CompletionItem.Tags) + "'");
 			return "literal";
 		}
 
@@ -259,7 +258,7 @@ namespace MonoDevelop.CSharp.Completion
 				markup.Append ("</span>");
 			}
 			return new TooltipInformation {
-				SignatureMarkup = markup.ToString () 
+				SignatureMarkup = markup.ToString ()
 			};
 		}
 	}

@@ -437,7 +437,7 @@ namespace MonoDevelop.CSharp.Completion
 				kind = CompletionTriggerKind.Insertion;
 				break;
 			case CompletionTriggerReason.CompletionCommand:
-				kind = CompletionTriggerKind.Invoke;
+				kind = CompletionTriggerKind.InvokeAndCommitIfUnique;
 				break;
 			case CompletionTriggerReason.BackspaceOrDeleteCommand:
 				kind = CompletionTriggerKind.Deletion;
@@ -450,14 +450,13 @@ namespace MonoDevelop.CSharp.Completion
 				break;
 			}
 			var triggerBuffer = Editor.GetPlatformTextBuffer ();
-			var trigger = new CompletionTrigger (kind, triggerInfo.TriggerCharacter.HasValue ? triggerInfo.TriggerCharacter.Value : '\0');
+			var trigger = new CompletionTrigger(kind, triggerInfo.TriggerCharacter.HasValue ? triggerInfo.TriggerCharacter.Value : '\0');
 			if (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CharTyped) {
 				if (!cs.ShouldTriggerCompletion (sourceText, completionContext.TriggerOffset, trigger, null)) {
 					return EmptyCompletionDataList;
 				}
 			}
-
-			var completionList = await cs.GetCompletionsAsync (analysisDocument, completionContext.TriggerOffset, trigger, cancellationToken: token);
+			var completionList = await cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, cancellationToken: token);
 			if (completionList == null)
 				return EmptyCompletionDataList;
 
