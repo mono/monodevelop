@@ -152,18 +152,35 @@ namespace MonoDevelop.CSharp
 							if (!MatchesTag (searchPattern.Tag, result))
 								continue;
 
-							int rank = 0;
-							if (result.MatchKind == NavigateToMatchKind.Exact)
-								rank = result.Name.Length * 11;
-							else if (result.MatchKind == NavigateToMatchKind.Prefix)
-								rank = result.Name.Length * 5;
-							else if (result.MatchKind == NavigateToMatchKind.Substring)
-								rank = result.Name.Length * 2;
-							else
-								rank = result.Name.Length;
+							int laneLength = result.NameMatchSpans.Length;
+							int index = laneLength > 0 ? result.NameMatchSpans [0].Start : -1;
 
-							if (result.IsCaseSensitive)
-								rank *= 2;
+							int rank = 0;
+							if (result.MatchKind == NavigateToMatchKind.Exact) {
+								rank = int.MaxValue;
+							} else if (result.MatchKind == NavigateToMatchKind.Prefix) {
+								rank = int.MaxValue - (result.Name.Length - 1) * 10 - index;
+							} else {
+								int patternLength = searchPattern.Pattern.Length;
+								rank = searchPattern.Pattern.Length - result.Name.Length;
+								rank -= index;
+
+								rank += laneLength * 100;
+
+								// Favor matches with less splits. That is, 'abc def' is better than 'ab c def'.
+								int baseRank = (patternLength - laneLength - 1) * 5000;
+
+								// First matching letter close to the begining is better
+								// The more matched letters the better
+								rank = baseRank - (index + (laneLength - patternLength));
+
+								// rank up matches which start with a filter substring
+								if (index == 0)
+									rank += result.NameMatchSpans [0].Length * 50;
+							}
+
+							if (!result.IsCaseSensitive)
+								rank /= 2;
 
 							searchResultCallback.ReportResult (new DeclaredSymbolInfoResult (
 								searchPattern.Pattern,
