@@ -867,9 +867,7 @@ namespace MonoDevelop.Projects
 		{
 			return BindTask<IEnumerable<AssemblyReference>> (async ct => {
 				var result = new List<AssemblyReference> ();
-				var res = await GetReferences (configuration);
-
-				foreach (var r in await OnGetReferences (configuration, ct).ConfigureAwait (false)) {
+				foreach (var r in await GetReferences (configuration, ct).ConfigureAwait (false)) {
 					if (includeProjectReferences || ! r.IsProjectReference) {
 						result.Add (r);
 					}
@@ -902,7 +900,7 @@ namespace MonoDevelop.Projects
 				return result;
 			}
 
-			foreach (var r in await OnGetReferences (configuration, token).ConfigureAwait (false)) {
+			foreach (var r in await GetReferences (configuration, token).ConfigureAwait (false)) {
 				if (r.IsProjectReference && r.ReferenceOutputAssembly && r.GetReferencedItem (ParentSolution) is DotNetProject p) {
 					result.Add (p);
 				}
@@ -919,7 +917,7 @@ namespace MonoDevelop.Projects
 		internal protected virtual async Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
 			var result = new List<AssemblyReference> ();
-			foreach (var r in await OnGetReferences (configuration, CancellationToken.None).ConfigureAwait (false)) {
+			foreach (var r in await GetReferences (configuration, CancellationToken.None).ConfigureAwait (false)) {
 				if (!r.IsProjectReference) {
 					result.Add (r);
 				}

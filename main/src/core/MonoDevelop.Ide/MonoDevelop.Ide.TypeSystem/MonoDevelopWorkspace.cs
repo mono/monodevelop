@@ -662,14 +662,13 @@ namespace MonoDevelop.Ide.TypeSystem
 							continue;
 						}
 
+						//it's an output tracked project, treat it as an assembly ref
 						if(!TypeSystemService.IsOutputTrackedProject (referencedProject)) {
 							projectRefs.Add (new ProjectReference (
 								GetOrCreateProjectId (referencedProject),
 								ImmutableArray<string>.Empty.AddRange (reference.EnumerateAliases ())));
 							continue;
 						}
-
-						//it's an output tracked project, treat it as an assembly ref
 					}
 
 					string fileName;

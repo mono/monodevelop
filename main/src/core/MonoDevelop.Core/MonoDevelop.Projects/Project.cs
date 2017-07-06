@@ -2039,6 +2039,20 @@ namespace MonoDevelop.Projects
 		}
 
 		[Obsolete ("Use FastCheckNeedsBuild")]
+		internal protected override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
+		{
+			return CheckNeedsBuild (configuration);
+		}
+
+		[Obsolete]
+		protected override void OnSetNeedsBuilding (ConfigurationSelector configuration)
+		{
+			var of = GetOutputFileName (configuration);
+			if (File.Exists (of))
+				File.Delete (of);
+		}
+
+		[Obsolete ("Use FastCheckNeedsBuild")]
 		protected virtual bool CheckNeedsBuild (ConfigurationSelector configuration)
 		{
 			DateTime tim = GetLastBuildTime (configuration);

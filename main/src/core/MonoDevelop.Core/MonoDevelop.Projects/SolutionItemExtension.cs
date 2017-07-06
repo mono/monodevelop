@@ -195,7 +195,7 @@ namespace MonoDevelop.Projects
 		[Obsolete ("This method will be removed in future releases")]
 		internal protected virtual DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
 		{
-			return DateTime.MinValue;
+			return next.OnGetLastBuildTime (configuration);
 		}
 
 		#endregion

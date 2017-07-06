@@ -1153,7 +1153,7 @@ namespace MonoDevelop.Projects
 			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var p = (DotNetProject)sol.Items [0];
-			var asms = await p.GetReferencedAssemblies (p.Configurations [0].Selector);
+			var asms = await p.GetReferences (p.Configurations [0].Selector);
 			Assert.IsTrue (asms.Any (r => r.FilePath.FileName == "System.Runtime.dll"));
 		}
 	}
