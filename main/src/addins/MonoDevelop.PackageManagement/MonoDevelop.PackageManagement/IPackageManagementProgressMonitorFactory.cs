@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using System.Threading;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
@@ -33,6 +33,10 @@ namespace MonoDevelop.PackageManagement
 	{
 		ProgressMonitor CreateProgressMonitor (string statusText);
 		ProgressMonitor CreateProgressMonitor (string statusText, bool clearConsole);
+		ProgressMonitor CreateProgressMonitor (
+			string statusText,
+			bool clearConsole,
+			CancellationTokenSource cancellationTokenSource);
 	}
 }
 

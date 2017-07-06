@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Components.Commands;
@@ -32,7 +33,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using NuGet.Common;
-using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -130,10 +130,7 @@ namespace MonoDevelop.PackageManagement.Commands
 		void WorkspaceItemUnloading (object sender, ItemUnloadingEventArgs e)
 		{
 			try {
-				if (PackageManagementServices.BackgroundPackageActionRunner.IsRunning) {
-					MessageService.ShowMessage (GettextCatalog.GetString ("Unable to close the solution when NuGet packages are being processed."));
-					e.Cancel = true;
-				}
+				e.Cancel = !PendingPackageActionsHandler.OnSolutionClosing ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error on unloading workspace item.", ex);
 			}

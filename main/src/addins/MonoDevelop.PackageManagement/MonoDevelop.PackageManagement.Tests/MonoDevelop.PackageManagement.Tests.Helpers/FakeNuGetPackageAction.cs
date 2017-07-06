@@ -39,6 +39,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public string PackageId { get; set; }
 
+		public PackageActionType ActionType { get; set; }
+
 		public void Execute ()
 		{
 		}

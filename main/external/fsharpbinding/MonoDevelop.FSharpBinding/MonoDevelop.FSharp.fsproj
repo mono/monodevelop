@@ -87,7 +87,6 @@
     <Compile Include="Services\LanguageService.fs" />
     <Compile Include="Services\MDLanguageService.fs" />
     <Compile Include="Services\CompilerService.fs" />
-    <Compile Include="Services\FSharpConsoleView.fs" />
     <Compile Include="Services\InteractiveSession.fs" />
     <Compile Include="Services\RoslynHelpers.fs" />
     <Compile Include="FSharpParsedDocument.fs" />

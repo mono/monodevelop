@@ -27,7 +27,7 @@
 		<Section id="PerformanceDiagnostics"
 			_label="Performance Diagnostics"
 			insertafter="VersionControl">
-			<Section id="General"
+			<Section id="PerformanceDiagnosticsGeneral"
 				_label="General"
 				fill="true"
 				class="PerformanceDiagnosticsAddIn.GlobalOptionsPanel"

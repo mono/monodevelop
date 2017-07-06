@@ -1,9 +1,10 @@
-﻿﻿// BaseDirectoryPanel.cs
+﻿//
+// PendingPackageActionsInformation.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,45 +23,35 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
 
-using System;
+using System.Collections.Generic;
 
-using MonoDevelop.Components.AtkCocoaHelper;
-using MonoDevelop.Core;
-
-namespace MonoDevelop.Ide.Projects.OptionPanels
+namespace MonoDevelop.PackageManagement
 {
-	
-	
-	[System.ComponentModel.Category("MonoDevelop.Projects.Gui")]
-	[System.ComponentModel.ToolboxItem(true)]
-	partial class BaseDirectoryPanelWidget : Gtk.Bin
+	class PendingPackageActionsInformation
 	{
-		public BaseDirectoryPanelWidget()
+		public bool IsInstallPending { get; private set; }
+		public bool IsUninstallPending { get; private set; }
+		public bool IsRestorePending { get; private set; }
+
+		public void Add (IEnumerable<IPackageAction> actions)
 		{
-			this.Build();
-			var a = folderentry.EntryAccessible;
-			a.SetTitleUIElement (label3.Accessible);
-			label3.Accessible.SetTitleFor (a);
-			SetupAccessibility ();
+			foreach (var action in actions)
+				Add (action);
 		}
 
-		private void SetupAccessibility ()
+		public void Add (IPackageAction action)
 		{
-			folderentry.SetEntryAccessibilityAttributes ("BaseDirectory.FolderEntry",
-														 GettextCatalog.GetString ("Root Directory"),
-														 GettextCatalog.GetString ("Entry the root directory for the project"));
-			folderentry.SetAccessibilityLabelRelationship (label3);
-		}
-		
-		public string BaseDirectory {
-			get {
-				return folderentry.Path;
-			}
-			set {
-				folderentry.Path = value;
+			switch (action.ActionType) {
+			case PackageActionType.Install:
+				IsInstallPending = true;
+				break;
+			case PackageActionType.Uninstall:
+				IsUninstallPending = true;
+				break;
+			case PackageActionType.Restore:
+				IsRestorePending = true;
+				break;
 			}
 		}
 	}

@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharpBinding
 	[TestFixture]
 	public class NamedArgumentCompletionTests : TestBase
 	{
-		class TestCompletionWidget : ICompletionWidget 
+		class TestCompletionWidget : ICompletionWidget
 		{
 			DocumentContext documentContext;
 
@@ -81,7 +81,7 @@ namespace MonoDevelop.CSharpBinding
 
 			public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
 			{
-				var line = editor.GetLineByOffset (triggerOffset); 
+				var line = editor.GetLineByOffset (triggerOffset);
 				return new CodeCompletionContext {
 					TriggerOffset = triggerOffset,
 					TriggerLine = line.LineNumber,
@@ -176,10 +176,10 @@ namespace MonoDevelop.CSharpBinding
 			var project = MonoDevelop.Projects.Services.ProjectService.CreateProject ("C#");
 			project.Name = "test";
 			project.FileName = "test.csproj";
-			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile)); 
+			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile));
 
 			var solution = new MonoDevelop.Projects.Solution ();
-			solution.AddConfiguration ("", true); 
+			solution.AddConfiguration ("", true);
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
 				await TypeSystemService.Load (solution, monitor);
@@ -207,12 +207,12 @@ namespace MonoDevelop.CSharpBinding
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
 			var sm = ext.DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
 
-			var t = sm.Compilation.GetTypeByMetadataName (type); 
+			var t = sm.Compilation.GetTypeByMetadataName (type);
 			var foundMember = t.GetMembers().First (m => m.Name == member);
 			var data = new CompletionData (foundMember.Name);
 			data.DisplayFlags |= DisplayFlags.NamedArgument;
 			KeyActions ka = KeyActions.Process;
-			data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None)); 
+			data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None));
 
 			return widget.CompletedWord;
 		}
@@ -221,7 +221,7 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public async Task TestSimpleCase ()
 		{
-			IdeApp.Preferences.AddParenthesesAfterCompletion.Set (true); 
+			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
 			string completion = await Test (@"class MyClass
 {
 	int foo;
@@ -230,14 +230,14 @@ namespace MonoDevelop.CSharpBinding
 		$
 	}
 }", "MyClass", "foo");
-			Assert.AreEqual ("foo = ", completion); 
+			Assert.AreEqual ("foo = ", completion);
 		}
 
-		
+
 		[Test]
 		public async Task TestNoAutoCase ()
 		{
-			IdeApp.Preferences.AddParenthesesAfterCompletion.Set (false); 
+			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = false;
 			string completion = await Test (@"class MyClass
 {
 	int foo;
@@ -246,10 +246,9 @@ namespace MonoDevelop.CSharpBinding
 		$
 	}
 }", "MyClass", "foo", Gdk.Key.space);
-			Assert.AreEqual ("foo", completion); 
+			Assert.AreEqual ("foo", completion);
 		}
 
 
 	}
 }
-
