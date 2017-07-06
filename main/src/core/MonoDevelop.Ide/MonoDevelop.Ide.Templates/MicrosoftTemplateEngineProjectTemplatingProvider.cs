@@ -44,6 +44,7 @@ using Microsoft.TemplateEngine.Abstractions;
 using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -219,7 +220,7 @@ namespace MonoDevelop.Ide.Templates
 			foreach (var p in workspaceItems.OfType<Project> ()) {
 				foreach (var file in p.Files)
 					if (!filesBeforeCreation.Contains ((string)file.FilePath, FilePath.PathComparer)) //Format only newly created files
-						await FormatFile (p, file.FilePath);
+						await FormatFile (parentFolder?.Policies ?? p.Policies, file.FilePath);
 			}
 			processResult.SetFilesToOpen (filesToOpen);
 			return processResult;
@@ -253,7 +254,7 @@ namespace MonoDevelop.Ide.Templates
 				.Where (parameter => parameter.IsValid);
 		}
 
-		async Task FormatFile (Project p, FilePath file)
+		async Task FormatFile (PolicyContainer policies, FilePath file)
 		{
 			string mime = DesktopService.GetMimeTypeForUri (file);
 			if (mime == null)
@@ -263,7 +264,7 @@ namespace MonoDevelop.Ide.Templates
 			if (formatter != null) {
 				try {
 					var content = await TextFileUtility.ReadAllTextAsync (file);
-					var formatted = formatter.FormatText (p.Policies, content.Text);
+					var formatted = formatter.FormatText (policies, content.Text);
 					if (formatted != null)
 						TextFileUtility.WriteText (file, formatted, content.Encoding);
 				} catch (Exception ex) {
