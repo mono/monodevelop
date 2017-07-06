@@ -212,16 +212,21 @@ namespace MonoDevelop.Components
 				cr.SetSourceColor (Styles.SubTabBarBackgroundColor.ToCairoColor ());
 				cr.Fill ();
 
+				Tab active = null;
 				for (int i = tabs.Count; i --> 0;) {
-					if (i == ActiveTab)
+					if (i == ActiveTab) {
+						active = tabs [i];
 						continue;
+					}
 					var tab = tabs[i];
 					var bounds = GetBounds (tab);
 					tab.HoverPosition = tab == hoverTab ? new Cairo.PointD (mx - bounds.X, my) : new Cairo.PointD (-1, -1);
 					tab.Draw (cr, bounds);
 				}
-				
-				tabs[ActiveTab].Draw (cr, GetBounds (tabs[ActiveTab]));
+
+				if (active != null) {
+					active.Draw (cr, GetBounds (active));
+				}
 			}
 
 			return base.OnExposeEvent (evnt);
@@ -291,7 +296,9 @@ namespace MonoDevelop.Components
 
 		protected override void OnActivate ()
 		{
-			ActiveTab = focusedTab;
+			if (focusedTab >= 0 && focusedTab < tabs.Count) {
+				ActiveTab = focusedTab;
+			}
 			base.OnActivate ();
 		}
 	}

@@ -89,6 +89,10 @@ namespace MonoDevelop.PackageManagement
 			projectName = dotNetProject.Name;
 		}
 
+		public PackageActionType ActionType {
+			get { return PackageActionType.Install; }
+		}
+
 		public void Execute ()
 		{
 			Execute (CancellationToken.None);

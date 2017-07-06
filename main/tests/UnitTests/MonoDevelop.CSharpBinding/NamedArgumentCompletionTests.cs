@@ -218,11 +218,10 @@ namespace MonoDevelop.CSharpBinding
 			return widget.CompletedWord;
 		}
 
-		
 		[Test]
 		public async Task TestSimpleCase ()
 		{
-			IdeApp.Preferences.AddParenthesesAfterCompletion.Set (true); 
+			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
 			string completion = await Test (@"class MyClass
 {
 	int foo;
@@ -238,7 +237,7 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public async Task TestNoAutoCase ()
 		{
-			IdeApp.Preferences.AddParenthesesAfterCompletion.Set (false); 
+			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = false;
 			string completion = await Test (@"class MyClass
 {
 	int foo;

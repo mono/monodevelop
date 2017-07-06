@@ -38,6 +38,7 @@ using System.Runtime.Remoting.Messaging;
 using MonoDevelop.Core.StringParsing;
 using System.Threading;
 using System.Collections.Immutable;
+using MonoDevelop.Core.AddIns;
 
 
 namespace MonoDevelop.Projects
@@ -67,9 +68,7 @@ namespace MonoDevelop.Projects
 			if (!initializeCalled) {
 				initializeCalled = true;
 
-				extensionContext = AddinManager.CreateExtensionContext ();
-				extensionContext.RegisterCondition ("ItemType", new ItemTypeCondition (GetType ()));
-				ExtensionContext.RegisterCondition ("AppliesTo", new AppliesToCondition (this));
+				extensionContext = CreateExtensionContext (this);
 
 				OnInitialize ();
 				InitializeExtensionChain ();
@@ -435,7 +434,23 @@ namespace MonoDevelop.Projects
 
 		static void LoadExtensions ()
 		{
-			modelExtensions = AddinManager.GetExtensionNodes<ProjectModelExtensionNode> (ProjectService.ProjectModelExtensionsPath).Concat (customNodes).ToArray ();
+			// Create a context for loading the default extensions. The context is necessary because
+			// the conditions declared in the extension point must always be present.
+			var extensionContext = CreateExtensionContext (null);
+			modelExtensions = extensionContext.GetExtensionNodes<ProjectModelExtensionNode> (ProjectService.ProjectModelExtensionsPath).Concat (customNodes).ToArray ();
+		}
+
+		static ExtensionContext CreateExtensionContext (WorkspaceObject targetObject)
+		{
+			var extensionContext = AddinManager.CreateExtensionContext ();
+			if (targetObject == null) {
+				extensionContext.RegisterCondition ("ItemType", FalseCondition.Instance);
+				extensionContext.RegisterCondition ("AppliesTo", FalseCondition.Instance);
+			} else {
+				extensionContext.RegisterCondition ("ItemType", new ItemTypeCondition (targetObject.GetType ()));
+				extensionContext.RegisterCondition ("AppliesTo", new AppliesToCondition (targetObject));
+			}
+			return extensionContext;
 		}
 
 		/// <summary>

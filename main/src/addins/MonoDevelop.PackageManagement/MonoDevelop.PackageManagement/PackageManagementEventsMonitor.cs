@@ -164,12 +164,13 @@ namespace MonoDevelop.PackageManagement
 			FileService.NotifyFilesChanged (files);
 		}
 
-		public void ReportError (ProgressMonitorStatusMessage progressMessage, Exception ex)
+		public void ReportError (ProgressMonitorStatusMessage progressMessage, Exception ex, bool showPackageConsole = true)
 		{
 			LoggingService.LogError (progressMessage.Error, ex);
 			progressMonitor.Log.WriteLine (GetErrorMessageForPackageConsole (ex));
 			progressMonitor.ReportError (progressMessage.Error, null);
-			ShowPackageConsole (progressMonitor);
+			if (showPackageConsole)
+				ShowPackageConsole (progressMonitor);
 			packageManagementEvents.OnPackageOperationError (ex);
 
 			if (taskCompletionSource != null) {

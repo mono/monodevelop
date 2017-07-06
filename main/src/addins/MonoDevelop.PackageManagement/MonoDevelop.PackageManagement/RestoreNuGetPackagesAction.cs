@@ -98,6 +98,10 @@ namespace MonoDevelop.PackageManagement
 
 		public bool RestorePackagesConfigProjects { get; set; }
 
+		public PackageActionType ActionType {
+			get { return PackageActionType.Restore; }
+		}
+
 		public void Execute ()
 		{
 			Execute (CancellationToken.None);

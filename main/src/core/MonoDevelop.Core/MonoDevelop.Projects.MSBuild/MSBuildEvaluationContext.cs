@@ -458,7 +458,9 @@ namespace MonoDevelop.Projects.MSBuild
 				while (i != -1);
 
 				sb.Append (str, last, str.Length - last);
-				return sb.ToString ();
+				lock (project.Pool) {
+					return project.Pool.Add (sb);
+				}
 			} finally {
 				evaluationSbs.Enqueue (sb);
 			}
@@ -498,12 +500,15 @@ namespace MonoDevelop.Projects.MSBuild
 			i += 2;
 			int j = FindClosingChar (str, i, ')');
 			if (j == -1) {
-				val = str.Substring (start);
+				lock (project.Pool)
+					val = project.Pool.Add (str, start, str.Length - start);
 				i = str.Length;
 				return false;
 			}
 
-			string prop = str.Substring (i, j - i).Trim ();
+			string prop;
+			lock (project.Pool)
+				prop = project.Pool.Add (str, i, j - i).Trim ();
 			i = j + 1;
 
 			bool res = false;
@@ -527,7 +532,10 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 			if (!res)
-				val = str.Substring (start, j - start + 1);
+				lock (project.Pool) {
+					val = project.Pool.Add (str, start, j - start + 1);
+				}
+
 			return res;
 		}
 
@@ -715,9 +723,9 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 
 				if (paramsArgType != null) {
-					var argsArray = new object [parameterValues.Length - numArgs];
+					var argsArray = Array.CreateInstance (paramsArgType, parameterValues.Length - numArgs);
 					for (int m = 0; m < argsArray.Length; m++)
-						argsArray [m] = ConvertArg (method, n, parameterValues [n++], paramsArgType);
+						argsArray.SetValue (ConvertArg (method, n, parameterValues [n++], paramsArgType), m);
 					convertedArgs [convertedArgs.Length - 1] = argsArray;
 				}
 

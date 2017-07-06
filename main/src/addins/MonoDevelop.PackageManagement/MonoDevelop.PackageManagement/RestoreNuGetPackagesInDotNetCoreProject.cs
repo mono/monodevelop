@@ -52,6 +52,10 @@ namespace MonoDevelop.PackageManagement
 
 		public bool ReloadProject { get; set; }
 
+		public PackageActionType ActionType {
+			get { return PackageActionType.Restore; }
+		}
+
 		public void Execute ()
 		{
 			Execute (CancellationToken.None);

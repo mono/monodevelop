@@ -64,7 +64,7 @@ type Test() =
             t1.UnitTestIdentifier |> should equal "NUnit.Framework.Test.TestOne"
             t1.IsIgnored |> should equal false
 
-            t2.UnitTestIdentifier |> should equal "NUnit.Framework.Test.``Test Two``"
+            t2.UnitTestIdentifier |> should equal "NUnit.Framework.Test.Test Two"
             t2.IsIgnored |> should equal true
         | _ -> NUnit.Framework.Assert.Fail "invalid number of tests returned"
 
@@ -121,7 +121,7 @@ module Test =
             t1.UnitTestIdentifier |> should equal "NUnit.Framework.Test+Test.TestOne"
             t1.IsIgnored |> should equal false
 
-            t2.UnitTestIdentifier |> should equal "NUnit.Framework.Test+Test.``Test Two``"
+            t2.UnitTestIdentifier |> should equal "NUnit.Framework.Test+Test.Test Two"
             t2.IsIgnored |> should equal true
         | _ -> NUnit.Framework.Assert.Fail "invalid number of tests returned"
 

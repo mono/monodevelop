@@ -1,11 +1,9 @@
 namespace MonoDevelopTests
 open System.Text.RegularExpressions
-open System.Threading
 open NUnit.Framework
 open FsUnit
 open MonoDevelop.FSharp.MonoDevelop
 open MonoDevelop.FSharp
-
 [<TestFixture>]
 type TestTooltipProvider() =
     let stripHtml html =
@@ -54,6 +52,26 @@ type TestTooltipProvider() =
         let segment = Symbols.getTextSegment editor symbolUse.Value col line
         segment.Offset |> should equal 5
         segment.EndOffset |> should equal 11
+
+    [<Test>]
+    member this.``Type annotation has correct segment``() =
+        let line, col, symbolUse, editor = getSymbol "let map (f : 'a$ -> 'b) = ()"
+        let segment = Symbols.getTextSegment editor symbolUse.Value col line
+        segment.Offset |> should equal 14
+        segment.EndOffset |> should equal 15
+
+    [<Test>]
+    member this.``Base method has correct segment``() =
+        let source =
+            """
+            type BaseType(int) = class end
+            type MyString() =
+                inherit BaseType(int)
+                let x = base.To$String() 
+            """
+        let line, col, symbolUse, editor = getSymbol source
+        let segment = Symbols.getTextSegment editor symbolUse.Value col line
+        segment.EndOffset - segment.Offset |> should equal 8
 
     [<Test>]
     member this.``Tooltip arrows are right aligned``() =

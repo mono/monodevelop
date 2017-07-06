@@ -59,9 +59,11 @@ namespace MonoDevelop.DotNetCore
 				return;
 			if (!pset.HasProperty (nameof (EnvironmentVariables)))
 				EnvironmentVariables.Add ("ASPNETCORE_ENVIRONMENT", "Development");
+#pragma warning disable CS0618 // Type or member is obsolete
 			LaunchBrowser = pset.GetValue (nameof (LaunchBrowser), true);
 			ApplicationURL = pset.GetValue (nameof (ApplicationURL), "http://localhost:5000/");
 			LaunchUrl = pset.GetValue (nameof (LaunchUrl), null);
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		protected override void Write (IPropertySet pset)
@@ -70,9 +72,11 @@ namespace MonoDevelop.DotNetCore
 			pset.SetValue (nameof (ExternalConsole), ExternalConsole, !webProject);
 			if (!webProject)
 				return;
+#pragma warning disable CS0618 // Type or member is obsolete
 			pset.SetValue (nameof (LaunchBrowser), LaunchBrowser, true);
 			pset.SetValue (nameof (LaunchUrl), string.IsNullOrWhiteSpace (LaunchUrl) ? null : LaunchUrl, null);
 			pset.SetValue (nameof (ApplicationURL), ApplicationURL, "http://localhost:5000/");
+#pragma warning restore CS0618 // Type or member is obsolete
 			if (EnvironmentVariables.Count == 1 && EnvironmentVariables.ContainsKey ("ASPNETCORE_ENVIRONMENT") && EnvironmentVariables ["ASPNETCORE_ENVIRONMENT"] == "Development")
 				pset.RemoveProperty (nameof (EnvironmentVariables));
 		}
@@ -88,6 +92,8 @@ namespace MonoDevelop.DotNetCore
 			var launchSettingsJsonPath = Path.Combine (project.BaseDirectory, "Properties", "launchSettings.json");
 			var launchSettingsJson = File.Exists (launchSettingsJsonPath) ? JObject.Parse (File.ReadAllText (launchSettingsJsonPath)) : null;
 			var settings = (launchSettingsJson?.GetValue ("profiles") as JObject)?.GetValue (project.Name) as JObject;
+
+#pragma warning disable CS0618 // Type or member is obsolete
 			LaunchBrowser = settings?.GetValue ("launchBrowser")?.Value<bool?> () ?? true;
 			LaunchUrl = settings?.GetValue ("launchUrl")?.Value<string> () ?? null;
 			foreach (var pair in (settings?.GetValue ("environmentVariables") as JObject)?.Properties () ?? Enumerable.Empty<JProperty> ()) {
@@ -95,12 +101,16 @@ namespace MonoDevelop.DotNetCore
 					EnvironmentVariables.Add (pair.Name, pair.Value.Value<string> ());
 			}
 			ApplicationURL = settings?.GetValue ("applicationUrl")?.Value<string> () ?? "http://localhost:5000/";
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
+		[Obsolete("Use MonoDevelop.AspNetCore.AspNetCoreRunConfiguration class")]
 		public bool LaunchBrowser { get; set; } = true;
 
+		[Obsolete ("Use MonoDevelop.AspNetCore.AspNetCoreRunConfiguration class")]
 		public string LaunchUrl { get; set; } = null;
 
+		[Obsolete ("Use MonoDevelop.AspNetCore.AspNetCoreRunConfiguration class")]
 		public string ApplicationURL { get; set; } = "http://localhost:5000/";
 
 		[ItemProperty (DefaultValue = null)]
@@ -112,9 +122,11 @@ namespace MonoDevelop.DotNetCore
 
 			var other = (DotNetCoreRunConfiguration)config;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 			LaunchBrowser = other.LaunchBrowser;
 			LaunchUrl = other.LaunchUrl;
 			ApplicationURL = other.ApplicationURL;
+#pragma warning restore CS0618 // Type or member is obsolete
 			if (other.PipeTransport == null)
 				PipeTransport = null;
 			else

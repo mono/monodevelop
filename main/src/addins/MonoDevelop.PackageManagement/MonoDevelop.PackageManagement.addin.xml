@@ -114,7 +114,7 @@
 
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
 		<Section id="NuGetPackageManagement" _label="NuGet" insertafter="VersionControl">
-			<Section id="General" _label="General" fill="true" class="MonoDevelop.PackageManagement.Gui.PackageManagementOptionsPanel" icon="md-prefs-package" />
+			<Section id="NuGetGeneral" _label="General" fill="true" class="MonoDevelop.PackageManagement.Gui.PackageManagementOptionsPanel" icon="md-prefs-package" />
 			<Section id="PackageSources" _label="Sources" fill="true" class="MonoDevelop.PackageManagement.Gui.PackageSourcesOptionsPanel" icon="md-prefs-package-source" />
 		</Section>
 	</Extension>

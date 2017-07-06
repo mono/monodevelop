@@ -69,6 +69,10 @@ namespace MonoDevelop.PackageManagement
 		public string PackageId { get; set; }
 		public NuGetVersion Version { get; set; }
 
+		public PackageActionType ActionType {
+			get { return PackageActionType.Install; }
+		}
+
 		public void Execute ()
 		{
 			Execute (CancellationToken.None);
