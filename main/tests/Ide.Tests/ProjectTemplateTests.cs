@@ -124,9 +124,8 @@ namespace MonoDevelop.Ide
 			var mutliplatformLibraryCategory = templatingService.GetProjectTemplateCategories ().Single (c => c.Id == "multiplat")
 																	   .Categories.Single (c => c.Id == "library")
 																	   .Categories.Single (c => c.Id == "general");
-			var pclTemplate = mutliplatformLibraryCategory.Templates.Single (t => t.Id == "MonoDevelop.CSharp.PortableLibrary");
-
-			var standardTemplate = mutliplatformLibraryCategory.Templates.Single (t => t.Id == "Microsoft.Common.Library.CSharp");
+			var pclTemplate = mutliplatformLibraryCategory.Templates.Single (t => t.GroupId == "md-project-portable-library").GetTemplate ("C#");
+			var standardTemplate = mutliplatformLibraryCategory.Templates.Single (t => t.GroupId == "Microsoft.Common.Library").GetTemplate ("C#");
 
 			var tempDirectory = Util.CreateTmpDir ("Bug57840Test");
 			var result = await templatingService.ProcessTemplate (pclTemplate, new Ide.Projects.NewProjectConfiguration () {
@@ -150,6 +149,8 @@ namespace MonoDevelop.Ide
 
 			Assert.AreNotEqual (fileContentBeforeFormat.Text, fileContentAfterFormat.Text);//Make sure our weird formatting applied
 
+			solution.Policies.Set<TextStylePolicy> (new TextStylePolicy (3, 3, 3, true, true, true, EolMarker.Mac), "text/x-csharp");
+
 			var result2 = await templatingService.ProcessTemplate (standardTemplate, new Ide.Projects.NewProjectConfiguration () {
 				CreateSolution = false,
 				Location = solution.BaseDirectory,
@@ -158,7 +159,15 @@ namespace MonoDevelop.Ide
 			}, solution.RootFolder);
 			await solution.SaveAsync (Util.GetMonitor ());
 			var fileContentAfterSecondProject = await TextFileUtility.ReadAllTextAsync (file);
-			Assert.AreEqual (fileContentAfterSecondProject.Text, fileContentAfterFormat.Text);//Mkae sure our weird formatting is preserved
+			Assert.AreEqual (fileContentAfterSecondProject.Text, fileContentAfterFormat.Text);//Make sure our weird formatting is preserved
+			var standardProject = result2.WorkspaceItems.OfType<DotNetProject> ().Single ();
+			var class1File = standardProject.Files.Single (f => f.FilePath.FileName == "Class1.cs").FilePath;
+			var fileContentAfterCreation = await TextFileUtility.ReadAllTextAsync (class1File);
+			standardProject.Policies.Set<TextStylePolicy> (new TextStylePolicy (3, 3, 3, true, true, true, EolMarker.Mac), "text/x-csharp");
+			await FormatFile (standardProject, class1File);
+			var fileContentAfterForceFormatting = await TextFileUtility.ReadAllTextAsync (class1File);
+			Assert.AreEqual (fileContentAfterForceFormatting.Text, fileContentAfterCreation.Text,
+			                "We expect them to be same because we placed same formatting policy on solution before creataion as after creation on project when we manually formatted.");
 		}
 	}
 }
