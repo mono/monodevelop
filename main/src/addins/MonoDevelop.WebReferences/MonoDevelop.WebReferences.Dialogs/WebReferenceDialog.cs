@@ -7,6 +7,7 @@ using System.Threading;
 using Gtk;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.WebBrowser;
 using MonoDevelop.WebReferences;
@@ -491,7 +492,15 @@ namespace MonoDevelop.WebReferences.Dialogs
 				btnOK.Sensitive = isWebService;
 				tlbNavigate.Visible = WebBrowserService.CanGetWebBrowser;
 				tbxReferenceName.Sensitive = isWebService;
-				comboModel.Sensitive = !project.IsPortableLibrary;
+				if (project.IsPortableLibrary)
+					comboModel.Sensitive = false;
+				else if (IsWcfSupported ())
+					comboModel.Sensitive = true;
+				else {
+					// Select web references instead of WCF.
+					comboModel.Active = 1;
+					comboModel.Sensitive = false;
+				}
 				break;
 
 			case DialogState.CreateConfig:
@@ -593,6 +602,15 @@ namespace MonoDevelop.WebReferences.Dialogs
 			default:
 				throw new InvalidOperationException ();
 			}
+		}
+
+		/// <summary>
+		/// PCL or projects that target .NET Framework are considered to support WCF.
+		/// </summary>
+		bool IsWcfSupported ()
+		{
+			return project.TargetFramework.Id.Identifier == TargetFrameworkMoniker.ID_NET_FRAMEWORK ||
+				project.IsPortableLibrary;
 		}
 
 		protected void OnBtnBackClicked (object sender, EventArgs e)
