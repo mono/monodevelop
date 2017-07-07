@@ -38,6 +38,7 @@ using System.Linq;
 using MonoDevelop.Core;
 using Pango;
 using MonoDevelop.Ide.Editor.Highlighting;
+using Gdk;
 
 namespace MonoDevelop.Refactoring
 {
@@ -113,9 +114,24 @@ namespace MonoDevelop.Refactoring
 				} catch (OperationCanceledException) {}
 				return new List<DiffHunk> ();
 			});
-			if (diff.Count > 0 && !token.IsCancellationRequested)
-				ShowPopup (rect, PopupPosition.Left);
+			if (diff.Count > 0 && !token.IsCancellationRequested) {
+				var pos = PopupPosition.Left;
+				if (Platform.IsMac) {
+					var screenRect = GtkUtil.ToScreenCoordinates (IdeApp.Workbench.RootWindow, IdeApp.Workbench.RootWindow.GdkWindow, rect.ToGdkRectangle ());
+					var geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (screenRect.X, screenRect.Y));
+					var request = SizeRequest ();
+					if (screenRect.X - geometry.X < request.Width) {
+						pos = PopupPosition.Top;
+						if (geometry.Bottom - screenRect.Bottom < request.Height)
+							pos = PopupPosition.Bottom;
+					} else {
+						pos = PopupPosition.Right;
+					}
+				}
+				ShowPopup (rect, pos);
+			}
 		}
+
 
 		protected override void OnDestroyed ()
 		{
