@@ -1465,7 +1465,7 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void GlobalPropertyProvider ()
 		{
-			var prov = new CustomGlobalPropertyProvider ();
+			var prov = new CustomGlobalPropertyProvider ("Works!");
 			MSBuildProjectService.RegisterGlobalPropertyProvider (prov);
 			try {
 				var p = LoadProject ();
@@ -1478,16 +1478,40 @@ namespace MonoDevelop.Projects
 				MSBuildProjectService.UnregisterGlobalPropertyProvider (prov);
 			}
 		}
+
+		[Test]
+		public void MultipleGlobalPropertyProvider ()
+		{
+			var prov1 = new CustomGlobalPropertyProvider ("First");
+			var prov2 = new CustomGlobalPropertyProvider ("Second");
+			MSBuildProjectService.RegisterGlobalPropertyProvider (prov1);
+			MSBuildProjectService.RegisterGlobalPropertyProvider (prov2);
+			try {
+				var p = LoadProject ();
+				p.Evaluate ();
+
+				var pg = p.EvaluatedProperties;
+				Assert.AreEqual ("Second", pg.GetValue ("TEST_GLOBAL"));
+
+			} finally {
+				MSBuildProjectService.UnregisterGlobalPropertyProvider (prov1);
+				MSBuildProjectService.UnregisterGlobalPropertyProvider (prov2);
+			}
+		}
 	}
 
 	class CustomGlobalPropertyProvider : IMSBuildGlobalPropertyProvider
 	{
 		public event EventHandler GlobalPropertiesChanged;
 
+		string result;
+
+		public CustomGlobalPropertyProvider (string result) => this.result = result;
+
 		public IDictionary<string, string> GetGlobalProperties ()
 		{
 			var props = new Dictionary<string, string> ();
-			props ["TEST_GLOBAL"] = "Works!";
+			props ["TEST_GLOBAL"] = result;
 			return props;
 		}
 	}
