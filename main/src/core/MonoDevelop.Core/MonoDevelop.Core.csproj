@@ -749,6 +749,8 @@
     <Compile Include="MonoDevelop.Core\StringInternPool.cs" />
     <Compile Include="MonoDevelop.Core\Hash.cs" />
     <Compile Include="MonoDevelop.Core\StringTable.cs" />
+    <Compile Include="MonoDevelop.Core.AddIns\FalseCondition.cs" />
+    <Compile Include="MonoDevelop.Core.AddIns\TrueCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

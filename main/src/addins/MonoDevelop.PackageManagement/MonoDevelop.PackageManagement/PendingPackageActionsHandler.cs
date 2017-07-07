@@ -1,9 +1,10 @@
-﻿﻿// BaseDirectoryPanel.cs
+﻿//
+// PendingPackageActionsHandler.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,45 +23,39 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
 
-using System;
-
-using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.PackageManagement.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Projects.OptionPanels
+namespace MonoDevelop.PackageManagement
 {
-	
-	
-	[System.ComponentModel.Category("MonoDevelop.Projects.Gui")]
-	[System.ComponentModel.ToolboxItem(true)]
-	partial class BaseDirectoryPanelWidget : Gtk.Bin
+	class PendingPackageActionsHandler
 	{
-		public BaseDirectoryPanelWidget()
+		/// <summary>
+		/// Returns true if the solution can be closed.
+		/// </summary>
+		public static bool OnSolutionClosing ()
 		{
-			this.Build();
-			var a = folderentry.EntryAccessible;
-			a.SetTitleUIElement (label3.Accessible);
-			label3.Accessible.SetTitleFor (a);
-			SetupAccessibility ();
+			if (!PackageManagementServices.BackgroundPackageActionRunner.IsRunning)
+				return true;
+
+			var pendingInfo = PackageManagementServices.BackgroundPackageActionRunner.GetPendingActionsInfo ();
+			if (pendingInfo.IsInstallPending)
+				return AskToStopCurrentPackageActions (true);
+			else if (pendingInfo.IsUninstallPending)
+				return AskToStopCurrentPackageActions (false);
+			else if (pendingInfo.IsRestorePending)
+				PackageManagementServices.BackgroundPackageActionRunner.Cancel ();
+
+			return true;
 		}
 
-		private void SetupAccessibility ()
+		static bool AskToStopCurrentPackageActions (bool installing)
 		{
-			folderentry.SetEntryAccessibilityAttributes ("BaseDirectory.FolderEntry",
-														 GettextCatalog.GetString ("Root Directory"),
-														 GettextCatalog.GetString ("Entry the root directory for the project"));
-			folderentry.SetAccessibilityLabelRelationship (label3);
-		}
-		
-		public string BaseDirectory {
-			get {
-				return folderentry.Path;
-			}
-			set {
-				folderentry.Path = value;
+			using (var dialog = new SolutionClosingDialog (installing)) {
+				dialog.ShowWithParent ();
+				return !dialog.KeepSolutionOpen;
 			}
 		}
 	}

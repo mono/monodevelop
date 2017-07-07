@@ -11,7 +11,8 @@
     <RootNamespace>MonoDevelop.DotNetCore</RootNamespace>
     <AssemblyName>MonoDevelop.DotNetCore</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TemplatesVersion>1.0.0-beta2-20170523-241</TemplatesVersion>
+    <Templates1xVersion>1.0.0-beta2-20170430-208</Templates1xVersion>
+    <TemplatesVersion>1.0.0-beta2-20170620-266</TemplatesVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -412,13 +413,13 @@
   <Target Name="BeforeBuild">
      <ItemGroup>
        <NuGetPackage Include="Microsoft.DotNet.Common.ProjectTemplates.1.x">
-         <Version>$(TemplatesVersion)</Version>
+         <Version>$(Templates1xVersion)</Version>
        </NuGetPackage>
        <NuGetPackage Include="Microsoft.DotNet.Common.ProjectTemplates.2.0">
          <Version>$(TemplatesVersion)</Version>
        </NuGetPackage>
        <NuGetPackage Include="Microsoft.DotNet.Test.ProjectTemplates.1.x">
-         <Version>$(TemplatesVersion)</Version>
+         <Version>$(Templates1xVersion)</Version>
        </NuGetPackage>
        <NuGetPackage Include="Microsoft.DotNet.Test.ProjectTemplates.2.0">
          <Version>$(TemplatesVersion)</Version>

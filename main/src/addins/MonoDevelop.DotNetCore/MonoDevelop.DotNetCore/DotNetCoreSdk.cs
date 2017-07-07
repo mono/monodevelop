@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Linq;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.DotNetCore
@@ -41,6 +43,9 @@ namespace MonoDevelop.DotNetCore
 
 			if (!IsInstalled)
 				LoggingService.LogInfo (".NET Core SDK not found.");
+
+			if (IsInstalled)
+				SetFSharpShims ();
 		}
 
 		public static bool IsInstalled { get; private set; }
@@ -59,6 +64,27 @@ namespace MonoDevelop.DotNetCore
 			sdkPaths.FindSdkPaths (sdk);
 
 			return sdkPaths;
+		}
+
+		/// <summary>
+		/// This is a workaround to allow F# .NET Core 2.0 projects to be evaluated properly and compile
+		/// without any errors. The better solution would be to ship the new Microsoft.FSharp.NetSdk.props
+		/// and .targets files with Mono so this workaround can be removed. Setting the FSharpPropsShim
+		/// and FSharpTargetsShim as environment variables allows the correct MSBuild imports to be used
+		/// when building and evaluating. Just setting a global MSBuild property would fix the Build target
+		/// not being found but the MSBuild project evaluation would not add the FSharp.Core PackageReference
+		/// to the project.assets.json file, also all .fs files were treated as None items instead of
+		/// Compile items.
+		/// </summary>
+		static void SetFSharpShims ()
+		{
+			var latestVersion = Versions.FirstOrDefault ();
+			if (latestVersion != null && latestVersion.Major == 2) {
+				FilePath directory = FilePath.Build (MSBuildSDKsPath, "..", "FSharp");
+
+				Environment.SetEnvironmentVariable ("FSharpPropsShim", directory.Combine ("Microsoft.FSharp.NetSdk.props").FullPath);
+				Environment.SetEnvironmentVariable ("FSharpTargetsShim", directory.Combine ("Microsoft.FSharp.NetSdk.targets").FullPath);
+			}
 		}
 	}
 }

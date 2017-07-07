@@ -60,6 +60,10 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
+		public PackageActionType ActionType {
+			get { return PackageActionType.Restore; }
+		}
+
 		public void Execute ()
 		{
 			Execute (CancellationToken.None);

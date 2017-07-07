@@ -4,7 +4,6 @@ open NUnit.Framework
 open FsUnit
 open MonoDevelop.FSharp.MonoDevelop
 open MonoDevelop.FSharp
-
 [<TestFixture>]
 type TestTooltipProvider() =
     let stripHtml html =
@@ -53,6 +52,13 @@ type TestTooltipProvider() =
         let segment = Symbols.getTextSegment editor symbolUse.Value col line
         segment.Offset |> should equal 5
         segment.EndOffset |> should equal 11
+
+    [<Test>]
+    member this.``Type annotation has correct segment``() =
+        let line, col, symbolUse, editor = getSymbol "let map (f : 'a$ -> 'b) = ()"
+        let segment = Symbols.getTextSegment editor symbolUse.Value col line
+        segment.Offset |> should equal 14
+        segment.EndOffset |> should equal 15
 
     [<Test>]
     member this.``Base method has correct segment``() =

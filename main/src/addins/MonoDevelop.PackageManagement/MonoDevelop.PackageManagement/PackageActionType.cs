@@ -1,9 +1,10 @@
-﻿﻿// BaseDirectoryPanel.cs
+﻿//
+// PackageActionType.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,46 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
 
-using System;
-
-using MonoDevelop.Components.AtkCocoaHelper;
-using MonoDevelop.Core;
-
-namespace MonoDevelop.Ide.Projects.OptionPanels
+namespace MonoDevelop.PackageManagement
 {
-	
-	
-	[System.ComponentModel.Category("MonoDevelop.Projects.Gui")]
-	[System.ComponentModel.ToolboxItem(true)]
-	partial class BaseDirectoryPanelWidget : Gtk.Bin
+	enum PackageActionType
 	{
-		public BaseDirectoryPanelWidget()
-		{
-			this.Build();
-			var a = folderentry.EntryAccessible;
-			a.SetTitleUIElement (label3.Accessible);
-			label3.Accessible.SetTitleFor (a);
-			SetupAccessibility ();
-		}
-
-		private void SetupAccessibility ()
-		{
-			folderentry.SetEntryAccessibilityAttributes ("BaseDirectory.FolderEntry",
-														 GettextCatalog.GetString ("Root Directory"),
-														 GettextCatalog.GetString ("Entry the root directory for the project"));
-			folderentry.SetAccessibilityLabelRelationship (label3);
-		}
-		
-		public string BaseDirectory {
-			get {
-				return folderentry.Path;
-			}
-			set {
-				folderentry.Path = value;
-			}
-		}
+		None,
+		Install,
+		Uninstall,
+		Restore
 	}
 }

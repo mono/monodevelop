@@ -102,6 +102,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			GetLatestVersionLogger = log;
 			GetLatestVersionCancellationToken = token;
 
+			token.ThrowIfCancellationRequested ();
+
 			var resolvedPackage = new ResolvedPackage (LatestVersion, true);
 			return Task.FromResult (resolvedPackage);
 		}
@@ -134,6 +136,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			PreviewInstallCancellationToken = token;
 
 			BeforePreviewInstallPackageAsyncAction ();
+
+			token.ThrowIfCancellationRequested ();
 
 			IEnumerable<NuGetProjectAction> actions = InstallActions.ToArray ();
 			return Task.FromResult (actions);
