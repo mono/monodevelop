@@ -145,9 +145,9 @@ namespace MonoDevelop.Debugger
 		void Refresh (object tokenObject)
 		{
 			var token = (CancellationToken)tokenObject;
+			var engine = selectedEngine;
 			while (!token.IsCancellationRequested) {
 				try {
-					var engine = selectedEngine;
 					this.procs = engine.GetAttachableProcesses ();
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not get attachable processes.", ex);
