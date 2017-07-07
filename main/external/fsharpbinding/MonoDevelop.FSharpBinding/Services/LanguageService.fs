@@ -276,6 +276,12 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         //cache 50 project infos, then start evicting the least recently used entries
         ref (ExtCore.Caching.LruCache.create 50u)
 
+    let optionsForDependentProject p =
+        async {
+            let! assemblies = x.GetReferencedAssembliesAsync p
+            return x.GetProjectCheckerOptions(p, [], assemblies)
+        }
+
     member x.Checker = checker
 
     member x.ClearProjectInfoCache() =
@@ -502,12 +508,6 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
 
     /// Get all the uses of the specified symbol in the current project and optionally all dependent projects
     member x.GetUsesOfSymbolInProject(projectFilename, file, source, symbol:FSharpSymbol, ?dependentProjects) =
-        let optionsForDependentProject p =
-            async {
-                let! assemblies = x.GetReferencedAssembliesAsync p
-                return x.GetProjectCheckerOptions(p, [], assemblies)
-            }
-
         async {
             LoggingService.logDebug "LanguageService: GetUsesOfSymbolInProject: project:%s, currentFile:%s, symbol:%s" projectFilename file symbol.DisplayName
             let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
@@ -576,7 +576,10 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         async {
             LoggingService.logDebug "LanguageService: GetDerivedSymbolInProject: proj:%s, file:%s, symbol:%s" projectFilename file symbolAtCaret.DisplayName
             let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
-            let dependentProjectsOptions = defaultArg dependentProjects [] |> List.map x.GetProjectCheckerOptions
+
+            let! dependentProjectsOptions =
+                 defaultArg dependentProjects [] 
+                 |> Async.List.map optionsForDependentProject
 
             let! allProjectResults =
                 sourceProjectOptions :: dependentProjectsOptions
