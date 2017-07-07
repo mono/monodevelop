@@ -41,6 +41,11 @@ namespace MonoDevelop.Debugger
 			AttachableProcessesChanged (this, processes);
 		}
 
+		protected void OnAttachableProcessesChanged ()
+		{
+			AttachableProcessesChanged (this, GetAttachableProcesses ());
+		}
+
 		public abstract void Dispose ();
 	}
 }
