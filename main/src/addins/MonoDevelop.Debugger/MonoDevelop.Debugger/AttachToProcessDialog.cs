@@ -32,35 +32,36 @@ using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using MonoDevelop.Ide.Gui;
 using System.Threading;
+using System.Linq;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {
 	public partial class AttachToProcessDialog : Gtk.Dialog
 	{
-		List<DebuggerEngine> currentDebEngines;
-		Dictionary<long, List<DebuggerEngine>> procEngines;
-		List<ProcessInfo> procs;
+		List<DebuggerEngine> debugEngines = new List<DebuggerEngine> ();
+		DebuggerEngine selectedEngine;
+		ProcessInfo [] procs;
 		Gtk.ListStore store;
 		TreeViewState state;
-		bool closed;
+		ProcessAttacher processAttacher;
+		CancellationTokenSource refreshLoopTokenSource = new CancellationTokenSource ();
 
-		public AttachToProcessDialog()
+		public AttachToProcessDialog ()
 		{
-			this.Build();
+			this.Build ();
 
-			store = new Gtk.ListStore (typeof(ProcessInfo), typeof(string), typeof(string));
+			store = new Gtk.ListStore (typeof (ProcessInfo), typeof (string), typeof (string), typeof (string));
 			tree.Model = store;
 			tree.AppendColumn ("PID", new Gtk.CellRendererText (), "text", 1);
-			tree.AppendColumn (GettextCatalog.GetString ("Process Name"), new Gtk.CellRendererText (), "text", 2);
+			tree.AppendColumn (GettextCatalog.GetString ("Name"), new Gtk.CellRendererText (), "text", 2);
+			tree.AppendColumn (GettextCatalog.GetString ("Description"), new Gtk.CellRendererText (), "text", 3);
 			tree.RowActivated += OnRowActivated;
 
 			state = new TreeViewState (tree, 1);
 
-			var refreshThread = new Thread (new ThreadStart (Refresh));
-			refreshThread.IsBackground = true;
-			refreshThread.Start ();
-
-			comboDebs.Sensitive = false;
 			buttonOk.Sensitive = false;
 			tree.Selection.UnselectAll ();
 			tree.Selection.Changed += OnSelectionChanged;
@@ -68,41 +69,90 @@ namespace MonoDevelop.Debugger
 			Gtk.TreeIter it;
 			if (store.GetIterFirst (out it))
 				tree.Selection.SelectIter (it);
+
+			//Logic below tries to CreateExecutionCommand which is used to determine default debug engine
+			var startupConfig = IdeApp.ProjectOperations.CurrentSelectedSolution?.StartupConfiguration as SingleItemSolutionRunConfiguration;
+			ExecutionCommand executionCommand = null;
+			if (startupConfig?.Item is DotNetProject dnp) {
+				var config = dnp.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+				var runProjectConfiguration = startupConfig.RunConfiguration as ProjectRunConfiguration ?? dnp.GetDefaultRunConfiguration () as ProjectRunConfiguration;
+				if (config != null) {
+					executionCommand = dnp.CreateExecutionCommand (IdeApp.Workspace.ActiveConfiguration, config, runProjectConfiguration);
+				}
+			}
+			DebuggerEngine defaultEngine = null;
+			foreach (DebuggerEngine de in DebuggingService.GetDebuggerEngines ()) {
+				if ((de.SupportedFeatures & DebuggerFeatures.Attaching) == 0)
+					continue;
+				if (executionCommand != null && de.CanDebugCommand (executionCommand))
+					defaultEngine = de;
+				debugEngines.Add (de);
+				comboDebs.AppendText (de.Name);
+			}
+			if (!debugEngines.Any ())
+				return;
+			if (defaultEngine == null)
+				defaultEngine = debugEngines.First ();
+			comboDebs.Active = debugEngines.IndexOf (defaultEngine);
+			ChangeEngine (defaultEngine);
+			comboDebs.Changed += delegate {
+				ChangeEngine (debugEngines [comboDebs.Active]);
+			};
+		}
+
+		private void ChangeEngine (DebuggerEngine newEngine)
+		{
+			if (selectedEngine == newEngine)
+				return;
+			selectedEngine = newEngine;
+
+			refreshLoopTokenSource.Cancel ();
+			refreshLoopTokenSource = new CancellationTokenSource ();
+
+			if (processAttacher != null) {
+				processAttacher.AttachableProcessesChanged -= ProcessAttacher_AttachableProcessesChanged;
+				processAttacher.Dispose ();
+			}
+
+			processAttacher = selectedEngine.GetProcessAttacher ();
+			if (processAttacher != null) {
+				processAttacher.AttachableProcessesChanged += ProcessAttacher_AttachableProcessesChanged;
+				this.procs = processAttacher.GetAttachableProcesses ();
+				Runtime.RunInMainThread (new Action (FillList)).Ignore ();
+			} else {
+				var refreshThread = new Thread (new ParameterizedThreadStart (Refresh));
+				refreshThread.IsBackground = true;
+				refreshThread.Start (refreshLoopTokenSource.Token);
+			}
+		}
+
+		void ProcessAttacher_AttachableProcessesChanged (Debugger.ProcessAttacher sender)
+		{
+			this.procs = sender.GetAttachableProcesses ();
+			Runtime.RunInMainThread (new Action (FillList)).Ignore ();
 		}
 
 		public override void Destroy ()
 		{
-			closed = true;
+			if (processAttacher != null) {
+				processAttacher.AttachableProcessesChanged -= ProcessAttacher_AttachableProcessesChanged;
+				processAttacher.Dispose ();
+			}
+			refreshLoopTokenSource.Cancel ();
 			base.Destroy ();
 		}
 
-		void Refresh ()
+		void Refresh (object tokenObject)
 		{
-			while (!closed) {
-				var procEngines = new Dictionary<long, List<DebuggerEngine>> ();
-				var procs = new List<ProcessInfo> ();
-
-				foreach (DebuggerEngine de in DebuggingService.GetDebuggerEngines ()) {
-					if ((de.SupportedFeatures & DebuggerFeatures.Attaching) == 0)
-						continue;
-					try {
-						var infos = de.GetAttachableProcesses ();
-						foreach (ProcessInfo pi in infos) {
-							List<DebuggerEngine> engs;
-							if (!procEngines.TryGetValue (pi.Id, out engs)) {
-								engs = new List<DebuggerEngine> ();
-								procEngines [pi.Id] = engs;
-								procs.Add (pi);
-							}
-							engs.Add (de);
-						}
-					} catch (Exception ex) {
-						LoggingService.LogError ("Could not get attachable processes.", ex);
-					}
+			var token = (CancellationToken)tokenObject;
+			var engine = selectedEngine;
+			while (!token.IsCancellationRequested) {
+				try {
+					this.procs = engine.GetAttachableProcesses ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not get attachable processes.", ex);
 				}
-				this.procEngines = procEngines;
-				this.procs = procs;
-				Runtime.RunInMainThread (new Action(FillList)).Ignore ();
+				Runtime.RunInMainThread (new Action (FillList)).Ignore ();
 				Thread.Sleep (3000);
 			}
 		}
@@ -113,13 +163,21 @@ namespace MonoDevelop.Debugger
 			tree.Model = null;
 			store.Clear ();
 			string filter = entryFilter.Text;
+			bool anyPidSet = false;
+			bool anyDescriptionSet = false;
 			foreach (ProcessInfo pi in procs) {
-				if (filter.Length == 0 || pi.Id.ToString().Contains (filter) || pi.Name.Contains (filter))
-					store.AppendValues (pi, pi.Id.ToString (), pi.Name);
+				if (pi.Id != 0)
+					anyPidSet = true;
+				if (pi.Description != null)
+					anyDescriptionSet = true;
+				if (filter.Length == 0 || (pi.Id != 0 && pi.Id.ToString ().Contains (filter)) || pi.Name.Contains (filter) || (pi.Description?.Contains (filter) ?? false))
+					store.AppendValues (pi, pi.Id.ToString (), pi.Name, pi.Description);
 			}
+			tree.Columns [0].Visible = anyPidSet;
+			tree.Columns [2].Visible = anyDescriptionSet;
 			tree.Model = store;
 			state.Load ();
-
+			tree.ColumnsAutosize ();
 			if (tree.Selection.CountSelectedRows () == 0) {
 				Gtk.TreeIter it;
 				if (store.GetIterFirst (out it))
@@ -129,21 +187,10 @@ namespace MonoDevelop.Debugger
 
 		void OnSelectionChanged (object s, EventArgs args)
 		{
-			((Gtk.ListStore)comboDebs.Model).Clear ();
-
 			Gtk.TreeIter iter;
 			if (tree.Selection.GetSelected (out iter)) {
-				ProcessInfo pi = (ProcessInfo) store.GetValue (iter, 0);
-				currentDebEngines = procEngines [pi.Id];
-				foreach (DebuggerEngine de in currentDebEngines) {
-					comboDebs.AppendText (de.Name);
-				}
-				comboDebs.Sensitive = true;
-				buttonOk.Sensitive = currentDebEngines.Count > 0;
-				comboDebs.Active = 0;
-			}
-			else {
-				comboDebs.Sensitive = false;
+				buttonOk.Sensitive = true;
+			} else {
 				buttonOk.Sensitive = false;
 			}
 		}
@@ -162,13 +209,13 @@ namespace MonoDevelop.Debugger
 			get {
 				Gtk.TreeIter iter;
 				tree.Selection.GetSelected (out iter);
-				return (ProcessInfo) store.GetValue (iter, 0);
+				return (ProcessInfo)store.GetValue (iter, 0);
 			}
 		}
 
 		public DebuggerEngine SelectedDebugger {
 			get {
-				return currentDebEngines [comboDebs.Active];
+				return selectedEngine;
 			}
 		}
 	}

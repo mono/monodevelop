@@ -201,6 +201,7 @@
     <Compile Include="gtk-gui\MonoDevelop.Debugger.DebugApplicationDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\DebugApplicationDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\Styles.cs" />
+    <Compile Include="MonoDevelop.Debugger\ProcessAttacher.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
