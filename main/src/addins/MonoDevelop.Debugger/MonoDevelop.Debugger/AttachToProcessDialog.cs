@@ -84,7 +84,7 @@ namespace MonoDevelop.Debugger
 			foreach (DebuggerEngine de in DebuggingService.GetDebuggerEngines ()) {
 				if ((de.SupportedFeatures & DebuggerFeatures.Attaching) == 0)
 					continue;
-				if (de.CanDebugCommand (executionCommand))
+				if (executionCommand != null && de.CanDebugCommand (executionCommand))
 					defaultEngine = de;
 				debugEngines.Add (de);
 				comboDebs.AppendText (de.Name);
@@ -147,7 +147,8 @@ namespace MonoDevelop.Debugger
 			var token = (CancellationToken)tokenObject;
 			while (!token.IsCancellationRequested) {
 				try {
-					this.procs = selectedEngine.GetAttachableProcesses ();
+					var engine = selectedEngine;
+					this.procs = engine.GetAttachableProcesses ();
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not get attachable processes.", ex);
 				}
