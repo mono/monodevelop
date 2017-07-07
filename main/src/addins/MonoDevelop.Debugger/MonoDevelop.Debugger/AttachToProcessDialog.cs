@@ -53,7 +53,7 @@ namespace MonoDevelop.Debugger
 		{
 			this.Build ();
 
-			store = new Gtk.ListStore (typeof (ProcessInfo), typeof (string), typeof (string));
+			store = new Gtk.ListStore (typeof (ProcessInfo), typeof (string), typeof (string), typeof (string));
 			tree.Model = store;
 			tree.AppendColumn ("PID", new Gtk.CellRendererText (), "text", 1);
 			tree.AppendColumn (GettextCatalog.GetString ("Name"), new Gtk.CellRendererText (), "text", 2);
@@ -76,7 +76,7 @@ namespace MonoDevelop.Debugger
 			if (startupConfig?.Item is DotNetProject dnp) {
 				var config = dnp.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 				var runProjectConfiguration = startupConfig.RunConfiguration as ProjectRunConfiguration ?? dnp.GetDefaultRunConfiguration () as ProjectRunConfiguration;
-				if (config != null && runProjectConfiguration != null) {
+				if (config != null) {
 					executionCommand = dnp.CreateExecutionCommand (IdeApp.Workspace.ActiveConfiguration, config, runProjectConfiguration);
 				}
 			}
@@ -176,7 +176,7 @@ namespace MonoDevelop.Debugger
 			tree.Columns [2].Visible = anyDescriptionSet;
 			tree.Model = store;
 			state.Load ();
-
+			tree.ColumnsAutosize ();
 			if (tree.Selection.CountSelectedRows () == 0) {
 				Gtk.TreeIter it;
 				if (store.GetIterFirst (out it))
