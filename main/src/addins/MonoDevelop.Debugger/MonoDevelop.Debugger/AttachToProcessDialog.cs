@@ -126,9 +126,9 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		void ProcessAttacher_AttachableProcessesChanged (Debugger.ProcessAttacher sender, ProcessInfo [] processes)
+		void ProcessAttacher_AttachableProcessesChanged (Debugger.ProcessAttacher sender)
 		{
-			this.procs = processes;
+			this.procs = sender.GetAttachableProcesses ();
 			Runtime.RunInMainThread (new Action (FillList)).Ignore ();
 		}
 

@@ -28,7 +28,7 @@ using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
-	public delegate void AttachableProcessesChangedDelegate (ProcessAttacher sender, ProcessInfo [] processes);
+	public delegate void AttachableProcessesChangedDelegate (ProcessAttacher sender);
 
 	public abstract class ProcessAttacher : IDisposable
 	{
@@ -36,14 +36,9 @@ namespace MonoDevelop.Debugger
 
 		public event AttachableProcessesChangedDelegate AttachableProcessesChanged;
 
-		protected void OnAttachableProcessesChanged (ProcessInfo [] processes)
-		{
-			AttachableProcessesChanged (this, processes);
-		}
-
 		protected void OnAttachableProcessesChanged ()
 		{
-			AttachableProcessesChanged (this, GetAttachableProcesses ());
+			AttachableProcessesChanged (this);
 		}
 
 		public abstract void Dispose ();
