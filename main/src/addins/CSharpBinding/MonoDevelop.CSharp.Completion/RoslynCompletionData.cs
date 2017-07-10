@@ -209,7 +209,9 @@ namespace MonoDevelop.CSharp.Completion
 
 			{ "Snippet", "template"},
 
-			{ "EnumMember", "literal" }
+			{ "EnumMember", "literal" },
+
+			{ "NewMethod", "newmethod" }
 		};
 
 		string GetItemType ()

@@ -333,8 +333,9 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			pDict = pDict.Add ("NewMethod", sb.ToString ());
 			pDict = pDict.Add ("MethodName", varName);
 
-			return CompletionItem.Create (uniqueName, properties: pDict, rules: NewMethodRules);
+			return CompletionItem.Create (uniqueName, properties: pDict, tags: newMethodTags, rules: NewMethodRules);
 		}
+		static readonly ImmutableArray<string> newMethodTags = ImmutableArray<string>.Empty.AddRange (new [] { "NewMethod" });
 
 		CompletionItem CreateCompletionItem (string displayString, string description, string insertBefore, string insertAfter)
 		{
@@ -344,7 +345,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			pDict = pDict.Add ("InsertBefore", insertBefore);
 			pDict = pDict.Add ("InsertAfter", insertAfter);
 
-			return CompletionItem.Create (displayString, properties: pDict, rules: DelegateRules);
+			return CompletionItem.Create (displayString, properties: pDict, tags: newMethodTags, rules: DelegateRules);
 		}
 
 		public override async Task<CompletionChange> GetChangeAsync (Document doc, CompletionItem item, char? commitKey = default (char?), CancellationToken cancellationToken = default (CancellationToken))

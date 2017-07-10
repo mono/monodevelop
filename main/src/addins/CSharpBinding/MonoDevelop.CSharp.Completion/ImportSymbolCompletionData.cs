@@ -29,6 +29,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor;
 using System.Text;
+using Microsoft.CodeAnalysis.Completion;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -45,8 +46,10 @@ namespace MonoDevelop.CSharp.Completion
 				return type.GetStockIcon ();
 			}
 		}
+		static CompletionItemRules rules = CompletionItemRules.Create (matchPriority: -10000);
+        public override CompletionItemRules Rules => rules;
 
-		public override int PriorityGroup { get { return int.MinValue; } }
+        public override int PriorityGroup { get { return int.MinValue; } }
 
 		public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, ISymbol type, bool useFullName) 
 		{
