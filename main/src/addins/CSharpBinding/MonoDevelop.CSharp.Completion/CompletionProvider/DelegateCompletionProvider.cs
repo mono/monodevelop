@@ -176,6 +176,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		//	}
 		//}
 
+		static CompletionItemRules DelegateRules = CompletionItemRules.Create (matchPriority: 9999);
+		static CompletionItemRules NewMethodRules = CompletionItemRules.Create (matchPriority: 10000);
 
 		void AddDelegateHandlers (CompletionContext context, SyntaxNode parent, SemanticModel semanticModel, ITypeSymbol delegateType, int position, string optDelegateName, CancellationToken cancellationToken)
 		{
@@ -331,7 +333,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			pDict = pDict.Add ("NewMethod", sb.ToString ());
 			pDict = pDict.Add ("MethodName", varName);
 
-			return CompletionItem.Create (uniqueName, properties: pDict);
+			return CompletionItem.Create (uniqueName, properties: pDict, rules: NewMethodRules);
 		}
 
 		CompletionItem CreateCompletionItem (string displayString, string description, string insertBefore, string insertAfter)
@@ -342,7 +344,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			pDict = pDict.Add ("InsertBefore", insertBefore);
 			pDict = pDict.Add ("InsertAfter", insertAfter);
 
-			return CompletionItem.Create (displayString, properties: pDict);
+			return CompletionItem.Create (displayString, properties: pDict, rules: DelegateRules);
 		}
 
 		public override async Task<CompletionChange> GetChangeAsync (Document doc, CompletionItem item, char? commitKey = default (char?), CancellationToken cancellationToken = default (CancellationToken))
