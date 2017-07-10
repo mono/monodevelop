@@ -147,8 +147,16 @@ namespace MonoDevelop.CSharp.Completion
 
 			var currentBuffer = editor.GetPlatformTextBuffer ();
 			var textChange = completionChange.TextChange;
-			var triggerSnapshotSpan = new SnapshotSpan (triggerBuffer, new Span (textChange.Span.Start, textChange.Span.Length));
-			var mappedSpan = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
+
+			// roslyn mapped span translation:
+			//var triggerSnapshotSpan = new SnapshotSpan (triggerBuffer, new Span (textChange.Span.Start, textChange.Span.Length));
+			//var mappedSpan = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
+
+			// xamarin studio way:
+			int partialWordLength = window.PartialWord != null ? window.PartialWord.Length : 0;
+			var replaceLength = window.CodeCompletionContext.TriggerWordLength + partialWordLength - window.InitialWordLength;
+			var mappedSpan = new Span (window.StartOffset, replaceLength);
+
 			window.CompletionWidget.Replace (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
 
 			if (completionChange.NewPosition.HasValue)
