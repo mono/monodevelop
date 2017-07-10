@@ -585,7 +585,6 @@ namespace MonoDevelop.Ide.Gui
 
 							if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 								doc.Select ();
-								doc.Window.SelectWindow ();
 								NavigationHistoryService.LogActiveDocument ();
 							}
 							return doc;
