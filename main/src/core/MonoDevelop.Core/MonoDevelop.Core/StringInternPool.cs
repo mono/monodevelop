@@ -56,5 +56,20 @@ namespace MonoDevelop.Core
 		{
 			return table.Add (chars);
 		}
+
+		public static string AddShared (StringBuilder chars)
+		{
+			return StringTable.AddShared (chars);
+		}
+
+		public static string AddShared (string chars)
+		{
+			return StringTable.AddShared (chars);
+		}
+
+		public static string AddShared (string chars, int start, int len)
+		{
+			return StringTable.AddShared (chars, start, len);
+		}
 	}
 }
