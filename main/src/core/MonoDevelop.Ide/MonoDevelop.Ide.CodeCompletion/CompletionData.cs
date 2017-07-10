@@ -179,7 +179,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return -1;
 			if (a == null && b != null)
 				return 1;
-
+			if (a.Rules != null && b.Rules != null) {
+				if (a.Rules.MatchPriority != b.Rules.MatchPriority) {
+					return b.Rules.MatchPriority.CompareTo (a.Rules.MatchPriority);
+				}
+			}
 			bool aIsObsolete = (a.DisplayFlags & DisplayFlags.Obsolete) != 0;
 			bool bIsObsolete = (b.DisplayFlags & DisplayFlags.Obsolete) != 0;
 			if (!aIsObsolete && bIsObsolete)

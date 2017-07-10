@@ -463,15 +463,10 @@ namespace MonoDevelop.CSharp.Completion
 			var result = new CompletionDataList ();
 			result.TriggerWordLength = triggerWordLength;
 
-			var priority = 0;
 			foreach (var item in completionList.Items) {
 				if (string.IsNullOrEmpty (item.DisplayText))
 					continue;
 				var data = new RoslynCompletionData (analysisDocument, triggerBuffer, cs, item);
-				if (item.Rules.MatchPriority > priority) {
-					priority = item.Rules.MatchPriority;
-					result.DefaultCompletionString = data.DisplayText;
-				}
 				result.Add (data);
 			}
 
