@@ -236,6 +236,7 @@ namespace MonoDevelop.SourceEditor
 				scrolledBackground = new EventBox ();
 				scrolledBackground.Accessible.SetShouldIgnore (true);
 				scrolledWindow = new CompactScrolledWindow ();
+				scrolledWindow.CanFocus = false;
 				scrolledWindow.ButtonPressEvent += PrepareEvent;
 				scrolledWindow.Accessible.SetShouldIgnore (true);
 				scrolledBackground.Add (scrolledWindow);
