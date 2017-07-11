@@ -106,12 +106,12 @@ namespace MonoDevelop.UnitTesting.VsTest
 			discoveryJobInProgress = newJob;
 			var testAssemblyFile = discoveryJobInProgress.project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 			if (!File.Exists (testAssemblyFile)) {
+				discoveryJobInProgress.taskSource.SetResult (discoveryJobInProgress.tests);
 				discoveryJobInProgress = null;
-				discoveryJobInProgress.taskSource.SetException (new FileNotFoundException (testAssemblyFile));
 				ProcessDiscoveryQueue ();
 				return;
 			}
-
+			SendExtensionList (GetTestAdapters (discoveryJobInProgress.project).Split (';'));
 			var message = new DiscoveryRequestPayload {
 				Sources = new string [] { testAssemblyFile },
 				RunSettings = GetRunSettings (discoveryJobInProgress.project)

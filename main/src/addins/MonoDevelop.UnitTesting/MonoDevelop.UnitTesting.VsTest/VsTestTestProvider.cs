@@ -36,6 +36,8 @@ namespace MonoDevelop.UnitTesting.VsTest
 			var proj = entry as Project;
 			if (proj == null)
 				return null;
+			if (string.IsNullOrEmpty (VsTestAdapter.GetTestAdapters (proj)))
+				return null;
 			return new VsTestProjectTestSuite (proj);
 		}
 

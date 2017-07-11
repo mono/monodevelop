@@ -42,6 +42,7 @@ using System.Linq;
 using MonoDevelop.Ide.TypeSystem;
 using System.IO;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -56,10 +57,13 @@ namespace MonoDevelop.UnitTesting
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += OnWorkspaceChanged;
 
-			IdeApp.Workspace.ItemAddedToSolution += OnItemsChangedInSolution;;
+			IdeApp.Workspace.ItemAddedToSolution += OnItemsChangedInSolution;
 			IdeApp.Workspace.ItemRemovedFromSolution += OnItemsChangedInSolution;
-			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChangedInProject;;
+			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChangedInProject;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChangedInProject;
+
+			PackageManagementServices.ProjectOperations.PackageReferenceAdded += ProjectOperations_PackageReferencesModified;
+			PackageManagementServices.ProjectOperations.PackageReferenceRemoved += ProjectOperations_PackageReferencesModified;
 
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/UnitTesting/TestProviders", OnExtensionChange);
 
@@ -300,6 +304,19 @@ namespace MonoDevelop.UnitTesting
 		{
 			if (!IsSolutionGroupPresent (e.Solution, rootTests))
 				RebuildTests ();
+		}
+
+		static CancellationTokenSource trottling = new CancellationTokenSource ();
+
+		static void ProjectOperations_PackageReferencesModified (object sender, PackageManagementPackageReferenceEventArgs e)
+		{
+			trottling.Cancel ();
+			trottling = new CancellationTokenSource ();
+			Task.Delay (1000, trottling.Token).ContinueWith ((task) => {
+				if (task.IsCanceled)
+					return;
+				RebuildTests ();
+			}, trottling.Token, TaskContinuationOptions.None, Runtime.MainTaskScheduler);
 		}
 
 		static bool IsSolutionGroupPresent (Solution sol, IEnumerable<UnitTest> tests)

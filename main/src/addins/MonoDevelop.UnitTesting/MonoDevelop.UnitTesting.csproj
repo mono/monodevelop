@@ -134,6 +134,11 @@
       <Project>{6868153E-41EA-43A4-A81A-C1E7256373F7}</Project>
       <Name>MonoDevelop.DotNetCore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.csproj">
+      <Project>{F218643D-2E74-4309-820E-206A54B7133F}</Project>
+      <Name>MonoDevelop.PackageManagement</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Gui\icons\unit-running-16.png">
@@ -312,31 +317,6 @@
     <Folder Include="MonoDevelop.UnitTesting.VsTest\" />
   </ItemGroup>
   <ItemGroup>
-    <XUnitTestAdapterFiles Hidden="true" Include="..\..\..\packages\xunit.runner.visualstudio.2.2.0\build\_common\**\*.*">
-      <Visible>false</Visible>
-    </XUnitTestAdapterFiles>
-  </ItemGroup>
-  <ItemGroup>
-    <NUnit2TestAdapterFiles Hidden="true" Include="..\..\..\packages\NUnitTestAdapter.2.1.1\tools\**\*.*">
-      <Visible>false</Visible>
-    </NUnit2TestAdapterFiles>
-  </ItemGroup>
-  <ItemGroup>
-    <NUnit3TestAdapterFiles Hidden="true" Include="..\..\..\packages\NUnit3TestAdapter.3.8.0-dev-00491\build\net35\**\*.*">
-      <Visible>false</Visible>
-    </NUnit3TestAdapterFiles>
-  </ItemGroup>
-  <ItemGroup>
-    <NUnit3TestCoreAdapterFiles Hidden="true" Include="..\..\..\packages\NUnit3TestAdapter.3.8.0-dev-00491\build\netcoreapp1.0\**\*.*">
-      <Visible>false</Visible>
-    </NUnit3TestCoreAdapterFiles>
-  </ItemGroup>
-  <ItemGroup>
-    <MSTestAdapterFiles Hidden="true" Include="..\..\..\packages\MSTest.TestAdapter.1.2.0-beta\build\_common\**\*.*">
-      <Visible>false</Visible>
-    </MSTestAdapterFiles>
-  </ItemGroup>
-  <ItemGroup>
     <VsTestConsole Include="..\..\..\packages\Microsoft.TestPlatform.15.3.0-preview-20170710-01\tools\net46\**\*.*">
       <Visible>false</Visible>
     </VsTestConsole>
@@ -351,11 +331,6 @@
     </VsTestConsoleExtensions>
   </ItemGroup>
   <Target Name="CopyTestAdapters" BeforeTargets="Build">
-    <Copy SourceFiles="@(XUnitTestAdapterFiles)" DestinationFolder="$(OutputPath)\XUnitAdapter\%(RecursiveDir)" />
-    <!--<Copy SourceFiles="@(NUnit2TestAdapterFiles)" DestinationFolder="$(OutputPath)\NUnit2Adapter\%(RecursiveDir)" />-->
-    <Copy SourceFiles="@(NUnit3TestAdapterFiles)" DestinationFolder="$(OutputPath)\NUnit3Adapter\%(RecursiveDir)" />
-    <Copy SourceFiles="@(NUnit3TestCoreAdapterFiles)" DestinationFolder="$(OutputPath)\NUnit3CoreAdapter\%(RecursiveDir)" />
-    <Copy SourceFiles="@(MSTestAdapterFiles)" DestinationFolder="$(OutputPath)\MSTestAdapter\%(RecursiveDir)" />
     <Copy SourceFiles="@(VsTestConsole)" DestinationFolder="$(OutputPath)\VsTestConsole\%(RecursiveDir)" />
     <Copy SourceFiles="@(VsTestConsoleExtensions)" DestinationFolder="$(OutputPath)\VsTestConsole\Extensions\" />
   </Target>

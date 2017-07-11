@@ -131,6 +131,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 				runJobInProgress = new RunOrDebugJob (testContext, testProvider);
 				testContext.Monitor.CancellationToken.Register (CancelTestRun);
 				var tests = testProvider.GetTests ();
+				SendExtensionList (GetTestAdapters (runJobInProgress.Project).Split (';'));
 				if (testContext.ExecutionContext.ExecutionHandler != null) {
 					if (tests == null) {
 						GetProcessStartInfo (testProvider.Project);

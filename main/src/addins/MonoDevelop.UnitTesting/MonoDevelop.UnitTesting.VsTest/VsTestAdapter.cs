@@ -45,6 +45,8 @@ using MonoDevelop.DotNetCore;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using MonoDevelop.PackageManagement;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.UnitTesting.VsTest
 {
@@ -62,8 +64,36 @@ namespace MonoDevelop.UnitTesting.VsTest
 			return "<RunSettings>" + new Microsoft.VisualStudio.TestPlatform.ObjectModel.RunConfiguration () {
 				TargetFrameworkVersion = Framework.FromString ((project as DotNetProject)?.TargetFramework?.Id?.ToString ()),
 				DisableAppDomain = true,
-				ShouldCollectSourceInformation = false
+				ShouldCollectSourceInformation = false,
+				TestAdaptersPaths = GetTestAdapters (project)
 			}.ToXml ().OuterXml + "</RunSettings>";
+		}
+
+		static ConditionalWeakTable<Project, Tuple<HashSet<string>, string>> projectTestAdapterListCache = new ConditionalWeakTable<Project, Tuple<HashSet<string>, string>> ();
+
+		public static string GetTestAdapters (Project project)
+		{
+			var nugetsFolders = PackageManagementServices.ProjectOperations.GetInstalledPackages (project).Select (p => p.InstallPath);
+			lock (projectTestAdapterListCache) {
+				if (projectTestAdapterListCache.TryGetValue (project, out var cachePackages))
+					if (cachePackages.Item1.SetEquals (nugetsFolders))
+						return cachePackages.Item2;
+
+				var result = string.Empty;
+				foreach (var folder in nugetsFolders) {
+					if (string.IsNullOrEmpty (folder) || !Directory.Exists (folder))
+						continue;
+					foreach (var path in Directory.GetFiles (folder, "*.TestAdapter.dll", SearchOption.AllDirectories))
+						result += path + ";";
+					foreach (var path in Directory.GetFiles (folder, "*.testadapter.dll", SearchOption.AllDirectories))
+						if (!result.Contains (path))
+							result += path + ";";
+				}
+				if (result.Length > 0)
+					result = result.Remove (result.Length - 1);
+				projectTestAdapterListCache.Add (project, new Tuple<HashSet<string>, string> (new HashSet<string> (nugetsFolders), result));
+				return result;
+			}
 		}
 
 		void Restart ()
@@ -161,7 +191,14 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 		string GetVSTestArguments (int port)
 		{
-			return $"/parentprocessid:{Process.GetCurrentProcess ().Id} /port:{port}";
+#if DIAGNOSTIC_LOGGING
+			LoggingService.CreateLogFile ("vstest", out var filename).Dispose ();
+#endif
+			return $"/parentprocessid:{Process.GetCurrentProcess ().Id} /port:{port}"
+#if DIAGNOSTIC_LOGGING
+				+ $" /diag:{filename}"
+#endif
+			;
 		}
 
 		void VsTestProcessExited (object sender, EventArgs e)
@@ -188,21 +225,12 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 		void OnSessionConnected ()
 		{
-			SendExtensionList ();
 			startedSource.SetResult (true);
 		}
 
-		private void SendExtensionList ()
+		protected void SendExtensionList (string [] extensions)
 		{
-			var addinPath = Path.GetDirectoryName (typeof (VsTestAdapter).Assembly.Location);
-			communicationManager.SendMessage (MessageType.ExtensionsInitialize, new string []
-			{
-				Path.Combine(addinPath, "NUnit3Adapter", "NUnit3.TestAdapter.dll"),
-				Path.Combine(addinPath, "NUnit3CoreAdapter", "NUnit3.TestAdapter.dll"),
-				//Path.Combine(addinPath, "NUnit2Adapter", "NUnit.VisualStudio.TestAdapter.dll"),
-				Path.Combine(addinPath, "XUnitAdapter", "xunit.runner.visualstudio.testadapter.dll"),
-				Path.Combine(addinPath, "MSTestAdapter", "Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll")
-			});
+			communicationManager.SendMessage (MessageType.ExtensionsInitialize, extensions);
 		}
 
 		protected virtual void ProcessMessage (Message message)
