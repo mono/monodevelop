@@ -33,7 +33,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	class TestableBackgroundPackageActionRunner : BackgroundPackageActionRunner
 	{
-		public List<Action> BackgroundActionsQueued = new List<Action> ();
+		public Queue<Action> BackgroundActionsQueued = new Queue<Action> ();
 
 		public TestableBackgroundPackageActionRunner (
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
@@ -49,29 +49,28 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		void Init ()
 		{
-			CreateEventMonitorAction = (monitor, packageManagementEvents) => {
-				EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents);
+			CreateEventMonitorAction = (monitor, packageManagementEvents, completionSource) => {
+				EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents, completionSource);
 				return EventsMonitor;
 			};
 		}
 
 		public void ExecuteSingleBackgroundDispatch ()
 		{
-			BackgroundActionsQueued [0].Invoke ();
-			BackgroundActionsQueued.RemoveAt (0);
+			var action = BackgroundActionsQueued.Dequeue ();
+			action.Invoke ();
 		}
 
 		public void ExecuteBackgroundDispatch ()
 		{
-			foreach (Action action in BackgroundActionsQueued) {
-				action ();
+			while (BackgroundActionsQueued.Count > 0) {
+				ExecuteSingleBackgroundDispatch ();
 			}
-			BackgroundActionsQueued.Clear ();
 		}
 
 		protected override void BackgroundDispatch (Action action)
 		{
-			BackgroundActionsQueued.Add (action);
+			BackgroundActionsQueued.Enqueue (action);
 		}
 
 		protected override void GuiDispatch (Action action)
@@ -79,8 +78,21 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			action ();
 		}
 
+		protected override void ClearDispatcher ()
+		{
+			BackgroundActionsQueued.Clear ();
+		}
+
+		public bool DispatcherIsDispatchingReturns;
+
+		protected override bool DispatcherIsDispatching ()
+		{
+			return DispatcherIsDispatchingReturns;
+		}
+
 		public Func<ProgressMonitor,
 			IPackageManagementEvents,
+			TaskCompletionSource<bool>,
 			PackageManagementEventsMonitor> CreateEventMonitorAction;
 
 		protected override PackageManagementEventsMonitor CreateEventMonitor (
@@ -88,7 +100,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			IPackageManagementEvents packageManagementEvents,
 			TaskCompletionSource<bool> taskCompletionSource)
 		{
-			return CreateEventMonitorAction (monitor, packageManagementEvents);
+			return CreateEventMonitorAction (monitor, packageManagementEvents, taskCompletionSource);
 		}
 
 		public TestablePackageManagementEventsMonitor EventsMonitor;

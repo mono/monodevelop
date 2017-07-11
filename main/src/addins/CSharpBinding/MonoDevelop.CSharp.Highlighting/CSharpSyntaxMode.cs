@@ -91,7 +91,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					var doNotify = !AreEqual (highlightTree, newTree, token);
 
 					if (!token.IsCancellationRequested) {
-						Gtk.Application.Invoke (delegate {
+						Gtk.Application.Invoke ((o, args) => {
 							if (token.IsCancellationRequested)
 								return;
 							if (highlightTree != null) {
@@ -208,7 +208,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		void Setup ()
 		{
-			defaultTextColor = CheckScopeExists ("");
+			defaultTextColor = "source.cs";
 			referenceTypeColor = CheckScopeExists (EditorThemeColors.UserTypes);
 			valueTypeColor = CheckScopeExists (EditorThemeColors.UserTypesValueTypes);
 			interfaceTypeColor = CheckScopeExists (EditorThemeColors.UserTypesInterfaces);
@@ -277,7 +277,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			case "nuint":
 				var symbol = base.semanticModel.GetSymbolInfo (node).Symbol as INamedTypeSymbol;
 				if (symbol != null && symbol.ContainingNamespace.ToDisplayString () == "System") {
-					Colorize (node.Span, "Keyword(Type)");
+					Colorize (node.Span, "keyword.source.cs");
 					return;
 				}
 				break;

@@ -41,6 +41,11 @@ module Symbols =
 
         let startOffset = doc.LocationToOffset(start.Line, start.Column+1)
         let endOffset = doc.LocationToOffset(finish.Line, finish.Column+1)
+        let startOffset =
+            if startOffset = endOffset then 
+                endOffset-symbolUse.Symbol.DisplayName.Length
+            else
+                startOffset
         MonoDevelop.Core.Text.TextSegment.FromBounds(startOffset, endOffset)
 
     let getEditorDataForFileName (fileName:string) =
@@ -357,10 +362,10 @@ module Highlight =
         use reader = new StreamReader(stream)
         let highlighting = Sublime3Format.ReadHighlighting(reader)
         highlighting.PrepareMatches()
-        editor.SyntaxHighlighting <- SyntaxHighlighting(highlighting, editor)
+        editor.SyntaxHighlighting <- new SyntaxHighlighting(highlighting, editor)
         editor
 
-    let editor =
+    let private editor =
         Runtime.RunInMainThread getEditor
         |> Async.AwaitTask 
         |> Async.RunSynchronously
@@ -725,12 +730,9 @@ module SymbolTooltips =
             let basicName = modifier + typeName ++ name
 
             if fse.IsFSharpAbbreviation then
-                let unannotatedType = fse.UnAnnotate()
-                basicName ++ "=" ++ (unannotatedType.DisplayName)
+                basicName ++ "=" ++ (fse.AbbreviatedType.Format displayContext)
             else
                 basicName
-
-        
 
         if fse.IsFSharpUnion then typeDisplay + uniontip ()
         elif fse.IsEnum then typeDisplay + enumtip ()

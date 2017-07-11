@@ -72,9 +72,22 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			if (style.Foreground.Alpha == 0)
 				return new Dictionary<string, string> ();
-			return new Dictionary<string, string> {
+			var result = new Dictionary<string, string> {
 				{ "foreground", style.Foreground.ToPangoString () }
 			};
+			if (style.FontStyle != Xwt.Drawing.FontStyle.Normal || 
+			    style.FontWeight != Xwt.Drawing.FontWeight.Normal) {
+				var fontStyle = new StringBuilder ();
+				if (style.FontStyle != Xwt.Drawing.FontStyle.Normal) {
+					fontStyle.Append (style.FontStyle.ToString ().ToLower ());
+					fontStyle.Append (" ");
+				}
+				if (style.FontWeight != Xwt.Drawing.FontWeight.Normal) {
+					fontStyle.Append (style.FontWeight.ToString ().ToLower ());
+				}
+				result ["fontStyle"] = fontStyle.ToString ();
+			}
+			return result;
 		}
 
 		static EditorTheme ConvertToEditorTheme (ColorScheme colorScheme)
@@ -170,6 +183,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			settings.Add (new ThemeSetting ("Comment", new List<string> { "comment" }, ConvertChunkStyle (colorScheme.CommentsSingleLine)));
 			settings.Add (new ThemeSetting ("Comment Tags", new List<string> { "markup.other" }, ConvertChunkStyle (colorScheme.CommentTags)));
+			settings.Add (new ThemeSetting ("Comment Block", new List<string> { "comment.block" }, ConvertChunkStyle (colorScheme.CommentsBlock)));
+			settings.Add (new ThemeSetting ("Comment XML Doc Comment", new List<string> { "comment.line.documentation" }, ConvertChunkStyle (colorScheme.CommentsForDocumentation)));
+			settings.Add (new ThemeSetting ("Comment XML Doc Tag", new List<string> { "punctuation.definition.tag" }, ConvertChunkStyle (colorScheme.CommentsForDocumentationTags)));
 
 			settings.Add (new ThemeSetting ("String", new List<string> { "string" }, ConvertChunkStyle (colorScheme.String)));
 			settings.Add (new ThemeSetting ("punctuation.definition.string", new List<string> { "punctuation.definition.string" }, ConvertChunkStyle (colorScheme.String)));
@@ -251,6 +267,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("HTML Comment", new List<string> { "comment.block.html" }, ConvertChunkStyle (colorScheme.HtmlComment)));
 			settings.Add (new ThemeSetting ("HTML Element Name", new List<string> { "entity.name.tag.html" }, ConvertChunkStyle (colorScheme.HtmlElementName)));
 			settings.Add (new ThemeSetting ("HTML Entity", new List<string> { "constant.character.entity.html" }, ConvertChunkStyle (colorScheme.HtmlEntity)));
+
+			var style = ConvertChunkStyle (colorScheme.PlainText);
+			style ["fontStyle"] = "bold";
+			settings.Add (new ThemeSetting ("Bold Markup", new List<string> { "markup.bold" }, style));
+
+			style = ConvertChunkStyle (colorScheme.PlainText);
+			style ["fontStyle"] = "italic";
+			settings.Add (new ThemeSetting ("Italic Markup", new List<string> { "markup.italic" }, style));
+
+			settings.Add (new ThemeSetting ("markup.emoji", new List<string> { "markup.emoji" }, ConvertChunkStyle (colorScheme.Preprocessor)));
+			settings.Add (new ThemeSetting ("markup.link", new List<string> { "markup.link" }, ConvertChunkStyle (colorScheme.UserTypesInterfaces)));
 
 			return new EditorTheme (colorScheme.Name, settings);
 		}

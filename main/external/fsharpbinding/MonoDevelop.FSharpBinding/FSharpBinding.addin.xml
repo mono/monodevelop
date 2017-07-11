@@ -1,4 +1,4 @@
-<ExtensionModel>
+﻿<ExtensionModel>
   <Runtime>
     <Import file="FSharp.Core.dll" />
     <Import assembly="FSharpBinding.dll" />
@@ -68,10 +68,6 @@
 
   <Extension path="/MonoDevelop/Ide/FileFilters">
     <FileFilter id="F#" insertbefore="AllFiles" _label="F# Source Files" extensions="*.fs;*.fsi;*.fsx;*.fsscript"/>
-  </Extension>
-
-  <Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
-    <FileTemplateType name = "UnformattedFile" class = "MonoDevelop.FSharp.UnformattedTextFileDescriptionTemplate"/>
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/FileTemplates">

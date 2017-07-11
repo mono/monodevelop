@@ -8,7 +8,7 @@ NUGET
     FSharp.Compiler.CodeDom (0.9.2)
     FSharp.Compiler.Service (11.0.10)
       System.Collections.Immutable (>= 1.2)
-      System.Reflection.Metadata (>= 1.4.1-beta-24227-04)
+      System.Reflection.Metadata (>= 1.4.2)
     FSharp.Core (4.1.0.2)
       System.ValueTuple (>= 4.3)
     Mono.Cecil (0.9.6.4)

@@ -85,6 +85,10 @@
       <HintPath>..\..\..\build\bin\System.Composition.AttributedModel.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Composition.Runtime">
+      <HintPath>..\..\..\build\bin\System.Composition.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>

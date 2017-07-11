@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (project == null)
 				return;
 
-			ProjectFileCollection files;
+			List<ProjectFile> files;
 			List<string> folders;
 
 			GetFolderContent (project, path, out files, out folders);
@@ -76,11 +76,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			builder.AddChildren (folders.Select (f => new ProjectFolder (f, project, dataObject)));
 		}
 				
-		void GetFolderContent (Project project, string folder, out ProjectFileCollection files, out List<string> folders)
+		void GetFolderContent (Project project, string folder, out List<ProjectFile> files, out List<string> folders)
 		{
 			string folderPrefix = folder + Path.DirectorySeparatorChar;
 
-			files = new ProjectFileCollection ();
+			files = new List<ProjectFile> ();
 			folders = new List<string> ();
 			
 			foreach (ProjectFile file in project.Files)

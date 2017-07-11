@@ -31,6 +31,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Gui.Pads;
 using System;
 using System.Linq;
+using System.Threading;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -42,6 +43,14 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public ProgressMonitor CreateProgressMonitor (string title, bool clearConsole)
+		{
+			return CreateProgressMonitor (title, clearConsole, null);
+		}
+
+		public ProgressMonitor CreateProgressMonitor (
+			string title,
+			bool clearConsole,
+			CancellationTokenSource cancellationTokenSource)
 		{
 			ConfigureConsoleClearing (clearConsole);
 
@@ -58,7 +67,7 @@ namespace MonoDevelop.PackageManagement
 				pad,
 				true);
 
-			return new PackageManagementProgressMonitor (consoleMonitor, statusMonitor);
+			return new PackageManagementProgressMonitor (consoleMonitor, statusMonitor, cancellationTokenSource);
 		}
 
 		OutputProgressMonitor CreatePackageConsoleOutputMonitor ()

@@ -404,8 +404,8 @@ namespace MonoDevelop.Ide.Projects
 			FileTemplate template = iconView.CurrentlySelected != null ? iconView.CurrentlySelected.Template : null;
 			
 			if (template != null) {
-				labelTemplateTitle.Markup = "<b>" + GettextCatalog.GetString (template.Name) + "</b>";
-				infoLabel.Text = GettextCatalog.GetString (template.Description);
+				labelTemplateTitle.Markup = "<b>" + template.Name + "</b>";
+				infoLabel.Text = template.Description;
 				
 				string filename = GetFileNameFromEntry ();
 				string name = null;

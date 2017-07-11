@@ -53,8 +53,7 @@ namespace MonoDevelop.Projects.MSBuild
 			msproject = project;
 			evaluatedItemsIgnoringCondition = new List<IMSBuildItemEvaluated> ();
 			evaluatedProperties = new MSBuildEvaluatedPropertyCollection (msproject);
-			if (!project.SolutionDirectory.IsNullOrEmpty)
-				globalProperties.Add ("SolutionDir", project.SolutionDirectory.ToString () + System.IO.Path.DirectorySeparatorChar);
+			globalProperties = new Dictionary<string, string> (project.GlobalProperties);
 		}
 
 		public void Dispose ()
@@ -94,6 +93,13 @@ namespace MonoDevelop.Projects.MSBuild
 			projectInstance = engine.CreateProjectInstance (info.Project);
 
 			try {
+				// Set properties defined by global property providers, and then
+				// properties explicitly set to this instance
+
+				foreach (var gpp in MSBuildProjectService.GlobalPropertyProviders) {
+					foreach (var prop in gpp.GetGlobalProperties ())
+						engine.SetGlobalProperty (projectInstance, prop.Key, prop.Value);
+				}
 				foreach (var prop in globalProperties)
 					engine.SetGlobalProperty (projectInstance, prop.Key, prop.Value);
 

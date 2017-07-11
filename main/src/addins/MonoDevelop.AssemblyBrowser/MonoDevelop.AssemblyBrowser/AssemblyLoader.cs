@@ -149,18 +149,6 @@ namespace MonoDevelop.AssemblyBrowser
 			var loader = widget.AddReferenceByAssemblyName (name);
 			return loader != null ? loader.Assembly : null;
 		}
-		
-		AssemblyDefinition IAssemblyResolver.Resolve (string fullName)
-		{
-			var loader = widget.AddReferenceByAssemblyName (fullName);
-			return loader != null ? loader.Assembly : null;
-		}
-		
-		AssemblyDefinition IAssemblyResolver.Resolve (string fullName, ReaderParameters parameters)
-		{
-			var loader = widget.AddReferenceByAssemblyName (fullName);
-			return loader != null ? loader.Assembly : null;
-		}
 		#endregion
 		
 		public string LookupAssembly (string fullAssemblyName)

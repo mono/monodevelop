@@ -56,7 +56,6 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnEnableBreakEvent (BreakEventInfo eventInfo, bool enable)
 		{
-			eventInfo.BreakEvent.Enabled = enable;
 			UpdateExceptions ();
 			UpdateBreakpoints ();
 		}
@@ -120,7 +119,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			if (protocolClient == null)
 				return;
 
-			var hasCustomExceptions = breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any ();
+			var hasCustomExceptions = breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (e => e.Enabled);
 			if (currentExceptionState != hasCustomExceptions) {
 				currentExceptionState = hasCustomExceptions;
 				protocolClient.SendRequest (new SetExceptionBreakpointsRequest (

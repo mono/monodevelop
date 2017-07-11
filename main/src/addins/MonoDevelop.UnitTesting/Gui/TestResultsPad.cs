@@ -825,7 +825,7 @@ namespace MonoDevelop.UnitTesting
 
 		void OnCancel ()
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				failuresStore.AppendValues (TestStatusIcon.Failure, GettextCatalog.GetString ("Test execution cancelled."), null);
 			});
 		}

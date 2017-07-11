@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					}
 
 					LoggingService.LogInfo ("Welcome Page updated.");
-					Gtk.Application.Invoke (delegate { LoadNews (); });
+					Gtk.Application.Invoke ((o, args) => { LoadNews (); });
 
 				} catch (Exception ex) {
 					var agg = ex as AggregateException;

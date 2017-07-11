@@ -76,6 +76,10 @@ namespace MonoDevelop.PackageManagement
 			this.packageIds.AddRange (packageIds);
 		}
 
+		public PackageActionType ActionType {
+			get { return PackageActionType.Uninstall; }
+		}
+
 		public void Execute ()
 		{
 			Execute (CancellationToken.None);

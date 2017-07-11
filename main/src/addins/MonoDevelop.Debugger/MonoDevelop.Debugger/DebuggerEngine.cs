@@ -94,7 +94,14 @@ namespace MonoDevelop.Debugger
 			LoadEngine ();
 			return engine.CreateDebuggerStartInfo (cmd);
 		}
-		
+
+		public ProcessAttacher GetProcessAttacher ()
+		{
+			LoadEngine ();
+
+			return engine?.GetProcessAttacher ();
+		}
+
 		public ProcessInfo[] GetAttachableProcesses ()
 		{
 			LoadEngine ();

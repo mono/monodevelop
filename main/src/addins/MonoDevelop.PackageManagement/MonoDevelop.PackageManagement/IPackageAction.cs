@@ -35,5 +35,6 @@ namespace MonoDevelop.PackageManagement
 		void Execute ();
 		void Execute (CancellationToken cancellationToken);
 		bool HasPackageScriptsToRun();
+		PackageActionType ActionType { get; }
 	}
 }

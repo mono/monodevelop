@@ -291,14 +291,28 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				ScopeStack = scope,
 				Foreground = color.Foreground,
 				Background = color.Background,
-				FontStyle = ConvertFontStyle (color.FontStyle)
+				FontStyle = ConvertFontStyle (color.FontStyle),
+				FontWeight = ConvertFontWeight (color.FontStyle)
 			};
+		}
+
+		private Xwt.Drawing.FontWeight ConvertFontWeight (string fontStyle)
+		{
+			if (fontStyle != null) {
+				if (fontStyle.Contains ("bold"))
+					return Xwt.Drawing.FontWeight.Bold;
+			}
+			return Xwt.Drawing.FontWeight.Normal;
 		}
 
 		FontStyle ConvertFontStyle (string fontStyle)
 		{
-			if (fontStyle == "italic")
-				return FontStyle.Italic;
+			if (fontStyle != null) {
+				if (fontStyle.Contains ("italic"))
+					return FontStyle.Italic;
+				if (fontStyle.Contains ("oblique"))
+					return FontStyle.Oblique;
+			}
 			return FontStyle.Normal;
 		}
 

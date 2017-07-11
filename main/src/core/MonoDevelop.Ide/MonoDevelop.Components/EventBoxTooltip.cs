@@ -55,11 +55,14 @@ namespace MonoDevelop.Components
 
 			eventBox.EnterNotifyEvent += HandleEnterNotifyEvent;
 			eventBox.LeaveNotifyEvent += HandleLeaveNotifyEvent;
+			eventBox.FocusInEvent += HandleFocusInEvent;
+			eventBox.FocusOutEvent += HandleFocusOutEvent;
 
 			Position = PopupPosition.TopLeft;
 
 			// Accessibility: Disguise this eventbox as a label
 			eventBox.Accessible.SetRole (AtkCocoa.Roles.AXStaticText);
+			eventBox.CanFocus = true;
 		}
 
 		[GLib.ConnectBefore]
@@ -71,6 +74,20 @@ namespace MonoDevelop.Components
 
 		[GLib.ConnectBefore]
 		void HandleEnterNotifyEvent (object sender, EventArgs e)
+		{
+			mouseOver = true;
+			ShowTooltip ();
+		}
+
+		[GLib.ConnectBefore]
+		void HandleFocusOutEvent (object sender, EventArgs e)
+		{
+			mouseOver = false;
+			HideTooltip ();
+		}
+
+		[GLib.ConnectBefore]
+		void HandleFocusInEvent (object sender, EventArgs e)
 		{
 			mouseOver = true;
 			ShowTooltip ();
@@ -108,6 +125,8 @@ namespace MonoDevelop.Components
 			HideTooltip ();
 			eventBox.EnterNotifyEvent -= HandleEnterNotifyEvent;
 			eventBox.LeaveNotifyEvent -= HandleLeaveNotifyEvent;
+			eventBox.FocusInEvent -= HandleFocusInEvent;
+			eventBox.FocusOutEvent -= HandleFocusOutEvent;
 		}
 
 		public string ToolTip {

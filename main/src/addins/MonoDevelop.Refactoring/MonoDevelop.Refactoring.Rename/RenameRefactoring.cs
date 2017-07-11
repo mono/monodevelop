@@ -72,8 +72,10 @@ namespace MonoDevelop.Refactoring.Rename
 		static void Rollback (TextEditor editor, List<MonoDevelop.Core.Text.TextChangeEventArgs> textChanges)
 		{
 			for (int i = textChanges.Count - 1; i >= 0; i--) {
-				foreach (var v in textChanges[i].TextChanges)
+				for (int j = 0; j < textChanges[i].TextChanges.Count; ++j) {
+					var v = textChanges[i].TextChanges[j];
 					editor.ReplaceText (v.Offset, v.InsertionLength, v.RemovedText);
+				}
 			}
 		}
 
@@ -146,10 +148,14 @@ namespace MonoDevelop.Refactoring.Rename
 				//If user cancel renaming revert changes
 				if (!arg.Success) {
 					var textChanges = editor.Version.GetChangesTo (oldVersion).ToList ();
-					foreach (var change in textChanges) {
-						foreach (var v in change.TextChanges.Reverse ()) {
-							editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+					for (int i = textChanges.Count - 1; i >= 0; i--) {
+						var change = textChanges [i];
+						var rollbackChanges = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+						for (int j = 0; j < change.TextChanges.Count; j++) {
+							var textChange = change.TextChanges [j];
+							rollbackChanges.Add (new Microsoft.CodeAnalysis.Text.TextChange (new TextSpan (textChange.Offset, textChange.InsertionLength), textChange.RemovedText.Text));
 						}
+						editor.ApplyTextChanges (rollbackChanges); 
 					}
 				}
 			}) { TextLinkPurpose = TextLinkPurpose.Rename });
@@ -213,7 +219,7 @@ namespace MonoDevelop.Refactoring.Rename
 					var newName = properties.NewName;
 					if (string.IsNullOrEmpty (oldFileName) || string.IsNullOrEmpty (newName))
 						continue;
-					if (string.Equals (oldFileName, newName, StringComparison.OrdinalIgnoreCase) || oldFileName.EndsWith ("." + newName, StringComparison.OrdinalIgnoreCase))
+					if (IsCompatibleForRenaming (oldFileName, newName))
 						continue;
 					int idx = oldFileName.IndexOf (type.Name, StringComparison.Ordinal);
 					if (idx >= 0) {
@@ -231,6 +237,11 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 			}
 			return changes;
+		}
+
+		internal static bool IsCompatibleForRenaming (string oldName, string newName)
+		{
+			return string.Equals (oldName, newName, StringComparison.OrdinalIgnoreCase) || oldName.EndsWith ("." + newName, StringComparison.OrdinalIgnoreCase);
 		}
 
 		static void FilterDuplicateLinkedDocs (Solution newSolution, List<DocumentId> documents)

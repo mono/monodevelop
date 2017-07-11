@@ -61,13 +61,13 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					if (symbolInfo.Symbol == null)
 						return TaskUtil.EmptyEnumerable<CompletionData> ();
 
-					if (SemanticHighlightingVisitor<int>.IsRegexMatchMethod (symbolInfo)) {
+					if (SemanticHighlightingVisitor<string>.IsRegexMatchMethod (symbolInfo)) {
 						if (((ArgumentListSyntax)argument.Parent).Arguments [1] != argument)
 							return TaskUtil.EmptyEnumerable<CompletionData> ();
 						completionResult.AutoSelect = false;
 						return Task.FromResult (GetFormatCompletionData (engine, argument.Expression.ToString () [0] == '@'));
 					}
-					if (SemanticHighlightingVisitor<int>.IsRegexConstructor (symbolInfo)) {
+					if (SemanticHighlightingVisitor<string>.IsRegexConstructor (symbolInfo)) {
 						if (((ArgumentListSyntax)argument.Parent).Arguments [0] != argument)
 							return TaskUtil.EmptyEnumerable<CompletionData> ();
 						completionResult.AutoSelect = false;
@@ -104,7 +104,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					continue;
 				var invocation = node.Initializer.Value as InvocationExpressionSyntax;
 				var invocationSymbol = ctx.SemanticModel.GetSymbolInfo (invocation).Symbol;
-				if (invocationSymbol.Name == "Match" && SemanticHighlightingVisitor<int>.IsRegexType (invocationSymbol.ContainingType)) {
+				if (invocationSymbol.Name == "Match" && SemanticHighlightingVisitor<string>.IsRegexType (invocationSymbol.ContainingType)) {
 					if (invocation.ArgumentList.Arguments.Count == 1) {
 						var memberAccess = invocation.Expression as MemberAccessExpressionSyntax;
 						if (memberAccess == null)
@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 						if (objectCreation == null)
 							continue;
 						var targetNodeSymbol = ctx.SemanticModel.GetSymbolInfo (objectCreation).Symbol;
-						if (SemanticHighlightingVisitor<int>.IsRegexType (targetNodeSymbol.ContainingType)) {
+						if (SemanticHighlightingVisitor<string>.IsRegexType (targetNodeSymbol.ContainingType)) {
 							if (objectCreation.ArgumentList.Arguments.Count < 1)
 								continue;
 							val = ctx.SemanticModel.GetConstantValue (objectCreation.ArgumentList.Arguments [0].Expression);

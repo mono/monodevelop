@@ -114,6 +114,19 @@ type MDLanguageService() =
   static member DisableVirtualFileSystem() =
       vfs <- lazy (Shim.FileSystem)
 
+  static member invalidateProjectFile(projectFile: FilePath) =
+      try
+          if File.Exists (projectFile.FullPath.ToString()) then
+              MDLanguageService.Instance.TryGetProjectCheckerOptionsFromCache(projectFile.FullPath.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
+              |> Option.iter(fun options ->
+                  MDLanguageService.Instance.InvalidateConfiguration(options)
+                  MDLanguageService.Instance.ClearProjectInfoCache())
+      with ex -> LoggingService.LogError ("Could not invalidate configuration", ex)
+
+  static member invalidateFiles (args:#ProjectFileEventInfo seq) =
+      for projectFileEvent in args do
+          if FileService.supportedFileName (projectFileEvent.ProjectFile.FilePath.ToString()) then
+              MDLanguageService.invalidateProjectFile(projectFileEvent.ProjectFile.FilePath)
 [<AutoOpen>]
 module MDLanguageServiceImpl =
     let languageService = MDLanguageService.Instance

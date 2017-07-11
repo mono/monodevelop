@@ -24,21 +24,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Linq;
 using Mono.Addins;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreSdkInstalledCondition : ConditionType
+	internal class DotNetCoreSdkInstalledCondition : ConditionType
 	{
+		/// <summary>
+		/// The SDK version check is not quite correct. It currently only checks the
+		/// latest installed version when it should check all versions installed.
+		/// The runtime check also needs improving. Currently it only checks that dotnet
+		/// is available. It should check the runtimes installed so it is possible
+		/// to create a .NET Core 2.0 project if only the 2.0 runtime is installed.
+		/// </summary>
 		public override bool Evaluate (NodeElement conditionNode)
 		{
-			if (DotNetCoreSdk.IsInstalled)
+			if (DotNetCoreSdk.IsInstalled && SdkVersionSupported (conditionNode, DotNetCoreSdk.Versions))
 				return true;
 
-			if (MSBuildSdks.Installed)
+			// Mono's MSBuild SDKs currently includes .NET Core SDK 1.0.
+			if (MSBuildSdks.Installed && SdkVersionSupported (conditionNode, DotNetCoreVersion.MinimumSupportedVersion))
 				return DotNetCoreRuntime.IsInstalled || !RequiresRuntime (conditionNode);
 
 			return false;
+		}
+
+		/// <summary>
+		/// Supports simple wildcards. 1.* => 1.0, 1.2, up to but not including 2.0.
+		/// Wildcards such as 1.*.3 are not supported.
+		/// </summary>
+		static bool SdkVersionSupported (NodeElement conditionNode, params DotNetCoreVersion[] versions)
+		{
+			string requiredSdkversion = conditionNode.GetAttribute ("sdkVersion");
+			if (string.IsNullOrEmpty (requiredSdkversion))
+				return true;
+
+			requiredSdkversion = requiredSdkversion.Replace ("*", string.Empty);
+			return versions.Any (version => version.ToString ().StartsWith (requiredSdkversion, StringComparison.OrdinalIgnoreCase));
 		}
 
 		/// <summary>

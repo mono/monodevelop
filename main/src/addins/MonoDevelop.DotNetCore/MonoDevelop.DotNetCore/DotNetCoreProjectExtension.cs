@@ -55,7 +55,12 @@ namespace MonoDevelop.DotNetCore
 
 		protected override bool SupportsObject (WorkspaceObject item)
 		{
-			return base.SupportsObject (item) && IsDotNetCoreProject ((DotNetProject)item);
+			return DotNetCoreSupportsObject(item) && !IsWebProject ((DotNetProject)item);
+		}
+
+		protected bool DotNetCoreSupportsObject (WorkspaceObject item)
+		{
+			return base.SupportsObject (item) && IsSdkProject ((DotNetProject)item);
 		}
 
 		protected override void Initialize ()
@@ -72,11 +77,15 @@ namespace MonoDevelop.DotNetCore
 			return base.OnGetSupportsFramework (framework);
 		}
 
-		bool IsDotNetCoreProject (DotNetProject project)
+		/// <summary>
+		/// Currently this project extension is enabled for all SDK style projects and
+		/// not just for .NET Core and .NET Standard projects. SDK project support
+		/// should be separated out from this extension so it can be enabled only for
+		/// .NET Core and .NET Standard projects.
+		/// </summary>
+		bool IsSdkProject (DotNetProject project)
 		{
-			var properties = project.MSBuildProject.EvaluatedProperties;
-			return properties.HasProperty ("TargetFramework") ||
-				properties.HasProperty ("TargetFrameworks");
+			return project.MSBuildProject.Sdk != null;
 		}
 
 		protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)
@@ -130,7 +139,10 @@ namespace MonoDevelop.DotNetCore
 
 		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
-			return CreateDotNetCoreExecutionCommand (configSel, configuration, runConfiguration);
+			if (Project.TargetFramework.IsNetCoreApp ()) {
+				return CreateDotNetCoreExecutionCommand (configSel, configuration, runConfiguration);
+			}
+			return base.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
 		}
 
 		DotNetCoreExecutionCommand CreateDotNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
@@ -150,9 +162,11 @@ namespace MonoDevelop.DotNetCore
 				EnvironmentVariables = dotnetCoreRunConfiguration?.EnvironmentVariables,
 				PauseConsoleOutput = dotnetCoreRunConfiguration?.PauseConsoleOutput ?? false,
 				ExternalConsole = dotnetCoreRunConfiguration?.ExternalConsole ?? false,
+#pragma warning disable CS0618 // Type or member is obsolete
 				LaunchBrowser = dotnetCoreRunConfiguration?.LaunchBrowser ?? false,
 				LaunchURL = dotnetCoreRunConfiguration?.LaunchUrl,
 				ApplicationURL = dotnetCoreRunConfiguration?.ApplicationURL,
+#pragma warning restore CS0618 // Type or member is obsolete
 				PipeTransport = dotnetCoreRunConfiguration?.PipeTransport
 			};
 		}
@@ -179,7 +193,7 @@ namespace MonoDevelop.DotNetCore
 			return FilePath.Null;
 		}
 
-		FilePath GetOutputFileName (DotNetProjectConfiguration configuration)
+		protected FilePath GetOutputFileName (DotNetProjectConfiguration configuration)
 		{
 			FilePath outputDirectory = GetOutputDirectory (configuration);
 			string assemblyName = Project.Name;
@@ -188,7 +202,7 @@ namespace MonoDevelop.DotNetCore
 
 		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
-			if (DotNetCoreRuntime.IsMissing) {
+			if (Project.TargetFramework.IsNetCoreApp () && DotNetCoreRuntime.IsMissing) {
 				return ShowCannotExecuteDotNetCoreApplicationDialog ();
 			}
 
@@ -226,7 +240,15 @@ namespace MonoDevelop.DotNetCore
 			return Project.ParentSolution.ExtendedProperties.Contains (ShownDotNetCoreSdkInstalledExtendedPropertyName);
 		}
 
-		protected override async Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
+		protected override Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
+		{
+			if (Project.TargetFramework.IsNetCoreApp ()) {
+				return OnExecuteDotNetCoreCommand (monitor, context, configuration, executionCommand);
+			}
+			return base.OnExecuteCommand (monitor, context, configuration, executionCommand);
+		}
+
+		async Task OnExecuteDotNetCoreCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
 		{
 			bool externalConsole = false;
 			bool pauseConsole = false;
@@ -360,8 +382,13 @@ namespace MonoDevelop.DotNetCore
 			get { return dotNetCoreMSBuildProject.HasSdk; }
 		}
 
+		protected bool IsWebProject (DotNetProject project)
+		{
+			return (project.MSBuildProject.Sdk?.IndexOf ("Microsoft.NET.Sdk.Web", System.StringComparison.OrdinalIgnoreCase) ?? -1) != -1;
+		}
+
 		public bool IsWeb {
-			get { return (dotNetCoreMSBuildProject.Sdk?.IndexOf ("Microsoft.NET.Sdk.Web", System.StringComparison.OrdinalIgnoreCase) ?? -1) != -1; }
+			get { return IsWebProject (Project);  }
 		}
 
 		protected override void OnPrepareForEvaluation (MSBuildProject project)
@@ -372,10 +399,6 @@ namespace MonoDevelop.DotNetCore
 				return;
 
 			sdkPaths = DotNetCoreSdk.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
-			if (!sdkPaths.Exist)
-				return;
-
-			dotNetCoreMSBuildProject.ReadDefaultCompileTarget (project);
 		}
 
 		protected override async Task<ProjectFile[]> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
@@ -413,20 +436,35 @@ namespace MonoDevelop.DotNetCore
 			// project file is being saved.
 		}
 
+		/// <summary>
+		/// Shared projects can trigger a reference change during re-evaluation so do not
+		/// restore if the project is being re-evaluated. Otherwise this could cause the
+		/// restore to be run repeatedly.
+		/// </summary>
 		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
 		{
 			base.OnReferenceAddedToProject (e);
 
-			if (!Project.Loading)
+			if (!IsLoadingOrReevaluating ())
 				RestoreNuGetPackages ();
 		}
 
+		/// <summary>
+		/// Shared projects can trigger a reference change during re-evaluation so do not
+		/// restore if the project is being re-evaluated. Otherwise this could cause the
+		/// restore to be run repeatedly.
+		/// </summary>
 		protected override void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
 		{
 			base.OnReferenceRemovedFromProject (e);
 
-			if (!Project.Loading)
+			if (!IsLoadingOrReevaluating ())
 				RestoreNuGetPackages ();
+		}
+
+		bool IsLoadingOrReevaluating ()
+		{
+			return Project.Loading || Project.IsReevaluating;
 		}
 
 		void RestoreNuGetPackages ()
@@ -450,12 +488,6 @@ namespace MonoDevelop.DotNetCore
 		bool IsFSharpSdkProject ()
 		{
 			return HasSdk && dotNetCoreMSBuildProject.Sdk.Contains ("FSharp");
-		}
-
-		internal IEnumerable<TargetFramework> GetSupportedTargetFrameworks ()
-		{
-			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project);
-			return supportedTargetFrameworks.GetFrameworks ();
 		}
 
 		/// <summary>
@@ -526,6 +558,9 @@ namespace MonoDevelop.DotNetCore
 					return false;
 			}
 
+			if (IsFromSharedProject (buildItem))
+				return false;
+
 			// HACK: Remove any imported items that are not in the EvaluatedItems
 			// This may happen if a condition excludes the item. All items passed to the
 			// OnGetSupportsImportedItem are from the EvaluatedItemsIgnoringCondition
@@ -533,9 +568,20 @@ namespace MonoDevelop.DotNetCore
 				.Any (item => item.IsImported && item.Name == buildItem.Name && item.Include == buildItem.Include);
 		}
 
+		/// <summary>
+		/// Checks that the project has the HasSharedItems property set to true and the SharedGUID
+		/// property in its global property group. Otherwise it is not considered to be a shared project.
+		/// </summary>
+		bool IsFromSharedProject (IMSBuildItemEvaluated buildItem)
+		{
+			var globalGroup = buildItem?.SourceItem?.ParentProject?.GetGlobalPropertyGroup ();
+			return globalGroup?.GetValue<bool> ("HasSharedItems") == true &&
+				globalGroup?.HasProperty ("SharedGUID") == true;
+		}
+
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
-			return new DotNetCoreRunConfiguration (name);
+			return new DotNetCoreRunConfiguration (name, IsWeb);
 		}
 
 		/// <summary>

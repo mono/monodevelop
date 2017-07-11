@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetCore", "DotNetCore\DotNetCoreProject.csproj", "{7A5198EC-20E7-4B49-9931-FBBCB58BDC27}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{551C9391-1E8F-47D3-9C80-6AE04DE1AEE3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7A5198EC-20E7-4B49-9931-FBBCB58BDC27}.Debug|x86.ActiveCfg = Debug|x86
+		{7A5198EC-20E7-4B49-9931-FBBCB58BDC27}.Debug|x86.Build.0 = Debug|x86
+		{7A5198EC-20E7-4B49-9931-FBBCB58BDC27}.Release|x86.ActiveCfg = Release|x86
+		{7A5198EC-20E7-4B49-9931-FBBCB58BDC27}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Console1\Console1.csproj
+	EndGlobalSection
+EndGlobal

@@ -61,7 +61,7 @@ module unitTestGatherer =
                                 | None _ ->
                                     MonoDevelop.Core.LoggingService.LogWarning(sprintf "F# GatherUnitTests: found a unit test method with no qualified name: %s" func.FullName)
                                     func.CompiledName
-                            let methName = PrettyNaming.QuoteIdentifierIfNeeded func.CompiledName
+                            let methName = func.CompiledName
                             let isIgnored =
                                 func.Attributes
                                 |> Seq.exists (fun a -> hasAttribute a (fun attributeName m -> m.IgnoreTestMethodAttributeMarker = attributeName))

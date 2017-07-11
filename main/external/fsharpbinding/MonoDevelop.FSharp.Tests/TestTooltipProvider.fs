@@ -1,11 +1,9 @@
 namespace MonoDevelopTests
 open System.Text.RegularExpressions
-open System.Threading
 open NUnit.Framework
 open FsUnit
 open MonoDevelop.FSharp.MonoDevelop
 open MonoDevelop.FSharp
-
 [<TestFixture>]
 type TestTooltipProvider() =
     let stripHtml html =
@@ -16,7 +14,7 @@ type TestTooltipProvider() =
          .Replace("&gt;", ">")
          .Replace("&apos;", "'")
 
-    let getTooltip (source: string) =
+    let getSymbol (source: string) =
         let offset = source.IndexOf("$")
         let source = source.Replace("$", "")
 
@@ -24,6 +22,10 @@ type TestTooltipProvider() =
         let line, col, lineStr = doc.Editor.GetLineInfoFromOffset offset
 
         let symbolUse = doc.Ast.GetSymbolAtLocation(line, col - 1, lineStr) |> Async.RunSynchronously
+        lineStr, col, symbolUse, doc.Editor
+
+    let getTooltip source =
+        let _, _, symbolUse, _ = getSymbol source
         symbolUse |> Option.bind SymbolTooltips.getTooltipFromSymbolUse
 
     let getTooltipSignature (source: string) =
@@ -43,6 +45,33 @@ type TestTooltipProvider() =
         match getTooltip source with
         | Some(_,summary,_) -> SymbolTooltips.formatSummary summary
         | _ ->  ""
+
+    [<Test>]
+    member this.``Namespace has correct segment``() =
+        let line, col, symbolUse, editor = getSymbol "open Sys$tem"
+        let segment = Symbols.getTextSegment editor symbolUse.Value col line
+        segment.Offset |> should equal 5
+        segment.EndOffset |> should equal 11
+
+    [<Test>]
+    member this.``Type annotation has correct segment``() =
+        let line, col, symbolUse, editor = getSymbol "let map (f : 'a$ -> 'b) = ()"
+        let segment = Symbols.getTextSegment editor symbolUse.Value col line
+        segment.Offset |> should equal 14
+        segment.EndOffset |> should equal 15
+
+    [<Test>]
+    member this.``Base method has correct segment``() =
+        let source =
+            """
+            type BaseType(int) = class end
+            type MyString() =
+                inherit BaseType(int)
+                let x = base.To$String() 
+            """
+        let line, col, symbolUse, editor = getSymbol source
+        let segment = Symbols.getTextSegment editor symbolUse.Value col line
+        segment.EndOffset - segment.Offset |> should equal 8
 
     [<Test>]
     member this.``Tooltip arrows are right aligned``() =
@@ -392,4 +421,16 @@ type myT$ype = class end"""
 
         summary |> shouldEqual expected
 
- 
+    [<Test>]
+    member this.``Function type tooltip``() =
+        let input =
+            """
+            type Spell =
+               | Frotz
+               | Grotz
+
+            type Sp$ellF = Spell -> Async<unit>
+            """
+        let signature = getTooltipSignature input
+        let expected = "type SpellF = Spell -> Async<unit>"
+        signature |> should equal expected

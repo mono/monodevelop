@@ -112,10 +112,13 @@ namespace MonoDevelop.PackageManagement
 				}
 
 				string targetFrameworks = properties.GetValue ("TargetFrameworks");
-				return MSBuildStringUtility.Split (targetFrameworks);
+				if (targetFrameworks != null) {
+					return MSBuildStringUtility.Split (targetFrameworks);
+				}
 			}
 
-			return new string[0];
+			var framework = NuGetFramework.Parse (project.TargetFrameworkMoniker.ToString ());
+			return new [] { framework.GetShortFolderName () };
 		}
 
 		static void AddProjectReferences (PackageSpec spec, IDotNetProject project, ILogger logger)
@@ -161,6 +164,9 @@ namespace MonoDevelop.PackageManagement
 		static bool IsProjectReference (ProjectReference projectReference)
 		{
 			if (projectReference.ReferenceType != ReferenceType.Project)
+				return false;
+
+			if (!projectReference.ReferenceOutputAssembly)
 				return false;
 
 			if (projectReference.Include != null)

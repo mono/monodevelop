@@ -23,6 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+using System;
 using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.DotNetCore
@@ -34,14 +36,63 @@ namespace MonoDevelop.DotNetCore
 			return framework.Id.Identifier == ".NETStandard";
 		}
 
+		public static bool IsNetStandard20 (this TargetFramework framework)
+		{
+			return framework.IsNetStandard () &&
+				framework.Id.Version == "2.0";
+		}
+
+		public static bool IsNetStandard1x (this TargetFramework framework)
+		{
+			return framework.IsNetStandard () &&
+				framework.IsVersion1x ();
+		}
+
+		public static bool IsLowerThanNetStandard16 (this TargetFramework framework)
+		{
+			if (framework.IsNetStandard20 ())
+				return false;
+
+			return framework.IsNetStandard1x () &&
+				framework.Id.Version != "1.6"; 
+		}
+
+		static bool IsVersion1x (this TargetFramework framework)
+		{
+			return framework.Id.Version.StartsWith ("1.", StringComparison.Ordinal);
+		}
+
 		public static bool IsNetCoreApp (this TargetFramework framework)
 		{
 			return framework.Id.Identifier == ".NETCoreApp";
 		}
 
+		public static bool IsNetCoreApp20 (this TargetFramework framework)
+		{
+			return framework.IsNetCoreApp () &&
+				framework.Id.Version == "2.0";
+		}
+
+		public static bool IsNetCoreApp1x (this TargetFramework framework)
+		{
+			return framework.IsNetCoreApp () &&
+				framework.IsVersion1x ();
+		}
+
 		public static bool IsNetFramework (this TargetFramework framework)
 		{
 			return framework.Id.IsNetFramework ();
+		}
+
+		public static string GetDisplayName (this TargetFramework framework)
+		{
+			if (framework.IsNetCoreApp ())
+				return string.Format (".NET Core {0}", framework.Id.Version);
+
+			if (framework.IsNetStandard ())
+				return string.Format (".NET Standard {0}", framework.Id.Version);
+
+			return framework.Name;
 		}
 	}
 }

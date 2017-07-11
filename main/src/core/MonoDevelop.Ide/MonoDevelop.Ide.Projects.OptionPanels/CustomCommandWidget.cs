@@ -61,6 +61,13 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public CustomCommandWidget (WorkspaceObject entry, CustomCommand cmd, ConfigurationSelector configSelector, CustomCommandType[] supportedTypes)
 		{
 			this.Build();
+
+			// Turn these off so that their children can be focused
+			CanFocus = false;
+			vbox1.CanFocus = false;
+			// Turn this off because otherwise it creates a keyboard trap and the focus cannot move off it.
+			comboType.CanFocus = false;
+
 			this.supportedTypes = supportedTypes;
 			this.cmd = cmd;
 			
@@ -97,8 +104,28 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			tagSelectorCommand.ButtonAccessible.SetCommonAttributes ("CustomCommand.TagSelector",
 				                                                     GettextCatalog.GetString ("Tag Selector"),
 					                                                 GettextCatalog.GetString ("Insert a custom tag into the command entry"));
+
+			SetupAccessibility ();
 		}
-		
+
+		void SetupAccessibility ()
+		{
+			comboType.SetCommonAccessibilityAttributes ("CustomCommands.OperationType",
+														GettextCatalog.GetString ("Select a project operation"),
+														GettextCatalog.GetString ("Select the type of project operation to add a custom command for"));
+			buttonRemove.SetCommonAccessibilityAttributes ("CustomCommands.Remove", "", GettextCatalog.GetString ("Click to remove this custom command"));
+
+			entryCommand.SetCommonAccessibilityAttributes ("CustomCommand.CommandEntry", label3,
+			                                               GettextCatalog.GetString ("Enter the custom command"));
+			buttonBrowse.SetCommonAccessibilityAttributes ("CustomCommand.CommandBrowse", "", GettextCatalog.GetString ("Use a file selector to select a custom command"));
+
+			entryName.SetCommonAccessibilityAttributes ("CustomCommands.WorkingDirectory", label1,
+			                                            GettextCatalog.GetString ("Enter the directory for the command to execute in"));
+
+			checkExternalCons.SetCommonAccessibilityAttributes ("CustomCommands.RunOnExtConsole", "", GettextCatalog.GetString ("Check for the command to run on an external console"));
+			checkPauseCons.SetCommonAccessibilityAttributes ("CustomCommands.Pause", "", GettextCatalog.GetString ("Check to pause the console output"));
+		}
+
 		public CustomCommand CustomCommand {
 			get { return cmd; }
 		}

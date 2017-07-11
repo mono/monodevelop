@@ -28,6 +28,7 @@
 
 using System;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Policies;
@@ -103,8 +104,21 @@ namespace MonoDevelop.Ide.StandardHeader
 			w4.Expand = false;
 			treeviewTemplates.WidthRequest = 200;
 			treeviewTemplates.QueueResize ();
+
+			SetupAccessibility ();
 		}
 
+		void SetupAccessibility ()
+		{
+			headerText.SetCommonAccessibilityAttributes ("StandardHeaderPanel.HeaderText",
+			                                             GettextCatalog.GetString ("Header Text"),
+			                                             GettextCatalog.GetString ("Enter the text to be used for the standard header"));
+			treeviewTemplates.SetCommonAccessibilityAttributes ("StandardHeaderPanel.TemplateTree",
+			                                                    GettextCatalog.GetString ("Templates"),
+			                                                    GettextCatalog.GetString ("Select a template to be inserted into the header text"));
+			includeAutoCheck.SetCommonAccessibilityAttributes ("StandardHeaderPanel.AutoCheck", "",
+			                                                   GettextCatalog.GetString ("Check to include the standard header in newly created files"));
+		}
 		void TreeviewTemplates_RowActivated (object o, Gtk.RowActivatedArgs args)
 		{
 			Gtk.TreeIter iter;

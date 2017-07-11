@@ -100,6 +100,28 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
+		internal void SetAllLiveUpdateBreakpoints (BreakpointStore bps)
+		{
+			lock (watches) {
+				foreach (PinnedWatch w in watches) {
+					if (w.LiveUpdate) {
+						var bp = CreateLiveUpdateBreakpoint (w);
+						Bind(w, bp);
+						bps.Add(bp);
+					}
+				}
+			}
+		}
+
+		internal Breakpoint CreateLiveUpdateBreakpoint (PinnedWatch watch)
+		{
+			var bp = new Breakpoint (watch.File, watch.Line);
+			bp.TraceExpression = "{" + watch.Expression + "}";
+			bp.HitAction = HitAction.PrintExpression;
+			bp.NonUserBreakpoint = true;
+			return bp;
+		}
+
 		internal bool UpdateLiveWatch (Breakpoint bp, string trace)
 		{
 			lock (watches) {

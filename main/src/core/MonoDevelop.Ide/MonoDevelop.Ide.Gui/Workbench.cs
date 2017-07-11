@@ -369,6 +369,12 @@ namespace MonoDevelop.Ide.Gui
 				if (result == AlertButton.Cancel)
 					return false;
 
+				if (result == AlertButton.CloseWithoutSave) {
+					doc.Window.ViewContent.DiscardChanges ();
+					await doc.Window.CloseWindow (true);
+					continue;
+				}
+
 				await doc.Save ();
 				if (doc.IsDirty) {
 					doc.Select ();
@@ -385,8 +391,8 @@ namespace MonoDevelop.Ide.Gui
 				(object)(doc.Window.ViewContent.IsUntitled
 					? doc.Window.ViewContent.UntitledName
 					: System.IO.Path.GetFileName (doc.Window.ViewContent.ContentName))),
-				"",
-				 AlertButton.Cancel, doc.Window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
+				GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
+				AlertButton.CloseWithoutSave, AlertButton.Cancel, doc.Window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 		}
 		
 		public void CloseAllDocuments (bool leaveActiveDocumentOpen)

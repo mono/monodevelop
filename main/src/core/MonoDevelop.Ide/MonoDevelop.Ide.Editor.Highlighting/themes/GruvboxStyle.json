@@ -1,6 +1,6 @@
 {
 	"name": "Gruvbox",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "A retro groove color scheme",
 	"originator": "https://github.com/morhetz/gruvbox",
 
@@ -110,7 +110,7 @@
 		{ "name": "Comment(Block)", "fore": "comment" },
 		{ "name": "Comment(Doc)", "fore": "comment" },
 		{ "name": "Comment(DocTag)", "fore": "comment" },
-		{ "name": "Comment Tag", "fore": "#ff00ff" },
+		{ "name": "Comment Tag", "fore": "#ff0dff" },
 
 		{ "name": "Excluded Code", "fore": "comment" },
 

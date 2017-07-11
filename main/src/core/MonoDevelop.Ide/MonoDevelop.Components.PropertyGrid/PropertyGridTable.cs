@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using Cairo;
 using System.Linq;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -72,6 +73,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			public TableRow (PropertyGrid parentGrid)
 			{
 				this.parentGrid = parentGrid;
+				Accessible = new AccessibilityElementProxy ();
+				Accessible.SetRole (AtkCocoa.Roles.AXRow);
 			}
 
 			public bool IsCategory;
@@ -88,9 +91,22 @@ namespace MonoDevelop.Components.PropertyGrid
 			public int ChildrenHeight;
 			public uint AnimationHandle;
 
+			internal IAccessibilityElementProxy Accessible { get; private set; }
+
 			public bool IsExpandable {
 				get {
 					return IsCategory || (ChildRows != null && ChildRows.Count > 0);
+				}
+			}
+
+			bool focused;
+			public bool Focused {
+				get {
+					return focused;
+				}
+
+				set {
+					focused = value;
 				}
 			}
 
@@ -148,6 +164,9 @@ namespace MonoDevelop.Components.PropertyGrid
 			CanFocus = true;
 			resizeCursor = new Cursor (CursorType.SbHDoubleArrow);
 			handCursor = new Cursor (CursorType.Hand1);
+
+			// Accessibility
+			Accessible.Role = Atk.Role.TreeTable;
 		}
 
 		protected override void OnDestroyed ()
@@ -408,6 +427,10 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		PropertyEditorCell GetCell (TableRow row)
 		{
+			if (row.Property == null) {
+				return null;
+			}
+
 			var e = editorManager.GetEditor (row);
 			e.Initialize (this, editorManager, row);
 			return e;
@@ -544,6 +567,14 @@ namespace MonoDevelop.Components.PropertyGrid
 					ctx.SetSourceColor (Styles.PadCategoryBackgroundColor.ToCairoColor ());
 					ctx.Fill ();
 
+					if (IsFocus && r.Focused) {
+						ctx.Rectangle (1, y + 1, Allocation.Width - 2, rh - 3);
+						ctx.SetDash (new double[] { 1, 1 }, 0.5);
+						ctx.LineWidth = 1.0;
+						ctx.SetSourceColor (Styles.BaseForegroundColor.ToCairoColor ());
+						ctx.Stroke ();
+					}
+
 					if (lastCategory == null || lastCategory.Expanded || lastCategory.AnimatingExpand) {
 						ctx.MoveTo (0, y + 0.5);
 						ctx.LineTo (Allocation.Width, y + 0.5);
@@ -649,6 +680,21 @@ namespace MonoDevelop.Components.PropertyGrid
 			}
 		}
 
+		TableRow GetRowAtPoint (int x, int y)
+		{
+			return GetAllRows (true).FirstOrDefault (r => r.Bounds.Contains (x, y));
+		}
+
+		void ExpandOrCollapseRow (TableRow row)
+		{
+			row.Expanded = !row.Expanded;
+			if (row.Expanded)
+				StartExpandAnimation (row);
+			else
+				StartCollapseAnimation (row);
+			QueueResize ();
+		}
+
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			if (evnt.Type != EventType.ButtonPress)
@@ -661,21 +707,22 @@ namespace MonoDevelop.Components.PropertyGrid
 				return true;
 			}
 
-			var row = GetAllRows (true).FirstOrDefault (r => r.Bounds.Contains ((int)evnt.X, (int)evnt.Y));
+			var row = GetRowAtPoint ((int)evnt.X, (int)evnt.Y);
 
 			if (row != null && editSession == null) {
 				var bounds = GetInactiveEditorBounds (row);
 				if (!bounds.IsEmpty && bounds.Contains ((int)evnt.X, (int)evnt.Y)) {
+					EndEditing ();
+
+					// Ending repopulates the tree, meaning that row no longer points to anything in the tree
+					row = GetRowAtPoint ((int)evnt.X, (int)evnt.Y);
+
 					StartEditing (row);
 					return true;
 				}
+
 				if (row.IsExpandable) {
-					row.Expanded = !row.Expanded;
-					if (row.Expanded)
-						StartExpandAnimation (row);
-					else
-						StartCollapseAnimation (row);
-					QueueResize ();
+					ExpandOrCollapseRow (row);
 					return true;
 				}
 			}
@@ -799,6 +846,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			EndEditing ();
 			if (row.AnimatingExpand) {
 				GLib.Source.Remove (row.AnimationHandle);
+				row.AnimationHandle = 0;
 			} else
 				row.AnimationHeight = 0;
 
@@ -807,6 +855,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				row.AnimationHeight += animationStepSize;
 				QueueResize ();
 				if (row.AnimationHeight >= row.ChildrenHeight) {
+					row.AnimationHandle = 0;
 					row.AnimatingExpand = false;
 					return false;
 				}
@@ -819,6 +868,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			EndEditing ();
 			if (row.AnimatingExpand) {
 				GLib.Source.Remove (row.AnimationHandle);
+				row.AnimationHandle = 0;
 			} else {
 				row.AnimationHeight = row.ChildrenHeight;
 			}
@@ -827,6 +877,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				row.AnimationHeight -= animationStepSize;
 				QueueResize ();
 				if (row.AnimationHeight <= 0) {
+					row.AnimationHandle = 0;
 					row.AnimatingExpand = false;
 					return false;
 				}
@@ -839,6 +890,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			foreach (var r in GetAllRows (false)) {
 				if (r.AnimatingExpand) {
 					GLib.Source.Remove (r.AnimationHandle);
+					r.AnimationHandle = 0;
 					r.AnimatingExpand = false;
 				}
 			}
@@ -859,28 +911,36 @@ namespace MonoDevelop.Components.PropertyGrid
 				currentEditor = null;
 				editSession.Dispose ();
 				editSession = null;
-				currentEditorRow = null;
+
 				parentGrid.Populate (saveEditSession: false);
-				QueueDraw ();
 			}
+			QueueDraw ();
 		}
 
 		void StartEditing (TableRow row)
 		{
-			EndEditing ();
+			GrabFocus ();
+
 			currentEditorRow = row;
+			row.Focused = true;
+
 			var cell = GetCell (row);
-			editSession = cell.StartEditing (row.EditorBounds, State);
-			if (editSession == null)
+			if (cell == null) {
+				GrabFocus ();
+				QueueDraw ();
 				return;
+			}
+
+			editSession = cell.StartEditing (row.EditorBounds, State);
+			if (editSession == null) {
+				return;
+			}
 
 			currentEditor = (Gtk.Widget) editSession.Editor;
 			Add (currentEditor);
 			SetAllocation (currentEditor, row.EditorBounds);
 			currentEditor.Show ();
-			currentEditor.CanFocus = true;
 			currentEditor.GrabFocus ();
-			ConnectTabEvent (currentEditor);
 
 			var refreshAtt = row.Property.Attributes.OfType<RefreshPropertiesAttribute> ().FirstOrDefault ();
 			var refresh = refreshAtt == null ? RefreshProperties.None : refreshAtt.RefreshProperties;
@@ -904,39 +964,90 @@ namespace MonoDevelop.Components.PropertyGrid
 			QueueDraw ();
 		}
 
-		void ConnectTabEvent (Gtk.Widget w)
+		protected override bool OnFocused (DirectionType direction)
 		{
-			w.KeyPressEvent += HandleKeyPressEvent;
-			if (w is Gtk.Container) {
-				foreach (var c in ((Gtk.Container)w).Children)
-					ConnectTabEvent (c);
-			}
-		}
+			TableRow nextFocus = null;
+			bool needsRedraw = false;
 
-		[GLib.ConnectBefore]
-		void HandleKeyPressEvent (object o, KeyPressEventArgs args)
-		{
-			if (args.Event.Key == Gdk.Key.Tab || args.Event.Key == Gdk.Key.ISO_Left_Tab || args.Event.Key == Gdk.Key.KP_Tab) {
-				var r = args.Event.State == ModifierType.ShiftMask ? GetPreviousRow (currentEditorRow) : GetNextRow (currentEditorRow);
-				if (r != null) {
-					Gtk.Application.Invoke (delegate {
-						StartEditing (r);
-					});
-					args.RetVal = true;
+			if (currentEditorRow != null) {
+				needsRedraw = true;
+				currentEditorRow.Focused = false;
+
+				// End editing here because it will cause a clear/populate cycle which will make all
+				// the rows invalid
+				if (!currentEditorRow.IsCategory) {
+					EndEditing ();
 				}
 			}
+
+			switch (direction) {
+			case DirectionType.TabForward:
+			case DirectionType.Down:
+				nextFocus = GetNextRow (currentEditorRow);
+				break;
+
+			case DirectionType.TabBackward:
+			case DirectionType.Up:
+				nextFocus = GetPreviousRow (currentEditorRow);
+				break;
+
+			default:
+				break;
+			}
+
+			currentEditorRow = nextFocus;
+
+			if (currentEditorRow != null) {
+				currentEditorRow.Focused = true;
+				StartEditing (currentEditorRow);
+			}
+
+			if (needsRedraw) {
+				QueueDraw ();
+			}
+
+			return currentEditorRow != null;
+		}
+
+		protected override void OnActivate ()
+		{
+			if (currentEditorRow != null && currentEditorRow.IsExpandable) {
+				ExpandOrCollapseRow (currentEditorRow);
+				return;
+			}
+			base.OnActivate ();
+		}
+
+		// When we stop editing a row, the tree gets rebuilt
+		// There isn't a reliable method to match old rows with new rows
+		// so check Labels and Property.Name
+		// see SaveStatus
+		bool CompareRows (TableRow r1, TableRow r2)
+		{
+			if (r1 == null || r2 == null) {
+				return false;
+			}
+
+			return (r1 == r2) ||
+				(r1.IsCategory && r2.IsCategory && r1.Label == r2.Label) ||
+				(r1.Property != null && r2.Property != null && r1.Property.Name == r2.Property.Name);
 		}
 
 		TableRow GetNextRow (TableRow row)
 		{
 			bool found = false;
 			foreach (var r in GetAllRows (true)) {
-				if (r.IsCategory || !r.Enabled)
+				if (!r.Enabled) {
 					continue;
-				if (found)
+				}
+
+				if (row == null || found) {
 					return r;
-				if (r == row)
+				}
+
+				if (CompareRows (row, r)) {
 					found = true;
+				}
 			}
 			return null;
 		}
@@ -945,13 +1056,17 @@ namespace MonoDevelop.Components.PropertyGrid
 		{
 			TableRow prev = null;
 			foreach (var r in GetAllRows (true)) {
-				if (r.IsCategory || !r.Enabled)
+				if (!r.Enabled)
 					continue;
-				if (r == row)
+
+				if (CompareRows (row, r))
 					return prev;
+
 				prev = r;
 			}
-			return null;
+
+			// Return last row
+			return prev;
 		}
 	}
 

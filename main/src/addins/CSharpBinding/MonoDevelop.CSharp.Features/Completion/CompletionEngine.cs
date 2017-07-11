@@ -200,7 +200,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					break;
 				}
 			}
-
+			if (ctx.CSharpSyntaxContext.IsPossibleTupleContext)
+				result.AutoSelect = false;
 			return result;
 		}
 

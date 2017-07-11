@@ -87,16 +87,15 @@
     <Compile Include="Services\LanguageService.fs" />
     <Compile Include="Services\MDLanguageService.fs" />
     <Compile Include="Services\CompilerService.fs" />
-    <Compile Include="Services\FSharpConsoleView.fs" />
     <Compile Include="Services\InteractiveSession.fs" />
     <Compile Include="Services\RoslynHelpers.fs" />
     <Compile Include="FSharpParsedDocument.fs" />
     <Compile Include="FSharpTokens.fs" />
     <Compile Include="FSharpSymbolHelper.fs" />
     <Compile Include="ProjectSearchCategory.fs" />
+    <Compile Include="FSharpProject.fs" />
     <Compile Include="FSharpInteractivePad.fs" />
     <Compile Include="FSharpOptionsPanels.fs" />
-    <Compile Include="FSharpProject.fs" />
     <Compile Include="PortableFSharpProjectFlavor.fs" />
     <Compile Include="FSharpFoldingParser.fs" />
     <Compile Include="FSharpParser.fs" />
@@ -115,7 +114,6 @@
     <Compile Include="FSharpFormattingPolicyPanel.fs" />
     <Compile Include="FSharpSyntaxMode.fs" />
     <Compile Include="FSharpHighlightUsagesExtension.fs" />
-    <Compile Include="UnformattedTextFileDescriptionTemplate.fs" />
     <Compile Include="FakeSearchCategory.fs" />
     <Compile Include="FSharpNavigationTextEditorExtension.fs" />
     <Compile Include="FSharpBraceMatcher.fs" />
@@ -225,14 +223,9 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabsToSpaces="True" scope="text/x-fsharp">
-            <inheritsSet />
-            <inheritsScope />
-          </TextStylePolicy>
+          <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabsToSpaces="True" scope="text/x-fsharp" />
           <FSharpFormattingPolicy scope="text/x-fsharp">
             <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" __added="0" />
-            <inheritsSet />
-            <inheritsScope />
           </FSharpFormattingPolicy>
         </Policies>
       </Properties>

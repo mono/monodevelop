@@ -108,13 +108,13 @@ namespace MonoDevelop.Core
 				tformat = string.Empty;
 			}
 			
-			tag = tag.ToUpperInvariant ();
-			object val = customTags.GetValue (tag);
+			tname = tname.ToUpperInvariant ();
+			object val = customTags.GetValue (tname);
 			if (val != null)
 				return FormatValue (val, tformat);
 			
-			if (properties.ContainsKey (tag))
-				return FormatValue (properties [tag], tformat);
+			if (properties.ContainsKey (tname))
+				return FormatValue (properties [tname], tformat);
 		
 			GenerateString genString;
 
@@ -122,7 +122,7 @@ namespace MonoDevelop.Core
 				return genString (tname, tformat);
 			
 			if (tformat.Length > 0) {
-				switch (tname.ToUpper()) {
+				switch (tname) {
 				case "ENV":
 					foreach (DictionaryEntry variable in Environment.GetEnvironmentVariables ()) {
 						if (string.Equals (variable.Key.ToString (), tformat, StringComparison.OrdinalIgnoreCase))
@@ -165,10 +165,12 @@ namespace MonoDevelop.Core
 			else if (val is double)
 				return ((double)val).ToString (format);
 			else if (val is string) {
-				if (format == "upper")
+				if (format.Equals ("UPPER", StringComparison.OrdinalIgnoreCase))
 					return val.ToString ().ToUpper ();
-				if (format == "lower")
+				if (format.Equals ("LOWER", StringComparison.OrdinalIgnoreCase))
 					return val.ToString ().ToLower ();
+				if (format.Equals ("HTMLENCODE", StringComparison.OrdinalIgnoreCase))
+					return System.Net.WebUtility.HtmlEncode (val.ToString ());
 			}
 			return val.ToString ();
 		}

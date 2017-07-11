@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Packaging.Gui
 {
@@ -38,6 +40,14 @@ namespace MonoDevelop.Packaging.Gui
 			UpdateMissingMetadataLabelVisibility ();
 			packOnBuildButton.Toggled += PackOnBuildButtonToggled;
 			GtkNuGetPackageMetadataOptionsPanelWidget.OnProjectHasMetadataChanged = OnProjectHasMetadataChanged;
+
+			SetupAccessibility ();
+		}
+
+		void SetupAccessibility ()
+		{
+			packOnBuildButton.SetCommonAccessibilityAttributes ("NugetBuildOptionsPanel.PackOnBuild", "",
+			                                                    GettextCatalog.GetString ("Check to create a NuGet package when building"));
 		}
 
 		public bool PackOnBuild {

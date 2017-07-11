@@ -24,7 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
@@ -58,30 +60,60 @@ namespace MonoDevelop.DotNetCore
 			return new TargetFramework [0];
 		}
 
-		IEnumerable<TargetFramework> GetNetStandardTargetFrameworks ()
+		public static IEnumerable<TargetFramework> GetNetStandardTargetFrameworks ()
 		{
-			return GetTargetFrameworksVersion1x (".NETStandard", HighestNetStandard1xMinorVersionSupported);
-		}
+			if (DotNetCoreRuntime.IsNetCore20Installed ())
+				yield return CreateTargetFramework (".NETStandard", "2.0");
 
-		IEnumerable<TargetFramework> GetTargetFrameworksVersion1x (string identifier, int maxMinorVersion)
-		{
-			for (int minorVersion = 0; minorVersion <= maxMinorVersion; ++minorVersion) {
-				string version = string.Format ($"1.{minorVersion}");
-				var moniker = new TargetFrameworkMoniker (identifier, version);
-				yield return Runtime.SystemAssemblyService.GetTargetFramework (moniker);
+			if (DotNetCoreRuntime.IsNetCore20Installed () || DotNetCoreRuntime.IsNetCore1xInstalled ()) {
+				foreach (var targetFramework in GetTargetFrameworksVersion1x (".NETStandard", HighestNetStandard1xMinorVersionSupported).Reverse ())
+					yield return targetFramework;
 			}
 		}
 
-		IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworks ()
+		/// <summary>
+		/// These are the .NET Standard target frameworks that the sdks that ship with 
+		/// Mono's MSBuild support.
+		/// </summary>
+		public static IEnumerable<TargetFramework> GetDefaultNetStandard1xTargetFrameworks ()
 		{
-			return GetTargetFrameworksVersion1x (".NETCoreApp", HighestNetCoreApp1xMinorVersionSupported);
+			foreach (var targetFramework in GetTargetFrameworksVersion1x (".NETStandard", HighestNetStandard1xMinorVersionSupported).Reverse ())
+				yield return targetFramework;
+		}
+
+		static IEnumerable<TargetFramework> GetTargetFrameworksVersion1x (string identifier, int maxMinorVersion)
+		{
+			for (int minorVersion = 0; minorVersion <= maxMinorVersion; ++minorVersion) {
+				string version = string.Format ($"1.{minorVersion}");
+				yield return CreateTargetFramework (identifier, version);
+			}
+		}
+
+		public static IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworks ()
+		{
+			foreach (Version runtimeVersion in GetMajorRuntimeVersions ()) {
+				string version = runtimeVersion.ToString (2);
+				yield return CreateTargetFramework (".NETCoreApp", version);
+			}
+		}
+
+		static IEnumerable<Version> GetMajorRuntimeVersions ()
+		{
+			return DotNetCoreRuntime.Versions
+				.Select (version => new Version (version.Major, version.Minor))
+				.Distinct ();
+		}
+
+		static TargetFramework CreateTargetFramework (string identifier, string version)
+		{
+			var moniker = new TargetFrameworkMoniker (identifier, version);
+			return Runtime.SystemAssemblyService.GetTargetFramework (moniker);
 		}
 
 		IEnumerable<TargetFramework> GetNetFrameworkTargetFrameworks ()
 		{
 			foreach (var targetFramework in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
-				if (!targetFramework.Hidden &&
-					targetFramework.IsNetFramework () &&
+				if (targetFramework.IsNetFramework () &&
 					project.TargetRuntime.IsInstalled (targetFramework))
 					yield return targetFramework;
 			}

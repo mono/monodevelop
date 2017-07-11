@@ -28,6 +28,7 @@
 
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Xml.Editor
 {
@@ -40,7 +41,11 @@ namespace MonoDevelop.Xml.Editor
 			Spacing = 6;
 
 			autoCompleteElementsCheck = new CheckButton (GettextCatalog.GetString ("Automatically insert closing tags"));
+			autoCompleteElementsCheck.SetCommonAccessibilityAttributes ("XmlOptionsPanel.autoComplete", "",
+			                                                            GettextCatalog.GetString ("Check to enable automatic close tag insertion"));
 			autoAddPunctuationCheck = new CheckButton (GettextCatalog.GetString ("Automatically insert punctuation (=\"\", />, etc.)"));
+			autoAddPunctuationCheck.SetCommonAccessibilityAttributes ("XmlOptionsPanel.autoAdd", "",
+			                                                          GettextCatalog.GetString ("Check to enable automatic punctuation insertion"));
 			showSchemaAnnotationCheck = new CheckButton (GettextCatalog.GetString ("Show schema annotation"));
 
 			PackStart (autoCompleteElementsCheck, false, false, 0);

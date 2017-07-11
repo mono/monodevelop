@@ -135,7 +135,7 @@ namespace MonoDevelop.DesignerSupport
 			
 			if (gtkThread != null 
 			    && gtkThread.ManagedThreadId != System.Threading.Thread.CurrentThread.ManagedThreadId) {
-				Gtk.Application.Invoke (delegate{
+				Gtk.Application.Invoke ((o, args) => {
 					ShowText (err);
 				});
 			} else {
@@ -196,14 +196,14 @@ namespace MonoDevelop.DesignerSupport
 		
 		public void AttachDesigner (uint socket)
 		{
-			Application.Invoke ( delegate {
+			Application.Invoke ( (o, args) => {
 				designerPlug = AttachChildViaPlug (socket, designerFrame);
 			});
 		}
 		
 		public void AttachPropertyGrid (uint socket)
 		{
-			Application.Invoke ( delegate {
+			Application.Invoke ( (o, args) => {
 				propGridPlug = AttachChildViaPlug (socket, propGridFrame);
 			});
 		}
@@ -241,7 +241,7 @@ namespace MonoDevelop.DesignerSupport
 			disposed = true;
 			
 			System.Diagnostics.Trace.WriteLine ("Trying to close designer GUI thread");
-			Application.Invoke ( delegate {
+			Application.Invoke ( (o, args) => {
 				Application.Quit ();
 				DisposePhase2 ();
 			});

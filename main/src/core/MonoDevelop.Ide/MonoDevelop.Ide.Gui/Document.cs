@@ -169,14 +169,11 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
-			window.ViewContent.ContentNameChanged += delegate {
-				UnsubscribeAnalysisDocument ();
-				UnloadAdhocProject();
-			};
-			MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
+			window.ViewContent.ContentNameChanged += ReloadAnalysisDocumentHandler;
+			MonoDevelopWorkspace.LoadingFinished += ReloadAnalysisDocumentHandler;
 		}
 
-		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
+		void ReloadAnalysisDocumentHandler (object sender, EventArgs e)
 		{
 			UnsubscribeAnalysisDocument ();
 			UnloadAdhocProject ();
@@ -595,7 +592,7 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified -= HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
-			MonoDevelopWorkspace.LoadingFinished -= TypeSystemService_WorkspaceItemLoaded;
+			MonoDevelopWorkspace.LoadingFinished -= ReloadAnalysisDocumentHandler;
 
 			window = null;
 
@@ -606,9 +603,11 @@ namespace MonoDevelop.Ide.Gui
 
 		void UnsubscribeAnalysisDocument ()
 		{
-			if (analysisDocument != null) {
-				TypeSystemService.InformDocumentClose (analysisDocument, FileName);
-				analysisDocument = null;
+			lock (analysisDocumentLock) {
+				if (analysisDocument != null) {
+					TypeSystemService.InformDocumentClose (analysisDocument, FileName);
+					analysisDocument = null;
+				}
 			}
 		}
 		#region document tasks
@@ -844,15 +843,17 @@ namespace MonoDevelop.Ide.Gui
 				return Task.CompletedTask;
 			}
 			if (Project != null && !IsUnreferencedSharedProject(Project)) {
-				UnsubscribeRoslynWorkspace ();
-				RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
-				if (RoslynWorkspace == null) // Solution not loaded yet
-					return Task.CompletedTask;
-				SubscribeRoslynWorkspace ();
-				analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
-				if (analysisDocument != null) {
-					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
-					return Task.CompletedTask;
+				lock (analysisDocumentLock) {
+					UnsubscribeRoslynWorkspace ();
+					RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
+					if (RoslynWorkspace == null) // Solution not loaded yet
+						return Task.CompletedTask;
+					SubscribeRoslynWorkspace ();
+					analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
+					if (analysisDocument != null) {
+						TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
+						return Task.CompletedTask;
+					}
 				}
 			}
 			lock (adhocProjectLock) {
@@ -905,6 +906,7 @@ namespace MonoDevelop.Ide.Gui
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
 			if (ws != null) {
 				ws.WorkspaceChanged -= HandleRoslynProjectChange;
+				ws.DocumentClosed -= HandleRoslynDocumentClosed;
 			}
 		}
 
@@ -913,6 +915,16 @@ namespace MonoDevelop.Ide.Gui
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
 			if (ws != null) {
 				ws.WorkspaceChanged += HandleRoslynProjectChange;
+				ws.DocumentClosed += HandleRoslynDocumentClosed;
+			}
+		}
+
+		void HandleRoslynDocumentClosed (object sender, Microsoft.CodeAnalysis.DocumentEventArgs e)
+		{
+			lock (analysisDocumentLock) {
+				if (e.Document.Id == analysisDocument) {
+					analysisDocument = null;
+				}
 			}
 		}
 
@@ -932,7 +944,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		object adhocProjectLock = new object();
-
+		object analysisDocumentLock = new object ();
 		void UnloadAdhocProject ()
 		{
 			CancelEnsureAnalysisDocumentIsOpen ();
@@ -962,9 +974,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 			RunWhenRealized (() => {
 				string currentParseFile = GetCurrentParseFileName ();
-				if (string.IsNullOrEmpty (currentParseFile))
+				var editor = Editor;
+				if (string.IsNullOrEmpty (currentParseFile) || editor == null || editor.IsDisposed == true)
 					return;
-
 				lock (reparseTimeoutLock) {
 					CancelParseTimeout ();
 
@@ -987,7 +999,7 @@ namespace MonoDevelop.Ide.Gui
 		async void StartReparseThreadDelayed (FilePath currentParseFile)
 		{
 			var editor = Editor;
-			if (editor == null)
+			if (editor == null || editor.IsDisposed)
 				return;
 
 			// Don't directly parse the document because doing it at every key press is
@@ -1017,7 +1029,7 @@ namespace MonoDevelop.Ide.Gui
 					TypeSystemService.ParseProjection (options, mimeType, token).ContinueWith (task => {
 						if (token.IsCancellationRequested)
 							return;
-						Application.Invoke (delegate {
+						Application.Invoke ((o, args) => {
 							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 							var taskResult = task.Result;
 							if (isClosed || taskResult == null || token.IsCancellationRequested)
@@ -1034,7 +1046,7 @@ namespace MonoDevelop.Ide.Gui
 					TypeSystemService.ParseFile (options, mimeType, token).ContinueWith (task => {
 						if (token.IsCancellationRequested)
 							return;
-						Application.Invoke (delegate {
+						Application.Invoke ((o, args) => {
 							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 							if (isClosed || task.Result == null || token.IsCancellationRequested)
 								return;

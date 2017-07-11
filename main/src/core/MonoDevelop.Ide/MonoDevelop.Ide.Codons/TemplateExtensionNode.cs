@@ -85,5 +85,59 @@ namespace MonoDevelop.Ide.Codons
 				return overrideDescription;
 			}
 		}
+
+		[NodeAttribute ("defaultParameters", "Default parameters for project template.")]
+		string defaultParameters;
+
+		public string DefaultParameters {
+			get {
+				return defaultParameters;
+			}
+		}
+
+		[NodeAttribute ("supportedParameters", "Parameters supported by the project template.")]
+		string supportedParameters;
+
+		public string SupportedParameters {
+			get {
+				return supportedParameters;
+			}
+		}
+
+		[NodeAttribute ("templateId", "Overrides the template id from the extension node id. Allows the same template to be used with different parameters.")]
+		string templateId;
+
+		public string TemplateId {
+			get {
+				return templateId ?? Id;
+			}
+		}
+
+		[NodeAttribute ("groupId", "Overrides the group id defined in the template. Allows the same template to be grouped differently.")]
+		string groupId;
+
+		public string GroupId {
+			get {
+				return groupId;
+			}
+		}
+
+		[NodeAttribute ("wizard", "Wizard identifier for this template.")]
+		string wizard;
+
+		public string Wizard {
+			get {
+				return wizard;
+			}
+		}
+
+		[NodeAttribute ("condition", "Allows a template to be conditionally selected.")]
+		string condition;
+
+		public string Condition {
+			get {
+				return condition;
+			}
+		}
 	}
 }

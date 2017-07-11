@@ -1,6 +1,6 @@
 {
 	"name": "Visual Studio",
-	"version": "1.2.2",
+	"version": "1.2.3",
 	"description": "Reminiscent of Microsoft Visual Studio's default colors",
 	"originator": "Jeffrey Stedfast <fejj@novell.com>",
 
@@ -39,6 +39,9 @@
 
 		{ "name": "Comment(Line)", "fore": "comment-green" },
 		{ "name": "Comment(Block)", "fore": "comment-green" },
+		{ "name": "Comment(Doc)", "fore": "comment-green" },
+		{ "name": "Comment(DocTag)", "fore": "comment-green" },
+		{ "name": "Comment Tag", "fore": "#b901b9" },
 
 		{ "name": "Excluded Code", "fore": "comment-green" },
 

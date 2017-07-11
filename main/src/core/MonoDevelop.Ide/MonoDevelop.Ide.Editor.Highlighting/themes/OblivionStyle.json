@@ -1,6 +1,6 @@
 {
 	"name": "Oblivion",
-	"version": "1.2.3",
+	"version": "1.2.4",
 	"description": "‘...where the soul at last is lost in utter peace’",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -119,8 +119,9 @@
 
 		{ "name": "Comment(Line)", "fore": "aluminium4" },
 		{ "name": "Comment(Block)", "fore": "aluminium4" },
-		{ "name": "Comment(Doc)", "fore": "#7ab8c8" },
-		{ "name": "Comment(DocTag)", "fore": "#79809e" },
+		{ "name": "Comment(Doc)", "fore": "aluminium4" },
+		{ "name": "Comment(DocTag)", "fore": "aluminium4" },
+		{ "name": "Comment Tag", "fore": "#ff37ff" },
 
 		{ "name": "Excluded Code", "fore": "aluminium4" },
 

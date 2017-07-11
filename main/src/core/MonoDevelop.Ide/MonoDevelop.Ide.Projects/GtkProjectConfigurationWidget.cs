@@ -71,6 +71,12 @@ namespace MonoDevelop.Ide.Projects
 
 			defaultTableRows = projectConfigurationTable.NRows;
 
+			// Disable width request for the event box otherwise the New Project dialog
+			// does not resize to fit. Set a width request for the project name text box
+			// instead so the project folder preview widget does not take up more width.
+			projectConfigurationTableEventBox.WidthRequest = -1;
+			projectNameTextBox.WidthRequest = 335;
+
 			RegisterEvents ();
 
 			// Accessibility
@@ -372,7 +378,7 @@ namespace MonoDevelop.Ide.Projects
 
 		EventBoxTooltip CreateTooltip (EventBox eventBox, string tooltipText)
 		{
-			Xwt.Drawing.Image image = ImageService.GetIcon ("md-information");
+			Xwt.Drawing.Image image = ImageService.GetIcon ("md-help");
 			eventBox.ModifyBg (StateType.Normal, leftHandBackgroundColor);
 			eventBox.Add (new ImageView (image));
 			eventBox.ShowAll ();
@@ -398,10 +404,16 @@ namespace MonoDevelop.Ide.Projects
 				0,
 				0);
 
+			uint rightAttach = 2;
+			if (extraRow.InformationTooltipWidget == null) {
+				// Allow control to extend all the way across if it has no information tooltip.
+				rightAttach = 3;
+			}
+
 			projectConfigurationTable.Attach (
 				extraRow.MainWidget,
 				1,
-				2,
+				rightAttach,
 				extraRow.Row,
 				extraRow.Row + 1,
 				AttachOptions.Fill,

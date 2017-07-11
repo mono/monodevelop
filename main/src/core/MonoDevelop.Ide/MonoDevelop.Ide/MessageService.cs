@@ -335,7 +335,13 @@ namespace MonoDevelop.Ide
 					PlaceDialog (dialog, parent);
 			}).Wait ();
 			#endif
-			return GtkWorkarounds.RunDialogWithNotification (dialog);
+
+			try {
+				IdeApp.DisableIdleActions ();
+				return GtkWorkarounds.RunDialogWithNotification (dialog);
+			} finally {
+				IdeApp.EnableIdleActions ();
+			}
 		}
 
 		#if MAC
@@ -473,7 +479,7 @@ namespace MonoDevelop.Ide
 				return task.Result;
 			//cancelDialog is used to close dialog when task is finished
 			var cancelDialog = new CancellationTokenSource ();
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				if (cancelDialog.Token.IsCancellationRequested)
 					return;
 				var gm = new GenericMessage (waitMessage, null, cancelDialog.Token);

@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -35,10 +36,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public List<NuGetPackageLicense> PackageLicensesAccepted;
 
-		public bool AcceptLicenses (IEnumerable<NuGetPackageLicense> licenses)
+		public Task<bool> AcceptLicenses (IEnumerable<NuGetPackageLicense> licenses)
 		{
 			PackageLicensesAccepted = licenses.ToList ();
-			return AcceptLicensesReturnValue;
+			return Task.FromResult (AcceptLicensesReturnValue);
 		}
 	}
 }

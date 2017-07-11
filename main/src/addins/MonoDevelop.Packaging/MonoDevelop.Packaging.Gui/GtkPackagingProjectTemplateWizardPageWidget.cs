@@ -63,6 +63,8 @@ namespace MonoDevelop.Packaging.Gui
 			configurationTableEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			configurationBottomEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			backgroundLargeImageEventBox.ModifyBg (StateType.Normal, backgroundColor);
+			topPadding.ModifyBg (StateType.Normal, backgroundColor);
+			bottomPadding.ModifyBg (StateType.Normal, backgroundColor);
 		}
 
 		internal GtkPackagingProjectTemplateWizardPageWidget (PackagingProjectTemplateWizardPage wizardPage)
@@ -101,6 +103,10 @@ namespace MonoDevelop.Packaging.Gui
 
 		void PackageIdTextBoxChanged (object sender, EventArgs e)
 		{
+			// Use id as description by default.
+			if (wizardPage.Id == wizardPage.Description)
+				packageDescriptionTextBox.Text = packageIdTextBox.Text;
+
 			wizardPage.Id = packageIdTextBox.Text;
 
 			if (wizardPage.HasIdError ()) {

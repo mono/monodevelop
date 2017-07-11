@@ -128,7 +128,7 @@ namespace MonoDevelop.Projects.MSBuild
 		[MessageHandler]
 		public LoadProjectResponse LoadProject (LoadProjectRequest msg)
 		{
-			var pb = LoadProject (msg.ProjectFile, msg.SDKsPath);
+			var pb = LoadProject (msg.ProjectFile);
 			lock (projects) {
 				var id = ++projectIdCounter;
 				projects [id] = pb;

@@ -132,7 +132,7 @@ namespace MonoDevelop.CSharp
 			isPathSet = false;
 			// Delay the execution of UpdateOwnerProjects since it may end calling DocumentContext.AttachToProject,
 			// which shouldn't be called while the extension chain is being initialized.
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				UpdateOwnerProjects ();
 				Editor_CaretPositionChanged (null, null);
 			});
@@ -407,19 +407,18 @@ namespace MonoDevelop.CSharp
 				if (tag is SyntaxTree) {
 					var unit = tag as SyntaxTree;
 					memberList.AddRange (unit.GetRoot ().DescendantNodes ().Where (IsType));
-				} else if (tag is BaseTypeDeclarationSyntax) {
-					AddTypeToMemberList ((BaseTypeDeclarationSyntax)tag);
 				} else if (tag is AccessorDeclarationSyntax) {
 					var acc = (AccessorDeclarationSyntax)tag;
 					var parent = (MemberDeclarationSyntax)acc.Parent;
 					memberList.AddRange (parent.ChildNodes ().OfType<AccessorDeclarationSyntax> ());
-				} else if (tag is MemberDeclarationSyntax) {
-					var entity = (MemberDeclarationSyntax)tag;
-					var type = entity.Parent as BaseTypeDeclarationSyntax;
+				} else if (tag is SyntaxNode) {
+					var entity = (SyntaxNode)tag;
+					var type = entity.AncestorsAndSelf ().OfType<BaseTypeDeclarationSyntax> ().FirstOrDefault ();
 					if (type != null) {
 						AddTypeToMemberList (type);
 					}
 				}
+
 				memberList.Sort ((x, y) => {
 					var result = String.Compare (GetName (x), GetName (y), StringComparison.OrdinalIgnoreCase);
 					if (result == 0)
@@ -774,7 +773,7 @@ namespace MonoDevelop.CSharp
 
 				var regionEntry = await GetRegionEntry (DocumentContext.ParsedDocument, loc).ConfigureAwait (false);
 
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					var result = new List<PathEntry>();
 
 					if (curProject != null) {

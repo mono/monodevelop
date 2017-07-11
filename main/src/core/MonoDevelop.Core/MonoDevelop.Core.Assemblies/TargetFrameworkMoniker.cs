@@ -174,12 +174,17 @@ namespace MonoDevelop.Core.Assemblies
 				val = val + ",Profile=" + profile;
 			return val;
 		}
-		
+
+		string cachedAssemblyDirectoryName;
 		public string GetAssemblyDirectoryName ()
 		{
-			if (profile != null)
-				return System.IO.Path.Combine (identifier, "v" + version, "Profile", profile);
-			return System.IO.Path.Combine (identifier, "v" + version);
+			// PERF: This is queried a lot, so cache it.
+			if (cachedAssemblyDirectoryName == null) {
+				if (profile != null)
+					cachedAssemblyDirectoryName = System.IO.Path.Combine (identifier, "v" + version, "Profile", profile);
+				cachedAssemblyDirectoryName = System.IO.Path.Combine (identifier, "v" + version);
+			}
+			return cachedAssemblyDirectoryName;
 		}
 		
 		public bool Equals (TargetFrameworkMoniker other)

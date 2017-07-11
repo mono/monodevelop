@@ -80,6 +80,10 @@ namespace MonoDevelop.PackageManagement
 		public string PackageId { get; set; }
 		public bool IncludePrerelease { get; set; }
 
+		public PackageActionType ActionType {
+			get { return PackageActionType.Install; }
+		}
+
 		public void Execute ()
 		{
 			Execute (CancellationToken.None);

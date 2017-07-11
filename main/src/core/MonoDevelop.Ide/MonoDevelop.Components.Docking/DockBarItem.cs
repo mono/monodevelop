@@ -142,6 +142,7 @@ namespace MonoDevelop.Components.Docking
 			this.size = size;
 			this.bar = bar;
 			this.it = it;
+			CanFocus = true;
 			VisibleWindow = false;
 			UpdateTab ();
 			lastFrameSize = bar.Frame.Allocation.Size;
@@ -164,6 +165,7 @@ namespace MonoDevelop.Components.Docking
 			Styles.Changed += UpdateStyle;
 
 			Accessible.Name = "DockbarItem";
+			Accessible.Role = Atk.Role.PushButton;
 		}
 
 		void IAnimatable.BatchBegin () { }
@@ -527,7 +529,28 @@ namespace MonoDevelop.Components.Docking
 				}
 				context.Fill ();
 			}
+
+			if (HasFocus) {
+				Gtk.Style.PaintFocus (Style, GdkWindow, State, Allocation, this, "button", Allocation.X + 2, Allocation.Y + 2, Allocation.Width - 4, Allocation.Height - 4);
+			}
 			return base.OnExposeEvent (evnt);
+		}
+
+		protected override bool OnFocusInEvent (Gdk.EventFocus evnt)
+		{
+			QueueDraw ();
+			return base.OnFocusInEvent (evnt);
+		}
+
+		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
+		{
+			QueueDraw ();
+			return base.OnFocusOutEvent (evnt);
+		}
+
+		protected override void OnActivate ()
+		{
+			AutoShow ();
 		}
 	}
 }

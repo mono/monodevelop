@@ -112,7 +112,7 @@
 		</XmlRegexScanner>
 		<XmlRegexScanner extension="xml" mimeType="application/xml">
 			<Include regex='\s_[-A-Za-z0-9._:]+\s*=\s*"([^"]+)"' escapeMode="Xml" />
-			<Include regex="&lt;_[^&gt;]+&gt;((?:.|\n)*?)&lt;/_[^&gt;]+&gt;" escapeMode="Xml" />
+			<Include regex="&lt;_[^&gt;]+&gt;(?:&lt;!\[CDATA\[)?((?:.|\n)*?)(?:\]\]&gt;)?&lt;/_[^&gt;]+&gt;" escapeMode="Xml" />
 		</XmlRegexScanner>
 		<RegexScanner extension="vb">
 			<Exclude regex='".*?[^"]"(?!")' />   <!-- Strings-->

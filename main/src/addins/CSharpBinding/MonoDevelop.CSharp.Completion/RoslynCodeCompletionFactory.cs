@@ -112,8 +112,7 @@ namespace MonoDevelop.CSharp.Completion
 					bool runCompletionCompletionCommand = false;
 					var method = Symbol as IMethodSymbol;
 
-					bool addParens = IdeApp.Preferences.AddParenthesesAfterCompletion;
-					bool addOpeningOnly = IdeApp.Preferences.AddOpeningOnly;
+					bool addParens = DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket;
 					var Editor = ext.Editor;
 					var Policy = ext.FormattingPolicy;
 					string insertionText = this.CompletionText;
@@ -127,11 +126,7 @@ namespace MonoDevelop.CSharp.Completion
 
 						var keys = new [] { SpecialKey.Return, SpecialKey.Tab, SpecialKey.Space };
 						if (keys.Contains (descriptor.SpecialKey) || descriptor.KeyChar == ' ') {
-							if (addOpeningOnly) {
-								insertionText += addSpace ? " (|" : "(|";
-							} else {
-								insertionText += addSpace ? " (|)" : "(|)";
-							}
+							insertionText += addSpace ? " (|)" : "(|)";
 						}
 						ka |= KeyActions.Ignore;
 					}
@@ -144,7 +139,7 @@ namespace MonoDevelop.CSharp.Completion
 					}
 
 					if (runCompletionCompletionCommand && IdeApp.Workbench != null) {
-						Application.Invoke (delegate {
+						Application.Invoke ((o, args) => {
 							ext.RunCompletionCommand ();
 						});
 					}

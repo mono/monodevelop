@@ -37,7 +37,7 @@ namespace MonoDevelop.VersionControl
 				foreach (VersionControlItemList list in items.SplitByRepository ())
 					list[0].Repository.Add (list.Paths, true, monitor);
 				
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
 				monitor.ReportSuccess (GettextCatalog.GetString ("Add operation completed."));
@@ -131,7 +131,7 @@ namespace MonoDevelop.VersionControl
 						dirs[0].Repository.DeleteDirectories (dirs.Paths, true, Monitor, true);
 				}
 				
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Remove operation completed."));

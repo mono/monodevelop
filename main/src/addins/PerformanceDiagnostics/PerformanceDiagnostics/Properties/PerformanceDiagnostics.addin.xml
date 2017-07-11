@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ExtensionModel>
+	<ConditionType id="LeakTrackerEnabled" type="PerformanceDiagnosticsAddIn.LeakTrackerEnabledCondition" />
+	
 	<Extension path="/MonoDevelop/Ide/Commands">
 		<Command id="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler"
 			defaultHandler="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler"
@@ -7,22 +9,48 @@
 		<Command id="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler"
 			defaultHandler="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler"
 			_label="Profile for 5 seconds" />
+		<Command id="PerformanceDiagnosticsAddIn.DumpLiveWidgetsHandler"
+			defaultHandler="PerformanceDiagnosticsAddIn.DumpLiveWidgetsHandler"
+			_label="Dump live widgets" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/MainMenu/Help">
 		<ItemSet id="Diagnostics">
 			<CommandItem id="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler" />
 			<CommandItem id="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler" />
+			<CommandItem id="PerformanceDiagnosticsAddIn.DumpLiveWidgetsHandler" />
 		</ItemSet>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/PreStartupHandlers">
+		<Class class="PerformanceDiagnosticsAddIn.InitializeGtkHelperHandler" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
 		<Section id="PerformanceDiagnostics"
 			_label="Performance Diagnostics"
 			insertafter="VersionControl">
-			<Section id="General"
+			<Section id="PerformanceDiagnosticsGeneral"
 				_label="General"
 				fill="true"
 				class="PerformanceDiagnosticsAddIn.GlobalOptionsPanel"
 				icon="md-prefs-performance" />
 		</Section>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Pads">
+		<Condition id="LeakTrackerEnabled" value="pad">
+			<Pad id = "PerformanceDiagnosticsAddIn.LeakTrackerPad"
+				_label="Leak Tracker"
+				icon="md-errors-list"
+				group="Logs"
+				class = "PerformanceDiagnosticsAddIn.LeakTrackerPad"
+				defaultPlacement = "Bottom"
+				defaultStatus="AutoHide"
+				defaultLayout="*"/>
+		</Condition>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts/Solution">
+		<Condition id="LeakTrackerEnabled" value="pad">
+			<LayoutPad id="PerformanceDiagnosticsAddIn.LeakTrackerPad" status="AutoHide" />
+		</Condition>
 	</Extension>
 </ExtensionModel>

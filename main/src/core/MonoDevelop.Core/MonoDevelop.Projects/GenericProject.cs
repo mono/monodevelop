@@ -47,6 +47,7 @@ namespace MonoDevelop.Projects
 
 		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
 		{
+			base.OnInitializeFromTemplate (projectCreateInfo, template);
 			Configurations.Add (CreateConfiguration ("Default"));
 		}
 
@@ -66,6 +67,11 @@ namespace MonoDevelop.Projects
 		{
 			base.OnWriteConfiguration (monitor, config, pset);
 			pset.SetValue ("OutputPath", config.OutputDirectory);
+		}
+
+		protected override ProjectFeatures OnGetSupportedFeatures ()
+		{
+			return ProjectFeatures.Build | ProjectFeatures.Configurations | ProjectFeatures.Execute;
 		}
 	}
 	

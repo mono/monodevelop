@@ -9,7 +9,7 @@ namespace MonoDevelop.ConnectedServices
 	/// </summary>
 	public abstract class GettingStartedConfigurationSection : ConfigurationSection
 	{
-		protected GettingStartedConfigurationSection (IConnectedService service, int snippetCount) : base (service, GettextCatalog.GetString (ConnectedServices.GettingStartedSectionDisplayName), false)
+		protected GettingStartedConfigurationSection (IConnectedService service, int snippetCount) : base (service, ConnectedServices.GettingStartedSectionDisplayName, false)
 		{
 			this.SnippetCount = snippetCount;
 		}

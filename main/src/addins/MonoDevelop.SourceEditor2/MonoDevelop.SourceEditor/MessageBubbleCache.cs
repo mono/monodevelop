@@ -200,8 +200,10 @@ namespace MonoDevelop.SourceEditor
 
 				DestroyPopoverWindow ();
 
-				if (marker.Layouts == null || marker.Layouts.Count < 2 && !isReduced)
+				hoverTimeout = 0;
+				if (marker.Layouts == null || marker.Layouts.Count < 2 && !isReduced) {
 					return false;
+				}
 
 				popoverWindow = new MessageBubblePopoverWindow (this, marker);
 				popoverWindow.ShowWindowShadow = false;

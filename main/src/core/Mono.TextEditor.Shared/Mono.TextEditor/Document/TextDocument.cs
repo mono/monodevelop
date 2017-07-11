@@ -263,8 +263,9 @@ namespace Mono.TextEditor
 			}
 
 			foldSegmentTree.UpdateOnTextReplace(this, textChange);
+			ClearTextMarkerCache ();
 			textSegmentMarkerTree.UpdateOnTextReplace (this, textChange);
-
+			ClearLineCache ();
 			TextChanged?.Invoke(this, textChange);
 			if (endUndo)
 				OnEndUndo(new UndoOperationEventArgs(operation));
@@ -699,14 +700,27 @@ namespace Mono.TextEditor
 			return GetLine (lineNumber);
 		}
 
+		DocumentLine cachedLine;
+		int cachedLineNumber = -1;
+		DocumentLine cachedLineFromLineNumber;
+
+		void ClearLineCache ()
+		{
+			cachedLine = null;
+			cachedLineNumber = -1;
+		}
+
 		public DocumentLine GetLineByOffset (int offset)
 		{
+			if (cachedLine?.Contains (offset) == true) {
+				return cachedLine;
+			}
 			var snapshot = this.currentSnapshot;
 
 			if (offset < 0 || offset > snapshot.Length)
 				return null;
 			var line = snapshot.GetLineFromPosition (offset);
-			return new DocumentLineFromTextSnapshotLine(line);
+			return cachedLine = new DocumentLineFromTextSnapshotLine(line);
 		}
 
 		IDocumentLine IReadonlyTextDocument.GetLineByOffset (int offset)
@@ -1251,7 +1265,7 @@ namespace Mono.TextEditor
 		object foldSegmentTaskLock = new object ();
 		Task foldSegmentTask;
 
-		public void UpdateFoldSegments (List<FoldSegment> newSegments, bool startTask = false, bool useApplicationInvoke = false, CancellationToken masterToken = default(CancellationToken))
+		public void UpdateFoldSegments (IEnumerable<IFoldSegment> newSegments, bool startTask = false, bool useApplicationInvoke = false, CancellationToken masterToken = default(CancellationToken))
 		{
 			if (newSegments == null) {
 				return;
@@ -1262,7 +1276,7 @@ namespace Mono.TextEditor
 				if (!startTask) {
 					var newFoldedSegments = UpdateFoldSegmentWorker (newSegments, out update);
 					if (useApplicationInvoke) {
-						Gtk.Application.Invoke (delegate {
+						Gtk.Application.Invoke ((o, args) => {
 							foldedSegments = newFoldedSegments;
 							InformFoldTreeUpdated ();
 						});
@@ -1280,7 +1294,7 @@ namespace Mono.TextEditor
 					if (token.IsCancellationRequested)
 						return;
 					foldedSegments = segments;
-					Gtk.Application.Invoke (delegate {
+					Gtk.Application.Invoke ((o, args) => {
 						if (token.IsCancellationRequested)
 							return;
 						InformFoldTreeUpdated ();
@@ -1303,14 +1317,16 @@ namespace Mono.TextEditor
 		/// Updates the fold segments in a background worker thread. Don't call this method outside of a background worker.
 		/// Use UpdateFoldSegments instead.
 		/// </summary>
-		HashSet<FoldSegment> UpdateFoldSegmentWorker (List<FoldSegment> newSegments, out bool update, CancellationToken token = default(CancellationToken))
+		HashSet<FoldSegment> UpdateFoldSegmentWorker (IEnumerable<IFoldSegment> segments, out bool update, CancellationToken token = default(CancellationToken))
 		{
 			var oldSegments = new List<FoldSegment> (FoldSegments);
 			int oldIndex = 0;
 			bool foldedSegmentAdded = false;
+			var newSegments = segments.ToList ();
 			newSegments.Sort ();
 			var newFoldedSegments = new HashSet<FoldSegment> ();
-			foreach (FoldSegment newFoldSegment in newSegments) {
+			foreach (var fs in newSegments) {
+				FoldSegment newFoldSegment = (fs as FoldSegment) ?? new FoldSegment (fs);
 				if (token.IsCancellationRequested) {
 					update = false;
 					return null;
@@ -1592,6 +1608,13 @@ namespace Mono.TextEditor
 			return GetTextSegmentMarkersAt (line).OfType<DocumentLineTextSegmentMarker> ().Select (m => m.Marker);
 		}
 
+		public IEnumerable<TextLineMarker> GetMarkersOrderedByInsertion (DocumentLine line)
+		{
+			if (line == null)
+				return Enumerable.Empty<TextLineMarker> ();
+			return OrderTextSegmentMarkersByInsertion(GetTextSegmentMarkersAt (line)).OfType<DocumentLineTextSegmentMarker> ().Select (m => m.Marker);
+		}
+
 		public void ClearMarkers (DocumentLine line)
 		{
 			if (line == null)
@@ -1703,7 +1726,7 @@ namespace Mono.TextEditor
 
 		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (DocumentLine line)
 		{
-			return textSegmentMarkerTree.GetSegmentsOverlapping (line.Segment);
+			return GetTextSegmentMarkersAt (line.Segment);
 		}
 
 		internal IEnumerable<TextSegmentMarker> GetVisibleTextSegmentMarkersAt (DocumentLine line)
@@ -1713,19 +1736,38 @@ namespace Mono.TextEditor
 					yield return marker;
 		}
 
+		int textSegmentCacheOffset = -1, textSegmentCacheLength;
+		List<TextSegmentMarker> textSegmentCache;
+
+		int textMarkerCacheOffset = -1;
+		List<TextSegmentMarker> textMarkerSegmentCache;
+
+		void ClearTextMarkerCache ()
+		{
+			textSegmentCacheOffset = textMarkerCacheOffset = -1;
+		}
+
 		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (ISegment segment)
 		{
-			return textSegmentMarkerTree.GetSegmentsOverlapping (segment);
+			if (segment.Offset == textSegmentCacheOffset && segment.Length == textSegmentCacheLength)
+				return textSegmentCache;
+			textSegmentCacheOffset = segment.Offset;
+			textSegmentCacheLength = segment.Length;
+			return textSegmentCache = textSegmentMarkerTree.GetSegmentsOverlapping (segment).ToList ();
 		}
 
 		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (int offset)
 		{
-			return textSegmentMarkerTree.GetSegmentsAt (offset);
+			if (textMarkerCacheOffset == offset)
+				return textMarkerSegmentCache;
+			textMarkerCacheOffset = offset;
+			return textMarkerSegmentCache = textSegmentMarkerTree.GetSegmentsAt (offset).ToList ();
 		}
 		
 
 		public void AddMarker (TextSegmentMarker marker)
 		{
+			ClearTextMarkerCache ();
 			marker.insertId = textSegmentInsertId++;
 			textSegmentMarkerTree.Add (marker);
 			var startLine = OffsetToLineNumber (marker.Offset);
@@ -1740,6 +1782,7 @@ namespace Mono.TextEditor
 		/// <param name="marker">Marker.</param>
 		public bool RemoveMarker (TextSegmentMarker marker)
 		{
+			ClearTextMarkerCache ();
 			bool wasRemoved = textSegmentMarkerTree.Remove (marker);
 			if (wasRemoved) {
 				var startLine = OffsetToLineNumber (marker.Offset);
@@ -1753,7 +1796,8 @@ namespace Mono.TextEditor
 
 		void HandleSplitterLineSegmentTreeLineRemoved (object sender, TextChangeEventArgs e)
 		{
-			foreach (var change in e.TextChanges) { 
+			for (int i = 0; i < e.TextChanges.Count; ++i) {
+				var change = e.TextChanges[i];
 				var line = GetLineByOffset (change.Offset);
 				if (line == null)
 					continue;
@@ -2138,12 +2182,14 @@ namespace Mono.TextEditor
 
 		private DocumentLine Get(int number)
 		{
+			if (cachedLineNumber == number)
+				return cachedLineFromLineNumber;
 			var snapshot = this.currentSnapshot;
 			int snapshotLineNumber = number - 1;
 			if (snapshotLineNumber < 0 || snapshotLineNumber >= snapshot.LineCount)
 				return null;
-
-			return new DocumentLineFromTextSnapshotLine(snapshot.GetLineFromLineNumber(snapshotLineNumber));
+			cachedLineNumber = number;
+			return cachedLineFromLineNumber = new DocumentLineFromTextSnapshotLine(snapshot.GetLineFromLineNumber(snapshotLineNumber));
 		}
 
 		internal sealed class DocumentLineFromTextSnapshotLine : DocumentLine
@@ -2541,6 +2587,8 @@ namespace Mono.TextEditor
 				}
 
 				int cmp = this.version.VersionNumber - otherVersion.version.VersionNumber;
+				if (cmp == 0)
+					yield break;
 				if (cmp > 0)
 				{
 					var v = otherVersion.version;
@@ -2551,7 +2599,7 @@ namespace Mono.TextEditor
 							for (int i = v.Changes.Count - 1; (i >= 0); --i)
 							{
 								var change = v.Changes[i];
-								yield return new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
+								yield return new TextChangeEventArgs(change.OldPosition, change.NewPosition, change.OldText, change.NewText);
 							}
 						}
 

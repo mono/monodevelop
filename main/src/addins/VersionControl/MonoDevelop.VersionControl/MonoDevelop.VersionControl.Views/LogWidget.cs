@@ -404,7 +404,7 @@ namespace MonoDevelop.VersionControl.Views
 					try {
 						text = info.Repository.GetTextAtRevision (path, rev);
 					} catch (Exception e) {
-						Application.Invoke (delegate {
+						Application.Invoke ((o2, a2) => {
 							LoggingService.LogError ("Error while getting revision text", e);
 							MessageService.ShowError (
 								GettextCatalog.GetString ("Error while getting revision text."),
@@ -417,7 +417,7 @@ namespace MonoDevelop.VersionControl.Views
 					try {
 						prevRev = rev.GetPrevious ();
 					} catch (Exception e) {
-						Application.Invoke (delegate {
+						Application.Invoke ((o2, a2) => {
 							MessageService.ShowError (GettextCatalog.GetString ("Error while getting previous revision."), e);
 						});
 						return;
@@ -438,7 +438,7 @@ namespace MonoDevelop.VersionControl.Views
 							try {
 								prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
 							} catch (Exception e) {
-								Application.Invoke (delegate {
+								Application.Invoke ((o2, a2) => {
 									LoggingService.LogError ("Error while getting revision text", e);
 									MessageService.ShowError (
 										GettextCatalog.GetString ("Error while getting revision text."),
@@ -463,7 +463,7 @@ namespace MonoDevelop.VersionControl.Views
 							lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
 						}
 					}
-					Application.Invoke (delegate {
+					Application.Invoke ((o2, a2) => {
 						changedpathstore.SetValue (iter, colDiff, lines);
 					});
 				});

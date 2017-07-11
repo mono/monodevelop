@@ -276,15 +276,13 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         //cache 50 project infos, then start evicting the least recently used entries
         ref (ExtCore.Caching.LruCache.create 50u)
 
-    member x.Checker = checker
+    let optionsForDependentProject p =
+        async {
+            let! assemblies = x.GetReferencedAssembliesAsync p
+            return x.GetProjectCheckerOptions(p, [], assemblies)
+        }
 
-    member x.RemoveFromProjectInfoCache(projFilename:string, ?properties) =
-        let properties = defaultArg properties ["Configuration", "Debug"]
-        let key = (projFilename, properties)
-        LoggingService.logDebug "LanguageService: Removing %s from projectInfoCache" projFilename
-        match (!projectInfoCache).TryExtract(key) with
-        | Some _extractee, cache -> projectInfoCache := cache
-        | None, _unchangedCache -> ()
+    member x.Checker = checker
 
     member x.ClearProjectInfoCache() =
         LoggingService.logDebug "LanguageService: Clearing ProjectInfoCache"
@@ -332,7 +330,24 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
         Some opts
 
-    member x.GetProjectOptionsFromProjectFile(project:DotNetProject) =
+    member x.GetProjectFromFileName projectFile =
+        IdeApp.Workspace.GetAllProjects()
+        |> Seq.tryFind (fun p -> p.FileName.FullPath.ToString() = projectFile)
+        |> Option.map(fun p -> p :?> DotNetProject)
+
+    member x.GetReferencedAssembliesSynchronously (project:DotNetProject) =
+        retry { return (project.GetReferencedAssemblies(CompilerArguments.getConfig())).Result }
+
+    member x.GetReferencedAssembliesAsync projectFile =
+        async {
+            let project = x.GetProjectFromFileName projectFile
+            match project with
+            | Some proj -> return! proj.GetReferencedAssemblies(CompilerArguments.getConfig()) |> Async.AwaitTask
+            | None -> return Seq.empty
+        }
+
+    member x.GetProjectOptionsFromProjectFile(project:DotNetProject, ?referencedAssemblies) =
+        let referencedAssemblies = defaultArg referencedAssemblies (x.GetReferencedAssembliesSynchronously project)
         let config =
             match IdeApp.Workspace with
             | null -> ConfigurationSelector.Default
@@ -344,9 +359,8 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         let getReferencedProjects (project:DotNetProject) =
             project.GetReferencedAssemblyProjects config
             |> Seq.filter (fun p -> p <> project && p.SupportedLanguages |> Array.contains "F#")
-
         let rec getOptions referencedProject =
-            let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject
+            let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject referencedAssemblies
             match projectOptions with
             | Some projOptions ->
                 let referencedProjectOptions =
@@ -363,14 +377,14 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         projectOptions
                 
     member x.TryGetProjectCheckerOptionsFromCache(projFilename, ?properties) : FSharpProjectOptions option =
-        let properties = defaultArg properties ["Configuration", "Debug"]
+        let properties = defaultArg properties ["Configuration", IdeApp.Workspace.ActiveConfigurationId]
         let key = (projFilename, properties)
         let entry, _ = (!projectInfoCache).TryFind (key)
         entry
 
     /// Constructs options for the interactive checker for a project under the given configuration.
-    member x.GetProjectCheckerOptions(projFilename, ?properties) : FSharpProjectOptions option =
-        let properties = defaultArg properties ["Configuration", "Debug"]
+    member x.GetProjectCheckerOptions(projFilename, ?properties, ?referencedAssemblies) : FSharpProjectOptions option =
+        let properties = defaultArg properties ["Configuration", IdeApp.Workspace.ActiveConfigurationId]
         let key = (projFilename, properties)
 
         lock projectInfoCache (fun () ->
@@ -386,7 +400,9 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
 
                 match project with
                 | Some proj ->
-                    let opts = x.GetProjectOptionsFromProjectFile (proj :?> DotNetProject)
+                    let proj = proj :?> DotNetProject
+                    let referencedAssemblies = defaultArg referencedAssemblies (x.GetReferencedAssembliesSynchronously proj)
+                    let opts = x.GetProjectOptionsFromProjectFile (proj, referencedAssemblies)
                     opts |> Option.bind(fun opts' ->
                         projectInfoCache := cache.Add (key, opts')
                         // Print contents of check option for debugging purposes
@@ -494,10 +510,13 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
     member x.GetUsesOfSymbolInProject(projectFilename, file, source, symbol:FSharpSymbol, ?dependentProjects) =
         async {
             LoggingService.logDebug "LanguageService: GetUsesOfSymbolInProject: project:%s, currentFile:%s, symbol:%s" projectFilename file symbol.DisplayName
-
             let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
-            let dependentProjectsOptions = defaultArg dependentProjects [] |> List.map x.GetProjectCheckerOptions
-            let! allProjectResults =
+
+            let! dependentProjectsOptions =
+                 defaultArg dependentProjects [] 
+                 |> Async.List.map optionsForDependentProject
+
+            let! allProjectResults  =
                 sourceProjectOptions :: dependentProjectsOptions
                 |> List.choose id
                 |> Async.List.map checker.ParseAndCheckProject
@@ -508,7 +527,8 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                 |> Async.Parallel
                 |> Async.map Array.concat
 
-          return allSymbolUses }
+            return allSymbolUses 
+        }
 
     member x.MatchingBraces(filename, projectFilename, source) =
         let options = x.GetCheckerOptions(filename, projectFilename, source)
@@ -556,7 +576,10 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         async {
             LoggingService.logDebug "LanguageService: GetDerivedSymbolInProject: proj:%s, file:%s, symbol:%s" projectFilename file symbolAtCaret.DisplayName
             let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
-            let dependentProjectsOptions = defaultArg dependentProjects [] |> List.map x.GetProjectCheckerOptions
+
+            let! dependentProjectsOptions =
+                 defaultArg dependentProjects [] 
+                 |> Async.List.map optionsForDependentProject
 
             let! allProjectResults =
                 sourceProjectOptions :: dependentProjectsOptions

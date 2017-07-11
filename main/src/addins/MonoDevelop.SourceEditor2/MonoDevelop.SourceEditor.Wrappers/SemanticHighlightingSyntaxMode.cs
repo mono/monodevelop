@@ -110,7 +110,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		void SemanticHighlighting_SemanticHighlightingUpdated (object sender, EventArgs e)
 		{
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				if (isDisposed)
 					return;
 				UnregisterLineSegmentTrees ();

@@ -27,6 +27,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NuGet.Packaging.Core;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -64,6 +65,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public void CheckForUpdates (ISolution solution)
+		{
+		}
+
+		public void CheckForUpdates (ISolution solution, ISourceRepositoryProvider sourceRepositoryProvider)
 		{
 		}
 	}

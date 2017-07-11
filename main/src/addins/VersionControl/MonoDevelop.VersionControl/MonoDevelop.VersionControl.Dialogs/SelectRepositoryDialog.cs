@@ -279,7 +279,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				ex = e;
 			}
 				
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				if (ex != null) {
 					LoggingService.LogError ("Failed to load connected repositories.", ex.ToString ());
 				}

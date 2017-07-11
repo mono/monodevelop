@@ -65,9 +65,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			includeCodeSnippetsCheckbutton.Active = IdeApp.Preferences.IncludeCodeSnippetsInCompletionList;
 			automaticCompletionModeCheckbutton.Active = !IdeApp.Preferences.ForceSuggestionMode;
 
-			insertParenthesesCheckbutton.Active = IdeApp.Preferences.AddParenthesesAfterCompletion;
-			openingRadiobutton.Active = IdeApp.Preferences.AddOpeningOnly;
-			bothRadiobutton.Active = !IdeApp.Preferences.AddOpeningOnly;
+			insertParenthesesCheckbutton.Visible = false;
+			openingRadiobutton.Visible = false;
+			bothRadiobutton.Visible = false;
 
 			InsertParensToggled (this, EventArgs.Empty);
 			AutomaticCompletionToggled (this, EventArgs.Empty);
@@ -97,9 +97,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			IdeApp.Preferences.IncludeKeywordsInCompletionList.Value = includeKeywordsCheckbutton.Active;
 			IdeApp.Preferences.IncludeCodeSnippetsInCompletionList.Value = includeCodeSnippetsCheckbutton.Active;
 			IdeApp.Preferences.ForceSuggestionMode.Value = !automaticCompletionModeCheckbutton.Active;
-
-			IdeApp.Preferences.AddParenthesesAfterCompletion.Value = insertParenthesesCheckbutton.Active;
-			IdeApp.Preferences.AddOpeningOnly.Value = openingRadiobutton.Active;
 		}
 
 		#endregion

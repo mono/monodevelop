@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -83,8 +84,21 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			comboboxMessageBubbles.AppendText (GettextCatalog.GetString ("For Errors and Warnings"));
 			comboboxMessageBubbles.Active = (int)IdeApp.Preferences.ShowMessageBubbles.Value;
 			this.QueueResize ();
+
+			SetupAccessibility ();
 		}
-		
+
+		void SetupAccessibility ()
+		{
+			comboboxJumpToFirst.SetCommonAccessibilityAttributes ("BuildMessagePanel.jumpToFirst", label6,
+			                                                      GettextCatalog.GetString ("Select which type of result to jump to after build completes"));
+
+			comboboxErrorPadAfter.SetCommonAccessibilityAttributes ("BuildMessagePanel.errorPadAfter", label3,
+			                                                        GettextCatalog.GetString ("Select when to show the Error Pad"));
+
+			comboboxMessageBubbles.SetCommonAccessibilityAttributes ("BuildMessagePanel.messageBubbles", label5,
+			                                                         GettextCatalog.GetString ("Select when to show message bubbles"));
+		}
 		public void Store ()
 		{
 			IdeApp.Preferences.JumpToFirstErrorOrWarning.Value = (JumpToFirst)comboboxJumpToFirst.Active;

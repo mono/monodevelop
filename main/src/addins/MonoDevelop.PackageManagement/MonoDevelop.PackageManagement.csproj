@@ -421,6 +421,15 @@
     <Compile Include="NuGet.CommandLine\SettingsCredentialProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UninstallNuGetPackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Refactoring\NuGetPackageServicesProxy.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageReferenceNuGetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\HasNuGetPackageOrReferenceFileTemplateCondition.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\SolutionClosingDialog.UI.cs">
+      <DependentUpon>SolutionClosingDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.PackageManagement.Gui\SolutionClosingDialog.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PendingPackageActionsInformation.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageActionType.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PendingPackageActionsHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -619,7 +628,7 @@
   <ItemGroup>
     <None Include="..\..\..\external\nuget-binary\NuGet-LICENSE.txt">
       <Link>NuGet-LICENSE.txt</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

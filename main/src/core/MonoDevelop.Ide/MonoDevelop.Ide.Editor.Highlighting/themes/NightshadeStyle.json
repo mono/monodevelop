@@ -1,6 +1,6 @@
 {
 	"name": "Nightshade",
-	"version": "1.2.3",
+	"version": "1.2.4",
 	"description": "An inky scheme with vibrant highlights",
 	"originator": "Anirudh Sanjeev <anirudh@anirudhsanjeev.org>",
 
@@ -113,7 +113,7 @@
 		{ "name": "Link Color", "color": "#41e2cb" },
 		{ "name": "Link Color(Active)", "color": "#41e2cb" }
 	],
-    
+
 	"text": [
 		{ "name": "Plain Text", "fore": "NormalVim", "back": "BlackVim" },
 		{ "name": "Selected Text", "back": "#2647DD" },
@@ -130,6 +130,7 @@
 		{ "name": "Comment(Block)", "fore": "CommentVim" },
 		{ "name": "Comment(Doc)", "fore": "CommentVim" },
 		{ "name": "Comment(DocTag)", "fore": "CommentVim" },
+		{ "name": "Comment Tag", "fore": "#ff21ff" },
 
 		{ "name": "Excluded Code", "fore": "CommentVim" },
 

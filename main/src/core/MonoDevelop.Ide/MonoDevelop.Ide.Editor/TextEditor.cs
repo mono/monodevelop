@@ -958,6 +958,12 @@ namespace MonoDevelop.Ide.Editor
 
 		bool isDisposed;
 
+		internal bool IsDisposed {
+			get {
+				return isDisposed;
+			}
+		}
+
 		protected override void Dispose (bool disposing)
 		{
 			if (isDisposed)

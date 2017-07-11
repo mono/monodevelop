@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -65,9 +66,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public Task CheckForUpdatesTask;
 		public Action AfterCheckForUpdatesAction = () => { };
 
-		protected override Task CheckForUpdates (IEnumerable<IDotNetProject> projects)
+		protected override Task CheckForUpdates (
+			IEnumerable<IDotNetProject> projects,
+			ISourceRepositoryProvider sourceRepositoryProvider)
 		{
-			CheckForUpdatesTask = base.CheckForUpdates (projects);
+			CheckForUpdatesTask = base.CheckForUpdates (projects, sourceRepositoryProvider);
 			AfterCheckForUpdatesAction ();
 			return CheckForUpdatesTask;
 		}

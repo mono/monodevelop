@@ -182,5 +182,14 @@ namespace NuGet.Credentials
 		{
 			return $"{provider.Id}_{type == CredentialRequestType.Proxy}_{uri}";
 		}
+
+		/// <summary>
+		/// Clears the retry cache so credentials will be tried again from the key chain
+		/// instead of defaulting to showing the credential dialog.
+		/// </summary>
+		public void Reset ()
+		{
+			_retryCache.Clear ();
+		}
 	}
 }

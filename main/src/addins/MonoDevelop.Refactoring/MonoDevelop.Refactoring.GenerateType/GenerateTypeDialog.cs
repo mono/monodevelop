@@ -127,7 +127,7 @@ namespace MonoDevelop.Refactoring.GenerateType
 			if (selectedProject == document.Project) {
 				SelectedDocument = document;
 				documentStore.AppendValues (GettextCatalog.GetString ("<Current File>"), document);
-				foreach (var doc in document.Project.Documents.Where (d => d.FilePath != SelectedDocument.FilePath && !d.IsGeneratedCode ())) {
+				foreach (var doc in document.Project.Documents.Where (d => d.FilePath != SelectedDocument.FilePath && !d.IsGeneratedCode (default (CancellationToken)))) {
 					documentStore.AppendValues (GetDocumentName (document), document);
 				}
 				comboboxExistingFile.Active = 0;
@@ -135,7 +135,7 @@ namespace MonoDevelop.Refactoring.GenerateType
 			}
 
 			bool first = true;
-			foreach (var doc in document.Project.Documents.Where (d => !d.IsGeneratedCode ())) {
+			foreach (var doc in document.Project.Documents.Where (d => !d.IsGeneratedCode (default (CancellationToken)))) {
 				if (first) {
 					SelectedDocument = doc;
 					first = false;

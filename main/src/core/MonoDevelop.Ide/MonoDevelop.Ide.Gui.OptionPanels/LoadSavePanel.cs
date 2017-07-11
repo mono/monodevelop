@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 #pragma warning disable 612
 
@@ -81,8 +82,25 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			loadUserDataCheckButton.Active = IdeApp.Preferences.LoadDocumentUserProperties;
 			createBackupCopyCheckButton.Active = IdeApp.Preferences.CreateFileBackupCopies;
 			loadPrevProjectCheckButton.Active = IdeApp.Preferences.LoadPrevSolutionOnStartup.Value;
+
+			SetupAccessibility ();
 		}
-		
+
+		void SetupAccessibility ()
+		{
+			folderEntry.EntryAccessible.SetCommonAttributes ("LoadSavePanel.folderEntry", "",
+			                                                 GettextCatalog.GetString ("Enter the default path for the solution"));
+			folderEntry.EntryAccessible.SetTitleUIElement (locationLabel.Accessible);
+			locationLabel.Accessible.SetTitleFor (folderEntry.EntryAccessible);
+
+			loadUserDataCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.loadUserData", "",
+			                                                          GettextCatalog.GetString ("Check to load the user specific settings with the solution"));
+			loadPrevProjectCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.loadPrevious", "",
+			                                                             GettextCatalog.GetString ("Check to load the previous solution when starting the application"));
+			createBackupCopyCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.createBackup", "",
+			                                                              GettextCatalog.GetString ("Check to always create a backup copy"));
+		}
+
 		public bool ValidateChanges ()
 		{
 			// check for correct settings

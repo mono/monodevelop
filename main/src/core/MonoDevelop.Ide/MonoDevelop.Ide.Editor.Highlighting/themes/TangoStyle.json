@@ -1,6 +1,6 @@
 {
 	"name": "Tango",
-	"version": "1.2.2",
+	"version": "1.2.3",
 	"description": "A light scheme using colors from the Tango Project",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -55,7 +55,7 @@
 		{ "name": "Comment(Block)", "fore": "aluminium4" },
 		{ "name": "Comment(Doc)", "fore": "aluminium4" },
 		{ "name": "Comment(DocTag)", "fore": "aluminium4" },
-		{ "name": "Comment Tag", "fore": "#ff00ff" },
+		{ "name": "Comment Tag", "fore": "#ff37ff" },
 
 		{ "name": "Excluded Code", "fore": "aluminium4" },
 

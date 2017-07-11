@@ -1,23 +1,23 @@
 %YAML 1.2
 ---
 # C#.sublime-syntax
-# 
+#
 #  Author:
 #    Mike Krüger <mkrueger@novell.com>
-# 
+#
 #  Copyright (c) 2016 Microsoft Corporation
 #  Copyright (c) 2007 Novell, Inc (http://www.novell.com)
-# 
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
 #  in the Software without restriction, including without limitation the rights
 #  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 #  copies of the Software, and to permit persons to whom the Software is
 #  furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included in
 #  all copies or substantial portions of the Software.
-# 
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 #  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -39,18 +39,18 @@ contexts:
     - include: strings
     - include: preprocessor
   comments:
-    - match: '//'
-      scope: comment.line.source.cs
-      push:
-        - include: commenttags
-        - match: $\n?
-          pop: true
     - match: '///'
       scope: comment.line.documentation.source.cs
       push:
         - match: '$\n?'
           pop: true
         - include: xmldoc
+    - match: '//'
+      scope: comment.line.source.cs
+      push:
+        - include: commenttags
+        - match: $\n?
+          pop: true
     - match: '/\*'
       scope: comment.block.source.cs
       push:
@@ -61,12 +61,39 @@ contexts:
     - match: '\b((?i:todo)|(?i:fixme)|(?i:hack)|(?i:undone))\b'
       scope: markup.other.source.cs
   xmldoc:
-    - match : '<'
-      scope: comment.line.documentation.tag.source.cs
-      push :
-        - match : '(>|$\n?)'
+    - match: '(?x)(</?)((?:([-_[:alnum:]]+)(:))?([-_[:alnum:]]+))'
+      captures:
+        1: punctuation.definition.tag.source.cs
+        2: entity.name.tag.source.cs
+        3: entity.name.tag.namespace.source.cs
+        4: punctuation.separator.colon.source.cs
+        5: entity.name.tag.localname.source.cs
+      push:
+        - match: '(?x)(?:^|\s+)((?:([-_[:alnum:]]+)(:))?([-_[:alnum:]]+))(=)'
+          captures:
+            1: entity.other.attribute-name.source.cs
+            2: entity.other.attribute-name.namespace.source.cs
+            3: punctuation.separator.colon.source.cs
+            4: entity.other.attribute-name.localname.source.cs
+            5: punctuation.separator.equals.source.cs
+        - match: '((/?>)|(?=($\n?)))'
+          captures:
+            1: punctuation.definition.tag.cs
           pop: true
+        - match: "'"
+          scope: string.quoted.single.source.cs
+          push:
+            - match: "('|(?=($\n?)))"
+              pop: true
+        - match: '"'
+          scope: string.quoted.double.source.cs
+          push:
+            - match: '("|(?=($\n?)))'
+              pop: true
+    - match: $\n?
+      pop: true
   keywords:
+    - match: '@\w+\b'
     - match: '\b(this|base|as|is|new|sizeof|typeof|stackalloc|else|if|switch|case|default|do|for|foreach|in|while|break|continue|goto|return|yield|partial|global|where|__arglist|__makeref|__reftype|__refvalue|by|descending|from|group|into|orderby|select|let|ascending|join|on|equals|try|throw|catch|finally|abstract|async|await|const|event|extern|override|readonly|sealed|static|virtual|volatile|public|protected|private|internal|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ushort|ulong|object|string|var|dynamic|void|namespace|using|get|set|add|remove|value|class|interface|delegate|enum|struct|params|ref|out|explicit|implicit|operator|checked|unchecked|fixed|unsafe|lock)\b'
       scope: keyword.source.cs
     - match: '\b(true|false|null)\b'
@@ -74,9 +101,9 @@ contexts:
   numbers:
     - match: '((\b\d+\.?\d+)|(\.\d+))([eE][+-]?\d*)?(F|f|D|d|M|m)?\b'
       scope: constant.numeric.float.source.cs
-    - match: '\d+(([eE][+-]?\d*)?(F|f|D|d|M|m)|([eE][+-]?\d*))\b'
+    - match: '\b\d+(([eE][+-]?\d*)?(F|f|D|d|M|m)|([eE][+-]?\d*))\b'
       scope: constant.numeric.float.source.cs
-    - match: '\b0[bB][01_]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b' 
+    - match: '\b0[bB][01_]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b'
       scope: constant.numeric.binary.source.cs
     - match: '\b(0[xX][0-9a-fA-F]+?|\d+)(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b'
       scope: constant.numeric.source.cs
@@ -102,6 +129,7 @@ contexts:
           scope: constant.character.interpolated.verbatim.escape.source.cs
         - match: '"'
           pop: true
+        - match: '\{\{'
         - match: '({)'
           captures:
             1: string.quoted.other.interpolated.verbatim.source.cs
@@ -119,6 +147,7 @@ contexts:
           scope: constant.character.escape.source.cs
         - match: '("|$\n?)'
           pop: true
+        - match: '\{\{'
         - match: '({)'
           captures:
             1: string.quoted.other.interpolated.source.cs

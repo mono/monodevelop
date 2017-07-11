@@ -51,6 +51,10 @@ namespace MonoDevelop.PackageManagement
 			packageRestorer = new MonoDevelopBuildIntegratedRestorer (solutionManager);
 		}
 
+		public PackageActionType ActionType {
+			get { return PackageActionType.Restore; }
+		}
+
 		public void Execute ()
 		{
 			Execute (CancellationToken.None);

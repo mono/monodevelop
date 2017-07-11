@@ -203,6 +203,9 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		// PERF: Keep a global pool for whitespace in MSBuild.
+		// There are not many variations on a properly formatted project so the pool is small.
+		readonly static StringInternPool whitespacePool = new StringInternPool ();
 		public static object ConsumeUntilNewLine (ref object ws)
 		{
 			if (ws == null)
@@ -215,8 +218,12 @@ namespace MonoDevelop.Projects.MSBuild
 					if (c == '\r' || c == '\n') {
 						if (n == s.Length - 1)
 							break; // Default case, consume the whole string
-						var res = s.Substring (0, n + 1);
-						ws = s.Substring (n + 1);
+						int len = n + 1;
+						string res;
+						lock (whitespacePool) {
+							res = whitespacePool.Add (s, 0, len);
+							ws = whitespacePool.Add (s, len, s.Length - len);
+						}
 						return res;
 					}
 				}
@@ -236,7 +243,10 @@ namespace MonoDevelop.Projects.MSBuild
 						return res;
 					}
 				}
-				var result = ws.ToString ();
+				string result;
+				lock (whitespacePool) {
+					result = whitespacePool.Add (sb);
+				}
 				ws = null;
 				return result;
 			}

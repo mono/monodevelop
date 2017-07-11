@@ -7,6 +7,7 @@ using System.Net;
 using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -282,6 +283,11 @@ namespace MonoDevelop.Core.Execution
 			return Task.Run (() => {
 				var cmd = Runtime.ProcessService.CreateCommand (exePath);
 				cmd.Arguments = ((IPEndPoint)listener.LocalEndpoint).Port + " " + DebugMode;
+
+				// Explicitly propagate the PATH var to the process. It ensures that tools required
+				// to run XS are also in the PATH for remote processes.
+				cmd.EnvironmentVariables ["PATH"] = Environment.GetEnvironmentVariable ("PATH");
+
 				process = executionHandler.Execute (cmd, console);
 				process.Task.ContinueWith (t => ProcessExited ());
 			});

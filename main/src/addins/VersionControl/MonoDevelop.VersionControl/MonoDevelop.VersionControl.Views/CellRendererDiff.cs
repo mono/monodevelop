@@ -362,7 +362,7 @@ namespace MonoDevelop.VersionControl.Views
 			ctx.Stroke ();
 			
 			string text = lines[firstBlock.FirstLine].Replace ("@","").Replace ("-","");
-			text = "<span size='x-small'>" + text.Replace ("+","</span><span size='small'>➜</span><span size='x-small'> ") + "</span>";
+			text = "<span size='x-small'>" + text.Replace ("+","</span><span size='small'>→</span><span size='x-small'> ") + "</span>";
 			
 			layout.SetText ("");
 			layout.SetMarkup (text);

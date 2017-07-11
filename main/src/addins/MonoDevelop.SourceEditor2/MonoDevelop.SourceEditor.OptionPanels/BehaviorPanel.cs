@@ -25,6 +25,7 @@
 
 using System;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Mono.TextEditor;
@@ -46,8 +47,36 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			controlLeftRightCombobox.InsertText (1, GettextCatalog.GetString ("Windows"));
 			
 			autoInsertBraceCheckbutton.Toggled += HandleAutoInsertBraceCheckbuttonToggled;
+
+			SetupAccessibility ();
 		}
-		
+
+		void SetupAccessibility ()
+		{
+			tabAsReindentCheckbutton.SetCommonAccessibilityAttributes ("BehaviorPanel.tabsAsReindent", "",
+			                                                           GettextCatalog.GetString ("Check to use the Tab key as a reindent command"));
+			smartBackspaceCheckbutton.SetCommonAccessibilityAttributes ("BehaviorPanel.smartBackspace", "",
+			                                                            GettextCatalog.GetString ("Check to make Backspace remove indentation"));
+			autoInsertBraceCheckbutton.SetCommonAccessibilityAttributes ("BehaviorPanel.autoInsertBrace", "",
+			                                                             GettextCatalog.GetString ("Check to automatically insert braces"));
+			smartSemicolonPlaceCheckbutton.SetCommonAccessibilityAttributes ("BehaviorPanel.smartSemicolon", "",
+			                                                                 GettextCatalog.GetString ("Check to use smart semicolon placement"));
+			checkbuttonFormatOnSave.SetCommonAccessibilityAttributes ("BehaviorPanel.formatOnSave", "",
+			                                                          GettextCatalog.GetString ("Check to reformat the document when saving"));
+			checkbuttonOnTheFlyFormatting.SetCommonAccessibilityAttributes ("BehaviorPanel.formatOnFly", "",
+			                                                                GettextCatalog.GetString ("Check to reformat the document while typing"));
+			checkbuttonAutoSetSearchPatternCasing.SetCommonAccessibilityAttributes ("BehaviorPanel.autoSearchPattern", "",
+			                                                                        GettextCatalog.GetString ("Check to automatically set the search pattern case sensitivity"));
+			checkbuttonEnableSelectionSurrounding.SetCommonAccessibilityAttributes ("BehaviorPanel.enableSelectionSurrounding", "",
+			                                                                        GettextCatalog.GetString ("Check to enable selection surrounding keys"));
+			checkbuttonGenerateFormattingUndoStep.SetCommonAccessibilityAttributes ("BehaviorPanel.generateFormattingUndo", "",
+			                                                                        GettextCatalog.GetString ("Check to add undo step for formatting changes"));
+			indentationCombobox.SetCommonAccessibilityAttributes ("BehaviorPanel.indentation", label1,
+			                                                      GettextCatalog.GetString ("Select the indentation mode"));
+			controlLeftRightCombobox.SetCommonAccessibilityAttributes ("BehaviorPanel.wordBreakMode", label2,
+			                                                           GettextCatalog.GetString ("Select the word break mode"));
+		}
+
 		public virtual Control CreatePanelWidget ()
 		{
 			//			this.autoInsertTemplateCheckbutton.Active  = DefaultSourceEditorOptions.Options.AutoInsertTemplates;

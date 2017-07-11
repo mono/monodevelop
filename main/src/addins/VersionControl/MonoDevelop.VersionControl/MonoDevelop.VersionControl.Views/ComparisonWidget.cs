@@ -35,6 +35,7 @@ using MonoDevelop.Components;
 using System.ComponentModel;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -68,9 +69,10 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected override void CreateComponents ()
 		{
+			var options = GetTextEditorOptions ();
 			this.editors = new [] {
-				new MonoTextEditor (new TextDocument (), CommonTextEditorOptions.Instance),
-				new MonoTextEditor (new TextDocument (), CommonTextEditorOptions.Instance),
+				new MonoTextEditor (new TextDocument (), options),
+				new MonoTextEditor (new TextDocument (), options),
 			};
 
 			if (!viewOnly) {
@@ -186,7 +188,7 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			
 			worker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					var result = (KeyValuePair<Revision, string>)e.Result;
 					var box = toEditor == editors[0] ? diffComboBox : originalComboBox;
 					RemoveLocal (toEditor.GetTextEditorData ());

@@ -155,7 +155,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Mono.TextTemplating">
-      <HintPath>..\..\..\packages\Mono.TextTemplating.1.3.0\lib\net45\Mono.TextTemplating.dll</HintPath>
+      <HintPath>..\..\..\packages\Mono.TextTemplating.1.3.1\lib\net45\Mono.TextTemplating.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -370,7 +370,6 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Projects\GtkAspNetProjectTemplateWizardPageWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Projects.GtkAspNetProjectTemplateWizardPageWidget.cs" />
-    <Compile Include="Projects\AspNetCoreFileTemplateCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -553,9 +552,6 @@
     <None Include="Templates\Projects\Files\Test.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Templates\AspNetCore\WebApiController.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Templates\EmptyCssFile.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -566,33 +562,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Templates\JsonFileTemplate.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\AspNetCore\StartupClass.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\AspNetCore\RazorTagHelper.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\AspNetCore\MiddlewareClass.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\AspNetCore\MvcController.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\AspNetCore\MiddlewareClassTemplate.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\AspNetCore\MvcControllerTemplate.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\AspNetCore\RazorTagHelperTemplate.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\AspNetCore\StartupClassTemplate.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\AspNetCore\WebApiControllerTemplate.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -645,5 +614,4 @@
     <Folder Include="Templates\images\" />
     <Folder Include="WebForms\CSharp\" />
   </ItemGroup>
-  <Import Project="..\..\..\packages\StrongNamer.0.0.3\build\StrongNamer.targets" Condition="Exists('..\..\..\packages\StrongNamer.0.0.3\build\StrongNamer.targets')" />
 </Project>

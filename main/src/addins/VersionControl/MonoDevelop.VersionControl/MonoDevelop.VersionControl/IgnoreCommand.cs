@@ -81,7 +81,7 @@ namespace MonoDevelop.VersionControl
 				foreach (VersionControlItemList list in items.SplitByRepository ())
 					list[0].Repository.Ignore (list.Paths);
 
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					foreach (VersionControlItem item in items)
 						if (!item.IsDirectory)
 							FileService.NotifyFileChanged (item.Path);
@@ -144,7 +144,7 @@ namespace MonoDevelop.VersionControl
 				foreach (VersionControlItemList list in items.SplitByRepository ())
 					list[0].Repository.Unignore (list.Paths);
 
-				Gtk.Application.Invoke (delegate {
+				Gtk.Application.Invoke ((o, args) => {
 					foreach (VersionControlItem item in items)
 						if (!item.IsDirectory)
 							FileService.NotifyFileChanged (item.Path);

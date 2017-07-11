@@ -52,6 +52,8 @@ namespace MonoDevelop.Ide.Gui
 		public static Color SecondaryTextColor { get; internal set; }
 		public static Color SecondarySelectionTextColor { get; internal set; }
 
+		public static Color FocusColor { get; internal set; }
+
 		public static Color ErrorForegroundColor { get; internal set; }
 		public static Color WarningForegroundColor { get; internal set; }
 		public static Color InformationForegroundColor { get; internal set; }
@@ -435,6 +437,11 @@ namespace MonoDevelop.Ide.Gui
 			KeyBindingsPanel.KeyConflictBackgroundColor = StatusErrorBackgroundColor;
 			KeyBindingsPanel.KeyConflictForegroundColor = StatusErrorTextColor;
 
+			// Tooltips
+			StatusInformationBackgroundColor = Color.FromName ("#eeeeee");
+			StatusInformationTextColor = Color.FromName ("#272727");
+			InformationBoxForegroundColor = Color.FromName ("#272727");
+
 			if (Changed != null)
 				Changed (null, EventArgs.Empty);
 		}
@@ -458,12 +465,10 @@ namespace MonoDevelop.Ide.Gui
 			DockBarPrelightColor = Color.FromName ("#eeeeee");
 			BrowserPadBackground = Color.FromName ("#ebedf0");
 			PropertyPadDividerColor = Color.FromName ("#efefef");
+			FocusColor = Color.FromName ("#4b4b4b");
 
 			// these colors need to match colors from status icons
-			StatusInformationBackgroundColor = Color.FromName ("#87b6f0");
-			StatusInformationTextColor = BaseBackgroundColor;
 			InformationBoxBackgroundColor = StatusInformationBackgroundColor;
-			InformationBoxForegroundColor = Color.FromName ("#000000");
 			InformationForegroundColor = Color.FromName ("#5785bd");
 
 			StatusWarningBackgroundColor = Color.FromName ("#f1c40f");
@@ -577,12 +582,10 @@ namespace MonoDevelop.Ide.Gui
 			DockBarPrelightColor = Color.FromName ("#666666");
 			BrowserPadBackground = Color.FromName ("#484b55");
 			PropertyPadDividerColor = SeparatorColor;
+			FocusColor = Color.FromName ("#f2f2f4");
 
 			// these colors need to match colors from status icons
-			StatusInformationBackgroundColor = Color.FromName ("#8fc1ff");
-			StatusInformationTextColor = Color.FromName ("#394d66");
 			InformationBoxBackgroundColor = StatusInformationBackgroundColor;
-			InformationBoxForegroundColor = Color.FromName ("#000000");
 			InformationForegroundColor = Color.FromName ("#9cc8ff");
 
 			StatusWarningBackgroundColor = Color.FromName ("#ffcf0f");

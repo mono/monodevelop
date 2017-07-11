@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NUnit.Framework;
 using NuGet.PackageManagement;
@@ -70,6 +71,18 @@ namespace MonoDevelop.PackageManagement.Tests
 		void RunWithoutBackgroundDispatch (bool clearConsole = true)
 		{
 			runner.Run (progressMessage, actions, clearConsole);
+		}
+
+		Task RunAsyncWithoutBackgroundDispatch (bool clearConsole = true)
+		{
+			return runner.RunAsync (progressMessage, actions, clearConsole);
+		}
+
+		Task RunAsync (bool clearConsole = true)
+		{
+			Task task = RunAsyncWithoutBackgroundDispatch (clearConsole);
+			runner.ExecuteBackgroundDispatch ();
+			return task;
 		}
 
 		TestableInstallNuGetPackageAction AddInstallAction ()
@@ -163,6 +176,19 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			var projectAction = new FakeNuGetProjectAction (packageId, version, NuGetProjectActionType.Uninstall);
 			packageManager.InstallActions.Add (projectAction);
+		}
+
+		void CancelCurrentAction ()
+		{
+			progressMonitorFactory.ProgressMonitor.Cancel ();
+		}
+
+		void AddRestoreAction ()
+		{
+			var action = new FakeNuGetPackageAction ();
+			action.ActionType = PackageActionType.Restore;
+
+			actions.Add (action);
 		}
 
 		[Test]
@@ -466,7 +492,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateRunner ();
 			AddUninstallAction ();
-			runner.CreateEventMonitorAction = (monitor, packageManagementEvents) => {
+			runner.CreateEventMonitorAction = (monitor, packageManagementEvents, completionSource) => {
 				throw new ApplicationException ("Error");
 			};
 
@@ -566,6 +592,236 @@ namespace MonoDevelop.PackageManagement.Tests
 			Run (clearConsole: false);
 
 			Assert.IsFalse (progressMonitorFactory.ClearConsole);
+		}
+
+		/// <summary>
+		/// Do not open the package console window after the package action is cancelled.
+		/// This is done when other exceptions occur during package processing since it is
+		/// done in the background and just showing an error in the status bar may not bring
+		/// the error enough attention. However if the user cancels the action there is no
+		/// need to show the package console after the install fails. This is also a workaround
+		/// to prevent any open dialogs from being closed when the package console window is
+		/// opened after the NuGet action is cancelled by the user.
+		/// </summary>
+		[Test]
+		public void Run_OneInstallActionThatIsCancelledByUser_PackageConsoleNotDisplayed ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+			RunWithoutBackgroundDispatch ();
+			CancelCurrentAction ();
+			runner.ExecuteBackgroundDispatch ();
+
+			Assert.IsFalse (runner.EventsMonitor.IsPackageConsoleShown);
+		}
+
+		[Test]
+		public void RunAsync_OneActionSuccessfully_TaskIsCompleted ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+
+			Task task = RunAsync ();
+
+			Assert.IsNull (task.Exception);
+			Assert.IsFalse (task.IsFaulted);
+			Assert.IsTrue (task.IsCompleted);
+		}
+
+		[Test]
+		public void RunAsync_OneActionStartedButNotFinished_TaskIsNotCompleted ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+
+			Task task = RunAsyncWithoutBackgroundDispatch ();
+
+			Assert.IsFalse (task.IsCompleted);
+		}
+
+		[Test]
+		public void RunAsync_ExceptionThrownRunningBackgroundDispatcher_TaskIsFaulted ()
+		{
+			CreateRunner ();
+			var action = AddInstallAction ();
+			action.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				throw new ApplicationException ("Error");
+			};
+
+			Task task = RunAsync ();
+
+			Assert.IsNotNull (task.Exception);
+			Assert.IsTrue (task.IsFaulted);
+		}
+
+		[Test]
+		public void RunAsync_ClearConsoleIsTrue_ProgressMonitorWillClearConsole ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+
+			RunAsync (clearConsole: true);
+
+			Assert.IsTrue (progressMonitorFactory.ClearConsole);
+		}
+
+		[Test]
+		public void RunAsync_ClearConsoleIsFalse_ProgressMonitorWillNotClearConsole ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+
+			RunAsync (clearConsole: false);
+
+			Assert.IsFalse (progressMonitorFactory.ClearConsole);
+		}
+
+		[Test]
+		public void Run_OneInstallActionThatIsCancelledByUser_CancelledMessageLogged ()
+		{
+			CreateRunner ();
+			var action = AddInstallAction ();
+			RunWithoutBackgroundDispatch ();
+			action.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				CancelCurrentAction ();
+			};
+			runner.ExecuteBackgroundDispatch ();
+
+			progressMonitor.AssertMessageIsLogged ("A task was canceled");
+		}
+
+		[Test]
+		public void Cancel_OneInstallActionCancelledDuringProcessing_ErrorReported ()
+		{
+			CreateRunner ();
+			var action = AddInstallAction ();
+			action.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				runner.Cancel ();
+			};
+
+			Run ();
+
+			progressMonitor.AssertMessageIsLogged ("A task was canceled");
+			Assert.IsFalse (runner.EventsMonitor.IsPackageConsoleShown);
+		}
+
+		[Test]
+		public void Cancel_ThreeInstallActionsQueuedIndividuallyAndFirstCancelledDuringProcessing_QueuedActionsAreCleared ()
+		{
+			CreateRunner ();
+			var action1 = AddInstallAction ();
+			action1.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				runner.Cancel ();
+			};
+			RunWithoutBackgroundDispatch ();
+			actions.Clear ();
+			var action2 = AddInstallAction ();
+			RunWithoutBackgroundDispatch ();
+			actions.Clear ();
+			var action3 = AddInstallAction ();
+			RunWithoutBackgroundDispatch ();
+
+			runner.ExecuteSingleBackgroundDispatch ();
+
+			progressMonitor.AssertMessageIsLogged ("A task was canceled");
+			Assert.AreEqual (0, runner.BackgroundActionsQueued.Count);
+			Assert.IsFalse (runner.IsRunning);
+		}
+
+		[Test]
+		public void IsRunning_CancelledButBackgroundDispatcherStillRunning_ReturnsTrue ()
+		{
+			CreateRunner ();
+			var action = AddInstallAction ();
+			action.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				runner.Cancel ();
+			};
+			runner.DispatcherIsDispatchingReturns = true;
+
+			Run ();
+
+			Assert.IsTrue (runner.IsRunning);
+		}
+
+		[Test]
+		public void Cancel_ThreeRunAsyncActionsQueuedIndividuallyAndFirstCancelledDuringProcessing_QueuedTasksAreCancelled ()
+		{
+			CreateRunner ();
+			var action = AddInstallAction ();
+			action.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				runner.Cancel ();
+			};
+			var action1 = AddInstallAction ();
+			action1.PackageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				runner.Cancel ();
+			};
+			Task task1 = RunAsyncWithoutBackgroundDispatch ();
+			actions.Clear ();
+			var action2 = AddInstallAction ();
+			Task task2 = RunAsyncWithoutBackgroundDispatch ();
+			actions.Clear ();
+			var action3 = AddInstallAction ();
+			Task task3 = RunAsyncWithoutBackgroundDispatch ();
+
+			runner.ExecuteSingleBackgroundDispatch ();
+
+			Assert.IsNotNull (task1.Exception);
+			Assert.IsTrue (task1.IsFaulted);
+			Assert.IsTrue (task2.IsCanceled);
+			Assert.IsTrue (task3.IsCanceled);
+			Assert.IsFalse (runner.IsRunning);
+		}
+
+		[Test]
+		public void GetPendingActionsInfo_InstallActionBeingRun_InstallPending ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+			RunWithoutBackgroundDispatch ();
+
+			var info = runner.GetPendingActionsInfo ();
+
+			Assert.IsTrue (info.IsInstallPending);
+		}
+
+		[Test]
+		public void GetPendingActionsInfo_UninstallActionBeingRun_UninstallPending ()
+		{
+			CreateRunner ();
+			AddUninstallAction ();
+			RunWithoutBackgroundDispatch ();
+
+			var info = runner.GetPendingActionsInfo ();
+
+			Assert.IsTrue (info.IsUninstallPending);
+		}
+
+		[Test]
+		public void GetPendingActionsInfo_RestoreActionBeingRun_RestorePending ()
+		{
+			CreateRunner ();
+			AddRestoreAction ();
+			RunWithoutBackgroundDispatch ();
+
+			var info = runner.GetPendingActionsInfo ();
+
+			Assert.IsTrue (info.IsRestorePending);
+		}
+
+		[Test]
+		public void GetPendingActionsInfo_InstallAndUninstallActions_InstallAndUninstallPending ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+			AddUninstallAction ();
+
+			RunWithoutBackgroundDispatch ();
+
+			var info = runner.GetPendingActionsInfo ();
+
+			Assert.IsTrue (info.IsInstallPending);
+			Assert.IsTrue (info.IsUninstallPending);
+			Assert.IsFalse (info.IsRestorePending);
 		}
 	}
 }

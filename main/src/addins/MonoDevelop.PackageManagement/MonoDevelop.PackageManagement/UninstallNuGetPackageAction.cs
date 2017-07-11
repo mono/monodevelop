@@ -78,6 +78,10 @@ namespace MonoDevelop.PackageManagement
 		public bool RemoveDependencies { get; set; }
 		public bool IsErrorWhenPackageNotInstalled { get; set; }
 
+		public PackageActionType ActionType {
+			get { return PackageActionType.Uninstall; }
+		}
+
 		public void Execute ()
 		{
 			Execute (CancellationToken.None);

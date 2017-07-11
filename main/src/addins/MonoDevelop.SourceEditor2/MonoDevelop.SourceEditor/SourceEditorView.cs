@@ -154,8 +154,10 @@ namespace MonoDevelop.SourceEditor
 
 		void RemoveMarkerQueue ()
 		{
-			if (removeMarkerTimeout != 0)
+			if (removeMarkerTimeout != 0) {
 				GLib.Source.Remove (removeMarkerTimeout);
+				removeMarkerTimeout = 0;
+			}
 		}
 
 		void ResetRemoveMarker ()
@@ -322,7 +324,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
 				return;
-			foreach (var change in args.TextChanges) {
+			for (int i = 0; i < args.TextChanges.Count; ++i) {
+				var change = args.TextChanges[i];
 				int startIndex = change.Offset;
 				foreach (var marker in currentErrorMarkers) {
 					var line = marker.LineSegment;
@@ -429,7 +432,7 @@ namespace MonoDevelop.SourceEditor
 				int x, y;
 				widget.TextEditor.TextArea.GetTopLevelWidgetPosition (w, out x, out y);
 				var size = w.SizeRequest ();
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					widget.TextEditor.ScrollTo (new Gdk.Rectangle (x, y, size.Width, size.Height));
 				});
 			}
@@ -636,7 +639,7 @@ namespace MonoDevelop.SourceEditor
 			}).ContinueWith (t => {
 				if (token.IsCancellationRequested)
 					return;
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					if (token.IsCancellationRequested)
 						return;
 					var newErrorMarkers = new List<MessageBubbleTextMarker> ();
@@ -1096,7 +1099,8 @@ namespace MonoDevelop.SourceEditor
 		void OnTextReplaced (object s, TextChangeEventArgs a)
 		{
 			IsDirty = Document.IsDirty;
-			foreach (var change in a.TextChanges) {
+			for (int j = 0; j < a.TextChanges.Count; ++j) {
+				var change = a.TextChanges[j];
 				var location = Document.OffsetToLocation (change.NewOffset);
 
 				int i = 0, lines = 0;
@@ -2806,11 +2810,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (this.isDisposed || !TextEditor.Options.ShowFoldMargin)
 				return;
-			var convertedList = foldings.Select (f => {
-				return new FoldSegment (f.CollapsedText, f.Offset, f.Length, f.FoldingType);
-			}).ToList ();
 
-			TextEditor.Document.UpdateFoldSegments (convertedList, true);
+			TextEditor.Document.UpdateFoldSegments (foldings, true);
 		}
 
 		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsContaining (int offset)
@@ -3138,7 +3139,7 @@ namespace MonoDevelop.SourceEditor
 						}
 					}
 				} catch (Exception e) {
-					LoggingService.LogError ($"Error while drawing bracket matcher ({this}) startOffset={startOffset} lineCharLength={metrics.Layout.LineChars.Length}", e);
+					LoggingService.LogError ($"Error while drawing bracket matcher ({this}) startOffset={startOffset} lineCharLength={metrics.Layout.Text.Length}", e);
 				}
 			}
 
@@ -3150,13 +3151,13 @@ namespace MonoDevelop.SourceEditor
 				int end = this.EndOffset;
 
 				uint curIndex = 0, byteIndex = 0;
-				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)Math.Min (start - startOffset, metrics.Layout.LineChars.Length), ref curIndex, ref byteIndex);
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.Text, (uint)Math.Min (start - startOffset, metrics.Layout.Text.Length), ref curIndex, ref byteIndex);
 
 				int x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				fromX = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 
-				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)Math.Min (end - startOffset, metrics.Layout.LineChars.Length), ref curIndex, ref byteIndex);
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.Text, (uint)Math.Min (end - startOffset, metrics.Layout.Text.Length), ref curIndex, ref byteIndex);
 				x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				toX = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
@@ -3196,7 +3197,7 @@ namespace MonoDevelop.SourceEditor
 				TextEditor.Options.ZoomChanged += value;
 			}
 			remove {
-				TextEditor.Options.ZoomChanged += value;
+				TextEditor.Options.ZoomChanged -= value;
 			}
 		}
 

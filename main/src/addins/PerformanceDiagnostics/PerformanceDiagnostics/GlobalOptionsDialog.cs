@@ -7,7 +7,8 @@ namespace PerformanceDiagnosticsAddIn
 {
 	public class GlobalOptionsPanel : OptionsPanel
 	{
-		FolderEntry folderEntry = new FolderEntry();
+		FolderEntry folderEntry = new FolderEntry ();
+		//Gtk.CheckButton uiCountersCheck;
 
 		public override Control CreatePanelWidget()
 		{
@@ -29,6 +30,14 @@ namespace PerformanceDiagnosticsAddIn
 			outputDirectoryHBox.PackStart(folderEntry, true, true, 0);
 
 			vbox.PackStart(outputDirectoryHBox, false, false, 0);
+
+			//if (Options.HasMemoryLeakFeature) {
+			//	uiCountersCheck = new Gtk.CheckButton (GettextCatalog.GetString ("Show UI Widget counters in the toolbar"));
+			//	uiCountersCheck.Active = Options.ShowUICounters.Value;
+
+			//	vbox.PackStart (uiCountersCheck, false, false, 0);
+			//}
+
 			vbox.ShowAll();
 			return vbox;
 		}
@@ -36,6 +45,9 @@ namespace PerformanceDiagnosticsAddIn
 		public override void ApplyChanges()
 		{
 			Options.OutputPath.Value = folderEntry.Path;
+
+			//if (Options.HasMemoryLeakFeature)
+				//Options.ShowUICounters.Value = uiCountersCheck.Active;
 		}
 	}
 }

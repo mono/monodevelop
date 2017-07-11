@@ -98,7 +98,7 @@ namespace MonoDevelop.UnitTesting
 						var foundTests = task.Result;
 						if (foundTests == null || DocumentContext == null)
 							return;
-						Application.Invoke (delegate {
+						Application.Invoke ((o, args) => {
 							if (token.IsCancellationRequested || DocumentContext == null)
 								return;
 							foreach (var oldMarker in currentMarker)

@@ -36,7 +36,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Projects;
-using Mono.Cecil.Cil;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using Gtk;

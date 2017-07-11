@@ -79,6 +79,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 			titleWindow.FocusOutEvent += delegate {
 				timeout = GLib.Timeout.Add (100, () => {
+					timeout = 0;
 					titleWindow.Close ();
 					return false;
 				});
@@ -105,7 +106,7 @@ namespace MonoDevelop.Components.DockNotebook
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				titleWindow.Destroy ();
 			});
 			IdeApp.Workbench.UnlockActiveWindowChangeEvent ();
@@ -232,6 +233,7 @@ namespace MonoDevelop.Components.DockNotebook
 		protected override bool OnFocusOutEvent (EventFocus evt)
 		{
 			timeout = GLib.Timeout.Add (100, () => {
+				timeout = 0;
 				titleWindow.Close ();
 				return false;
 			});
@@ -463,7 +465,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public void Close ()
 		{
-			Application.Invoke (delegate {
+			Application.Invoke ((o, args) => {
 				placeholder.Destroy ();
 			});
 		}

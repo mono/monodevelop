@@ -32,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
@@ -86,6 +87,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			this.Build();
 			Load ();
+
+			comboTheme.SetCommonAccessibilityAttributes ("IDEStyleOptionsPanel.Theme", labelTheme,
+			                                             GettextCatalog.GetString ("Select the user interface theme"));
+
+			comboLanguage.SetCommonAccessibilityAttributes ("IDEStyleOptionsPanel.Language", label2,
+			                                                GettextCatalog.GetString ("Select the user interface language"));
+
+			imageRestart.SetCommonAccessibilityAttributes ("IDEStyleOptionsPanel.RestartImage", labelRestart,
+			                                               GettextCatalog.GetString ("A restart is required before these changes take effect"));
 		}
 
 		void Load ()
@@ -114,6 +124,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			comboTheme.Active = sel;
 			comboTheme.Changed += ComboThemeChanged;
 			tableRestart.Visible = separatorRestart.Visible = false;
+
 			labelRestart.LabelProp = GettextCatalog.GetString ("These preferences will take effect next time you start {0}", BrandingService.ApplicationName);
 			btnRestart.Label = GettextCatalog.GetString ("Restart {0}", BrandingService.ApplicationName);
 

@@ -296,7 +296,11 @@ namespace Mono.Instrumentation.Monitor
 			timeAnim = GLib.Timeout.Add (40, delegate {
 				baseTime = baseTime + (destBaseTime - baseTime) / 2;
 				QueueDraw ();
-				return baseTime != destBaseTime;
+
+				bool cont = baseTime != destBaseTime;
+				if (!cont)
+					timeAnim = 0;
+				return cont;
 			});
 		}
 		

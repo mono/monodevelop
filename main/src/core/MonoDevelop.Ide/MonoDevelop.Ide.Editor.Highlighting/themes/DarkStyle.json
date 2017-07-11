@@ -1,6 +1,6 @@
 ﻿{
 	"name": "Dark",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "A dark scheme using colors from the Tango Project",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -117,11 +117,11 @@
 		{ "name": "Punctuation", "fore": "aluminium1" },
 		{ "name": "Punctuation(Brackets)", "fore": "aluminium1" },
 
-		{ "name": "Comment(Line)", "fore": "aluminium4" },
-		{ "name": "Comment(Block)", "fore": "aluminium4" },
-		{ "name": "Comment(Doc)", "fore": "aluminium3" },
+		{ "name": "Comment(Line)", "fore": "#7a976b" },
+		{ "name": "Comment(Block)", "fore": "#7a976b" },
+		{ "name": "Comment(Doc)", "fore": "#7a976b" },
 		{ "name": "Comment(DocTag)", "fore": "aluminium4" },
-		{ "name": "Comment Tag", "fore": "#ff00ff" },
+		{ "name": "Comment Tag", "fore": "#ff37ff" },
 
 		{ "name": "Excluded Code", "fore": "aluminium4" },
 
@@ -142,7 +142,7 @@
 		{ "name": "Xml Text", "fore": "aluminium1" },
 		{ "name": "Xml Delimiter", "fore": "aluminium1" },
 		{ "name": "Xml Name", "fore": "skyblue1" },
-		{ "name": "Xml Attribute", "fore": "aluminium1" },
+		{ "name": "Xml Attribute", "fore": "#9CDCFE" },
 		{ "name": "Xml Attribute Quotes", "fore": "#E6DB74" },
 		{ "name": "Xml Attribute Value", "fore": "#E6DB74" },
 		{ "name": "Xml Comment", "fore": "aluminium4" },

@@ -145,7 +145,7 @@ namespace MonoDevelop.RegexToolkit
 		{
 			try {
 				Regex regex = new Regex (pattern, options);
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					this.resultStore.Clear ();
 					var matches = regex.Matches (input);
 					foreach (Match match in matches) {
@@ -176,7 +176,7 @@ namespace MonoDevelop.RegexToolkit
 			} catch (ThreadAbortException) {
 				Thread.ResetAbort ();
 			} catch (ArgumentException) {
-				Application.Invoke (delegate {
+				Application.Invoke ((o, args) => {
 					Ide.IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Invalid expression"));
 				});
 			} finally {

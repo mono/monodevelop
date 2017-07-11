@@ -27,6 +27,7 @@
 using System;
 using Mono.Debugging.Client;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Xwt;
 using MonoDevelop.Core;
@@ -62,6 +63,7 @@ namespace MonoDevelop.Debugger
 		CheckBox checkGroupStatic;
 		SpinButton spinTimeout;
 		CheckBox enableLogging;
+		Label evalLabel;
 
 		void Build ()
 		{
@@ -82,7 +84,8 @@ namespace MonoDevelop.Debugger
 			checkGroupStatic = new CheckBox (GettextCatalog.GetString ("Group static members"));
 			PackStart (checkGroupStatic);
 			var evalBox = new HBox ();
-			evalBox.PackStart (new Label (GettextCatalog.GetString ("Evaluation Timeout:")));
+			evalLabel = new Label (GettextCatalog.GetString ("Evaluation Timeout:"));
+			evalBox.PackStart (evalLabel);
 			spinTimeout = new SpinButton ();
 			spinTimeout.ClimbRate = 100;
 			spinTimeout.Digits = 0;
@@ -99,6 +102,30 @@ namespace MonoDevelop.Debugger
 			});
 			enableLogging = new CheckBox (GettextCatalog.GetString ("Enable diagnostic logging", BrandingService.ApplicationName));
 			PackStart (enableLogging);
+
+			SetupAccessibility ();
+		}
+
+		void SetupAccessibility ()
+		{
+			checkProjectCodeOnly.SetCommonAccessibilityAttributes ("DebuggerPanel.projectCodeOnly", "",
+			                                                       GettextCatalog.GetString ("Check to only debug the project code and not step into framework code"));
+			checkStepOverPropertiesAndOperators.SetCommonAccessibilityAttributes ("DebuggerPanel.stepOverProperties", "",
+			                                                                      GettextCatalog.GetString ("Check to step over properties and operators"));
+			checkAllowEval.SetCommonAccessibilityAttributes ("DebuggerPanel.allowEval", "",
+			                                                 GettextCatalog.GetString ("Check to allow implicit property evaluation and method invocation"));
+			checkAllowToString.SetCommonAccessibilityAttributes ("DebuggerPanel.allowToString", "",
+			                                                     GettextCatalog.GetString ("Check to call string-conversion functions on objects in the Variables windows"));
+			checkShowBaseGroup.SetCommonAccessibilityAttributes ("DebuggerPanel.showBaseGroup", "",
+			                                                     GettextCatalog.GetString ("Check to show inherited class members in a base class group"));
+			checkGroupPrivate.SetCommonAccessibilityAttributes ("DebuggerPanel.groupPrivate", "",
+			                                                    GettextCatalog.GetString ("Check to group non-public members in the Variables windows"));
+			checkGroupStatic.SetCommonAccessibilityAttributes ("DebuggerPanel.groupStatic", "",
+			                                                   GettextCatalog.GetString ("Check to group static members in the Variables windows"));
+			spinTimeout.SetCommonAccessibilityAttributes ("DebuggerPanel.timeout", evalLabel,
+			                                              GettextCatalog.GetString ("Set the length of time the evaluation will wait before giving up"));
+			enableLogging.SetCommonAccessibilityAttributes ("DebuggerPanel.enableLogging", "",
+			                                                GettextCatalog.GetString ("Check to enable some diagnostic logging"));
 		}
 
 		public DebuggerOptionsPanelWidget ()

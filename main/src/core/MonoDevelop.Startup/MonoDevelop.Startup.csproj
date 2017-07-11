@@ -123,7 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="MonoDevelop.exe.addins">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

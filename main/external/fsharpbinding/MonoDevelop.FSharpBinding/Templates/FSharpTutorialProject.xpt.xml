@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <Template Originator="Ihor Sihuta" Created="28/3/2012">
 
   <!-- Template Header -->
@@ -36,7 +36,7 @@
       </Packages>
       
       <Files>
-        <UnformattedFile name = "Tutorial.fs" AddStandardHeader="True">
+        <File name = "Tutorial.fs" AddStandardHeader="True">
           <![CDATA[// This sample will guide you through elements of the F# language.
 //
 // *******************************************************************************************************
@@ -1013,7 +1013,7 @@ module BoilerPlateForForm =
     [<System.STAThread>]
     do ()
 #endif
-]]></UnformattedFile>
+]]></File>
       </Files>
     </Project>
   </Combine>
