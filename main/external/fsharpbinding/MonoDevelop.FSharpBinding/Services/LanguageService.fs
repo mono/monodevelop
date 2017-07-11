@@ -11,6 +11,7 @@ open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Projects
+open MonoDevelop.FSharp.Shared
 
 module Symbol =
     /// We always know the text of the identifier that resolved to symbol.
@@ -52,7 +53,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
             // Get items & generate output
             try
                 let results =
-                    Async.RunSynchronously (checkResults.GetDeclarationListInfo( parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false), timeout = ServiceSettings.blockingTimeout )
+                    Async.RunSynchronously (checkResults.GetDeclarationListInfo( parseResults, line, col, lineStr, longName, residue, fun () -> []), timeout = ServiceSettings.blockingTimeout )
                 Some (results, residue)
             with :? TimeoutException -> None
         | None, _ -> None
@@ -305,7 +306,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
             try
                 let fileName = fixFileName(fileName)
                 LoggingService.LogDebug ("LanguageService: GetScriptCheckerOptions: Creating for stand-alone file or script: {0}", fileName)
-                let opts =
+                let opts, _errors =
                   Async.RunSynchronously (checker.GetProjectOptionsFromScript(fileName, source, fakeDateTimeRepresentingTimeLoaded projFilename),
                                           timeout = ServiceSettings.maximumTimeout)
 
