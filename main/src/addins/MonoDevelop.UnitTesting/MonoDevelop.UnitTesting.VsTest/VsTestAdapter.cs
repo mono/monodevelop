@@ -50,17 +50,12 @@ namespace MonoDevelop.UnitTesting.VsTest
 {
 	abstract class VsTestAdapter
 	{
-		public VsTestAdapter ()
-		{
-			Start ().Ignore ();
-		}
-
 		protected IDataSerializer dataSerializer = JsonDataSerializer.Instance;
 		ProcessWrapper vsTestConsoleExeProcess;
 		protected SocketCommunicationManager communicationManager;
 		int clientConnectionTimeOut = 15000;
 		Thread messageProcessingThread;
-		bool stopping;
+		CancellationTokenSource restartTokenSource = new CancellationTokenSource ();
 
 		internal static string GetRunSettings (Project project)
 		{
@@ -71,10 +66,32 @@ namespace MonoDevelop.UnitTesting.VsTest
 			}.ToXml ().OuterXml + "</RunSettings>";
 		}
 
-		Task Restart ()
+		void Restart ()
 		{
 			startTask = null;
-			return Start ();
+
+			restartTokenSource.Cancel ();
+			restartTokenSource = new CancellationTokenSource ();
+
+			try {
+				if (communicationManager != null) {
+					communicationManager.StopServer ();
+					communicationManager = null;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("TestPlatformCommunicationManager stop error.", ex);
+			}
+
+			try {
+				if (vsTestConsoleExeProcess != null) {
+					if (!vsTestConsoleExeProcess.HasExited) {
+						vsTestConsoleExeProcess.Dispose ();
+					}
+					vsTestConsoleExeProcess = null;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("VSTest process dispose error.", ex);
+			}
 		}
 
 		Task startTask;
@@ -112,7 +129,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 				new Thread (ReceiveMessages) {
 					IsBackground = true
 				};
-			messageProcessingThread.Start ();
+			messageProcessingThread.Start (restartTokenSource.Token);
 			var timeoutDelay = Task.Delay (clientConnectionTimeOut);
 			if (await Task.WhenAny (startedSource.Task, timeoutDelay) == timeoutDelay)
 				throw new TimeoutException ("vstest.console failed to respond.");
@@ -151,37 +168,13 @@ namespace MonoDevelop.UnitTesting.VsTest
 		{
 			var process = (Process)sender;
 			LoggingService.LogError ("vstest.console.exe exited. Exit code: {0}", process.ExitCode);
-			Restart ().Ignore ();
+			Restart ();
 		}
 
-		public void Stop ()
+		void ReceiveMessages (object obj)
 		{
-			stopping = true;
-
-			try {
-				if (communicationManager != null) {
-					communicationManager.StopServer ();
-					communicationManager = null;
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("TestPlatformCommunicationManager stop error.", ex);
-			}
-
-			try {
-				if (vsTestConsoleExeProcess != null) {
-					if (!vsTestConsoleExeProcess.HasExited) {
-						vsTestConsoleExeProcess.Dispose ();
-					}
-					vsTestConsoleExeProcess = null;
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("VSTest process dispose error.", ex);
-			}
-		}
-
-		void ReceiveMessages ()
-		{
-			while (!stopping) {
+			var token = (CancellationToken)obj;
+			while (!token.IsCancellationRequested) {
 				try {
 					Message message = communicationManager.ReceiveMessage ();
 					ProcessMessage (message);
