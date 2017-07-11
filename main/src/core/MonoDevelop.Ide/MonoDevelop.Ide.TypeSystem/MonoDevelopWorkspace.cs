@@ -691,32 +691,26 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (netProj == null)
 				yield break;
 
-			//GetReferencedAssemblyProjects returns filtered projects, like:
+			//GetReferencedAssemblyProjectAliases returns filtered projects, like:
 			//MSBuild Condtion='something'
 			//pref.ReferenceOutputAssembly
 			//and for iOS/Android extensions
-			MonoDevelop.Projects.DotNetProject [] referencedProjects;
+			MonoDevelop.Projects.DotNetProjectAliases [] referencedProjects;
 			try {
-				referencedProjects = netProj.GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default).ToArray ();
+				referencedProjects = netProj.GetReferencedAssemblyProjectAliases (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default).ToArray ();
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting referenced projects.", e);
 				yield break;
 			};
 			var addedProjects = new HashSet<MonoDevelop.Projects.DotNetProject> ();
-			foreach (var pr in netProj.References.Where (pr => pr.ReferenceType == MonoDevelop.Projects.ReferenceType.Project)) {
-				//But since GetReferencedAssemblyProjects is returing DotNetProject, we lose information about
-				//reference Aliases, hence we have to loop over references
-				var referencedProject = pr.ResolveProject (p.ParentSolution) as MonoDevelop.Projects.DotNetProject;
-				if (referencedProject == null)
+			foreach (var pr in referencedProjects) {
+				if (!addedProjects.Add (pr.Project))
 					continue;
-				if (!referencedProjects.Contains (referencedProject))
+				if (TypeSystemService.IsOutputTrackedProject (pr.Project))
 					continue;
-				if (!addedProjects.Add (referencedProject))
-					continue;
-				if (TypeSystemService.IsOutputTrackedProject (referencedProject))
-					continue;
-				var splittedAliases = (pr.Aliases ?? "").Split (new [] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
-				yield return new ProjectReference (GetOrCreateProjectId (referencedProject), ImmutableArray<string>.Empty.AddRange (splittedAliases));
+				yield return new ProjectReference (
+					GetOrCreateProjectId (pr.Project),
+					ImmutableArray<string>.Empty.AddRange (pr.EnumerateAliases ()));
 			}
 		}
 
