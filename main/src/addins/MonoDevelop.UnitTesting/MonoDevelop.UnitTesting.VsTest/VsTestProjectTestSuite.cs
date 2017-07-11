@@ -181,13 +181,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 			TestContext testContext,
 			IVsTestTestProvider testProvider)
 		{
-			UnitTestResult result;
-			if (testContext.ExecutionContext.ExecutionHandler == null)
-				result = await VsTestRunAdapter.Instance.RunTests (this, testContext, testProvider);
-			else
-				result = await VsTestRunAdapter.Instance.DebugTests (this, testContext, testProvider);
-
-
+			var result = await VsTestRunAdapter.Instance.RunTests (this, testContext, testProvider);
 			Status = TestStatus.Ready;
 			return result;
 		}

@@ -47,7 +47,6 @@ namespace MonoDevelop.UnitTesting.VsTest
 		}
 
 		RunOrDebugJob runJobInProgress;
-		ProcessAsyncOperation debugOperation;
 
 		public static VsTestRunAdapter Instance { get; } = new VsTestRunAdapter ();
 
@@ -57,6 +56,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 			public Project Project { get; }
 			public TestResultBuilder TestResultBuilder { get; }
 			public TaskCompletionSource<UnitTestResult> TaskSource { get; }
+			public ProcessAsyncOperation ProcessOperation { get; set; }
 
 			public RunOrDebugJob (TestContext testContext, IVsTestTestProvider rootTest)
 			{
@@ -121,8 +121,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 			communicationManager.SendMessage (MessageType.TestRunAllSourcesWithDefaultHost, message);
 		}
 
-		private async Task<UnitTestResult> RunOrDebugTests (
-			bool debug,
+		public async Task<UnitTestResult> RunTests (
 			UnitTest test,
 			TestContext testContext,
 			IVsTestTestProvider testProvider)
@@ -130,9 +129,9 @@ namespace MonoDevelop.UnitTesting.VsTest
 			await Start ();
 			try {
 				runJobInProgress = new RunOrDebugJob (testContext, testProvider);
-
+				testContext.Monitor.CancellationToken.Register (CancelTestRun);
 				var tests = testProvider.GetTests ();
-				if (debug) {
+				if (testContext.ExecutionContext.ExecutionHandler != null) {
 					if (tests == null) {
 						GetProcessStartInfo (testProvider.Project);
 					} else {
@@ -146,6 +145,8 @@ namespace MonoDevelop.UnitTesting.VsTest
 					}
 				}
 				return await runJobInProgress.TaskSource.Task;
+			} catch (OperationCanceledException) {
+				return runJobInProgress.TestResultBuilder.TestResult;
 			} catch (Exception ex) {
 				testContext.Monitor.ReportRuntimeError (
 					GettextCatalog.GetString ("Failed to run tests."),
@@ -155,14 +156,6 @@ namespace MonoDevelop.UnitTesting.VsTest
 					runJobInProgress.TestResultBuilder.CreateFailure (ex);
 				return runJobInProgress.TestResultBuilder.TestResult;
 			}
-		}
-
-		public Task<UnitTestResult> RunTests (
-			UnitTest test,
-			TestContext testContext,
-			IVsTestTestProvider testProvider)
-		{
-			return RunOrDebugTests (false, test, testContext, testProvider);
 		}
 
 		void OnTestMessage (Message message)
@@ -183,8 +176,10 @@ namespace MonoDevelop.UnitTesting.VsTest
 			runJobInProgress.TestResultBuilder.OnTestRunChanged (eventArgs);
 		}
 
-		public void CancelTestRun ()
+		void CancelTestRun ()
 		{
+			runJobInProgress?.TaskSource?.TrySetCanceled ();
+
 			try {
 				communicationManager.SendMessage (MessageType.CancelTestRun);
 			} catch (Exception ex) {
@@ -192,22 +187,14 @@ namespace MonoDevelop.UnitTesting.VsTest
 			}
 
 			try {
-				if (debugOperation != null) {
-					if (!debugOperation.IsCompleted)
-						debugOperation.Cancel ();
-					debugOperation = null;
+				if (runJobInProgress?.ProcessOperation != null) {
+					if (!runJobInProgress.ProcessOperation.IsCompleted)
+						runJobInProgress.ProcessOperation.Cancel ();
+					runJobInProgress.ProcessOperation = null;
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("CancelTestRun error.", ex);
 			}
-		}
-
-		public Task<UnitTestResult> DebugTests (
-			UnitTest test,
-			TestContext testContext,
-			IVsTestTestProvider testProvider)
-		{
-			return RunOrDebugTests (true, test, testContext, testProvider);
 		}
 
 		void GetProcessStartInfo (Project project, IEnumerable<TestCase> testCases)
@@ -282,7 +269,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 						startInfo.EnvironmentVariables);
 			}
 
-			debugOperation = currentTestContext.ExecutionContext.ExecutionHandler.Execute (command, console);
+			runJobInProgress.ProcessOperation = currentTestContext.ExecutionContext.ExecutionHandler.Execute (command, console);
 
 
 			//This is horrible hack...
