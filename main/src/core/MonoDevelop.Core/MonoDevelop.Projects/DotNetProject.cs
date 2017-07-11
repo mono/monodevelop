@@ -888,6 +888,20 @@ namespace MonoDevelop.Projects
 			return ProjectExtension.OnGetReferencedAssemblyProjects (configuration);
 		}
 
+		/// <summary>
+		/// Gets the referenced assembly project aliases, but only projects which output are actually referenced
+		/// for example references with ReferenceOutputAssembly=false are excluded. This method will be used
+		/// by the type system since it requires both the DotNetProject and its associated aliases. This will
+		/// allow transitively referenced projects to be returned from the DotNetProjectExtension and the
+		/// type system service can just use this information directly without having to lookup the aliases
+		/// separately and potentially ignore the transitive project references.
+		/// </summary>
+		/// <param name="configuration">Configuration.</param>
+		public IEnumerable<DotNetProjectAliases> GetReferencedAssemblyProjectAliases (ConfigurationSelector configuration)
+		{
+			return ProjectExtension.OnGetReferencedAssemblyProjectAliases (configuration);
+		}
+
 		internal protected virtual async Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
 			List<AssemblyReference> result = new List<AssemblyReference> ();
@@ -1018,6 +1032,22 @@ namespace MonoDevelop.Projects
 					var rp = pref.ResolveProject (ParentSolution) as DotNetProject;
 					if (rp != null)
 						yield return rp;
+				}
+			}
+		}
+
+		internal protected virtual IEnumerable<DotNetProjectAliases> OnGetReferencedAssemblyProjectAliases (ConfigurationSelector configuration)
+		{
+			if (ParentSolution == null) {
+				yield break;
+			}
+			var ctx = new ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration));
+			foreach (ProjectReference pref in References) {
+				if (pref.ReferenceType == ReferenceType.Project && pref.ReferenceOutputAssembly &&
+				    (string.IsNullOrEmpty (pref.Condition) || ConditionParser.ParseAndEvaluate (pref.Condition, ctx))) {
+					var rp = pref.ResolveProject (ParentSolution) as DotNetProject;
+					if (rp != null)
+						yield return new DotNetProjectAliases (rp, pref.Aliases);
 				}
 			}
 		}
@@ -1878,6 +1908,11 @@ namespace MonoDevelop.Projects
 			internal protected override IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
 			{
 				return Project.OnGetReferencedAssemblyProjects (configuration);
+			}
+
+			internal protected override IEnumerable<DotNetProjectAliases> OnGetReferencedAssemblyProjectAliases (ConfigurationSelector configuration)
+			{
+				return Project.OnGetReferencedAssemblyProjectAliases (configuration);
 			}
 
 #pragma warning disable 672 // Member overrides obsolete member

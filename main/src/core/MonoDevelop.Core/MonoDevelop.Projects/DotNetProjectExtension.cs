@@ -82,6 +82,11 @@ namespace MonoDevelop.Projects
 			return next.OnGetReferencedAssemblyProjects (configuration);
 		}
 
+		internal protected virtual IEnumerable<DotNetProjectAliases> OnGetReferencedAssemblyProjectAliases (ConfigurationSelector configuration)
+		{
+			return next.OnGetReferencedAssemblyProjectAliases (configuration);
+		}
+
 		[Obsolete("User overload that takes a RunConfiguration")]
 		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
 		{
