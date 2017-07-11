@@ -24,7 +24,6 @@
     </Execution>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.UnitTesting\MonoDevelop.NUnit.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,7 +36,6 @@
     </Execution>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.UnitTesting\MonoDevelop.NUnit.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -64,17 +62,46 @@
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\build\bin\System.Reflection.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation">
+      <HintPath>..\..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.4.2\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.ObjectModel">
+      <HintPath>..\..\..\packages\Microsoft.TestPlatform.ObjectModel.15.3.0-preview-20170710-01\lib\net46\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TestPlatform.CommunicationUtilities">
+      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.3.0-preview-20170710-01\lib\net46\Microsoft.TestPlatform.CommunicationUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TestPlatform.CoreUtilities">
+      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.3.0-preview-20170710-01\lib\net46\Microsoft.TestPlatform.CoreUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TestPlatform.PlatformAbstractions">
+      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.3.0-preview-20170710-01\lib\net46\Microsoft.TestPlatform.PlatformAbstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TestPlatform.VsTestConsole.TranslationLayer">
+      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.3.0-preview-20170710-01\lib\net46\Microsoft.TestPlatform.VsTestConsole.TranslationLayer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.Common">
+      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.3.0-preview-20170710-01\lib\net46\Microsoft.VisualStudio.TestPlatform.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -102,6 +129,10 @@
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.DotNetCore\MonoDevelop.DotNetCore.csproj">
+      <Project>{6868153E-41EA-43A4-A81A-C1E7256373F7}</Project>
+      <Name>MonoDevelop.DotNetCore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -183,8 +214,8 @@
     <EmbeddedResource Include="Gui\icons\unit-success-16%402x.png">
       <LogicalName>unit-success-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelopNUnit.addin.xml">
-      <LogicalName>MonoDevelopNUnit.addin.xml</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.UnitTesting.addin.xml">
+      <LogicalName>MonoDevelop.UnitTesting.addin.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
@@ -228,7 +259,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Commands\NUnitCommands.cs" />
+    <Compile Include="Commands\UnitTestCommands.cs" />
     <Compile Include="Gui\TestPad.cs" />
     <Compile Include="Gui\TestResultsPad.cs" />
     <Compile Include="Gui\TestNodeBuilder.cs" />
@@ -260,9 +291,73 @@
     <Compile Include="Services\UnitTestMarkersExtension.cs" />
     <Compile Include="Services\UnitTestingRunConfiguration.cs" />
     <Compile Include="Services\UnitTestSelection.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.VsTest\DiscoveredTests.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.VsTest\VsTestNamespaceTestGroup.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.VsTest\VsTestProjectTestSuite.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.VsTest\VsTestTestClass.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.VsTest\VsTestAdapter.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.VsTest\VsTestTestProvider.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.VsTest\VsTestUnitTest.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.VsTest\IVsTestTestProvider.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.VsTest\IVsTestTestRunner.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.VsTest\TestResultBuilder.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.VsTest\VsTestDiscoveryAdapter.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.VsTest\VsTestRunAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
+    <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.UnitTesting.VsTest\" />
+  </ItemGroup>
+  <ItemGroup>
+    <XUnitTestAdapterFiles Hidden="true" Include="..\..\..\packages\xunit.runner.visualstudio.2.2.0\build\_common\**\*.*">
+      <Visible>false</Visible>
+    </XUnitTestAdapterFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <NUnit2TestAdapterFiles Hidden="true" Include="..\..\..\packages\NUnitTestAdapter.2.1.1\tools\**\*.*">
+      <Visible>false</Visible>
+    </NUnit2TestAdapterFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <NUnit3TestAdapterFiles Hidden="true" Include="..\..\..\packages\NUnit3TestAdapter.3.8.0-dev-00491\build\net35\**\*.*">
+      <Visible>false</Visible>
+    </NUnit3TestAdapterFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <NUnit3TestCoreAdapterFiles Hidden="true" Include="..\..\..\packages\NUnit3TestAdapter.3.8.0-dev-00491\build\netcoreapp1.0\**\*.*">
+      <Visible>false</Visible>
+    </NUnit3TestCoreAdapterFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <MSTestAdapterFiles Hidden="true" Include="..\..\..\packages\MSTest.TestAdapter.1.2.0-beta\build\_common\**\*.*">
+      <Visible>false</Visible>
+    </MSTestAdapterFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <VsTestConsole Include="..\..\..\packages\Microsoft.TestPlatform.15.3.0-preview-20170710-01\tools\net46\**\*.*">
+      <Visible>false</Visible>
+    </VsTestConsole>
+    <VsTestConsole Remove="..\..\..\packages\Microsoft.TestPlatform.15.3.0-preview-20170710-01\tools\net46\Extensions\**\*.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <VsTestConsoleExtensions Include="..\..\..\packages\Microsoft.TestPlatform.15.3.0-preview-20170710-01\tools\net46\Extensions\Microsoft.TestPlatform.TestHostRuntimeProvider.dll">
+      <Visible>false</Visible>
+    </VsTestConsoleExtensions>
+    <VsTestConsoleExtensions Include="..\..\..\packages\Microsoft.TestPlatform.15.3.0-preview-20170710-01\tools\net46\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.Trx.TestLogger.dll">
+      <Visible>false</Visible>
+    </VsTestConsoleExtensions>
+  </ItemGroup>
+  <Target Name="CopyTestAdapters" BeforeTargets="Build">
+    <Copy SourceFiles="@(XUnitTestAdapterFiles)" DestinationFolder="$(OutputPath)\XUnitAdapter\%(RecursiveDir)" />
+    <!--<Copy SourceFiles="@(NUnit2TestAdapterFiles)" DestinationFolder="$(OutputPath)\NUnit2Adapter\%(RecursiveDir)" />-->
+    <Copy SourceFiles="@(NUnit3TestAdapterFiles)" DestinationFolder="$(OutputPath)\NUnit3Adapter\%(RecursiveDir)" />
+    <Copy SourceFiles="@(NUnit3TestCoreAdapterFiles)" DestinationFolder="$(OutputPath)\NUnit3CoreAdapter\%(RecursiveDir)" />
+    <Copy SourceFiles="@(MSTestAdapterFiles)" DestinationFolder="$(OutputPath)\MSTestAdapter\%(RecursiveDir)" />
+    <Copy SourceFiles="@(VsTestConsole)" DestinationFolder="$(OutputPath)\VsTestConsole\%(RecursiveDir)" />
+    <Copy SourceFiles="@(VsTestConsoleExtensions)" DestinationFolder="$(OutputPath)\VsTestConsole\Extensions\" />
+  </Target>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

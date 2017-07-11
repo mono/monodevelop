@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreTestProvider.cs
+// IVsTestTestProvider.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,31 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.PackageManagement;
+using System.Collections.Generic;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using MonoDevelop.Projects;
-using MonoDevelop.UnitTesting;
 
-namespace MonoDevelop.DotNetCore.UnitTesting
+namespace MonoDevelop.UnitTesting.VsTest
 {
-	class DotNetCoreTestProvider : ITestProvider
+	interface IVsTestTestProvider
 	{
-		public UnitTest CreateUnitTest (WorkspaceObject entry)
-		{
-			var project = entry as DotNetProject;
-			if (project == null)
-				return null;
-
-			var dotNetCoreProject = project.GetFlavor<DotNetCoreProjectExtension> ();
-			if (dotNetCoreProject != null) {
-				if (project.HasPackageReference ("Microsoft.NET.Test.Sdk"))
-					return new DotNetCoreProjectTestSuite (dotNetCoreProject);
-			}
-
-			return null;
-		}
-
-		public void Dispose ()
-		{
-		}
+		Project Project { get; }
+		IEnumerable<TestCase> GetTests ();
 	}
 }

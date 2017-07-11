@@ -1,5 +1,5 @@
 ﻿//
-// IDotNetCoreTestProvider.cs
+// IVsTestTestRunner.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,13 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using System.Threading.Tasks;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.UnitTesting;
 
-namespace MonoDevelop.DotNetCore.UnitTesting
+namespace MonoDevelop.UnitTesting.VsTest
 {
-	interface IDotNetCoreTestProvider
+	interface IVsTestTestRunner
 	{
-		IEnumerable<TestCase> GetTests ();
+		bool CanRunTests (IExecutionHandler executionContext);
+		Task<UnitTestResult> RunTest (TestContext testContext, IVsTestTestProvider testProvider);
 	}
 }

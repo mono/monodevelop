@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreTestClass.cs
+// DiscoveredTests.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,45 +24,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using MonoDevelop.Core.Execution;
 using MonoDevelop.UnitTesting;
 
-namespace MonoDevelop.DotNetCore.UnitTesting
+namespace MonoDevelop.UnitTesting.VsTest
 {
-	class DotNetCoreTestClass : UnitTestGroup, IDotNetCoreTestProvider
+	class DiscoveredTests
 	{
-		IDotNetCoreTestRunner testRunner;
+		readonly List<TestCase> tests = new List<TestCase> ();
 
-		public DotNetCoreTestClass (IDotNetCoreTestRunner testRunner, string name)
-			: base (name)
-		{
-			this.testRunner = testRunner;
-			FixtureTypeName = name;
+		public IEnumerable<TestCase> Tests {
+			get { return tests; }
 		}
 
-		protected override UnitTestResult OnRun (TestContext testContext)
+		public void Add (IEnumerable<TestCase> newTests)
 		{
-			return testRunner.RunTest (testContext, this);
+			tests.AddRange (newTests);
 		}
 
-		protected override bool OnCanRun (IExecutionHandler executionContext)
+		public IEnumerable<UnitTest> BuildTestInfo (VsTestProjectTestSuite projectTestSuite)
 		{
-			return testRunner.CanRunTests (executionContext);
+			tests.Sort (OrderByName);
+
+			var parentNamespace = new VsTestNamespaceTestGroup (projectTestSuite, null, projectTestSuite.Project, String.Empty);
+			parentNamespace.AddTests (tests);
+			return parentNamespace.Tests;
 		}
 
-		public override bool HasTests {
-			get { return true; }
-		}
-
-		public IEnumerable<TestCase> GetTests ()
+		static int OrderByName (TestCase x, TestCase y)
 		{
-			foreach (IDotNetCoreTestProvider testProvider in Tests) {
-				foreach (TestCase childTest in testProvider.GetTests ()) {
-					yield return childTest;
-				}
-			}
+			return StringComparer.Ordinal.Compare (x.FullyQualifiedName, y.FullyQualifiedName);
 		}
 	}
 }
