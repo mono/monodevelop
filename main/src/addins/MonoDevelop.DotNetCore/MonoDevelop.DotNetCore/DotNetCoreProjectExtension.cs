@@ -608,5 +608,39 @@ namespace MonoDevelop.DotNetCore
 			await base.OnReevaluateProject (monitor);
 			UpdateHiddenFiles (Project.Files);
 		}
+
+		/// <summary>
+		/// Returns all transitive project references.
+		/// </summary>
+		protected override IEnumerable<DotNetProjectAliases> OnGetReferencedAssemblyProjectAliases (ConfigurationSelector configuration)
+		{
+			var projectAliases = new List<DotNetProjectAliases> ();
+
+			var traversedProjects = new HashSet<string> ();
+			traversedProjects.Add (Project.ItemId);
+
+			GetProjectAliases (traversedProjects, projectAliases, configuration);
+
+			return projectAliases;
+		}
+
+		/// <summary>
+		/// Recursively gets all project aliases for .NET Core projects. Calling
+		/// base.OnGetReferencedAssemblyProjectAliases returns the directly referenced project aliases.
+		/// </summary>
+		void GetProjectAliases (HashSet<string> traversedProjects, List<DotNetProjectAliases> projectAliases, ConfigurationSelector configuration)
+		{
+			foreach (var projectAlias in base.OnGetReferencedAssemblyProjectAliases (configuration)) {
+				if (traversedProjects.Contains (projectAlias.Project.ItemId))
+					continue;
+
+				projectAliases.Add (projectAlias);
+				traversedProjects.Add (projectAlias.Project.ItemId);
+
+				var extension = projectAlias.Project.AsFlavor<DotNetCoreProjectExtension> ();
+				if (extension != null)
+					extension.GetProjectAliases (traversedProjects, projectAliases, configuration);
+			}
+		}
 	}
 }
