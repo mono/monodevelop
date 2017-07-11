@@ -53,7 +53,6 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			foreach (var p in packages) {
 				yield return new PackageInstallerServiceFactory.PackageMetadata (p.PackageIdentity.Id, p.PackageIdentity.Version.ToFullString ());
 			}
-
 		}
 
 		public IEnumerable<KeyValuePair<string, string>> GetSources (bool includeUnOfficial, bool includeDisabled)
@@ -78,12 +77,14 @@ namespace MonoDevelop.PackageManagement.Refactoring
 
 		public void InstallLatestPackage (string source, Project project, string packageId, bool includePrerelease, bool ignoreDependencies)
 		{
-			throw new NotImplementedException ();
+			// TODO
+			ShowManagePackagesDialog (packageId);
 		}
 
 		public void InstallPackage (string source, Project project, string packageId, string version, bool ignoreDependencies)
 		{
-			throw new NotImplementedException ();
+			// TODO
+			ShowManagePackagesDialog (packageId);
 		}
 
 		public bool IsPackageInstalled (Project project, string id)
@@ -130,7 +131,10 @@ namespace MonoDevelop.PackageManagement.Refactoring
 
 		public void ShowManagePackagesDialog (string packageName)
 		{
-			MessageService.ShowMessage ("TODO: show managed packages dialog: " + packageName);
+ 			Runtime.RunInMainThread (delegate {
+				var runner = new AddPackagesDialogRunner ();
+				runner.Run ();
+			});
 		}
 	}
 }

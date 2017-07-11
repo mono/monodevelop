@@ -54,6 +54,8 @@ namespace MonoDevelop.Refactoring.PackageInstaller
 
 		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
 		{
+			if (PackageServices == null)
+				return null;
 			return service.Value;
 		}
 
