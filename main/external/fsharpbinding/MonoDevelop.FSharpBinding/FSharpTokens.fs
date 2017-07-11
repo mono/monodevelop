@@ -1,9 +1,10 @@
 ﻿namespace MonoDevelop.FSharp
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop
+open MonoDevelop.Core
+open MonoDevelop.FSharp.Shared
 open MonoDevelop.Ide.Editor
 open ExtCore.Control
-open MonoDevelop.Core
 open System.IO
 
 module Tokens =

@@ -1,9 +1,7 @@
 ﻿namespace MonoDevelopTests
 open NUnit.Framework
 open FsUnit
-open MonoDevelop.FSharp
-open ExtCore
-
+open MonoDevelop.FSharp.Shared
 
 [<TestFixture>]
 type ParsingTests() =
