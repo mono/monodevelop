@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharp.Completion
 	class RoslynCompletionData : CompletionData
 	{
 		readonly Microsoft.CodeAnalysis.Document doc;
-		readonly ITextSnapshot triggerBuffer;
+		readonly ITextSnapshot triggerSnapshot;
 		readonly CompletionService completionService;
 
 		public CompletionItem CompletionItem { get; private set; }
@@ -67,10 +67,10 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		public RoslynCompletionData (Microsoft.CodeAnalysis.Document document, ITextBuffer triggerBuffer, CompletionService completionService, CompletionItem completionItem)
+		public RoslynCompletionData (Microsoft.CodeAnalysis.Document document, ITextSnapshot triggerSnapshot, CompletionService completionService, CompletionItem completionItem)
 		{
 			this.doc = document;
-			this.triggerBuffer = triggerBuffer.CurrentSnapshot;
+			this.triggerSnapshot = triggerSnapshot;
 			this.completionService = completionService;
 			CompletionItem = completionItem;
 			provider = new Lazy<CompletionProvider> (delegate {
@@ -148,19 +148,14 @@ namespace MonoDevelop.CSharp.Completion
 			var currentBuffer = editor.GetPlatformTextBuffer ();
 			var textChange = completionChange.TextChange;
 
-			// roslyn mapped span translation:
-			//var triggerSnapshotSpan = new SnapshotSpan (triggerBuffer, new Span (textChange.Span.Start, textChange.Span.Length));
-			//var mappedSpan = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
+			var triggerSnapshotSpan = new SnapshotSpan (triggerSnapshot, new Span (textChange.Span.Start, textChange.Span.Length));
+			var mappedSpan = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
 
-			// xamarin studio way:
-			int partialWordLength = window.PartialWord != null ? window.PartialWord.Length : 0;
-			var replaceLength = window.CodeCompletionContext.TriggerWordLength + partialWordLength - window.InitialWordLength;
-			var mappedSpan = new Span (window.StartOffset, replaceLength);
-
-			window.CompletionWidget.Replace (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
+			editor.ReplaceText (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
 
 			if (completionChange.NewPosition.HasValue)
-				window.CompletionWidget.CaretOffset = completionChange.NewPosition.Value;
+				editor.CaretOffset = completionChange.NewPosition.Value;
+			
 			if (CompletionItem.Rules.FormatOnCommit) {
 				var endOffset = mappedSpan.Start + completionChange.TextChange.NewText.Length;
 				OnTheFlyFormatter.Format (editor, document, mappedSpan.Start, endOffset);

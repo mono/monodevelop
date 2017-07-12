@@ -449,7 +449,7 @@ namespace MonoDevelop.CSharp.Completion
 				kind = CompletionTriggerKind.Insertion;
 				break;
 			}
-			var triggerBuffer = Editor.GetPlatformTextBuffer ();
+			var triggerSnapshot = Editor.GetPlatformTextBuffer ().CurrentSnapshot;
 			var trigger = new CompletionTrigger(kind, triggerInfo.TriggerCharacter.HasValue ? triggerInfo.TriggerCharacter.Value : '\0');
 			if (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CharTyped) {
 				if (!cs.ShouldTriggerCompletion (sourceText, completionContext.TriggerOffset, trigger, null)) {
@@ -466,7 +466,7 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (var item in completionList.Items) {
 				if (string.IsNullOrEmpty (item.DisplayText))
 					continue;
-				var data = new RoslynCompletionData (analysisDocument, triggerBuffer, cs, item);
+				var data = new RoslynCompletionData (analysisDocument, triggerSnapshot, cs, item);
 				result.Add (data);
 			}
 
