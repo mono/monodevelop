@@ -116,7 +116,17 @@ namespace MonoDevelop.PackageManagement.Refactoring
 
 		public void UninstallPackage (Project project, string packageId, bool removeDependencies)
 		{
-			throw new NotImplementedException ();
+			Runtime.RunInMainThread (delegate {
+				var action = new UninstallNuGetPackageAction (
+					PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution),
+					new DotNetProjectProxy ((DotNetProject)project)) {
+					PackageId = packageId,
+					RemoveDependencies = removeDependencies
+				};
+
+				var message = ProgressMonitorStatusMessageFactory.CreateRemoveSinglePackageMessage (packageId);
+				PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
+			});
 		}
 
 		public Task<IEnumerable<(string PackageName, string Version, int Rank)>> FindPackagesWithAssemblyAsync (string source, string assemblyName, CancellationToken cancellationToken)
