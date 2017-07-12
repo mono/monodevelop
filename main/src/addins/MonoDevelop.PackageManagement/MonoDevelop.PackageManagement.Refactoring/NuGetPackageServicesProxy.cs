@@ -33,6 +33,8 @@ using System.Linq;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
+using NuGet.Configuration;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Refactoring
 {
@@ -77,14 +79,34 @@ namespace MonoDevelop.PackageManagement.Refactoring
 
 		public void InstallLatestPackage (string source, Project project, string packageId, bool includePrerelease, bool ignoreDependencies)
 		{
-			// TODO
-			ShowManagePackagesDialog (packageId);
+			InstallPackage (source, project, packageId, null, includePrerelease, false);
 		}
 
 		public void InstallPackage (string source, Project project, string packageId, string version, bool ignoreDependencies)
 		{
-			// TODO
-			ShowManagePackagesDialog (packageId);
+			InstallPackage (source, project, packageId, version, false, ignoreDependencies);
+		}
+
+		void InstallPackage (string source, Project project, string packageId, string version, bool includePrerelease, bool ignoreDependencies)
+		{
+			Runtime.RunInMainThread (delegate {
+				var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+				var repository = repositoryProvider.CreateRepository (new PackageSource (source));
+
+				var action = new InstallNuGetPackageAction (
+					new [] { repository },
+					PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution),
+					new DotNetProjectProxy ((DotNetProject)project),
+					new NuGetProjectContext ()) {
+					PackageId = packageId,
+					Version = string.IsNullOrEmpty (version) ? null : new NuGetVersion (version),
+					IncludePrerelease = includePrerelease,
+					IgnoreDependencies = ignoreDependencies,
+				};
+
+				var message = ProgressMonitorStatusMessageFactory.CreateInstallingSinglePackageMessage (packageId);
+				PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
+			});
 		}
 
 		public bool IsPackageInstalled (Project project, string id)
