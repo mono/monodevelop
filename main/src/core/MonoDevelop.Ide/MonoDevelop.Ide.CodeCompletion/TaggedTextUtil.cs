@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.TypeSystem;
 
-namespace MonoDevelop.CSharp.Completion
+namespace MonoDevelop.Ide.CodeCompletion
 {
 	static class TaggedTextUtil
 	{

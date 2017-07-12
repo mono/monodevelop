@@ -1,5 +1,5 @@
 ﻿//
-// CompletionDataWrapper.cs
+// RoslynCompletionData.cs
 //
 // Author:
 //       Mike Krüger <mikkrg@microsoft.com>
@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -36,7 +37,6 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide;
-using Microsoft.CodeAnalysis.CSharp.Completion;
 using MonoDevelop.Ide.Gui;
 using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text;
@@ -45,43 +45,18 @@ using System.Linq;
 using System.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Fonts;
-using MonoDevelop.CSharp.Formatting;
 
-namespace MonoDevelop.CSharp.Completion
+namespace MonoDevelop.Ide.CodeCompletion
 {
-	class RoslynCompletionData : CompletionData
+	public abstract class RoslynCompletionData : CompletionData
 	{
-		readonly Microsoft.CodeAnalysis.Document doc;
-		readonly ITextSnapshot triggerSnapshot;
-		readonly CompletionService completionService;
+		protected readonly Microsoft.CodeAnalysis.Document doc;
+		protected readonly ITextSnapshot triggerSnapshot;
+		protected readonly CompletionService completionService;
 
 		public CompletionItem CompletionItem { get; private set; }
 
 		public override CompletionItemRules Rules { get { return CompletionItem.Rules; } }
-
-		Lazy<CompletionProvider> provider;
-
-		public CompletionProvider Provider {
-			get {
-				return provider.Value;
-			}
-		}
-
-		public RoslynCompletionData (Microsoft.CodeAnalysis.Document document, ITextSnapshot triggerSnapshot, CompletionService completionService, CompletionItem completionItem)
-		{
-			this.doc = document;
-			this.triggerSnapshot = triggerSnapshot;
-			this.completionService = completionService;
-			CompletionItem = completionItem;
-			provider = new Lazy<CompletionProvider> (delegate {
-				return ((CSharpCompletionService)completionService).GetProvider (CompletionItem);
-			});
-		}
-
-		public override bool MuteCharacter (char keyChar, string partialWord)
-		{
-			return false;
-		}
 
 		public override string DisplayText {
 			get {
@@ -102,11 +77,14 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		public abstract CompletionProvider Provider { get; }
+
+		protected abstract string MimeType { get; }
 
 		public override IconId Icon {
 			get {
 				if (CompletionItem.Tags.Contains ("Snippet")) {
-					var template = CodeTemplateService.GetCodeTemplates (CSharp.Formatting.CSharpFormatter.MimeType).FirstOrDefault (t => t.Shortcut == CompletionItem.DisplayText);
+					var template = CodeTemplateService.GetCodeTemplates (MimeType).FirstOrDefault (t => t.Shortcut == CompletionItem.DisplayText);
 					if (template != null)
 						return template.Icon;
 				}
@@ -114,6 +92,14 @@ namespace MonoDevelop.CSharp.Completion
 				var type = GetItemType ();
 				return "md-" + modifier + type;
 			}
+		}
+
+		public RoslynCompletionData (Microsoft.CodeAnalysis.Document document, ITextSnapshot triggerSnapshot, CompletionService completionService, CompletionItem completionItem)
+		{
+			this.doc = document;
+			this.triggerSnapshot = triggerSnapshot;
+			this.completionService = completionService;
+			CompletionItem = completionItem;
 		}
 
 		public override string GetDisplayDescription (bool isSelected)
@@ -128,38 +114,6 @@ namespace MonoDevelop.CSharp.Completion
 			if (CompletionItem.Properties.TryGetValue ("RightSideMarkup", out string result))
 				return result;
 			return null;
-		}
-
-		public override bool IsCommitCharacter (char keyChar, string partialWord)
-		{
-			return base.IsCommitCharacter (keyChar, partialWord);
-		}
-
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
-		{
-			var document = IdeApp.Workbench.ActiveDocument;
-			var editor = document?.Editor;
-			if (editor == null || Provider == null) {
-				base.InsertCompletionText (window, ref ka, descriptor);
-				return;
-			}
-			var completionChange = Provider.GetChangeAsync (doc, CompletionItem, null, default (CancellationToken)).WaitAndGetResult (default (CancellationToken));
-
-			var currentBuffer = editor.GetPlatformTextBuffer ();
-			var textChange = completionChange.TextChange;
-
-			var triggerSnapshotSpan = new SnapshotSpan (triggerSnapshot, new Span (textChange.Span.Start, textChange.Span.Length));
-			var mappedSpan = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
-
-			editor.ReplaceText (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
-
-			if (completionChange.NewPosition.HasValue)
-				editor.CaretOffset = completionChange.NewPosition.Value;
-			
-			if (CompletionItem.Rules.FormatOnCommit) {
-				var endOffset = mappedSpan.Start + completionChange.TextChange.NewText.Length;
-				OnTheFlyFormatter.Format (editor, document, mappedSpan.Start, endOffset);
-			}
 		}
 
 		static Dictionary<string, string> roslynCompletionTypeTable = new Dictionary<string, string> {
@@ -248,6 +202,35 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
+		{
+			var document = IdeApp.Workbench.ActiveDocument;
+			var editor = document?.Editor;
+			if (editor == null || Provider == null) {
+				base.InsertCompletionText (window, ref ka, descriptor);
+				return;
+			}
+			var completionChange = Provider.GetChangeAsync (doc, CompletionItem, null, default (CancellationToken)).WaitAndGetResult (default (CancellationToken));
+
+			var currentBuffer = editor.GetPlatformTextBuffer ();
+			var textChange = completionChange.TextChange;
+
+			var triggerSnapshotSpan = new SnapshotSpan (triggerSnapshot, new Span (textChange.Span.Start, textChange.Span.Length));
+			var mappedSpan = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
+
+			editor.ReplaceText (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
+
+			if (completionChange.NewPosition.HasValue)
+				editor.CaretOffset = completionChange.NewPosition.Value;
+
+			if (CompletionItem.Rules.FormatOnCommit) {
+				var endOffset = mappedSpan.Start + completionChange.TextChange.NewText.Length;
+				Format (editor, document, mappedSpan.Start, endOffset);
+			}
+		}
+
+		protected abstract void Format (TextEditor editor, Gui.Document document, SnapshotPoint start, SnapshotPoint end);
+
 		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{
 			var description = await completionService.GetDescriptionAsync (doc, CompletionItem);
@@ -275,4 +258,5 @@ namespace MonoDevelop.CSharp.Completion
 			};
 		}
 	}
+
 }

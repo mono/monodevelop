@@ -657,7 +657,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			base.Initialize ();
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
-			CompletionWidget = CompletionWidget ?? DocumentContext.GetContent <ICompletionWidget> ();
+			CompletionWidget = CompletionWidget ?? DocumentContext.GetContent<ICompletionWidget> ();           
 			Editor.CaretPositionChanged += HandlePositionChanged;
 //			document.Editor.Paste += HandlePaste;
 			Editor.FocusLost += HandleFocusOutEvent;

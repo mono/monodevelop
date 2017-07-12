@@ -466,7 +466,7 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (var item in completionList.Items) {
 				if (string.IsNullOrEmpty (item.DisplayText))
 					continue;
-				var data = new RoslynCompletionData (analysisDocument, triggerSnapshot, cs, item);
+				var data = new CSharpCompletionData (analysisDocument, triggerSnapshot, cs, item);
 				result.Add (data);
 			}
 

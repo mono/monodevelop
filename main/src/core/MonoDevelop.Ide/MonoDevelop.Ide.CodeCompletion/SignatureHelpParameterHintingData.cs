@@ -38,8 +38,11 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide.Fonts;
 
-namespace MonoDevelop.CSharp.Completion
+namespace MonoDevelop.Ide.CodeCompletion
 {
+	/// <summary>
+	/// SignatureHelpItem is internal, therefore this class has only internal visibility.
+	/// </summary>
 	class SignatureHelpParameterHintingData : Ide.CodeCompletion.ParameterHintingData
 	{
 		public SignatureHelpParameterHintingData (SignatureHelpItem item)
