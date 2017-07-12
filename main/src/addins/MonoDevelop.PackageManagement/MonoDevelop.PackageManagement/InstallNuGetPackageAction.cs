@@ -107,6 +107,7 @@ namespace MonoDevelop.PackageManagement
 		public string PackageId { get; set; }
 		public NuGetVersion Version { get; set; }
 		public bool IncludePrerelease { get; set; }
+		public bool IgnoreDependencies { get; set; }
 		public bool LicensesMustBeAccepted { get; set; }
 		public bool PreserveLocalCopyReferences { get; set; }
 		public bool OpenReadmeFile { get; set; }
@@ -198,11 +199,19 @@ namespace MonoDevelop.PackageManagement
 		ResolutionContext CreateResolutionContext (bool includeUnlisted = true)
 		{
 			return new ResolutionContext (
-				DependencyBehavior.Lowest,
+				GetDependencyBehavior (),
 				IncludePrerelease || IsPrereleasePackageBeingInstalled (),
 				includeUnlisted,
 				VersionConstraints.None
 			);
+		}
+
+		DependencyBehavior GetDependencyBehavior ()
+		{
+			if (IgnoreDependencies)
+				return DependencyBehavior.Ignore;
+
+			return DependencyBehavior.Lowest;
 		}
 
 		bool IsPrereleasePackageBeingInstalled ()

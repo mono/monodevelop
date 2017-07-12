@@ -478,6 +478,18 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsTrue (packageManager.PreviewInstallResolutionContext.IncludePrerelease);
 		}
+
+		[Test]
+		public void Execute_IgnoreDependenciesTrue_ResolutionContextIgnoresDependencies ()
+		{
+			CreateAction ("Test", "1.2-beta1");
+			action.LicensesMustBeAccepted = false;
+			action.IgnoreDependencies = true;
+
+			action.Execute ();
+
+			Assert.AreEqual (DependencyBehavior.Ignore, packageManager.PreviewInstallResolutionContext.DependencyBehavior);
+		}
 	}
 }
 
