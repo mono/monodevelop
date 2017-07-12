@@ -94,6 +94,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void SetupAccessibility ()
 		{
+			label91.Accessible.Role = Atk.Role.Filler;
 			assemblyNameEntry.SetCommonAccessibilityAttributes ("OutputOptionsPanel.AssemblyEntry",
 			                                                    GettextCatalog.GetString ("Assembly Name"),
 			                                                    GettextCatalog.GetString ("Enter the name of the output assembly"));
