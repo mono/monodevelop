@@ -126,6 +126,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			AXCell,
 			AXColumn,
 			AXGroup,
+			AXGrowArea,
 			AXImage,
 			AXLink,
 			AXList,

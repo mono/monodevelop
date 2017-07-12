@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.Ide
@@ -52,13 +53,19 @@ namespace MonoDevelop.Ide
 			Spacing = 0;
 			HasResizeGrip = true;
 
+			Accessible.Role = Atk.Role.Filler;
+
 			HeaderBox hb = new HeaderBox (1, 0, 0, 0);
+			hb.Accessible.Role = Atk.Role.Filler;
 			hb.StyleSet += (o, args) => {
 				hb.BorderColor = Styles.DockSeparatorColor.ToGdkColor ();
 				hb.BackgroundColor = Styles.DockBarBackground.ToGdkColor ();
 			};
 			var mainBox = new HBox ();
-			mainBox.PackStart (new Label (""), true, true, 0);
+			mainBox.Accessible.Role = Atk.Role.Filler;
+			var alignment = new Alignment (0f, 0f, 0f, 0f);
+			alignment.Accessible.Role = Atk.Role.Filler;
+			mainBox.PackStart (alignment, true, true, 0);
 			hb.Add (mainBox);
 			hb.ShowAll ();
 			PackStart (hb, true, true, 0);
@@ -67,15 +74,26 @@ namespace MonoDevelop.Ide
 			
 			if (FeedbackService.Enabled) {
 				CustomFrame fr = new CustomFrame (0, 0, 1, 0);
+				fr.Accessible.Role = Atk.Role.Filler;
 				var px = Xwt.Drawing.Image.FromResource ("feedback-16.png");
 				HBox b = new HBox (false, 3);
-				b.PackStart (new Xwt.ImageView (px).ToGtkWidget ());
-				b.PackStart (new Gtk.Label ("Feedback"));
+				b.Accessible.Role = Atk.Role.Filler;
+
+				var im = new Xwt.ImageView (px).ToGtkWidget ();
+				im.Accessible.Role = Atk.Role.Filler;
+				b.PackStart (im);
+				var label = new Gtk.Label (GettextCatalog.GetString ("Feedback"));
+				label.Accessible.Role = Atk.Role.Filler;
+				b.PackStart (label);
 				Gtk.Alignment al = new Gtk.Alignment (0f, 0f, 1f, 1f);
+				al.Accessible.Role = Atk.Role.Filler;
 				al.RightPadding = 5;
 				al.LeftPadding = 3;
 				al.Add (b);
 				feedbackButton = new MiniButton (al);
+				feedbackButton.Accessible.SetLabel (GettextCatalog.GetString ("Feedback"));
+				feedbackButton.Accessible.Description = GettextCatalog.GetString ("Click to send feedback to the development team");
+
 				//feedbackButton.BackroundColor = new Gdk.Color (200, 200, 255);
 				fr.Add (feedbackButton);
 				mainBox.PackStart (fr, false, false, 0);
@@ -99,6 +117,7 @@ namespace MonoDevelop.Ide
 			// Dock area
 			
 			CustomFrame dfr = new CustomFrame (0, 0, 1, 0);
+			dfr.Accessible.Role = Atk.Role.Filler;
 			dfr.StyleSet += (o, args) => {
 				dfr.BorderColor = Styles.DockSeparatorColor.ToGdkColor ();
 			};
@@ -113,6 +132,7 @@ namespace MonoDevelop.Ide
 
 			// Resize grip
 
+			resizeGrip.Accessible.SetRole (AtkCocoa.Roles.AXGrowArea);
 			resizeGrip.WidthRequest = ResizeGripWidth;
 			resizeGrip.HeightRequest = 0;
 			resizeGrip.VisibleWindow = false;
