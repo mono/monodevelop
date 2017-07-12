@@ -103,6 +103,10 @@ namespace MonoDevelop.PackageManagement
 			return null;
 		}
 
+		public IDotNetProject Project {
+			get { return new DotNetProjectProxy (project); }
+		}
+
 		public virtual Task SaveProject ()
 		{
 			return project.SaveAsync (new ProgressMonitor ());

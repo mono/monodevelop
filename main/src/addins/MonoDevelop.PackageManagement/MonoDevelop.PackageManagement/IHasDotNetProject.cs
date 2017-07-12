@@ -31,5 +31,6 @@ namespace MonoDevelop.PackageManagement
 	interface IHasDotNetProject
 	{
 		Task SaveProject ();
+		IDotNetProject Project { get; }
 	}
 }

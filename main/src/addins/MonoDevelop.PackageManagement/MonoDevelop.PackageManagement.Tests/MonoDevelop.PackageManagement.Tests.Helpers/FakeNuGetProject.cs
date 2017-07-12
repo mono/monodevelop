@@ -39,7 +39,7 @@ using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	class FakeNuGetProject : NuGetProject, IBuildIntegratedNuGetProject
+	class FakeNuGetProject : NuGetProject, IBuildIntegratedNuGetProject, IHasDotNetProject
 	{
 		public FakeNuGetProject (IDotNetProject project)
 		{
@@ -109,6 +109,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void NotifyProjectReferencesChanged ()
 		{
+		}
+
+		public Task SaveProject ()
+		{
+			return Task.FromResult (0);
 		}
 	}
 }

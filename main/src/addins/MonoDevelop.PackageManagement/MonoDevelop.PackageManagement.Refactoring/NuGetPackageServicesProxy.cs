@@ -152,13 +152,21 @@ namespace MonoDevelop.PackageManagement.Refactoring
 
 		public ImmutableArray<string> GetInstalledVersions (string packageName)
 		{
-			return ImmutableArray<string>.Empty;
-		}		
+			return Runtime.RunInMainThread (async delegate {
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
+				var versions = await solutionManager.GetInstalledVersions (packageName).ConfigureAwait (false);
+				var versionStrings = versions.Select (version => version.ToFullString ()).ToArray ();
+				return ImmutableArray.Create (versionStrings);
+			}).WaitAndGetResult (default (CancellationToken));
+		}
 
-		public IEnumerable<MonoDevelop.Projects.Project> GetProjectsWithInstalledPackage (MonoDevelop.Projects.Solution solution, string packageName, string version)
+		public IEnumerable<Project> GetProjectsWithInstalledPackage (Solution solution, string packageName, string version)
 		{
-			var result = new List<MonoDevelop.Projects.Project> ();
-			return result;
+			return Runtime.RunInMainThread (async delegate {
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (solution);
+				var projects = await solutionManager.GetProjectsWithInstalledPackage (packageName, version).ConfigureAwait (false);
+				return projects.Select (project => project.DotNetProject);
+			}).WaitAndGetResult (default (CancellationToken));
 		}
 
 		public void ShowManagePackagesDialog (string packageName)

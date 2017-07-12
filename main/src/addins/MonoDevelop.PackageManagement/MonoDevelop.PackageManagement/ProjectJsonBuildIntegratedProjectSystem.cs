@@ -69,7 +69,7 @@ namespace MonoDevelop.PackageManagement
 			return dotNetProject.SaveAsync ();
 		}
 
-		public DotNetProjectProxy Project {
+		public IDotNetProject Project {
 			get { return dotNetProject; }
 		}
 

@@ -126,7 +126,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public IEnumerable<NuGetProject> GetNuGetProjects ()
 		{
-			throw new NotImplementedException ();
+			return NuGetProjects.Values;
 		}
 
 		public string GetNuGetProjectSafeName (NuGetProject nuGetProject)

@@ -24,13 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
-using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
@@ -77,6 +77,23 @@ namespace MonoDevelop.PackageManagement
 			if (buildIntegratedProject != null) {
 				buildIntegratedProject.OnBeforeUninstall (actions);
 			}
+		}
+
+		public static IDotNetProject GetDotNetProject (this NuGetProject project)
+		{
+			IHasDotNetProject hasProject = null;
+
+			var msbuildProject = project as MSBuildNuGetProject;
+			if (msbuildProject != null)
+				hasProject = msbuildProject.MSBuildNuGetProjectSystem as IHasDotNetProject;
+
+			if (hasProject == null)
+				hasProject = project as IHasDotNetProject;
+
+			if (hasProject != null)
+				return hasProject.Project;
+
+			throw new ApplicationException (string.Format ("Unsupported NuGetProject type: {0}", project.GetType ().FullName));
 		}
 	}
 }

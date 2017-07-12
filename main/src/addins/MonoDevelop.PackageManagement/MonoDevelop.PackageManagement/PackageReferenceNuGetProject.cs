@@ -74,6 +74,10 @@ namespace MonoDevelop.PackageManagement
 			projectName = project.Name;
 		}
 
+		public IDotNetProject Project {
+			get { return new DotNetProjectProxy (project); }
+		}
+
 		internal DotNetProject DotNetProject {
 			get { return project; }
 		}

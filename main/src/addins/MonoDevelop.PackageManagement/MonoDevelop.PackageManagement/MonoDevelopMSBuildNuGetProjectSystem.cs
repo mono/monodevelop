@@ -120,6 +120,10 @@ namespace MonoDevelop.PackageManagement
 			return NuGetFramework.Parse (projectTargetFramework.TargetFrameworkName.FullName);
 		}
 
+		public IDotNetProject Project {
+			get { return project; }
+		}
+
 		public Task SaveProject ()
 		{
 			return project.SaveAsync ();
