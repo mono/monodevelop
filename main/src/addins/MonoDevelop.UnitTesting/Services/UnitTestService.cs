@@ -306,17 +306,17 @@ namespace MonoDevelop.UnitTesting
 				RebuildTests ();
 		}
 
-		static CancellationTokenSource trottling = new CancellationTokenSource ();
+		static CancellationTokenSource throttling = new CancellationTokenSource ();
 
 		static void ProjectOperations_PackageReferencesModified (object sender, PackageManagementPackageReferenceEventArgs e)
 		{
-			trottling.Cancel ();
-			trottling = new CancellationTokenSource ();
-			Task.Delay (1000, trottling.Token).ContinueWith ((task) => {
+			throttling.Cancel ();
+			throttling = new CancellationTokenSource ();
+			Task.Delay (1000, throttling.Token).ContinueWith ((task) => {
 				if (task.IsCanceled)
 					return;
 				RebuildTests ();
-			}, trottling.Token, TaskContinuationOptions.None, Runtime.MainTaskScheduler);
+			}, throttling.Token, TaskContinuationOptions.None, Runtime.MainTaskScheduler);
 		}
 
 		static bool IsSolutionGroupPresent (Solution sol, IEnumerable<UnitTest> tests)
