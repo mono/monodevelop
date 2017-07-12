@@ -131,6 +131,7 @@ namespace MonoDevelop.CSharp.Project
 
 		void SetupAccessibility ()
 		{
+			label76.Accessible.Role = Atk.Role.Filler;
 			compileTargetCombo.SetCommonAccessibilityAttributes ("CodeGeneration.CompileTarget", label86,
 			                                                     GettextCatalog.GetString ("Select the compile target for the code generation"));
 
