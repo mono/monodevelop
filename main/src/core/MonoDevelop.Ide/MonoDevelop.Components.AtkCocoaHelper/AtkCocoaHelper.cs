@@ -128,6 +128,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			AXGroup,
 			AXImage,
 			AXLink,
+			AXList,
 			AXMenuButton,
 			AXPopUpButton,
 			AXRadioButton,
