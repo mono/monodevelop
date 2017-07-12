@@ -111,7 +111,7 @@ namespace MonoDevelop.PackageManagement.Refactoring
 
 		public bool IsPackageInstalled (Project project, string id)
 		{
-			return GetInstalledPackages (project).Any (p => p.Id == id);
+			return GetInstalledPackages (project).Any (p => StringComparer.OrdinalIgnoreCase.Equals (p.Id, id));
 		}
 
 		public void UninstallPackage (Project project, string packageId, bool removeDependencies)
