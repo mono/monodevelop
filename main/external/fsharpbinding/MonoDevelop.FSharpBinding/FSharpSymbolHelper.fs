@@ -194,7 +194,10 @@ module SymbolUse =
         | _ -> None
 
     let inline private notCtorOrProp (symbol:FSharpMemberOrFunctionOrValue) =
-        not symbol.IsConstructor && not symbol.IsPropertyGetterMethod && not symbol.IsPropertySetterMethod
+        not symbol.IsConstructor && 
+        not symbol.IsPropertyGetterMethod && 
+        not symbol.IsPropertySetterMethod &&
+        not (symbol.LogicalName = ".ctor")
 
     let (|Method|_|) (symbolUse:FSharpSymbolUse) =
         match symbolUse with
