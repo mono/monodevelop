@@ -54,6 +54,9 @@ namespace MonoDevelop.Packaging.Gui
 
 		void SetupAccessibility ()
 		{
+			packageDescriptionPaddingLabel.Accessible.Role = Atk.Role.Filler;
+			packageReleaseNotesPaddingLabel.Accessible.Role = Atk.Role.Filler;
+
 			packageIdTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.ID",
 			                                                   GettextCatalog.GetString ("ID"),
 			                                                   GettextCatalog.GetString ("Enter the ID of the NuGet package"));
@@ -133,6 +136,7 @@ namespace MonoDevelop.Packaging.Gui
 			                                                              GettextCatalog.GetString ("Release Notes"),
 			                                                              GettextCatalog.GetString ("Enter the release notes for this NuGet package"));
 			packageReleaseNotesTextView.SetAccessibilityLabelRelationship (packageReleaseNotesLabel);
+
 		}
 
 		internal static System.Action<bool> OnProjectHasMetadataChanged;
