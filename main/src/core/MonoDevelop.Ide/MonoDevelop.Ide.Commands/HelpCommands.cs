@@ -32,6 +32,7 @@ using System.Timers;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -175,5 +176,13 @@ namespace MonoDevelop.Ide.Commands
 			t.Start ();
 		}
 #endif
+	}
+
+	class MarkLogHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			LoggingService.LogInfo ("\n\n--- --- --- --- MARK --- --- --- ---\n\n");
+		}
 	}
 }
