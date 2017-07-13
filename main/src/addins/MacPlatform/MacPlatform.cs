@@ -174,7 +174,8 @@ namespace MonoDevelop.MacIntegration
 			var keyboardMode = NSUserDefaults.StandardUserDefaults.IntForKey ("AppleKeyboardUIMode");
 			// 0 - Text boxes and lists only
 			// 2 - All controls
-			if (keyboardMode == 2) {
+			// 3 - All controls + keyboard access
+			if (keyboardMode != 0) {
 				Gtk.Rc.ParseString ("style \"default\" { engine \"xamarin\" { focusstyle = 2 } }");
 				Gtk.Rc.ParseString ("style \"radio-or-check-box\" { engine \"xamarin\" { focusstyle = 2 } } ");
 			}
