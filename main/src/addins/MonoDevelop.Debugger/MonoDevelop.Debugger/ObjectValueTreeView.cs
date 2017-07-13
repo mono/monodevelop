@@ -79,6 +79,7 @@ namespace MonoDevelop.Debugger
 		readonly ValueCellRenderer crtValue;
 		readonly CellRendererText crtType;
 		readonly CellRendererRoundedButton crpButton;
+		readonly CellRendererImage evaluateStatusCell;
 		readonly CellRendererImage crpPin;
 		readonly CellRendererImage crpLiveUpdate;
 		readonly CellRendererImage crpViewer;
@@ -343,7 +344,7 @@ namespace MonoDevelop.Debugger
 			
 			valueCol = new TreeViewColumn ();
 			valueCol.Title = GettextCatalog.GetString ("Value");
-			var evaluateStatusCell = new CellRendererImage ();
+			evaluateStatusCell = new CellRendererImage ();
 			valueCol.PackStart (evaluateStatusCell, false);
 			valueCol.AddAttribute (evaluateStatusCell, "visible", EvaluateStatusIconVisibleColumn);
 			valueCol.AddAttribute (evaluateStatusCell, "image", EvaluateStatusIconColumn);
@@ -1885,10 +1886,12 @@ namespace MonoDevelop.Debugger
 			CellRenderer cr;
 			TreePath path;
 			bool closePreviewWindow = true;
+			bool clickProcessed = false;
 			
 			TreeIter it;
 			if (CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && store.GetIter (out it, path)) {
 				if (cr == crpViewer) {
+					clickProcessed = true;
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					if (DebuggingService.ShowValueVisualizer (val)) {
 						UpdateParentValue (it);
@@ -1913,6 +1916,7 @@ namespace MonoDevelop.Debugger
 					startPreviewCaret.Y += (int)Vadjustment.Value;
 					if (startPreviewCaret.X < evnt.X &&
 						startPreviewCaret.X + 16 > evnt.X) {
+						clickProcessed = true;
 						if (CompactView) {
 							SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
 						} else {
@@ -1932,6 +1936,7 @@ namespace MonoDevelop.Debugger
 						var url = crtValue.Text.Trim ('"', '{', '}');
 						Uri uri;
 						if (url != null && Uri.TryCreate (url, UriKind.Absolute, out uri) && (uri.Scheme == "http" || uri.Scheme == "https")) {
+							clickProcessed = true;
 							DesktopService.ShowUrl (url);
 						}
 					}
@@ -1942,14 +1947,17 @@ namespace MonoDevelop.Debugger
 						base.OnButtonPressEvent (evnt);//Select row, so base.OnButtonPressEvent below starts editing
 				} else if (!editing) {
 					if (cr == crpButton) {
+						clickProcessed = true;
 						HandleValueButton (it);
 					} else if (cr == crpPin) {
+						clickProcessed = true;
 						TreeIter pi;
 						if (PinnedWatch != null && !store.IterParent (out pi, it))
 							RemovePinnedWatch (it);
 						else
 							CreatePinnedWatch (it);
 					} else if (cr == crpLiveUpdate) {
+						clickProcessed = true;
 						TreeIter pi;
 						if (PinnedWatch != null && !store.IterParent (out pi, it)) {
 							DebuggingService.SetLiveUpdateMode (PinnedWatch, !PinnedWatch.LiveUpdate);
@@ -1966,6 +1974,9 @@ namespace MonoDevelop.Debugger
 				PreviewWindowManager.DestroyWindow ();
 			}
 
+			if (clickProcessed)
+				return true;
+			
 			//HACK: show context menu in release event instead of show event to work around gtk bug
 			if (evnt.TriggersContextMenu ()) {
 				//	ShowPopup (evnt);
@@ -2181,7 +2192,21 @@ namespace MonoDevelop.Debugger
 				foreach (CellRenderer cr in col.CellRenderers) {
 					int xo, w;
 					col.CellGetPosition (cr, out xo, out w);
-					if (cr.Visible && x >= xo && x < xo + w) {
+					var visible = cr.Visible;
+					if (cr == crpViewer) {
+						if (store.GetIter (out var it, path)) {
+							visible = (bool)store.GetValue (it, ViewerButtonVisibleColumn);
+						}
+					} else if (cr == evaluateStatusCell) {
+						if (store.GetIter (out var it, path)) {
+							visible = (bool)store.GetValue (it, EvaluateStatusIconVisibleColumn);
+						}
+					} else if (cr == crpButton) {
+						if (store.GetIter (out var it, path)) {
+							visible = (bool)store.GetValue (it, ValueButtonVisibleColumn);
+						}
+					}
+					if (visible && x >= xo && x < xo + w) {
 						cellRenderer = cr;
 						return true;
 					}
