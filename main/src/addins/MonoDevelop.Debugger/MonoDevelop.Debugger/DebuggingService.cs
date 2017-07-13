@@ -254,11 +254,11 @@ namespace MonoDevelop.Debugger
 			return GetSetConverter<T> (val) != null;
 		}
 
-		public static void ShowValueVisualizer (ObjectValue val)
+		public static bool ShowValueVisualizer (ObjectValue val)
 		{
 			using (var dlg = new ValueVisualizerDialog ()) {
 				dlg.Show (val);
-				MessageService.ShowCustomDialog (dlg);
+				return MessageService.ShowCustomDialog (dlg) == (int)Gtk.ResponseType.Ok;
 			}
 		}
 
