@@ -74,6 +74,22 @@
     <Reference Include="Microsoft.CodeAnalysis.Features">
       <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Cairo" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Features\ParameterHinting\ParameterHintingTests.cs" />
@@ -88,6 +104,13 @@
     <Compile Include="Features\IndentationTests\TextPasteIndentEngineTests.cs" />
     <Compile Include="Features\TestBase.cs" />
     <Compile Include="Features\Util.cs" />
+    <Compile Include="Features\Completion\CastCompletionProviderTests.cs" />
+    <Compile Include="Features\Completion\EnumMemberCompletionProviderTests.cs" />
+    <Compile Include="Features\Completion\DelegateCompletionProviderTests.cs" />
+    <Compile Include="Features\Completion\EventSenderCompletionProviderTests.cs" />
+    <Compile Include="Features\Completion\RegexCompletionProviderTests.cs" />
+    <Compile Include="Features\Completion\FormatItemCompletionProviderTests.cs" />
+    <Compile Include="Features\Completion\AbstractCSharpCompletionProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
@@ -120,7 +143,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Features\IndentEngine\" />
+    <Folder Include="Features\Completion\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

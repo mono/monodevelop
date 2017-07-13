@@ -182,10 +182,17 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		void AddDelegateHandlers (CompletionContext context, SyntaxNode parent, SemanticModel semanticModel, ITypeSymbol delegateType, int position, string optDelegateName, CancellationToken cancellationToken)
 		{
 			var delegateMethod = delegateType.GetDelegateInvokeMethod ();
-			var editor = IdeApp.Workbench.ActiveDocument.Editor;
 
-			var thisLineIndent = editor.IndentationTracker.GetIndentationString (editor.OffsetToLineNumber (position));
-			var oneIndent = editor.Options.TabsToSpaces ? new string (' ', editor.Options.TabSize) : "\t";
+			string thisLineIndent;
+			string oneIndent;
+			var editor = IdeApp.Workbench?.ActiveDocument?.Editor;
+			if (editor != null) {
+				thisLineIndent = editor.IndentationTracker.GetIndentationString (editor.OffsetToLineNumber (position));
+				oneIndent = editor.Options.TabsToSpaces ? new string (' ', editor.Options.TabSize) : "\t";
+			} else {
+				thisLineIndent = oneIndent = "\t";
+			}
+
 			string EolMarker = "\n";
 			bool addSemicolon = true;
 			bool addDefault = true;
@@ -296,7 +303,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			var sb = new StringBuilder ();
 			string varName = optDelegateName ?? "Handle" + delegateType.Name;
 
-			var editor = IdeApp.Workbench.ActiveDocument.Editor;
+			var editor = IdeApp.Workbench?.ActiveDocument?.Editor;
 			var curType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (position, cancellationToken);
 			var uniqueName = new UniqueNameGenerator (semanticModel).CreateUniqueMethodName (parent, varName);
 			var pDict = ImmutableDictionary<string, string>.Empty;
@@ -320,16 +327,16 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			}
 			sb.Append (")");
 
-			sb.Append (editor.EolMarker);
+			sb.Append (editor?.EolMarker ?? "\n");
 			sb.Append (indent);
 			sb.Append ("{");
-			sb.Append (editor.EolMarker);
+			sb.Append (editor?.EolMarker ?? "\n");
 			sb.Append (indent);
-			sb.Append (editor.Options.GetIndentationString ());
+			sb.Append (editor?.Options.GetIndentationString () ?? "\t");
 			//int cursorPos = pos + sb.Length;
 			sb.Append (indent);
 			sb.Append ("}");
-			sb.Append (editor.EolMarker);
+			sb.Append (editor?.EolMarker ?? "\n");
 			pDict = pDict.Add ("NewMethod", sb.ToString ());
 			pDict = pDict.Add ("MethodName", varName);
 
