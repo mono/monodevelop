@@ -1125,7 +1125,7 @@ namespace MonoDevelop.Debugger
 			RegisterValue (val, iter);
 		}
 		
-		void SetValues (TreeIter parent, TreeIter it, string name, ObjectValue val)
+		void SetValues (TreeIter parent, TreeIter it, string name, ObjectValue val, bool updateJustValue = false)
 		{
 			string strval;
 			bool canEdit;
@@ -1209,10 +1209,13 @@ namespace MonoDevelop.Debugger
 
 			strval = strval.Replace ("\r\n", " ").Replace ("\n", " ");
 
+			store.SetValue (it, ValueColumn, strval);
+			if (updateJustValue)
+				return;
+
 			bool hasChildren = val.HasChildren;
 			string icon = GetIcon (val.Flags);
 			store.SetValue (it, NameColumn, name);
-			store.SetValue (it, ValueColumn, strval);
 			store.SetValue (it, TypeColumn, val.TypeName);
 			store.SetValue (it, ObjectColumn, val);
 			store.SetValue (it, NameEditableColumn, !hasParent && AllowAdding);
@@ -1509,8 +1512,35 @@ namespace MonoDevelop.Debugger
 			
 			store.SetValue (it, NameColorColumn, newColor);
 			store.SetValue (it, ValueColorColumn, newColor);
+			UpdateParentValue (it);
 		}
-		
+
+		private void UpdateParentValue (TreeIter it)
+		{
+			if (store.IterParent (out var parentIter, it)) {
+				if (store.GetValue (parentIter, ObjectColumn) is ObjectValue parentVal) {
+					parentVal.Refresh ();
+					nodes [parentVal] = new TreeRowReference (store, store.GetPath (parentIter));
+					if (parentVal.IsEvaluating)
+						parentVal.ValueChanged += UpdateObjectValue;
+					else
+						UpdateObjectValue (parentVal, null);
+				}
+			}
+		}
+
+		private void UpdateObjectValue (object sender, EventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				var val = (ObjectValue)sender;
+				val.ValueChanged -= UpdateObjectValue;
+				if (!FindValue (val, out var it))
+					return;
+				nodes.Remove (val);
+				SetValues (TreeIter.Zero, it, null, val, true);
+			});
+		}
+
 		void OnEditingCancelled (object s, EventArgs args)
 		{
 			OnEndEditing ();
@@ -1860,7 +1890,10 @@ namespace MonoDevelop.Debugger
 			if (CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && store.GetIter (out it, path)) {
 				if (cr == crpViewer) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
-					DebuggingService.ShowValueVisualizer (val);
+					if (DebuggingService.ShowValueVisualizer (val)) {
+						UpdateParentValue (it);
+						RefreshRow (it);
+					}
 				} else if (cr == crtExp && !PreviewWindowManager.IsVisible && ValidObjectForPreviewIcon (it)) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					startPreviewCaret = GetCellRendererArea (path, col, cr);
