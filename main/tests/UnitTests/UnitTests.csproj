@@ -307,6 +307,7 @@
     <Compile Include="MonoDevelop.Projects\SdkVersionTests.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\SystemAssemblyServiceTests.cs" />
     <Compile Include="MonoDevelop.Core\StringParserServiceTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpFindReferencesProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
