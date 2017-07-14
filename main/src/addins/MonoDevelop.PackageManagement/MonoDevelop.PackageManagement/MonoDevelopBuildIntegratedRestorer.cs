@@ -44,7 +44,7 @@ using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class MonoDevelopBuildIntegratedRestorer
+	internal class MonoDevelopBuildIntegratedRestorer : IMonoDevelopBuildIntegratedRestorer
 	{
 		IPackageManagementEvents packageManagementEvents;
 		List<SourceRepository> sourceRepositories;
