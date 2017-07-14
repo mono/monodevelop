@@ -274,7 +274,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			return ProjectFeatures.None;
 		}
 
-		protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration)
+		protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			return false;
 		}

@@ -1154,6 +1154,35 @@ namespace MonoDevelop.Projects
 			var asms = await p.GetReferencedAssemblies (p.Configurations [0].Selector);
 			Assert.IsTrue (asms.Any (r => r.FilePath.FileName == "System.Runtime.dll"));
 		}
+
+		[Test]
+		public async Task FastCheckNeedsBuildWithContext ()
+		{
+			string solFile = Util.GetSampleProject ("fast-build-test", "FastBuildTest.sln");
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var app = (DotNetProject)sol.Items [0];
+
+			var cs = new SolutionConfigurationSelector ("Debug");
+
+			var ctx = new TargetEvaluationContext ();
+			ctx.GlobalProperties.SetValue ("Foo", "Bar");
+
+			Assert.IsTrue (app.FastCheckNeedsBuild (cs, ctx));
+
+			ctx = new TargetEvaluationContext ();
+			ctx.GlobalProperties.SetValue ("Foo", "Bar");
+
+			var res = await sol.Build (Util.GetMonitor (), cs, ctx);
+			Assert.IsFalse (res.HasErrors);
+
+			ctx = new TargetEvaluationContext ();
+			ctx.GlobalProperties.SetValue ("Foo", "Bar");
+			Assert.IsFalse (app.FastCheckNeedsBuild (cs, ctx));
+
+			ctx = new TargetEvaluationContext ();
+			ctx.GlobalProperties.SetValue ("Foo", "Modified");
+			Assert.IsTrue (app.FastCheckNeedsBuild (cs, ctx));
+		}
 	}
 
 	class SerializedSaveTestExtension: SolutionItemExtension
