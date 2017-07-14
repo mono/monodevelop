@@ -1182,6 +1182,40 @@ namespace MonoDevelop.Projects
 			ctx = new TargetEvaluationContext ();
 			ctx.GlobalProperties.SetValue ("Foo", "Modified");
 			Assert.IsTrue (app.FastCheckNeedsBuild (cs, ctx));
+
+			sol.Dispose ();
+		}
+
+		[Test]
+		public async Task OnConfigureTargetEvaluationContext ()
+		{
+			var node = new CustomItemNode<EvalContextCreationTestExtension> ();
+			WorkspaceObject.RegisterCustomExtension (node);
+
+			try {
+				string solFile = Util.GetSampleProject ("fast-build-test", "FastBuildTest.sln");
+				Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var app = (DotNetProject)sol.Items [0];
+
+				var cs = new SolutionConfigurationSelector ("Debug");
+
+				Assert.IsTrue (app.FastCheckNeedsBuild (cs));
+
+				var res = await sol.Build (Util.GetMonitor (), cs);
+				Assert.IsFalse (res.HasErrors);
+				Assert.IsFalse (app.FastCheckNeedsBuild (cs));
+
+				EvalContextCreationTestExtension.ControlValue = "Changed";
+				Assert.IsTrue (app.FastCheckNeedsBuild (cs));
+
+				res = await sol.Build (Util.GetMonitor (), cs);
+				Assert.IsFalse (res.HasErrors);
+				Assert.IsFalse (app.FastCheckNeedsBuild (cs));
+
+				sol.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (node);
+			}
 		}
 	}
 
@@ -1199,6 +1233,18 @@ namespace MonoDevelop.Projects
 			Running = false;
 			SaveCount++;
 			await base.OnSave (monitor);
+		}
+	}
+
+	class EvalContextCreationTestExtension : ProjectExtension
+	{
+		public static string ControlValue = "First";
+
+		internal protected override TargetEvaluationContext OnConfigureTargetEvaluationContext (string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			var c = base.OnConfigureTargetEvaluationContext (target, configuration, context);
+			context.GlobalProperties.SetValue ("Foo", ControlValue);
+			return c;
 		}
 	}
 }
