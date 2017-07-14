@@ -50,11 +50,19 @@ namespace MonoDevelop.PackageManagement.Tests
 		void CreateNuGetProject (string projectName = "MyProject", string fileName = @"d:\projects\MyProject\MyProject.csproj")
 		{
 			context = new FakeNuGetProjectContext ();
-			dotNetProject = new DummyDotNetProject ();
-			dotNetProject.Name = projectName;
-			dotNetProject.FileName = fileName.ToNativePath ();
+			dotNetProject = CreateDotNetCoreProject (projectName, fileName);
+			var solution = new Solution ();
+			solution.RootFolder.AddItem (dotNetProject);
 			project = new TestableDotNetCoreNuGetProject (dotNetProject);
 			buildIntegratedRestorer = project.BuildIntegratedRestorer;
+		}
+
+		static DummyDotNetProject CreateDotNetCoreProject (string projectName = "MyProject", string fileName = @"d:\projects\MyProject\MyProject.csproj")
+		{
+			var project = new DummyDotNetProject ();
+			project.Name = projectName;
+			project.FileName = fileName.ToNativePath ();
+			return project;
 		}
 
 		void AddDotNetProjectPackageReference (string packageId, string version)
@@ -302,8 +310,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateNuGetProject ();
 			AddDotNetProjectPackageReference ("NUnit", "2.6.0");
-			var solution = new Solution ();
-			solution.RootFolder.AddItem (dotNetProject);
 			string modifiedHint = null;
 			dotNetProject.Modified += (sender, e) => {
 				modifiedHint = e.Single ().Hint;
@@ -312,7 +318,8 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			await project.PostProcessAsync (context, CancellationToken.None);
 
-			Assert.AreEqual (solution, project.SolutionUsedToCreateBuildIntegratedRestorer);
+			Assert.IsNotNull (dotNetProject.ParentSolution);
+			Assert.AreEqual (dotNetProject.ParentSolution, project.SolutionUsedToCreateBuildIntegratedRestorer);
 			Assert.AreEqual (project, buildIntegratedRestorer.ProjectRestored);
 			Assert.AreEqual ("References", modifiedHint);
 		}
@@ -388,9 +395,110 @@ namespace MonoDevelop.PackageManagement.Tests
 				modifiedHint = e.Single ().Hint;
 			};
 
-			project.NotifyProjectReferencesChanged ();
+			project.NotifyProjectReferencesChanged (false);
 
 			Assert.AreEqual ("References", modifiedHint);
+		}
+
+		/// <summary>
+		/// Assembly references are transitive for .NET Core projects so any .NET Core project
+		/// that references the project having a NuGet package being installed needs to refresh
+		/// references for the other projects not just itself.
+		/// </summary>
+		[Test]
+		public async Task PostProcessAsync_DotNetCoreProjectReferencesThisProject_NotifyReferencesChangedEventFiredForBothProjects ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.0");
+			var dotNetProjectWithProjectReference = CreateDotNetCoreProject ("MyProject2", @"d:\projects\MyProject2\MyProject2.csproj");
+			dotNetProject.ParentSolution.RootFolder.AddItem (dotNetProjectWithProjectReference);
+			var projectReference = ProjectReference.CreateProjectReference (dotNetProject);
+			dotNetProjectWithProjectReference.References.Add (projectReference);
+			string modifiedHintMainProject = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHintMainProject = e.Single ().Hint;
+			};
+			string modifiedHintProjectWithReference = null;
+			dotNetProjectWithProjectReference.Modified += (sender, e) => {
+				modifiedHintProjectWithReference = e.Single ().Hint;
+			};
+
+			await project.PostProcessAsync (context, CancellationToken.None);
+
+			Assert.AreEqual ("References", modifiedHintMainProject);
+			Assert.AreEqual ("References", modifiedHintProjectWithReference);
+		}
+
+		[Test]
+		public async Task PostProcessAsync_DotNetCoreProjectReferencesThisProjectLockFileNotChanged_NotifyReferencesChangedEventFiredForBothProjects ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.0");
+			var dotNetProjectWithProjectReference = CreateDotNetCoreProject ("MyProject2", @"d:\projects\MyProject2\MyProject2.csproj");
+			dotNetProject.ParentSolution.RootFolder.AddItem (dotNetProjectWithProjectReference);
+			var projectReference = ProjectReference.CreateProjectReference (dotNetProject);
+			dotNetProjectWithProjectReference.References.Add (projectReference);
+			string modifiedHintMainProject = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHintMainProject = e.Single ().Hint;
+			};
+			string modifiedHintProjectWithReference = null;
+			dotNetProjectWithProjectReference.Modified += (sender, e) => {
+				modifiedHintProjectWithReference = e.Single ().Hint;
+			};
+			OnAfterExecuteActions ("NUnit", "2.6.3", NuGetProjectActionType.Install);
+
+			await project.PostProcessAsync (context, CancellationToken.None);
+
+			Assert.AreEqual (project, buildIntegratedRestorer.ProjectRestored);
+			Assert.AreEqual ("References", modifiedHintMainProject);
+			Assert.AreEqual ("References", modifiedHintProjectWithReference);
+		}
+
+		[Test]
+		public void NotifyProjectReferencesChanged_IncludeTransitiveReferences_NotifyReferencesChangedEventFiredForAllProjects ()
+		{
+			CreateNuGetProject ();
+			var dotNetProjectWithProjectReference = CreateDotNetCoreProject ("MyProject2", @"d:\projects\MyProject2\MyProject2.csproj");
+			dotNetProject.ParentSolution.RootFolder.AddItem (dotNetProjectWithProjectReference);
+			var projectReference = ProjectReference.CreateProjectReference (dotNetProject);
+			dotNetProjectWithProjectReference.References.Add (projectReference);
+			string modifiedHintMainProject = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHintMainProject = e.Single ().Hint;
+			};
+			string modifiedHintProjectWithReference = null;
+			dotNetProjectWithProjectReference.Modified += (sender, e) => {
+				modifiedHintProjectWithReference = e.Single ().Hint;
+			};
+
+			project.NotifyProjectReferencesChanged (true);
+
+			Assert.AreEqual ("References", modifiedHintMainProject);
+			Assert.AreEqual ("References", modifiedHintProjectWithReference);
+		}
+
+		[Test]
+		public void NotifyProjectReferencesChanged_DoNotIncludeTransitiveReferences_NotifyReferencesChangedEventFiredForMainProjectOnly ()
+		{
+			CreateNuGetProject ();
+			var dotNetProjectWithProjectReference = CreateDotNetCoreProject ("MyProject2", @"d:\projects\MyProject2\MyProject2.csproj");
+			dotNetProject.ParentSolution.RootFolder.AddItem (dotNetProjectWithProjectReference);
+			var projectReference = ProjectReference.CreateProjectReference (dotNetProject);
+			dotNetProjectWithProjectReference.References.Add (projectReference);
+			string modifiedHintMainProject = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHintMainProject = e.Single ().Hint;
+			};
+			string modifiedHintProjectWithReference = null;
+			dotNetProjectWithProjectReference.Modified += (sender, e) => {
+				modifiedHintProjectWithReference = e.Single ().Hint;
+			};
+
+			project.NotifyProjectReferencesChanged (false);
+
+			Assert.AreEqual ("References", modifiedHintMainProject);
+			Assert.IsNull (modifiedHintProjectWithReference);
 		}
 	}
 }

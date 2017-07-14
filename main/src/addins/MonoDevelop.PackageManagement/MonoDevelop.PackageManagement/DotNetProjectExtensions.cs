@@ -216,5 +216,83 @@ namespace MonoDevelop.PackageManagement
 			return File.Exists (propsFileName) &&
 				File.Exists (targetsFileName);
 		}
+
+		/// <summary>
+		/// If a NuGet package is installed into a .NET Core project then all .NET Core projects that
+		/// reference this project need to have their reference information updated. This allows the
+		/// assemblies from the NuGet package to be made available to the other projects since .NET
+		/// Core projects support transitive references. This method calls NotifyModified for each
+		/// project that references it, as well as for the project itself, passing the hint 'References'
+		/// which will cause the type system to refresh its reference information, which will be taken
+		/// from MSBuild.
+		/// 
+		/// All projects that reference .NET Core projects will have their references refreshed. If a
+		/// .NET Framework project (non SDK), has PackageReferences and references a .NET Standard project
+		/// (SDK project) then NuGet dependencies from the .NET Standard project are available to the
+		/// .NET Framework project transitively without needing the NuGet package to be installed into
+		/// the .NET Framework project. So refreshing the references of any project that references a
+		/// .NET Core project will ensure assemblies from NuGet packages are available after installing
+		/// a new NuGet package into the referenced project.
+		/// </summary>
+		/// <param name="project">.NET Core project</param>
+		/// <param name="transitiveOnly">If false then the project passed will also have its
+		/// references refreshed. Otherwise only the projects that reference the project will
+		/// have their references refreshed.</param>
+		public static void DotNetCoreNotifyReferencesChanged (this DotNetProject project, bool transitiveOnly = false)
+		{
+			if (!transitiveOnly)
+				project.NotifyModified ("References");
+
+			var traversedProjects = new Dictionary<string, bool> ();
+			traversedProjects.Add (project.ItemId, true);
+
+			foreach (var currentProject in project.ParentSolution.GetAllDotNetProjects ()) {
+				if (!traversedProjects.ContainsKey (currentProject.ItemId))
+					DotNetCoreNotifyReferencesChanged (project, currentProject, traversedProjects);
+			}
+		}
+
+		static bool DotNetCoreNotifyReferencesChanged (
+			DotNetProject mainProject,
+			DotNetProject project,
+			Dictionary<string, bool> traversedProjects)
+		{
+			foreach (var projectReference in project.References.Where (IncludeProjectReference)) {
+				var resolvedProject = projectReference.ResolveProject (mainProject.ParentSolution) as DotNetProject;
+				if (resolvedProject == null)
+					continue;
+
+				if (resolvedProject == mainProject) {
+					traversedProjects [project.ItemId] = true;
+					project.NotifyModified ("References");
+					return true;
+				}
+
+				if (traversedProjects.TryGetValue (resolvedProject.ItemId, out bool referencesProject)) {
+					if (referencesProject) {
+						traversedProjects [project.ItemId] = referencesProject;
+						project.NotifyModified ("References");
+						return true;
+					}
+					continue;
+				}
+
+				if (DotNetCoreNotifyReferencesChanged (mainProject, resolvedProject, traversedProjects)) {
+					traversedProjects [project.ItemId] = true;
+					project.NotifyModified ("References");
+					return true;
+				}
+			}
+
+			traversedProjects [project.ItemId] = false;
+
+			return false;
+		}
+
+		static bool IncludeProjectReference (ProjectReference projectReference)
+		{
+			return projectReference.ReferenceType == ReferenceType.Project &&
+				projectReference.ReferenceOutputAssembly;
+		}
 	}
 }

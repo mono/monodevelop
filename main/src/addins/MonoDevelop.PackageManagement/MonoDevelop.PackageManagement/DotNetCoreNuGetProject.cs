@@ -281,7 +281,7 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			Runtime.RunInMainThread (() => {
-				DotNetProject.NotifyModified ("References");
+				DotNetProject.DotNetCoreNotifyReferencesChanged ();
 			});
 
 			packageManagementEvents.OnFileChanged (project.GetNuGetAssetsFilePath ());
@@ -303,7 +303,7 @@ namespace MonoDevelop.PackageManagement
 			if (!packageRestorer.LockFileChanged) {
 				// Need to refresh the references since the restore did not.
 				await Runtime.RunInMainThread (() => {
-					DotNetProject.NotifyModified ("References");
+					DotNetProject.DotNetCoreNotifyReferencesChanged ();
 					packageManagementEvents.OnFileChanged (project.GetNuGetAssetsFilePath ());
 				});
 			}
@@ -326,12 +326,16 @@ namespace MonoDevelop.PackageManagement
 			restoreRequired = actions.Any (action => action.NuGetProjectActionType == NuGetProjectActionType.Install);
 		}
 
-		public void NotifyProjectReferencesChanged ()
+		public void NotifyProjectReferencesChanged (bool includeTransitiveProjectReferences)
 		{
 			Runtime.AssertMainThread ();
 
 			DotNetProject.RefreshProjectBuilder ();
-			DotNetProject.NotifyModified ("References");
+
+			if (includeTransitiveProjectReferences)
+				DotNetProject.DotNetCoreNotifyReferencesChanged ();
+			else
+				DotNetProject.NotifyModified ("References");
 		}
 
 		/// <summary>

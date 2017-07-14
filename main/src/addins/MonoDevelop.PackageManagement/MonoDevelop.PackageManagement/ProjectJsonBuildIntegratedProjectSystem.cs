@@ -247,7 +247,7 @@ namespace MonoDevelop.PackageManagement
 			return excludedReferences;
 		}
 
-		public void NotifyProjectReferencesChanged ()
+		public void NotifyProjectReferencesChanged (bool includeTransitiveProjectReferences)
 		{
 			Runtime.AssertMainThread ();
 
