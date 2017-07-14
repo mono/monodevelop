@@ -189,6 +189,7 @@ type FSharpInteractivePad() =
 
     let setPrompt() =
         editor.InsertAtCaret ("\n")
+        editor.ScrollTo editor.CaretLocation
         addMarker promptIcon
 
     let fsiOutput t =

@@ -23,7 +23,7 @@ type SyntaxHighlighting() =
         use reader = new StreamReader(stream)
         let highlighting = Sublime3Format.ReadHighlighting(reader)
         highlighting.PrepareMatches()
-        editor.SyntaxHighlighting <- MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlighting(highlighting, editor)
+        editor.SyntaxHighlighting <- new MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlighting(highlighting, editor)
         editor
 
     let assertStyle (input:string, expectedStyle:string) =

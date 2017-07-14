@@ -3,6 +3,7 @@
 open System
 open System.Collections.Generic
 open System.Collections.Immutable
+open MonoDevelop.FSharp.Shared
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Highlighting

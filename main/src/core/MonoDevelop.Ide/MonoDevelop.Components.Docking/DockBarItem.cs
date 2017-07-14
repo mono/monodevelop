@@ -165,6 +165,7 @@ namespace MonoDevelop.Components.Docking
 			Styles.Changed += UpdateStyle;
 
 			Accessible.Name = "DockbarItem";
+			Accessible.Role = Atk.Role.PushButton;
 		}
 
 		void IAnimatable.BatchBegin () { }

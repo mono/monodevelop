@@ -11,6 +11,7 @@ open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Projects
+open MonoDevelop.FSharp.Shared
 
 module Symbol =
     /// We always know the text of the identifier that resolved to symbol.
@@ -52,7 +53,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
             // Get items & generate output
             try
                 let results =
-                    Async.RunSynchronously (checkResults.GetDeclarationListInfo( parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false), timeout = ServiceSettings.blockingTimeout )
+                    Async.RunSynchronously (checkResults.GetDeclarationListInfo( parseResults, line, col, lineStr, longName, residue, fun () -> []), timeout = ServiceSettings.blockingTimeout )
                 Some (results, residue)
             with :? TimeoutException -> None
         | None, _ -> None
@@ -276,6 +277,12 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         //cache 50 project infos, then start evicting the least recently used entries
         ref (ExtCore.Caching.LruCache.create 50u)
 
+    let optionsForDependentProject p =
+        async {
+            let! assemblies = x.GetReferencedAssembliesAsync p
+            return x.GetProjectCheckerOptions(p, [], assemblies)
+        }
+
     member x.Checker = checker
 
     member x.ClearProjectInfoCache() =
@@ -299,7 +306,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
             try
                 let fileName = fixFileName(fileName)
                 LoggingService.LogDebug ("LanguageService: GetScriptCheckerOptions: Creating for stand-alone file or script: {0}", fileName)
-                let opts =
+                let opts, _errors =
                   Async.RunSynchronously (checker.GetProjectOptionsFromScript(fileName, source, fakeDateTimeRepresentingTimeLoaded projFilename),
                                           timeout = ServiceSettings.maximumTimeout)
 
@@ -502,12 +509,6 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
 
     /// Get all the uses of the specified symbol in the current project and optionally all dependent projects
     member x.GetUsesOfSymbolInProject(projectFilename, file, source, symbol:FSharpSymbol, ?dependentProjects) =
-        let optionsForDependentProject p =
-            async {
-                let! assemblies = x.GetReferencedAssembliesAsync p
-                return x.GetProjectCheckerOptions(p, [], assemblies)
-            }
-
         async {
             LoggingService.logDebug "LanguageService: GetUsesOfSymbolInProject: project:%s, currentFile:%s, symbol:%s" projectFilename file symbol.DisplayName
             let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
@@ -576,7 +577,10 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         async {
             LoggingService.logDebug "LanguageService: GetDerivedSymbolInProject: proj:%s, file:%s, symbol:%s" projectFilename file symbolAtCaret.DisplayName
             let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
-            let dependentProjectsOptions = defaultArg dependentProjects [] |> List.map x.GetProjectCheckerOptions
+
+            let! dependentProjectsOptions =
+                 defaultArg dependentProjects [] 
+                 |> Async.List.map optionsForDependentProject
 
             let! allProjectResults =
                 sourceProjectOptions :: dependentProjectsOptions

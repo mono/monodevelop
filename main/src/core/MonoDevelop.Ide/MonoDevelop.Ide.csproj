@@ -167,7 +167,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\..\..\packages\JetBrains.SharpZipLib.Stripped.0.87.20170615.10\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Collections.Immutable">
@@ -193,7 +193,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\..\..\packages\JetBrains.SharpZipLib.Stripped.0.87.20170615.10\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="System.Composition.AttributedModel">
       <HintPath>..\..\..\packages\System.Composition.AttributedModel.1.0.31\lib\netstandard1.0\System.Composition.AttributedModel.dll</HintPath>

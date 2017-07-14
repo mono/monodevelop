@@ -81,7 +81,6 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		}
 
 		bool isDisposed;
-		Queue<Tuple<IDocumentLine, HighlightingSegmentTree>> lineSegments = new Queue<Tuple<IDocumentLine, HighlightingSegmentTree>> ();
 
 		public SemanticHighlightingSyntaxMode (ExtensibleTextEditor editor, ISyntaxHighlighting syntaxMode, SemanticHighlighting semanticHighlighting)
 		{
@@ -113,9 +112,6 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			Application.Invoke ((o, args) => {
 				if (isDisposed)
 					return;
-				UnregisterLineSegmentTrees ();
-				lineSegments.Clear ();
-
 				var margin = editor.TextViewMargin;
 				if (margin == null)
 					return;
@@ -124,26 +120,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			});
 		}
 
-		void UnregisterLineSegmentTrees ()
-		{
-			if (isDisposed)
-				return;
-			foreach (var kv in lineSegments) {
-				try {
-					kv.Item2.RemoveListener ();
-				} catch (Exception) {
-				}
-			}
-		}
-
 		public void Dispose()
 		{
 			if (isDisposed)
 				return;
 			// Unregister before setting isDisposed=true, as that causes the method to bail out early.
-			UnregisterLineSegmentTrees ();
 			isDisposed = true;
-			lineSegments = null;
 			semanticHighlighting.SemanticHighlightingUpdated -= SemanticHighlighting_SemanticHighlightingUpdated;
 		}
 
@@ -153,54 +135,35 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		{
 			if (line == null)
 				throw new ArgumentNullException (nameof (line));
+
 			if (!DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting) {
 				return await syntaxMode.GetHighlightedLineAsync (line, cancellationToken);
 			}
 			var syntaxLine = await syntaxMode.GetHighlightedLineAsync (line, cancellationToken).ConfigureAwait (false);
-			if (syntaxLine.Segments.Count == 0)
+			if (syntaxLine.Segments.Count == 0) {
 				return syntaxLine;
-			lock (lineSegments) {
-				var segments = new List<ColoredSegment> (syntaxLine.Segments);
-				int endOffset = segments [segments.Count - 1].EndOffset;
-				try {
-					Tuple<IDocumentLine, HighlightingSegmentTree> tree = null;
-
-					// This code should not have any lambda capture linq, as it is a hot loop.
-					int lineOffset = line.Offset;
-					foreach (var segment in lineSegments) {
-						if (segment.Item1.Offset == lineOffset) {
-							tree = segment;
-							break;
-						}
-					}
-					if (tree == null) {
-						tree = Tuple.Create (line, new HighlightingSegmentTree ());
-						tree.Item2.InstallListener (editor.Document);
-						foreach (var seg2 in semanticHighlighting.GetColoredSegments (new TextSegment (lineOffset, line.Length))) {
-							tree.Item2.AddStyle (seg2, seg2.ColorStyleKey);
-						}
-						while (lineSegments.Count > MaximumCachedLineSegments) {
-							var removed = lineSegments.Dequeue ();
-							try {
-								removed.Item2.RemoveListener ();
-							} catch (Exception) { }
-						}
-						lineSegments.Enqueue (tree);
-					}
-					foreach (var treeseg in tree.Item2.GetSegmentsOverlapping (line)) {
-						var inLineStartOffset = Math.Max (0, treeseg.Offset - lineOffset);
-						var inLineEndOffset = Math.Min (line.Length, treeseg.EndOffset - lineOffset);
-						if (inLineEndOffset <= inLineStartOffset)
-							continue;
-						var semanticSegment = new ColoredSegment (inLineStartOffset, inLineEndOffset - inLineStartOffset, syntaxLine.Segments [0].ScopeStack.Push (treeseg.Style));
-						SyntaxHighlighting.ReplaceSegment (segments, semanticSegment);
-					}
-				} catch (Exception e) {
-					LoggingService.LogError ("Error in semantic highlighting: " + e);
-					return syntaxLine;
-				}
-				return new HighlightedLine (line, segments);
 			}
+			var segments = new List<ColoredSegment> (syntaxLine.Segments);
+			int endOffset = segments [segments.Count - 1].EndOffset;
+			try {
+				// This code should not have any lambda capture linq, as it is a hot loop.
+				int lineOffset = line.Offset;
+
+				foreach (var treeseg in semanticHighlighting.GetColoredSegments (new TextSegment (lineOffset, line.Length))) {
+					var inLineStartOffset = Math.Max (0, treeseg.Offset - lineOffset);
+					var inLineEndOffset = Math.Min (line.Length, treeseg.EndOffset - lineOffset);
+
+					if (inLineEndOffset <= inLineStartOffset) {
+						continue;
+					}
+					var semanticSegment = new ColoredSegment (inLineStartOffset, inLineEndOffset - inLineStartOffset, treeseg.ScopeStack);
+					SyntaxHighlighting.ReplaceSegment (segments, semanticSegment);
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error in semantic highlighting: " + e);
+				return syntaxLine;
+			}
+			return new HighlightedLine (line, segments);
 		}
 
 		async Task<ScopeStack> ISyntaxHighlighting.GetScopeStackAsync (int offset, CancellationToken cancellationToken)

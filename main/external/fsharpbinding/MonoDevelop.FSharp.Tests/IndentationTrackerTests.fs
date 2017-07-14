@@ -24,7 +24,7 @@ type IndentationTrackerTests() =
 
     let insertEnterAtSection (text:string) =
         let idx = text.IndexOf ('§')
-        let doc = TextDocument(text.Replace("§", ""))
+        let doc = new TextDocument(text.Replace("§", ""))
         use data = new TextEditorData (doc)
         data.Caret.Offset <- idx
         MiscActions.InsertNewLine(data)
