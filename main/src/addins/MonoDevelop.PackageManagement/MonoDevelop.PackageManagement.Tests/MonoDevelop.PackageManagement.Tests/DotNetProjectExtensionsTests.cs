@@ -25,8 +25,9 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
+using System.Linq;
 using MonoDevelop.PackageManagement.Tests.Helpers;
+using MonoDevelop.Projects;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -54,6 +55,20 @@ namespace MonoDevelop.PackageManagement.Tests
 		void AddExistingFile (string fileName)
 		{
 			existingFiles.Add (fileName.ToNativePath ());
+		}
+
+		static DummyDotNetProject CreateDotNetCoreProject (string projectName = "MyProject", string fileName = @"d:\projects\MyProject\MyProject.csproj")
+		{
+			var project = new DummyDotNetProject ();
+			project.Name = projectName;
+			project.FileName = fileName.ToNativePath ();
+			return project;
+		}
+
+		void AddParentSolution (DotNetProject dotNetProject)
+		{
+			var solution = new Solution ();
+			solution.RootFolder.AddItem (dotNetProject);
 		}
 
 		[Test]
@@ -161,6 +176,175 @@ namespace MonoDevelop.PackageManagement.Tests
 			bool result = project.HasPackages ();
 
 			Assert.IsTrue (result);
+		}
+
+		[Test]
+		public void DotNetCoreNotifyReferencesChanged_NoProjectReferencesAllProjects_NotifyReferencesChangedForProject ()
+		{
+			var dotNetProject = CreateDotNetCoreProject ();
+			AddParentSolution (dotNetProject);
+			string modifiedHint = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHint = e.First ().Hint;
+			};
+
+			dotNetProject.DotNetCoreNotifyReferencesChanged (transitiveOnly: false);
+
+			Assert.AreEqual ("References", modifiedHint);
+		}
+
+		[Test]
+		public void DotNetCoreNotifyReferencesChanged_NoProjectReferencesTransitiveProjectReferencesOnly_NotifyReferencesChangedNotFiredForProject ()
+		{
+			var dotNetProject = CreateDotNetCoreProject ();
+			AddParentSolution (dotNetProject);
+			string modifiedHint = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHint = e.First ().Hint;
+			};
+
+			dotNetProject.DotNetCoreNotifyReferencesChanged (transitiveOnly: true);
+
+			Assert.IsNull (modifiedHint);
+		}
+
+		[Test]
+		public void DotNetCoreNotifyReferencesChanged_OneProjectReferencesProject_NotifyReferencesChangedForAllProjects ()
+		{
+			var dotNetProject = CreateDotNetCoreProject ();
+			AddParentSolution (dotNetProject);
+			var referencingProject = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (referencingProject);
+			referencingProject.References.Add (ProjectReference.CreateProjectReference (dotNetProject));
+			string modifiedHint = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHint = e.First ().Hint;
+			};
+			string modifiedHintForReferencingProject = null;
+			referencingProject.Modified += (sender, e) => {
+				modifiedHintForReferencingProject = e.First ().Hint;
+			};
+
+			dotNetProject.DotNetCoreNotifyReferencesChanged ();
+
+			Assert.AreEqual ("References", modifiedHint);
+			Assert.AreEqual ("References", modifiedHintForReferencingProject);
+		}
+
+		[Test]
+		public void DotNetCoreNotifyReferencesChanged_OneProjectReferencesProjectWithReferencedOutputAssemblyFalse_NotifyReferencesChangedNotFiredForReferencingProject ()
+		{
+			var dotNetProject = CreateDotNetCoreProject ();
+			AddParentSolution (dotNetProject);
+			var referencingProject = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (referencingProject);
+			var projectReference = ProjectReference.CreateProjectReference (dotNetProject);
+			projectReference.ReferenceOutputAssembly = false;
+			referencingProject.References.Add (projectReference);
+			string modifiedHintForReferencingProject = null;
+			referencingProject.Modified += (sender, e) => {
+				modifiedHintForReferencingProject = e.First ().Hint;
+			};
+
+			dotNetProject.DotNetCoreNotifyReferencesChanged (true);
+
+			Assert.IsNull (modifiedHintForReferencingProject);
+		}
+
+		[Test]
+		public void DotNetCoreNotifyReferencesChanged_TwoOneProjectReferencesModifiedProject_NotifyReferencesChangedForAllProjects ()
+		{
+			var dotNetProject = CreateDotNetCoreProject ();
+			AddParentSolution (dotNetProject);
+			var referencingProject1 = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (referencingProject1);
+			referencingProject1.References.Add (ProjectReference.CreateProjectReference (dotNetProject));
+			var referencingProject2 = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (referencingProject2);
+			referencingProject2.References.Add (ProjectReference.CreateProjectReference (dotNetProject));
+			string modifiedHint = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHint = e.First ().Hint;
+			};
+			string modifiedHintForReferencingProject1 = null;
+			referencingProject1.Modified += (sender, e) => {
+				modifiedHintForReferencingProject1 = e.First ().Hint;
+			};
+			string modifiedHintForReferencingProject2 = null;
+			referencingProject2.Modified += (sender, e) => {
+				modifiedHintForReferencingProject2 = e.First ().Hint;
+			};
+
+			dotNetProject.DotNetCoreNotifyReferencesChanged ();
+
+			Assert.AreEqual ("References", modifiedHint);
+			Assert.AreEqual ("References", modifiedHintForReferencingProject1);
+			Assert.AreEqual ("References", modifiedHintForReferencingProject2);
+		}
+
+		[Test]
+		public void DotNetCoreNotifyReferencesChanged_TwoOneProjectReferencesChainToModifiedProject_NotifyReferencesChangedForAllProjects ()
+		{
+			var dotNetProject = CreateDotNetCoreProject ();
+			AddParentSolution (dotNetProject);
+			var referencingProject1 = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (referencingProject1);
+			referencingProject1.References.Add (ProjectReference.CreateProjectReference (dotNetProject));
+			var referencingProject2 = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (referencingProject2);
+			referencingProject2.References.Add (ProjectReference.CreateProjectReference (referencingProject1));
+			string modifiedHint = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHint = e.First ().Hint;
+			};
+			string modifiedHintForReferencingProject1 = null;
+			referencingProject1.Modified += (sender, e) => {
+				modifiedHintForReferencingProject1 = e.First ().Hint;
+			};
+			string modifiedHintForReferencingProject2 = null;
+			referencingProject2.Modified += (sender, e) => {
+				modifiedHintForReferencingProject2 = e.First ().Hint;
+			};
+
+			dotNetProject.DotNetCoreNotifyReferencesChanged ();
+
+			Assert.AreEqual ("References", modifiedHint);
+			Assert.AreEqual ("References", modifiedHintForReferencingProject1);
+			Assert.AreEqual ("References", modifiedHintForReferencingProject2);
+		}
+
+		/// <summary>
+		/// Same as above but the projects are added to the solution in a different order.
+		/// </summary>
+		[Test]
+		public void DotNetCoreNotifyReferencesChanged_TwoOneProjectReferencesChainToModifiedProject_NotifyReferencesChangedForAllProjects2 ()
+		{
+			var dotNetProject = CreateDotNetCoreProject ();
+			AddParentSolution (dotNetProject);
+			var referencingProject1 = CreateDotNetCoreProject ();
+			var referencingProject2 = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (referencingProject2);
+			dotNetProject.ParentSolution.RootFolder.AddItem (referencingProject1);
+			referencingProject1.References.Add (ProjectReference.CreateProjectReference (dotNetProject));
+			referencingProject2.References.Add (ProjectReference.CreateProjectReference (referencingProject1));
+			string modifiedHint = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHint = e.First ().Hint;
+			};
+			string modifiedHintForReferencingProject1 = null;
+			referencingProject1.Modified += (sender, e) => {
+				modifiedHintForReferencingProject1 = e.First ().Hint;
+			};
+			string modifiedHintForReferencingProject2 = null;
+			referencingProject2.Modified += (sender, e) => {
+				modifiedHintForReferencingProject2 = e.First ().Hint;
+			};
+
+			dotNetProject.DotNetCoreNotifyReferencesChanged ();
+
+			Assert.AreEqual ("References", modifiedHint);
+			Assert.AreEqual ("References", modifiedHintForReferencingProject1);
+			Assert.AreEqual ("References", modifiedHintForReferencingProject2);
 		}
 	}
 }
