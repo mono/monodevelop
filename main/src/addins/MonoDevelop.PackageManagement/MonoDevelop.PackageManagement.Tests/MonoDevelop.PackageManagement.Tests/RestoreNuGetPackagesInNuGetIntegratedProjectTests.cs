@@ -27,40 +27,61 @@
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
 using NUnit.Framework;
-
 namespace MonoDevelop.PackageManagement.Tests
 {
 	[TestFixture]
 	class RestoreNuGetPackagesInNuGetIntegratedProjectTests
 	{
 		RestoreNuGetPackagesInNuGetIntegratedProject action;
+		FakeSolutionManager solutionManager;
+		FakeSolution fakeSolution;
 		DotNetProject dotNetProject;
 		FakeDotNetProject fakeDotNetProject;
 		TestableDotNetCoreNuGetProject nugetProject;
 		FakeMonoDevelopBuildIntegratedRestorer buildIntegratedRestorer;
 
-		void CreateAction ()
+		void CreateProject ()
 		{
-			var solutionManager = new FakeSolutionManager ();
+			solutionManager = new FakeSolutionManager ();
+			fakeSolution = new FakeSolution ();
 			CreateNuGetProject ();
 			fakeDotNetProject = new FakeDotNetProject (dotNetProject.FileName);
+			fakeDotNetProject.ParentSolution = fakeSolution;
 			fakeDotNetProject.DotNetProject = dotNetProject;
+			fakeSolution.Projects.Add (fakeDotNetProject);
+		}
 
+		void CreateAction (bool restoreTransitiveProjectReferences = false)
+		{
 			action = new RestoreNuGetPackagesInNuGetIntegratedProject (
 				fakeDotNetProject,
 				nugetProject,
 				solutionManager,
-				buildIntegratedRestorer);
+				buildIntegratedRestorer,
+				restoreTransitiveProjectReferences);
 		}
 
 		void CreateNuGetProject (string projectName = "MyProject", string fileName = @"d:\projects\MyProject\MyProject.csproj")
 		{
-			var context = new FakeNuGetProjectContext ();
 			dotNetProject = CreateDotNetCoreProject (projectName, fileName);
 			var solution = new Solution ();
 			solution.RootFolder.AddItem (dotNetProject);
 			nugetProject = new TestableDotNetCoreNuGetProject (dotNetProject);
 			buildIntegratedRestorer = nugetProject.BuildIntegratedRestorer;
+		}
+
+		TestableDotNetCoreNuGetProject CreateNuGetProject (DotNetProject project)
+		{
+			var dotNetProjectProxy = new FakeDotNetProject ();
+			dotNetProjectProxy.DotNetProject = project;
+			fakeSolution.Projects.Add (dotNetProjectProxy);
+
+			var dotNetCoreNuGetProject = new TestableDotNetCoreNuGetProject (project);
+			dotNetCoreNuGetProject.BuildIntegratedRestorer = null;
+
+			solutionManager.NuGetProjectsUsingDotNetProjects.Add (project, dotNetCoreNuGetProject);
+
+			return dotNetCoreNuGetProject;
 		}
 
 		static DummyDotNetProject CreateDotNetCoreProject (string projectName = "MyProject", string fileName = @"d:\projects\MyProject\MyProject.csproj")
@@ -74,6 +95,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void Execute_BuildIntegratedRestorer_PackagesRestoredForProject ()
 		{
+			CreateProject ();
 			CreateAction ();
 
 			action.Execute ();
@@ -84,6 +106,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void Execute_Events_PackagesRestoredEventFired ()
 		{
+			CreateProject ();
 			CreateAction ();
 			bool packagesRestoredEventFired = false;
 			PackageManagementServices.PackageManagementEvents.PackagesRestored += (sender, e) => {
@@ -98,11 +121,31 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void Execute_ReferenceStatus_IsRefreshed ()
 		{
+			CreateProject ();
 			CreateAction ();
 
 			action.Execute ();
 
 			Assert.IsTrue (fakeDotNetProject.IsReferenceStatusRefreshed);
+		}
+
+		[Test]
+		public void IncludeTransitiveProjectReferences_ThreeProjectsOneReferencedAnother_TwoProjectsRestored ()
+		{
+			CreateProject ();
+			var referencingProject = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (referencingProject);
+			referencingProject.References.Add (ProjectReference.CreateProjectReference (dotNetProject));
+			var otherProject = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (otherProject);
+			var referencingNuGetProject = CreateNuGetProject (referencingProject);
+			CreateAction (true);
+
+			action.Execute ();
+
+			Assert.AreEqual (2, buildIntegratedRestorer.ProjectsRestored.Count);
+			Assert.AreEqual (buildIntegratedRestorer.ProjectsRestored[0], nugetProject);
+			Assert.AreEqual (buildIntegratedRestorer.ProjectsRestored[1], referencingNuGetProject);
 		}
 	}
 }

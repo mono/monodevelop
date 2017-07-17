@@ -243,19 +243,33 @@ namespace MonoDevelop.PackageManagement
 			if (!transitiveOnly)
 				project.NotifyModified ("References");
 
+			foreach (var referencingProject in project.GetReferencingProjects ()) {
+				referencingProject.NotifyModified ("References");
+			}
+		}
+
+		/// <summary>
+		/// Returns all projects that directly or indirectly referencing the specified project.
+		/// </summary>
+		public static IEnumerable<DotNetProject> GetReferencingProjects (this DotNetProject project)
+		{
+			var projects = new List<DotNetProject> ();
 			var traversedProjects = new Dictionary<string, bool> ();
 			traversedProjects.Add (project.ItemId, true);
 
 			foreach (var currentProject in project.ParentSolution.GetAllDotNetProjects ()) {
 				if (!traversedProjects.ContainsKey (currentProject.ItemId))
-					DotNetCoreNotifyReferencesChanged (project, currentProject, traversedProjects);
+					GetReferencingProjects (project, currentProject, traversedProjects, projects);
 			}
+
+			return projects;
 		}
 
-		static bool DotNetCoreNotifyReferencesChanged (
+		static bool GetReferencingProjects (
 			DotNetProject mainProject,
 			DotNetProject project,
-			Dictionary<string, bool> traversedProjects)
+			Dictionary<string, bool> traversedProjects,
+			List<DotNetProject> referencingProjects)
 		{
 			foreach (var projectReference in project.References.Where (IncludeProjectReference)) {
 				var resolvedProject = projectReference.ResolveProject (mainProject.ParentSolution) as DotNetProject;
@@ -264,22 +278,22 @@ namespace MonoDevelop.PackageManagement
 
 				if (resolvedProject == mainProject) {
 					traversedProjects [project.ItemId] = true;
-					project.NotifyModified ("References");
+					referencingProjects.Add (project);
 					return true;
 				}
 
 				if (traversedProjects.TryGetValue (resolvedProject.ItemId, out bool referencesProject)) {
 					if (referencesProject) {
 						traversedProjects [project.ItemId] = referencesProject;
-						project.NotifyModified ("References");
+						referencingProjects.Add (project);
 						return true;
 					}
 					continue;
 				}
 
-				if (DotNetCoreNotifyReferencesChanged (mainProject, resolvedProject, traversedProjects)) {
+				if (GetReferencingProjects (mainProject, resolvedProject, traversedProjects, referencingProjects)) {
 					traversedProjects [project.ItemId] = true;
-					project.NotifyModified ("References");
+					referencingProjects.Add (project);
 					return true;
 				}
 			}

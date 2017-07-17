@@ -283,7 +283,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void DotNetCoreNotifyReferencesChanged_TwoOneProjectReferencesChainToModifiedProject_NotifyReferencesChangedForAllProjects ()
+		public void DotNetCoreNotifyReferencesChanged_TwoProjectReferencesChainToModifiedProject_NotifyReferencesChangedForAllProjects ()
 		{
 			var dotNetProject = CreateDotNetCoreProject ();
 			AddParentSolution (dotNetProject);
@@ -317,7 +317,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		/// Same as above but the projects are added to the solution in a different order.
 		/// </summary>
 		[Test]
-		public void DotNetCoreNotifyReferencesChanged_TwoOneProjectReferencesChainToModifiedProject_NotifyReferencesChangedForAllProjects2 ()
+		public void DotNetCoreNotifyReferencesChanged_TwoProjectReferencesChainToModifiedProject_NotifyReferencesChangedForAllProjects2 ()
 		{
 			var dotNetProject = CreateDotNetCoreProject ();
 			AddParentSolution (dotNetProject);
@@ -345,6 +345,44 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("References", modifiedHint);
 			Assert.AreEqual ("References", modifiedHintForReferencingProject1);
 			Assert.AreEqual ("References", modifiedHintForReferencingProject2);
+		}
+
+		[Test]
+		public void GetReferencingProjects_ThreeProjectsOneProjectReferencesModifiedProject_OneProjectReturned ()
+		{
+			var dotNetProject = CreateDotNetCoreProject ();
+			AddParentSolution (dotNetProject);
+			var referencedProject = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (referencedProject);
+			referencedProject.References.Add (ProjectReference.CreateProjectReference (dotNetProject));
+			var otherProject = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (otherProject);
+
+			var projects = dotNetProject.GetReferencingProjects ().ToList ();
+
+			Assert.AreEqual (1, projects.Count);
+			Assert.AreEqual (projects[0], referencedProject);
+		}
+
+		[Test]
+		public void GetReferencingProjects_TwoProjectReferencesChainToModifiedProject_NotifyReferencesChangedForAllProjects ()
+		{
+			var dotNetProject = CreateDotNetCoreProject ();
+			AddParentSolution (dotNetProject);
+			var referencingProject1 = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (referencingProject1);
+			referencingProject1.References.Add (ProjectReference.CreateProjectReference (dotNetProject));
+			var referencingProject2 = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (referencingProject2);
+			referencingProject2.References.Add (ProjectReference.CreateProjectReference (referencingProject1));
+			var otherProject = CreateDotNetCoreProject ();
+			dotNetProject.ParentSolution.RootFolder.AddItem (otherProject);
+
+			var projects = dotNetProject.GetReferencingProjects ().ToList ();
+
+			Assert.AreEqual (2, projects.Count);
+			Assert.That (projects, Contains.Item (referencingProject1));
+			Assert.That (projects, Contains.Item (referencingProject2));
 		}
 	}
 }
