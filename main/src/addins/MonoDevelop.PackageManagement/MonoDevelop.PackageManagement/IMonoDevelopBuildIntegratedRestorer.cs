@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.ProjectManagement.Projects;
@@ -34,6 +35,10 @@ namespace MonoDevelop.PackageManagement
 	{
 		Task RestorePackages (
 			BuildIntegratedNuGetProject project,
+			CancellationToken cancellationToken);
+
+		Task RestorePackages (
+			IEnumerable<BuildIntegratedNuGetProject> projects,
 			CancellationToken cancellationToken);
 
 		bool LockFileChanged { get; }

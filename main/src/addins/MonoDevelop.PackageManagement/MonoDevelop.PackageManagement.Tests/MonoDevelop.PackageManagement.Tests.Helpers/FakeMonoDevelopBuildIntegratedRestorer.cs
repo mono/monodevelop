@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.ProjectManagement.Projects;
@@ -41,6 +42,16 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			CancellationToken cancellationToken)
 		{
 			ProjectRestored = project;
+			return Task.FromResult (0);
+		}
+
+		public List<BuildIntegratedNuGetProject> ProjectsRestored = new List<BuildIntegratedNuGetProject> ();
+
+		public Task RestorePackages (
+			IEnumerable<BuildIntegratedNuGetProject> projects,
+			CancellationToken cancellationToken)
+		{
+			ProjectsRestored.AddRange (projects);
 			return Task.FromResult (0);
 		}
 	}
