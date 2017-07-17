@@ -211,6 +211,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageReferenceNuGetProjectTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageReferenceNuGetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeMonoDevelopBuildIntegratedRestorer.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\RestoreNuGetPackagesInNuGetIntegratedProjectTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

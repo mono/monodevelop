@@ -34,21 +34,35 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class RestoreNuGetPackagesInNuGetIntegratedProject : IPackageAction
 	{
-		DotNetProject project;
+		IDotNetProject project;
 		BuildIntegratedNuGetProject nugetProject;
-		MonoDevelopBuildIntegratedRestorer packageRestorer;
+		IMonoDevelopSolutionManager solutionManager;
+		IMonoDevelopBuildIntegratedRestorer packageRestorer;
 		IPackageManagementEvents packageManagementEvents;
 
 		public RestoreNuGetPackagesInNuGetIntegratedProject (
 			DotNetProject project,
 			BuildIntegratedNuGetProject nugetProject,
 			IMonoDevelopSolutionManager solutionManager)
+			: this (
+				new DotNetProjectProxy (project),
+				nugetProject,
+				solutionManager,
+				new MonoDevelopBuildIntegratedRestorer (solutionManager))
+		{
+		}
+
+		public RestoreNuGetPackagesInNuGetIntegratedProject (
+			IDotNetProject project,
+			BuildIntegratedNuGetProject nugetProject,
+			IMonoDevelopSolutionManager solutionManager,
+			IMonoDevelopBuildIntegratedRestorer packageRestorer)
 		{
 			this.project = project;
 			this.nugetProject = nugetProject;
+			this.solutionManager = solutionManager;
+			this.packageRestorer = packageRestorer;
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
-
-			packageRestorer = new MonoDevelopBuildIntegratedRestorer (solutionManager);
 		}
 
 		public PackageActionType ActionType {
