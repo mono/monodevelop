@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects
 {
@@ -56,7 +57,13 @@ namespace MonoDevelop.Projects
 				customData = new Dictionary<object, object> (other.customData);
 			else
 				customData = null;
+			ExecutionTarget = other.ExecutionTarget;
 		}
+
+		/// <summary>
+		/// Execution target for which the operation is being executed
+		/// </summary>
+		public ExecutionTarget ExecutionTarget { get; set; }
 	}
 }
 

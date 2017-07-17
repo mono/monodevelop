@@ -1182,7 +1182,7 @@ namespace MonoDevelop.Ide
 			BuildResult res = null;
 			try {
 				tt.Trace ("Cleaning item");
-				res = await entry.Clean (monitor, IdeApp.Workspace.ActiveConfiguration, operationContext);
+				res = await entry.Clean (monitor, IdeApp.Workspace.ActiveConfiguration, InitOperationContext (entry, operationContext));
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Clean failed."), ex);
 			} finally {
@@ -1435,13 +1435,13 @@ namespace MonoDevelop.Ide
 
 			var sei = target as Project;
 			if (sei != null) {
-				if (sei.FastCheckNeedsBuild (configuration))
+				if (sei.FastCheckNeedsBuild (configuration, InitOperationContext (target, new TargetEvaluationContext ())))
 					return true;
 				//TODO: respect solution level dependencies
 				var deps = new HashSet<SolutionItem> ();
 				CollectReferencedItems (sei, deps, configuration);
 				foreach (var dep in deps.OfType<Project> ()) {
-					if (dep.FastCheckNeedsBuild (configuration))
+					if (dep.FastCheckNeedsBuild (configuration, InitOperationContext (target, new TargetEvaluationContext ())))
 						return true;
 				}
 				return false;
@@ -1450,7 +1450,7 @@ namespace MonoDevelop.Ide
 			var sln = target as Solution;
 			if (sln != null) {
 				foreach (var item in sln.GetAllProjects ()) {
-					if (item.FastCheckNeedsBuild (configuration))
+					if (item.FastCheckNeedsBuild (configuration, InitOperationContext (target, new TargetEvaluationContext ())))
 						return true;
 				}
 				return false;
@@ -1517,7 +1517,7 @@ namespace MonoDevelop.Ide
 
 				if (skipPrebuildCheck || result.ErrorCount == 0) {
 					tt.Trace ("Building item");
-					result = await entry.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true, operationContext);
+					result = await entry.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true, InitOperationContext (entry, operationContext));
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Build failed."), ex);
@@ -1533,6 +1533,25 @@ namespace MonoDevelop.Ide
 			BuildDone (monitor, result, entry, tt);	// BuildDone disposes the monitor
 
 			return result;
+		}
+
+		/// <summary>
+		/// Initializes the context to be used for build operations. It currently just initializes
+		/// it with the currently selected execution target.
+		/// </summary>
+		T InitOperationContext<T> (IBuildTarget target, T context) where T:OperationContext
+		{
+			OperationContext ctx = context;
+			if (ctx == null)
+				ctx = new OperationContext ();
+			if (ctx.ExecutionTarget == null) {
+				var item = target as SolutionItem;
+				if (item != null)
+					ctx.ExecutionTarget = IdeApp.Workspace.GetActiveExecutionTarget (item);
+				else
+					ctx.ExecutionTarget = IdeApp.Workspace.ActiveExecutionTarget;
+			}
+			return (T)ctx;
 		}
 		
 		// Note: This must run in the main thread
