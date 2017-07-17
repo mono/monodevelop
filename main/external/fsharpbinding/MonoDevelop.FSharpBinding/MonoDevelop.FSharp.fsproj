@@ -65,7 +65,7 @@
         <Version>4.3.0</Version>
       </NuGetPackage>
     </ItemGroup>
-    <Copy SourceFiles="..\packages\%(NuGetPackage.Name)\%(NuGetPackage.Name).%(NuGetPackage.Version).nupkg" DestinationFolder="$(OutputPath)/Packages" />
+    <Copy SourceFiles="..\packages\%(NuGetPackage.Name)\%(NuGetPackage.Name).%(NuGetPackage.Version).nupkg" DestinationFolder="$(OutputPath)/Packages" SkipUnchangedFiles="true" />
   </Target>
   <Target Name="AfterBuild">
   </Target>
