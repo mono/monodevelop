@@ -62,7 +62,7 @@
       </NuGetPackage>
       <NuGetPackage Include="System.ValueTuple">
         <Name>System.ValueTuple</Name>
-        <Version>4.3.0</Version>
+        <Version>4.3.1</Version>
       </NuGetPackage>
     </ItemGroup>
     <Copy SourceFiles="..\packages\%(NuGetPackage.Name)\%(NuGetPackage.Name).%(NuGetPackage.Version).nupkg" DestinationFolder="$(OutputPath)/Packages" SkipUnchangedFiles="true" />
