@@ -100,7 +100,9 @@ namespace MonoDevelop.Components.Commands
 
 		public bool Equals (KeyBindingSet other)
 		{
-			if (parent != other && bindings.Count != other.bindings.Count)
+			if (other == null)
+				return false;
+			if (parent != null && parent != other && !parent.Equals (other.parent))
 				return false;
 			foreach (KeyValuePair<string, string> binding in bindings) {
 				string accel;
@@ -214,9 +216,21 @@ namespace MonoDevelop.Components.Commands
 					case "binding":
 						command = reader.GetAttribute (commandAttr);
 						binding = reader.GetAttribute (shortcutAttr);
+
+						if (string.IsNullOrEmpty (command))
+							continue;
+
+						if (!string.IsNullOrEmpty (binding))
+							binding = KeyBindingManager.FixChordSeparators (binding);
+
+						string pbind;
+						if (parent?.bindings != null && parent.bindings.TryGetValue (command, out pbind)) {
+							if (binding == pbind)
+								continue;
+						} else if (string.IsNullOrEmpty (binding))
+							continue;
 						
-						if (!string.IsNullOrEmpty (command))
-							bindings.Add (command, KeyBindingManager.FixChordSeparators(binding));
+						bindings.Add (command, binding);
 						
 						break;
 					}
