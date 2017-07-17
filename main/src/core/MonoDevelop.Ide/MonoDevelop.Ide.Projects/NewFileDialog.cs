@@ -173,12 +173,9 @@ namespace MonoDevelop.Ide.Projects
 
 			if (catView.Selection.GetSelected (out treeModel, out treeIter)) {
 				FillCategoryTemplates (treeIter);
-				catView.ExpandRow (treeModel.GetPath (treeIter), false);
 				UpdateOkStatus ();
 			}
 		}
-
-
 
 		void InitializeDialog (bool update)
 		{
