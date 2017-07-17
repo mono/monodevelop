@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -9,21 +9,13 @@
     <Import_RootNamespace>Mono.TextEditor.Platform</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-      <Compile Include="$(MSBuildThisFileDirectory)PlatformCatalog.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)PlatformExtensions.cs" />
-
-      <Compile Include="$(MSBuildThisFileDirectory)Platform\Imaging\Impl\ImageMoniker.cs" />
-
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ITagBasedSyntaxHighlightingFactory.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ITextEditorFactoryService.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ConnectionReason.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\IWpfTextView.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\IWpfTextViewConnectionListener.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\IWpfTextViewCreationListener.cs" />
-
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\ITextBufferFactoryService2.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\IThreadHelper.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\TagAggregatorOptions2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformCatalog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platform\Imaging\Impl\ImageMoniker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ITagBasedSyntaxHighlightingFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\ITextBufferFactoryService2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\IThreadHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\TagAggregatorOptions2.cs" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

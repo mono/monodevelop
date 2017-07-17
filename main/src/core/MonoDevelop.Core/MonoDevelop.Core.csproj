@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
@@ -260,6 +260,9 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.EditorFeatures.Text">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.EditorFeatures.Text.2.3.0-beta1\lib\net46\Microsoft.CodeAnalysis.EditorFeatures.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf">
+      <HintPath>..\..\..\packages\TextUIWpfStub.15.0.0\lib\net45\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
