@@ -80,6 +80,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				return (await findRefsCallback (project)).ToList ();
 			} finally {
 				TypeSystemService.Unload (solution);
+				project.Dispose ();
 			}
 		}
 
