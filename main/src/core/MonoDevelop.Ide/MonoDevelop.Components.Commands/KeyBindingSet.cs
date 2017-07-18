@@ -100,6 +100,9 @@ namespace MonoDevelop.Components.Commands
 
 		public bool Equals (KeyBindingSet other)
 		{
+			// TODO: full IEquatable<KeyBindingSet> implementation
+			// the current solutions is just enough to detect whether a custom set equals a predefined one
+			// and is not a real equality check. See KeyBindingsPanel.SelectCurrentScheme().
 			if (other == null)
 				return false;
 			if (parent != null && parent != other && !parent.Equals (other.parent))
