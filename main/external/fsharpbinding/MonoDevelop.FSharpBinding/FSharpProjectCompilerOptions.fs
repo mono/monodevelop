@@ -3,8 +3,10 @@
 open Gtk
 
 open MonoDevelop.Components
+open MonoDevelop.Components.AtkCocoaHelper
 open MonoDevelop.Core
 open MonoDevelop.Ide.Gui.Dialogs
+open MonoDevelop.Ide.Gui.OptionPanels
 open MonoDevelop.Projects
 
 type FSharpProjectCompilerOptions(project:DotNetProject) as this =
@@ -15,28 +17,22 @@ type FSharpProjectCompilerOptions(project:DotNetProject) as this =
         child.Expand <- false
         child.Fill <- false
 
-    let entries = 
-        [| "Executable"
-           "Library"
-           "Executable with GUI"
-           "Module" |] |> Array.map GettextCatalog.GetString
-
-    let combo = new ComboBox(entries)
+    let combo = new DotNetCompileTargetSelector(CompileTarget = project.CompileTarget)
 
     do
         Stetic.BinContainer.Attach (this) |> ignore
         let label = new Label(GettextCatalog.GetString "Compile target:")
-        let hbox = new HBox()
-        combo.Active <- int project.CompileTarget
+        let hbox = new HBox(Spacing = 6)
         hbox.Add label
         hbox.Add combo
-        hbox.Spacing <- 6
         boxChild hbox.[label]
         boxChild hbox.[combo]
         this.Add hbox
         this.ShowAll()
 
-    member this.CompileTarget = enum<CompileTarget> combo.Active
+        combo.SetCommonAccessibilityAttributes ("CodeGeneration.CompileTarget", label,
+                                                 GettextCatalog.GetString ("Select the compile target for the code generation"));
+    member this.CompileTarget = combo.CompileTarget
 
 type FSharpProjectCompilerOptionsPanel() =
     inherit ItemOptionsPanel()

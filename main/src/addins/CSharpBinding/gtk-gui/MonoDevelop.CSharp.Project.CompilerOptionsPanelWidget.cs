@@ -20,7 +20,7 @@ namespace MonoDevelop.CSharp.Project
 		
 		private global::Gtk.HBox hbox57;
 		
-		private global::Gtk.ComboBox compileTargetCombo;
+		private MonoDevelop.Ide.Gui.OptionPanels.DotNetCompileTargetSelector compileTargetCombo;
 		
 		private global::MonoDevelop.Components.FileEntry iconEntry;
 		
@@ -112,7 +112,7 @@ namespace MonoDevelop.CSharp.Project
 			this.hbox57 = new global::Gtk.HBox ();
 			this.hbox57.Name = "hbox57";
 			// Container child hbox57.Gtk.Box+BoxChild
-			this.compileTargetCombo = new global::Gtk.ComboBox ();
+			this.compileTargetCombo = new MonoDevelop.Ide.Gui.OptionPanels.DotNetCompileTargetSelector();
 			this.compileTargetCombo.Name = "compileTargetCombo";
 			this.hbox57.Add (this.compileTargetCombo);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox57 [this.compileTargetCombo]));
