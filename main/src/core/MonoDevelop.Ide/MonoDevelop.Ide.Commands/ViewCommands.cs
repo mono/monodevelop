@@ -424,6 +424,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			IdeApp.Workbench.ActiveDocument.Select ();
 			IdeApp.Workbench.ActiveDocument.Editor.StartCaretPulseAnimation ();
+			IdeApp.Workbench.ActiveDocument.Editor.GrabFocus ();
 		}
 
 	}
