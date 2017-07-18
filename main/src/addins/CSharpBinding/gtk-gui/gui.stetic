@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
@@ -589,7 +589,7 @@ None</property>
                       <widget class="Gtk.HBox" id="hbox57">
                         <property name="MemberName" />
                         <child>
-                          <widget class="Gtk.ComboBox" id="compileTargetCombo">
+                          <widget class="MonoDevelop.Ide.Gui.OptionPanels.DotNetCompileTargetSelector" id="compileTargetCombo">
                             <property name="MemberName" />
                             <property name="IsTextCombo">False</property>
                             <property name="Items" />
