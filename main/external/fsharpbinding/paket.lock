@@ -17,4 +17,4 @@ NUGET
     System.Collections.Immutable (1.3.1)
     System.Reflection.Metadata (1.4.2)
       System.Collections.Immutable (>= 1.3.1)
-    System.ValueTuple (4.3)
+    System.ValueTuple (4.3.1)
