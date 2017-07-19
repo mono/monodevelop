@@ -631,17 +631,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			var descriptionCol = view.AppendColumn (GettextCatalog.GetString ("Description"), descriptionCellRenderer);
 			descriptionCol.SetCellDataFunc (descriptionCellRenderer, new Gtk.TreeCellDataFunc (DescriptionDataFunc));
 			descriptionCol.Resizable = true;
+			descriptionCol.Expand = true;
 			descriptionCellRenderer.WrapMode = Pango.WrapMode.Word;
 			descriptionCellRenderer.PreferedMaxWidth = IdeApp.Workbench.RootWindow.Allocation.Width / 3;
 
-			descriptionCol.AddNotification("width", delegate
-			{
-				if (descriptionCellRenderer.WrapWidth == descriptionCol.Width)
-					return;
-				descriptionCellRenderer.WrapWidth = descriptionCol.Width;
-				descriptionCol.QueueResize ();
-			});
-			
 			col = view.AppendColumn (GettextCatalog.GetString ("File"), view.TextRenderer);
 			col.SetCellDataFunc (view.TextRenderer, new Gtk.TreeCellDataFunc (FileDataFunc));
 			col.Resizable = true;
