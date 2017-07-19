@@ -94,8 +94,38 @@ contexts:
       pop: true
   keywords:
     - match: '@\w+\b'
-    - match: '\b(this|base|as|is|new|sizeof|typeof|stackalloc|else|if|switch|case|default|do|for|foreach|in|while|break|continue|goto|return|yield|partial|global|where|__arglist|__makeref|__reftype|__refvalue|by|descending|from|group|into|orderby|select|let|ascending|join|on|equals|try|throw|catch|finally|abstract|async|await|const|event|extern|override|readonly|sealed|static|virtual|volatile|public|protected|private|internal|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ushort|ulong|object|string|var|dynamic|void|namespace|using|get|set|add|remove|value|class|interface|delegate|enum|struct|params|ref|out|explicit|implicit|operator|checked|unchecked|fixed|unsafe|lock)\b'
-      scope: keyword.source.cs
+    - match: '\b(this|base)\b'
+      scope: keyword.other.access.source.cs
+    - match: '\b(as|is|new|sizeof|typeof|stackalloc)\b'
+      scope: keyword.operator.source.cs
+    - match: '\b(else|if|switch|case|default)\b'
+      scope: keyword.other.selection.source.cs
+    - match: '\b(do|for|foreach|in|while)\b'
+      scope: keyword.other.iteration.source.cs
+    - match: '\b(break|continue|goto|return)\b'
+      scope: keyword.other.jump.source.cs
+    - match: '\b(yield|partial|global|where|__arglist|__makeref|__reftype|__refvalue|by|descending|from|group|into|orderby|select|let|ascending|join|on|equals)\b'
+      scope: keyword.other.context.source.cs
+    - match: '\b(try|throw|catch|finally)\b'
+      scope: keyword.other.exception.source.cs
+    - match: '\b(abstract|async|await|const|event|extern|override|readonly|sealed|static|virtual|volatile|public|protected|private|internal)\b'
+      scope: keyword.other.modifiers.source.cs
+    - match: '\b(bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ushort|ulong|object|string|var|dynamic)\b'
+      scope: keyword.other.type.source.cs
+    - match: '\b(void)\b'
+      scope: keyword.other.void.source.cs
+    - match: '\b(namespace|using)\b'
+      scope: keyword.other.namespace.source.cs
+    - match: '\b(get|set|add|remove|value)\b'
+      scope: keyword.other.property.source.cs
+    - match: '\b(class|interface|delegate|enum|struct)\b'
+      scope: keyword.other.declaration.source.cs
+    - match: '\b(params|ref|out)\b'
+      scope: keyword.other.parameter.source.cs
+    - match: '\b(explicit|implicit|operator)\b'
+      scope: keyword.operator.declaration.source.cs
+    - match: '\b(checked|unchecked|fixed|unsafe|lock)\b'
+      scope: keyword.other.source.cs
     - match: '\b(true|false|null)\b'
       scope: constant.language.source.cs
   numbers:

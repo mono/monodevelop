@@ -196,6 +196,22 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("Variable", new List<string> { "variable" }, ConvertChunkStyle (colorScheme.UserVariableUsage)));
 			settings.Add (new ThemeSetting ("variable.other", new List<string> { "variable.other" }, ConvertChunkStyle (colorScheme.ScriptKeyword)));
 			settings.Add (new ThemeSetting ("Keyword", new List<string> { "keyword - (source.c keyword.operator | source.c++ keyword.operator | source.objc keyword.operator | source.objc++ keyword.operator), keyword.operator.word" }, ConvertChunkStyle (colorScheme.KeywordOther)));
+			settings.Add (new ThemeSetting ("Keyword (Access)", new List<string> { "keyword.other.access" }, ConvertChunkStyle (colorScheme.KeywordAccessors)));
+			settings.Add (new ThemeSetting ("Keyword (Types)", new List<string> { "keyword.other.type" }, ConvertChunkStyle (colorScheme.KeywordTypes)));
+			settings.Add (new ThemeSetting ("Keyword (Operator)", new List<string> { "keyword.operator" }, ConvertChunkStyle (colorScheme.KeywordOperators)));
+			settings.Add (new ThemeSetting ("Keyword (Selection)", new List<string> { "keyword.other.selection" }, ConvertChunkStyle (colorScheme.KeywordSelection)));
+			settings.Add (new ThemeSetting ("Keyword (Itarator)", new List<string> { "keyword.other.iteration" }, ConvertChunkStyle (colorScheme.KeywordIteration)));
+			settings.Add (new ThemeSetting ("Keyword (Jump)", new List<string> { "keyword.other.jump" }, ConvertChunkStyle (colorScheme.KeywordJump)));
+			settings.Add (new ThemeSetting ("Keyword (Context)", new List<string> { "keyword.other.context" }, ConvertChunkStyle (colorScheme.KeywordContext)));
+			settings.Add (new ThemeSetting ("Keyword (Exception)", new List<string> { "keyword.other.exception" }, ConvertChunkStyle (colorScheme.KeywordException)));
+			settings.Add (new ThemeSetting ("Keyword (Modifier)", new List<string> { "keyword.other.modifiers" }, ConvertChunkStyle (colorScheme.KeywordModifiers)));
+			settings.Add (new ThemeSetting ("Keyword (Void)", new List<string> { "keyword.other.void" }, ConvertChunkStyle (colorScheme.KeywordVoid)));
+			settings.Add (new ThemeSetting ("Keyword (Namespace)", new List<string> { "keyword.other.namespace" }, ConvertChunkStyle (colorScheme.KeywordNamespace)));
+			settings.Add (new ThemeSetting ("Keyword (Property)", new List<string> { "keyword.other.property" }, ConvertChunkStyle (colorScheme.KeywordProperty)));
+			settings.Add (new ThemeSetting ("Keyword (Declaration)", new List<string> { "keyword.other.declaration" }, ConvertChunkStyle (colorScheme.KeywordDeclaration)));
+			settings.Add (new ThemeSetting ("Keyword (Parameter)", new List<string> { "keyword.other.parameter" }, ConvertChunkStyle (colorScheme.KeywordParameter)));
+			settings.Add (new ThemeSetting ("Keyword (Operator)", new List<string> { "keyword.other.access" }, ConvertChunkStyle (colorScheme.KeywordOperatorDeclaration)));
+
 			settings.Add (new ThemeSetting ("storage", new List<string> { "storage" }, ConvertChunkStyle (colorScheme.KeywordOther)));
 			settings.Add (new ThemeSetting ("storage.type", new List<string> { "storage.type" }, ConvertChunkStyle (colorScheme.KeywordOther)));
 			settings.Add (new ThemeSetting ("punctuation", new List<string> { "punctuation" }, ConvertChunkStyle (colorScheme.Punctuation)));
