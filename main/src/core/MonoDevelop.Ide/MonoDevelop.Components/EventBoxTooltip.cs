@@ -70,9 +70,8 @@ namespace MonoDevelop.Components
 
 			if (image != null) {
 				normalPixbuf = image.Image.ToPixbuf ();
+				activePixbuf = normalPixbuf.ColorShiftPixbuf ();
 			}
-			normalPixbuf = image.Image.ToPixbuf ();
-			activePixbuf = normalPixbuf.ColorShiftPixbuf ();
 
 			eventBox.FocusGrabbed += (sender, e) => {
 				if (image != null)
