@@ -29,6 +29,8 @@ using Gtk;
 using System;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide;
+using Gdk;
 
 namespace MonoDevelop.Components
 {
@@ -49,14 +51,38 @@ namespace MonoDevelop.Components
 		/// The EventBox should have Visible set to false otherwise the tooltip pop window
 		/// will have the wrong location.
 		/// </summary>
+
+		ImageView image;
+		Pixbuf normalPixbuf;
+		Pixbuf activePixbuf;
+
 		public EventBoxTooltip (EventBox eventBox)
 		{
 			this.eventBox = eventBox;
+			eventBox.CanFocus = true;
 
 			eventBox.EnterNotifyEvent += HandleEnterNotifyEvent;
 			eventBox.LeaveNotifyEvent += HandleLeaveNotifyEvent;
 			eventBox.FocusInEvent += HandleFocusInEvent;
 			eventBox.FocusOutEvent += HandleFocusOutEvent;
+
+			image = eventBox.Child as ImageView;
+
+			if (image != null) {
+				normalPixbuf = image.Image.ToPixbuf ();
+			}
+			normalPixbuf = image.Image.ToPixbuf ();
+			activePixbuf = normalPixbuf.ColorShiftPixbuf ();
+
+			eventBox.FocusGrabbed += (sender, e) => {
+				if (image != null)
+					image.Image = activePixbuf.ToXwtImage ();
+			};
+
+			eventBox.Focused += (o, args) => {
+				if (image != null)
+					image.Image = normalPixbuf.ToXwtImage ();
+			};
 
 			Position = PopupPosition.TopLeft;
 
@@ -147,5 +173,38 @@ namespace MonoDevelop.Components
 		public TaskSeverity? Severity { get; set; }
 		public PopupPosition Position { get; set; }
 	}
+#region Extension method for Pixbuf
+	internal static class PixbufExtension
+	{
+		public static unsafe Pixbuf ColorShiftPixbuf (this Pixbuf src, byte shift = 120)
+		{
+			var dest = new Gdk.Pixbuf (src.Colorspace, src.HasAlpha, src.BitsPerSample, src.Width, src.Height);
+
+			byte* src_pixels_orig = (byte*)src.Pixels;
+			byte* dest_pixels_orig = (byte*)dest.Pixels;
+
+			for (int i = 0; i < src.Height; i++) {
+				byte* src_pixels = src_pixels_orig + i * src.Rowstride;
+				byte* dest_pixels = dest_pixels_orig + i * dest.Rowstride;
+
+				for (int j = 0; j < src.Width; j++) {
+					*(dest_pixels++) = PixelClamp (*(src_pixels++) + shift);
+					*(dest_pixels++) = PixelClamp (*(src_pixels++) + shift);
+					*(dest_pixels++) = PixelClamp (*(src_pixels++) + shift);
+
+					if (src.HasAlpha) {
+						*(dest_pixels++) = *(src_pixels++);
+					}
+				}
+			}
+			return dest;
+		}
+
+		static byte PixelClamp (int val)
+		{
+			return (byte)System.Math.Max (0, System.Math.Min (255, val));
+		}
+	}
+#endregion
 }
 
