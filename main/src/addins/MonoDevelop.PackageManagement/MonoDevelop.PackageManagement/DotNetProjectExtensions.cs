@@ -254,7 +254,7 @@ namespace MonoDevelop.PackageManagement
 		public static IEnumerable<DotNetProject> GetReferencingProjects (this DotNetProject project)
 		{
 			var projects = new List<DotNetProject> ();
-			var traversedProjects = new Dictionary<string, bool> ();
+			var traversedProjects = new Dictionary<string, bool> (StringComparer.OrdinalIgnoreCase);
 			traversedProjects.Add (project.ItemId, true);
 
 			foreach (var currentProject in project.ParentSolution.GetAllDotNetProjects ()) {
