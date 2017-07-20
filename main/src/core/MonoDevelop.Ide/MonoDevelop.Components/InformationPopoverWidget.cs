@@ -42,6 +42,7 @@ namespace MonoDevelop.Components
 		{
 			severity = TaskSeverity.Information;
 			imageView = new Xwt.ImageView ();
+			imageView.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			UpdateIcon ();
 			Content = imageView;
 			CanGetFocus = true;
@@ -66,6 +67,8 @@ namespace MonoDevelop.Components
 			set {
 				message = value;
 				UpdatePopover ();
+
+				this.Accessible.Label = value;
 			}
 		}
 
