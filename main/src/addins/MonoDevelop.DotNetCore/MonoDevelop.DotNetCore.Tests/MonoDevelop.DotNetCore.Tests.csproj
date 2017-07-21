@@ -40,6 +40,7 @@
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreMSBuildProjectTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreVersionTests.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreSdkTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
