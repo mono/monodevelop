@@ -106,7 +106,7 @@ msgstr ""
 #: ../MonoDevelop.Database.Sql.SqlServer/SqlServerDbFactory.cs:44
 #, fuzzy
 msgid "SQL Server database"
-msgstr "Bancos de dados SQLite"
+msgstr "Bancos de dados SQL Server"
 
 #: ../MonoDevelop.Database.Sql.SqlServer/gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget.cs:62
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:337
