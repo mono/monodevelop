@@ -61,5 +61,20 @@ namespace MonoDevelop.DotNetCore
 		{
 			return framework.Identifier == ".NETFramework";
 		}
+
+		public static bool IsNetCoreApp (this TargetFrameworkMoniker framework)
+		{
+			return framework.Identifier == ".NETCoreApp";
+		}
+
+		public static bool IsNetStandard (this TargetFrameworkMoniker framework)
+		{
+			return framework.Identifier == ".NETStandard";
+		}
+
+		public static bool IsNetStandardOrNetCoreApp (this TargetFrameworkMoniker framework)
+		{
+			return framework.IsNetStandard () || framework.IsNetCoreApp ();
+		}
 	}
 }
