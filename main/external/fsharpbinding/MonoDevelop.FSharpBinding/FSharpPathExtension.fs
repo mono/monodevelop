@@ -51,7 +51,7 @@ type FSharpPathExtension() as x =
         |> Option.iter x.DocumentContext.AttachToProject)
 
     let getSolutions() =
-        ownerProjects |> Seq.map (fun p -> p.ParentSolution) |> Seq.distinct
+        ownerProjects |> Seq.choose (fun p -> p.ParentSolution |> Option.ofNull) |> Seq.distinct
 
     let untrackStartupProjectChanges () =
         getSolutions()
