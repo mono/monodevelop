@@ -33,7 +33,7 @@ namespace MonoDevelop.Packaging
 {
 	class MSBuildGlobalPropertyProvider : IMSBuildGlobalPropertyProvider
 	{
-		Dictionary<string, string> properties;
+		Lazy<Dictionary<string, string>> properties = new Lazy<Dictionary<string, string>> (CreateProperties);
 
 		#pragma warning disable 67
 		public event EventHandler GlobalPropertiesChanged;
@@ -41,13 +41,17 @@ namespace MonoDevelop.Packaging
 
 		public IDictionary<string, string> GetGlobalProperties ()
 		{
-			if (properties == null) {
-				string addinDirectory = Path.GetDirectoryName (GetType ().Assembly.Location);
-				string targetsDirectory = Path.Combine (addinDirectory, "Targets");
+			return properties.Value;
+		}
 
-				properties = new Dictionary<string, string> ();
-				properties.Add ("NuGetAuthoringPath", targetsDirectory);
-			}
+		static Dictionary<string, string> CreateProperties ()
+		{
+			string addinDirectory = Path.GetDirectoryName (typeof (MSBuildGlobalPropertyProvider).Assembly.Location);
+			string targetsDirectory = Path.Combine (addinDirectory, "Targets");
+
+			var properties = new Dictionary<string, string> ();
+			properties.Add ("NuGetAuthoringPath", targetsDirectory);
+
 			return properties;
 		}
 	}

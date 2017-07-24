@@ -215,5 +215,30 @@ namespace Mono.TextEditor.Tests.Actions
 			DeleteActions.NextSubword (data);
 			Check (data, @"      $");
 		}
+
+		[Test]
+		public void AdvancedBackspaceTests ()
+		{
+			var data = Create (@"($)", mimeType: "text/x-csharp");
+			MonoDevelop.SourceEditor.EditActions.AdvancedBackspace (data);
+			Check (data, @"$");
+			data = Create (@"[$]", mimeType:"text/x-csharp");
+			MonoDevelop.SourceEditor.EditActions.AdvancedBackspace (data);
+			Check (data, @"$");
+			data = Create ("\"$\"", mimeType:"text/x-csharp");
+			MonoDevelop.SourceEditor.EditActions.AdvancedBackspace (data);
+			Check (data, @"$");
+			data = Create ("'$'", mimeType: "text/x-csharp");
+			MonoDevelop.SourceEditor.EditActions.AdvancedBackspace (data);
+			Check (data, @"$");
+
+			data = Create (@"// ($)", mimeType: "text/x-csharp");
+			MonoDevelop.SourceEditor.EditActions.AdvancedBackspace (data);
+			Check (data, @"// $)");
+
+			data = Create (@""" ($)", mimeType: "text/x-csharp");
+			MonoDevelop.SourceEditor.EditActions.AdvancedBackspace (data);
+			Check (data, @""" $)");
+		}
 	}
 }

@@ -1067,7 +1067,12 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public Task<TargetEvaluationResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context = null)
 		{
-			return ProjectExtension.OnRunTarget (monitor, target, configuration, context ?? new TargetEvaluationContext ());
+			// Initialize the evaluation context. This initialization is shared with FastCheckNeedsBuild.
+			// Extenders will override OnConfigureTargetEvaluationContext to add custom properties and do other
+			// initializations required by MSBuild.
+			context = ProjectExtension.OnConfigureTargetEvaluationContext (target, configuration, context ?? new TargetEvaluationContext ());
+
+			return ProjectExtension.OnRunTarget (monitor, target, configuration, context);
 		}
 
 		public bool SupportsTarget (string target)
@@ -1083,6 +1088,24 @@ namespace MonoDevelop.Projects
 		protected virtual bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
 		{
 			return false;
+		}
+
+		/// <summary>
+		/// Initialize the evaluation context that is going to be used to execute an MSBuild target.
+		/// </summary>
+		/// <returns>The updated context.</returns>
+		/// <param name="target">Target.</param>
+		/// <param name="configuration">Configuration.</param>
+		/// <param name="context">Context.</param>
+		/// <remarks>
+		/// This method can be overriden to add custom properties and do other initializations on the evaluation
+		/// context. The method is always called before executing OnRunTarget and other methods that do
+		/// target evaluations. The method can modify the provided context instance and return it, or it can
+		/// create a new instance.
+		/// </remarks>
+		protected virtual TargetEvaluationContext OnConfigureTargetEvaluationContext (string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			return context;
 		}
 
 		/// <summary>
@@ -1687,7 +1710,7 @@ namespace MonoDevelop.Projects
 			if (UsingMSBuildEngine (configuration)) {
 				var result = await RunMSBuildTarget (monitor, "Build", configuration, context);
 				if (!result.BuildResult.Failed)
-					SetFastBuildCheckClean (configuration);
+					SetFastBuildCheckClean (configuration, context);
 				return result;			
 			}
 			
@@ -1720,16 +1743,31 @@ namespace MonoDevelop.Projects
 
 		bool disableFastUpToDateCheck;
 
-		//the configuration of the last build that completed successfully
-		//null if any file in the project has since changed
+		// The configuration of the last build that completed successfully,
+		// null if any file in the project has since changed
 		string fastUpToDateCheckGoodConfig;
+
+		// The global properties used in the last build
+		IPropertySet fastUpToDateCheckGlobalProperties;
+
+		// Timestamp of the last build
 		DateTime fastUpToDateTimestamp;
 
 		public bool FastCheckNeedsBuild (ConfigurationSelector configuration)
 		{
-			return ProjectExtension.OnFastCheckNeedsBuild (configuration);
+			return FastCheckNeedsBuild (configuration, new TargetEvaluationContext ());
 		}
-		
+
+		public bool FastCheckNeedsBuild (ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			// Initialize the evaluation context. This initialization is shared with RunTarget.
+			// Extenders will override OnConfigureTargetEvaluationContext to add custom properties and do other
+			// initializations required by MSBuild.
+			context = ProjectExtension.OnConfigureTargetEvaluationContext ("Build", configuration, context ?? new TargetEvaluationContext ());
+			return ProjectExtension.OnFastCheckNeedsBuild (configuration, context);
+		}
+
+		[Obsolete ("Use OnFastCheckNeedsBuild (configuration, TargetEvaluationContext)")]
 		protected virtual bool OnFastCheckNeedsBuild (ConfigurationSelector configuration)
 		{
 			if (disableFastUpToDateCheck || fastUpToDateCheckGoodConfig == null)
@@ -1738,14 +1776,51 @@ namespace MonoDevelop.Projects
 			if (cfg == null || cfg.Id != fastUpToDateCheckGoodConfig)
 				return true;
 
+			return false;
+		}
+
+		/// <summary>
+		/// Checks if this project needs to be built.
+		/// </summary>
+		/// <returns><c>true</c>, if the project is dirty and needs to be rebuilt, <c>false</c> otherwise.</returns>
+		/// <param name="configuration">Build configuration.</param>
+		/// <param name="context">Evaluation context.</param>
+		/// <remarks>
+		/// This method can be overriden to provide custom logic for checking if a project needs to be built, either
+		/// due to changes in the content or in the configuration.
+		/// </remarks>
+		protected virtual bool OnFastCheckNeedsBuild (ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			// Chain the new OnFastCheckNeedsBuild override to the old one, so that extensions
+			// using the old API keep working
+#pragma warning disable 618
+			if (ProjectExtension.OnFastCheckNeedsBuild (configuration))
+				return true;
+#pragma warning restore 618
+
 			// Shouldn't need to build, but if a dependency was changed since this project build flag was reset,
 			// the project needs to be rebuilt
 
 			foreach (var dep in GetReferencedItems (configuration).OfType<Project> ()) {
-				if (dep.FastCheckNeedsBuild (configuration) || dep.fastUpToDateTimestamp >= fastUpToDateTimestamp) {
+				if (dep.FastCheckNeedsBuild (configuration, context) || dep.fastUpToDateTimestamp >= fastUpToDateTimestamp) {
 					fastUpToDateCheckGoodConfig = null;
 					return true;
 				}
+			}
+
+			// Check if global properties have changed
+
+			var cachedCount = fastUpToDateCheckGlobalProperties != null ? fastUpToDateCheckGlobalProperties.GetProperties ().Count () : 0;
+
+			if (cachedCount != context.GlobalProperties.GetProperties ().Count ())
+				return true;
+
+			if (cachedCount == 0)
+				return false;
+			
+			foreach (var p in context.GlobalProperties.GetProperties ()) {
+				if (fastUpToDateCheckGlobalProperties.GetValue (p.Name) != p.Value)
+					return true;
 			}
 			return false;
 		}
@@ -1755,10 +1830,11 @@ namespace MonoDevelop.Projects
 			fastUpToDateCheckGoodConfig = null;
 		}
 		
-		void SetFastBuildCheckClean (ConfigurationSelector configuration)
+		void SetFastBuildCheckClean (ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			var cfg = GetConfiguration (configuration);
 			fastUpToDateCheckGoodConfig = cfg != null ? cfg.Id : null;
+			fastUpToDateCheckGlobalProperties = context.GlobalProperties;
 			fastUpToDateTimestamp = DateTime.Now;
 		}
 
@@ -3862,6 +3938,11 @@ namespace MonoDevelop.Projects
 				Project.OnWriteRunConfiguration (monitor, runConfig, properties);
 			}
 
+			internal protected override TargetEvaluationContext OnConfigureTargetEvaluationContext (string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+			{
+				return Project.OnConfigureTargetEvaluationContext (target, configuration, context);
+			}
+
 			internal protected override Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 			{
 				return Project.DoRunTarget (monitor, target, configuration, context);
@@ -3978,9 +4059,16 @@ namespace MonoDevelop.Projects
 				Project.OnPrepareForEvaluation (project);
 			}
 
+#pragma warning disable 672, 618
 			internal protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration)
 			{
 				return Project.OnFastCheckNeedsBuild (configuration);
+			}
+#pragma warning restore 672, 618
+
+			internal protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration, TargetEvaluationContext context)
+			{
+				return Project.OnFastCheckNeedsBuild (configuration, context);
 			}
 
 			internal protected override Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)

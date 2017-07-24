@@ -126,6 +126,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			AXCell,
 			AXColumn,
 			AXGroup,
+			AXGrowArea,
 			AXImage,
 			AXLink,
 			AXList,
@@ -534,6 +535,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		string Identifier { get; set; }
 		string Help { get; set; }
 		bool Hidden { get; set; }
+		int Index { get; set;  }
 
 		// For Navigable Static Text
 		Func<string> Contents { set; }

@@ -301,6 +301,7 @@
     <Compile Include="MonoDevelop.Projects\MSBuildLoggerTests.cs" />
     <Compile Include="MonoDevelop.Core\MonoExecutionParametersTests.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid\EditorManagerTests.cs" />
+    <Compile Include="MonoDevelop.Ide\KeyBindingSetTests.cs" />
     <Compile Include="MonoDevelop.Ide\TypeSystemServiceTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildSearchPathTests.cs" />
     <Compile Include="MonoDevelop.Projects\SdkVersionTests.cs" />

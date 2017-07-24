@@ -288,6 +288,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.DumpUITree" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.DumpA11yTree" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.DumpA11yTreeDelayed" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.MarkLog" />
 		</ItemSet>
 		<Condition id = "Platform" value = "!mac">
 			<SeparatorItem id = "SeparatorAbout" />

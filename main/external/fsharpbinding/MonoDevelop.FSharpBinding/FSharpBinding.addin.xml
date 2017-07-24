@@ -105,6 +105,11 @@
     </Condition>
   </Extension>
 
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
+    <Condition id="ProjectTypeId" value="F#">
+      <Panel id = "FSharpCompilerOptionsPanel" _label = "F#" class = "MonoDevelop.FSharp.FSharpProjectCompilerOptionsPanel"/>
+    </Condition>
+  </Extension>
   <Extension path="/MonoDevelop/Core/MimeTypes">
     <MimeType id="text/x-fsharp" _description="F# Source File" icon="md-file-source" isText="true">
       <File pattern="*.fs" />
