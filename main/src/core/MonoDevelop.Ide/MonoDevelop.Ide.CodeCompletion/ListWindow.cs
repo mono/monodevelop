@@ -210,7 +210,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public event EventHandler SelectionChanged {
 			add { list.SelectionChanged += value; }
-			remove { list.SelectionChanged += value; }
+			remove { list.SelectionChanged -= value; }
 		}
 
 		public bool AutoSelect {

@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public event EventHandler SelectionChanged {
 			add { window.SelectionChanged += value; }
-			remove { window.SelectionChanged += value; }
+			remove { window.SelectionChanged -= value; }
 		}
 
 
