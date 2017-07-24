@@ -336,6 +336,10 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
+			// Already in 2-column mode?
+			if (DockNotebook.ActiveNotebook?.Container?.SplitCount > 0)
+				return;
+			
 			IdeApp.Workbench.LockActiveWindowChangeEvent ();
 			var container = DockNotebook.ActiveNotebook.Container;
 			var tab = DockNotebook.ActiveNotebook.CurrentTab;

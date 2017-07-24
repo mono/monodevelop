@@ -27,6 +27,7 @@
 using System;
 using Gtk;
 
+using MonoDevelop.Components.AtkCocoaHelper;
 namespace MonoDevelop.Components
 {
 	class MiniButton: Gtk.EventBox
@@ -41,6 +42,10 @@ namespace MonoDevelop.Components
 		{
 			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
 			Clickable = true;
+
+			Accessible.Role = Atk.Role.PushButton;
+			var actionHandler = new ActionDelegate (this);
+			actionHandler.PerformPress += PerformPress;
 		}
 		
 		public MiniButton (Gtk.Widget label): this ()
@@ -102,7 +107,12 @@ namespace MonoDevelop.Components
 			if (Clicked != null)
 				Clicked (this, EventArgs.Empty);
 		}
-		
+
+		void PerformPress (object sender, EventArgs args)
+		{
+			OnClicked ();
+		}
+
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (!ClickOnRelease && Clickable && evnt.Button == 1 && !evnt.TriggersContextMenu ()) {

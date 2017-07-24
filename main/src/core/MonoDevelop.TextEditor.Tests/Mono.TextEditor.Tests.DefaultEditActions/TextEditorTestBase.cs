@@ -92,11 +92,13 @@ namespace Mono.TextEditor.Tests
 
 
 
-		public static TextEditorData Create (string content, ITextEditorOptions options = null)
+		public static TextEditorData Create (string content, ITextEditorOptions options = null, string mimeType = null)
 		{
 			var data = new TextEditorData ();
 			if (options != null)
 				data.Options = options;
+			if (mimeType != null)
+				data.Document.MimeType = mimeType;
 			var sb = new StringBuilder ();
 			int caretIndex = -1, selectionStart = -1, selectionEnd = -1;
 			var foldSegments = new List<FoldSegment> ();

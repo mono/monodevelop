@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.IO;
 using MonoDevelop.MacInterop;
 using NUnit.Framework;
 
@@ -53,22 +54,63 @@ namespace MacPlatform.Tests
 			MonoDevelop.MacInterop.CoreFoundation.Release (testUrl);
 		}
 
-		[Test]
-		public static void TestApplicationUrls ()
-		{
-			string test = "/Applications/Xamarin Studio.app/Contents/Info.plist";
-			string[] results = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrls (test, MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
+		static string plistFile = Path.GetFullPath (
+			Path.Combine (
+				Path.GetDirectoryName (typeof (PListFile).Assembly.Location),
+				"..",
+				"MacOSX",
+				"Info.plist.in"
+			)
+		);
 
-			Assert.Greater (results.Length, 0);
+		[Test]
+		public void TestApplicationUrls ()
+		{
+			using (var helper = new PListFile ()) {
+				string [] results = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrls (helper.FilePath, MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
+
+				Assert.Greater (results.Length, 0);
+			}
 		}
 
 		[Test]
-		public static void TestApplicationUrl ()
+		public void TestApplicationUrl ()
 		{
-			string test = "/Applications/Xamarin Studio.app/Contents/Info.plist";
-			string result = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrl (test, MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
+			using (var helper = new PListFile ()) {
+				string result = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrl (helper.FilePath, MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
 
-			Assert.NotNull (result);
+				Assert.NotNull (result);
+			}
+		}
+
+		[Test]
+		public void TestApplicationUrlOnPListIn ()
+		{
+			string [] results = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrls (plistFile, MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
+
+			Assert.AreEqual (results.Length, 0);
+
+			string result = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrl (plistFile, MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
+
+			Assert.Null (result);
+		}
+
+		class PListFile : IDisposable
+		{
+			readonly string dir = MonoDevelop.Core.FileService.CreateTempDirectory ();
+			public string FilePath { get; }
+
+			public PListFile ()
+			{
+				FilePath = Path.Combine (dir, "Info.plist");
+				File.Copy (plistFile, FilePath, true);
+			}
+
+			public void Dispose ()
+			{
+				if (Directory.Exists (dir))
+					Directory.Delete (dir, true);
+			}
 		}
 	}
 }

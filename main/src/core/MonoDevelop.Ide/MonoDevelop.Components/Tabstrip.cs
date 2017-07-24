@@ -128,6 +128,7 @@ namespace MonoDevelop.Components
 			var proxies = new AtkCocoaHelper.AccessibilityElementProxy [tabs.Count];
 			foreach (var tab in tabs) {
 				proxies [i] = tab.Accessible;
+				tab.Accessible.Index = i;
 				i++;
 			}
 
@@ -204,7 +205,7 @@ namespace MonoDevelop.Components
 		{
 			requisition.Height = (int)Math.Ceiling (tabSizes.Max (p => p.Y));
 		}
-		
+
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
@@ -367,7 +368,6 @@ namespace MonoDevelop.Components
 				Gdk.Rectangle gdkRect = new Gdk.Rectangle ((int)allocation.X, (int)allocation.Y, (int)allocation.Width, (int)allocation.Height);
 				Accessible.FrameInGtkParent = gdkRect;
 				// If Y != 0, then we need to flip the y axis
-
 				Accessible.FrameInParent = gdkRect;
 			}
 		}
@@ -406,8 +406,10 @@ namespace MonoDevelop.Components
 			this.TabPosition = tabPosition;
 
 			Accessible = AccessibilityElementProxy.ButtonElementProxy ();
+			Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, "tab");
 			Accessible.Title = label;
 			Accessible.GtkParent = parent;
+			Accessible.Identifier = "Tabstrip.Tab";
 			Accessible.PerformPress += OnTabPressed;
 		}
 		

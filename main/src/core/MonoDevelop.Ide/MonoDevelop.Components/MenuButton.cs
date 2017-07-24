@@ -52,6 +52,7 @@ namespace MonoDevelop.Components
 			Add (box);
 			
 			image = new ImageView ();
+			image.Accessible.Role = Atk.Role.Filler;
 			image.NoShowAll = true;
 			box.PackStart (image, false, false, 0);
 			label = new Label ();
@@ -170,6 +171,7 @@ namespace MonoDevelop.Components
 				} else {
 					if (arrow == null ) {
 						arrow = new Arrow (Gtk.ArrowType.Down, ShadowType.Out);
+						arrow.Accessible.Role = Atk.Role.Filler;
 						arrow.Show ();
 						((HBox)label.Parent).PackEnd (arrow, false, false, 0);
 					}

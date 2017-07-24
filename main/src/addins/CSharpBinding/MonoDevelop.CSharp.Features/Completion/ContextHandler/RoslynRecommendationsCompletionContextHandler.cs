@@ -105,7 +105,11 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					if (isInAttribute) {
 						var type = (ITypeSymbol)symbol;
 						if (type.IsAttribute ()) {
-							var v = type.Name.Substring (0, type.Name.Length - "Attribute".Length);
+							const string attributeSuffix = "Attribute";
+							var v = type.Name.EndsWith (attributeSuffix, StringComparison.Ordinal)
+								? type.Name.Substring (0, type.Name.Length - attributeSuffix.Length)
+								: type.Name;
+
 							var needsEscaping = SyntaxFacts.GetKeywordKind(v) != SyntaxKind.None;
 							needsEscaping = needsEscaping || (isInQuery && SyntaxFacts.IsQueryContextualKeyword(SyntaxFacts.GetContextualKeywordKind(v)));
 							if (!needsEscaping) {

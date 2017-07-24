@@ -88,16 +88,7 @@ module CompilerArguments =
                       | Some asm -> [asm.Location]
                       | None -> []
                   else
-                      let package = reference.Package
-                      package.Assemblies
-                      |> Seq.choose (fun a -> match a.Name with
-                                              | "FSharp.Core"
-                                              | "mscorlib" -> None
-                                              | _ -> if package.IsGacPackage then
-                                                         Some a.Name
-                                                     else
-                                                         Some a.Location)
-                      |> List.ofSeq
+                      []
 
           | ReferenceType.Project ->
               let referencedProject = reference.Project :?> DotNetProject

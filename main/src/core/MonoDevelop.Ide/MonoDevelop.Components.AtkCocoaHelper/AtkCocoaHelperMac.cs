@@ -855,6 +855,26 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				p.GetVisibleCharacterRange = value;
 			}
 		}
+
+		public int Index {
+			get {
+				var p = realProxyElement;
+				if (p == null) {
+					throw new Exception ("Not proxy element");
+				}
+
+				return (int) p.AccessibilityIndex;
+			}
+
+			set {
+				var p = realProxyElement;
+				if (p == null) {
+					throw new Exception ("Not a proxy element");
+				}
+
+				p.AccessibilityIndex = value;
+			}
+		}
 	}
 
 	class RealAccessibilityElementProxy : NSAccessibilityElement, INSAccessibility

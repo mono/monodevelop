@@ -31,7 +31,7 @@ render.exe: render.cs
 dmg: render.exe app
 	./make-dmg-bundle.sh
 
-monostub: monostub.mm $(MONOSTUB_EXTRA_SOURCES)
+monostub: monostub.mm $(MONOSTUB_EXTRA_SOURCES) $(MONOSTUB_STATIC_LINK)
 	clang++ $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm -framework AppKit -framework Quartz $(MONOSTUB_STATIC_LINK) -undefined dynamic_lookup
 #	gcc -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.m -framework AppKit -isysroot $(SDK_PATH)
 	cp monostub ../bin/MonoDevelop

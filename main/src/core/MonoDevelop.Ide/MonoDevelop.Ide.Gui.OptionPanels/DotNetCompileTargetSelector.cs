@@ -1,10 +1,10 @@
 ﻿//
-// BuildSession.cs
+// DotNetCompileTargetSelector.cs
 //
 // Author:
-//       Lluis Sanchez Gual <lluis@xamarin.com>
+//       Jason Imison <jaimison@microsoft.com>
 //
-// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2017 Microsoft Corporation
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,46 +24,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Core.Execution;
+using Gtk;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Ide.Gui.OptionPanels
 {
-	public class OperationContext
+	public class DotNetCompileTargetSelector : ComboBox
 	{
-		Dictionary<object, object> customData;
-
-		public OperationContext ()
+		public DotNetCompileTargetSelector ()
 		{
+			var store = new ListStore (typeof (string));
+			store.AppendValues (GettextCatalog.GetString ("Executable"));
+			store.AppendValues (GettextCatalog.GetString ("Library"));
+			store.AppendValues (GettextCatalog.GetString ("Executable with GUI"));
+			store.AppendValues (GettextCatalog.GetString ("Module"));
+			this.Model = store;
+			var cr = new CellRendererText ();
+			this.PackStart (cr, true);
+			this.AddAttribute (cr, "text", 0);
 		}
 
-		public OperationContext (OperationContext other): this ()
-		{
-			if (other != null)
-				CopyFrom (other);
+		public CompileTarget CompileTarget {
+			get { return (CompileTarget)this.Active; }
+			set { this.Active = (int)value; }
 		}
-
-		public Dictionary<object, object> SessionData {
-			get {
-				if (customData == null)
-					customData = new Dictionary<object, object> ();
-				return customData;
-			}
-		}
-
-		public virtual void CopyFrom (OperationContext other)
-		{
-			if (other.customData != null)
-				customData = new Dictionary<object, object> (other.customData);
-			else
-				customData = null;
-			ExecutionTarget = other.ExecutionTarget;
-		}
-
-		/// <summary>
-		/// Execution target for which the operation is being executed
-		/// </summary>
-		public ExecutionTarget ExecutionTarget { get; set; }
 	}
 }
-
