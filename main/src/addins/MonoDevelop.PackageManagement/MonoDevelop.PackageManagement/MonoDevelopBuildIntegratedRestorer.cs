@@ -44,7 +44,7 @@ using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class MonoDevelopBuildIntegratedRestorer
+	internal class MonoDevelopBuildIntegratedRestorer : IMonoDevelopBuildIntegratedRestorer
 	{
 		IPackageManagementEvents packageManagementEvents;
 		List<SourceRepository> sourceRepositories;
@@ -99,7 +99,9 @@ namespace MonoDevelop.PackageManagement
 				await Runtime.RunInMainThread (() => {
 					FileService.NotifyFilesChanged (changedLocks);
 					foreach (var project in affectedProjects) {
-						NotifyProjectReferencesChanged (project);
+						// Restoring the entire solution so do not refresh references for
+						// transitive  project references since they should be refreshed anyway.
+						NotifyProjectReferencesChanged (project, includeTransitiveProjectReferences: false);
 					}
 				});
 			}
@@ -114,12 +116,17 @@ namespace MonoDevelop.PackageManagement
 			var changedLock = await RestorePackagesInternal (project, cancellationToken);
 
 			if (projectToReload != null) {
-				await ReloadProject (projectToReload, changedLock);
+				// Need to ensure transitive project references are refreshed if only the single
+				// project is reloaded since they will still be out of date.
+				await ReloadProject (projectToReload, changedLock, refreshTransitiveReferences: true);
 			} else if (changedLock != null) {
 				LockFileChanged = true;
 				await Runtime.RunInMainThread (() => {
 					FileService.NotifyFileChanged (changedLock);
-					NotifyProjectReferencesChanged (project);
+
+					// Restoring a single project so ensure references are refreshed for
+					// transitive project references.
+					NotifyProjectReferencesChanged (project, includeTransitiveProjectReferences: true);
 				});
 			}
 		}
@@ -153,11 +160,13 @@ namespace MonoDevelop.PackageManagement
 			return null;
 		}
 
-		static void NotifyProjectReferencesChanged (BuildIntegratedNuGetProject project)
+		static void NotifyProjectReferencesChanged (
+			BuildIntegratedNuGetProject project,
+			bool includeTransitiveProjectReferences)
 		{
 			var buildIntegratedProject = project as IBuildIntegratedNuGetProject;
 			if (buildIntegratedProject != null) {
-				buildIntegratedProject.NotifyProjectReferencesChanged ();
+				buildIntegratedProject.NotifyProjectReferencesChanged (includeTransitiveProjectReferences);
 			}
 		}
 
@@ -219,7 +228,7 @@ namespace MonoDevelop.PackageManagement
 			return null;
 		}
 
-		Task ReloadProject (DotNetProject projectToReload, string changedLock)
+		Task ReloadProject (DotNetProject projectToReload, string changedLock, bool refreshTransitiveReferences = false)
 		{
 			return Runtime.RunInMainThread (async () => {
 				if (changedLock != null) {
@@ -227,6 +236,9 @@ namespace MonoDevelop.PackageManagement
 					FileService.NotifyFileChanged (changedLock);
 				}
 				await projectToReload.ReevaluateProject (new ProgressMonitor ());
+
+				if (refreshTransitiveReferences)
+					projectToReload.DotNetCoreNotifyReferencesChanged (transitiveOnly: true);
 			});
 		}
 	}

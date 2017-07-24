@@ -284,7 +284,7 @@ namespace MonoDevelop.PackageManagement
 		{
 		}
 
-		public void NotifyProjectReferencesChanged ()
+		public void NotifyProjectReferencesChanged (bool includeTransitiveProjectReferences)
 		{
 			Runtime.AssertMainThread ();
 
