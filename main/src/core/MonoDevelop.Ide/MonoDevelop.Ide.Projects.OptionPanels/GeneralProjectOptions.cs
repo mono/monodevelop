@@ -42,13 +42,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			return widget = new GeneralProjectOptionsWidget (ConfiguredProject, ParentDialog);
 		}
-		
+
 		public override void ApplyChanges()
 		{
 			widget.Store ();
 		}
 	}
-
 	partial class GeneralProjectOptionsWidget : Gtk.Bin
 	{
 		Project project;
@@ -57,12 +56,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public GeneralProjectOptionsWidget (Project project, OptionsDialog dialog)
 		{
 			Build ();
-			
 			this.project = project;
 			this.dialog = dialog;
-			
 			nameLabel.UseUnderline = true;
-			
 			descriptionLabel.UseUnderline = true;
 
 			projectNameEntry.Text = project.Name;
@@ -76,7 +72,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				defaultNamespaceLabel.Visible = false;
 				projectDefaultNamespaceEntry.Visible = false;
 			}
-			
 			entryVersion.Text = project.Version;
 			checkSolutionVersion.Active = project.SyncVersionWithSolution;
 			entryVersion.Sensitive = !project.SyncVersionWithSolution;
@@ -86,6 +81,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void SetAccessibilityAttributes ()
 		{
+			label55.Accessible.Role = Atk.Role.Filler;
 			informationHeaderLabel.Accessible.SetTitleFor (table11.Accessible);
 			table11.Accessible.SetTitleUIElement (informationHeaderLabel.Accessible);
 
@@ -117,7 +113,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			                                                               GettextCatalog.GetString ("Enter the default namespace for the project"));
 			defaultNamespaceLabel.Accessible.SetTitleFor (projectDescriptionTextView.Accessible);
 		}
-		
+
 		public void Store ()
 		{
 			if (projectNameEntry.Text != project.Name) {
@@ -125,7 +121,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				if (project.ParentSolution != null)
 					dialog.ModifiedObjects.Add (project.ParentSolution);
 			}
-			
+
 			project.Description = projectDescriptionTextView.Buffer.Text;
 			if (project is DotNetProject) {
 				((DotNetProject)project).DefaultNamespace = projectDefaultNamespaceEntry.Text;
@@ -151,4 +147,3 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	}
 
 }
-

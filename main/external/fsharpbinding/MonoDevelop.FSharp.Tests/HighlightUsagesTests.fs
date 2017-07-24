@@ -1,8 +1,8 @@
 ﻿namespace MonoDevelopTests
 open NUnit.Framework
 open FsUnit
-open MonoDevelop.FSharp
 open MonoDevelop.FSharp.MonoDevelop
+open MonoDevelop.FSharp.Shared
 
 [<TestFixture>]
 type HighlightUsagesTests() =
@@ -11,7 +11,6 @@ type HighlightUsagesTests() =
         let source = source.Replace("|", "")
         let doc = TestHelpers.createDoc source ""
         let line, col, lineStr = doc.Editor.GetLineInfoFromOffset offset
-        //doc.Ast
 
         match Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent with
         | None -> Assert.Fail "Could not find ident"

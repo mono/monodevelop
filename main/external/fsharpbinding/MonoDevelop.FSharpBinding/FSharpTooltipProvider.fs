@@ -9,6 +9,7 @@ open System.Threading.Tasks
 open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Components
+open MonoDevelop.FSharp.Shared
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Ide.Editor

@@ -58,16 +58,7 @@ namespace MonoDevelop.CSharp.Project
 			CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 			var csproject = (CSharpProject)project;
 			
-			ListStore store = new ListStore (typeof (string));
-			store.AppendValues (GettextCatalog.GetString ("Executable"));
-			store.AppendValues (GettextCatalog.GetString ("Library"));
-			store.AppendValues (GettextCatalog.GetString ("Executable with GUI"));
-			store.AppendValues (GettextCatalog.GetString ("Module"));
-			compileTargetCombo.Model = store;
-			CellRendererText cr = new CellRendererText ();
-			compileTargetCombo.PackStart (cr, true);
-			compileTargetCombo.AddAttribute (cr, "text", 0);
-			compileTargetCombo.Active = (int) configuration.CompileTarget;
+			compileTargetCombo.CompileTarget = configuration.CompileTarget;
 			compileTargetCombo.Changed += new EventHandler (OnTargetChanged);
 			
 			if (project.IsLibraryBasedProjectType) {
@@ -131,6 +122,7 @@ namespace MonoDevelop.CSharp.Project
 
 		void SetupAccessibility ()
 		{
+			label76.Accessible.Role = Atk.Role.Filler;
 			compileTargetCombo.SetCommonAccessibilityAttributes ("CodeGeneration.CompileTarget", label86,
 			                                                     GettextCatalog.GetString ("Select the compile target for the code generation"));
 
@@ -178,7 +170,6 @@ namespace MonoDevelop.CSharp.Project
 		public void Store (ItemConfigurationCollection<ItemConfiguration> configs)
 		{
 			int codePage;
-			var compileTarget =  (CompileTarget) compileTargetCombo.Active;
 
 			var langVersion = LanguageVersion.Default;
 			TreeIter iter;
@@ -207,7 +198,7 @@ namespace MonoDevelop.CSharp.Project
 			} else
 				codePage = 0;
 			
-			project.CompileTarget = compileTarget;
+			project.CompileTarget = compileTargetCombo.CompileTarget;
 			
 			var csproject = (CSharpProject)project; 
 			
@@ -233,7 +224,7 @@ namespace MonoDevelop.CSharp.Project
 		
 		void UpdateTarget ()
 		{
-			if ((CompileTarget) compileTargetCombo.Active == CompileTarget.Library) {
+			if (compileTargetCombo.CompileTarget == CompileTarget.Library) {
 				iconEntry.Sensitive = false;
 			} else {
 				iconEntry.Sensitive = true;

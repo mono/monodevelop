@@ -71,10 +71,10 @@
 		{ "name": "Debugger Current Line Marker", "color": "#69684c", "bordercolor": "#69684c" },
 		{ "name": "Debugger Stack Line Marker", "color": "#5c6b4d", "bordercolor": "#5c6b4d" },
 
-		{ "name": "Primary Link", "color": "foreground", "secondcolor": "#7f4a81" },
-		{ "name": "Primary Link(Highlighted)", "color": "foreground", "secondcolor": "#b167b3" },
-		{ "name": "Secondary Link", "color": "foreground", "secondcolor": "#262228" },
-		{ "name": "Secondary Link(Highlighted)", "color": "foreground", "secondcolor": "#4e4552" },
+		{ "name": "Primary Link", "color": "#7f4a81", "secondcolor": "#7f4a81" },
+		{ "name": "Primary Link(Highlighted)", "color": "#b167b3", "secondcolor": "#b167b3" },
+		{ "name": "Secondary Link", "color": "#262228", "secondcolor": "#262228" },
+		{ "name": "Secondary Link(Highlighted)", "color": "#4e4552", "secondcolor": "#4e4552" },
 
 		{ "name": "Message Bubble Error Marker", "color": "#b28d37" },
 		{ "name": "Message Bubble Error Tag", "color": "#e3a6a1", "secondcolor": "black" },

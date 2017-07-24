@@ -127,5 +127,5 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildThisFileDirectory)..\..\..\packages\LargeAddressAware.1.0.0\build\LargeAddressAware.targets" Condition="$(OS) != 'Unix' AND Exists('$(MSBuildThisFileDirectory)..\..\..\packages\LargeAddressAware.1.0.0\build\LargeAddressAware.targets')" />
+  <Import Project="$(MSBuildThisFileDirectory)..\..\..\packages\LargeAddressAware.1.0.1\build\LargeAddressAware.targets" Condition="$(OS) != 'Unix' AND Exists('$(MSBuildThisFileDirectory)..\..\..\packages\LargeAddressAware.1.0.1\build\LargeAddressAware.targets')" />
 </Project>
