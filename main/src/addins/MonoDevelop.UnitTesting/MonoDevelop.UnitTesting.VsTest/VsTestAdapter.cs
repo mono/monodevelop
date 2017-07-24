@@ -136,6 +136,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 		async Task PrivateStart ()
 		{
+			var token = restartTokenSource.Token;
 			startedSource = new TaskCompletionSource<bool> ();
 			communicationManager = new SocketCommunicationManager ();
 			int port = communicationManager.HostServer ();
@@ -143,23 +144,26 @@ namespace MonoDevelop.UnitTesting.VsTest
 			vsTestConsoleExeProcess = StartVsTestConsoleExe (port);
 			var sw = Stopwatch.StartNew ();
 			if (!await Task.Run (() => {
-				while (true) {
+				while (!token.IsCancellationRequested) {
 					if (communicationManager.WaitForClientConnection (100))
 						return true;
 					if (clientConnectionTimeOut < sw.ElapsedMilliseconds)
 						return false;
 				}
+				return false;
 			})) {
 				sw.Stop ();
 				throw new TimeoutException ("vstest.console failed to connect.");
 			}
 			sw.Stop ();
+			if (token.IsCancellationRequested)
+				return;
 
 			messageProcessingThread =
 				new Thread (ReceiveMessages) {
 					IsBackground = true
 				};
-			messageProcessingThread.Start (restartTokenSource.Token);
+			messageProcessingThread.Start (token);
 			var timeoutDelay = Task.Delay (clientConnectionTimeOut);
 			if (await Task.WhenAny (startedSource.Task, timeoutDelay) == timeoutDelay)
 				throw new TimeoutException ("vstest.console failed to respond.");
