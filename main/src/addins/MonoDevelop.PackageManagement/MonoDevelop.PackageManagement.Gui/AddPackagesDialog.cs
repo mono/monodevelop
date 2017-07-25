@@ -320,7 +320,9 @@ namespace MonoDevelop.PackageManagement
 
 		void ShowPackageInformation (PackageSearchResultViewModel packageViewModel)
 		{
-			this.packageNameLabel.Markup = packageViewModel.GetNameMarkup ();
+			// Use the package id and not the package title to prevent a pango crash if the title
+			// contains Chinese characters.
+			this.packageNameLabel.Markup = packageViewModel.GetIdMarkup ();
 			this.packageAuthor.Text = packageViewModel.Author;
 			this.packagePublishedDate.Text = packageViewModel.GetLastPublishedDisplayText ();
 			this.packageDownloads.Text = packageViewModel.GetDownloadCountDisplayText ();

@@ -38,6 +38,7 @@ using System.Xml;
 using Gtk;
 using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Core.AddIns;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
@@ -220,9 +221,9 @@ namespace MonoDevelop.Ide.Templates
 				extensionContext.RegisterCondition ("FlavorType", new FlavorTypeCondition (project));
 				extensionContext.RegisterCondition ("ProjectTypeId", new ProjectTypeIdCondition (project));
 			} else {
-				extensionContext.RegisterCondition ("AppliesTo", new TrueCondition ());
-				extensionContext.RegisterCondition ("FlavorType", new TrueCondition ());
-				extensionContext.RegisterCondition ("ProjectTypeId", new TrueCondition ());
+				extensionContext.RegisterCondition ("AppliesTo", TrueCondition.Instance);
+				extensionContext.RegisterCondition ("FlavorType", TrueCondition.Instance);
+				extensionContext.RegisterCondition ("ProjectTypeId", TrueCondition.Instance);
 			}
 
 			var list = new List<FileTemplate> ();
@@ -234,14 +235,6 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			return list;
-		}
-
-		class TrueCondition : ConditionType
-		{
-			public override bool Evaluate (NodeElement conditionNode)
-			{
-				return true;
-			}
 		}
 
 		internal static FileTemplate GetFileTemplateByID (string templateID)

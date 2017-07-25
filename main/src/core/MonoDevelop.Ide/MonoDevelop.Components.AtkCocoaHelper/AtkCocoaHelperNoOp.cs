@@ -219,6 +219,14 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
+		public int Index {
+			get {
+				return 0;
+			}
+			set {
+			}
+		}
+
 		public Gtk.Widget GtkParent { get; set; }
 		public Gdk.Rectangle FrameInGtkParent { get; set; }
 		public Gdk.Rectangle FrameInParent { get; set; }

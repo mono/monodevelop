@@ -54,7 +54,7 @@ namespace MonoDevelop.Debugger
 		Catchpoint
 	}
 
-	sealed class BreakpointPropertiesDialog : Dialog
+	sealed class BreakpointPropertiesDialog : Xwt.Dialog
 	{
 		// For button sensitivity.
 		DialogButton buttonOk;
@@ -121,6 +121,7 @@ namespace MonoDevelop.Debugger
 			Task.Run (LoadExceptionList);
 			Initialize ();
 			SetInitialData ();
+			SetAccessibility ();
 			SetLayout ();
 			if (be == null) {
 				switch (breakpointType) {
@@ -649,18 +650,108 @@ namespace MonoDevelop.Debugger
 			return be;
 		}
 
+		void SetAccessibility ()
+		{
+			var accessible = breakpointActionPause.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.Pause";
+			accessible.Description = GettextCatalog.GetString ("Cause the program to pause when the breakpoint is hit");
+
+			accessible = breakpointActionPrint.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.Print";
+			accessible.Description = GettextCatalog.GetString ("Cause the program to print a message and continue when the breakpoint is hit");
+
+			accessible = entryPrintExpression.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.PrintExpression";
+			accessible.Label = GettextCatalog.GetString ("Breakpoint Expression");
+			accessible.Description = GettextCatalog.GetString ("Enter the expression you wish to have printed to the console. Place simple C# expressions within {} to interpolate them.");
+
+			accessible = warningPrintExpression.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.WarningPrintExpression";
+			accessible.Description = GettextCatalog.GetString ("There is a warning for the print expression");
+
+			accessible = stopOnFunction.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.StopOnFunction";
+			accessible.Description = GettextCatalog.GetString ("Execute the action when a function is entered");
+
+			accessible = entryFunctionName.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.FunctionName";
+			accessible.Label = GettextCatalog.GetString ("Breakpoint Function");
+			accessible.Description = GettextCatalog.GetString ("Enter the name of the breakpoint function");
+
+			accessible = warningFunction.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.WarningFunction";
+			accessible.Description = GettextCatalog.GetString ("There is a warning for the function name");
+
+			accessible = stopOnException.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.StopOnException";
+			accessible.Description = GettextCatalog.GetString ("Execute the action when an exception is thrown");
+
+			accessible = entryExceptionType.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.ExceptionType";
+			accessible.Label = GettextCatalog.GetString ("Breakpoint Exception");
+			accessible.Description = GettextCatalog.GetString ("Enter the type of the breakpoint exception");
+
+			accessible = warningException.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.WarningException";
+			accessible.Description = GettextCatalog.GetString ("There is a warning for the exception type");
+
+			accessible = checkIncludeSubclass.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.IncludeSubclasses";
+			accessible.Description = GettextCatalog.GetString ("Select whether to also break on exception subclasses");
+
+			accessible = stopOnLocation.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.StopOnLocation";
+			accessible.Description = GettextCatalog.GetString ("Execute the action when the program reaches a location in a file");
+
+			accessible = entryLocationFile.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.FileLocation";
+			accessible.Label = GettextCatalog.GetString ("Breakpoint Location");
+			accessible.Description = GettextCatalog.GetString ("Enter the file and line number of the breakpoint location");
+
+			accessible = warningLocation.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.WarningLocation";
+			accessible.Description = GettextCatalog.GetString ("There is a warning for the breakpoint location");
+
+			accessible = ignoreHitType.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.HitType";
+			accessible.Label = GettextCatalog.GetString ("Breakpoint Hit Count Type");
+			accessible.Description = GettextCatalog.GetString ("Select a hit count condition for this breakpoint");
+
+			accessible = ignoreHitCount.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.HitCount";
+			accessible.Label = GettextCatalog.GetString ("Hit Count");
+			accessible.Description = GettextCatalog.GetString ("Enter the hit count required for the condition");
+
+			accessible = conditionalHitType.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.ConditionalHit";
+			accessible.Label = GettextCatalog.GetString ("Conditional Breakpoint Hit Type");
+			accessible.Description = GettextCatalog.GetString ("Select an extra condition for this breakpoint");
+
+			accessible = entryConditionalExpression.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.ConditionEntry";
+			accessible.Label = GettextCatalog.GetString ("Conditional Breakpoint Expression");
+			accessible.Description = GettextCatalog.GetString ("Enter a C# boolean expression to act as a condition for this breakpoint. The scope of the expression is local to the breakpoint");
+
+			accessible = warningCondition.Accessible;
+			accessible.Identifier = "BreakpointPropertiesDialog.WarningCondition";
+			accessible.Description = GettextCatalog.GetString ("There is a warning for the condition expression");
+		}
+
 		void SetLayout ()
 		{
 			var vbox = new VBox ();
+			vbox.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			vbox.MinWidth = 450;
 
-			vbox.PackStart (new Label (GettextCatalog.GetString ("Breakpoint Action")) {
+			var actionLabel = new Label (GettextCatalog.GetString ("Breakpoint Action")) {
 				Font = vbox.Font.WithWeight (FontWeight.Bold)
-			});
+			};
+			vbox.PackStart (actionLabel);
 
 			var breakpointActionGroup = new VBox {
 				MarginLeft = 12
 			};
+			breakpointActionGroup.Accessible.Role = Xwt.Accessibility.Role.Filler;
 
 			breakpointActionGroup.PackStart (breakpointActionPause);
 			breakpointActionGroup.PackStart (breakpointActionPrint);
@@ -669,7 +760,13 @@ namespace MonoDevelop.Debugger
 				MarginLeft = 18
 			};
 
+			printExpressionGroup.Accessible.Role = Xwt.Accessibility.Role.Filler;
+
 			printExpressionGroup.PackStart (entryPrintExpression, true);
+
+			// We'll ignore this label because the content of the label is included in the accessibility Help text of the 
+			// entryPrintExpression widget
+			warningPrintExpression.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			printExpressionGroup.PackStart (warningPrintExpression);
 			breakpointActionGroup.PackStart (printExpressionGroup);
 
@@ -677,13 +774,15 @@ namespace MonoDevelop.Debugger
 
 			vbox.PackStart (breakpointActionGroup);
 
-			vbox.PackStart (new Label (GettextCatalog.GetString ("When to Take Action")) {
+			var whenLabel = new Label (GettextCatalog.GetString ("When to Take Action")) {
 				Font = vbox.Font.WithWeight (FontWeight.Bold)
-			});
+			};
+			vbox.PackStart (whenLabel);
 
 			var whenToTakeActionRadioGroup = new VBox {
 				MarginLeft = 12
 			};
+			whenToTakeActionRadioGroup.Accessible.Role = Xwt.Accessibility.Role.Filler;
 
 			// Function group
 			{
@@ -700,6 +799,8 @@ namespace MonoDevelop.Debugger
 				whenToTakeActionRadioGroup.PackStart (stopOnException);
 
 				hboxException = new HBox ();
+				hboxException.Accessible.Role = Xwt.Accessibility.Role.Filler;
+
 				hboxException.PackStart (entryExceptionType, true);
 				hboxException.PackEnd (warningException);
 
@@ -720,23 +821,31 @@ namespace MonoDevelop.Debugger
 			}
 			vbox.PackStart (whenToTakeActionRadioGroup);
 
-			vbox.PackStart (new Label (GettextCatalog.GetString ("Advanced Conditions")) {
+			var advancedLabel = new Label (GettextCatalog.GetString ("Advanced Conditions")) {
 				Font = vbox.Font.WithWeight (FontWeight.Bold)
-			});
+			};
+			vbox.PackStart (advancedLabel);
 
 			var vboxAdvancedConditions = new VBox {
 				MarginLeft = 30
 			};
+			vboxAdvancedConditions.Accessible.Role = Xwt.Accessibility.Role.Filler;
+
 			var hboxHitCount = new HBox ();
+			hboxHitCount.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			hboxHitCount.PackStart (ignoreHitType, true);
 			hboxHitCount.PackStart (ignoreHitCount);
 			vboxAdvancedConditions.PackStart (hboxHitCount);
 
 			vboxAdvancedConditions.PackStart (conditionalHitType);
 			hboxCondition = new HBox ();
+			hboxCondition.Accessible.Role = Xwt.Accessibility.Role.Filler;
+
 			hboxCondition.PackStart (entryConditionalExpression, true);
 			hboxCondition.PackStart (warningCondition);
 			vboxAdvancedConditions.PackStart (hboxCondition);
+
+			conditionalExpressionTip.Accessible.Role = Xwt.Accessibility.Role.Filler;
 			vboxAdvancedConditions.PackEnd (conditionalExpressionTip);
 
 			vbox.PackStart (vboxAdvancedConditions);

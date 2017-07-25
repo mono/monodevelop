@@ -50,6 +50,20 @@ namespace MonoDevelop.Debugger
 			return new ProcessInfo[0];
 		}
 
+		/// <summary>
+		/// <see cref="GetProcessAttacher"/> has two advantages over <see cref="GetAttachableProcesses"/>:
+		/// 1) it gives debugger engine ability to update processes list as soon as it discovers new processes via <see cref="ProcessAttacher.AttachableProcessesChanged"/>
+		/// 2) it gives debugger engine lifetime information via <see cref="ProcessAttacher.Dispose"/>, so debugger engine can clean resources used to look for processes e.g. loop thread, sockets...
+		/// </summary>
+		/// <remarks>
+		/// If this method returns valid <see cref="ProcessAttacher"/>, <see cref="GetAttachableProcesses"/> won't be called. 
+		/// </remarks>
+		/// <returns>The process attacher.</returns>
+		public virtual ProcessAttacher GetProcessAttacher ()
+		{
+			return null;
+		}
+
 		public abstract DebuggerSession CreateSession ();
 	}
 

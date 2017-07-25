@@ -94,6 +94,15 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		internal static IEnumerable<IMSBuildGlobalPropertyProvider> GlobalPropertyProviders {
+			get {
+				if (customGlobalPropertyProviders != null)
+					return globalPropertyProviders.Concat (customGlobalPropertyProviders);
+				else
+					return globalPropertyProviders;
+			}
+		}
+
 		static MSBuildProjectService ()
 		{
 			Services.ProjectService.DataContextChanged += delegate {
@@ -198,6 +207,21 @@ namespace MonoDevelop.Projects.MSBuild
 		internal static void UnregisterCustomProjectItemType (string name)
 		{
 			customProjectItemTypes.Remove (name);
+		}
+
+		static List<IMSBuildGlobalPropertyProvider> customGlobalPropertyProviders;
+
+		internal static void RegisterGlobalPropertyProvider (IMSBuildGlobalPropertyProvider provider)
+		{
+			if (customGlobalPropertyProviders == null)
+				customGlobalPropertyProviders = new List<IMSBuildGlobalPropertyProvider> ();
+			customGlobalPropertyProviders.Add (provider);
+		}
+
+		internal static void UnregisterGlobalPropertyProvider (IMSBuildGlobalPropertyProvider provider)
+		{
+			if (customGlobalPropertyProviders != null)
+				customGlobalPropertyProviders.Remove (provider);
 		}
 
 		/// <summary>

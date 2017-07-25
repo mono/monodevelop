@@ -77,6 +77,11 @@
 		{ "name": "Debugger Current Line Marker", "color": "#69684c", "bordercolor": "#69684c" },
 		{ "name": "Debugger Stack Line Marker", "color": "#54653f", "bordercolor": "#54653f" },
 
+		{ "name": "Primary Link", "color": "base2", "secondcolor": "base2" },
+		{ "name": "Primary Link(Highlighted)", "color": "base2", "secondcolor": "base2" },
+		{ "name": "Secondary Link", "color": "base02", "secondcolor": "base02" },
+		{ "name": "Secondary Link(Highlighted)", "color": "base02", "secondcolor": "base02" },
+
 		{ "name": "Message Bubble Error Marker", "color": "#b28d37" },
 		{ "name": "Message Bubble Error Tag", "color": "#e3a6a1", "secondcolor": "black" },
 		{ "name": "Message Bubble Error Counter", "color": "black", "secondcolor": "#e3a6a1" },

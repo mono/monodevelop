@@ -123,7 +123,7 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents.OnPackageUninstalled (dotNetProject, eventArgs);
 		}
 
-		public void NotifyProjectReferencesChanged ()
+		public void NotifyProjectReferencesChanged (bool includeTransitiveProjectReferences)
 		{
 			Runtime.AssertMainThread ();
 

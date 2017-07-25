@@ -302,11 +302,13 @@
     <Compile Include="MonoDevelop.Projects\MSBuildLoggerTests.cs" />
     <Compile Include="MonoDevelop.Core\MonoExecutionParametersTests.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid\EditorManagerTests.cs" />
+    <Compile Include="MonoDevelop.Ide\KeyBindingSetTests.cs" />
     <Compile Include="MonoDevelop.Ide\TypeSystemServiceTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildSearchPathTests.cs" />
     <Compile Include="MonoDevelop.Projects\SdkVersionTests.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\SystemAssemblyServiceTests.cs" />
     <Compile Include="MonoDevelop.Core\StringParserServiceTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpFindReferencesProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

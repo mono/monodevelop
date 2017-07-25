@@ -130,6 +130,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			Events |= EventMask.ButtonPressMask;
 
 			Accessible.Name = "MainWindow.QuickTaskStrip";
+			Accessible.SetShouldIgnore (false);
+			Accessible.SetRole (AtkCocoa.Roles.AXRuler);
 			Accessible.SetLabel (GettextCatalog.GetString ("Quick Task Strip"));
 			Accessible.Description = GettextCatalog.GetString ("An overview of the current file's messages, warnings and errors");
 

@@ -93,6 +93,13 @@ namespace MonoDevelop.Projects.MSBuild
 			projectInstance = engine.CreateProjectInstance (info.Project);
 
 			try {
+				// Set properties defined by global property providers, and then
+				// properties explicitly set to this instance
+
+				foreach (var gpp in MSBuildProjectService.GlobalPropertyProviders) {
+					foreach (var prop in gpp.GetGlobalProperties ())
+						engine.SetGlobalProperty (projectInstance, prop.Key, prop.Value);
+				}
 				foreach (var prop in globalProperties)
 					engine.SetGlobalProperty (projectInstance, prop.Key, prop.Value);
 

@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Templates
 			cinfo.ProjectName = config.ProjectName;
 			cinfo.SolutionName = config.SolutionName;
 			cinfo.ParentFolder = parentFolder;
-			cinfo.ActiveConfiguration = IdeApp.Workspace.ActiveConfiguration;
+			cinfo.ActiveConfiguration = IdeApp.Workspace?.ActiveConfiguration ?? ConfigurationSelector.Default;
 			cinfo.Parameters = config.Parameters;
 			return cinfo;
 		}

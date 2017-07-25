@@ -76,7 +76,7 @@ namespace MonoDevelop.DotNetCore
 		void OnDotNetCoreProjectReloaded (ProjectReloadedEventArgs e)
 		{
 			DotNetCoreProjectBuilderMaintainer.OnProjectReload (e);
-			RestorePackagesInProjectHandler.Run (e.NewProject.DotNetProject);
+			RestorePackagesInProjectHandler.Run (e.NewProject.DotNetProject, restoreTransitiveProjectReferences: true);
 		}
 
 		async void FileChanged (object sender, FileEventArgs e)

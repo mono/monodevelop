@@ -51,16 +51,8 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 			if (dotNetCoreProject.HasSdk && !dotNetCoreProject.IsDotNetCoreSdkInstalled ()) {
 				nodeInfo.StatusSeverity = TaskSeverity.Error;
-				nodeInfo.StatusMessage = GetMessage (dotNetCoreProject);
+				nodeInfo.StatusMessage = dotNetCoreProject.GetDotNetCoreSdkRequiredMessage ();
 			}
-		}
-
-		string GetMessage (DotNetCoreProjectExtension dotNetCoreProject)
-		{
-			if (dotNetCoreProject.IsUnsupportedDotNetCoreSdkInstalled ())
-				return GettextCatalog.GetString ("The .NET Core SDK installed is not supported. Please install a more recent version. {0}", DotNetCoreNotInstalledDialog.DotNetCoreDownloadUrl);
-
-			return GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build .NET Core projects. {0}", DotNetCoreNotInstalledDialog.DotNetCoreDownloadUrl);
 		}
 
 		public override Type CommandHandlerType {
