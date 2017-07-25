@@ -323,7 +323,7 @@ namespace MonoDevelop.Ide.Projects
 				recentTemplates = TemplatingService.RecentTemplates.GetTemplates (templateCategories).ToList ();
 		}
 
-		// Allow testing of the controller by allowing tests to specific the
+		// Allow testing of the controller by allowing tests to specify the
 		// TemplatingService. IdeApp.Services is not initialized during unit tests.
 		TemplatingService templatingService;
 
