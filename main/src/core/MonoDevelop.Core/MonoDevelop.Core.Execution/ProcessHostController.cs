@@ -364,7 +364,7 @@ namespace MonoDevelop.Core.Execution
 
 	}
 	
-	class ProcessHostConsole: OperationConsole
+	public class ProcessHostConsole: OperationConsole
 	{
 		public override TextReader In {
 			get { return Console.In; }

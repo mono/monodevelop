@@ -53,7 +53,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 	abstract class VsTestAdapter
 	{
 		protected IDataSerializer dataSerializer = JsonDataSerializer.Instance;
-		ProcessWrapper vsTestConsoleExeProcess;
+		ProcessAsyncOperation vsTestConsoleExeProcess;
 		protected SocketCommunicationManager communicationManager;
 		int clientConnectionTimeOut = 15000;
 		Thread messageProcessingThread;
@@ -114,8 +114,8 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 			try {
 				if (vsTestConsoleExeProcess != null) {
-					if (!vsTestConsoleExeProcess.HasExited) {
-						vsTestConsoleExeProcess.Dispose ();
+					if (!vsTestConsoleExeProcess.IsCompleted) {
+						vsTestConsoleExeProcess.Cancel ();
 					}
 					vsTestConsoleExeProcess = null;
 				}
@@ -172,25 +172,17 @@ namespace MonoDevelop.UnitTesting.VsTest
 		TextWriter outW = new StringWriter ();
 		TextWriter errW = new StringWriter ();
 
-		ProcessWrapper StartVsTestConsoleExe (int port)
+		ProcessAsyncOperation StartVsTestConsoleExe (int port)
 		{
 			string vsTestConsoleExeFolder = Path.Combine (Path.GetDirectoryName (typeof (VsTestAdapter).Assembly.Location), "VsTestConsole");
 			string vsTestConsoleExe = Path.Combine (vsTestConsoleExeFolder, "vstest.console.exe");
-			var startPar = new ProcessStartInfo {
-				FileName = Platform.IsWindows ? vsTestConsoleExe : "mono",
-				Arguments = GetVSTestArguments (vsTestConsoleExe, port),
-				WorkingDirectory = vsTestConsoleExeFolder,
-				UseShellExecute = false,
-				CreateNoWindow = true,
-			};
+			var executionCommand = Runtime.ProcessService.CreateCommand (vsTestConsoleExe);
+			executionCommand.Arguments = GetVSTestArguments (vsTestConsoleExe, port);
+			executionCommand.WorkingDirectory = vsTestConsoleExeFolder;
 			//Workaround macOs "bug" where terminal path has dotnet added to path but gui apps path doesn't(IDE)
 			if (Platform.IsMac)
-				startPar.EnvironmentVariables ["PATH"] = Environment.GetEnvironmentVariable ("PATH") + Path.PathSeparator + "/usr/local/share/dotnet/";
-			return Runtime.ProcessService.StartProcess (
-				startPar,
-				outW,
-				errW,
-				VsTestProcessExited);
+				executionCommand.EnvironmentVariables ["PATH"] = Environment.GetEnvironmentVariable ("PATH") + Path.PathSeparator + "/usr/local/share/dotnet/";
+			return Runtime.ProcessService.DefaultExecutionHandler.Execute (executionCommand, new ProcessHostConsole());
 		}
 
 		string GetVSTestArguments (string vsTestConsoleExe, int port)
@@ -198,9 +190,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 #if DIAGNOSTIC_LOGGING
 			LoggingService.CreateLogFile ("vstest", out var filename).Dispose ();
 #endif
-			if (Platform.IsWindows)
-				vsTestConsoleExe = "";
-			return $"{vsTestConsoleExe} /parentprocessid:{Process.GetCurrentProcess ().Id} /port:{port}"
+			return $"/parentprocessid:{Process.GetCurrentProcess ().Id} /port:{port}"
 #if DIAGNOSTIC_LOGGING
 				+ $" /diag:{filename}"
 #endif
