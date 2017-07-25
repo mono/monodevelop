@@ -140,5 +140,27 @@ namespace MonoDevelop.Ide.Projects
 			Assert.IsTrue (controller.FinalConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
 			Assert.IsFalse (controller.FinalConfiguration.IsCreateProjectDirectoryInsideSolutionDirectoryEnabled);
 		}
+
+		/// <summary>
+		/// Ensure a project directory is always created when adding a project to an existing solution even
+		/// if previously the create project directory setting was disabled.
+		/// </summary>
+		[Test]
+		public void CreateProjectDirectorySetting_IsFalseAndAddingProjectToExistingSolution_FinalPageHasCreateDirectoryDisabledAndChecked ()
+		{
+			CreateDialog ();
+			CSharpLibraryTemplateSelectedByDefault ();
+			UseExistingSolution ();
+			PropertyService.Set (NewProjectDialogController.CreateProjectSubDirectoryPropertyName, false);
+
+			controller.Backend.OnShowDialogCalled = () => {
+				controller.MoveToNextPage ();
+			};
+
+			controller.Show ();
+
+			Assert.IsTrue (controller.FinalConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
+			Assert.IsFalse (controller.FinalConfiguration.IsCreateProjectDirectoryInsideSolutionDirectoryEnabled);
+		}
 	}
 }
