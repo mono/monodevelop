@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Projects
 
 		const string UseGitPropertyName = "Dialogs.NewProjectDialog.UseGit";
 		const string CreateGitIgnoreFilePropertyName = "Dialogs.NewProjectDialog.CreateGitIgnoreFile";
-		const string CreateProjectSubDirectoryPropertyName = "MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir";
+		internal const string CreateProjectSubDirectoryPropertyName = "MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir";
 		const string NewSolutionLastSelectedCategoryPropertyName = "Dialogs.NewProjectDialog.LastSelectedCategoryPath";
 		const string NewSolutionLastSelectedTemplatePropertyName = "Dialogs.NewProjectDialog.LastSelectedTemplate";
 		const string NewProjectLastSelectedCategoryPropertyName = "Dialogs.NewProjectDialog.AddNewProjectLastSelectedCategoryPath";
@@ -268,7 +268,7 @@ namespace MonoDevelop.Ide.Projects
 			PropertyService.Set (CreateGitIgnoreFilePropertyName, projectConfiguration.CreateGitIgnoreFile);
 		}
 
-		INewProjectDialogBackend CreateNewProjectDialog ()
+		protected virtual INewProjectDialogBackend CreateNewProjectDialog ()
 		{
 			return new GtkNewProjectDialogBackend ();
 		}
@@ -315,11 +315,25 @@ namespace MonoDevelop.Ide.Projects
 		void LoadTemplateCategories ()
 		{
 			Predicate<SolutionTemplate> templateMatch = GetTemplateFilter ();
-			templateCategories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories (templateMatch).ToList ();
+			templateCategories = TemplatingService.GetProjectTemplateCategories (templateMatch).ToList ();
 			if (IsNewSolution)
-				recentTemplates = IdeApp.Services.TemplatingService.RecentTemplates.GetTemplates (templateCategories).Where (t => t.IsMatch (SolutionTemplateVisibility.NewSolution)).ToList ();
+				recentTemplates = TemplatingService.RecentTemplates.GetTemplates (templateCategories).Where (t => t.IsMatch (SolutionTemplateVisibility.NewSolution)).ToList ();
 			else
-				recentTemplates = IdeApp.Services.TemplatingService.RecentTemplates.GetTemplates (templateCategories).ToList ();
+				recentTemplates = TemplatingService.RecentTemplates.GetTemplates (templateCategories).ToList ();
+		}
+
+		// Allow testing of the controller by allowing tests to specific the
+		// TemplatingService. IdeApp.Services is not initialized during unit tests.
+		TemplatingService templatingService;
+
+		internal TemplatingService TemplatingService {
+			get {
+				if (templatingService != null)
+					return templatingService;
+
+				return IdeApp.Services.TemplatingService;
+			}
+			set { templatingService = value; }
 		}
 
 		Predicate<SolutionTemplate> GetTemplateFilter ()
@@ -480,7 +494,7 @@ namespace MonoDevelop.Ide.Projects
 
 			// Fallback to checking all templates that match the template id in the same category
 			// and support the condition.
-			SolutionTemplate matchedTemplate = IdeApp.Services.TemplatingService.GetTemplate (
+			SolutionTemplate matchedTemplate = TemplatingService.GetTemplate (
 				templateCategories,
 				currentTemplate => IsTemplateMatch (currentTemplate, SelectedTemplate, language, finalConfigurationPage.Parameters),
 				category => true,
@@ -746,7 +760,7 @@ namespace MonoDevelop.Ide.Projects
 			DisposeExistingNewItems ();
 
 			try {
-				result = await IdeApp.Services.TemplatingService.ProcessTemplate (template, projectConfiguration, ParentFolder);
+				result = await TemplatingService.ProcessTemplate (template, projectConfiguration, ParentFolder);
 				if (!result.WorkspaceItems.Any ())
 					return false;
 			} catch (UserException ex) {
