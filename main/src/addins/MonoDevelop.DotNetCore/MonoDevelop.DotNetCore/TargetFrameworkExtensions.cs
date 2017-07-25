@@ -33,7 +33,7 @@ namespace MonoDevelop.DotNetCore
 	{
 		public static bool IsNetStandard (this TargetFramework framework)
 		{
-			return framework.Id.Identifier == ".NETStandard";
+			return framework.Id.IsNetStandard ();
 		}
 
 		public static bool IsNetStandard20 (this TargetFramework framework)
@@ -64,7 +64,7 @@ namespace MonoDevelop.DotNetCore
 
 		public static bool IsNetCoreApp (this TargetFramework framework)
 		{
-			return framework.Id.Identifier == ".NETCoreApp";
+			return framework.Id.IsNetCoreApp ();
 		}
 
 		public static bool IsNetCoreApp20 (this TargetFramework framework)
@@ -82,6 +82,11 @@ namespace MonoDevelop.DotNetCore
 		public static bool IsNetFramework (this TargetFramework framework)
 		{
 			return framework.Id.IsNetFramework ();
+		}
+
+		public static bool IsNetStandard20OrNetCore20 (this TargetFramework framework)
+		{
+			return framework.IsNetStandard20 () || framework.IsNetCoreApp ();
 		}
 
 		public static string GetDisplayName (this TargetFramework framework)
