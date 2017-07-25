@@ -193,7 +193,8 @@ namespace MonoDevelop.Ide.Projects
 			SetDefaultLocation ();
 			SetDefaultGitSettings ();
 			SelectedLanguage = PropertyService.Get (SelectedLanguagePropertyName, "C#");
-			projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory = PropertyService.Get (CreateProjectSubDirectoryPropertyName, true);
+			if (IsNewSolution)
+				projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory = PropertyService.Get (CreateProjectSubDirectoryPropertyName, true);
 		}
 
 		void UpdateDefaultSettings ()
