@@ -426,6 +426,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageActionType.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PendingPackageActionsHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementPathResolver.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopBuildIntegratedRestorer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
