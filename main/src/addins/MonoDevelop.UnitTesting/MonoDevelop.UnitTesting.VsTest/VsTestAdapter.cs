@@ -174,11 +174,12 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 		ProcessWrapper StartVsTestConsoleExe (int port)
 		{
-			string VsTestConsoleExeFolder = Path.Combine (Path.GetDirectoryName (typeof (VsTestAdapter).Assembly.Location), "VsTestConsole");
+			string vsTestConsoleExeFolder = Path.Combine (Path.GetDirectoryName (typeof (VsTestAdapter).Assembly.Location), "VsTestConsole");
+			string vsTestConsoleExe = Path.Combine (vsTestConsoleExeFolder, "vstest.console.exe");
 			var startPar = new ProcessStartInfo {
-				FileName = Path.Combine (VsTestConsoleExeFolder, "vstest.console.exe"),
-				Arguments = GetVSTestArguments (port),
-				WorkingDirectory = VsTestConsoleExeFolder,
+				FileName = Platform.IsWindows ? vsTestConsoleExe : "mono",
+				Arguments = GetVSTestArguments (vsTestConsoleExe, port),
+				WorkingDirectory = vsTestConsoleExeFolder,
 				UseShellExecute = false,
 				CreateNoWindow = true,
 			};
@@ -190,15 +191,16 @@ namespace MonoDevelop.UnitTesting.VsTest
 				outW,
 				errW,
 				VsTestProcessExited);
-
 		}
 
-		string GetVSTestArguments (int port)
+		string GetVSTestArguments (string vsTestConsoleExe, int port)
 		{
 #if DIAGNOSTIC_LOGGING
 			LoggingService.CreateLogFile ("vstest", out var filename).Dispose ();
 #endif
-			return $"/parentprocessid:{Process.GetCurrentProcess ().Id} /port:{port}"
+			if (Platform.IsWindows)
+				vsTestConsoleExe = "";
+			return $"{vsTestConsoleExe} /parentprocessid:{Process.GetCurrentProcess ().Id} /port:{port}"
 #if DIAGNOSTIC_LOGGING
 				+ $" /diag:{filename}"
 #endif
