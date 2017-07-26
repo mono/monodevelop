@@ -1,0 +1,26 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask
+    TaskName="GenerateRuntimeImports"
+    TaskFactory="CodeTaskFactory"
+    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
+    <ParameterGroup>
+      <AddinFolder ParameterType="System.String" Required="true" />
+      <ManifestFile ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.IO.Compression" />
+      <Reference Include="System.IO.Compression.FileSystem" />
+      <Code Language="cs" Source="$(MSBuildThisFileDirectory)/GenerateRuntimeImports.cs" />
+    </Task>
+  </UsingTask>
+
+  <PropertyGroup>
+    <CoreCompileDependsOn>
+        GenerateRuntimeImports;$(CoreCompileDependsOn)
+    </CoreCompileDependsOn>
+  </PropertyGroup>
+
+  <Target Name="GenerateRuntimeImports">
+    <GenerateRuntimeImports AddinFolder="$(OutputPath)" ManifestFile="$(MSBuildThisFileDirectory)/Properties/AddinInfo.generated.cs" />
+  </Target>
+</Project>

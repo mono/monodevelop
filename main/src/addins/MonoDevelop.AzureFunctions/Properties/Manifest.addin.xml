@@ -1,4 +1,7 @@
 ﻿<ExtensionModel>
+
+    <Runtime/>
+ 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
 		<Category id="cloud" _name="Cloud" insertafter="netcore">
 			<Category id="general" _name="General">
