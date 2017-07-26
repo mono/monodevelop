@@ -20,6 +20,7 @@
 // limitations under the License.
 //
 // Based on parts of src/NuGet.Core/NuGet.Commands/RestoreCommand/Utility/MSBuildRestoreUtility.cs
+// and src/NuGet.Clients/NuGet.PackageManagement.VisualStudio/Projects/LegacyPackageReferenceProject.cs
 
 using System;
 using System.Collections.Generic;
@@ -28,8 +29,10 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.Commands;
 using NuGet.Common;
+using NuGet.Configuration;
 using NuGet.Frameworks;
 using NuGet.LibraryModel;
+using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
 using NuGet.RuntimeModel;
 using NuGet.Versioning;
@@ -38,21 +41,21 @@ namespace MonoDevelop.PackageManagement
 {
 	static class PackageSpecCreator
 	{
-		public static PackageSpec CreatePackageSpec (DotNetProject project, ILogger logger)
+		public static PackageSpec CreatePackageSpec (DotNetProject project, DependencyGraphCacheContext context)
 		{
-			return CreatePackageSpec (new DotNetProjectProxy (project), logger);
+			return CreatePackageSpec (new DotNetProjectProxy (project), context);
 		}
 
-		public static PackageSpec CreatePackageSpec (IDotNetProject project, ILogger logger)
+		public static PackageSpec CreatePackageSpec (IDotNetProject project, DependencyGraphCacheContext context)
 		{
 			var packageSpec = new PackageSpec (GetTargetFrameworks (project));
 			packageSpec.FilePath = project.FileName;
 			packageSpec.Name = project.Name;
 			packageSpec.Version = GetVersion (project);
 
-			packageSpec.RestoreMetadata = CreateRestoreMetadata (packageSpec, project);
+			packageSpec.RestoreMetadata = CreateRestoreMetadata (packageSpec, project, context.Settings);
 			packageSpec.RuntimeGraph = GetRuntimeGraph (project);
-			AddProjectReferences (packageSpec, project, logger);
+			AddProjectReferences (packageSpec, project, context.Logger);
 			AddPackageReferences (packageSpec, project);
 			AddPackageTargetFallbacks (packageSpec, project);
 
@@ -90,15 +93,20 @@ namespace MonoDevelop.PackageManagement
 			return NuGetVersion.Parse (versionString);
 		}
 
-		static ProjectRestoreMetadata CreateRestoreMetadata (PackageSpec packageSpec, IDotNetProject project)
+		static ProjectRestoreMetadata CreateRestoreMetadata (PackageSpec packageSpec, IDotNetProject project, ISettings settings)
 		{
 			return new ProjectRestoreMetadata {
+				ConfigFilePaths = SettingsUtility.GetConfigFilePaths (settings).ToList (),
+				FallbackFolders = SettingsUtility.GetFallbackPackageFolders (settings).ToList (),
+				PackagesPath = SettingsUtility.GetGlobalPackagesFolder (settings),
 				ProjectStyle = ProjectStyle.PackageReference,
 				ProjectPath = project.FileName,
 				ProjectName = packageSpec.Name,
 				ProjectUniqueName = project.FileName,
+				ProjectWideWarningProperties = GetWarningProperties (project),
 				OutputPath = project.BaseIntermediateOutputPath,
-				OriginalTargetFrameworks = GetOriginalTargetFrameworks (project).ToList ()
+				OriginalTargetFrameworks = GetOriginalTargetFrameworks (project).ToList (),
+				Sources = SettingsUtility.GetEnabledSources (settings).ToList ()
 			};
 		}
 
@@ -193,7 +201,7 @@ namespace MonoDevelop.PackageManagement
 				ProjectUniqueName = referencedProject.FileName,
 			};
 
-			ApplyIncludeFlags (
+			MSBuildRestoreUtility.ApplyIncludeFlags (
 				reference,
 				item.Metadata.GetValue ("IncludeAssets"),
 				item.Metadata.GetValue ("ExcludeAssets"),
@@ -206,6 +214,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			foreach (var packageReference in project.GetPackageReferences ()) {
 				var dependency = new LibraryDependency ();
+
+				dependency.AutoReferenced = packageReference.IsImplicit;
 
 				dependency.LibraryRange = new LibraryRange (
 					name: packageReference.Include,
@@ -239,33 +249,11 @@ namespace MonoDevelop.PackageManagement
 
 		static void ApplyIncludeFlags (LibraryDependency dependency, ProjectPackageReference packageReference)
 		{
-			var includeFlags = GetIncludeFlags (packageReference.Metadata.GetValue ("IncludeAssets"), LibraryIncludeFlags.All);
-			var excludeFlags = GetIncludeFlags (packageReference.Metadata.GetValue ("ExcludeAssets"), LibraryIncludeFlags.None);
-
-			dependency.IncludeType = includeFlags & ~excludeFlags;
-			dependency.SuppressParent = GetIncludeFlags (packageReference.Metadata.GetValue ("PrivateAssets"), LibraryIncludeFlagUtils.DefaultSuppressParent);
-		}
-
-		static void ApplyIncludeFlags (
-			ProjectRestoreReference dependency,
-			string includeAssets,
-			string excludeAssets,
-			string privateAssets)
-		{
-			dependency.IncludeAssets = GetIncludeFlags (includeAssets, LibraryIncludeFlags.All);
-			dependency.ExcludeAssets = GetIncludeFlags (excludeAssets, LibraryIncludeFlags.None);
-			dependency.PrivateAssets = GetIncludeFlags (privateAssets, LibraryIncludeFlagUtils.DefaultSuppressParent);
-		}
-
-		static LibraryIncludeFlags GetIncludeFlags (string value, LibraryIncludeFlags defaultValue)
-		{
-			var parts = MSBuildStringUtility.Split (value);
-
-			if (parts.Length > 0) {
-				return LibraryIncludeFlagUtils.GetFlags (parts);
-			} else {
-				return defaultValue;
-			}
+			MSBuildRestoreUtility.ApplyIncludeFlags (
+				dependency,
+				packageReference.Metadata.GetValue ("IncludeAssets"),
+				packageReference.Metadata.GetValue ("ExcludeAssets"),
+				packageReference.Metadata.GetValue ("PrivateAssets"));
 		}
 
 		static HashSet<NuGetFramework> GetProjectFrameworks (IDotNetProject project)
@@ -326,17 +314,26 @@ namespace MonoDevelop.PackageManagement
 
 		static void AddPackageTargetFallbacks (PackageSpec packageSpec, IDotNetProject project)
 		{
-			var fallbackList = GetPackageTargetFallbackList (project)
+			var packageTargetFallback = GetPackageTargetFallbackList (project)
 				.Select (NuGetFramework.Parse)
 				.ToList ();
-			if (!fallbackList.Any ())
+
+			var assetTargetFallback = GetAssetTargetFallbackList (project)
+				.Select (NuGetFramework.Parse)
+				.ToList ();
+
+			if (!packageTargetFallback.Any () && !assetTargetFallback.Any ())
 				return;
+
+			AssetTargetFallbackUtility.EnsureValidFallback (
+				packageTargetFallback,
+				assetTargetFallback,
+				packageSpec.FilePath);
 
 			var frameworks = GetProjectFrameworks (project);
 			foreach (var framework in frameworks) {
 				var frameworkInfo = packageSpec.GetTargetFramework (framework);
-				frameworkInfo.Imports = fallbackList;
-				frameworkInfo.FrameworkName = new FallbackFramework (frameworkInfo.FrameworkName, fallbackList);
+				AssetTargetFallbackUtility.ApplyFramework (frameworkInfo, packageTargetFallback, assetTargetFallback);
 			}
 		}
 
@@ -348,6 +345,13 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return new string[0];
+		}
+
+		static IEnumerable<string> GetAssetTargetFallbackList (IDotNetProject project)
+		{
+			return MSBuildStringUtility.Split (
+				project.EvaluatedProperties.GetValue (AssetTargetFallbackUtility.AssetTargetFallback)
+			);
 		}
 
 		static RuntimeGraph GetRuntimeGraph (IDotNetProject project)
@@ -363,6 +367,15 @@ namespace MonoDevelop.PackageManagement
 				.ToList ();
 
 			return new RuntimeGraph (runtimes, supports);
+		}
+
+		static WarningProperties GetWarningProperties (IDotNetProject project)
+		{
+			return MSBuildRestoreUtility.GetWarningProperties (
+				project.EvaluatedProperties.GetValue ("TreatWarningsAsErrors"),
+				project.EvaluatedProperties.GetValue ("WarningsAsErrors"),
+				project.EvaluatedProperties.GetValue ("NoWarn")
+			);
 		}
 	}
 }

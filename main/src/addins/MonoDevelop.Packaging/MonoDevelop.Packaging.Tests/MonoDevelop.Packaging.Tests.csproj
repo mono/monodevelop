@@ -33,9 +33,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="NuGet.ProjectManagement">
-      <HintPath>..\..\..\..\external\nuget-binary\NuGet.ProjectManagement.dll</HintPath>
-    </Reference>
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
@@ -81,6 +78,11 @@
     <ProjectReference Include="..\..\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.Tests\MonoDevelop.PackageManagement.Tests.csproj">
       <Project>{2645C9F3-9ED5-4806-AB09-DAD9BE90C67B}</Project>
       <Name>MonoDevelop.PackageManagement.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.DotNetCore\MonoDevelop.DotNetCore.csproj">
+      <Project>{6868153E-41EA-43A4-A81A-C1E7256373F7}</Project>
+      <Name>MonoDevelop.DotNetCore</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

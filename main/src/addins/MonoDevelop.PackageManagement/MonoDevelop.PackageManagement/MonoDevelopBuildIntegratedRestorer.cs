@@ -146,7 +146,6 @@ namespace MonoDevelop.PackageManagement
 				new RestoreCommandProvidersCache (),
 				cacheContextModifier,
 				sourceRepositories,
-				settings,
 				context.Logger,
 				cancellationToken);
 
@@ -177,7 +176,7 @@ namespace MonoDevelop.PackageManagement
 
 		DependencyGraphCacheContext CreateRestoreContext ()
 		{
-			return new DependencyGraphCacheContext (CreateLogger ());
+			return new DependencyGraphCacheContext (CreateLogger (), settings);
 		}
 
 		void ReportRestoreError (RestoreResult restoreResult)
@@ -189,34 +188,6 @@ namespace MonoDevelop.PackageManagement
 					libraryRange.ToString ());
 			}
 			throw new ApplicationException (GettextCatalog.GetString ("Restore failed."));
-		}
-
-		public Task<bool> IsRestoreRequired (BuildIntegratedNuGetProject project)
-		{
-			var pathContext = NuGetPathContext.Create (settings);
-			var packageFolderPaths = new List<string> ();
-			packageFolderPaths.Add (pathContext.UserPackageFolder);
-			packageFolderPaths.AddRange (pathContext.FallbackPackageFolders);
-			var pathResolvers = packageFolderPaths.Select (path => new VersionFolderPathResolver (path));
-
-			var packagesChecked = new HashSet<PackageIdentity> ();
-
-			return project.IsRestoreRequired (pathResolvers, packagesChecked, context);
-		}
-
-		public async Task<IEnumerable<BuildIntegratedNuGetProject>> GetProjectsRequiringRestore (
-			IEnumerable<BuildIntegratedNuGetProject> projects)
-		{
-			var projectsToBeRestored = new List<BuildIntegratedNuGetProject> ();
-
-			foreach (BuildIntegratedNuGetProject project in projects) {
-				bool restoreRequired = await IsRestoreRequired (project);
-				if (restoreRequired) {
-					projectsToBeRestored.Add (project);
-				}
-			}
-
-			return projectsToBeRestored;
 		}
 
 		DotNetProject GetProjectToReloadAfterRestore (BuildIntegratedNuGetProject project)
