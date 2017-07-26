@@ -21,6 +21,6 @@
   </PropertyGroup>
 
   <Target Name="GenerateRuntimeImports">
-    <GenerateRuntimeImports AddinFolder="$(OutputPath)" ManifestFile="$(MSBuildThisFileDirectory)/Properties/Manifest.addin.xml" />
+    <GenerateRuntimeImports AddinFolder="$(OutputPath)" ManifestFile="$(MSBuildThisFileDirectory)/Properties/AddinInfo.generated.cs" />
   </Target>
 </Project>

@@ -20,24 +20,16 @@ namespace MDBuildTasks
 		public override bool Execute ()
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.AppendLine("    <Runtime>");
+			sb.AppendLine("// this file was auto-generated");
+			sb.AppendLine("using System;");
+			sb.AppendLine("using Mono.Addins;");
 
 			var addinBaseDir = Path.GetFullPath(AddinFolder);
 			
 			AddFilesInFolder(addinBaseDir, Path.Combine(addinBaseDir, "Templates"), sb);
 			AddFilesInFolder(addinBaseDir, Path.Combine(addinBaseDir, "azure-functions-cli-66a932fb"), sb);
 
-			sb.AppendLine("    </Runtime>");
-
-			var existingContents = File.ReadAllText(ManifestFile);
-			if (existingContents.Contains("<Runtime/>"))
-			{
-				existingContents = existingContents.Replace("<Runtime/>", sb.ToString());
-				File.WriteAllText(ManifestFile, existingContents);
-			} else 
-			{
-				Log.LogMessage ("Manifest file was not updated.");
-			}
+			File.WriteAllText(ManifestFile, sb.ToString());
 
 			return true;
 		}
@@ -55,7 +47,8 @@ namespace MDBuildTasks
 			foreach (var file in files)
 			{
 				var fileName = file.Substring(addinBaseDir.Length);
-				sb.AppendLine($"        <Import file=\"{fileName}\" />");
+
+				sb.AppendLine($"[assembly: ImportAddinFile (\"{fileName}\")]");
 			}
 		}
 	}
