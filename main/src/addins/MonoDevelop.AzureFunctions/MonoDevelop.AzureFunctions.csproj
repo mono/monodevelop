@@ -112,5 +112,6 @@
         Unpack="True" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)\GenerateRuntimeImports.targets" />
   <Import Project="$(MDBuildTasks)\DownloadFile.targets" />
 </Project>
