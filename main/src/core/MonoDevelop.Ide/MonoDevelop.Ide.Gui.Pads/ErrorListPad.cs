@@ -238,6 +238,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sort.SetSortFunc (VisibleColumns.Category, CategoryIterSort);
 
 			view = new PadTreeView (sort);
+			view.Selection.Mode = SelectionMode.Multiple;
 			view.ShowExpanders = true;
 			view.RulesHint = true;
 			view.DoPopupMenu = (evnt) => IdeApp.CommandService.ShowContextMenu (view, evnt, CreateMenu ());
@@ -499,6 +500,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 						columnDescription.Active ||
 						columnFile.Active ||
 						columnPath.Active);
+
+				// Disable Help and Go To if multiple rows selected.
+				if (help.Sensitive && view.Selection.CountSelectedRows () > 1) {
+					help.Sensitive = false;
+					jump.Sensitive = false;
+				}
+
 				string dummyString;
 				help.Sensitive &= GetSelectedErrorReference (out dummyString);
 			};
@@ -508,11 +516,23 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		TaskListEntry SelectedTask {
 			get {
-				TreeModel model;
 				TreeIter iter;
-				if (view.Selection.GetSelected (out model, out iter))
-					return model.GetValue (iter, DataColumns.Task) as TaskListEntry;
+				var rows = view.Selection.GetSelectedRows ();
+				if (rows.Any () && view.Model.GetIter (out iter, rows[0]))
+					return view.Model.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				return null; // no one selected
+			}
+		}
+
+		IEnumerable<TaskListEntry> GetSelectedTasks ()
+		{
+			TreeIter iter;
+			foreach (var row in view.Selection.GetSelectedRows ()) {
+				if (view.Model.GetIter (out iter, row)) {
+					var task = view.Model.GetValue (iter, DataColumns.Task) as TaskListEntry;
+					if (task != null)
+						yield return task;
+				}
 			}
 		}
 
@@ -524,9 +544,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void OnTaskCopied (object o, EventArgs args)
 		{
-			TaskListEntry task = SelectedTask;
-			if (task != null) {
-				StringBuilder text = new StringBuilder ();
+			var selectedTasks = GetSelectedTasks ().ToArray ();
+			if (!selectedTasks.Any ())
+				return;
+
+			var text = new StringBuilder ();
+
+			for (int i = 0; i < selectedTasks.Length; i++) {
+				if (i > 0)
+					text.Append (Environment.NewLine);
+
+				TaskListEntry task = selectedTasks [i];
 				if (!string.IsNullOrEmpty (task.FileName)) {
 					text.Append (task.FileName);
 					if (task.Line >= 1) {
@@ -549,12 +577,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 				if (!string.IsNullOrEmpty (task.Category)) {
 					text.Append (" ").Append (task.Category);
 				}
-
-				clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-				clipboard.Text = text.ToString ();
-				clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-				clipboard.Text = text.ToString ();
 			}
+
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = text.ToString ();
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			clipboard.Text = text.ToString ();
 		}
 
 		void OnShowReference (object o, EventArgs args)
@@ -586,9 +614,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void OnTaskJumpto (object o, EventArgs args)
 		{
+			var rows = view.Selection.GetSelectedRows ();
+			if (!rows.Any ())
+				return;
+
 			TreeIter iter, sortedIter;
-			TreeModel model;
-			if (view.Selection.GetSelected (out model, out sortedIter)) {
+			if (view.Model.GetIter (out sortedIter, rows [0])) {
 				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (sortedIter));
 				store.SetValue (iter, DataColumns.Read, true);
 				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
