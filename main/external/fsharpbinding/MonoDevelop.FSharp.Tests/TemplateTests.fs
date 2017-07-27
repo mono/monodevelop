@@ -54,7 +54,7 @@ type ``Template tests``() =
 
     let templatesDir = FilePath(".").FullPath.ToString() / "buildtemplates"
 
-    let test (tt:string) =
+    let testWithParameters (tt:string, parameters:string) =
         if not MonoDevelop.Core.Platform.IsMac then
             Assert.Ignore ()
         //if tt = "FSharpPortableLibrary" then
@@ -80,6 +80,10 @@ type ``Template tests``() =
             cinfo.Parameters.["AndroidMinSdkVersionAttribute"] <- "android:minSdkVersion=\"10\""
             cinfo.Parameters.["AndroidThemeAttribute"] <- ""
             cinfo.Parameters.["TargetFrameworkVersion"] <- "MonoAndroid,Version=v7.0"
+
+            for templateParameter in TemplateParameter.CreateParameters (parameters) do
+                cinfo.Parameters.[templateParameter.Name] <- templateParameter.Value
+
             use sln = projectTemplate.CreateWorkspaceItem (cinfo) :?> Solution
 
             let createTemplate (template:SolutionTemplate) =
@@ -137,6 +141,9 @@ type ``Template tests``() =
             | [] -> Assert.Pass()
             | errors -> Assert.Fail (sprintf "%A" errors)
         }
+
+    let test (tt:string) = testWithParameters (tt, "")
+
     [<TestFixtureSetUp>]
     member x.Setup() =
         let config = """
@@ -179,3 +186,6 @@ type ``Template tests``() =
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpGtkProject``()= test "FSharpGtkProject"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``MonoDevelop FSharp LibraryProject``()= test "MonoDevelop.FSharp.LibraryProject"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpNUnitLibraryProject``()= test "FSharpNUnitLibraryProject"
+    [<Test;AsyncStateMachine(typeof<Task>)>]
+    member x.``Xamarin Forms FSharp FormsApp Shared``() =
+        testWithParameters ("Xamarin.Forms.FSharp.FormsApp", "CreateSharedAssetsProject=True;CreatePortableDotNetProject=False")
