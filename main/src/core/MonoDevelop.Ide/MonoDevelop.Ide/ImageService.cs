@@ -39,6 +39,7 @@ using System.Threading.Tasks;
 using System.Net;
 using Xwt.Backends;
 using Gtk;
+using Gdk;
 
 namespace MonoDevelop.Ide
 {
@@ -837,6 +838,41 @@ namespace MonoDevelop.Ide
 					image.Pixbuf = gravatar.Image.ToPixbuf ();
 			};
 		}
+
+		public static Pixbuf ColorShiftPixbuf (this Pixbuf src, byte shift = 120)
+		{
+			var dest = new Gdk.Pixbuf (src.Colorspace, src.HasAlpha, src.BitsPerSample, src.Width, src.Height);
+
+			unsafe
+			{
+
+				byte* src_pixels_orig = (byte*)src.Pixels;
+				byte* dest_pixels_orig = (byte*)dest.Pixels;
+
+				for (int i = 0; i < src.Height; i++) {
+					byte* src_pixels = src_pixels_orig + i * src.Rowstride;
+					byte* dest_pixels = dest_pixels_orig + i * dest.Rowstride;
+
+					for (int j = 0; j < src.Width; j++) {
+						*(dest_pixels++) = PixelClamp (*(src_pixels++) + shift);
+						*(dest_pixels++) = PixelClamp (*(src_pixels++) + shift);
+						*(dest_pixels++) = PixelClamp (*(src_pixels++) + shift);
+
+						if (src.HasAlpha) {
+							*(dest_pixels++) = *(src_pixels++);
+						}
+					}
+				}
+			}
+			return dest;
+		}
+
+		static byte PixelClamp (int val)
+		{
+			return (byte)System.Math.Max (0, System.Math.Min (255, val));
+		}
+
+
 	}
 
 	class CustomImageLoader : Xwt.Drawing.IImageLoader
