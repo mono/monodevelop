@@ -88,8 +88,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			var getSymbolTask = RenameLocations.ReferenceProcessing.GetRenamableSymbolAsync (ctx.AnalysisDocument, editor.CaretOffset, cts.Token);
 			var message = GettextCatalog.GetString ("Resolving symbol…");
 			var info = await MessageService.ExecuteTaskAndShowWaitDialog (getSymbolTask, message, cts);
-			if (info == null)
-				return;
 			var sym = info.Symbol;
 			if (!CanRename (sym))
 				return;
