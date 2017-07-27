@@ -44,7 +44,7 @@ using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class MonoDevelopBuildIntegratedRestorer
+	internal class MonoDevelopBuildIntegratedRestorer : IMonoDevelopBuildIntegratedRestorer
 	{
 		IPackageManagementEvents packageManagementEvents;
 		List<SourceRepository> sourceRepositories;
@@ -99,7 +99,9 @@ namespace MonoDevelop.PackageManagement
 				await Runtime.RunInMainThread (() => {
 					FileService.NotifyFilesChanged (changedLocks);
 					foreach (var project in affectedProjects) {
-						NotifyProjectReferencesChanged (project);
+						// Restoring the entire solution so do not refresh references for
+						// transitive  project references since they should be refreshed anyway.
+						NotifyProjectReferencesChanged (project, includeTransitiveProjectReferences: false);
 					}
 				});
 			}
@@ -114,12 +116,17 @@ namespace MonoDevelop.PackageManagement
 			var changedLock = await RestorePackagesInternal (project, cancellationToken);
 
 			if (projectToReload != null) {
-				await ReloadProject (projectToReload, changedLock);
+				// Need to ensure transitive project references are refreshed if only the single
+				// project is reloaded since they will still be out of date.
+				await ReloadProject (projectToReload, changedLock, refreshTransitiveReferences: true);
 			} else if (changedLock != null) {
 				LockFileChanged = true;
 				await Runtime.RunInMainThread (() => {
 					FileService.NotifyFileChanged (changedLock);
-					NotifyProjectReferencesChanged (project);
+
+					// Restoring a single project so ensure references are refreshed for
+					// transitive project references.
+					NotifyProjectReferencesChanged (project, includeTransitiveProjectReferences: true);
 				});
 			}
 		}
@@ -139,7 +146,6 @@ namespace MonoDevelop.PackageManagement
 				new RestoreCommandProvidersCache (),
 				cacheContextModifier,
 				sourceRepositories,
-				settings,
 				context.Logger,
 				cancellationToken);
 
@@ -153,11 +159,13 @@ namespace MonoDevelop.PackageManagement
 			return null;
 		}
 
-		static void NotifyProjectReferencesChanged (BuildIntegratedNuGetProject project)
+		static void NotifyProjectReferencesChanged (
+			BuildIntegratedNuGetProject project,
+			bool includeTransitiveProjectReferences)
 		{
 			var buildIntegratedProject = project as IBuildIntegratedNuGetProject;
 			if (buildIntegratedProject != null) {
-				buildIntegratedProject.NotifyProjectReferencesChanged ();
+				buildIntegratedProject.NotifyProjectReferencesChanged (includeTransitiveProjectReferences);
 			}
 		}
 
@@ -168,7 +176,7 @@ namespace MonoDevelop.PackageManagement
 
 		DependencyGraphCacheContext CreateRestoreContext ()
 		{
-			return new DependencyGraphCacheContext (CreateLogger ());
+			return new DependencyGraphCacheContext (CreateLogger (), settings);
 		}
 
 		void ReportRestoreError (RestoreResult restoreResult)
@@ -182,34 +190,6 @@ namespace MonoDevelop.PackageManagement
 			throw new ApplicationException (GettextCatalog.GetString ("Restore failed."));
 		}
 
-		public Task<bool> IsRestoreRequired (BuildIntegratedNuGetProject project)
-		{
-			var pathContext = NuGetPathContext.Create (settings);
-			var packageFolderPaths = new List<string> ();
-			packageFolderPaths.Add (pathContext.UserPackageFolder);
-			packageFolderPaths.AddRange (pathContext.FallbackPackageFolders);
-			var pathResolvers = packageFolderPaths.Select (path => new VersionFolderPathResolver (path));
-
-			var packagesChecked = new HashSet<PackageIdentity> ();
-
-			return project.IsRestoreRequired (pathResolvers, packagesChecked, context);
-		}
-
-		public async Task<IEnumerable<BuildIntegratedNuGetProject>> GetProjectsRequiringRestore (
-			IEnumerable<BuildIntegratedNuGetProject> projects)
-		{
-			var projectsToBeRestored = new List<BuildIntegratedNuGetProject> ();
-
-			foreach (BuildIntegratedNuGetProject project in projects) {
-				bool restoreRequired = await IsRestoreRequired (project);
-				if (restoreRequired) {
-					projectsToBeRestored.Add (project);
-				}
-			}
-
-			return projectsToBeRestored;
-		}
-
 		DotNetProject GetProjectToReloadAfterRestore (BuildIntegratedNuGetProject project)
 		{
 			var dotNetCoreNuGetProject = project as DotNetCoreNuGetProject;
@@ -219,7 +199,7 @@ namespace MonoDevelop.PackageManagement
 			return null;
 		}
 
-		Task ReloadProject (DotNetProject projectToReload, string changedLock)
+		Task ReloadProject (DotNetProject projectToReload, string changedLock, bool refreshTransitiveReferences = false)
 		{
 			return Runtime.RunInMainThread (async () => {
 				if (changedLock != null) {
@@ -227,6 +207,9 @@ namespace MonoDevelop.PackageManagement
 					FileService.NotifyFileChanged (changedLock);
 				}
 				await projectToReload.ReevaluateProject (new ProgressMonitor ());
+
+				if (refreshTransitiveReferences)
+					projectToReload.DotNetCoreNotifyReferencesChanged (transitiveOnly: true);
 			});
 		}
 	}

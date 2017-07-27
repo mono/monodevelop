@@ -49,6 +49,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public static Action<Action> GuiSyncDispatcher = handler => handler.Invoke ();
 		public static Func<Func<Task>,Task> GuiSyncDispatcherFunc = handler => handler.Invoke();
+		public static Func<Func<Task<bool>>,Task<bool>> GuiSyncDispatcherReturnBoolFunc = handler => handler.Invoke ();
 
 		public TestableMonoDevelopProjectSystem (IDotNetProject project)
 			: this (
@@ -64,7 +65,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			FakeNuGetProjectContext context,
 			IPackageManagementFileService fileService,
 			PackageManagementEvents packageManagementEvents)
-			: base (project, context, fileService, packageManagementEvents, GuiSyncDispatcher, GuiSyncDispatcherFunc)
+			: base (
+				project,
+				context,
+				fileService,
+				packageManagementEvents,
+				GuiSyncDispatcher,
+				GuiSyncDispatcherFunc,
+				GuiSyncDispatcherReturnBoolFunc)
 		{
 			FakeNuGetProjectContext = context;
 			FakeFileService = (FakeFileService)fileService;

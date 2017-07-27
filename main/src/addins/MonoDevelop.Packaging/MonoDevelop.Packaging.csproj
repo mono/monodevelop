@@ -37,20 +37,16 @@
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="Mono.Posix" />
-    <Reference Include="NuGet.ProjectManagement">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.ProjectManagement.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NuGet.Protocol.Core.Types">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.Core.Types.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NuGet.Packaging.Core.Types">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Packaging.Core.Types.dll</HintPath>
+    <Reference Include="NuGet.Protocol">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Packaging">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Packaging.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NuGet.Packaging.Core">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Packaging.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Frameworks">
