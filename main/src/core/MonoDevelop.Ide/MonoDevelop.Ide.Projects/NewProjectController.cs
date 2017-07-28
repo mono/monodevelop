@@ -480,7 +480,7 @@ namespace MonoDevelop.Ide.Projects
 
 			// Fallback to checking all templates that match the template id in the same category
 			// and support the condition.
-			SolutionTemplate matchedTemplate = IdeApp.Services.TemplatingService.GetTemplate (
+			SolutionTemplate matchedTemplate = TemplatingService.GetTemplate (
 				templateCategories,
 				currentTemplate => IsTemplateMatch (currentTemplate, SelectedTemplate, language, finalConfigurationPage.Parameters),
 				category => true,
