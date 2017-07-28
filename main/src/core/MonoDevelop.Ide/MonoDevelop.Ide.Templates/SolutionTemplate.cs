@@ -255,6 +255,19 @@ namespace MonoDevelop.Ide.Templates
 				^ (Name != null ? Name.GetHashCode () : 0)
 				^ (Category != null ? Category.GetHashCode () : 0);
 		}
+
+		/// <summary>
+		/// Returns all other templates in the group. Does not include this template.
+		/// </summary>
+		internal IEnumerable<SolutionTemplate> GetGroupedTemplates ()
+		{
+			if (Parent != null)
+				return Parent.groupedTemplates
+					.Where (template => template != this)
+					.Concat (Parent);
+
+			return groupedTemplates;
+		}
 	}
 }
 

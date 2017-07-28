@@ -26,9 +26,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using NUnit.Framework;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using NUnit.Framework;
+using UnitTests;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -39,12 +42,22 @@ namespace MonoDevelop.Ide.Templates
 		List<TemplateCategory> categories;
 		List<SolutionTemplate> templates;
 		List<TemplateCategory> categorizedTemplates;
+		string recentlyUsedTemplatesFile;
 
 		[SetUp]
 		public void Init ()
 		{
 			categories = new List<TemplateCategory> ();
 			templates = new List<SolutionTemplate> ();
+
+			recentlyUsedTemplatesFile = Path.Combine (Util.TmpDir, "TestRecentlyUsedTemplates.xml");
+		}
+
+		[TearDown]
+		public void TearDown ()
+		{
+			if (File.Exists (recentlyUsedTemplatesFile))
+				Util.ClearTmpDir ();
 		}
 
 		void CreateCategories (string topLevelCategoryName, string secondLevelCategoryName, string thirdLevelCategoryName)
@@ -610,6 +623,108 @@ namespace MonoDevelop.Ide.Templates
 			Assert.AreEqual (template1, matchedIPhoneTemplate);
 			Assert.AreEqual (template2, matchedIPadTemplate.GetTemplate ("C#", ipadParameters));
 			Assert.AreEqual (template1, matchedIPadTemplate.GetTemplate ("C#", iphoneParameters));
+		}
+
+		[Test]
+		public void RecentTemplates_TwoTemplatesInGroupConditionSameLanguage_TreatedAsSameRecentTemplate ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template1 = AddTemplate ("template-id1", "android/app/general");
+			template1.GroupId = "console";
+			template1.Language = "C#";
+			SolutionTemplate template2 = AddTemplate ("template-id2", "android/app/general");
+			template2.GroupId = "console";
+			template2.Language = "C#";
+			CategorizeTemplates ();
+			var recentTemplates = new RecentTemplates (recentlyUsedTemplatesFile);
+			var initialRecentTemplatesList = recentTemplates.GetTemplates (categorizedTemplates);
+
+			recentTemplates.AddTemplate (template1);
+			recentTemplates.AddTemplate (template2);
+
+			var recentTemplatesList = recentTemplates.GetTemplates (categorizedTemplates);
+
+			Assert.AreEqual (0, initialRecentTemplatesList.Count);
+			Assert.AreEqual (1, recentTemplatesList.Count);
+			Assert.AreEqual (template2, recentTemplatesList[0]);
+		}
+
+		[Test]
+		public void RecentTemplates_TwoTemplatesInGroupDifferentLanguage_TreatedAsDifferentRecentTemplate ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template1 = AddTemplate ("template-id1", "android/app/general");
+			template1.GroupId = "console";
+			template1.Language = "C#";
+			SolutionTemplate template2 = AddTemplate ("template-id2", "android/app/general");
+			template2.GroupId = "console";
+			template2.Language = "F#";
+			CategorizeTemplates ();
+			var recentTemplates = new RecentTemplates (recentlyUsedTemplatesFile);
+			var initialRecentTemplatesList = recentTemplates.GetTemplates (categorizedTemplates);
+
+			recentTemplates.AddTemplate (template1);
+			recentTemplates.AddTemplate (template2);
+
+			var recentTemplatesList = recentTemplates.GetTemplates (categorizedTemplates);
+
+			Assert.AreEqual (0, initialRecentTemplatesList.Count);
+			Assert.AreEqual (2, recentTemplatesList.Count);
+			Assert.AreEqual (template2, recentTemplatesList[0]);
+			Assert.AreEqual (template1, recentTemplatesList[1]);
+		}
+
+		[Test]
+		public void GetGroupedTemplates_TwoGroupedConsoleProjectTemplates_CanGetOtherTemplatesInGroupFromEitherTemplate ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template1 = AddTemplate ("template-id1", "android/app/general");
+			template1.GroupId = "console";
+			template1.Language = "C#";
+			SolutionTemplate template2 = AddTemplate ("template-id2", "android/app/general");
+			template2.GroupId = "console";
+			template2.Language = "F#";
+			CategorizeTemplates ();
+
+			var templatesInGroupForTemplate1 = template1.GetGroupedTemplates ().Single ();
+			var templatesInGroupForTemplate2 = template2.GetGroupedTemplates ().Single ();
+
+			Assert.AreEqual (template2, templatesInGroupForTemplate1);
+			Assert.AreEqual (template1, templatesInGroupForTemplate2);
+		}
+
+		[Test]
+		public void GetGroupedTemplates_ThreeGroupedConsoleProjectTemplates_CanGetOtherTemplatesInGroupFromEitherTemplate ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template1 = AddTemplate ("template-id1", "android/app/general");
+			template1.GroupId = "console";
+			template1.Language = "C#";
+			SolutionTemplate template2 = AddTemplate ("template-id2", "android/app/general");
+			template2.GroupId = "console";
+			template2.Language = "F#";
+			SolutionTemplate template3 = AddTemplate ("template-id3", "android/app/general");
+			template3.GroupId = "console";
+			template3.Language = "VBNet";
+			CategorizeTemplates ();
+
+			var templatesInGroupForTemplate1 = template1.GetGroupedTemplates ().ToList ();
+			var templatesInGroupForTemplate2 = template2.GetGroupedTemplates ().ToList ();
+			var templatesInGroupForTemplate3 = template3.GetGroupedTemplates ().ToList ();
+
+			Assert.That (templatesInGroupForTemplate1, Contains.Item (template2));
+			Assert.That (templatesInGroupForTemplate1, Contains.Item (template3));
+			Assert.That (templatesInGroupForTemplate2, Contains.Item (template1));
+			Assert.That (templatesInGroupForTemplate2, Contains.Item (template3));
+			Assert.That (templatesInGroupForTemplate3, Contains.Item (template1));
+			Assert.That (templatesInGroupForTemplate3, Contains.Item (template2));
+			Assert.AreEqual (2, templatesInGroupForTemplate1.Count);
+			Assert.AreEqual (2, templatesInGroupForTemplate2.Count);
+			Assert.AreEqual (2, templatesInGroupForTemplate3.Count);
 		}
 	}
 }
