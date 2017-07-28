@@ -49,7 +49,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase (".NETStandard", "2.0", new [] { "1.0.4", "2.0.0" }, false, true)]
 		[TestCase (".NETCoreApp", "2.0", new [] { "2.0.0-preview2-006497" }, false, true)] // Allow preview versions.
 		[TestCase (".NETStandard", "2.0", new [] { "2.0.0-preview2-006497" }, false, true)] // Allow preview versions.
-		[TestCase (".NETFramework", "2.0", new [] { "2.0.0" }, false, false)] // Only .NETCoreApp and .NETStandard are supported.
+		[TestCase (".NETFramework", "2.0", new [] { "2.0.0" }, false, true)] // Allow other non-.NET Core frameworks to be supported.
 		[TestCase (".NETCoreApp", "1.1", new [] { "2.0.0" }, false, true)] // v2.0 SDK can compile v1 projects
 		[TestCase (".NETStandard", "1.6", new [] { "2.0.0" }, false, true)] // v2.0 SDK can compile v1 projects
 		public void IsSupportedTargetFramework (
