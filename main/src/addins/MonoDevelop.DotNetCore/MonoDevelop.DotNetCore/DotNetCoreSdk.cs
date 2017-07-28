@@ -84,8 +84,10 @@ namespace MonoDevelop.DotNetCore
 			DotNetCoreVersion[] versions,
 			bool msbuildSdksInstalled)
 		{
-			if (!projectFramework.IsNetStandardOrNetCoreApp ())
-				return false;
+			if (!projectFramework.IsNetStandardOrNetCoreApp ()) {
+				// Allow other frameworks to be supported such as .NET Framework.
+				return true;
+			}
 
 			var projectFrameworkVersion = Version.Parse (projectFramework.Version);
 
