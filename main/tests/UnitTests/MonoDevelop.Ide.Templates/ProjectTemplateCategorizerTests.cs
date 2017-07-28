@@ -582,6 +582,35 @@ namespace MonoDevelop.Ide.Templates
 			});
 			Assert.AreEqual (2, templateCount);
 		}
+
+		[Test]
+		public void GetCategorizedTemplates_TwoTemplatesWithGroupCondition_CanGetTemplateMatchingConditionFromAnyGroupedTemplate ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template1 = AddTemplate ("template-id1", "android/app/general");
+			template1.GroupId = "console";
+			template1.Language = "C#";
+			template1.Condition = "Device=IPhone";
+			SolutionTemplate template2 = AddTemplate ("template-id2", "android/app/general");
+			template2.GroupId = "console";
+			template2.Language = "C#";
+			template2.Condition = "Device=IPad";
+			ProjectCreateParameters ipadParameters = CreateParameters ("Device", "IPad");
+			ProjectCreateParameters iphoneParameters = CreateParameters ("Device", "IPhone");
+
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate firstTemplate = generalCategory.Templates.FirstOrDefault ();
+			SolutionTemplate matchedIPadTemplate = firstTemplate.GetTemplate ("C#", ipadParameters);
+			SolutionTemplate matchedIPhoneTemplate = firstTemplate.GetTemplate ("C#", iphoneParameters);
+
+			Assert.AreEqual (template2, matchedIPadTemplate);
+			Assert.AreEqual (template1, matchedIPhoneTemplate);
+			Assert.AreEqual (template2, matchedIPadTemplate.GetTemplate ("C#", ipadParameters));
+			Assert.AreEqual (template1, matchedIPadTemplate.GetTemplate ("C#", iphoneParameters));
+		}
 	}
 }
 

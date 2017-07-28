@@ -114,14 +114,18 @@ namespace MonoDevelop.Ide.Templates
 		public void AddGroupTemplate (SolutionTemplate template)
 		{
 			groupedTemplates.Add (template);
+			template.Parent = this;
 
 			if (!availableLanguages.Contains (template.Language)) {
 				availableLanguages.Add (template.Language);
 			}
 		}
 
+		internal SolutionTemplate Parent { get; set; }
+
 		internal void ClearGroupedTemplates ()
 		{
+			Parent = null;
 			groupedTemplates.Clear ();
 		}
 
@@ -140,6 +144,9 @@ namespace MonoDevelop.Ide.Templates
 			if (predicate (this)) {
 				return this;
 			}
+
+			if (Parent != null)
+				return Parent.GetTemplate (predicate);
 
 			return groupedTemplates.FirstOrDefault (template => predicate (template));
 		}
