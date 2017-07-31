@@ -34,6 +34,9 @@ using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Ide.Gui;
+using AppKit;
+using Foundation;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -59,7 +62,7 @@ namespace MonoDevelop.Ide.Projects
 			templatesTreeView.Selection.SelectFunction = TemplatesTreeViewSelection;
 			templatesTreeView.RowActivated += TreeViewRowActivated;
 			cancelButton.Clicked += CancelButtonClicked;
-			nextButton.Clicked += (sender, e) => MoveToNextPage ();
+			nextButton.Clicked += NextButtonClicked;
 			previousButton.Clicked += (sender, e) => MoveToPreviousPage ();
 
 			nextButton.CanDefault = true;
@@ -68,6 +71,37 @@ namespace MonoDevelop.Ide.Projects
 			// Setup the treeview to be able to have a context menu
 			var actionHandler = new ActionDelegate (templatesTreeView);
 			actionHandler.PerformShowMenu += PerformShowMenu;
+		}
+
+		void NextButtonClicked (object sender, EventArgs e)
+		{
+			bool isLastPage = controller.IsLastPage;
+			MoveToNextPage ();
+			if (isLastPage) {
+				var message = GenerateProjectCreatedMessage ();
+				ShowAccessibityNotification (message);
+			}
+		}
+
+		void ShowAccessibityNotification (string message)
+		{
+			var accessibleObject = this.Accessible;
+			if (accessibleObject == null)
+				return;
+			var nsObject = AtkCocoaMacExtensions.GetNSAccessibilityElement (accessibleObject) as NSObject;
+			if (nsObject == null)
+				return;
+			var dictionary =
+				new NSDictionary (NSAccessibilityNotificationUserInfoKeys.AnnouncementKey, new NSString (message),
+								  NSAccessibilityNotificationUserInfoKeys.PriorityKey, NSAccessibilityPriorityLevel.High);
+			NSAccessibility.PostNotification (nsObject, NSAccessibilityNotifications.AnnouncementRequestedNotification, dictionary);
+		}
+
+		string GenerateProjectCreatedMessage ()
+		{
+			var message = GettextCatalog.GetString ("{0} successfully created");
+			var template = controller.SelectedTemplate;
+			return String.Format (message, template.Name);
 		}
 
 		public void ShowDialog ()
