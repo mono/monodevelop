@@ -223,6 +223,7 @@ namespace MonoDevelop.Ide.Projects
 			if (templateTextRenderer.RenderRecentTemplate && controller.SelectedTemplate != null) {
 				// reset selected language if a recent template has been selected
 				templateTextRenderer.SelectedLanguage = controller.SelectedTemplate.Language;
+				languageCellRenderer.SelectedLanguage = controller.SelectedTemplate.Language;
 				controller.SelectedLanguage = controller.SelectedTemplate.Language;
 			}
 			ShowSelectedTemplate ();
