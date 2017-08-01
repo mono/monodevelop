@@ -615,7 +615,7 @@ namespace MonoDevelop.Ide.Projects
 				wizardProvider.BeforeProjectIsCreated ();
 
 			if (!await CreateProject ()) {
-				ProjectCreationFailed?.Invoke (this, new EventArgs ());
+				ProjectCreationFailed?.Invoke (this, EventArgs.Empty);
 				return;
 			}
 
