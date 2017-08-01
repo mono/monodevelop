@@ -34,8 +34,6 @@ using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Ide.Gui;
-using AppKit;
-using Foundation;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Projects;
