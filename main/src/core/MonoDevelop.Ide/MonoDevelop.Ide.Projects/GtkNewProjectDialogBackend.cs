@@ -80,8 +80,8 @@ namespace MonoDevelop.Ide.Projects
 		void ShowProjectCreationAccessibityNotification (bool hasError)
 		{
 			var projectTemplate = controller.SelectedTemplate;
-			var textTemplate= hasError ? "{0} creation fail" : "{0} successfully created";
-			var messageText = GettextCatalog.GetString (textTemplate, projectTemplate.Name);
+			var textTemplate= hasError ? "creation fail" : "successfully created";
+			var messageText = $"{projectTemplate.Name} {GettextCatalog.GetString (textTemplate)}";
 			this.Accessible.MakeAccessibilityAnnouncement (messageText);
 		}
 
