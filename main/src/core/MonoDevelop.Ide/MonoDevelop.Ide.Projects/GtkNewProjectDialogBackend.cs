@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		void ProjectCreationFailed (object obj, EventArgs args) => ShowProjectCreationAccessibityNotification (true);
-		void ProjectCreationSucceed (object obj, EventArgs args) => ShowProjectCreationAccessibityNotification (false);
+		void ProjectCreated(object obj, EventArgs args) => ShowProjectCreationAccessibityNotification (false);
 		async void NextButtonClicked (object sender, EventArgs e) => await MoveToNextPage ();
 
 		void ShowProjectCreationAccessibityNotification (bool hasError)
@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			this.controller = controller;
 			controller.ProjectCreationFailed += ProjectCreationFailed;
-			controller.ProjectCreationSucceed += ProjectCreationSucceed;
+			controller.ProjectCreated += ProjectCreated;
 			languageCellRenderer.SelectedLanguage = controller.SelectedLanguage;
 			topBannerLabel.Text = controller.BannerText;
 			LoadTemplates ();
@@ -263,7 +263,7 @@ namespace MonoDevelop.Ide.Projects
 				projectConfigurationWidget.Destroy ();
 
 			controller.ProjectCreationFailed -= ProjectCreationFailed;
-			controller.ProjectCreationSucceed -= ProjectCreationSucceed;
+			controller.ProjectCreated -= ProjectCreated;
 
 			base.Destroy ();
 		}

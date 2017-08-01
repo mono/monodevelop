@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Projects
 	class NewProjectDialogController : INewProjectDialogController
 	{
 		public event EventHandler ProjectCreationFailed;
-		public event EventHandler ProjectCreationSucceed;
+		public event EventHandler ProjectCreated;
 
 		string chooseTemplateBannerText =  GettextCatalog.GetString ("Choose a template for your new project");
 		string configureYourWorkspaceBannerText = GettextCatalog.GetString ("Configure your new workspace");
@@ -703,8 +703,14 @@ namespace MonoDevelop.Ide.Projects
 
 			IsNewItemCreated = true;
 			UpdateDefaultSettings ();
-			var result = ProjectCreationSucceed?.BeginInvoke(this, new EventArgs (), new AsyncCallback ((_) => {} ),null);
-			result.AsyncWaitHandle.WaitOne ();
+
+			var tcs = new TaskCompletionSource<bool> ();
+			Gtk.Application.Invoke ((sender, args) => {
+				ProjectCreated?.Invoke (this, EventArgs.Empty);
+				tcs.SetResult (true);
+			});
+			await tcs.Task;
+
 			dialog.CloseDialog ();
 		}
 

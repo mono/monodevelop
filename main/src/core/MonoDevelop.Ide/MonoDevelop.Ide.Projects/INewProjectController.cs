@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Projects
 	interface INewProjectDialogController
 	{
 		event EventHandler ProjectCreationFailed;
-		event EventHandler ProjectCreationSucceed;
+		event EventHandler ProjectCreated;
 		IEnumerable<TemplateCategory> TemplateCategories { get; }
 		List<SolutionTemplate> RecentTemplates { get; }
 		TemplateCategory SelectedSecondLevelCategory { get; }
