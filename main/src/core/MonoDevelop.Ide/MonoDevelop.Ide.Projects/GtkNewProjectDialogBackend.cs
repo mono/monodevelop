@@ -84,21 +84,7 @@ namespace MonoDevelop.Ide.Projects
 			var projectTemplate = controller.SelectedTemplate;
 			var messageText = GettextCatalog.GetString (hasError ? "{0} creation fail" : "{0} successfully created", 
 			                                            projectTemplate.Name);
-			ShowAccessibityNotification (messageText);
-		}
-
-		void ShowAccessibityNotification (string message)
-		{
-			var accessibleObject = this.Accessible;
-			if (accessibleObject == null)
-				return;
-			var nsObject = AtkCocoaMacExtensions.GetNSAccessibilityElement (accessibleObject) as NSObject;
-			if (nsObject == null)
-				return;
-			var dictionary =
-				new NSDictionary (NSAccessibilityNotificationUserInfoKeys.AnnouncementKey, new NSString (message),
-								  NSAccessibilityNotificationUserInfoKeys.PriorityKey, NSAccessibilityPriorityLevel.High);
-			NSAccessibility.PostNotification (nsObject, NSAccessibilityNotifications.AnnouncementRequestedNotification, dictionary);
+			this.Accessible.MakeAccessibilityAnnouncement (messageText);
 		}
 
 		public void ShowDialog ()

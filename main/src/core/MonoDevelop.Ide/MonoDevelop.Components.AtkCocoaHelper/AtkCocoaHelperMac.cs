@@ -523,6 +523,19 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 			nsa.AccessibilityLinkedUIElements = newLinkedElements;
 		}
+
+		public static void MakeAccessibilityAnnouncement (this Atk.Object o,  string message)
+		{
+			if (o == null)
+				return;
+			var nsObject = AtkCocoaMacExtensions.GetNSAccessibilityElement (o) as NSObject;
+			if (nsObject == null)
+				return;
+			var dictionary =
+				new NSDictionary (NSAccessibilityNotificationUserInfoKeys.AnnouncementKey, new NSString (message),
+								  NSAccessibilityNotificationUserInfoKeys.PriorityKey, NSAccessibilityPriorityLevel.High);
+			NSAccessibility.PostNotification (nsObject, NSAccessibilityNotifications.AnnouncementRequestedNotification, dictionary);
+		}
 	}
 
 	public class AccessibilityElementProxy : IAccessibilityElementProxy
