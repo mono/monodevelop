@@ -528,7 +528,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 			if (o == null)
 				return;
-			var nsObject = AtkCocoaMacExtensions.GetNSAccessibilityElement (o) as NSObject;
+			var nsObject = GetNSAccessibilityElement (o) as NSObject;
 			if (nsObject == null)
 				return;
 			var dictionary =
