@@ -80,8 +80,8 @@ namespace MonoDevelop.Ide.Projects
 		void ShowProjectCreationAccessibityNotification (bool hasError)
 		{
 			var projectTemplate = controller.SelectedTemplate;
-			var messageText = GettextCatalog.GetString (hasError ? "{0} creation fail" : "{0} successfully created", 
-			                                            projectTemplate.Name);
+			var textTemplate= hasError ? "{0} creation fail" : "{0} successfully created";
+			var messageText = GettextCatalog.GetString (textTemplate, projectTemplate.Name);
 			this.Accessible.MakeAccessibilityAnnouncement (messageText);
 		}
 
@@ -261,6 +261,9 @@ namespace MonoDevelop.Ide.Projects
 
 			if (!controller.IsLastPage)
 				projectConfigurationWidget.Destroy ();
+
+			controller.ProjectCreationFailed -= ProjectCreationFailed;
+			controller.ProjectCreationSucceed -= ProjectCreationSucceed;
 
 			base.Destroy ();
 		}
