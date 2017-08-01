@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
@@ -34,21 +36,42 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class RestoreNuGetPackagesInNuGetIntegratedProject : IPackageAction
 	{
-		DotNetProject project;
+		IDotNetProject project;
 		BuildIntegratedNuGetProject nugetProject;
-		MonoDevelopBuildIntegratedRestorer packageRestorer;
+		IMonoDevelopSolutionManager solutionManager;
+		IMonoDevelopBuildIntegratedRestorer packageRestorer;
 		IPackageManagementEvents packageManagementEvents;
+		List<BuildIntegratedNuGetProject> referencingProjects;
 
 		public RestoreNuGetPackagesInNuGetIntegratedProject (
 			DotNetProject project,
 			BuildIntegratedNuGetProject nugetProject,
-			IMonoDevelopSolutionManager solutionManager)
+			IMonoDevelopSolutionManager solutionManager,
+			bool restoreTransitiveProjectReferences = false)
+			: this (
+				new DotNetProjectProxy (project),
+				nugetProject,
+				solutionManager,
+				new MonoDevelopBuildIntegratedRestorer (solutionManager),
+				restoreTransitiveProjectReferences)
+		{
+		}
+
+		public RestoreNuGetPackagesInNuGetIntegratedProject (
+			IDotNetProject project,
+			BuildIntegratedNuGetProject nugetProject,
+			IMonoDevelopSolutionManager solutionManager,
+			IMonoDevelopBuildIntegratedRestorer packageRestorer,
+			bool restoreTransitiveProjectReferences)
 		{
 			this.project = project;
 			this.nugetProject = nugetProject;
+			this.solutionManager = solutionManager;
+			this.packageRestorer = packageRestorer;
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
-			packageRestorer = new MonoDevelopBuildIntegratedRestorer (solutionManager);
+			if (restoreTransitiveProjectReferences)
+				IncludeTransitiveProjectReferences ();
 		}
 
 		public PackageActionType ActionType {
@@ -75,11 +98,43 @@ namespace MonoDevelop.PackageManagement
 
 		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
-			await packageRestorer.RestorePackages (nugetProject, cancellationToken);
+			if (referencingProjects == null)
+				await packageRestorer.RestorePackages (nugetProject, cancellationToken);
+			else
+				await RestoreMultiplePackages (cancellationToken);
 
 			await Runtime.RunInMainThread (() => project.RefreshReferenceStatus ());
 
 			packageManagementEvents.OnPackagesRestored ();
+		}
+
+		/// <summary>
+		/// Execute will restore packages for all projects that transitively reference the project
+		/// passed to the constructor of this restore action if this method is passed.
+		/// </summary>
+		void IncludeTransitiveProjectReferences ()
+		{
+			var projects = project.DotNetProject.GetReferencingProjects ();
+			if (!projects.Any ())
+				return;
+
+			referencingProjects = new List<BuildIntegratedNuGetProject> ();
+			foreach (var referencingProject in projects) {
+				var projectProxy = new DotNetProjectProxy (referencingProject);
+				var currentNuGetProject = solutionManager.GetNuGetProject (projectProxy) as BuildIntegratedNuGetProject;
+				if (currentNuGetProject != null) {
+					referencingProjects.Add (currentNuGetProject);
+				}
+			}
+		}
+
+		Task RestoreMultiplePackages (CancellationToken cancellationToken)
+		{
+			var projects = new List<BuildIntegratedNuGetProject> ();
+			projects.Add (nugetProject);
+			projects.AddRange (referencingProjects);
+
+			return packageRestorer.RestorePackages (projects, cancellationToken);
 		}
 	}
 }

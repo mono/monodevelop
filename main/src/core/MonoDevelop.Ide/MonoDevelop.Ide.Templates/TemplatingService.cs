@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.Templates
 			return templateCategorizer.GetCategorizedTemplates ();
 		}
 
-		internal SolutionTemplate GetTemplate (IEnumerable<TemplateCategory> categories, string templateId)
+		internal static SolutionTemplate GetTemplate (IEnumerable<TemplateCategory> categories, string templateId)
 		{
 			return GetTemplate (
 				categories,
@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Templates
 				category => true);
 		}
 
-		internal SolutionTemplate GetTemplate (
+		internal static SolutionTemplate GetTemplate (
 			IEnumerable<TemplateCategory> categories,
 			Func<SolutionTemplate, bool> isTemplateMatch,
 			Func<TemplateCategory, bool> isTopLevelCategoryMatch,
@@ -230,10 +230,27 @@ namespace MonoDevelop.Ide.Templates
 		public void AddTemplate (SolutionTemplate template)
 		{
 			try {
+				if (template.HasGroupId)
+					RemoveTemplateFromSameGroup (template);
 				var recentItem = CreateRecentItem (template);
 				recentTemplates.AddWithLimit (recentItem, templateGroup, ItemLimit);
 			} catch (Exception e) {
 				LoggingService.LogError ("Failed to add item to recent templates list.", e);
+			}
+		}
+
+		/// <summary>
+		/// Removes any recent templates from the same group if it has the same language.
+		/// Different languages for the same group can exist separately in the recent project
+		/// templates list.
+		/// </summary>
+		void RemoveTemplateFromSameGroup (SolutionTemplate template)
+		{
+			foreach (var groupTemplate in template.GetGroupedTemplates ()) {
+				if (groupTemplate.Language == template.Language) {
+					var recentItem = CreateRecentItem (groupTemplate);
+					recentTemplates.RemoveItem (recentItem);
+				}
 			}
 		}
 
@@ -256,7 +273,7 @@ namespace MonoDevelop.Ide.Templates
 			SolutionTemplate recentTemplate = null;
 
 			if (parts.Length > 1)
-				recentTemplate = IdeApp.Services.TemplatingService.GetTemplate (
+				recentTemplate = TemplatingService.GetTemplate (
 					categories,
 					(template) => template.Id == templateId,
 					(category) => parts.Length > 1 ? category.Id == parts[0] : true,
@@ -266,7 +283,7 @@ namespace MonoDevelop.Ide.Templates
 			// fallback to global template lookup if no category matched
 			// in this case the category is not guaranteed if a template is listed in more than one category
 			if (recentTemplate == null)
-				recentTemplate = IdeApp.Services.TemplatingService.GetTemplate (categories, templateId);
+				recentTemplate = TemplatingService.GetTemplate (categories, templateId);
 			return recentTemplate;
 		}
 

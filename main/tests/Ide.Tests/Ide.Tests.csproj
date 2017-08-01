@@ -39,6 +39,9 @@
   <ItemGroup>
     <Compile Include="ProjectTemplateTests.cs" />
     <Compile Include="FileTransferTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\NewProjectDialogTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\TestableNewProjectDialogController.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\DummyNewProjectDialogBackend.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

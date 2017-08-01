@@ -234,10 +234,6 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, CancellationToken token = default (CancellationToken))
 		{
-			//			if (!EnableCodeCompletion)
-			//				return null;
-			if (!IdeApp.Preferences.EnableAutoCodeCompletion)
-				return null;
 			int triggerWordLength = 0;
 			switch (triggerInfo.CompletionTriggerReason) {
 			case CompletionTriggerReason.CharTyped:
@@ -972,7 +968,11 @@ namespace MonoDevelop.CSharp.Completion
 						}
 
 						Lazy<string> displayText = new Lazy<string> (delegate {
+<<<<<<< HEAD
 							string name = showFullName ? builder.ConvertType(type).ToString() : type.Name;
+=======
+							string name = showFullName ? builder.ConvertType(type).ToString() : type.Name; 
+>>>>>>> master
 							if (isInAttributeContext && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
 								name = name.Substring(0, name.Length - "Attribute".Length);
 							}
@@ -980,7 +980,11 @@ namespace MonoDevelop.CSharp.Completion
 						});
 
 						var result = new TypeCompletionData (type, ext,
+<<<<<<< HEAD
 							displayText,
+=======
+							displayText, 
+>>>>>>> master
 							type.GetStockIcon (),
 							addConstructors);
 						return result;
@@ -989,6 +993,7 @@ namespace MonoDevelop.CSharp.Completion
 					ICompletionData ICompletionDataFactory.CreateMemberCompletionData(IType type, IEntity member)
 					{
 						Lazy<string> displayText = new Lazy<string> (delegate {
+<<<<<<< HEAD
 							string name = builder.ConvertType(type).ToString();
 							return name + "."+ member.Name;
 						});
@@ -1001,6 +1006,61 @@ namespace MonoDevelop.CSharp.Completion
 					}
 
 
+					ICompletionData ICompletionDataFactory.CreateLiteralCompletionData (string title, string description, string insertText)
+					{
+						return new GenericTooltipCompletionData ((list, smartWrap) => {
+							var sig = new SignatureMarkupCreator (list.Resolver, ext.FormattingPolicy.CreateOptions ());
+							sig.BreakLineAfterReturnType = smartWrap;
+							return sig.GetKeywordTooltip (title, null);
+						}, title, "md-keyword", description, insertText ?? title);
+=======
+							string name = builder.ConvertType(type).ToString(); 
+							return name + "."+ member.Name;
+						});
+
+						var result = new LazyGenericTooltipCompletionData (
+							(List, sw) => new TooltipInformation (), 
+							displayText, 
+							member.GetStockIcon ());
+						return result;
+>>>>>>> master
+					}
+
+					class XmlDocCompletionData : CompletionData, IListData
+					{
+						readonly CSharpCompletionTextEditorExtension ext;
+						readonly string title;
+
+<<<<<<< HEAD
+						#region IListData implementation
+
+						CSharpCompletionDataList list;
+						public CSharpCompletionDataList List {
+							get {
+								return list;
+							}
+							set {
+								list = value;
+							}
+						}
+
+						#endregion
+
+						public XmlDocCompletionData (CSharpCompletionTextEditorExtension ext, string title, string description, string insertText) : base (title, "md-keyword", description, insertText ?? title)
+						{
+							this.ext = ext;
+							this.title = title;
+						}
+
+						public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+						{
+							var sig = new SignatureMarkupCreator (List.Resolver, ext.FormattingPolicy.CreateOptions ());
+							sig.BreakLineAfterReturnType = smartWrap;
+							return sig.GetKeywordTooltip (title, null);
+						}
+
+
+=======
 					ICompletionData ICompletionDataFactory.CreateLiteralCompletionData (string title, string description, string insertText)
 					{
 						return new GenericTooltipCompletionData ((list, smartWrap) => {
@@ -1041,8 +1101,7 @@ namespace MonoDevelop.CSharp.Completion
 							sig.BreakLineAfterReturnType = smartWrap;
 							return sig.GetKeywordTooltip (title, null);
 						}
-
-
+>>>>>>> master
 
 						public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 						{
@@ -1059,6 +1118,7 @@ namespace MonoDevelop.CSharp.Completion
 						return new XmlDocCompletionData (ext, title, description, insertText);
 					}
 
+<<<<<<< HEAD
 					ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (INamespace name)
 					{
 						return new CompletionData (name.Name, AstStockIcons.Namespace, "", CSharpAmbience.FilterName (name.Name));
@@ -1133,6 +1193,113 @@ namespace MonoDevelop.CSharp.Completion
 						{
 							return "- <span foreground=\"darkgray\" size='small'>" + description + "</span>";
 						}
+=======
+						public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
+						{
+							var currentWord = GetCurrentWord (window);
+							var text = CompletionText;
+							if (descriptor.KeyChar != '>')
+								text += ">";
+							window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, text);
+						}
+					}
+
+					ICompletionData ICompletionDataFactory.CreateXmlDocCompletionData (string title, string description, string insertText)
+					{
+						return new XmlDocCompletionData (ext, title, description, insertText);
+					}
+
+					ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (INamespace name)
+					{
+						return new CompletionData (name.Name, AstStockIcons.Namespace, "", CSharpAmbience.FilterName (name.Name));
+					}
+
+					ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IVariable variable)
+					{
+						return new VariableCompletionData (ext, variable);
+					}
+
+					ICompletionData ICompletionDataFactory.CreateVariableCompletionData (ITypeParameter parameter)
+					{
+						return new CompletionData (parameter.Name, parameter.GetStockIcon ());
+					}
+
+					ICompletionData ICompletionDataFactory.CreateEventCreationCompletionData (string varName, IType delegateType, IEvent evt, string parameterDefinition, IUnresolvedMember currentMember, IUnresolvedTypeDefinition currentType)
+					{
+						return new EventCreationCompletionData (ext, varName, delegateType, evt, parameterDefinition, currentMember, currentType);
+					}
+
+					ICompletionData ICompletionDataFactory.CreateNewOverrideCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IMember m)
+					{
+						return new NewOverrideCompletionData (ext, declarationBegin, type, m);
+					}
+					ICompletionData ICompletionDataFactory.CreateNewPartialCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
+					{
+						var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.Editor.CaretLocation);
+						return new NewOverrideCompletionData (ext, declarationBegin, type, m.CreateResolved (ctx));
+					}
+					IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData ()
+					{
+						var result = new CompletionDataList ();
+						if (EnableAutoCodeCompletion || IncludeCodeSnippetsInCompletionList.Value) {
+							CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", result);
+						}
+						return result;
+					}
+
+					IEnumerable<ICompletionData> ICompletionDataFactory.CreatePreProcessorDefinesCompletionData ()
+					{
+						var project = ext.DocumentContext.Project;
+						if (project == null)
+							yield break;
+						var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+						if (configuration == null)
+							yield break;
+						foreach (var define in configuration.GetDefineSymbols ())
+							yield return new CompletionData (define, "md-keyword");
+
+					}
+>>>>>>> master
+
+					class FormatItemCompletionData : CompletionData
+					{
+						string format;
+						string description;
+						object example;
+
+						public FormatItemCompletionData (string format, string description, object example)
+						{
+							this.format = format;
+							this.description = description;
+							this.example = example;
+						}
+
+<<<<<<< HEAD
+						string rightSideDescription = null;
+						public override string GetRightSideDescription (bool isSelected)
+						{
+							if (rightSideDescription == null) {
+								try {
+									rightSideDescription = "<span size='small'>" + string.Format ("{0:" +format +"}", example) +"</span>";
+								} catch (Exception e) {
+									rightSideDescription = "";
+									LoggingService.LogError ("Format error.", e);
+								}
+							}
+							return rightSideDescription;
+						}
+
+=======
+
+						public override string DisplayText {
+							get {
+								return format;
+							}
+						}
+						public override string GetDisplayDescription (bool isSelected)
+						{
+							return "- <span foreground=\"darkgray\" size='small'>" + description + "</span>";
+						}
 
 
 						string rightSideDescription = null;
@@ -1149,6 +1316,7 @@ namespace MonoDevelop.CSharp.Completion
 							return rightSideDescription;
 						}
 
+>>>>>>> master
 						public override string CompletionText {
 							get {
 								return format;

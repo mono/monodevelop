@@ -27,6 +27,7 @@
 using System;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -64,6 +65,57 @@ namespace MonoDevelop.DotNetCore
 			sdkPaths.FindSdkPaths (sdk);
 
 			return sdkPaths;
+		}
+
+		/// <summary>
+		/// Checks that the target framework (e.g. .NETCoreApp1.1 or .NETStandard2.0) is supported
+		/// by the installed SDKs. Takes into account Mono having .NET Core v1 SDKs installed.
+		/// </summary>
+		internal static bool IsSupported (TargetFramework framework)
+		{
+			return IsSupported (framework.Id, Versions, MSBuildSdks.Installed);
+		}
+
+		/// <summary>
+		/// Used by unit tests.
+		/// </summary>
+		internal static bool IsSupported (
+			TargetFrameworkMoniker projectFramework,
+			DotNetCoreVersion[] versions,
+			bool msbuildSdksInstalled)
+		{
+			if (!projectFramework.IsNetStandardOrNetCoreApp ()) {
+				// Allow other frameworks to be supported such as .NET Framework.
+				return true;
+			}
+
+			var projectFrameworkVersion = Version.Parse (projectFramework.Version);
+
+			if (versions.Any (sdkVersion => IsSupported (projectFrameworkVersion, sdkVersion)))
+				return true;
+
+			// .NET Core 1.x is supported by the MSBuild .NET Core SDKs if they are installed with Mono.
+			if (projectFrameworkVersion.Major == 1)
+				return msbuildSdksInstalled;
+
+			return false;
+		}
+
+		/// <summary>
+		/// Project framework version is considered supported if the major version of the
+		/// .NET Core SDK is greater or equal to the major version of the project framework.
+		/// The fact that a .NET Core SDK is a preview version is ignored in this check.
+		///
+		/// .NET Core SDK 1.0.4 supports .NET Core 1.0 and 1.1
+		/// .NET Core SDK 1.0.4 supports .NET Standard 1.0 to 1.6
+		/// .NET Core SDK 2.0 supports 1.0, 1.1 and 2.0
+		/// .NET Core SDK 2.0 supports .NET Standard 1.0 to 1.6 and 2.0
+		/// .NET Core SDK 2.1 supports 1.0, 1.1 and 2.0
+		/// .NET Core SDK 2.1 supports .NET Standard 1.0 to 1.6 and 2.0
+		/// </summary>
+		static bool IsSupported (Version projectFrameworkVersion, DotNetCoreVersion sdkVersion)
+		{
+			return sdkVersion.Major >= projectFrameworkVersion.Major;
 		}
 
 		/// <summary>

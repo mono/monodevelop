@@ -32,12 +32,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using NuGet.Frameworks;
-using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class MonoDevelopMSBuildNuGetProjectSystem : IMSBuildNuGetProjectSystem, IHasDotNetProject
+	internal class MonoDevelopMSBuildNuGetProjectSystem : IMSBuildProjectSystem
 	{
 		IDotNetProject project;
 		NuGetFramework targetFramework;
@@ -47,6 +46,7 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementFileService fileService;
 		Action<Action> guiSyncDispatcher;
 		Func<Func<Task>,Task> guiSyncDispatcherFunc;
+		Func<Func<Task<bool>>, Task<bool>> guiSyncDispatcherFuncReturnBool;
 
 		public MonoDevelopMSBuildNuGetProjectSystem (DotNetProject project, INuGetProjectContext context)
 			: this (
@@ -55,7 +55,8 @@ namespace MonoDevelop.PackageManagement
 				new PackageManagementFileService (),
 				PackageManagementServices.PackageManagementEvents,
 				DefaultGuiSyncDispatcher,
-				GuiSyncDispatchWithException)
+				GuiSyncDispatchWithException,
+				GuiSyncDispatchReturnBoolWithException)
 		{
 		}
 
@@ -65,7 +66,8 @@ namespace MonoDevelop.PackageManagement
 			IPackageManagementFileService fileService,
 			IPackageManagementEvents packageManagementEvents,
 			Action<Action> guiSyncDispatcher,
-			Func<Func<Task>, Task> guiSyncDispatcherFunc)
+			Func<Func<Task>, Task> guiSyncDispatcherFunc,
+			Func<Func<Task<bool>>, Task<bool>> guiSyncDispatcherFuncReturnBool)
 		{
 			this.project = project;
 			NuGetProjectContext = context;
@@ -73,9 +75,10 @@ namespace MonoDevelop.PackageManagement
 			this.packageManagementEvents = packageManagementEvents;
 			this.guiSyncDispatcher = guiSyncDispatcher;
 			this.guiSyncDispatcherFunc = guiSyncDispatcherFunc;
+			this.guiSyncDispatcherFuncReturnBool = guiSyncDispatcherFuncReturnBool;
 		}
 
-		public INuGetProjectContext NuGetProjectContext { get; private set; }
+		public INuGetProjectContext NuGetProjectContext { get; set; }
 
 		public string ProjectFullPath {
 			get {
@@ -197,9 +200,9 @@ namespace MonoDevelop.PackageManagement
 			DebugLogFormat("Added file '{0}' to project '{1}'.", fileName, projectName);
 		}
 
-		public void AddFrameworkReference (string name, string packageId)
+		public Task AddFrameworkReferenceAsync (string name, string packageId)
 		{
-			GuiSyncDispatch (async () => {
+			return GuiSyncDispatchAsync (async () => {
 				ProjectReference assemblyReference = CreateGacReference (name);
 				await AddReferenceToProject (assemblyReference);
 			});
@@ -237,9 +240,9 @@ namespace MonoDevelop.PackageManagement
 			return MSBuildProjectService.ToMSBuildPath (project.BaseDirectory, path);
 		}
 
-		public void AddReference (string referencePath)
+		public Task AddReferenceAsync (string referencePath)
 		{
-			GuiSyncDispatch (async () => {
+			return GuiSyncDispatchAsync (async () => {
 				ProjectReference assemblyReference = CreateReference (referencePath);
 				packageManagementEvents.OnReferenceAdding (assemblyReference);
 				await AddReferenceToProject (assemblyReference);
@@ -279,8 +282,9 @@ namespace MonoDevelop.PackageManagement
 			NuGetProjectContext.Log (MessageLevel.Debug, format, args);
 		}
 
-		public void BeginProcessing ()
+		public Task BeginProcessingAsync ()
 		{
+			return Task.FromResult (true);
 		}
 
 		// TODO: Support recursive.
@@ -299,20 +303,9 @@ namespace MonoDevelop.PackageManagement
 			DebugLogFormat ("Removed folder '{0}'.", folder);
 		}
 
-		public void EndProcessing ()
+		public Task EndProcessingAsync ()
 		{
-		}
-
-		public Task ExecuteScriptAsync (PackageIdentity identity, string packageInstallPath, string scriptRelativePath, bool throwOnFailure)
-		{
-			string message = GettextCatalog.GetString (
-				"WARNING: {0} Package contains PowerShell script '{1}' which will not be run.",
-				identity.Id,
-				scriptRelativePath);
-
-			NuGetProjectContext.Log (MessageLevel.Info, message);
-
-			return Task.FromResult (0);
+			return Task.FromResult (true);
 		}
 
 		public bool FileExistsInProject (string path)
@@ -395,14 +388,14 @@ namespace MonoDevelop.PackageManagement
 			return IsMatchIgnoringCase (fileName1, fileName2);
 		}
 
-		public bool ReferenceExists (string name)
+		public Task<bool> ReferenceExistsAsync (string name)
 		{
-			return GuiSyncDispatch (() => {
+			return GuiSyncDispatchAsync (() => {
 				ProjectReference referenceProjectItem = FindReference (name);
 				if (referenceProjectItem != null) {
-					return true;
+					return Task.FromResult (true);
 				}
-				return false;
+				return Task.FromResult (false);
 			});
 		}
 
@@ -512,9 +505,9 @@ namespace MonoDevelop.PackageManagement
 			project.RemoveImport (relativeTargetPath);
 		}
 
-		public void RemoveReference (string name)
+		public Task RemoveReferenceAsync (string name)
 		{
-			GuiSyncDispatch (async () => {
+			return GuiSyncDispatchAsync (async () => {
 				ProjectReference referenceProjectItem = FindReference (name);
 				if (referenceProjectItem != null) {
 					packageManagementEvents.OnReferenceRemoving (referenceProjectItem);
@@ -540,11 +533,6 @@ namespace MonoDevelop.PackageManagement
 			return path;
 		}
 
-		public void SetNuGetProjectContext (INuGetProjectContext nuGetProjectContext)
-		{
-			NuGetProjectContext = nuGetProjectContext;
-		}
-
 		T GuiSyncDispatch<T> (Func<T> action)
 		{
 			T result = default(T);
@@ -564,6 +552,13 @@ namespace MonoDevelop.PackageManagement
 			return Runtime.RunInMainThread (func);
 		}
 
+		static Task<T> GuiSyncDispatchReturnBoolWithException<T> (Func<Task<T>> func)
+		{
+			if (Runtime.IsMainThread)
+				throw new InvalidOperationException ("GuiSyncDispatch called from GUI thread");
+			return Runtime.RunInMainThread (func);
+		}
+
 		public static void DefaultGuiSyncDispatcher (Action action)
 		{
 			Runtime.RunInMainThread (action).Wait ();
@@ -572,6 +567,16 @@ namespace MonoDevelop.PackageManagement
 		void GuiSyncDispatch (Func<Task> func)
 		{
 			guiSyncDispatcherFunc (func).Wait ();
+		}
+
+		Task GuiSyncDispatchAsync (Func<Task> func)
+		{
+			return guiSyncDispatcherFunc (func);
+		}
+
+		Task<bool> GuiSyncDispatchAsync (Func<Task<bool>> func)
+		{
+			return guiSyncDispatcherFuncReturnBool (func);
 		}
 
 		public dynamic VSProject4 { get; private set; }

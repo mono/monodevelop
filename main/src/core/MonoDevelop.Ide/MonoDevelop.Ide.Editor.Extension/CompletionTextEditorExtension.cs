@@ -179,8 +179,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return res;
 
 			// don't complete on block selection
-			if (/*!EnableCodeCompletion ||*/ Editor.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block)
+			if (!IdeApp.Preferences.EnableAutoCodeCompletion || Editor.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block)
 				return res;
+
 			// Handle code completion
 			if (descriptor.KeyChar != '\0' && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
 				completionTokenSrc.Cancel ();

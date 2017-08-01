@@ -34,9 +34,15 @@ namespace MonoDevelop.DotNetCore
 	class DotNetCoreNotInstalledDialog : IDisposable
 	{
 		public static readonly string DotNetCoreDownloadUrl = "https://aka.ms/vs/mac/install-netcore";
+		public static readonly string DotNetCore20DownloadUrl = "https://aka.ms/vs/mac/install-netcore2";
+
+		static readonly string defaultMessage = GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build and run .NET Core projects.");
+		static readonly string unsupportedMessage = GettextCatalog.GetString ("The .NET Core SDK installed is not supported. Please install a more recent version.");
+		static readonly string dotNetCore20Message = GettextCatalog.GetString (".NET Core 2.0 SDK is not installed. This is required to build and run .NET Core 2.0 projects.");
 
 		GenericMessage message;
 		AlertButton downloadButton;
+		string downloadUrl = DotNetCoreDownloadUrl;
 
 		public DotNetCoreNotInstalledDialog ()
 		{
@@ -46,7 +52,7 @@ namespace MonoDevelop.DotNetCore
 		void Build ()
 		{
 			message = new GenericMessage {
-				Text = GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build and run .NET Core projects."),
+				Text = defaultMessage,
 				DefaultButton = 1,
 				Icon = Stock.Information
 			};
@@ -61,7 +67,7 @@ namespace MonoDevelop.DotNetCore
 		void AlertButtonClicked (object sender, AlertButtonEventArgs e)
 		{
 			if (e.Button == downloadButton)
-				DesktopService.ShowUrl (DotNetCoreDownloadUrl);
+				DesktopService.ShowUrl (downloadUrl);
 		}
 
 		public void Dispose ()
@@ -71,6 +77,13 @@ namespace MonoDevelop.DotNetCore
 
 		public void Show ()
 		{
+			if (IsUnsupportedVersion)
+				Message = unsupportedMessage;
+			else if (RequiresDotNetCore20) {
+				Message = dotNetCore20Message;
+				downloadUrl = DotNetCore20DownloadUrl;
+			}
+
 			MessageService.GenericAlert (message);
 		}
 
@@ -78,5 +91,8 @@ namespace MonoDevelop.DotNetCore
 			get { return message.Text; }
 			set { message.Text = value; }
 		}
+
+		public bool IsUnsupportedVersion { get; set; }
+		public bool RequiresDotNetCore20 { get; set; }
 	}
 }

@@ -1,10 +1,10 @@
 ﻿//
-// TestableDotNetCoreNuGetProject.cs
+// DummyNewProjectDialogBackend.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +24,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading.Tasks;
-using MonoDevelop.Projects;
+using System;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.Ide.Projects
 {
-	class TestableDotNetCoreNuGetProject : DotNetCoreNuGetProject
+	class DummyNewProjectDialogBackend : INewProjectDialogBackend
 	{
-		public TestableDotNetCoreNuGetProject (DotNetProject project)
-			: base (project, new [] { "netcoreapp1.0" })
+		public bool CanMoveToNextPage { get; set; }
+
+		public void CloseDialog ()
 		{
-			BuildIntegratedRestorer = new FakeMonoDevelopBuildIntegratedRestorer ();
 		}
 
-		public bool IsSaved { get; set; }
-
-		public override Task SaveProject ()
+		public void RegisterController (INewProjectDialogController controller)
 		{
-			IsSaved = true;
-			return Task.FromResult (0);
 		}
 
-		public FakeMonoDevelopBuildIntegratedRestorer BuildIntegratedRestorer;
-		public Solution SolutionUsedToCreateBuildIntegratedRestorer;
+		public Action OnShowDialogCalled = () => { };
 
-		protected override IMonoDevelopBuildIntegratedRestorer CreateBuildIntegratedRestorer (Solution solution)
+		public void ShowDialog ()
 		{
-			SolutionUsedToCreateBuildIntegratedRestorer = solution;
-			return BuildIntegratedRestorer;
+			OnShowDialogCalled ();
 		}
 	}
 }

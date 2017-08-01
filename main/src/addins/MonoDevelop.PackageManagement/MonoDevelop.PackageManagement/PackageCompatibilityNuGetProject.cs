@@ -45,7 +45,7 @@ namespace MonoDevelop.PackageManagement
 
 		public NuGetFramework TargetFramework {
 			get {
-				return nugetProject.MSBuildNuGetProjectSystem.TargetFramework;
+				return nugetProject.GetMetadata<NuGetFramework> (NuGetProjectMetadataKeys.TargetFramework);
 			}
 		}
 

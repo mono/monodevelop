@@ -54,7 +54,7 @@ type ``Template tests``() =
 
     let templatesDir = FilePath(".").FullPath.ToString() / "buildtemplates"
 
-    let test (tt:string) =
+    let testWithParameters (tt:string, parameters:string) =
         if not MonoDevelop.Core.Platform.IsMac then
             Assert.Ignore ()
         //if tt = "FSharpPortableLibrary" then
@@ -80,6 +80,10 @@ type ``Template tests``() =
             cinfo.Parameters.["AndroidMinSdkVersionAttribute"] <- "android:minSdkVersion=\"10\""
             cinfo.Parameters.["AndroidThemeAttribute"] <- ""
             cinfo.Parameters.["TargetFrameworkVersion"] <- "MonoAndroid,Version=v7.0"
+
+            for templateParameter in TemplateParameter.CreateParameters (parameters) do
+                cinfo.Parameters.[templateParameter.Name] <- templateParameter.Value
+
             use sln = projectTemplate.CreateWorkspaceItem (cinfo) :?> Solution
 
             let createTemplate (template:SolutionTemplate) =
@@ -99,9 +103,15 @@ type ``Template tests``() =
 
             let projects = sln.Items |> Seq.filter(fun i -> i :? DotNetProject) |> Seq.cast<DotNetProject> |> List.ofSeq
 
-
-            do! NuGetPackageInstaller.InstallPackages (sln, projectTemplate.PackageReferencesForCreatedProjects)
+            // Save solution before installing NuGet packages to prevent any Imports from being added
+            // in the wrong place. Android projects now use the Xamarin.Build.Download NuGet package which
+            // will add its own .props Import at the top of the project file. Saving the project the first time
+            // after installing this NuGet package results in the Xamarin.Android.FSharp.targets Import being
+            // added at the top of the project which causes a compile error about the OutputType not being defined.
+            // This is because the Import is grouped with the Xamarin.Build.Download .props Import which is inserted
+            // at the top of the project file.
             do! sln.SaveAsync(monitor)
+            do! NuGetPackageInstaller.InstallPackages (sln, projectTemplate.PackageReferencesForCreatedProjects)
 
             let getErrorsForProject (projects: DotNetProject list) =
                 asyncSeq {
@@ -131,6 +141,9 @@ type ``Template tests``() =
             | [] -> Assert.Pass()
             | errors -> Assert.Fail (sprintf "%A" errors)
         }
+
+    let test (tt:string) = testWithParameters (tt, "")
+
     [<TestFixtureSetUp>]
     member x.Setup() =
         let config = """
@@ -173,3 +186,6 @@ type ``Template tests``() =
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpGtkProject``()= test "FSharpGtkProject"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``MonoDevelop FSharp LibraryProject``()= test "MonoDevelop.FSharp.LibraryProject"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpNUnitLibraryProject``()= test "FSharpNUnitLibraryProject"
+    [<Test;AsyncStateMachine(typeof<Task>)>]
+    member x.``Xamarin Forms FSharp FormsApp Shared``() =
+        testWithParameters ("Xamarin.Forms.FSharp.FormsApp", "CreateSharedAssetsProject=True;CreatePortableDotNetProject=False")
