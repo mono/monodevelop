@@ -37,6 +37,8 @@ using MonoDevelop.Ide.Gui;
 using AppKit;
 using Foundation;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -73,14 +75,16 @@ namespace MonoDevelop.Ide.Projects
 			actionHandler.PerformShowMenu += PerformShowMenu;
 		}
 
-		void NextButtonClicked (object sender, EventArgs e)
+		void ProjectCreationFailed (object obj, EventArgs args) => ShowProjectCreationAccessibityNotification (true);
+		void ProjectCreationSucceed (object obj, EventArgs args) => ShowProjectCreationAccessibityNotification (false);
+		async void NextButtonClicked (object sender, EventArgs e) => await MoveToNextPage ();
+
+		void ShowProjectCreationAccessibityNotification (bool hasError)
 		{
-			bool isLastPage = controller.IsLastPage;
-			MoveToNextPage ();
-			if (isLastPage) {
-				var message = GenerateProjectCreatedMessage ();
-				ShowAccessibityNotification (message);
-			}
+			var projectTemplate = controller.SelectedTemplate;
+			var messageText = GettextCatalog.GetString (hasError ? "{0} creation fail" : "{0} successfully created", 
+			                                            projectTemplate.Name);
+			ShowAccessibityNotification (messageText);
 		}
 
 		void ShowAccessibityNotification (string message)
@@ -95,13 +99,6 @@ namespace MonoDevelop.Ide.Projects
 				new NSDictionary (NSAccessibilityNotificationUserInfoKeys.AnnouncementKey, new NSString (message),
 								  NSAccessibilityNotificationUserInfoKeys.PriorityKey, NSAccessibilityPriorityLevel.High);
 			NSAccessibility.PostNotification (nsObject, NSAccessibilityNotifications.AnnouncementRequestedNotification, dictionary);
-		}
-
-		string GenerateProjectCreatedMessage ()
-		{
-			var message = GettextCatalog.GetString ("{0} successfully created");
-			var template = controller.SelectedTemplate;
-			return String.Format (message, template.Name);
 		}
 
 		public void ShowDialog ()
@@ -122,16 +119,17 @@ namespace MonoDevelop.Ide.Projects
 		public void RegisterController (INewProjectDialogController controller)
 		{
 			this.controller = controller;
+			controller.ProjectCreationFailed += ProjectCreationFailed;
+			controller.ProjectCreationSucceed += ProjectCreationSucceed;
 			languageCellRenderer.SelectedLanguage = controller.SelectedLanguage;
 			topBannerLabel.Text = controller.BannerText;
-
 			LoadTemplates ();
 			SelectTemplateDefinedbyController ();
 			if (CanMoveToNextPage && !controller.ShowTemplateSelection)
 				MoveToNextPage ();
 		}
 
-		static void SetTemplateCategoryCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
+		void SetTemplateCategoryCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
 		{
 			var categoryTextRenderer = (GtkTemplateCategoryCellRenderer)renderer;
 			categoryTextRenderer.Category = (TemplateCategory)model.GetValue (it, TemplateCategoryColumn);
@@ -541,12 +539,14 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		async void MoveToNextPage ()
+		async Task MoveToNextPage ()
 		{
 			if (controller.IsLastPage) {
 				try {
 					CanMoveToNextPage = false;
 					await controller.Create ();
+				} catch {
+					throw;
 				} finally {
 					CanMoveToNextPage = true;
 				}
