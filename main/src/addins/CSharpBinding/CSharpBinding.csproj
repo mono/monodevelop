@@ -398,6 +398,7 @@
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\EnumMemberCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\EventSenderCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\ProtocolMemberCompletionProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
