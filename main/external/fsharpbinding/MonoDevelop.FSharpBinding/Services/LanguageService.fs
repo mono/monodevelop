@@ -340,6 +340,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         let getReferencedProjects (project:DotNetProject) =
             project.GetReferencedAssemblyProjects config
             |> Seq.filter (fun p -> p <> project && p.SupportedLanguages |> Array.contains "F#")
+
         let rec getOptions referencedProject =
             let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject referencedAssemblies
             match projectOptions with
@@ -352,7 +353,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                                      | Some outFile, Some opts  -> (outFile, opts) :: acc
                                      | _ -> acc) ([])
                                     
-                (Some (referencedProject.GetOutputFileName(config).ChangeExtension(".ref").ToString()), Some ({ projOptions with ReferencedProjects = referencedProjectOptions |> Array.ofList } ))
+                (Some (referencedProject.GetOutputFileName(config).ToString()), Some ({ projOptions with ReferencedProjects = referencedProjectOptions |> Array.ofList } ))
             | None -> None, None
         let _file, projectOptions = getOptions project
         projectOptions
