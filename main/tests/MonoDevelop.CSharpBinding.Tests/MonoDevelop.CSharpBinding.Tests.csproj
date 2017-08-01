@@ -111,6 +111,7 @@
     <Compile Include="Features\Completion\RegexCompletionProviderTests.cs" />
     <Compile Include="Features\Completion\FormatItemCompletionProviderTests.cs" />
     <Compile Include="Features\Completion\AbstractCSharpCompletionProviderTests.cs" />
+    <Compile Include="Features\Completion\ProtocolMemberCompletionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">

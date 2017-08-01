@@ -177,7 +177,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			if (typeString != null)
 				pDict = pDict.Add ("CastTypeString", typeString);
 			pDict = pDict.Add ("NodeString", node.ToString ());
-			
+
 			while (type != null && type.SpecialType != SpecialType.System_Object && type != stopAt) {
 				foreach (var member in type.GetMembers ()) {
 					cancellationToken.ThrowIfCancellationRequested ();
