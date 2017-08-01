@@ -12,7 +12,7 @@
     <AssemblyName>MonoDevelop.DotNetCore</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <Templates1xVersion>1.0.0-beta2-20170430-208</Templates1xVersion>
-    <TemplatesVersion>1.0.0-beta2-20170620-266</TemplatesVersion>
+    <TemplatesVersion>1.0.0-beta2-20170727-301</TemplatesVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
