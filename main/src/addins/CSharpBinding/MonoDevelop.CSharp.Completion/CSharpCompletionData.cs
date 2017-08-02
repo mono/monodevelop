@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Completion
 			return false;
 		}
 
-		protected override void Format (TextEditor editor, Ide.Gui.Document document, SnapshotPoint start, SnapshotPoint end)
+		protected override void Format (TextEditor editor, Ide.Gui.Document document, int start, int end)
 		{
 			OnTheFlyFormatter.Format (editor, document, start, end);
 		}

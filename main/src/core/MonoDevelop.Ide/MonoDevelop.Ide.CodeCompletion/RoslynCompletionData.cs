@@ -217,19 +217,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			var triggerSnapshotSpan = new SnapshotSpan (triggerSnapshot, new Span (textChange.Span.Start, textChange.Span.Length));
 			var mappedSpan = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
+			using (var undo = editor.OpenUndoGroup ()) {
+				editor.ReplaceText (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
 
-			editor.ReplaceText (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
+				if (completionChange.NewPosition.HasValue)
+					editor.CaretOffset = completionChange.NewPosition.Value;
 
-			if (completionChange.NewPosition.HasValue)
-				editor.CaretOffset = completionChange.NewPosition.Value;
-
-			if (CompletionItem.Rules.FormatOnCommit) {
-				var endOffset = mappedSpan.Start + completionChange.TextChange.NewText.Length;
-				Format (editor, document, mappedSpan.Start, endOffset);
+				if (CompletionItem.Rules.FormatOnCommit) {
+					var endOffset = mappedSpan.Start.Position + completionChange.TextChange.NewText.Length;
+					Format (editor, document, mappedSpan.Start, endOffset);
+				}
 			}
 		}
 
-		protected abstract void Format (TextEditor editor, Gui.Document document, SnapshotPoint start, SnapshotPoint end);
+		protected abstract void Format (TextEditor editor, Gui.Document document, int start, int end);
 
 		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{
