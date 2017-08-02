@@ -37,6 +37,7 @@ using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Core;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
@@ -143,22 +144,11 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				var lastRegion = result.BodyRegions.LastOrDefault ();
 				var region = lastRegion == null ? null
 					: new CodeGeneratorBodyRegion (lastRegion.StartOffset - trimStart, lastRegion.EndOffset - trimStart);
-
-				int targetCaretPosition;
-				int selectionEndPosition = -1;
-				if (region != null && region.IsValid) {
-					targetCaretPosition = declarationBegin + region.StartOffset;
-					if (region.Length > 0) {
-						selectionEndPosition = declarationBegin + region.EndOffset;
-					}
-				} else {
-					targetCaretPosition = declarationBegin + sb.Length;
-				}
-
-				pDict = pDict.Add ("NodeString", sb.ToString ());
-				pDict = pDict.Add ("TargetCaretPosition", targetCaretPosition.ToString ());
-
-				var completionData = CompletionItem.Create (m.Name, properties: pDict, rules: ProtocolCompletionRules);
+				
+				pDict = pDict.Add ("InsertionText", sb.ToString ());
+				pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + GettextCatalog.GetString("Implement protocol member") + "</span>");
+				var tags = ImmutableArray<string>.Empty.Add ("NewMethod");
+				var completionData = CompletionItem.Create (m.Name, properties: pDict, rules: ProtocolCompletionRules, tags: tags);
 				context.AddItem (completionData);
 			}
 		}
@@ -167,8 +157,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 		protected override Task<TextChange?> GetTextChangeAsync (CompletionItem selectedItem, char? ch, CancellationToken cancellationToken)
 		{
-			var node = selectedItem.Properties ["NodeString"];
-			return Task.FromResult<TextChange?> (new TextChange (new TextSpan (selectedItem.Span.Start - node.Length - 1, selectedItem.Span.Length + node.Length + 1), node));
+			var text = Microsoft.CodeAnalysis.Completion.Providers.SymbolCompletionItem.GetInsertionText (selectedItem);
+			return Task.FromResult<TextChange?> (new TextChange (new TextSpan (selectedItem.Span.Start, selectedItem.Span.Length), text));
 		}
 
 		static bool TryDetermineOverridableProtocolMembers (SemanticModel semanticModel, SyntaxToken startToken, Accessibility seenAccessibility, out ISet<ISymbol> overridableMembers, CancellationToken cancellationToken)
