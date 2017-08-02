@@ -182,6 +182,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			}
 		}
 
+		readonly static ImmutableArray<string> tags = ImmutableArray<string>.Empty.Add ("Snippet");
+
 		internal static CompletionItem CreateCompletionItem (string completionText, string description, object example)
 		{
 			var pDict = ImmutableDictionary<string, string>.Empty;
@@ -194,7 +196,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					LoggingService.LogError ("Format error.", e);
 				}
 			}
-			return CompletionItem.Create (completionText, properties: pDict);
+			return CompletionItem.Create (completionText, properties: pDict, tags: tags);
 		}
 
 		static readonly DateTime curDate = DateTime.Now;
