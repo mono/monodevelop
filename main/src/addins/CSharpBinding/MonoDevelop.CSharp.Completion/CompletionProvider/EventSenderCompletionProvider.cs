@@ -39,6 +39,8 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Threading;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis.Completion.Providers;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Completion.Provider
 {
@@ -96,6 +98,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			var pDict = ImmutableDictionary<string, string>.Empty;
 			if (typeString != null)
 				pDict = pDict.Add ("CastTypeString", typeString);
+			pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + GettextCatalog.GetString ("Cast to '{0}'", type.Name) + "</span>");
 			pDict = pDict.Add ("NodeString", node.ToString ());
 
 			while (type.SpecialType != SpecialType.System_Object) {
@@ -104,7 +107,15 @@ namespace MonoDevelop.CSharp.Completion.Provider
 						continue;
 					if (member.IsOrdinaryMethod () || member.Kind == SymbolKind.Field || member.Kind == SymbolKind.Property) {
 						if (member.IsAccessibleWithin (within)) {
-							var completionData = CompletionItem.Create (member.Name, properties: pDict);
+
+							var completionData = SymbolCompletionItem.CreateWithSymbolId (
+								member.Name,
+								new [] { member },
+								CompletionItemRules.Default,
+								context.Position,
+								properties: pDict
+							);
+
 							if (addedSymbols.Contains (completionData.DisplayText))
 								continue;
 							addedSymbols.Add (completionData.DisplayText);
@@ -135,6 +146,11 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			if (symbolInfo.Symbol == null || symbolInfo.Symbol is ITypeSymbol)
 				return null;
 			return model.GetTypeInfo (left.Expression).Type;
+		}
+
+		protected override async Task<CompletionDescription> GetDescriptionWorkerAsync (Document document, CompletionItem item, CancellationToken cancellationToken)
+		{
+			return await SymbolCompletionItem.GetDescriptionAsync (item, document, cancellationToken).ConfigureAwait (false);
 		}
 	}
 }

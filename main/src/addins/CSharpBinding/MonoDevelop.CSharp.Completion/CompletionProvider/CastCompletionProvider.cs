@@ -41,6 +41,7 @@ using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis.Completion.Providers;
 
 namespace MonoDevelop.CSharp.Completion.Provider
 {
@@ -176,6 +177,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			var pDict = ImmutableDictionary<string, string>.Empty;
 			if (typeString != null)
 				pDict = pDict.Add ("CastTypeString", typeString);
+			pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + GettextCatalog.GetString ("Cast to '{0}'", type.Name) + "</span>");
+
 			pDict = pDict.Add ("NodeString", node.ToString ());
 
 			while (type != null && type.SpecialType != SpecialType.System_Object && type != stopAt) {
@@ -185,7 +188,14 @@ namespace MonoDevelop.CSharp.Completion.Provider
 						continue;
 					if (member.IsOrdinaryMethod () || member.Kind == SymbolKind.Field || member.Kind == SymbolKind.Property) {
 						if (member.IsAccessibleWithin (within)) {
-							var completionData = CompletionItem.Create (member.Name, properties: pDict);
+							var completionData = SymbolCompletionItem.CreateWithSymbolId (
+								member.Name,
+								new [] { member },
+								CompletionItemRules.Default,
+								context.Position,
+								properties: pDict
+							);
+
 							if (addedSymbols.Contains (completionData.DisplayText))
 								continue;
 							addedSymbols.Add (completionData.DisplayText);
@@ -195,6 +205,11 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				}
 				type = type.BaseType;
 			}
+		}
+
+		protected override async Task<CompletionDescription> GetDescriptionWorkerAsync (Document document, CompletionItem item, CancellationToken cancellationToken)
+		{
+			return await SymbolCompletionItem.GetDescriptionAsync (item, document, cancellationToken).ConfigureAwait (false);
 		}
 	}
 }
