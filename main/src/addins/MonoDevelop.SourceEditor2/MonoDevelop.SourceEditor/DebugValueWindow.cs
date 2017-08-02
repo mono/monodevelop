@@ -168,7 +168,7 @@ namespace MonoDevelop.SourceEditor
 
 			if (dy > 0 && sw.VscrollbarPolicy == PolicyType.Never) {
 				sw.VscrollbarPolicy = PolicyType.Always;
-				sw.HeightRequest = h - dy - 10;
+				sw.HeightRequest = h - dy - 20;
 			} else if (sw.VscrollbarPolicy == PolicyType.Always && sw.Vadjustment.Upper == sw.Vadjustment.PageSize) {
 				sw.VscrollbarPolicy = PolicyType.Never;
 				sw.HeightRequest = -1;
@@ -176,7 +176,7 @@ namespace MonoDevelop.SourceEditor
 
 			if (dx > 0 && sw.HscrollbarPolicy == PolicyType.Never) {
 				sw.HscrollbarPolicy = PolicyType.Always;
-				sw.WidthRequest = w - dx - 10;
+				sw.WidthRequest = w - dx - 20;
 			} else if (sw.HscrollbarPolicy == PolicyType.Always && sw.Hadjustment.Upper == sw.Hadjustment.PageSize) {
 				sw.HscrollbarPolicy = PolicyType.Never;
 				sw.WidthRequest = -1;
