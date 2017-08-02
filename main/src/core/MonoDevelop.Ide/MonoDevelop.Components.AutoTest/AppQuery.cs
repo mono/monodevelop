@@ -31,6 +31,7 @@ using MonoDevelop.Components.AutoTest.Operations;
 using MonoDevelop.Components.AutoTest.Results;
 using System.Linq;
 using System.Xml;
+using MonoDevelop.Core;
 
 #if MAC
 using AppKit;
@@ -93,6 +94,23 @@ namespace MonoDevelop.Components.AutoTest
 				if (child.Subviews != null) {
 					AppResult children = GenerateChildrenForNSView (child, resultSet);
 					node.FirstChild = children;
+				}
+			}
+
+			if (view is NSSegmentedControl || view.GetType ().IsSubclassOf (typeof (NSSegmentedControl))) {
+				var segmentedControl = (NSSegmentedControl)view;
+				LoggingService.LogInfo ($"Found 'NSSegmentedControl' with {segmentedControl.SegmentCount} children");
+				for (int i = 0; i < segmentedControl.SegmentCount; i++) {
+					var node = new NSObjectResult (view, i);
+					resultSet.Add (node);
+					if (firstChild == null) {
+						firstChild = node;
+						lastChild = node;
+					} else {
+						lastChild.NextSibling = node;
+						node.PreviousSibling = lastChild;
+						lastChild = node;
+					}
 				}
 			}
 
