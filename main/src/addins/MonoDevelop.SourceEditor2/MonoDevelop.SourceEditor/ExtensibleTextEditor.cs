@@ -596,7 +596,12 @@ namespace MonoDevelop.SourceEditor
 			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (EditorExtension.Editor);
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (EditorExtension.Editor).WaitAndGetResult (CancellationToken.None)) {
 				if (template.Shortcut == shortcut) {
-					InsertTemplate (template, view.WorkbenchWindow.Document.Editor, view.WorkbenchWindow.Document);
+					var doc = view.WorkbenchWindow?.Document ?? IdeApp.Workbench.ActiveDocument;
+					if (doc != null) {
+						InsertTemplate (template, doc.Editor, doc);
+					} else {
+						LoggingService.LogError ("DoInsertTemplate(): Can't find valid document");
+					}
 					return true;
 				}
 			}

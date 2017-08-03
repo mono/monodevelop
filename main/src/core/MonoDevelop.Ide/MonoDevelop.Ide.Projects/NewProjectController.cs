@@ -1,4 +1,4 @@
-﻿//
+﻿﻿//
 // NewProjectDialogController.cs
 //
 // Author:
@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using Xwt.Drawing;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -51,6 +52,9 @@ namespace MonoDevelop.Ide.Projects
 	/// </summary>
 	class NewProjectDialogController : INewProjectDialogController
 	{
+		public event EventHandler ProjectCreationFailed;
+		public event EventHandler ProjectCreated;
+
 		string chooseTemplateBannerText =  GettextCatalog.GetString ("Choose a template for your new project");
 		string configureYourWorkspaceBannerText = GettextCatalog.GetString ("Configure your new workspace");
 		string configureYourSolutionBannerText = GettextCatalog.GetString ("Configure your new solution");
@@ -610,8 +614,10 @@ namespace MonoDevelop.Ide.Projects
 			if (wizardProvider.HasWizard)
 				wizardProvider.BeforeProjectIsCreated ();
 
-			if (!await CreateProject ())
+			if (!await CreateProject ()) {
+				ProjectCreationFailed?.Invoke (this, EventArgs.Empty);
 				return;
+			}
 
 			Solution parentSolution = null;
 
@@ -697,6 +703,14 @@ namespace MonoDevelop.Ide.Projects
 
 			IsNewItemCreated = true;
 			UpdateDefaultSettings ();
+
+			var tcs = new TaskCompletionSource<bool> ();
+			Gtk.Application.Invoke ((sender, args) => {
+				ProjectCreated?.Invoke (this, EventArgs.Empty);
+				tcs.SetResult (true);
+			});
+			await tcs.Task;
+
 			dialog.CloseDialog ();
 		}
 

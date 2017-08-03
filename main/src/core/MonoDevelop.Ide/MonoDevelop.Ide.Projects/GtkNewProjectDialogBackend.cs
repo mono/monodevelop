@@ -34,6 +34,9 @@ using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -59,7 +62,7 @@ namespace MonoDevelop.Ide.Projects
 			templatesTreeView.Selection.SelectFunction = TemplatesTreeViewSelection;
 			templatesTreeView.RowActivated += TreeViewRowActivated;
 			cancelButton.Clicked += CancelButtonClicked;
-			nextButton.Clicked += (sender, e) => MoveToNextPage ();
+			nextButton.Clicked += NextButtonClicked;
 			previousButton.Clicked += (sender, e) => MoveToPreviousPage ();
 
 			nextButton.CanDefault = true;
@@ -68,6 +71,24 @@ namespace MonoDevelop.Ide.Projects
 			// Setup the treeview to be able to have a context menu
 			var actionHandler = new ActionDelegate (templatesTreeView);
 			actionHandler.PerformShowMenu += PerformShowMenu;
+		}
+
+		void ProjectCreationFailed (object obj, EventArgs args) => ShowProjectCreationAccessibityNotification (true);
+		void ProjectCreated(object obj, EventArgs args) => ShowProjectCreationAccessibityNotification (false);
+		async void NextButtonClicked (object sender, EventArgs e) => await MoveToNextPage ();
+
+		void ShowProjectCreationAccessibityNotification (bool hasError)
+		{
+			var projectTemplate = controller.SelectedTemplate;
+
+			string messageText;
+
+			if (hasError)
+				messageText = GettextCatalog.GetString ("{0} failed to create", projectTemplate.Name);
+			else
+				messageText = GettextCatalog.GetString ("{0} successfully created", projectTemplate.Name);
+
+			this.Accessible.MakeAccessibilityAnnouncement (messageText);
 		}
 
 		public void ShowDialog ()
@@ -88,16 +109,17 @@ namespace MonoDevelop.Ide.Projects
 		public void RegisterController (INewProjectDialogController controller)
 		{
 			this.controller = controller;
+			controller.ProjectCreationFailed += ProjectCreationFailed;
+			controller.ProjectCreated += ProjectCreated;
 			languageCellRenderer.SelectedLanguage = controller.SelectedLanguage;
 			topBannerLabel.Text = controller.BannerText;
-
 			LoadTemplates ();
 			SelectTemplateDefinedbyController ();
 			if (CanMoveToNextPage && !controller.ShowTemplateSelection)
 				MoveToNextPage ();
 		}
 
-		static void SetTemplateCategoryCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
+		void SetTemplateCategoryCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
 		{
 			var categoryTextRenderer = (GtkTemplateCategoryCellRenderer)renderer;
 			categoryTextRenderer.Category = (TemplateCategory)model.GetValue (it, TemplateCategoryColumn);
@@ -246,6 +268,9 @@ namespace MonoDevelop.Ide.Projects
 
 			if (!controller.IsLastPage)
 				projectConfigurationWidget.Destroy ();
+
+			controller.ProjectCreationFailed -= ProjectCreationFailed;
+			controller.ProjectCreated -= ProjectCreated;
 
 			base.Destroy ();
 		}
@@ -508,12 +533,14 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		async void MoveToNextPage ()
+		async Task MoveToNextPage ()
 		{
 			if (controller.IsLastPage) {
 				try {
 					CanMoveToNextPage = false;
 					await controller.Create ();
+				} catch {
+					throw;
 				} finally {
 					CanMoveToNextPage = true;
 				}
