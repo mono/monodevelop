@@ -192,6 +192,7 @@ namespace Microsoft.VisualStudio.Platform
 			LinkTypes (mimeType, ContentTypeRegistryService.GetContentType (contentType));
 		}
 
+
 		void IPartImportsSatisfiedNotification.OnImportsSatisfied ()
 		{
 			LinkTypes ("text/plain", "text");
@@ -199,6 +200,8 @@ namespace Microsoft.VisualStudio.Platform
 
 			if (this.ContentTypeRegistryService.GetContentType ("css") != null) {
 				LinkTypes ("text/x-css", "css");
+				LinkTypes ("text/x-less", "LESS");
+				LinkTypes ("text/x-scss", "SCSS");
 				LinkTypes ("text/x-html", "htmlx");
 				LinkTypes ("text/x-json", "JSON");
 			}
