@@ -74,8 +74,7 @@ namespace MonoDevelop.CSharp.Formatting
 				int lineStartOffset = startLine.Offset != endLine.Offset ? startLine.Offset : insertionOffset;
 				int formatCharsCount = insertedChars + (insertionOffset - lineStartOffset);
 				var policy = indent.DocumentContext.GetFormattingPolicy ();
-				var textPolicy = indent.DocumentContext.Project.Policies.Get<Ide.Gui.Content.TextStylePolicy> (indent.Editor.MimeType);
-				var optionSet = policy.CreateOptions (textPolicy);
+				var optionSet = policy.CreateOptions (indent.Editor.Options);
 				var span = new TextSpan (lineStartOffset, formatCharsCount);
 
 				var rules = new List<IFormattingRule> () { new PasteFormattingRule () };
