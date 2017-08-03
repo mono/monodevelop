@@ -244,7 +244,7 @@ namespace MonoDevelop.PackageManagement
 
 		static PackageSpec CreateProjectPackageSpec (DotNetProject project, DependencyGraphCacheContext context)
 		{
-			PackageSpec packageSpec = PackageSpecCreator.CreatePackageSpec (project, context.Logger);
+			PackageSpec packageSpec = PackageSpecCreator.CreatePackageSpec (project, context);
 			return packageSpec;
 		}
 
@@ -267,17 +267,6 @@ namespace MonoDevelop.PackageManagement
 				out ignore);
 		}
 
-		public override Task<bool> ExecuteInitScriptAsync (
-			PackageIdentity identity,
-			string packageInstallPath,
-			INuGetProjectContext projectContext,
-			bool throwOnFailure)
-		{
-			// Not supported. This gets called for every NuGet package
-			// even if they do not have an init.ps1 so do not report this.
-			return Task.FromResult (false);
-		}
-
 		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
 		{
 			if (restoreRequired) {
@@ -285,7 +274,7 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			Runtime.RunInMainThread (() => {
-				DotNetProject.NotifyModified ("References");
+				DotNetProject.DotNetCoreNotifyReferencesChanged ();
 			});
 
 			packageManagementEvents.OnFileChanged (project.GetNuGetAssetsFilePath ());
@@ -296,8 +285,7 @@ namespace MonoDevelop.PackageManagement
 		async Task RestorePackages (INuGetProjectContext nuGetProjectContext, CancellationToken token)
 		{
 			var packageRestorer = await Runtime.RunInMainThread (() => {
-				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
-				return new MonoDevelopBuildIntegratedRestorer (solutionManager);
+				return CreateBuildIntegratedRestorer (project.ParentSolution);
 			});
 
 			var restoreTask = packageRestorer.RestorePackages (this, token);
@@ -308,12 +296,18 @@ namespace MonoDevelop.PackageManagement
 			if (!packageRestorer.LockFileChanged) {
 				// Need to refresh the references since the restore did not.
 				await Runtime.RunInMainThread (() => {
-					DotNetProject.NotifyModified ("References");
+					DotNetProject.DotNetCoreNotifyReferencesChanged ();
 					packageManagementEvents.OnFileChanged (project.GetNuGetAssetsFilePath ());
 				});
 			}
 
 			await base.PostProcessAsync (nuGetProjectContext, token);
+		}
+
+		protected virtual IMonoDevelopBuildIntegratedRestorer CreateBuildIntegratedRestorer (Solution solution)
+		{
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			return new MonoDevelopBuildIntegratedRestorer (solutionManager);
 		}
 
 		public void OnBeforeUninstall (IEnumerable<NuGetProjectAction> actions)
@@ -325,12 +319,16 @@ namespace MonoDevelop.PackageManagement
 			restoreRequired = actions.Any (action => action.NuGetProjectActionType == NuGetProjectActionType.Install);
 		}
 
-		public void NotifyProjectReferencesChanged ()
+		public void NotifyProjectReferencesChanged (bool includeTransitiveProjectReferences)
 		{
 			Runtime.AssertMainThread ();
 
 			DotNetProject.RefreshProjectBuilder ();
-			DotNetProject.NotifyModified ("References");
+
+			if (includeTransitiveProjectReferences)
+				DotNetProject.DotNetCoreNotifyReferencesChanged ();
+			else
+				DotNetProject.NotifyModified ("References");
 		}
 
 		/// <summary>

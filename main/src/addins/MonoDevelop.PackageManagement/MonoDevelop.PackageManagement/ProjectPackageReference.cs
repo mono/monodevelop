@@ -119,6 +119,8 @@ namespace MonoDevelop.PackageManagement
 				packageReference.Metadata.SetValue (property.Name, property.Value);
 			}
 
+			packageReference.IsImplicit = evaluatedItem.Metadata.GetValue<bool> ("IsImplicitlyDefined");
+
 			return packageReference;
 		}
 
@@ -131,5 +133,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			project.AddKnownItemAttribute ("PackageReference", "Version");
 		}
+
+		public bool IsImplicit { get; internal set; }
 	}
 }

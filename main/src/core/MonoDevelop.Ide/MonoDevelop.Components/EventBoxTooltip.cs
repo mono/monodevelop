@@ -29,14 +29,19 @@ using Gtk;
 using System;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide;
+using Gdk;
 
 namespace MonoDevelop.Components
 {
 	public class EventBoxTooltip : IDisposable
 	{
 		EventBox eventBox;
-		string tip;
 		TooltipPopoverWindow tooltipWindow;
+		ImageView image;
+		Pixbuf normalPixbuf;
+		Pixbuf activePixbuf;
+		string tip;
 		bool mouseOver;
 
 		public Atk.Object Accessible {
@@ -52,11 +57,29 @@ namespace MonoDevelop.Components
 		public EventBoxTooltip (EventBox eventBox)
 		{
 			this.eventBox = eventBox;
+			eventBox.CanFocus = true;
 
 			eventBox.EnterNotifyEvent += HandleEnterNotifyEvent;
 			eventBox.LeaveNotifyEvent += HandleLeaveNotifyEvent;
 			eventBox.FocusInEvent += HandleFocusInEvent;
 			eventBox.FocusOutEvent += HandleFocusOutEvent;
+
+			image = eventBox.Child as ImageView;
+
+			if (image != null) {
+				normalPixbuf = image.Image.ToPixbuf ();
+				activePixbuf = normalPixbuf.ColorShiftPixbuf ();
+			}
+
+			eventBox.FocusGrabbed += (sender, e) => {
+				if (image != null)
+					image.Image = activePixbuf.ToXwtImage ();
+			};
+
+			eventBox.Focused += (o, args) => {
+				if (image != null)
+					image.Image = normalPixbuf.ToXwtImage ();
+			};
 
 			Position = PopupPosition.TopLeft;
 

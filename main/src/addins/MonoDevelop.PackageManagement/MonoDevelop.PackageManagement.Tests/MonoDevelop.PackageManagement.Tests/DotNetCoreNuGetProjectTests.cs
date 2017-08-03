@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
 using NUnit.Framework;
+using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
@@ -44,14 +45,24 @@ namespace MonoDevelop.PackageManagement.Tests
 		TestableDotNetCoreNuGetProject project;
 		FakeNuGetProjectContext context;
 		DependencyGraphCacheContext dependencyGraphCacheContext;
+		FakeMonoDevelopBuildIntegratedRestorer buildIntegratedRestorer;
 
 		void CreateNuGetProject (string projectName = "MyProject", string fileName = @"d:\projects\MyProject\MyProject.csproj")
 		{
 			context = new FakeNuGetProjectContext ();
-			dotNetProject = new DummyDotNetProject ();
-			dotNetProject.Name = projectName;
-			dotNetProject.FileName = fileName.ToNativePath ();
+			dotNetProject = CreateDotNetCoreProject (projectName, fileName);
+			var solution = new Solution ();
+			solution.RootFolder.AddItem (dotNetProject);
 			project = new TestableDotNetCoreNuGetProject (dotNetProject);
+			buildIntegratedRestorer = project.BuildIntegratedRestorer;
+		}
+
+		static DummyDotNetProject CreateDotNetCoreProject (string projectName = "MyProject", string fileName = @"d:\projects\MyProject\MyProject.csproj")
+		{
+			var project = new DummyDotNetProject ();
+			project.Name = projectName;
+			project.FileName = fileName.ToNativePath ();
+			return project;
 		}
 
 		void AddDotNetProjectPackageReference (string packageId, string version)
@@ -84,6 +95,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			var specs = await project.GetPackageSpecsAsync (cacheContext);
 			return specs.Single ();
+		}
+
+		void OnAfterExecuteActions (string packageId, string version, NuGetProjectActionType actionType)
+		{
+			var action = new FakeNuGetProjectAction (packageId, version, actionType);
+			project.OnAfterExecuteActions (new [] { action });
 		}
 
 		[Test]
@@ -254,6 +271,234 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("NUnit", packageReference.PackageIdentity.Id);
 			Assert.IsTrue (packageReference.IsFloating ());
 			Assert.AreEqual ("2.6.0-*", packageReference.AllowedVersions.Float.ToString ());
+		}
+
+		[Test]
+		public async Task PostProcessAsync_ProjectAssetsFile_NotifyChangeInAssetsFile ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.0");
+			dotNetProject.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
+			string fileNameChanged = null;
+			PackageManagementServices.PackageManagementEvents.FileChanged += (sender, e) => {
+				fileNameChanged = e.Single ().FileName;
+			};
+
+			await project.PostProcessAsync (context, CancellationToken.None);
+
+			string expectedFileNameChanged = @"d:\projects\MyProject\obj\project.assets.json".ToNativePath ();
+			Assert.AreEqual (expectedFileNameChanged, fileNameChanged);
+		}
+
+		[Test]
+		public async Task PostProcessAsync_References_NotifyReferencesChangedEventFired ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.0");
+			string modifiedHint = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHint = e.Single ().Hint;
+			};
+
+			await project.PostProcessAsync (context, CancellationToken.None);
+
+			Assert.AreEqual ("References", modifiedHint);
+		}
+
+		[Test]
+		public async Task PostProcessAsync_RestoreRunLockFileNotChanged_NotifyReferencesChangedEventFired ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.0");
+			string modifiedHint = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHint = e.Single ().Hint;
+			};
+			OnAfterExecuteActions ("NUnit", "2.6.3", NuGetProjectActionType.Install);
+
+			await project.PostProcessAsync (context, CancellationToken.None);
+
+			Assert.IsNotNull (dotNetProject.ParentSolution);
+			Assert.AreEqual (dotNetProject.ParentSolution, project.SolutionUsedToCreateBuildIntegratedRestorer);
+			Assert.AreEqual (project, buildIntegratedRestorer.ProjectRestored);
+			Assert.AreEqual ("References", modifiedHint);
+		}
+
+		[Test]
+		public async Task PostProcessAsync_RestoreRunLockFileNotChanged_NotifyChangeInAssetsFile ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.0");
+			dotNetProject.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
+			string fileNameChanged = null;
+			PackageManagementServices.PackageManagementEvents.FileChanged += (sender, e) => {
+				fileNameChanged = e.Single ().FileName;
+			};
+			OnAfterExecuteActions ("NUnit", "2.6.3", NuGetProjectActionType.Install);
+
+			await project.PostProcessAsync (context, CancellationToken.None);
+
+			string expectedFileNameChanged = @"d:\projects\MyProject\obj\project.assets.json".ToNativePath ();
+			Assert.AreEqual (expectedFileNameChanged, fileNameChanged);
+			Assert.AreEqual (project, buildIntegratedRestorer.ProjectRestored);
+		}
+
+		/// <summary>
+		/// Build restorer would trigger the notification itself.
+		/// </summary>
+		[Test]
+		public async Task PostProcessAsync_RestoreRunLockFileChanged_NotifyReferencesChangedEventNotFired ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.0");
+			string modifiedHint = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHint = e.Single ().Hint;
+			};
+			buildIntegratedRestorer.LockFileChanged = true;
+			OnAfterExecuteActions ("NUnit", "2.6.3", NuGetProjectActionType.Install);
+
+			await project.PostProcessAsync (context, CancellationToken.None);
+
+			Assert.AreEqual (project, buildIntegratedRestorer.ProjectRestored);
+			Assert.IsNull (modifiedHint);
+		}
+
+		/// <summary>
+		/// Build restorer would trigger the notification itself.
+		/// </summary>
+		[Test]
+		public async Task PostProcessAsync_RestoreRunLockFileChanged_NotifyChangeInAssetsFileIsNotMade ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.0");
+			dotNetProject.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
+			string fileNameChanged = null;
+			PackageManagementServices.PackageManagementEvents.FileChanged += (sender, e) => {
+				fileNameChanged = e.Single ().FileName;
+			};
+			buildIntegratedRestorer.LockFileChanged = true;
+			OnAfterExecuteActions ("NUnit", "2.6.3", NuGetProjectActionType.Install);
+
+			await project.PostProcessAsync (context, CancellationToken.None);
+
+			Assert.IsNull (fileNameChanged);
+			Assert.AreEqual (project, buildIntegratedRestorer.ProjectRestored);
+		}
+
+		[Test]
+		public void NotifyProjectReferencesChanged_References_NotifyReferencesChangedEventFired ()
+		{
+			CreateNuGetProject ();
+			string modifiedHint = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHint = e.Single ().Hint;
+			};
+
+			project.NotifyProjectReferencesChanged (false);
+
+			Assert.AreEqual ("References", modifiedHint);
+		}
+
+		/// <summary>
+		/// Assembly references are transitive for .NET Core projects so any .NET Core project
+		/// that references the project having a NuGet package being installed needs to refresh
+		/// references for the other projects not just itself.
+		/// </summary>
+		[Test]
+		public async Task PostProcessAsync_DotNetCoreProjectReferencesThisProject_NotifyReferencesChangedEventFiredForBothProjects ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.0");
+			var dotNetProjectWithProjectReference = CreateDotNetCoreProject ("MyProject2", @"d:\projects\MyProject2\MyProject2.csproj");
+			dotNetProject.ParentSolution.RootFolder.AddItem (dotNetProjectWithProjectReference);
+			var projectReference = ProjectReference.CreateProjectReference (dotNetProject);
+			dotNetProjectWithProjectReference.References.Add (projectReference);
+			string modifiedHintMainProject = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHintMainProject = e.Single ().Hint;
+			};
+			string modifiedHintProjectWithReference = null;
+			dotNetProjectWithProjectReference.Modified += (sender, e) => {
+				modifiedHintProjectWithReference = e.Single ().Hint;
+			};
+
+			await project.PostProcessAsync (context, CancellationToken.None);
+
+			Assert.AreEqual ("References", modifiedHintMainProject);
+			Assert.AreEqual ("References", modifiedHintProjectWithReference);
+		}
+
+		[Test]
+		public async Task PostProcessAsync_DotNetCoreProjectReferencesThisProjectLockFileNotChanged_NotifyReferencesChangedEventFiredForBothProjects ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.0");
+			var dotNetProjectWithProjectReference = CreateDotNetCoreProject ("MyProject2", @"d:\projects\MyProject2\MyProject2.csproj");
+			dotNetProject.ParentSolution.RootFolder.AddItem (dotNetProjectWithProjectReference);
+			var projectReference = ProjectReference.CreateProjectReference (dotNetProject);
+			dotNetProjectWithProjectReference.References.Add (projectReference);
+			string modifiedHintMainProject = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHintMainProject = e.Single ().Hint;
+			};
+			string modifiedHintProjectWithReference = null;
+			dotNetProjectWithProjectReference.Modified += (sender, e) => {
+				modifiedHintProjectWithReference = e.Single ().Hint;
+			};
+			OnAfterExecuteActions ("NUnit", "2.6.3", NuGetProjectActionType.Install);
+
+			await project.PostProcessAsync (context, CancellationToken.None);
+
+			Assert.AreEqual (project, buildIntegratedRestorer.ProjectRestored);
+			Assert.AreEqual ("References", modifiedHintMainProject);
+			Assert.AreEqual ("References", modifiedHintProjectWithReference);
+		}
+
+		[Test]
+		public void NotifyProjectReferencesChanged_IncludeTransitiveReferences_NotifyReferencesChangedEventFiredForAllProjects ()
+		{
+			CreateNuGetProject ();
+			var dotNetProjectWithProjectReference = CreateDotNetCoreProject ("MyProject2", @"d:\projects\MyProject2\MyProject2.csproj");
+			dotNetProject.ParentSolution.RootFolder.AddItem (dotNetProjectWithProjectReference);
+			var projectReference = ProjectReference.CreateProjectReference (dotNetProject);
+			dotNetProjectWithProjectReference.References.Add (projectReference);
+			string modifiedHintMainProject = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHintMainProject = e.Single ().Hint;
+			};
+			string modifiedHintProjectWithReference = null;
+			dotNetProjectWithProjectReference.Modified += (sender, e) => {
+				modifiedHintProjectWithReference = e.Single ().Hint;
+			};
+
+			project.NotifyProjectReferencesChanged (true);
+
+			Assert.AreEqual ("References", modifiedHintMainProject);
+			Assert.AreEqual ("References", modifiedHintProjectWithReference);
+		}
+
+		[Test]
+		public void NotifyProjectReferencesChanged_DoNotIncludeTransitiveReferences_NotifyReferencesChangedEventFiredForMainProjectOnly ()
+		{
+			CreateNuGetProject ();
+			var dotNetProjectWithProjectReference = CreateDotNetCoreProject ("MyProject2", @"d:\projects\MyProject2\MyProject2.csproj");
+			dotNetProject.ParentSolution.RootFolder.AddItem (dotNetProjectWithProjectReference);
+			var projectReference = ProjectReference.CreateProjectReference (dotNetProject);
+			dotNetProjectWithProjectReference.References.Add (projectReference);
+			string modifiedHintMainProject = null;
+			dotNetProject.Modified += (sender, e) => {
+				modifiedHintMainProject = e.Single ().Hint;
+			};
+			string modifiedHintProjectWithReference = null;
+			dotNetProjectWithProjectReference.Modified += (sender, e) => {
+				modifiedHintProjectWithReference = e.Single ().Hint;
+			};
+
+			project.NotifyProjectReferencesChanged (false);
+
+			Assert.AreEqual ("References", modifiedHintMainProject);
+			Assert.IsNull (modifiedHintProjectWithReference);
 		}
 	}
 }

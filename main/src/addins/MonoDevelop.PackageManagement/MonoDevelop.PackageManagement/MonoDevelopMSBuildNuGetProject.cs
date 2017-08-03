@@ -1,10 +1,10 @@
 ﻿//
-// TestableDotNetCoreNuGetProject.cs
+// MonoDevelopMSBuildNuGetProject.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +24,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Threading.Tasks;
-using MonoDevelop.Projects;
+using NuGet.ProjectManagement;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	class TestableDotNetCoreNuGetProject : DotNetCoreNuGetProject
+	class MonoDevelopMSBuildNuGetProject : MSBuildNuGetProject, IHasDotNetProject
 	{
-		public TestableDotNetCoreNuGetProject (DotNetProject project)
-			: base (project, new [] { "netcoreapp1.0" })
+		MonoDevelopMSBuildNuGetProjectSystem projectSystem;
+
+		public MonoDevelopMSBuildNuGetProject (
+			MonoDevelopMSBuildNuGetProjectSystem projectSystem,
+			string folderNuGetProjectFullPath,
+			string packagesConfigFolderPath)
+			: base (projectSystem, folderNuGetProjectFullPath, packagesConfigFolderPath)
 		{
-			BuildIntegratedRestorer = new FakeMonoDevelopBuildIntegratedRestorer ();
+			this.projectSystem = projectSystem;
 		}
 
-		public bool IsSaved { get; set; }
-
-		public override Task SaveProject ()
+		public Task SaveProject ()
 		{
-			IsSaved = true;
-			return Task.FromResult (0);
-		}
-
-		public FakeMonoDevelopBuildIntegratedRestorer BuildIntegratedRestorer;
-		public Solution SolutionUsedToCreateBuildIntegratedRestorer;
-
-		protected override IMonoDevelopBuildIntegratedRestorer CreateBuildIntegratedRestorer (Solution solution)
-		{
-			SolutionUsedToCreateBuildIntegratedRestorer = solution;
-			return BuildIntegratedRestorer;
+			return projectSystem.SaveProject ();
 		}
 	}
 }
