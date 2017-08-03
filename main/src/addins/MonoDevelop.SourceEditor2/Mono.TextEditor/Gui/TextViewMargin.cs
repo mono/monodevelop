@@ -3097,7 +3097,9 @@ namespace Mono.TextEditor
 			if (!isSelectionDrawn && BackgroundRenderer == null) {
 				if (isEolSelected) {
 					// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
-					wrapper = GetLayout (line);
+					// Need to get the layout for the remaning line which is drawn after the last fold marker
+					wrapper = CreateLinePartLayout (line, logicalRulerColumn, offset, line.Offset + line.Length - offset, 0, 0);
+
 					int remainingLineWidth, ph;
 					wrapper.GetPixelSize (out remainingLineWidth, out ph);
 
