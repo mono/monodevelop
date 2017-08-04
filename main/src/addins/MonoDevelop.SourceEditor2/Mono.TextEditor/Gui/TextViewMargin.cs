@@ -2560,9 +2560,6 @@ namespace Mono.TextEditor
 			if (line != null) {
 				newMarkers.Clear ();
 				newMarkers.AddRange (textEditor.Document.GetMarkers (line).OfType<IActionTextLineMarker> ());
-				var extraMarker = Document.GetExtendingTextMarker (loc.Line) as IActionTextLineMarker;
-				if (extraMarker != null && !oldMarkers.Contains (extraMarker))
-					newMarkers.Add (extraMarker);
 				foreach (var marker in newMarkers) {
 					if (oldMarkers.Contains (marker))
 						continue;
@@ -2989,10 +2986,6 @@ namespace Mono.TextEditor
 			// Check if line is beyond the document length
 			if (line == null) {
 				DrawScrollShadow (cr, x, y, _lineHeight);
-
-				var marker = Document.GetExtendingTextMarker (lineNr);
-				if (marker != null)
-					marker.Draw (textEditor, cr, lineNr, lineArea);
 				return;
 			}
 			

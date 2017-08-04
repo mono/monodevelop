@@ -856,13 +856,23 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			public void Draw (MonoTextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea)
+			public void Draw (MonoTextEditor editor, Cairo.Context g, int lineNr, Cairo.Rectangle lineArea)
 			{
+				using (var layout = new Pango.Layout (editor.PangoContext)) {
+					g.Save ();
+					editor.EditorTheme.TryGetColor (EditorThemeColors.Foreground, out HslColor color);
+					g.SetSourceColor (color);
+					g.Translate (lineArea.X, lineArea.Y - editor.LineHeight * 2);
+					layout.SetText ("Line " + lineNr);
+					g.ShowLayout (layout);
+					g.Restore ();
+				}
+
 			}
 
 			public double GetLineHeight (MonoTextEditor editor)
 			{
-				return editor.LineHeight *  3 / 2;
+				return editor.LineHeight *  3;
 			}
 		}
 
@@ -931,6 +941,10 @@ namespace MonoDevelop.SourceEditor
 			}
 
 			document.TextChanged += OnTextReplaced;
+			//document.AddMarker (5, new MyExtendingLineMarker ());
+			//document.AddMarker (7, new MyExtendingLineMarker ());
+			//document.AddMarker (10, new MyExtendingLineMarker ());
+
 			return TaskUtil.Default<object>();
 		}
 
