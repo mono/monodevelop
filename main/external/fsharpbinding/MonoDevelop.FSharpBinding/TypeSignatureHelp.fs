@@ -120,7 +120,7 @@ module signatureHelp =
 
             let addMarker text (lineNr:int) line =
                 let newMarker = SignatureHelpMarker(document, text, font, line)
-                document.AddMarker(lineNr, newMarker)
+                runInMainThread(fun() -> document.AddMarker(lineNr, newMarker))
                 newMarker
 
             funs |> Map.iter(fun _l f ->
