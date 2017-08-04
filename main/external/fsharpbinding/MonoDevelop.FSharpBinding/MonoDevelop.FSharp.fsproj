@@ -126,6 +126,7 @@
     <Compile Include="HighlightUnusedCode.fs" />
     <Compile Include="ScriptDebugging.fs" />
     <Compile Include="FSharpProjectCompilerOptions.fs" />
+    <Compile Include="TypeSignatureHelp.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="pango-sharp" />
