@@ -217,7 +217,6 @@ namespace Mono.TextEditor
 
 			this.VsTextDocument.FileActionOccurred += this.OnTextDocumentFileActionOccured;
 
-			TextChanging += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved;
 			this.diffTracker.SetTrackDocument(this);
 		}
@@ -1548,7 +1547,11 @@ namespace Mono.TextEditor
 		List<TextLineMarker> extendingTextMarkers = new List<TextLineMarker> ();
 		public IEnumerable<DocumentLine> LinesWithExtendingTextMarkers {
 			get {
-				return from marker in extendingTextMarkers where marker.LineSegment != null select marker.LineSegment;
+				foreach (var marker in extendingTextMarkers) {
+					var line = marker.LineSegment;
+					if (line != null)
+						yield return line;
+				} 
 			}
 		}
 		
@@ -1794,31 +1797,6 @@ namespace Mono.TextEditor
 
 		#endregion
 
-		void HandleSplitterLineSegmentTreeLineRemoved (object sender, TextChangeEventArgs e)
-		{
-			for (int i = 0; i < e.TextChanges.Count; ++i) {
-				var change = e.TextChanges[i];
-				var line = GetLineByOffset (change.Offset);
-				if (line == null)
-					continue;
-				var endOffset = change.Offset + change.RemovalLength;
-				var offset = line.Offset;
-				do {
-					foreach (TextLineMarker marker in GetMarkers (line)) {
-						if (marker is IExtendingTextLineMarker) {
-							UnRegisterVirtualTextMarker ((IExtendingTextLineMarker)marker);
-							lock (extendingTextMarkers) {
-								extendingTextMarkers.Remove (marker);
-								OnHeightChanged (EventArgs.Empty);
-							}
-						}
-					}
-					offset += line.LengthIncludingDelimiter;
-					line = line.NextLine;
-				} while (line != null && offset < endOffset);
-			}
-		}
-		
 		public bool Contains (int offset)
 		{
 			return new TextSegment (0, Length).Contains (offset);
@@ -1975,33 +1953,6 @@ namespace Mono.TextEditor
 				return isInUndo;
 			}
 		}
-		
-		Dictionary<int, IExtendingTextLineMarker> virtualTextMarkers = new Dictionary<int, IExtendingTextLineMarker> ();
-		public void RegisterVirtualTextMarker (int lineNumber, IExtendingTextLineMarker marker)
-		{
-			virtualTextMarkers[lineNumber] = marker;
-		}
-		
-		public IExtendingTextLineMarker GetExtendingTextMarker (int lineNumber)
-		{
-			IExtendingTextLineMarker result;
-			if (virtualTextMarkers.TryGetValue (lineNumber, out result))
-				return result;
-			return null;
-		}
-		
-		/// <summary>
-		/// un register virtual text marker.
-		/// </summary>
-		/// <param name='marker'>
-		/// marker.
-		/// </param>
-		public void UnRegisterVirtualTextMarker (IExtendingTextLineMarker marker)
-		{
-			var keys = new List<int> (from pair in virtualTextMarkers where pair.Value == marker select pair.Key);
-			keys.ForEach (key => { virtualTextMarkers.Remove (key); CommitLineUpdate (key); });
-		}
-		
 		
 #region Diff
 
