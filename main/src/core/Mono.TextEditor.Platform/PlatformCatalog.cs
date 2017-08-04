@@ -1,4 +1,4 @@
-﻿//
+//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -199,6 +199,8 @@ namespace Microsoft.VisualStudio.Platform
 
 			if (this.ContentTypeRegistryService.GetContentType ("css") != null) {
 				LinkTypes ("text/x-css", "css");
+				LinkTypes ("text/x-less", "LESS");
+				LinkTypes ("text/x-scss", "SCSS");
 				LinkTypes ("text/x-html", "htmlx");
 				LinkTypes ("text/x-json", "JSON");
 			}
