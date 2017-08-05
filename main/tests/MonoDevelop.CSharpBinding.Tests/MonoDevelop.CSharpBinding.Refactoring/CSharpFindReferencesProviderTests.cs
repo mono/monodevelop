@@ -73,7 +73,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
 				await TypeSystemService.Load (solution, monitor);
-			content.Project = project;
+			content.Owner = project;
 			doc.SetProject (project);
 
 			await doc.UpdateParseDocument ();

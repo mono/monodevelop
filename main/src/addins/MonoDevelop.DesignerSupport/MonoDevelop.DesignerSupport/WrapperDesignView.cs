@@ -88,6 +88,12 @@ namespace MonoDevelop.DesignerSupport
 			content.Project = project;
 		}
 
+		protected override void OnSetOwner (MonoDevelop.Projects.SolutionItem owner)
+		{
+			base.OnSetOwner (owner);
+			content.Owner = owner;
+		}
+
 		public override ProjectReloadCapability ProjectReloadCapability {
 			get {
 				return content.ProjectReloadCapability;

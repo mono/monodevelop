@@ -16,7 +16,7 @@ namespace MonoDevelop.Ide.GettingStarted
 			GettingStartedViewContent view;
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				view = doc.PrimaryView.GetContent<GettingStartedViewContent> ();
-				if (view != null && view.Project == project) {
+				if (view != null && view.Owner == project) {
 					view.WorkbenchWindow.SelectWindow ();
 					return;
 				}

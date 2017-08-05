@@ -73,7 +73,7 @@ namespace MonoDevelop.ConnectedServices
 
 			foreach (var view in IdeApp.Workbench.Documents) {
 				servicesView = view.PrimaryView.GetContent<ConnectedServicesViewContent> ();
-				if (servicesView != null && servicesView.Project == project) {
+				if (servicesView != null && servicesView.Owner == project) {
 					servicesView.UpdateContent(serviceId);
 					view.Window.SelectWindow ();
 					return;
@@ -158,7 +158,7 @@ namespace MonoDevelop.ConnectedServices
 			documentView = null;
 			foreach (var view in IdeApp.Workbench.Documents) {
 				var servicesView = view.PrimaryView.GetContent<ConnectedServicesViewContent> ();
-				if (servicesView != null && servicesView.Project == project) {
+				if (servicesView != null && servicesView.Owner == project) {
 					documentView = view;
 					return servicesView;
 				}

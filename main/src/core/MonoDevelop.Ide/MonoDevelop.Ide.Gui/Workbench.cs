@@ -1585,7 +1585,7 @@ namespace MonoDevelop.Ide.Gui
 
 				newContent.Binding = binding;
 				if (project != null)
-					newContent.Project = project;
+					newContent.Owner = project;
 
 				Counters.OpenDocumentTimer.Trace ("Loading file");
 

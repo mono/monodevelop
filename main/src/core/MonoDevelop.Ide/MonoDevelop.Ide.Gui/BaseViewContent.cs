@@ -40,6 +40,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		IWorkbenchWindow workbenchWindow;
 		Project project;
+		SolutionItem owner;
 
 		public abstract Control Control { get; }
 
@@ -142,6 +143,20 @@ namespace MonoDevelop.Ide.Gui
 		protected virtual void OnSetProject (Project project)
 		{
 			this.project = project;
+		}
+
+		public SolutionItem Owner {
+			get {
+				return owner;
+			}
+			set {
+				OnSetOwner (value);
+			}
+		}
+
+		protected virtual void OnSetOwner (SolutionItem owner)
+		{
+			this.owner = owner;
 		}
 
 		/// <summary>

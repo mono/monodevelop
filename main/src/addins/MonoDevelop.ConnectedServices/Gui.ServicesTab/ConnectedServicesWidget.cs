@@ -56,7 +56,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// <summary>
 		/// Shows the services gallery and removes the details widget if it is visible
 		/// </summary>
-		public void ShowGallery(IConnectedService[] services, Project project)
+		public void ShowGallery(IConnectedService[] services, SolutionItem owner)
 		{
 			if (gallery == null) {
 				gallery = new ServicesGalleryWidget ();
@@ -67,7 +67,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			gallery.LoadServices (services);
 
 			header.Image = ImageService.GetIcon ("md-service");
-			header.Subtitle = project?.Name;
+			header.Subtitle = owner?.Name;
 			header.BackButtonVisible = false;
 
 			ShowingService = null;

@@ -115,6 +115,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			content.Project = project; 
 		}
 
+		protected override void OnSetOwner (Projects.SolutionItem owner)
+		{
+			base.OnSetOwner (owner);
+			content.Owner = owner;
+		}
+
 		public override ProjectReloadCapability ProjectReloadCapability {
 			get {
 				return content.ProjectReloadCapability;

@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void UpdateTextEditorOptions (object sender, EventArgs e)
 		{
-			UpdateStyleParent (Project, textEditor.MimeType);
+			UpdateStyleParent (Owner, textEditor.MimeType);
 		}
 
 		uint autoSaveTimer = 0;
@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.Editor
 				policyContainer.PolicyChanged -= HandlePolicyChanged;
 		}
 
-		void UpdateStyleParent (MonoDevelop.Projects.Project styleParent, string mimeType)
+		void UpdateStyleParent (MonoDevelop.Projects.SolutionItem styleParent, string mimeType)
 		{
 			RemovePolicyChangeHandler ();
 
@@ -191,11 +191,11 @@ namespace MonoDevelop.Ide.Editor
 			} else {
 				var normalParser = TypeSystemService.GetParser (textEditor.MimeType);
 				if (normalParser != null) {
-					parsedDocument = await normalParser.Parse(
+					parsedDocument = await normalParser.Parse (
 						new TypeSystem.ParseOptions {
 							FileName = textEditor.FileName,
-							Content = new StringTextSource(text),
-							Project = Project
+							Content = new StringTextSource (text),
+							Owner = Owner
 						});
 				}
 			}
@@ -257,7 +257,7 @@ namespace MonoDevelop.Ide.Editor
 		protected override void OnSetProject (MonoDevelop.Projects.Project project)
 		{
 			base.OnSetProject (project);
-			textEditorImpl.ViewContent.Project = project;
+			textEditorImpl.ViewContent.Owner = project;
 			UpdateTextEditorOptions (null, null);
 		}
 

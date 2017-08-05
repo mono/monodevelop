@@ -166,8 +166,8 @@ namespace MonoDevelop.Ide.Gui
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
-			if (window.ViewContent.Project != null)
-				window.ViewContent.Project.Modified += HandleProjectModified;
+			if (window.ViewContent.Owner != null)
+				window.ViewContent.Owner.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
 			window.ViewContent.ContentNameChanged += ReloadAnalysisDocumentHandler;
 			MonoDevelopWorkspace.LoadingFinished += ReloadAnalysisDocumentHandler;
@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.Gui
 		Solution adhocSolution;
 
 		public override Project Project {
-			get { return (Window != null ? Window.ViewContent.Project : null) ?? adhocProject; }
+			get { return (Window != null ? Window.ViewContent.Owner as Project : null) ?? adhocProject; }
 /*			set { 
 				Window.ViewContent.Project = value; 
 				if (value != null)
@@ -512,7 +512,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// do actual save
 			Window.ViewContent.ContentName = filename;
-			Window.ViewContent.Project = Workbench.GetProjectContainingFile (filename);
+			Window.ViewContent.Owner = Workbench.GetProjectContainingFile (filename);
 			await Window.ViewContent.Save (new FileSaveInformation (filename, encoding));
 			DesktopService.RecentFiles.AddFile (filename, (Project)null);
 			
@@ -589,8 +589,8 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
 
 			// Unsubscribe project events
-			if (window.ViewContent.Project != null)
-				window.ViewContent.Project.Modified -= HandleProjectModified;
+			if (window.ViewContent.Owner != null)
+				window.ViewContent.Owner.Modified -= HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
 			MonoDevelopWorkspace.LoadingFinished -= ReloadAnalysisDocumentHandler;
 
@@ -735,15 +735,15 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void SetProject (Project project)
 		{
-			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project || project == adhocProject)
+			if (Window == null || Window.ViewContent == null || Window.ViewContent.Owner == project || project == adhocProject)
 				return;
 			UnloadAdhocProject ();
 			if (adhocProject == null)
 				UnsubscribeAnalysisDocument ();
 			// Unsubscribe project events
-			if (Window.ViewContent.Project != null)
-				Window.ViewContent.Project.Modified -= HandleProjectModified;
-			Window.ViewContent.Project = project;
+			if (Window.ViewContent.Owner != null)
+				Window.ViewContent.Owner.Modified -= HandleProjectModified;
+			Window.ViewContent.Owner = project;
 			if (project != null)
 				project.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
@@ -1081,8 +1081,8 @@ namespace MonoDevelop.Ide.Gui
 
 		void OnEntryRemoved (object sender, SolutionItemEventArgs args)
 		{
-			if (args.SolutionItem == window.ViewContent.Project)
-				window.ViewContent.Project = null;
+			if (args.SolutionItem == window.ViewContent.Owner)
+				window.ViewContent.Owner = null;
 		}
 		
 		public event EventHandler Closed;

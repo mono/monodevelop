@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui
 		public virtual object GetDocumentObject ()
 		{
 			string path = IsUntitled ? UntitledName : ContentName;
-			if (IsFile && !string.IsNullOrEmpty (path) && Project != null) {
+			if (IsFile && !string.IsNullOrEmpty (path) && Owner != null) {
 					return Project.Files.GetFile (path);
 			}
 			return null;
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		internal string PathRelativeToProject {
-			get { return Project == null ? null : FileService.AbsoluteToRelativePath (Project.BaseDirectory, ContentName); }
+			get { return Owner == null ? null : FileService.AbsoluteToRelativePath (Owner.BaseDirectory, ContentName); }
 		}
 
 		public virtual Task Save ()

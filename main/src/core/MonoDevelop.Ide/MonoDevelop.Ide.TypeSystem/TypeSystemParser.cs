@@ -55,6 +55,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public ITextSource Content { get; set; }
 
 		public MonoDevelop.Projects.Project Project { get; set; }
+		public MonoDevelop.Projects.SolutionItem Owner { get; set; }
 
 		public Document RoslynDocument { get; set; }
 		public ParsedDocument OldParsedDocument { get; internal set; }
