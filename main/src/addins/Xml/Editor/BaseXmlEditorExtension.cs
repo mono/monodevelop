@@ -550,8 +550,8 @@ namespace MonoDevelop.Xml.Editor
 			//because that means there are closing tags on the line, and they de-indent the line they're on
 			var endElementDepth = GetElementIndentDepth (Tracker.Engine.Nodes);
 			var elementDepth = Math.Min (endElementDepth, startElementDepth);
-
-			//FIXME: use policies
+			if (Editor.Options.TabsToSpaces)
+				return new string (' ', elementDepth * Editor.Options.TabSize);
 			return new string ('\t', elementDepth /*+ attributeDepth*/);
 		}
 		
