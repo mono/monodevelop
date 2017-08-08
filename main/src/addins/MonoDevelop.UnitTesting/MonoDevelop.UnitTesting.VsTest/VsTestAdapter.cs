@@ -172,6 +172,25 @@ namespace MonoDevelop.UnitTesting.VsTest
 		TextWriter outW = new StringWriter ();
 		TextWriter errW = new StringWriter ();
 
+		class ProcessHostConsole : OperationConsole
+		{
+			public override TextReader In {
+				get { return Console.In; }
+			}
+
+			public override TextWriter Out {
+				get { return Console.Out; }
+			}
+
+			public override TextWriter Error {
+				get { return Console.Error; }
+			}
+
+			public override TextWriter Log {
+				get { return Out; }
+			}
+		}
+
 		ProcessAsyncOperation StartVsTestConsoleExe (int port)
 		{
 			string vsTestConsoleExeFolder = Path.Combine (Path.GetDirectoryName (typeof (VsTestAdapter).Assembly.Location), "VsTestConsole");
