@@ -43,6 +43,9 @@
     <Compile Include="..\MonoDevelop.VersionControl.Git.Tests\BaseRepositoryTests.cs">
       <Link>BaseRepositoryTests.cs</Link>
     </Compile>
+    <Compile Include="..\MonoDevelop.VersionControl\MonoDevelop.VersionControl\RevisionHelpers.cs">
+      <Link>RevisionHelpers.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

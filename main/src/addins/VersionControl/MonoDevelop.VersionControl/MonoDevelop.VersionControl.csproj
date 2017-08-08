@@ -1251,6 +1251,7 @@
     <Compile Include="MonoDevelop.VersionControl.Views\BaseView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\Styles.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlInitializer.cs" />
+    <Compile Include="MonoDevelop.VersionControl\RevisionHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
