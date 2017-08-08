@@ -111,6 +111,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			NSUserDefaults defaults = NSUserDefaults.StandardUserDefaults;
 			defaults.SetBool (enabled.Active, EnabledKey);
+			defaults.Synchronize ();
 		}
 
 		void ShowQuitOption (object sender, EventArgs args)
