@@ -54,12 +54,18 @@
 		<Import file = "Templates/MvcCommon/_ViewStart.cshtml"/>
 
 		<Import file = "Templates/EmptyCssFile.xft.xml"/>
+		<Import file = "Templates/EmptyLessFile.xft.xml"/>
+		<Import file = "Templates/EmptyScssFile.xft.xml"/>
 		<Import file = "Templates/EmptyJsonFile.xft.xml"/>
+		<Import file = "Templates/EmptyTypeScriptFile.xft.xml"/>
 		<Import file = "Templates/GlobalAsax.xft.xml"/>
 		<Import file = "Templates/JsonFileTemplate.json"/>
+		<Import file = "Templates/TypeScriptFileTemplate.ts"/>
 		<Import file = "Templates/PreprocessedRazorTemplate.xft.xml" />
 		<Import file = "Templates/RouteConfig.cs"/>
 		<Import file = "Templates/StylesheetTemplate.css"/>
+		<Import file = "Templates/StylesheetTemplate.less"/>
+		<Import file = "Templates/StylesheetTemplate.scss"/>
 		<Import file = "Templates/WebApiConfig.cs"/>
 		<Import file = "Templates/WebConfig-Application.xft.xml"/>
 		<Import file = "Templates/WebConfig-SubDir.xft.xml"/>
@@ -160,8 +166,14 @@
 
 		<FileTemplate id   = "EmptyCSSFile"
 		              file = "Templates/EmptyCssFile.xft.xml"/>
+		<FileTemplate id   = "EmptyLESSFile"
+		              file = "Templates/EmptyLessFile.xft.xml"/>
+		<FileTemplate id   = "EmptySCSSFile"
+		              file = "Templates/EmptyScssFile.xft.xml"/>
 		<FileTemplate id   = "EmptyJSONFile"
 		              file = "Templates/EmptyJsonFile.xft.xml"/>
+		<FileTemplate id   = "EmptyTypeScriptFile"
+		              file = "Templates/EmptyTypeScriptFile.xft.xml"/>
 		
 	</Extension>
 
