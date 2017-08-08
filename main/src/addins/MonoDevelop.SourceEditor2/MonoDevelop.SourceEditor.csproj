@@ -284,6 +284,7 @@
     <Compile Include="Mono.TextEditor.Theatrics\SmartScrolledWindow.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\Stage.cs" />
     <None Include="packages.config" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\CodeLensMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

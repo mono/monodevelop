@@ -77,4 +77,12 @@ namespace MonoDevelop.Ide.Editor
 
 		void AddTask (MonoDevelop.Ide.Tasks.TaskListEntry task);
 	}
+
+	public interface ICodeLensMarker : ITextLineMarker
+	{
+		int CodeLensCount { get; }
+
+		void AddLens (MonoDevelop.Ide.Editor.Extension.CodeLens lens);
+		void RemoveLens (MonoDevelop.Ide.Editor.Extension.CodeLens lens);
+	}
 }

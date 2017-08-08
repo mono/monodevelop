@@ -3496,6 +3496,11 @@ namespace MonoDevelop.SourceEditor
 			return new MessageBubbleTextMarker (messageBubbleCache);
 		}
 
+		ICodeLensMarker ITextMarkerFactory.CreateCodeLensMarker (TextEditor editor)
+		{
+			return new CodeLensMarker ();
+		}
+
 		IGenericTextSegmentMarker ITextMarkerFactory.CreateGenericTextSegmentMarker (MonoDevelop.Ide.Editor.TextEditor editor, TextSegmentMarkerEffect effect, int offset, int length)
 		{
 			switch (effect) {

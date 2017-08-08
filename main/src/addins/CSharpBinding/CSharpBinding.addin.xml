@@ -343,4 +343,9 @@
 	<Extension path = "/MonoDevelop/Ide/AutoInsertBracketHandler">
 		<Class class="MonoDevelop.CSharp.Features.AutoInsertBracket.CSharpAutoInsertBracketHandler" insertbefore="Default"/>
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/CodeLensProvider">
+		<CodeLens class="MonoDevelop.CSharp.Refactoring.CSharpCodeLensProvider" mimeType="text/x-csharp"/>
+	</Extension>
+	
 </ExtensionModel>

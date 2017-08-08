@@ -238,6 +238,10 @@
 		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Ide/CodeLensProvider" name = "Code lens provider">
+		<Description>Algorithm for providing code lenses in a file.</Description>
+		<ExtensionNode name="CodeLens" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
+	</ExtensionPoint>
   <!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
@@ -320,6 +324,7 @@
 		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateFoldingTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateIndentationTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateCompletionTextEditorExtension" />
+		<Class class = "MonoDevelop.Ide.Editor.Extension.CodeLensTextEditorExtension" />
 		<Class id="FinalStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
 	</Extension>
 	
