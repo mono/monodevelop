@@ -108,12 +108,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			cw.Destroy ();
 			ShowPage (0);*/
 		}
-		
-		protected override void OnSetProject (Projects.Project project)
-		{
-			base.OnSetProject (project);
-			content.Project = project; 
-		}
 
 		protected override void OnSetOwner (Projects.SolutionItem owner)
 		{

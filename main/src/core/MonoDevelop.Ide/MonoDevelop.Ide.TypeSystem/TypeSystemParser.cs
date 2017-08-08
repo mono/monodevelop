@@ -54,7 +54,15 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public ITextSource Content { get; set; }
 
-		public MonoDevelop.Projects.Project Project { get; set; }
+		public MonoDevelop.Projects.Project Project {
+			get {
+				return (Owner as MonoDevelop.Projects.Project);
+			}
+			set {
+				this.Owner = value;
+			}
+		}
+
 		public MonoDevelop.Projects.SolutionItem Owner { get; set; }
 
 		public Document RoslynDocument { get; set; }

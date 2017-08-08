@@ -54,7 +54,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		public event EventHandler<ServiceEventArgs> ServiceShown;
 
 		/// <summary>
-		/// Shows the services gallery and removes the details widget if it is visible
+		/// Shows the services gallery and removes the details widget if it is visible (Project version)
+		/// </summary>
+		public void ShowGallery (IConnectedService [] services, Project project)
+		{
+			ShowGallery (services, project as SolutionItem);
+		}
+
+		/// <summary>
+		/// Shows the services gallery and removes the details widget if it is visible (SolutionItem version)
 		/// </summary>
 		public void ShowGallery(IConnectedService[] services, SolutionItem owner)
 		{

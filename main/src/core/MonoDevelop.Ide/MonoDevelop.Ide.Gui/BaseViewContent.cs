@@ -127,10 +127,10 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		public Project Project {
 			get {
-				return project;
+				return Owner as Project;
 			}
 			set {
-				OnSetProject (value);
+				OnSetOwner (project);
 			}
 		}
 
@@ -140,11 +140,15 @@ namespace MonoDevelop.Ide.Gui
 		/// <param name="project">
 		/// New project assigned to the view. It can be null.
 		/// </param>
+		[Obsolete ("Use (OnSetOwner (SolutionItem owner))")]
 		protected virtual void OnSetProject (Project project)
 		{
 			this.project = project;
 		}
 
+		/// <summary>
+		/// Gets or sets the SolutionItem bound to the view
+		/// </summary>
 		public SolutionItem Owner {
 			get {
 				return owner;
@@ -156,6 +160,10 @@ namespace MonoDevelop.Ide.Gui
 
 		protected virtual void OnSetOwner (SolutionItem owner)
 		{
+			if (owner is Project project)
+			{
+				OnSetProject (project);
+			}
 			this.owner = owner;
 		}
 

@@ -38,6 +38,11 @@ namespace MonoDevelop.Ide.GettingStarted
 			return null;
 		}
 
+		public static GettingStartedNode GetGettingStartedNode (this Project project)
+		{
+			return GetGettingStartedNode (project as SolutionItem);
+		}
+
 		public static GettingStartedNode GetGettingStartedNode (this SolutionItem owner)
 		{
 			return owner.GetService<GettingStartedProjectExtension> ()?.ProjectPadNode;

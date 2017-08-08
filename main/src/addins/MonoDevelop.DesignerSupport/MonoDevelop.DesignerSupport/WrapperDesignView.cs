@@ -81,12 +81,6 @@ namespace MonoDevelop.DesignerSupport
 		protected ViewContent Content {
 			get { return content; }
 		}
-		
-		protected override void OnSetProject (MonoDevelop.Projects.Project project)
-		{
-			base.OnSetProject (project);
-			content.Project = project;
-		}
 
 		protected override void OnSetOwner (MonoDevelop.Projects.SolutionItem owner)
 		{

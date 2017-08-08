@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui
 		public virtual object GetDocumentObject ()
 		{
 			string path = IsUntitled ? UntitledName : ContentName;
-			if (IsFile && !string.IsNullOrEmpty (path) && Owner != null) {
+			if (IsFile && !string.IsNullOrEmpty (path) && Project != null) {
 					return Project.Files.GetFile (path);
 			}
 			return null;
