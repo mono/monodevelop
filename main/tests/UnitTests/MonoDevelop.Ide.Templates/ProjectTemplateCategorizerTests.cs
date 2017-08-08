@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MonoDevelop.Core;
+using System.Threading.Tasks;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using UnitTests;
@@ -49,8 +49,6 @@ namespace MonoDevelop.Ide.Templates
 		{
 			categories = new List<TemplateCategory> ();
 			templates = new List<SolutionTemplate> ();
-
-			recentlyUsedTemplatesFile = Path.Combine (Util.TmpDir, "TestRecentlyUsedTemplates.xml");
 		}
 
 		[TearDown]
@@ -58,6 +56,11 @@ namespace MonoDevelop.Ide.Templates
 		{
 			if (File.Exists (recentlyUsedTemplatesFile))
 				Util.ClearTmpDir ();
+		}
+
+		static string GetRecentlyUsedTemplatesFileName (string name)
+		{
+			return Path.Combine (Util.TmpDir, name);
 		}
 
 		void CreateCategories (string topLevelCategoryName, string secondLevelCategoryName, string thirdLevelCategoryName)
@@ -127,6 +130,39 @@ namespace MonoDevelop.Ide.Templates
 			var parameters = new ProjectCreateParameters ();
 			parameters [name] = value;
 			return parameters;
+		}
+
+		/// <summary>
+		/// The RecentTemplates class uses the RecentFileStorage class. In the
+		/// RecentFileStorage class constructor a task is started to create a file
+		/// and may finish whilst the unit test is adding a new template. This task
+		/// delay can cause the cached in-memory list in the RecentFileStorage to be
+		/// cleared. This causes the test to fail since it will run before the
+		/// in-memory list can be updated when the RecentFileStorage class saves the
+		/// file to disk. This saving to file is delayed by a second. So we retry
+		/// getting the templates from the RecentTemplates until a timeout occurs.
+		/// Most of the time the RecentTemplates.GetTemplates method works first
+		/// time and returns the expected templates.
+		/// </summary>
+		static async Task<IList<SolutionTemplate>> GetRecentTemplates (
+			RecentTemplates recentTemplates,
+			List<TemplateCategory> categorizedTemplates,
+			int expectedTemplateCount)
+		{
+			const int MAX_WAIT_TIME = 5000;
+			const int RETRY_WAIT = 100;
+
+			int remainingTries = MAX_WAIT_TIME / RETRY_WAIT;
+			while (remainingTries > 0) {
+				var recentTemplatesList = recentTemplates.GetTemplates (categorizedTemplates);
+				if (recentTemplatesList.Count == expectedTemplateCount)
+					return recentTemplatesList;
+
+				// Wait for recent file storage to be updated.
+				await Task.Delay (RETRY_WAIT);
+				remainingTries--;
+			}
+			return new List<SolutionTemplate> ();
 		}
 
 		[Test]
@@ -626,7 +662,7 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		[Test]
-		public void RecentTemplates_TwoTemplatesInGroupConditionSameLanguage_TreatedAsSameRecentTemplate ()
+		public async Task RecentTemplates_TwoTemplatesInGroupConditionSameLanguage_TreatedAsSameRecentTemplate ()
 		{
 			CreateCategories ("android", "app", "general");
 			CreateCategorizer ();
@@ -637,13 +673,14 @@ namespace MonoDevelop.Ide.Templates
 			template2.GroupId = "console";
 			template2.Language = "C#";
 			CategorizeTemplates ();
+			recentlyUsedTemplatesFile = GetRecentlyUsedTemplatesFileName ("TwoTemplatesInGroupSameLanguage.xml");
 			var recentTemplates = new RecentTemplates (recentlyUsedTemplatesFile);
 			var initialRecentTemplatesList = recentTemplates.GetTemplates (categorizedTemplates);
 
 			recentTemplates.AddTemplate (template1);
 			recentTemplates.AddTemplate (template2);
 
-			var recentTemplatesList = recentTemplates.GetTemplates (categorizedTemplates);
+			var recentTemplatesList = await GetRecentTemplates (recentTemplates, categorizedTemplates, 1);
 
 			Assert.AreEqual (0, initialRecentTemplatesList.Count);
 			Assert.AreEqual (1, recentTemplatesList.Count);
@@ -651,7 +688,7 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		[Test]
-		public void RecentTemplates_TwoTemplatesInGroupDifferentLanguage_TreatedAsDifferentRecentTemplate ()
+		public async Task RecentTemplates_TwoTemplatesInGroupDifferentLanguage_TreatedAsDifferentRecentTemplate ()
 		{
 			CreateCategories ("android", "app", "general");
 			CreateCategorizer ();
@@ -662,13 +699,14 @@ namespace MonoDevelop.Ide.Templates
 			template2.GroupId = "console";
 			template2.Language = "F#";
 			CategorizeTemplates ();
+			recentlyUsedTemplatesFile = GetRecentlyUsedTemplatesFileName ("TwoTemplatesInGroupDifferentLanguage.xml");
 			var recentTemplates = new RecentTemplates (recentlyUsedTemplatesFile);
 			var initialRecentTemplatesList = recentTemplates.GetTemplates (categorizedTemplates);
 
 			recentTemplates.AddTemplate (template1);
 			recentTemplates.AddTemplate (template2);
 
-			var recentTemplatesList = recentTemplates.GetTemplates (categorizedTemplates);
+			var recentTemplatesList = await GetRecentTemplates (recentTemplates, categorizedTemplates, 2);
 
 			Assert.AreEqual (0, initialRecentTemplatesList.Count);
 			Assert.AreEqual (2, recentTemplatesList.Count);
