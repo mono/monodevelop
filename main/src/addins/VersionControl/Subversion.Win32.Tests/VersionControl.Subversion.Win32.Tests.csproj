@@ -42,6 +42,9 @@
     <Compile Include="..\MonoDevelop.VersionControl.Subversion.Tests\BaseSvnRepositoryTests.cs">
       <Link>BaseSvnRepositoryTests.cs</Link>
     </Compile>
+    <Compile Include="..\MonoDevelop.VersionControl\MonoDevelop.VersionControl\RevisionHelpers.cs">
+      <Link>RevisionHelpers.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
