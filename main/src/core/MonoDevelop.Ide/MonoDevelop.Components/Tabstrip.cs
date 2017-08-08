@@ -456,9 +456,10 @@ namespace MonoDevelop.Components
 				layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
 			}
 
-			layout.Width = (int)rectangle.Width;
+			// Pango.Layout.Width is in pango units
+			layout.Width = (int)rectangle.Width * (int)Pango.Scale.PangoScale;
 
-			cr.MoveTo (rectangle.X + (int)(rectangle.Width / 2), (rectangle.Height - h) / 2 - 1);
+			cr.MoveTo (rectangle.X, (rectangle.Height - h) / 2 - 1);
 			Pango.CairoHelper.ShowLayout (cr, layout);
 
 			if (parent.HasFocus && Focused) {
