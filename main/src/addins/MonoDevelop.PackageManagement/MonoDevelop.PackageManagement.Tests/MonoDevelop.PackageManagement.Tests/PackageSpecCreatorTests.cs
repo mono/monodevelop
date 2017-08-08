@@ -24,15 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
+using NuGet.Commands;
+using NuGet.Configuration;
+using NUnit.Framework;
 using NuGet.Frameworks;
 using NuGet.LibraryModel;
 using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
-using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -44,11 +47,13 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakeSolution solution;
 		PackageManagementEvents packageManagementEvents;
 		PackageManagementLogger logger;
+		FakeNuGetSettings settings;
 
 		void CreateProject (string name, string fileName = @"d:\projects\MyProject\MyProject.csproj")
 		{
 			packageManagementEvents = new PackageManagementEvents ();
 			logger = new PackageManagementLogger (packageManagementEvents);
+			settings = new FakeNuGetSettings ();
 			solution = new FakeSolution ();
 			project = new FakeDotNetProject (fileName.ToNativePath ());
 			project.ParentSolution = solution;
@@ -62,13 +67,15 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreatePackageSpec ()
 		{
-			spec = PackageSpecCreator.CreatePackageSpec (project, logger);
+			var context = new DependencyGraphCacheContext (logger, settings);
+			spec = PackageSpecCreator.CreatePackageSpec (project, context);
 		}
 
-		void AddPackageReference (string id, string version)
+		TestableProjectPackageReference AddPackageReference (string id, string version)
 		{
 			var packageReference = new TestableProjectPackageReference (id, version);
 			project.PackageReferences.Add (packageReference);
+			return packageReference;
 		}
 
 		FakeDotNetProject AddProjectReference (string projectName, string fileName, string include, bool referenceOutputAssembly = true)
@@ -88,6 +95,22 @@ namespace MonoDevelop.PackageManagement.Tests
 		void AddPackageTargetFallback (string packageTargetFallback)
 		{
 			project.AddPackageTargetFallback (packageTargetFallback);
+		}
+
+		void AddAssetTargetFallback (string assetTargetFallback)
+		{
+			project.AddProperty ("AssetTargetFallback", assetTargetFallback);
+		}
+
+		void AddPackagesPath (string path)
+		{
+			settings.SetValue (SettingsUtility.ConfigSection, "globalPackagesFolder", path);
+		}
+
+		void AddFallbackFolder (params string[] folders)
+		{
+			var values = folders.Select (folder => new SettingValue (folder, folder, false)).ToList ();
+			settings.SetValues (ConfigurationConstants.FallbackPackageFolders, values);
 		}
 
 		[Test]
@@ -296,6 +319,161 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("netcoreapp1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
 			Assert.AreEqual (".NETCoreApp,Version=v1.0", targetFramework.FrameworkName.ToString ());
 			Assert.AreEqual (0, targetFramework.ProjectReferences.Count);
+		}
+
+		[Test]
+		public void CreatePackageSpec_PackagesPath_RestoreMetadataHasPackagesPathTakenFromSettings ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			project.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
+			AddTargetFramework ("netcoreapp1.0");
+			string packagesPath = @"c:\users\test\packages".ToNativePath ();
+			AddPackagesPath (packagesPath);
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (packagesPath, spec.RestoreMetadata.PackagesPath);
+		}
+
+		[Test]
+		public void CreatePackageSpec_ConfigFilePaths_RestoreMetadataHasConfigFilesTakenFromSettings ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			project.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
+			AddTargetFramework ("netcoreapp1.0");
+			string configFilePath = @"c:\users\test\.nuget\NuGet\NuGet.Config".ToNativePath ();
+			settings.FileName = configFilePath;
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (1, spec.RestoreMetadata.ConfigFilePaths.Count);
+			Assert.AreEqual (configFilePath, spec.RestoreMetadata.ConfigFilePaths[0]);
+		}
+
+		[Test]
+		public void CreatePackageSpec_PackageSources_RestoreMetadataHasSourcesTakenFromSettings ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			project.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
+			AddTargetFramework ("netcoreapp1.0");
+			var packageSource = new PackageSource ("https://nuget.org", "NuGet source");
+			var sources = new List<SettingValue> ();
+			sources.Add (new SettingValue (packageSource.Name, packageSource.Source, false));
+			settings.SetValues (ConfigurationConstants.PackageSources, sources);
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (1, spec.RestoreMetadata.Sources.Count);
+			Assert.AreEqual (packageSource.Name, spec.RestoreMetadata.Sources[0].Name);
+			Assert.AreEqual (packageSource.Source, spec.RestoreMetadata.Sources[0].Source);
+		}
+
+		[Test]
+		public void CreatePackageSpec_FallbackFolders_RestoreMetadataHasFallbackFoldersTakenFromSettings ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			project.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
+			AddTargetFramework ("netcoreapp1.0");
+			string folderPath = @"c:\users\test\packages".ToNativePath ();
+			AddFallbackFolder (folderPath);
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (1, spec.RestoreMetadata.FallbackFolders.Count);
+			Assert.AreEqual (folderPath, spec.RestoreMetadata.FallbackFolders[0]);
+		}
+
+		[Test]
+		public void CreatePackageSpec_ProjectWideWarningProperties_RestoreMetadataHasProjectWideWarningProperties ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			project.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
+			AddTargetFramework ("netcoreapp1.0");
+
+			project.AddProperty ("TreatWarningsAsErrors", bool.TrueString);
+			project.AddProperty ("WarningsAsErrors", "NU1801");
+			project.AddProperty ("NoWarn", "NU1701");
+
+			CreatePackageSpec ();
+
+			Assert.IsTrue (spec.RestoreMetadata.ProjectWideWarningProperties.AllWarningsAsErrors);
+			Assert.IsTrue (spec.RestoreMetadata.ProjectWideWarningProperties.WarningsAsErrors.Contains (NuGet.Common.NuGetLogCode.NU1801));
+			Assert.IsTrue (spec.RestoreMetadata.ProjectWideWarningProperties.NoWarn.Contains (NuGet.Common.NuGetLogCode.NU1701));
+		}
+
+		[Test]
+		public void CreatePackageSpec_TreatWarningsAsErrorsIsFalse_RestoreMetadataHasTreatWarningsAsErrorsSetToFalse ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			project.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
+			AddTargetFramework ("netcoreapp1.0");
+
+			project.AddProperty ("TreatWarningsAsErrors", bool.FalseString);
+			project.AddProperty ("WarningsAsErrors", "NU1801");
+			project.AddProperty ("NoWarn", "NU1701");
+
+			CreatePackageSpec ();
+
+			Assert.IsFalse (spec.RestoreMetadata.ProjectWideWarningProperties.AllWarningsAsErrors);
+			Assert.IsTrue (spec.RestoreMetadata.ProjectWideWarningProperties.WarningsAsErrors.Contains (NuGet.Common.NuGetLogCode.NU1801));
+			Assert.IsTrue (spec.RestoreMetadata.ProjectWideWarningProperties.NoWarn.Contains (NuGet.Common.NuGetLogCode.NU1701));
+		}
+
+		[Test]
+		public void CreatePackageSpec_AssetTargetFallback_ImportsAddedToTargetFramework ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			AddAssetTargetFallback (";dotnet5.6;portable-net45+win8;");
+			CreatePackageSpec ();
+
+			var targetFramework = spec.TargetFrameworks.Single ();
+			var fallbackFramework = targetFramework.FrameworkName as AssetTargetFallbackFramework;
+			Assert.AreEqual (2, targetFramework.Imports.Count);
+			Assert.AreEqual ("dotnet5.6", targetFramework.Imports[0].GetShortFolderName ());
+			Assert.AreEqual ("portable-net45+win8", targetFramework.Imports[1].GetShortFolderName ());
+			Assert.IsNotNull (fallbackFramework);
+			Assert.AreEqual (".NETCoreApp,Version=v1.0", targetFramework.FrameworkName.ToString ());
+			Assert.AreEqual (2, fallbackFramework.Fallback.Count);
+			Assert.AreEqual ("dotnet5.6", fallbackFramework.Fallback[0].GetShortFolderName ());
+			Assert.AreEqual ("portable-net45+win8", fallbackFramework.Fallback[1].GetShortFolderName ());
+			Assert.IsTrue (targetFramework.Warn);
+			Assert.IsTrue (targetFramework.AssetTargetFallback);
+		}
+
+		[Test]
+		public void CreatePackageSpec_AssetTargetFallbackAndPackageTargetFallbackBothDefined_ExceptionThrown ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			AddAssetTargetFallback (";dotnet5.6;portable-net45+win8;");
+			AddPackageTargetFallback (";dotnet5.5;portable-net45+win8;");
+
+			var ex = Assert.Throws<RestoreCommandException> (CreatePackageSpec);
+			string expectedMessage = "PackageTargetFallback and AssetTargetFallback cannot be used together. Remove PackageTargetFallback(deprecated) references from the project environment.";
+			Assert.AreEqual (expectedMessage, ex.Message);
+		}
+
+		[Test]
+		public void CreatePackageSpec_OneImplicitlyDefinedPackageReference_PackageReferencedAddedMarkedAsAutoReferenced ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			var packageReference = AddPackageReference ("Test", "1.2.3");
+			packageReference.IsImplicit = true;
+
+			CreatePackageSpec ();
+
+			var targetFramework = spec.TargetFrameworks.Single ();
+			var dependency = targetFramework.Dependencies.Single ();
+			Assert.AreEqual ("Test", dependency.Name);
+			Assert.IsTrue (dependency.AutoReferenced);
+			Assert.AreEqual (LibraryDependencyType.Default, dependency.Type);
+			Assert.AreEqual (LibraryIncludeFlags.All, dependency.IncludeType);
+			Assert.AreEqual (LibraryIncludeFlagUtils.DefaultSuppressParent, dependency.SuppressParent);
+			Assert.AreEqual ("[1.2.3, )", dependency.LibraryRange.VersionRange.ToString ());
+			Assert.AreEqual (LibraryDependencyTarget.Package, dependency.LibraryRange.TypeConstraint);
+			Assert.AreEqual ("Test", dependency.LibraryRange.Name);
 		}
 	}
 }

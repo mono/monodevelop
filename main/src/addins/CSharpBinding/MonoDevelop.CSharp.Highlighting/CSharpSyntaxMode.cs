@@ -257,7 +257,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		string CheckScopeExists (string color)
 		{
 			HslColor c;
-			if (!theme.TryGetColor (color, EditorThemeColors.Foreground, out c) || c.Equals (defaultColor))
+			if (!theme.TryGetColor (color, EditorThemeColors.Foreground, out c))
 				return null;
 			return color;
 		}

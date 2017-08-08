@@ -53,10 +53,11 @@ type FSharpTextPasteHandler(editor:TextEditor) =
                 let insertionIndent = editor.GetLineIndent line
                 let lines = String.getLines text
                 let firstLine = lines.[0]
-                let firstLineIndent = if copyData.Length > 0 then
-                                          int copyData.[0]
-                                      else
-                                          getIndent firstLine
+                let copyData = copyData |> Option.ofObj
+                let firstLineIndent =
+                    match copyData with
+                    | Some data when data.Length > 0 -> int data.[0]
+                    | _ -> getIndent firstLine
 
                 let indentDifference = insertionIndent.Length - firstLineIndent
                 let remainingLines = lines |> Seq.skip (1)

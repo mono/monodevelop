@@ -309,6 +309,7 @@
     <Compile Include="MonoDevelop.Core.Assemblies\SystemAssemblyServiceTests.cs" />
     <Compile Include="MonoDevelop.Core\StringParserServiceTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpFindReferencesProviderTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CSharpCompletionTextEditorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

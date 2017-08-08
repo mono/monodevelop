@@ -1,10 +1,10 @@
 ﻿//
-// PackageCompatibilityNuGetProject.cs
+// TestableNewProjectDialogController.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using NuGet.Frameworks;
-using NuGet.Packaging;
-using NuGet.Packaging.Core;
-using NuGet.ProjectManagement;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Templates;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.Ide
 {
-	class PackageCompatibilityNuGetProject : IPackageCompatibilityNuGetProject
+	class TestableNewProjectDialogController : NewProjectDialogController
 	{
-		MSBuildNuGetProject nugetProject;
-
-		public PackageCompatibilityNuGetProject (MSBuildNuGetProject nugetProject)
+		public TestableNewProjectDialogController ()
 		{
-			this.nugetProject = nugetProject;
+			Backend = new DummyNewProjectDialogBackend ();
+			TemplatingService = new TemplatingService ();
 		}
 
-		public NuGetFramework TargetFramework {
-			get {
-				return nugetProject.GetMetadata<NuGetFramework> (NuGetProjectMetadataKeys.TargetFramework);
-			}
-		}
+		public DummyNewProjectDialogBackend Backend { get; private set; }
 
-		public string GetInstalledPackageFilePath (PackageIdentity packageIdentity)
+		protected override INewProjectDialogBackend CreateNewProjectDialog ()
 		{
-			return nugetProject.FolderNuGetProject.GetInstalledPackageFilePath (packageIdentity);
-		}
-
-		public Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync (CancellationToken token)
-		{
-			return nugetProject.GetInstalledPackagesAsync (token);
+			return Backend;
 		}
 	}
 }

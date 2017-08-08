@@ -1,10 +1,10 @@
 ﻿//
-// PackageCompatibilityNuGetProject.cs
+// DummyNewProjectDialogBackend.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using NuGet.Frameworks;
-using NuGet.Packaging;
-using NuGet.Packaging.Core;
-using NuGet.ProjectManagement;
+using System;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.Ide.Projects
 {
-	class PackageCompatibilityNuGetProject : IPackageCompatibilityNuGetProject
+	class DummyNewProjectDialogBackend : INewProjectDialogBackend
 	{
-		MSBuildNuGetProject nugetProject;
+		public bool CanMoveToNextPage { get; set; }
 
-		public PackageCompatibilityNuGetProject (MSBuildNuGetProject nugetProject)
+		public void CloseDialog ()
 		{
-			this.nugetProject = nugetProject;
 		}
 
-		public NuGetFramework TargetFramework {
-			get {
-				return nugetProject.GetMetadata<NuGetFramework> (NuGetProjectMetadataKeys.TargetFramework);
-			}
+		public void RegisterController (INewProjectDialogController controller)
+		{
 		}
 
-		public string GetInstalledPackageFilePath (PackageIdentity packageIdentity)
-		{
-			return nugetProject.FolderNuGetProject.GetInstalledPackageFilePath (packageIdentity);
-		}
+		public Action OnShowDialogCalled = () => { };
 
-		public Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync (CancellationToken token)
+		public void ShowDialog ()
 		{
-			return nugetProject.GetInstalledPackagesAsync (token);
+			OnShowDialogCalled ();
 		}
 	}
 }

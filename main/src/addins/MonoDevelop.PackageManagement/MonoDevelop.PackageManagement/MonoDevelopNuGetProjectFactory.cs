@@ -85,12 +85,10 @@ namespace MonoDevelop.PackageManagement
 			string projectJsonPath = ProjectJsonPathUtilities.GetProjectConfigPath (project.BaseDirectory, project.Name);
 
 			if (File.Exists (projectJsonPath)) {
-				return new ProjectJsonBuildIntegratedProjectSystem  (
+				return new ProjectJsonBuildIntegratedNuGetProject (
 					projectJsonPath,
 					project.FileName,
 					project,
-					projectSystem,
-					project.Name,
 					settings);
 			}
 
@@ -99,7 +97,7 @@ namespace MonoDevelop.PackageManagement
 
 			string packagesConfigFolderPath = project.BaseDirectory;
 
-			return new MSBuildNuGetProject (
+			return new MonoDevelopMSBuildNuGetProject (
 				projectSystem, 
 				folderNuGetProjectFullPath, 
 				packagesConfigFolderPath);

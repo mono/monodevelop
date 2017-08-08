@@ -52,7 +52,11 @@ namespace MonoDevelop.Ide.Templates
 
 		Image LoadImageFromResource (string imageId)
 		{
-			return IdeApp.Services.TemplatingService.LoadTemplateImage (imageId);
+			if (IdeApp.IsInitialized)
+				return IdeApp.Services.TemplatingService.LoadTemplateImage (imageId);
+
+			// Should only happen when running unit tests.
+			return null;
 		}
 
 		public void Dispose ()
