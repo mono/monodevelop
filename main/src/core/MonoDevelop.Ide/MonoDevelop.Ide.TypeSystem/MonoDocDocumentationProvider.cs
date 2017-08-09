@@ -73,12 +73,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					string memberName;
 					if (openIdx < 0) {
 						memberName = idString.Substring (idx + 1);
-						return doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + memberName + "']").OuterXml;
+						var xmlNode = doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + memberName + "']/Docs");
+						return xmlNode.OuterXml;
 					}
 					string parameterString = idString.Substring (openIdx + 1, idString.Length - openIdx - 2);
 					var parameterTypes = parameterString.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 					memberName = idString.Substring (idx + 1, openIdx - idx - 1);
-					foreach (var o in doc.SelectNodes ("/Type/Members/Member[@MemberName='" + memberName + "']")) {
+					foreach (var o in doc.SelectNodes ("/Type/Members/Member[@MemberName='" + memberName + "']/Docs")) {
 						var curNode = o as XmlElement;
 						if (curNode == null)
 							continue;
