@@ -190,6 +190,7 @@ namespace Mono.TextEditor
 				}
 				rectangleHeight = yEnd - y;
 
+				// FIXME: Need to take scroll offset into consideration
 				return new Rectangle ((int)((xPos / Pango.Scale.PangoScale) + Margin.XOffset), (int)y, (int)rectangleWidth, (int)rectangleHeight);
 			}
 
@@ -203,6 +204,7 @@ namespace Mono.TextEditor
 				if (line == null) {
 					return 0;
 				}
+
 				return line.LineNumber;
 			}
 
@@ -210,14 +212,7 @@ namespace Mono.TextEditor
 			{
 				// Check if the glyph at offset really is just 1 char wide
 				var c = Margin.Document.GetCharAt (index);
-				int length;
-
-				// Is this right, does it make any difference?
-				if (char.IsWhiteSpace (c)) {
-					length = 0;
-				} else {
-					length = 1;
-				}
+				int length = 1;
 
 				return new AtkCocoa.Range { Location = index, Length = length };
 			}
@@ -226,7 +221,8 @@ namespace Mono.TextEditor
 			{
 				var line = Margin.Document.GetLine (lineNo);
 
-				return new AtkCocoa.Range { Location = line.Offset, Length = line.Length };
+				int length = line.Length > 0 ? line.Length : line.LengthIncludingDelimiter;
+				return new AtkCocoa.Range { Location = line.Offset, Length = length };
 			}
 
 			AtkCocoa.Range GetRangeForPosition (Gdk.Point position)
