@@ -1487,6 +1487,12 @@ namespace Mono.TextEditor
 				return textViewMargin;
 			}
 		}
+
+		public GutterMargin GutterMargin {
+			get {
+				return gutterMargin;
+			}
+		}
 		
 		public Margin IconMargin {
 			get { return iconMargin; }
