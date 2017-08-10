@@ -50,8 +50,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			cancellationToken.ThrowIfCancellationRequested ();
 			SourceText text;
-			if (IdeApp.Workbench?.Documents.Any (doc => doc.IsFile && doc.FileName != null && FilePath.PathComparer.Compare (Path.GetFullPath (doc.FileName), fileName) == 0) == true) {
-				var document = IdeApp.Workbench?.Documents.FirstOrDefault (doc => doc.IsFile && doc.FileName != null && FilePath.PathComparer.Compare (Path.GetFullPath (doc.FileName), fileName) == 0);
+			if (IdeApp.Workbench?.Documents.Any (doc => doc.IsFile && doc.FileName != null && FilePath.PathComparer.Compare (Path.GetFullPath (doc.FileName), fileName) == 0 && doc.Editor != null) == true) {
+				var document = IdeApp.Workbench?.Documents.FirstOrDefault (doc => doc.IsFile && doc.FileName != null && FilePath.PathComparer.Compare (Path.GetFullPath (doc.FileName), fileName) == 0 && doc.Editor != null);
 				text = MonoDevelopSourceText.Create (document.Editor);
 			} else {
 				try {
