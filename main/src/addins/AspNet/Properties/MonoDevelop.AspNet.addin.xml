@@ -309,11 +309,20 @@
 		<MimeType id="application/x-master-page" _description="ASP.NET master page" icon="md-html-file-icon" isText="true">
 			<File pattern="*.master|*.Master" />
 		</MimeType>
-		<MimeType id="application/javascript" _description="Javascript source code" icon="md-html-file-icon" isText="true">
+		<MimeType id="application/javascript" _description="Javascript source code" icon="md-file-js" isText="true">
 			<File pattern="*.js" />
 		</MimeType>
-		<MimeType id="text/x-less" _description="LESS, CSS document" icon="md-html-file-icon" isText="true">
+		<MimeType id="text/css" _description="CSS document" icon="md-file-css" isText="true">
+			<File pattern="*.css" />
+		</MimeType>
+		<MimeType id="text/x-less" _description="LESS, CSS document" icon="md-file-less" isText="true">
 			<File pattern="*.less" />
+		</MimeType>
+		<MimeType id="text/x-sass" _description="SASS, CSS document" icon="md-file-scss" isText="true">
+			<File pattern="*.sass" />
+		</MimeType>
+		<MimeType id="text/x-scss" _description="SCSS, CSS document" icon="md-file-scss" isText="true">
+			<File pattern="*.scss" />
 		</MimeType>
 		<MimeType id="text/html" _description="HTML document" icon="md-html-file-icon" isText="true">
 			<File pattern="*.html|*.htm" />
@@ -322,7 +331,7 @@
 			baseType="text/html">
 			<File pattern="*.spark" />
 		</MimeType>
-		<MimeType id="application/typescript" _description="Typescript source code" icon="md-html-file-icon" isText="true">
+		<MimeType id="application/typescript" _description="Typescript source code" icon="md-file-ts" isText="true">
 			<File pattern="*.ts" />
 		</MimeType>
 		<MimeType id="text/x-cshtml" _description="Razor template" icon="md-html-file-icon" isText="true">
