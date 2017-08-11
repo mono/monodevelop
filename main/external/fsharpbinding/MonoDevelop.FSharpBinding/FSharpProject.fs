@@ -50,6 +50,11 @@ type FSharpProject() as self =
         // Merge ItemGroups into one group ordered by folder name
         // so that VS for Windows can load it.
         let projectPath = project.FileName.ParentDirectory |> string
+        let projectFiles =
+            self.Files
+            |> Seq.filter(fun f -> f.BuildAction <> "Folder")
+            |> Seq.map(fun f -> f.Include, f.BuildAction) 
+            |> map
 
         let absolutePath path = MSBuildProjectService.FromMSBuildPath(projectPath, path)
 
@@ -57,16 +62,13 @@ type FSharpProject() as self =
             let itemInclude = item.Include.Replace('\\', Path.DirectorySeparatorChar)
             Path.GetDirectoryName itemInclude
 
-        let msbuildItemExistsAsFile (item:MSBuildItem) =
-           let itemPath = absolutePath item.Include
-           item.Name <> "ProjectReference" && File.Exists itemPath
-
         let groups = project.ItemGroups |> List.ofSeq
+
         let itemGroups =
             groups
             |> List.map  (fun group ->
                 group, group.Items
-                       |> Seq.filter msbuildItemExistsAsFile
+                       |> Seq.filter(fun item -> projectFiles.ContainsKey item.Include)
                        |> List.ofSeq)
             |> List.filter (fun (_, items) -> items.Length > 0)
 
@@ -83,7 +85,6 @@ type FSharpProject() as self =
                     | _ -> isParentDirRec dir.Parent
                 isParentDirRec absoluteFile.Directory
 
-        let unsorted = itemGroups |> List.collect snd
         let rec splitFilesByParent (items:MSBuildItem list) parentFolder list1 list2 =
             match items with
             | h :: t ->
@@ -104,10 +105,21 @@ type FSharpProject() as self =
                     orderFiles childrenFirst (h::acc) newFolder
             | [] -> acc |> List.rev
 
-        let sortedItems = orderFiles unsorted [] ""
+        let unsorted = itemGroups |> List.collect snd
+        let msbuildIncludes = unsorted |> List.map(fun msbuild -> msbuild.Name, msbuild.Include) |> Set.ofList
+
+        // Add any items that are projectFiles but not yet msbuild items to the unsorted list
+        // This is to fix a race condition that sometimes occurs - See #57689
+        let buildItems =
+            projectFiles
+            |> Map.filter(fun inc action -> not (msbuildIncludes.Contains (action, inc)))
+            |> Map.fold(fun state inc action ->
+                             (new MSBuildItem(action, Include=inc)) :: state) unsorted
+
+        let sortedItems = orderFiles buildItems [] ""
         let needsSort = 
             match itemGroups with
-            | [_single, items] when items = sortedItems -> false
+            | [_single, groupedItems] when groupedItems = sortedItems -> false
             | _ -> true
 
         if needsSort && sortedItems.Length > 0 then
@@ -124,9 +136,6 @@ type FSharpProject() as self =
     member val TargetFSharpCoreVersion = String.Empty with get, set
 
     override x.IsPortableLibrary = initialisedAsPortable
-
-    override x.OnInitialize() =
-        base.OnInitialize()
 
     override x.OnReadProject(progress, project) =
         initialisedAsPortable <- isPortable project
