@@ -230,6 +230,10 @@ namespace MonoDevelop.Ide.Gui
 			}*/
 		}
 
+		public override SolutionItem Owner {
+			get { return (Window != null ? Window.ViewContent.Owner : null) ?? adhocProject; }
+		}
+
 		internal override bool IsAdHocProject {
 			get { return adhocProject != null; }
 		}

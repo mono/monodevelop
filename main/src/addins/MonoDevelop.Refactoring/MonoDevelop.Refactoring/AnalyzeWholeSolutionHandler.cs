@@ -212,6 +212,12 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 
+			public override Projects.SolutionItem Owner {
+				get {
+					return TypeSystemService.GetMonoProject (project);
+				}
+			}
+
 			public override void AttachToProject (Projects.Project project)
 			{
 				throw new NotImplementedException ();

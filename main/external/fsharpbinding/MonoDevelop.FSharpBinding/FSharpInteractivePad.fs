@@ -81,6 +81,7 @@ type FsiDocumentContext() =
     override x.ReparseDocument() = ()
     override x.GetOptionSet() = TypeSystemService.Workspace.Options
     override x.Project = project :> Project
+    override x.Owner = project :> SolutionItem
     override x.Name = name
     override x.AnalysisDocument with get() = null
     override x.UpdateParseDocument() = Task.FromResult pd

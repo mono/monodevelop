@@ -63,10 +63,18 @@ namespace MonoDevelop.Ide.Editor
 		/// <summary>
 		/// Gets the project this context is in.
 		/// </summary>
-		public abstract Project Project {
-			get;
+		public virtual Project Project {
+			get {
+				return Owner as Project;
+			}
 		}
 
+		/// <summary>
+		/// Gets the SolutionItem this context is in.
+		/// </summary>
+		public abstract SolutionItem Owner {
+			get;
+		}
 
 		/// <summary>
 		/// Determine if the file has already saved on disk. Untitled files are open
