@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Template
+	originator="Mike Lorbetske"
+	language="SCSS"
+	created="2017/08/08"
+	lastModified="2017/08/08">
+
+	<TemplateConfiguration>
+		<_Name>SCSS Style Sheet (SASS)</_Name>
+		<Icon>md-file-scss</Icon>
+		<_Category>Web</_Category>
+		<_Description>SCSS is a language that compiles into CSS.</_Description>
+		<DefaultFilename>EmptySCSSFile</DefaultFilename>
+	</TemplateConfiguration>
+
+	<TemplateFiles>
+		<File DefaultExtension=".scss" src="StylesheetTemplate.scss" />
+	</TemplateFiles>
+</Template>
