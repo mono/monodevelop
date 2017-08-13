@@ -533,6 +533,18 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (openFileInfo);
 		}
 
+		internal Task<Document> OpenDocument (FilePath fileName, SolutionItem owner, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
+		{
+			var openFileInfo = new FileOpenInformation (fileName, owner as Project) {
+				Options = options,
+				Line = line,
+				Column = column,
+				DisplayBinding = binding,
+				Encoding = encoding
+			};
+			return OpenDocument (openFileInfo);
+		}
+
 		static void ScrollToRequestedCaretLocation (Document doc, FileOpenInformation info)
 		{
 			var ipos = doc.Editor;
