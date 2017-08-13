@@ -486,6 +486,15 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (openFileInfo);
 		}
 
+		public Task<Document> OpenDocument (FilePath fileName, SolutionItem owner, bool bringToFront)
+		{
+			return OpenDocument (fileName, owner, bringToFront ? OpenDocumentOptions.Default : OpenDocumentOptions.Default & ~OpenDocumentOptions.BringToFront);
+		}
+
+		public Task<Document> OpenDocument (FilePath fileName, SolutionItem owner, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		{
+			return OpenDocument (fileName, owner, -1, -1, options, null, null);
+		}
 
 		public Task<Document> OpenDocument (FilePath fileName, Project project, bool bringToFront)
 		{
@@ -515,6 +524,18 @@ namespace MonoDevelop.Ide.Gui
 		internal Task<Document> OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
 		{
 			var openFileInfo = new FileOpenInformation (fileName, project) {
+				Options = options,
+				Line = line,
+				Column = column,
+				DisplayBinding = binding,
+				Encoding = encoding
+			};
+			return OpenDocument (openFileInfo);
+		}
+
+		internal Task<Document> OpenDocument (FilePath fileName, SolutionItem owner, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
+		{
+			var openFileInfo = new FileOpenInformation (fileName, owner as Project) {
 				Options = options,
 				Line = line,
 				Column = column,
