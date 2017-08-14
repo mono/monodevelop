@@ -613,6 +613,7 @@
     <InternalsVisibleTo Include="MonoDevelop.PackageManagement.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.Packaging" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
+    <InternalsVisibleTo Include="MonoDevelop.UnitTesting.NUnit" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
