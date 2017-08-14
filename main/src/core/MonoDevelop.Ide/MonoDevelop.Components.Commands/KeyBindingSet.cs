@@ -105,14 +105,34 @@ namespace MonoDevelop.Components.Commands
 			// and is not a real equality check. See KeyBindingsPanel.SelectCurrentScheme().
 			if (other == null)
 				return false;
-			if (parent != null && parent != other && !parent.Equals (other.parent))
+
+			var otherSet = other.GetAllBindings ();
+			var allBindings = GetAllBindings ();
+			if (otherSet.Count != allBindings.Count)
 				return false;
-			foreach (KeyValuePair<string, string> binding in bindings) {
+			foreach (var binding in allBindings) {
 				string accel;
-				if (!other.bindings.TryGetValue (binding.Key, out accel) || accel != binding.Value)
+				if (!otherSet.TryGetValue (binding.Key, out accel) || accel != binding.Value)
 					return false;
 			}
 			return true;
+		}
+
+		IDictionary<string, string> GetAllBindings ()
+		{
+			if (parent == null)
+				return bindings.Where (b => !string.IsNullOrEmpty (b.Value)).ToDictionary (b => b.Key, b => b.Value);
+
+			var pbindings = parent.GetAllBindings ();
+			var allBindings = new Dictionary<string, string> ();
+			foreach (var cmd in bindings.Keys.Concat (pbindings.Keys).Distinct ()) {
+				var accel = string.Empty;
+				if (!bindings.TryGetValue (cmd, out accel))
+					pbindings.TryGetValue (cmd, out accel);
+				if (!string.IsNullOrEmpty (accel))
+					allBindings [cmd] = accel;
+			}
+			return allBindings;
 		}
 
 		public void ClearBindings ()
@@ -230,8 +250,7 @@ namespace MonoDevelop.Components.Commands
 						if (parent?.bindings != null && parent.bindings.TryGetValue (command, out pbind)) {
 							if (binding == pbind)
 								continue;
-						} else if (string.IsNullOrEmpty (binding))
-							continue;
+						}
 						
 						bindings.Add (command, binding);
 						
