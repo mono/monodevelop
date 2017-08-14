@@ -177,8 +177,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 			ToolbarView.RunConfigurationVisible = ToolbarView.RunConfigurationModel.Count () > 1;
 
-			FillRuntimes ();
 			SelectActiveConfiguration ();
+			FillRuntimes ();
+			SelectActiveRuntime (ToolbarView.ActiveRuntime as RuntimeModel);
 		}
 
 		void FillRuntimes ()
@@ -440,8 +441,6 @@ namespace MonoDevelop.Components.MainToolbar
 			} finally {
 				ignoreConfigurationChangedCount--;
 			}
-
-			SelectActiveRuntime (ToolbarView.ActiveRuntime as RuntimeModel);
 		}
 
 		IEnumerable<IRuntimeModel> AllRuntimes (IEnumerable<IRuntimeModel> runtimes)
