@@ -73,6 +73,7 @@
 		<Condition id="AspNetCoreSdkInstalled" sdkVersion="1.*">
 			<Template
 				id="Microsoft.Web.Empty.CSharp"
+				_overrideName="ASP.NET Core Empty"
 				_overrideDescription="Creates a new ASP.NET Core web project."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
@@ -83,6 +84,7 @@
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.Mvc.CSharp"
+				_overrideName="ASP.NET Core Web App"
 				_overrideDescription="Creates a new ASP.NET MVC Core web project."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
@@ -93,6 +95,7 @@
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.Mvc.FSharp"
+				_overrideName="ASP.NET Core Web App"
 				_overrideDescription="Creates a new ASP.NET MVC Core web project."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
@@ -103,6 +106,7 @@
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.WebApi.CSharp"
+				_overrideName="ASP.NET Core Web API"
 				_overrideDescription="Creates a new ASP.NET Web API Core web project."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
@@ -151,6 +155,7 @@
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.RazorPages.CSharp.2.0"
+				_overrideName="ASP.NET Core Web App (Razor Pages)"
 				_overrideDescription="Creates a new ASP.NET Web API Core web project using Razor Pages."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170620-266.nupkg"
 				icon="md-netcore-empty-project"
@@ -163,7 +168,7 @@
 			<Template
 				id="Microsoft.Web.WebApi.CSharp"
 				templateId="Microsoft.Web.WebApi.CSharp.2.0"
-				_overrideName="ASP.NET Core Web Api"
+				_overrideName="ASP.NET Core Web API"
 				_overrideDescription="Creates a new ASP.NET Web API Core web project."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170620-266.nupkg"
 				icon="md-netcore-empty-project"

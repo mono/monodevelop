@@ -238,6 +238,7 @@
 		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.*">
 		<Template
 			id="Microsoft.Test.xUnit.CSharp"
+			_overrideName="xUnit Test Project"
 			_overrideDescription="Creates a new xUnit test project."
 			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 			icon="md-netcore-test-project"
@@ -247,6 +248,7 @@
 			category="netcore/test/general" />
 		<Template
 			id="Microsoft.Test.xUnit.FSharp"
+			_overrideName="xUnit Test Project"
 			_overrideDescription="Creates a new xUnit test project."
 			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 			icon="md-netcore-test-project"
