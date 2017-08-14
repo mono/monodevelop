@@ -51,6 +51,7 @@ namespace MonoDevelop.Projects
 		
 		public SolutionFolder ()
 		{
+			Initialize (this);
 		}
 		
 		public SolutionFolderItemCollection Items {
