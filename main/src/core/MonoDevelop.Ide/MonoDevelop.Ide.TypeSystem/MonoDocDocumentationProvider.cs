@@ -74,12 +74,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (openIdx < 0) {
 						memberName = idString.Substring (idx + 1);
 						var xmlNode = doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + memberName + "']/Docs");
-						return xmlNode.OuterXml;
+						return xmlNode?.OuterXml;
 					}
 					string parameterString = idString.Substring (openIdx + 1, idString.Length - openIdx - 2);
 					var parameterTypes = parameterString.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 					memberName = idString.Substring (idx + 1, openIdx - idx - 1);
-					foreach (var o in doc.SelectNodes ("/Type/Members/Member[@MemberName='" + memberName + "']/Docs")) {
+					foreach (var o in doc.SelectNodes ("/Type/Members/Member[@MemberName='" + memberName + "']")) {
 						var curNode = o as XmlElement;
 						if (curNode == null)
 							continue;
@@ -90,23 +90,43 @@ namespace MonoDevelop.Ide.TypeSystem
 							continue;
 						bool matched = true;
 						for (int i = 0; i < parameterTypes.Length; i++) {
-							if (parameterTypes[i] != paramList [i].Attributes ["Type"].Value) {
+							if (CompareNames (parameterTypes [i], paramList [i].Attributes ["Type"].Value)) {
 								matched = false;
 								break;
 							}
 						}
 						if (matched)
-							return curNode.OuterXml;
+							return curNode.SelectSingleNode ("Docs")?.OuterXml;
 					}
 					return null;
 				}
 
-				return helpTree.GetHelpXml (idString).SelectSingleNode ("/Type/Docs").OuterXml;
+				doc = helpTree.GetHelpXml (idString);
+				if (doc == null)
+					return null;
+				return doc.SelectSingleNode ("/Type/Docs")?.OuterXml;
 			} catch (Exception e) {
 				hadError = true;
 				LoggingService.LogError ("Error while reading monodoc file.", e);
 			}
 			return null;
+		}
+
+		static bool CompareNames (string idStringName, string monoDocName)
+		{
+			if (idStringName.Length != monoDocName.Length)
+				return false;
+			for (int i = 0; i < idStringName.Length; i++) {
+				if (idStringName [i] == '+') {
+					if (monoDocName [i] != '.')
+						return false;
+					continue;
+				}
+				if (idStringName [i] != monoDocName [i])
+					return false;
+
+			}
+			return true;
 		}
 
 		public static string GetDocumentation (ISymbol entity)
