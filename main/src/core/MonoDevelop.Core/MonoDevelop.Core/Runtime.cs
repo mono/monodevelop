@@ -1,4 +1,4 @@
-//
+﻿//
 // Runtime.cs
 //
 // Author:
@@ -483,6 +483,7 @@ namespace MonoDevelop.Core
 		{
 			// Explicitly load the msbuild libraries since they are not installed in the GAC
 			var path = systemAssemblyService.CurrentRuntime.GetMSBuildBinPath ("15.0");
+			path = @"C:\MSBuild\bin\Bootstrap\MSBuild\15.0\Bin";
 			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.dll"));
 			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Framework.dll"));
 			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Utilities.Core.dll"));
