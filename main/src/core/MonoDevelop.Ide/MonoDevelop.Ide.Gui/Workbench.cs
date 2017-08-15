@@ -521,21 +521,9 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (fileName, project, line, column, options, encoding, null);
 		}
 
-		internal Task<Document> OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
-		{
-			var openFileInfo = new FileOpenInformation (fileName, project) {
-				Options = options,
-				Line = line,
-				Column = column,
-				DisplayBinding = binding,
-				Encoding = encoding
-			};
-			return OpenDocument (openFileInfo);
-		}
-
 		internal Task<Document> OpenDocument (FilePath fileName, SolutionItem owner, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
 		{
-			var openFileInfo = new FileOpenInformation (fileName, owner as Project) {
+			var openFileInfo = new FileOpenInformation (fileName, owner) {
 				Options = options,
 				Line = line,
 				Column = column,
@@ -598,8 +586,8 @@ namespace MonoDevelop.Ide.Gui
 					if (vcFound != null) {
 						// reuse the view if the binidng didn't change
 						if (info.Options.HasFlag (OpenDocumentOptions.TryToReuseViewer) || vcFound.Binding == info.DisplayBinding) {
-							if (info.Project != null && doc.Project != info.Project) {
-								doc.SetProject (info.Project);
+							if (info.Owner != null && doc.Owner != info.Owner) {
+								doc.SetProject (info.Owner as Project);
 							}
 
 							ScrollToRequestedCaretLocation (doc, info);
@@ -618,8 +606,8 @@ namespace MonoDevelop.Ide.Gui
 				}
 				Counters.OpenDocumentTimer.Trace ("Initializing monitor");
 				ProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (
-					GettextCatalog.GetString ("Opening {0}", info.Project != null ?
-						info.FileName.ToRelative (info.Project.ParentSolution.BaseDirectory) :
+					GettextCatalog.GetString ("Opening {0}", info.Owner != null ?
+						info.FileName.ToRelative (info.Owner.ParentSolution.BaseDirectory) :
 						info.FileName),
 					Stock.StatusWorking,
 					true
@@ -995,12 +983,12 @@ namespace MonoDevelop.Ide.Gui
 			
 			IDisplayBinding binding = null;
 			IViewDisplayBinding viewBinding = null;
-			Project project = openFileInfo.Project ?? GetProjectContainingFile (fileName);
+			SolutionItem owner = openFileInfo.Owner ?? GetProjectContainingFile (fileName);
 			
 			if (openFileInfo.DisplayBinding != null) {
 				binding = viewBinding = openFileInfo.DisplayBinding;
 			} else {
-				var bindings = DisplayBindingService.GetDisplayBindings (fileName, null, project).ToList ();
+				var bindings = DisplayBindingService.GetDisplayBindings (fileName, null, owner as Project).ToList ();
 				if (openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
 					binding = bindings.OfType<IViewDisplayBinding>().FirstOrDefault (d => d.CanUseAsDefault)
 						?? bindings.OfType<IViewDisplayBinding>().FirstOrDefault ();
@@ -1019,16 +1007,16 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				if (binding != null) {
 					if (viewBinding != null)  {
-						var fw = new LoadFileWrapper (monitor, workbench, viewBinding, project, openFileInfo);
+						var fw = new LoadFileWrapper (monitor, workbench, viewBinding, owner, openFileInfo);
 						await fw.Invoke (fileName);
 					} else {
 						var extBinding = (IExternalDisplayBinding)binding;
-						var app = extBinding.GetApplication (fileName, null, project);
+						var app = extBinding.GetApplication (fileName, null, owner as Project);
 						app.Launch (fileName);
 					}
 					
 					Counters.OpenDocumentTimer.Trace ("Adding to recent files");
-					DesktopService.RecentFiles.AddFile (fileName, project);
+					DesktopService.RecentFiles.AddFile (fileName, owner as Project);
 				} else if (!openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
 					try {
 						Counters.OpenDocumentTimer.Trace ("Showing in browser");
@@ -1481,6 +1469,7 @@ namespace MonoDevelop.Ide.Gui
 		public ViewContent NewContent { get; set; }
 		public Encoding Encoding { get; set; }
 		public Project Project { get; set; }
+		public SolutionItem Owner { get; set; }
 
 		/// <summary>
 		/// Is true when the file is already open and reload is requested.
@@ -1499,26 +1488,26 @@ namespace MonoDevelop.Ide.Gui
 
 		}
 
-		public FileOpenInformation (FilePath filePath, Project project = null)
+		public FileOpenInformation (FilePath filePath, SolutionItem owner = null)
 		{
 			this.FileName = filePath;
-			this.Project = project;
+			this.Owner = owner;
 			this.Options = OpenDocumentOptions.Default;
 		}
 		
-		public FileOpenInformation (FilePath filePath, Project project, int line, int column, OpenDocumentOptions options) 
+		public FileOpenInformation (FilePath filePath, SolutionItem owner, int line, int column, OpenDocumentOptions options) 
 		{
 			this.FileName = filePath;
-			this.Project = project;
+			this.Owner = owner;
 			this.Line = line;
 			this.Column = column;
 			this.Options = options;
 		}
 
-		public FileOpenInformation (FilePath filePath, Project project, bool bringToFront)
+		public FileOpenInformation (FilePath filePath, SolutionItem owner, bool bringToFront)
 		{
 			this.FileName = filePath;
-			this.Project = project;
+			this.Owner = owner;
 			this.Options = OpenDocumentOptions.Default;
 			if (bringToFront) {
 				this.Options |= OpenDocumentOptions.BringToFront;
@@ -1562,6 +1551,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		IViewDisplayBinding binding;
 		Project project;
+		SolutionItem owner;
 		FileOpenInformation fileInfo;
 		DefaultWorkbench workbench;
 		ProgressMonitor monitor;
@@ -1575,10 +1565,10 @@ namespace MonoDevelop.Ide.Gui
 			this.binding = binding;
 		}
 		
-		public LoadFileWrapper (ProgressMonitor monitor, DefaultWorkbench workbench, IViewDisplayBinding binding, Project project, FileOpenInformation fileInfo)
+		public LoadFileWrapper (ProgressMonitor monitor, DefaultWorkbench workbench, IViewDisplayBinding binding, SolutionItem owner, FileOpenInformation fileInfo)
 			: this (monitor, workbench, binding, fileInfo)
 		{
-			this.project = project;
+			this.owner = owner;
 		}
 
 		public async Task<bool> Invoke (string fileName)
