@@ -227,6 +227,9 @@
 		<PolicySet id="Mono" _name="Mono" allowDiffSerialize="true">
 		<!--	<Policies resource="" /> -->
 		</PolicySet>
+		<PolicySet id="MonoDefault" _name="MonoDefault" allowDiffSerialize="true">
+		<!--	<Policies resource="" /> -->
+		</PolicySet>
 		<PolicySet id="Invariant" _name="Invariant" visible="false"/>
 	</Extension>
 	

@@ -209,17 +209,17 @@
 		<Generator class="MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator" mimeType = "text/x-csharp" />
 	</Extension>
 
+
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
+		<Policies resource="MonoDevelopCSharpPolicy.xml" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/MonoDefault" >
+		<Policies resource="MonoCSharpPolicy.xml" />
+		<Policies resource="MonoTextStylePolicy.xml" />
+	</Extension>
+
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="Mono" _name="MonoDevelop style" allowDiffSerialize="false">
-			<Policies resource="InvariantTextStylePolicy.xml" />
-			<Policies resource="MonoDevelopCSharpPolicy.xml" />
-		</PolicySet>
-		
-		<PolicySet id="MonoDefault" _name="Mono" allowDiffSerialize="false">
-			<Policies resource="MonoCSharpPolicy.xml" />
-			<Policies resource="MonoTextStylePolicy.xml" />
-		</PolicySet>
-		
 		<PolicySet id="KR" _name="K&amp;R style" allowDiffSerialize="false">
 			<Policies resource="KRCSharpPolicy.xml" />
 			<Policies resource="InvariantTextStylePolicy.xml" />
