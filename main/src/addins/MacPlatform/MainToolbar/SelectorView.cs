@@ -54,7 +54,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	}
 
 	[Register]
-	class SelectorView : NSButton
+	class SelectorView : NSFocusButton
 	{
 		public event EventHandler<EventArgs> SizeChanged;
 		internal const int RunConfigurationIdx = 0;
@@ -311,8 +311,24 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return menuItem;
 			}
 
-			NSPathComponentCell [] Cells;
-			NSPathComponentCell [] VisibleCells;
+			class NSPathComponentCellFocusable:NSPathComponentCell
+			{
+				public bool HasFocus { set; get; }
+				public override void DrawWithFrame (CGRect cellFrame, NSView inView)
+				{
+					if (HasFocus) {
+						var focusRect = new CGRect (cellFrame.X , cellFrame.Y + 3, cellFrame.Width+2, cellFrame.Height - 6);
+						var path = NSBezierPath.FromRoundedRect (focusRect, 3, 3);
+						path.LineWidth = 2f;
+						NSColor.KeyboardFocusIndicator.SetStroke ();
+						path.Stroke ();
+					}
+					base.DrawWithFrame (cellFrame, inView);
+				}
+			}
+
+			NSPathComponentCellFocusable [] Cells;
+			NSPathComponentCellFocusable [] VisibleCells;
 			int [] VisibleCellIds;
 
 			int lastSelectedCell;
@@ -335,19 +351,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			public PathSelectorView (CGRect frameRect) : base (frameRect)
 			{
 				Cells = new [] {
-					new NSPathComponentCell {
+					new NSPathComponentCellFocusable {
 						Image = projectImageDisabled,
 						Title = TextForActiveRunConfiguration,
 						Enabled = false,
 						Identifier = RunConfigurationIdentifier
 					},
-					new NSPathComponentCell {
+					new NSPathComponentCellFocusable {
 						Image = projectImageDisabled,
 						Title = TextForActiveConfiguration,
 						Enabled = false,
 						Identifier = ConfigurationIdentifier
 					},
-					new NSPathComponentCell {
+					new NSPathComponentCellFocusable {
 						Image = deviceImageDisabled,
 						Title = TextForRuntimeConfiguration,
 						Enabled = false,
@@ -373,7 +389,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			{
 				VisibleCellIds = ids;
 				LastSelectedCell = ids [0];
-				VisibleCells = new NSPathComponentCell [ids.Length];
+				VisibleCells = new NSPathComponentCellFocusable [ids.Length];
 				for (int n = 0; n < ids.Length; n++)
 					VisibleCells [n] = Cells [ids [n]];
 				PathComponentCells = VisibleCells;
@@ -424,6 +440,54 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					return;
 
 				PopupMenuForCell (item);
+			}
+
+			int focusedCellIndex = 1;
+			NSPathComponentCellFocusable focusedItem;
+
+			public override void KeyDown (NSEvent theEvent)
+			{
+				if(theEvent.Characters == " ")
+				{
+					var item = Cells [focusedCellIndex];
+					PopupMenuForCell (item);
+					return;
+				}
+
+				if (theEvent.Characters == "\t") {
+					focusedCellIndex++;
+					if(focusedCellIndex > VisibleCells.Count ()){
+						if (NextKeyView != null) {
+							Window.MakeFirstResponder (NextKeyView);
+							SetSelection ();
+							focusedCellIndex = 1;
+							focusedItem = null;
+							return;
+						}
+					}
+				}
+
+				SetSelection ();
+				base.KeyDown (theEvent);
+			}
+
+			void SetSelection ()
+			{
+				if (focusedItem != null) {
+					focusedItem.HasFocus = false;
+				}
+				if (focusedCellIndex < Cells.Count ()) {
+					var item = Cells [focusedCellIndex];
+					focusedItem = item;
+					item.HasFocus = true;
+				}
+				SetNeedsDisplay ();
+			}
+
+			public override bool BecomeFirstResponder ()
+			{
+				SetSelection ();
+				return base.BecomeFirstResponder ();
 			}
 
 			void PopupMenuForCell (NSPathComponentCell item)

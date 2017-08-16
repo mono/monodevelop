@@ -89,6 +89,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			};
 		}
 
+		public void Focus()
+		{
+			awesomeBar.Window.MakeFirstResponder (awesomeBar.RunButton);
+		}
+
 		public MainToolbar (Gtk.Window window)
 		{
 			gtkWindow = window;
@@ -101,6 +106,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (RunButtonClicked != null)
 					RunButtonClicked (o, e);
 			};
+
 
 			// Remove the focus from the Gtk system when Cocoa has focus
 			// Fixes BXC #29601
@@ -302,7 +308,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				searchEntry.StringValue = value;
 			}
 		}
-
+					
 		public Gtk.Widget PopupAnchor {
 			get {
 				var entry = searchEntry;

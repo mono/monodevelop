@@ -256,6 +256,7 @@ namespace MonoDevelop.Components.MainToolbar
 	/// </summary>
 	public interface IMainToolbarView : IRunButtonView, ISelectorView, ISearchEntryView, IStatusBarView, IButtonBarView
 	{
+		void Focus ();
 	}
 }
 

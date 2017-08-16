@@ -590,6 +590,8 @@ namespace MonoDevelop.Components.MainToolbar
 			buttonBar.Groups = groups;
 		}
 
+		public void Focus (){}
+
 		public bool ButtonBarSensitivity {
 			set { buttonBar.Sensitive = value; }
 		}
