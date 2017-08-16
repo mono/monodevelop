@@ -174,7 +174,7 @@ namespace console61
 			content.Text = text;
 			content.CursorPosition = Math.Max (0, endPos);
 			var doc = new MonoDevelop.Ide.Gui.Document (tww);
-			doc.SetProject (project);
+			doc.SetOwner (project);
 
 			var compExt = new CSharpCompletionTextEditorExtension ();
 			compExt.Initialize (doc.Editor, doc);

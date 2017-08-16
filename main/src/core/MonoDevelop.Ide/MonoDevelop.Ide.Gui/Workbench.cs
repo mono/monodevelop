@@ -587,7 +587,7 @@ namespace MonoDevelop.Ide.Gui
 						// reuse the view if the binidng didn't change
 						if (info.Options.HasFlag (OpenDocumentOptions.TryToReuseViewer) || vcFound.Binding == info.DisplayBinding) {
 							if (info.Owner != null && doc.Owner != info.Owner) {
-								doc.SetProject (info.Owner as Project);
+								doc.SetOwner (info.Owner);
 							}
 
 							ScrollToRequestedCaretLocation (doc, info);
@@ -988,7 +988,7 @@ namespace MonoDevelop.Ide.Gui
 			if (openFileInfo.DisplayBinding != null) {
 				binding = viewBinding = openFileInfo.DisplayBinding;
 			} else {
-				var bindings = DisplayBindingService.GetDisplayBindings (fileName, null, owner as Project).ToList ();
+				var bindings = DisplayBindingService.GetDisplayBindings (fileName, null, owner).ToList ();
 				if (openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
 					binding = bindings.OfType<IViewDisplayBinding>().FirstOrDefault (d => d.CanUseAsDefault)
 						?? bindings.OfType<IViewDisplayBinding>().FirstOrDefault ();
@@ -1011,12 +1011,12 @@ namespace MonoDevelop.Ide.Gui
 						await fw.Invoke (fileName);
 					} else {
 						var extBinding = (IExternalDisplayBinding)binding;
-						var app = extBinding.GetApplication (fileName, null, owner as Project);
+						var app = extBinding.GetApplication (fileName, null, owner);
 						app.Launch (fileName);
 					}
 					
 					Counters.OpenDocumentTimer.Trace ("Adding to recent files");
-					DesktopService.RecentFiles.AddFile (fileName, owner as Project);
+					DesktopService.RecentFiles.AddFile (fileName, owner);
 				} else if (!openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
 					try {
 						Counters.OpenDocumentTimer.Trace ("Showing in browser");

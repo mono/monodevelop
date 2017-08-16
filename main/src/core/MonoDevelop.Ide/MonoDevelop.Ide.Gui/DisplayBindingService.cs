@@ -57,6 +57,14 @@ namespace MonoDevelop.Ide.Gui
 			runtimeBindings.Remove(binding);
 		}
 
+		internal static IEnumerable<IDisplayBinding> GetDisplayBindings (FilePath filePath, string mimeType, SolutionItem owner)
+		{
+			//FIXME : this cannot be yet implemented without breaking IDisplayBinding.CanHandle API.
+			// it can be fixed when default  interface methods are added to the C# language.
+			// for now, just forward to the project version.
+			return GetDisplayBindings (filePath, mimeType, owner as Project);
+		}
+
 		internal static IEnumerable<IDisplayBinding> GetDisplayBindings (FilePath filePath, string mimeType, Project ownerProject)
 		{
 			if (mimeType == null && !filePath.IsNullOrEmpty)
@@ -118,7 +126,7 @@ namespace MonoDevelop.Ide.Gui
 					yield return new FileViewer (vb);
 				} else {
 					var eb = (IExternalDisplayBinding) b;
-					var app = eb.GetApplication (filePath, mimeType, ownerProject);
+					var app = eb.GetApplication (filePath, mimeType, ownerProject as SolutionItem);
 					if (viewerIds.Add (app.Id))
 						yield return new FileViewer (app);
 				}

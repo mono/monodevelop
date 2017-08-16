@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public void UpdateProject (Project project)
 		{
-			SetProject (project);
+			SetOwner (project);
 		}
 		
 		public IProjectContent HiddenProjectContent;

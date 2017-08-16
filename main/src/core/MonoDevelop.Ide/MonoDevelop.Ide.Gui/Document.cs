@@ -734,12 +734,12 @@ namespace MonoDevelop.Ide.Gui
 
 		public override void AttachToProject (Project project)
 		{
-			SetProject (project);
+			SetOwner (project);
 		}
 
-		internal void SetProject (Project project)
+		internal void SetOwner (SolutionItem owner)
 		{
-			if (Window == null || Window.ViewContent == null || Window.ViewContent.Owner == project || project == adhocProject)
+			if (Window == null || Window.ViewContent == null || Window.ViewContent.Owner == owner || owner == adhocProject)
 				return;
 			UnloadAdhocProject ();
 			if (adhocProject == null)
@@ -747,14 +747,19 @@ namespace MonoDevelop.Ide.Gui
 			// Unsubscribe project events
 			if (Window.ViewContent.Owner != null)
 				Window.ViewContent.Owner.Modified -= HandleProjectModified;
-			Window.ViewContent.Owner = project;
-			if (project != null)
-				project.Modified += HandleProjectModified;
+			Window.ViewContent.Owner = owner;
+			if (owner != null)
+				owner.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
-			ListenToProjectLoad (project);
+			ListenToProjectLoad (owner);
 		}
 
 		void ListenToProjectLoad (Project project)
+		{
+			ListenToProjectLoad (project as SolutionItem);
+		}
+
+		void ListenToProjectLoad (SolutionItem owner)
 		{
 			StartReparseThread ();
 		}

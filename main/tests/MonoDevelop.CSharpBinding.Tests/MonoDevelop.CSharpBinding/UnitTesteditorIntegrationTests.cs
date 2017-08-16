@@ -93,7 +93,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			using (var monitor = new ProgressMonitor ())
 				await TypeSystemService.Load (solution, monitor);
 			content.Owner = project;
-			doc.SetProject (project);
+			doc.SetOwner (project);
 
 			var compExt = new UnitTestTextEditorExtension ();
 			compExt.Initialize (doc.Editor, doc);

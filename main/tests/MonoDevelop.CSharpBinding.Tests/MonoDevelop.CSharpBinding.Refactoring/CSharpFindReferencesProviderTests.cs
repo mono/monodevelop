@@ -74,7 +74,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			using (var monitor = new ProgressMonitor ())
 				await TypeSystemService.Load (solution, monitor);
 			content.Owner = project;
-			doc.SetProject (project);
+			doc.SetOwner (project);
 
 			await doc.UpdateParseDocument ();
 			try {
