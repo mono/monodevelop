@@ -238,8 +238,7 @@ namespace MonoDevelop.Ide
 			set2.SetBinding (cmd3, "Ctrl+3");
 
 			Assert.IsFalse (set2.Equals (set1));
-			//UNDONE: a set equals an other set if its a subset, this may/shold change in the future
-			Assert.IsTrue (set1.Equals (set2));
+			Assert.IsFalse (set1.Equals (set2));
 		}
 
 		[Test]
@@ -257,8 +256,7 @@ namespace MonoDevelop.Ide
 			// add an empty binding to set2 which shouldn't change equality (bug #57111)
 			set2.SetBinding (cmd2, string.Empty);
 
-			Assert.IsFalse (set2.Equals (set1));
-			//UNDONE: a set equals an other set if its a subset, this may/shold change in the future
+			Assert.IsTrue (set2.Equals (set1));
 			Assert.IsTrue (set1.Equals (set2));
 		}
 
