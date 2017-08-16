@@ -1010,50 +1010,55 @@ namespace MonoDevelop.Ide.Gui
 			string mimeType = editor.MimeType;
 			CancelOldParsing ();
 			var token = parseTokenSource.Token;
-			var project = adhocProject ?? Project;
-			var projectFile = project?.GetProjectFile (currentParseFile);
-
+			var projectsContainingFile = (adhocProject ?? Project)?.ParentSolution?.GetProjectsContainingFile (currentParseFile);
+			if (projectsContainingFile == null || !projectsContainingFile.Any ())
+				projectsContainingFile = new Project [] { adhocProject ?? Project };
 			ThreadPool.QueueUserWorkItem (delegate {
-				TypeSystemService.AddSkippedFile (currentParseFile);
-				var options = new ParseOptions {
-					Project = project,
-					Content = currentParseText,
-					FileName = currentParseFile,
-					OldParsedDocument = parsedDocument,
-					RoslynDocument = AnalysisDocument
-				};
-				if (projectFile != null)
-					options.BuildAction = projectFile.BuildAction;
-				
-				if (project != null && TypeSystemService.CanParseProjections (project, mimeType, currentParseFile)) {
-					TypeSystemService.ParseProjection (options, mimeType, token).ContinueWith (task => {
-						if (token.IsCancellationRequested)
-							return;
-						Application.Invoke ((o, args) => {
-							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
-							var taskResult = task.Result;
-							if (isClosed || taskResult == null || token.IsCancellationRequested)
+				foreach (var project in projectsContainingFile) {
+					if (project is SharedAssetsProject)
+						continue;
+					var projectFile = project?.GetProjectFile (currentParseFile);
+					TypeSystemService.AddSkippedFile (currentParseFile);
+					var options = new ParseOptions {
+						Project = project,
+						Content = currentParseText,
+						FileName = currentParseFile,
+						OldParsedDocument = parsedDocument,
+						RoslynDocument = AnalysisDocument
+					};
+					if (projectFile != null)
+						options.BuildAction = projectFile.BuildAction;
+
+					if (project != null && TypeSystemService.CanParseProjections (project, mimeType, currentParseFile)) {
+						TypeSystemService.ParseProjection (options, mimeType, token).ContinueWith (task => {
+							if (token.IsCancellationRequested)
 								return;
-							this.parsedDocument = taskResult.ParsedDocument;
-							var projections = taskResult.Projections;
-							foreach (var p2 in projections)
-								p2.CreateProjectedEditor (this);
-							Editor.SetOrUpdateProjections (this, projections, taskResult.DisabledProjectionFeatures);
-							OnDocumentParsed (EventArgs.Empty);
-						});
-					}, TaskContinuationOptions.OnlyOnRanToCompletion);
-				} else {
-					TypeSystemService.ParseFile (options, mimeType, token).ContinueWith (task => {
-						if (token.IsCancellationRequested)
-							return;
-						Application.Invoke ((o, args) => {
-							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
-							if (isClosed || task.Result == null || token.IsCancellationRequested)
+							Application.Invoke ((o, args) => {
+								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
+								var taskResult = task.Result;
+								if (isClosed || taskResult == null || token.IsCancellationRequested)
+									return;
+								this.parsedDocument = taskResult.ParsedDocument;
+								var projections = taskResult.Projections;
+								foreach (var p2 in projections)
+									p2.CreateProjectedEditor (this);
+								Editor.SetOrUpdateProjections (this, projections, taskResult.DisabledProjectionFeatures);
+								OnDocumentParsed (EventArgs.Empty);
+							});
+						}, TaskContinuationOptions.OnlyOnRanToCompletion);
+					} else {
+						TypeSystemService.ParseFile (options, mimeType, token).ContinueWith (task => {
+							if (token.IsCancellationRequested)
 								return;
-							this.parsedDocument = task.Result;
-							OnDocumentParsed (EventArgs.Empty);
-						});
-					}, TaskContinuationOptions.OnlyOnRanToCompletion);
+							Application.Invoke ((o, args) => {
+								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
+								if (isClosed || task.Result == null || token.IsCancellationRequested)
+									return;
+								this.parsedDocument = task.Result;
+								OnDocumentParsed (EventArgs.Empty);
+							});
+						}, TaskContinuationOptions.OnlyOnRanToCompletion);
+					}
 				}
 			});
 		}
