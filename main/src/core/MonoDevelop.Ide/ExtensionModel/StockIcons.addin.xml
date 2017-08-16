@@ -120,12 +120,14 @@
 	<StockIcon stockid="md-field" resource="element-field-16.png" size="Menu" />
 	<StockIcon stockid="md-file-css" resource="file-css-16.png" size="Menu" />
 	<StockIcon stockid="md-file-css" resource="file-css-32.png" size="Dnd" />
-	<StockIcon stockid="md-file-less" resource="file-css-16.png" size="Menu" />
-	<StockIcon stockid="md-file-less" resource="file-css-32.png" size="Dnd" />
-	<StockIcon stockid="md-file-scss" resource="file-css-16.png" size="Menu" />
-	<StockIcon stockid="md-file-scss" resource="file-css-32.png" size="Dnd" />
-	<StockIcon stockid="md-file-ts" resource="file-css-16.png" size="Menu" />
-	<StockIcon stockid="md-file-ts" resource="file-css-32.png" size="Dnd" />
+	<StockIcon stockid="md-file-less" resource="file-less-16.png" size="Menu" />
+	<StockIcon stockid="md-file-less" resource="file-less-32.png" size="Dnd" />
+	<StockIcon stockid="md-file-scss" resource="file-scss-16.png" size="Menu" />
+	<StockIcon stockid="md-file-scss" resource="file-scss-32.png" size="Dnd" />
+	<StockIcon stockid="md-file-js" resource="file-js-16.png" size="Menu" />
+	<StockIcon stockid="md-file-js" resource="file-js-32.png" size="Dnd" />
+	<StockIcon stockid="md-file-ts" resource="file-ts-16.png" size="Menu" />
+	<StockIcon stockid="md-file-ts" resource="file-ts-32.png" size="Dnd" />
 	<StockIcon stockid="md-file-header" resource="file-header-16.png" size="Menu" />
 	<StockIcon stockid="md-file-header" resource="file-header-32.png" size="Dnd" />
 	<StockIcon stockid="md-file-image" resource="file-image-16.png" size="Menu" />
