@@ -25,14 +25,12 @@
 //
 //
 
-using System;
 using System.IO;
 using System.Xml;
 using System.Collections;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Projects;
 
 namespace UnitTests
 {

@@ -11,6 +11,8 @@
     <RootNamespace>MonoDevelop.CSharpBinding.Tests</RootNamespace>
     <AssemblyName>MonoDevelop.CSharpBinding.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TestRunnerCommand>..\..\build\bin\mdtool.exe</TestRunnerCommand>
+    <TestRunnerArgs>run-md-tests</TestRunnerArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,6 +70,8 @@
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
       <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
     </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Features\CodeCompletion\NR5\BrowsableAttributeTests.cs" />
@@ -128,6 +132,20 @@
     <Compile Include="Features\CodeCompletion\NR6\RegexContextHandlerTests.cs" />
     <Compile Include="Features\TestBase.cs" />
     <Compile Include="Features\Util.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CSharpCompletionTextEditorTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CSharpProjectPropertiesTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CSharpTextEditorIndentationTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\FindMemberVisitorTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\FoldingParserTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\MonodevelopWorkspaceTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\NamedArgumentCompletionTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\OnTheFlyFormatterTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\TypeSystemServiceTestExtensions.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\UnitTesteditorIntegrationTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpFindReferencesProviderTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\PolicyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
@@ -158,9 +176,45 @@
       <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
       <Name>MonoDevelop.Debugger</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Ide.Tests\MonoDevelop.Ide.Tests.csproj">
+      <Project>{73D4CC8B-BAB9-4A29-841B-F25C6311F067}</Project>
+      <Name>MonoDevelop.Ide.Tests</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\UnitTests\UnitTests.csproj">
+      <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
+      <Name>UnitTests</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
+      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
+      <Name>MonoDevelop.UnitTesting</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Features\IndentEngine\" />
+    <Folder Include="MonoDevelop.CSharpBinding\" />
+    <Folder Include="MonoDevelop.CSharpBinding.Refactoring\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

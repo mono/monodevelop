@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>MonoDevelop.Core.Tests</RootNamespace>
+    <AssemblyName>MonoDevelop.Core.Tests</AssemblyName>
+    <TestRunnerCommand>..\..\build\bin\mdtool.exe</TestRunnerCommand>
+    <TestRunnerArgs>run-md-tests</TestRunnerArgs>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\msbuild\MonoDevelop-Public.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\build\tests</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\build\tests</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Test.cs" />
+    <Compile Include="MonoDevelop.Core\BacktrackingStringMatcherTests.cs" />
+    <Compile Include="MonoDevelop.Core\BaseCredentialsProviderTests.cs" />
+    <Compile Include="MonoDevelop.Core\CoreExtensionsTests.cs" />
+    <Compile Include="MonoDevelop.Core\FilePathTests.cs" />
+    <Compile Include="MonoDevelop.Core\FileServiceTests.cs" />
+    <Compile Include="MonoDevelop.Core\LaneStringMatcherTests.cs" />
+    <Compile Include="MonoDevelop.Core\LoggingServiceTests.cs" />
+    <Compile Include="MonoDevelop.Core\MonoExecutionParametersTests.cs" />
+    <Compile Include="MonoDevelop.Core\RemoteProcessConnectionTests.cs" />
+    <Compile Include="MonoDevelop.Core\RuntimeTests.cs" />
+    <Compile Include="MonoDevelop.Core\StringParserServiceTests.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\SystemAssemblyServiceTests.cs" />
+    <Compile Include="MonoDevelop.Projects\FileServiceTests.cs" />
+    <Compile Include="MonoDevelop.Projects\FlavorMigration.cs" />
+    <Compile Include="MonoDevelop.Projects\GetSourceFilesAsyncTests.cs" />
+    <Compile Include="MonoDevelop.Projects\ItemMetadataTests.cs" />
+    <Compile Include="MonoDevelop.Projects\LocalCopyTests.cs" />
+    <Compile Include="MonoDevelop.Projects\MakefileTests.cs" />
+    <Compile Include="MonoDevelop.Projects\MdsTests.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildGlobTests.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildLoggerTests.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildProjectServiceTests.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildProjectTests.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildSearchPathTests.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildTests.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectCapabilityTests.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectReevaluationTests.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectTests.cs" />
+    <Compile Include="MonoDevelop.Projects\PropertyBagTests.cs" />
+    <Compile Include="MonoDevelop.Projects\RunConfigurations.cs" />
+    <Compile Include="MonoDevelop.Projects\SdkVersionTests.cs" />
+    <Compile Include="MonoDevelop.Projects\SharedAssetsProjectTests.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionFolderTests.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionTests.cs" />
+    <Compile Include="MonoDevelop.Projects\StringTagTests.cs" />
+    <Compile Include="MonoDevelop.Projects\TestProjectsChecks.cs" />
+    <Compile Include="MonoDevelop.Projects\TextFileTests.cs" />
+    <Compile Include="MonoDevelop.Projects\TextFormatterTests.cs" />
+    <Compile Include="MonoDevelop.Projects\WebProjectTests.cs" />
+    <Compile Include="MonoDevelop.Projects\WorkspaceTests.cs" />
+    <Compile Include="MonoDevelop.Projects\ConfigurationMergingTests.cs" />
+    <Compile Include="MonoDevelop.Projects\TestLanguageProject.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Core\" />
+    <Folder Include="MonoDevelop.Core.Assemblies\" />
+    <Folder Include="MonoDevelop.Projects\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\UnitTests\UnitTests.csproj">
+      <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
+      <Name>UnitTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
+      <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
+      <Name>GuiUnit_NET_4_5</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

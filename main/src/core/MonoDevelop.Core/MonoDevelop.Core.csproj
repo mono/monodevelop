@@ -737,7 +737,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="UnitTests" />
+    <InternalsVisibleTo Include="MonoDevelop.Core.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs">

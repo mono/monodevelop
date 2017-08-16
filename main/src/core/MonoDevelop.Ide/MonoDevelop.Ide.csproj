@@ -9529,8 +9529,7 @@
     <InternalsVisibleTo Include="WindowsPlatform" />
     <InternalsVisibleTo Include="MonoDevelop.Debugger" />
     <InternalsVisibleTo Include="MonoDevelop.DesignerSupport" />
-    <InternalsVisibleTo Include="Ide.Tests" />
-    <InternalsVisibleTo Include="UnitTests" />
+    <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
     <InternalsVisibleTo Include="Xamarin.OSXEditor" />
     <InternalsVisibleTo Include="MonoDevelop.Refactoring" />
@@ -9553,6 +9552,7 @@
     <InternalsVisibleTo Include="Xamarin.Forms.Addin.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.VBNetBinding" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

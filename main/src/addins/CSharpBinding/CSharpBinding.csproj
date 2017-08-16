@@ -435,7 +435,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="UnitTests" />
+    <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.AspNet" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.DocFood" />

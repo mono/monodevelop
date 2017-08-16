@@ -99,6 +99,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="Mono.Cairo" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -108,6 +111,7 @@
     <Compile Include="..\MonoDevelop.VersionControl\MonoDevelop.VersionControl\RevisionHelpers.cs">
       <Link>RevisionHelpers.cs</Link>
     </Compile>
+    <Compile Include="EditorCompareWidgetBaseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -132,6 +136,11 @@
     <ProjectReference Include="..\..\..\..\external\libgit2sharp\LibGit2Sharp\LibGit2Sharp.csproj">
       <Project>{EE6ED99F-CB12-4683-B055-D28FC7357A34}</Project>
       <Name>LibGit2Sharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Choose>
