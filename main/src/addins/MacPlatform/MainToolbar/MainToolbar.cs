@@ -33,7 +33,6 @@ using AppKit;
 using CoreGraphics;
 using Foundation;
 using MonoDevelop.Ide;
-using MonoDevelop.MacIntegration;
 using Xwt;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
@@ -72,21 +71,46 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void AttachToolbarEvents (SearchBar bar)
 		{
 			bar.Changed += (o, e) => {
-				if (SearchEntryChanged != null)
-					SearchEntryChanged (o, e);
+				SearchEntryChanged?.Invoke (o, e);
 			};
 			bar.KeyPressed += (o, e) => {
-				if (SearchEntryKeyPressed != null)
-					SearchEntryKeyPressed (o, e);
+				SearchEntryKeyPressed?.Invoke (o, e);
 			};
 			bar.LostFocus += (o, e) => {
-				if (SearchEntryLostFocus != null)
-					SearchEntryLostFocus (o, e);
+				SearchEntryLostFocus?.Invoke (o, e);
 			};
 			bar.SelectionActivated += (o, e) => {
-				if (SearchEntryActivated != null)
-					SearchEntryActivated (o, e);
+				SearchEntryActivated?.Invoke (o, e);
 			};
+			bar.LostFocus += (sender, e) => {
+				exitAction?.Invoke ();
+			};
+		}
+
+		void OnKeyPressed (object sender, KeyEventArgs args)
+		{
+			var searchField = sender as NSSearchField;
+
+			if (searchField == null || searchEntry.Window == null)
+				return;
+
+			var isNSTextView = searchField.Window.FirstResponder is NSTextView;
+			var isTabPressedInsideSearchBar = (args.Key == Key.Tab && isNSTextView);
+
+			if(isTabPressedInsideSearchBar)
+				SearchEntryKeyPressed?.Invoke (sender, args);
+		}
+
+		public void Focus()
+		{
+			awesomeBar.Window.MakeFirstResponder (awesomeBar.RunButton);
+		}
+
+		Action exitAction;
+		public void Focus(Action exitAction)
+		{
+			this.exitAction = exitAction;
+			Focus();
 		}
 
 		public MainToolbar (Gtk.Window window)
@@ -101,6 +125,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (RunButtonClicked != null)
 					RunButtonClicked (o, e);
 			};
+
 
 			// Remove the focus from the Gtk system when Cocoa has focus
 			// Fixes BXC #29601
@@ -302,7 +327,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				searchEntry.StringValue = value;
 			}
 		}
-
+					
 		public Gtk.Widget PopupAnchor {
 			get {
 				var entry = searchEntry;

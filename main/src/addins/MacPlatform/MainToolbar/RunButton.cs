@@ -35,7 +35,7 @@ using Xwt.Mac;
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
 	[Register ("RunButton")]
-	class RunButton : NSButton, INSAccessibilityButton, INSAccessibility
+	class RunButton : NSFocusButton, INSAccessibilityButton, INSAccessibility
 	{
 		NSImage stopIcon, continueIcon, buildIcon;
 
