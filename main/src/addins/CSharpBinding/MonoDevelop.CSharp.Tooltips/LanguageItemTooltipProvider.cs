@@ -139,7 +139,7 @@ namespace MonoDevelop.SourceEditor
 					return result;
 				
 				if (symbol != null) {
-					result = await CreateTooltipInformation (CancellationToken.None, editor, doc, symbol, false, true);
+					result = await QuickInfoProvider.GetQuickInfoAsync (editor, doc, symbol);
 				}
 				
 				return result;
