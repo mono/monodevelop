@@ -13,6 +13,7 @@
     <EvalProp>$(TestProp)</EvalProp>
   	<Foo>support\file1.txt</Foo>
   	<ExistsTest Condition="Exists('$(Foo)')">OK</ExistsTest>
+  	<ExistsNotInsideQuotesTest Condition="Exists($(Foo))">OK</ExistsNotInsideQuotesTest>
   	<CASE1>value1</CASE1>
   	<Case1>value2</Case1>
   	<Case2>$(CasE1)</Case2>
