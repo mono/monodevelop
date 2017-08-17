@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Gui
 		public static Color DimTextColor { get => SecondaryTextColor; }
 
 		[Obsolete ("Please use SecondaryTextColorHexString")]
-		public static string DimTextColorHexString { get => DimTextColorHexString; }
+		public static string DimTextColorHexString { get => SecondaryTextColorHexString; }
 
 		public static Color StatusInformationBackgroundColor { get; internal set; }
 		public static Color StatusInformationTextColor { get; internal set; }
