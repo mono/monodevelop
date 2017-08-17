@@ -1010,13 +1010,12 @@ namespace MonoDevelop.Ide.Gui
 			string mimeType = editor.MimeType;
 			CancelOldParsing ();
 			var token = parseTokenSource.Token;
-			var projectsContainingFile = (adhocProject ?? Project)?.ParentSolution?.GetProjectsContainingFile (currentParseFile);
+			var currentProject = adhocProject ?? Project;
+			var projectsContainingFile = currentProject?.ParentSolution?.GetProjectsContainingFile (currentParseFile);
 			if (projectsContainingFile == null || !projectsContainingFile.Any ())
-				projectsContainingFile = new Project [] { adhocProject ?? Project };
+				projectsContainingFile = new Project [] { currentProject };
 			ThreadPool.QueueUserWorkItem (delegate {
 				foreach (var project in projectsContainingFile) {
-					if (project is SharedAssetsProject)
-						continue;
 					var projectFile = project?.GetProjectFile (currentParseFile);
 					TypeSystemService.AddSkippedFile (currentParseFile);
 					var options = new ParseOptions {
@@ -1033,6 +1032,8 @@ namespace MonoDevelop.Ide.Gui
 						TypeSystemService.ParseProjection (options, mimeType, token).ContinueWith (task => {
 							if (token.IsCancellationRequested)
 								return;
+							if (currentProject != project)
+								return;
 							Application.Invoke ((o, args) => {
 								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 								var taskResult = task.Result;
@@ -1046,7 +1047,7 @@ namespace MonoDevelop.Ide.Gui
 								OnDocumentParsed (EventArgs.Empty);
 							});
 						}, TaskContinuationOptions.OnlyOnRanToCompletion);
-					} else {
+					} else if (project == null || currentProject == project) {
 						TypeSystemService.ParseFile (options, mimeType, token).ContinueWith (task => {
 							if (token.IsCancellationRequested)
 								return;
