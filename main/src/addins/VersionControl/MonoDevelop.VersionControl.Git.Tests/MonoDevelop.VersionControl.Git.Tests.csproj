@@ -108,9 +108,6 @@
     <Compile Include="BaseGitRepositoryTests.cs" />
     <Compile Include="BaseRepositoryTests.cs" />
     <Compile Include="GitIntegrityTests.cs" />
-    <Compile Include="..\MonoDevelop.VersionControl\MonoDevelop.VersionControl\RevisionHelpers.cs">
-      <Link>RevisionHelpers.cs</Link>
-    </Compile>
     <Compile Include="EditorCompareWidgetBaseTest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -99,6 +99,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\TestViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\TestWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\TestDocument.cs" />
+    <Compile Include="TypeSystemServiceTestExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -24,16 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.Razor;
 using MonoDevelop.Core.Text;
-using MonoDevelop.CSharpBinding;
-using MonoDevelop.CSharpBinding.Tests;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using NUnit.Framework;
