@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 using NuGet.Commands;
 using NuGet.Common;
 using NuGet.Configuration;
@@ -97,7 +98,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			return new ProjectRestoreMetadata {
 				ConfigFilePaths = SettingsUtility.GetConfigFilePaths (settings).ToList (),
-				FallbackFolders = SettingsUtility.GetFallbackPackageFolders (settings).ToList (),
+				FallbackFolders = GetFallbackPackageFolders (settings, project),
 				PackagesPath = SettingsUtility.GetGlobalPackagesFolder (settings),
 				ProjectStyle = ProjectStyle.PackageReference,
 				ProjectPath = project.FileName,
@@ -376,6 +377,20 @@ namespace MonoDevelop.PackageManagement
 				project.EvaluatedProperties.GetValue ("WarningsAsErrors"),
 				project.EvaluatedProperties.GetValue ("NoWarn")
 			);
+		}
+
+		static IList<string> GetFallbackPackageFolders (ISettings settings, IDotNetProject project)
+		{
+			var folders = SettingsUtility.GetFallbackPackageFolders (settings).ToList ();
+
+			var additionalFolders = project.EvaluatedProperties.GetValue ("RestoreAdditionalProjectFallbackFolders");
+			if (!string.IsNullOrEmpty (additionalFolders)) {
+				var normalizedFolders = MSBuildStringUtility.Split (additionalFolders)
+					.Select (folder => MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, folder));
+				folders.AddRange (normalizedFolders);
+			}
+
+			return folders;
 		}
 	}
 }

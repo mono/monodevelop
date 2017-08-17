@@ -113,6 +113,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			settings.SetValues (ConfigurationConstants.FallbackPackageFolders, values);
 		}
 
+		void AddRestoreAdditionalProjectFallbackFolders (string folders)
+		{
+			project.AddProperty ("RestoreAdditionalProjectFallbackFolders", folders);
+		}
+
 		[Test]
 		public void CreatePackageSpec_NewProject_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
 		{
@@ -474,6 +479,54 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("[1.2.3, )", dependency.LibraryRange.VersionRange.ToString ());
 			Assert.AreEqual (LibraryDependencyTarget.Package, dependency.LibraryRange.TypeConstraint);
 			Assert.AreEqual ("Test", dependency.LibraryRange.Name);
+		}
+
+		[Test]
+		public void CreatePackageSpec_RestoreAdditionalProjectFallbackFolders_IncludedInFallbackFolders ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			string folderPath1 = @"c:\users\test1\packages".ToNativePath ();
+			AddFallbackFolder (folderPath1);
+			string folderPath2 = @"c:\users\test2\packages".ToNativePath ();
+			string folderPath3 = @"c:\users\test3\packages".ToNativePath ();
+			string folders = folderPath2 + ";" + folderPath3;
+			AddRestoreAdditionalProjectFallbackFolders (folders);
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (3, spec.RestoreMetadata.FallbackFolders.Count);
+			Assert.AreEqual (folderPath1, spec.RestoreMetadata.FallbackFolders[0]);
+			Assert.AreEqual (folderPath2, spec.RestoreMetadata.FallbackFolders[1]);
+			Assert.AreEqual (folderPath3, spec.RestoreMetadata.FallbackFolders[2]);
+		}
+
+		[Test]
+		public void CreatePackageSpec_RestoreAdditionalProjectFallbackFoldersWithBackSlashes_BackSlashesFixed ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			string folderPath = @"c:\users\test1\packages".ToNativePath ();
+			string folderPathWithBackSlashes = folderPath.Replace ('/', '\\');
+			AddRestoreAdditionalProjectFallbackFolders (folderPathWithBackSlashes);
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (folderPath, spec.RestoreMetadata.FallbackFolders[0]);
+		}
+
+		[Test]
+		public void CreatePackageSpec_RestoreAdditionalProjectFallbackFoldersUsingRelativePath_PathResolved ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			string folderPath = @"..\packages".ToNativePath ();
+			string expectedFallbackFolder = @"d:\projects\packages".ToNativePath ();
+			AddRestoreAdditionalProjectFallbackFolders (folderPath);
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (expectedFallbackFolder, spec.RestoreMetadata.FallbackFolders[0]);
 		}
 	}
 }
