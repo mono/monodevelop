@@ -1029,10 +1029,10 @@ namespace MonoDevelop.Ide.Gui
 						options.BuildAction = projectFile.BuildAction;
 
 					if (project != null && TypeSystemService.CanParseProjections (project, mimeType, currentParseFile)) {
-						TypeSystemService.ParseProjection (options, mimeType, token).ContinueWith (task => {
+						TypeSystemService.ParseProjection (options, mimeType, token).ContinueWith ((task, state) => {
 							if (token.IsCancellationRequested)
 								return;
-							if (currentProject != project)
+							if (currentProject != state)
 								return;
 							Application.Invoke ((o, args) => {
 								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
@@ -1046,7 +1046,7 @@ namespace MonoDevelop.Ide.Gui
 								Editor.SetOrUpdateProjections (this, projections, taskResult.DisabledProjectionFeatures);
 								OnDocumentParsed (EventArgs.Empty);
 							});
-						}, TaskContinuationOptions.OnlyOnRanToCompletion);
+						}, project, TaskContinuationOptions.OnlyOnRanToCompletion);
 					} else if (project == null || currentProject == project) {
 						TypeSystemService.ParseFile (options, mimeType, token).ContinueWith (task => {
 							if (token.IsCancellationRequested)
