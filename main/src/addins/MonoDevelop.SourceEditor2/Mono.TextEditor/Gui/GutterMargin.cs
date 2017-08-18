@@ -85,7 +85,7 @@ namespace Mono.TextEditor
 					this.width += 2;
 			}
 		}
-		
+
 		void UpdateWidth (object sender, TextChangeEventArgs args)
 		{
 			int currentLineCountLog10 = (int)System.Math.Log10 (LineCountMax);
@@ -95,18 +95,18 @@ namespace Mono.TextEditor
 				editor.Document.CommitUpdateAll ();
 			}
 		}
-		
+
 		public override double Width {
 			get {
 				return width;
 			}
 		}
-		
+
 		DocumentLocation anchorLocation = new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn);
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
-			
+
 			if (args.Button != 1 || args.LineNumber < DocumentLocation.MinLine)
 				return;
 			editor.LockedMargin = this;
@@ -133,19 +133,19 @@ namespace Mono.TextEditor
 				editor.Caret.PreserveSelection = false;
 			}
 		}
-		
+
 		internal protected override void MouseReleased (MarginMouseEventArgs args)
 		{
 			editor.LockedMargin = null;
 			base.MouseReleased (args);
 		}
-		
+
 		public static DocumentLocation GetLineEndLocation (TextEditorData data, int lineNumber)
 		{
 			DocumentLine line = data.Document.GetLine (lineNumber);
-			
+
 			DocumentLocation result = new DocumentLocation (lineNumber, line.Length + 1);
-			
+
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in data.Document.GetStartFoldings (line)) {
 				if (folding.IsCollapsed && folding.Contains (data.Document.LocationToOffset (result))) {
@@ -154,18 +154,18 @@ namespace Mono.TextEditor
 				}
 			}
 			if (segment != null) {
-				result = data.Document.OffsetToLocation(segment.EndOffset);
+				result = data.Document.OffsetToLocation (segment.EndOffset);
 			}
 			return result;
 		}
-		
+
 		internal protected override void MouseHover (MarginMouseEventArgs args)
 		{
 			base.MouseHover (args);
-			
+
 			if (!args.TriggersContextMenu () && args.Button == 1) {
 				//	DocumentLocation loc = editor.Document.LogicalToVisualLocation (editor.GetTextEditorData (), editor.Caret.Location);
-				
+
 				int lineNumber = args.LineNumber >= DocumentLocation.MinLine ? args.LineNumber : editor.Document.LineCount;
 				editor.Caret.PreserveSelection = true;
 				editor.Caret.Location = new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
@@ -173,40 +173,40 @@ namespace Mono.TextEditor
 				editor.Caret.PreserveSelection = false;
 			}
 		}
-		
+
 		public override void Dispose ()
 		{
 			if (base.cursor == null)
 				return;
-			
+
 			base.cursor.Dispose ();
 			base.cursor = null;
-			
+
 			this.editor.Caret.PositionChanged -= EditorCarethandlePositionChanged;
 			this.editor.Document.TextSet -= HandleEditorDocumenthandleTextSet;
 			this.editor.Document.TextChanged -= UpdateWidth;
-//			layout = layout.Kill ();
+			//			layout = layout.Kill ();
 			base.Dispose ();
 		}
-		
+
 		Cairo.Color lineNumberBgGC, lineNumberGC/*, lineNumberHighlightGC*/;
 
 		Pango.FontDescription gutterFont;
 
 		internal protected override void OptionsChanged ()
 		{
-			
+
 			lineNumberBgGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.LineNumbersBackground);
 			lineNumberGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.LineNumbers);
 			gutterFont = editor.Options.GutterFont;
-//			gutterFont.Weight = (Pango.Weight)editor.ColorStyle.LineNumbers.FontWeight;
-//			gutterFont.Style = (Pango.Style)editor.ColorStyle.LineNumbers.FontStyle;
+			//			gutterFont.Weight = (Pango.Weight)editor.ColorStyle.LineNumbers.FontWeight;
+			//			gutterFont.Style = (Pango.Style)editor.ColorStyle.LineNumbers.FontStyle;
 
-/*			if (Platform.IsWindows) {
-				gutterFont.Size = (int)(Pango.Scale.PangoScale * 8.0 * editor.Options.Zoom);
-			} else {
-				gutterFont.Size = (int)(Pango.Scale.PangoScale * 11.0 * editor.Options.Zoom);
-			}*/
+			/*			if (Platform.IsWindows) {
+							gutterFont.Size = (int)(Pango.Scale.PangoScale * 8.0 * editor.Options.Zoom);
+						} else {
+							gutterFont.Size = (int)(Pango.Scale.PangoScale * 11.0 * editor.Options.Zoom);
+						}*/
 			CalculateWidth ();
 		}
 
@@ -243,17 +243,22 @@ namespace Mono.TextEditor
 			if (line <= editor.Document.LineCount) {
 				// Due to a mac? gtk bug I need to re-create the layout here
 				// otherwise I get pango exceptions.
-				using (var layout = editor.LayoutCache.RequestLayout ()) {
-					layout.FontDescription = gutterFont;
-					layout.Width = (int)Width;
-					layout.Alignment = Pango.Alignment.Right;
-					layout.SetText (line.ToString ());
-					cr.Save ();
-					cr.Translate (x + (int)Width + (editor.Options.ShowFoldMargin ? 0 : -2), y + (isSpaceAbove ? lineHeight - editor.LineHeight : 0));
-					cr.SetSourceColor (lineNumberGC);
-					cr.ShowLayout (layout);
-					cr.Restore ();
-				}
+				DrawForeground (cr, line, x, y, lineHeight, isSpaceAbove);
+			}
+		}
+
+		internal void DrawForeground (Cairo.Context cr, int line, double x, double y, double lineHeight, bool isSpaceAbove)
+		{
+			using (var layout = editor.LayoutCache.RequestLayout ()) {
+				layout.FontDescription = gutterFont;
+				layout.Width = (int)Width;
+				layout.Alignment = Pango.Alignment.Right;
+				layout.SetText (line.ToString ());
+				cr.Save ();
+				cr.Translate (x + (int)Width + (editor.Options.ShowFoldMargin ? 0 : -2), y + (isSpaceAbove ? lineHeight - editor.LineHeight : 0));
+				cr.SetSourceColor (lineNumberGC);
+				cr.ShowLayout (layout);
+				cr.Restore ();
 			}
 		}
 	}

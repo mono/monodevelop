@@ -117,6 +117,28 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task SolutionFolderTags ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var model = sol.RootFolder.GetStringTagModel (ConfigurationSelector.Default);
+
+			Assert.AreEqual (sol.FileName, model.GetValue ("SolutionFile"));
+			Assert.AreEqual ("ConsoleProject", model.GetValue ("SolutionName"));
+			Assert.AreEqual (sol.ItemDirectory, model.GetValue ("SolutionDir"));
+
+			var mdesc = sol.GetStringTagModelDescription (ConfigurationSelector.Default);
+			var tt = mdesc.GetTags ().Select (t => t.Name).ToArray ();
+
+			Assert.That (tt.Contains ("SolutionFile"));
+			Assert.That (tt.Contains ("SolutionName"));
+			Assert.That (tt.Contains ("SolutionDir"));
+
+			sol.Dispose ();
+		}
+
+		[Test]
 		public void TagsInItemExtension ()
 		{
 			var p = new TestTagProvider ();
