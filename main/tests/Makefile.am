@@ -102,6 +102,17 @@ uitest:
 		exit 1; \
 	fi
 
+profile:
+	@if test -n "$(assembly)"; then \
+		for asm in $(TEST_ASSEMBLIES); do \
+			if test `basename $$asm` = $(assembly); then \
+				echo Generating profiling for `basename $$asm`...; \
+				($(MD_LAUNCH_SETUP) exec -a "mdtool" $(RUNTIME) --debug --profile=log:heapshot,alloc,calls,calldepth=100,zip,sample=cycles/1000,counters,output=ProfileResult_`basename $$asm`.mlpd "$(MD_BIN_PATH)/mdtool.exe" run-md-tests $$asm); \
+				mprof-report ProfileResult_`basename $$asm`.mlpd > ProfileAnalysis_`basename $$asm`.txt ; \
+			fi; \
+		done; \
+	fi
+
 coverage:
 	if ! test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
