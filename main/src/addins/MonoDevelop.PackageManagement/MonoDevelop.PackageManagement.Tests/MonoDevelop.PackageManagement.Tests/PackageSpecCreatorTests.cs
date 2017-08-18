@@ -580,5 +580,35 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (0, spec.RestoreMetadata.FallbackFolders.Count);
 		}
+
+		[Test]
+		public void CreatePackageSpec_RestorePackagesPath_PackagesPathTakenFromRestorePackagesPathNotFromSettings ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			project.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
+			AddTargetFramework ("netcoreapp1.0");
+			string packagesPath = @"c:\users\test\packages1".ToNativePath ();
+			string restorePackagesPath = @"c:\users\test\packages2".ToNativePath ();
+			AddPackagesPath (packagesPath);
+			project.AddProperty ("RestorePackagesPath", restorePackagesPath);
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (restorePackagesPath, spec.RestoreMetadata.PackagesPath);
+		}
+
+		[Test]
+		public void CreatePackageSpec_RelativeRestorePackagesPath_PackagesPathResolvedFromProjectDirectory ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			project.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
+			AddTargetFramework ("netcoreapp1.0");
+			string restorePackagesPath = @"d:\projects\packages".ToNativePath ();
+			project.AddProperty ("RestorePackagesPath", @"..\packages");
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (restorePackagesPath, spec.RestoreMetadata.PackagesPath);
+		}
 	}
 }

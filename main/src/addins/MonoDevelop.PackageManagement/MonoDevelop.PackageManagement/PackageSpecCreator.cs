@@ -99,7 +99,7 @@ namespace MonoDevelop.PackageManagement
 			return new ProjectRestoreMetadata {
 				ConfigFilePaths = SettingsUtility.GetConfigFilePaths (settings).ToList (),
 				FallbackFolders = GetFallbackPackageFolders (settings, project),
-				PackagesPath = SettingsUtility.GetGlobalPackagesFolder (settings),
+				PackagesPath = GetPackagesPath (settings, project),
 				ProjectStyle = ProjectStyle.PackageReference,
 				ProjectPath = project.FileName,
 				ProjectName = packageSpec.Name,
@@ -420,6 +420,15 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (MSBuildRestoreUtility.ContainsClearKeyword (values))
 				values.Clear ();
+		}
+
+		static string GetPackagesPath (ISettings settings, IDotNetProject project)
+		{
+			string packagesPath = project.EvaluatedProperties.GetValue ("RestorePackagesPath");
+			if (!string.IsNullOrEmpty (packagesPath))
+				return MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, packagesPath);
+
+			return SettingsUtility.GetGlobalPackagesFolder (settings);
 		}
 	}
 }
