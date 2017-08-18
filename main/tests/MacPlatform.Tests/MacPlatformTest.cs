@@ -33,7 +33,7 @@ using UnitTests;
 namespace MacPlatform.Tests
 {
 	[TestFixture]
-	public class MacPlatformTest : TestBase
+	public class MacPlatformTest : IdeTestBase
 	{
 		[Test]
 		public void GetMimeType_text ()
