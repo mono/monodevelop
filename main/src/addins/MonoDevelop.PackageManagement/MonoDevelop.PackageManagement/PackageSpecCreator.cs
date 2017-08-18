@@ -381,16 +381,45 @@ namespace MonoDevelop.PackageManagement
 
 		static IList<string> GetFallbackPackageFolders (ISettings settings, IDotNetProject project)
 		{
-			var folders = SettingsUtility.GetFallbackPackageFolders (settings).ToList ();
+			var folders = new List<string> ();
 
-			var additionalFolders = project.EvaluatedProperties.GetValue ("RestoreAdditionalProjectFallbackFolders");
-			if (!string.IsNullOrEmpty (additionalFolders)) {
-				var normalizedFolders = MSBuildStringUtility.Split (additionalFolders)
-					.Select (folder => MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, folder));
-				folders.AddRange (normalizedFolders);
+			AddFolders (folders, project, "RestoreFallbackFolders");
+
+			if (folders.Any ()) {
+				HandleClear (folders);
+			} else {
+				folders = SettingsUtility.GetFallbackPackageFolders (settings).ToList ();
 			}
 
+			AddFolders (folders, project, "RestoreAdditionalProjectFallbackFolders");
+
 			return folders;
+		}
+
+		static void AddFolders (List<string> folders, IDotNetProject project, string propertyName)
+		{
+			string foldersProperty = project.EvaluatedProperties.GetValue (propertyName);
+			if (string.IsNullOrEmpty (foldersProperty))
+				return;
+
+			var normalizedFolders = MSBuildStringUtility.Split (foldersProperty)
+				.Select (folder => NormalizeFolder (project.BaseDirectory, folder));
+
+			folders.AddRange (normalizedFolders);
+		}
+
+		static string NormalizeFolder (FilePath baseDirectory, string folder)
+		{
+			if (StringComparer.OrdinalIgnoreCase.Equals ("clear", folder))
+				return folder;
+
+			return MSBuildProjectService.FromMSBuildPath (baseDirectory, folder);
+		}
+
+		static void HandleClear (List<string> values)
+		{
+			if (MSBuildRestoreUtility.ContainsClearKeyword (values))
+				values.Clear ();
 		}
 	}
 }
