@@ -107,7 +107,7 @@ namespace MonoDevelop.PackageManagement
 				ProjectWideWarningProperties = GetWarningProperties (project),
 				OutputPath = project.BaseIntermediateOutputPath,
 				OriginalTargetFrameworks = GetOriginalTargetFrameworks (project).ToList (),
-				Sources = SettingsUtility.GetEnabledSources (settings).ToList ()
+				Sources = GetSources (settings, project)
 			};
 		}
 
@@ -429,6 +429,29 @@ namespace MonoDevelop.PackageManagement
 				return MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, packagesPath);
 
 			return SettingsUtility.GetGlobalPackagesFolder (settings);
+		}
+
+		static IList<PackageSource> GetSources (ISettings settings, IDotNetProject project)
+		{
+			var sources = SettingsUtility.GetEnabledSources (settings).ToList ();
+
+			string additionalSources = project.EvaluatedProperties.GetValue ("RestoreAdditionalProjectSources");
+			if (!string.IsNullOrEmpty (additionalSources)) {
+				var additionalPackageSources = MSBuildStringUtility.Split (additionalSources)
+					.Select (source => CreatePackageSource (project.BaseDirectory, source));
+
+				sources.AddRange (additionalPackageSources);
+			}
+
+			return sources;
+		}
+
+		static PackageSource CreatePackageSource (FilePath baseDirectory, string source)
+		{
+			source = MSBuildProjectService.UnescapePath (source);
+			source = UriUtility.GetAbsolutePath (baseDirectory, source);
+
+			return new PackageSource (source);
 		}
 	}
 }

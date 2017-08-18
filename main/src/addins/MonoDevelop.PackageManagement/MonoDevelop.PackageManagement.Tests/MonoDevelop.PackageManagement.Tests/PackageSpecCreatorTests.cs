@@ -123,6 +123,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			project.AddProperty ("RestoreFallbackFolders", folders);
 		}
 
+		void AddRestoreAdditionalProjectSources (string sources)
+		{
+			project.AddProperty ("RestoreAdditionalProjectSources", sources);
+		}
+
 		[Test]
 		public void CreatePackageSpec_NewProject_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
 		{
@@ -609,6 +614,58 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreatePackageSpec ();
 
 			Assert.AreEqual (restorePackagesPath, spec.RestoreMetadata.PackagesPath);
+		}
+
+		[Test]
+		public void CreatePackageSpec_RestoreAdditionalProjectSources_IncludedSources ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			var packageSource = new PackageSource ("https://nuget.org", "NuGet source");
+			var sources = new List<SettingValue> ();
+			sources.Add (new SettingValue (packageSource.Name, packageSource.Source, false));
+			settings.SetValues (ConfigurationConstants.PackageSources, sources);
+			AddRestoreAdditionalProjectSources ("https://myget.org;https://microsoft.com");
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (3, spec.RestoreMetadata.Sources.Count);
+			Assert.AreEqual (packageSource.Name, spec.RestoreMetadata.Sources[0].Name);
+			Assert.AreEqual (packageSource.Source, spec.RestoreMetadata.Sources[0].Source);
+			Assert.AreEqual ("https://myget.org", spec.RestoreMetadata.Sources[1].Name);
+			Assert.AreEqual ("https://myget.org", spec.RestoreMetadata.Sources[1].Source);
+			Assert.AreEqual ("https://microsoft.com", spec.RestoreMetadata.Sources[2].Name);
+			Assert.AreEqual ("https://microsoft.com", spec.RestoreMetadata.Sources[2].Source);
+		}
+
+		[Test]
+		public void CreatePackageSpec_RestoreAdditionalProjectSourcesUsingRelativePath_PathResolvedUsingProjectDirectory ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			string expectedSource = @"d:\projects\packages".ToNativePath ();
+			AddRestoreAdditionalProjectSources (@"..\packages");
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (1, spec.RestoreMetadata.Sources.Count);
+			Assert.AreEqual (expectedSource, spec.RestoreMetadata.Sources[0].Name);
+			Assert.AreEqual (expectedSource, spec.RestoreMetadata.Sources[0].Source);
+		}
+
+		[Test]
+		public void CreatePackageSpec_RestoreAdditionalProjectSourcesFullDirectoryPath_PathIsUsedAsSource ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			string expectedSource = @"d:\projects\packages".ToNativePath ();
+			AddRestoreAdditionalProjectSources (expectedSource);
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (1, spec.RestoreMetadata.Sources.Count);
+			Assert.AreEqual (expectedSource, spec.RestoreMetadata.Sources[0].Name);
+			Assert.AreEqual (expectedSource, spec.RestoreMetadata.Sources[0].Source);
 		}
 	}
 }
