@@ -110,7 +110,7 @@ namespace MonoDevelop.Components.AutoTest
 		public void SetProperty (object o, string propertyName, object value)
 		{
 			var splitProperties = propertyName.Split(new[] { '.' });
-			var propertyName = splitProperties.Last();
+			propertyName = splitProperties.Last();
 			var exceptLast = splitProperties.Except(new List<string> { propertyName });
 			o = GetRecursiveObjectProperty(string.Join(".", exceptLast), o);
 
@@ -193,7 +193,7 @@ namespace MonoDevelop.Components.AutoTest
 
 		protected AppResult MatchProperty (string propertyName, object objectToCompare, object value)
 		{
-			var objectToCompare = GetRecursiveObjectProperty(propertyName, objectToCompare);
+			objectToCompare = GetRecursiveObjectProperty(propertyName, objectToCompare);
 			if (objectToCompare != null && value != null &&
 				CheckForText(objectToCompare.ToString(), value.ToString(), false)) {
 				return this;
