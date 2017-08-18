@@ -109,6 +109,11 @@ namespace MonoDevelop.Components.AutoTest
 
 		public void SetProperty (object o, string propertyName, object value)
 		{
+			var splitProperties = propertyName.Split(new[] { '.' });
+			var propertyName = splitProperties.Last();
+			var exceptLast = splitProperties.Except(new List<string> { propertyName });
+			o = GetRecursiveObjectProperty(string.Join(".", exceptLast), o);
+
 			// Find the property for the name
 			PropertyInfo propertyInfo = o.GetType().GetProperty(propertyName,
 				BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
