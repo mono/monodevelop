@@ -81,5 +81,9 @@
       <Name>MonoDevelop.Core.Tests</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\Ide.Tests\MonoDevelop.Ide.Tests.csproj">
+      <Project>{73D4CC8B-BAB9-4A29-841B-F25C6311F067}</Project>
+      <Name>MonoDevelop.Ide.Tests</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
