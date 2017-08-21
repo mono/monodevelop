@@ -128,6 +128,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			project.AddProperty ("RestoreAdditionalProjectSources", sources);
 		}
 
+		void AddRestoreSources (string sources)
+		{
+			project.AddProperty ("RestoreSources", sources);
+		}
+
 		[Test]
 		public void CreatePackageSpec_NewProject_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
 		{
@@ -666,6 +671,56 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (1, spec.RestoreMetadata.Sources.Count);
 			Assert.AreEqual (expectedSource, spec.RestoreMetadata.Sources[0].Name);
 			Assert.AreEqual (expectedSource, spec.RestoreMetadata.Sources[0].Source);
+		}
+
+		[Test]
+		public void CreatePackageSpec_RestoreSources_SourcesDefinedInSettingsAreNotUsed ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			var packageSource = new PackageSource ("https://nuget.org", "NuGet source");
+			var sources = new List<SettingValue> ();
+			sources.Add (new SettingValue (packageSource.Name, packageSource.Source, false));
+			settings.SetValues (ConfigurationConstants.PackageSources, sources);
+			AddRestoreSources ("https://myget.org");
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (1, spec.RestoreMetadata.Sources.Count);
+			Assert.AreEqual ("https://myget.org", spec.RestoreMetadata.Sources[0].Name);
+			Assert.AreEqual ("https://myget.org", spec.RestoreMetadata.Sources[0].Source);
+		}
+
+		[Test]
+		public void CreatePackageSpec_RestoreSourcesSetToClear_NoPackageSources ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			var packageSource = new PackageSource ("https://nuget.org", "NuGet source");
+			var sources = new List<SettingValue> ();
+			sources.Add (new SettingValue (packageSource.Name, packageSource.Source, false));
+			settings.SetValues (ConfigurationConstants.PackageSources, sources);
+			AddRestoreSources ("clear");
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (0, spec.RestoreMetadata.Sources.Count);
+		}
+
+		[Test]
+		public void CreatePackageSpec_RestoreSourcesSetToClearInUpperCase_NoPackageSources ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			var packageSource = new PackageSource ("https://nuget.org", "NuGet source");
+			var sources = new List<SettingValue> ();
+			sources.Add (new SettingValue (packageSource.Name, packageSource.Source, false));
+			settings.SetValues (ConfigurationConstants.PackageSources, sources);
+			AddRestoreSources ("CLEAR");
+
+			CreatePackageSpec ();
+
+			Assert.AreEqual (0, spec.RestoreMetadata.Sources.Count);
 		}
 	}
 }

@@ -410,10 +410,15 @@ namespace MonoDevelop.PackageManagement
 
 		static string NormalizeFolder (FilePath baseDirectory, string folder)
 		{
-			if (StringComparer.OrdinalIgnoreCase.Equals ("clear", folder))
+			if (IsClearKeyword (folder))
 				return folder;
 
 			return MSBuildProjectService.FromMSBuildPath (baseDirectory, folder);
+		}
+
+		static bool IsClearKeyword (string item)
+		{
+			return StringComparer.OrdinalIgnoreCase.Equals ("clear", item);
 		}
 
 		static void HandleClear (List<string> values)
@@ -433,25 +438,47 @@ namespace MonoDevelop.PackageManagement
 
 		static IList<PackageSource> GetSources (ISettings settings, IDotNetProject project)
 		{
-			var sources = SettingsUtility.GetEnabledSources (settings).ToList ();
+			var sources = new List<PackageSource> ();
 
-			string additionalSources = project.EvaluatedProperties.GetValue ("RestoreAdditionalProjectSources");
-			if (!string.IsNullOrEmpty (additionalSources)) {
-				var additionalPackageSources = MSBuildStringUtility.Split (additionalSources)
-					.Select (source => CreatePackageSource (project.BaseDirectory, source));
+			AddSources (sources, project, "RestoreSources");
 
-				sources.AddRange (additionalPackageSources);
+			if (sources.Any ()) {
+				HandleClear (sources);
+			} else {
+				sources = SettingsUtility.GetEnabledSources (settings).ToList ();
 			}
+
+			AddSources (sources, project, "RestoreAdditionalProjectSources");
 
 			return sources;
 		}
 
+		static void AddSources (List<PackageSource> sources, IDotNetProject project, string propertyName)
+		{
+			string sourcesProperty = project.EvaluatedProperties.GetValue (propertyName);
+			if (string.IsNullOrEmpty (sourcesProperty))
+				return;
+
+			var additionalPackageSources = MSBuildStringUtility.Split (sourcesProperty)
+				.Select (source => CreatePackageSource (project.BaseDirectory, source));
+
+			sources.AddRange (additionalPackageSources);
+		}
+
 		static PackageSource CreatePackageSource (FilePath baseDirectory, string source)
 		{
-			source = MSBuildProjectService.UnescapePath (source);
-			source = UriUtility.GetAbsolutePath (baseDirectory, source);
+			if (!IsClearKeyword (source)) {
+				source = MSBuildProjectService.UnescapePath (source);
+				source = UriUtility.GetAbsolutePath (baseDirectory, source);
+			}
 
 			return new PackageSource (source);
+		}
+
+		static void HandleClear (List<PackageSource> sources)
+		{
+			if (MSBuildRestoreUtility.ContainsClearKeyword (sources.Select (source => source.Source)))
+				sources.Clear ();
 		}
 	}
 }
