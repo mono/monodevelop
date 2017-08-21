@@ -670,6 +670,7 @@ namespace MonoDevelop.Projects
 			return SolutionExtension.Build (monitor, configuration, operationContext);
 		}
 
+		[Obsolete("This method will be removed in future releases")]
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
 			return SolutionExtension.NeedsBuilding (configuration);
@@ -807,6 +808,7 @@ namespace MonoDevelop.Projects
 			return RootFolder.Build (monitor, configuration, operationContext:operationContext);
 		}
 
+		[Obsolete("This method will be removed in future releases")]
 		/*protected virtual*/ bool OnGetNeedsBuilding (ConfigurationSelector configuration)
 		{
 			return RootFolder.NeedsBuilding (configuration);
@@ -1230,6 +1232,7 @@ namespace MonoDevelop.Projects
 				return Solution.OnBuild (monitor, configuration, operationContext);
 			}
 
+			[Obsolete("This method will be removed in future releases")]
 			internal protected override bool NeedsBuilding (ConfigurationSelector configuration)
 			{
 				return Solution.OnGetNeedsBuilding (configuration);

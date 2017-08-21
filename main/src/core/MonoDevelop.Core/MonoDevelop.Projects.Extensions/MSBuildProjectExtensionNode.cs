@@ -32,7 +32,9 @@ namespace MonoDevelop.Projects.Extensions
 	{
 		[NodeAttribute (Description = "GUID of the extension. The extension will be loaded if the project has this GUID in the project type GUID list. " +
 			"If not specified, the SupportsItem method will be called on the extension to determine if it is supported or not.")]
+#pragma warning disable CS0649
 		string guid;
+#pragma warning restore CS0649
 
 		public MSBuildProjectExtensionNode ()
 		{
