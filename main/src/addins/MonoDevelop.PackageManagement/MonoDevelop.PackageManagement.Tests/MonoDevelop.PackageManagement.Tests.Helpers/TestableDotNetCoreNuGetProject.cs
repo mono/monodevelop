@@ -34,6 +34,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public TestableDotNetCoreNuGetProject (DotNetProject project)
 			: base (project, new [] { "netcoreapp1.0" })
 		{
+			BuildIntegratedRestorer = new FakeMonoDevelopBuildIntegratedRestorer ();
 		}
 
 		public bool IsSaved { get; set; }
@@ -42,6 +43,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			IsSaved = true;
 			return Task.FromResult (0);
+		}
+
+		public FakeMonoDevelopBuildIntegratedRestorer BuildIntegratedRestorer;
+		public Solution SolutionUsedToCreateBuildIntegratedRestorer;
+
+		protected override IMonoDevelopBuildIntegratedRestorer CreateBuildIntegratedRestorer (Solution solution)
+		{
+			SolutionUsedToCreateBuildIntegratedRestorer = solution;
+			return BuildIntegratedRestorer;
 		}
 	}
 }

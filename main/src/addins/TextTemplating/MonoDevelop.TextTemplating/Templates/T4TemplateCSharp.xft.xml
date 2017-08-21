@@ -15,7 +15,7 @@
 	<!-- Template Content -->
 	<TemplateFiles>
 		<File name="${Name}.tt" CustomTool="TextTemplatingFileGenerator">
-		<![CDATA[﻿<#@ template language="C#" #>
+		<![CDATA[<#@ template language="C#" #>
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>

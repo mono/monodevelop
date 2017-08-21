@@ -2127,6 +2127,21 @@ namespace Test
 			VerifyItemIsAbsent (markup, "@namespace");
 		}
 
+		[Test]
+		public void AttributeNameWithoutAttributeSuffix ()
+		{
+			var markup = @"
+namespace Test
+{
+	class Foo : System.Attribute { }
+
+	[F$$
+	class Program { }
+}
+";
+
+			VerifyItemExists (markup, "Foo");
+		}
 
 
 		[Test]

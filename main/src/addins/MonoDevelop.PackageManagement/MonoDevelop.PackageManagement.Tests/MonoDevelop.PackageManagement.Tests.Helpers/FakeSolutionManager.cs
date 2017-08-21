@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
@@ -113,13 +114,19 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			throw new NotImplementedException ();
 		}
 
-		public Dictionary<IDotNetProject, FakeNuGetProject> NuGetProjects = new Dictionary<IDotNetProject, FakeNuGetProject> ();
+		public Dictionary<IDotNetProject, NuGetProject> NuGetProjects = new Dictionary<IDotNetProject, NuGetProject> ();
+		public Dictionary<DotNetProject, NuGetProject> NuGetProjectsUsingDotNetProjects = new Dictionary<DotNetProject, NuGetProject> ();
 
 		public NuGetProject GetNuGetProject (IDotNetProject project)
 		{
-			FakeNuGetProject nugetProject = null;
+			NuGetProject nugetProject = null;
 			if (NuGetProjects.TryGetValue (project, out nugetProject))
 				return nugetProject;
+
+			if (project.DotNetProject != null) {
+				if (NuGetProjectsUsingDotNetProjects.TryGetValue (project.DotNetProject, out nugetProject))
+					return nugetProject;
+			}
 
 			return new FakeNuGetProject (project);
 		}

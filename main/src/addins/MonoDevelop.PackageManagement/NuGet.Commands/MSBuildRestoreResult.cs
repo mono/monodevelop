@@ -3,15 +3,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Xml.Linq;
-using NuGet.Common;
+using MonoDevelop.Core;
 
 namespace NuGet.Commands
 {
+	/// <summary>
+	/// TODO: Look at removing this class and instead just using the existing PackageReference support.
+	/// </summary>
 	class MSBuildRestoreResult
 	{
 		/// <summary>
@@ -76,7 +77,7 @@ namespace NuGet.Commands
 				var name = $"{ProjectName}.nuget.targets";
 				var path = Path.Combine(ProjectDirectory, name);
 
-				log.LogMinimal(string.Format(CultureInfo.CurrentCulture, Strings.Log_GeneratingMsBuildFile, name));
+				log.LogMinimal(GettextCatalog.GetString ("Generating MSBuild file {0}.", name));
 				GenerateMSBuildErrorFile(path);
 			}
 			else
@@ -89,7 +90,7 @@ namespace NuGet.Commands
 
 				if (Targets.Any())
 				{
-					log.LogMinimal(string.Format(CultureInfo.CurrentCulture, Strings.Log_GeneratingMsBuildFile, targetsName));
+					log.LogMinimal(GettextCatalog.GetString ("Generating MSBuild file {0}.", targetsName));
 
 					GenerateImportsFile(targetsPath, Targets);
 				}
@@ -100,7 +101,7 @@ namespace NuGet.Commands
 
 				if (Props.Any())
 				{
-					log.LogMinimal(string.Format(CultureInfo.CurrentCulture, Strings.Log_GeneratingMsBuildFile, propsName));
+					log.LogMinimal(GettextCatalog.GetString ("Generating MSBuild file {0}.", propsName));
 
 					GenerateImportsFile(propsPath, Props);
 				}
@@ -130,6 +131,7 @@ namespace NuGet.Commands
 
 		private void GenerateMSBuildErrorFile(string path)
 		{
+			string warning = GettextCatalog.GetString ("Packages containing MSBuild targets and props files cannot be fully installed in projects targeting multiple frameworks. The MSBuild targets and props files have been ignored.");
 			var ns = XNamespace.Get("http://schemas.microsoft.com/developer/msbuild/2003");
 			var doc = new XDocument(
 				new XDeclaration("1.0", "utf-8", "no"),
@@ -142,7 +144,7 @@ namespace NuGet.Commands
 							new XAttribute("BeforeTargets", "Build"),
 
 							new XElement(ns + "Warning",
-								new XAttribute("Text", Strings.MSBuildWarning_MultiTarget)))));
+								new XAttribute("Text", warning)))));
 
 			using (var output = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
 			{

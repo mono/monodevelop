@@ -1,0 +1,31 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask
+    TaskName="GenerateRuntimeImports"
+    TaskFactory="CodeTaskFactory"
+    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
+    <ParameterGroup>
+      <AddinFolder ParameterType="System.String" Required="true" />
+      <ManifestFile ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.IO.Compression" />
+      <Reference Include="System.IO.Compression.FileSystem" />
+      <Code Language="cs" Source="$(MSBuildThisFileDirectory)/GenerateRuntimeImports.cs" />
+    </Task>
+  </UsingTask>
+
+  <PropertyGroup>
+    <CoreCompileDependsOn>
+        GenerateRuntimeImports;$(CoreCompileDependsOn)
+    </CoreCompileDependsOn>
+  </PropertyGroup>
+
+  <Target Name="GenerateRuntimeImports">
+    <!-- HACK: explicitly perform this since we need the files to be present to generate the imports -->
+    <MDDownloadFiles Downloads="@(MDDownload)" />
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)\..\..\..\packages\Microsoft.AzureFunctions.ProjectTemplates.1.0.0-beta3\Microsoft.AzureFunctions.ProjectTemplates.1.0.0-beta3.nupkg" DestinationFiles="$(OutputPath)\Templates\Microsoft.AzureFunctions.ProjectTemplates.nupkg" />
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)\..\..\..\packages\Azure.Functions.Templates.1.0.1-beta1\Azure.Functions.Templates.1.0.1-beta1.nupkg" DestinationFiles="$(OutputPath)\Templates\Azure.Functions.Templates.nupkg" />
+    
+    <GenerateRuntimeImports AddinFolder="$(OutputPath)" ManifestFile="$(MSBuildThisFileDirectory)/Properties/AddinInfo.generated.cs" />
+  </Target>
+</Project>

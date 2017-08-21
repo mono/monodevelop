@@ -65,8 +65,7 @@ namespace MonoDevelop.CSharp.Formatting
 				var startLine = indent.Editor.GetLineByOffset (insertionOffset);
 
 				var policy = indent.DocumentContext.GetFormattingPolicy ();
-				var textPolicy = indent.DocumentContext.Project.Policies.Get<Ide.Gui.Content.TextStylePolicy> (indent.Editor.MimeType);
-				var optionSet = policy.CreateOptions (textPolicy);
+				var optionSet = policy.CreateOptions (indent.Editor.Options);
 				var span = new TextSpan (insertionOffset, insertedChars);
 
 				var rules = new List<IFormattingRule> { new PasteFormattingRule () };
@@ -76,8 +75,8 @@ namespace MonoDevelop.CSharp.Formatting
 				var changes = Formatter.GetFormattedTextChanges (root, SpecializedCollections.SingletonEnumerable (span), indent.DocumentContext.RoslynWorkspace, optionSet, rules, default (CancellationToken));
 				var doc = TextEditorFactory.CreateNewDocument ();
 				doc.Text = text;
-				doc.ApplyTextChanges (changes.Where (c => c.Span.Start - insertionOffset < text.Length && c.Span.Start - insertionOffset >= 0).Select (delegate (TextChange c) { 
-					return new TextChange (new TextSpan (c.Span.Start - insertionOffset, c.Span.Length), c.NewText); 
+				doc.ApplyTextChanges (changes.Where (c => c.Span.Start - insertionOffset < text.Length && c.Span.Start - insertionOffset >= 0).Select (delegate (TextChange c) {
+					return new TextChange (new TextSpan (c.Span.Start - insertionOffset, c.Span.Length), c.NewText);
 				}));
 				return doc.Text;
 			}
@@ -140,4 +139,3 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 	}
 }
-
