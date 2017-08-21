@@ -141,8 +141,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (container != null) {
 				var toolbar = container.GetToolbar (DockPositionType.Top);
-				foreach (var w in toolbar.Children)
-					toolbar.Remove (w);
+				toolbar.RemoveAllChildren ();
 			}
 		}
 	}
@@ -164,8 +163,7 @@ namespace MonoDevelop.DesignerSupport
 			this.tb = tb;
 			if (tb != null) {
 				tb.Visible = visible;
-				foreach (var c in tb.Children)
-					tb.Remove (c);
+				tb.RemoveAllChildren ();
 				foreach (var b in buttons)
 					tb.Add (b);
 			}

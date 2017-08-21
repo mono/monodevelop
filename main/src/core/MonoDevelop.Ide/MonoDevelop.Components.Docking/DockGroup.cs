@@ -346,8 +346,8 @@ namespace MonoDevelop.Components.Docking
 			
 			if (type == DockGroupType.Tabbed) {
 				if (boundTabStrip != null) {
-					int tabsHeight = boundTabStrip.SizeRequest ().Height;
-					boundTabStrip.SizeAllocate (new Gdk.Rectangle (newAlloc.X, newAlloc.Y, newAlloc.Width, tabsHeight));
+					int tabsHeight = boundTabStrip.Size.Height;
+					boundTabStrip.Size = new Gdk.Rectangle (newAlloc.X, newAlloc.Y, newAlloc.Width, tabsHeight);
 				}
 				if (allocStatus == AllocStatus.Valid && newAlloc == oldAlloc) {
 					// Even if allocation has not changed, SizeAllocation has to be called on all items to avoid redrawing issues.
@@ -356,7 +356,7 @@ namespace MonoDevelop.Components.Docking
 					return;
 				}
 				if (VisibleObjects.Count > 1 && boundTabStrip != null) {
-					int tabsHeight = boundTabStrip.SizeRequest ().Height;
+					int tabsHeight = boundTabStrip.Size.Height;
 					newAlloc.Height -= tabsHeight;
 					newAlloc.Y += tabsHeight;
 					boundTabStrip.QueueDraw ();
@@ -601,7 +601,7 @@ namespace MonoDevelop.Components.Docking
 					ret.Width += req.Width;
 			}
 			if (type == DockGroupType.Tabbed && VisibleObjects.Count > 1 && boundTabStrip != null) {
-				Gtk.Requisition tabs = boundTabStrip.SizeRequest ();
+				Gdk.Rectangle tabs = boundTabStrip.Size;
 				ret.Height += tabs.Height;
 				if (ret.Width < tabs.Width)
 					ret.Width = tabs.Width;
@@ -611,11 +611,11 @@ namespace MonoDevelop.Components.Docking
 
 		internal void UpdateNotebook (TabStrip ts)
 		{
-			Gtk.Widget oldpage = null;
+			Control oldpage = null;
 			int oldtab = -1;
 			
 			if (tabFocus != null) {
-				oldpage = tabFocus.Item.Widget;
+				oldpage = tabFocus.Item.Widget.Control;
 				tabFocus = null;
 			} else if (boundTabStrip != null) {
 				oldpage = boundTabStrip.CurrentPage;
@@ -627,6 +627,7 @@ namespace MonoDevelop.Components.Docking
 			// Add missing pages
 			foreach (DockObject ob in VisibleObjects) {
 				DockGroupItem it = ob as DockGroupItem;
+
 				ts.AddTab (it.Item.TitleTab);
 			}
 
@@ -665,7 +666,7 @@ namespace MonoDevelop.Components.Docking
 					if (dit.Item == it) {
 						currentTabPage = n;
 						if (boundTabStrip != null)
-							boundTabStrip.CurrentPage = it.Widget;
+							boundTabStrip.CurrentPage = it.Widget.Control;
 						break;
 					}
 				}
@@ -728,11 +729,10 @@ namespace MonoDevelop.Components.Docking
 				if (it != null) {
 					if (it.Visible) {
 						// Add the dock item to the container and show it if visible
-						if (it.Item.Widget.Parent != Frame.Container) {
-							if (it.Item.Widget.Parent != null) {
-								((Gtk.Container)it.Item.Widget.Parent).Remove (it.Item.Widget);
-							}
-							Frame.Container.Add (it.Item.Widget);
+						if (!Frame.Container.ContainsItem (it.Item)) {
+							it.Item.RemoveFromParent (); 
+
+							Frame.Container.Add (it.Item);
 						}
 						if (!it.Item.Widget.Visible && type != DockGroupType.Tabbed)
 							it.Item.Widget.Show ();
@@ -740,20 +740,19 @@ namespace MonoDevelop.Components.Docking
 						// Do the same for the title tab
 						if ((type != DockGroupType.Tabbed || VisibleObjects.Count == 1) && (it.Item.Behavior & DockItemBehavior.NoGrip) == 0) {
 							var tab = it.Item.TitleTab;
-							if (tab.Parent != Frame.Container) {
-								if (tab.Parent != null) {
-									((Gtk.Container)tab.Parent).Remove (tab);
-								}
+							if (!Frame.Container.ContainsTab (tab)) {
+								tab.RemoveFromParent ();
+
 								Frame.Container.Add (tab);
 								tab.Active = true;
 							}
-							tab.ShowAll ();
+							tab.Control.ShowAll ();
 						}
 					} else {
-						if (it.Item.Widget.Parent == Frame.Container)
-							Frame.Container.Remove (it.Item.Widget);
+						if (Frame.Container.ContainsItem (it.Item))
+							Frame.Container.Remove (it.Item);
 						var tab = it.Item.TitleTab;
-						if (tab.Parent == Frame.Container)
+						if (Frame.Container.ContainsTab (tab))
 							Frame.Container.Remove (tab);
 					}
 				}
@@ -814,7 +813,7 @@ namespace MonoDevelop.Components.Docking
 						height = dh;
 				}
 				if (boundTabStrip != null) {
-					var tr = boundTabStrip.SizeRequest ();
+					var tr = boundTabStrip.Size;
 					if (width < tr.Width)
 						width = tr.Width;
 				}
@@ -873,13 +872,6 @@ namespace MonoDevelop.Components.Docking
 			int hw = horiz ? Frame.HandleSize : Allocation.Width;
 			int hh = horiz ? Allocation.Height : Frame.HandleSize;
 
-			Gdk.GC hgc = null;
-
-			if (areasList == null && oper == DrawSeparatorOperation.Draw) {
-				hgc = new Gdk.GC (Frame.Container.GdkWindow);
-				hgc.RgbFgColor = Styles.DockFrameBackground.ToGdkColor ();
-			}
-
 			for (int n=0; n<VisibleObjects.Count; n++) {
 				DockObject ob = VisibleObjects [n];
 				DockGroup grp = ob as DockGroup;
@@ -897,10 +889,10 @@ namespace MonoDevelop.Components.Docking
 							areasList.Add (new Gdk.Rectangle (x, y, hw, hh));
 						break;
 					case DrawSeparatorOperation.Invalidate:
-						Frame.Container.QueueDrawArea (x, y, hw, hh);
+						Frame.Container.Control.QueueDrawArea (x, y, hw, hh);
 						break;
 					case DrawSeparatorOperation.Draw:
-						Frame.Container.GdkWindow.DrawRectangle (hgc, true, x, y, hw, hh);
+						Frame.Container.Control.DrawSeparator(true, x, y, hw, hh);
 						break;
 					case DrawSeparatorOperation.Allocate:
 						Frame.Container.AllocateSplitter (this, n, new Gdk.Rectangle (x, y, hw, hh));
@@ -913,8 +905,6 @@ namespace MonoDevelop.Components.Docking
 						y += Frame.HandleSize + Frame.HandlePadding;
 				}
 			}
-			if (hgc != null)
-				hgc.Dispose ();
 		}
 		
 		public void ResizeItem (int index, int newSize)

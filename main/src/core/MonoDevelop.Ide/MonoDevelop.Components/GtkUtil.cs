@@ -818,6 +818,22 @@ namespace MonoDevelop.Components
 				return Ide.IdeApp.CommandService.ShowContextMenu (tree, x, y, entrySet, initialCommandTarget);
 			}
 		}
+
+		public static void SetFocus (Widget w)
+		{
+			w.ChildFocus (Gtk.DirectionType.Down);
+
+			Gtk.Window win = w.Toplevel as Gtk.Window;
+			if (win == null)
+				return;
+
+			// Make sure focus is not given to internal children
+			if (win.Focus != null) {
+				Gtk.Container c = win.Focus.Parent as Gtk.Container;
+				if (c.Children.Length == 0)
+					win.Focus = c;
+			}
+		}
 	}
 
 	class EventKeyWrapper: Gdk.EventKey

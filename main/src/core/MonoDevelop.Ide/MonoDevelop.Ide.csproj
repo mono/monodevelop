@@ -9640,6 +9640,7 @@
     <Compile Include="MonoDevelop.Ide.Tasks\CommentTasksProvider.Legacy.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\TagCommentsTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.Caching.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\ToolkitMismatchException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

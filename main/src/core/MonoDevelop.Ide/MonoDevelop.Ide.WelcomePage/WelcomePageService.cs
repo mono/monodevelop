@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				WelcomePageShown?.Invoke (welcomePage, EventArgs.Empty);
 				welcomePage.UpdateProjectBar ();
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).BottomBar.Visible = false;
-				((DefaultWorkbench)IdeApp.Workbench.RootWindow).DockFrame.AddOverlayWidget (welcomePage, animate);
+				((DefaultWorkbench)IdeApp.Workbench.RootWindow).DockFrame.Control.AddOverlayWidget (welcomePage, animate);
 				welcomePage.GrabFocus ();
 			}
 		}
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			if (visible) {
 				visible = false;
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).BottomBar.Show ();
-				((DefaultWorkbench)IdeApp.Workbench.RootWindow).DockFrame.RemoveOverlayWidget (animate);
+				((DefaultWorkbench)IdeApp.Workbench.RootWindow).DockFrame.Control.RemoveOverlayWidget (animate);
 			}
 			WelcomePageHidden?.Invoke (welcomePage, EventArgs.Empty);
 		}
