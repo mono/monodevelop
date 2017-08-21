@@ -126,7 +126,8 @@ namespace MonoDevelop.Core.Assemblies
 		}
 
 		public bool UserDefined { get; internal set; }
-		
+
+		[Obsolete("Use DotNetProject.GetAssemblyDebugInfoFile()")]
 		public override string GetAssemblyDebugInfoFile (string assemblyPath)
 		{
 			if (monoRuntimeInfo.RuntimeVersion != null && monoRuntimeInfo.RuntimeVersion >= new Version (4,9,0))
@@ -156,7 +157,9 @@ namespace MonoDevelop.Core.Assemblies
 
 		public override string GetToolPath (TargetFramework fx, string toolName)
 		{
+#pragma warning disable CS0618 // Type or member is obsolete
 			if (fx.ClrVersion == ClrVersion.Net_2_0 && toolName == "al")
+#pragma warning restore CS0618 // Type or member is obsolete
 				toolName = "al2";
 			return base.GetToolPath (fx, toolName);
 		}
