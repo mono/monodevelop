@@ -777,7 +777,7 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 				try {
-					this.Document.VsTextDocument.Save();
+					MonoDevelop.Core.Text.TextFileUtility.WriteText (fileName, Document);
 				} catch (InvalidEncodingException) {
 					var result = MessageService.AskQuestion (GettextCatalog.GetString ("Can't save file with current codepage."), 
 						GettextCatalog.GetString ("Some unicode characters in this file could not be saved with the current encoding.\nDo you want to resave this file as Unicode ?\nYou can choose another encoding in the 'save as' dialog."),
@@ -786,7 +786,7 @@ namespace MonoDevelop.SourceEditor
 						new AlertButton (GettextCatalog.GetString ("Save as Unicode")));
 					if (result != AlertButton.Cancel) {
 						this.Document.VsTextDocument.Encoding = Encoding.UTF8;
-						this.Document.VsTextDocument.Save();
+						MonoDevelop.Core.Text.TextFileUtility.WriteText (fileName, Document);
 					}
 					else {
 						return;
@@ -856,13 +856,23 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			public void Draw (MonoTextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea)
+			public void Draw (MonoTextEditor editor, Cairo.Context g, int lineNr, Cairo.Rectangle lineArea)
 			{
+				using (var layout = new Pango.Layout (editor.PangoContext)) {
+					g.Save ();
+					editor.EditorTheme.TryGetColor (EditorThemeColors.Foreground, out HslColor color);
+					g.SetSourceColor (color);
+					g.Translate (lineArea.X, lineArea.Y - editor.LineHeight * 2);
+					layout.SetText ("Line " + lineNr);
+					g.ShowLayout (layout);
+					g.Restore ();
+				}
+
 			}
 
 			public double GetLineHeight (MonoTextEditor editor)
 			{
-				return editor.LineHeight *  3 / 2;
+				return editor.LineHeight *  3;
 			}
 		}
 
@@ -934,6 +944,10 @@ namespace MonoDevelop.SourceEditor
 			}
 
 			document.TextChanged += OnTextReplaced;
+			//document.AddMarker (5, new MyExtendingLineMarker ());
+			//document.AddMarker (7, new MyExtendingLineMarker ());
+			//document.AddMarker (10, new MyExtendingLineMarker ());
+
 			return TaskUtil.Default<object>();
 		}
 
@@ -1482,7 +1496,7 @@ namespace MonoDevelop.SourceEditor
 			}
 
 			if (hoverDebugLineMarker == null && e.LineSegment != null && e.Editor.Document.GetMarkers (e.LineSegment).FirstOrDefault (m => m is DebugIconMarker) == null) {
-				hoverDebugLineMarker = new DebugIconMarker (hoverBreakpointIcon) {
+				hoverDebugLineMarker = new DebugIconMarker (hoverBreakpointIcon, true) {
 					Tooltip = GettextCatalog.GetString ("Insert Breakpoint")
 				};
 				e.Editor.Document.AddMarker (e.LineSegment.LineNumber, hoverDebugLineMarker);

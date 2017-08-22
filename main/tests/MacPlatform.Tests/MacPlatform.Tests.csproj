@@ -76,5 +76,14 @@
       <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
       <Name>UnitTests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Core.Tests\MonoDevelop.Core.Tests.csproj">
+      <Project>{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}</Project>
+      <Name>MonoDevelop.Core.Tests</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Ide.Tests\MonoDevelop.Ide.Tests.csproj">
+      <Project>{73D4CC8B-BAB9-4A29-841B-F25C6311F067}</Project>
+      <Name>MonoDevelop.Ide.Tests</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

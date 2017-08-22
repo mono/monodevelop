@@ -190,6 +190,7 @@ namespace Mono.TextEditor
 				}
 				rectangleHeight = yEnd - y;
 
+				// FIXME: Need to take scroll offset into consideration
 				return new Rectangle ((int)((xPos / Pango.Scale.PangoScale) + Margin.XOffset), (int)y, (int)rectangleWidth, (int)rectangleHeight);
 			}
 
@@ -203,6 +204,7 @@ namespace Mono.TextEditor
 				if (line == null) {
 					return 0;
 				}
+
 				return line.LineNumber;
 			}
 
@@ -210,14 +212,7 @@ namespace Mono.TextEditor
 			{
 				// Check if the glyph at offset really is just 1 char wide
 				var c = Margin.Document.GetCharAt (index);
-				int length;
-
-				// Is this right, does it make any difference?
-				if (char.IsWhiteSpace (c)) {
-					length = 0;
-				} else {
-					length = 1;
-				}
+				int length = 1;
 
 				return new AtkCocoa.Range { Location = index, Length = length };
 			}
@@ -226,7 +221,8 @@ namespace Mono.TextEditor
 			{
 				var line = Margin.Document.GetLine (lineNo);
 
-				return new AtkCocoa.Range { Location = line.Offset, Length = line.Length };
+				int length = line.Length > 0 ? line.Length : line.LengthIncludingDelimiter;
+				return new AtkCocoa.Range { Location = line.Offset, Length = length };
 			}
 
 			AtkCocoa.Range GetRangeForPosition (Gdk.Point position)
@@ -2560,9 +2556,6 @@ namespace Mono.TextEditor
 			if (line != null) {
 				newMarkers.Clear ();
 				newMarkers.AddRange (textEditor.Document.GetMarkers (line).OfType<IActionTextLineMarker> ());
-				var extraMarker = Document.GetExtendingTextMarker (loc.Line) as IActionTextLineMarker;
-				if (extraMarker != null && !oldMarkers.Contains (extraMarker))
-					newMarkers.Add (extraMarker);
 				foreach (var marker in newMarkers) {
 					if (oldMarkers.Contains (marker))
 						continue;
@@ -2989,10 +2982,6 @@ namespace Mono.TextEditor
 			// Check if line is beyond the document length
 			if (line == null) {
 				DrawScrollShadow (cr, x, y, _lineHeight);
-
-				var marker = Document.GetExtendingTextMarker (lineNr);
-				if (marker != null)
-					marker.Draw (textEditor, cr, lineNr, lineArea);
 				return;
 			}
 			
@@ -3097,7 +3086,9 @@ namespace Mono.TextEditor
 			if (!isSelectionDrawn && BackgroundRenderer == null) {
 				if (isEolSelected) {
 					// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
-					wrapper = GetLayout (line);
+					// Need to get the layout for the remaning line which is drawn after the last fold marker
+					wrapper = CreateLinePartLayout (line, logicalRulerColumn, offset, line.Offset + line.Length - offset, 0, 0);
+
 					int remainingLineWidth, ph;
 					wrapper.GetPixelSize (out remainingLineWidth, out ph);
 

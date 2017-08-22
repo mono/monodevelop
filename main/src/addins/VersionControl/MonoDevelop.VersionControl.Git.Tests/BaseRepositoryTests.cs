@@ -669,6 +669,72 @@ namespace MonoDevelop.VersionControl.Tests
 			Assert.AreEqual (VersionStatus.Versioned, Repo.GetVersionInfo (srcFile, VersionInfoQueryFlags.IgnoreCache).Status);
 			
 		}
+
+		[Test]
+		public void RevisionFormatMessageChangelogStyle()
+		{
+			var res = RevisionHelpers.FormatMessage(
+@"2009-11-23 Test Author
+
+	* MonoDevelop.CSharp/CSharpBindingCompilerManager.cs: Emit the
+	  target platform option. Fixes bug #557146.");
+
+			var expected =
+@"Emit the target platform option. Fixes bug #557146.";
+			
+			Assert.AreEqual (expected, res);
+		}
+
+		[Test]
+		public void RevisionFormatMessageChangelogStyleMultipleLines ()
+		{
+			var res = RevisionHelpers.FormatMessage (
+@"2005-09-22 Test Author
+	* Services/NUnitService.cs:
+	* Services/CombineTestGroup.cs:
+	* Services/NUnitProjectTestSuite.cs:
+	* Services/SystemTestProvider.cs: Only generate a test suite for
+	projects that reference the nunit.framework assembly.");
+
+			var expected =
+@"* Services/CombineTestGroup.cs:
+ * Services/NUnitProjectTestSuite.cs:
+ * Services/SystemTestProvider.cs: Only generate a test suite for
+ projects that reference the nunit.framework assembly.";
+//			var expected =
+//@"Only generate a test suite for projects that reference the nunit.framework assembly.";
+
+			Assert.AreEqual (expected, res);
+		}
+
+		[Test]
+		public void RevisionFormatMessageChangelogStyleMultipleMessages ()
+		{
+			var res = RevisionHelpers.FormatMessage (
+@"2005-08-22 Test Author
+	* Commands/ViewCommands.cs: Implemented delete layout command.
+	* Gui/Workbench/Layouts/SdiWorkspaceLayout.cs: Properly load saved
+	layouts. Added DeleteLayout method.
+	* Gui/IWorkbenchLayout.cs: Added DeleteLayout method.
+	* MonoDevelopCore.addin.xml: Added Delete Layout command.");
+
+//			var expected =
+//@"Implemented delete layout command.
+// Properly load saved layouts. Added DeleteLayout method.
+// Added DeleteLayout method.
+// Added Delete Layout command.
+
+			var expected =
+@"Implemented delete layout command. * Gui/Workbench/Layouts/SdiWorkspaceLayout.cs: Properly load saved
+ layouts. Added DeleteLayout method.
+ * Gui/IWorkbenchLayout.cs: Added DeleteLayout method.
+ * MonoDevelopCore.addin.xml: Added Delete Layout command.";
+
+			Assert.AreEqual (expected, res);
+		}
+
+
+
 		#region Util
 
 		protected void Checkout (string path, string url)

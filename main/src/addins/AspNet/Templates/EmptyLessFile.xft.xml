@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Template
+	originator="Mike Lorbetske"
+	language="LESS"
+	created="2017/08/08"
+	lastModified="2017/08/08">
+
+	<TemplateConfiguration>
+		<_Name>LESS Style Sheet</_Name>
+		<Icon>md-file-less</Icon>
+		<_Category>Web</_Category>
+		<_Description>LESS is a language that compiles into CSS.</_Description>
+		<DefaultFilename>EmptyLESSFile</DefaultFilename>
+	</TemplateConfiguration>
+
+	<TemplateFiles>
+		<File DefaultExtension=".less" src="StylesheetTemplate.less" />
+	</TemplateFiles>
+</Template>

@@ -310,9 +310,9 @@ namespace MonoDevelop.Ide.ExternalTools
 			
 			toolListBoxStore.SetValue (SelectedIter, 0, titleTextBox.Text);
 			selectedItem.MenuCommand        = titleTextBox.Text;
-			selectedItem.Command            = browseButton.Path;
+			selectedItem.Command            = browseButton.Path.Trim ();
 			selectedItem.Arguments          = argumentTextBox.Text;
-			selectedItem.InitialDirectory   = workingDirTextBox.Text;
+			selectedItem.InitialDirectory   = workingDirTextBox.Text.Trim ();
 			selectedItem.PromptForArguments = promptArgsCheckBox.Active;
 			selectedItem.UseOutputPad       = useOutputPadCheckBox.Active;
 			selectedItem.SaveCurrentFile    = saveCurrentFileCheckBox.Active;

@@ -23,9 +23,9 @@ TEST_ASSEMBLIES_WINDOWS = \
 	$(TEST_DIR)/VersionControl.Subversion.Win32.Tests.dll
 
 TEST_ASSEMBLIES_COMMON = \
-	$(TEST_DIR)/Ide.Tests.dll \
+    $(TEST_DIR)/MonoDevelop.Core.Tests.dll \
+	$(TEST_DIR)/MonoDevelop.Ide.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.VersionControl.Git.Tests.dll \
-	$(TEST_DIR)/UnitTests.dll \
 	$(TEST_DIR)/MonoDevelop.Debugger.Tests.dll \
 	$(TEST_DIR)/Mono.TextTemplating.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.PackageManagement.Tests.dll \

@@ -66,11 +66,6 @@ namespace MonoDevelop.Projects.Policies
 			}
 		}
 		
-		bool DirectHas (Type type, string scope)
-		{
-			return policies != null && policies.ContainsKey (new PolicyKey (type, scope));
-		}
-		
 		DataCollection ICustomDataItem.Serialize (ITypeSerializer handler)
 		{
 			if (policies == null)

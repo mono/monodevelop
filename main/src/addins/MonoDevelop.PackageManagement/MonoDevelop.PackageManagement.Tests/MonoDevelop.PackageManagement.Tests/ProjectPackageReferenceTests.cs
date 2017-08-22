@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Xml;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects.MSBuild;
@@ -56,6 +57,34 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("1.2.3", packageReferenceElement.GetAttribute ("Version"));
 			Assert.AreEqual (0, packageReferenceElement.ChildNodes.Count);
 			Assert.IsTrue (packageReferenceElement.IsEmpty);
+		}
+
+		[Test]
+		public void IsAtLeastVersion_Simple ()
+		{
+			var reference = ProjectPackageReference.Create ("NUnit", "3.2");
+			Assert.IsTrue (reference.IsAtLeastVersion (new Version (3, 0)));
+			Assert.IsTrue (reference.IsAtLeastVersion (new Version (3, 2)));
+			Assert.IsTrue (reference.IsAtLeastVersion (new Version (3, 0, 0)));
+			Assert.IsTrue (reference.IsAtLeastVersion (new Version (3, 2, 0)));
+			Assert.IsTrue (reference.IsAtLeastVersion (new Version (3, 2, 0, 0)));
+			Assert.IsTrue (reference.IsAtLeastVersion (new Version (3, 0, 0, 0)));
+			Assert.IsFalse (reference.IsAtLeastVersion (new Version (4, 0)));
+			Assert.IsFalse (reference.IsAtLeastVersion (new Version (3, 3, 0)));
+			Assert.IsFalse (reference.IsAtLeastVersion (new Version (3, 2, 1)));
+		}
+
+		[Test]
+		[TestCase ("[3.2,)")]
+		[TestCase ("(3.2,]")]
+		[TestCase ("[3.2]")]
+		public void IsAtLeastVersion_Range (string versionRange)
+		{
+			var reference = ProjectPackageReference.Create ("NUnit", versionRange);
+			Assert.IsTrue (reference.IsAtLeastVersion (new Version (3, 0)));
+			Assert.IsTrue (reference.IsAtLeastVersion (new Version (3, 2)));
+			Assert.IsFalse (reference.IsAtLeastVersion (new Version (3, 2, 1)));
+			Assert.IsFalse (reference.IsAtLeastVersion (new Version (3, 3)));
 		}
 	}
 }

@@ -40,7 +40,7 @@ using System;
 namespace MonoDevelop.Ide
 {
 	[TestFixture]
-	public class ProjectTemplateTests : TestBase
+	public class ProjectTemplateTests : IdeTestBase
 	{
 		public ProjectTemplateTests ()
 		{

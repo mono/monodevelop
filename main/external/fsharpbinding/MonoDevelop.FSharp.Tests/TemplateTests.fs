@@ -122,6 +122,13 @@ type ``Template tests``() =
                     | _, false, false ->
                         // xbuild worked, now check for editor squiggles
                         for project in projects do
+                            // make sure that an .mdb file was emitted
+                            let outputFile = project.GetOutputFileName(sln.DefaultConfigurationSelector)
+                                                   .FullPath |> string
+
+                            let debugFile = outputFile + ".mdb"
+                            if not (File.Exists debugFile) then
+                                yield "No debug file", debugFile, "No debug file was emitted"
                             let checker = FSharpChecker.Create()
                             let! refs = project.GetReferencedAssemblies (CompilerArguments.getConfig()) |> Async.AwaitTask
 
