@@ -65,7 +65,9 @@ namespace MonoDevelop.Ide.Templates
 			
 			DotNetProject dnp = proj as DotNetProject;
 			if (dnp != null) {
+#pragma warning disable CS0618 // Type or member is obsolete
 				ClrVersion pver = dnp.TargetFramework.ClrVersion;
+#pragma warning restore CS0618 // Type or member is obsolete
 				switch (condition) {
 				case ClrVersionCondition.Equal:
 					return (pver == clrVersion);

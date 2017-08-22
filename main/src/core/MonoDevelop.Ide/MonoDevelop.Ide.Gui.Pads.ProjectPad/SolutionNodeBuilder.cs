@@ -371,7 +371,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			foreach (ITreeNavigator node in CurrentNodes) {
 				Solution solution = (Solution) node.DataItem;
-				IdeApp.Workspace.CloseWorkspaceItem (solution);
+				IdeApp.Workspace.CloseWorkspaceItem (solution).Ignore();
 			}
 		}
 		

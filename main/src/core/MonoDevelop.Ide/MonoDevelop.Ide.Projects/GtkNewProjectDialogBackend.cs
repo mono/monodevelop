@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Projects
 			LoadTemplates ();
 			SelectTemplateDefinedbyController ();
 			if (CanMoveToNextPage && !controller.ShowTemplateSelection)
-				MoveToNextPage ();
+				MoveToNextPage ().Ignore();
 		}
 
 		void SetTemplateCategoryCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
@@ -635,7 +635,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			if (CanMoveToNextPage && !isLastPressedKeySpace && 
 			    IsSolutionTemplateOnActivatedRow ((Gtk.TreeView)o, args))
-				MoveToNextPage ();
+				MoveToNextPage ().Ignore();
 			isLastPressedKeySpace = false;
 		}
 

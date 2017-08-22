@@ -185,13 +185,13 @@ namespace MonoDevelop.Ide.Gui.Wizard
 				throw new ArgumentException ("pages must contain at least one page.", nameof (pages));
 		}
 
-		protected override async Task<IWizardDialogPage> OnGoNext (CancellationToken token)
+		protected override Task<IWizardDialogPage> OnGoNext (CancellationToken token)
 		{
 			var currentIndex = pages.IndexOf (CurrentPage);
 			if (currentIndex == pages.Count - 1)
-				throw new InvalidOperationException ();
+				return Task.FromException<IWizardDialogPage>(new InvalidOperationException ());
 			else
-				return pages [currentIndex + 1];
+				return Task.FromResult (pages [currentIndex + 1]);
 		}
 
 		protected override Task<IWizardDialogPage> OnGoBack (CancellationToken token)

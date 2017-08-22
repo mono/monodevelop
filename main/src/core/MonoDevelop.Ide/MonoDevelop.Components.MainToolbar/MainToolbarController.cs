@@ -531,7 +531,9 @@ namespace MonoDevelop.Components.MainToolbar
 		static IEnumerable<ExecutionTarget> GetExecutionTargets (string configuration)
 		{
 			var sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
+#pragma warning disable CS0618 // Type or member is obsolete
 			if (sol == null || !sol.SingleStartup || sol.StartupItem == null)
+#pragma warning restore CS0618 // Type or member is obsolete
 				return new ExecutionTarget [0];
 			var conf = sol.Configurations[configuration];
 			if (conf == null)
