@@ -38,6 +38,7 @@ using Microsoft.CodeAnalysis.Formatting.Rules;
 using Roslyn.Utilities;
 using System.Threading;
 using Microsoft.CodeAnalysis;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -52,12 +53,38 @@ namespace MonoDevelop.CSharp.Formatting
 			this.indent = indent;
 		}
 
-		public override string FormatPlainText (int offset, string text, byte[] copyData)
+		public override string FormatPlainText (int insertionOffset, string text, byte [] copyData)
 		{
-			return engine.FormatPlainText (indent.Editor, offset, text, copyData);
+			var result = engine.FormatPlainText (indent.Editor, insertionOffset, text, copyData);
+
+			if (DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
+				var tree = indent.DocumentContext.AnalysisDocument.GetSyntaxTreeAsync ().WaitAndGetResult (default (CancellationToken));
+				tree = tree.WithChangedText (tree.GetText ().WithChanges (new TextChange (new TextSpan (insertionOffset, 0), text)));
+
+				var insertedChars = text.Length;
+				var startLine = indent.Editor.GetLineByOffset (insertionOffset);
+
+				var policy = indent.DocumentContext.GetFormattingPolicy ();
+				var optionSet = policy.CreateOptions (indent.Editor.Options);
+				var span = new TextSpan (insertionOffset, insertedChars);
+
+				var rules = new List<IFormattingRule> { new PasteFormattingRule () };
+				rules.AddRange (Formatter.GetDefaultFormattingRules (indent.DocumentContext.AnalysisDocument));
+
+				var root = tree.GetRoot ();
+				var changes = Formatter.GetFormattedTextChanges (root, SpecializedCollections.SingletonEnumerable (span), indent.DocumentContext.RoslynWorkspace, optionSet, rules, default (CancellationToken));
+				var doc = TextEditorFactory.CreateNewDocument ();
+				doc.Text = text;
+				doc.ApplyTextChanges (changes.Where (c => c.Span.Start - insertionOffset < text.Length && c.Span.Start - insertionOffset >= 0).Select (delegate (TextChange c) {
+					return new TextChange (new TextSpan (c.Span.Start - insertionOffset, c.Span.Length), c.NewText);
+				}));
+				return doc.Text;
+			}
+
+			return result;
 		}
 
-		public override byte[] GetCopyData (int offset, int length)
+		public override byte [] GetCopyData (int offset, int length)
 		{
 			return engine.GetCopyData (indent.Editor, new TextSpan (offset, length));
 		}
@@ -67,25 +94,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (indent.Editor.Options.IndentStyle == IndentStyle.None ||
 				indent.Editor.Options.IndentStyle == IndentStyle.Auto)
 				return;
-			if (DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
-				var tree = await indent.DocumentContext.AnalysisDocument.GetSyntaxTreeAsync ();
-				var startLine = indent.Editor.GetLineByOffset (insertionOffset);
-				var endLine = indent.Editor.GetLineByOffset (insertionOffset + insertedChars);
-				int lineStartOffset = startLine.Offset != endLine.Offset ? startLine.Offset : insertionOffset;
-				int formatCharsCount = insertedChars + (insertionOffset - lineStartOffset);
-				var policy = indent.DocumentContext.GetFormattingPolicy ();
-				var optionSet = policy.CreateOptions (indent.Editor.Options);
-				var span = new TextSpan (lineStartOffset, formatCharsCount);
-
-				var rules = new List<IFormattingRule> () { new PasteFormattingRule () };
-				rules.AddRange (Formatter.GetDefaultFormattingRules (indent.DocumentContext.AnalysisDocument));
-
-				var root = tree.GetRoot ();
-				var changes = Formatter.GetFormattedTextChanges (root, SpecializedCollections.SingletonEnumerable (span), indent.DocumentContext.RoslynWorkspace, optionSet, rules, default(CancellationToken));
-				indent.Editor.ApplyTextChanges (changes);
-				return;
-			}
-			// Just correct the start line of the paste operation - the text is already indented.
+			// Just correct the start line of the paste operation - the text is already Formatted.
 			var curLine = indent.Editor.GetLineByOffset (insertionOffset);
 			var curLineOffset = curLine.Offset;
 			indent.SafeUpdateIndentEngine (curLineOffset);
@@ -130,4 +139,3 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 	}
 }
-
