@@ -231,7 +231,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			bool result = true;
 			focusedSegment++;
-			if (this.buttons.Count () <= focusedSegment+1) {
+			if (this.buttons.Count <= focusedSegment+1) {
 				focusedSegment = 0; //TODO: 
 				result = false;
 			} else {
