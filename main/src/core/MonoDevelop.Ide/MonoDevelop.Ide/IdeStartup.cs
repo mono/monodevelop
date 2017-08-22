@@ -627,7 +627,7 @@ namespace MonoDevelop.Ide
 				foreach (var path in paths) {
 					var file = BrandingService.GetFile (path.Replace ('/',Path.DirectorySeparatorChar));
 					if (File.Exists (file)) {
-						Assembly asm = Runtime.SystemAssemblyService.LoadAssemblyFrom(file);
+						Assembly asm = Platform.AssemblyLoad(file);
 						var t = asm.GetType (type, true);
 						var c = Activator.CreateInstance (t) as IdeCustomizer;
 						if (c == null)
