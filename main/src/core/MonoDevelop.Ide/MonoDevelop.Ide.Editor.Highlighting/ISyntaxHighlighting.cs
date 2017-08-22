@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return Task.FromResult (ScopeStack.Empty);
 		}
 
-		public event EventHandler<LineEventArgs> HighlightingStateChanged;
+		public event EventHandler<LineEventArgs> HighlightingStateChanged { add { } remove { } }
 
 		public void Dispose()
 		{

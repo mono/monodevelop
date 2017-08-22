@@ -961,17 +961,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
             return new Regex(pattern, options, matchTimeout, true).Replace(input, replacement);
         }
 
-        /*
+		/*
          * Does the replacement
          */
-        /// <devdoc>
-        ///    <para>
-        ///       Replaces all occurrences of 
-        ///          the <paramref name="pattern "/> with the <paramref name="replacement"/> pattern, starting at the
-        ///          first character in the input string, using the previous patten. 
-        ///       </para>
-        ///    </devdoc>
-        public String Replace(string input, String replacement) {
+		/// <devdoc>
+		///    <para>
+		///       Replaces all occurrences of 
+		///          the <paramref name="input "/> with the <paramref name="replacement"/> pattern, starting at the
+		///          first character in the input string, using the previous patten. 
+		///       </para>
+		///    </devdoc>
+		public String Replace(string input, String replacement) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -979,16 +979,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
             return Replace(input, replacement, -1, UseOptionR() ? input.Length : 0);
         }
 
-        /*
+		/*
          * Does the replacement
          */
-        /// <devdoc>
-        ///    <para>
-        ///    Replaces all occurrences of the (previously defined) <paramref name="pattern "/>with the 
-        ///    <paramref name="replacement"/> pattern, starting at the first character in the input string. 
-        /// </para>
-        /// </devdoc>
-        public String Replace(string input, String replacement, int count) {
+		/// <devdoc>
+		///    <para>
+		///    Replaces all occurrences of the (previously defined) <paramref name="input "/>with the 
+		///    <paramref name="replacement"/> pattern, starting at the first character in the input string. 
+		/// </para>
+		/// </devdoc>
+		public String Replace(string input, String replacement, int count) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -996,17 +996,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
             return Replace(input, replacement, count, UseOptionR() ? input.Length : 0);
         }
 
-        /*
+		/*
          * Does the replacement
          */
-        /// <devdoc>
-        ///    <para>
-        ///    Replaces all occurrences of the <paramref name="pattern "/>with the recent 
-        ///    <paramref name="replacement"/> pattern, starting at the character position 
-        ///    <paramref name="startat."/>
-        /// </para>
-        /// </devdoc>
-        public String Replace(string input, String replacement, int count, int startat) {
+		/// <devdoc>
+		///    <para>
+		///    Replaces all occurrences of the <paramref name="input "/>with the recent 
+		///    <paramref name="replacement"/> pattern, starting at the character position 
+		///    <paramref name="startat"/>
+		/// </para>
+		/// </devdoc>
+		public String Replace(string input, String replacement, int count, int startat) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -1028,13 +1028,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /*
          * Static version of simple Replace call
          */
-        /// <devdoc>
-        ///    <para>
-        ///    Replaces all occurrences of the <paramref name="pattern "/>with the 
-        ///    <paramref name="replacement"/> pattern 
-        ///    <paramref name="."/>
-        /// </para>
-        /// </devdoc>
         public static String Replace(string input, String pattern, MatchEvaluator evaluator) {
             return Replace(input, pattern, evaluator, RegexOptions.None, DefaultMatchTimeout);
         }
@@ -1042,12 +1035,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /*
          * Static version of simple Replace call
          */
-        /// <devdoc>
-        ///    <para>
-        ///    Replaces all occurrences of the <paramref name="pattern "/>with the recent 
-        ///    <paramref name="replacement"/> pattern, starting at the first character<paramref name="."/>
-        /// </para>
-        /// </devdoc>
         public static String Replace(string input, String pattern, MatchEvaluator evaluator, RegexOptions options) {
             return Replace(input, pattern, evaluator, options, DefaultMatchTimeout);
         }
@@ -1064,13 +1051,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /*
          * Does the replacement
          */
-        /// <devdoc>
-        ///    <para>
-        ///    Replaces all occurrences of the <paramref name="pattern "/>with the recent 
-        ///    <paramref name="replacement"/> pattern, starting at the first character 
-        ///    position<paramref name="."/>
-        /// </para>
-        /// </devdoc>
         public String Replace(string input, MatchEvaluator evaluator) {
 
             if (input == null)
@@ -1082,13 +1062,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /*
          * Does the replacement
          */
-        /// <devdoc>
-        ///    <para>
-        ///    Replaces all occurrences of the <paramref name="pattern "/>with the recent 
-        ///    <paramref name="replacement"/> pattern, starting at the first character 
-        ///    position<paramref name="."/>
-        /// </para>
-        /// </devdoc>
         public String Replace(string input, MatchEvaluator evaluator, int count) {
 
             if (input == null)
@@ -1100,13 +1073,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /*
          * Does the replacement
          */
-        /// <devdoc>
-        ///    <para>
-        ///    Replaces all occurrences of the (previouly defined) <paramref name="pattern "/>with 
-        ///       the recent <paramref name="replacement"/> pattern, starting at the character
-        ///    position<paramref name=" startat."/> 
-        /// </para>
-        /// </devdoc>
         public String Replace(string input, MatchEvaluator evaluator, int count, int startat) {
 
             if (input == null)
@@ -1152,13 +1118,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /*
          * Does a split
          */
-        /// <devdoc>
-        ///    <para>
-        ///       Splits the <paramref name="input "/>string at the position defined by
-        ///       a previous <paramref name="pattern"/>
-        ///       .
-        ///    </para>
-        /// </devdoc>
         public string[] Split(string input) {
 
             if (input == null)
@@ -1170,12 +1129,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /*
          * Does a split
          */
-        /// <devdoc>
-        ///    <para>
-        ///       Splits the <paramref name="input "/>string at the position defined by a previous
-        ///    <paramref name="pattern"/> . 
-        ///    </para>
-        /// </devdoc>
         public string[] Split(string input, int count) {
 
             if (input == null)
@@ -1187,12 +1140,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /*
          * Does a split
          */
-        /// <devdoc>
-        ///    <para>
-        ///       Splits the <paramref name="input "/>string at the position defined by a previous
-        ///    <paramref name="pattern"/> . 
-        ///    </para>
-        /// </devdoc>
         public string[] Split(string input, int count, int startat) {
             if (input==null)
                 throw new ArgumentNullException("input");

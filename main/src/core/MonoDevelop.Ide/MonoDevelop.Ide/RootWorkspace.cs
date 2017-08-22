@@ -930,11 +930,10 @@ namespace MonoDevelop.Ide
 		
 		internal void NotifyItemAdded (WorkspaceItem item)
 		{
-			try {
-				MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item, null);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Could not load parser database.", ex);
-			}
+			MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item, null).ContinueWith(t => {
+				if (t.IsFaulted)
+					LoggingService.LogError("Could not load parser database.", t.Exception);
+			});
 			if (Runtime.IsMainThread)
 				NotifyItemAddedGui (item, IsReloading);
 			else {

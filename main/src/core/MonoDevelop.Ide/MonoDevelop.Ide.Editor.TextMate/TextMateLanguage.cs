@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 							try {
 								highlightPairs.Add (Tuple.Create (((PString)pair [0]).Value, ((PString)pair [1]).Value));
 							} catch (Exception e) {
-								LoggingService.LogError ("Error while loading highlight pairs from :" + setting);
+								LoggingService.LogError ("Error while loading highlight pairs from :" + setting, e);
 							}
 						}
 					}

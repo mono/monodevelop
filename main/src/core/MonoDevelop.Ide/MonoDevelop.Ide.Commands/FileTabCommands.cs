@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Commands
 				if (dirtyDialogShown)
 					doc.Window.CloseWindow (true);
 				else
-					doc.Close ();
+					doc.Close ().Ignore();
 		}
 	}
 	

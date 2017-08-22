@@ -47,16 +47,16 @@ namespace MonoDevelop.Ide.TypeSystem
 
 	class TextPolicyDocumentOptionsProvider : IDocumentOptionsProvider
 	{
-		public async Task<IDocumentOptions> GetOptionsForDocumentAsync (Document document, CancellationToken cancellationToken)
+		public Task<IDocumentOptions> GetOptionsForDocumentAsync (Document document, CancellationToken cancellationToken)
 		{
 			var mimeChain = DesktopService.GetMimeTypeInheritanceChainForRoslynLanguage (document.Project.Language);
 			if (mimeChain == null) {
-				return null;
+				return Task.FromResult<IDocumentOptions>(null);
 			}
 
 			var project = TypeSystemService.GetMonoProject (document.Project);
 			var policy = project.Policies.Get<TextStylePolicy> (mimeChain);
-			return new TextDocumentOptions (policy);
+			return Task.FromResult<IDocumentOptions>(new TextDocumentOptions (policy));
 		}
 
 		class TextDocumentOptions : IDocumentOptions
