@@ -34,16 +34,24 @@ using AppKit;
 using Foundation;
 
 using MonoDevelop.Components.MainToolbar;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.AutoTest.Results
 {
 	public class NSObjectResult : AppResult
 	{
 		NSObject ResultObject;
+		int index = -1;
 
 		internal NSObjectResult (NSObject resultObject)
 		{
 			ResultObject = resultObject;
+		}
+
+		internal NSObjectResult (NSObject resultObject, int index)
+		{
+			ResultObject = resultObject;
+			this.index = index;
 		}
 
 		public override string ToString ()
@@ -126,6 +134,14 @@ namespace MonoDevelop.Components.AutoTest.Results
 				}
 			}
 
+			if(ResultObject is NSSegmentedControl){
+				NSSegmentedControl control = (NSSegmentedControl)ResultObject;
+				string value = control.GetLabel (this.index);
+				if (CheckForText (value, text, exact)) {
+					return this;
+				}
+			}
+
 			return null;
 		}
 
@@ -151,6 +167,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Property (string propertyName, object value)
 		{
+			if (ResultObject is NSSegmentedControl) {
+				NSSegmentedControl control = (NSSegmentedControl)ResultObject;
+				if (this.index >= 0 && propertyName == "Sensitive" || propertyName == "Visible") {
+					return control.IsEnabled (this.index) == (bool)value ? this : null;
+				}
+			}
 			return MatchProperty (propertyName, ResultObject, value);
 		}
 

@@ -196,7 +196,7 @@
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
@@ -3872,6 +3872,198 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-css-32~dark~sel%402x.png">
       <LogicalName>file-css-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-16.png">
+      <LogicalName>file-less-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-16%402x.png">
+      <LogicalName>file-less-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-16~dark.png">
+      <LogicalName>file-less-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-16~dark%402x.png">
+      <LogicalName>file-less-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-16~sel.png">
+      <LogicalName>file-less-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-16~sel%402x.png">
+      <LogicalName>file-less-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-16~dark~sel.png">
+      <LogicalName>file-less-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-16~dark~sel%402x.png">
+      <LogicalName>file-less-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-32.png">
+      <LogicalName>file-less-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-32%402x.png">
+      <LogicalName>file-less-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-32~dark.png">
+      <LogicalName>file-less-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-32~dark%402x.png">
+      <LogicalName>file-less-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-32~sel.png">
+      <LogicalName>file-less-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-32~sel%402x.png">
+      <LogicalName>file-less-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-32~dark~sel.png">
+      <LogicalName>file-less-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-less-32~dark~sel%402x.png">
+      <LogicalName>file-less-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-16.png">
+      <LogicalName>file-scss-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-16%402x.png">
+      <LogicalName>file-scss-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-16~dark.png">
+      <LogicalName>file-scss-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-16~dark%402x.png">
+      <LogicalName>file-scss-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-16~sel.png">
+      <LogicalName>file-scss-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-16~sel%402x.png">
+      <LogicalName>file-scss-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-16~dark~sel.png">
+      <LogicalName>file-scss-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-16~dark~sel%402x.png">
+      <LogicalName>file-scss-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-32.png">
+      <LogicalName>file-scss-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-32%402x.png">
+      <LogicalName>file-scss-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-32~dark.png">
+      <LogicalName>file-scss-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-32~dark%402x.png">
+      <LogicalName>file-scss-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-32~sel.png">
+      <LogicalName>file-scss-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-32~sel%402x.png">
+      <LogicalName>file-scss-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-32~dark~sel.png">
+      <LogicalName>file-scss-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-scss-32~dark~sel%402x.png">
+      <LogicalName>file-scss-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-16.png">
+      <LogicalName>file-js-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-16%402x.png">
+      <LogicalName>file-js-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-16~dark.png">
+      <LogicalName>file-js-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-16~dark%402x.png">
+      <LogicalName>file-js-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-16~sel.png">
+      <LogicalName>file-js-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-16~sel%402x.png">
+      <LogicalName>file-js-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-16~dark~sel.png">
+      <LogicalName>file-js-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-16~dark~sel%402x.png">
+      <LogicalName>file-js-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-32.png">
+      <LogicalName>file-js-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-32%402x.png">
+      <LogicalName>file-js-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-32~dark.png">
+      <LogicalName>file-js-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-32~dark%402x.png">
+      <LogicalName>file-js-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-32~sel.png">
+      <LogicalName>file-js-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-32~sel%402x.png">
+      <LogicalName>file-js-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-32~dark~sel.png">
+      <LogicalName>file-js-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-js-32~dark~sel%402x.png">
+      <LogicalName>file-js-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-16.png">
+      <LogicalName>file-ts-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-16%402x.png">
+      <LogicalName>file-ts-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-16~dark.png">
+      <LogicalName>file-ts-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-16~dark%402x.png">
+      <LogicalName>file-ts-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-16~sel.png">
+      <LogicalName>file-ts-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-16~sel%402x.png">
+      <LogicalName>file-ts-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-16~dark~sel.png">
+      <LogicalName>file-ts-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-16~dark~sel%402x.png">
+      <LogicalName>file-ts-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-32.png">
+      <LogicalName>file-ts-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-32%402x.png">
+      <LogicalName>file-ts-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-32~dark.png">
+      <LogicalName>file-ts-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-32~dark%402x.png">
+      <LogicalName>file-ts-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-32~sel.png">
+      <LogicalName>file-ts-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-32~sel%402x.png">
+      <LogicalName>file-ts-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-32~dark~sel.png">
+      <LogicalName>file-ts-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-ts-32~dark~sel%402x.png">
+      <LogicalName>file-ts-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-header-16.png">
       <LogicalName>file-header-16.png</LogicalName>
@@ -9533,8 +9725,7 @@
     <InternalsVisibleTo Include="WindowsPlatform" />
     <InternalsVisibleTo Include="MonoDevelop.Debugger" />
     <InternalsVisibleTo Include="MonoDevelop.DesignerSupport" />
-    <InternalsVisibleTo Include="Ide.Tests" />
-    <InternalsVisibleTo Include="UnitTests" />
+    <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
     <InternalsVisibleTo Include="Xamarin.OSXEditor" />
     <InternalsVisibleTo Include="MonoDevelop.Refactoring" />
@@ -9557,6 +9748,7 @@
     <InternalsVisibleTo Include="Xamarin.Forms.Addin.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.VBNetBinding" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

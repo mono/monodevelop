@@ -155,7 +155,9 @@ namespace MonoDevelop.Projects
 		
 		public MonoDevelop.Core.ClrVersion ClrVersion {
 			get {
+#pragma warning disable CS0618 // Type or member is obsolete
 				return TargetFramework.ClrVersion;
+#pragma warning restore CS0618 // Type or member is obsolete
 			}
 		}
 		

@@ -14,3 +14,4 @@ using Mono.Addins.Description;
 [assembly:AddinDependency ("Core", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("UnitTesting", MonoDevelop.BuildInfo.Version)]
+[assembly:AddinDependency ("PackageManagement", MonoDevelop.BuildInfo.Version)]

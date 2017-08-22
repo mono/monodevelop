@@ -67,7 +67,6 @@ namespace MonoDevelop.Projects
 		string productVersion;
 		string schemaVersion;
 		bool modifiedInMemory;
-		bool msbuildUpdatePending;
 		ProjectExtension projectExtension;
 		RunConfigurationCollection runConfigurations;
 		bool defaultRunConfigurationCreated;
@@ -411,7 +410,6 @@ namespace MonoDevelop.Projects
 		{
 			if (!Loading) {
 				modifiedInMemory = true;
-				msbuildUpdatePending = true;
 			}
 			base.OnModified (args);
 		}
@@ -2386,7 +2384,6 @@ namespace MonoDevelop.Projects
 			}
 			ProjectExtension.OnReadProjectHeader (monitor, msproject);
 			modifiedInMemory = false;
-			msbuildUpdatePending = false;
 			ProjectExtension.OnReadProject (monitor, msproject);
 			NeedsReload = false;
 		}
@@ -2413,7 +2410,6 @@ namespace MonoDevelop.Projects
 			saving = true;
 
 			try {
-				msbuildUpdatePending = false;
 				sourceProject.FileName = FileName;
 
 				OnWriteProjectHeader (monitor, sourceProject);
