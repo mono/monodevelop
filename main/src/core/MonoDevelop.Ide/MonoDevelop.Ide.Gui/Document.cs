@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.Gui
 		Solution adhocSolution;
 
 		public override Project Project {
-			get { return (Window != null ? Window.ViewContent.Owner as Project : null) ?? adhocProject; }
+			get { return Owner as Project; }
 /*			set { 
 				Window.ViewContent.Project = value; 
 				if (value != null)
@@ -756,7 +756,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void ListenToProjectLoad (Project project)
 		{
-			ListenToProjectLoad (project as SolutionItem);
+			ListenToProjectLoad ((SolutionItem)project);
 		}
 
 		void ListenToProjectLoad (SolutionItem owner)

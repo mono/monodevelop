@@ -206,12 +206,6 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 
-			public override Projects.Project Project {
-				get {
-					return TypeSystemService.GetMonoProject (project);
-				}
-			}
-
 			public override Projects.SolutionItem Owner {
 				get {
 					return TypeSystemService.GetMonoProject (project);

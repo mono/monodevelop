@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.Gui
 					yield return new FileViewer (vb);
 				} else {
 					var eb = (IExternalDisplayBinding) b;
-					var app = eb.GetApplication (filePath, mimeType, ownerProject as SolutionItem);
+					var app = eb.GetApplication (filePath, mimeType, ownerProject);
 					if (viewerIds.Add (app.Id))
 						yield return new FileViewer (app);
 				}

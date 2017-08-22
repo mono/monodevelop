@@ -1011,7 +1011,7 @@ namespace MonoDevelop.Ide.Gui
 						await fw.Invoke (fileName);
 					} else {
 						var extBinding = (IExternalDisplayBinding)binding;
-						var app = extBinding.GetApplication (fileName, null, owner);
+						var app = extBinding.GetApplication (fileName, null, owner as Project);
 						app.Launch (fileName);
 					}
 					

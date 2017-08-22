@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Gui
 	///<summary>A display binding that opens an external application.</summary>
 	public interface IExternalDisplayBinding : IDisplayBinding
 	{
-		DesktopApplication GetApplication (FilePath fileName, string mimeType, SolutionItem owner);
+		DesktopApplication GetApplication (FilePath fileName, string mimeType, Project ownerProject);
 	}
 	
 	///<summary>A display binding that attaches to an existing view in the workspace.</summary>

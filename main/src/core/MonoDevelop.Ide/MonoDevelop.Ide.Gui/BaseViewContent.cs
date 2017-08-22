@@ -39,7 +39,6 @@ namespace MonoDevelop.Ide.Gui
 	public abstract class BaseViewContent : IDisposable
 	{
 		IWorkbenchWindow workbenchWindow;
-		Project project;
 		SolutionItem owner;
 
 		public abstract Control Control { get; }
@@ -130,7 +129,7 @@ namespace MonoDevelop.Ide.Gui
 				return Owner as Project;
 			}
 			set {
-				OnSetOwner (project);
+				Owner = value;
 			}
 		}
 
@@ -143,7 +142,7 @@ namespace MonoDevelop.Ide.Gui
 		[Obsolete ("Use (OnSetOwner (SolutionItem owner))")]
 		protected virtual void OnSetProject (Project project)
 		{
-			this.project = project;
+			this.owner = project;
 		}
 
 		/// <summary>

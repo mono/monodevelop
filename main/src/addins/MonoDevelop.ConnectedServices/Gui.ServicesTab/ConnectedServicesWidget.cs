@@ -58,7 +58,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void ShowGallery (IConnectedService [] services, Project project)
 		{
-			ShowGallery (services, project as SolutionItem);
+			ShowGallery (services, (SolutionItem)project);
 		}
 
 		/// <summary>

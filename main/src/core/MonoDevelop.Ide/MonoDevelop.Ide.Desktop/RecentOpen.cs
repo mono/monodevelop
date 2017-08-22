@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide.Desktop
 
 		public void AddFile (string fileName, SolutionItem owner)
 		{
-			var projectName = owner != null ? owner.Name : null;
+			var projectName = owner?.Name;
 			var displayName = projectName != null ?
 				string.Format ("{0} [{1}]", Path.GetFileName (fileName), projectName)
 				: Path.GetFileName (fileName);
