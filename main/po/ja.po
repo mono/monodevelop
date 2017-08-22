@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-08 19:41:46+0300\n"
+"POT-Creation-Date: 2017-08-22 12:31:13+0100\n"
 "PO-Revision-Date: 2012-11-22 23:11:05+0900\n"
 "Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
 "Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
@@ -30,7 +30,7 @@ msgid "The application was terminated by a signal: {0}"
 msgstr "アプリケーションがシグナルにより終了しました: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:429
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1725
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1727
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:173
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:272
@@ -90,6 +90,7 @@ msgstr "実行"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:219
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:101
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:97
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicyPanelWidget.cs:165
 #: ../src/addins/MacPlatform/MainToolbar/SelectorView.cs:145
@@ -134,41 +135,41 @@ msgstr ""
 msgid "File '{0}' not found."
 msgstr "ファイル '{0}' が見つかりません。"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:213
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:215
 msgid "Project Configuration"
 msgstr "プロジェクト構成"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:214
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:216
 msgid "Project Configuration Name"
 msgstr "プロジェクトの構成名"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:215
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:217
 msgid "Project Configuration Platform"
 msgstr "プロジェクト構成プラットフォーム"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:216
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:218
 msgid "Target File"
 msgstr "ターゲット ファイル"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:217
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:219
 msgid "Target Path"
 msgstr "ターゲットのパス"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:218
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:220
 msgid "Target Name"
 msgstr "ターゲットの名前"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:219
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:221
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:35
 msgid "Target Directory"
 msgstr "ターゲット ディレクトリ"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:220
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:222
 msgid "Target Extension"
 msgstr "ターゲットの拡張子"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1153
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1166
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1151
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1164
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:651
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:665
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:738
@@ -176,44 +177,44 @@ msgstr "ターゲットの拡張子"
 msgid "Custom command execution failed"
 msgstr "カスタム コマンドの実行に失敗しました"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1674
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1672
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "ディレクトリ {0} は、その名前を持つファイルが存在するため、作成できません。"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1704
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2070
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2109
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1682
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1702
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2068
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2107
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1684
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "プロジェクト '{1}' に構成 '{0}' が見つかりません"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1730
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1728
 msgid "Performing main compilation…"
 msgstr "メイン コンパイルを実行しています..."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1738
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1736
 msgid "Build complete -- "
 msgstr "ビルド完了 -- "
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1884
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1882
 msgid "Could not find support file '{0}'."
 msgstr "サポート ファイル '{0}' が見つかりませんでした。"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1887
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1885
 msgid "Error copying support file '{0}'."
 msgstr "サポート ファイル '{0}' のコピーでエラーが発生しました。"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1919
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1917
 msgid "Error deleting support file '{0}'."
 msgstr "サポート ファイル '{0}' の削除でエラーが発生しました。"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2096
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2094
 msgid "Clean complete"
 msgstr "クリーン完了"
 
 #  FIXME: make this a resource in the resource file
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1735
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1733
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1218
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1635
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:354
@@ -223,7 +224,7 @@ msgid_plural "{0} errors"
 msgstr[0] "{0} 個のエラー"
 msgstr[1] "{0} 個のエラー"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1736
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1734
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1219
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1636
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:352
@@ -289,7 +290,7 @@ msgstr "ビルド前"
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:131
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:139
 #: ../src/addins/MacPlatform/MainToolbar/RunButton.cs:103
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:363
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:365
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:70
 msgid "Build"
 msgstr "ビルド"
@@ -384,28 +385,28 @@ msgstr "ワークスペース名"
 msgid "Workspace Directory"
 msgstr "ワークスペース ディレクトリ"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1320
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1323
 msgid "Solution File"
 msgstr "ソリューション ファイル"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1321
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1324
 msgid "Solution Name"
 msgstr "ソリューション名"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1322
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1325
 msgid "Solution Directory"
 msgstr "ソリューション ディレクトリ"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:591
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:620
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:592
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:621
 msgid "Cyclic dependencies are not supported."
 msgstr "循環依存関係はサポートされていません。"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:595
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:596
 msgid "Cleaning Solution: {0} ({1})"
 msgstr "ソリューションをクリーニングしています: {0} ({1})"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:626
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:627
 msgid "Building Solution: {0} ({1})"
 msgstr "ソリューションをビルドしています: {0} ({1})"
 
@@ -430,13 +431,13 @@ msgstr "新しい場合はコピーする"
 msgid "Incompatible target framework: {0}"
 msgstr "互換性のないターゲット フレームワーク: {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1686
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1688
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:150
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:759
 msgid "Running {0} ..."
 msgstr "{0} を実行中..."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1693
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1695
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:162
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for ."
@@ -445,7 +446,7 @@ msgstr ""
 "\"{0}\" を実行できません。選ばれている実行モードは .NET プロジェクトでサポー"
 "トされていません。"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1701
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1703
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:179
 msgid "Cannot execute \"{0}\""
 msgstr "\"{0}\" を実行できません"
@@ -1640,8 +1641,8 @@ msgstr "空のクラス"
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:16
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:19
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:236
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:4
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:5
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:9
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:10
 msgid "General"
 msgstr "全般"
 
@@ -1663,7 +1664,10 @@ msgstr "空の HTML ファイル"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml:7
 #: ../src/addins/AspNet/Templates/EmptyCssFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:11
 #: ../src/addins/AspNet/Templates/EmptyJsonFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:11
 msgid "Web"
 msgstr "Web"
 
@@ -1772,7 +1776,7 @@ msgstr "空のワークスペース"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:936
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:950
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:126
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:227
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:230
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:114
 msgid "C#"
 msgstr "C#"
@@ -3424,7 +3428,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/SearchEntry.cs:166
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:44
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:158
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:278
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:281
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:165
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:188
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:43
@@ -4022,7 +4026,7 @@ msgstr "フォント"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs:91
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:124
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:371
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:378
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:223
 msgid "Updates"
 msgstr "更新"
@@ -4113,7 +4117,7 @@ msgstr "ソリューション"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:48
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:51
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:358
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:360
 msgid "Runtime Options"
 msgstr "ランタイム オプション"
 
@@ -4241,7 +4245,6 @@ msgstr "セッション レコーダー"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:243
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:128
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:234
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:196
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:70
@@ -4290,6 +4293,7 @@ msgid "PNG resource"
 msgstr "PNG リソース"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:25
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:315
 msgid "CSS document"
 msgstr "CSS ドキュメント"
 
@@ -4432,7 +4436,7 @@ msgid ".NET"
 msgstr ".NET"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Templates.addin.xml:125
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:233
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:245
 #: ../src/addins/AspNet/Templates/WebConfig-Application.xft.xml:10
 #: ../src/addins/AspNet/Templates/WebConfig-SubDir.xft.xml:10
 #: ../src/addins/AspNet/Templates/GlobalAsax.xft.xml:9
@@ -5856,7 +5860,7 @@ msgstr "列"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:60
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:89
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:58
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:711
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:714
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:70
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:376
 msgid "Type"
@@ -7574,7 +7578,7 @@ msgstr "クラス情報を収集中..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs:245
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/TooltipInformationWindow.cs:132
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:225
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:228
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestPad.cs:259
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:96
 msgid "Summary"
@@ -8061,7 +8065,7 @@ msgid "Check to create configurations for all the solution items"
 msgstr "すべてのソリューション項目用の構成を作成する場合にチェックします"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs:53
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:542
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:549
 msgid "All files"
 msgstr "すべてのファイル"
 
@@ -8842,7 +8846,7 @@ msgid "Keep Current Identifiers"
 msgstr "現在の識別子を保持する"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:164
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:724
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:727
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:64
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:119
 msgid "Namespace"
@@ -9756,7 +9760,7 @@ msgid "file \"{0}\""
 msgstr "ファイル \"{0}\""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/DefaultWelcomePage.cs:51
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:277
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:280
 msgid "Documentation"
 msgstr "ドキュメント "
 
@@ -10074,21 +10078,21 @@ msgstr "{0} に対して作成する許可がありません"
 msgid "The project could not be created"
 msgstr "プロジェクトを作成できませんでした"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:87
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:90
 #, fuzzy
 msgid "{0} failed to create"
 msgstr "移行に失敗しました"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:89
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:92
 #, fuzzy
 msgid "{0} successfully created"
 msgstr "{0} は正常に再ターゲットされました。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:293
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:315
 msgid "Recently used"
 msgstr "最近の使用"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:407
 msgid "Recently used templates"
 msgstr "最近使用したテンプレート"
 
@@ -16825,7 +16829,7 @@ msgid "Namespaces"
 msgstr "名前空間"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.ClassOutline/OutlineSettings.cs:64
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:197
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:200
 msgid "Types"
 msgstr "種類"
 
@@ -18646,19 +18650,19 @@ msgstr "Unicode で保存"
 msgid "Can't save file - access denied"
 msgstr "ファイルを保存できません - アクセスが拒否されました"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1483
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1497
 msgid "Insert Breakpoint"
 msgstr "ブレークポイントの挿入"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2136
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2150
 msgid "Print operation failed."
 msgstr "印刷処理に失敗しました。"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2148
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2162
 msgid "Press F2 to focus"
 msgstr "フォーカスを移動するには F2 キーを押してください"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2168
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2182
 msgid "Clipboard ring"
 msgstr "クリップボード リング"
 
@@ -19237,7 +19241,7 @@ msgid "<i>EditorBrowsableState.Always and EditorBrowsableState.Advanced</i>"
 msgstr "<i>EditorBrowsableState.Always と EditorBrowsableState.Advanced</i>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/CompletionCharactersPanel.cs:55
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:321
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:324
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:134
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:411
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:131
@@ -19391,71 +19395,71 @@ msgstr "検査"
 msgid "Assembly Browser"
 msgstr "アセンブリ ブラウザー"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:167
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:170
 msgid "Only public members"
 msgstr "パブリック メンバーのみ"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:168
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:171
 msgid "All members"
 msgstr "すべてのメンバー"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:184
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:187
 msgid "Types and Members"
 msgstr "型とメンバー"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:210
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:213
 msgid "Members"
 msgstr "メンバー"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:226
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:229
 msgid "IL"
 msgstr "IL"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:295
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:298
 msgid "Search for types and members"
 msgstr "型とメンバーの検索"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:298
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:301
 msgid "Search for types"
 msgstr "型の検索"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:301
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:304
 msgid "Search for members"
 msgstr "メンバーの検索"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:311
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:314
 msgid "Visibility"
 msgstr "可視性"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:665
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:668
 msgid "Member"
 msgstr "メンバー"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:677
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:680
 msgid "Declaring Type"
 msgstr "宣言する型"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:687
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:690
 msgid "Results"
 msgstr "結果"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:700
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:703
 msgid "Parent"
 msgstr "親"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:781
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:784
 msgid "Searching member..."
 msgstr "メンバーを検索中..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:784
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:787
 msgid "Searching type..."
 msgstr "型を検索中..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:787
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:790
 msgid "Searching types and members..."
 msgstr "型とメンバーを検索中..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:1217
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:1220
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DocumentationPanel.cs:68
 msgid "No documentation available."
 msgstr "利用可能なドキュメントがありません。"
@@ -21753,109 +21757,119 @@ msgstr "参照の更新(_U):"
 msgid "_External"
 msgstr "外部(_E)"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:175
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:187
 msgid "ASP.NET Files"
 msgstr "ASP.NET ファイル"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:178
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:190
 msgid "HTML Files"
 msgstr "HTML ファイル"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:219
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:231
 msgid "XSP Web Server"
 msgstr "XSP Web サーバー"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:235
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:262
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:247
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:274
 msgid "ASP.NET Directory"
 msgstr "ASP.NET ディレクトリ"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:238
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:250
 msgid "Controller..."
 msgstr "コントローラー..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:239
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:251
 msgid "Add Controller..."
 msgstr "コントローラーの追加..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:240
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:252
 msgid "Add an ASP.NET MVC controller"
 msgstr "ASP.NET MVC コントローラーを追加する"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:242
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:254
 msgid "View..."
 msgstr "表示..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:243
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:250
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:255
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:262
 msgid "Add View..."
 msgstr "ビューの追加..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:244
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:256
 msgid "Add an ASP.NET MVC view"
 msgstr "ASP.NET MVC ビューを追加する"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:246
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:258
 msgid "Go to View"
 msgstr "ビューに移動"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:251
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:263
 msgid "Add View from Controller..."
 msgstr "コントローラーからビューを追加..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:255
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:267
 msgid "Go to Controller"
 msgstr "コントローラーに移動"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:279
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:291
 msgid "ASP.NET page"
 msgstr "ASP.NET ページ"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:282
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:294
 msgid "ASP.NET user control"
 msgstr "ASP.NET ユーザー コントロール"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:285
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:297
 msgid "ASP.NET global application class"
 msgstr "ASP.NET グローバル アプリケーション クラス"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:288
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:300
 msgid "ASP.NET handler"
 msgstr "ASP.NET ハンドラー"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:291
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:303
 msgid "ASP.NET web service"
 msgstr "ASP.NET Web サービス"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:294
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:306
 msgid "ASP.NET image generator"
 msgstr "ASP.NET イメージ ジェネレーター"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:297
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:309
 msgid "ASP.NET master page"
 msgstr "ASP.NET マスター ページ"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:300
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:312
 msgid "Javascript source code"
 msgstr "Javascript ソース コード"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:303
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:318
 msgid "LESS, CSS document"
 msgstr "LESS、CSS ドキュメント"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:306
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:321
+#, fuzzy
+msgid "SASS, CSS document"
+msgstr "LESS、CSS ドキュメント"
+
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:324
+#, fuzzy
+msgid "SCSS, CSS document"
+msgstr "LESS、CSS ドキュメント"
+
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:327
 msgid "HTML document"
 msgstr "HTML ドキュメント"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:309
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:330
 msgid "Spark View template"
 msgstr "Spark View テンプレート"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:313
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:334
 msgid "Typescript source code"
 msgstr "TypeScript ソース コード"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:316
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:337
 msgid "Razor template"
 msgstr "Razor テンプレート"
 
@@ -22792,6 +22806,23 @@ msgstr "空の CSS ファイル"
 msgid "Creates an empty CSS file."
 msgstr "空の CSS ファイルを作成します。"
 
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:9
+#, fuzzy
+msgid "LESS Style Sheet"
+msgstr "XSLT スタイルシートの選択"
+
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:12
+msgid "LESS is a language that compiles into CSS."
+msgstr ""
+
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:9
+msgid "SCSS Style Sheet (SASS)"
+msgstr ""
+
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:12
+msgid "SCSS is a language that compiles into CSS."
+msgstr ""
+
 #: ../src/addins/AspNet/Templates/EmptyJsonFile.xft.xml:9
 msgid "Empty JSON File"
 msgstr "空の JSON ファイル"
@@ -22799,6 +22830,16 @@ msgstr "空の JSON ファイル"
 #: ../src/addins/AspNet/Templates/EmptyJsonFile.xft.xml:12
 msgid "Creates an empty JSON file."
 msgstr "空の JSON ファイルを作成します。"
+
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:9
+#, fuzzy
+msgid "TypeScript file"
+msgstr "F# スクリプト ファイル"
+
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:12
+#, fuzzy
+msgid "A blank TypeScript source file."
+msgstr "TypeScript ソース コード"
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/MonoDevelop.TextTemplating.addin.xml:8
 msgid "Text template"
@@ -24565,8 +24606,8 @@ msgid "Current package version"
 msgstr "現在のパッケージ バージョン"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:86
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:384
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:392
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:386
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:394
 msgid "Add _Packages..."
 msgstr "パッケージの追加(_P)..."
 
@@ -24660,7 +24701,7 @@ msgstr "プロジェクトへの追加"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:131
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:116
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:257
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:264
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:122
 msgid "Installed"
 msgstr "インストール済み"
@@ -24982,32 +25023,34 @@ msgid "Creates a new .NET Core class library project."
 msgstr "新しい .NET Core クラス ライブラリ プロジェクトを作成します。"
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:241
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:250
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:283
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:294
-msgid "Creates a new xUnit test project."
-msgstr "新しい xUnit テスト プロジェクトを作成します。"
-
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:259
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:269
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:304
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:315
-msgid "MSTest Project"
-msgstr "MSTest プロジェクト"
-
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:260
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:270
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:305
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:316
-msgid "Creates a new MSTest project."
-msgstr "新しい MSTest プロジェクトを作成します。"
-
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:282
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:293
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:251
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:284
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:295
 msgid "xUnit Test Project"
 msgstr "xUnit テスト プロジェクト"
 
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:371
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:242
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:252
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:285
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:296
+msgid "Creates a new xUnit test project."
+msgstr "新しい xUnit テスト プロジェクトを作成します。"
+
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:261
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:271
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:306
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:317
+msgid "MSTest Project"
+msgstr "MSTest プロジェクト"
+
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:262
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:272
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:307
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:318
+msgid "Creates a new MSTest project."
+msgstr "新しい MSTest プロジェクトを作成します。"
+
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:373
 msgid "Migrate to New Format"
 msgstr "新しい形式への移行"
 
@@ -25591,11 +25634,11 @@ msgstr ""
 msgid "Creates a NuGet Packaging project."
 msgstr "NuGet パッケージ プロジェクトを作成します。"
 
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:3
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:8
 msgid "Cloud"
 msgstr "クラウド"
 
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:13
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:18
 msgid "Creates a new Azure Functions project."
 msgstr "新しい Azure Functions プロジェクトを作成します。"
 
@@ -25636,40 +25679,50 @@ msgid "ASP.NET Core"
 msgstr "ASP.NET Core"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:76
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:120
-msgid "Creates a new ASP.NET Core web project."
-msgstr "新しい ASP.NET Core Web プロジェクトを作成します。"
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:86
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:96
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:132
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:144
-msgid "Creates a new ASP.NET MVC Core web project."
-msgstr "新しい ASP.NET MVC Core Web プロジェクトを作成します。"
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:106
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:167
-msgid "Creates a new ASP.NET Web API Core web project."
-msgstr "新しい ASP.NET Web API Core Web プロジェクトを作成します。"
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:119
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:123
 msgid "ASP.NET Core Empty"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:131
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:143
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:77
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:124
+msgid "Creates a new ASP.NET Core web project."
+msgstr "新しい ASP.NET Core Web プロジェクトを作成します。"
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:87
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:98
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:135
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:147
 msgid "ASP.NET Core Web App"
 msgstr "ASP.NET Core Web アプリ"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:154
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:88
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:99
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:136
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:148
+msgid "Creates a new ASP.NET MVC Core web project."
+msgstr "新しい ASP.NET MVC Core Web プロジェクトを作成します。"
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:109
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:171
+#, fuzzy
+msgid "ASP.NET Core Web API"
+msgstr "ASP.NET Core Web アプリ"
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:110
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:172
+msgid "Creates a new ASP.NET Web API Core web project."
+msgstr "新しい ASP.NET Web API Core Web プロジェクトを作成します。"
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:158
+#, fuzzy
+msgid "ASP.NET Core Web App (Razor Pages)"
+msgstr "ASP.NET Core Web アプリ"
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:159
 msgid "Creates a new ASP.NET Web API Core web project using Razor Pages."
 msgstr ""
 "Razor ページを使用して、新しい ASP.NET Web API Core Web プロジェクトを作成し"
 "ます。"
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:166
-msgid "ASP.NET Core Web Api"
-msgstr "ASP.NET Core Web Api"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MiddlewareClass.xft.xml:8
 msgid "Middleware Class"
@@ -25842,41 +25895,41 @@ msgstr "無効になっているアドインを読み込むことはできせん
 msgid "Loading {0} add-in"
 msgstr "{0} アドインを読み込んでいます"
 
-#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:597
+#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:595
 msgid "The required addin '{0}' is disabled."
 msgstr "必要なアドイン '{0}' が無効になっています。"
 
-#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:599
+#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:597
 msgid "The required addin '{0}' is not installed."
 msgstr "必要なアドイン '{0}' がインストールされていません。"
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:132
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:332
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:339
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:313
 msgid "Gallery"
 msgstr "ギャラリー"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:268
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:275
 msgid "All repositories"
 msgstr "すべてのリポジトリ"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:275
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:282
 msgid "Manage Repositories..."
 msgstr "リポジトリの管理..."
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:427
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:434
 msgid "Updating repository"
 msgstr "リポジトリを更新しています"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:527
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:534
 msgid "Install Extension Package"
 msgstr "拡張機能パッケージのインストール"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:537
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:544
 msgid "Extension packages"
 msgstr "拡張機能パッケージ"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:370
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:377
 msgid "{0} update available"
 msgid_plural "{0} updates available"
 msgstr[0] "{0} 個の更新プログラムが利用可能"
@@ -28201,3 +28254,6 @@ msgstr "リスト ビュー"
 
 #~ msgid "C# Language Version"
 #~ msgstr "C# 言語バージョン"
+
+#~ msgid "ASP.NET Core Web Api"
+#~ msgstr "ASP.NET Core Web Api"

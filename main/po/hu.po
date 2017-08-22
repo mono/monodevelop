@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-08 19:41:46+0300\n"
+"POT-Creation-Date: 2017-08-22 12:31:13+0100\n"
 "PO-Revision-Date: 2009-03-03 21:27:26+0100\n"
 "Last-Translator: Bálint Kriván <balint@krivan.info>\n"
 "Language-Team: \n"
@@ -34,7 +34,7 @@ msgid "The application was terminated by a signal: {0}"
 msgstr "Az alkalmazás futását megszakította a következő szignál: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:429
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1725
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1727
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:173
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:272
@@ -95,6 +95,7 @@ msgstr "Futtatás"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:219
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:101
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:97
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicyPanelWidget.cs:165
 #: ../src/addins/MacPlatform/MainToolbar/SelectorView.cs:145
@@ -137,45 +138,45 @@ msgstr "A projekt ({0}) nem található. A hivatkozás helye: {1}."
 msgid "File '{0}' not found."
 msgstr "A fájl ({0}) nem található."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:213
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:215
 #, fuzzy
 msgid "Project Configuration"
 msgstr "Új konfiguráció"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:214
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:216
 #, fuzzy
 msgid "Project Configuration Name"
 msgstr "Új konfiguráció"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:215
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:217
 #, fuzzy
 msgid "Project Configuration Platform"
 msgstr "A megoldás gyöké_rkönyvtára"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:216
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:218
 #, fuzzy
 msgid "Target File"
 msgstr "Célnév"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:217
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:219
 msgid "Target Path"
 msgstr "Célútvonal"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:218
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:220
 msgid "Target Name"
 msgstr "Célnév"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:219
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:221
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:35
 msgid "Target Directory"
 msgstr "Célkönyvtár"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:220
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:222
 msgid "Target Extension"
 msgstr "Célkiterjesztés"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1153
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1166
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1151
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1164
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:651
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:665
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:738
@@ -184,48 +185,48 @@ msgstr "Célkiterjesztés"
 msgid "Custom command execution failed"
 msgstr "Nem sikerült a programot lefuttatni."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1674
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1672
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "Nem sikerült a könyvtár ({0}) létrehozása. Már létezik ilyen nevű könyvtár."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1704
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2070
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2109
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1682
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1702
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2068
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2107
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1684
 #, fuzzy
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "{0} létrehozása a következő projekthez: {1}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1730
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1728
 msgid "Performing main compilation…"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1738
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1736
 msgid "Build complete -- "
 msgstr "A fordítás befejeződött -- "
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1884
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1882
 #, fuzzy
 msgid "Could not find support file '{0}'."
 msgstr "A típus ('{0}') nem található."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1887
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1885
 #, fuzzy
 msgid "Error copying support file '{0}'."
 msgstr "Hiba történt a fájl olvasása közben ({0}): "
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1919
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1917
 #, fuzzy
 msgid "Error deleting support file '{0}'."
 msgstr "Hiba történt a fájl olvasása közben ({0}): "
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2096
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2094
 #, fuzzy
 msgid "Clean complete"
 msgstr "A keresés befejezve. "
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1735
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1733
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1218
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1635
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:354
@@ -235,7 +236,7 @@ msgid_plural "{0} errors"
 msgstr[0] "{0} hiba"
 msgstr[1] "{0} hiba"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1736
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1734
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1219
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1636
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:352
@@ -303,7 +304,7 @@ msgstr "A fordítás előtt"
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:131
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:139
 #: ../src/addins/MacPlatform/MainToolbar/RunButton.cs:103
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:363
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:365
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:70
 msgid "Build"
 msgstr "Fordítás"
@@ -403,32 +404,32 @@ msgstr "Munkaterület elmentve."
 msgid "Workspace Directory"
 msgstr "Munkakönyvtár:"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1320
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1323
 #, fuzzy
 msgid "Solution File"
 msgstr "Megoldás fá_jl"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1321
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1324
 #, fuzzy
 msgid "Solution Name"
 msgstr "Mego_ldás név"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1322
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1325
 #, fuzzy
 msgid "Solution Directory"
 msgstr "_Megoldás könyvtár"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:591
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:620
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:592
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:621
 msgid "Cyclic dependencies are not supported."
 msgstr "A ciklikus referenciák nem megengedettek."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:595
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:596
 #, fuzzy
 msgid "Cleaning Solution: {0} ({1})"
 msgstr "Megoldás mentése: {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:626
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:627
 #, fuzzy
 msgid "Building Solution: {0} ({1})"
 msgstr "Megoldás fordítása: {0}"
@@ -455,20 +456,20 @@ msgstr "Csak ha újabb"
 msgid "Incompatible target framework: {0}"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1686
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1688
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:150
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:759
 msgid "Running {0} ..."
 msgstr "{0} futtatása..."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1693
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1695
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:162
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for ."
 "NET projects."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1701
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1703
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:179
 #, fuzzy
 msgid "Cannot execute \"{0}\""
@@ -1637,8 +1638,8 @@ msgstr "Üres osztály"
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:16
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:19
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:236
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:4
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:5
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:9
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:10
 msgid "General"
 msgstr "Általános"
 
@@ -1660,7 +1661,10 @@ msgstr "Üres HTML dokumentum"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml:7
 #: ../src/addins/AspNet/Templates/EmptyCssFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:11
 #: ../src/addins/AspNet/Templates/EmptyJsonFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:11
 msgid "Web"
 msgstr "Web"
 
@@ -1772,7 +1776,7 @@ msgstr "Egy üres munkaterület"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:936
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:950
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:126
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:227
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:230
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:114
 msgid "C#"
 msgstr "C#"
@@ -3573,7 +3577,7 @@ msgstr "Üzenetek naplója"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/SearchEntry.cs:166
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:44
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:158
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:278
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:281
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:165
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:188
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:43
@@ -4220,7 +4224,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs:91
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:124
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:371
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:378
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:223
 #, fuzzy
 msgid "Updates"
@@ -4320,7 +4324,7 @@ msgstr "Megoldás"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:48
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:51
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:358
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:360
 msgid "Runtime Options"
 msgstr "Futtatókörnyezet beállításai"
 
@@ -4453,7 +4457,6 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:243
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:128
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:234
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:196
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:70
@@ -4506,6 +4509,7 @@ msgid "PNG resource"
 msgstr "Erőforrás"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:25
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:315
 #, fuzzy
 msgid "CSS document"
 msgstr "XML dokumentum"
@@ -4668,7 +4672,7 @@ msgid ".NET"
 msgstr "ASP.NET"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Templates.addin.xml:125
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:233
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:245
 #: ../src/addins/AspNet/Templates/WebConfig-Application.xft.xml:10
 #: ../src/addins/AspNet/Templates/WebConfig-SubDir.xft.xml:10
 #: ../src/addins/AspNet/Templates/GlobalAsax.xft.xml:9
@@ -6160,7 +6164,7 @@ msgstr "Oszlopok"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:60
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:89
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:58
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:711
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:714
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:70
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:376
 msgid "Type"
@@ -7994,7 +7998,7 @@ msgstr "Osztályinformációk összegyűjtése..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs:245
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/TooltipInformationWindow.cs:132
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:225
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:228
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestPad.cs:259
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:96
 msgid "Summary"
@@ -8518,7 +8522,7 @@ msgid "Check to create configurations for all the solution items"
 msgstr "Konfiguráció létrehozása a megoldás minden eleméhez."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs:53
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:542
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:549
 msgid "All files"
 msgstr "Minden fájl"
 
@@ -9362,7 +9366,7 @@ msgid "Keep Current Identifiers"
 msgstr "Aktuális fájl"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:164
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:724
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:727
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:64
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:119
 msgid "Namespace"
@@ -10375,7 +10379,7 @@ msgid "file \"{0}\""
 msgstr "Alak: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/DefaultWelcomePage.cs:51
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:277
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:280
 msgid "Documentation"
 msgstr "Dokumentáció"
 
@@ -10735,22 +10739,22 @@ msgstr "Nincs írási jogosultsága a '{0}' könyvtárhoz."
 msgid "The project could not be created"
 msgstr "A projekt nem hozható létre."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:87
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:90
 #, fuzzy
 msgid "{0} failed to create"
 msgstr "Nem sikerült legenerálni a forráskódot a(z) „{0}” fájlhoz."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:89
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:92
 #, fuzzy
 msgid "{0} successfully created"
 msgstr "{0} sikeresen elő lett állítva."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:293
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:315
 #, fuzzy
 msgid "Recently used"
 msgstr "Szövegszerkesztő"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:407
 #, fuzzy
 msgid "Recently used templates"
 msgstr "Kódsablonok"
@@ -17625,7 +17629,7 @@ msgid "Namespaces"
 msgstr "Névterek"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.ClassOutline/OutlineSettings.cs:64
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:197
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:200
 msgid "Types"
 msgstr "Típusok"
 
@@ -19415,20 +19419,20 @@ msgstr "Jelszó mentése"
 msgid "Can't save file - access denied"
 msgstr "Ugrás egy fájlhoz a jelenlegi munkaterületen"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1483
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1497
 #, fuzzy
 msgid "Insert Breakpoint"
 msgstr "Új töréspont..."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2136
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2150
 msgid "Print operation failed."
 msgstr "Nem sikerült nyomtatni."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2148
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2162
 msgid "Press F2 to focus"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2168
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2182
 #, fuzzy
 msgid "Clipboard ring"
 msgstr "Kódolás"
@@ -20043,7 +20047,7 @@ msgid "<i>EditorBrowsableState.Always and EditorBrowsableState.Advanced</i>"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/CompletionCharactersPanel.cs:55
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:321
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:324
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:134
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:411
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:131
@@ -20213,79 +20217,79 @@ msgstr "Megvizsgál"
 msgid "Assembly Browser"
 msgstr "Assembly böngésző"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:167
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:170
 #, fuzzy
 msgid "Only public members"
 msgstr "Csak a publikus tagok mutatása"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:168
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:171
 #, fuzzy
 msgid "All members"
 msgstr "Tagok"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:184
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:187
 #, fuzzy
 msgid "Types and Members"
 msgstr "Tag keresése..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:210
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:213
 msgid "Members"
 msgstr "Tagok"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:226
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:229
 msgid "IL"
 msgstr "IL"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:295
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:298
 #, fuzzy
 msgid "Search for types and members"
 msgstr "Szöveg keresése"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:298
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:301
 #, fuzzy
 msgid "Search for types"
 msgstr "Szöveg keresése"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:301
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:304
 #, fuzzy
 msgid "Search for members"
 msgstr "Tag keresése..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:311
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:314
 msgid "Visibility"
 msgstr "Láthatóság"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:665
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:668
 msgid "Member"
 msgstr "Tag"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:677
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:680
 msgid "Declaring Type"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:687
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:690
 msgid "Results"
 msgstr "Eredmények"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:700
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:703
 #, fuzzy
 msgid "Parent"
 msgstr "Paraméterek"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:781
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:784
 msgid "Searching member..."
 msgstr "Tag keresése..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:784
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:787
 msgid "Searching type..."
 msgstr "Típus keresése..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:787
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:790
 #, fuzzy
 msgid "Searching types and members..."
 msgstr "Tag keresése..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:1217
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:1220
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DocumentationPanel.cs:68
 msgid "No documentation available."
 msgstr "Nem érhető el dokumentáció."
@@ -22703,121 +22707,131 @@ msgstr "_Frissítő referenciák:"
 msgid "_External"
 msgstr "_Külső"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:175
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:187
 msgid "ASP.NET Files"
 msgstr "ASP.NET fájlok"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:178
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:190
 #, fuzzy
 msgid "HTML Files"
 msgstr "XAML fájlok"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:219
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:231
 msgid "XSP Web Server"
 msgstr "XSP webszerver"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:235
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:262
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:247
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:274
 msgid "ASP.NET Directory"
 msgstr "ASP.NET könyvtár"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:238
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:250
 #, fuzzy
 msgid "Controller..."
 msgstr "Ugrás fájlhoz..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:239
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:251
 #, fuzzy
 msgid "Add Controller..."
 msgstr "Ugrás fájlhoz..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:240
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:252
 #, fuzzy
 msgid "Add an ASP.NET MVC controller"
 msgstr "ASP.NET vezérlők"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:242
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:254
 #, fuzzy
 msgid "View..."
 msgstr "Nézet"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:243
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:250
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:255
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:262
 #, fuzzy
 msgid "Add View..."
 msgstr "Fájlok hozzáadása"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:244
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:256
 msgid "Add an ASP.NET MVC view"
 msgstr ""
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:246
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:258
 #, fuzzy
 msgid "Go to View"
 msgstr "Nézet módosítása"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:251
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:263
 #, fuzzy
 msgid "Add View from Controller..."
 msgstr "Fájlok hozzá_adása..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:255
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:267
 #, fuzzy
 msgid "Go to Controller"
 msgstr "Ugrás fájlhoz..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:279
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:291
 msgid "ASP.NET page"
 msgstr "ASP.NET lap"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:282
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:294
 msgid "ASP.NET user control"
 msgstr "ASP.NET felhasználói vezérlő"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:285
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:297
 msgid "ASP.NET global application class"
 msgstr "ASP.NET globális alkalmazás osztály"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:288
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:300
 msgid "ASP.NET handler"
 msgstr "ASP.NET eseménykezelő"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:291
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:303
 msgid "ASP.NET web service"
 msgstr "ASP.NET webszolgáltatás"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:294
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:306
 msgid "ASP.NET image generator"
 msgstr "ASP.NET képgenerátor"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:297
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:309
 msgid "ASP.NET master page"
 msgstr "ASP.NET mesterlap"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:300
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:312
 msgid "Javascript source code"
 msgstr "Javascript forráskód"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:303
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:318
 #, fuzzy
 msgid "LESS, CSS document"
 msgstr "XML dokumentum"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:306
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:321
+#, fuzzy
+msgid "SASS, CSS document"
+msgstr "XML dokumentum"
+
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:324
+#, fuzzy
+msgid "SCSS, CSS document"
+msgstr "XML dokumentum"
+
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:327
 msgid "HTML document"
 msgstr "HTML dokumentum"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:309
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:330
 #, fuzzy
 msgid "Spark View template"
 msgstr "Sablon"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:313
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:334
 #, fuzzy
 msgid "Typescript source code"
 msgstr "Javascript forráskód"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:316
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:337
 #, fuzzy
 msgid "Razor template"
 msgstr "Tabulátor eltávolítása"
@@ -23814,6 +23828,23 @@ msgstr "Üres fájl"
 msgid "Creates an empty CSS file."
 msgstr "Létrehoz egy üres fájlt C# nyelven."
 
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:9
+#, fuzzy
+msgid "LESS Style Sheet"
+msgstr "XSLT stíluslap kiválasztása"
+
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:12
+msgid "LESS is a language that compiles into CSS."
+msgstr ""
+
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:9
+msgid "SCSS Style Sheet (SASS)"
+msgstr ""
+
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:12
+msgid "SCSS is a language that compiles into CSS."
+msgstr ""
+
 #: ../src/addins/AspNet/Templates/EmptyJsonFile.xft.xml:9
 #, fuzzy
 msgid "Empty JSON File"
@@ -23823,6 +23854,16 @@ msgstr "Üres fájl"
 #, fuzzy
 msgid "Creates an empty JSON file."
 msgstr "Létrehoz egy üres Java fájlt."
+
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:9
+#, fuzzy
+msgid "TypeScript file"
+msgstr "Fájl kijelölése"
+
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:12
+#, fuzzy
+msgid "A blank TypeScript source file."
+msgstr "Javascript forráskód"
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/MonoDevelop.TextTemplating.addin.xml:8
 #, fuzzy
@@ -25764,8 +25805,8 @@ msgid "Current package version"
 msgstr "Aktuális oszlop"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:86
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:384
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:392
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:386
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:394
 #, fuzzy
 msgid "Add _Packages..."
 msgstr "Csomag hozzáadása..."
@@ -25869,7 +25910,7 @@ msgstr "_Hozzáadás a projekthez:"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:131
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:116
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:257
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:264
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:122
 #, fuzzy
 msgid "Installed"
@@ -26211,36 +26252,38 @@ msgid "Creates a new .NET Core class library project."
 msgstr "Létrehoz egy Moonlight függvénykönyvtár projektet."
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:241
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:250
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:283
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:294
-#, fuzzy
-msgid "Creates a new xUnit test project."
-msgstr "Létrehoz egy új konzolos projektet C# nyelven."
-
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:259
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:269
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:304
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:315
-#, fuzzy
-msgid "MSTest Project"
-msgstr "Legutóbb megnyitott projektek"
-
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:260
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:270
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:305
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:316
-#, fuzzy
-msgid "Creates a new MSTest project."
-msgstr "Egy új C# projektet hoz létre"
-
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:282
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:293
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:251
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:284
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:295
 #, fuzzy
 msgid "xUnit Test Project"
 msgstr "Hozzáadás a projekthez"
 
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:371
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:242
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:252
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:285
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:296
+#, fuzzy
+msgid "Creates a new xUnit test project."
+msgstr "Létrehoz egy új konzolos projektet C# nyelven."
+
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:261
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:271
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:306
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:317
+#, fuzzy
+msgid "MSTest Project"
+msgstr "Legutóbb megnyitott projektek"
+
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:262
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:272
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:307
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:318
+#, fuzzy
+msgid "Creates a new MSTest project."
+msgstr "Egy új C# projektet hoz létre"
+
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:373
 #, fuzzy
 msgid "Migrate to New Format"
 msgstr "Új formátum:"
@@ -26867,11 +26910,11 @@ msgstr ""
 msgid "Creates a NuGet Packaging project."
 msgstr "Létrehoz egy Gtk# projektet."
 
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:3
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:8
 msgid "Cloud"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:13
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:18
 #, fuzzy
 msgid "Creates a new Azure Functions project."
 msgstr "Létrehoz egy új konzolos projektet C# nyelven."
@@ -26915,44 +26958,53 @@ msgid "ASP.NET Core"
 msgstr "ASP.NET vezérlők"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:76
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:120
-#, fuzzy
-msgid "Creates a new ASP.NET Core web project."
-msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:86
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:96
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:132
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:144
-#, fuzzy
-msgid "Creates a new ASP.NET MVC Core web project."
-msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:106
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:167
-#, fuzzy
-msgid "Creates a new ASP.NET Web API Core web project."
-msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:119
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:123
 #, fuzzy
 msgid "ASP.NET Core Empty"
 msgstr "ASP.NET könyvtár"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:131
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:143
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:77
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:124
+#, fuzzy
+msgid "Creates a new ASP.NET Core web project."
+msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:87
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:98
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:135
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:147
 #, fuzzy
 msgid "ASP.NET Core Web App"
 msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:154
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:88
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:99
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:136
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:148
 #, fuzzy
-msgid "Creates a new ASP.NET Web API Core web project using Razor Pages."
+msgid "Creates a new ASP.NET MVC Core web project."
 msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:166
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:109
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:171
 #, fuzzy
-msgid "ASP.NET Core Web Api"
+msgid "ASP.NET Core Web API"
+msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:110
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:172
+#, fuzzy
+msgid "Creates a new ASP.NET Web API Core web project."
+msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:158
+#, fuzzy
+msgid "ASP.NET Core Web App (Razor Pages)"
+msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:159
+#, fuzzy
+msgid "Creates a new ASP.NET Web API Core web project using Razor Pages."
 msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MiddlewareClass.xft.xml:8
@@ -27149,47 +27201,47 @@ msgstr "A letiltott bővítmények nem tölthetők be."
 msgid "Loading {0} add-in"
 msgstr "Bővítmény betöltése ({0})..."
 
-#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:597
+#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:595
 msgid "The required addin '{0}' is disabled."
 msgstr "Egy szükséges bővítmény ('{0}') le van tiltva."
 
-#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:599
+#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:597
 #, fuzzy
 msgid "The required addin '{0}' is not installed."
 msgstr "Egy szükséges bővítmény ('{0}') le van tiltva."
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:132
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:332
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:339
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:313
 msgid "Gallery"
 msgstr ""
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:268
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:275
 #, fuzzy
 msgid "All repositories"
 msgstr "Minden bejegyzett tároló"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:275
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:282
 #, fuzzy
 msgid "Manage Repositories..."
 msgstr "Tá_rolók..."
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:427
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:434
 #, fuzzy
 msgid "Updating repository"
 msgstr "Version control tároló frissítése"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:527
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:534
 #, fuzzy
 msgid "Install Extension Package"
 msgstr "_Bővítmények telepítése..."
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:537
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:544
 #, fuzzy
 msgid "Extension packages"
 msgstr "Csomagok szerkesztése"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:370
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:377
 #, fuzzy
 msgid "{0} update available"
 msgid_plural "{0} updates available"
@@ -29651,6 +29703,10 @@ msgstr "Nézet módosítása"
 #, fuzzy
 msgid "List View"
 msgstr "Nézet módosítása"
+
+#, fuzzy
+#~ msgid "ASP.NET Core Web Api"
+#~ msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
 
 #, fuzzy
 #~ msgid "Desired File Width"

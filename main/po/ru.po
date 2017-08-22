@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 2.4.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-08 19:41:46+0300\n"
+"POT-Creation-Date: 2017-08-22 12:31:13+0100\n"
 "PO-Revision-Date: 2010-12-26 12:47+0300\n"
 "Last-Translator: Semen Soldatov <simplexe@mail.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -35,7 +35,7 @@ msgid "The application was terminated by a signal: {0}"
 msgstr "Работа приложения завершена по сигналу: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:429
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1725
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1727
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:173
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:272
@@ -95,6 +95,7 @@ msgstr "Запуск"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:219
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:101
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:97
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicyPanelWidget.cs:165
 #: ../src/addins/MacPlatform/MainToolbar/SelectorView.cs:145
@@ -139,41 +140,41 @@ msgstr ""
 msgid "File '{0}' not found."
 msgstr "Файл \"{0}\" не найден."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:213
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:215
 msgid "Project Configuration"
 msgstr "Конфигурация проекта"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:214
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:216
 msgid "Project Configuration Name"
 msgstr "Имя конфигурации проекта"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:215
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:217
 msgid "Project Configuration Platform"
 msgstr "Платформа конфигурации проекта"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:216
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:218
 msgid "Target File"
 msgstr "Конечный файл"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:217
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:219
 msgid "Target Path"
 msgstr "Конечный путь"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:218
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:220
 msgid "Target Name"
 msgstr "Конечное имя"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:219
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:221
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:35
 msgid "Target Directory"
 msgstr "Целевой каталог"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:220
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:222
 msgid "Target Extension"
 msgstr "Целевое расширение"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1153
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1166
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1151
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1164
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:651
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:665
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:738
@@ -181,43 +182,43 @@ msgstr "Целевое расширение"
 msgid "Custom command execution failed"
 msgstr "Сбой при выполнении настраиваемой команды"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1674
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1672
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "Не удается создать каталог {0}, так как существует файл с таким именем."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1704
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2070
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2109
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1682
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1702
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2068
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2107
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1684
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "Конфигурация \"{0}\" не найдена в проекте \"{1}\""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1730
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1728
 msgid "Performing main compilation…"
 msgstr "Выполняется основная компиляция…"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1738
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1736
 msgid "Build complete -- "
 msgstr "Сборка завершена -- "
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1884
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1882
 msgid "Could not find support file '{0}'."
 msgstr "Не удалось найти файл поддержки \"{0}\"."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1887
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1885
 msgid "Error copying support file '{0}'."
 msgstr "Ошибка при копировании файла поддержки \"{0}\"."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1919
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1917
 msgid "Error deleting support file '{0}'."
 msgstr "Ошибка при удалении файла поддержки \"{0}\"."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2096
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2094
 msgid "Clean complete"
 msgstr "Очистка выполнена"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1735
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1733
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1218
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1635
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:354
@@ -227,7 +228,7 @@ msgid_plural "{0} errors"
 msgstr[0] "ошибок: {0}"
 msgstr[1] "ошибок: {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1736
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1734
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1219
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1636
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:352
@@ -291,7 +292,7 @@ msgstr "Перед сборкой"
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:131
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:139
 #: ../src/addins/MacPlatform/MainToolbar/RunButton.cs:103
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:363
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:365
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:70
 msgid "Build"
 msgstr "Сборка"
@@ -386,28 +387,28 @@ msgstr "Имя рабочей области"
 msgid "Workspace Directory"
 msgstr "Каталог рабочей области"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1320
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1323
 msgid "Solution File"
 msgstr "Файл решения"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1321
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1324
 msgid "Solution Name"
 msgstr "Имя решения"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1322
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1325
 msgid "Solution Directory"
 msgstr "Каталог решения"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:591
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:620
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:592
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:621
 msgid "Cyclic dependencies are not supported."
 msgstr "Циклические зависимости не поддерживаются."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:595
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:596
 msgid "Cleaning Solution: {0} ({1})"
 msgstr "Решение очистки: {0} ({1})"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:626
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:627
 msgid "Building Solution: {0} ({1})"
 msgstr "Сборка решения: {0} ({1})"
 
@@ -432,13 +433,13 @@ msgstr "Копировать более позднюю версию"
 msgid "Incompatible target framework: {0}"
 msgstr "Несовместимая целевая платформа: {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1686
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1688
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:150
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:759
 msgid "Running {0} ..."
 msgstr "Выполняется запуск {0}..."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1693
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1695
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:162
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for ."
@@ -447,7 +448,7 @@ msgstr ""
 "Не удается выполнить \"{0}\". Выбранный режим выполнения не поддерживается "
 "для проектов .NET."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1701
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1703
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:179
 msgid "Cannot execute \"{0}\""
 msgstr "Не удается выполнить \"{0}\"."
@@ -1658,8 +1659,8 @@ msgstr "Пустой класс"
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:16
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:19
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:236
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:4
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:5
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:9
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:10
 msgid "General"
 msgstr "Общие"
 
@@ -1681,7 +1682,10 @@ msgstr "Пустой HTML-файл"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml:7
 #: ../src/addins/AspNet/Templates/EmptyCssFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:11
 #: ../src/addins/AspNet/Templates/EmptyJsonFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:11
 msgid "Web"
 msgstr "Веб"
 
@@ -1790,7 +1794,7 @@ msgstr "Пустая рабочая область"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:936
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:950
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:126
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:227
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:230
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:114
 msgid "C#"
 msgstr "C#"
@@ -3444,7 +3448,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/SearchEntry.cs:166
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:44
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:158
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:278
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:281
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:165
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:188
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:43
@@ -4039,7 +4043,7 @@ msgstr "Шрифты"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs:91
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:124
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:371
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:378
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:223
 msgid "Updates"
 msgstr "Обновления"
@@ -4130,7 +4134,7 @@ msgstr "Решение"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:48
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:51
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:358
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:360
 msgid "Runtime Options"
 msgstr "Параметры среды выполнения"
 
@@ -4258,7 +4262,6 @@ msgstr "Средство записи сеансов"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:243
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:128
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:234
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:196
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:70
@@ -4307,6 +4310,7 @@ msgid "PNG resource"
 msgstr "Ресурс PNG"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:25
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:315
 msgid "CSS document"
 msgstr "Документ CSS"
 
@@ -4449,7 +4453,7 @@ msgid ".NET"
 msgstr ".NET"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Templates.addin.xml:125
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:233
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:245
 #: ../src/addins/AspNet/Templates/WebConfig-Application.xft.xml:10
 #: ../src/addins/AspNet/Templates/WebConfig-SubDir.xft.xml:10
 #: ../src/addins/AspNet/Templates/GlobalAsax.xft.xml:9
@@ -5838,7 +5842,7 @@ msgstr "Столбцы"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:60
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:89
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:58
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:711
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:714
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:70
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:376
 msgid "Type"
@@ -7570,7 +7574,7 @@ msgstr "Сбор информации о классе..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs:245
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/TooltipInformationWindow.cs:132
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:225
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:228
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestPad.cs:259
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:96
 msgid "Summary"
@@ -8058,7 +8062,7 @@ msgstr ""
 "Установите флажок, чтобы создать конфигурации для всех элементов решения"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs:53
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:542
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:549
 msgid "All files"
 msgstr "Все файлы"
 
@@ -8843,7 +8847,7 @@ msgid "Keep Current Identifiers"
 msgstr "Сохранить текущие идентификаторы"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:164
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:724
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:727
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:64
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:119
 msgid "Namespace"
@@ -9769,7 +9773,7 @@ msgid "file \"{0}\""
 msgstr "файл \"{0}\""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/DefaultWelcomePage.cs:51
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:277
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:280
 msgid "Documentation"
 msgstr "Документация"
 
@@ -10091,21 +10095,21 @@ msgstr "У вас нет разрешения на создание в {0}"
 msgid "The project could not be created"
 msgstr "Не удалось создать проект"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:87
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:90
 #, fuzzy
 msgid "{0} failed to create"
 msgstr "Не удалось выполнить перенос"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:89
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:92
 #, fuzzy
 msgid "{0} successfully created"
 msgstr "{0} успешно перенацелен."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:293
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:315
 msgid "Recently used"
 msgstr "Недавно использовавшиеся"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:407
 msgid "Recently used templates"
 msgstr "Недавно использовавшиеся шаблоны"
 
@@ -16861,7 +16865,7 @@ msgid "Namespaces"
 msgstr "Пространства имен"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.ClassOutline/OutlineSettings.cs:64
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:197
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:200
 msgid "Types"
 msgstr "Типы"
 
@@ -18691,19 +18695,19 @@ msgstr "Сохранить в формате Юникод"
 msgid "Can't save file - access denied"
 msgstr "Не удается сохранить файл — отказ в доступе"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1483
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1497
 msgid "Insert Breakpoint"
 msgstr "Вставить точку останова"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2136
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2150
 msgid "Print operation failed."
 msgstr "Сбой операции печати."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2148
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2162
 msgid "Press F2 to focus"
 msgstr "Нажмите клавишу F2 для фокусировки"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2168
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2182
 msgid "Clipboard ring"
 msgstr "Буфер обмена"
 
@@ -19287,7 +19291,7 @@ msgid "<i>EditorBrowsableState.Always and EditorBrowsableState.Advanced</i>"
 msgstr "<i>EditorBrowsableState.Always и EditorBrowsableState.Advanced</i>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/CompletionCharactersPanel.cs:55
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:321
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:324
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:134
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:411
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:131
@@ -19443,71 +19447,71 @@ msgstr "Проверить"
 msgid "Assembly Browser"
 msgstr "Обозреватель сборок"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:167
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:170
 msgid "Only public members"
 msgstr "Только общие элементы"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:168
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:171
 msgid "All members"
 msgstr "Все элементы"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:184
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:187
 msgid "Types and Members"
 msgstr "Типы и элементы"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:210
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:213
 msgid "Members"
 msgstr "Элементы"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:226
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:229
 msgid "IL"
 msgstr "IL"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:295
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:298
 msgid "Search for types and members"
 msgstr "Поиск типов и элементов"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:298
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:301
 msgid "Search for types"
 msgstr "Поиск типов"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:301
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:304
 msgid "Search for members"
 msgstr "Поиск элементов"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:311
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:314
 msgid "Visibility"
 msgstr "Видимость"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:665
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:668
 msgid "Member"
 msgstr "Элемент"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:677
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:680
 msgid "Declaring Type"
 msgstr "Объявляющий тип"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:687
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:690
 msgid "Results"
 msgstr "Результаты"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:700
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:703
 msgid "Parent"
 msgstr "Родительский элемент"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:781
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:784
 msgid "Searching member..."
 msgstr "Выполняется поиск элемента..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:784
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:787
 msgid "Searching type..."
 msgstr "Выполняется поиск типа..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:787
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:790
 msgid "Searching types and members..."
 msgstr "Выполняется поиск типов и элементов..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:1217
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:1220
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DocumentationPanel.cs:68
 msgid "No documentation available."
 msgstr "Нет доступной документации."
@@ -21814,109 +21818,119 @@ msgstr "_Обновить ссылки:"
 msgid "_External"
 msgstr "_Внешние"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:175
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:187
 msgid "ASP.NET Files"
 msgstr "Файлы ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:178
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:190
 msgid "HTML Files"
 msgstr "HTML-файлы"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:219
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:231
 msgid "XSP Web Server"
 msgstr "Веб-сервер XSP"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:235
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:262
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:247
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:274
 msgid "ASP.NET Directory"
 msgstr "Каталог ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:238
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:250
 msgid "Controller..."
 msgstr "Контроллер..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:239
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:251
 msgid "Add Controller..."
 msgstr "Добавить контроллер..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:240
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:252
 msgid "Add an ASP.NET MVC controller"
 msgstr "Добавить контроллер MVC ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:242
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:254
 msgid "View..."
 msgstr "Просмотр..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:243
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:250
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:255
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:262
 msgid "Add View..."
 msgstr "Добавить представление..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:244
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:256
 msgid "Add an ASP.NET MVC view"
 msgstr "Добавить представление MVC ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:246
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:258
 msgid "Go to View"
 msgstr "Перейти к представлению"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:251
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:263
 msgid "Add View from Controller..."
 msgstr "Добавить представление из контроллера..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:255
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:267
 msgid "Go to Controller"
 msgstr "Перейти к контроллеру"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:279
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:291
 msgid "ASP.NET page"
 msgstr "Страница ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:282
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:294
 msgid "ASP.NET user control"
 msgstr "Пользовательский элемент управления ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:285
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:297
 msgid "ASP.NET global application class"
 msgstr "Глобальный класс приложения ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:288
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:300
 msgid "ASP.NET handler"
 msgstr "Обработчик ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:291
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:303
 msgid "ASP.NET web service"
 msgstr "Веб-служба ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:294
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:306
 msgid "ASP.NET image generator"
 msgstr "Генератор изображений ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:297
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:309
 msgid "ASP.NET master page"
 msgstr "Эталонная страница ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:300
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:312
 msgid "Javascript source code"
 msgstr "Исходный код Javascript"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:303
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:318
 msgid "LESS, CSS document"
 msgstr "LESS, документ CSS"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:306
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:321
+#, fuzzy
+msgid "SASS, CSS document"
+msgstr "LESS, документ CSS"
+
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:324
+#, fuzzy
+msgid "SCSS, CSS document"
+msgstr "LESS, документ CSS"
+
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:327
 msgid "HTML document"
 msgstr "HTML-документ"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:309
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:330
 msgid "Spark View template"
 msgstr "Шаблон представления Spark"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:313
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:334
 msgid "Typescript source code"
 msgstr "Исходный код TypeScript"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:316
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:337
 msgid "Razor template"
 msgstr "Шаблон Razor"
 
@@ -22846,6 +22860,23 @@ msgstr "Пустой CSS-файл"
 msgid "Creates an empty CSS file."
 msgstr "Создает пустой CSS-файл."
 
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:9
+#, fuzzy
+msgid "LESS Style Sheet"
+msgstr "Выбрать таблицу стилей XSLT"
+
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:12
+msgid "LESS is a language that compiles into CSS."
+msgstr ""
+
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:9
+msgid "SCSS Style Sheet (SASS)"
+msgstr ""
+
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:12
+msgid "SCSS is a language that compiles into CSS."
+msgstr ""
+
 #: ../src/addins/AspNet/Templates/EmptyJsonFile.xft.xml:9
 msgid "Empty JSON File"
 msgstr "Пустой JSON-файл"
@@ -22853,6 +22884,16 @@ msgstr "Пустой JSON-файл"
 #: ../src/addins/AspNet/Templates/EmptyJsonFile.xft.xml:12
 msgid "Creates an empty JSON file."
 msgstr "Создает пустой JSON-файл."
+
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:9
+#, fuzzy
+msgid "TypeScript file"
+msgstr "Файл скрипта F#"
+
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:12
+#, fuzzy
+msgid "A blank TypeScript source file."
+msgstr "Исходный код TypeScript"
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/MonoDevelop.TextTemplating.addin.xml:8
 msgid "Text template"
@@ -24607,8 +24648,8 @@ msgid "Current package version"
 msgstr "Текущая версия пакета"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:86
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:384
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:392
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:386
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:394
 msgid "Add _Packages..."
 msgstr "Добавить _пакеты..."
 
@@ -24701,7 +24742,7 @@ msgstr "Добавить в проект"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:131
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:116
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:257
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:264
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:122
 msgid "Installed"
 msgstr "Установленные"
@@ -25022,32 +25063,34 @@ msgid "Creates a new .NET Core class library project."
 msgstr "Создает новый проект библиотеки классов .NET Core."
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:241
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:250
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:283
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:294
-msgid "Creates a new xUnit test project."
-msgstr "Создает новый текстовый проект xUnit."
-
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:259
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:269
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:304
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:315
-msgid "MSTest Project"
-msgstr "Проект MSTest"
-
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:260
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:270
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:305
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:316
-msgid "Creates a new MSTest project."
-msgstr "Создает проект MSTest."
-
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:282
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:293
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:251
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:284
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:295
 msgid "xUnit Test Project"
 msgstr "Тестовый проект xUnit"
 
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:371
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:242
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:252
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:285
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:296
+msgid "Creates a new xUnit test project."
+msgstr "Создает новый текстовый проект xUnit."
+
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:261
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:271
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:306
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:317
+msgid "MSTest Project"
+msgstr "Проект MSTest"
+
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:262
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:272
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:307
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:318
+msgid "Creates a new MSTest project."
+msgstr "Создает проект MSTest."
+
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:373
 msgid "Migrate to New Format"
 msgstr "Перенести в новый формат"
 
@@ -25601,11 +25644,11 @@ msgstr ""
 msgid "Creates a NuGet Packaging project."
 msgstr "Создает пакет упаковки NuGet."
 
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:3
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:8
 msgid "Cloud"
 msgstr "Облако"
 
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:13
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:18
 msgid "Creates a new Azure Functions project."
 msgstr "Создает проект Функций Azure."
 
@@ -25646,38 +25689,48 @@ msgid "ASP.NET Core"
 msgstr "ASP.NET Core"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:76
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:120
-msgid "Creates a new ASP.NET Core web project."
-msgstr "Создает новый веб-проект ASP.NET Core."
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:86
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:96
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:132
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:144
-msgid "Creates a new ASP.NET MVC Core web project."
-msgstr "Создает новый веб-проект ASP.NET MVC Core."
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:106
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:167
-msgid "Creates a new ASP.NET Web API Core web project."
-msgstr "Создает новый веб-проект c веб-интерфейсом API ASP.NET Core."
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:119
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:123
 msgid "ASP.NET Core Empty"
 msgstr "Пустой ASP.NET Core"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:131
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:143
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:77
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:124
+msgid "Creates a new ASP.NET Core web project."
+msgstr "Создает новый веб-проект ASP.NET Core."
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:87
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:98
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:135
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:147
 msgid "ASP.NET Core Web App"
 msgstr "Веб-приложение ASP.NET Core"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:154
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:88
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:99
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:136
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:148
+msgid "Creates a new ASP.NET MVC Core web project."
+msgstr "Создает новый веб-проект ASP.NET MVC Core."
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:109
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:171
+#, fuzzy
+msgid "ASP.NET Core Web API"
+msgstr "Веб-приложение ASP.NET Core"
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:110
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:172
+msgid "Creates a new ASP.NET Web API Core web project."
+msgstr "Создает новый веб-проект c веб-интерфейсом API ASP.NET Core."
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:158
+#, fuzzy
+msgid "ASP.NET Core Web App (Razor Pages)"
+msgstr "Веб-приложение ASP.NET Core"
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:159
 msgid "Creates a new ASP.NET Web API Core web project using Razor Pages."
 msgstr "Создает веб-проект веб-API ASP.NET с использованием страниц Razor."
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:166
-msgid "ASP.NET Core Web Api"
-msgstr "Веб-API ASP.NET Core"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MiddlewareClass.xft.xml:8
 msgid "Middleware Class"
@@ -25850,41 +25903,41 @@ msgstr "Отключенные надстройки невозможно заг�
 msgid "Loading {0} add-in"
 msgstr "Идет загрузка надстройки {0}"
 
-#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:597
+#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:595
 msgid "The required addin '{0}' is disabled."
 msgstr "Требуемая надстройка \"{0}\" отключена."
 
-#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:599
+#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:597
 msgid "The required addin '{0}' is not installed."
 msgstr "Требуемая надстройка \"{0}\" не установлена."
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:132
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:332
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:339
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:313
 msgid "Gallery"
 msgstr "Коллекция"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:268
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:275
 msgid "All repositories"
 msgstr "Все репозитории"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:275
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:282
 msgid "Manage Repositories..."
 msgstr "Управление репозиториями..."
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:427
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:434
 msgid "Updating repository"
 msgstr "Обновление репозитория"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:527
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:534
 msgid "Install Extension Package"
 msgstr "Установить пакет расширения"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:537
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:544
 msgid "Extension packages"
 msgstr "Пакеты расширений"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:370
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:377
 msgid "{0} update available"
 msgid_plural "{0} updates available"
 msgstr[0] "Доступно обновлений: {0}"
@@ -28245,3 +28298,6 @@ msgstr "Список"
 
 #~ msgid "C# Language Version"
 #~ msgstr "Версия языка C#"
+
+#~ msgid "ASP.NET Core Web Api"
+#~ msgstr "Веб-API ASP.NET Core"
