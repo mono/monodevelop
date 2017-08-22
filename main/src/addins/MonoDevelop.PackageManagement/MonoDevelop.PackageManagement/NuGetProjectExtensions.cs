@@ -81,14 +81,7 @@ namespace MonoDevelop.PackageManagement
 
 		public static IDotNetProject GetDotNetProject (this NuGetProject project)
 		{
-			IHasDotNetProject hasProject = null;
-
-			var msbuildProject = project as MSBuildNuGetProject;
-			if (msbuildProject != null)
-				hasProject = msbuildProject.MSBuildNuGetProjectSystem as IHasDotNetProject;
-
-			if (hasProject == null)
-				hasProject = project as IHasDotNetProject;
+			var hasProject = project as IHasDotNetProject;
 
 			if (hasProject != null)
 				return hasProject.Project;
