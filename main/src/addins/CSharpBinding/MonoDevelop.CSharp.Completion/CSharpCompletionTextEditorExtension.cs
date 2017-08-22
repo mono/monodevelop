@@ -481,6 +481,9 @@ namespace MonoDevelop.CSharp.Completion
 				result.AutoSelect = false;
 			}
 
+			if (triggerInfo.TriggerCharacter == '_' && triggerWordLength == 1)
+				result.AutoSelect = false;
+
 			return result;
 		}
 

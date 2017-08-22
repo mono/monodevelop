@@ -41,30 +41,68 @@ namespace MonoDevelop.CSharpBinding
 	public class CSharpCompletionTextEditorTests : UnitTests.TestBase
 	{
 		[Test]
-		public async Task TestBug58473 ()
+		public async Task TestBug58473()
 		{
-			var text = @"$";
-			int endPos = text.IndexOf ('$');
-			if (endPos >= 0)
-				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
+			await TestCompletion(@"$", list => Assert.IsNotNull(list));
+		}
 
-			var project = Ide.Services.ProjectService.CreateDotNetProject ("C#");
+		[Test]
+		public async Task TestBug57170()
+		{
+			await TestCompletion(@"using System;
+
+namespace console61
+{
+	class MainClass
+	{
+		public static void Main ()
+		{
+			_ = Foo (out _$); // No completion for discards
+			return;
+		}
+
+		static (int Test, string Me) Foo (out int gg)
+		{
+			gg = 3;
+			return (1, ""3"");
+		}
+	}
+}
+", list => Assert.IsFalse(list.AutoSelect), new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, '_'));
+
+		}
+
+		static Task TestCompletion(string text, Action<ICompletionDataList> action)
+		{
+			return TestCompletion(text, action, CompletionTriggerInfo.CodeCompletionCommand);
+		}
+
+		static async Task TestCompletion(string text, Action<ICompletionDataList> action, CompletionTriggerInfo triggerInfo)
+		{
+			DesktopService.Initialize();
+
+			int endPos = text.IndexOf('$');
+			if (endPos >= 0)
+				text = text.Substring(0, endPos) + text.Substring(endPos + 1);
+
+			var project = Ide.Services.ProjectService.CreateDotNetProject("C#");
 			project.Name = "test";
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("mscorlib"));
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System.Core"));
+			project.References.Add(MonoDevelop.Projects.ProjectReference.CreateAssemblyReference("mscorlib"));
+			project.References.Add(MonoDevelop.Projects.ProjectReference.CreateAssemblyReference("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add(MonoDevelop.Projects.ProjectReference.CreateAssemblyReference("System.Core"));
 
 			project.FileName = "test.csproj";
-			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile));
+			project.Files.Add(new ProjectFile("/a.cs", BuildAction.Compile));
 
-			var solution = new MonoDevelop.Projects.Solution ();
-			solution.AddConfiguration ("", true);
-			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
+			var solution = new MonoDevelop.Projects.Solution();
+			solution.AddConfiguration("", true);
+			solution.DefaultSolutionFolder.AddItem(project);
+			using (var monitor = new ProgressMonitor())
+				await TypeSystemService.Load(solution, monitor);
+			
 
-			var tww = new TestWorkbenchWindow ();
-			var content = new TestViewContent ();
+			var tww = new TestWorkbenchWindow();
+			var content = new TestViewContent();
 			tww.ViewContent = content;
 			content.ContentName = "/a.cs";
 			content.Data.MimeType = "text/x-csharp";
@@ -72,25 +110,29 @@ namespace MonoDevelop.CSharpBinding
 
 
 			content.Text = text;
-			content.CursorPosition = Math.Max (0, endPos);
-			var doc = new MonoDevelop.Ide.Gui.Document (tww);
-			doc.SetProject (project);
+			content.CursorPosition = Math.Max(0, endPos);
+			var doc = new MonoDevelop.Ide.Gui.Document(tww);
+			doc.SetProject(project);
 
-			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc.Editor, doc);
-			content.Contents.Add (compExt);
+			var compExt = new CSharpCompletionTextEditorExtension();
+			compExt.Initialize(doc.Editor, doc);
+			compExt.CurrentCompletionContext = new CodeCompletionContext {
+				TriggerOffset = content.CursorPosition,
+				TriggerWordLength = 1
+			};
+			content.Contents.Add(compExt);
 
-			await doc.UpdateParseDocument ();
-
-			var ctx = new CodeCompletionContext ();
+			await doc.UpdateParseDocument();
 
 			var tmp = IdeApp.Preferences.EnableAutoCodeCompletion;
-			IdeApp.Preferences.EnableAutoCodeCompletion.Set (false);
-			var list = await compExt.HandleCodeCompletionAsync (ctx, CompletionTriggerInfo.CodeCompletionCommand);
-			Assert.IsNotNull (list);
-			IdeApp.Preferences.EnableAutoCodeCompletion.Set (tmp);
-			project.Dispose ();
+			IdeApp.Preferences.EnableAutoCodeCompletion.Set(false);
+			var list = await compExt.HandleCodeCompletionAsync(compExt.CurrentCompletionContext, triggerInfo);
+			try {
+				action(list);
+			} finally {
+				IdeApp.Preferences.EnableAutoCodeCompletion.Set(tmp);
+				project.Dispose();
+			}
 		}
-
 	}
 }
