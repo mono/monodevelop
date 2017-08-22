@@ -309,6 +309,17 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public void EvalExistsWhenNotInsideQuotes ()
+		{
+			var p = LoadProject ();
+			p.Evaluate ();
+			var res = p.EvaluatedProperties.GetValue ("ExistsNotInsideQuotesTest");
+			Assert.AreEqual ("OK", res);
+
+			p.Dispose ();
+		}
+
+		[Test]
 		public void ImportGroups ()
 		{
 			var p = LoadAndEvaluate ("project-with-import-groups", "import-group-test.csproj");
