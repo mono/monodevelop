@@ -287,7 +287,7 @@ namespace MonoDevelop.SourceEditor
 
 	class CurrentDebugLineTextMarker : DebugMarkerPair, ICurrentDebugLineTextMarker
 	{
-		static readonly Image currentLine = Image.FromResource (typeof (BreakpointPad), "gutter-execution-15.png");
+		internal static readonly Image currentLine = Image.FromResource (typeof (BreakpointPad), "gutter-execution-15.png");
 
 		public CurrentDebugLineTextMarker (MonoTextEditor editor, int offset, int length)
 		{

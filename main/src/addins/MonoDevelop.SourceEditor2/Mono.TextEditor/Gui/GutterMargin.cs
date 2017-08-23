@@ -67,7 +67,7 @@ namespace Mono.TextEditor
 
 		int LineCountMax {
 			get {
-				return System.Math.Max (1000, editor.Document.LineCount);
+				return editor.Document.LineCount;
 			}
 		}
 
@@ -81,6 +81,7 @@ namespace Mono.TextEditor
 				int height;
 				layout.GetPixelSize (out this.width, out height);
 				this.width += 4;
+				this.width += (int)MonoDevelop.SourceEditor.CurrentDebugLineTextMarker.currentLine.Width;
 				if (!editor.Options.ShowFoldMargin)
 					this.width += 2;
 			}
