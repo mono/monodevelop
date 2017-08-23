@@ -607,7 +607,22 @@ namespace MonoDevelop.Projects
 		[LocalizedDisplayName ("Architecture")]
 		[LocalizedDescription ("Selects the bitness of the Mono binary used, if available. If the binary used is already for the selected bitness, nothing changes. If not, the execution switches to a binary with the selected bitness suffix installed side by side (architecture=64 will switch to '/bin/mono64' if '/bin/mono' is a 32-bit build).")]
 		[MonoArg ("--arch={0}")]
-		[ItemProperty (DefaultValue = RuntimeArchitecture.Default)]
+		[ItemProperty ("MonoArchitecture", DefaultValue = RuntimeArchitecture.Default)]
 		public RuntimeArchitecture Architecture { get; set; }
+
+		string legacyArchitecture;
+		[ItemProperty("Architecture", DefaultValue = null)]
+		internal string LegacyArchitecture {
+			get { return legacyArchitecture; }
+			set {
+				legacyArchitecture = value;
+
+				// The Architecture property is now serialized as "MonoArchitecture" to avoid conflicts with existing MSBuild properties.
+				// If the value being read from the "Architecture" property is a valid value for the Mono architecture, then let's assume
+				// that the property is actually the Mono architecture, and set it to the right property.
+				if (Enum.TryParse<RuntimeArchitecture>(value, out RuntimeArchitecture arch) && arch != RuntimeArchitecture.Default)
+					Architecture = arch;
+			}
+		}
 	}
 }
