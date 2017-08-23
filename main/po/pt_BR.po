@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-22 12:31:13+0100\n"
+"POT-Creation-Date: 2017-08-23 11:37:25+0100\n"
 "PO-Revision-Date: 2013-02-23 16:37-0300\n"
 "Last-Translator: Felipe Mendonça Marques Silva <fmmsilva@gmail.com>\n"
 "Language-Team: Português <>\n"
@@ -93,7 +93,7 @@ msgstr "Executar"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:126
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:219
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:101
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:99
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:97
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicyPanelWidget.cs:165
@@ -3283,7 +3283,7 @@ msgid "Welcome Page"
 msgstr "Página Inicial"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:694
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:109
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:108
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:48
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:49
 msgid "Tools"
@@ -4293,6 +4293,12 @@ msgstr "Projeto do Mono"
 msgid "Report Problem..."
 msgstr "Relatar Problema..."
 
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
+#: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:17
+#, fuzzy
+msgid "_Diagnostics"
+msgstr "Diagnóstico"
+
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:9
 msgid ".NET binary resource"
 msgstr "Recurso binário .NET"
@@ -4777,7 +4783,7 @@ msgid "Add Custom Tool..."
 msgstr "Adicionar Ferramenta Personalizada..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:72
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:485
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:483
 msgid "Show {0}"
 msgstr "Mostrar {0}"
 
@@ -4910,7 +4916,7 @@ msgid "No more errors or warnings"
 msgstr "Não há mais erros ou avisos"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalTool.cs:124
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:407
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:406
 msgid "New Tool"
 msgstr "Nova Ferramenta"
 
@@ -5561,15 +5567,15 @@ msgstr "Incluir na Solução"
 msgid "Explore the current solution's files and structure"
 msgstr "Explore a estrutura e os arquivos da solução atual"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:238
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:236
 msgid "ApplicationIconId"
 msgstr "ApplicationIconId"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:484
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:482
 msgid "View (Pads)"
 msgstr "Exibir (Painéis)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:950
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:948
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:625
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:691
 msgid "Documents"
@@ -6322,102 +6328,102 @@ msgstr "Não foi possível iniciar as seguintes extensões:"
 msgid "Tools (Custom)"
 msgstr "Ferramentas (Personalizadas)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:146
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:145
 #, fuzzy
 msgid "Click to add a new external tool"
 msgstr "Clique aqui para adicionar uma nova inspeção"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:148
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:147
 #, fuzzy
 msgid "Click to remove an external tool from the list"
 msgstr "Deseja remover a referência a ele na lista Recentes?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:150
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:149
 #, fuzzy
 msgid "Click to move the selected tool up the list"
 msgstr "Converter o texto selecionado em maiúsculas"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:152
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:151
 #, fuzzy
 msgid "Click to move the selected tool down the list"
 msgstr "Converter o texto selecionado em minúsculas"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:154
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:153
 #, fuzzy
 msgid "Enter the title for this command"
 msgstr "Insira o comando personalizado"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:156
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:155
 msgid "Enter or select the path for the external command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:159
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:158
 #, fuzzy
 msgid "Enter the arguments for the external command"
 msgstr "Insira as marcações para este pacote NuGet"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:161
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:160
 #, fuzzy
 msgid "Argument Tags"
 msgstr "Argumentos"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:162
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:161
 #, fuzzy
 msgid "Select tags to add to the arguments"
 msgstr ""
 "Selecionar pacotes a serem adicionados ao novo Projeto de Empacotamento"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:164
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:163
 #, fuzzy
 msgid "Enter the working directory for this command"
 msgstr "Selecione o diretório de trabalho para a execução"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:165
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:164
 #, fuzzy
 msgid "Working Directory Tags"
 msgstr "Diretório de Trabalho"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:166
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:165
 #, fuzzy
 msgid "Select tags to add to the working directory"
 msgstr ""
 "Selecionar pacotes a serem adicionados ao novo Projeto de Empacotamento"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:168
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:167
 #, fuzzy
 msgid "Enter the default key binding for this command"
 msgstr "Insira o namespace padrão para o projeto"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:170
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:169
 msgid "Check to prompt for arguments when running the command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:172
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:171
 msgid "Check to save the current file before running the command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:174
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:173
 #, fuzzy
 msgid "Check to display the commands output in the Output Pad"
 msgstr "Marque para pausar a saída do console"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:443
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:442
 msgid "Control not found!"
 msgstr "Controle não encontrado."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:466
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:465
 msgid "The command of tool \"{0}\" is not set."
 msgstr "O comando da ferramenta \"{0}\" não foi definido."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:472
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:471
 msgid "The command of tool \"{0}\" is invalid."
 msgstr "O comando da ferramenta \"{0}\" é inválido."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:477
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:476
 msgid "The working directory of tool \"{0}\" is invalid."
 msgstr "O diretório de trabalho da ferramenta \"{0}\" é inválido."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:243
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:242
 msgid "This shortcut is assigned to another command:"
 msgid_plural "This shortcut is assigned to other commands:"
 msgstr[0] "Este atalho é atribuído a outros comandos:"
@@ -10291,11 +10297,11 @@ msgstr "Pesquisar Tipos"
 msgid "Search Members"
 msgstr "Pesquisar Membros"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:621
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:623
 msgid "Press ‘{0}’ to search"
 msgstr "Pressione ‘{0}’ para pesquisar"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:622
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:624
 msgid "Search solution"
 msgstr "Pesquisar solução"
 
@@ -26734,14 +26740,6 @@ msgstr "Gerar getter"
 msgid "Use 'string.Format()'"
 msgstr "Usar 'string.Format()'"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AdditionalOfTypeAnalyzer.cs:26
-msgid "Replace with call to OfType<T> (extended cases)"
-msgstr "Substituir por uma chamada para OfType<T> (casos estendidos)"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AdditionalOfTypeAnalyzer.cs:27
-msgid "Replace with 'OfType<T>'"
-msgstr "Substituir por 'OfType<T>'"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AvoidAsyncVoidAnalyzer.cs:18
 msgid "Asynchronous methods should return a Task instead of void"
 msgstr "Métodos assíncronos devem retornar uma Tarefa em vez de nulo"
@@ -26766,10 +26764,6 @@ msgstr ""
 "Chamada para base.Equals é resolvida para Object.Equals, que é a igualdade "
 "da referência"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/CheckNamespaceAnalyzer.cs:13
-msgid "Check if a namespace corresponds to a file location"
-msgstr "Verificar se um namespace corresponde a um local de arquivo"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/ConstantConditionAnalyzer.cs:14
 msgid "Condition is always 'true' or always 'false'"
 msgstr "A condição é sempre 'true' ou sempre 'false'"
@@ -26790,10 +26784,6 @@ msgstr "Converter na expressão '&&'"
 msgid "Replace with '&='"
 msgstr "Substituir por '&='"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/LockThisAnalyzer.cs:13
-msgid "Warns about using lock (this) or MethodImplOptions.Synchronized"
-msgstr "Avisa sobre o uso de bloqueio (this) ou MethodImplOptions.Synchronized"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NameOfSuggestionAnalyzer.cs:15
 msgid "Suggest the usage of the nameof operator"
 msgstr "Sugerir o uso do operador nameof"
@@ -26805,11 +26795,6 @@ msgstr "Use a expressão 'nameof({0})'."
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NameOfSuggestionCodeFixProvider.cs:44
 msgid "To 'nameof({0})'"
 msgstr "Para 'nameof({0})'"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NegativeRelationalExpressionAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NegativeRelationalExpressionAnalyzer.cs:14
-msgid "Simplify negative relational expression"
-msgstr "Simplificar a expressão relacional negativa"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NotImplementedExceptionAnalyzer.cs:18
 msgid "Shows NotImplementedException throws in the quick task bar"
@@ -26824,17 +26809,6 @@ msgstr "Não implementado"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/ParameterOnlyAssignedAnalyzer.cs:16
 msgid "Parameter is assigned but its value is never used"
 msgstr "O parâmetro está atribuído, mas seu valor nunca foi usado"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantAssignmentAnalyzer.cs:13
-msgid ""
-"Value assigned to a variable or parameter is not used in all execution path"
-msgstr ""
-"O valor atribuído a uma variável ou parâmetro não é utilizado em todos os "
-"caminhos de execução"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantAssignmentAnalyzer.cs:14
-msgid "Assignment is redundant"
-msgstr "A atribuição é redundante"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantInternalAnalyzer.cs:18
 msgid "Removes 'internal' modifiers that are not required"
@@ -26862,17 +26836,6 @@ msgstr "Uso não permitido dos recursos de Roslyn neste contexto."
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertIfToOrExpressionAnalyzer.cs:16
 msgid "{0}"
 msgstr "{0}"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/StaticEventSubscriptionAnalyzer.cs:13
-msgid "Checks if static events are removed"
-msgstr "Verifica se eventos estáticos são removidos"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/StaticEventSubscriptionAnalyzer.cs:14
-msgid ""
-"Subscription to static events without unsubscription may cause memory leaks"
-msgstr ""
-"A assinatura para eventos estáticos sem cancelamento da assinatura pode "
-"causar perda de memória"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/XmlDocAnalyzer.cs:20
 msgid "Validate Xml docs"
@@ -27124,16 +27087,6 @@ msgstr ""
 msgid "Operator 'is' can be used"
 msgstr "O operador 'is' pode ser usado"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterHierarchyMismatchAnalyzer.cs:13
-msgid ""
-"The value of an optional parameter in a method does not match the base method"
-msgstr ""
-"O valor de um parâmetro opcional em um método não corresponde ao método base"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterHierarchyMismatchAnalyzer.cs:14
-msgid "Optional parameter value {0} differs from base {1} '{2}'"
-msgstr "O valor de parâmetro opcional {0} difere da base {1} '{2}'"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterRefOutAnalyzer.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterRefOutAnalyzer.cs:16
 msgid "C# doesn't support optional 'ref' or 'out' parameters"
@@ -27175,31 +27128,6 @@ msgstr ""
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PartialMethodParameterNameMismatchCodeFixProvider.cs:49
 msgid "Rename to '{0}'"
 msgstr "Renomear para '{0}'"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PolymorphicFieldLikeEventInvocationAnalyzer.cs:13
-msgid ""
-"Invocation of polymorphic field event leads to unpredictable result since "
-"invocation lists are not virtual"
-msgstr ""
-"Invocação de evento de campo polimórfico leva a resultados imprevisíveis, "
-"pois as listas de chamada não são virtuais"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PolymorphicFieldLikeEventInvocationAnalyzer.cs:14
-msgid ""
-"The event `{0}' can only appear on the left hand side of `+=' or `-=' "
-"operator"
-msgstr ""
-"O evento `{0}' somente pode aparecer do lado esquerdo do operador '+=' ou '-"
-"='"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PossibleAssignmentToReadonlyFieldAnalyzer.cs:13
-msgid "Check if a readonly field is used as assignment target"
-msgstr "Verificar se um campo readonly é usado como destino de atribuição"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PossibleMultipleEnumerationAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PossibleMultipleEnumerationAnalyzer.cs:14
-msgid "Possible multiple enumeration of IEnumerable"
-msgstr "Múltiplas enumerações possíveis de IEnumerable"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/StaticFieldOrAutoPropertyInGenericTypeAnalyzer.cs:17
 msgid "Warns about static fields in generic types"
@@ -27336,14 +27264,6 @@ msgstr "Substituir pelo grupo de métodos"
 msgid "'?:' expression can be converted to '??' expression"
 msgstr "A expressão '?:' pode ser convertida na expressão '??'"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionAnalyzer.cs:13
-msgid "Convert 'if' to '??'"
-msgstr "Converter 'if' em '??'"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionAnalyzer.cs:14
-msgid "Convert to '??' expresssion"
-msgstr "Converter na expressão '??'"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToSwitchStatementAnalyzer.cs:16
 msgid "'if' statement can be re-written as 'switch' statement"
 msgstr "A instrução 'if' pode ser reescrita como a instrução 'switch'"
@@ -27360,22 +27280,6 @@ msgstr "Converter 'Nullable<T>' para a forma abreviada 'T?'"
 msgid "Nullable type can be simplified"
 msgstr "O tipo que permite valor nulo pode ser simplificado"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToAutoPropertyAnalyzer.cs:13
-msgid "Convert property to auto property"
-msgstr "Converter a propriedade em propriedade automática"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToAutoPropertyAnalyzer.cs:14
-msgid "Convert to auto property"
-msgstr "Converter em propriedade automática"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToLambdaExpressionAnalyzer.cs:13
-msgid "Convert to lambda with expression"
-msgstr "Converter em lambda com expressão"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToLambdaExpressionAnalyzer.cs:14
-msgid "Can be converted to expression"
-msgstr "Pode ser convertido em expressão"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToStaticTypeAnalyzer.cs:16
 msgid ""
 "If all fields, properties and methods members are static, the class can be "
@@ -27387,14 +27291,6 @@ msgstr ""
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToStaticTypeAnalyzer.cs:17
 msgid "This class is recommended to be defined as static"
 msgstr "Essa classe é recomendada para ser definida como estática"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ForCanBeConvertedToForeachAnalyzer.cs:13
-msgid "Foreach loops are more efficient"
-msgstr "Loops foreach são mais eficientes"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ForCanBeConvertedToForeachAnalyzer.cs:14
-msgid "'for' loop can be converted to 'foreach'"
-msgstr "O loop 'for' pode ser convertido em 'foreach'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/InvokeAsExtensionMethodAnalyzer.cs:14
 msgid ""
@@ -27436,14 +27332,6 @@ msgstr "A instrução pode ser simplificada para a instrução 'while'"
 msgid "Convert 'if' to '||' expression"
 msgstr "Converter 'if' na expressão '||'"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertToConstantAnalyzer.cs:13
-msgid "Convert local variable or field to constant"
-msgstr "Converter variável ou campo local em constante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertToConstantAnalyzer.cs:14
-msgid "Convert to constant"
-msgstr "Converter em constante"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/EmptyEmbeddedStatementAnalyzer.cs:14
 msgid "Empty control statement body"
 msgstr "Esvaziar corpo de instrução de controle"
@@ -27461,14 +27349,6 @@ msgstr "Converter campo em readonly"
 msgid "To 'readonly'"
 msgstr "Para 'readonly'"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ParameterCanBeDeclaredWithBaseTypeAnalyzer.cs:24
-msgid "Finds parameters that can be demoted to a base class"
-msgstr "Encontra parâmetros que podem ser rebaixados para uma classe base"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ParameterCanBeDeclaredWithBaseTypeAnalyzer.cs:25
-msgid "Parameter can be declared with base type"
-msgstr "O parâmetro pode ser declarado com o tipo de base"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PossibleMistakenCallToGetTypeAnalyzer.cs:14
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PossibleMistakenCallToGetTypeAnalyzer.cs:15
 msgid "Possible mistaken call to 'object.GetType()'"
@@ -27478,16 +27358,6 @@ msgstr "Chamada possivelmente errada para 'object.GetType()'"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PublicConstructorInAbstractClass.cs:16
 msgid "Constructor in abstract class should not be public"
 msgstr "O construtor na classe abstrata não deve ser público"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReferenceEqualsWithValueTypeAnalyzer.cs:13
-msgid "Check for reference equality instead"
-msgstr "Em vez disso, verificar a igualdade da referência"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReferenceEqualsWithValueTypeAnalyzer.cs:14
-msgid ""
-"'Object.ReferenceEquals' is always false because it is called with value type"
-msgstr ""
-"'Object.ReferenceEquals' sempre é falso porque é chamado com tipo de valor"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithFirstOrDefaultAnalyzer.cs:14
 msgid "Replace with call to FirstOrDefault<T>()"
@@ -27688,21 +27558,6 @@ msgstr "A expressão condicional pode ser simplificada"
 msgid "Simplify conditional expression"
 msgstr "Simplificar a expressão condicional"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/SimplifyLinqExpressionAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/SimplifyLinqExpressionAnalyzer.cs:14
-msgid "Simplify LINQ expression"
-msgstr "Simplificar expressão LINQ"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificAnalyzer.cs:16
-msgid "Warns when a culture-aware 'Compare' call is used by default"
-msgstr ""
-"Avisa quando uma chamada 'Compare' com reconhecimento de cultura é usada por "
-"padrão"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificAnalyzer.cs:17
-msgid "'string.Compare' is culture-aware"
-msgstr "'string.Compare' reconhece culturas"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificCodeFixProvider.cs:44
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareToIsCultureSpecificCodeFixProvider.cs:40
 msgid "Use ordinal comparison"
@@ -27765,22 +27620,6 @@ msgid "'StartsWith' is culture-aware and missing a StringComparison argument"
 msgstr ""
 "'StartsWith' reconhece culturas e não tem um argumento StringComparison"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseArrayCreationExpressionAnalyzer.cs:13
-msgid "Use array creation expression"
-msgstr "Usar expressão de criação de matriz"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseArrayCreationExpressionAnalyzer.cs:14
-msgid "Use array create expression"
-msgstr "Usar expressão para criar matriz"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseIsOperatorAnalyzer.cs:13
-msgid "'is' operator can be used"
-msgstr "O operador 'is' pode ser usado"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseIsOperatorAnalyzer.cs:14
-msgid "Use 'is' operator"
-msgstr "Usar o operador 'is'"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodAnyAnalyzer.cs:15
 msgid "Replace usages of 'Count()' with call to 'Any()'"
 msgstr "Substitui os usos de 'Count()' por uma chamada para 'Any()'"
@@ -27788,14 +27627,6 @@ msgstr "Substitui os usos de 'Count()' por uma chamada para 'Any()'"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodAnyAnalyzer.cs:16
 msgid "Use '{0}' for increased performance"
 msgstr "Use '{0}' para melhorar o desempenho"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodIsInstanceOfTypeAnalyzer.cs:13
-msgid "Use method IsInstanceOfType"
-msgstr "Usar o método IsInstanceOfType"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodIsInstanceOfTypeAnalyzer.cs:14
-msgid "Use method IsInstanceOfType (...)"
-msgstr "Usar o método IsInstanceOfType (...)"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/ArrayCreationCanBeReplacedWithArrayInitializerAnalyzer.cs:15
 msgid ""
@@ -27851,14 +27682,6 @@ msgstr "Nome de propriedade explícita redundante"
 msgid "The name can be inferred from the initializer expression"
 msgstr "O nome pode ser deduzido com base na expressão do inicializador"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantArgumentDefaultValueAnalyzer.cs:13
-msgid "Default argument value is redundant"
-msgstr "O valor padrão do argumento é redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantArgumentDefaultValueAnalyzer.cs:14
-msgid "The parameter is optional with the same default value"
-msgstr "O parâmetro é opcional com o mesmo valor padrão"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantArgumentNameAnalyzer.cs:15
 msgid "Redundant explicit argument name specification"
 msgstr "Especificação de nome de argumento explícito redundante"
@@ -27877,14 +27700,6 @@ msgstr "Os parênteses serão redundantes se o atributo não tiver argumentos"
 msgid "'base.' is redundant and can safely be removed"
 msgstr "'base.' é redundante e pode ser removido com segurança"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantBoolCompareAnalyzer.cs:13
-msgid "Comparison of a boolean value with 'true' or 'false' constant"
-msgstr "Comparação de um valor booliano com constante 'true' ou 'false'"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantBoolCompareAnalyzer.cs:14
-msgid "Comparison with '{0}' is redundant"
-msgstr "A comparação com '{0}' é redundante"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCaseLabelAnalyzer.cs:15
 msgid "Redundant case label"
 msgstr "Rótulo de caso redundante"
@@ -27892,10 +27707,6 @@ msgstr "Rótulo de caso redundante"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCaseLabelAnalyzer.cs:16
 msgid "'case' label is redundant"
 msgstr "O rótulo 'case' é redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCatchClauseAnalyzer.cs:13
-msgid "Catch clause with a single 'throw' statement is redundant"
-msgstr "Cláusula catch com uma única instrução 'throw' é redundante"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCheckBeforeAssignmentAnalyzer.cs:27
 msgid ""
@@ -27913,14 +27724,6 @@ msgstr "Verificação de condição redundante antes da atribuição"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCommaInArrayInitializerAnalyzer.cs:16
 msgid "Redundant comma in array initializer"
 msgstr "Vírgula redundante no inicializador de matriz"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantComparisonWithNullAnalyzer.cs:13
-msgid "When 'is' keyword is used, which implicitly check null"
-msgstr "Quando a palavra-chave 'is' é usada, que verifica nulo implicitamente"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantComparisonWithNullAnalyzer.cs:14
-msgid "Redundant comparison with 'null'"
-msgstr "Comparação redundante com 'null'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantDelegateCreationAnalyzer.cs:14
 msgid "Explicit delegate creation expression is redundant"
@@ -27940,22 +27743,6 @@ msgstr "Ramificação de mudança 'default' vazia redundante"
 msgid "Redundant empty finally block"
 msgstr "Bloco finally vazio redundante"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantEnumerableCastCallAnalyzer.cs:14
-msgid "Redundant 'IEnumerable.Cast<T>' or 'IEnumerable.OfType<T>' call"
-msgstr "Chamada 'IEnumerable.Cast<T>' ou 'IEnumerable.OfType<T>' redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantEnumerableCastCallAnalyzer.cs:15
-msgid "Redundant '{0}' call"
-msgstr "Chamada '{0}' redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitArrayCreationAnalyzer.cs:13
-msgid "Redundant explicit type in array creation"
-msgstr "Tipo explícito redundante na criação de matriz"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitArrayCreationAnalyzer.cs:14
-msgid "Redundant explicit array type specification"
-msgstr "Especificação de tipo de matriz explícita redundante"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitArraySizeAnalyzer.cs:14
 msgid "Redundant explicit size in array creation"
 msgstr "Tamanho explícito redundante na criação de matriz"
@@ -27974,39 +27761,10 @@ msgstr ""
 msgid "Redundant explicit nullable type creation"
 msgstr "Criação de tipo que permite valor nulo explícito redundante"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExtendsListEntryAnalyzer.cs:16
-msgid ""
-"Type is either mentioned in the base type list of another part or in another "
-"base type"
-msgstr ""
-"O tipo é mencionado na lista de tipo de base de outra parte ou em outro tipo "
-"de base"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantIfElseBlockAnalyzer.cs:16
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantIfElseBlockAnalyzer.cs:17
 msgid "Redundant 'else' keyword"
 msgstr "Palavra-chave 'else' redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaParameterTypeAnalyzer.cs:13
-msgid ""
-"Explicit type specification can be removed as it can be implicitly inferred"
-msgstr ""
-"A especificação de tipo explícita pode ser removida, pois pode ser deduzida "
-"implicitamente"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaParameterTypeAnalyzer.cs:14
-msgid "Redundant lambda explicit type specification"
-msgstr "Especificação do tipo explícito de lambda redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaSignatureParenthesesAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaSignatureParenthesesAnalyzer.cs:14
-msgid "Redundant lambda signature parentheses"
-msgstr "Parênteses de assinatura lambda redundantes"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLogicalConditionalExpressionOperandAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLogicalConditionalExpressionOperandAnalyzer.cs:14
-msgid "Redundant operand in logical conditional expression"
-msgstr "Operando redundante na expressão condicional lógica"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectCreationArgumentListAnalyzer.cs:14
 msgid ""
@@ -28019,14 +27777,6 @@ msgstr ""
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectCreationArgumentListAnalyzer.cs:15
 msgid "Empty argument list is redundant"
 msgstr "A lista de argumentos vazia é redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectOrCollectionInitializerAnalyzer.cs:13
-msgid "Redundant empty object or collection initializer"
-msgstr "Objeto vazio ou inicializador de coleção redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectOrCollectionInitializerAnalyzer.cs:14
-msgid "Empty object or collection initializer is redundant"
-msgstr "O objeto vazio ou o inicializador de coleção é redundante"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantStringToCharArrayCallAnalyzer.cs:16
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantStringToCharArrayCallAnalyzer.cs:17
@@ -28069,16 +27819,6 @@ msgstr "Remover instrução redundante"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RemoveRedundantOrStatementAnalyzer.cs:15
 msgid "Statement is redundant"
 msgstr "A instrução é redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/UnusedAnonymousMethodSignatureAnalyzer.cs:13
-msgid "Detects when no delegate parameter is used in the anonymous method body"
-msgstr ""
-"Detecta quando nenhum parâmetro de delegado é usado no corpo de método "
-"anônimo"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/UnusedAnonymousMethodSignatureAnalyzer.cs:14
-msgid "Specifying signature is redundant because no parameter is used"
-msgstr "É redundante especificar a assinatura, pois nenhum parâmetro é usado"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/EmptyConstructorAnalyzer.cs:15
 msgid "An empty public constructor without parameters is redundant."
@@ -28133,18 +27873,6 @@ msgstr "Inicializar o campo com valor padrão é redundante"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantDefaultFieldInitializerAnalyzer.cs:17
 msgid "Initializing field by default value is redundant"
 msgstr "Inicializar o campo por valor padrão é redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantOverriddenMemberAnalyzer.cs:13
-msgid ""
-"The override of a virtual member is redundant because it consists of only a "
-"call to the base"
-msgstr ""
-"A substituição de um membro virtual é redundante, pois consiste apenas em "
-"uma chamada para a base"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantOverriddenMemberAnalyzer.cs:14
-msgid "Redundant method override"
-msgstr "Substituição de método redundante"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassAnalyzer.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassAnalyzer.cs:16
@@ -28258,6 +27986,229 @@ msgstr "Exibição do Tempo"
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationChartView.cs:70
 msgid "List View"
 msgstr "Exibição de Lista"
+
+#~ msgid "Replace with call to OfType<T> (extended cases)"
+#~ msgstr "Substituir por uma chamada para OfType<T> (casos estendidos)"
+
+#~ msgid "Replace with 'OfType<T>'"
+#~ msgstr "Substituir por 'OfType<T>'"
+
+#~ msgid "Check if a namespace corresponds to a file location"
+#~ msgstr "Verificar se um namespace corresponde a um local de arquivo"
+
+#~ msgid "Warns about using lock (this) or MethodImplOptions.Synchronized"
+#~ msgstr ""
+#~ "Avisa sobre o uso de bloqueio (this) ou MethodImplOptions.Synchronized"
+
+#~ msgid "Simplify negative relational expression"
+#~ msgstr "Simplificar a expressão relacional negativa"
+
+#~ msgid ""
+#~ "Value assigned to a variable or parameter is not used in all execution "
+#~ "path"
+#~ msgstr ""
+#~ "O valor atribuído a uma variável ou parâmetro não é utilizado em todos os "
+#~ "caminhos de execução"
+
+#~ msgid "Assignment is redundant"
+#~ msgstr "A atribuição é redundante"
+
+#~ msgid "Checks if static events are removed"
+#~ msgstr "Verifica se eventos estáticos são removidos"
+
+#~ msgid ""
+#~ "Subscription to static events without unsubscription may cause memory "
+#~ "leaks"
+#~ msgstr ""
+#~ "A assinatura para eventos estáticos sem cancelamento da assinatura pode "
+#~ "causar perda de memória"
+
+#~ msgid ""
+#~ "The value of an optional parameter in a method does not match the base "
+#~ "method"
+#~ msgstr ""
+#~ "O valor de um parâmetro opcional em um método não corresponde ao método "
+#~ "base"
+
+#~ msgid "Optional parameter value {0} differs from base {1} '{2}'"
+#~ msgstr "O valor de parâmetro opcional {0} difere da base {1} '{2}'"
+
+#~ msgid ""
+#~ "Invocation of polymorphic field event leads to unpredictable result since "
+#~ "invocation lists are not virtual"
+#~ msgstr ""
+#~ "Invocação de evento de campo polimórfico leva a resultados imprevisíveis, "
+#~ "pois as listas de chamada não são virtuais"
+
+#~ msgid ""
+#~ "The event `{0}' can only appear on the left hand side of `+=' or `-=' "
+#~ "operator"
+#~ msgstr ""
+#~ "O evento `{0}' somente pode aparecer do lado esquerdo do operador '+=' ou "
+#~ "'-='"
+
+#~ msgid "Check if a readonly field is used as assignment target"
+#~ msgstr "Verificar se um campo readonly é usado como destino de atribuição"
+
+#~ msgid "Possible multiple enumeration of IEnumerable"
+#~ msgstr "Múltiplas enumerações possíveis de IEnumerable"
+
+#~ msgid "Convert 'if' to '??'"
+#~ msgstr "Converter 'if' em '??'"
+
+#~ msgid "Convert to '??' expresssion"
+#~ msgstr "Converter na expressão '??'"
+
+#~ msgid "Convert property to auto property"
+#~ msgstr "Converter a propriedade em propriedade automática"
+
+#~ msgid "Convert to auto property"
+#~ msgstr "Converter em propriedade automática"
+
+#~ msgid "Convert to lambda with expression"
+#~ msgstr "Converter em lambda com expressão"
+
+#~ msgid "Can be converted to expression"
+#~ msgstr "Pode ser convertido em expressão"
+
+#~ msgid "Foreach loops are more efficient"
+#~ msgstr "Loops foreach são mais eficientes"
+
+#~ msgid "'for' loop can be converted to 'foreach'"
+#~ msgstr "O loop 'for' pode ser convertido em 'foreach'"
+
+#~ msgid "Convert local variable or field to constant"
+#~ msgstr "Converter variável ou campo local em constante"
+
+#~ msgid "Convert to constant"
+#~ msgstr "Converter em constante"
+
+#~ msgid "Finds parameters that can be demoted to a base class"
+#~ msgstr "Encontra parâmetros que podem ser rebaixados para uma classe base"
+
+#~ msgid "Parameter can be declared with base type"
+#~ msgstr "O parâmetro pode ser declarado com o tipo de base"
+
+#~ msgid "Check for reference equality instead"
+#~ msgstr "Em vez disso, verificar a igualdade da referência"
+
+#~ msgid ""
+#~ "'Object.ReferenceEquals' is always false because it is called with value "
+#~ "type"
+#~ msgstr ""
+#~ "'Object.ReferenceEquals' sempre é falso porque é chamado com tipo de valor"
+
+#~ msgid "Simplify LINQ expression"
+#~ msgstr "Simplificar expressão LINQ"
+
+#~ msgid "Warns when a culture-aware 'Compare' call is used by default"
+#~ msgstr ""
+#~ "Avisa quando uma chamada 'Compare' com reconhecimento de cultura é usada "
+#~ "por padrão"
+
+#~ msgid "'string.Compare' is culture-aware"
+#~ msgstr "'string.Compare' reconhece culturas"
+
+#~ msgid "Use array creation expression"
+#~ msgstr "Usar expressão de criação de matriz"
+
+#~ msgid "Use array create expression"
+#~ msgstr "Usar expressão para criar matriz"
+
+#~ msgid "'is' operator can be used"
+#~ msgstr "O operador 'is' pode ser usado"
+
+#~ msgid "Use 'is' operator"
+#~ msgstr "Usar o operador 'is'"
+
+#~ msgid "Use method IsInstanceOfType"
+#~ msgstr "Usar o método IsInstanceOfType"
+
+#~ msgid "Use method IsInstanceOfType (...)"
+#~ msgstr "Usar o método IsInstanceOfType (...)"
+
+#~ msgid "Default argument value is redundant"
+#~ msgstr "O valor padrão do argumento é redundante"
+
+#~ msgid "The parameter is optional with the same default value"
+#~ msgstr "O parâmetro é opcional com o mesmo valor padrão"
+
+#~ msgid "Comparison of a boolean value with 'true' or 'false' constant"
+#~ msgstr "Comparação de um valor booliano com constante 'true' ou 'false'"
+
+#~ msgid "Comparison with '{0}' is redundant"
+#~ msgstr "A comparação com '{0}' é redundante"
+
+#~ msgid "Catch clause with a single 'throw' statement is redundant"
+#~ msgstr "Cláusula catch com uma única instrução 'throw' é redundante"
+
+#~ msgid "When 'is' keyword is used, which implicitly check null"
+#~ msgstr ""
+#~ "Quando a palavra-chave 'is' é usada, que verifica nulo implicitamente"
+
+#~ msgid "Redundant comparison with 'null'"
+#~ msgstr "Comparação redundante com 'null'"
+
+#~ msgid "Redundant 'IEnumerable.Cast<T>' or 'IEnumerable.OfType<T>' call"
+#~ msgstr "Chamada 'IEnumerable.Cast<T>' ou 'IEnumerable.OfType<T>' redundante"
+
+#~ msgid "Redundant '{0}' call"
+#~ msgstr "Chamada '{0}' redundante"
+
+#~ msgid "Redundant explicit type in array creation"
+#~ msgstr "Tipo explícito redundante na criação de matriz"
+
+#~ msgid "Redundant explicit array type specification"
+#~ msgstr "Especificação de tipo de matriz explícita redundante"
+
+#~ msgid ""
+#~ "Type is either mentioned in the base type list of another part or in "
+#~ "another base type"
+#~ msgstr ""
+#~ "O tipo é mencionado na lista de tipo de base de outra parte ou em outro "
+#~ "tipo de base"
+
+#~ msgid ""
+#~ "Explicit type specification can be removed as it can be implicitly "
+#~ "inferred"
+#~ msgstr ""
+#~ "A especificação de tipo explícita pode ser removida, pois pode ser "
+#~ "deduzida implicitamente"
+
+#~ msgid "Redundant lambda explicit type specification"
+#~ msgstr "Especificação do tipo explícito de lambda redundante"
+
+#~ msgid "Redundant lambda signature parentheses"
+#~ msgstr "Parênteses de assinatura lambda redundantes"
+
+#~ msgid "Redundant operand in logical conditional expression"
+#~ msgstr "Operando redundante na expressão condicional lógica"
+
+#~ msgid "Redundant empty object or collection initializer"
+#~ msgstr "Objeto vazio ou inicializador de coleção redundante"
+
+#~ msgid "Empty object or collection initializer is redundant"
+#~ msgstr "O objeto vazio ou o inicializador de coleção é redundante"
+
+#~ msgid ""
+#~ "Detects when no delegate parameter is used in the anonymous method body"
+#~ msgstr ""
+#~ "Detecta quando nenhum parâmetro de delegado é usado no corpo de método "
+#~ "anônimo"
+
+#~ msgid "Specifying signature is redundant because no parameter is used"
+#~ msgstr ""
+#~ "É redundante especificar a assinatura, pois nenhum parâmetro é usado"
+
+#~ msgid ""
+#~ "The override of a virtual member is redundant because it consists of only "
+#~ "a call to the base"
+#~ msgstr ""
+#~ "A substituição de um membro virtual é redundante, pois consiste apenas em "
+#~ "uma chamada para a base"
+
+#~ msgid "Redundant method override"
+#~ msgstr "Substituição de método redundante"
 
 #~ msgid "Platform"
 #~ msgstr "Plataforma"

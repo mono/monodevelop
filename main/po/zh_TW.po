@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-22 12:31:13+0100\n"
+"POT-Creation-Date: 2017-08-23 11:37:25+0100\n"
 "PO-Revision-Date: 2011-02-19 19:10+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese/Traditional <zh-l10n@linux.org.tw>\n"
@@ -84,7 +84,7 @@ msgstr "執行"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:126
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:219
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:101
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:99
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:97
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicyPanelWidget.cs:165
@@ -3193,7 +3193,7 @@ msgid "Welcome Page"
 msgstr "歡迎頁面"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:694
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:109
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:108
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:48
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:49
 msgid "Tools"
@@ -4196,6 +4196,12 @@ msgstr "Mono 專案"
 msgid "Report Problem..."
 msgstr "報告問題..."
 
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
+#: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:17
+#, fuzzy
+msgid "_Diagnostics"
+msgstr "診斷"
+
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:9
 msgid ".NET binary resource"
 msgstr ".NET 二進位資源"
@@ -4679,7 +4685,7 @@ msgid "Add Custom Tool..."
 msgstr "新增自訂工具..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:72
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:485
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:483
 msgid "Show {0}"
 msgstr "顯示 {0}"
 
@@ -4810,7 +4816,7 @@ msgid "No more errors or warnings"
 msgstr "沒有其他錯誤或警告"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalTool.cs:124
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:407
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:406
 msgid "New Tool"
 msgstr "新增工具"
 
@@ -5437,15 +5443,15 @@ msgstr "包含到解決方案"
 msgid "Explore the current solution's files and structure"
 msgstr "探索目前的解決方案檔案及結構"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:238
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:236
 msgid "ApplicationIconId"
 msgstr "ApplicationIconId"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:484
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:482
 msgid "View (Pads)"
 msgstr "檢視 (面板)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:950
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:948
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:625
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:691
 msgid "Documents"
@@ -6184,100 +6190,100 @@ msgstr "下列延伸模組無法啟動:"
 msgid "Tools (Custom)"
 msgstr "工具 (自訂)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:146
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:145
 #, fuzzy
 msgid "Click to add a new external tool"
 msgstr "按一下這裡可新增監看"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:148
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:147
 #, fuzzy
 msgid "Click to remove an external tool from the list"
 msgstr "要從最近使用的清單移除其參考嗎?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:150
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:149
 #, fuzzy
 msgid "Click to move the selected tool up the list"
 msgstr "將所選文字轉換為大寫"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:152
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:151
 #, fuzzy
 msgid "Click to move the selected tool down the list"
 msgstr "將所選文字轉換為小寫"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:154
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:153
 #, fuzzy
 msgid "Enter the title for this command"
 msgstr "輸入自訂命令"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:156
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:155
 msgid "Enter or select the path for the external command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:159
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:158
 #, fuzzy
 msgid "Enter the arguments for the external command"
 msgstr "輸入此 NuGet 套件的標記"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:161
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:160
 #, fuzzy
 msgid "Argument Tags"
 msgstr "引數"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:162
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:161
 #, fuzzy
 msgid "Select tags to add to the arguments"
 msgstr "選取要新增至新封裝專案的封裝"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:164
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:163
 #, fuzzy
 msgid "Enter the working directory for this command"
 msgstr "選取用於執行的工作目錄"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:165
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:164
 #, fuzzy
 msgid "Working Directory Tags"
 msgstr "工作目錄"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:166
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:165
 #, fuzzy
 msgid "Select tags to add to the working directory"
 msgstr "選取要新增至新封裝專案的封裝"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:168
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:167
 #, fuzzy
 msgid "Enter the default key binding for this command"
 msgstr "輸入專案的預設命名空間"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:170
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:169
 msgid "Check to prompt for arguments when running the command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:172
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:171
 msgid "Check to save the current file before running the command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:174
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:173
 #, fuzzy
 msgid "Check to display the commands output in the Output Pad"
 msgstr "核取此選項可暫停主控台輸出"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:443
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:442
 msgid "Control not found!"
 msgstr "找不到控制項!"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:466
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:465
 msgid "The command of tool \"{0}\" is not set."
 msgstr "工具 \"{0}\" 的此命令未設定。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:472
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:471
 msgid "The command of tool \"{0}\" is invalid."
 msgstr "工具 \"{0}\" 的此命令無效。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:477
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:476
 msgid "The working directory of tool \"{0}\" is invalid."
 msgstr "工具 \"{0}\" 的工作目錄無效。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:243
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:242
 msgid "This shortcut is assigned to another command:"
 msgid_plural "This shortcut is assigned to other commands:"
 msgstr[0] "此捷徑已指派至其他命令:"
@@ -10048,11 +10054,11 @@ msgstr "搜尋類型"
 msgid "Search Members"
 msgstr "搜尋成員"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:621
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:623
 msgid "Press ‘{0}’ to search"
 msgstr "按 '{0}' 進行搜尋"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:622
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:624
 msgid "Search solution"
 msgstr "搜尋解決方案"
 
@@ -26048,14 +26054,6 @@ msgstr "產生 getter"
 msgid "Use 'string.Format()'"
 msgstr "使用 'string.Format()'"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AdditionalOfTypeAnalyzer.cs:26
-msgid "Replace with call to OfType<T> (extended cases)"
-msgstr "以對 OfType<T> 的呼叫取代 (延伸案例)"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AdditionalOfTypeAnalyzer.cs:27
-msgid "Replace with 'OfType<T>'"
-msgstr "以 'OfType<T>' 取代"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AvoidAsyncVoidAnalyzer.cs:18
 msgid "Asynchronous methods should return a Task instead of void"
 msgstr "匿名方法應該傳回 Task，而不是 void"
@@ -26078,10 +26076,6 @@ msgid ""
 "Call to base.Equals resolves to Object.Equals, which is reference equality"
 msgstr "呼叫 base.Equals 會解析至參考相等的 Object.Equals"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/CheckNamespaceAnalyzer.cs:13
-msgid "Check if a namespace corresponds to a file location"
-msgstr "檢查命名空間是否對應至檔案位置"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/ConstantConditionAnalyzer.cs:14
 msgid "Condition is always 'true' or always 'false'"
 msgstr "條件一律為 'true' 或一律為 'false'"
@@ -26102,10 +26096,6 @@ msgstr "轉換為 '&&' 運算式"
 msgid "Replace with '&='"
 msgstr "以 '&=' 取代"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/LockThisAnalyzer.cs:13
-msgid "Warns about using lock (this) or MethodImplOptions.Synchronized"
-msgstr "警告使用鎖定 (這個) 或 MethodImplOptions.Synchronized"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NameOfSuggestionAnalyzer.cs:15
 msgid "Suggest the usage of the nameof operator"
 msgstr "建議使用 nameof 運算子"
@@ -26117,11 +26107,6 @@ msgstr "請改用 'nameof({0})' 運算式。"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NameOfSuggestionCodeFixProvider.cs:44
 msgid "To 'nameof({0})'"
 msgstr "至 'nameof({0})'"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NegativeRelationalExpressionAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NegativeRelationalExpressionAnalyzer.cs:14
-msgid "Simplify negative relational expression"
-msgstr "簡化負的關聯運算式"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NotImplementedExceptionAnalyzer.cs:18
 msgid "Shows NotImplementedException throws in the quick task bar"
@@ -26135,15 +26120,6 @@ msgstr "未實作"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/ParameterOnlyAssignedAnalyzer.cs:16
 msgid "Parameter is assigned but its value is never used"
 msgstr "已指派參數，但未曾使用過其值"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantAssignmentAnalyzer.cs:13
-msgid ""
-"Value assigned to a variable or parameter is not used in all execution path"
-msgstr "指派給變數或參數的值未用於所有執行路徑中"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantAssignmentAnalyzer.cs:14
-msgid "Assignment is redundant"
-msgstr "指派是冗餘的"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantInternalAnalyzer.cs:18
 msgid "Removes 'internal' modifiers that are not required"
@@ -26171,15 +26147,6 @@ msgstr "不允許在此內容中使用 Roslyn 功能。"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertIfToOrExpressionAnalyzer.cs:16
 msgid "{0}"
 msgstr "{0}"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/StaticEventSubscriptionAnalyzer.cs:13
-msgid "Checks if static events are removed"
-msgstr "檢查是否移除靜態事件"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/StaticEventSubscriptionAnalyzer.cs:14
-msgid ""
-"Subscription to static events without unsubscription may cause memory leaks"
-msgstr "訂閱沒有取消訂閱的靜態事件可能會導致記憶體流失"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/XmlDocAnalyzer.cs:20
 msgid "Validate Xml docs"
@@ -26425,15 +26392,6 @@ msgstr "可以使用運算子 Is，而非比較物件 GetType() 和 System.Type 
 msgid "Operator 'is' can be used"
 msgstr "運算子 'is' 可供使用"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterHierarchyMismatchAnalyzer.cs:13
-msgid ""
-"The value of an optional parameter in a method does not match the base method"
-msgstr "方法中選用參數的值不符合基底方法"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterHierarchyMismatchAnalyzer.cs:14
-msgid "Optional parameter value {0} differs from base {1} '{2}'"
-msgstr "選用參數值 {0} 與基底 {1} '{2}' 不同"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterRefOutAnalyzer.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterRefOutAnalyzer.cs:16
 msgid "C# doesn't support optional 'ref' or 'out' parameters"
@@ -26474,28 +26432,6 @@ msgstr "部分方法定義中的參數名稱不同，應該為 '{0}'"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PartialMethodParameterNameMismatchCodeFixProvider.cs:49
 msgid "Rename to '{0}'"
 msgstr "重新命名為 '{0}'"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PolymorphicFieldLikeEventInvocationAnalyzer.cs:13
-msgid ""
-"Invocation of polymorphic field event leads to unpredictable result since "
-"invocation lists are not virtual"
-msgstr ""
-"因為引動過程清單不是虛擬的，所以多型欄位事件的引動過程會導致無法預期的結果"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PolymorphicFieldLikeEventInvocationAnalyzer.cs:14
-msgid ""
-"The event `{0}' can only appear on the left hand side of `+=' or `-=' "
-"operator"
-msgstr "事件 '{0}' 只能出現在 '+=' 或 '-=' 運算子的左側"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PossibleAssignmentToReadonlyFieldAnalyzer.cs:13
-msgid "Check if a readonly field is used as assignment target"
-msgstr "檢查是否使用唯讀欄位作為引數目標"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PossibleMultipleEnumerationAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PossibleMultipleEnumerationAnalyzer.cs:14
-msgid "Possible multiple enumeration of IEnumerable"
-msgstr "IEnumerable 可能有多個列舉"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/StaticFieldOrAutoPropertyInGenericTypeAnalyzer.cs:17
 msgid "Warns about static fields in generic types"
@@ -26630,14 +26566,6 @@ msgstr "以方法群組取代"
 msgid "'?:' expression can be converted to '??' expression"
 msgstr "'?:' 運算式可以轉換成 '??' 運算式"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionAnalyzer.cs:13
-msgid "Convert 'if' to '??'"
-msgstr "將 'if' 轉換為 '??'"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionAnalyzer.cs:14
-msgid "Convert to '??' expresssion"
-msgstr "轉換為 '??' 運算式"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToSwitchStatementAnalyzer.cs:16
 msgid "'if' statement can be re-written as 'switch' statement"
 msgstr "'if' 陳述式可以重寫為 'switch' 陳述式"
@@ -26654,22 +26582,6 @@ msgstr "將 'Nullable<T>' 轉換為簡短形式的 'T?'"
 msgid "Nullable type can be simplified"
 msgstr "可為 Null 的型別可簡化"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToAutoPropertyAnalyzer.cs:13
-msgid "Convert property to auto property"
-msgstr "將 property 轉換為 auto property"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToAutoPropertyAnalyzer.cs:14
-msgid "Convert to auto property"
-msgstr "轉換為 auto property"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToLambdaExpressionAnalyzer.cs:13
-msgid "Convert to lambda with expression"
-msgstr "轉換為具有運算式的 lambda"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToLambdaExpressionAnalyzer.cs:14
-msgid "Can be converted to expression"
-msgstr "可轉換為運算式"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToStaticTypeAnalyzer.cs:16
 msgid ""
 "If all fields, properties and methods members are static, the class can be "
@@ -26679,14 +26591,6 @@ msgstr "若所有欄位、屬性和方法成員都是靜態的，則可以將類
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToStaticTypeAnalyzer.cs:17
 msgid "This class is recommended to be defined as static"
 msgstr "建議將此類別定義為靜態"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ForCanBeConvertedToForeachAnalyzer.cs:13
-msgid "Foreach loops are more efficient"
-msgstr "Foreach 迴圈會更有效率"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ForCanBeConvertedToForeachAnalyzer.cs:14
-msgid "'for' loop can be converted to 'foreach'"
-msgstr "'for' 迴圈可以轉換成 'foreach'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/InvokeAsExtensionMethodAnalyzer.cs:14
 msgid ""
@@ -26725,14 +26629,6 @@ msgstr "陳述式可以簡化成 'while' 陳述式"
 msgid "Convert 'if' to '||' expression"
 msgstr "將 'if' 轉換為 '||' 運算式"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertToConstantAnalyzer.cs:13
-msgid "Convert local variable or field to constant"
-msgstr "將區域變數或欄位轉換為常數"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertToConstantAnalyzer.cs:14
-msgid "Convert to constant"
-msgstr "轉換為常數"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/EmptyEmbeddedStatementAnalyzer.cs:14
 msgid "Empty control statement body"
 msgstr "空白控制項陳述式主體"
@@ -26750,14 +26646,6 @@ msgstr "將欄位轉換為唯讀"
 msgid "To 'readonly'"
 msgstr "至 'readonly'"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ParameterCanBeDeclaredWithBaseTypeAnalyzer.cs:24
-msgid "Finds parameters that can be demoted to a base class"
-msgstr "尋找可降階為基底類別的參數"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ParameterCanBeDeclaredWithBaseTypeAnalyzer.cs:25
-msgid "Parameter can be declared with base type"
-msgstr "參數可以使用基底類型進行宣告"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PossibleMistakenCallToGetTypeAnalyzer.cs:14
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PossibleMistakenCallToGetTypeAnalyzer.cs:15
 msgid "Possible mistaken call to 'object.GetType()'"
@@ -26767,15 +26655,6 @@ msgstr "可能不正確地呼叫 'object.GetType()'"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PublicConstructorInAbstractClass.cs:16
 msgid "Constructor in abstract class should not be public"
 msgstr "抽象類別中的建構函式不應該為公用"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReferenceEqualsWithValueTypeAnalyzer.cs:13
-msgid "Check for reference equality instead"
-msgstr "改為檢查參考是否相等"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReferenceEqualsWithValueTypeAnalyzer.cs:14
-msgid ""
-"'Object.ReferenceEquals' is always false because it is called with value type"
-msgstr "'Object.ReferenceEquals' 是使用實值型別所呼叫，因此一律為 false"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithFirstOrDefaultAnalyzer.cs:14
 msgid "Replace with call to FirstOrDefault<T>()"
@@ -26974,19 +26853,6 @@ msgstr "條件運算式可加以簡化"
 msgid "Simplify conditional expression"
 msgstr "簡化條件運算式"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/SimplifyLinqExpressionAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/SimplifyLinqExpressionAnalyzer.cs:14
-msgid "Simplify LINQ expression"
-msgstr "簡化 LINQ 運算式"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificAnalyzer.cs:16
-msgid "Warns when a culture-aware 'Compare' call is used by default"
-msgstr "預設使用文化特性感知的 'Compare' 呼叫時發出警告"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificAnalyzer.cs:17
-msgid "'string.Compare' is culture-aware"
-msgstr "'string.Compare' 為文化特性感知"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificCodeFixProvider.cs:44
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareToIsCultureSpecificCodeFixProvider.cs:40
 msgid "Use ordinal comparison"
@@ -27037,22 +26903,6 @@ msgstr "預設使用文化特性感知的 'StartsWith' 呼叫時發出警告。"
 msgid "'StartsWith' is culture-aware and missing a StringComparison argument"
 msgstr "'StartsWith' 為文化特性感知，並且遺漏 StringComparison 引數"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseArrayCreationExpressionAnalyzer.cs:13
-msgid "Use array creation expression"
-msgstr "使用陣列建立運算式"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseArrayCreationExpressionAnalyzer.cs:14
-msgid "Use array create expression"
-msgstr "使用陣列建立運算式"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseIsOperatorAnalyzer.cs:13
-msgid "'is' operator can be used"
-msgstr "'is' 運算子可供使用"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseIsOperatorAnalyzer.cs:14
-msgid "Use 'is' operator"
-msgstr "使用 'is' 運算子"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodAnyAnalyzer.cs:15
 msgid "Replace usages of 'Count()' with call to 'Any()'"
 msgstr "以呼叫 'Any()' 取代使用 'Count()'"
@@ -27060,14 +26910,6 @@ msgstr "以呼叫 'Any()' 取代使用 'Count()'"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodAnyAnalyzer.cs:16
 msgid "Use '{0}' for increased performance"
 msgstr "使用 '{0}' 以增加效能"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodIsInstanceOfTypeAnalyzer.cs:13
-msgid "Use method IsInstanceOfType"
-msgstr "使用方法 IsInstanceOfType"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodIsInstanceOfTypeAnalyzer.cs:14
-msgid "Use method IsInstanceOfType (...)"
-msgstr "使用方法 IsInstanceOfType (...)"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/ArrayCreationCanBeReplacedWithArrayInitializerAnalyzer.cs:15
 msgid ""
@@ -27120,14 +26962,6 @@ msgstr "冗餘的明確屬性名稱"
 msgid "The name can be inferred from the initializer expression"
 msgstr "可以透過初始設定式運算式推斷名稱"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantArgumentDefaultValueAnalyzer.cs:13
-msgid "Default argument value is redundant"
-msgstr "預設引數值重複"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantArgumentDefaultValueAnalyzer.cs:14
-msgid "The parameter is optional with the same default value"
-msgstr "當預設值相同時，此參數可省略。"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantArgumentNameAnalyzer.cs:15
 msgid "Redundant explicit argument name specification"
 msgstr "冗餘的明確引數名稱規格"
@@ -27146,14 +26980,6 @@ msgstr "如果屬性沒有引數，則括弧為冗餘"
 msgid "'base.' is redundant and can safely be removed"
 msgstr "'base.' 是冗餘的，可以放心將其移除"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantBoolCompareAnalyzer.cs:13
-msgid "Comparison of a boolean value with 'true' or 'false' constant"
-msgstr "與 'true' 或 'false' 常數的布林值比較"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantBoolCompareAnalyzer.cs:14
-msgid "Comparison with '{0}' is redundant"
-msgstr "與 '{0}' 比較是冗餘的"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCaseLabelAnalyzer.cs:15
 msgid "Redundant case label"
 msgstr "冗餘的 case 標籤"
@@ -27161,10 +26987,6 @@ msgstr "冗餘的 case 標籤"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCaseLabelAnalyzer.cs:16
 msgid "'case' label is redundant"
 msgstr "'case' 標籤重複"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCatchClauseAnalyzer.cs:13
-msgid "Catch clause with a single 'throw' statement is redundant"
-msgstr "具有單一 'throw' 陳述式的 catch 子句是冗餘的"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCheckBeforeAssignmentAnalyzer.cs:27
 msgid ""
@@ -27180,14 +27002,6 @@ msgstr "指派前的冗餘條件檢查"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCommaInArrayInitializerAnalyzer.cs:16
 msgid "Redundant comma in array initializer"
 msgstr "陣列初始設定式中的冗餘逗號"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantComparisonWithNullAnalyzer.cs:13
-msgid "When 'is' keyword is used, which implicitly check null"
-msgstr "使用 'is' 關鍵字 (這會隱含地檢查 Null) 時"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantComparisonWithNullAnalyzer.cs:14
-msgid "Redundant comparison with 'null'"
-msgstr "具有 'null' 的冗餘比較"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantDelegateCreationAnalyzer.cs:14
 msgid "Explicit delegate creation expression is redundant"
@@ -27207,22 +27021,6 @@ msgstr "冗餘的空白 'default' 參數分支"
 msgid "Redundant empty finally block"
 msgstr "冗餘的空白 finally 區塊"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantEnumerableCastCallAnalyzer.cs:14
-msgid "Redundant 'IEnumerable.Cast<T>' or 'IEnumerable.OfType<T>' call"
-msgstr "冗餘的 'IEnumerable.Cast<T>' 或 'IEnumerable.OfType<T>' 呼叫"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantEnumerableCastCallAnalyzer.cs:15
-msgid "Redundant '{0}' call"
-msgstr "冗餘的 '{0}' 呼叫"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitArrayCreationAnalyzer.cs:13
-msgid "Redundant explicit type in array creation"
-msgstr "陣列建立中冗餘的明確類型"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitArrayCreationAnalyzer.cs:14
-msgid "Redundant explicit array type specification"
-msgstr "冗餘的明確陣列類型規格"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitArraySizeAnalyzer.cs:14
 msgid "Redundant explicit size in array creation"
 msgstr "建立陣列時有冗餘的明確大小"
@@ -27239,35 +27037,10 @@ msgstr "實值型別可隱含地轉換成可為 Null"
 msgid "Redundant explicit nullable type creation"
 msgstr "冗餘的明確可為 Null 的型別建立"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExtendsListEntryAnalyzer.cs:16
-msgid ""
-"Type is either mentioned in the base type list of another part or in another "
-"base type"
-msgstr "在另一個部分的基底類型清單中或另一個基底類型中提及類型"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantIfElseBlockAnalyzer.cs:16
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantIfElseBlockAnalyzer.cs:17
 msgid "Redundant 'else' keyword"
 msgstr "冗餘的 'else' 關鍵字"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaParameterTypeAnalyzer.cs:13
-msgid ""
-"Explicit type specification can be removed as it can be implicitly inferred"
-msgstr "因為可隱含推斷明確類型規格，所以可將其移除"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaParameterTypeAnalyzer.cs:14
-msgid "Redundant lambda explicit type specification"
-msgstr "冗餘的 Lambda 明確類型規格"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaSignatureParenthesesAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaSignatureParenthesesAnalyzer.cs:14
-msgid "Redundant lambda signature parentheses"
-msgstr "冗餘的 lambda 特徵標記括弧"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLogicalConditionalExpressionOperandAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLogicalConditionalExpressionOperandAnalyzer.cs:14
-msgid "Redundant operand in logical conditional expression"
-msgstr "邏輯條件運算式中冗餘的運算元"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectCreationArgumentListAnalyzer.cs:14
 msgid ""
@@ -27278,14 +27051,6 @@ msgstr "物件建立使用物件或集合初始設定式時，空引數清單為
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectCreationArgumentListAnalyzer.cs:15
 msgid "Empty argument list is redundant"
 msgstr "空白引數清單是冗餘的"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectOrCollectionInitializerAnalyzer.cs:13
-msgid "Redundant empty object or collection initializer"
-msgstr "冗餘的空物件或集合初始設定式"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectOrCollectionInitializerAnalyzer.cs:14
-msgid "Empty object or collection initializer is redundant"
-msgstr "空白物件或集合初始設定式是冗餘的"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantStringToCharArrayCallAnalyzer.cs:16
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantStringToCharArrayCallAnalyzer.cs:17
@@ -27324,14 +27089,6 @@ msgstr "移除冗餘的陳述式"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RemoveRedundantOrStatementAnalyzer.cs:15
 msgid "Statement is redundant"
 msgstr "冗餘的陳述式"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/UnusedAnonymousMethodSignatureAnalyzer.cs:13
-msgid "Detects when no delegate parameter is used in the anonymous method body"
-msgstr "當匿名方法主體中未使用委派參數時偵測"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/UnusedAnonymousMethodSignatureAnalyzer.cs:14
-msgid "Specifying signature is redundant because no parameter is used"
-msgstr "未使用任何參數，因此簽章為冗餘"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/EmptyConstructorAnalyzer.cs:15
 msgid "An empty public constructor without parameters is redundant."
@@ -27384,16 +27141,6 @@ msgstr "以預設值初始化欄位是冗餘的"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantDefaultFieldInitializerAnalyzer.cs:17
 msgid "Initializing field by default value is redundant"
 msgstr "依預設值初始化欄位是冗餘的"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantOverriddenMemberAnalyzer.cs:13
-msgid ""
-"The override of a virtual member is redundant because it consists of only a "
-"call to the base"
-msgstr "虛擬成員的覆寫為冗餘，原因是其只包含基底的呼叫"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantOverriddenMemberAnalyzer.cs:14
-msgid "Redundant method override"
-msgstr "冗餘的方法覆寫"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassAnalyzer.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassAnalyzer.cs:16
@@ -27507,6 +27254,206 @@ msgstr "時間檢視"
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationChartView.cs:70
 msgid "List View"
 msgstr "清單檢視"
+
+#~ msgid "Replace with call to OfType<T> (extended cases)"
+#~ msgstr "以對 OfType<T> 的呼叫取代 (延伸案例)"
+
+#~ msgid "Replace with 'OfType<T>'"
+#~ msgstr "以 'OfType<T>' 取代"
+
+#~ msgid "Check if a namespace corresponds to a file location"
+#~ msgstr "檢查命名空間是否對應至檔案位置"
+
+#~ msgid "Warns about using lock (this) or MethodImplOptions.Synchronized"
+#~ msgstr "警告使用鎖定 (這個) 或 MethodImplOptions.Synchronized"
+
+#~ msgid "Simplify negative relational expression"
+#~ msgstr "簡化負的關聯運算式"
+
+#~ msgid ""
+#~ "Value assigned to a variable or parameter is not used in all execution "
+#~ "path"
+#~ msgstr "指派給變數或參數的值未用於所有執行路徑中"
+
+#~ msgid "Assignment is redundant"
+#~ msgstr "指派是冗餘的"
+
+#~ msgid "Checks if static events are removed"
+#~ msgstr "檢查是否移除靜態事件"
+
+#~ msgid ""
+#~ "Subscription to static events without unsubscription may cause memory "
+#~ "leaks"
+#~ msgstr "訂閱沒有取消訂閱的靜態事件可能會導致記憶體流失"
+
+#~ msgid ""
+#~ "The value of an optional parameter in a method does not match the base "
+#~ "method"
+#~ msgstr "方法中選用參數的值不符合基底方法"
+
+#~ msgid "Optional parameter value {0} differs from base {1} '{2}'"
+#~ msgstr "選用參數值 {0} 與基底 {1} '{2}' 不同"
+
+#~ msgid ""
+#~ "Invocation of polymorphic field event leads to unpredictable result since "
+#~ "invocation lists are not virtual"
+#~ msgstr ""
+#~ "因為引動過程清單不是虛擬的，所以多型欄位事件的引動過程會導致無法預期的結果"
+
+#~ msgid ""
+#~ "The event `{0}' can only appear on the left hand side of `+=' or `-=' "
+#~ "operator"
+#~ msgstr "事件 '{0}' 只能出現在 '+=' 或 '-=' 運算子的左側"
+
+#~ msgid "Check if a readonly field is used as assignment target"
+#~ msgstr "檢查是否使用唯讀欄位作為引數目標"
+
+#~ msgid "Possible multiple enumeration of IEnumerable"
+#~ msgstr "IEnumerable 可能有多個列舉"
+
+#~ msgid "Convert 'if' to '??'"
+#~ msgstr "將 'if' 轉換為 '??'"
+
+#~ msgid "Convert to '??' expresssion"
+#~ msgstr "轉換為 '??' 運算式"
+
+#~ msgid "Convert property to auto property"
+#~ msgstr "將 property 轉換為 auto property"
+
+#~ msgid "Convert to auto property"
+#~ msgstr "轉換為 auto property"
+
+#~ msgid "Convert to lambda with expression"
+#~ msgstr "轉換為具有運算式的 lambda"
+
+#~ msgid "Can be converted to expression"
+#~ msgstr "可轉換為運算式"
+
+#~ msgid "Foreach loops are more efficient"
+#~ msgstr "Foreach 迴圈會更有效率"
+
+#~ msgid "'for' loop can be converted to 'foreach'"
+#~ msgstr "'for' 迴圈可以轉換成 'foreach'"
+
+#~ msgid "Convert local variable or field to constant"
+#~ msgstr "將區域變數或欄位轉換為常數"
+
+#~ msgid "Convert to constant"
+#~ msgstr "轉換為常數"
+
+#~ msgid "Finds parameters that can be demoted to a base class"
+#~ msgstr "尋找可降階為基底類別的參數"
+
+#~ msgid "Parameter can be declared with base type"
+#~ msgstr "參數可以使用基底類型進行宣告"
+
+#~ msgid "Check for reference equality instead"
+#~ msgstr "改為檢查參考是否相等"
+
+#~ msgid ""
+#~ "'Object.ReferenceEquals' is always false because it is called with value "
+#~ "type"
+#~ msgstr "'Object.ReferenceEquals' 是使用實值型別所呼叫，因此一律為 false"
+
+#~ msgid "Simplify LINQ expression"
+#~ msgstr "簡化 LINQ 運算式"
+
+#~ msgid "Warns when a culture-aware 'Compare' call is used by default"
+#~ msgstr "預設使用文化特性感知的 'Compare' 呼叫時發出警告"
+
+#~ msgid "'string.Compare' is culture-aware"
+#~ msgstr "'string.Compare' 為文化特性感知"
+
+#~ msgid "Use array creation expression"
+#~ msgstr "使用陣列建立運算式"
+
+#~ msgid "Use array create expression"
+#~ msgstr "使用陣列建立運算式"
+
+#~ msgid "'is' operator can be used"
+#~ msgstr "'is' 運算子可供使用"
+
+#~ msgid "Use 'is' operator"
+#~ msgstr "使用 'is' 運算子"
+
+#~ msgid "Use method IsInstanceOfType"
+#~ msgstr "使用方法 IsInstanceOfType"
+
+#~ msgid "Use method IsInstanceOfType (...)"
+#~ msgstr "使用方法 IsInstanceOfType (...)"
+
+#~ msgid "Default argument value is redundant"
+#~ msgstr "預設引數值重複"
+
+#~ msgid "The parameter is optional with the same default value"
+#~ msgstr "當預設值相同時，此參數可省略。"
+
+#~ msgid "Comparison of a boolean value with 'true' or 'false' constant"
+#~ msgstr "與 'true' 或 'false' 常數的布林值比較"
+
+#~ msgid "Comparison with '{0}' is redundant"
+#~ msgstr "與 '{0}' 比較是冗餘的"
+
+#~ msgid "Catch clause with a single 'throw' statement is redundant"
+#~ msgstr "具有單一 'throw' 陳述式的 catch 子句是冗餘的"
+
+#~ msgid "When 'is' keyword is used, which implicitly check null"
+#~ msgstr "使用 'is' 關鍵字 (這會隱含地檢查 Null) 時"
+
+#~ msgid "Redundant comparison with 'null'"
+#~ msgstr "具有 'null' 的冗餘比較"
+
+#~ msgid "Redundant 'IEnumerable.Cast<T>' or 'IEnumerable.OfType<T>' call"
+#~ msgstr "冗餘的 'IEnumerable.Cast<T>' 或 'IEnumerable.OfType<T>' 呼叫"
+
+#~ msgid "Redundant '{0}' call"
+#~ msgstr "冗餘的 '{0}' 呼叫"
+
+#~ msgid "Redundant explicit type in array creation"
+#~ msgstr "陣列建立中冗餘的明確類型"
+
+#~ msgid "Redundant explicit array type specification"
+#~ msgstr "冗餘的明確陣列類型規格"
+
+#~ msgid ""
+#~ "Type is either mentioned in the base type list of another part or in "
+#~ "another base type"
+#~ msgstr "在另一個部分的基底類型清單中或另一個基底類型中提及類型"
+
+#~ msgid ""
+#~ "Explicit type specification can be removed as it can be implicitly "
+#~ "inferred"
+#~ msgstr "因為可隱含推斷明確類型規格，所以可將其移除"
+
+#~ msgid "Redundant lambda explicit type specification"
+#~ msgstr "冗餘的 Lambda 明確類型規格"
+
+#~ msgid "Redundant lambda signature parentheses"
+#~ msgstr "冗餘的 lambda 特徵標記括弧"
+
+#~ msgid "Redundant operand in logical conditional expression"
+#~ msgstr "邏輯條件運算式中冗餘的運算元"
+
+#~ msgid "Redundant empty object or collection initializer"
+#~ msgstr "冗餘的空物件或集合初始設定式"
+
+#~ msgid "Empty object or collection initializer is redundant"
+#~ msgstr "空白物件或集合初始設定式是冗餘的"
+
+#~ msgid ""
+#~ "Detects when no delegate parameter is used in the anonymous method body"
+#~ msgstr "當匿名方法主體中未使用委派參數時偵測"
+
+#~ msgid "Specifying signature is redundant because no parameter is used"
+#~ msgstr "未使用任何參數，因此簽章為冗餘"
+
+#~ msgid ""
+#~ "The override of a virtual member is redundant because it consists of only "
+#~ "a call to the base"
+#~ msgstr "虛擬成員的覆寫為冗餘，原因是其只包含基底的呼叫"
+
+#~ msgid "Redundant method override"
+#~ msgstr "冗餘的方法覆寫"
 
 #~ msgid "Platform"
 #~ msgstr "平台"
