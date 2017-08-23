@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-22 12:31:13+0100\n"
+"POT-Creation-Date: 2017-08-23 11:37:25+0100\n"
 "PO-Revision-Date: 2016-01-27 13:37+0900\n"
 "Last-Translator: Junil Um <powerumc@gmail.com>\n"
 "Language-Team: Junil Um <powerumc@gmail.com>\n"
@@ -89,7 +89,7 @@ msgstr "실행"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:126
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:219
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:101
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:99
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:97
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicyPanelWidget.cs:165
@@ -3248,7 +3248,7 @@ msgid "Welcome Page"
 msgstr "시작 페이지"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:694
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:109
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:108
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:48
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:49
 msgid "Tools"
@@ -4257,6 +4257,12 @@ msgstr "Mono 프로젝트"
 msgid "Report Problem..."
 msgstr "문제 보고..."
 
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
+#: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:17
+#, fuzzy
+msgid "_Diagnostics"
+msgstr "매우 자세히"
+
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:9
 msgid ".NET binary resource"
 msgstr ".NET 이진 리소스"
@@ -4740,7 +4746,7 @@ msgid "Add Custom Tool..."
 msgstr "사용자 지정 도구 추가..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:72
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:485
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:483
 msgid "Show {0}"
 msgstr "{0} 표시"
 
@@ -4872,7 +4878,7 @@ msgid "No more errors or warnings"
 msgstr "오류나 경고가 더 이상 없음"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalTool.cs:124
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:407
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:406
 msgid "New Tool"
 msgstr "새 도구"
 
@@ -5511,15 +5517,15 @@ msgstr "솔루션에 포함"
 msgid "Explore the current solution's files and structure"
 msgstr "현재 솔루션의 파일 및 구조 탐색"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:238
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:236
 msgid "ApplicationIconId"
 msgstr "ApplicationIconId"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:484
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:482
 msgid "View (Pads)"
 msgstr "뷰(패드)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:950
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:948
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:625
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:691
 msgid "Documents"
@@ -6300,100 +6306,100 @@ msgstr "다음 확장을 시작할 수 없습니다."
 msgid "Tools (Custom)"
 msgstr "도구(사용자 지정)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:146
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:145
 #, fuzzy
 msgid "Click to add a new external tool"
 msgstr "새 조사식을 추가하려면 여기를 클릭하세요."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:148
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:147
 #, fuzzy
 msgid "Click to remove an external tool from the list"
 msgstr "최근 목록에서 해당 참조를 제거할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:150
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:149
 #, fuzzy
 msgid "Click to move the selected tool up the list"
 msgstr "선택한 텍스트를 대문자로 변환"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:152
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:151
 #, fuzzy
 msgid "Click to move the selected tool down the list"
 msgstr "선택한 텍스트를 소문자로 변환"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:154
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:153
 #, fuzzy
 msgid "Enter the title for this command"
 msgstr "사용자 지정 명령 입력"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:156
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:155
 msgid "Enter or select the path for the external command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:159
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:158
 #, fuzzy
 msgid "Enter the arguments for the external command"
 msgstr "이 NuGet 패키지의 태그 입력"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:161
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:160
 #, fuzzy
 msgid "Argument Tags"
 msgstr "인수"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:162
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:161
 #, fuzzy
 msgid "Select tags to add to the arguments"
 msgstr "새 패키징 프로젝트에 추가할 패키지 선택"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:164
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:163
 #, fuzzy
 msgid "Enter the working directory for this command"
 msgstr "실행을 위한 작업 디렉터리 선택"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:165
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:164
 #, fuzzy
 msgid "Working Directory Tags"
 msgstr "작업 디렉터리"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:166
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:165
 #, fuzzy
 msgid "Select tags to add to the working directory"
 msgstr "새 패키징 프로젝트에 추가할 패키지 선택"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:168
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:167
 #, fuzzy
 msgid "Enter the default key binding for this command"
 msgstr "프로젝트의 기본 네임스페이스 입력"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:170
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:169
 msgid "Check to prompt for arguments when running the command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:172
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:171
 msgid "Check to save the current file before running the command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:174
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:173
 #, fuzzy
 msgid "Check to display the commands output in the Output Pad"
 msgstr "콘솔 출력을 일시 중지하려면 선택"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:443
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:442
 msgid "Control not found!"
 msgstr "컨트롤을 찾을 수 없습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:466
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:465
 msgid "The command of tool \"{0}\" is not set."
 msgstr "\"{0}\" 도구의 명령이 설정되지 않았습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:472
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:471
 msgid "The command of tool \"{0}\" is invalid."
 msgstr "\"{0}\" 도구의 명령이 잘못되었습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:477
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:476
 msgid "The working directory of tool \"{0}\" is invalid."
 msgstr "\"{0}\" 도구의 작업 디렉터리가 잘못되었습니다."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:243
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:242
 msgid "This shortcut is assigned to another command:"
 msgid_plural "This shortcut is assigned to other commands:"
 msgstr[0] "이 바로 가기는 다른 명령에 할당되었습니다."
@@ -10205,11 +10211,11 @@ msgstr "형식 검색"
 msgid "Search Members"
 msgstr "맴버 검색"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:621
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:623
 msgid "Press ‘{0}’ to search"
 msgstr "검색하려면 '{0}'을(를) 누르세요."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:622
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:624
 msgid "Search solution"
 msgstr "솔루션 검색"
 
@@ -26524,14 +26530,6 @@ msgstr "getter 생성"
 msgid "Use 'string.Format()'"
 msgstr "'string.Format()' 사용"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AdditionalOfTypeAnalyzer.cs:26
-msgid "Replace with call to OfType<T> (extended cases)"
-msgstr "OfType<T>에 대한 호출로 바꾸기(확장된 경우)"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AdditionalOfTypeAnalyzer.cs:27
-msgid "Replace with 'OfType<T>'"
-msgstr "'OfType<T>'으로 바꾸기"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AvoidAsyncVoidAnalyzer.cs:18
 msgid "Asynchronous methods should return a Task instead of void"
 msgstr "비동기 메서드는 void 대신 Task를 반환해야 합니다."
@@ -26554,10 +26552,6 @@ msgid ""
 "Call to base.Equals resolves to Object.Equals, which is reference equality"
 msgstr "base.Equals 호출은 참조 같음인 Object.Equals로 확인됩니다."
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/CheckNamespaceAnalyzer.cs:13
-msgid "Check if a namespace corresponds to a file location"
-msgstr "네임스페이스가 파일 위치에 해당하는지 확인"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/ConstantConditionAnalyzer.cs:14
 msgid "Condition is always 'true' or always 'false'"
 msgstr "조건이 항상 'true'이거나 항상 'false'입니다."
@@ -26578,11 +26572,6 @@ msgstr "'&&' 식으로 변환"
 msgid "Replace with '&='"
 msgstr "'&='으로 바꾸기"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/LockThisAnalyzer.cs:13
-msgid "Warns about using lock (this) or MethodImplOptions.Synchronized"
-msgstr ""
-"lock (this) 또는 MethodImplOptions.Synchronized 사용에 대해 경고합니다."
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NameOfSuggestionAnalyzer.cs:15
 msgid "Suggest the usage of the nameof operator"
 msgstr "nameof 연산자의 사용 제안"
@@ -26594,11 +26583,6 @@ msgstr "대신 'nameof({0})' 식을 사용합니다."
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NameOfSuggestionCodeFixProvider.cs:44
 msgid "To 'nameof({0})'"
 msgstr "'nameof({0})'로"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NegativeRelationalExpressionAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NegativeRelationalExpressionAnalyzer.cs:14
-msgid "Simplify negative relational expression"
-msgstr "부정 관계식 단순화"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NotImplementedExceptionAnalyzer.cs:18
 msgid "Shows NotImplementedException throws in the quick task bar"
@@ -26612,15 +26596,6 @@ msgstr "구현되지 않음"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/ParameterOnlyAssignedAnalyzer.cs:16
 msgid "Parameter is assigned but its value is never used"
 msgstr "매개 변수가 할당되었지만 해당 값이 사용되지 않았습니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantAssignmentAnalyzer.cs:13
-msgid ""
-"Value assigned to a variable or parameter is not used in all execution path"
-msgstr "변수나 매개 변수에 할당된 값이 모든 실행 경로에서 사용되지 않습니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantAssignmentAnalyzer.cs:14
-msgid "Assignment is redundant"
-msgstr "할당이 중복됩니다."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantInternalAnalyzer.cs:18
 msgid "Removes 'internal' modifiers that are not required"
@@ -26648,16 +26623,6 @@ msgstr "이 컨텍스트에서 Roslyn 기능의 사용이 허용되지 않습니
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertIfToOrExpressionAnalyzer.cs:16
 msgid "{0}"
 msgstr "{0}"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/StaticEventSubscriptionAnalyzer.cs:13
-msgid "Checks if static events are removed"
-msgstr "정적 이벤트가 제거되었는지 확인합니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/StaticEventSubscriptionAnalyzer.cs:14
-msgid ""
-"Subscription to static events without unsubscription may cause memory leaks"
-msgstr ""
-"구독 취소가 없는 정적 이벤트를 구독하면 메모리 누수가 발생할 수 있습니다."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/XmlDocAnalyzer.cs:20
 msgid "Validate Xml docs"
@@ -26905,15 +26870,6 @@ msgstr ""
 msgid "Operator 'is' can be used"
 msgstr "'is' 연산자를 사용할 수 있습니다."
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterHierarchyMismatchAnalyzer.cs:13
-msgid ""
-"The value of an optional parameter in a method does not match the base method"
-msgstr "메서드의 선택적 매개 변수 값이 기본 메서드와 일치하지 않습니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterHierarchyMismatchAnalyzer.cs:14
-msgid "Optional parameter value {0} differs from base {1} '{2}'"
-msgstr "선택적 매개 변수 값 {0}이(가) 기본 {1} '{2}'과(와) 다릅니다."
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterRefOutAnalyzer.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterRefOutAnalyzer.cs:16
 msgid "C# doesn't support optional 'ref' or 'out' parameters"
@@ -26956,29 +26912,6 @@ msgstr ""
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PartialMethodParameterNameMismatchCodeFixProvider.cs:49
 msgid "Rename to '{0}'"
 msgstr "'{0}'(으)로 이름 바꾸기"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PolymorphicFieldLikeEventInvocationAnalyzer.cs:13
-msgid ""
-"Invocation of polymorphic field event leads to unpredictable result since "
-"invocation lists are not virtual"
-msgstr ""
-"호출 목록이 가상이 아니므로 다형적 필드 이벤트를 호출하면 예기치 못한 결과가 "
-"생성됩니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PolymorphicFieldLikeEventInvocationAnalyzer.cs:14
-msgid ""
-"The event `{0}' can only appear on the left hand side of `+=' or `-=' "
-"operator"
-msgstr "`{0}' 이벤트는 `+=' 또는 `-=' 연산자의 왼쪽에만 나타날 수 있습니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PossibleAssignmentToReadonlyFieldAnalyzer.cs:13
-msgid "Check if a readonly field is used as assignment target"
-msgstr "읽기 전용 필드가 할당 대상으로 사용되는지 확인"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PossibleMultipleEnumerationAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PossibleMultipleEnumerationAnalyzer.cs:14
-msgid "Possible multiple enumeration of IEnumerable"
-msgstr "IEnumerable의 가능한 여러 열거형"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/StaticFieldOrAutoPropertyInGenericTypeAnalyzer.cs:17
 msgid "Warns about static fields in generic types"
@@ -27115,14 +27048,6 @@ msgstr "메서드 그룹으로 바꾸기"
 msgid "'?:' expression can be converted to '??' expression"
 msgstr "'?:' 식을 '??' 식으로 변환할 수 있습니다."
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionAnalyzer.cs:13
-msgid "Convert 'if' to '??'"
-msgstr "'if'를 '??'로 변환"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionAnalyzer.cs:14
-msgid "Convert to '??' expresssion"
-msgstr "'??' 식으로 변환"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToSwitchStatementAnalyzer.cs:16
 msgid "'if' statement can be re-written as 'switch' statement"
 msgstr "'if' 문을 'switch' 문으로 다시 작성할 수 있습니다."
@@ -27139,22 +27064,6 @@ msgstr "'Nullable<T>'를 약식 'T?'로 변환"
 msgid "Nullable type can be simplified"
 msgstr "Nullable 형식을 단순화할 수 있습니다."
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToAutoPropertyAnalyzer.cs:13
-msgid "Convert property to auto property"
-msgstr "속성을 auto 속성으로 변환"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToAutoPropertyAnalyzer.cs:14
-msgid "Convert to auto property"
-msgstr "auto 속성으로 변환"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToLambdaExpressionAnalyzer.cs:13
-msgid "Convert to lambda with expression"
-msgstr "식이 있는 람다로 변환"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToLambdaExpressionAnalyzer.cs:14
-msgid "Can be converted to expression"
-msgstr "식으로 변환될 수 있습니다."
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToStaticTypeAnalyzer.cs:16
 msgid ""
 "If all fields, properties and methods members are static, the class can be "
@@ -27166,14 +27075,6 @@ msgstr ""
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToStaticTypeAnalyzer.cs:17
 msgid "This class is recommended to be defined as static"
 msgstr "이 클래스는 static으로 정의하는 것이 좋습니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ForCanBeConvertedToForeachAnalyzer.cs:13
-msgid "Foreach loops are more efficient"
-msgstr "Foreach 루프가 더 효율적입니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ForCanBeConvertedToForeachAnalyzer.cs:14
-msgid "'for' loop can be converted to 'foreach'"
-msgstr "'for' 루프는 'foreach'로 변환될 수 있습니다."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/InvokeAsExtensionMethodAnalyzer.cs:14
 msgid ""
@@ -27214,14 +27115,6 @@ msgstr "문을 'while' 문으로 단순화할 수 있습니다."
 msgid "Convert 'if' to '||' expression"
 msgstr "'if'를 '||' 식으로 변환"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertToConstantAnalyzer.cs:13
-msgid "Convert local variable or field to constant"
-msgstr "지역 변수 또는 필드를 상수로 변환"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertToConstantAnalyzer.cs:14
-msgid "Convert to constant"
-msgstr "상수로 변환"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/EmptyEmbeddedStatementAnalyzer.cs:14
 msgid "Empty control statement body"
 msgstr "비어 있는 제어문 본문"
@@ -27239,14 +27132,6 @@ msgstr "필드를 읽기 전용으로 변환"
 msgid "To 'readonly'"
 msgstr "'readonly'로"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ParameterCanBeDeclaredWithBaseTypeAnalyzer.cs:24
-msgid "Finds parameters that can be demoted to a base class"
-msgstr "기본 클래스로 수준을 내릴 수 있는 매개 변수를 찾습니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ParameterCanBeDeclaredWithBaseTypeAnalyzer.cs:25
-msgid "Parameter can be declared with base type"
-msgstr "매개 변수를 기본 형식으로 선언할 수 있습니다."
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PossibleMistakenCallToGetTypeAnalyzer.cs:14
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PossibleMistakenCallToGetTypeAnalyzer.cs:15
 msgid "Possible mistaken call to 'object.GetType()'"
@@ -27256,16 +27141,6 @@ msgstr "'object.GetType()'을 잘못 호출했을 수 있음"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PublicConstructorInAbstractClass.cs:16
 msgid "Constructor in abstract class should not be public"
 msgstr "추상 클래스의 생성자는 public이 아니어야 합니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReferenceEqualsWithValueTypeAnalyzer.cs:13
-msgid "Check for reference equality instead"
-msgstr "대신 참조 같음 확인"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReferenceEqualsWithValueTypeAnalyzer.cs:14
-msgid ""
-"'Object.ReferenceEquals' is always false because it is called with value type"
-msgstr ""
-"'Object.ReferenceEquals'가 값 형식을 사용하여 호출되므로 항상 false입니다."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithFirstOrDefaultAnalyzer.cs:14
 msgid "Replace with call to FirstOrDefault<T>()"
@@ -27464,20 +27339,6 @@ msgstr "조건식을 단순화할 수 있습니다."
 msgid "Simplify conditional expression"
 msgstr "조건식 단순화"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/SimplifyLinqExpressionAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/SimplifyLinqExpressionAnalyzer.cs:14
-msgid "Simplify LINQ expression"
-msgstr "LINQ 식 단순화"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificAnalyzer.cs:16
-msgid "Warns when a culture-aware 'Compare' call is used by default"
-msgstr ""
-"문화권을 인식하는 'Compare' 호출이 기본적으로 사용되는 경우 경고합니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificAnalyzer.cs:17
-msgid "'string.Compare' is culture-aware"
-msgstr "'string.Compare'는 문화권을 인식합니다."
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificCodeFixProvider.cs:44
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareToIsCultureSpecificCodeFixProvider.cs:40
 msgid "Use ordinal comparison"
@@ -27534,22 +27395,6 @@ msgstr ""
 msgid "'StartsWith' is culture-aware and missing a StringComparison argument"
 msgstr "'StartsWith'는 문화권을 인식하며 StringComparison 인수가 없습니다."
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseArrayCreationExpressionAnalyzer.cs:13
-msgid "Use array creation expression"
-msgstr "배열 만들기 식 사용"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseArrayCreationExpressionAnalyzer.cs:14
-msgid "Use array create expression"
-msgstr "배열 만들기 식 사용"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseIsOperatorAnalyzer.cs:13
-msgid "'is' operator can be used"
-msgstr "'is' 연산자를 사용할 수 있습니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseIsOperatorAnalyzer.cs:14
-msgid "Use 'is' operator"
-msgstr "'is' 연산자 사용"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodAnyAnalyzer.cs:15
 msgid "Replace usages of 'Count()' with call to 'Any()'"
 msgstr "'Count()' 사용을 'Any()' 호출로 바꾸기"
@@ -27557,14 +27402,6 @@ msgstr "'Count()' 사용을 'Any()' 호출로 바꾸기"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodAnyAnalyzer.cs:16
 msgid "Use '{0}' for increased performance"
 msgstr "성능 향상을 위해 '{0}' 사용"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodIsInstanceOfTypeAnalyzer.cs:13
-msgid "Use method IsInstanceOfType"
-msgstr "IsInstanceOfType 메서드 사용"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodIsInstanceOfTypeAnalyzer.cs:14
-msgid "Use method IsInstanceOfType (...)"
-msgstr "IsInstanceOfType(...) 메서드 사용"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/ArrayCreationCanBeReplacedWithArrayInitializerAnalyzer.cs:15
 msgid ""
@@ -27617,14 +27454,6 @@ msgstr "중복된 명시적 속성 이름"
 msgid "The name can be inferred from the initializer expression"
 msgstr "이름은 이니셜라이저 식에서 유추할 수 있습니다."
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantArgumentDefaultValueAnalyzer.cs:13
-msgid "Default argument value is redundant"
-msgstr "기본 인수 값이 중복됩니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantArgumentDefaultValueAnalyzer.cs:14
-msgid "The parameter is optional with the same default value"
-msgstr "동일한 기본값을 사용하는 매개 변수는 선택 사항입니다."
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantArgumentNameAnalyzer.cs:15
 msgid "Redundant explicit argument name specification"
 msgstr "중복된 명시적 인수 이름 지정"
@@ -27643,14 +27472,6 @@ msgstr "특성에 인수가 없는 경우 괄호가 중복됩니다."
 msgid "'base.' is redundant and can safely be removed"
 msgstr "'base.'가 중복되며 안전하게 제거할 수 있습니다."
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantBoolCompareAnalyzer.cs:13
-msgid "Comparison of a boolean value with 'true' or 'false' constant"
-msgstr "'true' 또는 'false' 상수와 부울 값의 비교"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantBoolCompareAnalyzer.cs:14
-msgid "Comparison with '{0}' is redundant"
-msgstr "'{0}'과(와)의 비교가 중복됩니다."
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCaseLabelAnalyzer.cs:15
 msgid "Redundant case label"
 msgstr "중복 case 레이블"
@@ -27658,10 +27479,6 @@ msgstr "중복 case 레이블"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCaseLabelAnalyzer.cs:16
 msgid "'case' label is redundant"
 msgstr "'case' 레이블이 중복됩니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCatchClauseAnalyzer.cs:13
-msgid "Catch clause with a single 'throw' statement is redundant"
-msgstr "단일 'throw' 문이 있는 catch 절이 중복됩니다."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCheckBeforeAssignmentAnalyzer.cs:27
 msgid ""
@@ -27677,14 +27494,6 @@ msgstr "할당 전 중복된 조건 검사"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCommaInArrayInitializerAnalyzer.cs:16
 msgid "Redundant comma in array initializer"
 msgstr "배열 이니셜라이저의 중복 쉼표"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantComparisonWithNullAnalyzer.cs:13
-msgid "When 'is' keyword is used, which implicitly check null"
-msgstr "'is' 키워드가 사용되는 경우 암시적으로 null이 확인됩니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantComparisonWithNullAnalyzer.cs:14
-msgid "Redundant comparison with 'null'"
-msgstr "'null'을 사용한 중복 비교"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantDelegateCreationAnalyzer.cs:14
 msgid "Explicit delegate creation expression is redundant"
@@ -27704,22 +27513,6 @@ msgstr "중복된 빈 'default' switch 분기"
 msgid "Redundant empty finally block"
 msgstr "중복된 빈 finally 블록"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantEnumerableCastCallAnalyzer.cs:14
-msgid "Redundant 'IEnumerable.Cast<T>' or 'IEnumerable.OfType<T>' call"
-msgstr "중복된 'IEnumerable.Cast<T>' 또는 'IEnumerable.OfType<T>' 호출"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantEnumerableCastCallAnalyzer.cs:15
-msgid "Redundant '{0}' call"
-msgstr "중복된 '{0}' 호출"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitArrayCreationAnalyzer.cs:13
-msgid "Redundant explicit type in array creation"
-msgstr "배열 만들기의 중복된 명시적 형식"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitArrayCreationAnalyzer.cs:14
-msgid "Redundant explicit array type specification"
-msgstr "중복된 명시적 배열 형식 지정"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitArraySizeAnalyzer.cs:14
 msgid "Redundant explicit size in array creation"
 msgstr "배열 만들기의 중복된 명시적 크기"
@@ -27736,36 +27529,10 @@ msgstr "값 형식은 nullable로 암시적으로 변환 가능합니다."
 msgid "Redundant explicit nullable type creation"
 msgstr "중복된 명시적 nullable 형식 만들기"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExtendsListEntryAnalyzer.cs:16
-msgid ""
-"Type is either mentioned in the base type list of another part or in another "
-"base type"
-msgstr ""
-"형식이 다른 부분 또는 다른 기본 형식의 기본 형식 목록에서 언급되었습니다."
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantIfElseBlockAnalyzer.cs:16
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantIfElseBlockAnalyzer.cs:17
 msgid "Redundant 'else' keyword"
 msgstr "중복 'else' 키워드"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaParameterTypeAnalyzer.cs:13
-msgid ""
-"Explicit type specification can be removed as it can be implicitly inferred"
-msgstr "암시적으로 유추할 수 있으므로 명시적 형식 지정을 제거할 수 있습니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaParameterTypeAnalyzer.cs:14
-msgid "Redundant lambda explicit type specification"
-msgstr "중복된 람다 명시적 형식 지정"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaSignatureParenthesesAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaSignatureParenthesesAnalyzer.cs:14
-msgid "Redundant lambda signature parentheses"
-msgstr "중복된 람다 시그니처 괄호"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLogicalConditionalExpressionOperandAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLogicalConditionalExpressionOperandAnalyzer.cs:14
-msgid "Redundant operand in logical conditional expression"
-msgstr "논리 조건식의 중복 피연산자"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectCreationArgumentListAnalyzer.cs:14
 msgid ""
@@ -27778,14 +27545,6 @@ msgstr ""
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectCreationArgumentListAnalyzer.cs:15
 msgid "Empty argument list is redundant"
 msgstr "빈 인수 목록이 중복됩니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectOrCollectionInitializerAnalyzer.cs:13
-msgid "Redundant empty object or collection initializer"
-msgstr "중복된 빈 개체 또는 컬렉션 이니셜라이저"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectOrCollectionInitializerAnalyzer.cs:14
-msgid "Empty object or collection initializer is redundant"
-msgstr "빈 개체 또는 컬렉션 이니셜라이저가 중복됩니다."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantStringToCharArrayCallAnalyzer.cs:16
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantStringToCharArrayCallAnalyzer.cs:17
@@ -27826,14 +27585,6 @@ msgstr "중복 문 제거"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RemoveRedundantOrStatementAnalyzer.cs:15
 msgid "Statement is redundant"
 msgstr "문이 중복됩니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/UnusedAnonymousMethodSignatureAnalyzer.cs:13
-msgid "Detects when no delegate parameter is used in the anonymous method body"
-msgstr "대리자 매개 변수가 무명 메서드 본문에서 사용되지 않을 때를 검색합니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/UnusedAnonymousMethodSignatureAnalyzer.cs:14
-msgid "Specifying signature is redundant because no parameter is used"
-msgstr "매개 변수가 사용되지 않으므로 시그니처 지정이 중복됩니다."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/EmptyConstructorAnalyzer.cs:15
 msgid "An empty public constructor without parameters is redundant."
@@ -27886,16 +27637,6 @@ msgstr "기본값이 있는 필드를 초기화하면 중복됩니다."
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantDefaultFieldInitializerAnalyzer.cs:17
 msgid "Initializing field by default value is redundant"
 msgstr "기본값에 의한 필드 초기화가 중복됩니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantOverriddenMemberAnalyzer.cs:13
-msgid ""
-"The override of a virtual member is redundant because it consists of only a "
-"call to the base"
-msgstr "기본 호출로만 구성되어 있으므로 가상 멤버의 재정의가 중복됩니다."
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantOverriddenMemberAnalyzer.cs:14
-msgid "Redundant method override"
-msgstr "중복된 메서드 재정의"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassAnalyzer.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassAnalyzer.cs:16
@@ -28009,6 +27750,215 @@ msgstr "시간 뷰"
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationChartView.cs:70
 msgid "List View"
 msgstr "목록 뷰"
+
+#~ msgid "Replace with call to OfType<T> (extended cases)"
+#~ msgstr "OfType<T>에 대한 호출로 바꾸기(확장된 경우)"
+
+#~ msgid "Replace with 'OfType<T>'"
+#~ msgstr "'OfType<T>'으로 바꾸기"
+
+#~ msgid "Check if a namespace corresponds to a file location"
+#~ msgstr "네임스페이스가 파일 위치에 해당하는지 확인"
+
+#~ msgid "Warns about using lock (this) or MethodImplOptions.Synchronized"
+#~ msgstr ""
+#~ "lock (this) 또는 MethodImplOptions.Synchronized 사용에 대해 경고합니다."
+
+#~ msgid "Simplify negative relational expression"
+#~ msgstr "부정 관계식 단순화"
+
+#~ msgid ""
+#~ "Value assigned to a variable or parameter is not used in all execution "
+#~ "path"
+#~ msgstr ""
+#~ "변수나 매개 변수에 할당된 값이 모든 실행 경로에서 사용되지 않습니다."
+
+#~ msgid "Assignment is redundant"
+#~ msgstr "할당이 중복됩니다."
+
+#~ msgid "Checks if static events are removed"
+#~ msgstr "정적 이벤트가 제거되었는지 확인합니다."
+
+#~ msgid ""
+#~ "Subscription to static events without unsubscription may cause memory "
+#~ "leaks"
+#~ msgstr ""
+#~ "구독 취소가 없는 정적 이벤트를 구독하면 메모리 누수가 발생할 수 있습니다."
+
+#~ msgid ""
+#~ "The value of an optional parameter in a method does not match the base "
+#~ "method"
+#~ msgstr "메서드의 선택적 매개 변수 값이 기본 메서드와 일치하지 않습니다."
+
+#~ msgid "Optional parameter value {0} differs from base {1} '{2}'"
+#~ msgstr "선택적 매개 변수 값 {0}이(가) 기본 {1} '{2}'과(와) 다릅니다."
+
+#~ msgid ""
+#~ "Invocation of polymorphic field event leads to unpredictable result since "
+#~ "invocation lists are not virtual"
+#~ msgstr ""
+#~ "호출 목록이 가상이 아니므로 다형적 필드 이벤트를 호출하면 예기치 못한 결과"
+#~ "가 생성됩니다."
+
+#~ msgid ""
+#~ "The event `{0}' can only appear on the left hand side of `+=' or `-=' "
+#~ "operator"
+#~ msgstr "`{0}' 이벤트는 `+=' 또는 `-=' 연산자의 왼쪽에만 나타날 수 있습니다."
+
+#~ msgid "Check if a readonly field is used as assignment target"
+#~ msgstr "읽기 전용 필드가 할당 대상으로 사용되는지 확인"
+
+#~ msgid "Possible multiple enumeration of IEnumerable"
+#~ msgstr "IEnumerable의 가능한 여러 열거형"
+
+#~ msgid "Convert 'if' to '??'"
+#~ msgstr "'if'를 '??'로 변환"
+
+#~ msgid "Convert to '??' expresssion"
+#~ msgstr "'??' 식으로 변환"
+
+#~ msgid "Convert property to auto property"
+#~ msgstr "속성을 auto 속성으로 변환"
+
+#~ msgid "Convert to auto property"
+#~ msgstr "auto 속성으로 변환"
+
+#~ msgid "Convert to lambda with expression"
+#~ msgstr "식이 있는 람다로 변환"
+
+#~ msgid "Can be converted to expression"
+#~ msgstr "식으로 변환될 수 있습니다."
+
+#~ msgid "Foreach loops are more efficient"
+#~ msgstr "Foreach 루프가 더 효율적입니다."
+
+#~ msgid "'for' loop can be converted to 'foreach'"
+#~ msgstr "'for' 루프는 'foreach'로 변환될 수 있습니다."
+
+#~ msgid "Convert local variable or field to constant"
+#~ msgstr "지역 변수 또는 필드를 상수로 변환"
+
+#~ msgid "Convert to constant"
+#~ msgstr "상수로 변환"
+
+#~ msgid "Finds parameters that can be demoted to a base class"
+#~ msgstr "기본 클래스로 수준을 내릴 수 있는 매개 변수를 찾습니다."
+
+#~ msgid "Parameter can be declared with base type"
+#~ msgstr "매개 변수를 기본 형식으로 선언할 수 있습니다."
+
+#~ msgid "Check for reference equality instead"
+#~ msgstr "대신 참조 같음 확인"
+
+#~ msgid ""
+#~ "'Object.ReferenceEquals' is always false because it is called with value "
+#~ "type"
+#~ msgstr ""
+#~ "'Object.ReferenceEquals'가 값 형식을 사용하여 호출되므로 항상 false입니다."
+
+#~ msgid "Simplify LINQ expression"
+#~ msgstr "LINQ 식 단순화"
+
+#~ msgid "Warns when a culture-aware 'Compare' call is used by default"
+#~ msgstr ""
+#~ "문화권을 인식하는 'Compare' 호출이 기본적으로 사용되는 경우 경고합니다."
+
+#~ msgid "'string.Compare' is culture-aware"
+#~ msgstr "'string.Compare'는 문화권을 인식합니다."
+
+#~ msgid "Use array creation expression"
+#~ msgstr "배열 만들기 식 사용"
+
+#~ msgid "Use array create expression"
+#~ msgstr "배열 만들기 식 사용"
+
+#~ msgid "'is' operator can be used"
+#~ msgstr "'is' 연산자를 사용할 수 있습니다."
+
+#~ msgid "Use 'is' operator"
+#~ msgstr "'is' 연산자 사용"
+
+#~ msgid "Use method IsInstanceOfType"
+#~ msgstr "IsInstanceOfType 메서드 사용"
+
+#~ msgid "Use method IsInstanceOfType (...)"
+#~ msgstr "IsInstanceOfType(...) 메서드 사용"
+
+#~ msgid "Default argument value is redundant"
+#~ msgstr "기본 인수 값이 중복됩니다."
+
+#~ msgid "The parameter is optional with the same default value"
+#~ msgstr "동일한 기본값을 사용하는 매개 변수는 선택 사항입니다."
+
+#~ msgid "Comparison of a boolean value with 'true' or 'false' constant"
+#~ msgstr "'true' 또는 'false' 상수와 부울 값의 비교"
+
+#~ msgid "Comparison with '{0}' is redundant"
+#~ msgstr "'{0}'과(와)의 비교가 중복됩니다."
+
+#~ msgid "Catch clause with a single 'throw' statement is redundant"
+#~ msgstr "단일 'throw' 문이 있는 catch 절이 중복됩니다."
+
+#~ msgid "When 'is' keyword is used, which implicitly check null"
+#~ msgstr "'is' 키워드가 사용되는 경우 암시적으로 null이 확인됩니다."
+
+#~ msgid "Redundant comparison with 'null'"
+#~ msgstr "'null'을 사용한 중복 비교"
+
+#~ msgid "Redundant 'IEnumerable.Cast<T>' or 'IEnumerable.OfType<T>' call"
+#~ msgstr "중복된 'IEnumerable.Cast<T>' 또는 'IEnumerable.OfType<T>' 호출"
+
+#~ msgid "Redundant '{0}' call"
+#~ msgstr "중복된 '{0}' 호출"
+
+#~ msgid "Redundant explicit type in array creation"
+#~ msgstr "배열 만들기의 중복된 명시적 형식"
+
+#~ msgid "Redundant explicit array type specification"
+#~ msgstr "중복된 명시적 배열 형식 지정"
+
+#~ msgid ""
+#~ "Type is either mentioned in the base type list of another part or in "
+#~ "another base type"
+#~ msgstr ""
+#~ "형식이 다른 부분 또는 다른 기본 형식의 기본 형식 목록에서 언급되었습니다."
+
+#~ msgid ""
+#~ "Explicit type specification can be removed as it can be implicitly "
+#~ "inferred"
+#~ msgstr ""
+#~ "암시적으로 유추할 수 있으므로 명시적 형식 지정을 제거할 수 있습니다."
+
+#~ msgid "Redundant lambda explicit type specification"
+#~ msgstr "중복된 람다 명시적 형식 지정"
+
+#~ msgid "Redundant lambda signature parentheses"
+#~ msgstr "중복된 람다 시그니처 괄호"
+
+#~ msgid "Redundant operand in logical conditional expression"
+#~ msgstr "논리 조건식의 중복 피연산자"
+
+#~ msgid "Redundant empty object or collection initializer"
+#~ msgstr "중복된 빈 개체 또는 컬렉션 이니셜라이저"
+
+#~ msgid "Empty object or collection initializer is redundant"
+#~ msgstr "빈 개체 또는 컬렉션 이니셜라이저가 중복됩니다."
+
+#~ msgid ""
+#~ "Detects when no delegate parameter is used in the anonymous method body"
+#~ msgstr ""
+#~ "대리자 매개 변수가 무명 메서드 본문에서 사용되지 않을 때를 검색합니다."
+
+#~ msgid "Specifying signature is redundant because no parameter is used"
+#~ msgstr "매개 변수가 사용되지 않으므로 시그니처 지정이 중복됩니다."
+
+#~ msgid ""
+#~ "The override of a virtual member is redundant because it consists of only "
+#~ "a call to the base"
+#~ msgstr "기본 호출로만 구성되어 있으므로 가상 멤버의 재정의가 중복됩니다."
+
+#~ msgid "Redundant method override"
+#~ msgstr "중복된 메서드 재정의"
 
 #~ msgid "Platform"
 #~ msgstr "플랫폼"
