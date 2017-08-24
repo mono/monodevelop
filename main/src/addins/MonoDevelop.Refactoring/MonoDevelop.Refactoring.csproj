@@ -175,6 +175,9 @@
     <Compile Include="MonoDevelop.Refactoring.PackageInstaller\PackageInstallerService.cs" />
     <Compile Include="MonoDevelop.Refactoring.PackageInstaller\SymbolSearchService.cs" />
     <Compile Include="MonoDevelop.CodeActions\RoslynProgressTracker.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ExtractInterface\ExtractInterfaceOptionService.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ExtractInterface\ExtractInterfaceDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Refactoring.ExtractInterface.ExtractInterfaceDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -186,6 +189,7 @@
     <Folder Include="MonoDevelop.Refactoring.SignatureChange\" />
     <Folder Include="MonoDevelop.Refactoring.GenerateType\" />
     <Folder Include="MonoDevelop.Refactoring.PackageInstaller\" />
+    <Folder Include="MonoDevelop.Refactoring.ExtractInterface\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">
@@ -364,4 +368,14 @@
     <None Include="MonoDevelop.CodeIssues\Pad\AnalysisStateChangeEventArgs.cs" />
     <None Include="MonoDevelop.CodeIssues\Pad\CategoryGroupingProvider.cs" />
   </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
+          <CSharpFormattingPolicy IndentBlock="True" IndentBraces="False" IndentSwitchCaseSection="True" LabelPositioning="OneLess" NewLinesForBracesInTypes="True" NewLinesForBracesInMethods="True" SpaceWithinMethodDeclarationParenthesis="False" SpaceBetweenEmptyMethodDeclarationParentheses="False" SpaceWithinMethodCallParentheses="False" SpaceBetweenEmptyMethodCallParentheses="False" SpaceAfterControlFlowStatementKeyword="True" SpaceWithinExpressionParentheses="False" SpaceWithinCastParentheses="False" SpaceWithinOtherParentheses="False" SpaceAfterCast="False" SpacesIgnoreAroundVariableDeclaration="False" SpaceBetweenEmptySquareBrackets="False" SpaceWithinSquareBrackets="False" SpaceAfterColonInBaseTypeDeclaration="True" SpaceAfterComma="True" SpaceAfterDot="False" SpaceAfterSemicolonsInForStatement="True" SpaceBeforeColonInBaseTypeDeclaration="True" SpaceBeforeComma="False" SpaceBeforeDot="False" SpaceBeforeSemicolonsInForStatement="False" SpacingAroundBinaryOperator="Single" WrappingPreserveSingleLine="True" WrappingKeepStatementsOnSingleLine="True" PlaceSystemDirectiveFirst="True" IndentSwitchSection="False" NewLinesForBracesInProperties="False" NewLinesForBracesInAccessors="False" NewLinesForBracesInAnonymousMethods="False" NewLinesForBracesInControlBlocks="False" NewLinesForBracesInAnonymousTypes="False" NewLinesForBracesInObjectCollectionArrayInitializers="False" NewLinesForBracesInLambdaExpressionBody="False" NewLineForElse="False" NewLineForCatch="False" NewLineForFinally="False" NewLineForMembersInObjectInit="False" NewLineForMembersInAnonymousTypes="False" NewLineForClausesInQuery="False" SpacingAfterMethodDeclarationName="True" SpaceAfterMethodCallName="True" SpaceBeforeOpenSquareBracket="True" scope="text/x-csharp" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>
