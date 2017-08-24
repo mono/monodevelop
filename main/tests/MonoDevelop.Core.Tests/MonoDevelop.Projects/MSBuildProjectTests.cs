@@ -407,6 +407,10 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("56735", p.EvaluatedProperties.GetValue ("DoubleNumberComplex"));
 
 			Assert.AreEqual (Path.Combine ("a", "b", "c", "d", "e", "f"), p.EvaluatedProperties.GetValue ("ParamsPathCombine"));
+
+			var specialFolder = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
+			Assert.AreEqual (specialFolder, p.EvaluatedProperties.GetValue ("EnumFolderPath"));
+
 			p.Dispose ();
 		}
 

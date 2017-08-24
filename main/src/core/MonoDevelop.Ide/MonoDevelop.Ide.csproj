@@ -9423,6 +9423,7 @@
     <Compile Include="MonoDevelop.Components\Mac\MDLinkMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDMenu.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDMenuHeaderItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDServicesMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDSubMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\Messaging.cs" />

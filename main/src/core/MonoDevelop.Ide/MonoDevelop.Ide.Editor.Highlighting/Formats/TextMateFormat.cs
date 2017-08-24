@@ -481,7 +481,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				int g;
 				try {
 					g = int.Parse (kv.Key);
-				} catch (Exception e) {
+				} catch (Exception) {
 					named.Add (Tuple.Create (kv.Key, s));
 					continue;
 				}

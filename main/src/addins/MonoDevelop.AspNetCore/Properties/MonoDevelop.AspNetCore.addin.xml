@@ -83,6 +83,17 @@
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
+				id="Microsoft.Web.Empty.FSharp"
+				_overrideName="ASP.NET Core Empty"
+				_overrideDescription="Creates a new ASP.NET Core web project."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore1x=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
 				id="Microsoft.Web.Mvc.CSharp"
 				_overrideName="ASP.NET Core Web App"
 				_overrideDescription="Creates a new ASP.NET MVC Core web project."
@@ -120,6 +131,18 @@
 			<Template
 				id="Microsoft.Web.Empty.CSharp"
 				templateId="Microsoft.Web.Empty.CSharp.2.0"
+				_overrideName="ASP.NET Core Empty"
+				_overrideDescription="Creates a new ASP.NET Core web project."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore20=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Empty.FSharp"
+				templateId="Microsoft.Web.Empty.FSharp.2.0"
 				_overrideName="ASP.NET Core Empty"
 				_overrideDescription="Creates a new ASP.NET Core web project."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
@@ -174,6 +197,19 @@
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore20=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.WebApi.FSharp"
+				templateId="Microsoft.Web.WebApi.FSharp.2.0"
+				_overrideName="ASP.NET Core Web API"
+				_overrideDescription="Creates a new ASP.NET Web API Core web project."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				supportedParameters="FSharpWebApi"
 				condition="UseNetCore20=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />

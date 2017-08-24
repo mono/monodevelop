@@ -76,7 +76,6 @@ namespace MonoDevelop.Ide.ExternalTools
 		bool lockStoreValues = false;
 
 		EventBoxTooltip keyBindingInfoTooltip;
-		string defaultKeyBindingTooltipText;
 
 		public ExternalToolPanelWidget () 
 		{
