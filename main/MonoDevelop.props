@@ -5,9 +5,6 @@
 		<CustomBeforeMicrosoftCommonTargets>$(MonoDevelopRootDir)\msbuild\MonoDevelop.BeforeCommon.targets</CustomBeforeMicrosoftCommonTargets>
 		<CustomAfterMicrosoftCommonTargets>$(MonoDevelopRootDir)\msbuild\MonoDevelop.AfterCommon.targets</CustomAfterMicrosoftCommonTargets>
 		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-
-		<!-- temporary workaround for https://github.com/Microsoft/msbuild/issues/2165 -->
-		<CompileUsingReferenceAssemblies>false</CompileUsingReferenceAssemblies>
 	</PropertyGroup>
 	<!-- import common targets if they were not imported already by an MSBuild Sdk -->
 	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="'$(MicrosoftCommonPropsHasBeenImported)' != 'true'" />
