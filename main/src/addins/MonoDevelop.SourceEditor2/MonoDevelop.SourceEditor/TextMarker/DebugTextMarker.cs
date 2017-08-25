@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Editor;
 using Xwt.Drawing;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Editor.Highlighting;
+using Cairo;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -45,14 +46,17 @@ namespace MonoDevelop.SourceEditor
 		Image DebugIcon { get; }
 		public string Tooltip { get; set; }
 
-		public DebugIconMarker (Image debugIcon)
+		readonly bool drawInIconMarging;
+
+		public DebugIconMarker (Image debugIcon, bool drawInIconMarging = true)
 		{
+			this.drawInIconMarging = drawInIconMarging;
 			DebugIcon = debugIcon;
 		}
 
 		public override bool CanDrawForeground (Margin margin)
 		{
-			return margin is IconMargin;
+			return drawInIconMarging ? margin is IconMargin : margin is GutterMargin;
 		}
 
 		public override void DrawForeground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
@@ -65,8 +69,17 @@ namespace MonoDevelop.SourceEditor
 
 			var deltaX = size / 2 - DebugIcon.Width / 2 + 0.5f;
 			var deltaY = size / 2 - DebugIcon.Height / 2 + 0.5f;
+			if (drawInIconMarging) {
+				cr.DrawImage (editor, DebugIcon, Math.Round (x + deltaX), Math.Round (y + deltaY));
 
-			cr.DrawImage (editor, DebugIcon, Math.Round (x + deltaX), Math.Round (y + deltaY));
+			} else {
+				cr.DrawImage (editor, DebugIcon, metrics.X, Math.Round (y + deltaY));
+				var lineSegment = metrics.LineSegment;
+				var extendingMarker = lineSegment != null ? (IExtendingTextLineMarker)editor.Document.GetMarkers (lineSegment).FirstOrDefault (l => l is IExtendingTextLineMarker) : null;
+				bool isSpaceAbove = extendingMarker != null && extendingMarker.IsSpaceAbove;
+
+				editor.TextArea.GutterMargin.DrawForeground (cr, (int)metrics.LineNumber, metrics.X, metrics.Y, metrics.Height, isSpaceAbove);
+			}
 		}
 
 		public override void InformMouseHover (MonoTextEditor editor, Margin margin, MarginMouseEventArgs args)
@@ -135,17 +148,17 @@ namespace MonoDevelop.SourceEditor
 			@from = Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
-				cr.SetSourceColor (background(editor));
+				cr.SetSourceColor (background (editor));
 				cr.RoundedRectangle (@from + 2.5, y + 0.5, to - @from, editor.LineHeight - 1, 2); // 2.5 to make space for the column guideline
-				/* TODO: EditorTheme - do we need a border here ?
-				if (background(editor).HasBorderColor) {
-					cr.FillPreserve ();
+																								  /* TODO: EditorTheme - do we need a border here ?
+																								  if (background(editor).HasBorderColor) {
+																									  cr.FillPreserve ();
 
-					cr.SetSourceColor (background(editor).BorderColor);
-					cr.Stroke ();
-				} else {*/
-					cr.Fill ();
-//				}
+																									  cr.SetSourceColor (background(editor).BorderColor);
+																									  cr.Stroke ();
+																								  } else {*/
+				cr.Fill ();
+				//				}
 			}
 		}
 
@@ -156,7 +169,7 @@ namespace MonoDevelop.SourceEditor
 
 			var style = new MonoDevelop.Ide.Editor.Highlighting.ChunkStyle (baseStyle);
 			if (forground != null && editor != null) {
-				style.Foreground = forground(editor).Foreground;
+				style.Foreground = forground (editor).Foreground;
 			}
 			return style;
 		}
@@ -165,36 +178,36 @@ namespace MonoDevelop.SourceEditor
 
 		void IChunkMarker.TransformChunks (List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> chunks)
 		{
-			if (forground == null) {
-				return;
-			}
-			int markerStart = Segment.Offset;
-			int markerEnd = Segment.EndOffset;
-			for (int i = 0; i < chunks.Count; i++) {
-				var chunk = chunks [i];
-				if (chunk.EndOffset < markerStart || markerEnd <= chunk.Offset) 
-					continue;
-				if (chunk.Offset == markerStart && chunk.EndOffset == markerEnd)
-					return;
-				if (chunk.Offset < markerStart && chunk.EndOffset > markerEnd) {
-					var newChunk = new Ide.Editor.Highlighting.ColoredSegment (chunk.Offset, markerStart - chunk.Offset, chunk.ScopeStack);
-					chunks [i] = new Ide.Editor.Highlighting.ColoredSegment (chunk.Offset + newChunk.Length, chunk.Length - newChunk.Length, chunk.ScopeStack);
-					chunks.Insert (i, newChunk);
-					continue;
-				}
-			}
+			//if (forground == null) {
+			//	return;
+			//}
+			//int markerStart = Segment.Offset;
+			//int markerEnd = Segment.EndOffset;
+			//for (int i = 0; i < chunks.Count; i++) {
+			//	var chunk = chunks [i];
+			//	if (chunk.EndOffset < markerStart || markerEnd <= chunk.Offset) 
+			//		continue;
+			//	if (chunk.Offset == markerStart && chunk.EndOffset == markerEnd)
+			//		return;
+			//	if (chunk.Offset < markerStart && chunk.EndOffset > markerEnd) {
+			//		var newChunk = new Ide.Editor.Highlighting.ColoredSegment (chunk.Offset, markerStart - chunk.Offset, chunk.ScopeStack);
+			//		chunks [i] = new Ide.Editor.Highlighting.ColoredSegment (chunk.Offset + newChunk.Length, chunk.Length - newChunk.Length, chunk.ScopeStack);
+			//		chunks.Insert (i, newChunk);
+			//		continue;
+			//	}
+			//}
 		}
 
 		void IChunkMarker.ChangeForeColor (MonoTextEditor editor, MonoDevelop.Ide.Editor.Highlighting.ColoredSegment chunk, ref Cairo.Color color)
 		{
-			if (forground == null || editor == null) {
-				return;
-			}
-			int markerStart = Segment.Offset;
-			int markerEnd = Segment.EndOffset;
-			if (chunk.EndOffset <= markerStart || markerEnd <= chunk.Offset) 
-				return;
-			color = forground(editor).Foreground;
+			//if (forground == null || editor == null) {
+			//	return;
+			//}
+			//int markerStart = Segment.Offset;
+			//int markerEnd = Segment.EndOffset;
+			//if (chunk.EndOffset <= markerStart || markerEnd <= chunk.Offset) 
+			//	return;
+			//color = forground(editor).Foreground;
 		}
 
 		#endregion
@@ -204,7 +217,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		public DebugIconMarker IconMarker { get; protected set; }
 		public DebugTextMarker TextMarker { get; protected set; }
-		private TextDocument document;
+		protected TextDocument document;
 
 		internal void AddTo (TextDocument document, DocumentLine line)
 		{
@@ -220,6 +233,8 @@ namespace MonoDevelop.SourceEditor
 				document.RemoveMarker (TextMarker);
 			}
 		}
+
+
 	}
 
 	class BreakpointTextMarker : DebugMarkerPair
@@ -229,7 +244,7 @@ namespace MonoDevelop.SourceEditor
 
 		public BreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
 		{
-			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint);
+			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint, true);
 
 			TextMarker = new DebugTextMarker (offset, length, e => SyntaxHighlightingService.GetColor (e.EditorTheme, EditorThemeColors.BreakpointMarker), e => SyntaxHighlightingService.GetChunkStyle (e.EditorTheme, EditorThemeColors.BreakpointText));
 		}
@@ -242,7 +257,7 @@ namespace MonoDevelop.SourceEditor
 
 		public DisabledBreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
 		{
-			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint);
+			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint, true);
 			TextMarker = new DebugTextMarker (offset, length, e => SyntaxHighlightingService.GetColor (e.EditorTheme, EditorThemeColors.BreakpointMarkerDisabled));
 		}
 	}
@@ -254,7 +269,7 @@ namespace MonoDevelop.SourceEditor
 
 		public InvalidBreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
 		{
-			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint);
+			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint, true);
 			TextMarker = new DebugTextMarker (offset, length, e => SyntaxHighlightingService.GetColor (e.EditorTheme, EditorThemeColors.BreakpointMarkerInvalid));
 		}
 	}
@@ -265,18 +280,18 @@ namespace MonoDevelop.SourceEditor
 
 		public DebugStackLineTextMarker (MonoTextEditor editor, int offset, int length)
 		{
-			IconMarker = new DebugIconMarker (stackLine);
+			IconMarker = new DebugIconMarker (stackLine, false);
 			TextMarker = new DebugTextMarker (offset, length, e => SyntaxHighlightingService.GetColor (e.EditorTheme, EditorThemeColors.DebuggerStackLineMarker), e => SyntaxHighlightingService.GetChunkStyle (e.EditorTheme, EditorThemeColors.DebuggerStackLine));
 		}
 	}
 
 	class CurrentDebugLineTextMarker : DebugMarkerPair, ICurrentDebugLineTextMarker
 	{
-		static readonly Image currentLine = Image.FromResource (typeof (BreakpointPad), "gutter-execution-15.png");
+		internal static readonly Image currentLine = Image.FromResource (typeof (BreakpointPad), "gutter-execution-15.png");
 
 		public CurrentDebugLineTextMarker (MonoTextEditor editor, int offset, int length)
 		{
-			IconMarker = new DebugIconMarker (currentLine);
+			IconMarker = new DebugIconMarker (currentLine, false);
 			TextMarker = new DebugTextMarker (offset, length, e => SyntaxHighlightingService.GetColor (e.EditorTheme, EditorThemeColors.DebuggerCurrentLineMarker), e => SyntaxHighlightingService.GetChunkStyle (e.EditorTheme, EditorThemeColors.DebuggerCurrentLine));
 		}
 

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Ide.Editor;
 using NUnit.Framework;
 
 namespace Mono.TextEditor.Tests.Actions
@@ -220,6 +221,7 @@ namespace Mono.TextEditor.Tests.Actions
 		public void AdvancedBackspaceTests ()
 		{
 			var data = Create (@"($)", mimeType: "text/x-csharp");
+			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
 			MonoDevelop.SourceEditor.EditActions.AdvancedBackspace (data);
 			Check (data, @"$");
 			data = Create (@"[$]", mimeType:"text/x-csharp");

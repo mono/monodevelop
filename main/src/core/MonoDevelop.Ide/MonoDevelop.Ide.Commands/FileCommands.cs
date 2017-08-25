@@ -166,7 +166,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			if (IdeApp.Workbench.ActiveDocument != null)
-				IdeApp.Workbench.ActiveDocument.Close ();
+				IdeApp.Workbench.ActiveDocument.Close ().Ignore();
 		}
 
 		protected override void Update (CommandInfo info)
@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.Workspace.Close ();
+			IdeApp.Workspace.Close ().Ignore();
 		}
 
 		protected override void Update (CommandInfo info)
@@ -417,7 +417,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.Exit ();
+			IdeApp.Exit ().Ignore();
 		}
 	}
 	// MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis    Implemented in FileTabCommands.cs

@@ -241,7 +241,7 @@ namespace MonoDevelop.Components.MainToolbar
 		/// <summary>
 		/// Rebuilds the toolbar.
 		/// </summary>
-		/// <param name="buttons">A list of ButtonBarGroups.</param>
+		/// <param name="groups">A list of ButtonBarGroups.</param>
 		void RebuildToolbar (IEnumerable<ButtonBarGroup> groups);
 
 		/// <summary>

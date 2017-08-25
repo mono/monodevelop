@@ -148,9 +148,13 @@ namespace MonoDevelop.Core.Assemblies
 			else if (toolName == "vbc")
 				toolName = "vbnc";
 			else if (toolName == "resgen") {
+#pragma warning disable CS0618 // Type or member is obsolete
 				if (framework.ClrVersion == ClrVersion.Net_1_1)
+#pragma warning restore CS0618 // Type or member is obsolete
 					toolName = "resgen1";
+#pragma warning disable CS0618 // Type or member is obsolete
 				else if (framework.ClrVersion == ClrVersion.Net_2_0)
+#pragma warning restore CS0618 // Type or member is obsolete
 					toolName = "resgen2";
 			}
 			else if (toolName == "msbuild")

@@ -50,16 +50,6 @@ namespace MonoDevelop.Core.Text
 		NEL = 0x85,
 
 		/// <summary>
-		/// Vertical Tab, U+000B
-		/// </summary>
-		// VT = 0x0B,
-
-		/// <summary>
-		/// Form Feed, U+000C
-		/// </summary>
-		// FF = 0x0C,
-
-		/// <summary>
 		/// Line Separator, U+2028
 		/// </summary>
 		LS = 0x2028,

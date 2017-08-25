@@ -284,7 +284,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			foreach (ITreeNavigator node in CurrentNodes) {
 				Workspace ws = (Workspace) node.DataItem;
-				IdeApp.Workspace.CloseWorkspaceItem (ws);
+				IdeApp.Workspace.CloseWorkspaceItem (ws).Ignore();
 			}
 		}
 		

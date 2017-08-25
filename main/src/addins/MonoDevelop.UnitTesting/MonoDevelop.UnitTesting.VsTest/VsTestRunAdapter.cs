@@ -273,6 +273,16 @@ namespace MonoDevelop.UnitTesting.VsTest
 			runJobInProgress.ProcessOperation = currentTestContext.ExecutionContext.ExecutionHandler.Execute (command, console);
 
 
+			// Returns the IDE process id which is incorrect. This should be the
+			// custom test host process. The VSCodeDebuggerSession does not return
+			// the correct process id. If it did the process is not available
+			// immediately since it takes some time for it to start so a wait
+			// would be needed here. Note that returning process id of 1 for .NET
+			// Core SDK versions 1.0 does not work the debugger never starts.
+			var latestVersion = DotNetCoreSdk.Versions.FirstOrDefault ();
+			if (latestVersion == null || latestVersion.Major  < 2)
+				return Process.GetCurrentProcess ().Id;
+
 			//This is horrible hack...
 			//VSTest wants us to send it PID of process our debugger just started so it can kill it when tests are finished
 			//VSCode debug protocol doesn't give us PID of debugee

@@ -92,8 +92,6 @@ namespace MonoDevelop.Ide.Gui
 		MainToolbarController toolbar;
 		MonoDevelopStatusBar bottomBar;
 
-		Timer saveTimer;
-
 #if DUMMY_STRINGS_FOR_TRANSLATION_DO_NOT_COMPILE
 		private void DoNotCompile ()
 		{
@@ -672,7 +670,7 @@ namespace MonoDevelop.Ide.Gui
 								content.UntitledName = content.ContentName;
 								content.ContentName = null;
 							} else {
-								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
+								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true).Ignore();
 							}
 						}
 					}
@@ -684,7 +682,7 @@ namespace MonoDevelop.Ide.Gui
 								content.UntitledName = content.ContentName;
 								content.ContentName = null;
 							} else {
-								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
+								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true).Ignore();
 							}
 							return;
 						}
@@ -1280,7 +1278,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void CloseClicked (object o, TabEventArgs e)
 		{
-			((SdiWorkspaceWindow)e.Tab.Content).CloseWindow (false, true);
+			((SdiWorkspaceWindow)e.Tab.Content).CloseWindow (false, true).Ignore();
 		}
 
 		internal void RemoveTab (DockNotebook tabControl, int pageNum, bool animate)

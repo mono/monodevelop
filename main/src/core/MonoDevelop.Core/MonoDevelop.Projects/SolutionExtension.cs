@@ -118,6 +118,7 @@ namespace MonoDevelop.Projects
 			return next.OnGetRunConfigurations ();
 		}
 
+		[Obsolete("This method will be removed in future releases")]
 		internal protected virtual bool NeedsBuilding (ConfigurationSelector configuration)
 		{
 			return next.NeedsBuilding (configuration);

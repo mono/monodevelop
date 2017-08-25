@@ -31,9 +31,9 @@ using MonoDevelop.Ide;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Ide.Tests
+namespace MonoDevelop.Ide
 {
-	public class FileTransferTests: TestBase
+	public class FileTransferTests: IdeTestBase
 	{
 		[Test]
 		public async Task MoveEmptyFolder ()

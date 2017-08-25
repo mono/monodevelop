@@ -939,7 +939,7 @@ namespace MonoDevelop.Ide
 			SolutionItem prj = item as SolutionItem;
 			if (prj == null) {
 				if (MessageService.Confirm (question, AlertButton.Remove) && IdeApp.Workspace.RequestItemUnload (item))
-					RemoveItemFromSolution (prj);
+					RemoveItemFromSolution (prj).Ignore();
 				return;
 			}
 			
@@ -954,7 +954,7 @@ namespace MonoDevelop.Ide
 					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 
 						// Remove the project before removing the files to avoid unnecessary events
-						RemoveItemFromSolution (prj);
+						RemoveItemFromSolution (prj).Ignore();
 
 						List<FilePath> files = dlg.GetFilesToDelete ();
 						using (ProgressMonitor monitor = new MessageDialogProgressMonitor (true)) {
@@ -979,18 +979,18 @@ namespace MonoDevelop.Ide
 				}
 			}
 			else if (result == AlertButton.Remove && IdeApp.Workspace.RequestItemUnload (prj)) {
-				RemoveItemFromSolution (prj);
+				RemoveItemFromSolution (prj).Ignore();
 			}
 		}
 		
-		void RemoveItemFromSolution (SolutionFolderItem prj)
+		async Task RemoveItemFromSolution (SolutionFolderItem prj)
 		{
 			foreach (var doc in IdeApp.Workbench.Documents.Where (d => d.Project == prj).ToArray ())
-				doc.Close ();
+				await doc.Close ();
 			Solution sol = prj.ParentSolution;
 			prj.ParentFolder.Items.Remove (prj);
 			prj.Dispose ();
-			IdeApp.ProjectOperations.SaveAsync (sol);
+			await IdeApp.ProjectOperations.SaveAsync (sol);
 		}
 		
 		/// <summary>

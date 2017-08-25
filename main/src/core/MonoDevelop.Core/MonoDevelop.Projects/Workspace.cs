@@ -115,7 +115,9 @@ namespace MonoDevelop.Projects
 
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
+#pragma warning disable CS0618 // Type or member is obsolete
 			return Items.OfType<IBuildTarget> ().Any (t => t.NeedsBuilding (configuration));
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 		
 		[ThreadSafe]

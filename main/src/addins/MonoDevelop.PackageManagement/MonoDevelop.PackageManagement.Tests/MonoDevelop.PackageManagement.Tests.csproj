@@ -85,7 +85,7 @@
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.Resolver.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.ProjectModel">
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.ProjectModel.dll</HintPath>
@@ -203,6 +203,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageReferenceNuGetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeMonoDevelopBuildIntegratedRestorer.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\RestoreNuGetPackagesInNuGetIntegratedProjectTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ImportedPackageReferenceProjectTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

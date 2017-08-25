@@ -88,7 +88,8 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			yield return newFxDir;
 		}
-		
+
+		[Obsolete("Use DotNetProject.GetAssemblyDebugInfoFile()")]
 		public override string GetAssemblyDebugInfoFile (string assemblyPath)
 		{
 			return Path.ChangeExtension (assemblyPath, ".pdb");

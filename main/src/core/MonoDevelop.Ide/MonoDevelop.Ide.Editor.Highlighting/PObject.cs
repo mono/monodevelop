@@ -688,7 +688,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public static PDictionary FromStream (Stream stream)
+		new public static PDictionary FromStream (Stream stream)
 		{
 			bool isBinary;
 			return FromStream (stream, out isBinary);
