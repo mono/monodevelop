@@ -477,7 +477,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				cp != null ? cp.CreateCompilationOptions () : null,
 				cp != null ? cp.CreateParseOptions (config) : null,
 				documents.Item1,
-				CreateProjectReferences (p, token),
+				await CreateProjectReferences (p, token),
 				references,
 				additionalDocuments: documents.Item2
 			);
@@ -685,31 +685,34 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 
-		IEnumerable<ProjectReference> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
+		async Task<IEnumerable<ProjectReference>> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
 		{
 			var netProj = p as MonoDevelop.Projects.DotNetProject;
 			if (netProj == null)
-				yield break;
+				return Enumerable.Empty<ProjectReference> ();
 
-			//GetReferencedAssemblyProjectAliases returns filtered projects, like:
-			//MSBuild Condtion='something'
-			//pref.ReferenceOutputAssembly
-			//and for iOS/Android extensions
-			MonoDevelop.Projects.DotNetProjectAliases [] referencedProjects;
+			List<MonoDevelop.Projects.AssemblyReference> references;
 			try {
-				referencedProjects = netProj.GetReferencedAssemblyProjectAliases (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default).ToArray ();
+				var config = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default;
+				references = await netProj.GetReferences (config, token).ConfigureAwait (false);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting referenced projects.", e);
-				yield break;
+				return Enumerable.Empty<ProjectReference> ();
 			};
+			return CreateProjectReferences (netProj, references);
+		}
+
+		IEnumerable<ProjectReference> CreateProjectReferences (MonoDevelop.Projects.DotNetProject p, List<MonoDevelop.Projects.AssemblyReference> references)
+		{
 			var addedProjects = new HashSet<MonoDevelop.Projects.DotNetProject> ();
-			foreach (var pr in referencedProjects) {
-				if (!addedProjects.Add (pr.Project))
+			foreach (var pr in references.Where (r => r.IsProjectReference && r.ReferenceOutputAssembly)) {
+				var referencedProject = pr.GetReferencedItem (p.ParentSolution) as MonoDevelop.Projects.DotNetProject;
+				if (referencedProject == null || !addedProjects.Add (referencedProject))
 					continue;
-				if (TypeSystemService.IsOutputTrackedProject (pr.Project))
+				if (TypeSystemService.IsOutputTrackedProject (referencedProject))
 					continue;
 				yield return new ProjectReference (
-					GetOrCreateProjectId (pr.Project),
+					GetOrCreateProjectId (referencedProject),
 					ImmutableArray<string>.Empty.AddRange (pr.EnumerateAliases ()));
 			}
 		}

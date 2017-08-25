@@ -404,8 +404,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 				MSBuildEvaluatedItem[] items;
 				if (result.Items.TryGetValue ("ReferencePath", out items) && items != null) {
-					string aliases;
-					refs = items.Select (i => new AssemblyReference (i.ItemSpec, i.Metadata.TryGetValue ("Aliases", out aliases) ? aliases : "")).ToArray ();
+					refs = items.Select (i => new AssemblyReference (i.ItemSpec, i.Metadata)).ToArray ();
 				} else
 					refs = new AssemblyReference [0];
 

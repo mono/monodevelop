@@ -612,34 +612,47 @@ namespace MonoDevelop.DotNetCore
 		/// <summary>
 		/// Returns all transitive project references.
 		/// </summary>
-		protected override IEnumerable<DotNetProjectAliases> OnGetReferencedAssemblyProjectAliases (ConfigurationSelector configuration)
+		protected override async Task<List<AssemblyReference>> OnGetReferences (
+			ConfigurationSelector configuration,
+			System.Threading.CancellationToken token)
 		{
-			var projectAliases = new List<DotNetProjectAliases> ();
+			var references = new List<AssemblyReference> ();
 
 			var traversedProjects = new HashSet<string> ();
 			traversedProjects.Add (Project.ItemId);
 
-			GetProjectAliases (traversedProjects, projectAliases, configuration);
+			await GetProjectAssemblyReferences (traversedProjects, references, configuration, token);
 
-			return projectAliases;
+			return references;
 		}
 
 		/// <summary>
-		/// Recursively gets all project aliases for .NET Core projects. Calling
-		/// base.OnGetReferencedAssemblyProjectAliases returns the directly referenced project aliases.
+		/// Recursively gets all project references for .NET Core projects. Calling
+		/// base.OnGetReferences returns the directly referenced projects.
 		/// </summary>
-		void GetProjectAliases (HashSet<string> traversedProjects, List<DotNetProjectAliases> projectAliases, ConfigurationSelector configuration)
+		async Task GetProjectAssemblyReferences (
+			HashSet<string> traversedProjects,
+			List<AssemblyReference> references,
+			ConfigurationSelector configuration,
+			System.Threading.CancellationToken token)
 		{
-			foreach (var projectAlias in base.OnGetReferencedAssemblyProjectAliases (configuration)) {
-				if (traversedProjects.Contains (projectAlias.Project.ItemId))
+			foreach (var reference in await base.OnGetReferences (configuration, token)) {
+				if (!reference.IsProjectReference || !reference.ReferenceOutputAssembly)
 					continue;
 
-				projectAliases.Add (projectAlias);
-				traversedProjects.Add (projectAlias.Project.ItemId);
+				var project = reference.GetReferencedItem (Project.ParentSolution) as DotNetProject;
+				if (project == null)
+					continue;
 
-				var extension = projectAlias.Project.AsFlavor<DotNetCoreProjectExtension> ();
+				if (traversedProjects.Contains (project.ItemId))
+					continue;
+
+				references.Add (reference);
+				traversedProjects.Add (project.ItemId);
+
+				var extension = project.AsFlavor<DotNetCoreProjectExtension> ();
 				if (extension != null)
-					extension.GetProjectAliases (traversedProjects, projectAliases, configuration);
+					await extension.GetProjectAssemblyReferences (traversedProjects, references, configuration, token);
 			}
 		}
 	}

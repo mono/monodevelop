@@ -871,11 +871,23 @@ namespace MonoDevelop.Projects
 				if (includeProjectReferences) {
 					foreach (ProjectReference pref in References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
 						foreach (var asm in pref.GetReferencedFileNames (configuration))
-							res.Add (new AssemblyReference (asm, pref.Aliases));
+							res.Add (CreateProjectAssemblyReference (asm, pref));
 					}
 				}
 				return res;
 			});
+		}
+
+		public Task<List<AssemblyReference>> GetReferences (ConfigurationSelector configuration)
+		{
+			return BindTask (async ct => {
+				return await ProjectExtension.OnGetReferences (configuration, ct);
+			});
+		}
+
+		public Task<List<AssemblyReference>> GetReferences (ConfigurationSelector configuration, CancellationToken token)
+		{
+			return ProjectExtension.OnGetReferences (configuration, token);
 		}
 
 		/// <summary>
@@ -886,20 +898,6 @@ namespace MonoDevelop.Projects
 		public IEnumerable<DotNetProject> GetReferencedAssemblyProjects (ConfigurationSelector configuration)
 		{
 			return ProjectExtension.OnGetReferencedAssemblyProjects (configuration);
-		}
-
-		/// <summary>
-		/// Gets the referenced assembly project aliases, but only projects which output are actually referenced
-		/// for example references with ReferenceOutputAssembly=false are excluded. This method will be used
-		/// by the type system since it requires both the DotNetProject and its associated aliases. This will
-		/// allow transitively referenced projects to be returned from the DotNetProjectExtension and the
-		/// type system service can just use this information directly without having to lookup the aliases
-		/// separately and potentially ignore the transitive project references.
-		/// </summary>
-		/// <param name="configuration">Configuration.</param>
-		public IEnumerable<DotNetProjectAliases> GetReferencedAssemblyProjectAliases (ConfigurationSelector configuration)
-		{
-			return ProjectExtension.OnGetReferencedAssemblyProjectAliases (configuration);
 		}
 
 		internal protected virtual async Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
@@ -1036,20 +1034,41 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal protected virtual IEnumerable<DotNetProjectAliases> OnGetReferencedAssemblyProjectAliases (ConfigurationSelector configuration)
+		internal protected virtual async Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
 		{
-			if (ParentSolution == null) {
-				yield break;
+			var result = await OnGetReferencedAssemblies (configuration);
+
+			foreach (ProjectReference pref in References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
+				foreach (var asm in pref.GetReferencedFileNames (configuration))
+					result.Add (CreateProjectAssemblyReference (asm, pref));
 			}
-			var ctx = new ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration));
-			foreach (ProjectReference pref in References) {
-				if (pref.ReferenceType == ReferenceType.Project && pref.ReferenceOutputAssembly &&
-				    (string.IsNullOrEmpty (pref.Condition) || ConditionParser.ParseAndEvaluate (pref.Condition, ctx))) {
-					var rp = pref.ResolveProject (ParentSolution) as DotNetProject;
-					if (rp != null)
-						yield return new DotNetProjectAliases (rp, pref.Aliases);
-				}
-			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// This should be removed once the project reference information is retrieved from MSBuild.
+		/// </summary>
+		static AssemblyReference CreateProjectAssemblyReference (string path, ProjectReference reference)
+		{
+			var metadata = new Dictionary<string, string> {
+				{ "Aliases", reference.Aliases },
+				{ "CopyLocal", reference.LocalCopy.ToString () },
+				{ "Project", reference.ProjectGuid },
+				{ "MSBuildSourceProjectFile", GetProjectFileName (reference) },
+				{ "ReferenceOutputAssembly", reference.ReferenceOutputAssembly.ToString () },
+				{ "ReferenceSourceTarget", "ProjectReference" }
+			};
+			return new AssemblyReference (path, metadata);
+		}
+
+		static string GetProjectFileName (ProjectReference reference)
+		{
+			if (reference.OwnerProject?.ParentSolution == null)
+				return null;
+
+			Project project = reference.ResolveProject (reference.OwnerProject.ParentSolution);
+			return project?.FileName;
 		}
 
 		protected override Task<BuildResult> DoBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
@@ -1900,6 +1919,11 @@ namespace MonoDevelop.Projects
 				return Project.OnGetDefaultTargetPlatform (projectCreateInfo);
 			}
 
+			internal protected override Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
+			{
+				return Project.OnGetReferences (configuration, token);
+			}
+
 			internal protected override Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 			{
 				return Project.OnGetReferencedAssemblies (configuration);
@@ -1908,11 +1932,6 @@ namespace MonoDevelop.Projects
 			internal protected override IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
 			{
 				return Project.OnGetReferencedAssemblyProjects (configuration);
-			}
-
-			internal protected override IEnumerable<DotNetProjectAliases> OnGetReferencedAssemblyProjectAliases (ConfigurationSelector configuration)
-			{
-				return Project.OnGetReferencedAssemblyProjectAliases (configuration);
 			}
 
 #pragma warning disable 672 // Member overrides obsolete member

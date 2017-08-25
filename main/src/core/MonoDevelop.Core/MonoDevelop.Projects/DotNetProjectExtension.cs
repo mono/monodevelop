@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core;
+using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Projects.MSBuild;
 
@@ -77,14 +78,14 @@ namespace MonoDevelop.Projects
 			return next.OnGetReferencedAssemblies (configuration);
 		}
 
+		internal protected virtual Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
+		{
+			return next.OnGetReferences (configuration, token);
+		}
+
 		internal protected virtual IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
 		{
 			return next.OnGetReferencedAssemblyProjects (configuration);
-		}
-
-		internal protected virtual IEnumerable<DotNetProjectAliases> OnGetReferencedAssemblyProjectAliases (ConfigurationSelector configuration)
-		{
-			return next.OnGetReferencedAssemblyProjectAliases (configuration);
 		}
 
 		[Obsolete("User overload that takes a RunConfiguration")]
