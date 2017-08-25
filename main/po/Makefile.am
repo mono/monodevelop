@@ -1,3 +1,4 @@
+include $(top_srcdir)/xbuild.include
 
 LC_BUILD=$(top_builddir)/build/locale
 #old automake versions don't set datarootdir or localedir
@@ -12,9 +13,18 @@ all: $(GMO_FILES)
 update-po:
 	$(MDTOOL_RUN) gettext-update -f:$(top_srcdir)/Main.sln
 
-$(GMO_FILES): $(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo: %.po
+$(GMO_FILES): $(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo: %.po strip-mnemonics
 	$(MKDIR_P) $(dir $@)
 	msgfmt '$<' -o '$@'
+
+if ENABLE_MACPLATFORM
+strip-mnemonics:
+	$(XBUILD) "StripMnemonics/StripMnemonics.sln"
+	mono StripMnemonics.exe .
+else
+strip-mnemonics:
+endif
+
 
 statistics:
 	@for LANGFILE in $(ALL_LINGUAS); do \
