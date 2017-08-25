@@ -225,6 +225,7 @@ namespace MonoDevelop.Ide.Gui
 			DockNotebook.NotebookChanged += NotebookPagesChanged;
 
 			Accessible.SetIsMainWindow (true);
+			Accessible.SetRole (AtkCocoa.Roles.AXButton);
 		}
 
 		void NotebookPagesChanged (object sender, EventArgs e)

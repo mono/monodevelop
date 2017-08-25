@@ -36,6 +36,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using System.Linq;
 using System.IO;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Debugger
 {
@@ -311,10 +312,21 @@ namespace MonoDevelop.Debugger
 		protected override void Run ()
 		{
 			var breakpoints = DebuggingService.Breakpoints;
+			var activeDocument = IdeApp.Workbench.ActiveDocument;
+			var editor = activeDocument.Editor;
+			var rootWindow = IdeApp.Workbench.RootWindow;
+			string messageText;
 			Breakpoint bp;
 
-			lock (breakpoints)
-				bp = breakpoints.Toggle (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.CaretLine, IdeApp.Workbench.ActiveDocument.Editor.CaretColumn);
+			lock (breakpoints) {
+				bp = breakpoints.Toggle (activeDocument.FileName, editor.CaretLine, editor.CaretColumn);
+
+				if (bp == null)
+					messageText = GettextCatalog.GetString ("Breakpoint deleted from {0} line", editor.CaretLine);
+				else
+					messageText = GettextCatalog.GetString ("Breakpoint added to {0} line", editor.CaretLine);
+				rootWindow.Accessible.MakeAccessibilityAnnouncement (messageText);					
+			}
 			
 			// If the breakpoint could not be inserted in the caret location, move the caret
 			// to the real line of the breakpoint, so that if the Toggle command is run again,
@@ -322,7 +334,7 @@ namespace MonoDevelop.Debugger
 			if (bp != null && bp.Line != IdeApp.Workbench.ActiveDocument.Editor.CaretLine)
 				IdeApp.Workbench.ActiveDocument.Editor.CaretLine = bp.Line;
 		}
-		
+
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
