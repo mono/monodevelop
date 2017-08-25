@@ -43,7 +43,9 @@ namespace StripMnemonics
 		{
 			if (args.Length != 1) {
 				Console.WriteLine("Usage: StripMnemonics.exe <po_dir>");
+				return;
 			}
+
 			foreach (var lang in langs)
 				PostProcess(Path.Combine (args[0], lang + ".po"));
 		}

@@ -136,7 +136,9 @@ namespace StripMnemonics
 			line = reader.ReadLine();
 			while (!string.IsNullOrEmpty(line) && line.StartsWith("\"", StringComparison.Ordinal))
 			{
-				multiLineString.Add(line.Trim('\"'));
+				var leadingStripped = line.Remove(0, 1);
+				var stripped = leadingStripped.Remove(leadingStripped.Length - 1, 1);
+				multiLineString.Add(stripped);
 
 				// Parse number of plural forms to write for each string.
 				if (line.StartsWith("\"Plural-Forms:", StringComparison.Ordinal))
