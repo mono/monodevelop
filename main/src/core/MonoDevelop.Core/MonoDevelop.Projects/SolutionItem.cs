@@ -597,18 +597,21 @@ namespace MonoDevelop.Projects
 		async Task<BuildResult> BuildTask (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, OperationContext operationContext)
 		{
 			if (!buildReferences) {
+				await NotifyBeginBuildOperation(Enumerable.Repeat(this, 1), monitor, solutionConfiguration, operationContext);
+				BuildResult result = null;
 				try {
 					SolutionItemConfiguration iconf = GetConfiguration (solutionConfiguration);
 					string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
 					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
 
 					using (Counters.BuildProjectTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata (solutionConfiguration))) {
-						return await InternalBuild (monitor, solutionConfiguration, operationContext);
+						result = await InternalBuild (monitor, solutionConfiguration, operationContext);
 					}
-
 				} finally {
+					await NotifyEndBuildOperation(Enumerable.Repeat(this, 1), monitor, solutionConfiguration, operationContext, result);
 					monitor.EndTask ();
 				}
+				return result;
 			}
 
 			ITimeTracker tt = Counters.BuildProjectAndReferencesTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata (solutionConfiguration));
@@ -626,9 +629,18 @@ namespace MonoDevelop.Projects
 				string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
 				monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), sortedReferenced.Count);
 
-				return await SolutionFolder.RunParallelBuildOperation (monitor, solutionConfiguration, sortedReferenced, (ProgressMonitor m, SolutionItem item) => {
-					return item.Build (m, solutionConfiguration, false, operationContext);
-				}, false);
+				await NotifyBeginBuildOperation (sortedReferenced, monitor, solutionConfiguration, operationContext);
+
+				BuildResult result = null;
+				try {
+					result = await SolutionFolder.RunParallelBuildOperation (monitor, solutionConfiguration, sortedReferenced, (ProgressMonitor m, SolutionItem item) => {
+						return item.Build (m, solutionConfiguration, false, operationContext);
+					}, false);
+				}
+				finally {
+					await NotifyEndBuildOperation (sortedReferenced, monitor, solutionConfiguration, operationContext, result);
+				}
+				return result;
 			} finally {
 				monitor.EndTask ();
 				tt.End ();
@@ -669,6 +681,41 @@ namespace MonoDevelop.Projects
 			return res;
 		}
 
+		static object buildOperationStartedMarker = new object();
+
+		internal static async Task NotifyBeginBuildOperation (IEnumerable<SolutionItem> items, ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		{
+			// Invoke BeginBuildOperation on the items only if NotifyBeginBuildOperation has not
+			// been called during the current build session
+
+			object startCount;
+			if (!operationContext.SessionData.TryGetValue (buildOperationStartedMarker, out startCount)) {
+				operationContext.SessionData[buildOperationStartedMarker] = 1;
+				foreach (var item in items)
+					await item.BeginBuildOperation(monitor, configuration, operationContext);
+			} else
+				operationContext.SessionData[buildOperationStartedMarker] = ((int)startCount) + 1;
+		}
+
+		internal static async Task NotifyEndBuildOperation (IEnumerable<SolutionItem> items, ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext, BuildResult result)
+		{
+			// Invoke EndBuildOperation on the items only if this is the last call to NotifyEndBuildOperation
+			// in the current build session
+
+			object startCount;
+			if (operationContext.SessionData.TryGetValue (buildOperationStartedMarker, out startCount)) {
+				var startCountInt = (int) startCount;
+				if (--startCountInt == 0) {
+					operationContext.SessionData.Remove (buildOperationStartedMarker);
+					if (result == null)
+						result = new BuildResult().AddError("Unexpected build error");
+					foreach (var item in items)
+						await item.EndBuildOperation(monitor, configuration, operationContext, result);
+				} else
+					operationContext.SessionData [buildOperationStartedMarker] = startCountInt;
+			}
+		}
+
 		/// <summary>
 		/// Builds the solution item
 		/// </summary>
@@ -681,6 +728,26 @@ namespace MonoDevelop.Projects
 		protected virtual Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			return Task.FromResult (BuildResult.CreateSuccess ());
+		}
+
+		internal Task BeginBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		{
+			return ItemExtension.OnBeginBuildOperation (monitor, configuration, operationContext);
+		}
+
+		internal Task EndBuildOperation(ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext, BuildResult result)
+		{
+			return ItemExtension.OnEndBuildOperation (monitor, configuration, operationContext, result);
+		}
+
+		protected virtual Task OnBeginBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		{
+			return Task.CompletedTask;
+		}
+
+		protected virtual Task OnEndBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext, BuildResult result)
+		{
+			return Task.CompletedTask;
 		}
 
 		void GetBuildableReferencedItems (Set<SolutionItem> visited, List<SolutionItem> referenced, SolutionItem item, ConfigurationSelector configuration)
@@ -1646,6 +1713,16 @@ namespace MonoDevelop.Projects
 				get {
 					return Item.BaseItemFilesChanged;
 				}
+			}
+
+			internal protected override Task OnBeginBuildOperation(ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+			{
+				return Item.OnBeginBuildOperation(monitor, configuration, operationContext);
+			}
+
+			internal protected override Task OnEndBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext, BuildResult result)
+			{
+				return Item.OnEndBuildOperation (monitor, configuration, operationContext, result);
 			}
 
 			internal protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)

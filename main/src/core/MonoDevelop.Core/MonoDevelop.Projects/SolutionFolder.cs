@@ -626,10 +626,18 @@ namespace MonoDevelop.Projects
 				
 				monitor.BeginTask (GettextCatalog.GetString ("Building Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
 
-				return await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
-					return item.Build (m, configuration, false, operationContext);
-				}, false);
+				await SolutionItem.NotifyBeginBuildOperation (allProjects, monitor, configuration, operationContext);
 
+				BuildResult result = null;
+				try {
+					result = await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
+						return item.Build (m, configuration, false, operationContext);
+					}, false);
+				}
+				finally {
+					await SolutionItem.NotifyEndBuildOperation (allProjects, monitor, configuration, operationContext, result);
+				}
+				return result;
 			} finally {
 				monitor.EndTask ();
 			}
