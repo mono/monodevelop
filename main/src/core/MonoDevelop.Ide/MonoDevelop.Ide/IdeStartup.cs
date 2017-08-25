@@ -544,6 +544,11 @@ namespace MonoDevelop.Ide
 		
 		static void HandleException (Exception ex, bool willShutdown)
 		{
+			// This is a workaround for a specific issue in ServiceHub where some 'success' event triggers an exception
+			// We should remove this once it's fixed upstream.
+			if (ex?.InnerException is System.Net.Sockets.SocketException && ex.InnerException.Message == "Success")
+				return;
+
 			var msg = String.Format ("An unhandled exception has occured. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
 			var aggregateException = ex as AggregateException;
 			if (aggregateException != null) {
