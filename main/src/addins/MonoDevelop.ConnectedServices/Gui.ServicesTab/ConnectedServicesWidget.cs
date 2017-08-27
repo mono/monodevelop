@@ -58,13 +58,13 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void ShowGallery (IConnectedService [] services, Project project)
 		{
-			ShowGallery (services, (SolutionItem)project);
+			ShowGallery (services, (WorkspaceObject)project);
 		}
 
 		/// <summary>
 		/// Shows the services gallery and removes the details widget if it is visible (SolutionItem version)
 		/// </summary>
-		public void ShowGallery(IConnectedService[] services, SolutionItem owner)
+		public void ShowGallery(IConnectedService[] services, WorkspaceObject owner)
 		{
 			if (gallery == null) {
 				gallery = new ServicesGalleryWidget ();

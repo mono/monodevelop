@@ -486,12 +486,12 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (openFileInfo);
 		}
 
-		public Task<Document> OpenDocument (FilePath fileName, SolutionItem owner, bool bringToFront)
+		public Task<Document> OpenDocument (FilePath fileName, WorkspaceObject owner, bool bringToFront)
 		{
 			return OpenDocument (fileName, owner, bringToFront ? OpenDocumentOptions.Default : OpenDocumentOptions.Default & ~OpenDocumentOptions.BringToFront);
 		}
 
-		public Task<Document> OpenDocument (FilePath fileName, SolutionItem owner, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, WorkspaceObject owner, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, owner, -1, -1, options, null, null);
 		}
@@ -521,21 +521,9 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (fileName, project, line, column, options, encoding, null);
 		}
 
-		internal Task<Document> OpenDocument (FilePath fileName, SolutionItem owner, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
+		internal Task<Document> OpenDocument (FilePath fileName, WorkspaceObject owner, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
 		{
 			var openFileInfo = new FileOpenInformation (fileName, owner) {
-				Options = options,
-				Line = line,
-				Column = column,
-				DisplayBinding = binding,
-				Encoding = encoding
-			};
-			return OpenDocument (openFileInfo);
-		}
-
-		internal Task<Document> OpenDocument (FilePath fileName, SolutionItem owner, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
-		{
-			var openFileInfo = new FileOpenInformation (fileName, owner as Project) {
 				Options = options,
 				Line = line,
 				Column = column,
@@ -618,8 +606,8 @@ namespace MonoDevelop.Ide.Gui
 				}
 				Counters.OpenDocumentTimer.Trace ("Initializing monitor");
 				ProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (
-					GettextCatalog.GetString ("Opening {0}", info.Owner != null ?
-						info.FileName.ToRelative (info.Owner.ParentSolution.BaseDirectory) :
+					GettextCatalog.GetString ("Opening {0}", info.Owner is SolutionFolderItem solutionItem ?
+						info.FileName.ToRelative (solutionItem.ParentSolution.BaseDirectory) :
 						info.FileName),
 					Stock.StatusWorking,
 					true
@@ -995,7 +983,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			IDisplayBinding binding = null;
 			IViewDisplayBinding viewBinding = null;
-			SolutionItem owner = openFileInfo.Owner ?? GetProjectContainingFile (fileName);
+			WorkspaceObject owner = openFileInfo.Owner ?? GetProjectContainingFile (fileName);
 			
 			if (openFileInfo.DisplayBinding != null) {
 				binding = viewBinding = openFileInfo.DisplayBinding;
@@ -1481,7 +1469,7 @@ namespace MonoDevelop.Ide.Gui
 		public ViewContent NewContent { get; set; }
 		public Encoding Encoding { get; set; }
 		public Project Project { get; set; }
-		public SolutionItem Owner { get; set; }
+		public WorkspaceObject Owner { get; set; }
 
 		/// <summary>
 		/// Is true when the file is already open and reload is requested.
@@ -1500,14 +1488,14 @@ namespace MonoDevelop.Ide.Gui
 
 		}
 
-		public FileOpenInformation (FilePath filePath, SolutionItem owner = null)
+		public FileOpenInformation (FilePath filePath, WorkspaceObject owner = null)
 		{
 			this.FileName = filePath;
 			this.Owner = owner;
 			this.Options = OpenDocumentOptions.Default;
 		}
 		
-		public FileOpenInformation (FilePath filePath, SolutionItem owner, int line, int column, OpenDocumentOptions options) 
+		public FileOpenInformation (FilePath filePath, WorkspaceObject owner, int line, int column, OpenDocumentOptions options) 
 		{
 			this.FileName = filePath;
 			this.Owner = owner;
@@ -1563,7 +1551,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		IViewDisplayBinding binding;
 		Project project;
-		SolutionItem owner;
+		WorkspaceObject owner;
 		FileOpenInformation fileInfo;
 		DefaultWorkbench workbench;
 		ProgressMonitor monitor;
@@ -1577,7 +1565,7 @@ namespace MonoDevelop.Ide.Gui
 			this.binding = binding;
 		}
 		
-		public LoadFileWrapper (ProgressMonitor monitor, DefaultWorkbench workbench, IViewDisplayBinding binding, SolutionItem owner, FileOpenInformation fileInfo)
+		public LoadFileWrapper (ProgressMonitor monitor, DefaultWorkbench workbench, IViewDisplayBinding binding, WorkspaceObject owner, FileOpenInformation fileInfo)
 			: this (monitor, workbench, binding, fileInfo)
 		{
 			this.owner = owner;

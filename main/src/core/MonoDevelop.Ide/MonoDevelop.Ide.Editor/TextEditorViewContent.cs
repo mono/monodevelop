@@ -48,6 +48,7 @@ using Microsoft.CodeAnalysis;
 using Gdk;
 using MonoDevelop.Ide.CodeFormatting;
 using System.Collections.Immutable;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -145,7 +146,7 @@ namespace MonoDevelop.Ide.Editor
 				policyContainer.PolicyChanged -= HandlePolicyChanged;
 		}
 
-		void UpdateStyleParent (MonoDevelop.Projects.SolutionItem styleParent, string mimeType)
+		void UpdateStyleParent (MonoDevelop.Projects.WorkspaceObject styleParent, string mimeType)
 		{
 			RemovePolicyChangeHandler ();
 
@@ -155,7 +156,7 @@ namespace MonoDevelop.Ide.Editor
 			var mimeTypes = DesktopService.GetMimeTypeInheritanceChain (mimeType);
 
 			if (styleParent != null)
-				policyContainer = styleParent.Policies;
+				policyContainer = (styleParent as IPolicyProvider).Policies;
 			else
 				policyContainer = MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies;
 			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);

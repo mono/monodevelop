@@ -166,8 +166,10 @@ namespace MonoDevelop.Ide.Gui
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
-			if (window.ViewContent.Owner != null)
-				window.ViewContent.Owner.Modified += HandleProjectModified;
+			if (window.ViewContent.Owner is SolutionFolderItem solutionItem)
+				solutionItem.Modified += HandleProjectModified;
+			else if (window.ViewContent.Owner is WorkspaceItem workspaceItem)
+				workspaceItem.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
 			window.ViewContent.ContentNameChanged += ReloadAnalysisDocumentHandler;
 			MonoDevelopWorkspace.LoadingFinished += ReloadAnalysisDocumentHandler;
@@ -230,7 +232,7 @@ namespace MonoDevelop.Ide.Gui
 			}*/
 		}
 
-		public override SolutionItem Owner {
+		public override WorkspaceObject Owner {
 			get { return (Window != null ? Window.ViewContent.Owner : null) ?? adhocProject; }
 		}
 
@@ -593,8 +595,10 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
 
 			// Unsubscribe project events
-			if (window.ViewContent.Owner != null)
-				window.ViewContent.Owner.Modified -= HandleProjectModified;
+			if (window.ViewContent.Owner is SolutionFolderItem solutionItem)
+				solutionItem.Modified -= HandleProjectModified;
+			else if (window.ViewContent.Owner is WorkspaceItem workspaceItem)
+				workspaceItem.Modified -= HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
 			MonoDevelopWorkspace.LoadingFinished -= ReloadAnalysisDocumentHandler;
 
@@ -737,7 +741,7 @@ namespace MonoDevelop.Ide.Gui
 			SetOwner (project);
 		}
 
-		internal void SetOwner (SolutionItem owner)
+		internal void SetOwner (WorkspaceObject owner)
 		{
 			if (Window == null || Window.ViewContent == null || Window.ViewContent.Owner == owner || owner == adhocProject)
 				return;
@@ -745,21 +749,25 @@ namespace MonoDevelop.Ide.Gui
 			if (adhocProject == null)
 				UnsubscribeAnalysisDocument ();
 			// Unsubscribe project events
-			if (Window.ViewContent.Owner != null)
-				Window.ViewContent.Owner.Modified -= HandleProjectModified;
+			if (window.ViewContent.Owner is SolutionFolderItem solutionItem)
+				solutionItem.Modified -= HandleProjectModified;
+			else if (window.ViewContent.Owner is WorkspaceItem workspaceItem)
+				workspaceItem.Modified -= HandleProjectModified;
 			Window.ViewContent.Owner = owner;
-			if (owner != null)
-				owner.Modified += HandleProjectModified;
+			if (owner is SolutionFolderItem SolutionItem)
+				SolutionItem.Modified += HandleProjectModified;
+			else if (owner is WorkspaceItem workspaceItem)
+				workspaceItem.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
 			ListenToProjectLoad (owner);
 		}
 
 		void ListenToProjectLoad (Project project)
 		{
-			ListenToProjectLoad ((SolutionItem)project);
+			ListenToProjectLoad ((WorkspaceObject)project);
 		}
 
-		void ListenToProjectLoad (SolutionItem owner)
+		void ListenToProjectLoad (WorkspaceObject owner)
 		{
 			StartReparseThread ();
 		}
@@ -773,6 +781,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (!e.Any (x => x.Hint == "TargetFramework" || x.Hint == "References"))
 				return;
+			StartReparseThread ();
+		}
+
+		void HandleProjectModified (object sender, WorkspaceItemEventArgs e)
+		{
 			StartReparseThread ();
 		}
 

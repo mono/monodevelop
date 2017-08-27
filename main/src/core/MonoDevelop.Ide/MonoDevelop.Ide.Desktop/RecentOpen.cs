@@ -202,7 +202,7 @@ namespace MonoDevelop.Ide.Desktop
 			AddFile (fileName, project as SolutionItem);
 		}
 
-		public void AddFile (string fileName, SolutionItem owner)
+		public void AddFile (string fileName, WorkspaceObject owner)
 		{
 			var projectName = owner?.Name;
 			var displayName = projectName != null ?

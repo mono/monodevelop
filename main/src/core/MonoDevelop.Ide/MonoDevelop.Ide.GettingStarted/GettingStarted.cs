@@ -40,10 +40,10 @@ namespace MonoDevelop.Ide.GettingStarted
 
 		public static GettingStartedNode GetGettingStartedNode (this Project project)
 		{
-			return GetGettingStartedNode ((SolutionItem)project);
+			return GetGettingStartedNode ((WorkspaceObject)project);
 		}
 
-		public static GettingStartedNode GetGettingStartedNode (this SolutionItem owner)
+		public static GettingStartedNode GetGettingStartedNode (this WorkspaceObject owner)
 		{
 			return owner.GetService<GettingStartedProjectExtension> ()?.ProjectPadNode;
 		}

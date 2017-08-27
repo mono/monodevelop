@@ -109,7 +109,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			ShowPage (0);*/
 		}
 
-		protected override void OnSetOwner (Projects.SolutionItem owner)
+		protected override void OnSetOwner (Projects.WorkspaceObject owner)
 		{
 			base.OnSetOwner (owner);
 			content.Owner = owner;

@@ -136,11 +136,11 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		public override MonoDevelop.Projects.Project Project {
 			get {
-				return originalContext.Owner as Project;
+				return Owner as Project;
 			}
 		}
 
-		public override MonoDevelop.Projects.SolutionItem Owner {
+		public override MonoDevelop.Projects.WorkspaceObject Owner {
 			get {
 				return originalContext.Owner;
 			}

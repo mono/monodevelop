@@ -82,7 +82,7 @@ namespace MonoDevelop.DesignerSupport
 			get { return content; }
 		}
 
-		protected override void OnSetOwner (MonoDevelop.Projects.SolutionItem owner)
+		protected override void OnSetOwner (MonoDevelop.Projects.WorkspaceObject owner)
 		{
 			base.OnSetOwner (owner);
 			content.Owner = owner;

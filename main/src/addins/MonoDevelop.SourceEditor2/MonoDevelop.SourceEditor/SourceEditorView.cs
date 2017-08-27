@@ -2406,7 +2406,7 @@ namespace MonoDevelop.SourceEditor
 			var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
 			if (formatter == null || !formatter.SupportsCorrectingIndent)
 				return;
-			var policies = Owner?.Policies;
+			var policies = (Owner as IPolicyProvider)?.Policies;
 			var editorData = TextEditor.GetTextEditorData ();
 			if (TextEditor.IsSomethingSelected) {
 				using (var undo = TextEditor.OpenUndoGroup ()) {

@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public MonoDevelop.Projects.SolutionItem Owner { get; set; }
+		public MonoDevelop.Projects.WorkspaceObject Owner { get; set; }
 
 		public Document RoslynDocument { get; set; }
 		public ParsedDocument OldParsedDocument { get; internal set; }

@@ -206,7 +206,7 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 
-			public override Projects.SolutionItem Owner {
+			public override Projects.WorkspaceObject Owner {
 				get {
 					return TypeSystemService.GetMonoProject (project);
 				}

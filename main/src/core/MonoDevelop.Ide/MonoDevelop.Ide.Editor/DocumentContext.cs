@@ -70,9 +70,9 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		/// <summary>
-		/// Gets the SolutionItem this context is in.
+		/// Gets the WorkspaceObject this context is in.
 		/// </summary>
-		public abstract SolutionItem Owner {
+		public abstract WorkspaceObject Owner {
 			get;
 		}
 

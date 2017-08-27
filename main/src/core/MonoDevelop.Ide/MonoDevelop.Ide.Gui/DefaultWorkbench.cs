@@ -331,8 +331,10 @@ namespace MonoDevelop.Ide.Gui
 		public void CloseContent (ViewContent content)
 		{
 			if (viewContentCollection.Contains(content)) {
-				if (content.Owner != null)
-					content.Owner.NameChanged -= HandleProjectNameChanged;
+				if (content.Owner is SolutionFolderItem solutionItem)
+					solutionItem.NameChanged -= HandleProjectNameChanged;
+				else if (content.Owner is WorkspaceItem workspaceItem)
+					workspaceItem.NameChanged -= HandleProjectNameChanged;
 				viewContentCollection.Remove(content);
 			}
 		}
@@ -427,8 +429,10 @@ namespace MonoDevelop.Ide.Gui
 			if (mimeimage != null)
 				tab.Icon = mimeimage;
 
-			if (content.Owner != null)
-				content.Owner.NameChanged += HandleProjectNameChanged;
+			if (content.Owner is SolutionFolderItem solutionItem)
+				solutionItem.NameChanged -= HandleProjectNameChanged;
+			else if (content.Owner is WorkspaceItem workspaceItem)
+				workspaceItem.NameChanged -= HandleProjectNameChanged;
 			if (bringToFront)
 				content.WorkbenchWindow.SelectWindow();
 
@@ -437,6 +441,11 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		void HandleProjectNameChanged (object sender, SolutionItemRenamedEventArgs e)
+		{
+			SetWorkbenchTitle ();
+		}
+
+		void HandleProjectNameChanged (object sender, WorkspaceItemRenamedEventArgs e)
 		{
 			SetWorkbenchTitle ();
 		}
@@ -554,7 +563,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			string documentUrl, filename;
 			if (window.ViewContent.Owner != null) {
-				documentUrl = "file://" + window.ViewContent.Owner.FileName;
+				documentUrl = "file://" + window.ViewContent.Owner.BaseDirectory.FileName;
 				filename = System.IO.Path.GetFileName (window.ViewContent.PathRelativeToProject);
 			} else {
 				documentUrl = string.Empty;
