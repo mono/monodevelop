@@ -45,8 +45,8 @@ namespace MonoDevelop.Projects.MSBuild
 	partial class ProjectBuilder: MarshalByRefObject
 	{
 		readonly string file;
-		readonly MDConsoleLogger consoleLogger;
 		readonly BuildEngine buildEngine;
+		MDConsoleLogger consoleLogger;
 
 		public ProjectBuilder (BuildEngine buildEngine, string file)
 		{
@@ -55,7 +55,6 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			this.file = file;
 			this.buildEngine = buildEngine;
-			consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
 		}
 
 		//HACK: Mono does not implement 3.5 CustomMetadataNames API
@@ -66,10 +65,11 @@ namespace MonoDevelop.Projects.MSBuild
 			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, Dictionary<string,string> globalProperties, int taskId)
 		{
 			MSBuildResult result = null;
+			var loggerAdapter = new LoggerAdapter (logWriter);
+			consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, loggerAdapter.LogWriteLine, null, null);
 			BuildEngine.RunSTA (taskId, delegate {
 				try {
 					var project = SetupProject (configurations);
-					InitLogger (logWriter);
 
 					buildEngine.Engine.UnregisterAllLoggers ();
 
@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects.MSBuild
 					if (logWriter != null) {
 						buildEngine.Engine.RegisterLogger (consoleLogger);
 						consoleLogger.Verbosity = GetVerbosity (verbosity);
-						buildEngine.Engine.RegisterLogger (new TargetLogger (logWriter.RequiredEvents, LogEvent));
+						buildEngine.Engine.RegisterLogger (new TargetLogger (logWriter.RequiredEvents, loggerAdapter.LogEvent));
 					}
 
 					if (runTargets != null && runTargets.Length > 0) {
@@ -125,10 +125,10 @@ namespace MonoDevelop.Projects.MSBuild
 						file, false, ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
 						ex.LineNumber, ex.ColumnNumber, ex.EndLineNumber, ex.EndColumnNumber,
 						ex.BaseMessage, ex.HelpKeyword);
-					LogWriteLine (r.ToString ());
+					loggerAdapter.LogWriteLine (r.ToString ());
 					result = new MSBuildResult (new [] { r });
 				} finally {
-					DisposeLogger ();
+					loggerAdapter.Dispose ();
 				}
 			});
 			return result;

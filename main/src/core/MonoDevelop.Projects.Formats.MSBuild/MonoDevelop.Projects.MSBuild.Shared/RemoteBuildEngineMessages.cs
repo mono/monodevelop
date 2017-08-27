@@ -93,13 +93,6 @@ namespace MonoDevelop.Projects.MSBuild
 	}
 
 	[MessageDataTypeAttribute]
-	class DisposeProjectRequest: BinaryMessage
-	{
-		[MessageDataProperty]
-		public int ProjectId { get; set; }
-	}
-
-	[MessageDataTypeAttribute]
 	class RefreshProjectRequest: BinaryMessage
 	{
 		[MessageDataProperty]
@@ -222,6 +215,24 @@ namespace MonoDevelop.Projects.MSBuild
 
 		[MessageDataProperty]
 		public MSBuildEvent EventsFilter { get; set; }
+	}
+
+	[MessageDataType]
+	class BeginBuildRequest : BinaryMessage
+	{
+		[MessageDataProperty]
+		public int LogWriterId { get; set; }
+
+		[MessageDataProperty]
+		public MSBuildEvent EnabledLogEvents { get; set; }
+
+		[MessageDataProperty]
+		public MSBuildVerbosity Verbosity { get; set; }
+	}
+
+	[MessageDataType]
+	class EndBuildRequest : BinaryMessage
+	{
 	}
 }
 

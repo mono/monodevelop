@@ -1071,6 +1071,122 @@ namespace MonoDevelop.Projects
 				WorkspaceObject.UnregisterCustomExtension (en);
 			}
 		}
+
+		[Test]
+		public async Task BuildSessionBeginEnd ()
+		{
+			var en = new CustomSolutionItemNode<TestBuildSolutionExtension> ();
+			var en2 = new CustomSolutionItemNode<TestBuildSolutionItemExtension> ();
+
+			WorkspaceObject.RegisterCustomExtension (en);
+			WorkspaceObject.RegisterCustomExtension (en2);
+
+			int beginCount = 0, endCount = 0, projectBuildCount = 0, msbuildBeginCount = 0, msbuildEndCount = 0;
+
+			TestBuildSolutionExtension.BeginBuildCalled = delegate {
+				beginCount++;
+			};
+
+			TestBuildSolutionExtension.EndBuildCalled = delegate {
+				endCount++;
+			};
+
+			TestBuildSolutionItemExtension.BuildCalled = delegate {
+				Assert.AreEqual (1, beginCount);
+				Assert.AreEqual (0, endCount);
+				projectBuildCount++;
+			};
+
+			// This logger is used to verify that the BuildStarted event is raised only once per
+			// build, which means only one build session is started.
+
+			var customLogger = new MSBuildLogger ();
+			customLogger.EnabledEvents = MSBuildEvent.BuildStarted | MSBuildEvent.BuildFinished;
+			customLogger.EventRaised += (sender, e) => {
+				if (e.Event == MSBuildEvent.BuildStarted)
+					msbuildBeginCount++;
+				else if (e.Event == MSBuildEvent.BuildFinished)
+					msbuildEndCount++;
+			};
+
+			try {
+				FilePath solFile = Util.GetSampleProject ("build-session", "build-session.sln");
+				var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+				Assert.AreEqual (0, beginCount);
+				Assert.AreEqual (0, endCount);
+				Assert.AreEqual (0, projectBuildCount);
+				Assert.AreEqual (0, msbuildBeginCount);
+				Assert.AreEqual (0, msbuildEndCount);
+
+				// Test building the whole solution
+
+				var context = new TargetEvaluationContext ();
+				context.Loggers.Add (customLogger);
+				var res = await sol.Build (Util.GetMonitor (), "Debug", context);
+
+				Assert.AreEqual (1, beginCount);
+				Assert.AreEqual (1, endCount);
+				Assert.AreEqual (3, projectBuildCount);
+				Assert.AreEqual (1, msbuildBeginCount);
+				Assert.AreEqual (1, msbuildEndCount);
+
+				// Test building a solution folder
+
+				beginCount = endCount = projectBuildCount = msbuildBeginCount = msbuildEndCount = 0;
+
+				var folder = (SolutionFolder)sol.RootFolder.Items.FirstOrDefault (i => i.Name == "libraries");
+
+				context = new TargetEvaluationContext ();
+				context.Loggers.Add (customLogger);
+				res = await folder.Build (Util.GetMonitor (), sol.Configurations["Debug|x86"].Selector, operationContext:context);
+
+				Assert.AreEqual (1, beginCount);
+				Assert.AreEqual (1, endCount);
+				Assert.AreEqual (2, projectBuildCount);
+				Assert.AreEqual (1, msbuildBeginCount);
+				Assert.AreEqual (1, msbuildEndCount);
+
+				// Test building a specific item and dependencies
+
+				beginCount = endCount = projectBuildCount = msbuildBeginCount = msbuildEndCount = 0;
+
+				var item = (SolutionItem)sol.RootFolder.Items.FirstOrDefault (i => i.Name == "build-session");
+
+				context = new TargetEvaluationContext ();
+				context.Loggers.Add (customLogger);
+				res = await item.Build (Util.GetMonitor (), sol.Configurations ["Debug|x86"].Selector, true, context);
+
+				Assert.AreEqual (1, beginCount);
+				Assert.AreEqual (1, endCount);
+				Assert.AreEqual (3, projectBuildCount);
+				Assert.AreEqual (1, msbuildBeginCount);
+				Assert.AreEqual (1, msbuildEndCount);
+
+				// Test building a specific item but not its dependencies
+
+				beginCount = endCount = projectBuildCount = msbuildBeginCount = msbuildEndCount = 0;
+
+				context = new TargetEvaluationContext ();
+				context.Loggers.Add (customLogger);
+				res = await item.Build (Util.GetMonitor (), sol.Configurations ["Debug|x86"].Selector, false, context);
+
+				Assert.AreEqual (1, beginCount);
+				Assert.AreEqual (1, endCount);
+				Assert.AreEqual (1, projectBuildCount);
+				Assert.AreEqual (1, msbuildBeginCount);
+				Assert.AreEqual (1, msbuildEndCount);
+
+				sol.Dispose ();
+			} finally {
+				TestBuildSolutionExtension.BeginBuildCalled = null;
+				TestBuildSolutionExtension.EndBuildCalled = null;
+				TestBuildSolutionItemExtension.BuildCalled = null;
+
+				WorkspaceObject.UnregisterCustomExtension (en);
+				WorkspaceObject.UnregisterCustomExtension (en2);
+			}
+		}
 	}
 
 	class SomeItem: SolutionItem
@@ -1137,5 +1253,33 @@ namespace MonoDevelop.Projects
 
 		[ItemProperty ("prop4", DefaultValue = "")]
 		public string Prop4 { get; set; }
+	}
+
+	class TestBuildSolutionExtension : SolutionExtension
+	{
+		public static Action BeginBuildCalled, EndBuildCalled;
+
+		protected internal override Task OnBeginBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		{
+			BeginBuildCalled?.Invoke ();
+			return base.OnBeginBuildOperation (monitor, configuration, operationContext);
+		}
+
+		protected internal override Task OnEndBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext, BuildResult result)
+		{
+			EndBuildCalled?.Invoke ();
+			return base.OnEndBuildOperation (monitor, configuration, operationContext, result);
+		}
+	}
+
+	class TestBuildSolutionItemExtension : SolutionItemExtension
+	{
+		public static Action BuildCalled;
+
+		protected internal override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		{
+			BuildCalled?.Invoke ();
+			return base.OnBuild (monitor, configuration, operationContext);
+		}
 	}
 }

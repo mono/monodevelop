@@ -622,15 +622,25 @@ namespace MonoDevelop.Projects
 				return new BuildResult ("", 1, 1);
 			}
 
+			if (operationContext == null)
+				operationContext = new OperationContext ();
+
+			bool operationStarted = false;
+			BuildResult result = null;
+
 			try {
 				
 				monitor.BeginTask (GettextCatalog.GetString ("Building Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
 
-				return await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
+				operationStarted = ParentSolution != null && await ParentSolution.BeginBuildOperation (monitor, configuration, operationContext);
+
+				return result = await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
 					return item.Build (m, configuration, false, operationContext);
 				}, false);
 
 			} finally {
+				if (operationStarted)
+					await ParentSolution.EndBuildOperation (monitor, configuration, operationContext, result);
 				monitor.EndTask ();
 			}
         }

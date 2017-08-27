@@ -61,22 +61,21 @@ namespace MonoDevelop.Projects.MSBuild
 				throw new ArgumentException ("runTargets is empty");
 
 			MSBuildResult result = null;
+
 			BuildEngine.RunSTA (taskId, delegate {
 				Project project = null;
 				Dictionary<string, string> originalGlobalProperties = null;
+
+				MSBuildLoggerAdapter loggerAdapter;
+
+				if (buildEngine.BuildOperationStarted) {
+					loggerAdapter = buildEngine.StartProjectSessionBuild (logWriter);
+				}
+				else
+					loggerAdapter = new MSBuildLoggerAdapter (logWriter, verbosity);
+
 				try {
 					project = SetupProject (configurations);
-					InitLogger (logWriter);
-
-					ILogger[] loggers;
-					var logger = new LocalLogger (file);
-					if (logWriter != null) {
-						var consoleLogger = new ConsoleLogger (GetVerbosity (verbosity), LogWrite, null, null);
-						var eventLogger = new TargetLogger (logWriter.RequiredEvents, LogEvent);
-						loggers = new ILogger[] { logger, consoleLogger, eventLogger };
-					} else {
-						loggers = new ILogger[] { logger };
-					}
 
 					if (globalProperties != null) {
 						originalGlobalProperties = new Dictionary<string, string> ();
@@ -89,12 +88,12 @@ namespace MonoDevelop.Projects.MSBuild
 						project.ReevaluateIfNecessary ();
 					}
 
-					//building the project will create items and alter properties, so we use a new instance
+					// Building the project will create items and alter properties, so we use a new instance
 					var pi = project.CreateProjectInstance ();
-					
-					pi.Build (runTargets, loggers);
 
-					result = new MSBuildResult (logger.BuildResult.ToArray ());
+					Build (pi, runTargets, loggerAdapter.Loggers);
+
+					result = new MSBuildResult (loggerAdapter.BuildResult.ToArray ());
 
 					if (evaluateProperties != null) {
 						foreach (var name in evaluateProperties) {
@@ -122,10 +121,14 @@ namespace MonoDevelop.Projects.MSBuild
 						file, false, ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
 						ex.LineNumber, ex.ColumnNumber, ex.EndLineNumber, ex.EndColumnNumber,
 						ex.BaseMessage, ex.HelpKeyword);
-					LogWriteLine (r.ToString ());
+					loggerAdapter.LogWriteLine (r.ToString ());
 					result = new MSBuildResult (new [] { r });
 				} finally {
-					DisposeLogger ();
+					if (buildEngine.BuildOperationStarted)
+						buildEngine.EndProjectSessionBuild ();
+					else
+						loggerAdapter.Dispose ();
+					
 					if (project != null && globalProperties != null) {
 						foreach (var p in globalProperties)
 							project.RemoveGlobalProperty (p.Key);
@@ -160,7 +163,6 @@ namespace MonoDevelop.Projects.MSBuild
 		{			
 			var p = engine.GetLoadedProjects (file).FirstOrDefault ();
 			if (p == null) {
-
 				var projectDir = Path.GetDirectoryName (file);
 
 				// HACK: workaround to MSBuild bug #53019. We need to ensure that $(BaseIntermediateOutputPath) exists before
@@ -184,16 +186,40 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 
-			p.SetGlobalProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
-			p.SetGlobalProperty ("Configuration", configuration);
-			if (!string.IsNullOrEmpty (platform))
-				p.SetGlobalProperty ("Platform", platform);
-			else
-				p.RemoveGlobalProperty ("Platform");
+			if (p.GetPropertyValue("Configuration") != configuration || (p.GetPropertyValue("Platform") ?? "") != (platform ?? "") || p.GetPropertyValue ("CurrentSolutionConfigurationContents") != slnConfigContents)
+			{
+				p.SetGlobalProperty("CurrentSolutionConfigurationContents", slnConfigContents);
+				p.SetGlobalProperty("Configuration", configuration);
+				if (!string.IsNullOrEmpty(platform))
+					p.SetGlobalProperty("Platform", platform);
+				else
+					p.RemoveGlobalProperty("Platform");
 
-			p.ReevaluateIfNecessary ();
+				p.ReevaluateIfNecessary();
+			}
 
 			return p;
+		}
+
+
+		/// <summary>
+		/// Builds a list of targets with the specified loggers.
+		/// </summary>
+		internal void Build (ProjectInstance pi, string [] targets, IEnumerable<ILogger> loggers)
+		{
+			BuildResult results;
+
+			if (!buildEngine.BuildOperationStarted) {
+				BuildParameters parameters = new BuildParameters (engine);
+				parameters.ResetCaches = false;
+				parameters.EnableNodeReuse = true;
+				BuildRequestData data = new BuildRequestData (pi, targets, parameters.HostServices);
+				parameters.Loggers = loggers;
+				results = BuildManager.DefaultBuildManager.Build (parameters, data);
+			} else {
+				BuildRequestData data = new BuildRequestData (pi, targets);
+				results = BuildManager.DefaultBuildManager.BuildRequest (data);
+			}
 		}
 	}
 }

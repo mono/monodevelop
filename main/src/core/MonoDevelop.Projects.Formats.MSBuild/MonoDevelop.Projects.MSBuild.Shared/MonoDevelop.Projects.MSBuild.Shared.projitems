@@ -27,5 +27,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)..\..\MonoDevelop.Core\MonoDevelop.Projects.MSBuild\MSBuildEvent.cs">
       <Link>MSBuildEvent.cs</Link>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)LoggerAdapter.cs" />
   </ItemGroup>
 </Project>

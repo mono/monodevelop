@@ -226,6 +226,11 @@ namespace MonoDevelop.Projects
 			return next.OnCheckHasSolutionData ();
 		}
 
+		internal protected virtual Task OnClearCachedData ()
+		{
+			return next.OnClearCachedData ();
+		}
+
 		#endregion
 
 		#region Execution

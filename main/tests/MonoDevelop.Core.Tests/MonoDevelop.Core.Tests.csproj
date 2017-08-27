@@ -60,7 +60,6 @@
     <Compile Include="MonoDevelop.Projects\ItemMetadataTests.cs" />
     <Compile Include="MonoDevelop.Projects\LocalCopyTests.cs" />
     <Compile Include="MonoDevelop.Projects\MakefileTests.cs" />
-    <Compile Include="MonoDevelop.Projects\MdsTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildGlobTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildLoggerTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildProjectServiceTests.cs" />
@@ -84,6 +83,7 @@
     <Compile Include="MonoDevelop.Projects\WorkspaceTests.cs" />
     <Compile Include="MonoDevelop.Projects\ConfigurationMergingTests.cs" />
     <Compile Include="MonoDevelop.Projects\TestLanguageProject.cs" />
+    <Compile Include="MonoDevelop.Projects\BuilderManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Core\" />

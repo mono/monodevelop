@@ -894,20 +894,9 @@ namespace MonoDevelop.Projects
 		{
 			List<AssemblyReference> result = new List<AssemblyReference> ();
 			if (CheckUseMSBuildEngine (configuration)) {
-				// Get the references list from the msbuild project
-				RemoteProjectBuilder builder = await GetProjectBuilder ();
-				try {
-					var configs = GetConfigurations (configuration, false);
-					var globalProperties = CreateGlobalProperties ();
-
-					AssemblyReference [] refs;
+					// Get the references list from the msbuild project
 					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-						refs = await builder.ResolveAssemblyReferences (configs, globalProperties, CancellationToken.None);
-					foreach (var r in refs)
-						result.Add (r);
-				} finally {
-					builder.ReleaseReference ();
-				}
+						result = await RunResolveAssemblyReferencesTarget (configuration);
 			} else {
 				foreach (ProjectReference pref in References) {
 					if (pref.ReferenceType != ReferenceType.Project) {
@@ -979,6 +968,39 @@ namespace MonoDevelop.Projects
 			return result;
 		}
 
+		AsyncCriticalSection referenceCacheLock = new AsyncCriticalSection ();
+		Dictionary<string, List<AssemblyReference>> referenceCache = new Dictionary<string, List<AssemblyReference>> ();
+
+		async Task<List<AssemblyReference>> RunResolveAssemblyReferencesTarget (ConfigurationSelector configuration)
+		{
+			List<AssemblyReference> refs = null;
+			var conf = GetConfiguration (configuration);
+			if (conf == null)
+				return new List<AssemblyReference> ();
+			
+			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false)) {
+				// Check the cache before starting the task
+				if (referenceCache.TryGetValue (conf.Id, out refs))
+					return refs;
+
+				var monitor = new ProgressMonitor ();
+
+				var context = new TargetEvaluationContext ();
+				context.ItemsToEvaluate.Add ("ReferencePath");
+				context.BuilderQueue = BuilderQueue.ShortOperations;
+				context.LoadReferencedProjects = false;
+				context.LogVerbosity = MSBuildVerbosity.Quiet;
+
+				var result = await RunTarget (monitor, "ResolveAssemblyReferences", configuration, context);
+
+				refs = result.Items.Select (i => new AssemblyReference (i.Include, i.Metadata.GetValue ("Aliases", ""))).ToList ();
+
+				referenceCache [conf.Id] = refs;
+			}
+			return refs;
+		}
+
+
 		public Task<IEnumerable<PackageDependency>> GetPackageDependencies (ConfigurationSelector configuration, CancellationToken cancellationToken)
 		{
 			return BindTask<IEnumerable<PackageDependency>> (async ct => {
@@ -991,21 +1013,46 @@ namespace MonoDevelop.Projects
 			var result = new List<PackageDependency> ();
 			if (CheckUseMSBuildEngine (configuration)) {
 				// Get the references list from the msbuild project
-				RemoteProjectBuilder builder = await GetProjectBuilder ();
-				try {
-					var configs = GetConfigurations (configuration, false);
-					var globalProperties = CreateGlobalProperties ();
+				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
+					return await RunResolvePackageDependenciesTarget (configuration, cancellationToken);
+			} else
+				return new List<PackageDependency> ();
+		}
 
-					PackageDependency [] dependencies;
-					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-						dependencies = await builder.ResolvePackageDependencies (configs, globalProperties, cancellationToken);
-					foreach (var d in dependencies)
-						result.Add (d);
-				} finally {
-					builder.ReleaseReference ();
-				}
+		Dictionary<string, List<PackageDependency>> packageDependenciesCache = new Dictionary<string, List<PackageDependency>> ();
+		AsyncCriticalSection packageDependenciesCacheLock = new AsyncCriticalSection ();
+
+		async Task<List<PackageDependency>> RunResolvePackageDependenciesTarget (ConfigurationSelector configuration, CancellationToken cancellationToken)
+		{
+			List<PackageDependency> packageDependencies = null;
+			var conf = GetConfiguration (configuration);
+			if (conf == null)
+			return new List<PackageDependency> ();
+			
+			using (await packageDependenciesCacheLock.EnterAsync ().ConfigureAwait (false)) {
+				// Check the cache before starting the task
+				if (packageDependenciesCache.TryGetValue (conf.Id, out packageDependencies))
+					return packageDependencies;
+
+				var monitor = new ProgressMonitor ().WithCancellationToken (cancellationToken);
+
+				var context = new TargetEvaluationContext ();
+				context.ItemsToEvaluate.Add ("_DependenciesDesignTime");
+				context.BuilderQueue = BuilderQueue.ShortOperations;
+				context.LoadReferencedProjects = false;
+				context.LogVerbosity = MSBuildVerbosity.Quiet;
+
+				var result = await RunTarget (monitor, "ResolvePackageDependenciesDesignTime", configuration, context);
+
+				if (result == null)
+					return new List<PackageDependency> ();
+
+				packageDependencies = result.Items.Select (i => PackageDependency.Create (i)).Where (dependency => dependency != null).ToList ();
+
+				packageDependenciesCache [conf.Id] = packageDependencies;
 			}
-			return result;
+
+			return packageDependencies;
 		}
 
 		internal protected virtual IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
@@ -1022,6 +1069,19 @@ namespace MonoDevelop.Projects
 						yield return rp;
 				}
 			}
+		}
+
+		protected override async Task OnClearCachedData ()
+		{
+			// Clean the reference and package cache
+
+			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false))
+				referenceCache.Clear ();
+
+			using (await packageDependenciesCacheLock.EnterAsync ().ConfigureAwait (false))
+				packageDependenciesCache.Clear ();
+			
+			await base.OnClearCachedData ();
 		}
 
 		protected override Task<BuildResult> DoBuild (ProgressMonitor monitor, ConfigurationSelector configuration)

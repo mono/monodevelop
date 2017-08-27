@@ -35,19 +35,38 @@ namespace MonoDevelop.Projects.MSBuild
 	class TargetLogger: Logger
 	{
 		IEventSource eventSource;
-		readonly MSBuildEvent eventFilter;
+		MSBuildEvent eventFilter;
 		readonly Action<LogEvent> logger;
-		
+
+		public MSBuildEvent EventFilter {
+			get {
+				return eventFilter; 
+			}
+			set {
+				if (eventSource != null)
+					UnsubscribeAll ();
+				
+				eventFilter = value;
+
+				if (eventSource != null)
+					SubscribeEvents ();
+			}
+		}
+
 		public TargetLogger (MSBuildEvent eventFilter, Action<LogEvent> logger)
 		{
 			this.eventFilter = eventFilter;
 			this.logger = logger;
 		}
-		
+
 		public override void Initialize (IEventSource eventSource)
 		{
 			this.eventSource = eventSource;
+			SubscribeEvents ();
+		}
 
+		void SubscribeEvents ()
+		{
 			if ((eventFilter & MSBuildEvent.BuildStarted) != 0)
 				eventSource.BuildStarted += EventSource_BuildStarted;
 			
@@ -151,6 +170,11 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		public override void Shutdown ()
+		{
+			UnsubscribeAll ();
+		}
+
+		void UnsubscribeAll ()
 		{
 			eventSource.BuildStarted -= EventSource_BuildStarted;
 			eventSource.BuildFinished -= EventSource_BuildFinished;

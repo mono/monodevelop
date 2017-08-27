@@ -802,6 +802,37 @@ namespace MonoDevelop.Projects
 			return SolutionExtension.GetExecutionTargets (this, configuration);
 		}
 
+		/// <summary>
+		/// To be called when a new build session starts
+		/// </summary>
+		/// <returns>True if the session could be started, False otherwise (such as for example, when there is a session already in progress)</returns>
+		/// <param name="monitor">Monitor.</param>
+		/// <param name="configuration">Build configuration.</param>
+		/// <param name="operationContext">Operation context.</param>
+		internal async Task<bool> BeginBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		{
+			if (operationContext.BatchOperationStarted)
+				return false;
+			operationContext.BatchOperationStarted = true;
+			await SolutionExtension.OnBeginBuildOperation (monitor, configuration, operationContext);
+			return true;
+		}
+
+		/// <summary>
+		/// To be called when the currently active build session ends
+		/// </summary>
+		/// <param name="monitor">Monitor.</param>
+		/// <param name="configuration">Build configuration.</param>
+		/// <param name="operationContext">Operation context.</param>
+		/// <param name="result">Build results.</param>
+		internal Task EndBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext, BuildResult result)
+		{
+			if (result == null)
+				result = new BuildResult ().AddError ("Build operation failed");
+			operationContext.BatchOperationStarted = false;
+			return SolutionExtension.OnEndBuildOperation (monitor, configuration, operationContext, result);
+		}
+
 		/*protected virtual*/
 		Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
@@ -1311,6 +1342,16 @@ namespace MonoDevelop.Projects
 			internal protected override IEnumerable<SolutionRunConfiguration> OnGetRunConfigurations ()
 			{
 				return Solution.OnGetRunConfigurations ();
+			}
+
+			internal protected override Task OnBeginBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+			{
+				return Task.CompletedTask;
+			}
+
+			internal protected override Task OnEndBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext, BuildResult result)
+			{
+				return Task.CompletedTask;
 			}
 		}
 	}

@@ -24,15 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Threading;
-using System.IO;
-using System.Runtime.Remoting;
 using System.Collections.Generic;
 using Microsoft.Build.Evaluation;
-using Microsoft.Build.Construction;
-using System.Linq;
 using System.Globalization;
+using Microsoft.Build.Execution;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -41,6 +36,9 @@ namespace MonoDevelop.Projects.MSBuild
 		static CultureInfo uiCulture;
 		readonly Dictionary<string, string> unsavedProjects = new Dictionary<string, string> ();
 		readonly ProjectCollection engine = new ProjectCollection { DefaultToolsVersion = MSBuildConsts.Version };
+		MSBuildLoggerAdapter loggerAdapter;
+
+		IEngineLogWriter sessionLogWriter;
 
 		public void SetCulture (CultureInfo uiCulture)
 		{
@@ -90,6 +88,51 @@ namespace MonoDevelop.Projects.MSBuild
 				// changed and which are cached.
 				engine.UnloadAllProjects();
 			});
+		}
+
+		public bool BuildOperationStarted { get; set; }
+
+		void BeginBuildOperation (IEngineLogWriter logWriter, MSBuildVerbosity verbosity)
+		{
+			// Start a new MSBuild build session, sending log to the provided writter
+			BuildOperationStarted = true;
+			BuildParameters parameters = new BuildParameters (engine);
+			sessionLogWriter = logWriter;
+			loggerAdapter = new MSBuildLoggerAdapter (logWriter, verbosity);
+			parameters.Loggers = loggerAdapter.Loggers;
+			BuildManager.DefaultBuildManager.BeginBuild (parameters);
+		}
+
+		void EndBuildOperation ()
+		{
+			// End the MSBuild build session started in BeginBuildOperation
+
+			BuildOperationStarted = false;
+			BuildManager.DefaultBuildManager.EndBuild ();
+
+			// Dispose the loggers. This will flush pending output.
+			loggerAdapter.Dispose ();
+			loggerAdapter = null;
+			sessionLogWriter = null;
+		}
+
+		public MSBuildLoggerAdapter StartProjectSessionBuild (IEngineLogWriter logWriter)
+		{
+			// Sets the client logger to which to send build output.
+			// In the client, each project has its own logger,
+			// but in the builder there is a single logger for the
+			// whole builder session. To send log to the correct
+			// client logger, the logger will be changed every time
+			// a new project build starts
+
+			loggerAdapter.BuildResult.Clear ();
+			loggerAdapter.EngineLogWriter = logWriter;
+			return loggerAdapter;
+		}
+
+		public void EndProjectSessionBuild ()
+		{
+			loggerAdapter.EngineLogWriter = sessionLogWriter;
 		}
 	}
 }
