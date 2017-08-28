@@ -37,7 +37,6 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components.AtkCocoaHelper;
-using System.Linq;
 
 namespace MonoDevelop.Ide.Gui
 {
