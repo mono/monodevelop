@@ -430,9 +430,9 @@ namespace MonoDevelop.Ide.Gui
 				tab.Icon = mimeimage;
 
 			if (content.Owner is SolutionFolderItem solutionItem)
-				solutionItem.NameChanged -= HandleProjectNameChanged;
+				solutionItem.NameChanged += HandleProjectNameChanged;
 			else if (content.Owner is WorkspaceItem workspaceItem)
-				workspaceItem.NameChanged -= HandleProjectNameChanged;
+				workspaceItem.NameChanged += HandleProjectNameChanged;
 			if (bringToFront)
 				content.WorkbenchWindow.SelectWindow();
 

@@ -262,6 +262,13 @@ namespace MonoDevelop.Ide.Editor
 			UpdateTextEditorOptions (null, null);
 		}
 
+		protected override void OnSetOwner (MonoDevelop.Projects.WorkspaceObject owner)
+		{
+			base.OnSetOwner (owner);
+			textEditorImpl.ViewContent.Owner = owner;
+			UpdateTextEditorOptions (null, null);
+		}
+
 		public override ProjectReloadCapability ProjectReloadCapability {
 			get {
 				return textEditorImpl.ViewContent.ProjectReloadCapability;
