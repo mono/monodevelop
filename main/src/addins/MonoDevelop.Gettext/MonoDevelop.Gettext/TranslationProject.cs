@@ -307,9 +307,9 @@ namespace MonoDevelop.Gettext
 				monitor.BeginTask (GettextCatalog.GetString ("Updating {0}", translation.PoFile), 1);
 				try {
 					var pb = new ProcessArgumentBuilder ();
-					pb.Add ("-U");
+					pb.Add ("--update");
 					pb.AddQuoted (poFileName);
-					pb.Add ("-v");
+					pb.Add ("--verbose");
 					pb.Add ("--sort-output");
 					pb.AddQuoted (this.BaseDirectory.Combine ("messages.po"));
 					
