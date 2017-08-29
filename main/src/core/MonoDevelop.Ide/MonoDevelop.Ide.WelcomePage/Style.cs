@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			{
 				var bgColor = Gui.Styles.BaseBackgroundColor.ToHexString (false);
 				var fgColor = Gui.Styles.BaseForegroundColor.ToHexString (false);
-				var dimColor = Gui.Styles.DimTextColor.ToHexString (false);
+				var secColor = Gui.Styles.SecondaryTextColor.ToHexString (false);
 				var padColor = Gui.Styles.PadBackground.ToHexString (false);
 				var hoverColor = Gui.Styles.DockBarPrelightColor.ToHexString (false);
 
@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					BackgroundColor = bgColor;
 					InnerShadowColor = bgColor;
 
-					Links.Color = dimColor;
+					Links.Color = secColor;
 					Links.HoverColor = fgColor;
 
 					Pad.BackgroundColor = padColor;
@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					Pad.ShadowColor = "#000000";
 					Pad.LargeTitleFontColor = fgColor;
 					Pad.MediumTitleColor = fgColor;
-					Pad.SmallTitleColor = dimColor;
+					Pad.SmallTitleColor = secColor;
 
 					Pad.News.Item.TitleHoverColor = "#3496d9";
 
@@ -152,7 +152,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					Pad.ShadowColor = "#000000";
 					Pad.LargeTitleFontColor = fgColor;
 					Pad.MediumTitleColor = fgColor;
-					Pad.SmallTitleColor = dimColor;
+					Pad.SmallTitleColor = secColor;
 
 					Pad.News.Item.TitleHoverColor = "#5babed";
 

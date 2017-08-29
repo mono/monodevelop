@@ -135,7 +135,7 @@ namespace MonoDevelop.VersionControl
 			BlameView.AnnotationHighlightColor = MonoDevelop.Ide.Gui.Styles.SecondaryBackgroundLighterColor;
 			BlameView.AnnotationBackgroundColor = MonoDevelop.Ide.Gui.Styles.SecondaryBackgroundDarkerColor;
 			BlameView.AnnotationSplitterColor = MonoDevelop.Ide.Gui.Styles.SeparatorColor;
-			BlameView.AnnotationSummaryTextColor = MonoDevelop.Ide.Gui.Styles.DimTextColor;
+			BlameView.AnnotationSummaryTextColor = MonoDevelop.Ide.Gui.Styles.SecondaryTextColor;
 
 			LogView.CommitDescBackgroundColor = MonoDevelop.Ide.Gui.Styles.SecondaryBackgroundDarkerColor;
 			LogView.DiffBoxSplitterColor = MonoDevelop.Ide.Gui.Styles.PrimaryBackgroundColor;

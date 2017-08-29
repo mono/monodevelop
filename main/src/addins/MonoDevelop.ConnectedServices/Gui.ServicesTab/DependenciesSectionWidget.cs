@@ -131,7 +131,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					SetStatusIcon (IconId.Null);
 					statusLabel.Visible = false;
 				} else if (Dependency.Status == Status.NotAdded) {
-					nameLabel.TextColor = Styles.DimTextColor;
+					nameLabel.TextColor = Styles.SecondaryTextColor;
 					iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small).WithAlpha (0.4);
 					SetStatusIcon ("md-warning");
 					statusLabel.Markup = "<a href=''>" + GettextCatalog.GetString ("Add Dependency") + "</a>";
@@ -169,7 +169,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleDependencyAdding ()
 		{
 			Runtime.RunInMainThread (delegate {
-				nameLabel.TextColor = Styles.DimTextColor;
+				nameLabel.TextColor = Styles.SecondaryTextColor;
 				iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small).WithAlpha (0.4);
 
 				SetStatusIcon ("md-spinner-16");
@@ -191,7 +191,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleDependencyAddingFailed ()
 		{
 			Runtime.RunInMainThread (delegate {
-				nameLabel.TextColor = Styles.DimTextColor;
+				nameLabel.TextColor = Styles.SecondaryTextColor;
 				iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small).WithAlpha (0.4);
 				SetStatusIcon ("md-error");
 				statusLabel.Markup = GettextCatalog.GetString ("Adding failed") + " (<a>" + GettextCatalog.GetString ("Retry") + "</a>)";
