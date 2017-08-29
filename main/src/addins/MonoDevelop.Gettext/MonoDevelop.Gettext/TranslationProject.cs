@@ -310,7 +310,7 @@ namespace MonoDevelop.Gettext
 					pb.Add ("-U");
 					pb.AddQuoted (poFileName);
 					pb.Add ("-v");
-					pb.Add ("--sorted-output");
+					pb.Add ("--sort-output");
 					pb.AddQuoted (this.BaseDirectory.Combine ("messages.po"));
 					
 					var process = Runtime.ProcessService.StartProcess (Translation.GetTool ("msgmerge"),
