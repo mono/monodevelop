@@ -142,7 +142,10 @@ namespace MonoDevelop.UnitTesting.VsTest
 			communicationManager = new SocketCommunicationManager ();
 			int port = communicationManager.HostServer ();
 			communicationManager.AcceptClientAsync ().Ignore ();
-			vsTestConsoleExeProcess = StartVsTestConsoleExe (port);
+			vsTestConsoleExeProcess = StartVsTestConsoleExe(port);
+			vsTestConsoleExeProcess.Task.ContinueWith(delegate {
+				VsTestProcessExited(vsTestConsoleExeProcess);
+			}).Ignore();
 			var sw = Stopwatch.StartNew ();
 			if (!await Task.Run (() => {
 				while (!token.IsCancellationRequested) {
@@ -217,9 +220,8 @@ namespace MonoDevelop.UnitTesting.VsTest
 			;
 		}
 
-		void VsTestProcessExited (object sender, EventArgs e)
+		void VsTestProcessExited (ProcessAsyncOperation process)
 		{
-			var process = (Process)sender;
 			LoggingService.LogError ("vstest.console.exe exited. Exit code: {0}", process.ExitCode);
 			Restart ();
 		}
