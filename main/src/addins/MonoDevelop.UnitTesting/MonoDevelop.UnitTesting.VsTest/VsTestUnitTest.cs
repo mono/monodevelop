@@ -64,6 +64,9 @@ namespace MonoDevelop.UnitTesting.VsTest
 					var dotIndex = test.FullyQualifiedName.LastIndexOf (".", StringComparison.Ordinal);
 					var className = test.FullyQualifiedName.Remove (dotIndex);
 					var methodName = test.FullyQualifiedName.Substring (dotIndex + 1);
+					var bracketIndex = methodName.IndexOf ('(');
+					if (bracketIndex != -1)
+						methodName = methodName.Remove (bracketIndex).Trim ();
 					var compilation = t.Result;
 					if (compilation == null)
 						return;
