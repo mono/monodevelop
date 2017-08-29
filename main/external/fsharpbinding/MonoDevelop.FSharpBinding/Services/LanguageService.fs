@@ -84,10 +84,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
                 | None -> return None
                 | Some(col,identIsland) ->
                     let! res = checkResults.GetToolTipTextAlternate(line, col, lineStr, identIsland, FSharpTokenTag.Identifier)
-                    let! sym = checkResults.GetSymbolUseAtLocation(line, col, lineStr, identIsland)
-                    LoggingService.logDebug "Result: Got something, returning"
-                    return sym |> Option.bind (fun sym -> let start, finish = Symbol.trimSymbolRegion sym (Seq.last identIsland)
-                                                          Some (res, (start.Column, finish.Column)))
+                    return Some (res, line)
             | None -> return None }
 
     member x.GetDeclarationLocation(line, col, lineStr) =

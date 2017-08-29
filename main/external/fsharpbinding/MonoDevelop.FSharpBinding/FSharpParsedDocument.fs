@@ -23,6 +23,7 @@ type FSharpParsedDocument(fileName, location: DocumentLocation option) =
     member x.ParsedLocation = location
 
     member val UnusedCodeRanges : Range.range list option = None with get, set
+    member val HasErrors = false with get, set
 
     override x.GetTagCommentsAsync(cancellationToken) =
         let tokenListToComment (tokenList: FSharpTokenInfo list, lineText: string) =
