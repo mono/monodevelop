@@ -91,6 +91,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 				}
 				if (result.Length > 0)
 					result = result.Remove (result.Length - 1);
+				projectTestAdapterListCache.Remove (project);
 				projectTestAdapterListCache.Add (project, new Tuple<HashSet<string>, string> (new HashSet<string> (nugetsFolders), result));
 				return result;
 			}
