@@ -29,11 +29,14 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Templates;
 using Xwt.Drawing;
 using System.Threading.Tasks;
+using System;
 
 namespace MonoDevelop.Ide.Projects
 {
 	interface INewProjectDialogController
 	{
+		event EventHandler ProjectCreationFailed;
+		event EventHandler ProjectCreated;
 		IEnumerable<TemplateCategory> TemplateCategories { get; }
 		List<SolutionTemplate> RecentTemplates { get; }
 		TemplateCategory SelectedSecondLevelCategory { get; }

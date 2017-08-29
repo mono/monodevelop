@@ -73,7 +73,8 @@ namespace MonoDevelop.Core.Assemblies
 		}
 		
 		public event EventHandler Changed;
-		
+
+		[Obsolete("Avoid use of SystemPackage")]
 		public IEnumerable<SystemPackage> GetPackages ()
 		{
 			foreach (IAssemblyContext ctx in sources) {
@@ -81,7 +82,8 @@ namespace MonoDevelop.Core.Assemblies
 					yield return p;
 			}
 		}
-		
+
+		[Obsolete("Avoid use of SystemPackage")]
 		public IEnumerable<SystemPackage> GetPackages (TargetFramework fx)
 		{
 			foreach (IAssemblyContext ctx in sources) {

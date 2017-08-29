@@ -1,10 +1,10 @@
-///------------------------------------------------------------------------------
-/// <copyright file="RegexMatchTimeoutException.cs" company="Microsoft">
-///     Copyright (c) Microsoft Corporation.  All rights reserved.
-/// </copyright>                               
-///
-/// <owner>gpaperin</owner>
-///------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+// <copyright file="RegexMatchTimeoutException.cs" company="Microsoft">
+//     Copyright (c) Microsoft Corporation.  All rights reserved.
+// </copyright>                               
+//
+// <owner>gpaperin</owner>
+//------------------------------------------------------------------------------
 
 using System;
 using System.Runtime.Serialization;

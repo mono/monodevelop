@@ -72,7 +72,7 @@ namespace MonoDevelop.DotNetCore.Templating
 		void GetTargetFrameworks ()
 		{
 			if (IsSupportedParameter ("NetStandard")) {
-				targetFrameworks = GetNetStandardTargetFrameworks ().ToList ();
+				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().ToList ();
 
 				// Use 1.x target frameworks by default if none are available from the .NET Core sdk.
 				if (!targetFrameworks.Any ())
@@ -82,9 +82,9 @@ namespace MonoDevelop.DotNetCore.Templating
 					RemoveUnsupportedNetStandardTargetFrameworksForFSharp (targetFrameworks);
 				}
 			} else {
-				targetFrameworks = GetNetCoreAppTargetFrameworks ().ToList ();
+				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
 
-				if (IsSupportedParameter ("FSharpNetCoreLibrary") || IsSupportedParameter ("RazorPages")) {
+				if (!SupportsNetCore1x ()) {
 					RemoveUnsupportedNetCoreApp1xTargetFrameworks (targetFrameworks);
 				}
 			}
@@ -114,7 +114,7 @@ namespace MonoDevelop.DotNetCore.Templating
 		void ConfigureDefaultParameters ()
 		{
 			if (IsSupportedParameter ("NetStandard")) {
-				var highestFramework = GetNetStandardTargetFrameworks ().FirstOrDefault ();
+				var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().FirstOrDefault ();
 
 				if (highestFramework != null && highestFramework.IsNetStandard20 ()) {
 					Parameters ["UseNetStandard20"] = "true";
@@ -122,10 +122,10 @@ namespace MonoDevelop.DotNetCore.Templating
 					Parameters ["UseNetStandard1x"] = "true";
 				}
 			} else {
-				if (IsSupportedParameter ("FSharpNetCoreLibrary") || IsSupportedParameter ("RazorPages")) {
+				if (!SupportsNetCore1x ()) {
 					Parameters ["UseNetCore20"] = "true";
 				} else {
-					var highestFramework = GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
+					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
 					if (highestFramework != null && highestFramework.IsNetCoreApp20 ()) {
 						Parameters ["UseNetCore20"] = "true";
 					} else {
@@ -145,7 +145,7 @@ namespace MonoDevelop.DotNetCore.Templating
 			if (!IsSupportedParameter ("NetCoreLibrary"))
 				return;
 
-			var highestFramework = GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
+			var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
 			if (highestFramework != null) {
 				Parameters ["framework"] = highestFramework.Id.GetShortFrameworkName ();
 			} else {
@@ -153,34 +153,13 @@ namespace MonoDevelop.DotNetCore.Templating
 			}
 		}
 
-		static IEnumerable<TargetFramework> GetNetStandardTargetFrameworks ()
+		bool SupportsNetCore1x ()
 		{
-			bool includeNetCore20Frameworks = IncludeNetCore20TargetFrameworks ();
-			if (includeNetCore20Frameworks)
-				return DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ();
+			bool supportsNetCore20Only = IsSupportedParameter ("FSharpNetCoreLibrary") ||
+				IsSupportedParameter ("RazorPages") ||
+				IsSupportedParameter ("FSharpWebApi");
 
-			return DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ()
-				.Where (framework => !framework.IsNetStandard20 ());
-		}
-
-		static IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworks ()
-		{
-			bool includeNetCore20Frameworks = IncludeNetCore20TargetFrameworks ();
-			if (includeNetCore20Frameworks)
-				return DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ();
-
-			return DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ()
-				.Where (framework => !framework.IsNetCoreApp20 ());
-		}
-
-		/// <summary>
-		/// Ignore .NET Core 2.0 and .NET Standard 2.0 frameworks if the .NET Core 2.0 SDK preview 2 final
-		/// is not installed. The .NET Core 2.0 project templates are disabled if this is not installed so
-		/// any 2.0 frameworks should also be ignored.
-		/// </summary>
-		static bool IncludeNetCore20TargetFrameworks ()
-		{
-			return DotNetCoreSdk.Versions.Any (version => version.ToString () == "2.0.0-preview2-006497");
+			return !supportsNetCore20Only;
 		}
 	}
 }

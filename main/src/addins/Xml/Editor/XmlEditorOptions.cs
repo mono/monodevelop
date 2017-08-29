@@ -50,7 +50,7 @@ namespace MonoDevelop.Xml.Editor
 			
 			showSchemaAnnotation = properties.Get<bool> (ShowSchemaAnnotationPropertyName, false);
 			autoCompleteElements = properties.Get<bool> (AutoCompleteElementsPropertyName, false);
-			autoInsertFragments = properties.Get<bool> (AutoInsertFragmentsPropertyName, false);
+			autoInsertFragments = properties.Get<bool> (AutoInsertFragmentsPropertyName, true);
 		}
 
  		static void HandlePropertiesPropertyChanged (object sender, PropertyChangedEventArgs e)
@@ -143,7 +143,6 @@ namespace MonoDevelop.Xml.Editor
 		
 		/// <summary>
 		/// Automatically insert fragments such as ="" when committing an attribute and > when pressing / in a tag.
-		/// Off by default since it forces the user to alter typing behaviour.
 		/// </summary>
 		public static bool AutoInsertFragments {
 			get {

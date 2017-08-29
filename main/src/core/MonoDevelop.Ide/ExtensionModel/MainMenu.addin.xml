@@ -284,10 +284,11 @@
 		<SeparatorItem id = "DiagnosticToolsSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
-		<ItemSet id="Diagnostics">
+		<ItemSet id="Diagnostics" _label="_Diagnostics">
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.DumpUITree" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.DumpA11yTree" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.DumpA11yTreeDelayed" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.MarkLog" />
 		</ItemSet>
 		<Condition id = "Platform" value = "!mac">
 			<SeparatorItem id = "SeparatorAbout" />

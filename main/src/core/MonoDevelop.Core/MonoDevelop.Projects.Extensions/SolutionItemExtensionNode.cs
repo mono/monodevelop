@@ -49,7 +49,9 @@ namespace MonoDevelop.Projects.Extensions
 		bool migrationRequired = true;
 
 		[NodeAttribute]
+#pragma warning disable CS0649
 		string migrationHandler;
+#pragma warning restore CS0649
 
 		[NodeAttribute ("msbuildSupport")]
 		public MSBuildSupport MSBuildSupport { get; set; }

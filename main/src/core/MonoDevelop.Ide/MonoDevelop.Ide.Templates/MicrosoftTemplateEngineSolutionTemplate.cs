@@ -61,6 +61,12 @@ namespace MonoDevelop.Ide.Templates
 			//HasProjects = (template.SolutionDescriptor.EntryDescriptors.Length > 0);
 		}
 
+		internal MicrosoftTemplateEngineSolutionTemplate (string id, string name, string iconId, ITemplateInfo templateInfo)
+			: base (id, name, iconId)
+		{
+			this.templateInfo = templateInfo;
+		}
+
 		string MergeDefaultParameters (string defaultParameters)
 		{
 			List<TemplateParameter> priorityParameters = null;

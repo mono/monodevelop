@@ -43,31 +43,7 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="Mono.Cairo" />
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\build\bin\System.Reflection.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\build\bin\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
       <Private>False</Private>
@@ -91,71 +67,6 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\Deployment\MonoDevelop.Deployment\MonoDevelop.Deployment.csproj">
-      <Project>{9BC670A8-1851-40EC-9685-279F4C98433D}</Project>
-      <Name>MonoDevelop.Deployment</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\MonoDevelop.Autotools\MonoDevelop.Autotools.csproj">
-      <Project>{CFC02FEC-BDF4-40B9-94D6-35E73F76A92E}</Project>
-      <Name>MonoDevelop.Autotools</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
-      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
-      <Name>MonoDevelop.Ide</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
-      <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
-      <Name>CSharpBinding</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
-      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
-      <Name>MonoDevelop.Refactoring</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
-      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
-      <Name>MonoDevelop.DesignerSupport</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\VersionControl\MonoDevelop.VersionControl\MonoDevelop.VersionControl.csproj">
-      <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
-      <Name>MonoDevelop.VersionControl</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\VersionControl\MonoDevelop.VersionControl.Git\MonoDevelop.VersionControl.Git.csproj">
-      <Project>{0413DB7D-8B35-423F-9752-D75C9225E7DE}</Project>
-      <Name>MonoDevelop.VersionControl.Git</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
-      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
-      <Name>MonoDevelop.SourceEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
-      <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
-      <Name>MonoDevelop.Debugger</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\CSharpBinding\Autotools\Autotools.csproj">
-      <Project>{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}</Project>
-      <Name>Autotools</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\TextTemplating\MonoDevelop.TextTemplating\MonoDevelop.TextTemplating.csproj">
-      <Project>{8CCA39DD-8412-4547-BE7F-0C3D3ACC6FAC}</Project>
-      <Name>MonoDevelop.TextTemplating</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\Deployment\MonoDevelop.Deployment.Linux\MonoDevelop.Deployment.Linux.csproj">
-      <Project>{BA9020AD-A2D1-47C8-9A7C-756162C38296}</Project>
-      <Name>MonoDevelop.Deployment.Linux</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
@@ -176,163 +87,18 @@
       <Name>ICSharpCode.Decompiler</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
-      <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
-      <Name>Mono.Debugging</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\external\debugger-libs\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
-      <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>
-      <Name>Mono.Debugging.Soft</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\external\xwt\Xwt\Xwt.csproj">
-      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
-      <Name>Xwt</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
       <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
       <Name>GuiUnit_NET_4_5</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
-      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
-      <Name>MonoDevelop.UnitTesting</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\external\xwt\Xwt.Gtk\Xwt.Gtk.csproj">
-      <Project>{C3887A93-B2BD-4097-8E2F-3A063EFF32FD}</Project>
-      <Name>Xwt.Gtk</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Util.cs" />
-    <Compile Include="MonoDevelop.Projects\MdsTests.cs" />
-    <Compile Include="MonoDevelop.Projects\TestProjectsChecks.cs" />
-    <Compile Include="MonoDevelop.Projects\SolutionTests.cs" />
     <Compile Include="TestBase.cs" />
-    <Compile Include="MonoDevelop.Projects\MSBuildTests.cs" />
-    <Compile Include="MonoDevelop.Projects\MonoDeveloperFormatTests.cs" />
-    <Compile Include="MonoDevelop.Projects\ProjectTests.cs" />
-    <Compile Include="MonoDevelop.Projects\WorkspaceTests.cs" />
-    <Compile Include="MonoDevelop.Projects\MakefileTests.cs" />
-    <Compile Include="MonoDevelop.Projects\LocalCopyTests.cs" />
-    <Compile Include="MonoDevelop.Projects\TextFormatterTests.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBaseTest.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TestWorkbenchWindow.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TestViewContent.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\FindMemberVisitorTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TestDocument.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\FoldingParserTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CSharpTextEditorIndentationTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\OnTheFlyFormatterTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\CompletionListWindowTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SourceEditorTests.cs" />
-    <Compile Include="MonoDevelop.Projects\FileServiceTests.cs" />
-    <Compile Include="MonoDevelop.Projects\SolutionFolderTests.cs" />
-    <Compile Include="MonoDevelop.Core\BacktrackingStringMatcherTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\SearchPopupWindowTests.cs" />
-    <Compile Include="MonoDevelop.Core\LaneStringMatcherTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\NamedArgumentCompletionTests.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\DebugTooltipTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\UnitTesteditorIntegrationTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\LogViewTests.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\JSonIndentEngineTests.cs" />
-    <Compile Include="MonoDevelop.Projects\SharedAssetsProjectTests.cs" />
-    <Compile Include="MonoDevelop.Projects\WebProjectTests.cs" />
-    <Compile Include="MonoDevelop.Ide.FindInFiles\ColorizationTests.cs" />
-    <Compile Include="MonoDevelop.Projects\ItemMetadataTests.cs" />
-    <Compile Include="MonoDevelop.Projects\MSBuildProjectTests.cs" />
-    <Compile Include="MonoDevelop.Projects\FlavorMigration.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplateCategorizerTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\TestableProjectTemplateCategorizer.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\FinalProjectConfigurationTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\TemplateWizardProviderTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\TestableWizardPage.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\TestableTemplateWizard.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\TestableTemplateWizardProvider.cs" />
-    <Compile Include="MonoDevelop.Projects\StringTagTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\FileTemplateParserTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\ProjectCreateInformationTests.cs" />
-    <Compile Include="MonoDevelop.Projects\PolicyTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\TextSourceTestBase.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\ReadonlyTextDocumentTestBase.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\TextDocumentTestBase.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\Tests\StringTextSource_Tests.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\TextEditorTestBase.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\Tests\SimpleReadonlyDocument_Tests.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\Tests\MonoTextEditorImplementationTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\Commands\CodeCommentTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\TextEditorProjectionTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\SimpleBracketMatcherTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\Commands\SortSelectedLinesTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TypeSystemServiceTestExtensions.cs" />
-    <Compile Include="MonoDevelop.Core\FileServiceTests.cs" />
-    <Compile Include="MonoDevelop.Core\FilePathTests.cs" />
-    <Compile Include="MonoDevelop.Core\BaseCredentialsProviderTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\TemplateConditionEvaluatorTests.cs" />
-    <Compile Include="MonoDevelop.Core\LoggingServiceTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\FileTemplateTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\FileTemplateSnippets.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\NewFileDialogTests.cs" />
-    <Compile Include="MonoDevelop.Projects\PropertyBagTests.cs" />
-    <Compile Include="MonoDevelop.Projects\TextFileTests.cs" />
-    <Compile Include="MonoDevelop.Projects\GetSourceFilesAsyncTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\MonodevelopWorkspaceTests.cs" />
-    <Compile Include="MonoDevelop.Core\RemoteProcessConnectionTests.cs" />
-    <Compile Include="MonoDevelop.Projects\RunConfigurations.cs" />
-    <Compile Include="MonoDevelop.Core\RuntimeTests.cs" />
-    <Compile Include="MonoDevelop.Core\CoreExtensionsTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CSharpProjectPropertiesTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\DiffTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\RegexTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\SyntaxHighlightingTest.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\SyntaxHighlightingTest_TextMate.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\TextMateDocumentIndentEngineTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\TextMateFoldingTextEditorExtensionTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\TestCSharpHighlighting.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\TestYamlHighlighting.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\StackMatchExpressionTests.cs" />
-    <Compile Include="MonoDevelop.Projects\MSBuildProjectServiceTests.cs" />
-    <Compile Include="MonoDevelop.Projects\MSBuildGlobTests.cs" />
-    <Compile Include="MonoDevelop.Projects\ProjectCapabilityTests.cs" />
-    <Compile Include="MonoDevelop.Projects\ProjectReevaluationTests.cs" />
-    <Compile Include="MonoDevelop.Projects\MSBuildLoggerTests.cs" />
-    <Compile Include="MonoDevelop.Core\MonoExecutionParametersTests.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid\EditorManagerTests.cs" />
-    <Compile Include="MonoDevelop.Ide\TypeSystemServiceTests.cs" />
-    <Compile Include="MonoDevelop.Projects\MSBuildSearchPathTests.cs" />
-    <Compile Include="MonoDevelop.Projects\SdkVersionTests.cs" />
-    <Compile Include="MonoDevelop.Core.Assemblies\SystemAssemblyServiceTests.cs" />
-    <Compile Include="MonoDevelop.Core\StringParserServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
-    <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
-    <None Include="MonoDevelop.Refactoring\IssueGroupTests.cs" />
-    <None Include="MonoDevelop.Refactoring\MockGroupingProvider.cs" />
-    <None Include="MonoDevelop.Refactoring\GroupingProviderTestBase.cs" />
-    <None Include="MonoDevelop.Refactoring\CategoryGroupingProviderTests.cs" />
-    <None Include="MonoDevelop.Refactoring\ProviderGroupingProviderTests.cs" />
-    <None Include="MonoDevelop.Refactoring\SeverityGroupingProviderTests.cs" />
-    <None Include="MonoDevelop.Refactoring\AnalysisJobQueueTests.cs" />
-    <None Include="MonoDevelop.Refactoring\SimpleAnalysisJobTests.cs" />
-    <None Include="MonoDevelop.Refactoring\ProjectGroupingProviderTests.cs" />
-    <None Include="MonoDevelop.Refactoring\FileGroupingProviderTests.cs" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="MonoDevelop.Refactoring\" />
-    <Folder Include="MonoDevelop.Xml.StateEngine\" />
-    <Folder Include="MonoDevelop.Ide.Templates\" />
-    <Folder Include="MonoDevelop.Ide.Editor\" />
-    <Folder Include="MonoDevelop.Ide.Editor\Tests\" />
-    <Folder Include="MonoDevelop.Ide.Editor\Commands\" />
-    <Folder Include="MonoDevelop.Components.PropertyGrid\" />
-    <Folder Include="MonoDevelop.Core.Assemblies\" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

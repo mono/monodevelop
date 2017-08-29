@@ -210,7 +210,7 @@ namespace MonoDevelop.Components.Commands
 		public string Name {
 			get {
 				if (BrandingService.ApplicationName == "MonoDevelop")
-					return AddinManager.CurrentLocalizer.GetString ("Custom");
+					return AddinManager.CurrentLocalizer.GetString ("Default");
 				else
 					return BrandingService.ApplicationName;
 			}

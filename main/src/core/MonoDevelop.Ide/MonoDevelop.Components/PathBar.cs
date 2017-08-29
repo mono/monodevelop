@@ -78,6 +78,7 @@ namespace MonoDevelop.Components
 			get {
 				if (accessible == null) {
 					accessible = AccessibilityElementProxy.ButtonElementProxy ();
+					accessible.SetRole (AtkCocoa.Roles.AXPopUpButton);
 					accessible.Identifier = "Breadcrumb";
 					accessible.PerformPress += OnPerformShowMenu;
 
@@ -183,6 +184,8 @@ namespace MonoDevelop.Components
 			Accessible.Name = "PathBar";
 			Accessible.SetLabel (GettextCatalog.GetString ("Breadcrumb Bar"));
 			Accessible.Description = GettextCatalog.GetString ("Jump to definitions in the current file");
+			Accessible.SetRole (AtkCocoa.Roles.AXList);
+			Accessible.SetOrientation (Orientation.Horizontal);
 
 			CanFocus = true;
 
@@ -302,6 +305,7 @@ namespace MonoDevelop.Components
 			Gdk.Rectangle rect = new Gdk.Rectangle (x, y, width, height);
 
 			entry.Accessible.FrameInGtkParent = rect;
+			entry.Accessible.FrameInParent = rect;
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)

@@ -370,7 +370,7 @@ namespace MonoDevelop.Xml.Editor
 			}
 			
 			//attribute name completion
-			if ((forced && Tracker.Engine.Nodes.Peek () is IAttributedXObject && !tracker.Engine.Nodes.Peek ().IsEnded)
+			if ((forced && Tracker.Engine.Nodes.Peek () is XAttribute && !tracker.Engine.Nodes.Peek ().IsEnded)
 			     || ((Tracker.Engine.CurrentState is XmlNameState
 			    && Tracker.Engine.CurrentState.Parent is XmlAttributeState) ||
 			    Tracker.Engine.CurrentState is XmlTagState)) {
@@ -550,8 +550,8 @@ namespace MonoDevelop.Xml.Editor
 			//because that means there are closing tags on the line, and they de-indent the line they're on
 			var endElementDepth = GetElementIndentDepth (Tracker.Engine.Nodes);
 			var elementDepth = Math.Min (endElementDepth, startElementDepth);
-
-			//FIXME: use policies
+			if (Editor.Options.TabsToSpaces)
+				return new string (' ', elementDepth * Editor.Options.TabSize);
 			return new string ('\t', elementDepth /*+ attributeDepth*/);
 		}
 		

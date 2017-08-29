@@ -7,6 +7,6 @@
     <_MyNuGetPackage Include="$(MSBuildProjectDirectory)\..\..\..\packages\NuGet.Build.Packaging.$(_BuildPackagingVersion)\NuGet.Build.Packaging.$(_BuildPackagingVersion).nupkg" />
   </ItemGroup>
   <Target Name="_MyPostBuildTarget">
-    <Copy SourceFiles="@(_MyNuGetPackage)" DestinationFolder="$(OutputPath)\packages" /> 
+    <Copy SourceFiles="@(_MyNuGetPackage)" DestinationFolder="$(OutputPath)\packages" SkipUnchangedFiles="true" /> 
   </Target>
 </Project>

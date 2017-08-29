@@ -88,7 +88,7 @@ namespace MonoDevelop.PackageManagement
 
 		public static NuGetProject Create (DotNetProject project)
 		{
-			if (project.Items.OfType<ProjectPackageReference> ().Any ())
+			if (project.HasPackageReferences ())
 				return new PackageReferenceNuGetProject (project);
 
 			return null;
@@ -231,7 +231,7 @@ namespace MonoDevelop.PackageManagement
 
 		static PackageSpec CreateProjectPackageSpec (DotNetProject project, DependencyGraphCacheContext context)
 		{
-			PackageSpec packageSpec = PackageSpecCreator.CreatePackageSpec (project, context.Logger);
+			PackageSpec packageSpec = PackageSpecCreator.CreatePackageSpec (project, context);
 			return packageSpec;
 		}
 
@@ -254,17 +254,6 @@ namespace MonoDevelop.PackageManagement
 				out ignore);
 		}
 
-		public override Task<bool> ExecuteInitScriptAsync (
-			PackageIdentity identity,
-			string packageInstallPath,
-			INuGetProjectContext projectContext,
-			bool throwOnFailure)
-		{
-			// Not supported. This gets called for every NuGet package
-			// even if they do not have an init.ps1 so do not report this.
-			return Task.FromResult (false);
-		}
-
 		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
 		{
 			Runtime.RunInMainThread (() => {
@@ -284,7 +273,7 @@ namespace MonoDevelop.PackageManagement
 		{
 		}
 
-		public void NotifyProjectReferencesChanged ()
+		public void NotifyProjectReferencesChanged (bool includeTransitiveProjectReferences)
 		{
 			Runtime.AssertMainThread ();
 

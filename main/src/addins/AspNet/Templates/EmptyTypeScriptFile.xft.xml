@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Template
+	originator="Mike Lorbetske"
+	language="TypeScript"
+	created="2017/08/08"
+	lastModified="2017/08/08">
+
+	<TemplateConfiguration>
+		<_Name>TypeScript file</_Name>
+		<Icon>md-file-ts</Icon>
+		<_Category>Web</_Category>
+		<_Description>A blank TypeScript source file.</_Description>
+		<DefaultFilename>EmptyTSFile</DefaultFilename>
+	</TemplateConfiguration>
+
+	<TemplateFiles>
+		<File DefaultExtension=".ts" src="TypeScriptFileTemplate.ts" />
+	</TemplateFiles>
+</Template>

@@ -50,13 +50,18 @@ type FSharpPathExtension() as x =
         |> Option.bind (Option.condition ownerProjects.Contains)
         |> Option.iter x.DocumentContext.AttachToProject)
 
+    let getSolutions() =
+        ownerProjects |> Seq.choose (fun p -> p.ParentSolution |> Option.ofNull) |> Seq.distinct
+
     let untrackStartupProjectChanges () =
-        for sol in (ownerProjects |> Seq.map (fun p -> p.ParentSolution) |> Seq.distinct) do
-            sol.StartupItemChanged.RemoveHandler handleStartupProjectChanged
+        getSolutions()
+        |> Seq.choose (fun s -> s.StartupItemChanged |> Option.ofNull)
+        |> Seq.iter (fun e -> e.RemoveHandler handleStartupProjectChanged)
 
     let trackStartupProjectChanges() =
-        for sol in (ownerProjects |> Seq.map (fun p -> p.ParentSolution) |> Seq.distinct) do
-            sol.StartupItemChanged.AddHandler handleStartupProjectChanged
+        getSolutions()
+        |> Seq.choose (fun s -> s.StartupItemChanged |> Option.ofNull)
+        |> Seq.iter (fun e -> e.AddHandler handleStartupProjectChanged)
 
     let setOwnerProjects (projects) =
         untrackStartupProjectChanges ()

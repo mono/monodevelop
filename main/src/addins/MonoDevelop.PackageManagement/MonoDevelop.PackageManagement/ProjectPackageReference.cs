@@ -75,11 +75,31 @@ namespace MonoDevelop.PackageManagement
 
 		NuGetFramework GetFramework ()
 		{
+			if (Project == null)
+				return NuGetFramework.AnyFramework;
 			string framework = Project.GetDotNetCoreTargetFrameworks ().FirstOrDefault ();
 			if (framework != null)
 				return NuGetFramework.Parse (framework);
 
 			return NuGetFramework.UnsupportedFramework;
+		}
+
+		public bool IsAtLeastVersion (Version version)
+		{
+			var packageReference = CreatePackageReference ();
+			var requestedVersion = new NuGetVersion (version);
+			var comparer = VersionComparer.VersionRelease;
+			if (packageReference.HasAllowedVersions) {
+				var versionRange = packageReference.AllowedVersions;
+				if (versionRange.HasLowerBound) {
+					var result = comparer.Compare (versionRange.MinVersion, requestedVersion);
+					return versionRange.IsMinInclusive ? result <= 0 : result < 0;
+				}
+			} else if (packageReference.PackageIdentity.HasVersion) {
+				var packageVersion = packageReference.PackageIdentity.Version;
+				return comparer.Compare (requestedVersion, packageVersion) <= 0;
+			}
+			return false;
 		}
 
 		public bool Equals (PackageIdentity packageIdentity, bool matchVersion = true)
@@ -119,6 +139,8 @@ namespace MonoDevelop.PackageManagement
 				packageReference.Metadata.SetValue (property.Name, property.Value);
 			}
 
+			packageReference.IsImplicit = evaluatedItem.Metadata.GetValue<bool> ("IsImplicitlyDefined");
+
 			return packageReference;
 		}
 
@@ -131,5 +153,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			project.AddKnownItemAttribute ("PackageReference", "Version");
 		}
+
+		public bool IsImplicit { get; internal set; }
 	}
 }

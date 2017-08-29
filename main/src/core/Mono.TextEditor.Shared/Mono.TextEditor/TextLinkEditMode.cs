@@ -219,12 +219,21 @@ namespace Mono.TextEditor
 				handler (this, e);
 		}
 
-		TextLink closedLink = null;
+		TextLink closedLink = null, currentSelectedLink = null;
 
 		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
 		{
 			int caretOffset = Editor.Caret.Offset - baseOffset;
 			TextLink link = links.Find (l => !l.PrimaryLink.IsInvalid () && l.PrimaryLink.Offset <= caretOffset && caretOffset <= l.PrimaryLink.EndOffset);
+
+			if (link != currentSelectedLink) {
+				foreach (var l in textLinkMarkers) {
+					Editor.Document.CommitLineUpdate (l.LineSegment);
+				}
+				currentSelectedLink = link;
+			}
+
+
 			if (link != null && link.Count > 0 && link.IsEditable) {
 				if (closedLink == link)
 					return;
@@ -277,6 +286,7 @@ namespace Mono.TextEditor
 			Editor.Document.CommitUpdateAll ();
 			this.undoDepth = Editor.Document.GetCurrentUndoDepth ();
 			ShowHelpWindow ();
+			currentSelectedLink = null;
 		}
 
 		public bool HasChangedText {

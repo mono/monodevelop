@@ -142,7 +142,6 @@ namespace MonoDevelop.Core.Text
 
 		public static StringTextSource ReadFrom (Stream stream)
 		{
-			bool hadBom;
 			Encoding encoding;
 			var text = TextFileUtility.GetText (stream, out encoding);
 			return new StringTextSource (text, encoding);

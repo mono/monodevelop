@@ -1,4 +1,4 @@
-﻿//
+﻿﻿//
 // GtkNewProjectDialogBackend.cs
 //
 // Author:
@@ -34,6 +34,9 @@ using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -41,6 +44,7 @@ namespace MonoDevelop.Ide.Projects
 	{
 		INewProjectDialogController controller;
 		Menu popupMenu;
+		bool isLastPressedKeySpace;
 
 		public GtkNewProjectDialogBackend ()
 		{
@@ -58,8 +62,10 @@ namespace MonoDevelop.Ide.Projects
 			templatesTreeView.ButtonPressEvent += TemplatesTreeViewButtonPressed;
 			templatesTreeView.Selection.SelectFunction = TemplatesTreeViewSelection;
 			templatesTreeView.RowActivated += TreeViewRowActivated;
+			templatesTreeView.KeyPressEvent += TemplatesTreeViewKeyPressed;
+
 			cancelButton.Clicked += CancelButtonClicked;
-			nextButton.Clicked += (sender, e) => MoveToNextPage ();
+			nextButton.Clicked += NextButtonClicked;
 			previousButton.Clicked += (sender, e) => MoveToPreviousPage ();
 
 			nextButton.CanDefault = true;
@@ -68,6 +74,24 @@ namespace MonoDevelop.Ide.Projects
 			// Setup the treeview to be able to have a context menu
 			var actionHandler = new ActionDelegate (templatesTreeView);
 			actionHandler.PerformShowMenu += PerformShowMenu;
+		}
+
+		void ProjectCreationFailed (object obj, EventArgs args) => ShowProjectCreationAccessibityNotification (true);
+		void ProjectCreated(object obj, EventArgs args) => ShowProjectCreationAccessibityNotification (false);
+		async void NextButtonClicked (object sender, EventArgs e) => await MoveToNextPage ();
+
+		void ShowProjectCreationAccessibityNotification (bool hasError)
+		{
+			var projectTemplate = controller.SelectedTemplate;
+
+			string messageText;
+
+			if (hasError)
+				messageText = GettextCatalog.GetString ("{0} failed to create", projectTemplate.Name);
+			else
+				messageText = GettextCatalog.GetString ("{0} successfully created", projectTemplate.Name);
+
+			this.Accessible.MakeAccessibilityAnnouncement (messageText);
 		}
 
 		public void ShowDialog ()
@@ -88,16 +112,17 @@ namespace MonoDevelop.Ide.Projects
 		public void RegisterController (INewProjectDialogController controller)
 		{
 			this.controller = controller;
+			controller.ProjectCreationFailed += ProjectCreationFailed;
+			controller.ProjectCreated += ProjectCreated;
 			languageCellRenderer.SelectedLanguage = controller.SelectedLanguage;
 			topBannerLabel.Text = controller.BannerText;
-
 			LoadTemplates ();
 			SelectTemplateDefinedbyController ();
 			if (CanMoveToNextPage && !controller.ShowTemplateSelection)
-				MoveToNextPage ();
+				MoveToNextPage ().Ignore();
 		}
 
-		static void SetTemplateCategoryCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
+		void SetTemplateCategoryCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
 		{
 			var categoryTextRenderer = (GtkTemplateCategoryCellRenderer)renderer;
 			categoryTextRenderer.Category = (TemplateCategory)model.GetValue (it, TemplateCategoryColumn);
@@ -145,6 +170,7 @@ namespace MonoDevelop.Ide.Projects
 		[GLib.ConnectBefore]
 		void TemplatesTreeViewButtonPressed (object o, ButtonPressEventArgs args)
 		{
+
 			SolutionTemplate template = GetSelectedTemplate ();
 			if ((template == null) || (template.AvailableLanguages.Count <= 1)) {
 				return;
@@ -152,6 +178,24 @@ namespace MonoDevelop.Ide.Projects
 
 			if (languageCellRenderer.IsLanguageButtonPressed (args.Event)) {
 				HandlePopup (template, args.Event.Time);
+			}
+		}
+
+		[GLib.ConnectBefore]
+		private void TemplatesTreeViewKeyPressed (object o, KeyPressEventArgs args)
+		{
+			isLastPressedKeySpace = args.Event.Key == Gdk.Key.space;
+
+			if (isLastPressedKeySpace) {
+				isLastPressedKeySpace = true;
+				var template = GetSelectedTemplate ();
+
+				if (template == null)
+					return;
+				if (template.AvailableLanguages.Count > 1)
+					HandlePopup (template, 0);
+				else
+					System.Media.SystemSounds.Beep.Play ();
 			}
 		}
 
@@ -223,6 +267,7 @@ namespace MonoDevelop.Ide.Projects
 			if (templateTextRenderer.RenderRecentTemplate && controller.SelectedTemplate != null) {
 				// reset selected language if a recent template has been selected
 				templateTextRenderer.SelectedLanguage = controller.SelectedTemplate.Language;
+				languageCellRenderer.SelectedLanguage = controller.SelectedTemplate.Language;
 				controller.SelectedLanguage = controller.SelectedTemplate.Language;
 			}
 			ShowSelectedTemplate ();
@@ -245,6 +290,9 @@ namespace MonoDevelop.Ide.Projects
 
 			if (!controller.IsLastPage)
 				projectConfigurationWidget.Destroy ();
+
+			controller.ProjectCreationFailed -= ProjectCreationFailed;
+			controller.ProjectCreated -= ProjectCreated;
 
 			base.Destroy ();
 		}
@@ -507,12 +555,14 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		async void MoveToNextPage ()
+		async Task MoveToNextPage ()
 		{
 			if (controller.IsLastPage) {
 				try {
 					CanMoveToNextPage = false;
 					await controller.Create ();
+				} catch {
+					throw;
 				} finally {
 					CanMoveToNextPage = true;
 				}
@@ -583,9 +633,10 @@ namespace MonoDevelop.Ide.Projects
 
 		void TreeViewRowActivated (object o, RowActivatedArgs args)
 		{
-			if (CanMoveToNextPage && IsSolutionTemplateOnActivatedRow ((Gtk.TreeView)o, args)) {
-				MoveToNextPage ();
-			}
+			if (CanMoveToNextPage && !isLastPressedKeySpace && 
+			    IsSolutionTemplateOnActivatedRow ((Gtk.TreeView)o, args))
+				MoveToNextPage ().Ignore();
+			isLastPressedKeySpace = false;
 		}
 
 		bool IsSolutionTemplateOnActivatedRow (TreeView treeView, RowActivatedArgs args)

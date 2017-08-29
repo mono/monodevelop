@@ -153,6 +153,10 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public static void AddLinkedUIElement (this Atk.Object o, params Atk.Object [] linked)
 		{
 		}
+	
+		public static void MakeAccessibilityAnnouncement (this Atk.Object o,  string message)
+		{
+		}
 	}
 
 	public class AccessibilityElementProxy : IAccessibilityElementProxy
@@ -214,6 +218,14 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public bool Hidden {
 			get {
 				return false;
+			}
+			set {
+			}
+		}
+
+		public int Index {
+			get {
+				return 0;
 			}
 			set {
 			}

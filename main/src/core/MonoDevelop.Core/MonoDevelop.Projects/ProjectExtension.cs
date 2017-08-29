@@ -85,6 +85,19 @@ namespace MonoDevelop.Projects
 			next.OnWriteRunConfiguration (monitor, config, properties);
 		}
 
+		/// <summary>
+		/// Called to initialize a TargetEvaluationContext instance required by RunTarget()
+		/// and other methods that invoke MSBuild targets
+		/// </summary>
+		/// <returns>The initialized evaluation context (it can be just the provided context)</returns>
+		/// <param name="target">The MSBuild target that is going to be invoked</param>
+		/// <param name="configuration">Build configuration</param>
+		/// <param name="context">Execution context</param>
+		internal protected virtual TargetEvaluationContext OnConfigureTargetEvaluationContext (string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			return next.OnConfigureTargetEvaluationContext (target, configuration, context);
+		}
+
 		internal protected virtual Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			return next.OnRunTarget (monitor, target, configuration, context);
@@ -218,9 +231,25 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Obsolete ("Use OnFastCheckNeedsBuild (ConfigurationSelector,TargetEvaluationContext)")]
 		internal protected virtual bool OnFastCheckNeedsBuild (ConfigurationSelector configuration)
 		{
 			return next.OnFastCheckNeedsBuild (configuration);
+		}
+
+		/// <summary>
+		/// Checks if this project needs to be built.
+		/// </summary>
+		/// <returns><c>true</c>, if the project is dirty and needs to be rebuilt, <c>false</c> otherwise.</returns>
+		/// <param name="configuration">Build configuration.</param>
+		/// <param name="context">Evaluation context.</param>
+		/// <remarks>
+		/// This method can be overriden to provide custom logic for checking if a project needs to be built, either
+		/// due to changes in the content or in the configuration.
+		/// </remarks>
+		internal protected virtual bool OnFastCheckNeedsBuild (ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			return next.OnFastCheckNeedsBuild (configuration, context);
 		}
 
 		#endregion

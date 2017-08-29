@@ -1251,12 +1251,13 @@
     <Compile Include="MonoDevelop.VersionControl.Views\BaseView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\Styles.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlInitializer.cs" />
+    <Compile Include="MonoDevelop.VersionControl\RevisionHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="UnitTests" />
+    <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.MacDev" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

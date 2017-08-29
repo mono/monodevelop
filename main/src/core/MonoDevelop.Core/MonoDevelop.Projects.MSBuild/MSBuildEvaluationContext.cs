@@ -458,9 +458,7 @@ namespace MonoDevelop.Projects.MSBuild
 				while (i != -1);
 
 				sb.Append (str, last, str.Length - last);
-				lock (project.Pool) {
-					return project.Pool.Add (sb);
-				}
+				return StringInternPool.AddShared (sb);
 			} finally {
 				evaluationSbs.Enqueue (sb);
 			}
@@ -500,15 +498,12 @@ namespace MonoDevelop.Projects.MSBuild
 			i += 2;
 			int j = FindClosingChar (str, i, ')');
 			if (j == -1) {
-				lock (project.Pool)
-					val = project.Pool.Add (str, start, str.Length - start);
+				val = StringInternPool.AddShared (str, start, str.Length - start);
 				i = str.Length;
 				return false;
 			}
 
-			string prop;
-			lock (project.Pool)
-				prop = project.Pool.Add (str, i, j - i).Trim ();
+			string prop = StringInternPool.AddShared (str, i, j - i).Trim ();
 			i = j + 1;
 
 			bool res = false;
@@ -532,9 +527,7 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 			if (!res)
-				lock (project.Pool) {
-					val = project.Pool.Add (str, start, j - start + 1);
-				}
+				val = StringInternPool.AddShared (str, start, j - start + 1);
 
 			return res;
 		}
@@ -835,6 +828,15 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (sval != null && parameterType == typeof (char[]))
 				return sval.ToCharArray ();
+
+			if (sval != null && parameterType.IsEnum) {
+				var enumValue = sval;
+				if (enumValue.StartsWith (parameterType.Name))
+					enumValue = enumValue.Substring (parameterType.Name.Length + 1);
+				if (enumValue.StartsWith (parameterType.FullName))
+					enumValue = enumValue.Substring (parameterType.FullName.Length + 1);
+				return Enum.Parse(parameterType, enumValue, ignoreCase: true);
+			}
 
 			if (sval != null && Path.DirectorySeparatorChar != '\\')
 				value = sval.Replace ('\\', Path.DirectorySeparatorChar);

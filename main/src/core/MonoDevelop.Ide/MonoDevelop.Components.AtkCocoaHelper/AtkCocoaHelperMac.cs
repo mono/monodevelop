@@ -523,6 +523,19 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 			nsa.AccessibilityLinkedUIElements = newLinkedElements;
 		}
+
+		public static void MakeAccessibilityAnnouncement (this Atk.Object o,  string message)
+		{
+			if (o == null)
+				return;
+			var nsObject = GetNSAccessibilityElement (o) as NSObject;
+			if (nsObject == null)
+				return;
+			var dictionary =
+				new NSDictionary (NSAccessibilityNotificationUserInfoKeys.AnnouncementKey, new NSString (message),
+								  NSAccessibilityNotificationUserInfoKeys.PriorityKey, NSAccessibilityPriorityLevel.High);
+			NSAccessibility.PostNotification (nsObject, NSAccessibilityNotifications.AnnouncementRequestedNotification, dictionary);
+		}
 	}
 
 	public class AccessibilityElementProxy : IAccessibilityElementProxy
@@ -822,7 +835,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 					throw new Exception ("Not a Text element");
 				}
 
-				p.GetRangeForLine = value;
+				p.GetRangeForIndex = value;
 			}
 		}
 		public Func<int, AtkCocoa.Range> StyleRangeForIndex {
@@ -853,6 +866,26 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				}
 
 				p.GetVisibleCharacterRange = value;
+			}
+		}
+
+		public int Index {
+			get {
+				var p = realProxyElement;
+				if (p == null) {
+					throw new Exception ("Not proxy element");
+				}
+
+				return (int) p.AccessibilityIndex;
+			}
+
+			set {
+				var p = realProxyElement;
+				if (p == null) {
+					throw new Exception ("Not a proxy element");
+				}
+
+				p.AccessibilityIndex = value;
 			}
 		}
 	}

@@ -32,7 +32,6 @@ using MonoDevelop.Projects;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Projects.SharedAssetsProjects;
-using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Packaging.Tests
 {
@@ -44,9 +43,9 @@ namespace MonoDevelop.Packaging.Tests
 			Simulate ();
 
 			#pragma warning disable 219
-			// Ensure NuGet.ProjectManagement assembly is loaded otherwise creating
-			// a PackagingProject will fail.
-			string binDirectory = NuGet.ProjectManagement.Constants.BinDirectory;
+			// Ensure MSBuildSdksPath is registered otherwise the project builders are recycled
+			// when we try to build the packaging project which breaks the tests.
+			string directory = DotNetCore.DotNetCoreSdk.MSBuildSDKsPath;
 			#pragma warning restore 219
 		}
 

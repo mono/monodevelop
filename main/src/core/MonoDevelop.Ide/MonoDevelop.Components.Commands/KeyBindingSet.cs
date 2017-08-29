@@ -100,14 +100,39 @@ namespace MonoDevelop.Components.Commands
 
 		public bool Equals (KeyBindingSet other)
 		{
-			if (parent != other && bindings.Count != other.bindings.Count)
+			// TODO: full IEquatable<KeyBindingSet> implementation
+			// the current solutions is just enough to detect whether a custom set equals a predefined one
+			// and is not a real equality check. See KeyBindingsPanel.SelectCurrentScheme().
+			if (other == null)
 				return false;
-			foreach (KeyValuePair<string, string> binding in bindings) {
+
+			var otherSet = other.GetAllBindings ();
+			var allBindings = GetAllBindings ();
+			if (otherSet.Count != allBindings.Count)
+				return false;
+			foreach (var binding in allBindings) {
 				string accel;
-				if (!other.bindings.TryGetValue (binding.Key, out accel) || accel != binding.Value)
+				if (!otherSet.TryGetValue (binding.Key, out accel) || accel != binding.Value)
 					return false;
 			}
 			return true;
+		}
+
+		IDictionary<string, string> GetAllBindings ()
+		{
+			if (parent == null)
+				return bindings.Where (b => !string.IsNullOrEmpty (b.Value)).ToDictionary (b => b.Key, b => b.Value);
+
+			var pbindings = parent.GetAllBindings ();
+			var allBindings = new Dictionary<string, string> ();
+			foreach (var cmd in bindings.Keys.Concat (pbindings.Keys).Distinct ()) {
+				var accel = string.Empty;
+				if (!bindings.TryGetValue (cmd, out accel))
+					pbindings.TryGetValue (cmd, out accel);
+				if (!string.IsNullOrEmpty (accel))
+					allBindings [cmd] = accel;
+			}
+			return allBindings;
 		}
 
 		public void ClearBindings ()
@@ -214,9 +239,20 @@ namespace MonoDevelop.Components.Commands
 					case "binding":
 						command = reader.GetAttribute (commandAttr);
 						binding = reader.GetAttribute (shortcutAttr);
+
+						if (string.IsNullOrEmpty (command))
+							continue;
+
+						if (!string.IsNullOrEmpty (binding))
+							binding = KeyBindingManager.FixChordSeparators (binding);
+
+						string pbind;
+						if (parent?.bindings != null && parent.bindings.TryGetValue (command, out pbind)) {
+							if (binding == pbind)
+								continue;
+						}
 						
-						if (!string.IsNullOrEmpty (command))
-							bindings.Add (command, KeyBindingManager.FixChordSeparators(binding));
+						bindings.Add (command, binding);
 						
 						break;
 					}

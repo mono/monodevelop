@@ -60,7 +60,7 @@ namespace Microsoft.VisualStudio.Platform
 						AddinManager.LoadAddin(null, assemblyNode.Addin.Id);
 
                         var assemblyFilePath = assemblyNode.Addin.GetFilePath(assemblyNode.FileName);
-                        var assembly = MonoDevelop.Core.Platform.AssemblyLoad(assemblyFilePath);
+                        var assembly = Runtime.SystemAssemblyService.LoadAssemblyFrom(assemblyFilePath);
                         catalog.Catalogs.Add(new AssemblyCatalog(assembly));
                     }
                     catch (Exception e)

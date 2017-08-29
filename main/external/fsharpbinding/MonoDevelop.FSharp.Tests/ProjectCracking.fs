@@ -23,7 +23,8 @@ module ``Project Cracking`` =
         let! w = Services.ProjectService.ReadWorkspaceItem (monitor, FilePath(sln)) |> Async.AwaitTask
 
         let s = w :?> Solution
-        let fsproj = s.Items.[0] :?> DotNetProject
+        let fsproj = s.Items.[0] :?> FSharpProject
+        do! fsproj.GetReferences()
         let opts = languageService.GetProjectOptionsFromProjectFile fsproj
         return opts.Value.OtherOptions
     }
