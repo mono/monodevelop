@@ -32,6 +32,7 @@ using Gtk;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Refactoring.ExtractInterface
 {
@@ -76,7 +77,7 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 			}
 		}
 
-		public ExtractInterfaceDialog ()
+		public ExtractInterfaceDialog () : base (GettextCatalog.GetString ("Extract Interface"), IdeApp.Workbench.RootWindow, DialogFlags.Modal)
 		{
 			this.Build ();
 			this.buttonSelectAll.Clicked += delegate {

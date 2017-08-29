@@ -136,7 +136,7 @@ namespace MonoDevelop.Refactoring.SignatureChange
 			}
 		}
 
-		internal SignatureChangeDialog ()
+		internal SignatureChangeDialog () : base (GettextCatalog.GetString ("Change Signature"), IdeApp.Workbench.RootWindow, DialogFlags.Modal)
 		{
 			this.Build ();
 
