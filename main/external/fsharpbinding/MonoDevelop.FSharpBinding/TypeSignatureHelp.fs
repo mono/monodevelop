@@ -41,7 +41,7 @@ type SignatureHelpMarker(document, text, font, line) =
             let y = (editor.LineToY lineNr) - editor.VAdjustment.Value
 
             let currentPoint = g.CurrentPoint
-            g.MoveTo(x, y + editor.LineHeight * (1.0 - SignatureHelpMarker.FontScale))
+            g.MoveTo(x, y + editor.LineHeight * (1.0 - SignatureHelpMarker.FontScale) - 2.0)
             g.ShowLayout layout
             g.MoveTo currentPoint
 
