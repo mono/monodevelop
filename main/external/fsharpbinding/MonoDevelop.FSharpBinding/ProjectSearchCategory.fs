@@ -78,7 +78,7 @@ module Search =
     let correctDisplayName (symbol:FSharpSymbolUse) =
         match symbol with
         | SymbolUse.Constructor c ->
-            match c.EnclosingEntitySafe with
+            match c.EnclosingEntity with
             | Some ent -> ent.DisplayName
             | _ -> LoggingService.LogError(sprintf "Constructor with no EnclosingEntity: %s" c.DisplayName)
                    c.DisplayName

@@ -290,11 +290,6 @@ module TooltipFormatting =
     let signatureB, commentB = StringBuilder(), StringBuilder()
     match el with
     | FSharpToolTipElement.None -> ()
-    | FSharpToolTipElement.Single(it, comment) ->
-        signatureB.Append(GLib.Markup.EscapeText (it)) |> ignore
-        let html = buildFormatComment comment
-        if not (String.IsNullOrWhiteSpace html) then
-            commentB.Append(html) |> ignore
     | FSharpToolTipElement.Group(items) ->
         let items, msg =
             if items.Length > 10 then
@@ -302,21 +297,16 @@ module TooltipFormatting =
             else items, null
         if (items.Length > 1) then
             signatureB.AppendLine("Multiple overloads") |> ignore
-        items |> Seq.iteri (fun i (it,comment) ->
-            signatureB.Append(GLib.Markup.EscapeText (it))  |> ignore
+        items |> Seq.iteri (fun i (tooltipData) ->
+            signatureB.Append(GLib.Markup.EscapeText (tooltipData.MainDescription))  |> ignore
             if i = 0 then
-                let html = buildFormatComment comment
+                let html = buildFormatComment tooltipData.XmlDoc
                 if not (String.IsNullOrWhiteSpace html) then
                     commentB.AppendLine(html) |> ignore
                     commentB.Append(GLib.Markup.EscapeText "\n")  |> ignore )
         if msg <> null then signatureB.Append(msg) |> ignore
     | FSharpToolTipElement.CompositionError(err) ->
         signatureB.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
-    | FSharpToolTipElement.SingleParameter(it, comment, _idText) -> 
-        signatureB.Append(GLib.Markup.EscapeText (it)) |> ignore
-        let html = buildFormatComment comment
-        if not (String.IsNullOrWhiteSpace html) then
-            commentB.Append(html) |> ignore
     signatureB.ToString().Trim(), commentB.ToString().Trim()
 
   /// Format tool-tip that we get from the language service as string
@@ -346,10 +336,8 @@ module TooltipFormatting =
   let private extractParamTipFromElement paramName element =
       match element with
       | FSharpToolTipElement.None -> None
-      | FSharpToolTipElement.Single (_it, comment) -> extractParamTipFromComment paramName comment
-      | FSharpToolTipElement.Group items -> List.tryPick (snd >> extractParamTipFromComment paramName) items
+      | FSharpToolTipElement.Group items -> items |> List.tryPick (fun data -> extractParamTipFromComment paramName data.XmlDoc)
       | FSharpToolTipElement.CompositionError _err -> None
-      | FSharpToolTipElement.SingleParameter(_text, comment, _idText) -> extractParamTipFromComment paramName comment
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let extractParamTip paramName (FSharpToolTipText elements) =
