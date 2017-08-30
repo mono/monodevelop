@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.Gui
 		public static Color LinkForegroundColor { get; internal set; }
 		public static Color BorderColor { get; internal set; }
 		public static Color SecondaryTextColor { get; internal set; }
+		public static string SecondaryTextColorHexString { get; internal set; }
 		public static Color SecondarySelectionTextColor { get; internal set; }
 
 		public static Color FocusColor { get; internal set; }
@@ -78,8 +79,13 @@ namespace MonoDevelop.Ide.Gui
 		public static Color PrimaryBackgroundColor { get; internal set; }
 		public static Color SecondaryBackgroundLighterColor { get; internal set; }
 		public static Color SecondaryBackgroundDarkerColor { get; internal set; }
-		public static Color DimTextColor { get; internal set; }
-		public static string DimTextColorHexString { get; internal set; }
+
+		[Obsolete ("Please use SecondaryTextColor")]
+		public static Color DimTextColor { get => SecondaryTextColor; }
+
+		[Obsolete ("Please use SecondaryTextColorHexString")]
+		public static string DimTextColorHexString { get => SecondaryTextColorHexString; }
+
 		public static Color StatusInformationBackgroundColor { get; internal set; }
 		public static Color StatusInformationTextColor { get; internal set; }
 		public static Color StatusWarningBackgroundColor { get; internal set; }
@@ -364,8 +370,6 @@ namespace MonoDevelop.Ide.Gui
 			SubTabBarActiveTextColor = BaseSelectionTextColor;
 			SubTabBarSeparatorColor = SubTabBarTextColor;
 			InactiveBrowserPadBackground = InactivePadBackground;
-			SecondaryTextColor = Color.FromName ("#808080");
-			SecondarySelectionTextColor = Color.FromName ("#93cbff");
 
 			// Tabs
 
@@ -399,11 +403,11 @@ namespace MonoDevelop.Ide.Gui
 
 			GlobalSearch.BackgroundColor = PrimaryBackgroundColor;
 			GlobalSearch.HeaderBackgroundColor = SecondaryBackgroundLighterColor;
-			GlobalSearch.HeaderTextColor = DimTextColor;
+			GlobalSearch.HeaderTextColor = SecondaryTextColor;
 			GlobalSearch.SeparatorLineColor = SeparatorColor;
 			GlobalSearch.SelectionBackgroundColor = BaseSelectionBackgroundColor;
 			GlobalSearch.ResultTextColor = BaseForegroundColor;
-			GlobalSearch.ResultDescriptionTextColor = DimTextColor;
+			GlobalSearch.ResultDescriptionTextColor = SecondaryTextColor;
 			GlobalSearch.SelectedResultTextColor = BaseSelectionTextColor;
 			GlobalSearch.SelectedResultDescriptionTextColor = BaseSelectionTextColor;
 			GlobalSearch.SelectedResultMatchTextColor = BaseSelectionTextColor;
@@ -455,8 +459,9 @@ namespace MonoDevelop.Ide.Gui
 			PrimaryBackgroundColor = BaseBackgroundColor;
 			SecondaryBackgroundDarkerColor = Color.FromName ("#e7eaee");
 			SecondaryBackgroundLighterColor = Color.FromName ("#f9f9fb");
-			DimTextColorHexString = "#888888";
-			DimTextColor = Color.FromName (DimTextColorHexString);
+			SecondaryTextColorHexString = "#888888";
+			SecondaryTextColor = Color.FromName (SecondaryTextColorHexString);
+			SecondarySelectionTextColor = Color.FromName ("#93cbff");
 			PadBackground = Color.FromName ("#fafafa");
 			InactivePadBackground = Color.FromName ("#e8e8e8");
 			InactivePadLabelColor = Color.FromName ("#777777");
@@ -537,7 +542,7 @@ namespace MonoDevelop.Ide.Gui
 
 			CodeCompletion.BackgroundColor = Color.FromName ("#eef1f2");
 			CodeCompletion.TextColor = Color.FromName ("#646566");
-			CodeCompletion.CategoryColor = DimTextColor;
+			CodeCompletion.CategoryColor = SecondaryTextColor;
 			CodeCompletion.HighlightColor = Color.FromName ("#ba3373");
 			CodeCompletion.SelectionBackgroundInactiveColor = Color.FromName ("#7e96c0");
 			CodeCompletion.SelectionHighlightColor = CodeCompletion.HighlightColor;
@@ -572,8 +577,9 @@ namespace MonoDevelop.Ide.Gui
 			PrimaryBackgroundColor = BaseBackgroundColor;
 			SecondaryBackgroundDarkerColor = Color.FromName ("#484848");
 			SecondaryBackgroundLighterColor = SeparatorColor;
-			DimTextColorHexString = "#777777";
-			DimTextColor = Color.FromName (DimTextColorHexString);
+			SecondaryTextColorHexString = "#777777";
+			SecondaryTextColor = Color.FromName (SecondaryTextColorHexString);
+			SecondarySelectionTextColor = Color.FromName ("#93cbff");
 			PadBackground = Color.FromName ("#525252");
 			InactivePadBackground = Color.FromName ("#474747");
 			InactivePadLabelColor = Color.FromName ("#999999");

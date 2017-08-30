@@ -24,7 +24,7 @@ module ParsedDocument =
 
     let inline private isMoreThanNLines n (range:Range.range) =
         range.EndLine - range.StartLine > n
-        
+
     let create (parseOptions: ParseOptions) (parseResults: ParseAndCheckResults) defines location =
       //Try creating tokens
         async {
@@ -36,13 +36,14 @@ module ParsedDocument =
 
             //Get all the symboluses now rather than in semantic highlighting
             LoggingService.LogDebug ("FSharpParser: Processing symbol uses on {0}", shortFilename)
-            let errors = parseResults.GetErrors()
+            let errors = parseResults.GetErrors() |> List.ofSeq
             errors
-            |> Seq.groupBy(fun error -> error.ErrorNumber = 1182) //"The value '%s' is unused"
-            |> Seq.iter(function
+            |> List.groupBy(fun error -> error.ErrorNumber = 1182) //"The value '%s' is unused"
+            |> List.iter(function
                         | true, unused ->
-                            doc.UnusedCodeRanges <- Some (unused |> Seq.map formatUnused |> List.ofSeq)
+                            doc.UnusedCodeRanges <- Some (unused |> List.map formatUnused)
                         | false, errors ->
+                            doc.HasErrors <- errors |> List.exists(fun e -> e.Severity = FSharpErrorSeverity.Error)
                             errors |> (Seq.map formatError >> doc.AddRange))
 
             let! allSymbolUses = parseResults.GetAllUsesOfAllSymbolsInFile()

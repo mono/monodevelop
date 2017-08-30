@@ -9423,6 +9423,7 @@
     <Compile Include="MonoDevelop.Components\Mac\MDLinkMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDMenu.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDMenuHeaderItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDServicesMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDSubMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\Messaging.cs" />
@@ -9721,8 +9722,7 @@
     <InternalsVisibleTo Include="WindowsPlatform" />
     <InternalsVisibleTo Include="MonoDevelop.Debugger" />
     <InternalsVisibleTo Include="MonoDevelop.DesignerSupport" />
-    <InternalsVisibleTo Include="Ide.Tests" />
-    <InternalsVisibleTo Include="UnitTests" />
+    <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
     <InternalsVisibleTo Include="Xamarin.OSXEditor" />
     <InternalsVisibleTo Include="MonoDevelop.Refactoring" />
@@ -9745,6 +9745,7 @@
     <InternalsVisibleTo Include="Xamarin.Forms.Addin.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.VBNetBinding" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

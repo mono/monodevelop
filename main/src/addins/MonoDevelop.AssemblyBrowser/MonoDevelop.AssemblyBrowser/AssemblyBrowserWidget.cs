@@ -158,7 +158,10 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 
 
-
+		static readonly CustomEditorOptions assemblyBrowserEditorOptions = new CustomEditorOptions(DefaultSourceEditorOptions.PlainEditor) {
+			TabsToSpaces = false
+		};
+			
 		public AssemblyBrowserWidget ()
 		{
 			this.Build ();
@@ -260,7 +263,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 			inspectEditor = TextEditorFactory.CreateNewEditor ();
 			inspectEditor.ContextMenuPath = "/MonoDevelop/AssemblyBrowser/EditorContextMenu";
-			inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
+			inspectEditor.Options = assemblyBrowserEditorOptions;
 
 			//inspectEditor.ButtonPressEvent += HandleInspectEditorButtonPressEvent;
 			
@@ -1187,22 +1190,22 @@ namespace MonoDevelop.AssemblyBrowser
 			inspectEditor.SetFoldings (Enumerable.Empty<IFoldSegment> ());
 			switch (this.languageCombobox.Active) {
 			case 0:
-				inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
+				inspectEditor.Options = assemblyBrowserEditorOptions;
 				this.inspectEditor.MimeType = "text/x-csharp";
 				SetReferencedSegments (builder.GetSummary (inspectEditor, nav, PublicApiOnly));
 				break;
 			case 1:
-				inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
+				inspectEditor.Options = assemblyBrowserEditorOptions;
 				this.inspectEditor.MimeType = "text/x-ilasm";
 				SetReferencedSegments (builder.Disassemble (inspectEditor, nav));
 				break;
 			case 2:
-				inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
+				inspectEditor.Options = assemblyBrowserEditorOptions;
 				this.inspectEditor.MimeType = "text/x-csharp";
 				SetReferencedSegments (builder.Decompile (inspectEditor, nav, PublicApiOnly));
 				break;
 			default:
-				inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
+				inspectEditor.Options = assemblyBrowserEditorOptions;
 				this.inspectEditor.Text = "Invalid combobox value: " + this.languageCombobox.Active;
 				break;
 			}

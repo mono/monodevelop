@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Projects
 				int textY = cell_area.Y + ((cell_area.Height - h) - 2);
 
 				ctx.MoveTo (iconRect.Right + iconTextPadding, textY);
-				ctx.SetSourceColor ((isSelected ? Styles.BaseSelectionTextColor : Styles.DimTextColor).ToCairoColor ());
+				ctx.SetSourceColor ((isSelected ? Styles.BaseSelectionTextColor : Styles.SecondaryTextColor).ToCairoColor ());
 				ctx.ShowLayout (layout);
 			}
 		}

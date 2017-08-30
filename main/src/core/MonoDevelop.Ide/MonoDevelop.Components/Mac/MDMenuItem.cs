@@ -29,6 +29,7 @@ using System;
 using AppKit;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Navigation;
 using System.Text;
 using Foundation;
 using ObjCRuntime;
@@ -192,14 +193,53 @@ namespace MonoDevelop.Components.Mac
 		void SetItemValues (NSMenuItem item, CommandInfo info, bool disabledVisible, string overrideLabel = null)
 		{
 			item.SetTitleWithMnemonic (GetCleanCommandText (info, overrideLabel));
-			if (!string.IsNullOrEmpty (info.Description) && item.ToolTip != info.Description)
-				item.ToolTip = info.Description;
 
 			bool enabled = info.Enabled && (!IsGloballyDisabled || commandSource == CommandSource.ContextMenu);
 			bool visible = info.Visible && (disabledVisible || info.Enabled);
 
 			item.Enabled = enabled;
 			item.Hidden = !visible;
+
+			string fileName = null;
+			var doc = info.DataItem as Ide.Gui.Document;
+			if (doc != null) {
+				if (doc.IsFile)
+					fileName = doc.FileName;
+				else {
+					// Designer documents have no file bound to them, but the document name
+					// could be a valid path
+					var docName = doc.Name;
+					if (!string.IsNullOrEmpty (docName) && System.IO.Path.IsPathRooted (docName) && System.IO.File.Exists (docName))
+						fileName = docName;
+				}
+			} else if (info.DataItem is NavigationHistoryItem) {
+					var navDoc = ((NavigationHistoryItem)info.DataItem).NavigationPoint as DocumentNavigationPoint;
+					if (navDoc != null)
+						fileName = navDoc.FileName;
+			} else {
+				var str = info.DataItem as string;
+				if (str != null && System.IO.Path.IsPathRooted (str) && System.IO.File.Exists (str))
+					fileName = str;
+			}
+
+			if (!String.IsNullOrWhiteSpace (fileName)) {
+				item.ToolTip = fileName;
+				Xwt.Drawing.Image icon = null;
+				if (!info.Icon.IsNull)
+					icon = Ide.ImageService.GetIcon (info.Icon, Gtk.IconSize.Menu);
+				if (icon == null)
+					icon = Ide.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
+				if (icon != null) {
+					var scale = GtkWorkarounds.GetScaleFactor (Ide.IdeApp.Workbench.RootWindow);
+
+					if (NSUserDefaults.StandardUserDefaults.StringForKey ("AppleInterfaceStyle") == "Dark")
+						icon = icon.WithStyles ("dark");
+					else
+						icon = icon.WithStyles ("-dark");
+					item.Image = icon.ToBitmap (scale).ToNSImage ();
+					item.Image.Template = true;
+				}
+			}
 
 			SetAccel (item, info.AccelKey);
 

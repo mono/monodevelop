@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Codons
 	[ExtensionNode (Description="A template category.")]
 	internal class TemplateCategoryCodon : ExtensionNode
 	{
-		[ObsoleteAttribute ("This is ignored when generating translations.")]
+		// OBSOLETE: This member is ignored when generating translations.
 		[NodeAttribute ("name", "Name of the category.", Localizable=true)]
 		string name;
 

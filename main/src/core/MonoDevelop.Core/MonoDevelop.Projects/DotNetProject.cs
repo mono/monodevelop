@@ -508,7 +508,9 @@ namespace MonoDevelop.Projects
 			ClrVersion[] versions = OnGetSupportedClrVersions ();
 			if (versions != null && versions.Length > 0 && framework != null) {
 				foreach (ClrVersion v in versions) {
+#pragma warning disable CS0618 // Type or member is obsolete
 					if (v == framework.ClrVersion)
+#pragma warning restore CS0618 // Type or member is obsolete
 						return true;
 				}
 			}

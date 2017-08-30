@@ -81,12 +81,13 @@ namespace MonoDevelop.Ide.Desktop
 					return;
 				}
 
-				var stream = t.Result;
-				lock (cacheLock) {
-					cachedItemList = ReadStore (stream);
-					cachedItemList.Sort ();
+				using (var stream = t.Result) {
+					lock (cacheLock) {
+						cachedItemList = ReadStore (stream);
+						cachedItemList.Sort ();
+					}
+					OnRecentFilesChanged (cachedItemList);
 				}
-				OnRecentFilesChanged (cachedItemList);
 			});
 		}
 		

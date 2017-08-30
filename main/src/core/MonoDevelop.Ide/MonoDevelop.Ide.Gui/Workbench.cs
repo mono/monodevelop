@@ -405,10 +405,10 @@ namespace MonoDevelop.Ide.Gui
 			
 			foreach (Document doc in docs) {
 				if (doc != ActiveDocument)
-					doc.Close ();
+					doc.Close ().Ignore();
 			}
 			if (!leaveActiveDocumentOpen && ActiveDocument != null)
-				ActiveDocument.Close ();
+				ActiveDocument.Close ().Ignore();
 		}
 
 		internal Pad ShowPad (PadCodon content)
@@ -863,14 +863,14 @@ namespace MonoDevelop.Ide.Gui
 					args.Cancel = true;
 					await FindDocument (window).Save ();
 					viewContent.IsDirty = false;
-					window.CloseWindow (true);
+					await window.CloseWindow (true);
 					return;
 				} else if (result == AlertButton.SaveAs) {
 					args.Cancel = true;
 					var resultSaveAs = await FindDocument (window).SaveAs ();
 					if (resultSaveAs) {
 						viewContent.IsDirty = false;
-						window.CloseWindow (true);
+						await window.CloseWindow (true);
 					} else {
 						window.SelectWindow ();
 					}

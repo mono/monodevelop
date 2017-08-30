@@ -72,8 +72,8 @@ namespace MonoDevelop.Refactoring.Rename
 		static void Rollback (TextEditor editor, List<MonoDevelop.Core.Text.TextChangeEventArgs> textChanges)
 		{
 			for (int i = textChanges.Count - 1; i >= 0; i--) {
-				for (int j = 0; j < textChanges[i].TextChanges.Count; ++j) {
-					var v = textChanges[i].TextChanges[j];
+				for (int j = 0; j < textChanges [i].TextChanges.Count; ++j) {
+					var v = textChanges [i].TextChanges [j];
 					editor.ReplaceText (v.Offset, v.InsertionLength, v.RemovedText);
 				}
 			}
@@ -110,7 +110,7 @@ namespace MonoDevelop.Refactoring.Rename
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var editor = doc.Editor;
 			var oldVersion = editor.Version;
-			
+
 			var links = new List<TextLink> ();
 			var link = new TextLink ("name");
 
@@ -122,7 +122,7 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 			}
 
-			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, doc.AnalysisDocument.Project.Solution, documents, default(CancellationToken))) {
+			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, doc.AnalysisDocument.Project.Solution, documents, default (CancellationToken))) {
 				foreach (var loc in mref.Locations) {
 					TextSpan span = loc.Location.SourceSpan;
 					var root = loc.Location.SourceTree.GetRoot ();
@@ -155,19 +155,19 @@ namespace MonoDevelop.Refactoring.Rename
 							var textChange = change.TextChanges [j];
 							rollbackChanges.Add (new Microsoft.CodeAnalysis.Text.TextChange (new TextSpan (textChange.Offset, textChange.InsertionLength), textChange.RemovedText.Text));
 						}
-						editor.ApplyTextChanges (rollbackChanges); 
+						editor.ApplyTextChanges (rollbackChanges);
 					}
 				}
 			}) { TextLinkPurpose = TextLinkPurpose.Rename });
 		}
-		
+
 		public class RenameProperties
 		{
 			public string NewName {
 				get;
 				set;
 			}
-			
+
 			public bool RenameFile {
 				get;
 				set;
@@ -178,21 +178,20 @@ namespace MonoDevelop.Refactoring.Rename
 				set;
 			}
 		}
-		
+
 		public async Task<List<Change>> PerformChangesAsync (ISymbol symbol, RenameProperties properties)
 		{
 			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
 
 			var newSolution = await Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options);
 			var changes = new List<Change> ();
-			var documents = new List<DocumentId> ();
+			var documents = new List<Microsoft.CodeAnalysis.Document> ();
 			foreach (var projectChange in newSolution.GetChanges (ws.CurrentSolution).GetProjectChanges ()) {
-				documents.AddRange (projectChange.GetChangedDocuments ());
+				documents.AddRange (projectChange.GetChangedDocuments ().Select(d => newSolution.GetDocument (d)));
 			}
-			FilterDuplicateLinkedDocs (newSolution, documents);
-			foreach (var changedDoc in documents) {
-				var newDoc = newSolution.GetDocument (changedDoc);
-				foreach (var textChange in await newDoc.GetTextChangesAsync (ws.CurrentSolution.GetDocument (changedDoc))) {
+			FilterDuplicateLinkedDocs ((MonoDevelopWorkspace)ws, newSolution, documents);
+			foreach (var newDoc in documents) {
+				foreach (var textChange in await newDoc.GetTextChangesAsync (ws.CurrentSolution.GetDocument (newDoc.Id))) {
 					changes.Add (new TextReplaceChange () {
 						FileName = newDoc.FilePath,
 						Offset = textChange.Span.Start,
@@ -244,19 +243,34 @@ namespace MonoDevelop.Refactoring.Rename
 			return string.Equals (oldName, newName, StringComparison.OrdinalIgnoreCase) || oldName.EndsWith ("." + newName, StringComparison.OrdinalIgnoreCase);
 		}
 
-		static void FilterDuplicateLinkedDocs (Solution newSolution, List<DocumentId> documents)
+		static void FilterDuplicateLinkedDocs (MonoDevelopWorkspace ws, Solution newSolution, List<Microsoft.CodeAnalysis.Document> documents)
 		{
-			foreach (var doc in documents) {
-				var newDoc = newSolution.GetDocument (doc);
+			foreach (var newDoc in documents) {
 				bool didRemove = false;
-				foreach (var link in newDoc.GetLinkedDocumentIds ()) {
-					if (documents.Contains (link)) {
+
+				if (documents.Count > 1) {
+					// Filter out projections from other type systems otherwise changes would be reflected twice to the original
+					// file.
+					foreach (var projectionEntry in ws.ProjectionList) {
+						if (!projectionEntry.Projections.Any (p => p.Document.FileName.Equals (newDoc.FilePath)))
+							continue;
+						if (!documents.Any (d => d != newDoc && d.Project == newDoc.Project)) {
+							documents.Remove (newDoc);
+							didRemove = true;
+							goto skip;
+						}
+					}
+				}
+				foreach (var linkId in newDoc.GetLinkedDocumentIds ()) {
+					var link = documents.FirstOrDefault (d => d.Id == linkId);
+					if (link != null) {
 						documents.Remove (link);
 						didRemove = true;
 					}
 				}
+				skip:
 				if (didRemove) {
-					FilterDuplicateLinkedDocs (newSolution, documents);
+					FilterDuplicateLinkedDocs (ws, newSolution, documents);
 					return;
 				}
 			}
@@ -271,7 +285,7 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 			if (System.IO.Path.HasExtension (oldFullFileName))
 				name.Append (System.IO.Path.GetExtension (oldFullFileName));
-			
+
 			return System.IO.Path.Combine (System.IO.Path.GetDirectoryName (oldFullFileName), name.ToString ());
 		}
 	}

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-08 19:41:46+0300\n"
+"POT-Creation-Date: 2017-08-23 11:37:25+0100\n"
 "PO-Revision-Date: 2013-02-23 16:37-0300\n"
 "Last-Translator: Felipe Mendonça Marques Silva <fmmsilva@gmail.com>\n"
 "Language-Team: Português <>\n"
@@ -34,7 +34,7 @@ msgid "The application was terminated by a signal: {0}"
 msgstr "O aplicativo foi encerrado com um sinal: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:429
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1725
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1727
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:173
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:272
@@ -93,7 +93,8 @@ msgstr "Executar"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:126
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:137
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:219
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:101
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:99
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:97
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicyPanelWidget.cs:165
 #: ../src/addins/MacPlatform/MainToolbar/SelectorView.cs:145
@@ -138,41 +139,41 @@ msgstr ""
 msgid "File '{0}' not found."
 msgstr "Arquivo '{0}' não encontrado."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:213
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:215
 msgid "Project Configuration"
 msgstr "Configuração do Projeto"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:214
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:216
 msgid "Project Configuration Name"
 msgstr "Nome da Configuração do Projeto"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:215
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:217
 msgid "Project Configuration Platform"
 msgstr "Plataforma da Configuração do Projeto"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:216
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:218
 msgid "Target File"
 msgstr "Arquivo de Destino"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:217
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:219
 msgid "Target Path"
 msgstr "Caminho de Destino"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:218
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:220
 msgid "Target Name"
 msgstr "Nome de Destino"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:219
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:221
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:35
 msgid "Target Directory"
 msgstr "Diretório de Destino"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:220
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProjectConfiguration.cs:222
 msgid "Target Extension"
 msgstr "Extensão de Destino"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1153
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1166
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1151
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1164
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:651
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:665
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:738
@@ -180,44 +181,44 @@ msgstr "Extensão de Destino"
 msgid "Custom command execution failed"
 msgstr "Falha na execução do comando personalizado"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1674
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1672
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "Não foi possível criar o diretório {0}, pois já existe um arquivo com esse "
 "nome."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1704
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2070
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2109
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1682
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1702
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2068
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2107
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1684
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "Configuração '{0}' não encontrada no projeto '{1}'"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1730
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1728
 msgid "Performing main compilation…"
 msgstr "Executando compilação principal…"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1738
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1736
 msgid "Build complete -- "
 msgstr "Build concluído -- "
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1884
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1882
 msgid "Could not find support file '{0}'."
 msgstr "Não foi possível encontrar o arquivo de suporte '{0}'."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1887
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1885
 msgid "Error copying support file '{0}'."
 msgstr "Erro ao copiar o arquivo de suporte '{0}'."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1919
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1917
 msgid "Error deleting support file '{0}'."
 msgstr "Erro ao excluir o arquivo de suporte '{0}'."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2096
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2094
 msgid "Clean complete"
 msgstr "Limpeza concluída"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1735
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1733
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1218
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1635
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:354
@@ -227,7 +228,7 @@ msgid_plural "{0} errors"
 msgstr[0] "{0} erros"
 msgstr[1] "{0} erros"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1736
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1734
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1219
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1636
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:352
@@ -291,7 +292,7 @@ msgstr "Antes de Compilar"
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:131
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:139
 #: ../src/addins/MacPlatform/MainToolbar/RunButton.cs:103
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:363
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:365
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:70
 msgid "Build"
 msgstr "Build"
@@ -386,28 +387,28 @@ msgstr "Nome do Espaço de Trabalho"
 msgid "Workspace Directory"
 msgstr "Diretório do Espaço de Trabalho"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1320
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1323
 msgid "Solution File"
 msgstr "Arquivo da Solução"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1321
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1324
 msgid "Solution Name"
 msgstr "Nome da Solução"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1322
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1325
 msgid "Solution Directory"
 msgstr "Diretório da Solução"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:591
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:620
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:592
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:621
 msgid "Cyclic dependencies are not supported."
 msgstr "Não há suporte para as dependências cíclicas."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:595
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:596
 msgid "Cleaning Solution: {0} ({1})"
 msgstr "Limpando a solução: {0} ({1})"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:626
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:627
 msgid "Building Solution: {0} ({1})"
 msgstr "Solução de Build: {0} ({1})"
 
@@ -432,13 +433,13 @@ msgstr "Copiar se for o mais recente"
 msgid "Incompatible target framework: {0}"
 msgstr "Estrutura de destino incompatível: {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1686
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1688
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:150
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:759
 msgid "Running {0} ..."
 msgstr "Executando {0} ..."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1693
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1695
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:162
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for ."
@@ -447,7 +448,7 @@ msgstr ""
 "Não foi possível executar \"{0}\". Não há suporte para a execução "
 "selecionada em projetos .NET."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1701
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1703
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:179
 msgid "Cannot execute \"{0}\""
 msgstr "Não foi possível executar \"{0}\""
@@ -1659,8 +1660,8 @@ msgstr "Classe Vazia"
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:16
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:19
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:236
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:4
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:5
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:9
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:10
 msgid "General"
 msgstr "Geral"
 
@@ -1682,7 +1683,10 @@ msgstr "Arquivo HTML Vazio"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml:7
 #: ../src/addins/AspNet/Templates/EmptyCssFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:11
 #: ../src/addins/AspNet/Templates/EmptyJsonFile.xft.xml:11
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:11
 msgid "Web"
 msgstr "Web"
 
@@ -1791,7 +1795,7 @@ msgstr "Um espaço de trabalho em branco."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:936
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:950
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:126
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:227
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:230
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:114
 msgid "C#"
 msgstr "C#"
@@ -3279,7 +3283,7 @@ msgid "Welcome Page"
 msgstr "Página Inicial"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:694
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:109
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:108
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:48
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:49
 msgid "Tools"
@@ -3446,7 +3450,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/SearchEntry.cs:166
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:44
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:158
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:278
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:281
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:165
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:188
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:43
@@ -4043,7 +4047,7 @@ msgstr "Fontes"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs:91
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:124
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:371
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:378
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:223
 msgid "Updates"
 msgstr "Atualizações"
@@ -4134,7 +4138,7 @@ msgstr "Solução"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:48
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:51
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:358
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:360
 msgid "Runtime Options"
 msgstr "Opções de Tempo de Execução"
 
@@ -4262,7 +4266,6 @@ msgstr "Gravador de Sessão"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:243
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:128
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/KeyBindingService.cs:213
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:234
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:196
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:70
@@ -4290,6 +4293,12 @@ msgstr "Projeto do Mono"
 msgid "Report Problem..."
 msgstr "Relatar Problema..."
 
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
+#: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:17
+#, fuzzy
+msgid "_Diagnostics"
+msgstr "Diagnóstico"
+
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:9
 msgid ".NET binary resource"
 msgstr "Recurso binário .NET"
@@ -4311,6 +4320,7 @@ msgid "PNG resource"
 msgstr "Recurso PNG"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:25
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:315
 msgid "CSS document"
 msgstr "Documento CSS"
 
@@ -4453,7 +4463,7 @@ msgid ".NET"
 msgstr ".NET"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Templates.addin.xml:125
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:233
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:245
 #: ../src/addins/AspNet/Templates/WebConfig-Application.xft.xml:10
 #: ../src/addins/AspNet/Templates/WebConfig-SubDir.xft.xml:10
 #: ../src/addins/AspNet/Templates/GlobalAsax.xft.xml:9
@@ -4773,7 +4783,7 @@ msgid "Add Custom Tool..."
 msgstr "Adicionar Ferramenta Personalizada..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:72
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:485
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:483
 msgid "Show {0}"
 msgstr "Mostrar {0}"
 
@@ -4906,7 +4916,7 @@ msgid "No more errors or warnings"
 msgstr "Não há mais erros ou avisos"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalTool.cs:124
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:407
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:406
 msgid "New Tool"
 msgstr "Nova Ferramenta"
 
@@ -5557,15 +5567,15 @@ msgstr "Incluir na Solução"
 msgid "Explore the current solution's files and structure"
 msgstr "Explore a estrutura e os arquivos da solução atual"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:238
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:236
 msgid "ApplicationIconId"
 msgstr "ApplicationIconId"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:484
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:482
 msgid "View (Pads)"
 msgstr "Exibir (Painéis)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:950
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:948
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:625
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:691
 msgid "Documents"
@@ -5850,7 +5860,7 @@ msgstr "Colunas"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:60
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:89
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:58
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:711
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:714
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:70
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:376
 msgid "Type"
@@ -6318,102 +6328,102 @@ msgstr "Não foi possível iniciar as seguintes extensões:"
 msgid "Tools (Custom)"
 msgstr "Ferramentas (Personalizadas)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:146
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:145
 #, fuzzy
 msgid "Click to add a new external tool"
 msgstr "Clique aqui para adicionar uma nova inspeção"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:148
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:147
 #, fuzzy
 msgid "Click to remove an external tool from the list"
 msgstr "Deseja remover a referência a ele na lista Recentes?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:150
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:149
 #, fuzzy
 msgid "Click to move the selected tool up the list"
 msgstr "Converter o texto selecionado em maiúsculas"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:152
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:151
 #, fuzzy
 msgid "Click to move the selected tool down the list"
 msgstr "Converter o texto selecionado em minúsculas"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:154
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:153
 #, fuzzy
 msgid "Enter the title for this command"
 msgstr "Insira o comando personalizado"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:156
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:155
 msgid "Enter or select the path for the external command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:159
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:158
 #, fuzzy
 msgid "Enter the arguments for the external command"
 msgstr "Insira as marcações para este pacote NuGet"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:161
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:160
 #, fuzzy
 msgid "Argument Tags"
 msgstr "Argumentos"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:162
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:161
 #, fuzzy
 msgid "Select tags to add to the arguments"
 msgstr ""
 "Selecionar pacotes a serem adicionados ao novo Projeto de Empacotamento"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:164
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:163
 #, fuzzy
 msgid "Enter the working directory for this command"
 msgstr "Selecione o diretório de trabalho para a execução"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:165
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:164
 #, fuzzy
 msgid "Working Directory Tags"
 msgstr "Diretório de Trabalho"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:166
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:165
 #, fuzzy
 msgid "Select tags to add to the working directory"
 msgstr ""
 "Selecionar pacotes a serem adicionados ao novo Projeto de Empacotamento"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:168
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:167
 #, fuzzy
 msgid "Enter the default key binding for this command"
 msgstr "Insira o namespace padrão para o projeto"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:170
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:169
 msgid "Check to prompt for arguments when running the command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:172
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:171
 msgid "Check to save the current file before running the command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:174
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:173
 #, fuzzy
 msgid "Check to display the commands output in the Output Pad"
 msgstr "Marque para pausar a saída do console"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:443
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:442
 msgid "Control not found!"
 msgstr "Controle não encontrado."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:466
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:465
 msgid "The command of tool \"{0}\" is not set."
 msgstr "O comando da ferramenta \"{0}\" não foi definido."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:472
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:471
 msgid "The command of tool \"{0}\" is invalid."
 msgstr "O comando da ferramenta \"{0}\" é inválido."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:477
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:476
 msgid "The working directory of tool \"{0}\" is invalid."
 msgstr "O diretório de trabalho da ferramenta \"{0}\" é inválido."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:243
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:242
 msgid "This shortcut is assigned to another command:"
 msgid_plural "This shortcut is assigned to other commands:"
 msgstr[0] "Este atalho é atribuído a outros comandos:"
@@ -7585,7 +7595,7 @@ msgstr "Obtendo informação de classe..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs:245
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/TooltipInformationWindow.cs:132
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:225
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:228
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestPad.cs:259
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:96
 msgid "Summary"
@@ -8070,7 +8080,7 @@ msgid "Check to create configurations for all the solution items"
 msgstr "Marque para criar configurações para todos os itens da solução"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs:53
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:542
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:549
 msgid "All files"
 msgstr "Todos os arquivos"
 
@@ -8859,7 +8869,7 @@ msgid "Keep Current Identifiers"
 msgstr "Manter Identificadores Atuais"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:164
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:724
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:727
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:64
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:119
 msgid "Namespace"
@@ -9784,7 +9794,7 @@ msgid "file \"{0}\""
 msgstr "arquivo \"{0}\""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/DefaultWelcomePage.cs:51
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:277
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:280
 msgid "Documentation"
 msgstr "Documentação"
 
@@ -10106,21 +10116,21 @@ msgstr "Você não tem permissão para criar em {0}"
 msgid "The project could not be created"
 msgstr "Não foi possível criar o projeto"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:87
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:90
 #, fuzzy
 msgid "{0} failed to create"
 msgstr "Falha ao migrar"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:89
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:92
 #, fuzzy
 msgid "{0} successfully created"
 msgstr "{0} redirecionados com êxito."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:293
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:315
 msgid "Recently used"
 msgstr "Usado recentemente"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:407
 msgid "Recently used templates"
 msgstr "Modelos usados recentemente"
 
@@ -10287,11 +10297,11 @@ msgstr "Pesquisar Tipos"
 msgid "Search Members"
 msgstr "Pesquisar Membros"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:621
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:623
 msgid "Press ‘{0}’ to search"
 msgstr "Pressione ‘{0}’ para pesquisar"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:622
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:624
 msgid "Search solution"
 msgstr "Pesquisar solução"
 
@@ -16886,7 +16896,7 @@ msgid "Namespaces"
 msgstr "Namespaces"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.ClassOutline/OutlineSettings.cs:64
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:197
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:200
 msgid "Types"
 msgstr "Tipos"
 
@@ -18725,19 +18735,19 @@ msgstr "Salvar como Unicode"
 msgid "Can't save file - access denied"
 msgstr "Não é possível salvar o arquivo; acesso negado"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1483
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1497
 msgid "Insert Breakpoint"
 msgstr "Inserir Ponto de Interrupção"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2136
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2150
 msgid "Print operation failed."
 msgstr "A operação de impressão falhou."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2148
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2162
 msgid "Press F2 to focus"
 msgstr "Pressione F2 para focalizar"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2168
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2182
 msgid "Clipboard ring"
 msgstr "Anel da área de transferência"
 
@@ -19324,7 +19334,7 @@ msgid "<i>EditorBrowsableState.Always and EditorBrowsableState.Advanced</i>"
 msgstr "<i>EditorBrowsableState.Always e EditorBrowsableState.Advanced</i>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/CompletionCharactersPanel.cs:55
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:321
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:324
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:134
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:411
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:131
@@ -19478,71 +19488,71 @@ msgstr "Inspecionar"
 msgid "Assembly Browser"
 msgstr "Navegador de Assembly"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:167
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:170
 msgid "Only public members"
 msgstr "Apenas membros públicos"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:168
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:171
 msgid "All members"
 msgstr "Todos os membros"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:184
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:187
 msgid "Types and Members"
 msgstr "Tipos e Membros"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:210
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:213
 msgid "Members"
 msgstr "Membros"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:226
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:229
 msgid "IL"
 msgstr "IL"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:295
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:298
 msgid "Search for types and members"
 msgstr "Pesquisar por tipos e membros"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:298
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:301
 msgid "Search for types"
 msgstr "Pesquisa por tipos"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:301
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:304
 msgid "Search for members"
 msgstr "Pesquisar por membros"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:311
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:314
 msgid "Visibility"
 msgstr "Visibilidade"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:665
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:668
 msgid "Member"
 msgstr "Membro"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:677
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:680
 msgid "Declaring Type"
 msgstr "Tipo Declarativo"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:687
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:690
 msgid "Results"
 msgstr "Resultados"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:700
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:703
 msgid "Parent"
 msgstr "Pai"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:781
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:784
 msgid "Searching member..."
 msgstr "Pesquisando membro..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:784
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:787
 msgid "Searching type..."
 msgstr "Pesquisando tipo..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:787
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:790
 msgid "Searching types and members..."
 msgstr "Pesquisando tipos e membros..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:1217
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:1220
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DocumentationPanel.cs:68
 msgid "No documentation available."
 msgstr "Nenhum documento disponível."
@@ -21847,109 +21857,119 @@ msgstr "_Atualizar referências:"
 msgid "_External"
 msgstr "_Externo"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:175
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:187
 msgid "ASP.NET Files"
 msgstr "Arquivos ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:178
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:190
 msgid "HTML Files"
 msgstr "Arquivos HTML"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:219
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:231
 msgid "XSP Web Server"
 msgstr "Servidor Web XSP"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:235
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:262
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:247
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:274
 msgid "ASP.NET Directory"
 msgstr "Diretório ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:238
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:250
 msgid "Controller..."
 msgstr "Controlador..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:239
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:251
 msgid "Add Controller..."
 msgstr "Adicionar Controlador..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:240
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:252
 msgid "Add an ASP.NET MVC controller"
 msgstr "Adicionar um controlador ASP.NET MVC"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:242
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:254
 msgid "View..."
 msgstr "Exibir..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:243
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:250
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:255
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:262
 msgid "Add View..."
 msgstr "Adicionar Exibição..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:244
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:256
 msgid "Add an ASP.NET MVC view"
 msgstr "Adicionar uma exibição ASP.NET MVC"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:246
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:258
 msgid "Go to View"
 msgstr "Ir para a Exibição"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:251
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:263
 msgid "Add View from Controller..."
 msgstr "Adicionar Exibição do Controlador..."
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:255
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:267
 msgid "Go to Controller"
 msgstr "Ir para o Controlador"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:279
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:291
 msgid "ASP.NET page"
 msgstr "Página ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:282
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:294
 msgid "ASP.NET user control"
 msgstr "Controle de usuário ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:285
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:297
 msgid "ASP.NET global application class"
 msgstr "Classe de aplicativo global ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:288
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:300
 msgid "ASP.NET handler"
 msgstr "Manipulador ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:291
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:303
 msgid "ASP.NET web service"
 msgstr "Serviço Web ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:294
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:306
 msgid "ASP.NET image generator"
 msgstr "Gerador de imagem ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:297
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:309
 msgid "ASP.NET master page"
 msgstr "Página mestra ASP.NET"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:300
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:312
 msgid "Javascript source code"
 msgstr "Código-fonte Javascript"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:303
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:318
 msgid "LESS, CSS document"
 msgstr "LESS, documento CSS"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:306
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:321
+#, fuzzy
+msgid "SASS, CSS document"
+msgstr "LESS, documento CSS"
+
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:324
+#, fuzzy
+msgid "SCSS, CSS document"
+msgstr "LESS, documento CSS"
+
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:327
 msgid "HTML document"
 msgstr "Documento HTML"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:309
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:330
 msgid "Spark View template"
 msgstr "Modelo do Spark View"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:313
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:334
 msgid "Typescript source code"
 msgstr "Código-fonte TypeScript"
 
-#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:316
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:337
 msgid "Razor template"
 msgstr "Modelo Razor"
 
@@ -22874,6 +22894,23 @@ msgstr "Arquivo CSS Vazio"
 msgid "Creates an empty CSS file."
 msgstr "Cria um arquivo CSS vazio."
 
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:9
+#, fuzzy
+msgid "LESS Style Sheet"
+msgstr "Selecione a linguagem XSLT"
+
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:12
+msgid "LESS is a language that compiles into CSS."
+msgstr ""
+
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:9
+msgid "SCSS Style Sheet (SASS)"
+msgstr ""
+
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:12
+msgid "SCSS is a language that compiles into CSS."
+msgstr ""
+
 #: ../src/addins/AspNet/Templates/EmptyJsonFile.xft.xml:9
 msgid "Empty JSON File"
 msgstr "Arquivo JSON Vazio"
@@ -22881,6 +22918,16 @@ msgstr "Arquivo JSON Vazio"
 #: ../src/addins/AspNet/Templates/EmptyJsonFile.xft.xml:12
 msgid "Creates an empty JSON file."
 msgstr "Cria um arquivo JSON vazio."
+
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:9
+#, fuzzy
+msgid "TypeScript file"
+msgstr "Arquivo de Script F#"
+
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:12
+#, fuzzy
+msgid "A blank TypeScript source file."
+msgstr "Código-fonte TypeScript"
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/MonoDevelop.TextTemplating.addin.xml:8
 msgid "Text template"
@@ -24646,8 +24693,8 @@ msgid "Current package version"
 msgstr "Versão atual do pacote"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:86
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:384
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:392
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:386
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:394
 msgid "Add _Packages..."
 msgstr "Adicionar _Pacotes..."
 
@@ -24740,7 +24787,7 @@ msgstr "Adicionar ao projeto"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:131
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:116
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:257
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:264
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:122
 msgid "Installed"
 msgstr "Instalado"
@@ -25061,32 +25108,34 @@ msgid "Creates a new .NET Core class library project."
 msgstr "Cria um novo projeto de biblioteca de classes do .NET Core."
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:241
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:250
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:283
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:294
-msgid "Creates a new xUnit test project."
-msgstr "Cria um novo projeto de teste do xUnit."
-
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:259
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:269
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:304
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:315
-msgid "MSTest Project"
-msgstr "Projeto de MSTest"
-
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:260
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:270
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:305
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:316
-msgid "Creates a new MSTest project."
-msgstr "Cria um novo projeto de MSTest."
-
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:282
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:293
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:251
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:284
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:295
 msgid "xUnit Test Project"
 msgstr "Projeto de Teste do xUnit"
 
-#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:371
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:242
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:252
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:285
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:296
+msgid "Creates a new xUnit test project."
+msgstr "Cria um novo projeto de teste do xUnit."
+
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:261
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:271
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:306
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:317
+msgid "MSTest Project"
+msgstr "Projeto de MSTest"
+
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:262
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:272
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:307
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:318
+msgid "Creates a new MSTest project."
+msgstr "Cria um novo projeto de MSTest."
+
+#: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:373
 msgid "Migrate to New Format"
 msgstr "Migrar para Novo Formato"
 
@@ -25637,11 +25686,11 @@ msgstr ""
 msgid "Creates a NuGet Packaging project."
 msgstr "Cria um projeto de Empacotamento NuGet."
 
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:3
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:8
 msgid "Cloud"
 msgstr "Nuvem"
 
-#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:13
+#: ../src/addins/MonoDevelop.AzureFunctions/Properties/Manifest.addin.xml:18
 msgid "Creates a new Azure Functions project."
 msgstr "Cria um novo projeto do Azure Functions."
 
@@ -25682,38 +25731,48 @@ msgid "ASP.NET Core"
 msgstr "ASP.NET Core"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:76
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:120
-msgid "Creates a new ASP.NET Core web project."
-msgstr "Cria um novo projeto Web do ASP.NET."
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:86
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:96
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:132
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:144
-msgid "Creates a new ASP.NET MVC Core web project."
-msgstr "Cria um novo projeto Web do ASP.NET MVC Core."
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:106
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:167
-msgid "Creates a new ASP.NET Web API Core web project."
-msgstr "Cria um novo projeto Web do API Web ASP.NET Core."
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:119
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:123
 msgid "ASP.NET Core Empty"
 msgstr "ASP.NET Core Vazio"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:131
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:143
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:77
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:124
+msgid "Creates a new ASP.NET Core web project."
+msgstr "Cria um novo projeto Web do ASP.NET."
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:87
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:98
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:135
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:147
 msgid "ASP.NET Core Web App"
 msgstr "Aplicativo Web ASP.NET Core"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:154
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:88
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:99
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:136
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:148
+msgid "Creates a new ASP.NET MVC Core web project."
+msgstr "Cria um novo projeto Web do ASP.NET MVC Core."
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:109
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:171
+#, fuzzy
+msgid "ASP.NET Core Web API"
+msgstr "Aplicativo Web ASP.NET Core"
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:110
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:172
+msgid "Creates a new ASP.NET Web API Core web project."
+msgstr "Cria um novo projeto Web do API Web ASP.NET Core."
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:158
+#, fuzzy
+msgid "ASP.NET Core Web App (Razor Pages)"
+msgstr "Aplicativo Web ASP.NET Core"
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:159
 msgid "Creates a new ASP.NET Web API Core web project using Razor Pages."
 msgstr "Cria um novo projeto Web da API Web ASP.NET Core usando Páginas Razor."
-
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:166
-msgid "ASP.NET Core Web Api"
-msgstr "API Web ASP.NET Core"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MiddlewareClass.xft.xml:8
 msgid "Middleware Class"
@@ -25886,41 +25945,41 @@ msgstr "Suplementos desabilitados não podem ser carregados."
 msgid "Loading {0} add-in"
 msgstr "Carregando o suplemento {0}"
 
-#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:597
+#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:595
 msgid "The required addin '{0}' is disabled."
 msgstr "O suplemento necessário '{0}' está desabilitado."
 
-#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:599
+#: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:597
 msgid "The required addin '{0}' is not installed."
 msgstr "O suplemento necessário '{0}' não está instalado."
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:132
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:332
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:339
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:313
 msgid "Gallery"
 msgstr "Galeria"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:268
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:275
 msgid "All repositories"
 msgstr "Todos os repositórios"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:275
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:282
 msgid "Manage Repositories..."
 msgstr "Gerenciar Repositórios..."
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:427
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:434
 msgid "Updating repository"
 msgstr "Atualizando repositório"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:527
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:534
 msgid "Install Extension Package"
 msgstr "Instalar Pacote de Extensão"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:537
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:544
 msgid "Extension packages"
 msgstr "Pacotes de extensão"
 
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:370
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:377
 msgid "{0} update available"
 msgid_plural "{0} updates available"
 msgstr[0] "{0} atualizações disponíveis"
@@ -26681,14 +26740,6 @@ msgstr "Gerar getter"
 msgid "Use 'string.Format()'"
 msgstr "Usar 'string.Format()'"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AdditionalOfTypeAnalyzer.cs:26
-msgid "Replace with call to OfType<T> (extended cases)"
-msgstr "Substituir por uma chamada para OfType<T> (casos estendidos)"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AdditionalOfTypeAnalyzer.cs:27
-msgid "Replace with 'OfType<T>'"
-msgstr "Substituir por 'OfType<T>'"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AvoidAsyncVoidAnalyzer.cs:18
 msgid "Asynchronous methods should return a Task instead of void"
 msgstr "Métodos assíncronos devem retornar uma Tarefa em vez de nulo"
@@ -26713,10 +26764,6 @@ msgstr ""
 "Chamada para base.Equals é resolvida para Object.Equals, que é a igualdade "
 "da referência"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/CheckNamespaceAnalyzer.cs:13
-msgid "Check if a namespace corresponds to a file location"
-msgstr "Verificar se um namespace corresponde a um local de arquivo"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/ConstantConditionAnalyzer.cs:14
 msgid "Condition is always 'true' or always 'false'"
 msgstr "A condição é sempre 'true' ou sempre 'false'"
@@ -26737,10 +26784,6 @@ msgstr "Converter na expressão '&&'"
 msgid "Replace with '&='"
 msgstr "Substituir por '&='"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/LockThisAnalyzer.cs:13
-msgid "Warns about using lock (this) or MethodImplOptions.Synchronized"
-msgstr "Avisa sobre o uso de bloqueio (this) ou MethodImplOptions.Synchronized"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NameOfSuggestionAnalyzer.cs:15
 msgid "Suggest the usage of the nameof operator"
 msgstr "Sugerir o uso do operador nameof"
@@ -26752,11 +26795,6 @@ msgstr "Use a expressão 'nameof({0})'."
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NameOfSuggestionCodeFixProvider.cs:44
 msgid "To 'nameof({0})'"
 msgstr "Para 'nameof({0})'"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NegativeRelationalExpressionAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NegativeRelationalExpressionAnalyzer.cs:14
-msgid "Simplify negative relational expression"
-msgstr "Simplificar a expressão relacional negativa"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NotImplementedExceptionAnalyzer.cs:18
 msgid "Shows NotImplementedException throws in the quick task bar"
@@ -26771,17 +26809,6 @@ msgstr "Não implementado"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/ParameterOnlyAssignedAnalyzer.cs:16
 msgid "Parameter is assigned but its value is never used"
 msgstr "O parâmetro está atribuído, mas seu valor nunca foi usado"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantAssignmentAnalyzer.cs:13
-msgid ""
-"Value assigned to a variable or parameter is not used in all execution path"
-msgstr ""
-"O valor atribuído a uma variável ou parâmetro não é utilizado em todos os "
-"caminhos de execução"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantAssignmentAnalyzer.cs:14
-msgid "Assignment is redundant"
-msgstr "A atribuição é redundante"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantInternalAnalyzer.cs:18
 msgid "Removes 'internal' modifiers that are not required"
@@ -26809,17 +26836,6 @@ msgstr "Uso não permitido dos recursos de Roslyn neste contexto."
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertIfToOrExpressionAnalyzer.cs:16
 msgid "{0}"
 msgstr "{0}"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/StaticEventSubscriptionAnalyzer.cs:13
-msgid "Checks if static events are removed"
-msgstr "Verifica se eventos estáticos são removidos"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/StaticEventSubscriptionAnalyzer.cs:14
-msgid ""
-"Subscription to static events without unsubscription may cause memory leaks"
-msgstr ""
-"A assinatura para eventos estáticos sem cancelamento da assinatura pode "
-"causar perda de memória"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/XmlDocAnalyzer.cs:20
 msgid "Validate Xml docs"
@@ -27071,16 +27087,6 @@ msgstr ""
 msgid "Operator 'is' can be used"
 msgstr "O operador 'is' pode ser usado"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterHierarchyMismatchAnalyzer.cs:13
-msgid ""
-"The value of an optional parameter in a method does not match the base method"
-msgstr ""
-"O valor de um parâmetro opcional em um método não corresponde ao método base"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterHierarchyMismatchAnalyzer.cs:14
-msgid "Optional parameter value {0} differs from base {1} '{2}'"
-msgstr "O valor de parâmetro opcional {0} difere da base {1} '{2}'"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterRefOutAnalyzer.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterRefOutAnalyzer.cs:16
 msgid "C# doesn't support optional 'ref' or 'out' parameters"
@@ -27122,31 +27128,6 @@ msgstr ""
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PartialMethodParameterNameMismatchCodeFixProvider.cs:49
 msgid "Rename to '{0}'"
 msgstr "Renomear para '{0}'"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PolymorphicFieldLikeEventInvocationAnalyzer.cs:13
-msgid ""
-"Invocation of polymorphic field event leads to unpredictable result since "
-"invocation lists are not virtual"
-msgstr ""
-"Invocação de evento de campo polimórfico leva a resultados imprevisíveis, "
-"pois as listas de chamada não são virtuais"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PolymorphicFieldLikeEventInvocationAnalyzer.cs:14
-msgid ""
-"The event `{0}' can only appear on the left hand side of `+=' or `-=' "
-"operator"
-msgstr ""
-"O evento `{0}' somente pode aparecer do lado esquerdo do operador '+=' ou '-"
-"='"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PossibleAssignmentToReadonlyFieldAnalyzer.cs:13
-msgid "Check if a readonly field is used as assignment target"
-msgstr "Verificar se um campo readonly é usado como destino de atribuição"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PossibleMultipleEnumerationAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PossibleMultipleEnumerationAnalyzer.cs:14
-msgid "Possible multiple enumeration of IEnumerable"
-msgstr "Múltiplas enumerações possíveis de IEnumerable"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/StaticFieldOrAutoPropertyInGenericTypeAnalyzer.cs:17
 msgid "Warns about static fields in generic types"
@@ -27283,14 +27264,6 @@ msgstr "Substituir pelo grupo de métodos"
 msgid "'?:' expression can be converted to '??' expression"
 msgstr "A expressão '?:' pode ser convertida na expressão '??'"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionAnalyzer.cs:13
-msgid "Convert 'if' to '??'"
-msgstr "Converter 'if' em '??'"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionAnalyzer.cs:14
-msgid "Convert to '??' expresssion"
-msgstr "Converter na expressão '??'"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToSwitchStatementAnalyzer.cs:16
 msgid "'if' statement can be re-written as 'switch' statement"
 msgstr "A instrução 'if' pode ser reescrita como a instrução 'switch'"
@@ -27307,22 +27280,6 @@ msgstr "Converter 'Nullable<T>' para a forma abreviada 'T?'"
 msgid "Nullable type can be simplified"
 msgstr "O tipo que permite valor nulo pode ser simplificado"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToAutoPropertyAnalyzer.cs:13
-msgid "Convert property to auto property"
-msgstr "Converter a propriedade em propriedade automática"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToAutoPropertyAnalyzer.cs:14
-msgid "Convert to auto property"
-msgstr "Converter em propriedade automática"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToLambdaExpressionAnalyzer.cs:13
-msgid "Convert to lambda with expression"
-msgstr "Converter em lambda com expressão"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToLambdaExpressionAnalyzer.cs:14
-msgid "Can be converted to expression"
-msgstr "Pode ser convertido em expressão"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToStaticTypeAnalyzer.cs:16
 msgid ""
 "If all fields, properties and methods members are static, the class can be "
@@ -27334,14 +27291,6 @@ msgstr ""
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToStaticTypeAnalyzer.cs:17
 msgid "This class is recommended to be defined as static"
 msgstr "Essa classe é recomendada para ser definida como estática"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ForCanBeConvertedToForeachAnalyzer.cs:13
-msgid "Foreach loops are more efficient"
-msgstr "Loops foreach são mais eficientes"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ForCanBeConvertedToForeachAnalyzer.cs:14
-msgid "'for' loop can be converted to 'foreach'"
-msgstr "O loop 'for' pode ser convertido em 'foreach'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/InvokeAsExtensionMethodAnalyzer.cs:14
 msgid ""
@@ -27383,14 +27332,6 @@ msgstr "A instrução pode ser simplificada para a instrução 'while'"
 msgid "Convert 'if' to '||' expression"
 msgstr "Converter 'if' na expressão '||'"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertToConstantAnalyzer.cs:13
-msgid "Convert local variable or field to constant"
-msgstr "Converter variável ou campo local em constante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertToConstantAnalyzer.cs:14
-msgid "Convert to constant"
-msgstr "Converter em constante"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/EmptyEmbeddedStatementAnalyzer.cs:14
 msgid "Empty control statement body"
 msgstr "Esvaziar corpo de instrução de controle"
@@ -27408,14 +27349,6 @@ msgstr "Converter campo em readonly"
 msgid "To 'readonly'"
 msgstr "Para 'readonly'"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ParameterCanBeDeclaredWithBaseTypeAnalyzer.cs:24
-msgid "Finds parameters that can be demoted to a base class"
-msgstr "Encontra parâmetros que podem ser rebaixados para uma classe base"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ParameterCanBeDeclaredWithBaseTypeAnalyzer.cs:25
-msgid "Parameter can be declared with base type"
-msgstr "O parâmetro pode ser declarado com o tipo de base"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PossibleMistakenCallToGetTypeAnalyzer.cs:14
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PossibleMistakenCallToGetTypeAnalyzer.cs:15
 msgid "Possible mistaken call to 'object.GetType()'"
@@ -27425,16 +27358,6 @@ msgstr "Chamada possivelmente errada para 'object.GetType()'"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PublicConstructorInAbstractClass.cs:16
 msgid "Constructor in abstract class should not be public"
 msgstr "O construtor na classe abstrata não deve ser público"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReferenceEqualsWithValueTypeAnalyzer.cs:13
-msgid "Check for reference equality instead"
-msgstr "Em vez disso, verificar a igualdade da referência"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReferenceEqualsWithValueTypeAnalyzer.cs:14
-msgid ""
-"'Object.ReferenceEquals' is always false because it is called with value type"
-msgstr ""
-"'Object.ReferenceEquals' sempre é falso porque é chamado com tipo de valor"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithFirstOrDefaultAnalyzer.cs:14
 msgid "Replace with call to FirstOrDefault<T>()"
@@ -27635,21 +27558,6 @@ msgstr "A expressão condicional pode ser simplificada"
 msgid "Simplify conditional expression"
 msgstr "Simplificar a expressão condicional"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/SimplifyLinqExpressionAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/SimplifyLinqExpressionAnalyzer.cs:14
-msgid "Simplify LINQ expression"
-msgstr "Simplificar expressão LINQ"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificAnalyzer.cs:16
-msgid "Warns when a culture-aware 'Compare' call is used by default"
-msgstr ""
-"Avisa quando uma chamada 'Compare' com reconhecimento de cultura é usada por "
-"padrão"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificAnalyzer.cs:17
-msgid "'string.Compare' is culture-aware"
-msgstr "'string.Compare' reconhece culturas"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificCodeFixProvider.cs:44
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareToIsCultureSpecificCodeFixProvider.cs:40
 msgid "Use ordinal comparison"
@@ -27712,22 +27620,6 @@ msgid "'StartsWith' is culture-aware and missing a StringComparison argument"
 msgstr ""
 "'StartsWith' reconhece culturas e não tem um argumento StringComparison"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseArrayCreationExpressionAnalyzer.cs:13
-msgid "Use array creation expression"
-msgstr "Usar expressão de criação de matriz"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseArrayCreationExpressionAnalyzer.cs:14
-msgid "Use array create expression"
-msgstr "Usar expressão para criar matriz"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseIsOperatorAnalyzer.cs:13
-msgid "'is' operator can be used"
-msgstr "O operador 'is' pode ser usado"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseIsOperatorAnalyzer.cs:14
-msgid "Use 'is' operator"
-msgstr "Usar o operador 'is'"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodAnyAnalyzer.cs:15
 msgid "Replace usages of 'Count()' with call to 'Any()'"
 msgstr "Substitui os usos de 'Count()' por uma chamada para 'Any()'"
@@ -27735,14 +27627,6 @@ msgstr "Substitui os usos de 'Count()' por uma chamada para 'Any()'"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodAnyAnalyzer.cs:16
 msgid "Use '{0}' for increased performance"
 msgstr "Use '{0}' para melhorar o desempenho"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodIsInstanceOfTypeAnalyzer.cs:13
-msgid "Use method IsInstanceOfType"
-msgstr "Usar o método IsInstanceOfType"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodIsInstanceOfTypeAnalyzer.cs:14
-msgid "Use method IsInstanceOfType (...)"
-msgstr "Usar o método IsInstanceOfType (...)"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/ArrayCreationCanBeReplacedWithArrayInitializerAnalyzer.cs:15
 msgid ""
@@ -27798,14 +27682,6 @@ msgstr "Nome de propriedade explícita redundante"
 msgid "The name can be inferred from the initializer expression"
 msgstr "O nome pode ser deduzido com base na expressão do inicializador"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantArgumentDefaultValueAnalyzer.cs:13
-msgid "Default argument value is redundant"
-msgstr "O valor padrão do argumento é redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantArgumentDefaultValueAnalyzer.cs:14
-msgid "The parameter is optional with the same default value"
-msgstr "O parâmetro é opcional com o mesmo valor padrão"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantArgumentNameAnalyzer.cs:15
 msgid "Redundant explicit argument name specification"
 msgstr "Especificação de nome de argumento explícito redundante"
@@ -27824,14 +27700,6 @@ msgstr "Os parênteses serão redundantes se o atributo não tiver argumentos"
 msgid "'base.' is redundant and can safely be removed"
 msgstr "'base.' é redundante e pode ser removido com segurança"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantBoolCompareAnalyzer.cs:13
-msgid "Comparison of a boolean value with 'true' or 'false' constant"
-msgstr "Comparação de um valor booliano com constante 'true' ou 'false'"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantBoolCompareAnalyzer.cs:14
-msgid "Comparison with '{0}' is redundant"
-msgstr "A comparação com '{0}' é redundante"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCaseLabelAnalyzer.cs:15
 msgid "Redundant case label"
 msgstr "Rótulo de caso redundante"
@@ -27839,10 +27707,6 @@ msgstr "Rótulo de caso redundante"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCaseLabelAnalyzer.cs:16
 msgid "'case' label is redundant"
 msgstr "O rótulo 'case' é redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCatchClauseAnalyzer.cs:13
-msgid "Catch clause with a single 'throw' statement is redundant"
-msgstr "Cláusula catch com uma única instrução 'throw' é redundante"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCheckBeforeAssignmentAnalyzer.cs:27
 msgid ""
@@ -27860,14 +27724,6 @@ msgstr "Verificação de condição redundante antes da atribuição"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCommaInArrayInitializerAnalyzer.cs:16
 msgid "Redundant comma in array initializer"
 msgstr "Vírgula redundante no inicializador de matriz"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantComparisonWithNullAnalyzer.cs:13
-msgid "When 'is' keyword is used, which implicitly check null"
-msgstr "Quando a palavra-chave 'is' é usada, que verifica nulo implicitamente"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantComparisonWithNullAnalyzer.cs:14
-msgid "Redundant comparison with 'null'"
-msgstr "Comparação redundante com 'null'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantDelegateCreationAnalyzer.cs:14
 msgid "Explicit delegate creation expression is redundant"
@@ -27887,22 +27743,6 @@ msgstr "Ramificação de mudança 'default' vazia redundante"
 msgid "Redundant empty finally block"
 msgstr "Bloco finally vazio redundante"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantEnumerableCastCallAnalyzer.cs:14
-msgid "Redundant 'IEnumerable.Cast<T>' or 'IEnumerable.OfType<T>' call"
-msgstr "Chamada 'IEnumerable.Cast<T>' ou 'IEnumerable.OfType<T>' redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantEnumerableCastCallAnalyzer.cs:15
-msgid "Redundant '{0}' call"
-msgstr "Chamada '{0}' redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitArrayCreationAnalyzer.cs:13
-msgid "Redundant explicit type in array creation"
-msgstr "Tipo explícito redundante na criação de matriz"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitArrayCreationAnalyzer.cs:14
-msgid "Redundant explicit array type specification"
-msgstr "Especificação de tipo de matriz explícita redundante"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitArraySizeAnalyzer.cs:14
 msgid "Redundant explicit size in array creation"
 msgstr "Tamanho explícito redundante na criação de matriz"
@@ -27921,39 +27761,10 @@ msgstr ""
 msgid "Redundant explicit nullable type creation"
 msgstr "Criação de tipo que permite valor nulo explícito redundante"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExtendsListEntryAnalyzer.cs:16
-msgid ""
-"Type is either mentioned in the base type list of another part or in another "
-"base type"
-msgstr ""
-"O tipo é mencionado na lista de tipo de base de outra parte ou em outro tipo "
-"de base"
-
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantIfElseBlockAnalyzer.cs:16
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantIfElseBlockAnalyzer.cs:17
 msgid "Redundant 'else' keyword"
 msgstr "Palavra-chave 'else' redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaParameterTypeAnalyzer.cs:13
-msgid ""
-"Explicit type specification can be removed as it can be implicitly inferred"
-msgstr ""
-"A especificação de tipo explícita pode ser removida, pois pode ser deduzida "
-"implicitamente"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaParameterTypeAnalyzer.cs:14
-msgid "Redundant lambda explicit type specification"
-msgstr "Especificação do tipo explícito de lambda redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaSignatureParenthesesAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLambdaSignatureParenthesesAnalyzer.cs:14
-msgid "Redundant lambda signature parentheses"
-msgstr "Parênteses de assinatura lambda redundantes"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLogicalConditionalExpressionOperandAnalyzer.cs:13
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantLogicalConditionalExpressionOperandAnalyzer.cs:14
-msgid "Redundant operand in logical conditional expression"
-msgstr "Operando redundante na expressão condicional lógica"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectCreationArgumentListAnalyzer.cs:14
 msgid ""
@@ -27966,14 +27777,6 @@ msgstr ""
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectCreationArgumentListAnalyzer.cs:15
 msgid "Empty argument list is redundant"
 msgstr "A lista de argumentos vazia é redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectOrCollectionInitializerAnalyzer.cs:13
-msgid "Redundant empty object or collection initializer"
-msgstr "Objeto vazio ou inicializador de coleção redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantObjectOrCollectionInitializerAnalyzer.cs:14
-msgid "Empty object or collection initializer is redundant"
-msgstr "O objeto vazio ou o inicializador de coleção é redundante"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantStringToCharArrayCallAnalyzer.cs:16
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantStringToCharArrayCallAnalyzer.cs:17
@@ -28016,16 +27819,6 @@ msgstr "Remover instrução redundante"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RemoveRedundantOrStatementAnalyzer.cs:15
 msgid "Statement is redundant"
 msgstr "A instrução é redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/UnusedAnonymousMethodSignatureAnalyzer.cs:13
-msgid "Detects when no delegate parameter is used in the anonymous method body"
-msgstr ""
-"Detecta quando nenhum parâmetro de delegado é usado no corpo de método "
-"anônimo"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/UnusedAnonymousMethodSignatureAnalyzer.cs:14
-msgid "Specifying signature is redundant because no parameter is used"
-msgstr "É redundante especificar a assinatura, pois nenhum parâmetro é usado"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/EmptyConstructorAnalyzer.cs:15
 msgid "An empty public constructor without parameters is redundant."
@@ -28080,18 +27873,6 @@ msgstr "Inicializar o campo com valor padrão é redundante"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantDefaultFieldInitializerAnalyzer.cs:17
 msgid "Initializing field by default value is redundant"
 msgstr "Inicializar o campo por valor padrão é redundante"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantOverriddenMemberAnalyzer.cs:13
-msgid ""
-"The override of a virtual member is redundant because it consists of only a "
-"call to the base"
-msgstr ""
-"A substituição de um membro virtual é redundante, pois consiste apenas em "
-"uma chamada para a base"
-
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantOverriddenMemberAnalyzer.cs:14
-msgid "Redundant method override"
-msgstr "Substituição de método redundante"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassAnalyzer.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassAnalyzer.cs:16
@@ -28206,6 +27987,229 @@ msgstr "Exibição do Tempo"
 msgid "List View"
 msgstr "Exibição de Lista"
 
+#~ msgid "Replace with call to OfType<T> (extended cases)"
+#~ msgstr "Substituir por uma chamada para OfType<T> (casos estendidos)"
+
+#~ msgid "Replace with 'OfType<T>'"
+#~ msgstr "Substituir por 'OfType<T>'"
+
+#~ msgid "Check if a namespace corresponds to a file location"
+#~ msgstr "Verificar se um namespace corresponde a um local de arquivo"
+
+#~ msgid "Warns about using lock (this) or MethodImplOptions.Synchronized"
+#~ msgstr ""
+#~ "Avisa sobre o uso de bloqueio (this) ou MethodImplOptions.Synchronized"
+
+#~ msgid "Simplify negative relational expression"
+#~ msgstr "Simplificar a expressão relacional negativa"
+
+#~ msgid ""
+#~ "Value assigned to a variable or parameter is not used in all execution "
+#~ "path"
+#~ msgstr ""
+#~ "O valor atribuído a uma variável ou parâmetro não é utilizado em todos os "
+#~ "caminhos de execução"
+
+#~ msgid "Assignment is redundant"
+#~ msgstr "A atribuição é redundante"
+
+#~ msgid "Checks if static events are removed"
+#~ msgstr "Verifica se eventos estáticos são removidos"
+
+#~ msgid ""
+#~ "Subscription to static events without unsubscription may cause memory "
+#~ "leaks"
+#~ msgstr ""
+#~ "A assinatura para eventos estáticos sem cancelamento da assinatura pode "
+#~ "causar perda de memória"
+
+#~ msgid ""
+#~ "The value of an optional parameter in a method does not match the base "
+#~ "method"
+#~ msgstr ""
+#~ "O valor de um parâmetro opcional em um método não corresponde ao método "
+#~ "base"
+
+#~ msgid "Optional parameter value {0} differs from base {1} '{2}'"
+#~ msgstr "O valor de parâmetro opcional {0} difere da base {1} '{2}'"
+
+#~ msgid ""
+#~ "Invocation of polymorphic field event leads to unpredictable result since "
+#~ "invocation lists are not virtual"
+#~ msgstr ""
+#~ "Invocação de evento de campo polimórfico leva a resultados imprevisíveis, "
+#~ "pois as listas de chamada não são virtuais"
+
+#~ msgid ""
+#~ "The event `{0}' can only appear on the left hand side of `+=' or `-=' "
+#~ "operator"
+#~ msgstr ""
+#~ "O evento `{0}' somente pode aparecer do lado esquerdo do operador '+=' ou "
+#~ "'-='"
+
+#~ msgid "Check if a readonly field is used as assignment target"
+#~ msgstr "Verificar se um campo readonly é usado como destino de atribuição"
+
+#~ msgid "Possible multiple enumeration of IEnumerable"
+#~ msgstr "Múltiplas enumerações possíveis de IEnumerable"
+
+#~ msgid "Convert 'if' to '??'"
+#~ msgstr "Converter 'if' em '??'"
+
+#~ msgid "Convert to '??' expresssion"
+#~ msgstr "Converter na expressão '??'"
+
+#~ msgid "Convert property to auto property"
+#~ msgstr "Converter a propriedade em propriedade automática"
+
+#~ msgid "Convert to auto property"
+#~ msgstr "Converter em propriedade automática"
+
+#~ msgid "Convert to lambda with expression"
+#~ msgstr "Converter em lambda com expressão"
+
+#~ msgid "Can be converted to expression"
+#~ msgstr "Pode ser convertido em expressão"
+
+#~ msgid "Foreach loops are more efficient"
+#~ msgstr "Loops foreach são mais eficientes"
+
+#~ msgid "'for' loop can be converted to 'foreach'"
+#~ msgstr "O loop 'for' pode ser convertido em 'foreach'"
+
+#~ msgid "Convert local variable or field to constant"
+#~ msgstr "Converter variável ou campo local em constante"
+
+#~ msgid "Convert to constant"
+#~ msgstr "Converter em constante"
+
+#~ msgid "Finds parameters that can be demoted to a base class"
+#~ msgstr "Encontra parâmetros que podem ser rebaixados para uma classe base"
+
+#~ msgid "Parameter can be declared with base type"
+#~ msgstr "O parâmetro pode ser declarado com o tipo de base"
+
+#~ msgid "Check for reference equality instead"
+#~ msgstr "Em vez disso, verificar a igualdade da referência"
+
+#~ msgid ""
+#~ "'Object.ReferenceEquals' is always false because it is called with value "
+#~ "type"
+#~ msgstr ""
+#~ "'Object.ReferenceEquals' sempre é falso porque é chamado com tipo de valor"
+
+#~ msgid "Simplify LINQ expression"
+#~ msgstr "Simplificar expressão LINQ"
+
+#~ msgid "Warns when a culture-aware 'Compare' call is used by default"
+#~ msgstr ""
+#~ "Avisa quando uma chamada 'Compare' com reconhecimento de cultura é usada "
+#~ "por padrão"
+
+#~ msgid "'string.Compare' is culture-aware"
+#~ msgstr "'string.Compare' reconhece culturas"
+
+#~ msgid "Use array creation expression"
+#~ msgstr "Usar expressão de criação de matriz"
+
+#~ msgid "Use array create expression"
+#~ msgstr "Usar expressão para criar matriz"
+
+#~ msgid "'is' operator can be used"
+#~ msgstr "O operador 'is' pode ser usado"
+
+#~ msgid "Use 'is' operator"
+#~ msgstr "Usar o operador 'is'"
+
+#~ msgid "Use method IsInstanceOfType"
+#~ msgstr "Usar o método IsInstanceOfType"
+
+#~ msgid "Use method IsInstanceOfType (...)"
+#~ msgstr "Usar o método IsInstanceOfType (...)"
+
+#~ msgid "Default argument value is redundant"
+#~ msgstr "O valor padrão do argumento é redundante"
+
+#~ msgid "The parameter is optional with the same default value"
+#~ msgstr "O parâmetro é opcional com o mesmo valor padrão"
+
+#~ msgid "Comparison of a boolean value with 'true' or 'false' constant"
+#~ msgstr "Comparação de um valor booliano com constante 'true' ou 'false'"
+
+#~ msgid "Comparison with '{0}' is redundant"
+#~ msgstr "A comparação com '{0}' é redundante"
+
+#~ msgid "Catch clause with a single 'throw' statement is redundant"
+#~ msgstr "Cláusula catch com uma única instrução 'throw' é redundante"
+
+#~ msgid "When 'is' keyword is used, which implicitly check null"
+#~ msgstr ""
+#~ "Quando a palavra-chave 'is' é usada, que verifica nulo implicitamente"
+
+#~ msgid "Redundant comparison with 'null'"
+#~ msgstr "Comparação redundante com 'null'"
+
+#~ msgid "Redundant 'IEnumerable.Cast<T>' or 'IEnumerable.OfType<T>' call"
+#~ msgstr "Chamada 'IEnumerable.Cast<T>' ou 'IEnumerable.OfType<T>' redundante"
+
+#~ msgid "Redundant '{0}' call"
+#~ msgstr "Chamada '{0}' redundante"
+
+#~ msgid "Redundant explicit type in array creation"
+#~ msgstr "Tipo explícito redundante na criação de matriz"
+
+#~ msgid "Redundant explicit array type specification"
+#~ msgstr "Especificação de tipo de matriz explícita redundante"
+
+#~ msgid ""
+#~ "Type is either mentioned in the base type list of another part or in "
+#~ "another base type"
+#~ msgstr ""
+#~ "O tipo é mencionado na lista de tipo de base de outra parte ou em outro "
+#~ "tipo de base"
+
+#~ msgid ""
+#~ "Explicit type specification can be removed as it can be implicitly "
+#~ "inferred"
+#~ msgstr ""
+#~ "A especificação de tipo explícita pode ser removida, pois pode ser "
+#~ "deduzida implicitamente"
+
+#~ msgid "Redundant lambda explicit type specification"
+#~ msgstr "Especificação do tipo explícito de lambda redundante"
+
+#~ msgid "Redundant lambda signature parentheses"
+#~ msgstr "Parênteses de assinatura lambda redundantes"
+
+#~ msgid "Redundant operand in logical conditional expression"
+#~ msgstr "Operando redundante na expressão condicional lógica"
+
+#~ msgid "Redundant empty object or collection initializer"
+#~ msgstr "Objeto vazio ou inicializador de coleção redundante"
+
+#~ msgid "Empty object or collection initializer is redundant"
+#~ msgstr "O objeto vazio ou o inicializador de coleção é redundante"
+
+#~ msgid ""
+#~ "Detects when no delegate parameter is used in the anonymous method body"
+#~ msgstr ""
+#~ "Detecta quando nenhum parâmetro de delegado é usado no corpo de método "
+#~ "anônimo"
+
+#~ msgid "Specifying signature is redundant because no parameter is used"
+#~ msgstr ""
+#~ "É redundante especificar a assinatura, pois nenhum parâmetro é usado"
+
+#~ msgid ""
+#~ "The override of a virtual member is redundant because it consists of only "
+#~ "a call to the base"
+#~ msgstr ""
+#~ "A substituição de um membro virtual é redundante, pois consiste apenas em "
+#~ "uma chamada para a base"
+
+#~ msgid "Redundant method override"
+#~ msgstr "Substituição de método redundante"
+
 #~ msgid "Platform"
 #~ msgstr "Plataforma"
 
@@ -28266,3 +28270,6 @@ msgstr "Exibição de Lista"
 
 #~ msgid "C# Language Version"
 #~ msgstr "Versão da Linguagem C#"
+
+#~ msgid "ASP.NET Core Web Api"
+#~ msgstr "API Web ASP.NET Core"

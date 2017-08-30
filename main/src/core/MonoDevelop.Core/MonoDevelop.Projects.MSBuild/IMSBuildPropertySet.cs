@@ -73,11 +73,11 @@ namespace MonoDevelop.Projects.MSBuild
 					FilePath def = (string)prop.DefaultValue;
 					pset.SetValue (prop.Name, val, def, mergeToMainGroup: merge);
 				} else if (prop.PropertyType == typeof(string)) {
-					pset.SetValue (prop.Name, (string)prop.GetValue (ob), (string)prop.DefaultValue, merge);
+					pset.SetValue (prop.Name, (string)prop.GetValue (ob), (string)prop.DefaultValue, mergeToMainGroup:merge);
 				} else if (prop.DataType.IsSimpleType) {
-					pset.SetValue (prop.Name, prop.GetValue (ob), prop.DefaultValue, merge);
+					pset.SetValue (prop.Name, prop.GetValue (ob), prop.DefaultValue, mergeToMainGroup:merge);
 				} else if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition () == typeof(Nullable<>)) {
-					pset.SetValue (prop.Name, prop.GetValue (ob), prop.DefaultValue, merge);
+					pset.SetValue (prop.Name, prop.GetValue (ob), prop.DefaultValue, mergeToMainGroup:merge);
 				} else {
 					var val = prop.GetValue (ob);
 					if (val != null) {

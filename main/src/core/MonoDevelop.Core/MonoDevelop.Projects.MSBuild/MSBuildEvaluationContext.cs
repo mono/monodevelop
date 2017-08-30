@@ -829,6 +829,15 @@ namespace MonoDevelop.Projects.MSBuild
 			if (sval != null && parameterType == typeof (char[]))
 				return sval.ToCharArray ();
 
+			if (sval != null && parameterType.IsEnum) {
+				var enumValue = sval;
+				if (enumValue.StartsWith (parameterType.Name))
+					enumValue = enumValue.Substring (parameterType.Name.Length + 1);
+				if (enumValue.StartsWith (parameterType.FullName))
+					enumValue = enumValue.Substring (parameterType.FullName.Length + 1);
+				return Enum.Parse(parameterType, enumValue, ignoreCase: true);
+			}
+
 			if (sval != null && Path.DirectorySeparatorChar != '\\')
 				value = sval.Replace ('\\', Path.DirectorySeparatorChar);
 			

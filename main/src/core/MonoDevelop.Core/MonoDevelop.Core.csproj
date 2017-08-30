@@ -97,9 +97,6 @@
     <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Unix' and '$(MSBuild_OSS_BinDir)' == '' and Exists('$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\MSBuild.dll')">$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\</MSBuild_OSS_BinDir>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\..\..\packages\JetBrains.SharpZipLib.Stripped.0.87.20170615.10\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Build">
       <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.dll</HintPath>
       <Private>False</Private>
@@ -737,7 +734,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="UnitTests" />
+    <InternalsVisibleTo Include="MonoDevelop.Core.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs">

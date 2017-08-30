@@ -36,7 +36,6 @@ namespace MonoDevelop.Components
 		TaskSeverity? severity;
 		TooltipPopoverWindow tooltipWindow;
 		Xwt.Popover xwtPopover;
-		bool mouseOver, mouseOverTooltip;
 
 		public string ToolTip {
 			get { return tip; }
@@ -130,14 +129,12 @@ namespace MonoDevelop.Components
 		protected override void OnMouseEntered (EventArgs args)
 		{
 			base.OnMouseEntered (args);
-			mouseOver = true;
 			ShowTooltip ();
 		}
 
 		protected override void OnMouseExited (EventArgs args)
 		{
 			base.OnMouseExited (args);
-			mouseOver = false;
 			HideTooltip ();
 		}
 

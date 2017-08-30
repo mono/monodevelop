@@ -370,7 +370,7 @@ namespace MonoDevelop.Xml.Editor
 			}
 			
 			//attribute name completion
-			if ((forced && Tracker.Engine.Nodes.Peek () is IAttributedXObject && !tracker.Engine.Nodes.Peek ().IsEnded)
+			if ((forced && Tracker.Engine.Nodes.Peek () is XAttribute && !tracker.Engine.Nodes.Peek ().IsEnded)
 			     || ((Tracker.Engine.CurrentState is XmlNameState
 			    && Tracker.Engine.CurrentState.Parent is XmlAttributeState) ||
 			    Tracker.Engine.CurrentState is XmlTagState)) {

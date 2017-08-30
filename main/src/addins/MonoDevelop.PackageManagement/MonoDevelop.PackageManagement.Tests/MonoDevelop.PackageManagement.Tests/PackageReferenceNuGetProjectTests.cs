@@ -266,5 +266,26 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (expectedCacheFilePath, cacheFilePath);
 		}
+
+		[Test]
+		public void Create_NoPackageReferences_ReturnsNull ()
+		{
+			CreateNuGetProject ();
+
+			var nugetProject = PackageReferenceNuGetProject.Create (dotNetProject);
+
+			Assert.IsNull (nugetProject);
+		}
+
+		[Test]
+		public void Create_OnePackageReference_ReturnsNuGetProject ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
+
+			var nugetProject = PackageReferenceNuGetProject.Create (dotNetProject);
+
+			Assert.IsNotNull (nugetProject);
+		}
 	}
 }

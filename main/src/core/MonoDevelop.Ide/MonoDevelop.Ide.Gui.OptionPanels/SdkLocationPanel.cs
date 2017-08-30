@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				var tableRestart = new RestartPanel ();
 				tableRestart.RestartRequested += (sender, e) => {
 					ApplyChanges ();
-					IdeApp.Restart (true);
+					IdeApp.Restart (true).Ignore();
 				};
 
 				PackStart (tableRestart, false, false, 0);
