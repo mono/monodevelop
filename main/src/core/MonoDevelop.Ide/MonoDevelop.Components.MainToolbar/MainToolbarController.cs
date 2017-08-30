@@ -932,6 +932,7 @@ namespace MonoDevelop.Components.MainToolbar
 			public object Command { get; private set; }
 			public ExecutionTarget ExecutionTarget { get; private set; }
 			string DisplayText = null;
+			string image;
 			bool fullText;
 
 			RuntimeModel (MainToolbarController controller)
@@ -947,6 +948,7 @@ namespace MonoDevelop.Components.MainToolbar
 			public RuntimeModel (MainToolbarController controller, ActionCommand command) : this (controller)
 			{
 				Command = command.Id;
+				image = command?.Icon;
 			}
 
 			public RuntimeModel (MainToolbarController controller, ExecutionTarget target, bool fullText, SolutionItem project) : this (controller)
@@ -954,6 +956,7 @@ namespace MonoDevelop.Components.MainToolbar
 				if (target == null)
 					throw new ArgumentNullException (nameof (target));
 				ExecutionTarget = target;
+				image = target?.Image;
 				this.fullText = fullText;
 				Project = project;
 			}
@@ -1004,7 +1007,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public string Image {
 				get {
-					return ExecutionTarget?.Image;
+					return image;
 				}
 			}
 
