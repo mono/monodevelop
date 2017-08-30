@@ -44,7 +44,7 @@ type SignatureHelpMarker(document, text, font, line) =
             g.MoveTo(x, y + editor.LineHeight * (1.0 - SignatureHelpMarker.FontScale) - 2.0)
             g.ShowLayout layout
             g.MoveTo currentPoint
-
+  
 module signatureHelp =
     let getOffset (editor:TextEditor) (pos:Range.pos) =
         editor.LocationToOffset (pos.Line, pos.Column+1)
@@ -75,7 +75,7 @@ module signatureHelp =
         |> Option.map getSignature
         |> Option.fill ""
 
-    let displaySignatures (context:DocumentContext) (editor:TextEditor) =
+    let displaySignatures (context:DocumentContext) (editor:TextEditor) recalculate =
         let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
         let editorFont = data.Options.Font
         let font = new Pango.FontDescription(AbsoluteSize=float(editorFont.Size) * SignatureHelpMarker.FontScale, Family=editorFont.Family)
@@ -90,7 +90,7 @@ module signatureHelp =
             }
 
         ast |> Option.iter (fun (ast, pd) ->
-          if not pd.HasErrors && pd.AllSymbolsKeyed.Count > 0 then
+          if pd.AllSymbolsKeyed.Count > 0 then
             let symbols = pd.AllSymbolsKeyed.Values |> List.ofSeq
             let topVisibleLine = data.HeightTree.YToLineNumber data.VAdjustment.Value
             let bottomVisibleLine = 
@@ -130,17 +130,20 @@ module signatureHelp =
                 lineOption |> Option.iter(fun line ->
                     let marker = editor.GetLineMarkers line |> Seq.tryPick(Option.tryCast<SignatureHelpMarker>)
 
-                    let marker = marker |> Option.getOrElse(fun() -> addMarker "" range.StartLine line)
-                    if range.StartLine >= topVisibleLine && range.EndLine <= bottomVisibleLine then
-                        async {
-                            let lineText = editor.GetLineText(range.StartLine)
-                            let! tooltip = ast.GetToolTip(range.StartLine, range.StartColumn, lineText)
-                            tooltip |> Option.iter(fun (tooltip, lineNr) ->
-                                let text = extractSignature tooltip
-                                marker.Text <- text
-                                marker.Font <- font
-                                document.CommitLineUpdate lineNr)
-                        } |> Async.StartImmediate)))
+                    match marker, recalculate with
+                    | Some marker', false when marker'.Text <> "" -> ()
+                    | _ -> 
+                        let marker = marker |> Option.getOrElse(fun() -> addMarker "" range.StartLine line)
+                        if range.StartLine >= topVisibleLine && range.EndLine <= bottomVisibleLine then
+                            async {
+                                let lineText = editor.GetLineText(range.StartLine)
+                                let! tooltip = ast.GetToolTip(range.StartLine, range.StartColumn, lineText)
+                                tooltip |> Option.iter(fun (tooltip, lineNr) ->
+                                    let text = extractSignature tooltip
+                                    marker.Text <- text
+                                    marker.Font <- font
+                                    document.CommitLineUpdate lineNr)
+                            } |> Async.StartImmediate)))
 
 type SignatureHelp() as x =
     inherit TextEditorExtension()
@@ -155,20 +158,20 @@ type SignatureHelp() as x =
         } |> Async.StartImmediate
         
     override x.Initialize() =
-        let displaySignatures dueMs observable =
+        let displaySignatures dueMs recalculate observable =
             observable
             |> Observable.filter(fun _ -> PropertyService.Get(Settings.showTypeSignatures, false))
             |> Observable.throttle (TimeSpan.FromMilliseconds dueMs)
-            |> Observable.subscribe (fun _ -> signatureHelp.displaySignatures x.DocumentContext x.Editor)
+            |> Observable.subscribe (fun _ -> signatureHelp.displaySignatures x.DocumentContext x.Editor recalculate)
 
         disposables <-
             Some
                 [x.Editor.VAdjustmentChanged
                 |> Observable.merge x.Editor.ZoomLevelChanged
-                |> displaySignatures 100.
+                |> displaySignatures 100. false
                 ;
                 x.DocumentContext.DocumentParsed
-                |> displaySignatures 1000.
+                |> displaySignatures 1000. true
                 ;
                 PropertyService.PropertyChanged
                     .Subscribe(fun p -> if p.Key = Settings.showTypeSignatures && (not (p.NewValue :?> bool)) then
