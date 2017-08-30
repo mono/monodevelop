@@ -393,9 +393,13 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return "Visual Studio 2017"; }
 		}
 
+		static string[] supportedToolsVersions = new string[] {
+			"4.0", "12.0", "14.0", "15.0"
+		};
+
 		protected override bool SupportsToolsVersion (string version)
 		{
-			return version == "15.0";
+			return supportedToolsVersions.Contains (version);
 		}
 	}
 }
