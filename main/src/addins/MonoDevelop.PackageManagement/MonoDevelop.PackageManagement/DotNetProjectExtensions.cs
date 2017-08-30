@@ -195,6 +195,12 @@ namespace MonoDevelop.PackageManagement
 				.Any (projectItem => StringComparer.OrdinalIgnoreCase.Equals (projectItem.Include, packageId));
 		}
 
+		public static bool HasPackageReferenceRestoreProjectStyle (this DotNetProject project)
+		{
+			string restoreStyle = project.ProjectProperties.GetValue ("RestoreProjectStyle");
+			return StringComparer.OrdinalIgnoreCase.Equals (restoreStyle, "PackageReference");
+		}
+
 		public static FilePath GetNuGetAssetsFilePath (this DotNetProject project)
 		{
 			return project.BaseIntermediateOutputPath.Combine (LockFileFormat.AssetsFileName);
