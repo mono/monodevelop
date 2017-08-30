@@ -248,15 +248,15 @@ module Completion =
             try
                 match symbolUse with
                 | SymbolUse.Constructor c ->
-                    c.EnclosingEntitySafe
+                    c.EnclosingEntity
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, un)
                 | SymbolUse.Event ev ->
-                    ev.EnclosingEntitySafe
+                    ev.EnclosingEntity
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, un)
                 | SymbolUse.Property pr ->
-                    pr.EnclosingEntitySafe
+                    pr.EnclosingEntity
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, un)
                 | SymbolUse.ActivePatternCase ap ->
@@ -275,19 +275,19 @@ module Completion =
                         let real = f.LogicalEnclosingEntity.UnAnnotate()
                         Some(real.DisplayName, real)
                     else
-                        f.EnclosingEntitySafe
+                        f.EnclosingEntity
                         |> Option.map (fun real -> let un = real.UnAnnotate()
                                                    un.DisplayName, un)
                 | SymbolUse.Operator o ->
-                    o.EnclosingEntitySafe
+                    o.EnclosingEntity
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, un)
                 | SymbolUse.Pattern p ->
-                    p.EnclosingEntitySafe
+                    p.EnclosingEntity
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, ent)
                 | SymbolUse.Val v ->
-                    v.EnclosingEntitySafe
+                    v.EnclosingEntity
                     |> Option.map (fun ent -> let un  = ent.UnAnnotate()
                                               un.DisplayName, un)
                 | SymbolUse.TypeAbbreviation ta ->

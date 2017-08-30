@@ -65,12 +65,10 @@ module signatureHelp =
 
         let firstResult x =
             match x with
-            | FSharpToolTipElement.Single (t, _) when not (String.IsNullOrWhiteSpace t) -> Some t
-            | FSharpToolTipElement.Group gs -> List.tryPick (fun (t, _) -> if not (String.IsNullOrWhiteSpace t) then Some t else None) gs
+            | FSharpToolTipElement.Group gs -> gs |> List.tryPick (fun data -> if not (String.IsNullOrWhiteSpace data.MainDescription) then Some data.MainDescription else None)
             | _ -> None
 
         tips
-        |> Seq.sortBy (function FSharpToolTipElement.Single _ -> 0 | _ -> 1)
         |> Seq.tryPick firstResult
         |> Option.map getSignature
         |> Option.fill ""

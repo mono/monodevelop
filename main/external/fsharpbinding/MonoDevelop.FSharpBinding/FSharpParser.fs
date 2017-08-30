@@ -1,6 +1,7 @@
 ﻿namespace MonoDevelop.FSharp
 
 open Microsoft.FSharp.Compiler
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor

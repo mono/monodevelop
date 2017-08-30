@@ -135,10 +135,6 @@ module FSharpSymbolExt =
             if name.StartsWith "( " && name.EndsWith " )" && name.Length > 4
             then name.Substring (2, name.Length - 4) |> String.forall (fun c -> c <> ' ')
             else false
-        member x.EnclosingEntitySafe =
-            try
-                Some x.EnclosingEntity
-            with :? InvalidOperationException -> None
 
     type FSharpEntity with
         member x.TryGetFullName() =
