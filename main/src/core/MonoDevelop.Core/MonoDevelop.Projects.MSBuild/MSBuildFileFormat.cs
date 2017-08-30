@@ -386,7 +386,7 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		public override string SlnVersion {
-			get { return "15.00"; }
+			get { return "12.00"; }
 		}
 
 		public override string ProductDescription {
