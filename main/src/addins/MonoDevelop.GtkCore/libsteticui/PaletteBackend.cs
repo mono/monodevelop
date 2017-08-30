@@ -243,7 +243,7 @@ namespace Stetic {
 		{
 			vbox = new VBox (false, 0);
 			emptyLabel = new Gtk.Label ();
-			emptyLabel.Markup = "<small><i><span foreground='darkgrey'>  " + Catalog.GetString ("Empty") + "</span></i></small>";
+			emptyLabel.Markup = "<span font='11'><i><span foreground='darkgrey'>  " + Catalog.GetString ("Empty") + "</span></i><span>";
 			vbox.PackStart (emptyLabel, false, false, 0);
 			
 			align = new Gtk.Alignment (0, 0, 0, 0);

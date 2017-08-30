@@ -268,10 +268,10 @@ namespace MonoDevelop.CSharp.Completion
 						sb.AppendLine ();
 						sb.AppendLine ();
 					}
-					sb.Append ("<small>");
+					sb.Append ("<span font='11'>");
 					sb.AppendLine (GettextCatalog.GetString ("Delegate information:"));
 					sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
-					sb.Append ("</small>");
+					sb.Append ("<span>");
 				}
 			}
 			return sb.ToString ();

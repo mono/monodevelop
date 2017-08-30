@@ -78,7 +78,7 @@ namespace MonoDevelop.WebReferences
 				else if (dref is DiscoveryDocumentReference) {
 					text.Append ("<b>")
 					    .Append (GettextCatalog.GetString ("Discovery document"))
-					    .AppendFormat ("</b>\n<small>{0}</small>", dref.Url);
+					    .AppendFormat ("</b>\n<span font='11'>{0}<span>", dref.Url);
 				}
 				text.Append ("\n\n");
 			}

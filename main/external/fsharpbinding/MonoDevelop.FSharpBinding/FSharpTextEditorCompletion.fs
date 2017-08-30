@@ -31,7 +31,7 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
     override x.HasOverloads = not (List.isEmpty overloads)
     override x.GetRightSideDescription _selected =
         let formatType (t:FSharpType) =
-            try "<small>" + syntaxHighlight (t.Format symbol.DisplayContext) + "</small>"
+            try "<span font='11'>" + syntaxHighlight (t.Format symbol.DisplayContext) + "<span>"
             with ex -> ""
         SymbolTooltips.returnType symbol
         |> Option.map formatType
