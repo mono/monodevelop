@@ -306,6 +306,9 @@
                  _label="Start Debugging on External Console"
 
                  id="MonoDevelop.FSharp.Editor.DebugScriptExternal" />
+        <Command _description="Toggle type signature help"
+                 _label="Toggle type signature help"
+                 id="MonoDevelop.FSharp.SignatureHelp.Toggle" />
       </Category>
     </ComplexCondition>
   </Extension>

@@ -2,11 +2,11 @@
 
 open System
 open System.Collections.Generic
-open System.Collections.Concurrent
 open ExtCore.Control
 open Mono.TextEditor
 open MonoDevelop
 open MonoDevelop.Components
+open MonoDevelop.Components.Commands
 open MonoDevelop.Core
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
@@ -145,7 +145,7 @@ module signatureHelp =
 
 type SignatureHelp() as x =
     inherit TextEditorExtension()
-    let mutable disposables = None : IDisposable list option
+    let mutable disposables = []
 
     let removeAllMarkers() =
         async {
@@ -154,25 +154,37 @@ type SignatureHelp() as x =
             let editorData = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
             editorData.Document.CommitUpdateAll()
         } |> Async.StartImmediate
-        
+   
+    [<CommandHandler("MonoDevelop.FSharp.SignatureHelp.Toggle")>]
+    member x.SignatureHelpToggle() =
+        let current = PropertyService.Get(Settings.showTypeSignatures, false)
+        PropertyService.Set(Settings.showTypeSignatures, not current)
+
     override x.Initialize() =
         let displaySignatures dueMs recalculate observable =
             observable
             |> Observable.filter(fun _ -> PropertyService.Get(Settings.showTypeSignatures, false))
             |> Observable.throttle (TimeSpan.FromMilliseconds dueMs)
             |> Observable.subscribe (fun _ -> signatureHelp.displaySignatures x.DocumentContext x.Editor recalculate)
-
+        
+        let resetSignatures dueMs recalculate observable =
+            removeAllMarkers()
+            displaySignatures dueMs recalculate observable
+    
         disposables <-
-            Some
-                [x.Editor.VAdjustmentChanged
-                |> Observable.merge x.Editor.ZoomLevelChanged
-                |> displaySignatures 100. false
-                ;
-                x.DocumentContext.DocumentParsed
-                |> displaySignatures 1000. true
-                ;
-                PropertyService.PropertyChanged
-                    .Subscribe(fun p -> if p.Key = Settings.showTypeSignatures && (not (p.NewValue :?> bool)) then
-                                            removeAllMarkers())]
+            [ x.Editor.VAdjustmentChanged
+              |> displaySignatures 100. false
 
-    override x.Dispose() = disposables |> Option.iter (fun disps -> disps |> List.iter(fun disp -> disp.Dispose()))
+              x.Editor.ZoomLevelChanged
+              |> resetSignatures 100. true
+
+              x.DocumentContext.DocumentParsed
+              |> displaySignatures 1000. true
+
+              PropertyService.PropertyChanged
+                  .Subscribe(fun p -> if p.Key = Settings.showTypeSignatures then
+                                              match (p.NewValue :?> bool) with
+                                              | true -> signatureHelp.displaySignatures x.DocumentContext x.Editor true
+                                              | false -> removeAllMarkers())]
+
+    override x.Dispose() = disposables |> List.iter(fun disp -> disp.Dispose())
