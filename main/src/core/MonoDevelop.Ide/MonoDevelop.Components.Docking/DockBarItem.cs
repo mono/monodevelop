@@ -398,6 +398,10 @@ namespace MonoDevelop.Components.Docking
 					it.Widget.GetPointer (out px, out py);
 					if (it.Widget.Visible && it.Widget.IsRealized && it.Widget.Allocation.Contains (px + it.Widget.Allocation.X, py + it.Widget.Allocation.Y) && !force)
 						return true;
+					// Don't hide if the mouse pointer is still inside the DockBar item
+					GetPointer (out px, out py);
+					if (!force && Allocation.Contains (px + Allocation.X, py + Allocation.Y))
+						return true;
 					autoHideTimeout = uint.MaxValue;
 					AutoHide (true);
 					return false;
