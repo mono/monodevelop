@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unit-testing-xunit-dotnetcore", "unit-testing-xunit-dotnetcore\unit-testing-xunit-dotnetcore.csproj", "{D3097018-47ED-4677-989D-4A640A26CADF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unit-testing-xunit-dotnetfull", "unit-testing-xunit-dotnetfull\unit-testing-xunit-dotnetfull.csproj", "{B8AC1B1C-D466-46EE-B4F9-2C8E42C1CB2B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D3097018-47ED-4677-989D-4A640A26CADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3097018-47ED-4677-989D-4A640A26CADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3097018-47ED-4677-989D-4A640A26CADF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3097018-47ED-4677-989D-4A640A26CADF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8AC1B1C-D466-46EE-B4F9-2C8E42C1CB2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8AC1B1C-D466-46EE-B4F9-2C8E42C1CB2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8AC1B1C-D466-46EE-B4F9-2C8E42C1CB2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8AC1B1C-D466-46EE-B4F9-2C8E42C1CB2B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
