@@ -50,7 +50,6 @@ namespace MonoDevelop.Projects
 		bool isShared;
 		object localLock = new object ();
 		ExtensionContext extensionContext;
-		AppliesToCondition appliesToCondition;
 		CancellationTokenSource disposeCancellation = new CancellationTokenSource ();
 		HashSet<Task> activeTasks = new HashSet<Task> ();
 
@@ -69,8 +68,7 @@ namespace MonoDevelop.Projects
 			if (!initializeCalled) {
 				initializeCalled = true;
 
-				appliesToCondition = new AppliesToCondition (this);
-				extensionContext = CreateExtensionContext (this, appliesToCondition);
+				extensionContext = CreateExtensionContext (this);
 
 				OnInitialize ();
 				InitializeExtensionChain ();
@@ -438,11 +436,11 @@ namespace MonoDevelop.Projects
 		{
 			// Create a context for loading the default extensions. The context is necessary because
 			// the conditions declared in the extension point must always be present.
-			var extensionContext = CreateExtensionContext (null, null);
+			var extensionContext = CreateExtensionContext (null);
 			modelExtensions = extensionContext.GetExtensionNodes<ProjectModelExtensionNode> (ProjectService.ProjectModelExtensionsPath).Concat (customNodes).ToArray ();
 		}
 
-		static ExtensionContext CreateExtensionContext (WorkspaceObject targetObject, AppliesToCondition appliesToCondition)
+		static ExtensionContext CreateExtensionContext (WorkspaceObject targetObject)
 		{
 			var extensionContext = AddinManager.CreateExtensionContext ();
 			if (targetObject == null) {
@@ -450,7 +448,7 @@ namespace MonoDevelop.Projects
 				extensionContext.RegisterCondition ("AppliesTo", FalseCondition.Instance);
 			} else {
 				extensionContext.RegisterCondition ("ItemType", new ItemTypeCondition (targetObject.GetType ()));
-				extensionContext.RegisterCondition ("AppliesTo", appliesToCondition);
+				extensionContext.RegisterCondition ("AppliesTo", new AppliesToCondition (targetObject));
 			}
 			return extensionContext;
 		}
@@ -469,19 +467,20 @@ namespace MonoDevelop.Projects
 			// Get the list of nodes for which an extension has been created
 
 			var allExtensions = extensionChain.GetAllExtensions ().OfType<WorkspaceObjectExtension> ().ToList ();
-			var loadedNodes = allExtensions.Select (ex => ex.SourceExtensionNode).ToList ();
+			var loadedNodes = allExtensions.Where (ex => ex.SourceExtensionNode != null)
+				.Select (ex => ex.SourceExtensionNode.Id).ToList ();
 			var newExtensions = ImmutableList<WorkspaceObjectExtension>.Empty;
 
 			ProjectModelExtensionNode lastAddedNode = null;
 
-			// Ensure AppliesTo condition is re-evaluated.
-			appliesToCondition?.NotifyChanged ();
+			// Ensure conditions are re-evaluated.
+			extensionContext = CreateExtensionContext (this);
 
 			foreach (ProjectModelExtensionNode node in GetModelExtensions (extensionContext)) {
 				// If the node already generated an extension, skip it
-				if (loadedNodes.Contains (node)) {
+				if (loadedNodes.Contains (node.Id)) {
 					lastAddedNode = node;
-					loadedNodes.Remove (node);
+					loadedNodes.Remove (node.Id);
 					continue;
 				}
 
@@ -493,7 +492,7 @@ namespace MonoDevelop.Projects
 						newExtensions = newExtensions.Add (ext);
 						if (lastAddedNode != null) {
 							// There is an extension before this one. Find it and add the new extension after it.
-							var prevExtension = allExtensions.FirstOrDefault (ex => ex.SourceExtensionNode == lastAddedNode);
+							var prevExtension = allExtensions.FirstOrDefault (ex => ex.SourceExtensionNode?.Id == lastAddedNode.Id);
 							extensionChain.AddExtension (ext, prevExtension);
 						} else
 							extensionChain.AddExtension (ext);
@@ -509,12 +508,11 @@ namespace MonoDevelop.Projects
 					ext.Dispose ();
 			}
 
-			loadedNodes.RemoveAll (node => node == null);
 			if (loadedNodes.Any ()) {
-				foreach (var ext in allExtensions) {
-					if (loadedNodes.Contains (ext.SourceExtensionNode)) {
+				foreach (var ext in allExtensions.Where (ex => ex.SourceExtensionNode != null)) {
+					if (loadedNodes.Contains (ext.SourceExtensionNode.Id)) {
 						ext.Dispose ();
-						loadedNodes.Remove (ext.SourceExtensionNode);
+						loadedNodes.Remove (ext.SourceExtensionNode.Id);
 					}
 				}
 			}
