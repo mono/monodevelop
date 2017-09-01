@@ -39,8 +39,10 @@ namespace MonoDevelop.Projects
 			FilePath = path;
 
 			var properties = new MSBuildPropertyGroupEvaluated (null);
-			var property = new MSBuildPropertyEvaluated (null, nameof (Aliases), aliases, aliases);
-			properties.SetProperty (nameof (Aliases), property);
+			if (aliases != null) {
+				var property = new MSBuildPropertyEvaluated (null, nameof (Aliases), aliases, aliases);
+				properties.SetProperty (nameof (Aliases), property);
+			}
 			metadata = properties;
 		}
 
@@ -51,7 +53,7 @@ namespace MonoDevelop.Projects
 		}
 
 		public FilePath FilePath { get; private set; }
-		public string Aliases => GetMetadata ("Aliases") ?? "";
+		public string Aliases => metadata.GetValue ("Aliases", "");
 
 		/// <summary>
 		/// Whether the reference is a project.
@@ -89,7 +91,7 @@ namespace MonoDevelop.Projects
 
 		bool MetadataIsTrue (string name)
 		{
-			return string.Equals (GetMetadata (name), "true", StringComparison.OrdinalIgnoreCase);
+			return metadata.GetValue (name, false);
 		}
 
 		public override bool Equals (object obj)
