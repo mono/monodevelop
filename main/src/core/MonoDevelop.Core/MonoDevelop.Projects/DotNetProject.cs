@@ -1445,7 +1445,7 @@ namespace MonoDevelop.Projects
 			string root = null;
 			string dirNamespc = null;
 			string defaultNmspc = !string.IsNullOrEmpty (defaultNamespace)
-				? defaultNamespace
+				? SanitisePotentialNamespace (defaultNamespace)
 				: SanitisePotentialNamespace (project.Name) ?? "Application";
 
 			if (string.IsNullOrEmpty (fileName)) {

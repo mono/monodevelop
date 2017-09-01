@@ -87,7 +87,7 @@ namespace UserInterfaceTests
 		public static bool ClickButtonAlertDialog (string buttonText)
 		{
 			if (Platform.IsMac) {
-				Ide.WaitUntil (() => Session.Query (c => c.Marked ("Xamarin Studio").Marked ("AppKit.NSPanel")).Any ());
+				Ide.WaitUntil (() => Session.Query (c => c.Marked ("Visual Studio").Marked ("AppKit.NSPanel")).Any ());
 				return Session.ClickElement (c => c.Marked ("AppKit.NSButton").Text (buttonText));
 			} else {
 				Ide.WaitUntil (() => Session.Query (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.Dialogs.GtkAlertDialog")).Any ());

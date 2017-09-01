@@ -1235,6 +1235,16 @@ namespace MonoDevelop.Projects
 				WorkspaceObject.UnregisterCustomExtension (node);
 			}
 		}
+
+		[Test]
+		public void GetDefaultNamespaceWhenProjectRootNamespaceContainsHyphen ()
+		{
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
+			project.DefaultNamespace = "abc-test";
+			string defaultNamespace = project.GetDefaultNamespace (null);
+
+			Assert.AreEqual ("abctest", defaultNamespace);
+		}
 	}
 
 	class SerializedSaveTestExtension: SolutionItemExtension

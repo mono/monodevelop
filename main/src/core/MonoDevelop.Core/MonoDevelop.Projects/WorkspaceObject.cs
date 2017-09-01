@@ -467,15 +467,20 @@ namespace MonoDevelop.Projects
 			// Get the list of nodes for which an extension has been created
 
 			var allExtensions = extensionChain.GetAllExtensions ().OfType<WorkspaceObjectExtension> ().ToList ();
-			var loadedNodes = allExtensions.Select (ex => ex.SourceExtensionNode).ToList ();
+			var loadedNodes = allExtensions.Where (ex => ex.SourceExtensionNode != null)
+				.Select (ex => ex.SourceExtensionNode.Id).ToList ();
 			var newExtensions = ImmutableList<WorkspaceObjectExtension>.Empty;
 
 			ProjectModelExtensionNode lastAddedNode = null;
 
+			// Ensure conditions are re-evaluated.
+			extensionContext = CreateExtensionContext (this);
+
 			foreach (ProjectModelExtensionNode node in GetModelExtensions (extensionContext)) {
 				// If the node already generated an extension, skip it
-				if (loadedNodes.Contains (node)) {
+				if (loadedNodes.Contains (node.Id)) {
 					lastAddedNode = node;
+					loadedNodes.Remove (node.Id);
 					continue;
 				}
 
@@ -487,7 +492,7 @@ namespace MonoDevelop.Projects
 						newExtensions = newExtensions.Add (ext);
 						if (lastAddedNode != null) {
 							// There is an extension before this one. Find it and add the new extension after it.
-							var prevExtension = allExtensions.FirstOrDefault (ex => ex.SourceExtensionNode == lastAddedNode);
+							var prevExtension = allExtensions.FirstOrDefault (ex => ex.SourceExtensionNode?.Id == lastAddedNode.Id);
 							extensionChain.AddExtension (ext, prevExtension);
 						} else
 							extensionChain.AddExtension (ext);
@@ -501,6 +506,15 @@ namespace MonoDevelop.Projects
 			foreach (var ext in allExtensions) {
 				if (!ext.SupportsObject (this))
 					ext.Dispose ();
+			}
+
+			if (loadedNodes.Any ()) {
+				foreach (var ext in allExtensions.Where (ex => ex.SourceExtensionNode != null)) {
+					if (loadedNodes.Contains (ext.SourceExtensionNode.Id)) {
+						ext.Dispose ();
+						loadedNodes.Remove (ext.SourceExtensionNode.Id);
+					}
+				}
 			}
 
 			foreach (var e in newExtensions)

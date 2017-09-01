@@ -932,6 +932,7 @@ namespace MonoDevelop.Components.MainToolbar
 			public object Command { get; private set; }
 			public ExecutionTarget ExecutionTarget { get; private set; }
 			string DisplayText = null;
+			string image, tooltip;
 			bool fullText;
 
 			RuntimeModel (MainToolbarController controller)
@@ -947,13 +948,19 @@ namespace MonoDevelop.Components.MainToolbar
 			public RuntimeModel (MainToolbarController controller, ActionCommand command) : this (controller)
 			{
 				Command = command.Id;
+				image = command.Icon;
+				tooltip = command.Description;
 			}
 
 			public RuntimeModel (MainToolbarController controller, ExecutionTarget target, bool fullText, SolutionItem project) : this (controller)
 			{
 				if (target == null)
 					throw new ArgumentNullException (nameof (target));
+				
 				ExecutionTarget = target;
+				image = target?.Image;
+				tooltip = target?.Tooltip;
+
 				this.fullText = fullText;
 				Project = project;
 			}
@@ -1002,17 +1009,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public SolutionItem Project { get; }
 
-			public string Image {
-				get {
-					return ExecutionTarget?.Image;
-				}
-			}
+			public string Image => image;
 
-			public string Tooltip {
-				get {
-					return ExecutionTarget?.Tooltip;
-				}
-			}
+			public string Tooltip => tooltip;
 
 			public IRuntimeMutableModel GetMutableModel ()
 			{

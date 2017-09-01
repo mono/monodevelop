@@ -6,3 +6,4 @@ Mono.Cecil
 Newtonsoft.Json
 System.ValueTuple
 StrongNamer
+System.Reactive.Linq

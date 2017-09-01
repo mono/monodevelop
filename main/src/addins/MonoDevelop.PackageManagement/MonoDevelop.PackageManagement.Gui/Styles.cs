@@ -70,12 +70,12 @@ namespace MonoDevelop.PackageManagement
 
 			PackageInfoBackgroundColor = Ide.Gui.Styles.SecondaryBackgroundLighterColor;
 			PackageSourceErrorTextColor = Ide.Gui.Styles.ErrorForegroundColor;
-			PackageSourceUrlTextColor = Ide.Gui.Styles.DimTextColor;
+			PackageSourceUrlTextColor = Ide.Gui.Styles.SecondaryTextColor;
 
 			PackageSourceErrorSelectedTextColor = PackageSourceErrorTextColor;
 
 			// Blue selection text color only on Mac
-			PackageSourceUrlSelectedTextColor = Platform.IsMac ? Xwt.Drawing.Color.FromName ("#ffffff") : Ide.Gui.Styles.DimTextColor;
+			PackageSourceUrlSelectedTextColor = Platform.IsMac ? Xwt.Drawing.Color.FromName ("#ffffff") : Ide.Gui.Styles.SecondaryTextColor;
 
 			LineBorderColor = Ide.Gui.Styles.SeparatorColor;
 
