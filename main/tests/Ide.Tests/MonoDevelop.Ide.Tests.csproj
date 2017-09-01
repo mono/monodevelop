@@ -100,6 +100,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\TestWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\TestDocument.cs" />
     <Compile Include="TypeSystemServiceTestExtensions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SkipCharSessionTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -149,6 +150,11 @@
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
       <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
       <Name>CSharpBinding</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
