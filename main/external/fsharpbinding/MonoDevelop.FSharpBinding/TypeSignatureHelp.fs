@@ -140,7 +140,7 @@ module signatureHelp =
                                     let text = extractSignature tooltip
                                     marker.Text <- text
                                     marker.Font <- font
-                                    document.CommitLineUpdate lineNr)
+                                    runInMainThread (fun() -> document.CommitLineUpdate lineNr))
                             } |> Async.StartImmediate)))
 
 type SignatureHelp() as x =
@@ -152,7 +152,7 @@ type SignatureHelp() as x =
             let editor = x.Editor
             editor.GetLines() |> Seq.iter(signatureHelp.removeMarkers editor >> ignore)
             let editorData = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
-            editorData.Document.CommitUpdateAll()
+            signatureHelp.runInMainThread (fun() -> editorData.Document.CommitUpdateAll())
         } |> Async.StartImmediate
    
     [<CommandHandler("MonoDevelop.FSharp.SignatureHelp.Toggle")>]
