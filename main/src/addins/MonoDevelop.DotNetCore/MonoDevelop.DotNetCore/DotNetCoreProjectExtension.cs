@@ -622,7 +622,7 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		/// <summary>
-		/// Returns all transitive project references.
+		/// Returns all transitive references.
 		/// </summary>
 		protected override async Task<List<AssemblyReference>> OnGetReferences (
 			ConfigurationSelector configuration,
@@ -633,24 +633,46 @@ namespace MonoDevelop.DotNetCore
 			var traversedProjects = new HashSet<string> ();
 			traversedProjects.Add (Project.ItemId);
 
-			await GetProjectAssemblyReferences (traversedProjects, references, configuration, token);
+			await GetTransitiveAssemblyReferences (traversedProjects, references, configuration, true, token);
 
 			return references;
 		}
 
 		/// <summary>
-		/// Recursively gets all project references for .NET Core projects. Calling
-		/// base.OnGetReferences returns the directly referenced projects.
+		/// Recursively gets all transitive project references for .NET Core projects
+		/// and if includeNonProjectReferences is true also returns non project
+		/// assembly references.
+		/// 
+		/// Calling base.OnGetReferences returns the directly referenced projects and
+		/// also all transitive references which are not project references.
+		/// 
+		/// includeNonProjectReferences should be set to false when getting the
+		/// assembly references for referenced projects since the assembly references
+		/// from OnGetReferences already contains any transitive references which are
+		/// not projects.
 		/// </summary>
-		async Task GetProjectAssemblyReferences (
+		async Task GetTransitiveAssemblyReferences (
 			HashSet<string> traversedProjects,
 			List<AssemblyReference> references,
 			ConfigurationSelector configuration,
+			bool includeNonProjectReferences,
 			System.Threading.CancellationToken token)
 		{
 			foreach (var reference in await base.OnGetReferences (configuration, token)) {
-				if (!reference.IsProjectReference || !reference.ReferenceOutputAssembly)
+				if (!reference.IsProjectReference) {
+					if (includeNonProjectReferences) {
+						references.Add (reference);
+					}
 					continue;
+				}
+
+				// Project references with ReferenceOutputAssembly false should be
+				// added but there is no need to check any further since there will not
+				// any transitive project references.
+				if (!reference.ReferenceOutputAssembly) {
+					references.Add (reference);
+					continue;
+				}
 
 				var project = reference.GetReferencedItem (Project.ParentSolution) as DotNetProject;
 				if (project == null)
@@ -664,7 +686,7 @@ namespace MonoDevelop.DotNetCore
 
 				var extension = project.AsFlavor<DotNetCoreProjectExtension> ();
 				if (extension != null)
-					await extension.GetProjectAssemblyReferences (traversedProjects, references, configuration, token);
+					await extension.GetTransitiveAssemblyReferences (traversedProjects, references, configuration, false, token);
 			}
 		}
 	}

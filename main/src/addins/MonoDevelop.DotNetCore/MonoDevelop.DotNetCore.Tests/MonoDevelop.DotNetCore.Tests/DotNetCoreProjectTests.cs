@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
@@ -152,7 +153,42 @@ namespace MonoDevelop.DotNetCore.Tests
 			var projectReferencesLibB = referencesLibB.Where (r => r.IsProjectReference).ToList ();
 
 			Assert.AreEqual (1, projectReferencesLibB.Count);
-			Assert.AreEqual (0, projectReferencesLibC.Count);
+			Assert.AreEqual (1, projectReferencesLibC.Count);
+			Assert.IsTrue (projectReferencesLibB [0].ReferenceOutputAssembly);
+			Assert.IsFalse (projectReferencesLibC [0].ReferenceOutputAssembly);
+		}
+
+		[Test]
+		public async Task GetReferences_ThreeProjectReferencesJsonNet_JsonNetReferenceAvailableToReferencingProjects ()
+		{
+			string solutionFileName = Util.GetSampleProject ("TransitiveProjectReferences", "TransitiveProjectReferences.sln");
+			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var projectLibC = solution.FindProjectByName ("LibC") as DotNetProject;
+			var projectLibB = solution.FindProjectByName ("LibB") as DotNetProject;
+			var projectLibA = solution.FindProjectByName ("LibA") as DotNetProject;
+
+			//string fileName = GetType ().Assembly.Location;
+			//var reference = ProjectReference.CreateAssemblyFileReference (fileName);
+			//projectLibA.Items.Add (reference);
+			var packageReference = ProjectPackageReference.Create ("Newtonsoft.Json", "10.0.1");
+			projectLibA.Items.Add (packageReference);
+			await projectLibA.SaveAsync (Util.GetMonitor ());
+
+			var process = Process.Start ("msbuild", $"/t:Restore {solutionFileName}");
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+			Assert.AreEqual (0, process.ExitCode);
+
+			var referencesLibC = await projectLibC.GetReferences (ConfigurationSelector.Default);
+			var referencesLibB = await projectLibB.GetReferences (ConfigurationSelector.Default);
+			var referencesLibA = await projectLibA.GetReferences (ConfigurationSelector.Default);
+
+			var jsonNetReferenceLibC = referencesLibC.FirstOrDefault (r => r.FilePath.FileName == "Newtonsoft.Json.dll");
+			var jsonNetReferenceLibB = referencesLibB.FirstOrDefault (r => r.FilePath.FileName == "Newtonsoft.Json.dll");
+			var jsonNetReferenceLibA = referencesLibA.FirstOrDefault (r => r.FilePath.FileName == "Newtonsoft.Json.dll");
+
+			Assert.IsNotNull (jsonNetReferenceLibA);
+			Assert.IsNotNull (jsonNetReferenceLibB);
+			Assert.IsNotNull (jsonNetReferenceLibC);
 		}
 	}
 }
