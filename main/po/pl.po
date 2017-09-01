@@ -10164,7 +10164,7 @@ msgstr ""
 "Nazwa gałęzi nie może:\n"
 "zaczynać się do znaku „.” lub kończyć znakiem „/” bądź ciągiem "
 "„.lock”\n"
-"zawierać znaków „ ”, „..”, „~”, „^”, „:”, „\”, „?” ani znaku „[”"
+"zawierać znaków „ ”, „..”, „~”, „^”, „:”, „\\”, „?” ani znaku „[”"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:32
 msgid "Branch Properties"

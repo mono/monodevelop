@@ -26946,7 +26946,7 @@ msgstr "Seleccione la versión de C# que se usará"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:145
 msgid "Check to allow 'unsafe' code"
-msgstr "Marque esta opción para permitir código \"\poco seguro\"\"
+msgstr "Marque esta opción para permitir código \"poco seguro\""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:150
 msgid "Dark"
