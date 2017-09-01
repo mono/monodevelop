@@ -225,6 +225,7 @@ namespace MonoDevelop.Ide.Gui
 			DockNotebook.NotebookChanged += NotebookPagesChanged;
 
 			Accessible.SetIsMainWindow (true);
+			Accessible.SetRole (AtkCocoa.Roles.AXButton);
 		}
 
 		void NotebookPagesChanged (object sender, EventArgs e)
@@ -1135,6 +1136,12 @@ namespace MonoDevelop.Ide.Gui
 			return base.OnFocusInEvent (evnt);
 		}
 
+		protected override void OnSetFocus (Widget focus)
+		{
+			if (focus.GetType ().Name.Contains ("TextArea"))
+				toolbar.ToolbarView.Focus ();
+			base.OnSetFocus (focus);
+		}
 
 		/// <summary>
 		/// Sets the current active document widget.
