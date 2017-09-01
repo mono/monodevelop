@@ -281,8 +281,6 @@ namespace MonoDevelop.MacIntegration
 		}
 
 
-		//BUG 53648 - that code reason of "divider" message in Voice Over
-		/*
 		static void OnCommandActivating (object sender, CommandActivationEventArgs args)
 		{
 			if (args.Source != CommandSource.Keybinding)
@@ -296,7 +294,7 @@ namespace MonoDevelop.MacIntegration
 				}
 			}
 		}
-		*/
+
 		
 
 		void InitApp (CommandManager commandManager)
@@ -304,7 +302,7 @@ namespace MonoDevelop.MacIntegration
 			if (initedApp)
 				return;
 
-			//commandManager.CommandActivating += OnCommandActivating; //that code reason of "divider" message in Voice Over
+			commandManager.CommandActivating += OnCommandActivating;
 
 			//mac-ify these command names
 			commandManager.GetCommand (EditCommands.MonodevelopPreferences).Text = GettextCatalog.GetString ("Preferences...");
