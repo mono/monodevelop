@@ -26,21 +26,25 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using System.Linq;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
 	public sealed class AssemblyReference
 	{
-		Dictionary<string, string> metadata;
+		IReadOnlyPropertySet metadata;
 
 		public AssemblyReference (FilePath path, string aliases = null)
 		{
 			FilePath = path;
-			metadata = new Dictionary<string, string> { { "Aliases", aliases } };
+
+			var properties = new MSBuildPropertyGroupEvaluated (null);
+			var property = new MSBuildPropertyEvaluated (null, nameof (Aliases), aliases, aliases);
+			properties.SetProperty (nameof (Aliases), property);
+			metadata = properties;
 		}
 
-		public AssemblyReference (FilePath path, Dictionary<string, string> metadata)
+		public AssemblyReference (FilePath path, IReadOnlyPropertySet metadata)
 		{
 			FilePath = path;
 			this.metadata = metadata;
@@ -74,13 +78,16 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public bool IsFrameworkFile => MetadataIsTrue ("FrameworkFile");
 
-		public string GetMetadata (string name)
-		{
-			metadata.TryGetValue (name, out string value);
-			return value;
+		public IReadOnlyPropertySet Metadata {
+			get { return metadata; }
 		}
 
-		public bool MetadataIsTrue (string name)
+		string GetMetadata (string name)
+		{
+			return metadata.GetValue (name);
+		}
+
+		bool MetadataIsTrue (string name)
 		{
 			return string.Equals (GetMetadata (name), "true", StringComparison.OrdinalIgnoreCase);
 		}

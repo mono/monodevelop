@@ -914,7 +914,7 @@ namespace MonoDevelop.Projects
 
 					AssemblyReference [] refs;
 					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-						refs = await builder.ResolveAssemblyReferences (configs, globalProperties, CancellationToken.None);
+						refs = await builder.ResolveAssemblyReferences (configs, globalProperties, MSBuildProject, CancellationToken.None);
 					foreach (var r in refs)
 						result.Add (r);
 				} finally {
@@ -1051,17 +1051,23 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// This should be removed once the project reference information is retrieved from MSBuild.
 		/// </summary>
-		static AssemblyReference CreateProjectAssemblyReference (string path, ProjectReference reference)
+		AssemblyReference CreateProjectAssemblyReference (string path, ProjectReference reference)
 		{
-			var metadata = new Dictionary<string, string> {
-				{ "Aliases", reference.Aliases },
-				{ "CopyLocal", reference.LocalCopy.ToString () },
-				{ "Project", reference.ProjectGuid },
-				{ "MSBuildSourceProjectFile", GetProjectFileName (reference) },
-				{ "ReferenceOutputAssembly", reference.ReferenceOutputAssembly.ToString () },
-				{ "ReferenceSourceTarget", "ProjectReference" }
-			};
+			var metadata = new MSBuildPropertyGroupEvaluated (MSBuildProject);
+			SetProperty (metadata, "Aliases", reference.Aliases);
+			SetProperty (metadata, "CopyLocal", reference.LocalCopy.ToString ());
+			SetProperty (metadata, "Project", reference.ProjectGuid);
+			SetProperty (metadata, "MSBuildSourceProjectFile", GetProjectFileName (reference));
+			SetProperty (metadata, "ReferenceOutputAssembly", reference.ReferenceOutputAssembly.ToString ());
+			SetProperty (metadata, "ReferenceSourceTarget", "ProjectReference");
+
 			return new AssemblyReference (path, metadata);
+		}
+
+		void SetProperty (MSBuildPropertyGroupEvaluated metadata, string name, string value)
+		{
+			var property = new MSBuildPropertyEvaluated (MSBuildProject, name, value, value);
+			metadata.SetProperty (name, property);
 		}
 
 		static string GetProjectFileName (ProjectReference reference)
