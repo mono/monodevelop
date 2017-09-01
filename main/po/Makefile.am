@@ -8,7 +8,7 @@ FILES = $(addsuffix .po, $(ALL_LINGUAS))
 GMO_FILES = $(patsubst %.po,$(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo,$(FILES))
 MO_FILES = $(foreach po,$(FILES), $(INSTALL_DIR)/$(basename $(po))/LC_MESSAGES/$(PACKAGE).mo)
 
-all: $(GMO_FILES)
+all: $(GMO_FILES) post-strip-mnemonics
 
 update-po:
 	$(MDTOOL_RUN) gettext-update -f:$(top_srcdir)/Main.sln
@@ -19,10 +19,17 @@ $(GMO_FILES): $(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo: %.po strip-mnemonics
 
 if ENABLE_MACPLATFORM
 strip-mnemonics:
+	mkdir -p backup
+	cp *.po backup
 	$(XBUILD) "StripMnemonics/StripMnemonics.sln"
 	mono StripMnemonics.exe .
+
+post-strip-mnemonics:
+	mv backup/*.po .
+	rm -rf backup
 else
 strip-mnemonics:
+post-strip-mnemonics:
 endif
 
 
