@@ -2781,6 +2781,27 @@ namespace MonoDevelop.Projects
 			p.Dispose ();
 		}
 
+		[Test]
+		public async Task GetReferences ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-tests", "aliased-references.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			var asms = (await p.GetReferences (p.Configurations [0].Selector)).ToArray ();
+
+			var ar = asms.FirstOrDefault (a => a.FilePath.FileName == "System.Xml.dll");
+			Assert.IsNotNull (ar);
+			Assert.AreEqual ("", ar.Aliases);
+
+			ar = asms.FirstOrDefault (a => a.FilePath.FileName == "System.Data.dll");
+			Assert.IsNotNull (ar);
+			Assert.AreEqual ("Foo", ar.Aliases);
+
+			Assert.AreEqual (4, asms.Length);
+
+			p.Dispose ();
+		}
+
 		/// <summary>
 		/// Tests that the default tools version is used for the new project.
 		/// </summary>

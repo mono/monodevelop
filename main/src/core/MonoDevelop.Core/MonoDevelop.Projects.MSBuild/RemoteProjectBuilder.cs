@@ -372,7 +372,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		public async Task<AssemblyReference[]> ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations, Dictionary<string, string> globalProperties, CancellationToken cancellationToken)
+		public async Task<AssemblyReference[]> ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations, Dictionary<string, string> globalProperties, MSBuildProject project, CancellationToken cancellationToken)
 		{
 			AssemblyReference[] refs = null;
 			var id = configurations [0].Configuration + "|" + configurations [0].Platform;
@@ -404,14 +404,25 @@ namespace MonoDevelop.Projects.MSBuild
 
 				MSBuildEvaluatedItem[] items;
 				if (result.Items.TryGetValue ("ReferencePath", out items) && items != null) {
-					string aliases;
-					refs = items.Select (i => new AssemblyReference (i.ItemSpec, i.Metadata.TryGetValue ("Aliases", out aliases) ? aliases : "")).ToArray ();
+					refs = items.Select (it => CreateAssemblyReference (it, project)).ToArray ();
 				} else
 					refs = new AssemblyReference [0];
 
 				referenceCache [id] = refs;
 			}
 			return refs;
+		}
+
+		static AssemblyReference CreateAssemblyReference (MSBuildEvaluatedItem it, MSBuildProject project)
+		{
+			var imd = new MSBuildPropertyGroupEvaluated (project);
+			if (it.Metadata.Count > 0) {
+				var properties = new Dictionary<string, IMSBuildPropertyEvaluated> ();
+				foreach (var m in it.Metadata)
+					properties [m.Key] = new MSBuildPropertyEvaluated (project, m.Key, m.Value, m.Value);
+				imd.SetProperties (properties);
+			}
+			return new AssemblyReference (it.ItemSpec, imd);
 		}
 
 		public async Task<PackageDependency[]> ResolvePackageDependencies (ProjectConfigurationInfo[] configurations, Dictionary<string, string> globalProperties, CancellationToken cancellationToken)
