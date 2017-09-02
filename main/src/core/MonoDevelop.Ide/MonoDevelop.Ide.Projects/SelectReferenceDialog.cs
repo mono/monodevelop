@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.Projects
 		TreeIter AddAssemplyReference (ProjectReference refInfo)
 		{
 			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
-			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (System.IO.Path.GetFullPath (refInfo.HintPath)) + "</small></span>";
+			txt += "<span color='darkgrey'><span font='11'>" + GLib.Markup.EscapeText (System.IO.Path.GetFullPath (refInfo.HintPath)) + "<span></span>";
 			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, ImageService.GetIcon ("md-empty-file-icon", IconSize.Dnd));
 		}
 
@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Projects
 			if (p == null) return TreeIter.Zero;
 			
 			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
-			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (p.BaseDirectory.ToString ()) + "</small></span>";
+			txt += "<span color='darkgrey'><span font='11'>" + GLib.Markup.EscapeText (p.BaseDirectory.ToString ()) + "<span></span>";
 			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), p.BaseDirectory.ToString (), refInfo, ImageService.GetIcon ("md-project", IconSize.Dnd));
 		}
 
@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.Projects
 			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference));
 			int i = refInfo.Reference.IndexOf (',');
 			if (i != -1)
-				txt = GLib.Markup.EscapeText (txt.Substring (0, i)) + "\n<span color='darkgrey'><small>" + GLib.Markup.EscapeText (refInfo.Reference.Substring (i+1).Trim()) + "</small></span>";
+				txt = GLib.Markup.EscapeText (txt.Substring (0, i)) + "\n<span color='darkgrey'><span font='11'>" + GLib.Markup.EscapeText (refInfo.Reference.Substring (i+1).Trim()) + "<span></span>";
 			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), refInfo.Reference, refInfo, ImageService.GetIcon ("md-package", IconSize.Dnd));
 		}
 		

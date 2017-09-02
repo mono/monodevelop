@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override string GetDisplayDescription (bool isSelected)
 		{
-			var description = "<small>(cast to " + SafeMinimalDisplayString (targetType, semanticModel, nodeToCast.SpanStart, Ambience.LabelFormat) + ")</small>";
+			var description = "<span font='11'>(cast to " + SafeMinimalDisplayString (targetType, semanticModel, nodeToCast.SpanStart, Ambience.LabelFormat) + ")<span>";
 			if (isSelected)
 				return description;
 			return "<span foreground=\"darkgray\">" + description + "</span>";

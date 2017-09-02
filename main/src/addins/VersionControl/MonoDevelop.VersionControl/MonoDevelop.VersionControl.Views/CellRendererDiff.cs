@@ -385,7 +385,7 @@ namespace MonoDevelop.VersionControl.Views
 		void DrawLineBox (Gdk.GC gc, Cairo.Context ctx, int right, int top, int line, Gtk.Widget widget, Gdk.Drawable window)
 		{
 			layout.SetText ("");
-			layout.SetMarkup ("<small>" + line.ToString () + "</small>");
+			layout.SetMarkup ("<span font='11'>" + line.ToString () + "<span>");
 			int tw,th;
 			layout.GetPixelSize (out tw, out th);
 			th--;

@@ -28,7 +28,7 @@ namespace Stetic {
 				hbox.PackStart (new Gtk.Image (icon), false, false, 0);
 			}
 
-			Gtk.Label label = new Gtk.Label ("<small>" + name + "</small>");
+			Gtk.Label label = new Gtk.Label ("<span font='11'>" + name + "<span>");
 			label.UseMarkup = true;
 			label.Justify = Justification.Left;
 			label.Xalign = 0;

@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var str = body.Trim ();
 				if (string.IsNullOrEmpty (str))
 					return "";
-				return SmallText ? "<small>" + str + Environment.NewLine + "</small>" : str + Environment.NewLine;
+				return SmallText ? "<span font='11'>" + str + Environment.NewLine + "<span>" : str + Environment.NewLine;
 			}
 		}
 
@@ -518,7 +518,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			StringBuilder parameterBuilder = new StringBuilder ();
 			StringBuilder exceptions = new StringBuilder ();
 			exceptions.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Exceptions:")));
-			//		ret.Append ("<small>");
+			//		ret.Append ("<span font='11'>");
 			int paramCount = 0, exceptionCount = 0, summaryEnd = -1;
 			try {
 				xml.Read ();
@@ -558,13 +558,13 @@ namespace MonoDevelop.Ide.TypeSystem
 						case "exception":
 							exceptionCount++;
 							if (options.SmallText)
-								exceptions.Append ("<small>");
+								exceptions.Append ("<span font='11'>");
 							exceptions.Append ("<b>");
 							exceptions.Append (EscapeText (xml ["cref"]));
 							exceptions.Append (": ");
 							exceptions.Append ("</b>");
 							if (options.SmallText)
-								exceptions.Append ("</small>");
+								exceptions.Append ("<span>");
 							
 							exceptions.AppendLine (options.FormatBody (ParseBody (member, xml, xml.Name, options)));
 							break;
@@ -586,10 +586,10 @@ namespace MonoDevelop.Ide.TypeSystem
 								if (options.HighlightParameter == paramName)
 									parameterBuilder.Append ("<b>");
 								if (options.SmallText)
-									parameterBuilder.Append ("<small>");
+									parameterBuilder.Append ("<span font='11'>");
 								parameterBuilder.Append (EscapeText (paramName));
 								if (options.SmallText)
-									parameterBuilder.Append ("</small>");
+									parameterBuilder.Append ("<span>");
 								if (options.HighlightParameter == paramName)
 									parameterBuilder.Append ("</b>");
 								parameterBuilder.Append (":</i> ");
@@ -631,15 +631,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				var paramSb = new StringBuilder ();
 				if (result.Length > 0)
 					paramSb.AppendLine ();/*
-				paramSb.Append ("<small>");
+				paramSb.Append ("<span font='11'>");
 				paramSb.AppendLine (options.FormatHeading (GettextCatalog.GetPluralString ("Parameter:", "Parameters:", paramCount)));
-				paramSb.Append ("</small>");*/
+				paramSb.Append ("<span>");*/
 				paramSb.Append (parameterBuilder.ToString ());
 				result = result.Insert (summaryEnd, paramSb.ToString ());
 			}
 			result = result.Trim ();
-			if (result.EndsWith (Environment.NewLine + "</small>"))
-				result = result.Substring (0, result.Length - (Environment.NewLine + "</small>").Length) + "</small>";
+			if (result.EndsWith (Environment.NewLine + "<span>"))
+				result = result.Substring (0, result.Length - (Environment.NewLine + "<span>").Length) + "<span>";
 			return result;
 		}
 		#endregion

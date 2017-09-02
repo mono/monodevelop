@@ -1054,7 +1054,7 @@ namespace MonoDevelop.Components.MainToolbar
 			if (descLength > 0) {
 				sb.Append ("<span foreground=\"");
 				sb.Append (descFgColor);
-				sb.Append ("\" font=\"" + ParentWindow.Theme.Font.WithScaledSize (0.7).ToString () + "\">\n");
+				sb.Append ("\" font='11'>\n");
 				sb.Append (desc);
 				sb.Append ("</span>");
 			}

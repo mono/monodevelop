@@ -18,8 +18,8 @@ namespace MonoDevelop.VersionControl
 		{
 			Build ();
 
-			labelError.Markup = "<small><span color='" + Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false) + "'>"
-				+ GettextCatalog.GetString ("Invalid URL") + "</span></small>";
+			labelError.Markup = "<span font='11'><span color='" + Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false) + "'>"
+				+ GettextCatalog.GetString ("Invalid URL") + "</span><span>";
 
 			protocols = new List<string> (repo.SupportedProtocols);
 			protocols.AddRange (repo.SupportedNonUrlProtocols);

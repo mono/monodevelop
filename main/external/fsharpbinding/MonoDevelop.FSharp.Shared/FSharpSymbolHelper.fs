@@ -634,33 +634,33 @@ module SymbolTooltips =
                 let parent = ent.UnAnnotate()
                 let parentType = parent.DisplayName
                 let parentDesc = if parent.IsFSharpModule then "module" else "type"
-                sprintf "<small>From %s:\t%s</small>%s<small>Assembly:\t%s</small>" parentDesc parentType Environment.NewLine ent.Assembly.SimpleName
+                sprintf "<span font='11'>From %s:\t%s<span>%s<span font='11'>Assembly:\t%s<span>" parentDesc parentType Environment.NewLine ent.Assembly.SimpleName
             else
-                sprintf "<small>Assembly:\t%s</small>" m.Assembly.SimpleName
-      
+                sprintf "<span font='11'>Assembly:\t%s<span>" m.Assembly.SimpleName
+
         | Entity c ->
             let ns = c.Namespace |> Option.getOrElse (fun () -> c.AccessPath)
             let fullName =
                 match c.TryGetFullNameWithUnderScoreTypes() with
-                | Some fullname -> "<small>Full name: " + fullname + "</small>"
-                | None -> "<small>Full name: " + c.QualifiedName + "</small>"
+                | Some fullname -> "<span font='11'>Full name: " + fullname + "<span>"
+                | None -> "<span font='11'>Full name: " + c.QualifiedName + "<span>"
 
-            sprintf "%s%s<small>Namespace:\t%s</small>%s<small>Assembly:\t%s</small>" fullName Environment.NewLine ns Environment.NewLine c.Assembly.SimpleName
-      
+            sprintf "%s%s<span font='11'>Namespace:\t%s<span>%s<span font='11'>Assembly:\t%s<span>" fullName Environment.NewLine ns Environment.NewLine c.Assembly.SimpleName
+
         | Field f ->
             let parent = f.DeclaringEntity.UnAnnotate().DisplayName
-            sprintf "<small>From type:\t%s</small>%s<small>Assembly:\t%s</small>" parent Environment.NewLine f.Assembly.SimpleName
-      
+            sprintf "<span font='11'>From type:\t%s<span>%s<span font='11'>Assembly:\t%s<span>" parent Environment.NewLine f.Assembly.SimpleName
+
         | ActivePatternCase ap ->
           let parent =
               ap.Group.EnclosingEntity
               |> Option.map (fun enclosing -> enclosing.UnAnnotate().DisplayName)
               |> Option.fill "None"
-          sprintf "<small>From type:\t%s</small>%s<small>Assembly:\t%s</small>" parent Environment.NewLine ap.Assembly.SimpleName
-      
+          sprintf "<span font='11'>From type:\t%s<span>%s<span font='11'>Assembly:\t%s<span>" parent Environment.NewLine ap.Assembly.SimpleName
+
         |  UnionCase uc ->
             let parent = uc.ReturnType.TypeDefinition.UnAnnotate().DisplayName
-            sprintf "<small>From type:\t%s</small>%s<small>Assembly:\t%s</small>" parent Environment.NewLine uc.Assembly.SimpleName
+            sprintf "<span font='11'>From type:\t%s<span>%s<span font='11'>Assembly:\t%s<span>" parent Environment.NewLine uc.Assembly.SimpleName
         | _ -> ""
 
     let getTooltipFromSymbolUse (symbol:FSharpSymbolUse) =
