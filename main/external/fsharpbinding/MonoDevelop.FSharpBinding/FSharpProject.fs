@@ -167,7 +167,7 @@ type FSharpProject() as self =
         let globalGroup = msproject.GetGlobalPropertyGroup()
         // Generate F# resource names the same way that C# does
         // See https://github.com/Microsoft/visualfsharp/pull/3352
-        globalGroup.SetValue ("UseStandardResourceNames", "true", "false", true)
+        globalGroup.SetValue ("UseStandardResourceNames", x.UseStandardResourceNames, "false", true)
 
         maybe {
             //Fix pcl netcore and TargetFSharpCoreVersion
