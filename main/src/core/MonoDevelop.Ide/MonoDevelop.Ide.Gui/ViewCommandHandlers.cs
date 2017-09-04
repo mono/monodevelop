@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -234,13 +235,19 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnSelectAll ()
 		{
 			IClipboardHandler handler = GetContent <IClipboardHandler> ();
-			if (handler != null)
+			if (handler != null) {
 				handler.SelectAll ();
+				var selectAllText = GettextCatalog.GetString ("Select All");
+				IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement (selectAllText);
+			}
 		}
 		
 		[CommandUpdateHandler (EditCommands.SelectAll)]
 		protected void OnUpdateSelectAll (CommandInfo info)
 		{
+			var selectAllText = GettextCatalog.GetString ("Select All");
+			IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement (selectAllText);
+
 			bool inWpf = false;
 			#if WIN32
 			if (System.Windows.Input.Keyboard.FocusedElement != null)
@@ -252,7 +259,7 @@ namespace MonoDevelop.Ide.Gui
 			else
 				info.Bypass = true;
 		}
-		
+
 		[CommandHandler (EditCommands.UppercaseSelection)]
 		public void OnUppercaseSelection ()
 		{

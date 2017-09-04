@@ -28,7 +28,6 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-
 using AppKit;
 using CoreGraphics;
 using Foundation;
@@ -103,20 +102,24 @@ namespace MonoDevelop.Components.Mac
 			}
 		}
 
+		NSMenuItem blink;
 		// http://lists.apple.com/archives/cocoa-dev/2008/Apr/msg01696.html
 		void FlashMenu ()
 		{
 			var f35 = ((char)0xF726).ToString ();
-			var blink = new NSMenuItem ("* blink *") {
-				KeyEquivalent = f35,
-			};
-			var f35Event = NSEvent.KeyEvent (
+			if (blink == null) {
+				blink = new NSMenuItem (String.Empty) {
+					KeyEquivalent = f35,
+				};
+				AddItem (blink);
+			}
+		    var f35Event = NSEvent.KeyEvent (
 				NSEventType.KeyDown, CGPoint.Empty, NSEventModifierMask.CommandKeyMask, 0, 0,
 				NSGraphicsContext.CurrentContext, f35, f35, false, 0);
-			AddItem (blink);
+
 			PerformKeyEquivalent (f35Event);
-			RemoveItem (blink);
 		}
+
 
 		public bool FlashIfContainsCommand (object command)
 		{

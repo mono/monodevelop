@@ -280,6 +280,7 @@ namespace MonoDevelop.MacIntegration
 			return true;
 		}
 
+
 		static void OnCommandActivating (object sender, CommandActivationEventArgs args)
 		{
 			if (args.Source != CommandSource.Keybinding)
@@ -293,6 +294,8 @@ namespace MonoDevelop.MacIntegration
 				}
 			}
 		}
+
+		
 
 		void InitApp (CommandManager commandManager)
 		{
