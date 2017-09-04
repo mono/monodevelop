@@ -33,6 +33,8 @@ using System.Linq;
 using System.Xml;
 using ValueSet = MonoDevelop.Projects.ConditionedPropertyCollection.ValueSet;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
 
 namespace MonoDevelop.Projects
 {
@@ -317,6 +319,25 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("OK", res);
 
 			p.Dispose ();
+		}
+
+		[Test]
+		//[SetCulture ("cs-CZ")] Does not work. Culture is not changed.
+		public void ConditionUsingEmptyStringsIsEvaluatedCorrectlyForCzechLocale ()
+		{
+			var currentCulture = Thread.CurrentThread.CurrentCulture;
+			Thread.CurrentThread.CurrentCulture = new CultureInfo ("cs-CZ");
+
+			try {
+				var p = LoadProject ();
+				p.Evaluate ();
+				var res = p.EvaluatedProperties.GetValue ("EmptyStringConditionProp");
+				Assert.AreEqual ("OK", res);
+
+				p.Dispose ();
+			} finally {
+				Thread.CurrentThread.CurrentCulture = currentCulture;
+			}
 		}
 
 		[Test]
