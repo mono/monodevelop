@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreNamespaceTestGroup.cs
+// VsTestNamespaceTestGroup.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -28,19 +28,22 @@ using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Projects;
 using MonoDevelop.UnitTesting;
 
-namespace MonoDevelop.DotNetCore.UnitTesting
+namespace MonoDevelop.UnitTesting.VsTest
 {
-	class DotNetCoreNamespaceTestGroup : UnitTestGroup, IDotNetCoreTestProvider
+	class VsTestNamespaceTestGroup : UnitTestGroup, IVsTestTestProvider
 	{
-		DotNetCoreNamespaceTestGroup currentNamespace;
-		DotNetCoreTestClass currentClass;
-		IDotNetCoreTestRunner testRunner;
+		public Project Project { get; private set; }
+		VsTestNamespaceTestGroup currentNamespace;
+		VsTestTestClass currentClass;
+		IVsTestTestRunner testRunner;
 
-		public DotNetCoreNamespaceTestGroup (IDotNetCoreTestRunner testRunner, UnitTestGroup parent, string name)
+		public VsTestNamespaceTestGroup (IVsTestTestRunner testRunner, UnitTestGroup parent, Project project, string name)
 			: base (name)
 		{
+			this.Project = project;
 			currentNamespace = this;
 			this.testRunner = testRunner;
 
@@ -54,25 +57,25 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		public void AddTests (IEnumerable<TestCase> tests)
 		{
 			foreach (TestCase test in tests) {
-				var dotNetCoreTest = new DotNetCoreUnitTest (testRunner, test);
-				AddTest (dotNetCoreTest);
+				var VsTestTest = new VsTestUnitTest (testRunner, test, Project);
+				AddTest (VsTestTest);
 			}
 		}
 
-		void AddTest (DotNetCoreUnitTest dotNetCoreTest)
+		void AddTest (VsTestUnitTest VsTestTest)
 		{
-			string childNamespace = dotNetCoreTest.GetChildNamespace (FixtureTypeNamespace);
+			string childNamespace = VsTestTest.GetChildNamespace (FixtureTypeNamespace);
 			if (string.IsNullOrEmpty (childNamespace)) {
-				if (currentClass == null || currentClass.FixtureTypeName != dotNetCoreTest.FixtureTypeName) {
-					currentClass = new DotNetCoreTestClass (testRunner, dotNetCoreTest.FixtureTypeName);
+				if (currentClass == null || currentClass.FixtureTypeName != VsTestTest.FixtureTypeName) {
+					currentClass = new VsTestTestClass (testRunner, Project, VsTestTest.FixtureTypeName);
 					Tests.Add (currentClass);
 				}
-				currentClass.Tests.Add (dotNetCoreTest);
+				currentClass.Tests.Add (VsTestTest);
 			} else if (currentNamespace.Name == childNamespace) {
-				currentNamespace.AddTest (dotNetCoreTest);
+				currentNamespace.AddTest (VsTestTest);
 			} else {
-				currentNamespace = new DotNetCoreNamespaceTestGroup (testRunner, currentNamespace, childNamespace);
-				currentNamespace.AddTest (dotNetCoreTest);
+				currentNamespace = new VsTestNamespaceTestGroup (testRunner, currentNamespace, Project, childNamespace);
+				currentNamespace.AddTest (VsTestTest);
 				Tests.Add (currentNamespace);
 			}
 		}
@@ -88,12 +91,12 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 
 		protected override UnitTestResult OnRun (TestContext testContext)
 		{
-			return testRunner.RunTest (testContext, this);
+			return testRunner.RunTest (testContext, this).Result;
 		}
 
 		public IEnumerable<TestCase> GetTests ()
 		{
-			foreach (IDotNetCoreTestProvider testProvider in Tests) {
+			foreach (IVsTestTestProvider testProvider in Tests) {
 				foreach (TestCase childTest in testProvider.GetTests ()) {
 					yield return childTest;
 				}

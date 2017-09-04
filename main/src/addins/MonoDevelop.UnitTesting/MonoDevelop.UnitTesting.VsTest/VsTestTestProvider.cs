@@ -1,5 +1,5 @@
 ﻿//
-// IDotNetCoreTestRunner.cs
+// VsTestTestProvider.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,14 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Execution;
+using MonoDevelop.Projects;
 using MonoDevelop.UnitTesting;
 
-namespace MonoDevelop.DotNetCore.UnitTesting
+namespace MonoDevelop.UnitTesting.VsTest
 {
-	interface IDotNetCoreTestRunner
+	class VsTestTestProvider : ITestProvider
 	{
-		bool CanRunTests (IExecutionHandler executionContext);
-		UnitTestResult RunTest (TestContext testContext, IDotNetCoreTestProvider testProvider);
+		public UnitTest CreateUnitTest (WorkspaceObject entry)
+		{
+			var proj = entry as Project;
+			if (proj == null)
+				return null;
+			if (string.IsNullOrEmpty (VsTestAdapter.GetTestAdapters (proj)))
+				return null;
+			return new VsTestProjectTestSuite (proj);
+		}
+
+		public void Dispose ()
+		{
+		}
 	}
 }

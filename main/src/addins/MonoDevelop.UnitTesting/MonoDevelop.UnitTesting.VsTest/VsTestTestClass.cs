@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreTestProvider.cs
+// VsTestTestClass.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,31 +24,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.PackageManagement;
+using System.Collections.Generic;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 using MonoDevelop.UnitTesting;
 
-namespace MonoDevelop.DotNetCore.UnitTesting
+namespace MonoDevelop.UnitTesting.VsTest
 {
-	class DotNetCoreTestProvider : ITestProvider
+	class VsTestTestClass : UnitTestGroup, IVsTestTestProvider
 	{
-		public UnitTest CreateUnitTest (WorkspaceObject entry)
+		public Project Project { get; private set; }
+		IVsTestTestRunner testRunner;
+
+		public VsTestTestClass (IVsTestTestRunner testRunner, Project project, string name)
+			: base (name)
 		{
-			var project = entry as DotNetProject;
-			if (project == null)
-				return null;
-
-			var dotNetCoreProject = project.GetFlavor<DotNetCoreProjectExtension> ();
-			if (dotNetCoreProject != null) {
-				if (project.HasPackageReference ("Microsoft.NET.Test.Sdk"))
-					return new DotNetCoreProjectTestSuite (dotNetCoreProject);
-			}
-
-			return null;
+			this.Project = project;
+			this.testRunner = testRunner;
+			FixtureTypeName = name;
 		}
 
-		public void Dispose ()
+		protected override UnitTestResult OnRun (TestContext testContext)
 		{
+			return testRunner.RunTest (testContext, this).Result;
+		}
+
+		protected override bool OnCanRun (IExecutionHandler executionContext)
+		{
+			return testRunner.CanRunTests (executionContext);
+		}
+
+		public override bool HasTests {
+			get { return true; }
+		}
+
+		public IEnumerable<TestCase> GetTests ()
+		{
+			foreach (IVsTestTestProvider testProvider in Tests) {
+				foreach (TestCase childTest in testProvider.GetTests ()) {
+					yield return childTest;
+				}
+			}
 		}
 	}
 }

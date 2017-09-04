@@ -1,8 +1,8 @@
-<ExtensionModel>
+﻿<ExtensionModel>
 
 	<!-- Extension Points -->
 
-	<ExtensionPoint path = "/MonoDevelop/UnitTesting/TestProviders" name = "Test providers">
+	<ExtensionPoint path = "/MonoDevelop/UnitTesting/TestProviders" name = "Test providers" defaultInsertBefore="VsTestProvider">
 		<Description>Test providers. Specified classes must implement ITestProvider.</Description>
 		<ExtensionNode name ="Class" />
 	</ExtensionPoint>
@@ -116,6 +116,7 @@
 
 	<Extension path = "/MonoDevelop/UnitTesting/TestProviders">
 		<Class id="SystemTestProvider" class="MonoDevelop.UnitTesting.SystemTestProvider" />
+		<Class id="VsTestProvider" class="MonoDevelop.UnitTesting.VsTest.VsTestTestProvider" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
