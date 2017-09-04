@@ -18,6 +18,7 @@
   	<Case1>value2</Case1>
   	<Case2>$(CasE1)</Case2>
   	<Case3>$(CASE1)</Case3>
+  	<EmptyStringConditionProp Condition="'$(UndefinedProperty)' == ''">OK</EmptyStringConditionProp>
   	<TestRewrite>Val</TestRewrite>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
