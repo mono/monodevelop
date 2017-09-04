@@ -123,6 +123,9 @@ type FSharpProject() as self =
     [<ProjectPathItemProperty ("TargetFSharpCoreVersion", DefaultValue = "")>]
     member val TargetFSharpCoreVersion = String.Empty with get, set
 
+    [<ProjectPathItemProperty ("UseStandardResourceNames", DefaultValue="true")>]
+    member val UseStandardResourceNames = "true" with get, set 
+
     override x.IsPortableLibrary = initialisedAsPortable
 
     override x.OnInitialize() =
@@ -161,9 +164,13 @@ type FSharpProject() as self =
     override x.OnWriteProject(monitor, msproject) =
         base.OnWriteProject(monitor, msproject)
         fixProjectFormatForVisualStudio msproject
-        //Fix pcl netcore and TargetFSharpCoreVersion
         let globalGroup = msproject.GetGlobalPropertyGroup()
+        // Generate F# resource names the same way that C# does
+        // See https://github.com/Microsoft/visualfsharp/pull/3352
+        globalGroup.SetValue ("UseStandardResourceNames", x.UseStandardResourceNames, "false", true)
+
         maybe {
+            //Fix pcl netcore and TargetFSharpCoreVersion
             let! targetFrameworkProfile = x.TargetFramework.Id.Profile |> Option.ofString
             let! fsharpcoreversion, netcore = profileMap |> Map.tryFind targetFrameworkProfile
             do globalGroup.SetValue ("TargetFSharpCoreVersion", fsharpcoreversion, "", true)
@@ -300,3 +307,4 @@ type FSharpProject() as self =
         //Should only be done on solution close
         //langServ.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()
         base.OnDispose ()
+
