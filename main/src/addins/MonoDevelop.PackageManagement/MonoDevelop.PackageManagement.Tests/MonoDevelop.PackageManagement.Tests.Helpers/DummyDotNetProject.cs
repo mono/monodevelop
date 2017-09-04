@@ -35,6 +35,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public DummyDotNetProject ()
 			: base ("C#")
 		{
+			// Set the TypeGuid to be a C# project so the default file extension will
+			// be .csproj and not .mdproj
+			TypeGuid = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
 			Initialize (this);
 		}
 

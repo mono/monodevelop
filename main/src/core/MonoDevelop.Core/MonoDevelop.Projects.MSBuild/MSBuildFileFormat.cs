@@ -55,8 +55,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public static IEnumerable<MSBuildFileFormat> GetSupportedFormats ()
 		{
-			yield return VS2017;
+			// Return VS2012 format first since this is the default format used.
+			// If VS2017 is returned first then since it uses the same solution file
+			// version it would be used instead. This would cause the tools version for
+			// new projects added to an existing solution to be changed to 15.0 instead
+			// of using 4.0 which is the current default.
 			yield return VS2012;
+			yield return VS2017;
 			yield return VS2010;
 			yield return VS2008;
 			yield return VS2005;
@@ -386,7 +391,7 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		public override string SlnVersion {
-			get { return "15.00"; }
+			get { return "12.00"; }
 		}
 
 		public override string ProductDescription {

@@ -649,6 +649,36 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task GetReferencesIncludesProjectReferences ()
+		{
+			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject) sol.FindProjectByName ("console-with-libs");
+			var lib1Project = (DotNetProject) sol.FindProjectByName ("library1");
+			var lib2Project = (DotNetProject) sol.FindProjectByName ("library2");
+
+			// This will force the loading of the builder
+			var refs = await p.GetReferences (ConfigurationSelector.Default);
+
+			var projectRefs = refs.Where (r => r.IsProjectReference).ToList ();
+			var lib1ProjectRef = projectRefs.FirstOrDefault (r => r.FilePath.FileName == "library1.dll");
+			var lib2ProjectRef = projectRefs.FirstOrDefault (r => r.FilePath.FileName == "library2.dll");
+			var systemRef = refs.FirstOrDefault (r => r.FilePath.FileName == "System.dll");
+
+			Assert.AreEqual (lib1Project, lib1ProjectRef.GetReferencedItem (sol));
+			Assert.AreEqual (lib2Project, lib2ProjectRef.GetReferencedItem (sol));
+			Assert.IsTrue (lib1ProjectRef.ReferenceOutputAssembly);
+			Assert.IsTrue (lib2ProjectRef.ReferenceOutputAssembly);
+			Assert.IsTrue (lib1ProjectRef.IsCopyLocal);
+			Assert.IsTrue (lib2ProjectRef.IsCopyLocal);
+			Assert.IsTrue (systemRef.IsFrameworkFile);
+			Assert.IsFalse (systemRef.IsCopyLocal);
+
+			sol.Dispose ();
+		}
+
+		[Test]
 		public async Task DefaultMSBuildSupport ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
@@ -1204,6 +1234,16 @@ namespace MonoDevelop.Projects
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (node);
 			}
+		}
+
+		[Test]
+		public void GetDefaultNamespaceWhenProjectRootNamespaceContainsHyphen ()
+		{
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
+			project.DefaultNamespace = "abc-test";
+			string defaultNamespace = project.GetDefaultNamespace (null);
+
+			Assert.AreEqual ("abctest", defaultNamespace);
 		}
 	}
 

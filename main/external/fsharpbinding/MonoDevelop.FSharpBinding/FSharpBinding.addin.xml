@@ -166,6 +166,7 @@
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
     <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.FSharpPathExtension" />
     <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.HighlightUnusedCode" />
+    <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.SignatureHelp" />
     <Class fileExtensions = ".fs,.fsi,.fsx" class = "MonoDevelop.FSharp.HighlightUsagesExtension" />
     <Class fileExtensions = ".fs" class = "MonoDevelop.FSharp.FSharpUnitTestTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpOutlineTextEditorExtension" />
@@ -305,6 +306,9 @@
                  _label="Start Debugging on External Console"
 
                  id="MonoDevelop.FSharp.Editor.DebugScriptExternal" />
+        <Command _description="Toggle type signature help"
+                 _label="Toggle type signature help"
+                 id="MonoDevelop.FSharp.SignatureHelp.Toggle" />
       </Category>
     </ComplexCondition>
   </Extension>

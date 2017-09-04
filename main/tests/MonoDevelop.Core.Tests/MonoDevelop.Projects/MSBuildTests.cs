@@ -2780,6 +2780,52 @@ namespace MonoDevelop.Projects
 
 			p.Dispose ();
 		}
+
+		[Test]
+		public async Task GetReferences ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-tests", "aliased-references.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			var asms = (await p.GetReferences (p.Configurations [0].Selector)).ToArray ();
+
+			var ar = asms.FirstOrDefault (a => a.FilePath.FileName == "System.Xml.dll");
+			Assert.IsNotNull (ar);
+			Assert.AreEqual ("", ar.Aliases);
+
+			ar = asms.FirstOrDefault (a => a.FilePath.FileName == "System.Data.dll");
+			Assert.IsNotNull (ar);
+			Assert.AreEqual ("Foo", ar.Aliases);
+
+			Assert.AreEqual (4, asms.Length);
+
+			p.Dispose ();
+		}
+
+		/// <summary>
+		/// Tests that the default tools version is used for the new project.
+		/// </summary>
+		[Test]
+		public async Task ToolsVersion_CreateSolutionWithProjectReloadAndAddNewProject ()
+		{
+			string directory = Util.CreateTmpDir ("ToolsVersionTest");
+			string solutionFileName = Path.Combine (directory, "ToolsVersionTest.sln");
+			var solution = new Solution ();
+			solution.FileName = solutionFileName;
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
+			project.FileName = Path.Combine (directory, "ToolsVersionTest.csproj");
+			solution.RootFolder.AddItem (project);
+
+			await solution.SaveAsync (Util.GetMonitor ());
+
+			solution = await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName) as Solution;
+
+			var project2 = Services.ProjectService.CreateDotNetProject ("C#");
+			project2.FileName = Path.Combine (directory, "ToolsVersionTest2.csproj");
+			solution.RootFolder.AddItem (project2);
+
+			Assert.AreEqual (project.ToolsVersion, project2.ToolsVersion);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode
