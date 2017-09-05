@@ -122,6 +122,16 @@ namespace UserInterfaceTests
 			takeScreenshot ("Closed-Workspace");
 		}
 
+		public static void CloseDocument (UITestBase testContext = null)
+		{
+			if (testContext != null)
+				testContext.ReproStep ("Close current workspace");
+			Action<string> takeScreenshot = GetScreenshotAction (testContext);
+			takeScreenshot ("About-To-Close-Workspace");
+			Session.ExecuteCommand (FileCommands.CloseFile);
+			takeScreenshot ("Closed-Workspace");
+		}
+
 		public static string Configuration
 		{
 			get {
