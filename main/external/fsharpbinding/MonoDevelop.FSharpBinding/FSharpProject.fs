@@ -3,6 +3,7 @@
 open System
 open System.IO
 open MonoDevelop.Core
+open MonoDevelop.Core.Serialization
 open MonoDevelop.Projects
 open MonoDevelop.Projects.MSBuild
 open System.Xml
@@ -117,14 +118,14 @@ type FSharpProject() as self =
                 project.RemoveItem(item, true)
                 newGroup.AddItem item
 
-    [<ProjectPathItemProperty ("TargetProfile", DefaultValue = "mscorlib")>]
+    [<ItemProperty ("TargetProfile", DefaultValue = "mscorlib")>]
     member val TargetProfile = "mscorlib" with get, set
 
-    [<ProjectPathItemProperty ("TargetFSharpCoreVersion", DefaultValue = "")>]
+    [<ItemProperty ("TargetFSharpCoreVersion", DefaultValue = "")>]
     member val TargetFSharpCoreVersion = String.Empty with get, set
 
-    [<ProjectPathItemProperty ("UseStandardResourceNames", DefaultValue="true")>]
-    member val UseStandardResourceNames = "true" with get, set 
+    [<ItemProperty ("UseStandardResourceNames", DefaultValue = false)>]
+    member val UseStandardResourceNames = true with get, set 
 
     override x.IsPortableLibrary = initialisedAsPortable
 
@@ -165,9 +166,6 @@ type FSharpProject() as self =
         base.OnWriteProject(monitor, msproject)
         fixProjectFormatForVisualStudio msproject
         let globalGroup = msproject.GetGlobalPropertyGroup()
-        // Generate F# resource names the same way that C# does
-        // See https://github.com/Microsoft/visualfsharp/pull/3352
-        globalGroup.SetValue ("UseStandardResourceNames", x.UseStandardResourceNames, "false", true)
 
         maybe {
             //Fix pcl netcore and TargetFSharpCoreVersion
