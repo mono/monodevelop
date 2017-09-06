@@ -296,6 +296,14 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		internal void CheckSelectedPackage ()
+		{
+			PackageSearchResultViewModel packageViewModel = GetSelectedPackageViewModel();
+			if (packageViewModel != null) {
+				packageViewModel.IsChecked = true;
+			}
+		}
+
 		void ShowSelectedPackage ()
 		{
 			RemoveSelectedPackagePropertyChangedEventHandler ();
