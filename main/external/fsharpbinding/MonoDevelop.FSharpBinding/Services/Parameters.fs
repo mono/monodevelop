@@ -43,6 +43,9 @@ type FSharpCompilerParameters() =
     [<ItemProperty("NoWarn", DefaultValue = "")>]
     let mutable nowarn = String.empty
 
+    [<ItemProperty("DebugType", DefaultValue = "portable")>]
+    let mutable debugType = "portable"
+
     member x.Optimize with get () = optimize and set v = optimize <- v
     member x.GenerateTailCalls with get () = generateTailCalls and set v = generateTailCalls <- v
     override x.NoStdLib with get () = noStdLib and set v = noStdLib <- v
@@ -53,6 +56,7 @@ type FSharpCompilerParameters() =
     member x.TreatWarningsAsErrors with get () = warnAsError and set v = warnAsError <- v
     member x.WarningLevel with get () = warningLevel and set v = warningLevel <- v
     member x.NoWarn with get () = nowarn and set v = nowarn <- v
+    member x.DebugType with get () = debugType and set v = debugType <- v
     
     override x.AddDefineSymbol(symbol) =
         if System.String.IsNullOrEmpty x.DefineConstants then
