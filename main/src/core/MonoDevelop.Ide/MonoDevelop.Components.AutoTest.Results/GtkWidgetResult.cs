@@ -35,7 +35,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 {
 	public class GtkWidgetResult : AppResult
 	{
-		Widget resultWidget;
+		protected Widget resultWidget;
 
 		internal GtkWidgetResult (Widget widget)
 		{
@@ -101,6 +101,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Text (string text, bool exact)
 		{
+			if (resultWidget?.GetType().FullName == "MonoDevelop.PackageManagement.AddPackagesDialog")
+			{
+				return new AddPackagesResult(this.resultWidget);
+			}
+
 			// Entries and Labels have Text, Buttons have Label.
 			// FIXME: Are there other property names?
 
