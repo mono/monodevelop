@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Gtk;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.AutoTest.Results
 {
@@ -38,10 +39,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool Select()
 		{
+			LoggingService.LogInfo("In AddPackagesResult.Select: trying to get CheckSelectedPackage MethodInfo");
 			var checkSelectedPackage = this.resultWidget.GetType().GetMethod("CheckSelectedPackage",
 				BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField);
 			if(checkSelectedPackage != null)
 			{
+				LoggingService.LogInfo($"Found CheckSelectedPackage MethodInfo. Invoking");
 				checkSelectedPackage.Invoke(this.resultWidget, new object [] {});
 				return true;
 			}

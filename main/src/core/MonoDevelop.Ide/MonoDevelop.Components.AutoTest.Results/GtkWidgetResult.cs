@@ -30,6 +30,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Xml;
 using Gtk;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.AutoTest.Results
 {
@@ -103,6 +104,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			if (resultWidget?.GetType().FullName == "MonoDevelop.PackageManagement.AddPackagesDialog")
 			{
+				LoggingService.LogInfo("Found AddPackagesDialog. Returning AddPackagesResult");
 				return new AddPackagesResult(this.resultWidget);
 			}
 
