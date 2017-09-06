@@ -99,7 +99,6 @@ namespace MonoDevelop.Components.AutoTest
 
 			if (view is NSSegmentedControl || view.GetType ().IsSubclassOf (typeof (NSSegmentedControl))) {
 				var segmentedControl = (NSSegmentedControl)view;
-				LoggingService.LogInfo ($"Found 'NSSegmentedControl' with {segmentedControl.SegmentCount} children");
 				for (int i = 0; i < segmentedControl.SegmentCount; i++) {
 					var node = new NSObjectResult (view, i);
 					resultSet.Add (node);
