@@ -64,15 +64,21 @@ namespace MonoDevelop.Ide.Gui.Components
 				Menu menu = new Menu ();
 				
 				bool itemsAdded = false;
+				bool needsSeparator = false;
 				
 				foreach (StringTagDescription[] tags in TagModel.GetTagsGrouped ()) {
-					if (itemsAdded) {
-						SeparatorMenuItem sep = new SeparatorMenuItem ();
-						menu.Add (sep);
-					}
+					itemsAdded = false;
+
 					foreach (StringTagDescription tag in tags) {
 						if (tag.Important != importantOnly)
 							continue;
+
+						if (itemsAdded && needsSeparator) {
+							SeparatorMenuItem sep = new SeparatorMenuItem();
+							needsSeparator = false;
+							menu.Add(sep);
+						}
+
 						MenuItem item = new MenuItem (tag.Description);
 						string tagString = tag.Name;
 						item.ButtonPressEvent += delegate {
@@ -81,6 +87,7 @@ namespace MonoDevelop.Ide.Gui.Components
 						menu.Add (item);
 						itemsAdded = true;
 					}
+					needsSeparator = true;
 				}
 				if (importantOnly) {
 					Menu subMenu = CreateMenu (false);
