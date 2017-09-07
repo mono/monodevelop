@@ -199,6 +199,8 @@ namespace Microsoft.VisualStudio.Platform
 
 			if (this.ContentTypeRegistryService.GetContentType ("css") != null) {
 				LinkTypes ("text/x-css", "css");
+				LinkTypes ("text/x-less-web", "LESS");
+				LinkTypes ("text/x-scss-web", "SCSS");
 				LinkTypes ("text/x-html", "htmlx");
 				LinkTypes ("text/x-json", "JSON");
 			}
