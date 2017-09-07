@@ -25860,8 +25860,8 @@ msgid ""
 "MSBuild must be used instead of xbuild. Please enable MSBuild in preferences "
 "- Projects - Build and then re-open the solution."
 msgstr ""
-"Se debe usar MSBuild en lugar de xbuild. Habilite MSBuild en Preferences - "
-"Projects - Build y vuelva a abrir la solución."
+"Se debe usar MSBuild en lugar de xbuild. Habilite MSBuild en Preferencias - "
+"Proyectos - Compilar y vuelva a abrir la solución."
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.UnitTesting/DotNetCoreProjectTestSuite.cs:233
 msgid "Unable to run tests. Test discovery failed."
@@ -26448,7 +26448,7 @@ msgstr "Pruebas"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:432
 msgid "The application was terminated by an unknown signal: {0}"
-msgstr ""
+msgstr "Una señal desconocida terminó la aplicación: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:607
 msgid "Architecture"
@@ -26770,6 +26770,8 @@ msgid ""
 "Do you want to temporarily trust this certificate in order to connect to the "
 "server at {0}?"
 msgstr ""
+"¿Desea confiar temporalmente en este certificado para conectar con el "
+"servidor en {0}?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs:58
 msgid "Message Header"
@@ -26889,7 +26891,7 @@ msgstr "Escriba el nombre de archivo para la documentación XML generada"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CodeGenerationPanel.cs:73
 msgid "Select the level of debugging information to be generated"
-msgstr ""
+msgstr "Seleccione el nivel de información de depuración que se generará"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CodeGenerationPanel.cs:76
 msgid "Enter the symbols the compiler should define"
@@ -28130,5 +28132,5 @@ msgstr "ASP.NET Core Web App (páginas de Razor)"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:17
 msgid "_Diagnostics"
-msgstr ""
+msgstr "_Diagnósticos"
 

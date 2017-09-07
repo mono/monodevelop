@@ -27782,5 +27782,5 @@ msgstr "ASP.NET Core Web Uygulaması (Razor Pages)"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:17
 msgid "_Diagnostics"
-msgstr ""
+msgstr "_Tanılama"
 

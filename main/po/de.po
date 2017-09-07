@@ -27389,3 +27389,777 @@ msgstr "Erstellt ein neues Azure Functions-Projekt."
 msgid "Connected Services"
 msgstr "Verbundene Dienste"
 
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:833
+msgid "Mark Log"
+msgstr "Markierungsprotokoll"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:75
+msgid "Check to build the solution before running"
+msgstr ""
+"Diese Option aktivieren, um die Projektmappe vor dem Ausführen zu erstellen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:77
+msgid "Check to run the solution even if the build had warnings"
+msgstr ""
+"Diese Option aktivieren, um die Projektmappe auch dann auszuführen, wenn der "
+"Build Warnungen enthielt"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:79
+msgid "Check to build the solution before running tests"
+msgstr ""
+"Diese Option aktivieren, um die Projektmappe vor dem Ausführen von Tests zu "
+"erstellen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:81
+msgid "Check to use MSBuild to build the solution"
+msgstr ""
+"Diese Option aktivieren, um MSBuild zum Erstellen der Projektmappe zu "
+"verwenden"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:83
+msgid "Check to enable parallel building"
+msgstr "Diese Option aktivieren, um die parallele Erstellung zu aktivieren"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:86
+msgid "Check to save changes before building"
+msgstr "Diese Option aktivieren, um Änderungen vor dem Erstellen zu speichern"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:88
+msgid "Check to not save changes before building"
+msgstr ""
+"Diese Option aktivieren, um Änderungen vor dem Erstellen nicht zu speichern"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:90
+msgid "Check to be prompted to save changes before building"
+msgstr ""
+"Diese Option aktivieren, um vor dem Erstellen eine Eingabeaufforderung zum "
+"Speichern der Änderungen anzuzeigen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:93
+msgid "Select the verbosity level of the build"
+msgstr "Ausführlichkeitsgrad des Builds auswählen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs:92
+msgid "Enter the default path for the solution"
+msgstr "Standardpfad für die Projektmappe eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs:97
+msgid "Check to load the user specific settings with the solution"
+msgstr ""
+"Diese Option aktivieren, um die benutzerspezifischen Einstellungen mit der "
+"Projektmappe zu laden"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs:99
+msgid "Check to load the previous solution when starting the application"
+msgstr ""
+"Diese Option aktivieren, um die zuletzt geöffnete Projektmappe beim Starten "
+"der Anwendung zu laden"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs:101
+msgid "Check to always create a backup copy"
+msgstr "Diese Option aktivieren, um immer eine Sicherungskopie zu erstellen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs:79
+msgid "Select the priority for this token"
+msgstr "Priorität für dieses Token auswählen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs:82
+msgid "Enter a word to detect as a token"
+msgstr "Wort zur Erkennung als Token eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs:85
+msgid "A list of recognised tokens"
+msgstr "Eine Liste erkannter Token"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs:88
+msgid "Add a new token"
+msgstr "Neues Token hinzufügen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs:90
+msgid "Edit the currently selected token"
+msgstr "Momentan ausgewähltes Token bearbeiten"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs:92
+msgid "Remove the currently selected token"
+msgstr "Momentan ausgewähltes Token entfernen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs:95
+msgid "Select the foreground color for low priority tasks"
+msgstr "Vordergrundfarbe für Aufgaben mit niedriger Priorität auswählen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs:98
+msgid "Select the foreground color for the high priority tasks"
+msgstr "Vordergrundfarbe für Aufgaben mit hoher Priorität auswählen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs:101
+msgid "Select the foreground color for the normal priority tasks"
+msgstr "Vordergrundfarbe für Aufgaben mit normaler Priorität auswählen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:165
+msgid "Select a predefined keybindings scheme"
+msgstr "Vordefiniertes Tastenzuordnungsschema auswählen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:169
+msgid "Enter a search term to find it in the keybindings list"
+msgstr ""
+"Suchbegriff eingeben, um in der Liste der Tastenzuordnungen nach dem Begriff "
+"zu suchen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:172
+msgid "Enter the keybinding for this command"
+msgstr "Tastenzuordnung für diesen Befehl eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:175
+msgid "Add a new binding for this command"
+msgstr "Neue Bindung für diesen Befehl hinzufügen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:177
+msgid "Update the binding for this command"
+msgstr "Bindung für diesen Befehl aktualisieren"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:146
+msgid "Click to add a new external tool"
+msgstr "Klicken, um ein neues externes Tool hinzuzufügen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:148
+msgid "Click to remove an external tool from the list"
+msgstr "Klicken, um ein externes Tool aus der Liste zu entfernen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:150
+msgid "Click to move the selected tool up the list"
+msgstr "Klicken, um das ausgewählte Tool in der Liste nach oben zu verschieben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:152
+msgid "Click to move the selected tool down the list"
+msgstr "Klicken, um das ausgewählte Tool in der Liste nach unten zu verschieben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:154
+msgid "Enter the title for this command"
+msgstr "Titel für diesen Befehl eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:156
+msgid "Enter or select the path for the external command"
+msgstr "Pfad für den externen Befehl eingeben oder auswählen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:159
+msgid "Enter the arguments for the external command"
+msgstr "Argumente für den externen Befehl eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:161
+msgid "Argument Tags"
+msgstr "Argumenttags"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:162
+msgid "Select tags to add to the arguments"
+msgstr "Tags auswählen, die den Argumenten hinzugefügt werden sollen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:164
+msgid "Enter the working directory for this command"
+msgstr "Arbeitsverzeichnis für diesen Befehl eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:165
+msgid "Working Directory Tags"
+msgstr "Arbeitsverzeichnistags"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:166
+msgid "Select tags to add to the working directory"
+msgstr "Tags auswählen, die dem Arbeitsverzeichnis hinzugefügt werden sollen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:168
+msgid "Enter the default key binding for this command"
+msgstr "Standardtastenzuordnung für diesen Befehl eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:170
+msgid "Check to prompt for arguments when running the command"
+msgstr ""
+"Diese Option aktivieren, um beim Ausführen des Befehls eine "
+"Eingabeaufforderung für Argumente anzuzeigen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:172
+msgid "Check to save the current file before running the command"
+msgstr ""
+"Diese Option aktivieren, um die aktuelle Datei vor dem Ausführen des Befehls "
+"zu speichern"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:174
+msgid "Check to display the commands output in the Output Pad"
+msgstr ""
+"Diese Option aktivieren, um die Befehlsausgabe im Ausgabebereich anzuzeigen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:95
+msgid "Click to send feedback to the development team"
+msgstr "Klicken, um Feedback an das Entwicklungsteam zu senden"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:92
+msgid "Select the user interface theme"
+msgstr "Design der Benutzeroberfläche auswählen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:95
+msgid "Select the user interface language"
+msgstr "Sprache der Benutzeroberfläche auswählen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:86
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs:72
+msgid "Enter the author name"
+msgstr "Namen des Autors eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:90
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs:76
+msgid "Enter the author's email address"
+msgstr "E-Mail-Adresse des Autors eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:94
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs:80
+msgid "Enter the copyright statement"
+msgstr "Urheberrechtserklärung eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:97
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs:84
+msgid "Enter the company name"
+msgstr "Firmennamen eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:100
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs:88
+msgid "Enter the trademark statement"
+msgstr "Markenerklärung eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:104
+msgid "Available Runtimes"
+msgstr "Verfügbare Runtimes"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:105
+msgid "A list of available runtimes"
+msgstr "Eine Liste der verfügbaren Runtimes"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:107
+msgid "Click to install a new runtime"
+msgstr "Klicken, um eine neue Runtime zu installieren"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:109
+msgid "Click to remove the currently selected runtime"
+msgstr "Klicken, um die momentan ausgewählte Runtime zu entfernen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:111
+msgid "Click to set the currently selected runtime as default"
+msgstr "Klicken, um die momentan ausgewählte Runtime als Standard festzulegen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:246
+msgid "Enter string to find"
+msgstr "Zu suchende Zeichenfolge eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:250
+msgid "Enter the file mask"
+msgstr "Dateimaske eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:258
+msgid "Enter string to replace"
+msgstr "Zu ersetzende Zeichenfolge eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:267
+msgid "Enter the Path"
+msgstr "Pfad eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/AssemblyFoldersPanel.cs:66
+msgid "Enter a folder to search for assemblies and packages"
+msgstr "Ordner eingeben, um nach Assemblys und Paketen zu suchen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:94
+msgid "Select which type of result to jump to after build completes"
+msgstr ""
+"Auswählen, zu welchem Ergebnistyp nach dem Abschluss des Builds gesprungen "
+"werden soll"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:97
+msgid "Select when to show the Error Pad"
+msgstr "Auswählen, wann der Fehlerbereich angezeigt werden soll"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:100
+msgid "Select when to show message bubbles"
+msgstr "Auswählen, wann Sprechblasen mit Meldungen angezeigt werden sollen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/FolderListSelector.cs:61
+msgid "Add the folder to the list"
+msgstr "Ordner zur Liste hinzufügen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/FolderListSelector.cs:63
+msgid "Remove the selected folder from the list"
+msgstr "Ausgewählten Ordner aus der Liste entfernen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/FolderListSelector.cs:65
+msgid "Move the selected folder up the list"
+msgstr "Ausgewählten Ordner in der Liste nach oben verschieben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/FolderListSelector.cs:67
+msgid "Move the selected folder down the list"
+msgstr "Ausgewählten Ordner in der Liste nach unten verschieben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/FolderListSelector.cs:68
+msgid "Folder List"
+msgstr "Ordnerliste"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/FolderListSelector.cs:69
+msgid "The list of folders"
+msgstr "Die Liste der Ordner"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CombineBuildOptions.cs:67
+msgid "Enter the output directory"
+msgstr "Ausgabeverzeichnis eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CombineInformationPanel.cs:75
+msgid "Enter the version"
+msgstr "Version eingeben"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:90
+msgid "{0} failed to create"
+msgstr "{0} konnte nicht erstellt werden."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:92
+msgid "{0} successfully created"
+msgstr "{0} wurde erfolgreich erstellt."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitCredentials.cs:185
+msgid "Operation cancelled by the user"
+msgstr "Der Vorgang wurde vom Benutzer abgebrochen."
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:57
+msgid "Check to use the Tab key as a reindent command"
+msgstr ""
+"Diese Option aktivieren, um die TAB-TASTE als Befehl für einen neuen Einzug "
+"zu verwenden"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:59
+msgid "Check to make Backspace remove indentation"
+msgstr "Diese Option aktivieren, um mit der RÜCKTASTE einen Einzug zu entfernen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:61
+msgid "Check to automatically insert braces"
+msgstr "Diese Option aktivieren, um automatisch geschweifte Klammern einzufügen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:63
+msgid "Check to use smart semicolon placement"
+msgstr ""
+"Diese Option aktivieren, um die intelligente Platzierung von Semikolons zu "
+"verwenden"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:65
+msgid "Check to reformat the document when saving"
+msgstr ""
+"Diese Option aktivieren, um das Dokument beim Speichern neu zu formatieren"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:67
+msgid "Check to reformat the document while typing"
+msgstr ""
+"Diese Option aktivieren, um das Dokument während der Eingabe neu zu "
+"formatieren"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:69
+msgid "Check to automatically set the search pattern case sensitivity"
+msgstr ""
+"Diese Option aktivieren, um die Unterscheidung nach Groß-/Kleinschreibung "
+"für das Suchmuster automatisch festzulegen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:71
+msgid "Check to enable selection surrounding keys"
+msgstr "Diese Option aktivieren, um die Auswahl um Tasten zu aktivieren"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:73
+msgid "Check to add undo step for formatting changes"
+msgstr ""
+"Diese Option aktivieren, um einen Schritt zum Rückgängigmachen von "
+"Formatierungsänderungen hinzuzufügen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:75
+msgid "Select the indentation mode"
+msgstr "Einzugsmodus auswählen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:77
+msgid "Select the word break mode"
+msgstr "Wortumbruchmodus auswählen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:53
+msgid "Select how to handle line ending conversions"
+msgstr "Auswählen, wie Zeilenendekonvertierungen behandelt werden"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:55
+msgid "Check to enable line folding"
+msgstr "Diese Option aktivieren, um die Zeilenfaltung zu aktivieren"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:57
+msgid "Check to fold regions by default"
+msgstr "Diese Option aktivieren, um Regionen standardmäßig zu falten"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:59
+msgid "Check to fold comments by default"
+msgstr "Diese Option aktivieren, um Kommentare standardmäßig zu falten"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:80
+msgid "Check to show tabs when showing invisible characters"
+msgstr ""
+"Diese Option aktivieren, um Tabstopps beim Anzeigen unsichtbarer Zeichen "
+"anzuzeigen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:82
+msgid "Check to show spaces when showing invisible characters"
+msgstr ""
+"Diese Option aktivieren, um Leerzeichen beim Anzeigen unsichtbarer Zeichen "
+"anzuzeigen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:84
+msgid "Check to show line endings when showing invisible characters"
+msgstr ""
+"Diese Option aktivieren, um Zeilenenden beim Anzeigen unsichtbarer Zeichen "
+"anzuzeigen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:86
+msgid "Check to show the column ruler"
+msgstr "Diese Option aktivieren, um das Spaltenlineal anzuzeigen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:88
+msgid "Check to show line numbers"
+msgstr "Diese Option aktivieren, um Zeilennummern anzuzeigen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:90
+msgid "Check to highlight to current line"
+msgstr "Diese Option aktivieren, um die aktuelle Zeile hervorzuheben"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:92
+msgid "Check to highlight the matching bracket"
+msgstr "Diese Option aktivieren, um die passende Klammer hervorzuheben"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:94
+msgid "Check to highlight identifier references"
+msgstr "Diese Option aktivieren, um Bezeichnerverweise hervorzuheben"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:96
+msgid "Check to enable animations in the text editor"
+msgstr "Diese Option aktivieren, um Animationen im Text-Editor zu aktivieren"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:98
+msgid "Check to highlight changed line"
+msgstr "Diese Option aktivieren, um die geänderte Zeile hervorzuheben"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:100
+msgid "Check to draw indentation markers"
+msgstr "Diese Option aktivieren, um Einzugsmarkierungen zu zeichnen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:103
+msgid "Select when to show invisible characters"
+msgstr "Auswählen, wann unsichtbare Zeichen angezeigt werden"
+
+#: ../src/addins/Xml/Editor/XmlEditorOptionsPanelWidget.cs:45
+msgid "Check to enable automatic close tag insertion"
+msgstr ""
+"Diese Option aktivieren, um das automatische Einfügen von Endtags zu "
+"aktivieren"
+
+#: ../src/addins/Xml/Editor/XmlEditorOptionsPanelWidget.cs:48
+msgid "Check to enable automatic punctuation insertion"
+msgstr ""
+"Diese Option aktivieren, um das automatische Einfügen von "
+"Interpunktionszeichen zu aktivieren"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:112
+msgid "Check to only debug the project code and not step into framework code"
+msgstr ""
+"Diese Option aktivieren, um nur den Projektcode zu debuggen und den "
+"Frameworkcode nicht schrittweise auszuführen"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:114
+msgid "Check to step over properties and operators"
+msgstr ""
+"Diese Option aktivieren, um Eigenschaften und Operatoren zu überspringen"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:116
+msgid "Check to allow implicit property evaluation and method invocation"
+msgstr ""
+"Diese Option aktivieren, um die implizite Eigenschaftenauswertung und "
+"implizite Methodenaufrufe zuzulassen"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:118
+msgid ""
+"Check to call string-conversion functions on objects in the Variables "
+"windows"
+msgstr ""
+"Diese Option aktivieren, um Zeichenfolgenkonvertierungsfunktionen für "
+"Objekte in den Variablenfenstern aufzurufen"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:120
+msgid "Check to show inherited class members in a base class group"
+msgstr ""
+"Diese Option aktivieren, um geerbte Klassenmember in einer "
+"Basisklassengruppe anzuzeigen"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:122
+msgid "Check to group non-public members in the Variables windows"
+msgstr ""
+"Diese Option aktivieren, um nicht öffentliche Member in den "
+"Variablenfenstern zu gruppieren"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:124
+msgid "Check to group static members in the Variables windows"
+msgstr ""
+"Diese Option aktivieren, um statische Member in den Variablenfenstern zu "
+"gruppieren"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:126
+msgid "Set the length of time the evaluation will wait before giving up"
+msgstr "Wartezeit vor dem Abbrechen des Vorgangs für die Auswertung festlegen"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:128
+msgid "Check to enable some diagnostic logging"
+msgstr "Diese Option aktivieren, um die Diagnoseprotokollierung zu aktivieren"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:657
+msgid "Cause the program to pause when the breakpoint is hit"
+msgstr ""
+"Bewirkt, dass das Programm beim Erreichen des Haltepunkts angehalten wird"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:661
+msgid ""
+"Cause the program to print a message and continue when the breakpoint is hit"
+msgstr ""
+"Bewirkt, dass das Programm beim Erreichen des Haltepunkts eine Meldung "
+"ausgibt und fortgesetzt wird"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:665
+msgid "Breakpoint Expression"
+msgstr "Haltepunktausdruck"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:666
+msgid ""
+"Enter the expression you wish to have printed to the console. Place simple "
+"C# expressions within {} to interpolate them."
+msgstr ""
+"Geben Sie den Ausdruck ein, der an die Konsole ausgegeben werden soll. "
+"Setzen Sie einfache C#-Ausdrücke in geschweifte Klammern ({}), um sie zu "
+"interpolieren."
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:670
+msgid "There is a warning for the print expression"
+msgstr "Für den Ausgabeausdruck liegt eine Warnung vor."
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:674
+msgid "Execute the action when a function is entered"
+msgstr "Aktion beim Eintritt in eine Funktion ausführen"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:678
+msgid "Breakpoint Function"
+msgstr "Haltepunktfunktion"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:679
+msgid "Enter the name of the breakpoint function"
+msgstr "Namen der Haltepunktfunktion eingeben"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:683
+msgid "There is a warning for the function name"
+msgstr "Für den Funktionsnamen liegt eine Warnung vor."
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:687
+msgid "Execute the action when an exception is thrown"
+msgstr "Aktion ausführen, wenn eine Ausnahme ausgelöst wird"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:691
+msgid "Breakpoint Exception"
+msgstr "Haltepunktausnahme"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:692
+msgid "Enter the type of the breakpoint exception"
+msgstr "Typ der Haltepunktausnahme eingeben"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:696
+msgid "There is a warning for the exception type"
+msgstr "Für den Ausnahmetyp liegt eine Warnung vor."
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:700
+msgid "Select whether to also break on exception subclasses"
+msgstr ""
+"Auswählen, ob die Ausführung auch bei Ausnahmeunterklassen unterbrochen "
+"werden soll"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:704
+msgid "Execute the action when the program reaches a location in a file"
+msgstr ""
+"Aktion ausführen, wenn das Programm eine Position in einer Datei erreicht"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:708
+msgid "Breakpoint Location"
+msgstr "Haltepunktposition"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:709
+msgid "Enter the file and line number of the breakpoint location"
+msgstr "Datei und Zeilennummer der Haltepunktposition eingeben"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:713
+msgid "There is a warning for the breakpoint location"
+msgstr "Für die Haltepunktposition liegt eine Warnung vor."
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:717
+msgid "Breakpoint Hit Count Type"
+msgstr "Trefferanzahltyp für den Haltepunkt"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:718
+msgid "Select a hit count condition for this breakpoint"
+msgstr "Bedingung für die Trefferanzahl für diesen Haltepunkt auswählen"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:723
+msgid "Enter the hit count required for the condition"
+msgstr "Erforderliche Trefferanzahl für die Bedingung eingeben"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:727
+msgid "Conditional Breakpoint Hit Type"
+msgstr "Treffertyp für bedingten Haltepunkt"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:728
+msgid "Select an extra condition for this breakpoint"
+msgstr "Zusätzliche Bedingung für diesen Haltepunkt auswählen"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:732
+msgid "Conditional Breakpoint Expression"
+msgstr "Bedingter Haltepunktausdruck"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:733
+msgid ""
+"Enter a C# boolean expression to act as a condition for this breakpoint. The "
+"scope of the expression is local to the breakpoint"
+msgstr ""
+"Geben Sie einen booleschen C#-Ausdruck als Bedingung für diesen Haltepunkt "
+"ein. Der Ausdruck gilt lokal für den Haltepunkt."
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:737
+msgid "There is a warning for the condition expression"
+msgstr "Für den Bedingungsausdruck liegt eine Warnung vor."
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:67
+msgid "Enter the name for this package source"
+msgstr "Namen für diese Paketquelle eingeben"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:83
+msgid "Enter the URL for this package source"
+msgstr "URL für diese Paketquelle eingeben"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:104
+msgid "Enter the username (if required) for this package source"
+msgstr "Benutzernamen (sofern erforderlich) für diese Paketquelle eingeben"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:121
+msgid "Enter the password (if required) for this package source"
+msgstr "Kennwort (sofern erforderlich) für diese Paketquelle eingeben"
+
+#: ../src/addins/MonoDevelop.PackageManagement/NuGet.Commands/MSBuildRestoreResult.cs:80
+#: ../src/addins/MonoDevelop.PackageManagement/NuGet.Commands/MSBuildRestoreResult.cs:93
+#: ../src/addins/MonoDevelop.PackageManagement/NuGet.Commands/MSBuildRestoreResult.cs:104
+msgid "Generating MSBuild file {0}."
+msgstr "Die MSBuild-Datei {0} wird generiert."
+
+#: ../src/addins/MonoDevelop.PackageManagement/NuGet.Commands/MSBuildRestoreResult.cs:134
+msgid ""
+"Packages containing MSBuild targets and props files cannot be fully "
+"installed in projects targeting multiple frameworks. The MSBuild targets and "
+"props files have been ignored."
+msgstr ""
+"Pakete, die MSBuild-Ziele und -Eigenschaftendateien enthalten, können in "
+"Projekten mit mehreren Zielframeworks nicht vollständig installiert werden. "
+"Die MSBuild-Ziele und -Eigenschaftendateien wurden ignoriert."
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/SolutionClosingDialog.UI.cs:61
+msgid ""
+"Busy indicator shown whilst waiting stopping for NuGet package processing to "
+"stop"
+msgstr ""
+"Der Auslastungsindikator wird angezeigt, während auf die Beendigung der "
+"Verarbeitung des NuGet-Pakets gewartet wird."
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/SolutionClosingDialog.UI.cs:73
+msgid "Unable to close the solution when NuGet packages are being installed."
+msgstr ""
+"Die Projektmappe kann nicht geschlossen werden, während NuGet-Pakete "
+"installiert werden."
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/SolutionClosingDialog.UI.cs:75
+msgid "Unable to close the solution when NuGet packages are being uninstalled."
+msgstr ""
+"Die Projektmappe kann nicht geschlossen werden, während NuGet-Pakete "
+"deinstalliert werden."
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/SolutionClosingDialog.UI.cs:81
+msgid "Stop installing NuGet packages?"
+msgstr "Möchten Sie die Installation von NuGet-Paketen beenden?"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/SolutionClosingDialog.UI.cs:83
+msgid "Stop uninstalling NuGet packages?"
+msgstr "Möchten Sie die Deinstallation von NuGet-Paketen beenden?"
+
+#: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:14
+msgid "Dump live widgets"
+msgstr "Live-Widgets sichern"
+
+#: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:41
+msgid "Leak Tracker"
+msgstr "Speicherverlustnachverfolgung"
+
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:380
+msgid ""
+".NET Core 2.0 SDK is not installed. This is required to build .NET Core 2.0 "
+"projects. {0}"
+msgstr ""
+"Das .NET Core 2.0-SDK ist nicht installiert. Dieses SDK ist zum Erstellen "
+"von .NET Core 2.0-Projekten erforderlich. {0}"
+
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreNotInstalledDialog.cs:41
+msgid ""
+".NET Core 2.0 SDK is not installed. This is required to build and run .NET "
+"Core 2.0 projects."
+msgstr ""
+"Das .NET Core 2.0-SDK ist nicht installiert. Dieses SDK ist zum Erstellen "
+"und Ausführen von .NET Core 2.0-Projekten erforderlich."
+
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:110
+msgid "F#"
+msgstr "F#"
+
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:321
+msgid "SASS, CSS document"
+msgstr "SASS, CSS-Dokument"
+
+#: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:324
+msgid "SCSS, CSS document"
+msgstr "SCSS, CSS-Dokument"
+
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:9
+msgid "LESS Style Sheet"
+msgstr "LESS-Stylesheet"
+
+#: ../src/addins/AspNet/Templates/EmptyLessFile.xft.xml:12
+msgid "LESS is a language that compiles into CSS."
+msgstr "LESS ist eine Sprache, die in CSS kompiliert wird."
+
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:9
+msgid "SCSS Style Sheet (SASS)"
+msgstr "SCSS-Stylesheet (SASS)"
+
+#: ../src/addins/AspNet/Templates/EmptyScssFile.xft.xml:12
+msgid "SCSS is a language that compiles into CSS."
+msgstr "SCSS ist eine Sprache, die in CSS kompiliert wird."
+
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:9
+msgid "TypeScript file"
+msgstr "TypeScript-Datei"
+
+#: ../src/addins/AspNet/Templates/EmptyTypeScriptFile.xft.xml:12
+msgid "A blank TypeScript source file."
+msgstr "Eine leere TypeScript-Quelldatei."
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:109
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:171
+msgid "ASP.NET Core Web API"
+msgstr "ASP.NET Core-Web-API"
+
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:158
+msgid "ASP.NET Core Web App (Razor Pages)"
+msgstr "ASP.NET Core-Web-App (Razor-Seiten)"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
+#: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:17
+msgid "_Diagnostics"
+msgstr "_Diagnose"
+
