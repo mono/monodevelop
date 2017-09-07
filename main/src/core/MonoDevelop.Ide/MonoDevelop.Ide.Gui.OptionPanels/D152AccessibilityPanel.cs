@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using Gtk;
 
 using Foundation;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -110,8 +111,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public void Save ()
 		{
 			NSUserDefaults defaults = NSUserDefaults.StandardUserDefaults;
+			Debug.WriteLine ($"A11y: Setting {EnabledKey} -> {enabled.Active}");
 			defaults.SetBool (enabled.Active, EnabledKey);
 			defaults.Synchronize ();
+			Debug.WriteLine ("A11y: Synchronized");
+
+			NSUserDefaults.ResetStandardUserDefaults ();
+
+			defaults = NSUserDefaults.StandardUserDefaults;
+			Debug.WriteLine ($"A11y: {defaults.BoolForKey (EnabledKey)}");
 		}
 
 		void ShowQuitOption (object sender, EventArgs args)

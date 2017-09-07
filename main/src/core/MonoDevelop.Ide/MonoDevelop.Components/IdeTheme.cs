@@ -81,6 +81,9 @@ namespace MonoDevelop.Components
 				LoggingService.LogInfo ($"Loading modules from {gtkPath}");
 				Environment.SetEnvironmentVariable ("GTK_MODULES", $"{gtkPath}/libatkcocoa.so");
 			} else {
+				// If we are restarted from a running instance when changing the accessibility setting then
+				// we inherit the environment from it
+				Environment.SetEnvironmentVariable ("GTK_MODULES", null);
 				LoggingService.LogInfo ("Accessibility disabled");
 			}
 #endif
@@ -88,6 +91,7 @@ namespace MonoDevelop.Components
 
 			// Reset our environment after initialization on Mac
 			if (Platform.IsMac) {
+				Environment.SetEnvironmentVariable ("GTK_MODULES", null);
 				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", DefaultGtk2RcFiles);
 			}
 		}
