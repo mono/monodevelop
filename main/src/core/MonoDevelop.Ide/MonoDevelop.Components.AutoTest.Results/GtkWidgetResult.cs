@@ -69,6 +69,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Marked (string mark)
 		{
+			if (resultWidget?.GetType().FullName == "MonoDevelop.PackageManagement.AddPackagesDialog")
+			{
+				LoggingService.LogInfo("Found AddPackagesDialog. Returning AddPackagesResult");
+				return new AddPackagesResult(this.resultWidget);
+			}
+
 			if (resultWidget.Name != null && resultWidget.Name.IndexOf (mark) > -1) {
 				return this;
 			}
