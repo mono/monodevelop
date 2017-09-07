@@ -163,7 +163,7 @@ namespace MonoDevelop.Components.Docking
 
 			// Emit the add signal so that the A11y system will pick up that a widget has been added to the box
 			// but the box won't handle it because widget.Parent has already been set.
-			GLib.Signal.Emit (this, "add", widget);
+			GtkWorkarounds.EmitAddSignal(this, widget);
 
 			OverlayWidgetVisible = true;
 			MinimizeAllAutohidden ();
@@ -212,7 +212,7 @@ namespace MonoDevelop.Components.Docking
 				} else {
 					overlayWidget.Unparent ();
 					// After we've unparented the widget, we call remove so the A11y system can clean up as well.
-					GLib.Signal.Emit (this, "remove", overlayWidget);
+					GtkWorkarounds.EmitRemoveSignal(this, overlayWidget);
 
 					overlayWidget = null;
 					QueueResize ();

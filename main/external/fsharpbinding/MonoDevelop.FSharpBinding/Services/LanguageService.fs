@@ -334,7 +334,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         |> Option.map(fun p -> p :?> DotNetProject)
 
     member x.GetReferencedAssembliesSynchronously (project:DotNetProject) =
-        retry { return (project.GetReferencedAssemblies(CompilerArguments.getConfig())).Result }
+        project.GetReferencedAssemblies(CompilerArguments.getConfig()).Result
 
     member x.GetReferencedAssembliesAsync projectFile =
         async {

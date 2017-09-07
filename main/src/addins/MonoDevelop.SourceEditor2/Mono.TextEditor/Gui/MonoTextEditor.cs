@@ -224,7 +224,7 @@ namespace Mono.TextEditor
 
 			// Emit the add signal so that the A11y system will pick up that a widget has been added to the box
 			// but the box won't handle it because widget.Parent has already been set.
-			GLib.Signal.Emit (this, "add", widget);
+			GtkWorkarounds.EmitAddSignal(this, widget);
 		}
 		
 		public void MoveTopLevelWidget (Gtk.Widget widget, int x, int y)
