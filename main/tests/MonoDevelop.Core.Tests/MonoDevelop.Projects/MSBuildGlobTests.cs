@@ -649,6 +649,33 @@ namespace MonoDevelop.Projects
 			p.Dispose ();
 		}
 
+		/// <summary>
+		/// Checks that a Remove item is added for a new MSBuild item that has a different item type
+		/// but matches the Include of an existing file glob.
+		/// 
+		/// Example: Add a new EmbeddedResource .cs file which matches the existing Compile file glob
+		/// should result in an EmbeddedResource Include item and a Compile Remove item being added.
+		/// </summary>
+		[Test]
+		public async Task AddFileWithDifferentMSBuildItemType_IncludeMatchesExistingGlob_AddsRemoveItemForGlob ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			string newFileName = p.BaseDirectory.Combine ("test.cs");
+			File.WriteAllText (newFileName, "test");
+
+			var projectFile = new ProjectFile (newFileName, BuildAction.EmbeddedResource);
+			p.Files.Add (projectFile);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-import-remove-test-saved")), projectXml);
+
+			p.Dispose ();
+		}
+
 		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
 		{
 			internal protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)

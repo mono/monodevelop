@@ -3377,7 +3377,8 @@ namespace MonoDevelop.Projects
 							msproject.RemoveItem (it);
 					}
 					// Check if the file is included in a glob.
-					var globItem = msproject.FindGlobItemsIncludingFile (item.Include).FirstOrDefault (gi => gi.Name == item.ItemName);
+					var matchingGlobItems = msproject.FindGlobItemsIncludingFile (item.Include).ToList ();
+					var globItem = matchingGlobItems.FirstOrDefault (gi => gi.Name == item.ItemName);
 
 					if (globItem != null) {
 						// Globbing magic can only be done if there is no metadata (for now)
@@ -3416,6 +3417,18 @@ namespace MonoDevelop.Projects
 						include = item.Include;
 						var removeItem = new MSBuildItem (item.WildcardItem.Name) { Remove = include };
 						msproject.AddItem (removeItem);
+					}
+
+					// Add remove item if file is included in a glob with a different MSBuild item type.
+					var removeGlobItem = matchingGlobItems.FirstOrDefault (gi => gi.Name != item.ItemName);
+					if (removeGlobItem != null) {
+						// Do not add the remove item if one already exists or if the Items contains
+						// an include for the item.
+						if (!msproject.GetAllItems ().Any (it => it.Name == removeGlobItem.Name && it.Remove == item.Include) &&
+							!Items.Any (it => it.ItemName == removeGlobItem.Name && it.Include == item.Include)) {
+							var removeItem = new MSBuildItem (removeGlobItem.Name) { Remove = item.Include };
+							msproject.AddItem (removeItem);
+						}
 					}
 				}
 				if (buildItem == null)
