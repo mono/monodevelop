@@ -216,6 +216,7 @@
     </Content>
     <Compile Include="BraceMatcher.fs" />
     <Compile Include="TagComments.fs" />
+    <Compile Include="TypeSignatureHelp.fs" />
   </ItemGroup>
   <Import Project="..\.paket\paket.targets" />
   <ProjectExtensions>
