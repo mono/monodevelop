@@ -390,12 +390,23 @@ namespace MonoDevelop.Xml.Editor
 				if (!shouldTriggerAttributeCompletion)
 					return null;
 
-				var existingAtts = new Dictionary<string,string> (StringComparer.OrdinalIgnoreCase);
-
+				// Parse rest of element to get all attributes
+				for (int i = Tracker.Engine.Position; i < Editor.Length; i++) {
+					Tracker.Engine.Push (Editor.GetCharAt (i));
+					var currentState = Tracker.Engine.CurrentState;
+					if (currentState is XmlAttributeState ||
+						currentState is XmlAttributeValueState ||
+						currentState is XmlTagState ||
+						(currentState is XmlNameState && currentState.Parent is XmlAttributeState))
+						continue;
+					break;
+				}
+				var existingAtts = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 				foreach (XAttribute att in attributedOb.Attributes) {
 					existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
 				}
-
+				// Update engine to Caret position(revert parsed attributes from above)
+				Tracker.UpdateEngine ();
 				var result = await GetAttributeCompletions (attributedOb, existingAtts, token);
 				if (result != null) {
 					if (!forced && currentIsNameStart)
