@@ -3318,8 +3318,18 @@ namespace MonoDevelop.Projects
 			foreach (var it in unusedItems) {
 				if (it.ParentGroup != null) { // It may already have been deleted
 					// Remove wildcard item if it is not imported.
-					if (!it.IsWildcardItem || it.ParentProject == msproject)
+					if (!it.IsWildcardItem || it.ParentProject == msproject) {
 						msproject.RemoveItem (it);
+
+						// Remove any "Remove" items that match if the file has been deleted.
+						var file = loadedProjectItems.FirstOrDefault (i => i.ItemName == it.Name && i.Include == it.Include) as ProjectFile;
+						if (file != null && !File.Exists (file.FilePath)) {
+							var toRemove = msproject.GetAllItems ().Where (i => i.Remove == it.Include).ToList ();
+							foreach (var item in toRemove) {
+								msproject.RemoveItem (item);
+							}
+						}
+					}
 				}
 				loadedItems.Remove (it);
 			}
