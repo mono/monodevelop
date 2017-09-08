@@ -40,8 +40,8 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			nodeInfo.Label = ConnectedServices.SolutionTreeNodeName;
-			nodeInfo.Icon = Context.GetIcon ("md-folder-services");
-			nodeInfo.ClosedIcon = Context.GetIcon ("md-folder-services");
+			nodeInfo.Icon = Context.GetIcon (Stock.ServicesFolder);
+			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ServicesFolder);
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

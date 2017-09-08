@@ -1271,7 +1271,7 @@ namespace MonoDevelop.Debugger
 			case ObjectValueFlags.Method: source = "method"; break;
 			case ObjectValueFlags.Literal: return "md-literal";
 			case ObjectValueFlags.Namespace: return "md-name-space";
-			case ObjectValueFlags.Group: return "md-open-resource-folder";
+			case ObjectValueFlags.Group: return Ide.Gui.Stock.OpenResourceFolder;
 			case ObjectValueFlags.Field: source = "field"; break;
 			case ObjectValueFlags.Variable: return "md-variable";
 			default: return "md-empty";

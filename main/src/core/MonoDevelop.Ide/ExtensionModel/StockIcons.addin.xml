@@ -140,7 +140,6 @@
 	<StockIcon stockid="md-file-unit-test" resource="file-unit-test-32.png" size="Dnd" />
 	<StockIcon stockid="md-find-next" resource="find-next-16.png" size="Menu" />
 	<StockIcon stockid="md-find-prev" resource="find-prev-16.png" size="Menu" />
-	<StockIcon stockid="md-folder-assets" resource="folder-assets-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-assembly" resource="reference-assembly-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-folder" resource="reference-assembly-16.png" size="Menu" />
 	<StockIcon stockid="md-fs-field" resource="element-fs-field-16.png" size="Menu" />
@@ -263,16 +262,6 @@
 	<StockIcon stockid="md-workspace" resource="workspace-16.png" size="Menu" />
 	<StockIcon stockid="md-xml-file-icon" resource="file-xml-16.png" size="Menu" />
 	<StockIcon stockid="md-xml-file-icon" resource="file-xml-32.png" size="Dnd" />
-	<StockIcon stockid="md-closed-folder" resource="folder-generic-16.png" size="Menu" />
-	<StockIcon stockid="md-closed-reference-folder" resource="folder-component-16.png" size="Menu" />
-	<StockIcon stockid="md-closed-resource-folder" resource="folder-resource-16.png" size="Menu" />
-	<StockIcon stockid="md-solution-folder-closed" resource="folder-solution-16.png" size="Menu" />
-	<StockIcon stockid="md-component-folder-closed" resource="folder-component-16.png" size="Menu" />
-	<StockIcon stockid="md-open-folder" resource="folder-generic-16.png" size="Menu" />
-	<StockIcon stockid="md-open-reference-folder" resource="folder-component-16.png" size="Menu" />
-	<StockIcon stockid="md-open-resource-folder" resource="folder-resource-16.png" size="Menu" />
-	<StockIcon stockid="md-solution-folder-open" resource="folder-solution-16.png" size="Menu" />
-	<StockIcon stockid="md-component-folder-open" resource="folder-component-16.png" size="Menu" />
 	<StockIcon stockid="md-web-search" resource="web-search-16.png" size="Menu" />
 	<StockIcon stockid="md-pad-download" resource="pad-download-16.png" size="Menu" />
 	<StockIcon stockid="md-pad-upload" resource="pad-upload-16.png" size="Menu" />
@@ -286,8 +275,6 @@
 	<StockIcon stockid="md-dependency" resource="dependency-16.png" size="Menu" />
 	<StockIcon stockid="md-expander-arrow-closed" resource="expander-arrow-closed-8.png" />
 	<StockIcon stockid="md-expander-arrow-expanded" resource="expander-arrow-expanded-8.png" />
-	<StockIcon stockid="md-folder-code" resource="folder-code-16.png" />
-	<StockIcon stockid="md-folder-services" resource="folder-services-16.png" />
 	<StockIcon stockid="md-getting-started" resource="getting-started-16.png" size="Menu" />
 	<StockIcon stockid="md-recent" resource="recent-16.png" size="Menu" />
 	<StockIcon stockid="md-palette" resource="palette-16.png" size="Menu" />
@@ -295,6 +282,21 @@
 	<StockIcon stockid="md-typography" resource="typography-16.png" size="Menu" />
 	<StockIcon stockid="md-scroll" resource="scroll-16.png" size="Menu" />
 	<StockIcon stockid="md-widget" resource="widget-16.png" size="Menu" />
+
+	<!-- Folder icons -->
+	<StockIcon stockid="md-open-folder" resource="folder-generic-16.png" size="Menu" />
+	<StockIcon stockid="md-closed-folder" resource="folder-generic-16.png" size="Menu" />
+	<StockIcon stockid="md-open-reference-folder" resource="folder-component-16.png" size="Menu" />
+	<StockIcon stockid="md-closed-reference-folder" resource="folder-component-16.png" size="Menu" />
+	<StockIcon stockid="md-open-resource-folder" resource="folder-resource-16.png" size="Menu" />
+	<StockIcon stockid="md-closed-resource-folder" resource="folder-resource-16.png" size="Menu" />
+	<StockIcon stockid="md-solution-folder-open" resource="folder-solution-16.png" size="Menu" />
+	<StockIcon stockid="md-solution-folder-closed" resource="folder-solution-16.png" size="Menu" />
+	<StockIcon stockid="md-component-folder-open" resource="folder-component-16.png" size="Menu" />
+	<StockIcon stockid="md-component-folder-closed" resource="folder-component-16.png" size="Menu" />
+	<StockIcon stockid="md-folder-assets" resource="folder-assets-16.png" size="Menu" />
+	<StockIcon stockid="md-folder-code" resource="folder-code-16.png" size="Menu" />
+	<StockIcon stockid="md-folder-services" resource="folder-services-16.png" size="Menu" />
 
 	<!-- Project icons -->
 	<StockIcon stockid="md-workspace" resource="workspace-32.png" size="Dnd" />
