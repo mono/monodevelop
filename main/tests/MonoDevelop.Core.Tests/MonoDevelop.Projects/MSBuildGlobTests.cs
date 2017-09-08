@@ -585,6 +585,25 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task DeleteFile_RemoveItemAndIncludeItemExistInProject ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-remove-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			var f = p.Files.Single (fi => fi.FilePath.FileName == "test.cs");
+			p.Files.Remove (f);
+			File.Delete (f.FilePath);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-remove-saved")), projectXml);
+
+			p.Dispose ();
+		}
+
+		[Test]
 		public async Task FileUpdateRemoveMetadataDefinedInGlob ()
 		{
 			// The glob item defines a metadata. All evaluated items have that value.
