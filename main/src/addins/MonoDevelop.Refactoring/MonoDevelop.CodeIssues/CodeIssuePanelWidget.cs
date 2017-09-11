@@ -317,6 +317,7 @@ namespace MonoDevelop.CodeIssues
 			
 			col.SetCellDataFunc (comboRenderer, ComboDataFunc);
 			treeviewInspections.HeadersVisible = false;
+			treeviewInspections.RulesHint = true;
 			treeviewInspections.Model = treeStore;
 			treeviewInspections.SearchColumn = -1; // disable the interactive search
 			GetAllSeverities ();
