@@ -73,10 +73,8 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 			return token.RawKind == OpeningTokenKind && token.SpanStart == position;
 		}
 
-		ITextSourceVersion version;
 		protected override void OnEditorSet ()
 		{
-			version = Editor.Version;
 			this.startOffset = Editor.CaretOffset - 1;
 			this.endOffset = startOffset + 1;
 		}
