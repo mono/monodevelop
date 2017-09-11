@@ -185,56 +185,56 @@ namespace ICSharpCode.NRefactory6.CSharp
 			return token;
 		}
 
-		//		private async Task<IList<TextChange>> FormatTokenAsync(Document document, SyntaxToken token, IEnumerable<IFormattingRule> formattingRules, CancellationToken cancellationToken)
-		//		{
-		//			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-		//			var formatter = CreateSmartTokenFormatter(document.Project.Solution.Workspace.Options, formattingRules, root);
-		//			var changes = formatter.FormatToken(document.Project.Solution.Workspace, token, cancellationToken);
-		//			return changes;
-		//		}
-		//
-		//		private ISmartTokenFormatter CreateSmartTokenFormatter(OptionSet optionSet, IEnumerable<IFormattingRule> formattingRules, SyntaxNode root)
-		//		{
-		//			return new SmartTokenFormatter(optionSet, formattingRules, (CompilationUnitSyntax)root);
-		//		}
-		//
-		//		private async Task<IList<TextChange>> FormatRangeAsync(
-		//			Document document, SyntaxToken endToken, IEnumerable<IFormattingRule> formattingRules,
-		//			CancellationToken cancellationToken)
-		//		{
-		//			if (!IsEndToken(endToken))
-		//			{
-		//				return SpecializedCollections.EmptyList<TextChange>();
-		//			}
-		//
-		//			var tokenRange = FormattingRangeHelper.FindAppropriateRange(endToken);
-		//			if (tokenRange == null || tokenRange.Value.Item1.Equals(tokenRange.Value.Item2))
-		//			{
-		//				return SpecializedCollections.EmptyList<TextChange>();
-		//			}
-		//
-		//			if (IsInvalidTokenKind(tokenRange.Value.Item1) || IsInvalidTokenKind(tokenRange.Value.Item2))
-		//			{
-		//				return SpecializedCollections.EmptyList<TextChange>();
-		//			}
-		//
-		//			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-		//			var formatter = new SmartTokenFormatter(document.Project.Solution.Workspace.Options, formattingRules, (CompilationUnitSyntax)root);
-		//
-		//			var changes = formatter.FormatRange(document.Project.Solution.Workspace, tokenRange.Value.Item1, tokenRange.Value.Item2, cancellationToken);
-		//			return changes;
-		//		}
-		//
-		//		private bool IsEndToken(SyntaxToken endToken)
-		//		{
-		//			if (endToken.IsKind(SyntaxKind.OpenBraceToken))
-		//			{
-		//				return false;
-		//			}
-		//
-		//			return true;
-		//		}
-		//
+		public static async Task<IList<TextChange>> FormatTokenAsync(Document document, SyntaxToken token, IEnumerable<IFormattingRule> formattingRules, CancellationToken cancellationToken)
+		{
+			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			var formatter = CreateSmartTokenFormatter(document.Project.Solution.Workspace.Options, formattingRules, root);
+			var changes = await formatter.FormatTokenAsync(document.Project.Solution.Workspace, token, cancellationToken);
+			return changes;
+		}
+
+		static SmartTokenFormatter CreateSmartTokenFormatter(OptionSet optionSet, IEnumerable<IFormattingRule> formattingRules, SyntaxNode root)
+		{
+			return new SmartTokenFormatter(optionSet, formattingRules, (CompilationUnitSyntax)root);
+		}
+		
+		public static async Task<IList<TextChange>> FormatRangeAsync(
+			Document document, SyntaxToken endToken, IEnumerable<IFormattingRule> formattingRules,
+			CancellationToken cancellationToken)
+		{
+			if (!IsEndToken(endToken))
+			{
+				return SpecializedCollections.EmptyList<TextChange>();
+			}
+
+			var tokenRange = FormattingRangeHelper.FindAppropriateRange(endToken);
+			if (tokenRange == null || tokenRange.Value.Item1.Equals(tokenRange.Value.Item2))
+			{
+				return SpecializedCollections.EmptyList<TextChange>();
+			}
+
+			if (IsInvalidTokenKind(tokenRange.Value.Item1) || IsInvalidTokenKind(tokenRange.Value.Item2))
+			{
+				return SpecializedCollections.EmptyList<TextChange>();
+			}
+
+			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			var formatter = new SmartTokenFormatter(document.Project.Solution.Workspace.Options, formattingRules, (CompilationUnitSyntax)root);
+
+			var changes = formatter.FormatRange(document.Project.Solution.Workspace, tokenRange.Value.Item1, tokenRange.Value.Item2, cancellationToken);
+			return changes;
+		}
+
+		static bool IsEndToken(SyntaxToken endToken)
+		{
+			if (endToken.IsKind(SyntaxKind.OpenBraceToken))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
 		public bool ValidSingleOrMultiCharactersTokenKind(char typedChar, SyntaxKind kind)
 		{
 			ImmutableHashSet<SyntaxKind> set;
@@ -247,7 +247,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			return set.Contains(kind);
 		}
 
-		public bool IsInvalidToken(char typedChar, SyntaxToken token)
+		public static bool IsInvalidToken(char typedChar, SyntaxToken token)
 		{
 			string text = null;
 			if (IsInvalidToken(token, ref text))
@@ -258,7 +258,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			return text[0] != typedChar;
 		}
 
-		public bool IsInvalidToken(SyntaxToken token, ref string text)
+		public static bool IsInvalidToken(SyntaxToken token, ref string text)
 		{
 			if (IsInvalidTokenKind(token))
 			{
@@ -274,7 +274,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			return false;
 		}
 
-		private bool IsInvalidTokenKind(SyntaxToken token)
+		static bool IsInvalidTokenKind(SyntaxToken token)
 		{
 			// invalid token to be formatted
 			return token.IsKind(SyntaxKind.None) ||
