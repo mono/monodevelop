@@ -45,7 +45,7 @@ module TypeSignatureHelp =
         type someType() =
             override this.ToStr$ing() = ""
         """
-        |> getSignatureHelp |> should equal "string"
+        |> getSignatureHelp |> should equal "unit -> string"
 
     [<Test>]
     let ``Override with generic parameter``() =
@@ -70,3 +70,22 @@ module TypeSignatureHelp =
             override this.Mem$ber(x:int) = 1
         """
         |> getSignatureHelp |> should equal "x:int -> int"
+
+    [<Test>]
+    let ``Override BCL method with parameter``() =
+        """
+        type someType() =
+            inherit System.IO.Stream()
+            override this.Dis$pose(disposing) = ()
+        """
+        |> getSignatureHelp |> should equal "(disposing: bool) -> unit"
+
+    [<Test>]
+    let ``Tuple argument``() =
+        "let so$mefunc(x:int, y:int) = ()"
+        |> getSignatureHelp |> should equal "x:int * y:int -> unit"
+
+    [<Test>]
+    let ``Tuple return``() =
+        "let so$mefunc(x:int, y:int) = x, y"
+        |> getSignatureHelp |> should equal "x:int * y:int -> int * int"

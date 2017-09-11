@@ -60,8 +60,17 @@ module signatureHelp =
         let getSignature (str: string) =
             let nlpos = str.IndexOfAny [|'\r';'\n'|]
             let nlpos = if nlpos > 0 then nlpos else str.Length
-            let index = str.IndexOf ": "
-            str.[index+2 .. nlpos-1]
+            let parensPos = str.IndexOf '(' 
+            if parensPos > 0 then
+                // BCL tupled arguments method
+                let str = 
+                    str.[parensPos .. nlpos-1]
+                    |> String.replace "()" "unit"
+                let lastColon = str.LastIndexOf ':'
+                sprintf "%s->%s" str.[0 .. lastColon-1] str.[lastColon+1 .. str.Length-1]
+            else
+                let index = str.IndexOf ": "
+                str.[index+2 .. nlpos-1]
 
         let firstResult x =
             match x with
