@@ -77,28 +77,30 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					MarginTop = 6,
 				});
 		       
-				var linkLabel = new Xwt.Label {
+				var linkLabel = new Xwt.LinkLabel {
 					Markup = "<span underline='true'>License Terms</span>",
 					Cursor = Xwt.CursorType.Hand,
-					MarginLeft = 12
+					MarginLeft = 12,
+					CanGetFocus = true,
+					Uri = new Uri(BrandingService.LicenseTermsUrl) 
 				};
 				if (IdeTheme.UserInterfaceTheme == Theme.Light)
 					linkLabel.Markup = string.Format ("<span color='#5C2D91'>{0}</span>", linkLabel.Markup);
 				
-				linkLabel.ButtonReleased += (sender, e) => DesktopService.ShowUrl (BrandingService.LicenseTermsUrl);
 				infoBox.PackStart (linkLabel);
 
 				if (BrandingService.PrivacyStatementUrl != null) {
-					linkLabel = new Xwt.Label {
+					linkLabel = new Xwt.LinkLabel {
 						Markup = string.Format ("<span underline='true'>{0}</span>", GettextCatalog.GetString ("Privacy Statement")),
 						Cursor = Xwt.CursorType.Hand,
-						MarginLeft = 12
+						MarginLeft = 12,
+						CanGetFocus = true,
+						Uri = new Uri(BrandingService.PrivacyStatementUrl) 
 					};
 
 					if (IdeTheme.UserInterfaceTheme == Theme.Light)
 						linkLabel.Markup = string.Format ("<span color='#5C2D91'>{0}</span>", linkLabel.Markup);
 
-					linkLabel.ButtonReleased += (sender, e) => DesktopService.ShowUrl (BrandingService.PrivacyStatementUrl);
 					infoBox.PackStart (linkLabel);
 				}
 			}
