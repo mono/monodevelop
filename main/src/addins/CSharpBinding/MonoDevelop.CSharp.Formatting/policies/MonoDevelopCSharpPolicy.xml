@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 
 MonoCSharpPolicy.xml
  
@@ -32,7 +32,7 @@ THE SOFTWARE.
 	<IndentSwitchSection>False</IndentSwitchSection>
 	<IndentSwitchCaseSection>True</IndentSwitchCaseSection>
 	<LabelPositioning>OneLess</LabelPositioning>
-	<NewLinesForBracesInTypes>False</NewLinesForBracesInTypes>
+	<NewLinesForBracesInTypes>True</NewLinesForBracesInTypes>
 	<NewLinesForBracesInMethods>True</NewLinesForBracesInMethods>
 	<NewLinesForBracesInProperties>False</NewLinesForBracesInProperties>
 	<NewLinesForBracesInAccessors>False</NewLinesForBracesInAccessors>
