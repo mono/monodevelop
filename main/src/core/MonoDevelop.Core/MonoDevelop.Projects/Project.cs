@@ -3329,6 +3329,16 @@ namespace MonoDevelop.Projects
 								msproject.RemoveItem (item);
 							}
 						}
+					} else if (it.IsWildcardItem && UseAdvancedGlobSupport) {
+						// Add "Remove" items if the file is not deleted.
+						foreach (var file in loadedProjectItems.Where (i => i.WildcardItem == it).OfType<ProjectFile> ()) {
+							if (File.Exists (file.FilePath)) {
+								if (!msproject.GetAllItems ().Where (i => i.Remove == file.Include).Any ()) {
+									var removeItem = new MSBuildItem (file.ItemName) { Remove = file.Include };
+									msproject.AddItem (removeItem);
+								}
+							}
+						}
 					}
 				}
 				loadedItems.Remove (it);

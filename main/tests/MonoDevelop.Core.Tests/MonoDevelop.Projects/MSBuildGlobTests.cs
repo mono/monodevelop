@@ -695,6 +695,63 @@ namespace MonoDevelop.Projects
 			p.Dispose ();
 		}
 
+		[Test]
+		public async Task RemoveAllFilesFromProject_OneFileNotDeleted_RemoveItemAddedForFileNotDeleted ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (3, p.Files.Count);
+
+				var f2 = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+				var f3 = p.Files.First (fi => fi.FilePath.FileName == "c3.cs");
+				File.Delete (f2.FilePath);
+				File.Delete (f3.FilePath);
+
+				p.Files.Clear ();
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-remove-saved2")), projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
+		public async Task RemoveAllFilesFromProject_NoFilesDeleted_RemoveItemAddedForFiles ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (3, p.Files.Count);
+
+				p.Files.Clear ();
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-remove-saved3")), projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
 		{
 			internal protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
