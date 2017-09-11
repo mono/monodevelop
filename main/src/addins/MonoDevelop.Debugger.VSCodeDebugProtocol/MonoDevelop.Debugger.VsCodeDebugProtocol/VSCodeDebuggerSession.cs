@@ -70,10 +70,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			protocolClient.SendRequestSync (new StepOutRequest (currentThreadId));
 		}
 
-		ProcessInfo [] processInfo = { new ProcessInfo (1, "debugee") };
+		List<ProcessInfo> processInfo = new List<ProcessInfo>();
 		protected override ProcessInfo [] OnGetProcesses ()
 		{
-			return processInfo;
+			return processInfo.ToArray();
 		}
 
 		protected override Backtrace OnGetThreadBacktrace (long processId, long threadId)
@@ -188,9 +188,6 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			protocolClient = new DebugProtocolHost (debugAgentProcess.StandardInput.BaseStream, debugAgentProcess.StandardOutput.BaseStream);
 			protocolClient.RequestReceived += OnDebugAdaptorRequestReceived;
 			protocolClient.Run ();
-			protocolClient.TraceCallback = (obj) => {
-				Debug.WriteLine (obj);
-			};
 			protocolClient.EventReceived += HandleEvent;
 			InitializeRequest initRequest = CreateInitRequest ();
 			Capabilities = protocolClient.SendRequestSync (initRequest);
@@ -223,7 +220,6 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			StartDebugAgent ();
 			LaunchRequest launchRequest = CreateLaunchRequest (startInfo);
 			protocolClient.SendRequestSync (launchRequest);
-			OnStarted ();
 			protocolClient.SendRequestSync (new ConfigurationDoneRequest ());
 		}
 
@@ -290,6 +286,11 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited) {
 						ExitCode = ((ExitedEvent)obj.Body).ExitCode
 					});
+					break;
+				case "process":
+						var processEvent = (ProcessEvent)obj.Body;
+						processInfo.Add(new ProcessInfo(processEvent.SystemProcessId ?? 1, processEvent.Name));
+						OnStarted();
 					break;
 				case "output":
 					var outputBody = (OutputEvent)obj.Body;

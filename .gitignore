@@ -87,7 +87,7 @@ Thumbs.db
 /main/missing
 /main/configure
 
-# Autotool-generated Makefiles. 
+# Autotool-generated Makefiles.
 # We have some manually-written makefiles too so can't use a glob
 /main/Makefile
 /main/man/Makefile
@@ -249,3 +249,7 @@ Thumbs.db
 #Visual Studio 2015
 main/.vs/
 main/build/util
+main/po/StripMnemonics.pdb
+main/po/StripMnemonics.exe
+*.binlog
+*.ProjectImports.zip

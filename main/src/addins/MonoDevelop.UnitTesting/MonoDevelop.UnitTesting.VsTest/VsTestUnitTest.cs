@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreUnitTest.cs
+// VsTestUnitTest.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -28,20 +28,26 @@ using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Projects;
 using MonoDevelop.UnitTesting;
+using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis;
+using System.Linq;
 
-namespace MonoDevelop.DotNetCore.UnitTesting
+namespace MonoDevelop.UnitTesting.VsTest
 {
-	class DotNetCoreUnitTest : UnitTest, IDotNetCoreTestProvider
+	class VsTestUnitTest : UnitTest, IVsTestTestProvider
 	{
+		public Project Project { get; private set; }
 		TestCase test;
-		IDotNetCoreTestRunner testRunner;
+		IVsTestTestRunner testRunner;
 		string name;
 		SourceCodeLocation sourceCodeLocation;
 
-		public DotNetCoreUnitTest (IDotNetCoreTestRunner testRunner, TestCase test)
+		public VsTestUnitTest (IVsTestTestRunner testRunner, TestCase test, Project project)
 			: base (test.DisplayName)
 		{
+			this.Project = project;
 			this.testRunner = testRunner;
 			this.test = test;
 
@@ -51,7 +57,37 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		void Init ()
 		{
 			TestId = test.Id.ToString ();
-			sourceCodeLocation = new SourceCodeLocation (test.CodeFilePath, test.LineNumber, 0);
+			if (!string.IsNullOrEmpty (test.CodeFilePath))
+				sourceCodeLocation = new SourceCodeLocation (test.CodeFilePath, test.LineNumber, 0);
+			else {
+				TypeSystemService.GetCompilationAsync (Project).ContinueWith ((t) => {
+					var dotIndex = test.FullyQualifiedName.LastIndexOf (".", StringComparison.Ordinal);
+					var className = test.FullyQualifiedName.Remove (dotIndex);
+					var methodName = test.FullyQualifiedName.Substring (dotIndex + 1);
+					var bracketIndex = methodName.IndexOf ('(');
+					if (bracketIndex != -1)
+						methodName = methodName.Remove (bracketIndex).Trim ();
+					var compilation = t.Result;
+					if (compilation == null)
+						return;
+					var cls = compilation.GetTypeByMetadataName (className);
+					if (cls == null)
+						return;
+					IMethodSymbol method = null;
+					while ((method = cls.GetMembers (methodName).OfType<IMethodSymbol> ().FirstOrDefault ()) == null) {
+						cls = cls.BaseType;
+						if (cls == null)
+							return;
+					}
+					if (method == null)
+						return;
+					var source = method.Locations.FirstOrDefault (l => l.IsInSource);
+					if (source == null)
+						return;
+					var line = source.GetLineSpan ();
+					sourceCodeLocation = new SourceCodeLocation (source.SourceTree.FilePath, line.StartLinePosition.Line, line.StartLinePosition.Character);
+				}).Ignore ();
+			}
 
 			int index = test.FullyQualifiedName.LastIndexOf ('.');
 			if (index > 0) {
@@ -60,7 +96,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 				index = FixtureTypeName.LastIndexOf ('.');
 				if (index > 0) {
 					FixtureTypeNamespace = FixtureTypeName.Substring (0, index);
-					FixtureTypeName =  FixtureTypeName.Substring (index + 1);
+					FixtureTypeName = FixtureTypeName.Substring (index + 1);
 				} else {
 					FixtureTypeNamespace = string.Empty;
 				}
@@ -79,7 +115,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 
 		protected override UnitTestResult OnRun (TestContext testContext)
 		{
-			return testRunner.RunTest (testContext, this);
+			return testRunner.RunTest (testContext, this).Result;
 		}
 
 		protected override bool OnCanRun (IExecutionHandler executionContext)

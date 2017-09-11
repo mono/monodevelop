@@ -328,7 +328,8 @@ module CompilerArguments =
        yield if fsconfig.HasDefineSymbol "DEBUG" then  "--debug+" else  "--debug-"
        yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
        yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
-
+       if not (String.IsNullOrWhiteSpace fsconfig.DebugType) then
+           yield sprintf "--debug:%s" fsconfig.DebugType
        yield match project.CompileTarget with
              | CompileTarget.Library -> "--target:library"
              | CompileTarget.Module -> "--target:module"
