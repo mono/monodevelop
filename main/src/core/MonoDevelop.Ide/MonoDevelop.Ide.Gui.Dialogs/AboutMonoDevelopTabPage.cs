@@ -55,8 +55,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			iv.SetCommonAccessibilityAttributes ("AboutImage", BrandingService.ApplicationLongName, "");
 			PackStart (iv, false, false, 0);
 
-			Xwt.VBox infoBox = new Xwt.VBox ();
-			Xwt.FrameBox mbox = new Xwt.FrameBox (infoBox);
+			Xwt.VBox infoBox = new Xwt.VBox () {
+				CanGetFocus = false
+			};
+			Xwt.FrameBox mbox = new Xwt.FrameBox (infoBox) {
+				CanGetFocus = false
+			};
 
 			infoBox.Spacing = 6;
 			infoBox.Margin = 12;
@@ -82,7 +86,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					Cursor = Xwt.CursorType.Hand,
 					MarginLeft = 12,
 					CanGetFocus = true,
-					Uri = new Uri(BrandingService.LicenseTermsUrl) 
+					Uri = new Uri(BrandingService.LicenseTermsUrl),
 				};
 				if (IdeTheme.UserInterfaceTheme == Theme.Light)
 					linkLabel.Markup = string.Format ("<span color='#5C2D91'>{0}</span>", linkLabel.Markup);
@@ -95,7 +99,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						Cursor = Xwt.CursorType.Hand,
 						MarginLeft = 12,
 						CanGetFocus = true,
-						Uri = new Uri(BrandingService.PrivacyStatementUrl) 
+						Uri = new Uri(BrandingService.PrivacyStatementUrl),
 					};
 
 					if (IdeTheme.UserInterfaceTheme == Theme.Light)
