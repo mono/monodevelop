@@ -140,8 +140,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.Workspace != null && solution != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
-			// TODO: Verify the source analysis options of the user.
-			DiagnosticProvider.Enable (this, DiagnosticProvider.Options.Syntax);
+			if (IdeApp.Preferences.EnableSourceAnalysis)
+				DiagnosticProvider.Enable (this, DiagnosticProvider.Options.Syntax);
 		}
 
 		protected override void Dispose (bool finalize)
