@@ -13,7 +13,7 @@ open MonoDevelop.Ide.Editor.Extension
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
-type SignatureHelpMarker(document, text, font, line) =
+type SignatureHelpMarker(document, text, font, line, isFromFSharpType) =
     inherit TextLineMarker()
     let mutable text' = text
     let mutable font' = font
@@ -22,6 +22,7 @@ type SignatureHelpMarker(document, text, font, line) =
     member x.Text with get() = text' and set(value) = text' <- value
     // Font size can increase with zoom
     member x.Font with get() = font' and set(value) = font' <- value
+    member x.IsFromFSharpType = isFromFSharpType
 
     interface ITextLineMarker with
         member x.Line with get() = line
@@ -56,18 +57,22 @@ module signatureHelp =
         |> List.iter(fun m -> Runtime.RunInMainThread(fun() -> editor.RemoveMarker m) |> ignore)
         markers.Length > 0
 
-    let extractSignature (FSharpToolTipText tips) =
+    let extractSignature (FSharpToolTipText tips) isFromFSharpType =
         let getSignature (str: string) =
             let nlpos = str.IndexOfAny [|'\r';'\n'|]
             let nlpos = if nlpos > 0 then nlpos else str.Length
-            let parensPos = str.IndexOf '(' 
-            if parensPos > 0 then
-                // BCL tupled arguments method
-                let str = 
-                    str.[parensPos .. nlpos-1]
-                    |> String.replace "()" "unit"
-                let lastColon = str.LastIndexOf ':'
-                sprintf "%s->%s" str.[0 .. lastColon-1] str.[lastColon+1 .. str.Length-1]
+            if not isFromFSharpType then
+                let parensPos = str.IndexOf '(' 
+                if parensPos > 0 then
+                    // BCL tupled arguments method
+                    let str = 
+                        str.[parensPos .. nlpos-1]
+                        |> String.replace "()" "unit"
+                    let lastColon = str.LastIndexOf ':'
+                    sprintf "%s->%s" str.[0 .. lastColon-1] str.[lastColon+1 .. str.Length-1]
+                else
+                    let index = str.IndexOf ": "
+                    str.[index+2 .. nlpos-1]
             else
                 let index = str.IndexOf ": "
                 str.[index+2 .. nlpos-1]
@@ -81,6 +86,32 @@ module signatureHelp =
         |> Seq.tryPick firstResult
         |> Option.map getSignature
         |> Option.fill ""
+
+    let isFSharp (mfv: FSharpMemberOrFunctionOrValue) =
+        match mfv.IsOverrideOrExplicitInterfaceImplementation with
+        | true ->
+            match mfv.EnclosingEntity with
+            | Some ent ->
+                match ent.BaseType with
+                | Some baseType ->
+                    match baseType.HasTypeDefinition with
+                    | true -> baseType.TypeDefinition.IsFSharp
+                    | false -> true
+                | None -> false
+            | None -> true
+        | false ->
+            match mfv.EnclosingEntity with
+            | Some ent -> ent.IsFSharp
+            | None -> true
+
+    let getFunctionInformation (symbolUse:FSharpSymbolUse) =
+        match symbolUse with 
+        | SymbolUse.MemberFunctionOrValue mfv when symbolUse.IsFromDefinition ->
+            match mfv.FullTypeSafe with
+            | Some t when t.IsFunctionType ->
+                 Some (symbolUse.RangeAlternate.StartLine, (symbolUse, isFSharp mfv))
+            | _ -> None
+        | _ -> None
 
     let displaySignatures (context:DocumentContext) (editor:TextEditor) recalculate =
         let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
@@ -106,10 +137,7 @@ module signatureHelp =
 
             let funs =
                 symbols
-                |> List.filter(fun s -> match s with 
-                                        | SymbolUse.MemberFunctionOrValue mfv when s.IsFromDefinition -> mfv.FullType.IsFunctionType
-                                        | _ -> false)
-                |> List.map(fun f -> f.RangeAlternate.StartLine, f)
+                |> List.choose getFunctionInformation
                 |> Map.ofList
 
             // remove any markers that are in the wrong positions
@@ -125,12 +153,12 @@ module signatureHelp =
             if removedAny then
                 runInMainThread (fun() -> document.CommitMultipleLineUpdate(topVisibleLine, bottomVisibleLine))
 
-            let addMarker text (lineNr:int) line =
-                let newMarker = SignatureHelpMarker(document, text, font, line)
+            let addMarker text (lineNr:int) line isFromFSharpType =
+                let newMarker = SignatureHelpMarker(document, text, font, line, isFromFSharpType)
                 runInMainThread(fun() -> document.AddMarker(lineNr, newMarker))
                 newMarker
 
-            funs |> Map.iter(fun _l f ->
+            funs |> Map.iter(fun _l (f, isFSharp) ->
                 let range = f.RangeAlternate
 
                 let lineOption = editor.GetLine range.StartLine |> Option.ofObj
@@ -140,13 +168,13 @@ module signatureHelp =
                     match marker, recalculate with
                     | Some marker', false when marker'.Text <> "" -> ()
                     | _ -> 
-                        let marker = marker |> Option.getOrElse(fun() -> addMarker "" range.StartLine line)
+                        let marker = marker |> Option.getOrElse(fun() -> addMarker "" range.StartLine line isFSharp)
                         if range.StartLine >= topVisibleLine && range.EndLine <= bottomVisibleLine then
                             async {
                                 let lineText = editor.GetLineText(range.StartLine)
                                 let! tooltip = ast.GetToolTip(range.StartLine, range.StartColumn, lineText)
                                 tooltip |> Option.iter(fun (tooltip, lineNr) ->
-                                    let text = extractSignature tooltip
+                                    let text = extractSignature tooltip marker.IsFromFSharpType
                                     marker.Text <- text
                                     marker.Font <- font
                                     runInMainThread (fun() -> document.CommitLineUpdate lineNr))
