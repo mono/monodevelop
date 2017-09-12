@@ -407,6 +407,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageActionType.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PendingPackageActionsHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISolutionManagerExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementPathResolver.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopMSBuildNuGetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopBuildIntegratedRestorer.cs" />
   </ItemGroup>

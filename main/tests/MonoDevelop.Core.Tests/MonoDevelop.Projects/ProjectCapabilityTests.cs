@@ -112,6 +112,33 @@ namespace MonoDevelop.Projects
 
 			item.Dispose ();
 		}
+
+		[Test]
+		public async Task AppliesTo_ActivateDeactivateCapability ()
+		{
+			string solFile = Util.GetSampleProject ("project-capability-tests", "ConsoleProject.csproj");
+			var item = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
+
+			string azureFunctionsProjectExtension = "AzureFunctionsProjectExtension";
+			Func<ProjectExtension, bool> isMatch = f => f.GetType ().Name == azureFunctionsProjectExtension;
+			var ext = item.GetFlavors ().FirstOrDefault (isMatch);
+			Assert.IsNull (ext);
+
+			// Now activate "AzureFunctions" capability
+			var import = item.MSBuildProject.AddNewImport ("azurefunctions.targets");
+			await item.ReevaluateProject (Util.GetMonitor ());
+
+			ext = item.GetFlavors ().FirstOrDefault (isMatch);
+			Assert.IsNotNull (ext);
+
+			item.MSBuildProject.RemoveImport (import);
+			await item.ReevaluateProject (Util.GetMonitor ());
+
+			ext = item.GetFlavors ().FirstOrDefault (isMatch);
+			Assert.IsNull (ext);
+
+			item.Dispose ();
+		}
 	}
 
 	class CustomCapabilityNode : SolutionItemExtensionNode

@@ -45,8 +45,21 @@ namespace MonoDevelop.Core.Execution
 		}
 
 		public int ExitCode { get; set; }
-		
-		public int ProcessId { get; set; }
+
+		int processId;
+		public int ProcessId {
+			get {
+				return processId;
+			}
+			set {
+				if (processId != value) {
+					processId = value;
+					ProcessIdSet?.Invoke (this);
+				}
+			}
+		}
+
+		public event Action<ProcessAsyncOperation> ProcessIdSet;
 	}
 
 	public class NullProcessAsyncOperation : ProcessAsyncOperation

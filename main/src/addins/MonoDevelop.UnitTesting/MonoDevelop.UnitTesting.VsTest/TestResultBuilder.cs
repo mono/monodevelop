@@ -30,26 +30,30 @@ using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using MonoDevelop.UnitTesting;
+using System.Threading.Tasks;
 
-namespace MonoDevelop.DotNetCore.UnitTesting
+namespace MonoDevelop.UnitTesting.VsTest
 {
 	class TestResultBuilder
 	{
 		TestContext testContext;
-		IDotNetCoreTestProvider rootTest;
+		IVsTestTestProvider rootTest;
 		bool runningSingleTest;
 
-		public TestResultBuilder (TestContext testContext, IDotNetCoreTestProvider rootTest)
+		public TaskCompletionSource<UnitTestResult> TaskSource = new TaskCompletionSource<UnitTestResult> ();
+
+		public TestResultBuilder (TestContext testContext, IVsTestTestProvider rootTest)
 		{
 			this.testContext = testContext;
 			this.rootTest = rootTest;
-			runningSingleTest = rootTest is DotNetCoreUnitTest;
+			runningSingleTest = rootTest is VsTestUnitTest;
 			TestResult = UnitTestResult.CreateSuccess ();
 		}
 
 		public void CreateFailure (Exception ex)
 		{
 			TestResult = UnitTestResult.CreateFailure (ex);
+			TaskSource.SetResult (TestResult);
 		}
 
 		public UnitTestResult TestResult { get; private set; }
@@ -77,6 +81,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			if (testRunComplete.LastRunTests != null) {
 				OnTestRunChanged (testRunComplete.LastRunTests);
 			}
+			TaskSource.SetResult (TestResult);
 		}
 
 		void OnTestResult (TestResult result)
@@ -203,7 +208,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		{
 			var parent = currentTest.Parent as UnitTestGroup;
 
-			while (parent != null && parent != rootTest && !(parent is DotNetCoreProjectTestSuite)) {
+			while (parent != null && parent != rootTest && !(parent is VsTestProjectTestSuite)) {
 				if (currentTest.Status == TestStatus.Running) {
 					OnChildTestRunning (parent);
 				} else if (currentTest.Status == TestStatus.Ready) {

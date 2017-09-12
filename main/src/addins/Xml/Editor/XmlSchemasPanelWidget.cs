@@ -421,6 +421,10 @@ namespace MonoDevelop.Xml.Editor
 		protected virtual void addRegisteredSchema (object sender, EventArgs args)
 		{
 			string fileName = XmlEditorService.BrowseForSchemaFile ();
+
+			// We need to present the window so that the keyboard focus returns to the correct parent window
+			((Gtk.Window)Toplevel).Present();
+
 			if (string.IsNullOrEmpty (fileName))
 				return;
 			

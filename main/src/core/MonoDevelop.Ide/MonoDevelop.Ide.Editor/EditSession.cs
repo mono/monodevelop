@@ -155,25 +155,26 @@ namespace MonoDevelop.Ide.Editor
 				return;
 			}
 			handledCommand = false;
-		}
+		}	
 
 		protected override void OnEditorSet ()
 		{
-			startOffset = Editor.CaretOffset;
-			endOffset = StartOffset + 1;
+			startOffset = Editor.CaretOffset - 1;
+			endOffset = startOffset + 1;
 		}
 
 		public override void BeforeBackspace (out bool handledCommand)
 		{
-			if (Editor.CaretOffset == StartOffset +  1) {
-				Editor.EndSession ();
-			}
 			base.BeforeBackspace (out handledCommand);
+			if (Editor.CaretOffset <= StartOffset + 1 || Editor.CaretOffset > EndOffset) {
+				Editor.EndSession ();
+			}	
 		}
 
-		public override void AfterDelete ()
+		public override void BeforeDelete (out bool handledCommand)
 		{
-			if (Editor.CaretOffset == StartOffset) {
+			base.BeforeDelete (out handledCommand);
+			if (Editor.CaretOffset <= StartOffset || Editor.CaretOffset >= EndOffset) {
 				Editor.EndSession ();
 			}
 		}

@@ -1,4 +1,4 @@
-﻿//
+//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -60,7 +60,7 @@ namespace Microsoft.VisualStudio.Platform
 						AddinManager.LoadAddin(null, assemblyNode.Addin.Id);
 
                         var assemblyFilePath = assemblyNode.Addin.GetFilePath(assemblyNode.FileName);
-                        var assembly = Runtime.SystemAssemblyService.LoadAssemblyFrom(assemblyFilePath);
+                        var assembly = MonoDevelop.Core.Runtime.SystemAssemblyService.LoadAssemblyFrom(assemblyFilePath);
                         catalog.Catalogs.Add(new AssemblyCatalog(assembly));
                     }
                     catch (Exception e)
@@ -199,6 +199,8 @@ namespace Microsoft.VisualStudio.Platform
 
 			if (this.ContentTypeRegistryService.GetContentType ("css") != null) {
 				LinkTypes ("text/x-css", "css");
+				LinkTypes ("text/x-less-web", "LESS");
+				LinkTypes ("text/x-scss-web", "SCSS");
 				LinkTypes ("text/x-html", "htmlx");
 				LinkTypes ("text/x-json", "JSON");
 			}

@@ -268,7 +268,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			buffer.TagTable.Add (debugTag);
 
 			consoleLogTag = new TextTag ("consoleLog");
-			consoleLogTag.Foreground = Styles.DimTextColor.ToHexString (false);
+			consoleLogTag.Foreground = Styles.SecondaryTextColor.ToHexString (false);
 			buffer.TagTable.Add (consoleLogTag);
 			
 			tag = new TextTag ("0");

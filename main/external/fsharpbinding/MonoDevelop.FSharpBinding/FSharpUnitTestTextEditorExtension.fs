@@ -56,7 +56,7 @@ module unitTestGatherer =
                         match symbolUse.Symbol with
                         | :? FSharpMemberOrFunctionOrValue as func -> 
                             let typeName =
-                                match func.EnclosingEntitySafe with
+                                match func.EnclosingEntity with
                                 | Some ent -> ent.QualifiedName
                                 | None _ ->
                                     MonoDevelop.Core.LoggingService.LogWarning(sprintf "F# GatherUnitTests: found a unit test method with no qualified name: %s" func.FullName)

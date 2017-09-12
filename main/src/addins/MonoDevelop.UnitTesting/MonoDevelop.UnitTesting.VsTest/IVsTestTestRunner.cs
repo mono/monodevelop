@@ -1,5 +1,5 @@
 ﻿//
-// DiscoveredTests.cs
+// IVsTestTestRunner.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,38 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using System.Threading.Tasks;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.UnitTesting;
 
-namespace MonoDevelop.DotNetCore.UnitTesting
+namespace MonoDevelop.UnitTesting.VsTest
 {
-	class DiscoveredTests
+	interface IVsTestTestRunner
 	{
-		readonly List<TestCase> tests = new List<TestCase> ();
-
-		public IEnumerable<TestCase> Tests {
-			get { return tests; }
-		}
-
-		public void Add (IEnumerable<TestCase> newTests)
-		{
-			tests.AddRange (newTests);
-		}
-
-		public IEnumerable<UnitTest> BuildTestInfo (DotNetCoreProjectTestSuite projectTestSuite)
-		{
-			tests.Sort (OrderByName);
-
-			var parentNamespace = new DotNetCoreNamespaceTestGroup (projectTestSuite, null, String.Empty);
-			parentNamespace.AddTests (tests);
-			return parentNamespace.Tests;
-		}
-
-		static int OrderByName (TestCase x, TestCase y)
-		{
-			return StringComparer.Ordinal.Compare (x.FullyQualifiedName, y.FullyQualifiedName);
-		}
+		bool CanRunTests (IExecutionHandler executionContext);
+		Task<UnitTestResult> RunTest (TestContext testContext, IVsTestTestProvider testProvider);
 	}
 }

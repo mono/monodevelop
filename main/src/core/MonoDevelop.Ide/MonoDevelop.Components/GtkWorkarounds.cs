@@ -1497,6 +1497,24 @@ namespace MonoDevelop.Components
 			window.Mapped += OnMappedDisableButtons;
 #endif
 		}
+
+
+		public static void EmitAddSignal(Container container, Widget child)
+		{
+#if MAC
+			// On Mac if we add a widget to a parent by hand, we need to inform the accessibility system of the fact
+			// If this is called from Linux or Windows custom Gtk then it will trigger warnings because we've protected
+			// for the situation in the Mac version of Gtk
+			GLib.Signal.Emit(container, "add", child);
+#endif
+		}
+
+		public static void EmitRemoveSignal(Container container, Widget child)
+		{
+#if MAC
+			GLib.Signal.Emit(container, "remove", child);
+#endif
+		}
 	}
 
 	public struct KeyboardShortcut : IEquatable<KeyboardShortcut>

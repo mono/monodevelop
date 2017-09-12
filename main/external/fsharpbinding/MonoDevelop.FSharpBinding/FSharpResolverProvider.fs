@@ -55,9 +55,11 @@ type FSharpResolverProvider() =
                             | FSharpFindDeclResult.DeclFound(m) ->
                                 LoggingService.LogDebug("ResolverProvider: found, line = {0}, col = {1}, file = {2}", m.StartLine, m.StartColumn, m.FileName)
                                 DocumentRegion(m.StartLine, m.EndLine, m.StartColumn+1, m.EndColumn+1)
+                            | FSharpFindDeclResult.ExternalDecl(_assembly, _externalSymbol) ->
+                                DocumentRegion()
                             | FSharpFindDeclResult.DeclNotFound(notfound) ->
                                 match notfound with
-                                | FSharpFindDeclFailureReason.Unknown           -> LoggingService.LogWarning "Declaration not found: Unknown"
+                                | FSharpFindDeclFailureReason.Unknown _         -> LoggingService.LogWarning "Declaration not found: Unknown"
                                 | FSharpFindDeclFailureReason.NoSourceCode      -> LoggingService.LogWarning "Declaration not found: No Source Code"
                                 | FSharpFindDeclFailureReason.ProvidedType(t)   -> LoggingService.LogWarning("Declaration not found: ProvidedType {0}", t)
                                 | FSharpFindDeclFailureReason.ProvidedMember(m) -> LoggingService.LogWarning("Declaration not found: ProvidedMember {0}", m)

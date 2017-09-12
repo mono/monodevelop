@@ -95,15 +95,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			tagSelectorDirectory.TagModel = tagModel;
 			tagSelectorDirectory.TargetEntry = workingdirEntry;
-			tagSelectorDirectory.ButtonAccessible.SetCommonAttributes ("CustomCommand.TagSelectorDirectory",
-										  							   GettextCatalog.GetString ("Tag Selector"),
-																	   GettextCatalog.GetString ("Insert a custom tag into the directory entry"));
+			tagSelectorDirectory.Accessible.SetCommonAttributes ("CustomCommand.TagSelectorDirectory",
+																 GettextCatalog.GetString ("Tag Selector"),
+																 GettextCatalog.GetString ("Insert a custom tag into the directory entry"));
 			
 			tagSelectorCommand.TagModel = tagModel;
 			tagSelectorCommand.TargetEntry = entryCommand;
-			tagSelectorCommand.ButtonAccessible.SetCommonAttributes ("CustomCommand.TagSelector",
-				                                                     GettextCatalog.GetString ("Tag Selector"),
-					                                                 GettextCatalog.GetString ("Insert a custom tag into the command entry"));
+			tagSelectorCommand.Accessible.SetCommonAttributes ("CustomCommand.TagSelector",
+                                                               GettextCatalog.GetString ("Tag Selector"),
+	                                                           GettextCatalog.GetString ("Insert a custom tag into the command entry"));
 
 			SetupAccessibility ();
 		}

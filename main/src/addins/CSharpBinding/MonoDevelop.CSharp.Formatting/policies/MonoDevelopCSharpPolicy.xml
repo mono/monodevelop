@@ -1,0 +1,76 @@
+﻿<!--
+
+MonoCSharpPolicy.xml
+ 
+Author:
+      Mike Krüger <mkrueger@xamarin.com>
+
+Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+
+<CSharpFormattingPolicy scope="text/x-csharp" allowDiffSerialize="True">
+	<IndentBlock>True</IndentBlock>
+	<IndentBraces>False</IndentBraces>
+	<IndentSwitchSection>False</IndentSwitchSection>
+	<IndentSwitchCaseSection>True</IndentSwitchCaseSection>
+	<LabelPositioning>OneLess</LabelPositioning>
+	<NewLinesForBracesInTypes>True</NewLinesForBracesInTypes>
+	<NewLinesForBracesInMethods>True</NewLinesForBracesInMethods>
+	<NewLinesForBracesInProperties>False</NewLinesForBracesInProperties>
+	<NewLinesForBracesInAccessors>False</NewLinesForBracesInAccessors>
+	<NewLinesForBracesInAnonymousMethods>False</NewLinesForBracesInAnonymousMethods>
+	<NewLinesForBracesInControlBlocks>False</NewLinesForBracesInControlBlocks>
+	<NewLinesForBracesInAnonymousTypes>False</NewLinesForBracesInAnonymousTypes>
+	<NewLinesForBracesInObjectCollectionArrayInitializers>False</NewLinesForBracesInObjectCollectionArrayInitializers>
+	<NewLinesForBracesInLambdaExpressionBody>False</NewLinesForBracesInLambdaExpressionBody>
+	<NewLineForElse>False</NewLineForElse>
+	<NewLineForCatch>False</NewLineForCatch>
+	<NewLineForFinally>False</NewLineForFinally>
+	<NewLineForMembersInObjectInit>False</NewLineForMembersInObjectInit>
+	<NewLineForMembersInAnonymousTypes>False</NewLineForMembersInAnonymousTypes>
+	<NewLineForClausesInQuery>False</NewLineForClausesInQuery>
+	<SpacingAfterMethodDeclarationName>True</SpacingAfterMethodDeclarationName>
+	<SpaceWithinMethodDeclarationParenthesis>False</SpaceWithinMethodDeclarationParenthesis>
+	<SpaceBetweenEmptyMethodDeclarationParentheses>False</SpaceBetweenEmptyMethodDeclarationParentheses>
+	<SpaceAfterMethodCallName>True</SpaceAfterMethodCallName>
+	<SpaceWithinMethodCallParentheses>False</SpaceWithinMethodCallParentheses>
+	<SpaceBetweenEmptyMethodCallParentheses>False</SpaceBetweenEmptyMethodCallParentheses>
+	<SpaceAfterControlFlowStatementKeyword>True</SpaceAfterControlFlowStatementKeyword>
+	<SpaceWithinExpressionParentheses>False</SpaceWithinExpressionParentheses>
+	<SpaceWithinCastParentheses>False</SpaceWithinCastParentheses>
+	<SpaceWithinOtherParentheses>False</SpaceWithinOtherParentheses>
+	<SpaceAfterCast>False</SpaceAfterCast>
+	<SpacesIgnoreAroundVariableDeclaration>False</SpacesIgnoreAroundVariableDeclaration>
+	<SpaceBeforeOpenSquareBracket>True</SpaceBeforeOpenSquareBracket>
+	<SpaceBetweenEmptySquareBrackets>False</SpaceBetweenEmptySquareBrackets>
+	<SpaceWithinSquareBrackets>False</SpaceWithinSquareBrackets>
+	<SpaceAfterColonInBaseTypeDeclaration>True</SpaceAfterColonInBaseTypeDeclaration>
+	<SpaceAfterComma>True</SpaceAfterComma>
+	<SpaceAfterDot>False</SpaceAfterDot>
+	<SpaceAfterSemicolonsInForStatement>True</SpaceAfterSemicolonsInForStatement>
+	<SpaceBeforeColonInBaseTypeDeclaration>True</SpaceBeforeColonInBaseTypeDeclaration>
+	<SpaceBeforeComma>False</SpaceBeforeComma>
+	<SpaceBeforeDot>False</SpaceBeforeDot>
+	<SpaceBeforeSemicolonsInForStatement>False</SpaceBeforeSemicolonsInForStatement>
+	<SpacingAroundBinaryOperator>Single</SpacingAroundBinaryOperator>
+	<WrappingPreserveSingleLine>True</WrappingPreserveSingleLine>
+	<WrappingKeepStatementsOnSingleLine>True</WrappingKeepStatementsOnSingleLine>
+</CSharpFormattingPolicy>
