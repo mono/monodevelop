@@ -28,6 +28,7 @@ using System;
 using System.Diagnostics;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Core;
 
 namespace Mono.TextEditor
 {
@@ -396,7 +397,7 @@ namespace Mono.TextEditor
 					try {
 						font = Pango.FontDescription.FromString (FontName);
 					} catch {
-						Console.WriteLine ("Could not load font: {0}", FontName);
+						LoggingService.LogError("Could not load text editor font");
 					}
 					if (font == null || String.IsNullOrEmpty (font.Family))
 						font = Pango.FontDescription.FromString (DEFAULT_FONT);
@@ -427,7 +428,7 @@ namespace Mono.TextEditor
 						if (!string.IsNullOrEmpty (GutterFontName))
 							gutterFont = Pango.FontDescription.FromString (GutterFontName);
 					} catch {
-						Console.WriteLine ("Could not load gutter font: {0}", GutterFontName);
+						LoggingService.LogError("Error while loading gutter font.");
 					}
 					if (gutterFont == null || String.IsNullOrEmpty (gutterFont.Family))
 						gutterFont = Gtk.Widget.DefaultStyle.FontDescription.Copy ();

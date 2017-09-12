@@ -45,6 +45,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Refactoring;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -583,7 +584,13 @@ namespace MonoDevelop.CSharp.Formatting
 					using (var undo = Editor.OpenUndoGroup ()) {
 						if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
 							var oldVersion = Editor.Version;
-							OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
+							int start = token.SpanStart;
+							var parentStatement = token.Parent.AncestorsAndSelf().OfType<StatementSyntax>().FirstOrDefault();
+							if (parentStatement != null)
+								start = parentStatement.SpanStart;
+							Console.WriteLine(start +"-"+ Editor.CaretOffset);
+							OnTheFlyFormatter.Format(Editor, DocumentContext, start, Editor.CaretOffset, exact:true, optionSet: optionSet);
+							//OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
 							if (oldVersion.CompareAge (Editor.Version) != 0)
 								CompletionWindowManager.HideWindow ();
 						}
@@ -629,7 +636,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 
 			string text = null;
-			if (service.IsInvalidToken (token, ref text))
+			if (CSharpEditorFormattingService.IsInvalidToken (token, ref text))
 				return;
 			// Check to see if the token is ')' and also the parent is a using statement. If not, bail
 			if (CSharpEditorFormattingService.TokenShouldNotFormatOnReturn (token))
