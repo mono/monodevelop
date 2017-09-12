@@ -26,6 +26,7 @@ using System.IO;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.DotNetCore;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.AzureFunctions
@@ -52,7 +53,7 @@ namespace MonoDevelop.AzureFunctions
 					return Path.GetFullPath (funcEnv);
 				}
 			}
-			return AddinManager.CurrentAddin.GetFilePath (Path.Combine ("azure-functions-cli-66a932fb", "func.exe"));
+			return AddinManager.CurrentAddin.GetFilePath (Path.Combine ("azure-functions-cli", "Azure.Functions.Cli.dll"));
 		}
 
 		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
@@ -74,8 +75,8 @@ namespace MonoDevelop.AzureFunctions
 		{
 			// Unless we pass a port it will spawn a child host, which won't be followed by the debugger.
 			var cfg = (DotNetProjectConfiguration)Project.GetConfiguration (configSel);
-			var cmd = new DotNetExecutionCommand (FuncExe) {
-				Arguments = "host start -p 7071 --pause-on-error",
+			var cmd = new DotNetCoreExecutionCommand (cfg.OutputDirectory, FuncExe, "host start -p 7071 --pause-on-error") {
+				//Arguments = "host start -p 7071 --pause-on-error",
 				WorkingDirectory = cfg.OutputDirectory,
 				EnvironmentVariables = cfg.GetParsedEnvironmentVariables (),
 			};

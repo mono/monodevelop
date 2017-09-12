@@ -44,6 +44,11 @@
       <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.DotNetCore\MonoDevelop.DotNetCore.csproj">
+      <Project>{6868153E-41EA-43A4-A81A-C1E7256373F7}</Project>
+      <Name>MonoDevelop.DotNetCore</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -97,19 +102,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="..\..\..\packages\Microsoft.AzureFunctions.ProjectTemplates.1.0.0-beta3\Microsoft.AzureFunctions.ProjectTemplates.1.0.0-beta3.nupkg">
+    <None Include="..\..\..\packages\Microsoft.AzureFunctions.ProjectTemplates.1.0.1-beta6-10048\Microsoft.AzureFunctions.ProjectTemplates.1.0.1-beta6-10048.nupkg">
       <Link>Templates\Microsoft.AzureFunctions.ProjectTemplates.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\packages\Azure.Functions.Templates.1.0.1-beta1\Azure.Functions.Templates.1.0.1-beta1.nupkg">
+    <None Include="..\..\..\packages\Azure.Functions.Templates.1.0.1-beta6-10048\Azure.Functions.Templates.1.0.1-beta6-10048.nupkg">
       <Link>Templates\Azure.Functions.Templates.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <MDDownload
-        Include="https://dl.xamarin.com/uploads/at5p4wjtk44/azure-functions-cli-66a932fb.zip"
-        SHA1="81a64e48067a1ef5da6396d151fcfbdfa75afa3c"
-        OutputDir="$(OutputPath)"
-        Unpack="True" />
+    <MDDownload Include="https://dl.xamarin.com/uploads/at5p4wjtk44/azure-functions-cli-66a932fb.zip" SHA1="81a64e48067a1ef5da6396d151fcfbdfa75afa3c" OutputDir="$(OutputPath)" Unpack="True" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MDBuildTasks)\DownloadFile.targets" />
