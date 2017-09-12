@@ -3341,6 +3341,10 @@ namespace MonoDevelop.Projects
 							if (File.Exists (file.FilePath)) {
 								AddRemoveItemIfMissing (msproject, file);
 							}
+							// Ensure "Update" items are removed from the project. If there are no
+							// files left in the project for the glob then the "Update" item will
+							// not have been removed.
+							RemoveUpdateItemsForFile (msproject, it, file);
 						}
 					}
 				}
@@ -3481,6 +3485,15 @@ namespace MonoDevelop.Projects
 			if (!msproject.GetAllItems ().Where (i => i.Remove == file.Include).Any ()) {
 				var removeItem = new MSBuildItem (file.ItemName) { Remove = file.Include };
 				msproject.AddItem (removeItem);
+			}
+		}
+
+		void RemoveUpdateItemsForFile (MSBuildProject msproject, MSBuildItem globItem, ProjectFile file)
+		{
+			foreach (var updateItem in FindUpdateItemsForItem (globItem, file.Include).ToList ()) {
+				if (updateItem.ParentGroup != null) {
+					msproject.RemoveItem (updateItem);
+				}
 			}
 		}
 
