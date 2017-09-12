@@ -1798,6 +1798,10 @@ namespace MonoDevelop.Projects
 			var mp = (Project)p;
 			mp.UseAdvancedGlobSupport = true;
 
+			foreach (var file in mp.Files) {
+				File.Delete (file.FilePath);
+			}
+
 			mp.Files.Clear ();
 			await p.SaveAsync (Util.GetMonitor ());
 

@@ -3321,13 +3321,30 @@ namespace MonoDevelop.Projects
 					if (!it.IsWildcardItem || it.ParentProject == msproject) {
 						msproject.RemoveItem (it);
 
-						// Remove any "Remove" items that match if the file has been deleted.
-						var file = loadedProjectItems.FirstOrDefault (i => i.ItemName == it.Name && i.Include == it.Include) as ProjectFile;
-						if (file != null && !File.Exists (file.FilePath)) {
-							var toRemove = msproject.GetAllItems ().Where (i => i.Remove == it.Include).ToList ();
-							foreach (var item in toRemove) {
-								msproject.RemoveItem (item);
+						var file = loadedProjectItems.FirstOrDefault (i => {
+							return i.ItemName == it.Name && (i.Include == it.Include || i.Include == it.Update);
+						}) as ProjectFile;
+						if (file != null) {
+							if (File.Exists (file.FilePath)) {
+								AddRemoveItemIfMissing (msproject, file);
+							} else {
+								// Remove any "Remove" items that match if the file has been deleted.
+								var toRemove = msproject.GetAllItems ().Where (i => i.Remove == it.Include).ToList ();
+								foreach (var item in toRemove) {
+									msproject.RemoveItem (item);
+								}
 							}
+						}
+					} else if (it.IsWildcardItem && UseAdvancedGlobSupport) {
+						// Add "Remove" items if the file is not deleted.
+						foreach (var file in loadedProjectItems.Where (i => i.WildcardItem == it).OfType<ProjectFile> ()) {
+							if (File.Exists (file.FilePath)) {
+								AddRemoveItemIfMissing (msproject, file);
+							}
+							// Ensure "Update" items are removed from the project. If there are no
+							// files left in the project for the glob then the "Update" item will
+							// not have been removed.
+							RemoveUpdateItemsForFile (msproject, it, file);
 						}
 					}
 				}
@@ -3459,6 +3476,23 @@ namespace MonoDevelop.Projects
 					item.Write (this, buildItem);
 					if (buildItem.Include != include)
 						buildItem.Include = include;
+				}
+			}
+		}
+
+		static void AddRemoveItemIfMissing (MSBuildProject msproject, ProjectFile file)
+		{
+			if (!msproject.GetAllItems ().Where (i => i.Remove == file.Include).Any ()) {
+				var removeItem = new MSBuildItem (file.ItemName) { Remove = file.Include };
+				msproject.AddItem (removeItem);
+			}
+		}
+
+		void RemoveUpdateItemsForFile (MSBuildProject msproject, MSBuildItem globItem, ProjectFile file)
+		{
+			foreach (var updateItem in FindUpdateItemsForItem (globItem, file.Include).ToList ()) {
+				if (updateItem.ParentGroup != null) {
+					msproject.RemoveItem (updateItem);
 				}
 			}
 		}
