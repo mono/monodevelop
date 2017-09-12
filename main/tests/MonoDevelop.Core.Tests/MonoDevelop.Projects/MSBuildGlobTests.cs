@@ -752,6 +752,56 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Single .cs file found by the imported file glob. The .cs file has an Update item.
+		/// On removing the file from the project, but not deleting it, was not adding a Remove item
+		/// to the project.
+		/// </summary>
+		[Test]
+		public async Task RemoveAllFilesFromProject_ProjectHasOneFileWithUpdateItem_RemoveItemAddedAndUpdateItemRemoved ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-remove-test2.csproj");
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (3, p.Files.Count);
+
+				var f2 = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+				var f3 = p.Files.First (fi => fi.FilePath.FileName == "c3.cs");
+				File.Delete (f2.FilePath);
+				File.Delete (f3.FilePath);
+
+				p.Files.Remove (f2);
+				p.Files.Remove (f3);
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				// Single c1.cs Update item in project. No other .cs files found by the file glob.
+				// With two or more files the bug does not happen. Also need to reload the project
+				// otherwise the bug does not happen.
+				p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (1, p.Files.Count);
+
+				// Remove c1.cs file but do not delete it.
+				p.Files.Clear ();
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-remove-saved2")), projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
 		{
 			internal protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
