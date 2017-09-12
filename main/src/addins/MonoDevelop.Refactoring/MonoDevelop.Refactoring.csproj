@@ -127,8 +127,6 @@
     <Compile Include="MonoDevelop.Refactoring\RefactoringService.cs" />
     <Compile Include="MonoDevelop.Refactoring\Change.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameRefactoring.cs" />
-    <Compile Include="MonoDevelop.Refactoring.Rename\RenameItemDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringOptions.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
@@ -162,6 +160,7 @@
     <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewTooltipWindow.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeFixMenuService.cs" />
     <Compile Include="MonoDevelop.Refactoring\QuickFixMenuHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Rename\RenamePopup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

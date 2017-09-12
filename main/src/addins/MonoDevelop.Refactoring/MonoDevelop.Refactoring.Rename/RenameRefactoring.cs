@@ -45,6 +45,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -95,16 +96,14 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 
 			if (changedDocuments.Count > 1) {
-				using (var dlg = new RenameItemDialog (symbol, this))
-					MessageService.ShowCustomDialog (dlg);
+				ShowRenamePopup(symbol);
 				return;
 			}
 
 			var projectChange = projectChanges [0];
 			var changes = projectChange.GetChangedDocuments ().ToList ();
 			if (changes.Count != 1 || symbol.Kind == SymbolKind.NamedType) {
-				using (var dlg = new RenameItemDialog (symbol, this))
-					MessageService.ShowCustomDialog (dlg);
+				ShowRenamePopup(symbol);
 				return;
 			}
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -159,6 +158,12 @@ namespace MonoDevelop.Refactoring.Rename
 					}
 				}
 			}) { TextLinkPurpose = TextLinkPurpose.Rename });
+		}
+
+		void ShowRenamePopup(ISymbol symbol)
+		{
+			new RenamePopup(this, symbol);
+
 		}
 
 		public class RenameProperties
