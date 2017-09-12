@@ -400,6 +400,7 @@ namespace MonoDevelop.SourceEditor
 			if (extension is TopLevelWidgetExtension) {
 				var widgetExtension = (TopLevelWidgetExtension)extension;
 				Widget w = widgetExtension.CreateWidget ();
+				w.SizeAllocated += (o, args) => UpdateWidgetPosition(widgetExtension, w);
 				int x, y;
 				if (!CalcWidgetPosition (widgetExtension, w, out x, out y)) {
 					w.Destroy ();
@@ -466,12 +467,17 @@ namespace MonoDevelop.SourceEditor
 		void UpdateWidgetPositions ()
 		{
 			foreach (var e in widgetExtensions) {
-				int x,y;
-				if (CalcWidgetPosition ((TopLevelWidgetExtension)e.Key, e.Value, out x, out y))
-					widget.TextEditor.TextArea.MoveTopLevelWidget (e.Value, x, y);
-				else
-					e.Value.Hide ();
+				UpdateWidgetPosition (e.Key, e.Value);
 			}
+		}
+
+		void UpdateWidgetPosition (TopLevelWidgetExtension widgetExtension, Widget w)
+		{
+			int x, y;
+			if (CalcWidgetPosition(widgetExtension, w, out x, out y))
+				widget.TextEditor.TextArea.MoveTopLevelWidget(w, x, y);
+			else
+				w.Hide();
 		}
 
 		bool CalcWidgetPosition (TopLevelWidgetExtension widgetExtension, Widget w, out int x, out int y)
