@@ -611,6 +611,8 @@ namespace MonoDevelop.Projects
 		{
 			base.PopulateOutputFileList (list, configuration);
 			DotNetProjectConfiguration conf = GetConfiguration (configuration) as DotNetProjectConfiguration;
+			if (conf == null)
+				return;
 
 			// Debug info file
 
@@ -989,13 +991,11 @@ namespace MonoDevelop.Projects
 		async Task<List<AssemblyReference>> RunResolveAssemblyReferencesTarget (ConfigurationSelector configuration)
 		{
 			List<AssemblyReference> refs = null;
-			var conf = GetConfiguration (configuration);
-			if (conf == null)
-				return new List<AssemblyReference> ();
-			
+			var confId = (GetConfiguration (configuration) ?? DefaultConfiguration)?.Id ?? "";
+
 			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false)) {
 				// Check the cache before starting the task
-				if (referenceCache.TryGetValue (conf.Id, out refs))
+				if (referenceCache.TryGetValue (confId, out refs))
 					return refs;
 
 				var monitor = new ProgressMonitor ();
@@ -1010,7 +1010,7 @@ namespace MonoDevelop.Projects
 
 				refs = result.Items.Select (i => new AssemblyReference (i.Include, i.Metadata)).ToList ();
 
-				referenceCache [conf.Id] = refs;
+				referenceCache [confId] = refs;
 			}
 			return refs;
 		}
@@ -1040,13 +1040,11 @@ namespace MonoDevelop.Projects
 		async Task<List<PackageDependency>> RunResolvePackageDependenciesTarget (ConfigurationSelector configuration, CancellationToken cancellationToken)
 		{
 			List<PackageDependency> packageDependencies = null;
-			var conf = GetConfiguration (configuration);
-			if (conf == null)
-			return new List<PackageDependency> ();
-			
+			var confId = (GetConfiguration (configuration) ?? DefaultConfiguration)?.Id ?? "";
+
 			using (await packageDependenciesCacheLock.EnterAsync ().ConfigureAwait (false)) {
 				// Check the cache before starting the task
-				if (packageDependenciesCache.TryGetValue (conf.Id, out packageDependencies))
+				if (packageDependenciesCache.TryGetValue (confId, out packageDependencies))
 					return packageDependencies;
 
 				var monitor = new ProgressMonitor ().WithCancellationToken (cancellationToken);
@@ -1064,7 +1062,7 @@ namespace MonoDevelop.Projects
 
 				packageDependencies = result.Items.Select (i => PackageDependency.Create (i)).Where (dependency => dependency != null).ToList ();
 
-				packageDependenciesCache [conf.Id] = packageDependencies;
+				packageDependenciesCache [confId] = packageDependencies;
 			}
 
 			return packageDependencies;
