@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
 using NuGet.Configuration;
+using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Refactoring
@@ -61,13 +62,8 @@ namespace MonoDevelop.PackageManagement.Refactoring
 		{
 			return Runtime.RunInMainThread (() => {
 				var result = new List<KeyValuePair<string, string>> ();
-				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
 
-				var provider = solutionManager.CreateSourceRepositoryProvider ();
-				var packageSourceProvider = provider.PackageSourceProvider;
-				var repositories = provider.GetRepositories ().ToList ();
-
-				foreach (var repository in repositories) {
+				foreach (var repository in GetSourceRepositories ().ToList ()) {
 					result.Add (new KeyValuePair<string, string> (
 						repository.PackageSource.Name,
 						repository.PackageSource.Source
@@ -129,13 +125,13 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			});
 		}
 
-		public Task<IEnumerable<(string PackageName, string Version, int Rank)>> FindPackagesWithAssemblyAsync (string source, string assemblyName, CancellationToken cancellationToken)
+		public async Task<IEnumerable<(string PackageName, string Version, int Rank)>> FindPackagesWithAssemblyAsync (string source, string assemblyName, CancellationToken cancellationToken)
 		{
 			var result = new List<(string PackageName, string Version, int Rank)> ();
-			if (source == "nuget.org" && assemblyName == "System.ValueTuple") {
+			if (assemblyName == "System.ValueTuple" && await IsOfficialNuGetPackageSource (source).ConfigureAwait (false)) {
 				result.Add (("System.ValueTuple", "4.3.0", 1)); 
 			}
-			return Task.FromResult ((IEnumerable<(string PackageName, string Version, int Rank)>)result);
+			return result;
 		}
 
 		public Task<IEnumerable<(string PackageName, string TypeName, string Version, int Rank, IReadOnlyList<string> ContainingNamespaceNames)>> FindPackagesWithTypeAsync (string source, string name, int arity, CancellationToken cancellationToken)
@@ -177,6 +173,30 @@ namespace MonoDevelop.PackageManagement.Refactoring
 					var runner = new AddPackagesDialogRunner ();
 					runner.Run (project, packageName);
 				}
+			});
+		}
+
+		IEnumerable<SourceRepository> GetSourceRepositories ()
+		{
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
+
+			var provider = solutionManager.CreateSourceRepositoryProvider ();
+			var packageSourceProvider = provider.PackageSourceProvider;
+			return provider.GetRepositories ();
+		}
+
+		Task<bool> IsOfficialNuGetPackageSource (string source)
+		{
+			return Runtime.RunInMainThread (() => {
+				var matchedRepository = GetSourceRepositories ()
+					.FirstOrDefault (repository => repository.PackageSource.Name == source);
+
+				if (matchedRepository != null) {
+					string host = matchedRepository.PackageSource.SourceUri.Host;
+					return host.EndsWith ("nuget.org", StringComparison.OrdinalIgnoreCase);
+				}
+
+				return false;
 			});
 		}
 	}
