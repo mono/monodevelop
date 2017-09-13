@@ -54,7 +54,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				BaseBackgroundColor = Ide.Gui.Styles.BaseBackgroundColor;
 				BaseForegroundColor = Ide.Gui.Styles.BaseForegroundColor;
-				DisabledForegroundColor = Xwt.Mac.Util.ToXwtColor (AppKit.NSColor.DisabledControlText); //Ide.Gui.Styles.DimTextColor;
+				DisabledForegroundColor = Xwt.Mac.Util.ToXwtColor (AppKit.NSColor.DisabledControlText); //Ide.Gui.Styles.SecondaryTextColor;
 				StatusErrorTextColor = Color.FromName ("#fa5433");
 				StatusWarningTextColor = Color.FromName ("#e8bd0d");
 				StatusReadyTextColor = Color.FromName ("#7f7f7f");

@@ -255,7 +255,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRunner", "tests\TestRun
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextEditor.Tests", "src\core\MonoDevelop.TextEditor.Tests\MonoDevelop.TextEditor.Tests.csproj", "{9E4BA410-8338-42EC-AF9C-422C35ECED81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ide.Tests", "tests\Ide.Tests\Ide.Tests.csproj", "{73D4CC8B-BAB9-4A29-841B-F25C6311F067}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Ide.Tests", "tests\Ide.Tests\MonoDevelop.Ide.Tests.csproj", "{73D4CC8B-BAB9-4A29-841B-F25C6311F067}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsPlatform.Tests", "tests\WindowsPlatform.Tests\WindowsPlatform.Tests.csproj", "{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}"
 EndProject
@@ -331,6 +331,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoDevelop.AspNetCore", "MonoDevelop.AspNetCore", "{1DEFDD53-2677-439D-906E-141ED2AEC19B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.AspNetCore", "src\addins\MonoDevelop.AspNetCore\MonoDevelop.AspNetCore.csproj", "{B3E73DE7-8AFC-429A-9B68-5699B1E63A02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Core.Tests", "tests\MonoDevelop.Core.Tests\MonoDevelop.Core.Tests.csproj", "{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.UnitTesting.Tests", "src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.Tests\MonoDevelop.UnitTesting.Tests.csproj", "{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2113,6 +2117,46 @@ Global
 		{B3E73DE7-8AFC-429A-9B68-5699B1E63A02}.Debug|x86.Build.0 = Debug|Any CPU
 		{B3E73DE7-8AFC-429A-9B68-5699B1E63A02}.Release|x86.ActiveCfg = Release|Any CPU
 		{B3E73DE7-8AFC-429A-9B68-5699B1E63A02}.Release|x86.Build.0 = Release|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.Debug|x86.Build.0 = Debug|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.Release|x86.ActiveCfg = Release|Any CPU
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03}.Release|x86.Build.0 = Release|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.Debug|x86.Build.0 = Debug|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.Release|x86.ActiveCfg = Release|Any CPU
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7525BB88-6142-4A26-93B9-A30C6983390A} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
@@ -2260,6 +2304,8 @@ Global
 		{7A55BE57-81C9-45EC-9C7C-7F97D0508171} = {776872D9-76FA-407B-BA69-08E25A24E5CE}
 		{1DEFDD53-2677-439D-906E-141ED2AEC19B} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{B3E73DE7-8AFC-429A-9B68-5699B1E63A02} = {1DEFDD53-2677-439D-906E-141ED2AEC19B}
+		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
+		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF} = {DE462010-393D-4655-A42C-2C78BB14D2FA}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
@@ -2282,23 +2328,6 @@ Global
 		$6.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $7
 		$7.scope = text/x-csharp
-		$7.IndentSwitchSection = False
-		$7.NewLinesForBracesInProperties = False
-		$7.NewLinesForBracesInAccessors = False
-		$7.NewLinesForBracesInAnonymousMethods = False
-		$7.NewLinesForBracesInControlBlocks = False
-		$7.NewLinesForBracesInAnonymousTypes = False
-		$7.NewLinesForBracesInObjectCollectionArrayInitializers = False
-		$7.NewLinesForBracesInLambdaExpressionBody = False
-		$7.NewLineForElse = False
-		$7.NewLineForCatch = False
-		$7.NewLineForFinally = False
-		$7.NewLineForMembersInObjectInit = False
-		$7.NewLineForMembersInAnonymousTypes = False
-		$7.NewLineForClausesInQuery = False
-		$7.SpacingAfterMethodDeclarationName = True
-		$7.SpaceAfterMethodCallName = True
-		$7.SpaceBeforeOpenSquareBracket = True
 		$0.TextStylePolicy = $8
 		$8.inheritsSet = null
 		$8.scope = text/x-makefile

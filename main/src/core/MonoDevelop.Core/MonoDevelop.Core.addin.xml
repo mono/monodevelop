@@ -224,7 +224,10 @@
 		<PolicySet id="VisualStudio" _name="Microsoft Visual Studio" allowDiffSerialize="true">
 		<!--	<Policies resource="" /> -->
 		</PolicySet>
-		<PolicySet id="Mono" _name="Mono" allowDiffSerialize="true">
+		<PolicySet id="Mono" _name="MonoDevelop" allowDiffSerialize="true" visible="false">
+		<!--	<Policies resource="" /> -->
+		</PolicySet>
+		<PolicySet id="MonoDefault" _name="Mono" allowDiffSerialize="true">
 		<!--	<Policies resource="" /> -->
 		</PolicySet>
 		<PolicySet id="Invariant" _name="Invariant" visible="false"/>

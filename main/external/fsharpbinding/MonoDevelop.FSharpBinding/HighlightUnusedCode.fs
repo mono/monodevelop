@@ -116,11 +116,11 @@ module highlightUnusedCode =
                     | SymbolUse.Field f when not (isQualified (Some f.FullName)) -> 
                         getPartNamespace sym (Some f.FullName) :: entityNamespace (Some f.DeclaringEntity)
                     | SymbolUse.MemberFunctionOrValue mfv when not (isQualified (Some mfv.FullName)) -> 
-                        getPartNamespace sym (Some mfv.FullName) :: entityNamespace mfv.EnclosingEntitySafe
+                        getPartNamespace sym (Some mfv.FullName) :: entityNamespace mfv.EnclosingEntity
                     | SymbolUse.Operator op when not (isQualified (Some op.FullName)) ->
-                        getPartNamespace sym (Some op.FullName) :: entityNamespace op.EnclosingEntitySafe
+                        getPartNamespace sym (Some op.FullName) :: entityNamespace op.EnclosingEntity
                     | SymbolUse.ActivePattern ap when not (isQualified (Some ap.FullName)) ->
-                        getPartNamespace sym (Some ap.FullName) :: entityNamespace ap.EnclosingEntitySafe
+                        getPartNamespace sym (Some ap.FullName) :: entityNamespace ap.EnclosingEntity
                     | SymbolUse.ActivePatternCase apc when not (isQualified (Some apc.FullName)) ->
                         getPartNamespace sym (Some apc.FullName) :: entityNamespace apc.Group.EnclosingEntity
                     | SymbolUse.UnionCase uc when not (isQualified (Some uc.FullName)) ->

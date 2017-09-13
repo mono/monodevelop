@@ -183,7 +183,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
                 _matches.CopyTo(array, arrayIndex);
 #endif
             }
-            catch (ArrayTypeMismatchException ex)
+            catch (ArrayTypeMismatchException)
             {
 #if FEATURE_LEGACYNETCF
                 if (CompatibilitySwitches.IsAppEarlierThanWindowsPhone8)

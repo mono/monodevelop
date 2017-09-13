@@ -755,7 +755,7 @@ namespace MonoDevelop.VersionControl.Views
 						if (ann != null && line - lineStart > 1) {
 							string msg = GetCommitMessage (lineStart, false);
 							if (!string.IsNullOrEmpty (msg)) {
-								msg = Revision.FormatMessage (msg);
+								msg = RevisionHelpers.FormatMessage (msg);
 
 								layout.SetText (msg);
 								layout.Width = (int)(Allocation.Width * Pango.Scale.PangoScale);

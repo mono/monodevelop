@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Projects
 {
-	class NewProjectDialogTests : TestBase
+	class NewProjectDialogTests : IdeTestBase
 	{
 		TestableNewProjectDialogController controller;
 		bool createProjectDirectoryOriginalValue;

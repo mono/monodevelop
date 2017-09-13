@@ -40,7 +40,7 @@ namespace MonoDevelop.Xml.Completion
 {
 	public class BaseXmlCompletionData : CompletionData
 	{
-		const string commitChars = " <>()[]{}=+*%~&^|.,;:?\"'";
+		const string commitChars = " <>()[]{}=+*%~&^|,;:?\"'";
 
 		public BaseXmlCompletionData ()
 		{
@@ -97,14 +97,20 @@ namespace MonoDevelop.Xml.Completion
 		public XmlCompletionData(string text, DataType dataType)
 			: this(text, String.Empty, dataType)
 		{
-		}		
+		}
 
-		public XmlCompletionData(string text, string description, DataType dataType)
+		public XmlCompletionData (string text, string description, DataType dataType)
+			: this (text, description, dataType, IconId.Null)
+		{
+		}
+
+		public XmlCompletionData (string text, string description, DataType dataType, IconId icon)
+			: base (text, icon, description)
 		{
 			this.text = text;
 			this.description = description;
-			this.dataType = dataType;  
-		}		
+			this.dataType = dataType;
+		}
 		
 		public DataType XmlCompletionDataType {
 			get { return dataType; }

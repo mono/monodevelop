@@ -214,6 +214,39 @@ namespace Microsoft.VisualStudio.Platform
                     styleName = "support.type.property-name.json";
                     break;
 
+                // LESS Entries
+                case "LessCssVariableDeclaration":
+                    styleName = "variable.other.less";
+                    break;
+                case "LessCssVariableReference":
+                    styleName = "variable.other.less";
+                    break;
+                case "LessCssNamespaceReference":
+                    styleName = "variable.other.less";
+                    break;
+                case "LessCssMixinReference":
+                    styleName = "variable.other.less";
+                    break;
+                case "LessCssMixinDeclaration":
+                    styleName = "variable.other.less";
+                    break;
+                case "LessCssKeyword":
+                    styleName = "punctuation.definition.keyword.css";
+                    break;
+
+                // Scss Entries
+                case "ScssMixinReference":
+                    styleName = "variable.other.less";
+                    break;
+                case "ScssMixinDeclaration":
+                    styleName = "variable.other.less";
+                    break;
+                case "ScssVariableDeclaration":
+                    styleName = "variable.other.less";
+                    break;
+                case "ScssVariableReference":
+                    styleName = "variable.other.less";
+                    break;
                 default:
                     styleName = EditorThemeColors.Foreground;
                     break;

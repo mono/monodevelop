@@ -400,6 +400,7 @@ namespace MonoDevelop.SourceEditor
 			if (extension is TopLevelWidgetExtension) {
 				var widgetExtension = (TopLevelWidgetExtension)extension;
 				Widget w = widgetExtension.CreateWidget ();
+				w.SizeAllocated += (o, args) => UpdateWidgetPosition(widgetExtension, w);
 				int x, y;
 				if (!CalcWidgetPosition (widgetExtension, w, out x, out y)) {
 					w.Destroy ();
@@ -466,12 +467,17 @@ namespace MonoDevelop.SourceEditor
 		void UpdateWidgetPositions ()
 		{
 			foreach (var e in widgetExtensions) {
-				int x,y;
-				if (CalcWidgetPosition ((TopLevelWidgetExtension)e.Key, e.Value, out x, out y))
-					widget.TextEditor.TextArea.MoveTopLevelWidget (e.Value, x, y);
-				else
-					e.Value.Hide ();
+				UpdateWidgetPosition (e.Key, e.Value);
 			}
+		}
+
+		void UpdateWidgetPosition (TopLevelWidgetExtension widgetExtension, Widget w)
+		{
+			int x, y;
+			if (CalcWidgetPosition(widgetExtension, w, out x, out y))
+				widget.TextEditor.TextArea.MoveTopLevelWidget(w, x, y);
+			else
+				w.Hide();
 		}
 
 		bool CalcWidgetPosition (TopLevelWidgetExtension widgetExtension, Widget w, out int x, out int y)
@@ -777,7 +783,7 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 				try {
-					this.Document.VsTextDocument.Save();
+					MonoDevelop.Core.Text.TextFileUtility.WriteText (fileName, Document);
 				} catch (InvalidEncodingException) {
 					var result = MessageService.AskQuestion (GettextCatalog.GetString ("Can't save file with current codepage."), 
 						GettextCatalog.GetString ("Some unicode characters in this file could not be saved with the current encoding.\nDo you want to resave this file as Unicode ?\nYou can choose another encoding in the 'save as' dialog."),
@@ -786,7 +792,7 @@ namespace MonoDevelop.SourceEditor
 						new AlertButton (GettextCatalog.GetString ("Save as Unicode")));
 					if (result != AlertButton.Cancel) {
 						this.Document.VsTextDocument.Encoding = Encoding.UTF8;
-						this.Document.VsTextDocument.Save();
+						MonoDevelop.Core.Text.TextFileUtility.WriteText (fileName, Document);
 					}
 					else {
 						return;
@@ -1493,7 +1499,7 @@ namespace MonoDevelop.SourceEditor
 			}
 
 			if (hoverDebugLineMarker == null && e.LineSegment != null && e.Editor.Document.GetMarkers (e.LineSegment).FirstOrDefault (m => m is DebugIconMarker) == null) {
-				hoverDebugLineMarker = new DebugIconMarker (hoverBreakpointIcon) {
+				hoverDebugLineMarker = new DebugIconMarker (hoverBreakpointIcon, true) {
 					Tooltip = GettextCatalog.GetString ("Insert Breakpoint")
 				};
 				e.Editor.Document.AddMarker (e.LineSegment.LineNumber, hoverDebugLineMarker);

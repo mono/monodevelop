@@ -117,8 +117,11 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 				return true;
 			else if (token.Type == TokenType.String) {
 				var text = StringEvaluate (context);
+
+				// Use same styles used by Single.TryParse by default when culture not specified.
+				var styles = NumberStyles.Float | NumberStyles.AllowThousands;
 				Single number;
-				return Single.TryParse (text, out number);
+				return Single.TryParse (text, styles, CultureInfo.InvariantCulture, out number);
 			}
 			else
 				return false;

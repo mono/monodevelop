@@ -265,7 +265,7 @@ namespace MonoDevelop.Components.Docking
 					notebooks.Add (ts);
 					ts.Parent = this;
 
-					GLib.Signal.Emit (this, "add", ts);
+					GtkWorkarounds.EmitAddSignal(this, ts);
 				}
 				frame.UpdateRegionStyle (grp);
 				ts.VisualStyle = grp.VisualStyle;

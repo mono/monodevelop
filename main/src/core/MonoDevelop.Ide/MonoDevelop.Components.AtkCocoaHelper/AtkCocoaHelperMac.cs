@@ -835,7 +835,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 					throw new Exception ("Not a Text element");
 				}
 
-				p.GetRangeForLine = value;
+				p.GetRangeForIndex = value;
 			}
 		}
 		public Func<int, AtkCocoa.Range> StyleRangeForIndex {

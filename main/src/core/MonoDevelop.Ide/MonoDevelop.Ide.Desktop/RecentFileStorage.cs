@@ -81,12 +81,13 @@ namespace MonoDevelop.Ide.Desktop
 					return;
 				}
 
-				var stream = t.Result;
-				lock (cacheLock) {
-					cachedItemList = ReadStore (stream);
-					cachedItemList.Sort ();
+				using (var stream = t.Result) {
+					lock (cacheLock) {
+						cachedItemList = ReadStore (stream);
+						cachedItemList.Sort ();
+					}
+					OnRecentFilesChanged (cachedItemList);
 				}
-				OnRecentFilesChanged (cachedItemList);
 			});
 		}
 		
@@ -240,7 +241,11 @@ namespace MonoDevelop.Ide.Desktop
 				if (recentSaveTask == null) {
 					recentSaveTask = Task.Run (async () => {
 						await Task.Delay (1000).ConfigureAwait (false);
-						await SaveRecentFiles ().ConfigureAwait (false);
+						try {
+							await SaveRecentFiles ().ConfigureAwait (false);
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error while saving recent file store.", ex);
+						}
 					});
 				}
 			}

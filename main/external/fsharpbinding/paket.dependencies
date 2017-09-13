@@ -11,3 +11,4 @@ nuget Mono.Cecil framework: >= net40
 nuget FAKE
 nuget Newtonsoft.Json
 nuget StrongNamer
+nuget System.Reactive.Linq

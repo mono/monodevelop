@@ -24,7 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
+using System.IO;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.SharedAssetsProjects;
 using NUnit.Framework;
@@ -40,7 +42,7 @@ using System;
 namespace MonoDevelop.Ide
 {
 	[TestFixture]
-	public class ProjectTemplateTests : TestBase
+	public class ProjectTemplateTests : IdeTestBase
 	{
 		public ProjectTemplateTests ()
 		{
@@ -168,6 +170,40 @@ namespace MonoDevelop.Ide
 			var fileContentAfterForceFormatting = await TextFileUtility.ReadAllTextAsync (class1File);
 			Assert.AreEqual (fileContentAfterForceFormatting.Text, fileContentAfterCreation.Text,
 			                "We expect them to be same because we placed same formatting policy on solution before creataion as after creation on project when we manually formatted.");
+		}
+
+		[Test]
+		public async Task DotNetCoreProjectTemplateUsingBackslashesInPrimaryOutputPathsIsSupported ()
+		{
+			var templatingService = new TemplatingService ();
+
+			string templateId = "MonoDevelop.Ide.Tests.TwoProjects.CSharp";
+			string scanPath = Util.GetSampleProjectPath ("DotNetCoreTemplating");
+			var template = MicrosoftTemplateEngineProjectTemplatingProvider.CreateTemplate (templateId, scanPath);
+
+			string tempDirectory = Util.CreateTmpDir ("BackslashInPrimaryOutputTest");
+			string projectDirectory = Path.Combine (tempDirectory, "BackslashInPrimaryOutputTestProject");
+			Directory.CreateDirectory (projectDirectory);
+			string library1FileToOpen = Path.Combine (projectDirectory, "Library1", "MyClass.cs");
+			string library2FileToOpen = Path.Combine (projectDirectory, "Library2", "MyClass.cs");
+
+			var result = await templatingService.ProcessTemplate (template, new NewProjectConfiguration () {
+				CreateSolution = true,
+				Location = tempDirectory,
+				SolutionName = "BackslashInPrimaryOutputTest",
+				ProjectName = "BackslashInPrimaryOutputTestProject",
+				CreateProjectDirectoryInsideSolutionDirectory = false,
+			}, null);
+
+			var solution = result.WorkspaceItems.OfType<Solution> ().Single ();
+
+			await solution.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (2, solution.GetAllProjects ().Count ());
+			Assert.IsNotNull (solution.FindProjectByName ("Library1"));
+			Assert.IsNotNull (solution.FindProjectByName ("Library2"));
+			Assert.AreEqual (2, result.Actions.Count ());
+			Assert.That (result.Actions, Contains.Item (library1FileToOpen));
+			Assert.That (result.Actions, Contains.Item (library2FileToOpen));
 		}
 	}
 }

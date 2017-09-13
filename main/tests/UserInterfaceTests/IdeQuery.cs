@@ -37,7 +37,7 @@ namespace UserInterfaceTests
 		readonly static Func<AppQuery, AppQuery> _editRemoteDialog = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog");
 		readonly static Func<AppQuery, AppQuery> _editBranchDialog = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog");
 		readonly static Func<AppQuery, AppQuery> _textArea = c => c.Window ().Children ().Marked ("Mono.TextEditor.TextArea");
-		readonly static Func<AppQuery, AppQuery> _xamarinUpdate = c => c.Marked ("Xamarin Update");
+		readonly static Func<AppQuery, AppQuery> _xamarinUpdate = c => c.Marked ("Visual Studio Update");
 
 		readonly static Func<AppQuery, AppQuery> _macRunButton = c => c.Marked ("MonoDevelop.MacIntegration.MainToolbar.RunButton");
 

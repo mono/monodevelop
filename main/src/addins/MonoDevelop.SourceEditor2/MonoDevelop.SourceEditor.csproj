@@ -520,6 +520,8 @@
     <InternalsVisibleTo Include="MonoDevelop.AspNet.Tests" />
     <InternalsVisibleTo Include="FSharpBinding" />
     <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
   </ItemGroup>
   <Import Project="..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems')" />
   <Import Project="..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Impl.projitems" Label="Shared" Condition="Exists('..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Impl.projitems')" />

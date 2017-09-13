@@ -226,7 +226,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		static bool wasCompletionWindowVisible;
 		static int lastW = -1, lastH = -1;
 
-		internal static async void UpdateWindow (CompletionTextEditorExtension textEditorExtension, ICompletionWidget completionWidget)
+		internal static void UpdateWindow (CompletionTextEditorExtension textEditorExtension, ICompletionWidget completionWidget)
 		{
 			// Updates the parameter information window from the information
 			// of the current method overload

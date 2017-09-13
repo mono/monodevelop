@@ -76,7 +76,6 @@ namespace MonoDevelop.Ide.ExternalTools
 		bool lockStoreValues = false;
 
 		EventBoxTooltip keyBindingInfoTooltip;
-		string defaultKeyBindingTooltipText;
 
 		public ExternalToolPanelWidget () 
 		{
@@ -158,12 +157,12 @@ namespace MonoDevelop.Ide.ExternalTools
 			argumentTextBox.SetCommonAccessibilityAttributes ("ExternalTools.Arguments", "",
 			                                                  GettextCatalog.GetString ("Enter the arguments for the external command"));
 			argumentTextBox.SetAccessibilityLabelRelationship (argumentLabel);
-			tagSelectorArgs.ButtonAccessible.SetCommonAttributes ("ExternalTools.tagSelectorArgs", GettextCatalog.GetString ("Argument Tags"),
-				                                                  GettextCatalog.GetString ("Select tags to add to the arguments"));
+			tagSelectorArgs.Accessible.SetCommonAttributes ("ExternalTools.tagSelectorArgs", GettextCatalog.GetString ("Argument Tags"),
+                                                            GettextCatalog.GetString ("Select tags to add to the arguments"));
 			workingDirTextBox.SetCommonAccessibilityAttributes ("ExternalTools.workingDir", workingDirLabel,
 			                                                    GettextCatalog.GetString ("Enter the working directory for this command"));
-			tagSelectorPath.ButtonAccessible.SetCommonAttributes ("ExternalTools.tagSelectorPath", GettextCatalog.GetString ("Working Directory Tags"),
-				                                                  GettextCatalog.GetString ("Select tags to add to the working directory"));
+			tagSelectorPath.Accessible.SetCommonAttributes ("ExternalTools.tagSelectorPath", GettextCatalog.GetString ("Working Directory Tags"),
+				                                            GettextCatalog.GetString ("Select tags to add to the working directory"));
 			defaultKeyTextBox.SetCommonAccessibilityAttributes ("ExternalTools.defaultKey", defaultKeyLabel,
 			                                                    GettextCatalog.GetString ("Enter the default key binding for this command"));
 			promptArgsCheckBox.SetCommonAccessibilityAttributes ("ExternalTools.promptArgs", "",
@@ -310,9 +309,9 @@ namespace MonoDevelop.Ide.ExternalTools
 			
 			toolListBoxStore.SetValue (SelectedIter, 0, titleTextBox.Text);
 			selectedItem.MenuCommand        = titleTextBox.Text;
-			selectedItem.Command            = browseButton.Path;
+			selectedItem.Command            = browseButton.Path.Trim ();
 			selectedItem.Arguments          = argumentTextBox.Text;
-			selectedItem.InitialDirectory   = workingDirTextBox.Text;
+			selectedItem.InitialDirectory   = workingDirTextBox.Text.Trim ();
 			selectedItem.PromptForArguments = promptArgsCheckBox.Active;
 			selectedItem.UseOutputPad       = useOutputPadCheckBox.Active;
 			selectedItem.SaveCurrentFile    = saveCurrentFileCheckBox.Active;

@@ -23,9 +23,9 @@ TEST_ASSEMBLIES_WINDOWS = \
 	$(TEST_DIR)/VersionControl.Subversion.Win32.Tests.dll
 
 TEST_ASSEMBLIES_COMMON = \
-	$(TEST_DIR)/Ide.Tests.dll \
+    $(TEST_DIR)/MonoDevelop.Core.Tests.dll \
+	$(TEST_DIR)/MonoDevelop.Ide.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.VersionControl.Git.Tests.dll \
-	$(TEST_DIR)/UnitTests.dll \
 	$(TEST_DIR)/MonoDevelop.Debugger.Tests.dll \
 	$(TEST_DIR)/Mono.TextTemplating.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.PackageManagement.Tests.dll \
@@ -34,7 +34,8 @@ TEST_ASSEMBLIES_COMMON = \
 	$(TEST_DIR)/MonoDevelop.Xml.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.AspNet.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.CSharpBinding.Tests.dll \
-	$(TEST_DIR)/MonoDevelop.DotNetCore.Tests.dll
+	$(TEST_DIR)/MonoDevelop.DotNetCore.Tests.dll \
+    $(TEST_DIR)/MonoDevelop.UnitTesting.Tests.dll
 
 if RELEASE_BUILDS
 TEST_ASSEMBLIES_COMMON += $(EXTERNAL)/nrefactory/bin/Release/ICSharpCode.NRefactory.Tests.dll
@@ -100,6 +101,17 @@ uitest:
 	@if ! test -n "$(assembly)"; then \
 		echo "You must pass 'assembly' argument"; \
 		exit 1; \
+	fi
+
+profile:
+	@if test -n "$(assembly)"; then \
+		for asm in $(TEST_ASSEMBLIES); do \
+			if test `basename $$asm` = $(assembly); then \
+				echo Generating profiling for `basename $$asm`...; \
+				($(MD_LAUNCH_SETUP) exec -a "mdtool" $(RUNTIME) --debug --profile=log:heapshot,alloc,calls,calldepth=100,zip,sample=cycles/1000,counters,output=ProfileResult_`basename $$asm`.mlpd "$(MD_BIN_PATH)/mdtool.exe" run-md-tests $$asm); \
+				mprof-report ProfileResult_`basename $$asm`.mlpd > ProfileAnalysis_`basename $$asm`.txt ; \
+			fi; \
+		done; \
 	fi
 
 coverage:

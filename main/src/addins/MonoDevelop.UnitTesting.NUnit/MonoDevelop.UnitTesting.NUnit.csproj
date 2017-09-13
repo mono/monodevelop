@@ -70,6 +70,11 @@
       <Name>MonoDevelop.UnitTesting</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.csproj">
+      <Project>{F218643D-2E74-4309-820E-206A54B7133F}</Project>
+      <Name>MonoDevelop.PackageManagement</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelopNUnit.addin.xml">

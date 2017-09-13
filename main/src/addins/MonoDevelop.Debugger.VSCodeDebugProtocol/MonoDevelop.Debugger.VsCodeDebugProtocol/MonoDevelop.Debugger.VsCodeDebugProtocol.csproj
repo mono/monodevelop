@@ -32,11 +32,11 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shared.VSCodeDebugProtocol">
-      <HintPath>..\..\..\..\packages\Microsoft.VisualStudio.Shared.VsCodeDebugProtocol.15.0.10309.2\lib\net45\Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Microsoft.VisualStudio.Shared.VsCodeDebugProtocol.15.0.10815.1\lib\net45\Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

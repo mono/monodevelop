@@ -28,7 +28,7 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreExecutionCommand : ProcessExecutionCommand
+	public class DotNetCoreExecutionCommand : ProcessExecutionCommand
 	{
 		public DotNetCoreExecutionCommand (string directory, string outputPath, string arguments)
 		{

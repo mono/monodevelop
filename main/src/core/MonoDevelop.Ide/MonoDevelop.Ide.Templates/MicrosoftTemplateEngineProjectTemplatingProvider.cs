@@ -140,6 +140,21 @@ namespace MonoDevelop.Ide.Templates
 			return templates;
 		}
 
+		/// <summary>
+		/// Used by unit tests to create a new solution template without having to use an addin.
+		/// </summary>
+		static internal SolutionTemplate CreateTemplate (string templateId, string scanPath)
+		{
+			var settingsLoader = (SettingsLoader)environmentSettings.SettingsLoader;
+			settingsLoader.UserTemplateCache.Scan (scanPath);
+			settingsLoader.Save ();
+
+			var templateInfo = settingsLoader.UserTemplateCache.TemplateInfo
+				.FirstOrDefault (t => t.Identity == templateId);
+
+			return new MicrosoftTemplateEngineSolutionTemplate (templateId, templateId, null, templateInfo);
+		}
+
 		static MonoDevelop.Core.Instrumentation.Counter TemplateCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Template Instantiated", "Project Model", id: "Core.Template.Instantiated");
 
 		public async Task<ProcessedTemplateResult> ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
@@ -169,7 +184,7 @@ namespace MonoDevelop.Ide.Templates
 					if (postAction.Args.TryGetValue ("files", out var files))
 						foreach (var fi in files.Split (';'))
 							if (int.TryParse (fi.Trim (), out var i))
-								filesToOpen.Add (Path.Combine (config.ProjectLocation, result.ResultInfo.PrimaryOutputs [i].Path));
+								filesToOpen.Add (Path.Combine (config.ProjectLocation, GetPath (result.ResultInfo.PrimaryOutputs [i])));
 					break;
 				case "D396686C-DE0E-4DE6-906D-291CD29FC5DE":
 					//TODO: Load project files
@@ -179,7 +194,7 @@ namespace MonoDevelop.Ide.Templates
 
 			//TODO: Once templates support "D396686C-DE0E-4DE6-906D-291CD29FC5DE" use that to load projects
 			foreach (var path in result.ResultInfo.PrimaryOutputs) {
-				var fullPath = Path.Combine (config.ProjectLocation, path.Path);
+				var fullPath = Path.Combine (config.ProjectLocation, GetPath (path));
 				if (Services.ProjectService.IsSolutionItemFile (fullPath))
 					workspaceItems.Add (await MonoDevelop.Projects.Services.ProjectService.ReadSolutionItem (new Core.ProgressMonitor (), fullPath));
 			}
@@ -224,6 +239,14 @@ namespace MonoDevelop.Ide.Templates
 			}
 			processResult.SetFilesToOpen (filesToOpen);
 			return processResult;
+		}
+
+		string GetPath (ICreationPath path)
+		{
+			if (Path.DirectorySeparatorChar != '\\')
+				return path.Path.Replace ('\\', Path.DirectorySeparatorChar);
+
+			return path.Path;
 		}
 
 		Dictionary<string, string> GetParameters (MicrosoftTemplateEngineSolutionTemplate template, NewProjectConfiguration config)

@@ -154,13 +154,6 @@
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.1'">
-      <PropertyGroup>
-        <__paket__StrongNamer_targets>StrongNamer</__paket__StrongNamer_targets>
-      </PropertyGroup>
-    </When>
-  </Choose>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj">
       <Project>{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}</Project>
@@ -223,6 +216,7 @@
     </Content>
     <Compile Include="BraceMatcher.fs" />
     <Compile Include="TagComments.fs" />
+    <Compile Include="TypeSignatureHelp.fs" />
   </ItemGroup>
   <Import Project="..\.paket\paket.targets" />
   <ProjectExtensions>
@@ -280,6 +274,11 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.1'">
       <ItemGroup>
+        <Reference Include="Mono.Cecil">
+          <HintPath>..\packages\Mono.Cecil\lib\net45\Mono.Cecil.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Mono.Cecil.Mdb">
           <HintPath>..\packages\Mono.Cecil\lib\net45\Mono.Cecil.Mdb.dll</HintPath>
           <Private>True</Private>
@@ -292,11 +291,6 @@
         </Reference>
         <Reference Include="Mono.Cecil.Rocks">
           <HintPath>..\packages\Mono.Cecil\lib\net45\Mono.Cecil.Rocks.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Mono.Cecil">
-          <HintPath>..\packages\Mono.Cecil\lib\net45\Mono.Cecil.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -336,5 +330,5 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\packages\StrongNamer\build\$(__paket__StrongNamer_targets).targets" Condition="Exists('..\packages\StrongNamer\build\$(__paket__StrongNamer_targets).targets')" Label="Paket" />
+  <Import Project="..\packages\StrongNamer\build\StrongNamer.targets" Condition="Exists('..\packages\StrongNamer\build\StrongNamer.targets')" Label="Paket" />
 </Project>
