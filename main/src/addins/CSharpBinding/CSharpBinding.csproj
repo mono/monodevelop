@@ -430,7 +430,6 @@
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionHelpers.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionService.cs" />
     <Compile Include="Util\PortingExtensions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Formatter\SmartTokenFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
