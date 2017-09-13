@@ -104,25 +104,30 @@ namespace MonoDevelop.Components.Mac
 		}
 
 		// http://lists.apple.com/archives/cocoa-dev/2008/Apr/msg01696.html
-		void FlashMenu ()
+		NSMenuItem blink;
+		void FlashMenu (MDMenuItem item)
 		{
 			var f35 = ((char)0xF726).ToString ();
-			var blink = new NSMenuItem ("* blink *") {
+			if (blink != null) {
+				RemoveItem(blink);
+			}
+			blink = new NSMenuItem(item.CommandEntry.GetCommand(item.Manager).DisplayName) {
 				KeyEquivalent = f35,
 			};
+
+			AddItem(blink);
+
 			var f35Event = NSEvent.KeyEvent (
 				NSEventType.KeyDown, CGPoint.Empty, NSEventModifierMask.CommandKeyMask, 0, 0,
 				NSGraphicsContext.CurrentContext, f35, f35, false, 0);
-			AddItem (blink);
 			PerformKeyEquivalent (f35Event);
-			RemoveItem (blink);
 		}
 
 		public bool FlashIfContainsCommand (object command)
 		{
 			foreach (var item in ItemArray ().OfType<MDMenuItem> ()) {
 				if (item.CommandEntry.CommandId == command) {
-					FlashMenu ();
+					FlashMenu (item);
 					return true;
 				}
 				var submenu = item.Submenu as MDMenu;

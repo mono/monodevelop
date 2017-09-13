@@ -32,7 +32,7 @@ THE SOFTWARE.
 	<IndentSwitchSection>False</IndentSwitchSection>
 	<IndentSwitchCaseSection>True</IndentSwitchCaseSection>
 	<LabelPositioning>OneLess</LabelPositioning>
-	<NewLinesForBracesInTypes>True</NewLinesForBracesInTypes>
+	<NewLinesForBracesInTypes>False</NewLinesForBracesInTypes>
 	<NewLinesForBracesInMethods>True</NewLinesForBracesInMethods>
 	<NewLinesForBracesInProperties>False</NewLinesForBracesInProperties>
 	<NewLinesForBracesInAccessors>False</NewLinesForBracesInAccessors>

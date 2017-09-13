@@ -69,6 +69,7 @@ namespace MonoDevelop.Components.Mac
 			base.Dispose (disposing);
 		}
 
+		public CommandManager Manager { get { return manager; } }
 		public CommandEntry CommandEntry { get { return ce; } }
 
 		[Export (ActionSelName)]

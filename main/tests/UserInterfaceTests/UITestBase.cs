@@ -62,17 +62,17 @@ namespace UserInterfaceTests
 			var installedXS = Environment.GetEnvironmentVariable ("USE_INSTALLED_XS");
 			if (!string.IsNullOrWhiteSpace(installedXS)) {
 				if (Platform.IsMac)
-					installedXS = Path.Combine(installedXS, "Contents/MacOS/XamarinStudio");
+					installedXS = Path.Combine(installedXS, "Contents/MacOS/VisualStudio");
 				else if (Platform.IsWindows)
-					installedXS = Path.Combine(installedXS, @"bin\XamarinStudio.exe");
+					installedXS = Path.Combine(installedXS, @"bin\VisualStudio.exe");
 			}
 
 			if (File.Exists (installedXS)) {
 				MonoDevelopBinPath = installedXS;
-				Console.WriteLine ("[UITEST] Using installed Xamarin Studio from this location: " + installedXS);
+				Console.WriteLine ("[UITEST] Using installed Visual Studio from this location: " + installedXS);
 			}
 			else {
-				Console.WriteLine ("[UITEST] Installed Xamarin Studio not found. Falling back to default behavior.");
+				Console.WriteLine ("[UITEST] Installed Visual Studio not found. Falling back to default behavior.");
 				MonoDevelopBinPath = mdBinPath;
 			}
 
@@ -158,7 +158,7 @@ namespace UserInterfaceTests
 				Session.ClickElement (c => IdeQuery.XamarinUpdate (c).Children ().Button ().Text ("Close"));
 			}
 			catch (TimeoutException) {
-				TestService.Session.DebugObject.Debug ("Xamarin Update did not open");
+				TestService.Session.DebugObject.Debug ("Visual Studio Update did not open");
 			}
 		}
 

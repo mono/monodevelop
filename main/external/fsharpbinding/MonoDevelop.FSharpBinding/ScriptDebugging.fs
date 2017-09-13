@@ -71,7 +71,7 @@ type ScriptBuildTarget(scriptPath, consoleKind, source) =
                 let framework = Project.getDefaultTargetFramework runtime
                 let args =
                     [ 
-                      yield "--target:exe --nologo -g --debug:full --define:DEBUG --define:INTERACTIVE --optimize- --tailcalls-"
+                      yield "--target:exe --nologo -g --debug:portable --define:DEBUG --define:INTERACTIVE --optimize- --tailcalls-"
                       yield "--fullpaths --flaterrors --highentropyva-"
                       if not Platform.IsWindows then
                           yield "--noframework"

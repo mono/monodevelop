@@ -215,6 +215,12 @@
     <EmbeddedResource Include="templates\SharedAssetsProject.xpt.xml">
       <LogicalName>SharedAssetsProject.xpt.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoDevelopCSharpPolicy.xml">
+      <LogicalName>MonoDevelopCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoTextStylePolicy.xml">
+      <LogicalName>MonoTextStylePolicy.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
@@ -424,6 +430,7 @@
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionHelpers.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionService.cs" />
     <Compile Include="Util\PortingExtensions.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\Formatter\SmartTokenFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

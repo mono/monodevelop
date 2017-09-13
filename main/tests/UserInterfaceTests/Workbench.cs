@@ -29,6 +29,8 @@ using MonoDevelop.Components.AutoTest;
 using System.Text.RegularExpressions;
 using MonoDevelop.Ide.Commands;
 using System.Linq;
+using MonoDevelop.Ide;
+using System.Collections;
 
 namespace UserInterfaceTests
 {
@@ -60,6 +62,30 @@ namespace UserInterfaceTests
 				);
 			}
 			return (string) Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.renderArg.CurrentText");
+		}
+
+		public static void WaitForStatusIcon(int timeout = 20000, string text = "", bool waitForExisting = true)
+		{
+			if (Platform.IsMac)
+			{
+				Ide.WaitUntil(
+					() => {
+						var icons = Session.GetGlobalValue<string[]>("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.StatusIcons");
+						bool found = false;
+						foreach (string icon in icons) {
+							if (icon == text) {
+								found = true;
+								break;
+							}
+						}
+
+						return found ^ waitForExisting;
+					},
+					timeout
+				);
+			}
+
+			// TODO:
 		}
 
 		public static bool IsBuildSuccessful (int timeoutInSecs)
@@ -119,6 +145,16 @@ namespace UserInterfaceTests
 			Action<string> takeScreenshot = GetScreenshotAction (testContext);
 			takeScreenshot ("About-To-Close-Workspace");
 			Session.ExecuteCommand (FileCommands.CloseWorkspace);
+			takeScreenshot ("Closed-Workspace");
+		}
+
+		public static void CloseDocument (UITestBase testContext = null)
+		{
+			if (testContext != null)
+				testContext.ReproStep ("Close current workspace");
+			Action<string> takeScreenshot = GetScreenshotAction (testContext);
+			takeScreenshot ("About-To-Close-Workspace");
+			Session.ExecuteCommand (FileCommands.CloseFile);
 			takeScreenshot ("Closed-Workspace");
 		}
 

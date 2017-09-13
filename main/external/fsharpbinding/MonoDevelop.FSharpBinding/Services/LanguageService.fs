@@ -83,11 +83,8 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
                 match Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent with
                 | None -> return None
                 | Some(col,identIsland) ->
-                    let! res = checkResults.GetToolTipTextAlternate(line, col, lineStr, identIsland, FSharpTokenTag.Identifier)
-                    let! sym = checkResults.GetSymbolUseAtLocation(line, col, lineStr, identIsland)
-                    LoggingService.logDebug "Result: Got something, returning"
-                    return sym |> Option.bind (fun sym -> let start, finish = Symbol.trimSymbolRegion sym (Seq.last identIsland)
-                                                          Some (res, (start.Column, finish.Column)))
+                    let! res = checkResults.GetToolTipText(line, col, lineStr, identIsland, FSharpTokenTag.Identifier)
+                    return Some (res, line)
             | None -> return None }
 
     member x.GetDeclarationLocation(line, col, lineStr) =
@@ -95,9 +92,9 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
             match infoOpt with
             | Some checkResults ->
                 match Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent with
-                | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown
-                | Some(col,identIsland) -> return! checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, false)
-            | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown }
+                | None -> return FSharpFindDeclResult.DeclNotFound (FSharpFindDeclFailureReason.Unknown "No idents found")
+                | Some(col,identIsland) -> return! checkResults.GetDeclarationLocation(line, col, lineStr, identIsland, false)
+            | None -> return FSharpFindDeclResult.DeclNotFound (FSharpFindDeclFailureReason.Unknown "No check results")}
 
     member x.GetSymbolAtLocation(line, col, lineStr) =
         async {
@@ -337,7 +334,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         |> Option.map(fun p -> p :?> DotNetProject)
 
     member x.GetReferencedAssembliesSynchronously (project:DotNetProject) =
-        retry { return (project.GetReferencedAssemblies(CompilerArguments.getConfig())).Result }
+        project.GetReferencedAssemblies(CompilerArguments.getConfig()).Result
 
     member x.GetReferencedAssembliesAsync projectFile =
         async {
@@ -409,7 +406,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                         projectInfoCache := cache.Add (key, opts')
                         // Print contents of check option for debugging purposes
                         LoggingService.logDebug "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
-                            opts'.ProjectFileName opts'.ProjectFileNames opts'.OtherOptions opts'.IsIncompleteTypeCheckEnvironment opts'.UseScriptResolutionRules
+                            opts'.ProjectFileName opts'.SourceFiles opts'.OtherOptions opts'.IsIncompleteTypeCheckEnvironment opts'.UseScriptResolutionRules
                         opts)
                 | None -> None)
 
@@ -536,7 +533,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         let options = x.GetCheckerOptions(filename, projectFilename, source)
         match options with
         | Some opts ->
-            checker.MatchBracesAlternate(filename, source, opts)
+            checker.MatchBraces(filename, source, opts)
         | None -> async { return [||] }
 
     /// Get all symbols derived from the specified symbol in the current project and optionally all dependent projects
@@ -550,9 +547,9 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                         let isOverrideOrDefault = mfv.IsOverrideOrExplicitInterfaceImplementation
                         let baseTypeMatch() =
                             maybe {
-                                let! ent = mfv.EnclosingEntitySafe
+                                let! ent = mfv.EnclosingEntity
                                 let! bt = ent.BaseType
-                                let! carentEncEnt = caretmfv.EnclosingEntitySafe
+                                let! carentEncEnt = caretmfv.EnclosingEntity
                                 return carentEncEnt.IsEffectivelySameAs bt.TypeDefinition }
 
                         let nameMatch = mfv.DisplayName = caretmfv.DisplayName

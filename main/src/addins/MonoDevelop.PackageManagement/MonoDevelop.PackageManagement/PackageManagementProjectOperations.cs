@@ -202,14 +202,16 @@ namespace MonoDevelop.PackageManagement
 					}
 
 					var dotNetProject = (DotNetProject)project;
-					var nugetProject = CreateNuGetProject (dotNetProject);
+					var solutionManager = GetSolutionManager (dotNetProject);
+					var nugetProject = CreateNuGetProject (solutionManager, dotNetProject);
+					var pathResolver = CreatePathResolver (solutionManager);
 
 					var packagesBeingInstalled = GetPackagesBeingInstalled (dotNetProject).ToList ();
 
 					var packages = await Task.Run (() => nugetProject.GetInstalledPackagesAsync (CancellationToken.None)).ConfigureAwait (false);
 
 					var packageReferences = packages
-						.Select (package => CreatePackageReference (package.PackageIdentity))
+						.Select (package => CreatePackageReference (package.PackageIdentity, nugetProject, pathResolver))
 						.ToList ();
 
 					packageReferences.AddRange (GetMissingPackagesBeingInstalled (packageReferences, packagesBeingInstalled));
@@ -228,14 +230,28 @@ namespace MonoDevelop.PackageManagement
 				!String.IsNullOrEmpty (project.Name);
 		}
 
-		NuGetProject CreateNuGetProject (DotNetProject project)
+		IMonoDevelopSolutionManager GetSolutionManager (DotNetProject project)
 		{
 			if (project.ParentSolution != null) {
-				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+				return PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			}
+			return null;
+		}
+
+		NuGetProject CreateNuGetProject (IMonoDevelopSolutionManager solutionManager, DotNetProject project)
+		{
+			if (solutionManager != null) {
 				return solutionManager.GetNuGetProject (new DotNetProjectProxy (project));
 			}
 
 			return new MonoDevelopNuGetProjectFactory ().CreateNuGetProject (project);
+		}
+
+		PackageManagementPathResolver CreatePathResolver (IMonoDevelopSolutionManager solutionManager)
+		{
+			if (solutionManager != null)
+				return new PackageManagementPathResolver (solutionManager);
+			return new PackageManagementPathResolver ();
 		}
 
 		IEnumerable<PackageManagementPackageReference> GetMissingPackagesBeingInstalled (
@@ -252,9 +268,15 @@ namespace MonoDevelop.PackageManagement
 				.Select (CreatePackageReference);
 		}
 
-		static PackageManagementPackageReference CreatePackageReference (PackageIdentity package)
+		static PackageManagementPackageReference CreatePackageReference (
+			PackageIdentity package,
+			NuGetProject nugetProject,
+			PackageManagementPathResolver pathResolver)
 		{
-			return new PackageManagementPackageReference (package.Id, package.Version.ToString ());
+			return new PackageManagementPackageReference (
+				package.Id,
+				package.Version.ToString (),
+				pathResolver.GetPackageInstallPath (nugetProject, package));
 		}
 
 		static PackageManagementPackageReference CreatePackageReference (IInstallNuGetPackageAction installAction)

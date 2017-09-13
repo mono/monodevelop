@@ -328,7 +328,8 @@ module CompilerArguments =
        yield if fsconfig.HasDefineSymbol "DEBUG" then  "--debug+" else  "--debug-"
        yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
        yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
-
+       if not (String.IsNullOrWhiteSpace fsconfig.DebugType) then
+           yield sprintf "--debug:%s" fsconfig.DebugType
        yield match project.CompileTarget with
              | CompileTarget.Library -> "--target:library"
              | CompileTarget.Module -> "--target:module"
@@ -348,7 +349,8 @@ module CompilerArguments =
     let compilerOptions = generateCompilerOptions (project, projectAssemblyReferences, fsconfig, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
     let loadedTimeStamp =  DateTime.MaxValue // Not 'now', we don't want to force reloading
     { ProjectFileName = project.FileName.FullPath.ToString()
-      ProjectFileNames = [| |] // the project file names will be inferred from the ProjectOptions
+      SourceFiles = [| |]
+      Stamp = None
       OtherOptions = compilerOptions
       ReferencedProjects = [| |]
       IsIncompleteTypeCheckEnvironment = false

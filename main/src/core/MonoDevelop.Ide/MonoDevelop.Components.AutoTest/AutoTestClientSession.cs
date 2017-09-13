@@ -193,7 +193,8 @@ namespace MonoDevelop.Components.AutoTest
 
 		public T GetGlobalValue<T> (string name)
 		{
-			return (T) session.GetGlobalValue (name);
+			var val = (T)session.GetGlobalValue(name);
+			return val;
 		}
 
 		public void SetGlobalValue (string name, object value)

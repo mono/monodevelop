@@ -6,6 +6,7 @@ open System.Threading.Tasks
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Core
 open ExtCore
+open System.Reactive.Linq
 
 module Seq =
     let tryHead items =
@@ -136,10 +137,6 @@ module FSharpSymbolExt =
             if name.StartsWith "( " && name.EndsWith " )" && name.Length > 4
             then name.Substring (2, name.Length - 4) |> String.forall (fun c -> c <> ' ')
             else false
-        member x.EnclosingEntitySafe =
-            try
-                Some x.EnclosingEntity
-            with :? InvalidOperationException -> None
 
     type FSharpEntity with
         member x.TryGetFullName() =
@@ -247,21 +244,6 @@ module LoggingService =
     let logInfo format = log LoggingService.LogInfo format
     let logWarning format = log LoggingService.LogWarning format
 
-type RetryBuilder(max) = 
-  member x.Return(a) = a               // Enable 'return'
-  member x.Delay(f) = f                // Gets wrapped body and returns it (as it is)
-                                       // so that the body is passed to 'Run'
-  member x.Zero() = failwith "Zero"    // Support if .. then 
-  member x.Run(f) =                    // Gets function created by 'Delay'
-    let rec loop(n) = 
-      if n = 0 then failwith "Failed"  // Number of retries exceeded
-      else try f() with _ -> loop(n-1)
-    loop max
-
-[<AutoOpen>]
-module Retry =
-    let retry = RetryBuilder(3)
-
 module Async =
     let inline startAsPlainTask (work : Async<unit>) =
         System.Threading.Tasks.Task.Factory.StartNew(fun () -> work |> Async.RunSynchronously)
@@ -277,3 +259,8 @@ module AsyncTaskBind =
         member x.ReturnFrom(computation:Task<'T>) = x.ReturnFrom(Async.AwaitTask computation)
         member x.Bind(computation:Task, binder:unit -> Async<unit>) =  x.Bind(Async.awaitPlainTask computation, binder)
         member x.ReturnFrom(computation:Task) = x.ReturnFrom(Async.awaitPlainTask computation)
+
+module Observable =
+    let throttle (due:TimeSpan) observable =
+        Observable.Throttle(observable, due)
+

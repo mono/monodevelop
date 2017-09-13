@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreTestClass.cs
+// IVsTestTestProvider.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,43 +26,13 @@
 
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.UnitTesting;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.DotNetCore.UnitTesting
+namespace MonoDevelop.UnitTesting.VsTest
 {
-	class DotNetCoreTestClass : UnitTestGroup, IDotNetCoreTestProvider
+	interface IVsTestTestProvider
 	{
-		IDotNetCoreTestRunner testRunner;
-
-		public DotNetCoreTestClass (IDotNetCoreTestRunner testRunner, string name)
-			: base (name)
-		{
-			this.testRunner = testRunner;
-			FixtureTypeName = name;
-		}
-
-		protected override UnitTestResult OnRun (TestContext testContext)
-		{
-			return testRunner.RunTest (testContext, this);
-		}
-
-		protected override bool OnCanRun (IExecutionHandler executionContext)
-		{
-			return testRunner.CanRunTests (executionContext);
-		}
-
-		public override bool HasTests {
-			get { return true; }
-		}
-
-		public IEnumerable<TestCase> GetTests ()
-		{
-			foreach (IDotNetCoreTestProvider testProvider in Tests) {
-				foreach (TestCase childTest in testProvider.GetTests ()) {
-					yield return childTest;
-				}
-			}
-		}
+		Project Project { get; }
+		IEnumerable<TestCase> GetTests ();
 	}
 }
