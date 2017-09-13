@@ -51,14 +51,25 @@ namespace MonoDevelop.Ide.Gui.Content
 			EolMarker = eolMarker;
 		}
 		
-		public TextStylePolicy ()
+		public TextStylePolicy()
 		{
 			FileWidth = 120;
 			TabWidth = 4;
 			IndentWidth = 4;
 			RemoveTrailingWhitespace = true;
 		}
-		
+
+		public TextStylePolicy(TextStylePolicy other)
+		{
+			FileWidth = other.FileWidth;
+			TabWidth = other.TabWidth;
+			IndentWidth = other.IndentWidth;
+			TabsToSpaces = other.TabsToSpaces;
+			NoTabsAfterNonTabs = other.NoTabsAfterNonTabs;
+			RemoveTrailingWhitespace = other.RemoveTrailingWhitespace;
+			EolMarker = other.EolMarker;
+		}
+
 		[ItemProperty]
 		public int FileWidth { get; private set; }
 		
@@ -79,7 +90,25 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		[ItemProperty]
 		public EolMarker EolMarker { get; private set; }
-		
+
+		public TextStylePolicy WithTabsToSpaces(bool tabToSpaces)
+		{
+			if (tabToSpaces == TabsToSpaces)
+				return this;
+			return new TextStylePolicy(this) {
+				TabsToSpaces = tabToSpaces
+			};
+		}
+
+		public TextStylePolicy WithTabWidth(int tabWidth)
+		{
+			if (tabWidth == TabWidth)
+				return this;
+			return new TextStylePolicy(this) {
+				TabWidth = tabWidth
+			};
+		}
+
 		public static string GetEolMarker (EolMarker eolMarker)
 		{
 			switch (eolMarker) {
