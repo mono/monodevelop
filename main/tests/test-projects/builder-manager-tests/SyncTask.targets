@@ -1,0 +1,16 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask
+    TaskName="FileSyncTask"
+    TaskFactory="CodeTaskFactory"
+    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
+    <ParameterGroup>
+      <Path ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Language="cs" Source="$(MSBuildThisFileDirectory)/SyncTask/SyncTask.cs" />
+    </Task>
+  </UsingTask>
+  <Target Name="FileSync" AfterTargets="Build">
+    <FileSyncTask Path="$(MSBuildProjectDirectory)"/>
+  </Target>
+</Project>
