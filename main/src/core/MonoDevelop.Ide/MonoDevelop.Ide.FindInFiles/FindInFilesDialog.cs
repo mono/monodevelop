@@ -245,10 +245,6 @@ namespace MonoDevelop.Ide.FindInFiles
 												"Find",
 												GettextCatalog.GetString ("Enter string to find"));
 			comboboxentryFind.SetAccessibilityLabelRelationship (labelFind);
-			searchentryFileMask.SetCommonAccessibilityAttributes ("FindInFilesDialog.searchentryFileMask",
-												"File Mask",
-												GettextCatalog.GetString ("Enter the file mask"));
-			searchentryFileMask.SetAccessibilityLabelRelationship (labelFileMask);
 		}
 
 		void SetupAccessibilityForReplace ()
@@ -259,7 +255,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			comboboxentryReplace.SetAccessibilityLabelRelationship (labelReplace);
 		}
 
-
 		void SetupAccessibilityForPath ()
 		{
 			comboboxentryPath.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryPath",
@@ -268,7 +263,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			comboboxentryPath.SetAccessibilityLabelRelationship (labelPath);
 		}
 
-
+		void SetupAccessibilityForSearch ()
+		{
+			searchentryFileMask.SetCommonAccessibilityAttributes ("FindInFilesDialog.searchentryFileMask",
+				"File Mask",
+				GettextCatalog.GetString ("Enter the file mask"));
+			searchentryFileMask.SetAccessibilityLabelRelationship (labelFileMask);
+		}
 
 		static void TableAddRow (Table table, uint row, Widget column1, Widget column2)
 		{
@@ -518,6 +519,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			searchentryFileMask.Entry.ActivatesDefault = true;
 			searchentryFileMask.Show ();
+
+			SetupAccessibilityForSearch ();
 			
 			TableAddRow (tableFindAndReplace, row, labelFileMask, searchentryFileMask);
 		}
