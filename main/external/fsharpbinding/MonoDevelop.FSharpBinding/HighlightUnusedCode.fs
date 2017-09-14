@@ -24,8 +24,8 @@ module highlightUnusedCode =
                 | _ -> () ]
 
     let getOpenStatements (tree: ParsedInput option) = 
-        match tree.Value with
-        | ParsedInput.ImplFile(implFile) ->
+        match tree with
+        | Some (ParsedInput.ImplFile(implFile)) ->
             let (ParsedImplFileInput(_fn, _script, _name, _, _, modules, _)) = implFile
             visitModulesAndNamespaces modules
         | _ -> []
