@@ -44,7 +44,7 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 			var dialog = new ExtractInterfaceDialog ();
 			try {
 				dialog.Init (syntaxFactsService, notificationService, extractableMembers, defaultInterfaceName, conflictingTypeNames, defaultNamespace, generatedNameTypeParameterSuffix, languageName);
-				bool performChange = dialog.Run () == (int)Gtk.ResponseType.Ok;
+				bool performChange = dialog.Run () == Xwt.Command.Ok;
 				if (!performChange)
 					return ExtractInterfaceOptionsResult.Cancelled;
 
@@ -53,7 +53,7 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 				LoggingService.LogError ("Error while signature changing.", ex);
 				return ExtractInterfaceOptionsResult.Cancelled;
 			} finally {
-				dialog.Destroy ();
+				dialog.Dispose ();
 			}
 		}
 	}

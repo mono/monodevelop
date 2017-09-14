@@ -28,15 +28,16 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Notification;
 using Microsoft.CodeAnalysis.LanguageServices;
 using System.Collections.Generic;
-using Gtk;
+using Xwt;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using System.Linq;
 using MonoDevelop.Core;
+using Xwt.Drawing;
 
 namespace MonoDevelop.Refactoring.ExtractInterface
 {
-	partial class ExtractInterfaceDialog : Gtk.Dialog
+	class ExtractInterfaceDialog : Xwt.Dialog
 	{
 		ISyntaxFactsService syntaxFactsService;
 		INotificationService notificationService;
@@ -45,8 +46,15 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 		string defaultNamespace;
 		string generatedNameTypeParameterSuffix;
 		string languageName;
-		readonly TreeStore treeStore = new TreeStore (typeof (bool), typeof (ISymbol));
 
+		DataField<bool> symbolIncludedField = new DataField<bool> ();
+		DataField<string> symbolTextField = new DataField<string> ();
+		DataField<Image> symbolIconField = new DataField<Image> ();
+
+		DataField<ISymbol> symbolField = new DataField<ISymbol> ();
+
+		ListStore treeStore;
+		 
 		public string InterfaceName {
 			get {
 				return entryName.Text;
@@ -67,58 +75,110 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 
 		public IEnumerable<ISymbol> IncludedMembers {
 			get {
-				if (treeStore.GetIterFirst (out TreeIter iter)) {
-					do {
-						var entity = treeStore.GetValue (iter, 1) as ISymbol;
-						if (entity != null)
-							yield return entity;
-					} while (treeStore.IterNext (ref iter));
+				for (int i = 0; i < treeStore.RowCount; i++) {
+					if (treeStore.GetValue (i, symbolIncludedField))
+						yield return treeStore.GetValue (i, symbolField);
 				}
 			}
 		}
 
-		public ExtractInterfaceDialog () : base (GettextCatalog.GetString ("Extract Interface"), IdeApp.Workbench.RootWindow, DialogFlags.Modal)
+		TextEntry entryFileName = new TextEntry ();
+		TextEntry entryName = new TextEntry ();
+		ListView listViewPublicMembers = new ListView ();
+
+		public ExtractInterfaceDialog ()
 		{
 			this.Build ();
 			this.buttonSelectAll.Clicked += delegate {
-				if (treeStore.GetIterFirst (out TreeIter iter)) {
-					do {
-						treeStore.SetValue (iter, 0, true);
-					} while (treeStore.IterNext (ref iter));
+				for (int i = 0; i < treeStore.RowCount; i++) {
+					treeStore.SetValue (i, symbolIncludedField, true);
 				}
 				UpdateOkButton ();
 			};
 
 			this.buttonDeselectAll.Clicked += delegate {
-				if (treeStore.GetIterFirst (out TreeIter iter)) {
-					do {
-						treeStore.SetValue (iter, 0, false);
-					} while (treeStore.IterNext (ref iter));
+				for (int i = 0; i < treeStore.RowCount; i++) {
+					treeStore.SetValue (i, symbolIncludedField, false);
 				}
 				UpdateOkButton ();
 			};
 
-			treeviewPublicMembers.HeadersVisible = false;
-			this.treeviewPublicMembers.Model = treeStore;
-			var toggle = new CellRendererToggle ();
-			toggle.Toggled += delegate (object o, ToggledArgs args) {
-				if (treeStore.GetIterFromString (out TreeIter iter, args.Path)) {
-					treeStore.SetValue (iter, 0, !(bool)treeStore.GetValue (iter, 0));
-				}
-				UpdateOkButton ();
-			};
-			this.treeviewPublicMembers.AppendColumn ("", toggle, "active", 0);
+			listViewPublicMembers.HeadersVisible = false;
+			listViewPublicMembers.DataSource = treeStore;
+			var checkBoxCellView = new CheckBoxCellView (symbolIncludedField);
+			checkBoxCellView.Editable = true;
+			checkBoxCellView.Toggled += delegate { UpdateOkButton ();};
+			listViewPublicMembers.Columns.Add ("", checkBoxCellView);
+			listViewPublicMembers.Columns.Add ("", new ImageCellView (symbolIconField), new TextCellView (symbolTextField));
 
-			var crImage = new CellRendererImage ();
-			var col = this.treeviewPublicMembers.AppendColumn ("", crImage);
-			col.SetCellDataFunc (crImage, RenderPixbuf);
-
-			var crText = new CellRendererText ();
-			col = this.treeviewPublicMembers.AppendColumn ("", crText);
-			col.SetCellDataFunc (crText, RenderText);
 
 			this.entryName.Changed += delegate { UpdateOkButton (); };
 			this.entryFileName.Changed += delegate { UpdateOkButton (); };
+		}
+
+		void Build ()
+		{
+			this.TransientFor = MessageDialog.RootWindow;
+			this.Title = GettextCatalog.GetString ("Extract Interface");
+
+			treeStore = new ListStore (symbolIncludedField, symbolField, symbolTextField, symbolIconField); 
+			var box = new VBox {
+				Margin = 6,
+				Spacing = 6
+			};
+
+			box.PackStart (new Label {
+				Markup = GettextCatalog.GetString ("Name of the new interface:")
+			});
+			box.PackStart (entryName);
+			entryName.Changed += delegate {
+				UpdateOkButton ();
+			};
+			box.PackStart (new Label {
+				Markup = GettextCatalog.GetString ("File name:")
+			});
+
+			box.PackStart (entryFileName);
+			entryFileName.Changed += delegate {
+				UpdateOkButton ();
+			};
+			box.PackStart (new Label {
+				Markup = "<b>" + GettextCatalog.GetString ("Select public members for the interface:") + "</b>"
+			});
+
+			var hbox = new HBox {
+				Spacing = 6
+			};
+			hbox.PackStart (listViewPublicMembers, true);
+
+			var vbox = new VBox {
+				Spacing = 6
+			};
+			buttonSelectAll = new Button (GettextCatalog.GetString ("Select All"));
+			buttonSelectAll.Clicked += delegate {
+				UpdateOkButton ();
+			};
+			vbox.PackStart (buttonSelectAll);
+
+			buttonDeselectAll = new Button (GettextCatalog.GetString ("Clear"));
+			buttonDeselectAll.Clicked += delegate {
+				UpdateOkButton ();
+			};
+			vbox.PackStart (buttonDeselectAll);
+
+			hbox.PackStart (vbox);
+
+			box.PackStart (hbox, true);
+
+			Content = box;
+			Buttons.Add (okButton = new DialogButton (Command.Ok));
+			Buttons.Add (new DialogButton (Command.Cancel));
+
+			this.Width = 400;
+			this.Height = 421;
+			this.Resizable = false;
+
+			Show ();
 		}
 
 		static SymbolDisplayFormat memberDisplayFormat = new SymbolDisplayFormat (
@@ -127,23 +187,9 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 			parameterOptions: SymbolDisplayParameterOptions.IncludeType | SymbolDisplayParameterOptions.IncludeParamsRefOut | SymbolDisplayParameterOptions.IncludeOptionalBrackets,
 			miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers | SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
 		private string fileExtension;
-
-		void RenderText (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
-		{
-			var crText = (Gtk.CellRendererText)cell;
-			var entity = tree_model.GetValue (iter, 1) as ISymbol;
-			if (entity != null)
-				crText.Text = entity.ToDisplayString (memberDisplayFormat);
-		}
-
-		void RenderPixbuf (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
-		{
-			var crImage = (CellRendererImage)cell;
-			var entity = tree_model.GetValue (iter, 1) as ISymbol;
-			if (entity != null)
-				crImage.Image = ImageService.GetIcon (MonoDevelop.Ide.TypeSystem.Stock.GetStockIcon (entity));
-		}
-
+		private Button buttonSelectAll;
+		private Button buttonDeselectAll;
+		private DialogButton okButton;
 
 		internal void Init (ISyntaxFactsService syntaxFactsService, INotificationService notificationService, List<ISymbol> extractableMembers, string defaultInterfaceName, List<string> conflictingTypeNames, string defaultNamespace, string generatedNameTypeParameterSuffix, string languageName)
 		{
@@ -160,13 +206,17 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 			this.FileName = defaultInterfaceName + fileExtension;
 			treeStore.Clear ();
 			foreach (var member in extractableMembers) {
-				treeStore.AppendValues (true, member);
+				var row = treeStore.AddRow ();
+				treeStore.SetValue (row, symbolIncludedField, true);
+				treeStore.SetValue (row, symbolField, member);
+				treeStore.SetValue (row, symbolTextField, member.ToDisplayString (memberDisplayFormat));
+				treeStore.SetValue (row, symbolIconField, ImageService.GetIcon (MonoDevelop.Ide.TypeSystem.Stock.GetStockIcon (member)));
 			}
 		}
 
 		void UpdateOkButton ()
 		{
-			buttonOk.Sensitive = TrySubmit ();
+			okButton.Sensitive = TrySubmit ();
 		}
 
 		bool TrySubmit ()

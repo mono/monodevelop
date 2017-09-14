@@ -176,7 +176,6 @@
     <Compile Include="MonoDevelop.CodeActions\RoslynProgressTracker.cs" />
     <Compile Include="MonoDevelop.Refactoring.ExtractInterface\ExtractInterfaceOptionService.cs" />
     <Compile Include="MonoDevelop.Refactoring.ExtractInterface\ExtractInterfaceDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Refactoring.ExtractInterface.ExtractInterfaceDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
