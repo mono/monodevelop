@@ -36,6 +36,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		VsFormat format;
 		readonly int threadId;
 		readonly int frameIndex;
+		internal readonly int frameId;
 		string fullStackframeText;
 
 		public VsCodeStackFrame (VsFormat format, int threadId, int frameIndex, Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrame frame)
@@ -45,6 +46,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			this.threadId = threadId;
 			this.frameIndex = frameIndex;
 			this.fullStackframeText = frame.Name;
+			this.frameId = frame.Id;
 		}
 
 		public override string FullStackframeText {
