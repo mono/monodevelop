@@ -2830,6 +2830,37 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (project.ToolsVersion, project2.ToolsVersion);
 		}
+
+		[Test]
+		public async Task ProjectBuildAfterModifyingImport()
+		{
+			// Tests that changes in imported target files are taken into account
+			// when building a project.
+
+			string solFile = Util.GetSampleProject("test-project-refresh", "test-project-refresh.sln");
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem(Util.GetMonitor(), solFile);
+			var p = (Project)sol.Items[0];
+
+			var targetsFile = p.ItemDirectory.Combine ("extra.targets");
+			var appFile = p.ItemDirectory.Combine ("Program.cs");
+
+			// The project has a build error due to an invalid file inclusion in extra.targets
+
+			var res = await p.Build (Util.GetMonitor (), p.Configurations[0].Selector);
+			Assert.AreEqual (1, res.ErrorCount);
+
+			// Fix the error in the targets file
+
+			var txt = File.ReadAllText (targetsFile);
+			txt = txt.Replace ("Extra.xx", "Extra.cs");
+			File.WriteAllText (targetsFile, txt);
+
+			// The project should now build. The builder should detect that the imported
+			// extra.targets file has been modified and should reload it
+
+			res = await p.Build (Util.GetMonitor (), p.Configurations [0].Selector);
+			Assert.AreEqual (0, res.ErrorCount);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode
