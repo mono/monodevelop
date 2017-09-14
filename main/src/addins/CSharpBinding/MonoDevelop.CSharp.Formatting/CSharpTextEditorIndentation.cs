@@ -588,7 +588,6 @@ namespace MonoDevelop.CSharp.Formatting
 							var parentStatement = token.Parent.AncestorsAndSelf().OfType<StatementSyntax>().FirstOrDefault();
 							if (parentStatement != null)
 								start = parentStatement.SpanStart;
-							Console.WriteLine(start +"-"+ Editor.CaretOffset);
 							OnTheFlyFormatter.Format(Editor, DocumentContext, start, Editor.CaretOffset, exact:true, optionSet: optionSet);
 							//OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
 							if (oldVersion.CompareAge (Editor.Version) != 0)

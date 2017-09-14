@@ -28,7 +28,6 @@ using System;
 using System.Security;
 using System.Collections.Generic;
 using System.Linq;
-using Gtk;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.GenerateType;
 using Microsoft.CodeAnalysis.LanguageServices;
@@ -38,31 +37,42 @@ using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.Threading;
+using Xwt;
 
 namespace MonoDevelop.Refactoring.GenerateType
 {
-	partial class GenerateTypeDialog : Gtk.Dialog
+	class GenerateTypeDialog : Dialog
 	{
 		readonly Document document;
 		readonly GenerateTypeDialogOptions generateTypeDialogOptions;
 		readonly ISyntaxFactsService syntaxFactsService;
+		readonly IProjectManagementService projectManagementService;
 
-		// reserved names that cannot be a folder name or filename
-		static readonly string[] reservedKeywords = { "con", "prn", "aux", "nul",
+		TextEntry entryNewFile = new TextEntry ();
+		TextEntry entryName = new TextEntry ();
+
+		ComboBox comboboxExistingFile = new ComboBox ();
+		ComboBox comboboxProject = new ComboBox ();
+
+		ComboBox comboboxAccess = new ComboBox ();
+		ComboBox comboboxType = new ComboBox ();
+		DialogButton okButton;
+
+		RadioButton radiobuttonNewFile, radiobuttonToExistingFile;
+
+// reserved names that cannot be a folder name or filename
+		static readonly string [] reservedKeywords = { "con", "prn", "aux", "nul",
 			"com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9",
 			"lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "clock$"
 		};
-
-		ListStore projectStore = new ListStore (typeof (string), typeof (Project));
-		ListStore documentStore = new ListStore (typeof (string), typeof (Document));
 
 		internal GenerateTypeOptionsResult GenerateTypeOptionsResult {
 			get {
 				string defaultNamespace = "";
 
 				return new GenerateTypeOptionsResult (
-					accessibilityList [comboboxAccess.Active],
-					typeKindList [comboboxType.Active],
+					(Accessibility)comboboxAccess.SelectedItem,
+					(TypeKind)comboboxType.SelectedItem,
 					entryName.Text,
 					SelectedProject,
 					radiobuttonNewFile.Active,
@@ -78,21 +88,19 @@ namespace MonoDevelop.Refactoring.GenerateType
 
 		Project SelectedProject {
 			get {
-				if (!comboboxProject.GetActiveIter (out TreeIter iter))
-					return document.Project;
-				return (Project)projectStore.GetValue (iter, 1);
+				return (Project)comboboxProject.SelectedItem;
 			}
 		}
 
-		readonly IProjectManagementService projectManagementService;
 
-		internal GenerateTypeDialog (string className, GenerateTypeDialogOptions generateTypeDialogOptions, Document document, INotificationService notificationService, IProjectManagementService projectManagementService, ISyntaxFactsService syntaxFactsService)
+		internal GenerateTypeDialog(string className, GenerateTypeDialogOptions generateTypeDialogOptions, Document document, INotificationService notificationService, IProjectManagementService projectManagementService, ISyntaxFactsService syntaxFactsService)
 		{
 			this.generateTypeDialogOptions = generateTypeDialogOptions;
 			this.projectManagementService = projectManagementService;
 			this.syntaxFactsService = syntaxFactsService;
 			this.document = document;
-			this.Build ();
+			Build ();
+
 			PopulateAccessibilty ();
 			PopulateTypeKinds ();
 
@@ -100,37 +108,122 @@ namespace MonoDevelop.Refactoring.GenerateType
 			FileName = className + ".cs";
 
 			PopulateProjectList ();
-			comboboxProject.Model = projectStore;
-			comboboxProject.Changed += delegate {
+
+			comboboxProject.SelectionChanged += delegate {
 				PopulateDocumentList ();
 			};
-			comboboxProject.Active = 0;
+			comboboxProject.SelectedIndex = 0;
 
-			comboboxExistingFile.Model = documentStore;
-			comboboxExistingFile.Changed += delegate {
-				if (comboboxExistingFile.GetActiveIter (out TreeIter iter)) {
-					SelectedDocument = (Document)documentStore.GetValue (iter, 1);
-				}
+			comboboxExistingFile.SelectionChanged += delegate {
+				SelectedDocument = (Document)comboboxExistingFile.SelectedItem;
 			};
 			PopulateDocumentList ();
+
 			radiobuttonToExistingFile.Active = true;
-			this.buttonOk.Clicked += delegate {
-				if (TrySubmit ())
-					Respond (ResponseType.Ok);
+
+		}
+
+		void Build ()
+		{
+			this.TransientFor = MessageDialog.RootWindow;
+			this.Title = GettextCatalog.GetString ("Generate Type");
+
+			var box = new VBox {
+				Margin = 6,
+				Spacing = 6
 			};
+
+			box.PackStart (new Label {
+				Markup = "<b>" + GettextCatalog.GetString ("Type details:") + "</b>"
+			});
+
+			var table = new Table ();
+			table.Add (new Label (GettextCatalog.GetString ("Access:")), 0, 0);
+			table.Add (new Label (GettextCatalog.GetString ("Type:")), 1, 0);
+			table.Add (new Label (GettextCatalog.GetString ("Name:")), 2, 0);
+
+			table.Add (comboboxAccess, 0, 1);
+			table.Add (comboboxType, 1, 1);
+			table.Add (entryName, 2, 1, vexpand: true);
+
+			box.PackStart (table);
+
+			box.PackStart (new Label {
+				Markup = "<b>" + GettextCatalog.GetString ("Save location:") + "</b>"
+			});
+
+			box.PackStart (new Label {
+				Markup = "<b>" + GettextCatalog.GetString ("Project:") + "</b>"
+			});
+
+			box.PackStart (comboboxProject);
+
+			box.PackStart (new Label {
+				Markup = "<b>" + GettextCatalog.GetString ("Type details:") + "</b>"
+			});
+
+			var frameBox = new VBox {
+				Spacing = 6,
+				Margin = 12
+			};
+
+			frameBox.PackStart (new Label {
+				Text = GettextCatalog.GetString ("File name:")
+			});
+
+			var alignment = new VBox {
+				MarginLeft = 12
+			};
+			radiobuttonNewFile = new RadioButton (GettextCatalog.GetString ("Create new file"));
+			alignment.PackStart (radiobuttonNewFile);
+
+			alignment.PackStart (entryNewFile);
+
+			radiobuttonToExistingFile = new RadioButton (GettextCatalog.GetString ("Add to existing file"));
+			var actionGroup = new RadioButtonGroup ();
+			radiobuttonNewFile.Group = actionGroup;
+			radiobuttonToExistingFile.Group = actionGroup;
+
+			actionGroup.ActiveRadioButtonChanged += delegate {
+				comboboxExistingFile.Sensitive = radiobuttonToExistingFile.Active;
+				entryNewFile.Sensitive = radiobuttonNewFile.Active;
+			};
+			alignment.PackStart (radiobuttonToExistingFile);
+
+			comboboxExistingFile.WidthRequest = 350;
+			alignment.PackStart (comboboxExistingFile);
+
+			frameBox.PackStart (alignment);
+			box.PackStart (new Frame (frameBox));
+
+			Content = box;
+			Buttons.Add (okButton = new DialogButton (GettextCatalog.GetString ("OK")));
+			okButton.Clicked += delegate {
+				if (TrySubmit ())
+					Respond (Command.Ok);
+			};
+
+			Buttons.Add (new DialogButton (Command.Cancel));
+
+			this.Width = 400;
+			this.Height = 421;
+			this.Resizable = false;
+
+			Show ();
 		}
 
 		void PopulateDocumentList ()
 		{
 			var selectedProject = SelectedProject;
-			documentStore.Clear ();
+			comboboxExistingFile.Items.Clear ();
 			if (selectedProject == document.Project) {
 				SelectedDocument = document;
-				documentStore.AppendValues (GettextCatalog.GetString ("<Current File>"), document);
+				comboboxExistingFile.Items.Add (document, GettextCatalog.GetString ("<Current File>")); 
+
 				foreach (var doc in document.Project.Documents.Where (d => d.FilePath != SelectedDocument.FilePath && !d.IsGeneratedCode (default (CancellationToken)))) {
-					documentStore.AppendValues (GetDocumentName (document), document);
+					comboboxExistingFile.Items.Add (doc, GetDocumentName (doc)); 
 				}
-				comboboxExistingFile.Active = 0;
+				comboboxExistingFile.SelectedIndex = 0;
 				return;
 			}
 
@@ -140,9 +233,9 @@ namespace MonoDevelop.Refactoring.GenerateType
 					SelectedDocument = doc;
 					first = false;
 				}
-				documentStore.AppendValues (GetDocumentName (document), document);
+				comboboxExistingFile.Items.Add (doc, GetDocumentName (doc));
 			}
-			comboboxExistingFile.Active = 0;
+			comboboxExistingFile.SelectedIndex = 0;
 		}
 
 		string GetDocumentName (Document document) 
@@ -155,11 +248,11 @@ namespace MonoDevelop.Refactoring.GenerateType
 
 		void PopulateProjectList ()
 		{
-			projectStore.Clear ();
-			projectStore.AppendValues (document.Project.Name, document.Project);
+			comboboxProject.Items.Clear ();
+			comboboxProject.Items.Add (document.Project, document.Project.Name);
 			var dependencyGraph = document.Project.Solution.GetProjectDependencyGraph ();
 			foreach (var project in document.Project.Solution.Projects.Where (p => p.Name != document.Project.Name && !dependencyGraph.GetProjectsThatThisProjectTransitivelyDependsOn (p.Id).Contains (document.Project.Id))) {
-				projectStore.AppendValues (project.Name, project);
+				comboboxProject.Items.Add (project, project.Name);
 			}
 		}
 
@@ -167,16 +260,13 @@ namespace MonoDevelop.Refactoring.GenerateType
 		void PopulateAccessibilty ()
 		{
 			if (!generateTypeDialogOptions.IsPublicOnlyAccessibility) {
-				comboboxAccess.AppendText ("Default");
-				accessibilityList.Add (Accessibility.NotApplicable);
+				comboboxAccess.Items.Add (Accessibility.NotApplicable, GettextCatalog.GetString ("default"));
 
-				comboboxAccess.AppendText ("internal");
-				accessibilityList.Add (Accessibility.Internal);
+				comboboxAccess.Items.Add (Accessibility.Internal, "internal");
 			}
 
-			comboboxAccess.AppendText ("public");
-			accessibilityList.Add (Accessibility.Public);
-			comboboxAccess.Active = 0;
+			comboboxAccess.Items.Add (Accessibility.Public, "public");
+			comboboxAccess.SelectedIndex = 0;
 		}
 
 		List<TypeKind> typeKindList = new List<TypeKind> ();
@@ -198,28 +288,23 @@ namespace MonoDevelop.Refactoring.GenerateType
 		void PopulateTypeKinds ()
 		{
 			if (TypeKindOptionsHelper.IsClass (generateTypeDialogOptions.TypeKindOptions)) {
-				comboboxType.AppendText ("Class");
-				typeKindList.Add (TypeKind.Class);
+				comboboxType.Items.Add (TypeKind.Class, "Class");
 			}
 			if (TypeKindOptionsHelper.IsEnum (generateTypeDialogOptions.TypeKindOptions)) {
-				comboboxType.AppendText ("Enum");
-				typeKindList.Add (TypeKind.Enum);
+				comboboxType.Items.Add (TypeKind.Enum, "Enum");
 			}
 
 			if (TypeKindOptionsHelper.IsStructure (generateTypeDialogOptions.TypeKindOptions)) {
-				comboboxType.AppendText ("Structure");
-				typeKindList.Add (TypeKind.Structure);
+				comboboxType.Items.Add (TypeKind.Structure, "Structure");
 			}
 			if (TypeKindOptionsHelper.IsInterface (generateTypeDialogOptions.TypeKindOptions)) {
-				comboboxType.AppendText ("Interface");
-				typeKindList.Add (TypeKind.Interface);
+				comboboxType.Items.Add (TypeKind.Interface, "Interface");
 			}
 
 			if (TypeKindOptionsHelper.IsDelegate (generateTypeDialogOptions.TypeKindOptions)) {
-				comboboxType.AppendText ("Delegate");
-				typeKindList.Add (TypeKind.Delegate);
+				comboboxType.Items.Add (TypeKind.Delegate, "Delegate");
 			}
-			comboboxType.Active = 0;
+			comboboxType.SelectedIndex = 0;
 		}
 	
 	

@@ -54,7 +54,7 @@ namespace MonoDevelop.Refactoring.GenerateType
 			{
 				var dialog = new GenerateTypeDialog (className, generateTypeDialogOptions, document, notificationService, projectManagementService, syntaxFactsService);
 				try {
-					bool performChange = dialog.Run () == (int)Gtk.ResponseType.Ok;
+					bool performChange = dialog.Run () == Xwt.Command.Ok;
 					if (!performChange)
 						return GenerateTypeOptionsResult.Cancelled;
 					
@@ -63,7 +63,7 @@ namespace MonoDevelop.Refactoring.GenerateType
 					LoggingService.LogError ("Error while signature changing.", ex);
 					return GenerateTypeOptionsResult.Cancelled;
 				} finally {
-					dialog.Destroy ();
+					dialog.Dispose ();
 				}
 			}
 		}
