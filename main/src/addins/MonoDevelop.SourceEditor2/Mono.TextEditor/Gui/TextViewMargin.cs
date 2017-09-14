@@ -1969,23 +1969,35 @@ namespace Mono.TextEditor
 				DecorateTabsAndSpaces (cr, layout, offset, xPos, y, selectionStartOffset, selectionEndOffset);
 
 
-			if (textEditor.IsSomethingSelected && !isSelectionDrawn && BackgroundRenderer == null) {
-				if (lineNumber == textEditor.MainSelection.End.Line && textEditor.MainSelection.End.Column > line.Length + 1) {
-					using (var wrapper = GetVirtualSpaceLayout (line, textEditor.MainSelection.End)) {
-						double startX;
-						double endX;
-						startX = xPos;
-						endX = position + wrapper.Width + layout.Width;
+			if (textEditor.IsSomethingSelected && !isSelectionDrawn && BackgroundRenderer == null && textEditor.MainSelection.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block) {
+				DocumentLocation rightCorner = new DocumentLocation(textEditor.MainSelection.End.Line, Math.Max(textEditor.MainSelection.Start.Column, textEditor.MainSelection.End.Column));
+				if (lineNumber >= textEditor.MainSelection.Start.Line && lineNumber <= textEditor.MainSelection.End.Line && rightCorner.Column > line.Length + 1) {
+					using (var wrapper = GetVirtualSpaceLayout (line, rightCorner)) {
+						if (line.Length >= Math.Min (textEditor.MainSelection.Anchor.Column, textEditor.MainSelection.Lead.Column))
+						{
+							double startX = Math.Floor (position + layout.Width);
+							double endX = Math.Ceiling (wrapper.Width);
 
-						DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (startX, y, endX - startX, _lineHeight), SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Selection), true);
-
-						if (lineNumber == Caret.Line &&
-						    textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection &&
-						    textEditor.IsSomethingSelected &&
-						    (selectionStartOffset < offset || selectionStartOffset == selectionEndOffset) &&
-						    BackgroundRenderer == null) {
-							DecorateTabsAndSpaces (cr, wrapper, offset, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.Text.Length);
+							DrawRectangleWithRuler(cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle(startX, y, endX, _lineHeight), SyntaxHighlightingService.GetColor(textEditor.EditorTheme, EditorThemeColors.Selection), true);
 						}
+						else if (line.Length < textEditor.MainSelection.Anchor.Column)
+						{
+							DocumentLine fakeLine = textEditor.Lines.MaxValue(x => x.Length);
+							LayoutWrapper fakeLineLayoutWrapper = CreateLinePartLayout(fakeLine, logicalRulerColumn, fakeLine.Offset, fakeLine.Length, -1, -1);
+							var startIndex = fakeLineLayoutWrapper.IndexToPos(Math.Min (textEditor.MainSelection.Anchor.Column, textEditor.MainSelection.Lead.Column) - 1);
+							var endIndex = fakeLineLayoutWrapper.IndexToPos(Math.Max(textEditor.MainSelection.Anchor.Column, textEditor.MainSelection.Lead.Column) - 1);
+							double startX = Math.Floor (startIndex.X / Pango.Scale.PangoScale) + position;
+							double endX = Math.Ceiling (endIndex.X / Pango.Scale.PangoScale) + position;
+
+							DrawRectangleWithRuler(cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle(startX, y, endX - startX, _lineHeight), SyntaxHighlightingService.GetColor(textEditor.EditorTheme, EditorThemeColors.Selection), true);
+						}
+						//if (lineNumber == Caret.Line &&
+						//    textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection &&
+						//    textEditor.IsSomethingSelected &&
+						//    (selectionStartOffset < offset || selectionStartOffset == selectionEndOffset) &&
+						//    BackgroundRenderer == null) {
+						//	DecorateTabsAndSpaces (cr, wrapper, offset, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.Text.Length);
+						//}
 
 						DrawIndent (cr, wrapper, line, position, y);
 					}
@@ -2151,14 +2163,14 @@ namespace Mono.TextEditor
 
 		internal bool CalculateClickLocation (double x, double y, out DocumentLocation clickLocation)
 		{
-			VisualLocationTranslator trans = new VisualLocationTranslator (this);
+			VisualLocationTranslator trans = new VisualLocationTranslator (this, textEditor);
 
 			clickLocation = trans.PointToLocation (x, y, snapCharacters: true);
 			if (clickLocation.Line < DocumentLocation.MinLine || clickLocation.Column < DocumentLocation.MinColumn)
 				return false;
 			DocumentLine line = Document.GetLine (clickLocation.Line);
 			if (line != null && clickLocation.Column >= line.Length + 1 && GetWidth (Document.GetTextAt (line.SegmentIncludingDelimiter) + "-") < x) {
-				clickLocation = new DocumentLocation (clickLocation.Line, line.Length + 1);
+				//clickLocation = new DocumentLocation (clickLocation.Line, line.Length + 1);
 				if (textEditor.GetTextEditorData ().HasIndentationTracker && textEditor.Options.IndentStyle == IndentStyle.Virtual && clickLocation.Column == 1) {
 					int indentationColumn = this.textEditor.GetTextEditorData ().GetVirtualIndentationColumn (clickLocation);
 					if (indentationColumn > clickLocation.Column)
@@ -2611,14 +2623,20 @@ namespace Mono.TextEditor
 
 			switch (this.mouseSelectionMode) {
 			case MouseSelectionMode.SingleChar:
-				if (loc.Line != Caret.Line || !textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
-					if (!InSelectionDrag) {
-						textEditor.SetSelection (loc, loc);
-					} else {
-						textEditor.ExtendSelectionTo (loc);
+					if (loc.Line != Caret.Line || !textEditor.GetTextEditorData().IsCaretInVirtualLocation)
+					{
+						if (!InSelectionDrag)
+						{
+							textEditor.SetSelection(loc, loc);
+						}
+						else
+						{
+							textEditor.ExtendSelectionTo(loc);
+						}
+						//Caret.Location = loc;
 					}
-					Caret.Location = loc;
-				}
+					else
+						return;
 				break;
 			case MouseSelectionMode.Word:
 				if (loc.Line != Caret.Line || !textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
@@ -3201,6 +3219,7 @@ namespace Mono.TextEditor
 		class VisualLocationTranslator
 		{
 			TextViewMargin margin;
+			MonoTextEditor textEditor;
 			int lineNumber;
 			DocumentLine line;
 			int xPos = 0;
@@ -3211,9 +3230,10 @@ namespace Mono.TextEditor
 				set;
 			}
 
-			public VisualLocationTranslator (TextViewMargin margin)
+			public VisualLocationTranslator (TextViewMargin margin, MonoTextEditor textEditor)
 			{
 				this.margin = margin;
+				this.textEditor = textEditor;
 			}
 
 			int index;
@@ -3249,7 +3269,8 @@ namespace Mono.TextEditor
 			public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false, bool snapCharacters = false)
 			{
 				lineNumber = System.Math.Min (margin.YToLine (yp + margin.textEditor.VAdjustment.Value), margin.Document.LineCount);
-				line = lineNumber <= margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
+				//line = lineNumber <= margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
+				line = textEditor.Lines.MaxValue(x => x.Length);
 				this.snapCharacters = snapCharacters;
 				if (line == null)
 					return DocumentLocation.Empty;
@@ -3343,17 +3364,17 @@ namespace Mono.TextEditor
 
 		public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false, bool snapCharacters = false)
 		{
-			return new VisualLocationTranslator (this).PointToLocation (xp, yp, endAtEol, snapCharacters);
+			return new VisualLocationTranslator (this, textEditor).PointToLocation (xp, yp, endAtEol, snapCharacters);
 		}
 
 		public DocumentLocation PointToLocation (Cairo.Point p, bool endAtEol = false, bool snapCharacters = false)
 		{
-			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y, endAtEol, snapCharacters);
+			return new VisualLocationTranslator (this, textEditor).PointToLocation (p.X, p.Y, endAtEol, snapCharacters);
 		}
 
 		public DocumentLocation PointToLocation (Cairo.PointD p, bool endAtEol = false, bool snapCharacters = false)
 		{
-			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y, endAtEol, snapCharacters);
+			return new VisualLocationTranslator (this, textEditor).PointToLocation (p.X, p.Y, endAtEol, snapCharacters);
 		}
 		
 		public Cairo.Point LocationToPoint (int line, int column)

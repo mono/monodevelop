@@ -211,16 +211,16 @@ namespace Mono.TextEditor
 			int result = 1;
 			int offset = Offset;
 			var tabSize = editor.Options.TabSize;
-			if (editor.Options.IndentStyle == IndentStyle.Virtual && Length == 0 && logicalColumn > DocumentLocation.MinColumn) {
-				foreach (char ch in editor.GetIndentationString (Offset)) {
-					if (ch == '\t') {
-						result += tabSize;
-						continue;
-					}
-					result++;
-				}
-				return result;
-			}
+			//if (editor.Options.IndentStyle == IndentStyle.Virtual && Length == 0 && logicalColumn > DocumentLocation.MinColumn) {
+			//	foreach (char ch in editor.GetIndentationString (Offset)) {
+			//		if (ch == '\t') {
+			//			result += tabSize;
+			//			continue;
+			//		}
+			//		result++;
+			//	}
+			//	return result;
+			//}
 
 			for (int i = 0; i < logicalColumn - 1; i++) {
 				if (i < Length && editor.Document.GetCharAt (offset + i) == '\t') {
