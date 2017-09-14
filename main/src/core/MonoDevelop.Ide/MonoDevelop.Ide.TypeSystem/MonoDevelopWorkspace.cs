@@ -230,6 +230,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Task.Run (async delegate {
 				var projects = new ConcurrentBag<ProjectInfo> ();
 				var mdProjects = solution.GetAllProjects ();
+				foreach (var p in projectionList)
+					p.Dispose ();
 				projectionList = projectionList.Clear ();
 				projectIdMap.Clear ();
 				projectIdToMdProjectMap = projectIdToMdProjectMap.Clear ();
@@ -495,6 +497,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var entry in projectionList) {
 					if (entry?.File?.FilePath == projectFile.FilePath) {
 						projectionList = projectionList.Remove (entry);
+						entry.Dispose ();
 						break;
 					}
 				}
@@ -532,10 +535,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal class ProjectionEntry
+		internal class ProjectionEntry : IDisposable
 		{
 			public MonoDevelop.Projects.ProjectFile File;
 			public IReadOnlyList<Projection> Projections;
+
+			public void Dispose ()
+			{
+				foreach (var p in Projections)
+					p.Dispose ();
+			}
 		}
 
 		static bool CanGenerateAnalysisContextForNonCompileable (MonoDevelop.Projects.Project p, MonoDevelop.Projects.ProjectFile f)

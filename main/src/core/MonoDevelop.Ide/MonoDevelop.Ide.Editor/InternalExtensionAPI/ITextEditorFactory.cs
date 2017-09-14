@@ -40,6 +40,10 @@ namespace MonoDevelop.Ide.Editor
 		ITextEditorImpl CreateNewEditor (string fileName, string mimeType);
 		ITextEditorImpl CreateNewEditor (IReadonlyTextDocument document);
 
+		ITextEditorImpl CreateNewEditor (TextEditorType textEditorType);
+		ITextEditorImpl CreateNewEditor (string fileName, string mimeType, TextEditorType textEditorType);
+		ITextEditorImpl CreateNewEditor (IReadonlyTextDocument document, TextEditorType textEditorType);
+
 		string[] GetSyntaxProperties (string mimeType, string name);
 	}
 	

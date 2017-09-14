@@ -176,14 +176,25 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		bool loadedInCtor = false;
+		TextEditorType textEditorType;
 
-		public SourceEditorView(string fileName, string mimeType)
+		public TextEditorType TextEditorType {
+			get {
+				return textEditorType;
+			}
+		}
+
+		public SourceEditorView (TextEditorType textEditorType = TextEditorType.Default)
+		{
+
+		}
+		public SourceEditorView(string fileName, string mimeType, TextEditorType textEditorType = TextEditorType.Default)
 			: this(new DocumentAndLoaded(fileName, mimeType))
 		{
 			FileRegistry.Add(this);
 		}
 
-		public SourceEditorView(IReadonlyTextDocument document = null)
+		public SourceEditorView(IReadonlyTextDocument document, TextEditorType textEditorType = TextEditorType.Default)
 			: this(new DocumentAndLoaded(document))
 		{
 			if (document != null)
@@ -3625,5 +3636,7 @@ namespace MonoDevelop.SourceEditor
 				return this.TextEditor.HasFocus;
 			}
 		}
+
+		public TextEditorType TextEditorType1 { get => textEditorType; set => textEditorType = value; }
 	}
 } 
