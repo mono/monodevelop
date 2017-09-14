@@ -37,34 +37,23 @@ using Microsoft.CodeAnalysis.ProjectManagement;
 
 namespace MonoDevelop.Refactoring.GenerateType
 {
-	[ExportWorkspaceServiceFactory (typeof (IGenerateTypeOptionsService)), Shared]
-	class GenerateTypeOptionsServiceFactory2 : IWorkspaceServiceFactory
+	[ExportWorkspaceService (typeof (IGenerateTypeOptionsService), ServiceLayer.Host), Shared]
+	class GenerateTypeOptionsService : IGenerateTypeOptionsService
 	{
-		static Lazy<IGenerateTypeOptionsService> service = new Lazy<IGenerateTypeOptionsService> (() => new GenerateTypeOptionsService ());
-
-		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
+		GenerateTypeOptionsResult IGenerateTypeOptionsService.GetGenerateTypeOptions (string className, GenerateTypeDialogOptions generateTypeDialogOptions, Document document, INotificationService notificationService, IProjectManagementService projectManagementService, ISyntaxFactsService syntaxFactsService)
 		{
-
-			return service.Value;
-		}
-
-		class GenerateTypeOptionsService : IGenerateTypeOptionsService
-		{
-			GenerateTypeOptionsResult IGenerateTypeOptionsService.GetGenerateTypeOptions (string className, GenerateTypeDialogOptions generateTypeDialogOptions, Document document, INotificationService notificationService, IProjectManagementService projectManagementService, ISyntaxFactsService syntaxFactsService)
-			{
-				var dialog = new GenerateTypeDialog (className, generateTypeDialogOptions, document, notificationService, projectManagementService, syntaxFactsService);
-				try {
-					bool performChange = dialog.Run () == Xwt.Command.Ok;
-					if (!performChange)
-						return GenerateTypeOptionsResult.Cancelled;
-					
-					return dialog.GenerateTypeOptionsResult;
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error while signature changing.", ex);
+			var dialog = new GenerateTypeDialog (className, generateTypeDialogOptions, document, notificationService, projectManagementService, syntaxFactsService);
+			try {
+				bool performChange = dialog.Run () == Xwt.Command.Ok;
+				if (!performChange)
 					return GenerateTypeOptionsResult.Cancelled;
-				} finally {
-					dialog.Dispose ();
-				}
+				
+				return dialog.GenerateTypeOptionsResult;
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error while signature changing.", ex);
+				return GenerateTypeOptionsResult.Cancelled;
+			} finally {
+				dialog.Dispose ();
 			}
 		}
 	}

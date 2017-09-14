@@ -34,39 +34,29 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Refactoring.SignatureChange
 {
-	[ExportWorkspaceServiceFactory (typeof (IChangeSignatureOptionsService)), Shared]
-	class SignatureChangeOptionServiceFactory : IWorkspaceServiceFactory
+	[ExportWorkspaceService (typeof (IChangeSignatureOptionsService), ServiceLayer.Host), Shared]
+	class SignatureChangeOptionService : IChangeSignatureOptionsService
 	{
-		static Lazy<IChangeSignatureOptionsService> service = new Lazy<IChangeSignatureOptionsService> (() => new SignatureChangeOptionService ());
+		static readonly ChangeSignatureOptionsResult cancelled = new ChangeSignatureOptionsResult { IsCancelled = true };
 
-		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
+		public ChangeSignatureOptionsResult GetChangeSignatureOptions (ISymbol symbol, ParameterConfiguration parameters, INotificationService notificationService)
 		{
-			return service.Value;
-		}
-
-		class SignatureChangeOptionService : IChangeSignatureOptionsService
-		{
-			static readonly ChangeSignatureOptionsResult cancelled = new ChangeSignatureOptionsResult { IsCancelled = true };
-
-			public ChangeSignatureOptionsResult GetChangeSignatureOptions (ISymbol symbol, ParameterConfiguration parameters, INotificationService notificationService)
-			{
-				var dialog = new SignatureChangeDialog ();
-				try {
-					dialog.Init (symbol, parameters); 
-					bool performChange = dialog.Run () == (int)Gtk.ResponseType.Ok;
-					if (!performChange)
-						return cancelled;
-
-					return new ChangeSignatureOptionsResult {
-						IsCancelled = false,
-						UpdatedSignature = new Microsoft.CodeAnalysis.ChangeSignature.SignatureChange (parameters, ParameterConfiguration.Create (dialog.ParameterList, parameters.ThisParameter != null))
-					};
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error while signature changing.", ex);
+			var dialog = new SignatureChangeDialog ();
+			try {
+				dialog.Init (symbol, parameters); 
+				bool performChange = dialog.Run () == (int)Gtk.ResponseType.Ok;
+				if (!performChange)
 					return cancelled;
-				} finally  {
-					dialog.Destroy ();
-				}
+
+				return new ChangeSignatureOptionsResult {
+					IsCancelled = false,
+					UpdatedSignature = new Microsoft.CodeAnalysis.ChangeSignature.SignatureChange (parameters, ParameterConfiguration.Create (dialog.ParameterList, parameters.ThisParameter != null))
+				};
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error while signature changing.", ex);
+				return cancelled;
+			} finally  {
+				dialog.Destroy ();
 			}
 		}
 	}
