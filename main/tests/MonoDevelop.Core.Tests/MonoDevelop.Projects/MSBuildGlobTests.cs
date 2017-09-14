@@ -695,6 +695,202 @@ namespace MonoDevelop.Projects
 			p.Dispose ();
 		}
 
+		[Test]
+		public async Task RemoveAllFilesFromProject_OneFileNotDeleted_RemoveItemAddedForFileNotDeleted ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (3, p.Files.Count);
+
+				var f2 = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+				var f3 = p.Files.First (fi => fi.FilePath.FileName == "c3.cs");
+				File.Delete (f2.FilePath);
+				File.Delete (f3.FilePath);
+
+				p.Files.Clear ();
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-remove-saved2")), projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
+		public async Task RemoveAllFilesFromProject_NoFilesDeleted_RemoveItemAddedForFiles ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (3, p.Files.Count);
+
+				p.Files.Clear ();
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-remove-saved3")), projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		/// <summary>
+		/// Single .cs file found by the imported file glob. The .cs file has an Update item.
+		/// On removing the file from the project, but not deleting it, was not adding a Remove item
+		/// to the project.
+		/// </summary>
+		[Test]
+		public async Task RemoveAllFilesFromProject_ProjectHasOneFileWithUpdateItem_RemoveItemAddedAndUpdateItemRemoved ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-remove-test2.csproj");
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (3, p.Files.Count);
+
+				var f2 = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+				var f3 = p.Files.First (fi => fi.FilePath.FileName == "c3.cs");
+				File.Delete (f2.FilePath);
+				File.Delete (f3.FilePath);
+
+				p.Files.Remove (f2);
+				p.Files.Remove (f3);
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				// Single c1.cs Update item in project. No other .cs files found by the file glob.
+				// With two or more files the bug does not happen. Also need to reload the project
+				// otherwise the bug does not happen.
+				p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (1, p.Files.Count);
+
+				// Remove c1.cs file but do not delete it.
+				p.Files.Clear ();
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-remove-saved2")), projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		/// <summary>
+		/// As above but the Update item is added whilst the project is loaded. If the Update item
+		/// exists when the project is loaded and then the file is removed then the Update item is
+		/// removed correctly.
+		/// </summary>
+		[Test]
+		public async Task RemoveAllFilesFromProject_ProjectHasOneFileWithUpdateItem_RemoveItemAddedAndUpdateItemRemoved2 ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+
+				// Leave only the c1.cs file.
+				var c2File = projFile.ParentDirectory.Combine ("c2.cs");
+				var c3File = projFile.ParentDirectory.Combine ("c3.cs");
+				File.Delete (c2File);
+				File.Delete (c3File);
+
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (1, p.Files.Count);
+
+				var c1File = p.Files.First (fi => fi.FilePath.FileName == "c1.cs");
+				c1File.CopyToOutputDirectory = FileCopyMode.Always;
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				// Remove c1.cs file but do not delete it.
+				p.Files.Clear ();
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-remove-saved2")), projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		/// <summary>
+		/// As above but the file is deleted not just removed from the project. If the Update item
+		/// exists when the project is loaded and then the file is deleted then the Update item is
+		/// removed correctly.
+		/// </summary>
+		[Test]
+		public async Task DeleteAllFilesFromProject_ProjectHasOneFileWithUpdateItem_UpdateItemRemoved ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+				string expectedProjectXml = File.ReadAllText (projFile);
+
+				// Leave only the c1.cs file.
+				var c2File = projFile.ParentDirectory.Combine ("c2.cs");
+				var c3File = projFile.ParentDirectory.Combine ("c3.cs");
+				File.Delete (c2File);
+				File.Delete (c3File);
+
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (1, p.Files.Count);
+
+				var c1File = p.Files.First (fi => fi.FilePath.FileName == "c1.cs");
+				c1File.CopyToOutputDirectory = FileCopyMode.Always;
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				File.Delete (c1File.FilePath);
+				p.Files.Clear ();
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
 		{
 			internal protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)

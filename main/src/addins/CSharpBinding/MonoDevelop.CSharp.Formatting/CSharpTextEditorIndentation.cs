@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -45,7 +45,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Refactoring;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -191,7 +190,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			IdeApp.Workspace.ActiveConfigurationChanged -= HandleTextOptionsChanged;
 			CompletionWindowManager.WindowClosed -= CompletionWindowManager_WindowClosed;
-			
+
 			stateTracker = null;
 			base.Dispose ();
 		}
@@ -414,7 +413,7 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				return retval;
 			}
-			
+
 			if (descriptor.SpecialKey == SpecialKey.Tab && descriptor.ModifierKeys == ModifierKeys.None && !CompletionWindowManager.IsVisible) {
 				SafeUpdateIndentEngine (Editor.CaretOffset);
 				if (stateTracker.IsInsideStringLiteral && !Editor.IsSomethingSelected) {
@@ -463,9 +462,9 @@ namespace MonoDevelop.CSharp.Formatting
 
 
 				bool returnBetweenBraces =
-					descriptor.SpecialKey == SpecialKey.Return && 
-					descriptor.ModifierKeys == ModifierKeys.None && 
-					          Editor.CaretOffset > 0 && Editor.CaretOffset < Editor.Length && 
+					descriptor.SpecialKey == SpecialKey.Return &&
+					descriptor.ModifierKeys == ModifierKeys.None &&
+					          Editor.CaretOffset > 0 && Editor.CaretOffset < Editor.Length &&
 					          Editor.GetCharAt (Editor.CaretOffset - 1) == '{' && Editor.GetCharAt (Editor.CaretOffset) == '}' && !stateTracker.IsInsideOrdinaryCommentOrString;
 
 				bool automaticReindent;
@@ -485,7 +484,7 @@ namespace MonoDevelop.CSharp.Formatting
 				//handle inserted characters
 				if (Editor.CaretOffset <= 0 || Editor.IsSomethingSelected)
 					return retval;
-				
+
 				lastCharInserted = TranslateKeyCharForIndenter (descriptor.SpecialKey, descriptor.KeyChar, Editor.GetCharAt (Editor.CaretOffset - 1));
 				if (lastCharInserted == '\0')
 					return retval;
@@ -510,7 +509,7 @@ namespace MonoDevelop.CSharp.Formatting
 						}
 					}
 					//reindent the line after the insertion, if needed
-					//N.B. if the engine says we need to reindent, make sure that it's because a char was 
+					//N.B. if the engine says we need to reindent, make sure that it's because a char was
 					//inserted rather than just updating the stack due to moving around
 
 					SafeUpdateIndentEngine (Editor.CaretOffset);
@@ -558,7 +557,7 @@ namespace MonoDevelop.CSharp.Formatting
 			CheckXmlCommentCloseTag (descriptor.KeyChar);
 
 			HandleOnTheFlyFormatting (descriptor);
-			
+
 			return result;
 		}
 
@@ -584,12 +583,7 @@ namespace MonoDevelop.CSharp.Formatting
 					using (var undo = Editor.OpenUndoGroup ()) {
 						if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
 							var oldVersion = Editor.Version;
-							int start = token.SpanStart;
-							var parentStatement = token.Parent.AncestorsAndSelf().OfType<StatementSyntax>().FirstOrDefault();
-							if (parentStatement != null)
-								start = parentStatement.SpanStart;
-							OnTheFlyFormatter.Format(Editor, DocumentContext, start, Editor.CaretOffset, exact:true, optionSet: optionSet);
-							//OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
+							OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
 							if (oldVersion.CompareAge (Editor.Version) != 0)
 								CompletionWindowManager.HideWindow ();
 						}
@@ -617,7 +611,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var tokenRange = Microsoft.CodeAnalysis.CSharp.Utilities.FormattingRangeHelper.FindAppropriateRange (token);
 			if (tokenRange == null || !tokenRange.HasValue || tokenRange.Value.Item1.Equals (tokenRange.Value.Item2))
 				return;
-			
+
 			var value = tokenRange.Value;
 			using (var undo = Editor.OpenUndoGroup ()) {
 				OnTheFlyFormatter.Format (Editor, DocumentContext, value.Item1.SpanStart, value.Item2.Span.End, optionSet: optionSet);
@@ -635,7 +629,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 
 			string text = null;
-			if (CSharpEditorFormattingService.IsInvalidToken (token, ref text))
+			if (service.IsInvalidToken (token, ref text))
 				return;
 			// Check to see if the token is ')' and also the parent is a using statement. If not, bail
 			if (CSharpEditorFormattingService.TokenShouldNotFormatOnReturn (token))
@@ -700,7 +694,7 @@ namespace MonoDevelop.CSharp.Formatting
 					lastNonWsChar = ch;
 				}
 				return false;
-			}); 
+			});
 			// if the line ends with ';' the line end is not the correct place for a new semicolon.
 			if (lastNonWsChar == ';')
 				return false;
@@ -782,7 +776,7 @@ namespace MonoDevelop.CSharp.Formatting
 				reIndent = true;
 				break;
 			case '\n':
-				if (completionWindowWasVisible) // \n is handled by an open completion window 
+				if (completionWindowWasVisible) // \n is handled by an open completion window
 					return;
 				if (FixLineStart (Editor, stateTracker, Editor.OffsetToLineNumber (stateTracker.Offset)))
 					return;
@@ -887,7 +881,7 @@ namespace MonoDevelop.CSharp.Formatting
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception during indentation", e);
 			}
-			
+
 			int pos = line.Offset;
 			string curIndent = line.GetIndentation (Editor);
 			int nlwsp = curIndent.Length;

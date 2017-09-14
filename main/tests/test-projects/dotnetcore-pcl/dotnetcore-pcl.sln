@@ -1,0 +1,29 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStandard14", "NetStandard14\NetStandard14.csproj", "{87B9046C-04BA-4094-A2AD-BD7AE730592F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PclProfile111", "PclProfile111\PclProfile111.csproj", "{4D145A54-478E-41FA-BB0F-EEAC578AF234}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCore11", "NetCore11\NetCore11.csproj", "{A9AE4F25-13FA-4148-BD8D-8F87F68DAD5A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{87B9046C-04BA-4094-A2AD-BD7AE730592F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87B9046C-04BA-4094-A2AD-BD7AE730592F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87B9046C-04BA-4094-A2AD-BD7AE730592F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87B9046C-04BA-4094-A2AD-BD7AE730592F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D145A54-478E-41FA-BB0F-EEAC578AF234}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D145A54-478E-41FA-BB0F-EEAC578AF234}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D145A54-478E-41FA-BB0F-EEAC578AF234}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D145A54-478E-41FA-BB0F-EEAC578AF234}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9AE4F25-13FA-4148-BD8D-8F87F68DAD5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9AE4F25-13FA-4148-BD8D-8F87F68DAD5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9AE4F25-13FA-4148-BD8D-8F87F68DAD5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9AE4F25-13FA-4148-BD8D-8F87F68DAD5A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
