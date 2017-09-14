@@ -679,7 +679,7 @@ namespace MonoDevelop.PackageManagement
 				return;
 
 			double alpha = GetPackageCheckBoxAlpha ();
-			for (int row = 0; row <  .RowCount; ++row) {
+			for (int row = 0; row < packageStore.RowCount; ++row) {
 				packageStore.SetValue (row, packageCheckBoxAlphaField, alpha);
 			}
 		}
