@@ -190,5 +190,30 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsNotNull (jsonNetReferenceLibB);
 			Assert.IsNotNull (jsonNetReferenceLibC);
 		}
+
+		/// <summary>
+		/// Mirror Visual Studio on Windows behaviour where a .NET Standard project or a .NET Core
+		/// project can add a reference to any PCL project.
+		/// </summary>
+		[Test]
+		public async Task CanReference_PortableClassLibrary_FromNetStandardOrNetCoreAppProject ()
+		{
+			string solutionFileName = Util.GetSampleProject ("dotnetcore-pcl", "dotnetcore-pcl.sln");
+			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var pclProject = solution.FindProjectByName ("PclProfile111") as DotNetProject;
+			var netStandardProject = solution.FindProjectByName ("NetStandard14") as DotNetProject;
+			var netCoreProject = solution.FindProjectByName ("NetCore11") as DotNetProject;
+
+			string reason = null;
+			bool canReferenceFromNetStandard = netStandardProject.CanReferenceProject (pclProject, out reason);
+			bool canReferenceFromNetCore = netCoreProject.CanReferenceProject (pclProject, out reason);
+			bool canReferenceNetCoreFromNetStandard = netStandardProject.CanReferenceProject (netCoreProject, out reason);
+			bool canReferenceNetStandardFromNetCore = netCoreProject.CanReferenceProject (netStandardProject, out reason);
+
+			Assert.IsTrue (canReferenceFromNetStandard);
+			Assert.IsTrue (canReferenceFromNetCore);
+			Assert.IsFalse (canReferenceNetCoreFromNetStandard);
+			Assert.IsTrue (canReferenceNetStandardFromNetCore);
+		}
 	}
 }
