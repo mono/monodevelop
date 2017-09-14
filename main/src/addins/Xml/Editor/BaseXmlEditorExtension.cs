@@ -386,7 +386,7 @@ namespace MonoDevelop.Xml.Editor
 
 				bool shouldTriggerAttributeCompletion = forced
 					|| (currentIsNameStart && previousIsWhiteSpace)
-					|| currentIsWhiteSpace;
+					|| currentIsWhiteSpace || currentChar == '.' || currentChar == ':';
 				if (!shouldTriggerAttributeCompletion)
 					return null;
 
@@ -418,7 +418,8 @@ namespace MonoDevelop.Xml.Editor
 			}
 
 			//element completion
-			if (currentChar == '<' && tracker.Engine.CurrentState is XmlRootState ||
+			if ((currentChar == '<' && tracker.Engine.CurrentState is XmlRootState) ||
+				((currentChar == '.' || currentChar == ':') && tracker.Engine.CurrentState is XmlNameState) ||
 				(tracker.Engine.CurrentState is XmlNameState && forced)) {
 				var list = await GetElementCompletions (token);
 				if (completionContext.TriggerLine == 1 && completionContext.TriggerOffset == 1) {
