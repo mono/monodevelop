@@ -159,6 +159,7 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 				Spacing = 6
 			};
 			hbox.PackStart (listViewPublicMembers, true);
+			listViewPublicMembers.Accessible.Description = GettextCatalog.GetString ("Select the public members which are added to the interface");
 
 			var vbox = new VBox {
 				Spacing = 6

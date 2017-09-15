@@ -190,6 +190,7 @@ namespace MonoDevelop.Refactoring.GenerateType
 				MarginLeft = 12
 			};
 			radiobuttonNewFile = new RadioButton (GettextCatalog.GetString ("Create new file"));
+			radiobuttonNewFile.Accessible.Description = GettextCatalog.GetString ("Select this to create a new file for the type");
 			alignment.PackStart (radiobuttonNewFile);
 
 			alignment.PackStart (entryNewFile);
@@ -198,6 +199,7 @@ namespace MonoDevelop.Refactoring.GenerateType
 			                                               GettextCatalog.GetString ("The name of the new file the type will be generated in."));
 
 			radiobuttonToExistingFile = new RadioButton (GettextCatalog.GetString ("Add to existing file"));
+			radiobuttonToExistingFile.Accessible.Description = GettextCatalog.GetString ("Select this to add the type to an existing file");
 			var actionGroup = new RadioButtonGroup ();
 			radiobuttonNewFile.Group = actionGroup;
 			radiobuttonToExistingFile.Group = actionGroup;
