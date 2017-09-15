@@ -596,6 +596,7 @@ namespace MonoDevelop.Projects
 		{
 			var node = new CustomItemNode<EvalContextCreationTestExtension> ();
 			WorkspaceObject.RegisterCustomExtension (node);
+			EvalContextCreationTestExtension.ControlValue = "First";
 
 			try {
 				string solFile = Util.GetSampleProject ("fast-build-test", "FastBuildTest.sln");
