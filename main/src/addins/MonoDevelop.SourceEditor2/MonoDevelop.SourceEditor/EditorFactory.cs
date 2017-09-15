@@ -83,7 +83,7 @@ namespace MonoDevelop.SourceEditor
 
 		ITextEditorImpl ITextEditorFactory.CreateNewEditor (TextEditorType textEditorType)
 		{
-			return new SourceEditorView ( textEditorType);
+			return new SourceEditorView (textEditorType);
 		}
 
 		ITextEditorImpl ITextEditorFactory.CreateNewEditor (string fileName, string mimeType, TextEditorType textEditorType)
@@ -93,7 +93,7 @@ namespace MonoDevelop.SourceEditor
 
 		ITextEditorImpl ITextEditorFactory.CreateNewEditor (IReadonlyTextDocument document, TextEditorType textEditorType)
 		{
-			return new SourceEditorView (document, textEditorType );
+			return new SourceEditorView (document, textEditorType);
 		}
 
 		string[] ITextEditorFactory.GetSyntaxProperties (string mimeType, string name)

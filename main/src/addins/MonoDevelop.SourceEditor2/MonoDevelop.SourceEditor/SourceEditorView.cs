@@ -186,17 +186,19 @@ namespace MonoDevelop.SourceEditor
 
 		public SourceEditorView (TextEditorType textEditorType = TextEditorType.Default)
 		{
-
+			this.textEditorType = textEditorType;
 		}
 		public SourceEditorView(string fileName, string mimeType, TextEditorType textEditorType = TextEditorType.Default)
 			: this(new DocumentAndLoaded(fileName, mimeType))
 		{
+			this.textEditorType = textEditorType;
 			FileRegistry.Add(this);
 		}
 
 		public SourceEditorView(IReadonlyTextDocument document, TextEditorType textEditorType = TextEditorType.Default)
 			: this(new DocumentAndLoaded(document))
 		{
+			this.textEditorType = textEditorType;
 			if (document != null)
 			{
 				Document.MimeType = document.MimeType;
@@ -3636,7 +3638,5 @@ namespace MonoDevelop.SourceEditor
 				return this.TextEditor.HasFocus;
 			}
 		}
-
-		public TextEditorType TextEditorType1 { get => textEditorType; set => textEditorType = value; }
 	}
 } 
