@@ -34,6 +34,7 @@ using Microsoft.CodeAnalysis.LanguageServices;
 using Microsoft.CodeAnalysis.Notification;
 using Microsoft.CodeAnalysis.ProjectManagement;
 using Microsoft.CodeAnalysis.Shared.Extensions;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.Threading;
@@ -143,8 +144,19 @@ namespace MonoDevelop.Refactoring.GenerateType
 			table.Add (new Label (GettextCatalog.GetString ("Name:")), 2, 0);
 
 			table.Add (comboboxAccess, 0, 1);
+			comboboxAccess.Name = "comboboxAccess.Name";
+			comboboxAccess.SetCommonAccessibilityAttributes (comboboxAccess.Name, GettextCatalog.GetString ("Accessibility"),
+			                                                 GettextCatalog.GetString ("Select the accessibility for the new type."));
+
 			table.Add (comboboxType, 1, 1);
+			comboboxType.Name = "comboboxType.Name";
+			comboboxType.SetCommonAccessibilityAttributes (comboboxType.Name, GettextCatalog.GetString ("Type"),
+			                                               GettextCatalog.GetString ("Select type to be generated."));
+
 			table.Add (entryName, 2, 1, vexpand: true);
+			entryName.Name = "entry.Name";
+			entryName.SetCommonAccessibilityAttributes (entryName.Name, GettextCatalog.GetString ("Name"),
+			                                            GettextCatalog.GetString ("The name of the new type to be generated."));
 
 			box.PackStart (table);
 
@@ -157,6 +169,9 @@ namespace MonoDevelop.Refactoring.GenerateType
 			});
 
 			box.PackStart (comboboxProject);
+			comboboxProject.Name = "comboboxProject.Name";
+			comboboxProject.SetCommonAccessibilityAttributes (comboboxProject.Name, GettextCatalog.GetString ("Project"),
+			                                                  GettextCatalog.GetString ("The project new type will be generated in."));
 
 			box.PackStart (new Label {
 				Markup = "<b>" + GettextCatalog.GetString ("Type details:") + "</b>"
@@ -178,6 +193,9 @@ namespace MonoDevelop.Refactoring.GenerateType
 			alignment.PackStart (radiobuttonNewFile);
 
 			alignment.PackStart (entryNewFile);
+			entryNewFile.Name = "entryNewFile.Name";
+			entryNewFile.SetCommonAccessibilityAttributes (entryNewFile.Name, GettextCatalog.GetString ("New file"),
+			                                               GettextCatalog.GetString ("The name of the new file the type will be generated in."));
 
 			radiobuttonToExistingFile = new RadioButton (GettextCatalog.GetString ("Add to existing file"));
 			var actionGroup = new RadioButtonGroup ();
@@ -192,6 +210,9 @@ namespace MonoDevelop.Refactoring.GenerateType
 
 			comboboxExistingFile.WidthRequest = 350;
 			alignment.PackStart (comboboxExistingFile);
+			comboboxExistingFile.Name = "comboboxExistingFile.Name";
+			comboboxExistingFile.SetCommonAccessibilityAttributes (comboboxExistingFile.Name, GettextCatalog.GetString ("Existing file"),
+			                                                       GettextCatalog.GetString ("The name of the existing file the type will be generated in."));
 
 			frameBox.PackStart (alignment);
 			box.PackStart (new Frame (frameBox));

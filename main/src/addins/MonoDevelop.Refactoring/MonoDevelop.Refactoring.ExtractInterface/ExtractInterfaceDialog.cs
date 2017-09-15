@@ -34,6 +34,7 @@ using MonoDevelop.Components;
 using System.Linq;
 using MonoDevelop.Core;
 using Xwt.Drawing;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Refactoring.ExtractInterface
 {
@@ -131,6 +132,10 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 				Markup = GettextCatalog.GetString ("Name of the new interface:")
 			});
 			box.PackStart (entryName);
+			entryName.Name = "entryName.Name";
+			entryName.SetCommonAccessibilityAttributes (entryName.Name, GettextCatalog.GetString ("Name of the new interface"),
+			                                            GettextCatalog.GetString ("The name of the new interface"));
+
 			entryName.Changed += delegate {
 				UpdateOkButton ();
 			};
@@ -139,6 +144,10 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 			});
 
 			box.PackStart (entryFileName);
+			entryFileName.Name = "entryFileName.Name";
+			entryFileName.SetCommonAccessibilityAttributes (entryFileName.Name, GettextCatalog.GetString ("Name of the new file"),
+			                                                GettextCatalog.GetString ("The name of the file for the new interface"));
+
 			entryFileName.Changed += delegate {
 				UpdateOkButton ();
 			};
