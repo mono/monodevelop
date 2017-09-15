@@ -317,7 +317,9 @@ module CompilerArguments =
     [
        yield "--simpleresolution"
        yield "--noframework"
-       yield "--out:" + project.GetOutputFileName(configSelector).ToString()
+       let outputFile = project.GetOutputFileName(configSelector).ToString()
+       if not (String.IsNullOrWhiteSpace outputFile) then 
+           yield "--out:" + outputFile
        if Project.isPortable project || Project.isDotNetCoreProject project then
            yield "--targetprofile:netcore"
        if not (String.IsNullOrWhiteSpace fsconfig.PlatformTarget) then

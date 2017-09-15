@@ -54,11 +54,36 @@ type ``Template tests``() =
 
     let templatesDir = FilePath(".").FullPath.ToString() / "buildtemplates"
 
+    let getErrorsForProject (solution:Solution) =
+        asyncSeq {
+
+            let ctx = TargetEvaluationContext (LogVerbosity=MSBuildVerbosity.Diagnostic)
+            let! result = solution.Build(monitor, solution.DefaultConfigurationSelector, ctx) |> Async.AwaitTask
+            match result.HasWarnings, result.HasErrors with
+            //| "Xamarin.tvOS.FSharp.SingleViewApp", _, false //MTOUCH : warning MT0094: Both profiling (--profiling) and incremental builds (--fastdev) is not supported when building for tvOS. Incremental builds have ben disabled.]
+            | false, false ->
+                // xbuild worked, now check for editor squiggles
+                let projects =
+                    solution.Items
+                    |> Seq.filter(fun i -> i :? DotNetProject)
+                    |> Seq.cast<DotNetProject> |> List.ofSeq
+
+                for project in projects do
+                    let checker = FSharpChecker.Create()
+                    let! refs = project.GetReferencedAssemblies (CompilerArguments.getConfig()) |> Async.AwaitTask
+
+                    let projectOptions = languageService.GetProjectOptionsFromProjectFile (project, refs)
+                    printfn "%A" projectOptions
+                    let! checkResult = checker.ParseAndCheckProject projectOptions.Value
+                    for error in checkResult.Errors do
+                        yield "Editor error", error.FileName, error.Message
+            | _ ->
+                for error in result.Errors do
+                    if not error.IsWarning then
+                        yield "Build error", error.FileName, error.ErrorText
+        }
+
     let test (tt:string) =
-        if not MonoDevelop.Core.Platform.IsMac then
-            Assert.Ignore ()
-        //if tt = "FSharpPortableLibrary" then
-            //Assert.Ignore ("A platform service implementation has not been found")
         toTask <| async {
             let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = tt)
             let dir = FilePath (templatesDir/projectTemplate.Id)
@@ -109,33 +134,11 @@ type ``Template tests``() =
             do! sln.SaveAsync(monitor)
             do! NuGetPackageInstaller.InstallPackages (sln, projectTemplate.PackageReferencesForCreatedProjects)
 
-            let getErrorsForProject (projects: DotNetProject list) =
-                asyncSeq {
-                    let ctx = TargetEvaluationContext (LogVerbosity=MSBuildVerbosity.Diagnostic)
-                    let! result = sln.Build(monitor, sln.DefaultConfigurationSelector, ctx) |> Async.AwaitTask
-                    match tt, result.HasWarnings, result.HasErrors with
-                    | "Xamarin.tvOS.FSharp.SingleViewApp", _, false //MTOUCH : warning MT0094: Both profiling (--profiling) and incremental builds (--fastdev) is not supported when building for tvOS. Incremental builds have ben disabled.]
-                    | _, false, false ->
-                        // xbuild worked, now check for editor squiggles
-                        for project in projects do
-                            let checker = FSharpChecker.Create()
-                            let! refs = project.GetReferencedAssemblies (CompilerArguments.getConfig()) |> Async.AwaitTask
-
-                            let projectOptions = languageService.GetProjectOptionsFromProjectFile (project, refs)
-
-                            let! checkResult = checker.ParseAndCheckProject projectOptions.Value
-                            for error in checkResult.Errors do
-                                yield "Editor error", error.FileName, error.Message
-                    | _ ->
-                        for error in result.Errors do
-                            if not error.IsWarning then
-                                yield "Build error", error.FileName, error.ErrorText
-                }
-
-            let errors = getErrorsForProject projects |> AsyncSeq.toSeq |> List.ofSeq
+            let errors = getErrorsForProject sln |> AsyncSeq.toSeq |> List.ofSeq
             match errors with
             | [] -> Assert.Pass()
             | errors -> Assert.Fail (sprintf "%A" errors)
+
         }
     [<TestFixtureSetUp>]
     member x.Setup() =
@@ -160,6 +163,45 @@ type ``Template tests``() =
         let sln = projectTemplate.CreateWorkspaceItem (cinfo) :?> Solution
         let proj = sln.Items.[0] :?> FSharpProject
         proj.IsPortableLibrary |> should equal true
+
+    [<Test;AsyncStateMachine(typeof<Task>)>]
+    [<Ignore("Waiting for dotnet core SDK 2.0 to be installed on Wrench")>]
+    member x.``Can build netcoreapp11 MVC web app``()=
+        async {
+            let directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+            let projectPath = directoryName / ".." / ".." / "Samples" / "aspnetcoremvc11.sln"
+
+            let! w = Services.ProjectService.ReadWorkspaceItem (monitor, FilePath(projectPath)) |> Async.AwaitTask
+
+            let solution = w :?> Solution
+
+            let project =
+                solution.Items
+                |> Seq.filter(fun i -> i :? DotNetProject)
+                |> Seq.cast<DotNetProject>
+                |> Seq.head
+
+            let! res = project.RunTarget(monitor, "Restore", ConfigurationSelector.Default)
+            let fsharpFiles =
+                project.Files
+                |> Seq.filter(fun f -> f.FilePath.Extension = ".fs")
+                |> Seq.map(fun f -> f.IsImported)
+
+            fsharpFiles |> Seq.length |> should equal 3
+            fsharpFiles |> Seq.iter(fun imported -> imported |> should equal false)
+
+            let wwwrootFiles =
+                project.Files
+                |> Seq.filter(fun f -> f.FilePath.ToString().Contains("wwwroot"))
+                |> Seq.map(fun f -> f.IsImported)
+
+            wwwrootFiles |> Seq.length |> should equal 41
+            wwwrootFiles |> Seq.iter(fun imported -> imported |> should equal true)
+            let errors = getErrorsForProject solution |> AsyncSeq.toSeq |> List.ofSeq
+            match errors with
+            | [] -> Assert.Pass()
+            | errors -> Assert.Fail (sprintf "%A" errors)
+        } |> toTask
 
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Forms FSharp FormsApp``()= test "Xamarin.Forms.FSharp.FormsApp"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpPortableLibrary``()= test "FSharpPortableLibrary"
