@@ -654,6 +654,33 @@ namespace MonoDevelop.Projects
 			p.Dispose ();
 		}
 
+		[Test]
+		public async Task FilesImportedAreMarkedAsImported ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test2.csproj");
+				var textFilePath = projFile.ParentDirectory.Combine ("test.txt");
+				File.WriteAllText (textFilePath, "test");
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (4, p.Files.Count);
+
+				var c2File = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+				var textFile = p.Files.First (fi => fi.FilePath.FileName == "test.txt");
+
+				Assert.IsFalse (textFile.IsImported);
+				Assert.IsTrue (c2File.IsImported);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
 		{
 			protected internal override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
