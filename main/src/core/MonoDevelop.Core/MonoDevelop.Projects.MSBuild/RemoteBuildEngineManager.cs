@@ -85,6 +85,7 @@ namespace MonoDevelop.Projects.MSBuild
 			public TextWriter Writer;
 			public MSBuildLogger Logger;
 			public MSBuildVerbosity Verbosity;
+			public ProjectConfigurationInfo [] Configurations;
 		}
 
 		static RemoteBuildEngineManager ()
@@ -198,7 +199,7 @@ namespace MonoDevelop.Projects.MSBuild
 					// If a new session is being assigned, signal the session start
 					builder.BuildSessionId = buildSessionId;
 					var si = (SessionInfo)buildSessionId;
-					await builder.BeginBuildOperation (si.Writer, si.Logger, si.Verbosity).ConfigureAwait (false);
+					await builder.BeginBuildOperation (si.Writer, si.Logger, si.Verbosity, si.Configurations).ConfigureAwait (false);
 				}
 				builder.CancelScheduledDisposal ();
 				return builder;
@@ -255,7 +256,7 @@ namespace MonoDevelop.Projects.MSBuild
 					builder.SetBusy ();
 				if (buildSessionId != null) {
 					var si = (SessionInfo)buildSessionId;
-					await builder.BeginBuildOperation (si.Writer, si.Logger, si.Verbosity);
+					await builder.BeginBuildOperation (si.Writer, si.Logger, si.Verbosity, si.Configurations);
 				}
 				return builder;
 			});
@@ -335,12 +336,13 @@ namespace MonoDevelop.Projects.MSBuild
 		/// <returns>The build session handle.</returns>
 		/// <param name="tw">Log writter</param>
 		/// <param name="verbosity">MSBuild verbosity.</param>
-		internal static object StartBuildSession (TextWriter tw, MSBuildLogger logger, MSBuildVerbosity verbosity)
+		internal static object StartBuildSession (TextWriter tw, MSBuildLogger logger, MSBuildVerbosity verbosity, ProjectConfigurationInfo[] configurations)
 		{
 			return new SessionInfo {
 					Writer = tw,
 					Verbosity = verbosity,
-					Logger = logger
+					Logger = logger,
+					Configurations = configurations
 				};
 		}
 

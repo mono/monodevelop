@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
@@ -47,7 +48,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var logger = targetContext != null ? new ProxyLogger (null, targetContext.Loggers) : null;
 
 			// Start the build session
-			object sessionId = RemoteBuildEngineManager.StartBuildSession (monitor.Log, logger, verbosity);
+			object sessionId = RemoteBuildEngineManager.StartBuildSession (monitor.Log, logger, verbosity, GetSolutionConfigurations (configuration));
 
 			// Store the session handle in the context, so that it can be later used to
 			// add builds to the session.
@@ -64,6 +65,33 @@ namespace MonoDevelop.Projects.MSBuild
 			operationContext.SessionData.Remove (MSBuildProjectOperationId);
 			await RemoteBuildEngineManager.EndBuildSession (id);
 			await base.OnEndBuildOperation (monitor, configuration, operationContext, result);
+		}
+
+		ProjectConfigurationInfo [] GetSolutionConfigurations (ConfigurationSelector configuration)
+		{
+			List<ProjectConfigurationInfo> configs = new List<ProjectConfigurationInfo> ();
+			var sc = Solution.GetConfiguration (configuration);
+			foreach (var p in Solution.GetAllProjects ()) {
+				var c = p.GetConfiguration (configuration);
+				configs.Add (new ProjectConfigurationInfo () {
+					ProjectFile = p.FileName,
+					Configuration = c != null ? c.Name : "",
+					Platform = c != null ? GetExplicitPlatform (c) : "",
+					ProjectGuid = p.ItemId,
+					Enabled = sc == null || sc.BuildEnabledForItem (p)
+				});
+			}
+			return configs.ToArray ();
+		}
+
+		//for some reason, MD internally handles "AnyCPU" as "", but we need to be explicit when
+		//passing it to the build engine
+		static string GetExplicitPlatform (SolutionItemConfiguration configObject)
+		{
+			if (string.IsNullOrEmpty (configObject.Platform)) {
+				return "AnyCPU";
+			}
+			return configObject.Platform;
 		}
 
 		public override void Dispose ()

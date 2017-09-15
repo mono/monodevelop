@@ -79,6 +79,9 @@ namespace MonoDevelop.Projects
 
 				if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
 					Assert.Fail ("Build did not end in time");
+				
+				Assert.AreEqual (0, build1.Result.ErrorCount);
+				Assert.AreEqual (0, build2.Result.ErrorCount);
 			}
 		}
 
@@ -118,6 +121,9 @@ namespace MonoDevelop.Projects
 
 				if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
 					Assert.Fail ("Build did not end in time");
+				
+				Assert.AreEqual (0, build1.Result.ErrorCount);
+				Assert.NotNull (build2.Result);
 			}
 		}
 
@@ -175,6 +181,8 @@ namespace MonoDevelop.Projects
 				if (await Task.WhenAny (build2, Task.Delay (5000)) != build2)
 					Assert.Fail ("Build did not end in time");
 				
+				Assert.NotNull (build1.Result);
+				Assert.NotNull (build2.Result);
 				Assert.AreEqual (1, RemoteBuildEngineManager.ActiveEnginesCount);
 			}
 		}
@@ -233,6 +241,68 @@ namespace MonoDevelop.Projects
 				if (await Task.WhenAny (build2, Task.Delay (5000)) != build2)
 					Assert.Fail ("Build did not end in time");
 
+				Assert.NotNull (build1.Result);
+				Assert.NotNull (build2.Result);
+				Assert.AreEqual (1, RemoteBuildEngineManager.ActiveEnginesCount);
+			}
+		}
+
+		[Test]
+		public async Task ConcurrentShortAndBuildOperations ()
+		{
+			// If a builder is running a short operation and a build is started,
+			// the build operation will wait for the sort operation to finish
+			// and will use the same builder, instead of starting a new one.
+			// Also, the build session should not start until the short operation
+			// is finished.
+
+			await RemoteBuildEngineManager.RecycleAllBuilders ();
+			Assert.AreEqual (0, RemoteBuildEngineManager.ActiveEnginesCount);
+
+			FilePath solFile = Util.GetSampleProject ("builder-manager-tests", "builder-manager-tests.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+
+				var project1 = (Project)sol.Items.FirstOrDefault (p => p.Name == "SyncBuildProject");
+				var project2 = (Project)sol.Items.FirstOrDefault (p => p.Name == "App");
+
+				InitBuildSyncEvent (project1);
+
+				// Start the first target. The FileSync target will pause until signaled to continue.
+				// Select the ShortOperations build queue.
+				var context = new TargetEvaluationContext {
+					BuilderQueue = BuilderQueue.ShortOperations
+				};
+				var build1 = project1.RunTarget (Util.GetMonitor (), "FileSync", sol.Configurations [0].Selector, context);
+
+				// Wait for the build to reach the sync task
+				await WaitForBuildSyncEvent (project1);
+
+				Assert.AreEqual (1, RemoteBuildEngineManager.ActiveEnginesCount);
+
+				// The build is now in progess. Run a new target.
+
+				var build2 = project2.Build (Util.GetMonitor (), sol.Configurations [0].Selector);
+
+				// Wait a bit. This should be enough to ensure the build has started.
+				await Task.Delay (1000);
+
+				// The RunTarget request should be queued, no new builder should be spawned
+				Assert.AreEqual (1, RemoteBuildEngineManager.ActiveEnginesCount);
+
+				// Continue building the first project
+				SignalBuildToContinue (project1);
+
+				// The first build should end now
+				if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
+					Assert.Fail ("Build did not end in time");
+
+				// And now the second build should end
+				if (await Task.WhenAny (build2, Task.Delay (5000)) != build2)
+					Assert.Fail ("Build did not end in time");
+
+				Assert.NotNull (build1.Result);
+				Assert.AreEqual (0, build2.Result.ErrorCount);
+				      
 				Assert.AreEqual (1, RemoteBuildEngineManager.ActiveEnginesCount);
 			}
 		}
@@ -472,6 +542,9 @@ namespace MonoDevelop.Projects
 
 					if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
 						Assert.Fail ("Build did not end in time");
+					
+					Assert.AreEqual (0, build1.Result.ErrorCount);
+					Assert.AreEqual (0, build2.Result.ErrorCount);
 
 					// The builder that was running the build and was shutdown should be immediately stopped after build finishes
 					Assert.AreEqual (0, RemoteBuildEngineManager.ActiveEnginesCount);

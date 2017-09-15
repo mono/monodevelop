@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using Microsoft.Build.Evaluation;
 using System.Globalization;
 using Microsoft.Build.Execution;
+using System.Linq;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -101,28 +102,37 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public bool BuildOperationStarted { get; set; }
 
-		void BeginBuildOperation (IEngineLogWriter logWriter, MSBuildVerbosity verbosity)
+		void BeginBuildOperation (IEngineLogWriter logWriter, MSBuildVerbosity verbosity, ProjectConfigurationInfo [] configurations)
 		{
 			// Start a new MSBuild build session, sending log to the provided writter
-			BuildOperationStarted = true;
-			BuildParameters parameters = new BuildParameters (engine);
-			sessionLogWriter = logWriter;
-			loggerAdapter = new MSBuildLoggerAdapter (logWriter, verbosity);
-			parameters.Loggers = loggerAdapter.Loggers;
-			BuildManager.DefaultBuildManager.BeginBuild (parameters);
+
+			RunSTA (delegate {
+				BuildOperationStarted = true;
+				// This property specifies the mapping between the solution configuration
+				// and the project configurations
+				engine.SetGlobalProperty ("CurrentSolutionConfigurationContents", ProjectBuilder.GenerateSolutionConfigurationContents (configurations));
+				BuildParameters parameters = new BuildParameters (engine);
+				sessionLogWriter = logWriter;
+				loggerAdapter = new MSBuildLoggerAdapter (logWriter, verbosity);
+				parameters.Loggers = loggerAdapter.Loggers;
+				BuildManager.DefaultBuildManager.BeginBuild (parameters);
+			});
 		}
 
 		void EndBuildOperation ()
 		{
 			// End the MSBuild build session started in BeginBuildOperation
 
-			BuildOperationStarted = false;
-			BuildManager.DefaultBuildManager.EndBuild ();
+			RunSTA (delegate {
+				engine.RemoveGlobalProperty ("CurrentSolutionConfigurationContents");
+				BuildOperationStarted = false;
+				BuildManager.DefaultBuildManager.EndBuild ();
 
-			// Dispose the loggers. This will flush pending output.
-			loggerAdapter.Dispose ();
-			loggerAdapter = null;
-			sessionLogWriter = null;
+				// Dispose the loggers. This will flush pending output.
+				loggerAdapter.Dispose ();
+				loggerAdapter = null;
+				sessionLogWriter = null;
+			});
 		}
 
 		public MSBuildLoggerAdapter StartProjectSessionBuild (IEngineLogWriter logWriter)

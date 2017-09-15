@@ -193,22 +193,28 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 
+			bool reevaluate = false;
+
 			if (p.GetPropertyValue ("Configuration") != configuration || (p.GetPropertyValue ("Platform") ?? "") != (platform ?? "")) {
 				p.SetGlobalProperty ("Configuration", configuration);
 				if (!string.IsNullOrEmpty (platform))
 					p.SetGlobalProperty ("Platform", platform);
 				else
 					p.RemoveGlobalProperty ("Platform");
-
+				reevaluate = true;
 			}
 
 			// The CurrentSolutionConfigurationContents property only needs to be set once
 			// for the project actually being built
+			// If a build session was started, that property is already set at engine level
 
-			if (this.file == file && p.GetPropertyValue ("CurrentSolutionConfigurationContents") != slnConfigContents)
+			if (!buildEngine.BuildOperationStarted && this.file == file && p.GetPropertyValue ("CurrentSolutionConfigurationContents") != slnConfigContents) {
 				p.SetGlobalProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
+				reevaluate = true;
+			}
 
-			p.ReevaluateIfNecessary ();
+			if (reevaluate)
+				p.ReevaluateIfNecessary ();
 
 			return p;
 		}

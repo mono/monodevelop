@@ -85,7 +85,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return str;
 		}
 
-		string GenerateSolutionConfigurationContents (ProjectConfigurationInfo[] configurations)
+		internal static string GenerateSolutionConfigurationContents (ProjectConfigurationInfo[] configurations)
 		{
 			// can't use XDocument because of the 2.0 builder
 			// and don't just build a string because things may need escaping

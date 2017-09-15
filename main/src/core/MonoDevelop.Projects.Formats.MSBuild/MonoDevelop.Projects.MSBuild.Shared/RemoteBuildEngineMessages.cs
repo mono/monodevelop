@@ -228,6 +228,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 		[MessageDataProperty]
 		public MSBuildVerbosity Verbosity { get; set; }
+
+		[MessageDataProperty]
+		public ProjectConfigurationInfo [] Configurations { get; set; }
 	}
 
 	[MessageDataType]

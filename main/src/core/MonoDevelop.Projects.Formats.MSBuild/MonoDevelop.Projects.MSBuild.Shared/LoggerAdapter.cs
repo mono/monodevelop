@@ -99,7 +99,6 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public void LogWrite (string txt)
 		{
-			Console.WriteLine (txt);
 			lock (log) {
 				if (currentLogWriter != null) {
 					// Append the line to the log, and schedule the flush of the log, unless it has already been done

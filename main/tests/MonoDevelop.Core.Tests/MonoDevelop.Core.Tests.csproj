@@ -83,6 +83,7 @@
     <Compile Include="MonoDevelop.Projects\ConfigurationMergingTests.cs" />
     <Compile Include="MonoDevelop.Projects\TestLanguageProject.cs" />
     <Compile Include="MonoDevelop.Projects\BuilderManagerTests.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectBuildTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Core\" />
