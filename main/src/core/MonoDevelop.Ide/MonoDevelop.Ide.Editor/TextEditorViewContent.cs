@@ -155,10 +155,9 @@ namespace MonoDevelop.Ide.Editor
 
 			var mimeTypes = DesktopService.GetMimeTypeInheritanceChain (mimeType);
 
-			if (styleParent != null)
-				policyContainer = (styleParent as IPolicyProvider).Policies;
-			else
-				policyContainer = MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies;
+				policyContainer = ((styleParent as IPolicyProvider)
+									?.Policies)
+									?? MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies;
 			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
 
 			policyContainer.PolicyChanged += HandlePolicyChanged;
