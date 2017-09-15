@@ -1,4 +1,4 @@
-﻿// 
+// 
 // ProjectBuilder.cs
 //  
 // Author:
@@ -153,6 +153,13 @@ namespace MonoDevelop.Projects.MSBuild
 					project = p;
 			}
 
+			// Reload referenced projects if they have changed in disk. ProjectCollection doesn't do it automatically.
+
+			foreach (var p in project.Imports) {
+				if (p.ImportedProject.LastWriteTimeWhenRead != File.GetLastWriteTime (p.ImportedProject.FullPath))
+					p.ImportedProject.Reload (false);
+			}
+
 			var projectDir = Path.GetDirectoryName (file);
 			if (!string.IsNullOrEmpty (projectDir) && Directory.Exists (projectDir))
 				Environment.CurrentDirectory = projectDir;
@@ -186,17 +193,22 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 
-			if (p.GetPropertyValue("Configuration") != configuration || (p.GetPropertyValue("Platform") ?? "") != (platform ?? "") || p.GetPropertyValue ("CurrentSolutionConfigurationContents") != slnConfigContents)
-			{
-				p.SetGlobalProperty("CurrentSolutionConfigurationContents", slnConfigContents);
-				p.SetGlobalProperty("Configuration", configuration);
-				if (!string.IsNullOrEmpty(platform))
-					p.SetGlobalProperty("Platform", platform);
+			if (p.GetPropertyValue ("Configuration") != configuration || (p.GetPropertyValue ("Platform") ?? "") != (platform ?? "")) {
+				p.SetGlobalProperty ("Configuration", configuration);
+				if (!string.IsNullOrEmpty (platform))
+					p.SetGlobalProperty ("Platform", platform);
 				else
-					p.RemoveGlobalProperty("Platform");
+					p.RemoveGlobalProperty ("Platform");
 
-				p.ReevaluateIfNecessary();
 			}
+
+			// The CurrentSolutionConfigurationContents property only needs to be set once
+			// for the project actually being built
+
+			if (this.file == file && p.GetPropertyValue ("CurrentSolutionConfigurationContents") != slnConfigContents)
+				p.SetGlobalProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
+
+			p.ReevaluateIfNecessary ();
 
 			return p;
 		}

@@ -874,7 +874,8 @@ namespace MonoDevelop.Ide.Gui
 						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
 
-						newProject.FileName = "test.csproj";
+						// Use a different name for each project, otherwise the msbuild builder will complain about duplicate projects.
+						newProject.FileName = "adhoc_" + (++adhocProjectCount) + ".csproj";
 						if (!Window.ViewContent.IsUntitled) {
 							adHocFile = Editor.FileName;
 						} else {
@@ -943,6 +944,7 @@ namespace MonoDevelop.Ide.Gui
 			return project is SharedAssetsProject;
 		}
 
+		static int adhocProjectCount = 0;
 		object adhocProjectLock = new object();
 		object analysisDocumentLock = new object ();
 		void UnloadAdhocProject ()

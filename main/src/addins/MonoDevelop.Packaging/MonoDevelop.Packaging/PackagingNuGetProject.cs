@@ -55,14 +55,17 @@ namespace MonoDevelop.Packaging
 			InternalMetadata.Add (NuGetProjectMetadataKeys.UniqueName, project.Name);
 		}
 
-		public override async Task<IEnumerable<NuGet.Packaging.PackageReference>> GetInstalledPackagesAsync (CancellationToken token)
+		public override Task<IEnumerable<NuGet.Packaging.PackageReference>> GetInstalledPackagesAsync (CancellationToken token)
 		{
-			return await Runtime.RunInMainThread (() => {
-				return project
-					.PackageReferences
-					.Select (packageReference => packageReference.ToNuGetPackageReference ())
-					.ToList ();
-			});
+			return Task.FromResult (GetPackageReferences ());
+		}
+
+		IEnumerable<NuGet.Packaging.PackageReference> GetPackageReferences ()
+		{
+			return project
+				.PackageReferences
+				.Select (packageReference => packageReference.ToNuGetPackageReference ())
+				.ToList ();
 		}
 
 		public override async Task<bool> InstallPackageAsync (

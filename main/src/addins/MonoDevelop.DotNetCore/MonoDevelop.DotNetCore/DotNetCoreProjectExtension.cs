@@ -98,6 +98,9 @@ namespace MonoDevelop.DotNetCore
 
 		bool CanReferenceProject (DotNetProject targetProject)
 		{
+			if (targetProject.IsPortableLibrary)
+				return true;
+
 			if (!targetProject.TargetFramework.IsNetStandard ())
 				return false;
 
