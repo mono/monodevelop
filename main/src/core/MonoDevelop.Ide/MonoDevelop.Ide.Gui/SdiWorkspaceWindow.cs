@@ -840,8 +840,11 @@ namespace MonoDevelop.Ide.Gui
 		protected virtual async Task OnClosing (WorkbenchWindowEventArgs e)
 		{
 			if (Closing != null) {
-				foreach (var handler in Closing.GetInvocationList ().Cast<WorkbenchWindowAsyncEventHandler> ())
+				foreach (var handler in Closing.GetInvocationList ().Cast<WorkbenchWindowAsyncEventHandler> ()) {
 					await handler (this, e);
+					if (e.Cancel)
+						break;
+				}
 			}
 		}
 
