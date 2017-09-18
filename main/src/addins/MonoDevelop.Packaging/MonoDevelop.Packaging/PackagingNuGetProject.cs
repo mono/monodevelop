@@ -156,6 +156,10 @@ namespace MonoDevelop.Packaging
 		{
 			return project.SaveAsync (new ProgressMonitor ());
 		}
+
+		public IDotNetProject Project {
+			get { return new DotNetProjectProxy (project); }
+		}
 	}
 }
 

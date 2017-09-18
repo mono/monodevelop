@@ -391,13 +391,13 @@ namespace MonoDevelop.CodeActions
 					foreach (var operation in await act.GetOperationsAsync (token)) {
 						var applyChanges = operation as ApplyChangesOperation;
 						if (applyChanges == null) {
-							operation.Apply (documentContext.RoslynWorkspace, token);
+							operation.TryApply (documentContext.RoslynWorkspace, new RoslynProgressTracker (), token);
 							continue;
 						}
 						if (updatedSolution == oldSolution) {
 							updatedSolution = applyChanges.ChangedSolution;
 						}
-						operation.Apply (documentContext.RoslynWorkspace, token);
+						operation.TryApply (documentContext.RoslynWorkspace, new RoslynProgressTracker (), token);
 					}
 				}
 				await TryStartRenameSession (documentContext.RoslynWorkspace, oldSolution, updatedSolution, token);

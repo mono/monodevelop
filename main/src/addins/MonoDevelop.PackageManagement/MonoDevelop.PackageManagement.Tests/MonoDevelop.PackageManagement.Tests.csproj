@@ -201,6 +201,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUninstallNuGetPackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageReferenceNuGetProjectTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageReferenceNuGetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\SolutionManagerTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeMonoDevelopBuildIntegratedRestorer.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\RestoreNuGetPackagesInNuGetIntegratedProjectTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ImportedPackageReferenceProjectTests.cs" />

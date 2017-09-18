@@ -68,6 +68,18 @@ namespace MonoDevelop.PackageManagement
 			return new AllPackagesViewModel (solutionManager, dotNetProject, recentPackagesRepository);
 		}
 
+		public static AllPackagesViewModel Create (
+			DotNetProject project,
+			RecentNuGetPackagesRepository recentPackagesRepository)
+		{
+			if (project == null)
+				return Create (recentPackagesRepository);
+
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			var dotNetProject = new DotNetProjectProxy (project);
+			return new AllPackagesViewModel (solutionManager, dotNetProject, recentPackagesRepository);
+		}
+
 		public AllPackagesViewModel (
 			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject dotNetProject,

@@ -1,10 +1,10 @@
 ﻿//
-// MonoDevelopMSBuildNuGetProject.cs
+// RoslynProgressTracker.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Mike Krüger <mikkrg@microsoft.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Microsoft Corporation
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,33 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Threading.Tasks;
-using NuGet.ProjectManagement;
+using Microsoft.CodeAnalysis.Shared.Utilities;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.CodeActions
 {
-	class MonoDevelopMSBuildNuGetProject : MSBuildNuGetProject, IHasDotNetProject
+	class RoslynProgressTracker : IProgressTracker
 	{
-		MonoDevelopMSBuildNuGetProjectSystem projectSystem;
+		public int CompletedItems { get; set; }
 
-		public MonoDevelopMSBuildNuGetProject (
-			MonoDevelopMSBuildNuGetProjectSystem projectSystem,
-			string folderNuGetProjectFullPath,
-			string packagesConfigFolderPath)
-			: base (projectSystem, folderNuGetProjectFullPath, packagesConfigFolderPath)
+		public int TotalItems { get; set; }
+
+		public void AddItems (int count)
 		{
-			this.projectSystem = projectSystem;
+			TotalItems += count;
 		}
 
-		public Task SaveProject ()
+		public void Clear ()
 		{
-			return projectSystem.SaveProject ();
+			CompletedItems = TotalItems = 0;
 		}
 
-		public IDotNetProject Project {
-			get { return projectSystem.Project; }
+		public void ItemCompleted ()
+		{
+			CompletedItems++;
 		}
 	}
 }
