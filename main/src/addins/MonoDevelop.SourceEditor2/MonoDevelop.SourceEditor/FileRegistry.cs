@@ -57,18 +57,22 @@ namespace MonoDevelop.SourceEditor
 
 		public static void Add (SourceEditorView sourceEditorView)
 		{
+			if (sourceEditorView.TextEditorType == TextEditorType.Projection)
+				return;
 			openFiles.Add (sourceEditorView);
 		}
 
 		public static void Remove (SourceEditorView sourceEditorView)
 		{
+			if (sourceEditorView.TextEditorType == TextEditorType.Projection)
+				return;
 			openFiles.Remove (sourceEditorView);
 			UpdateEolMessages ();
 		}
 
 		static bool SkipView (SourceEditorView view)
 		{
-			return view.Document == null || !view.IsFile || view.IsUntitled;
+			return view.Document == null || !view.IsFile || view.IsUntitled || view.TextEditorType == TextEditorType.Projection;
 		}
 
 		static void HandleFileServiceChange (object sender, FileEventArgs e)

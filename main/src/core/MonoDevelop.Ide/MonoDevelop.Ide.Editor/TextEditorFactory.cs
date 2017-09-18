@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (document == null)
 				throw new System.ArgumentNullException ("document");
-			var result = new TextEditor (currentFactory.CreateNewEditor (document), textEditorType) {
+			var result = new TextEditor (currentFactory.CreateNewEditor (document, textEditorType), textEditorType) {
 				ZoomLevel = zoomLevel
 			};
 			result.ZoomLevelChanged += delegate {
