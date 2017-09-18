@@ -109,8 +109,8 @@ namespace MonoDevelop.Projects.MSBuild
 							var list = new List<MSBuildEvaluatedItem> ();
 							foreach (var item in grp) {
 								var evItem = new MSBuildEvaluatedItem (name, UnescapeString (item.EvaluatedInclude));
-								foreach (var m in item.Metadata) {
-									evItem.Metadata [m.Name] = UnescapeString (m.EvaluatedValue);
+								foreach (var metadataName in item.MetadataNames) {
+									evItem.Metadata [metadataName] = UnescapeString (item.GetMetadataValue (metadataName));
 								}
 								list.Add (evItem);
 							}

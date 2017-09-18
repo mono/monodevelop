@@ -88,6 +88,11 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, items.Length);
 			Assert.AreEqual ("bar", items [0].Include);
 			Assert.AreEqual ("Hello", items [0].Metadata.GetValue ("MyMetadata"));
+			if (Runtime.Preferences.BuildWithMSBuild.Value) {
+				// Standard metadata inclusion is only supported via 4.0 API builder
+				Assert.AreEqual ("bar", items [0].Metadata.GetValue ("Filename"));
+				Assert.AreEqual (p.ItemDirectory.Combine ("bar").ToString (), items [0].Metadata.GetValue ("FullPath"));
+			}
 
 			p.Dispose ();
 		}
