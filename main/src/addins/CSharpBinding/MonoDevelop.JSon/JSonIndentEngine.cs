@@ -39,7 +39,7 @@ namespace MonoDevelop.JSon
 		TextEditor editor;
 		DocumentContext ctx;
 		int offset, line, column;
-		internal Indent thisLineIndent, nextLineIndent;
+		internal int thisLineIndent, nextLineIndent;
 		StringBuilder currentIndent;
 		// char previousNewline = '\0';
 		char previousChar = '\0';
@@ -64,8 +64,8 @@ namespace MonoDevelop.JSon
 			this.offset = jSonIndentEngine.offset;
 			this.line = jSonIndentEngine.line;
 			this.column = jSonIndentEngine.column;
-			this.thisLineIndent = jSonIndentEngine.thisLineIndent.Clone ();
-			this.nextLineIndent = jSonIndentEngine.nextLineIndent.Clone ();
+			this.thisLineIndent = jSonIndentEngine.thisLineIndent;
+			this.nextLineIndent = jSonIndentEngine.nextLineIndent;
 			this.currentIndent = jSonIndentEngine.currentIndent != null ? new StringBuilder (jSonIndentEngine.currentIndent.ToString ()) : null;
 			this.previousChar = jSonIndentEngine.previousChar;
 			this.isLineStart = jSonIndentEngine.isLineStart;
@@ -166,7 +166,7 @@ namespace MonoDevelop.JSon
 		#endregion
 
 		#region IDocumentIndentEngine implementation
-		Indent savedStringIndent;
+		int savedStringIndent;
 		public void Push (char ch)
 		{
 			var isNewLine = NewLine.IsNewLine (ch);
@@ -175,18 +175,18 @@ namespace MonoDevelop.JSon
 					isInString = !IsInsideString;
 					if (isInString) {
 						savedStringIndent = nextLineIndent;
-						nextLineIndent = new Indent (ctx.GetOptionSet ());
+						nextLineIndent = 0;
 					} else {
 						nextLineIndent = savedStringIndent;
 					}
 				}
 				if (ch == '{' || ch == '[') {
-					nextLineIndent.Push (IndentType.Block);
+					nextLineIndent++;
 				} else if (ch == '}' || ch == ']') {
-					if (thisLineIndent.Count > 0)
-						thisLineIndent.Pop ();
-					if (nextLineIndent.Count > 0)
-						nextLineIndent.Pop ();
+					if (thisLineIndent > 0)
+						thisLineIndent--;
+					if (nextLineIndent > 0)
+						nextLineIndent--;
 				} 
 			} else {
 				if (ch == NewLine.LF && previousChar == NewLine.CR) {
@@ -217,7 +217,7 @@ namespace MonoDevelop.JSon
 				isLineStart = true;
 				column = 1;
 				line++;
-				thisLineIndent = nextLineIndent.Clone ();
+				thisLineIndent = nextLineIndent;
 			}
 			previousChar = ch;
 		}
@@ -226,8 +226,8 @@ namespace MonoDevelop.JSon
 		{
 			offset = 0;
 			line = column = 1;
-			thisLineIndent = new Indent (ctx.GetOptionSet ());
-			nextLineIndent = new Indent (ctx.GetOptionSet ());
+			thisLineIndent = 0;
+			nextLineIndent = 0;
 			currentIndent = new StringBuilder ();
 			// previousNewline = '\0';
 			previousChar = '\0';
@@ -260,13 +260,17 @@ namespace MonoDevelop.JSon
 
 		public string ThisLineIndent {
 			get {
-				return thisLineIndent.IndentString;
+				if (editor.Options.TabsToSpaces)
+					return new string(' ', thisLineIndent * editor.Options.TabSize);
+				return new string('\t', thisLineIndent);
 			}
 		}
 
 		public string NextLineIndent {
 			get {
-				return nextLineIndent.IndentString;
+				if (editor.Options.TabsToSpaces)
+					return new string(' ', nextLineIndent * editor.Options.TabSize);
+				return new string('\t', nextLineIndent);
 			}
 		}
 
