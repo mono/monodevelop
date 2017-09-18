@@ -586,6 +586,9 @@ namespace MonoDevelop.Projects
 			if (conf == null)
 				return new BuildResult();
 
+			if (operationContext == null)
+				operationContext = new OperationContext ();
+
 			ReadOnlyCollection<SolutionItem> allProjects;
 			try {
 				allProjects = GetAllBuildableEntries (configuration, true, true);
