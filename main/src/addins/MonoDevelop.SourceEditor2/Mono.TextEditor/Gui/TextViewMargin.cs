@@ -274,7 +274,6 @@ namespace Mono.TextEditor
 			this.textEditor = textEditor;
 
 			textEditor.Document.TextChanged += HandleTextReplaced;
-			base.cursor = xtermCursor;
 			textEditor.HighlightSearchPatternChanged += TextEditor_HighlightSearchPatternChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
 			markerLayout = PangoUtil.CreateLayout (textEditor);
@@ -483,8 +482,48 @@ namespace Mono.TextEditor
 		}
 
 		System.ComponentModel.BackgroundWorker searchPatternWorker;
-		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
-		Gdk.Cursor textLinkCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
+		static Cursor xtermCursor = new Cursor(CursorType.Xterm);
+		static Cursor xtermCursorInverted;
+		static Cursor textLinkCursor = new Cursor (CursorType.Hand1);
+
+		static TextViewMargin()
+		{
+			xtermCursorInverted = xtermCursor;
+			if (Platform.IsMac) {
+				var img = xtermCursor.Image.ToXwtImage();
+				xtermCursorInverted = new Cursor(xtermCursor.Display, InvertCursorPixbuf(img.ToPixbuf()), (int)img.Width / 2, (int)img.Height / 2);
+			}
+		} 
+
+		unsafe static Pixbuf InvertCursorPixbuf(Pixbuf src)
+		{
+			var dest = new Pixbuf(src.Colorspace, src.HasAlpha, src.BitsPerSample, src.Width, src.Height);
+
+			var src_start = (byte*)src.Pixels;
+			var dst_start = (byte*)dest.Pixels;
+
+			for (int i = 0; i < src.Height; i++) {
+				var sp = src_start + i * src.Rowstride;
+				var dp = dst_start + i * dest.Rowstride;
+
+				for (int j = 0; j < src.Width; j++) {
+					var r = *(dp++) = (byte)(*(sp++) ^ 0xFF);
+					var g = *(dp++) = (byte)(*(sp++) ^ 0xFF);
+					var b = *(dp++) = (byte)(*(sp++) ^ 0xFF);
+
+					if (src.HasAlpha) {
+						if (r + g + b < 600) {
+							*(dp++) = 0;
+							sp++;
+						} else {
+							*(dp++) = *(sp++);
+						}
+					}
+				}
+			}
+
+			return dest;
+		}
 
 		static readonly string[] markerTexts = {
 			"<EOF>",
@@ -594,6 +633,7 @@ namespace Mono.TextEditor
 
 			DisposeLayoutDict ();
 			caretX = caretY = -LineHeight;
+			base.cursor = GetDefaultTextCursor();
 		}
 
 		void DisposeGCs ()
@@ -615,9 +655,6 @@ namespace Mono.TextEditor
 			textEditor.TextArea.FocusOutEvent -= HandleFocusOutEvent;
 
 			textEditor.GetTextEditorData ().SearchChanged -= HandleSearchChanged;
-
-			textLinkCursor.Dispose ();
-			xtermCursor.Dispose ();
 
 			DisposeGCs ();
 			if (markerLayout != null)
@@ -2538,6 +2575,13 @@ namespace Mono.TextEditor
 
 		List<IActionTextLineMarker> oldMarkers = new List<IActionTextLineMarker> ();
 		List<IActionTextLineMarker> newMarkers = new List<IActionTextLineMarker> ();
+
+		Cursor GetDefaultTextCursor()
+		{
+			var baseColor = textEditor.Style.Base(StateType.Normal);
+			return  HslColor.Brightness(baseColor) < 0.55 ? xtermCursorInverted : xtermCursor;
+		}
+
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
 			var loc = PointToLocation (args.X, args.Y, snapCharacters: true);
@@ -2577,7 +2621,7 @@ namespace Mono.TextEditor
 			} else {
 				oldMarkers.Clear ();
 			}
-			base.cursor = hoverResult.HasCursor ? hoverResult.Cursor : xtermCursor;
+			base.cursor = hoverResult.HasCursor ? hoverResult.Cursor : GetDefaultTextCursor ();
 			if (textEditor.TooltipMarkup != hoverResult.TooltipMarkup) {
 				textEditor.TooltipMarkup = null;
 				textEditor.TriggerTooltipQuery ();
@@ -2600,7 +2644,7 @@ namespace Mono.TextEditor
 				if (!String.IsNullOrEmpty (link)) {
 					base.cursor = textLinkCursor;
 				} else {
-					base.cursor = hoverResult.HasCursor ? hoverResult.Cursor : xtermCursor;
+					base.cursor = hoverResult.HasCursor ? hoverResult.Cursor : GetDefaultTextCursor ();
 				}
 				return;
 			}
