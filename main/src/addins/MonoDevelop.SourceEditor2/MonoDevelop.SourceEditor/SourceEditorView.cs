@@ -184,10 +184,11 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public SourceEditorView (TextEditorType textEditorType = TextEditorType.Default)
+		public SourceEditorView (TextEditorType textEditorType = TextEditorType.Default) : this(new DocumentAndLoaded(new TextDocument(), true))
 		{
 			this.textEditorType = textEditorType;
 		}
+
 		public SourceEditorView(string fileName, string mimeType, TextEditorType textEditorType = TextEditorType.Default)
 			: this(new DocumentAndLoaded(fileName, mimeType))
 		{
