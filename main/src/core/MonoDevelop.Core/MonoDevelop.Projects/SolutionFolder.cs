@@ -39,6 +39,7 @@ using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -594,12 +595,20 @@ namespace MonoDevelop.Projects
 			}
 
 			monitor.BeginTask (GettextCatalog.GetString ("Cleaning Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
+
+			bool operationStarted = false;
+			BuildResult result = null;
+
 			try {
-				return await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
+				operationStarted = ParentSolution != null && await ParentSolution.BeginBuildOperation (monitor, configuration, operationContext);
+
+				return result = await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
 					return item.Clean (m, configuration, operationContext);
 				}, false);
 			}
 			finally {
+				if (operationStarted)
+					await ParentSolution.EndBuildOperation (monitor, configuration, operationContext, result);
 				monitor.EndTask ();
 			}
 		}
