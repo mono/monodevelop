@@ -490,8 +490,8 @@ namespace Mono.TextEditor
 		{
 			xtermCursorInverted = xtermCursor;
 			if (Platform.IsMac) {
-				var img = xtermCursor.Image.ToXwtImage();
-				xtermCursorInverted = new Cursor(xtermCursor.Display, InvertCursorPixbuf(img.ToPixbuf()), (int)img.Width / 2, (int)img.Height / 2);
+				var img = MacCursorImage.Image;
+				xtermCursorInverted = new Cursor(xtermCursor.Display, (InvertCursorPixbuf (img.ToPixbuf())), (int)img.Width / 2, (int)img.Height / 2);
 			}
 		} 
 
@@ -512,7 +512,7 @@ namespace Mono.TextEditor
 					var b = *(dp++) = (byte)(*(sp++) ^ 0xFF);
 
 					if (src.HasAlpha) {
-						if (r + g + b < 600) {
+						if (r + g + b < 750) {
 							*(dp++) = 0;
 							sp++;
 						} else {
@@ -633,6 +633,7 @@ namespace Mono.TextEditor
 
 			DisposeLayoutDict ();
 			caretX = caretY = -LineHeight;
+			Console.WriteLine("set cursor");
 			base.cursor = GetDefaultTextCursor();
 		}
 
@@ -2578,8 +2579,8 @@ namespace Mono.TextEditor
 
 		Cursor GetDefaultTextCursor()
 		{
-			var baseColor = textEditor.Style.Base(StateType.Normal);
-			return  HslColor.Brightness(baseColor) < 0.55 ? xtermCursorInverted : xtermCursor;
+			var baseColor = textEditor.Style.Background(StateType.Normal);
+			return  HslColor.Brightness(baseColor) < 0.5 ? xtermCursorInverted : xtermCursor;
 		}
 
 		protected internal override void MouseHover (MarginMouseEventArgs args)

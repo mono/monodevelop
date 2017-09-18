@@ -9652,6 +9652,7 @@
     <Compile Include="MonoDevelop.Ide.Projects\LanguageCellRenderer.cs" />
     <Compile Include="MonoDevelop.Components\RestartPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\DotNetCompileTargetSelector.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\MacCursorImage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
