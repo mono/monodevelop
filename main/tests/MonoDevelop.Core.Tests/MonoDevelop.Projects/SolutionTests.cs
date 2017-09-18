@@ -867,7 +867,9 @@ namespace MonoDevelop.Projects
 					msbuildEndCount++;
 			};
 
+			var oldStatus = Runtime.Preferences.ParallelBuild.Value;
 			try {
+				Runtime.Preferences.ParallelBuild.Set (false);
 				FilePath solFile = Util.GetSampleProject ("build-session", "build-session.sln");
 				var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
@@ -943,6 +945,8 @@ namespace MonoDevelop.Projects
 
 				WorkspaceObject.UnregisterCustomExtension (en);
 				WorkspaceObject.UnregisterCustomExtension (en2);
+
+				Runtime.Preferences.ParallelBuild.Set (oldStatus);
 			}
 		}
 	}
