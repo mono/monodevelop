@@ -80,15 +80,24 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal void UnloadProject (string file)
 		{
-			lock (unsavedProjects)
-				unsavedProjects.Remove (file);
-
 			RunSTA (delegate
 			{
-				// Unloading the project file is not enough because the project
-				// may be referencing other target files which may have
-				// changed and which are cached.
-				engine.UnloadAllProjects();
+				// Unloading projects modifies the collection, so copy it
+				var loadedProjects = engine.GetLoadedProjects(file).ToArray();
+
+				if (loadedProjects.Length == 0)
+					return;
+
+				var rootElement = loadedProjects[0].Xml;
+
+				foreach (var p in loadedProjects)
+					engine.UnloadProject(p);
+
+				// Try to unload the projects' XML from the cache
+				// This could fail if something else is referencing the xml somehow.
+				// But not a big deal, it's just a cache.
+
+				engine.TryUnloadProject(rootElement);
 			});
 		}
 	}

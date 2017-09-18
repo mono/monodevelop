@@ -36,7 +36,7 @@ namespace MonoDevelop.SourceEditor
 	[TestFixture]
 	public class JSonIndentEngineTests : IdeTestBase
 	{
-		const string indentString = "    ";
+		const string indentString = "\t";
 
 		internal static IDocumentIndentEngine CreateEngine (string text)
 		{

@@ -118,7 +118,7 @@ namespace MonoDevelop.MacInterop
 		{
 			var component = ComponentManager.OpenDefaultComponent ((OSType)(int)OsaType.OsaComponent, (OSType)(int)OsaType.AppleScript);
 			if (component.IsNull)
-				throw new Exception ("Could not load component");
+				throw new AppleScriptException (OsaError.GeneralError, "Could not load component");
 			AEDesc resultData = new AEDesc ();
 			OsaId contextId = new OsaId (), scriptId = new OsaId (), resultId = new OsaId ();
 			try {

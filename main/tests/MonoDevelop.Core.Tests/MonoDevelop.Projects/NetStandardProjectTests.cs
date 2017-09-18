@@ -1,10 +1,10 @@
-//
-// ITextEditorFactory.cs
+﻿//
+// NetStandardProjectTests.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Text;
+using System;
+using System.IO;
+using System.Xml;
+using NUnit.Framework;
+using UnitTests;
+using MonoDevelop.Core;
+using System.Linq;
+using MonoDevelop.Projects.MSBuild;
+using System.Threading.Tasks;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects.Extensions;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Projects
 {
-	interface ITextEditorFactory
+	[TestFixture]
+	public class NetStandardProjectTests: TestBase
 	{
-		ITextDocument CreateNewDocument ();
-		ITextDocument CreateNewDocument (string fileName, string mimeType);
-		ITextDocument CreateNewDocument (ITextSource textSource, string fileName, string mimeType);
+		[Test]
+		public async Task NetStandardProjectReferenceIncludesFacades ()
+		{
+			// Test for https://bugzilla.xamarin.com/show_bug.cgi?id=55734
 
-		IReadonlyTextDocument CreateNewReadonlyDocument (ITextSource textSource, string fileName, string mimeType);
+			string solFile = Util.GetSampleProject ("netstandard-project", "NetStandardTest.sln");
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
-		ITextEditorImpl CreateNewEditor ();
-		ITextEditorImpl CreateNewEditor (string fileName, string mimeType);
-		ITextEditorImpl CreateNewEditor (IReadonlyTextDocument document);
-
-		ITextEditorImpl CreateNewEditor (TextEditorType textEditorType);
-		ITextEditorImpl CreateNewEditor (string fileName, string mimeType, TextEditorType textEditorType);
-		ITextEditorImpl CreateNewEditor (IReadonlyTextDocument document, TextEditorType textEditorType);
-
-		string[] GetSyntaxProperties (string mimeType, string name);
+			var p = (DotNetProject)sol.Items [0];
+			var asms = await p.GetReferencedAssemblies (p.Configurations [0].Selector);
+			Assert.IsTrue (asms.Any (r => r.FilePath.FileName == "System.Runtime.dll"));
+		}
 	}
-	
 }

@@ -176,16 +176,30 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		bool loadedInCtor = false;
+		TextEditorType textEditorType;
 
-		public SourceEditorView(string fileName, string mimeType)
+		public TextEditorType TextEditorType {
+			get {
+				return textEditorType;
+			}
+		}
+
+		public SourceEditorView (TextEditorType textEditorType = TextEditorType.Default) : this(new DocumentAndLoaded(new TextDocument(), true))
+		{
+			this.textEditorType = textEditorType;
+		}
+
+		public SourceEditorView(string fileName, string mimeType, TextEditorType textEditorType = TextEditorType.Default)
 			: this(new DocumentAndLoaded(fileName, mimeType))
 		{
+			this.textEditorType = textEditorType;
 			FileRegistry.Add(this);
 		}
 
-		public SourceEditorView(IReadonlyTextDocument document = null)
+		public SourceEditorView(IReadonlyTextDocument document, TextEditorType textEditorType = TextEditorType.Default)
 			: this(new DocumentAndLoaded(document))
 		{
+			this.textEditorType = textEditorType;
 			if (document != null)
 			{
 				Document.MimeType = document.MimeType;
