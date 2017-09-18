@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTask", "SyncTask\SyncTa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncBuildProject", "TaskTest\SyncBuildProject.csproj", "{441F02A0-E0AC-4E7E-99D9-E6E516D0B35F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dep1", "Dep1\Dep1.csproj", "{B515C1C3-9897-45FE-B350-037EECD0BDC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dep2", "Dep2\Dep2.csproj", "{99329AC5-674A-4475-9431-43CAC8ED1CBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DepMain", "DepMain\DepMain.csproj", "{12D301E7-3AAC-4375-A6DB-E3755E9892E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -25,5 +31,17 @@ Global
 		{441F02A0-E0AC-4E7E-99D9-E6E516D0B35F}.Debug|x86.Build.0 = Debug|Any CPU
 		{441F02A0-E0AC-4E7E-99D9-E6E516D0B35F}.Release|x86.ActiveCfg = Release|Any CPU
 		{441F02A0-E0AC-4E7E-99D9-E6E516D0B35F}.Release|x86.Build.0 = Release|Any CPU
+		{B515C1C3-9897-45FE-B350-037EECD0BDC7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B515C1C3-9897-45FE-B350-037EECD0BDC7}.Debug|x86.Build.0 = Debug|Any CPU
+		{B515C1C3-9897-45FE-B350-037EECD0BDC7}.Release|x86.ActiveCfg = Release|Any CPU
+		{B515C1C3-9897-45FE-B350-037EECD0BDC7}.Release|x86.Build.0 = Release|Any CPU
+		{99329AC5-674A-4475-9431-43CAC8ED1CBF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{99329AC5-674A-4475-9431-43CAC8ED1CBF}.Debug|x86.Build.0 = Debug|Any CPU
+		{99329AC5-674A-4475-9431-43CAC8ED1CBF}.Release|x86.ActiveCfg = Release|Any CPU
+		{99329AC5-674A-4475-9431-43CAC8ED1CBF}.Release|x86.Build.0 = Release|Any CPU
+		{12D301E7-3AAC-4375-A6DB-E3755E9892E4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{12D301E7-3AAC-4375-A6DB-E3755E9892E4}.Debug|x86.Build.0 = Debug|Any CPU
+		{12D301E7-3AAC-4375-A6DB-E3755E9892E4}.Release|x86.ActiveCfg = Release|Any CPU
+		{12D301E7-3AAC-4375-A6DB-E3755E9892E4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

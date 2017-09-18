@@ -1228,7 +1228,7 @@ namespace MonoDevelop.Projects
 				foreach (var err in result.Errors) {
 					FilePath file = null;
 					if (err.File != null)
-						file = Path.Combine (Path.GetDirectoryName (err.ProjectFile), err.File);
+						file = Path.Combine (Path.GetDirectoryName (err.ProjectFile ?? ItemDirectory.ToString ()), err.File);
 
 					br.Append (new BuildError (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message) {
 						Subcategory = err.Subcategory,

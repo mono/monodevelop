@@ -172,21 +172,21 @@ namespace MonoDevelop.Projects.MSBuild
 
 			// Find builders which are not being shut down
 
-			var candiateBuilders = builders.GetBuilders (builderKey).Where (b => !b.IsShuttingDown);
+			var candiateBuilders = builders.GetBuilders (builderKey).Where (b => !b.IsShuttingDown && (!b.IsBusy || allowBusy));
 
 			if (buildSessionId != null) {
 
-				// Look for a builder that already started the session, no matter if the builder is busy or not.
+				// Look for a builder that already started the session.
 				// If there isn't one, pick builders which don't have any session assigned, so a new one
 				// can be started.
 
 				var sessionBuilders = candiateBuilders.Where (b => b.BuildSessionId == buildSessionId);
 				if (!sessionBuilders.Any ())
-					sessionBuilders = candiateBuilders.Where (b => b.BuildSessionId == null && (!b.IsBusy || allowBusy));
+					sessionBuilders = candiateBuilders.Where (b => b.BuildSessionId == null);
 				candiateBuilders = sessionBuilders;
 			} else
 				// Pick builders which are not bound to any session
-				candiateBuilders = candiateBuilders.Where (b => b.BuildSessionId == null && (!b.IsBusy || allowBusy));
+				candiateBuilders = candiateBuilders.Where (b => b.BuildSessionId == null);
 
 			// Prefer non-busy builders
 

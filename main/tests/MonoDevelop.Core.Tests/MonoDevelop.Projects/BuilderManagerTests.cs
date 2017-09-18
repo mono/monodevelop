@@ -556,6 +556,53 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Test]
+		public async Task ParallelBuilds ()
+		{
+			// Check that the project system can start two builds in parallel.
+
+			await RemoteBuildEngineManager.RecycleAllBuilders ();
+			Assert.AreEqual (0, RemoteBuildEngineManager.ActiveEnginesCount);
+
+			var currentSetting = Runtime.Preferences.ParallelBuild.Value;
+			try {
+				Runtime.Preferences.ParallelBuild.Set (true);
+
+				FilePath solFile = Util.GetSampleProject ("builder-manager-tests", "builder-manager-tests.sln");
+				using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+
+					// DepMain depends on both Dep1 and Dep2.
+
+					var demMain = sol.Items.FirstOrDefault (p => p.Name == "DepMain");
+					var dep1 = sol.Items.FirstOrDefault (p => p.Name == "Dep1");
+					var dep2 = sol.Items.FirstOrDefault (p => p.Name == "Dep2");
+
+					InitBuildSyncEvent (dep1);
+					InitBuildSyncEvent (dep2);
+
+					// Start the build
+					var build1 = demMain.Build (Util.GetMonitor (), sol.Configurations [0].Selector, true);
+
+					// Wait for sync signal from projects Dep1 and Dep2, which will mean that
+					// both projects started building in parallel
+
+					var syncAll = Task.WhenAll (WaitForBuildSyncEvent (dep1), WaitForBuildSyncEvent (dep2));
+					if (await Task.WhenAny (syncAll, Task.Delay (5000)) != syncAll)
+						Assert.Fail ("Not all builds were started");
+
+					// Finish the build
+					SignalBuildToContinue (dep1);
+					SignalBuildToContinue (dep2);
+
+					if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
+						Assert.Fail ("Build did not end in time");
+
+					Assert.AreEqual (0, build1.Result.ErrorCount);
+				}
+			} finally {
+				Runtime.Preferences.ParallelBuild.Set (currentSetting);
+			}
+		}
 		void InitBuildSyncEvent (SolutionItem p)
 		{
 			var file = p.FileName.ParentDirectory.Combine ("sync-event");
