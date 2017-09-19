@@ -107,6 +107,10 @@ type ``Template tests``() =
             cinfo.Parameters.["AndroidMinSdkVersionAttribute"] <- "android:minSdkVersion=\"10\""
             cinfo.Parameters.["AndroidThemeAttribute"] <- ""
             cinfo.Parameters.["TargetFrameworkVersion"] <- "MonoAndroid,Version=v7.0"
+
+            for templateParameter in TemplateParameter.CreateParameters (parameters) do
+                cinfo.Parameters.[templateParameter.Name] <- templateParameter.Value
+
             use sln = projectTemplate.CreateWorkspaceItem (cinfo) :?> Solution
 
             let createTemplate (template:SolutionTemplate) =
