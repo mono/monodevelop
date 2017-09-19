@@ -254,7 +254,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 					((DotNetCoreExecutionCommand)command).Arguments = startInfo.Arguments;
 				} else {
 					var portArgument = startInfo.Arguments.IndexOf (" --port", StringComparison.Ordinal);
-					var assembly = startInfo.Arguments.Remove (portArgument - 1);
+                    var assembly = startInfo.Arguments.Remove (portArgument - 1).Trim (new char[] { '"' });
 					var arguments = startInfo.Arguments.Substring (portArgument + 1);
 					command = new DotNetExecutionCommand (
 						assembly,

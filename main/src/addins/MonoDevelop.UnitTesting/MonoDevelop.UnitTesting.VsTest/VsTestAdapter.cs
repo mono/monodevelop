@@ -47,6 +47,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using MonoDevelop.PackageManagement;
 using System.Runtime.CompilerServices;
+using System.Net;
 
 namespace MonoDevelop.UnitTesting.VsTest
 {
@@ -65,7 +66,8 @@ namespace MonoDevelop.UnitTesting.VsTest
 				TargetFrameworkVersion = Framework.FromString ((project as DotNetProject)?.TargetFramework?.Id?.ToString ()),
 				DisableAppDomain = true,
 				ShouldCollectSourceInformation = false,
-				TestAdaptersPaths = GetTestAdapters (project)
+				TestAdaptersPaths = GetTestAdapters (project),
+				TestSessionTimeout = 60000,
 			}.ToXml ().OuterXml + "</RunSettings>";
 		}
 
@@ -140,9 +142,9 @@ namespace MonoDevelop.UnitTesting.VsTest
 			var token = restartTokenSource.Token;
 			startedSource = new TaskCompletionSource<bool> ();
 			communicationManager = new SocketCommunicationManager ();
-			int port = communicationManager.HostServer ();
+			var endPoint = communicationManager.HostServer(new IPEndPoint(IPAddress.Loopback, 0));
 			communicationManager.AcceptClientAsync ().Ignore ();
-			vsTestConsoleExeProcess = StartVsTestConsoleExe(port);
+			vsTestConsoleExeProcess = StartVsTestConsoleExe(endPoint.Port);
 			vsTestConsoleExeProcess.Task.ContinueWith(delegate {
 				VsTestProcessExited(vsTestConsoleExeProcess);
 			}).Ignore();
