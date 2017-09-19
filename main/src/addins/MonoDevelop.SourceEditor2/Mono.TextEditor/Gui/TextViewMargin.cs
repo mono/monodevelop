@@ -488,11 +488,12 @@ namespace Mono.TextEditor
 
 		static TextViewMargin()
 		{
+#if MAC
+			var img = MacCursorImage.Image;
+			xtermCursorInverted = new Cursor(xtermCursor.Display, (InvertCursorPixbuf (img.ToPixbuf())), (int)img.Width / 2, (int)img.Height / 2);
+#else
 			xtermCursorInverted = xtermCursor;
-			if (Platform.IsMac) {
-				var img = MacCursorImage.Image;
-				xtermCursorInverted = new Cursor(xtermCursor.Display, (InvertCursorPixbuf (img.ToPixbuf())), (int)img.Width / 2, (int)img.Height / 2);
-			}
+#endif
 		} 
 
 		unsafe static Pixbuf InvertCursorPixbuf(Pixbuf src)
@@ -633,7 +634,6 @@ namespace Mono.TextEditor
 
 			DisposeLayoutDict ();
 			caretX = caretY = -LineHeight;
-			Console.WriteLine("set cursor");
 			base.cursor = GetDefaultTextCursor();
 		}
 
