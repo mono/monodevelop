@@ -32,14 +32,12 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor
 {
-	class MacCursorImage
+	class OSXEditor
 	{
 		static Xwt.Drawing.Image image;
 
-		public static Xwt.Drawing.Image Image
-		{
-			get
-			{
+		public static Xwt.Drawing.Image IBeamCursorImage {
+			get {
 				if (image != null)
 					return image;
 				var cacheFileName = Path.Combine(UserProfile.Current.CacheDir, "MacCursorImage.tiff");
@@ -50,6 +48,15 @@ namespace MonoDevelop.Ide.Editor
 				image = img.WithSize(size.Width, size.Height);
 				return image;
 			}
+		}
+
+		public static int GetLineHeight(string fontName)
+		{
+			var editorFont = Xwt.Drawing.Font.FromName(fontName);
+
+			using (var nsFont = NSFont.FromFontName(editorFont.Family, (nfloat)editorFont.Size))
+				using (var lm = new NSLayoutManager())
+			 		return (int)lm.DefaultLineHeightForFont(nsFont);
 		}
 	}
 }
