@@ -86,22 +86,22 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.ObjectModel">
-      <HintPath>..\..\..\packages\Microsoft.TestPlatform.ObjectModel.15.3.0-preview-20170710-01\lib\net46\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.TestPlatform.ObjectModel.15.5.0-preview-20170919-04\lib\net451\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TestPlatform.CommunicationUtilities">
-      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.3.0-preview-20170710-01\lib\net46\Microsoft.TestPlatform.CommunicationUtilities.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.5.0-preview-20170919-04\lib\net451\Microsoft.TestPlatform.CommunicationUtilities.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TestPlatform.CoreUtilities">
-      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.3.0-preview-20170710-01\lib\net46\Microsoft.TestPlatform.CoreUtilities.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.5.0-preview-20170919-04\lib\net451\Microsoft.TestPlatform.CoreUtilities.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TestPlatform.PlatformAbstractions">
-      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.3.0-preview-20170710-01\lib\net46\Microsoft.TestPlatform.PlatformAbstractions.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.5.0-preview-20170919-04\lib\net451\Microsoft.TestPlatform.PlatformAbstractions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TestPlatform.VsTestConsole.TranslationLayer">
-      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.3.0-preview-20170710-01\lib\net46\Microsoft.TestPlatform.VsTestConsole.TranslationLayer.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.5.0-preview-20170919-04\lib\net451\Microsoft.TestPlatform.VsTestConsole.TranslationLayer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.Common">
-      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.3.0-preview-20170710-01\lib\net46\Microsoft.VisualStudio.TestPlatform.Common.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.5.0-preview-20170919-04\lib\net451\Microsoft.VisualStudio.TestPlatform.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -318,16 +318,16 @@
     <Folder Include="MonoDevelop.UnitTesting.VsTest\" />
   </ItemGroup>
   <ItemGroup>
-    <VsTestConsole Include="..\..\..\packages\Microsoft.TestPlatform.15.3.0-preview-20170710-01\tools\net46\**\*.*">
+    <VsTestConsole Include="..\..\..\packages\Microsoft.TestPlatform.15.5.0-preview-20170919-04\tools\net451\**\*.*">
       <Visible>false</Visible>
     </VsTestConsole>
-    <VsTestConsole Remove="..\..\..\packages\Microsoft.TestPlatform.15.3.0-preview-20170710-01\tools\net46\Extensions\**\*.*" />
+    <VsTestConsole Remove="..\..\..\packages\Microsoft.TestPlatform.15.5.0-preview-20170919-04\tools\net451\Extensions\**\*.*" />
   </ItemGroup>
   <ItemGroup>
-    <VsTestConsoleExtensions Include="..\..\..\packages\Microsoft.TestPlatform.15.3.0-preview-20170710-01\tools\net46\Extensions\Microsoft.TestPlatform.TestHostRuntimeProvider.dll">
+    <VsTestConsoleExtensions Include="..\..\..\packages\Microsoft.TestPlatform.15.5.0-preview-20170919-04\tools\net451\Extensions\Microsoft.TestPlatform.TestHostRuntimeProvider.dll">
       <Visible>false</Visible>
     </VsTestConsoleExtensions>
-    <VsTestConsoleExtensions Include="..\..\..\packages\Microsoft.TestPlatform.15.3.0-preview-20170710-01\tools\net46\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.Trx.TestLogger.dll">
+    <VsTestConsoleExtensions Include="..\..\..\packages\Microsoft.TestPlatform.15.5.0-preview-20170919-04\tools\net451\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.Trx.TestLogger.dll">
       <Visible>false</Visible>
     </VsTestConsoleExtensions>
   </ItemGroup>
