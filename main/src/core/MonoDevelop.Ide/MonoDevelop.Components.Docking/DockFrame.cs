@@ -39,6 +39,8 @@ using Xwt.Motion;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
 {
