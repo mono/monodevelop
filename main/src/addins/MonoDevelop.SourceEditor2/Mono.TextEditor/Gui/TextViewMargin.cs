@@ -575,11 +575,12 @@ namespace Mono.TextEditor
 			markerLayoutFont.Weight = Pango.Weight.Normal;
 			markerLayout.FontDescription = markerLayoutFont;
 
-			defaultLayout.FontDescription = textEditor.Options.Font;
-			using (var metrics = textEditor.PangoContext.GetMetrics (textEditor.Options.Font, textEditor.PangoContext.Language)) {
-				this.textEditor.GetTextEditorData ().LineHeight = System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
-				this.charWidth = metrics.ApproximateCharWidth / Pango.Scale.PangoScale;
-			}
+			// Gutter font may be bigger
+			GetFontMetrics(textEditor.Options.GutterFont, textEditor.Options.GutterFontName, out double gutterFontLineHeight, out double fontCharWidth, out underlinePosition, out underLineThickness);
+			GetFontMetrics(textEditor.Options.Font, textEditor.Options.FontName, out double fontLineHeight, out fontCharWidth, out underlinePosition, out underLineThickness);
+			this.textEditor.GetTextEditorData().LineHeight = fontLineHeight;
+			this.charWidth = fontCharWidth;
+
 			var family = textEditor.PangoContext.Families.FirstOrDefault (f => f.Name == textEditor.Options.Font.Family);
 			if (family != null) {
 				isMonospacedFont = family.IsMonospace;
@@ -587,11 +588,6 @@ namespace Mono.TextEditor
 				isMonospacedFont = false;
 			}
 			          
-			// Gutter font may be bigger
-			using (var metrics = textEditor.PangoContext.GetMetrics (textEditor.Options.GutterFont, textEditor.PangoContext.Language)) {
-				this.textEditor.GetTextEditorData ().LineHeight = System.Math.Max (this.textEditor.GetTextEditorData ().LineHeight, System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale));
-			}
-
 			textEditor.LineHeight = System.Math.Max (1, LineHeight);
 
 			if (eolMarkerLayout == null) {
@@ -642,6 +638,23 @@ namespace Mono.TextEditor
 			ShowTooltip (TextSegment.Invalid, Gdk.Rectangle.Zero);
 		}
 
+		int underlinePosition, underLineThickness;
+		public int UnderlinePosition => underlinePosition;
+		public int UnderLineThickness => underLineThickness;
+
+		void GetFontMetrics(Pango.FontDescription font, string fontName, out double lineHeight, out double charWidth, out int underlinePosition, out int underLineThickness)
+		{
+			using (var metrics = textEditor.PangoContext.GetMetrics(font, textEditor.PangoContext.Language)) {
+#if MAC
+				lineHeight = OSXEditor.GetLineHeight(textEditor.Options.FontName);
+#else 
+				lineHeight = System.Math.Ceiling(0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
+#endif
+				underlinePosition = metrics.UnderlinePosition;
+				underLineThickness = metrics.UnderlineThickness;
+				charWidth = metrics.ApproximateCharWidth / Pango.Scale.PangoScale;
+			}
+		}
 		public override void Dispose ()
 		{
 			CancelCodeSegmentTooltip ();

@@ -138,11 +138,12 @@ namespace Mono.TextEditor
 			}
 			//}
 			if (Wave) {	
-				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
+				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.TextViewMargin.UnderlinePosition, to - @from, height);
 			} else {
-				cr.LineWidth = 1;
-				cr.MoveTo (@from, y + editor.LineHeight - 1.5);
-				cr.LineTo (to, y + editor.LineHeight - 1.5);
+				cr.LineWidth = editor.TextViewMargin.UnderLineThickness;
+
+				cr.MoveTo (@from, y + editor.TextViewMargin.UnderlinePosition - 0.5);
+				cr.LineTo (to, y + editor.TextViewMargin.UnderlinePosition - 0.5);
 				cr.Stroke ();
 			}
 		}
