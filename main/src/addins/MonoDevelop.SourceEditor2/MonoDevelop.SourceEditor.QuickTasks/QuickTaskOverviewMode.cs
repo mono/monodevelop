@@ -54,9 +54,20 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		static Xwt.Drawing.Image warningImage = Xwt.Drawing.Image.FromResource ("issues-warning-16.png");
 		static Xwt.Drawing.Image errorImage = Xwt.Drawing.Image.FromResource ("issues-error-16.png");
 		static Xwt.Drawing.Image suggestionImage = Xwt.Drawing.Image.FromResource ("issues-suggestion-16.png");
+		static Xwt.Drawing.Image hideImage = Xwt.Drawing.Image.FromResource ("issues-hide-16.png");
 
-		public static Xwt.Drawing.Image SuggestionImage {
-			get {
+		public static Xwt.Drawing.Image HideImage
+		{
+			get
+			{
+				return hideImage;
+			}
+		}
+
+		public static Xwt.Drawing.Image SuggestionImage
+		{
+			get
+			{
 				return suggestionImage;
 			}
 		}
