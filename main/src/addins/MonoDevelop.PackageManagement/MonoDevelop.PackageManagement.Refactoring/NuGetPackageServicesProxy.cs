@@ -134,16 +134,16 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			return result;
 		}
 
-		public Task<IEnumerable<(string PackageName, string TypeName, string Version, int Rank, IReadOnlyList<string> ContainingNamespaceNames)>> FindPackagesWithTypeAsync (string source, string name, int arity, CancellationToken cancellationToken)
+		public Task<IEnumerable<(string PackageName, string TypeName, string Version, int Rank, ImmutableArray<string> ContainingNamespaceNames)>> FindPackagesWithTypeAsync (string source, string name, int arity, CancellationToken cancellationToken)
 		{
-			var result = new List<(string PackageName, string TypeName, string Version, int Rank, IReadOnlyList<string> ContainingNamespaceNames)> ();
-			return Task.FromResult ((IEnumerable<(string PackageName, string TypeName, string Version, int Rank, IReadOnlyList<string> ContainingNamespaceNames)>)result);
+			var result = new List<(string PackageName, string TypeName, string Version, int Rank, ImmutableArray<string> ContainingNamespaceNames)> ();
+			return Task.FromResult ((IEnumerable<(string PackageName, string TypeName, string Version, int Rank, ImmutableArray<string> ContainingNamespaceNames)>)result);
 		}
 
-		public Task<IEnumerable<(string AssemblyName, string TypeName, IReadOnlyList<string> ContainingNamespaceNames)>> FindReferenceAssembliesWithTypeAsync (string name, int arity, CancellationToken cancellationToken)
+		public Task<IEnumerable<(string AssemblyName, string TypeName, ImmutableArray<string> ContainingNamespaceNames)>> FindReferenceAssembliesWithTypeAsync (string name, int arity, CancellationToken cancellationToken)
 		{
-			var result = new List<(string AssemblyName, string TypeName, IReadOnlyList<string> ContainingNamespaceNames)> ();
-			return Task.FromResult ((IEnumerable<(string AssemblyName, string TypeName, IReadOnlyList<string> ContainingNamespaceNames)>)result);
+			var result = new List<(string AssemblyName, string TypeName, ImmutableArray<string> ContainingNamespaceNames)> ();
+			return Task.FromResult ((IEnumerable<(string AssemblyName, string TypeName, ImmutableArray<string> ContainingNamespaceNames)>)result);
 		}
 
 		public ImmutableArray<string> GetInstalledVersions (string packageName)
