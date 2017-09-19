@@ -489,7 +489,7 @@ namespace Mono.TextEditor
 		static TextViewMargin()
 		{
 #if MAC
-			var img = MacCursorImage.Image;
+			var img = OSXEditor.IBeamCursorImage;
 			xtermCursorInverted = new Cursor(xtermCursor.Display, (InvertCursorPixbuf (img.ToPixbuf())), (int)img.Width / 2, (int)img.Height / 2);
 #else
 			xtermCursorInverted = xtermCursor;
