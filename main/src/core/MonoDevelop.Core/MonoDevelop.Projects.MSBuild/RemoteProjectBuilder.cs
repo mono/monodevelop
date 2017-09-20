@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RemoteProjectBuilder.cs
 //  
 // Author:
@@ -85,6 +85,7 @@ namespace MonoDevelop.Projects.MSBuild
 		async Task<ProjectBuilder> LoadProject (string projectFile)
 		{
 			try {
+				RemoteProcessConnection.Log ("RemoteBuildEngine.LoadProject: " + projectFile);
 				var pid = (await connection.SendMessage (new LoadProjectRequest { ProjectFile = projectFile })).ProjectId;
 				return new ProjectBuilder (connection, pid);
 			} catch {
@@ -99,6 +100,7 @@ namespace MonoDevelop.Projects.MSBuild
 				remoteProjectBuilders.Remove (remoteBuilder);
 			
 			try {
+				RemoteProcessConnection.Log ("RemoteBuildEngine.UnloadProject");
 				await connection.SendMessage (new UnloadProjectRequest { ProjectId = ((ProjectBuilder)builder).ProjectId});
 			} catch (Exception ex) {
 				LoggingService.LogError ("Project unloading failed", ex);
@@ -126,6 +128,7 @@ namespace MonoDevelop.Projects.MSBuild
 		public async Task CancelTask (int taskId)
 		{
 			try {
+				RemoteProcessConnection.Log ("RemoteBuildEngine.CancelTask");
 				await connection.SendMessage (new CancelTaskRequest { TaskId = taskId });
 			} catch {
 				await CheckDisconnected ();
@@ -136,6 +139,7 @@ namespace MonoDevelop.Projects.MSBuild
 		public async Task SetGlobalProperties (Dictionary<string, string> properties)
 		{
 			try {
+				RemoteProcessConnection.Log ("RemoteBuildEngine.SetGlobalProperties");
 				await connection.SendMessage (new SetGlobalPropertiesRequest { Properties = properties });
 			} catch {
 				await CheckDisconnected ();
@@ -145,6 +149,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public async Task Ping ()
 		{
+			RemoteProcessConnection.Log ("RemoteBuildEngine.Ping");
 			await connection.SendMessage (new PingRequest ());
 		}
 
@@ -153,6 +158,10 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!alive)
 				return false;
 			try {
+				if (!connection.IsReachable) {
+					alive = false;
+					return false;
+				}
 				await Ping ();
 				return true;
 			} catch {
@@ -176,6 +185,7 @@ namespace MonoDevelop.Projects.MSBuild
 			Interlocked.Decrement (ref count);
 			try {
 				alive = false;
+				RemoteProcessConnection.Log ("RemoteProjectBuilder.Dispose()");
 				connection.Disconnect ().Ignore ();
 			} catch {
 				// Ignore
