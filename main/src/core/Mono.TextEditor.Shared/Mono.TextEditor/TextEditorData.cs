@@ -649,6 +649,7 @@ namespace Mono.TextEditor
 			HeightTree.Dispose ();
 			DetachDocument ();
 			ClearTooltipProviders ();
+			DisposeIndentationTracker();
 			tooltipProviders = null;
 		}
 
@@ -1243,7 +1244,62 @@ namespace Mono.TextEditor
 				return indentationTracker;
 			}
 			set {
-				indentationTracker = value;
+				DisposeIndentationTracker();
+				indentationTracker = new CachedIndentationTracker (this, value);
+			}
+		}
+
+		void DisposeIndentationTracker()
+		{
+			var disposableIndentationTracker = indentationTracker as IDisposable;
+			if (disposableIndentationTracker != null)
+				disposableIndentationTracker.Dispose();
+			indentationTracker = null;
+		}
+
+		sealed class CachedIndentationTracker : IndentationTracker, IDisposable
+		{
+			const int maximumCachedLines = 100;
+			readonly TextEditorData textEditorData;
+			readonly IndentationTracker baseTracker;
+
+			Dictionary<int, string> indentationCache = new Dictionary<int, string>();
+
+			public override IndentationTrackerFeatures SupportedFeatures {
+				get {
+					return baseTracker.SupportedFeatures;
+				}
+			}
+
+			public CachedIndentationTracker (TextEditorData textEditorData, IndentationTracker baseTracker)
+			{
+				this.textEditorData = textEditorData;
+				this.baseTracker = baseTracker;
+				textEditorData.Document.TextChanged += Document_TextChanged;
+			}
+
+			void Document_TextChanged (object sender, TextChangeEventArgs e)
+			{
+				indentationCache.Clear ();
+			}
+
+			public override string GetIndentationString (int lineNumber)
+			{
+				string result;
+				if (!indentationCache.TryGetValue (lineNumber, out result)) {
+					result = baseTracker.GetIndentationString (lineNumber);
+					if (indentationCache.Count > maximumCachedLines)
+						indentationCache.Clear ();
+					indentationCache.Add (lineNumber, result);
+				}
+				return result;
+			}
+
+			public void Dispose()
+			{
+				textEditorData.Document.TextChanged -= Document_TextChanged;
+				if (baseTracker is IDisposable)
+					((IDisposable)baseTracker).Dispose ();
 			}
 		}
 		
