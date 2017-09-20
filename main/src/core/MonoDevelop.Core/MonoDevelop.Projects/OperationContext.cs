@@ -58,12 +58,19 @@ namespace MonoDevelop.Projects
 			else
 				customData = null;
 			ExecutionTarget = other.ExecutionTarget;
+			BatchOperationStarted = other.BatchOperationStarted;
 		}
 
 		/// <summary>
 		/// Execution target for which the operation is being executed
 		/// </summary>
 		public ExecutionTarget ExecutionTarget { get; set; }
+
+		/// <summary>
+		/// Indicates that a build session has started
+		/// </summary>
+		/// <value><c>true</c> if batch operation started; otherwise, <c>false</c>.</value>
+		internal bool BatchOperationStarted { get; set; }
 	}
 }
 

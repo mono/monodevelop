@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -58,7 +58,6 @@
     <Compile Include="MonoDevelop.Projects\ItemMetadataTests.cs" />
     <Compile Include="MonoDevelop.Projects\LocalCopyTests.cs" />
     <Compile Include="MonoDevelop.Projects\MakefileTests.cs" />
-    <Compile Include="MonoDevelop.Projects\MdsTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildGlobTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildLoggerTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildProjectServiceTests.cs" />
@@ -90,6 +89,7 @@
     <Compile Include="MonoDevelop.Projects\PortableLibraryTests.cs" />
     <Compile Include="MonoDevelop.Projects\GenericProjectTests.cs" />
     <Compile Include="MonoDevelop.Projects\NetStandardProjectTests.cs" />
+    <Compile Include="MonoDevelop.Projects\BuilderManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Core\" />

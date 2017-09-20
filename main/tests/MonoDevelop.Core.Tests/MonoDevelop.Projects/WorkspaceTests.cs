@@ -33,6 +33,7 @@ using UnitTests;
 using MonoDevelop.Core;
 using System.Linq;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace MonoDevelop.Projects
 {
@@ -345,6 +346,32 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (1, sol.Items.Count);
 			Assert.IsInstanceOf<Project> (sol.Items[0]);
+
+			ws.Dispose ();
+		}
+
+		[Test]
+		public async Task Save ()
+		{
+			// Saving a workspace must save all solutions and projects it contains
+
+			string dir = Util.CreateTmpDir ("TestSaveWorkspace");
+			Workspace ws = new Workspace ();
+			ws.FileName = Path.Combine (dir, "workspace");
+
+			Solution sol = new Solution ();
+			sol.FileName = Path.Combine (dir, "thesolution");
+			ws.Items.Add (sol);
+
+			DotNetProject p = Services.ProjectService.CreateDotNetProject ("C#");
+			p.FileName = Path.Combine (dir, "theproject");
+			sol.RootFolder.Items.Add (p);
+
+			await ws.SaveAsync (Util.GetMonitor ());
+
+			Assert.IsTrue (File.Exists (ws.FileName));
+			Assert.IsTrue (File.Exists (sol.FileName));
+			Assert.IsTrue (File.Exists (p.FileName));
 
 			ws.Dispose ();
 		}

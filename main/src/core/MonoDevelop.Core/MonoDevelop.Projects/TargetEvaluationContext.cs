@@ -56,6 +56,21 @@ namespace MonoDevelop.Projects
 			get { return loggers; }
 		}
 
+		/// <summary>
+		/// Gets or sets the builder queue to be used to execute the target
+		/// </summary>
+		/// <remarks>
+		/// This property helps the build system decide which builder to use
+		/// to execute the target.
+		/// </remarks>
+		public BuilderQueue BuilderQueue { get; set; } = BuilderQueue.LongOperations;
+
+		/// <summary>
+		/// Gets or sets a value indicating whether referenced projects must be
+		/// loaded and configured before running the target (true by default)
+		/// </summary>
+		public bool LoadReferencedProjects { get; set; } = true;
+
 		public override void CopyFrom (OperationContext other)
 		{
 			base.CopyFrom (other);
@@ -67,6 +82,21 @@ namespace MonoDevelop.Projects
 				LogVerbosity = o.LogVerbosity;
 			}
 		}
+	}
+
+	public enum BuilderQueue
+	{
+		/// <summary>
+		/// This builder queue is used to execute targets that are quick to execute,
+		/// for example getting the list of assembly references of a project.
+		/// </summary>
+		ShortOperations,
+
+		/// <summary>
+		/// This builder queue is used to execute targets which may take a long
+		/// time to execute, for example building, cleaning or deploying a project.
+		/// </summary>
+		LongOperations
 	}
 }
 
