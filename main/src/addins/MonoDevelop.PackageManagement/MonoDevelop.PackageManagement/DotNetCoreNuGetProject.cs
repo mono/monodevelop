@@ -30,6 +30,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using NuGet.Commands;
 using NuGet.Frameworks;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
@@ -101,6 +102,10 @@ namespace MonoDevelop.PackageManagement
 				return new DotNetCoreNuGetProject (project);
 
 			return null;
+		}
+
+		public IDotNetProject Project {
+			get { return new DotNetProjectProxy (project); }
 		}
 
 		public virtual Task SaveProject ()
@@ -203,6 +208,14 @@ namespace MonoDevelop.PackageManagement
 		public override Task<string> GetAssetsFilePathOrNullAsync ()
 		{
 			return GetAssetsFilePathAsync ();
+		}
+
+		public override Task<string> GetCacheFilePathAsync ()
+		{
+			string cacheFilePath = NoOpRestoreUtilities.GetProjectCacheFilePath (
+				project.BaseIntermediateOutputPath,
+				msbuildProjectPath);
+			return Task.FromResult (cacheFilePath);
 		}
 
 		public override async Task<IReadOnlyList<PackageSpec>> GetPackageSpecsAsync (DependencyGraphCacheContext context)

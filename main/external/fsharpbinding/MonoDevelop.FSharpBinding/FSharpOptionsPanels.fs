@@ -17,9 +17,15 @@ open MonoDevelop.FSharp.Gui
 // --------------------------------------------------------------------------------------
 // F# build options - compiler configuration panel
 // --------------------------------------------------------------------------------------
+module Settings =
+    let fscPath = "FSharpBinding.FscPath"
+    let fsiAdvanceToNextLine = "FSharpBinding.AdvanceToNextLine"
+    let highlightMutables = "FSharpBinding.HighlightMutables"
+    let showTypeSignatures = "FSharpBinding.ShowTypeSignatures"
 
 type FSharpSettingsPanel() =
     inherit OptionsPanel()
+
     let fscPathPropName = "FSharpBinding.FscPath"
     let fsiAdvanceToNextLine = "FSharpBinding.AdvanceToNextLine"
     let fsHighlightMutables = "FSharpBinding.HighlightMutables"
@@ -30,7 +36,7 @@ type FSharpSettingsPanel() =
     let setCompilerDisplay (use_default:bool) =
         if widget.CheckCompilerUseDefault.Active <> use_default then
             widget.CheckCompilerUseDefault.Active <- use_default
-        let prop_compiler_path = PropertyService.Get (fscPathPropName,"")
+        let prop_compiler_path = PropertyService.Get (Settings.fscPath,"")
         let default_compiler_path = match CompilerArguments.getDefaultFSharpCompiler() with | Some(r) -> r | None -> ""
         widget.EntryCompilerPath.Text <- if use_default || prop_compiler_path = "" then default_compiler_path else prop_compiler_path
         widget.EntryCompilerPath.Sensitive <- not use_default
@@ -45,12 +51,14 @@ type FSharpSettingsPanel() =
         let interactiveAdvanceToNextLine = PropertyService.Get (fsiAdvanceToNextLine, true)
         let compilerPath = PropertyService.Get (fscPathPropName, "")
         let highlightMutables = PropertyService.Get (fsHighlightMutables, false)
+        let showTypeSignatures = PropertyService.Get (Settings.showTypeSignatures, false)
 
         setCompilerDisplay (compilerPath = "")
 
         widget.AdvanceLine.Active <- interactiveAdvanceToNextLine
 
         widget.CheckHighlightMutables.Active <- highlightMutables
+        widget.CheckTypeSignatures.Active <- showTypeSignatures
 
         // Implement checkbox for F# Compiler options
         widget.CheckCompilerUseDefault.Toggled.Add (fun _ -> setCompilerDisplay widget.CheckCompilerUseDefault.Active)
@@ -62,6 +70,8 @@ type FSharpSettingsPanel() =
         PropertyService.Set (fscPathPropName, if widget.CheckCompilerUseDefault.Active then null else widget.EntryCompilerPath.Text)
         PropertyService.Set (fsiAdvanceToNextLine, widget.AdvanceLine.Active)
         PropertyService.Set (fsHighlightMutables, widget.CheckHighlightMutables.Active)
+        PropertyService.Set (Settings.showTypeSignatures, widget.CheckTypeSignatures.Active)
+
         IdeApp.Workbench.ReparseOpenDocuments()
 
 // --------------------------------------------------------------------------------------

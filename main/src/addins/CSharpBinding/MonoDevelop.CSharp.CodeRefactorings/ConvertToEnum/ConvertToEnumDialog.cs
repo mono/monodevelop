@@ -90,8 +90,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 			Content = vbox;
 
-			Buttons.Add (new Xwt.DialogButton(Xwt.Command.Ok));
-			Buttons.Add (new Xwt.DialogButton(Xwt.Command.Cancel));
+			Buttons.Add (new Xwt.DialogButton (Xwt.Command.Ok));
+			Buttons.Add (new Xwt.DialogButton (Xwt.Command.Cancel));
 		}
 
 		public string EnumName {

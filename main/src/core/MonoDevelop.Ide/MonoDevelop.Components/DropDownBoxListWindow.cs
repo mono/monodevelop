@@ -244,9 +244,7 @@ namespace MonoDevelop.Components
 				this.win = win;
 				this.Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
 				this.CanFocus = true;
-				layout = new Pango.Layout (this.PangoContext);
-				CalcRowHeight ();
-				CalcVisibleRows ();
+				UpdateStyle ();
 
 				CalcAccessibility ();
 			}
@@ -451,7 +449,7 @@ namespace MonoDevelop.Components
 					int iconWidth = icon != null ? (int)icon.Width : 0;
 
 					layout.Ellipsize = Pango.EllipsizeMode.End;
-					layout.Width = (Allocation.Width - xpos - iconWidth - iconTextDistance) * (int)Pango.Scale.PangoScale;
+					layout.Width = (Allocation.Width - xpos - padding - iconWidth - iconTextDistance) * (int)Pango.Scale.PangoScale;
 					layout.SetMarkup (PathBar.GetFirstLineFromMarkup (text));
 
 					int wi, he, typos, iypos;
@@ -537,13 +535,13 @@ namespace MonoDevelop.Components
 						longest = i;
 					}
 				}
-				layout.SetMarkup (win.DataProvider.GetMarkup (longest) ?? "&lt;null&gt;");
-				Pango.Rectangle inkRec, logRect;
-				layout.GetExtents (out inkRec, out logRect);
+				layout.Width = -1;
+				layout.SetMarkup (longestText ?? "&lt;null&gt;");
+				int w, h;
+				layout.GetPixelSize(out w, out h);
 				var icon = win.DataProvider.GetIcon (longest);
 				int iconWidth = icon != null ? (int) icon.Width : 24;
-				return iconWidth + iconTextDistance + padding * 2 + leftXAlignment +
-					(int)(inkRec.Width / Pango.Scale.PangoScale);
+				return iconWidth + iconTextDistance + (padding * 2) + leftXAlignment + w;
 			}
 
 
@@ -580,7 +578,8 @@ namespace MonoDevelop.Components
 
 			void UpdateStyle ()
 			{
-				GdkWindow.Background = Style.Base (StateType.Normal);
+				if (IsRealized)
+					GdkWindow.Background = Style.Base (StateType.Normal);
 				if (layout != null)
 					layout.Dispose ();
 				layout = new Pango.Layout (PangoContext);

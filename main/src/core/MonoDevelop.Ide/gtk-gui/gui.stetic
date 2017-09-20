@@ -10194,24 +10194,6 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.Components.StringTagSelectorButton" design-size="27 27">
-    <property name="MemberName" />
-    <property name="Visible">False</property>
-    <child>
-      <widget class="Gtk.Button" id="button">
-        <property name="MemberName" />
-        <property name="CanFocus">True</property>
-        <property name="Type">Custom</property>
-        <signal name="Clicked" handler="OnButtonClicked" />
-        <child>
-          <widget class="Gtk.Arrow" id="arrow1">
-            <property name="MemberName" />
-            <property name="ArrowType">Down</property>
-          </widget>
-        </child>
-      </widget>
-    </child>
-  </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Fonts.FontChooserPanelWidget" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>

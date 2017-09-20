@@ -366,7 +366,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (res == AlertButton.Save) {
 					try {
 						foreach (Document doc in filesToSave) {
-							doc.Save ();
+							await doc.Save ();
 						}
 					} catch (Exception ex) {
 						MessageService.ShowError (GettextCatalog.GetString ("Save operation failed."), ex);

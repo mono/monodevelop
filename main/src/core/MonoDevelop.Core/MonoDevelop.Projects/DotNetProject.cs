@@ -873,10 +873,25 @@ namespace MonoDevelop.Projects
 				if (includeProjectReferences) {
 					foreach (ProjectReference pref in References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
 						foreach (var asm in pref.GetReferencedFileNames (configuration))
-							res.Add (new AssemblyReference (asm, pref.Aliases));
+							res.Add (CreateProjectAssemblyReference (asm, pref));
 					}
 				}
 				return res;
+			});
+		}
+
+		public Task<List<AssemblyReference>> GetReferences (ConfigurationSelector configuration)
+		{
+			return BindTask (async ct => {
+				return await ProjectExtension.OnGetReferences (configuration, ct);
+			});
+		}
+
+		public Task<List<AssemblyReference>> GetReferences (ConfigurationSelector configuration, CancellationToken token)
+		{
+			return BindTask (ct => {
+				var tokenSource = CancellationTokenSource.CreateLinkedTokenSource (ct, token);
+				return ProjectExtension.OnGetReferences (configuration, tokenSource.Token);
 			});
 		}
 
@@ -902,7 +917,7 @@ namespace MonoDevelop.Projects
 
 					AssemblyReference [] refs;
 					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-						refs = await builder.ResolveAssemblyReferences (configs, globalProperties, CancellationToken.None);
+						refs = await builder.ResolveAssemblyReferences (configs, globalProperties, MSBuildProject, CancellationToken.None);
 					foreach (var r in refs)
 						result.Add (r);
 				} finally {
@@ -982,7 +997,8 @@ namespace MonoDevelop.Projects
 		public Task<IEnumerable<PackageDependency>> GetPackageDependencies (ConfigurationSelector configuration, CancellationToken cancellationToken)
 		{
 			return BindTask<IEnumerable<PackageDependency>> (async ct => {
-				return await OnGetPackageDependencies (configuration, cancellationToken);
+				var tokenSource = CancellationTokenSource.CreateLinkedTokenSource (ct, cancellationToken);
+				return await OnGetPackageDependencies (configuration, tokenSource.Token);
 			});
 		}
 
@@ -1022,6 +1038,49 @@ namespace MonoDevelop.Projects
 						yield return rp;
 				}
 			}
+		}
+
+		internal protected virtual async Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
+		{
+			var result = await OnGetReferencedAssemblies (configuration);
+
+			foreach (ProjectReference pref in References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
+				foreach (var asm in pref.GetReferencedFileNames (configuration))
+					result.Add (CreateProjectAssemblyReference (asm, pref));
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// This should be removed once the project reference information is retrieved from MSBuild.
+		/// </summary>
+		AssemblyReference CreateProjectAssemblyReference (string path, ProjectReference reference)
+		{
+			var metadata = new MSBuildPropertyGroupEvaluated (MSBuildProject);
+			SetProperty (metadata, "Aliases", reference.Aliases);
+			SetProperty (metadata, "CopyLocal", reference.LocalCopy.ToString ());
+			SetProperty (metadata, "Project", reference.ProjectGuid);
+			SetProperty (metadata, "MSBuildSourceProjectFile", GetProjectFileName (reference));
+			SetProperty (metadata, "ReferenceOutputAssembly", reference.ReferenceOutputAssembly.ToString ());
+			SetProperty (metadata, "ReferenceSourceTarget", "ProjectReference");
+
+			return new AssemblyReference (path, metadata);
+		}
+
+		void SetProperty (MSBuildPropertyGroupEvaluated metadata, string name, string value)
+		{
+			var property = new MSBuildPropertyEvaluated (MSBuildProject, name, value, value);
+			metadata.SetProperty (name, property);
+		}
+
+		static string GetProjectFileName (ProjectReference reference)
+		{
+			if (reference.OwnerProject?.ParentSolution == null)
+				return null;
+
+			Project project = reference.ResolveProject (reference.OwnerProject.ParentSolution);
+			return project?.FileName;
 		}
 
 		protected override Task<BuildResult> DoBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
@@ -1386,7 +1445,7 @@ namespace MonoDevelop.Projects
 			string root = null;
 			string dirNamespc = null;
 			string defaultNmspc = !string.IsNullOrEmpty (defaultNamespace)
-				? defaultNamespace
+				? SanitisePotentialNamespace (defaultNamespace)
 				: SanitisePotentialNamespace (project.Name) ?? "Application";
 
 			if (string.IsNullOrEmpty (fileName)) {
@@ -1870,6 +1929,11 @@ namespace MonoDevelop.Projects
 			internal protected override string OnGetDefaultTargetPlatform (ProjectCreateInformation projectCreateInfo)
 			{
 				return Project.OnGetDefaultTargetPlatform (projectCreateInfo);
+			}
+
+			internal protected override Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
+			{
+				return Project.OnGetReferences (configuration, token);
 			}
 
 			internal protected override Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)

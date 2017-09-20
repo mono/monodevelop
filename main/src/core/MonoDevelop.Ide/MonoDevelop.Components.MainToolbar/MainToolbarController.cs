@@ -531,7 +531,9 @@ namespace MonoDevelop.Components.MainToolbar
 		static IEnumerable<ExecutionTarget> GetExecutionTargets (string configuration)
 		{
 			var sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
+#pragma warning disable CS0618 // Type or member is obsolete
 			if (sol == null || !sol.SingleStartup || sol.StartupItem == null)
+#pragma warning restore CS0618 // Type or member is obsolete
 				return new ExecutionTarget [0];
 			var conf = sol.Configurations[configuration];
 			if (conf == null)
@@ -702,14 +704,12 @@ namespace MonoDevelop.Components.MainToolbar
 			if (e.Key == Xwt.Key.Escape) {
 				DestroyPopup();
 				var doc = IdeApp.Workbench.ActiveDocument;
-				if (doc != null) {
+				if (doc != null) 
 					doc.Select ();
-				}
 				return;
 			}
-			if (popup != null) {
+			if (popup != null) 
 				e.Handled = popup.ProcessKey (e.Key, e.Modifiers);
-			}
 		}
 
 		string lastSearchText = string.Empty;
@@ -930,6 +930,7 @@ namespace MonoDevelop.Components.MainToolbar
 			public object Command { get; private set; }
 			public ExecutionTarget ExecutionTarget { get; private set; }
 			string DisplayText = null;
+			string image, tooltip;
 			bool fullText;
 
 			RuntimeModel (MainToolbarController controller)
@@ -945,13 +946,19 @@ namespace MonoDevelop.Components.MainToolbar
 			public RuntimeModel (MainToolbarController controller, ActionCommand command) : this (controller)
 			{
 				Command = command.Id;
+				image = command.Icon;
+				tooltip = command.Description;
 			}
 
 			public RuntimeModel (MainToolbarController controller, ExecutionTarget target, bool fullText, SolutionItem project) : this (controller)
 			{
 				if (target == null)
 					throw new ArgumentNullException (nameof (target));
+				
 				ExecutionTarget = target;
+				image = target?.Image;
+				tooltip = target?.Tooltip;
+
 				this.fullText = fullText;
 				Project = project;
 			}
@@ -1000,17 +1007,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public SolutionItem Project { get; }
 
-			public string Image {
-				get {
-					return ExecutionTarget?.Image;
-				}
-			}
+			public string Image => image;
 
-			public string Tooltip {
-				get {
-					return ExecutionTarget?.Tooltip;
-				}
-			}
+			public string Tooltip => tooltip;
 
 			public IRuntimeMutableModel GetMutableModel ()
 			{

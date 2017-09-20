@@ -30,6 +30,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using NuGet.Commands;
 using NuGet.Frameworks;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
@@ -74,6 +75,10 @@ namespace MonoDevelop.PackageManagement
 			projectName = project.Name;
 		}
 
+		public IDotNetProject Project {
+			get { return new DotNetProjectProxy (project); }
+		}
+
 		internal DotNetProject DotNetProject {
 			get { return project; }
 		}
@@ -88,7 +93,7 @@ namespace MonoDevelop.PackageManagement
 
 		public static NuGetProject Create (DotNetProject project)
 		{
-			if (project.Items.OfType<ProjectPackageReference> ().Any ())
+			if (project.HasPackageReferences ())
 				return new PackageReferenceNuGetProject (project);
 
 			return null;
@@ -194,6 +199,14 @@ namespace MonoDevelop.PackageManagement
 		public override Task<string> GetAssetsFilePathOrNullAsync ()
 		{
 			return GetAssetsFilePathAsync ();
+		}
+
+		public override Task<string> GetCacheFilePathAsync ()
+		{
+			string cacheFilePath = NoOpRestoreUtilities.GetProjectCacheFilePath (
+				project.BaseIntermediateOutputPath,
+				msbuildProjectPath);
+			return Task.FromResult (cacheFilePath);
 		}
 
 		public override async Task<IReadOnlyList<PackageSpec>> GetPackageSpecsAsync (DependencyGraphCacheContext context)

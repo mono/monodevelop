@@ -1,0 +1,37 @@
+﻿{
+	"$schema": "http://json.schemastore.org/template",
+	"author": "Microsoft",
+	"classifications": [ "Common", "Library" ],
+	"name": "Class library",
+	"description": "",
+	"groupIdentity": "MonoDevelop.Ide.Tests",
+	"precedence": "2000",
+	"identity": "MonoDevelop.Ide.Tests.TwoProjects.CSharp",
+	"shortName": "twoprojects",
+	"tags": {
+		"language": "C#",
+		"type": "project"
+	},
+	"sourceName": "sourceName",
+	"guids": [
+		"{7F63CBE6-2FE7-47A7-8930-EA078DA05062}",
+		"{42A9AAF1-DCB8-4F3F-9B20-5F17D4EAAD20}"
+	],
+	"primaryOutputs": [
+		{ "path": "Library1\\Library1.csproj" },
+		{ "path": "Library2\\Library2.csproj" },
+		{ "path": "Library1\\MyClass.cs" },
+		{ "path": "Library2\\MyClass.cs" },
+	],
+	"postActions": [
+		{
+			"description": "Opens files in the editor",
+			"manualInstructions": [],
+			"actionId": "84C0DA21-51C8-4541-9940-6CA19AF04EE6",
+			"args": {
+				"files": "2;3"
+			},
+			"continueOnError": true
+		}
+	]
+}

@@ -310,7 +310,7 @@ int main (int argc, char **argv)
 		}
 	}
 
-	setenv ("MONO_GC_PARAMS", "major=marksweep-conc", 0);
+	setenv ("MONO_GC_PARAMS", "major=marksweep-conc,nursery-size=8m", 0);
 
   NSString *exePath;
   char **extra_argv;

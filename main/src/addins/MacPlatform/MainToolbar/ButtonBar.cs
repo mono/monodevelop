@@ -43,6 +43,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	{
 		class DarkThemeSegmentedCell : NSSegmentedCell
 		{
+			ButtonBar buttonBar;
+
+			public DarkThemeSegmentedCell (ButtonBar buttonBar)
+			{
+				this.buttonBar = buttonBar;
+			}
+
 			public override void DrawWithFrame (CGRect cellFrame, NSView inView)
 			{
 				if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
@@ -76,8 +83,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			{
 				var img = base.GetImageForSegment (segment);
 				var rect = new CGRect (Math.Round (frame.X + ((frame.Width / 2) - (img.Size.Width  / 2))), Math.Round (frame.Y + ((frame.Height / 2) - (img.Size.Height  / 2))), img.Size.Width, img.Size.Height);
-
 				img.Draw (rect);
+
+				if (segment == buttonBar.focusedSegment && buttonBar.HasFocus) {
+					var path = NSBezierPath.FromRoundedRect (frame, 3, 3);
+					path.LineWidth = 3.5f;
+					NSColor.KeyboardFocusIndicator.SetStroke ();
+					path.Stroke ();
+				}
 			}
 		}
 
@@ -93,7 +106,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public ButtonBar (IEnumerable<IButtonBarButton> buttons)
 		{
-			Cell = new DarkThemeSegmentedCell ();
+			Cell = new DarkThemeSegmentedCell (this);
 
 			this.buttons = buttons.ToList ();
 
@@ -198,6 +211,35 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			SetNeedsDisplay ();
 		}
 
+		public void ExecuteFocused()
+		{
+			this.buttons[(int)focusedSegment].NotifyPushed ();//TODO
+		}
+
+		bool hasFocus;
+		public bool HasFocus { 
+			get{
+				return hasFocus;
+			}
+			set{
+				hasFocus = value;
+				RebuildSegments ();
+			}
+		}
+		uint focusedSegment = 0; 
+		public bool IncreaseFocusIndex()
+		{
+			bool result = true;
+			focusedSegment++;
+			if (this.buttons.Count () <= focusedSegment+1) {
+				focusedSegment = 0; //TODO: 
+				result = false;
+			} else {
+				
+				RebuildSegments ();
+			};
+			return result;
+		}
 		public event EventHandler ResizeRequested;
 	}
 }

@@ -3,6 +3,7 @@
 open System
 open System.IO
 open MonoDevelop.Core
+open MonoDevelop.Core.Serialization
 open MonoDevelop.Projects
 open MonoDevelop.Projects.MSBuild
 open System.Xml
@@ -117,11 +118,14 @@ type FSharpProject() as self =
                 project.RemoveItem(item, true)
                 newGroup.AddItem item
 
-    [<ProjectPathItemProperty ("TargetProfile", DefaultValue = "mscorlib")>]
+    [<ItemProperty ("TargetProfile", DefaultValue = "mscorlib")>]
     member val TargetProfile = "mscorlib" with get, set
 
-    [<ProjectPathItemProperty ("TargetFSharpCoreVersion", DefaultValue = "")>]
+    [<ItemProperty ("TargetFSharpCoreVersion", DefaultValue = "")>]
     member val TargetFSharpCoreVersion = String.Empty with get, set
+
+    [<ItemProperty ("UseStandardResourceNames", DefaultValue = false)>]
+    member val UseStandardResourceNames = true with get, set 
 
     override x.IsPortableLibrary = initialisedAsPortable
 
@@ -161,9 +165,10 @@ type FSharpProject() as self =
     override x.OnWriteProject(monitor, msproject) =
         base.OnWriteProject(monitor, msproject)
         fixProjectFormatForVisualStudio msproject
-        //Fix pcl netcore and TargetFSharpCoreVersion
         let globalGroup = msproject.GetGlobalPropertyGroup()
+
         maybe {
+            //Fix pcl netcore and TargetFSharpCoreVersion
             let! targetFrameworkProfile = x.TargetFramework.Id.Profile |> Option.ofString
             let! fsharpcoreversion, netcore = profileMap |> Map.tryFind targetFrameworkProfile
             do globalGroup.SetValue ("TargetFSharpCoreVersion", fsharpcoreversion, "", true)
@@ -300,3 +305,4 @@ type FSharpProject() as self =
         //Should only be done on solution close
         //langServ.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()
         base.OnDispose ()
+

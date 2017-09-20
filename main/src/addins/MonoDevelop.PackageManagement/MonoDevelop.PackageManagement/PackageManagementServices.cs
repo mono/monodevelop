@@ -70,6 +70,7 @@ namespace MonoDevelop.PackageManagement
 			nuGetConfigFileChangedMonitor.MonitorFileChanges ();
 
 			//analyzerPackageMonitor = new AnalyzerPackageMonitor ();
+			MonoDevelop.Refactoring.PackageInstaller.PackageInstallerServiceFactory.PackageServices = new MonoDevelop.PackageManagement.Refactoring.NuGetPackageServicesProxy ();
 		}
 
 		internal static void InitializeCredentialService ()

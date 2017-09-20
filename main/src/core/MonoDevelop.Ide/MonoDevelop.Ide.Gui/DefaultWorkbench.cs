@@ -92,8 +92,6 @@ namespace MonoDevelop.Ide.Gui
 		MainToolbarController toolbar;
 		MonoDevelopStatusBar bottomBar;
 
-		Timer saveTimer;
-
 #if DUMMY_STRINGS_FOR_TRANSLATION_DO_NOT_COMPILE
 		private void DoNotCompile ()
 		{
@@ -672,7 +670,7 @@ namespace MonoDevelop.Ide.Gui
 								content.UntitledName = content.ContentName;
 								content.ContentName = null;
 							} else {
-								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
+								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true).Ignore();
 							}
 						}
 					}
@@ -684,7 +682,7 @@ namespace MonoDevelop.Ide.Gui
 								content.UntitledName = content.ContentName;
 								content.ContentName = null;
 							} else {
-								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
+								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true).Ignore();
 							}
 							return;
 						}
@@ -1135,6 +1133,40 @@ namespace MonoDevelop.Ide.Gui
 			return base.OnFocusInEvent (evnt);
 		}
 
+		bool haveFocusedToolbar = false;
+		protected override bool OnFocused (DirectionType direction)
+		{
+			// If the toolbar is not focused, focus it, and focus the next child once it loses focus
+			switch (direction) {
+			case DirectionType.TabForward:
+				if (!haveFocusedToolbar) {
+					haveFocusedToolbar = true;
+					toolbar.ToolbarView.Focus(() => {
+						if (!dock.ChildFocus(direction)) {
+							haveFocusedToolbar = false;
+							OnFocused(direction);
+						}
+					});
+				} else {
+					if (!dock.ChildFocus(direction)) {
+						haveFocusedToolbar = false;
+						OnFocused(direction);
+					}
+				}
+				break;
+
+			case DirectionType.TabBackward:
+				if (!dock.ChildFocus(direction)) {
+					haveFocusedToolbar = false;
+					OnFocused(DirectionType.TabForward);
+				}
+				break;
+
+			default:
+				return base.OnFocused(direction);
+			}
+			return true;
+		}
 
 		/// <summary>
 		/// Sets the current active document widget.
@@ -1280,7 +1312,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void CloseClicked (object o, TabEventArgs e)
 		{
-			((SdiWorkspaceWindow)e.Tab.Content).CloseWindow (false, true);
+			((SdiWorkspaceWindow)e.Tab.Content).CloseWindow (false, true).Ignore();
 		}
 
 		internal void RemoveTab (DockNotebook tabControl, int pageNum, bool animate)

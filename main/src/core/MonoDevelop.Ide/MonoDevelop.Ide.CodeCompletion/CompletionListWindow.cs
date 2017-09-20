@@ -385,7 +385,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		IMutableCompletionDataList mutableList;
-		public ICompletionDataList CompletionDataList {
+		new public ICompletionDataList CompletionDataList {
 			get { return completionDataList; }
 			set {
 				completionDataList = value;

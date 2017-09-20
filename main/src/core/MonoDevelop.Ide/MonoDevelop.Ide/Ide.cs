@@ -33,6 +33,8 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Instrumentation;
 using Mono.Addins;
+using Mono.Addins.Gui;
+using Mono.Addins.Setup;
 using MonoDevelop.Components.Commands;
 
 using MonoDevelop.Projects;
@@ -344,6 +346,11 @@ namespace MonoDevelop.Ide
 					} catch (Exception ex) {
 						MessageService.ShowError (GettextCatalog.GetString ("Could not load solution: {0}", file.FileName), ex);
 					}
+				} else if (file.FileName.HasExtension ("mpack")) {
+					var service = new SetupService (AddinManager.Registry);
+					AddinManagerWindow.RunToInstallFile (Workbench.RootWindow,
+					                                     service,
+					                                     file.FileName.FullPath);
 				} else {
 					filteredFiles.Add (file);
 				}

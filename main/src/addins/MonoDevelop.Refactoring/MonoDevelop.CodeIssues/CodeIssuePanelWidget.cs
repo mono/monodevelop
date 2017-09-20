@@ -133,7 +133,7 @@ namespace MonoDevelop.CodeIssues
 		{
 			switch (severity) {
 			case DiagnosticSeverity.Hidden:
-				return GettextCatalog.GetString ("Do not show");
+				return GettextCatalog.GetString ("Hide");
 			case DiagnosticSeverity.Error:
 				return GettextCatalog.GetString ("Error");
 			case DiagnosticSeverity.Warning:
@@ -155,7 +155,7 @@ namespace MonoDevelop.CodeIssues
 			case DiagnosticSeverity.Info:
 				return QuickTaskOverviewMode.SuggestionImage;
 			default:
-				return QuickTaskOverviewMode.OkImage;
+				return QuickTaskOverviewMode.HideImage;
 			}
 		}
 
@@ -317,6 +317,7 @@ namespace MonoDevelop.CodeIssues
 			
 			col.SetCellDataFunc (comboRenderer, ComboDataFunc);
 			treeviewInspections.HeadersVisible = false;
+			treeviewInspections.RulesHint = true;
 			treeviewInspections.Model = treeStore;
 			treeviewInspections.SearchColumn = -1; // disable the interactive search
 			GetAllSeverities ();

@@ -764,10 +764,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				case '>':
 					recordGroupName = false;
 					if (replaceGroup) {
-						bool foundGroup = false;
-							result.Append ("\\k<");
-							result.Append (curGroupName.ToString ());
-							result.Append (">");
+						result.Append ("\\k<");
+						result.Append (curGroupName.ToString ());
+						result.Append (">");
 
 						replaceGroup = false;
 						curGroupName.Length = 0;

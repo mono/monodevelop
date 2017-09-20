@@ -874,7 +874,8 @@ namespace MonoDevelop.Ide.Gui
 						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
 
-						newProject.FileName = "test.csproj";
+						// Use a different name for each project, otherwise the msbuild builder will complain about duplicate projects.
+						newProject.FileName = "adhoc_" + (++adhocProjectCount) + ".csproj";
 						if (!Window.ViewContent.IsUntitled) {
 							adHocFile = Editor.FileName;
 						} else {
@@ -943,6 +944,7 @@ namespace MonoDevelop.Ide.Gui
 			return project is SharedAssetsProject;
 		}
 
+		static int adhocProjectCount = 0;
 		object adhocProjectLock = new object();
 		object analysisDocumentLock = new object ();
 		void UnloadAdhocProject ()
@@ -1010,50 +1012,56 @@ namespace MonoDevelop.Ide.Gui
 			string mimeType = editor.MimeType;
 			CancelOldParsing ();
 			var token = parseTokenSource.Token;
-			var project = adhocProject ?? Project;
-			var projectFile = project?.GetProjectFile (currentParseFile);
-
+			var currentProject = adhocProject ?? Project;
+			var projectsContainingFile = currentProject?.ParentSolution?.GetProjectsContainingFile (currentParseFile);
+			if (projectsContainingFile == null || !projectsContainingFile.Any ())
+				projectsContainingFile = new Project [] { currentProject };
 			ThreadPool.QueueUserWorkItem (delegate {
-				TypeSystemService.AddSkippedFile (currentParseFile);
-				var options = new ParseOptions {
-					Project = project,
-					Content = currentParseText,
-					FileName = currentParseFile,
-					OldParsedDocument = parsedDocument,
-					RoslynDocument = AnalysisDocument
-				};
-				if (projectFile != null)
-					options.BuildAction = projectFile.BuildAction;
-				
-				if (project != null && TypeSystemService.CanParseProjections (project, mimeType, currentParseFile)) {
-					TypeSystemService.ParseProjection (options, mimeType, token).ContinueWith (task => {
-						if (token.IsCancellationRequested)
-							return;
-						Application.Invoke ((o, args) => {
-							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
-							var taskResult = task.Result;
-							if (isClosed || taskResult == null || token.IsCancellationRequested)
+				foreach (var project in projectsContainingFile) {
+					var projectFile = project?.GetProjectFile (currentParseFile);
+					TypeSystemService.AddSkippedFile (currentParseFile);
+					var options = new ParseOptions {
+						Project = project,
+						Content = currentParseText,
+						FileName = currentParseFile,
+						OldParsedDocument = parsedDocument,
+						RoslynDocument = AnalysisDocument
+					};
+					if (projectFile != null)
+						options.BuildAction = projectFile.BuildAction;
+
+					if (project != null && TypeSystemService.CanParseProjections (project, mimeType, currentParseFile)) {
+						TypeSystemService.ParseProjection (options, mimeType, token).ContinueWith ((task, state) => {
+							if (token.IsCancellationRequested)
 								return;
-							this.parsedDocument = taskResult.ParsedDocument;
-							var projections = taskResult.Projections;
-							foreach (var p2 in projections)
-								p2.CreateProjectedEditor (this);
-							Editor.SetOrUpdateProjections (this, projections, taskResult.DisabledProjectionFeatures);
-							OnDocumentParsed (EventArgs.Empty);
-						});
-					}, TaskContinuationOptions.OnlyOnRanToCompletion);
-				} else {
-					TypeSystemService.ParseFile (options, mimeType, token).ContinueWith (task => {
-						if (token.IsCancellationRequested)
-							return;
-						Application.Invoke ((o, args) => {
-							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
-							if (isClosed || task.Result == null || token.IsCancellationRequested)
+							if (currentProject != state)
 								return;
-							this.parsedDocument = task.Result;
-							OnDocumentParsed (EventArgs.Empty);
-						});
-					}, TaskContinuationOptions.OnlyOnRanToCompletion);
+							Application.Invoke ((o, args) => {
+								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
+								var taskResult = task.Result;
+								if (isClosed || taskResult == null || token.IsCancellationRequested)
+									return;
+								this.parsedDocument = taskResult.ParsedDocument;
+								var projections = taskResult.Projections;
+								foreach (var p2 in projections)
+									p2.CreateProjectedEditor (this);
+								Editor.SetOrUpdateProjections (this, projections, taskResult.DisabledProjectionFeatures);
+								OnDocumentParsed (EventArgs.Empty);
+							});
+						}, project, TaskContinuationOptions.OnlyOnRanToCompletion);
+					} else if (project == null || currentProject == project) {
+						TypeSystemService.ParseFile (options, mimeType, token).ContinueWith (task => {
+							if (token.IsCancellationRequested)
+								return;
+							Application.Invoke ((o, args) => {
+								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
+								if (isClosed || task.Result == null || token.IsCancellationRequested)
+									return;
+								this.parsedDocument = task.Result;
+								OnDocumentParsed (EventArgs.Empty);
+							});
+						}, TaskContinuationOptions.OnlyOnRanToCompletion);
+					}
 				}
 			});
 		}

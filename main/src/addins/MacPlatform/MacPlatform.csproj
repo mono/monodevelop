@@ -134,6 +134,7 @@
     <Compile Include="MainToolbar\MultiResImage.cs" />
     <Compile Include="MimeMapLoader.cs" />
     <Compile Include="ScreenMonitor.cs" />
+    <Compile Include="MainToolbar\NSFocusButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

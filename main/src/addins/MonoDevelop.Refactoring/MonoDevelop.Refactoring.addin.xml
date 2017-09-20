@@ -1,4 +1,4 @@
-<ExtensionModel>
+﻿<ExtensionModel>
 	<Runtime>
 		<Import assembly="RefactoringEssentials.dll" />
 	</Runtime>
@@ -145,5 +145,8 @@
 		</Condition>
 	</Extension>
 
+	<Extension path="/MonoDevelop/Ide/TypeService/MefHostServices">
+		<Assembly file="MonoDevelop.Refactoring.dll"/>
+	</Extension>
 
 </ExtensionModel>

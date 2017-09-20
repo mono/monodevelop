@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		void RestartClicked (object sender, System.EventArgs e)
 		{
 			Store ();
-			IdeApp.Restart (true);
+			IdeApp.Restart (true).Ignore();
 		}
 
 		void UpdateRestartMessage ()

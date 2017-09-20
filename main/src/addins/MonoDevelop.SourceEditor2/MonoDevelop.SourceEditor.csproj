@@ -508,6 +508,18 @@
     <EmbeddedResource Include="icons\prefs-completion-16~dark~sel%402x.png">
       <LogicalName>prefs-completion-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-hide-16.png">
+      <LogicalName>issues-hide-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-hide-16%402x.png">
+      <LogicalName>issues-hide-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-hide-16~dark.png">
+      <LogicalName>issues-hide-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-hide-16~dark%402x.png">
+      <LogicalName>issues-hide-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTests" />
@@ -521,6 +533,7 @@
     <InternalsVisibleTo Include="FSharpBinding" />
     <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
   </ItemGroup>
   <Import Project="..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems')" />
   <Import Project="..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Impl.projitems" Label="Shared" Condition="Exists('..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Impl.projitems')" />

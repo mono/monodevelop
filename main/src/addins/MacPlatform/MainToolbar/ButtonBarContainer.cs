@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using AppKit;
 using CoreGraphics;
 using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -58,6 +59,39 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				LayoutButtonBars ();
 			}
 		}
+
+		public override void KeyDown (NSEvent theEvent)
+        {
+            if (theEvent.Characters == "\t" && NextKeyView != null) {
+				var success = buttonBars.FirstOrDefault ().IncreaseFocusIndex(); //TODO
+				if(!success)
+					Window.MakeFirstResponder (NextKeyView);
+				return; 
+            }
+
+			if (theEvent.Characters == " " && NextKeyView != null) {
+				var buttonBar = buttonBars.FirstOrDefault ();
+				buttonBar.ExecuteFocused ();
+			}
+
+			base.KeyDown (theEvent);
+        }
+
+		public override bool BecomeFirstResponder ()
+		{
+			if (buttonBars.Any ())
+				buttonBars.FirstOrDefault ().HasFocus = true;
+			else
+				Window.MakeFirstResponder (NextKeyView);
+			return base.BecomeFirstResponder ();
+		}
+
+		public override bool ResignFirstResponder ()
+		{
+			if (buttonBars.Any ()) 
+				buttonBars.FirstOrDefault ().HasFocus = false;
+			return base.ResignFirstResponder ();
+		}  
 
 		public ButtonBarContainer ()
 		{

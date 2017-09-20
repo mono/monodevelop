@@ -33,6 +33,8 @@ using System.Linq;
 using System.Xml;
 using ValueSet = MonoDevelop.Projects.ConditionedPropertyCollection.ValueSet;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
 
 namespace MonoDevelop.Projects
 {
@@ -320,6 +322,25 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		//[SetCulture ("cs-CZ")] Does not work. Culture is not changed.
+		public void ConditionUsingEmptyStringsIsEvaluatedCorrectlyForCzechLocale ()
+		{
+			var currentCulture = Thread.CurrentThread.CurrentCulture;
+			Thread.CurrentThread.CurrentCulture = new CultureInfo ("cs-CZ");
+
+			try {
+				var p = LoadProject ();
+				p.Evaluate ();
+				var res = p.EvaluatedProperties.GetValue ("EmptyStringConditionProp");
+				Assert.AreEqual ("OK", res);
+
+				p.Dispose ();
+			} finally {
+				Thread.CurrentThread.CurrentCulture = currentCulture;
+			}
+		}
+
+		[Test]
 		public void ImportGroups ()
 		{
 			var p = LoadAndEvaluate ("project-with-import-groups", "import-group-test.csproj");
@@ -407,6 +428,10 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("56735", p.EvaluatedProperties.GetValue ("DoubleNumberComplex"));
 
 			Assert.AreEqual (Path.Combine ("a", "b", "c", "d", "e", "f"), p.EvaluatedProperties.GetValue ("ParamsPathCombine"));
+
+			var specialFolder = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
+			Assert.AreEqual (specialFolder, p.EvaluatedProperties.GetValue ("EnumFolderPath"));
+
 			p.Dispose ();
 		}
 

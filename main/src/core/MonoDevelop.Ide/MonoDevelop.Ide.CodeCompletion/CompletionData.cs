@@ -236,7 +236,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public virtual bool OverloadGroupEquals (CompletionData other)
 		{
+#pragma warning disable CS0618 // Type or member is obsolete
 			if (!IsOverload (other))
+#pragma warning restore CS0618 // Type or member is obsolete
 				return false;
 			return DisplayText == other.DisplayText;
 		}

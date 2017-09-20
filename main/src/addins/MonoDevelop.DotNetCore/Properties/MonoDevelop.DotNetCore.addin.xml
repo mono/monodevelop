@@ -339,10 +339,6 @@
 		<Class id="DotNetCoreProjectReader" class="MonoDevelop.DotNetCore.DotNetCoreProjectReader" />
 	</Extension>
 
-	<Extension path="/MonoDevelop/UnitTesting/TestProviders">
-		<Class id="DnxTestProvider" class="MonoDevelop.DotNetCore.UnitTesting.DotNetCoreTestProvider" />
-	</Extension>
-
 	<ExtensionPoint path="/MonoDevelop/DotNetCore/ContextMenu/ProjectPad/PackageDependency">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>

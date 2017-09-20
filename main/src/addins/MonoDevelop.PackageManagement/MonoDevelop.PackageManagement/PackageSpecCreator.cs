@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 using NuGet.Commands;
 using NuGet.Common;
 using NuGet.Configuration;
@@ -97,8 +98,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			return new ProjectRestoreMetadata {
 				ConfigFilePaths = SettingsUtility.GetConfigFilePaths (settings).ToList (),
-				FallbackFolders = SettingsUtility.GetFallbackPackageFolders (settings).ToList (),
-				PackagesPath = SettingsUtility.GetGlobalPackagesFolder (settings),
+				FallbackFolders = GetFallbackPackageFolders (settings, project),
+				PackagesPath = GetPackagesPath (settings, project),
 				ProjectStyle = ProjectStyle.PackageReference,
 				ProjectPath = project.FileName,
 				ProjectName = packageSpec.Name,
@@ -106,7 +107,7 @@ namespace MonoDevelop.PackageManagement
 				ProjectWideWarningProperties = GetWarningProperties (project),
 				OutputPath = project.BaseIntermediateOutputPath,
 				OriginalTargetFrameworks = GetOriginalTargetFrameworks (project).ToList (),
-				Sources = SettingsUtility.GetEnabledSources (settings).ToList ()
+				Sources = GetSources (settings, project)
 			};
 		}
 
@@ -376,6 +377,108 @@ namespace MonoDevelop.PackageManagement
 				project.EvaluatedProperties.GetValue ("WarningsAsErrors"),
 				project.EvaluatedProperties.GetValue ("NoWarn")
 			);
+		}
+
+		static IList<string> GetFallbackPackageFolders (ISettings settings, IDotNetProject project)
+		{
+			var folders = new List<string> ();
+
+			AddFolders (folders, project, "RestoreFallbackFolders");
+
+			if (folders.Any ()) {
+				HandleClear (folders);
+			} else {
+				folders = SettingsUtility.GetFallbackPackageFolders (settings).ToList ();
+			}
+
+			AddFolders (folders, project, "RestoreAdditionalProjectFallbackFolders");
+
+			return folders;
+		}
+
+		static void AddFolders (List<string> folders, IDotNetProject project, string propertyName)
+		{
+			string foldersProperty = project.EvaluatedProperties.GetValue (propertyName);
+			if (string.IsNullOrEmpty (foldersProperty))
+				return;
+
+			var normalizedFolders = MSBuildStringUtility.Split (foldersProperty)
+				.Select (folder => NormalizeFolder (project.BaseDirectory, folder));
+
+			folders.AddRange (normalizedFolders);
+		}
+
+		static string NormalizeFolder (FilePath baseDirectory, string folder)
+		{
+			if (IsClearKeyword (folder))
+				return folder;
+
+			return MSBuildProjectService.FromMSBuildPath (baseDirectory, folder);
+		}
+
+		static bool IsClearKeyword (string item)
+		{
+			return StringComparer.OrdinalIgnoreCase.Equals ("clear", item);
+		}
+
+		static void HandleClear (List<string> values)
+		{
+			if (MSBuildRestoreUtility.ContainsClearKeyword (values))
+				values.Clear ();
+		}
+
+		static string GetPackagesPath (ISettings settings, IDotNetProject project)
+		{
+			string packagesPath = project.EvaluatedProperties.GetValue ("RestorePackagesPath");
+			if (!string.IsNullOrEmpty (packagesPath))
+				return MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, packagesPath);
+
+			return SettingsUtility.GetGlobalPackagesFolder (settings);
+		}
+
+		static IList<PackageSource> GetSources (ISettings settings, IDotNetProject project)
+		{
+			var sources = new List<PackageSource> ();
+
+			AddSources (sources, project, "RestoreSources");
+
+			if (sources.Any ()) {
+				HandleClear (sources);
+			} else {
+				sources = SettingsUtility.GetEnabledSources (settings).ToList ();
+			}
+
+			AddSources (sources, project, "RestoreAdditionalProjectSources");
+
+			return sources;
+		}
+
+		static void AddSources (List<PackageSource> sources, IDotNetProject project, string propertyName)
+		{
+			string sourcesProperty = project.EvaluatedProperties.GetValue (propertyName);
+			if (string.IsNullOrEmpty (sourcesProperty))
+				return;
+
+			var additionalPackageSources = MSBuildStringUtility.Split (sourcesProperty)
+				.Select (source => CreatePackageSource (project.BaseDirectory, source));
+
+			sources.AddRange (additionalPackageSources);
+		}
+
+		static PackageSource CreatePackageSource (FilePath baseDirectory, string source)
+		{
+			if (!IsClearKeyword (source)) {
+				source = MSBuildProjectService.UnescapePath (source);
+				source = UriUtility.GetAbsolutePath (baseDirectory, source);
+			}
+
+			return new PackageSource (source);
+		}
+
+		static void HandleClear (List<PackageSource> sources)
+		{
+			if (MSBuildRestoreUtility.ContainsClearKeyword (sources.Select (source => source.Source)))
+				sources.Clear ();
 		}
 	}
 }

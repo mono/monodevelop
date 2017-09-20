@@ -47,5 +47,9 @@ namespace MonoDevelop.PackageManagement
 		{
 			return projectSystem.SaveProject ();
 		}
+
+		public IDotNetProject Project {
+			get { return projectSystem.Project; }
+		}
 	}
 }

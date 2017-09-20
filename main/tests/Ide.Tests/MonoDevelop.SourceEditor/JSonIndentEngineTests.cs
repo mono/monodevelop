@@ -36,9 +36,9 @@ namespace MonoDevelop.SourceEditor
 	[TestFixture]
 	public class JSonIndentEngineTests : IdeTestBase
 	{
-		const string indentString = "    ";
+		const string indentString = "\t";
 
-		internal static IDocumentIndentEngine CreateEngine (string text)
+		internal static IDocumentIndentEngine CreateEngine (string text, bool tabsToSpaces = false)
 		{
 			var sb = new StringBuilder ();
 			int offset = 0;
@@ -60,7 +60,7 @@ namespace MonoDevelop.SourceEditor
 			content.Data.Text = sb.ToString ();
 			var doc = new MonoDevelop.Ide.Gui.Document (tww);
 			doc.Editor.Options = new CustomEditorOptions {
-				TabsToSpaces = false,
+				TabsToSpaces = tabsToSpaces,
 				TabSize = 4
 			};
 			var csi = new JSonIndentEngine (content.Data, doc);
@@ -130,6 +130,20 @@ $
 			Assert.AreEqual ("", engine.ThisLineIndent);
 			Assert.AreEqual ("", engine.NextLineIndent);
 		}
+
+
+		[Test]
+		public void TestSpaceIndentation()
+		{
+			var engine = CreateEngine(
+				@"
+{
+$
+", true);
+			Assert.AreEqual("    ", engine.ThisLineIndent);
+			Assert.AreEqual(engine.ThisLineIndent, engine.NextLineIndent);
+		}
+
 	}
 }
 

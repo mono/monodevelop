@@ -14,7 +14,7 @@
 			_label="Dump live widgets" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/MainMenu/Help">
-		<ItemSet id="Diagnostics">
+		<ItemSet id="Diagnostics" _label="_Diagnostics">
 			<CommandItem id="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler" />
 			<CommandItem id="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler" />
 			<CommandItem id="PerformanceDiagnosticsAddIn.DumpLiveWidgetsHandler" />

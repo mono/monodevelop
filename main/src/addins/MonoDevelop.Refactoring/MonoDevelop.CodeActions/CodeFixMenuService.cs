@@ -217,10 +217,12 @@ namespace MonoDevelop.CodeActions
 
 		static async Task<ImmutableArray<Diagnostic>> GetDiagnosticsForDocument (ImmutableArray<DiagnosticAnalyzer> analyzers, Microsoft.CodeAnalysis.Document doc, ImmutableHashSet<string> diagnostics, CancellationToken token)
 		{
+			var sol = doc.Project.Solution;
 			var options = new CompilationWithAnalyzersOptions (
 				new WorkspaceAnalyzerOptions (
 					new AnalyzerOptions (ImmutableArray<AdditionalText>.Empty),
-					doc.Project.Solution.Workspace),
+					sol.Options,
+					sol),
 				delegate (Exception exception, DiagnosticAnalyzer analyzer, Diagnostic diag) {
 					LoggingService.LogError ("Exception in diagnostic analyzer " + diag.Id + ":" + diag.GetMessage (), exception);
 				},
@@ -391,13 +393,13 @@ namespace MonoDevelop.CodeActions
 					foreach (var operation in await act.GetOperationsAsync (token)) {
 						var applyChanges = operation as ApplyChangesOperation;
 						if (applyChanges == null) {
-							operation.Apply (documentContext.RoslynWorkspace, token);
+							operation.TryApply (documentContext.RoslynWorkspace, new RoslynProgressTracker (), token);
 							continue;
 						}
 						if (updatedSolution == oldSolution) {
 							updatedSolution = applyChanges.ChangedSolution;
 						}
-						operation.Apply (documentContext.RoslynWorkspace, token);
+						operation.TryApply (documentContext.RoslynWorkspace, new RoslynProgressTracker (), token);
 					}
 				}
 				await TryStartRenameSession (documentContext.RoslynWorkspace, oldSolution, updatedSolution, token);

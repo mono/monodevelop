@@ -84,7 +84,7 @@ namespace MonoDevelop.DotNetCore.Templating
 			} else {
 				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
 
-				if (IsSupportedParameter ("FSharpNetCoreLibrary") || IsSupportedParameter ("RazorPages")) {
+				if (!SupportsNetCore1x ()) {
 					RemoveUnsupportedNetCoreApp1xTargetFrameworks (targetFrameworks);
 				}
 			}
@@ -122,7 +122,7 @@ namespace MonoDevelop.DotNetCore.Templating
 					Parameters ["UseNetStandard1x"] = "true";
 				}
 			} else {
-				if (IsSupportedParameter ("FSharpNetCoreLibrary") || IsSupportedParameter ("RazorPages")) {
+				if (!SupportsNetCore1x ()) {
 					Parameters ["UseNetCore20"] = "true";
 				} else {
 					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
@@ -151,6 +151,15 @@ namespace MonoDevelop.DotNetCore.Templating
 			} else {
 				Parameters ["framework"] = "netcoreapp1.1";
 			}
+		}
+
+		bool SupportsNetCore1x ()
+		{
+			bool supportsNetCore20Only = IsSupportedParameter ("FSharpNetCoreLibrary") ||
+				IsSupportedParameter ("RazorPages") ||
+				IsSupportedParameter ("FSharpWebApi");
+
+			return !supportsNetCore20Only;
 		}
 	}
 }

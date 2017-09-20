@@ -255,5 +255,37 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (packageReference.IsFloating ());
 			Assert.AreEqual ("2.6.0-*", packageReference.AllowedVersions.Float.ToString ());
 		}
+
+		[Test]
+		public async Task GetCacheFilePathAsync_BaseIntermediatePathNotSet_BaseIntermediatePathUsedForCacheFilePath ()
+		{
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string expectedCacheFilePath = @"d:\projects\MyProject\obj\MyProject.csproj.nuget.cache".ToNativePath ();
+
+			string cacheFilePath = await project.GetCacheFilePathAsync ();
+
+			Assert.AreEqual (expectedCacheFilePath, cacheFilePath);
+		}
+
+		[Test]
+		public void Create_NoPackageReferences_ReturnsNull ()
+		{
+			CreateNuGetProject ();
+
+			var nugetProject = PackageReferenceNuGetProject.Create (dotNetProject);
+
+			Assert.IsNull (nugetProject);
+		}
+
+		[Test]
+		public void Create_OnePackageReference_ReturnsNuGetProject ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
+
+			var nugetProject = PackageReferenceNuGetProject.Create (dotNetProject);
+
+			Assert.IsNotNull (nugetProject);
+		}
 	}
 }

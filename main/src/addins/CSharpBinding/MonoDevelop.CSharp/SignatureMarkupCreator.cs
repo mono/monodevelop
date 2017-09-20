@@ -1895,19 +1895,19 @@ namespace MonoDevelop.CSharp
 									 //						var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, loc.SourceTree.FilePath);
 									 //						var line = loc.SourceTree.GetLineSpan (loc.SourceSpan, true).StartLinePosition.Line;
 									 //						
-									 //						return (type.ContainingNamespace.IsGlobalNamespace ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", AmbienceService.EscapeText (type.ContainingNamespace.Name)) + "</small>" + Environment.NewLine) +
-									 //							"<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (type.ContainingAssembly.Name)) + "</small>" + Environment.NewLine +
-									 //							"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), line) + "</small>";
+									 //						return (type.ContainingNamespace.IsGlobalNamespace ? "" : "<span font='11'>" + GettextCatalog.GetString ("Namespace:\t{0}", AmbienceService.EscapeText (type.ContainingNamespace.Name)) + "</span>" + Environment.NewLine) +
+									 //							"<span font='11'>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (type.ContainingAssembly.Name)) + "</span>" + Environment.NewLine +
+									 //							"<span font='11'>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), line) + "</span>";
 									 //					}
 				}
-				return (type.ContainingNamespace.IsGlobalNamespace ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (type.ContainingNamespace.GetFullName ())) + "</small>" + Environment.NewLine) +
-					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (type.ContainingAssembly.Name)) + "</small>";
+				return (type.ContainingNamespace.IsGlobalNamespace ? "" : "<span font='11'>" + GettextCatalog.GetString ("Namespace:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (type.ContainingNamespace.GetFullName ())) + "</span>" + Environment.NewLine) +
+					"<span font='11'>" + GettextCatalog.GetString ("Assembly:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (type.ContainingAssembly.Name)) + "</span>";
 			}
 
 			var method = entity as IMethodSymbol;
 			if (method != null && (method.MethodKind == MethodKind.Constructor || method.MethodKind == MethodKind.StaticConstructor || method.MethodKind == MethodKind.Destructor)) {
-				return (method.ContainingNamespace.IsGlobalNamespace ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (method.ContainingNamespace.GetFullName ())) + "</small>" + Environment.NewLine) +
-					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (method.ContainingAssembly.Name)) + "</small>";
+				return (method.ContainingNamespace.IsGlobalNamespace ? "" : "<span font='11'>" + GettextCatalog.GetString ("Namespace:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (method.ContainingNamespace.GetFullName ())) + "</span>" + Environment.NewLine) +
+					"<span font='11'>" + GettextCatalog.GetString ("Assembly:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (method.ContainingAssembly.Name)) + "</span>";
 			}
 
 
@@ -1919,13 +1919,13 @@ namespace MonoDevelop.CSharp
 					//					if (entity.ContainingType.TryGetSourceProject (out project)) {
 					//						var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, loc.SourceTree.FilePath);
 					//						var line = loc.SourceTree.GetLineSpan (loc.SourceSpan, true).StartLinePosition.Line;
-					//						return "<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (project.Name)) + "</small>" + Environment.NewLine +
-					//								"<small>" + GettextCatalog.GetString ("From type:\t{0}", AmbienceService.EscapeText (entity.ContainingType.Name)) + "</small>" + Environment.NewLine +
-					//								"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), line) + "</small>";
+					//						return "<span font='11'>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (project.Name)) + "</span>" + Environment.NewLine +
+					//								"<span font='11'>" + GettextCatalog.GetString ("From type:\t{0}", AmbienceService.EscapeText (entity.ContainingType.Name)) + "</span>" + Environment.NewLine +
+					//								"<span font='11'>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), line) + "</span>";
 					//					}
 				}
-				return "<small>" + GettextCatalog.GetString ("From type:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (entity.ContainingType.Name)) + "</small>" + Environment.NewLine +
-					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (entity.ContainingAssembly.Name)) + "</small>";
+				return "<span font='11'>" + GettextCatalog.GetString ("From type:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (entity.ContainingType.Name)) + "</span>" + Environment.NewLine +
+					"<span font='11'>" + GettextCatalog.GetString ("Assembly:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (entity.ContainingAssembly.Name)) + "</span>";
 			}
 			return null;
 		}

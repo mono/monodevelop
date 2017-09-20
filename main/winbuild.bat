@@ -37,7 +37,7 @@ set "PLATFORM=Any CPU"
 rem only perform integrated restore on RefactoringEssentials, it fails on the whole solution
 "%MSBUILD_EXE%" external\RefactoringEssentials\RefactoringEssentials.2017.sln /target:Restore %* || goto :error
 
-"%MSBUILD_EXE%" Main.sln /m "/p:Configuration=%CONFIG%" "/p:Platform=%PLATFORM%" %* || goto :error
+"%MSBUILD_EXE%" Main.sln /bl:MonoDevelop.binlog /m "/p:Configuration=%CONFIG%" "/p:Platform=%PLATFORM%" %* || goto :error
 goto :eof
 
 :error

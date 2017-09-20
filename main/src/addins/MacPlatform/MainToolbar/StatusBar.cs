@@ -456,7 +456,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	}
 
 	[Register]
-	class StatusBar : NSButton, MonoDevelop.Ide.StatusBar
+	class StatusBar : NSFocusButton, MonoDevelop.Ide.StatusBar
 	{
 		public enum MessageType
 		{
@@ -702,6 +702,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		readonly List<StatusIcon> statusIcons = new List<StatusIcon> ();
+
+		// Used by AutoTest.
+		internal string[] StatusIcons => statusIcons.Select(x => x.ToolTip).ToArray ();
 
 		internal void RemoveStatusIcon (StatusIcon icon)
 		{

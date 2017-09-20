@@ -272,7 +272,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			nint value = ((NSNumber)notification.UserInfo.ValueForKey ((NSString)"NSTextMovement")).LongValue;
 			if (value == (nint)(long)NSTextMovement.Tab) {
-				SelectText (this);
+				Window.MakeFirstResponder(null);
+				LostFocus?.Invoke(this, EventArgs.Empty);
 				return;
 			}
 

@@ -413,7 +413,7 @@ module SymbolTooltips =
         let functionName =
             let name =
                 if func.IsConstructor then
-                    match func.EnclosingEntitySafe with
+                    match func.EnclosingEntity with
                     | Some ent -> ent.DisplayName
                     | _ ->
                         //LoggingService.LogWarning(sprintf "getFuncSignatureWithFormat: No enclosing entity found for: %s" func.DisplayName)
@@ -433,7 +433,7 @@ module SymbolTooltips =
             let modifier =
                 //F# types are prefixed with new, should non F# types be too for consistancy?
                 if func.IsConstructor then
-                    match func.EnclosingEntitySafe with
+                    match func.EnclosingEntity with
                     | Some ent -> if ent.IsFSharp then "new" ++ accessibility
                                   else accessibility
                     | _ ->
@@ -488,7 +488,7 @@ module SymbolTooltips =
             | _ -> indent + name.PadRight padding + ":"
 
         let isDelegate =
-            match func.EnclosingEntitySafe with
+            match func.EnclosingEntity with
             | Some ent -> ent.IsDelegate
             | _ ->
                 //LoggingService.logWarning "getFuncSignatureWithFormat: No enclosing entity found for: %s" func.DisplayName
@@ -674,7 +674,7 @@ module SymbolTooltips =
                 None
 
         | Constructor func ->
-            match func.EnclosingEntitySafe with
+            match func.EnclosingEntity with
             | Some ent when ent.IsValueType || ent.IsEnum ->
                   //ValueTypes
                   let signature = getFuncSignature symbol.DisplayContext func

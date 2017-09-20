@@ -38,17 +38,19 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharpBinding
 {
 	[TestFixture]
-	public class OnTheFlyFormatterTests : UnitTests.TestBase
+	class OnTheFlyFormatterTests : ICSharpCode.NRefactory6.TestBase
 	{
-		static async Task Simulate (string input, Action<TestViewContent, CSharpTextEditorIndentation> act)
+		static async Task Simulate(string input, Action<TestViewContent, CSharpTextEditorIndentation> act, CSharpFormattingPolicy formattingPolicy = null)
 		{
-			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
-			var content = new TestViewContent ();
-			content.Data.Options = new CustomEditorOptions {
+			TestWorkbenchWindow tww = new TestWorkbenchWindow();
+			var content = new TestViewContent();
+			content.Data.Options = new CustomEditorOptions
+			{
 				IndentStyle = IndentStyle.Auto
 			};
 
@@ -56,58 +58,66 @@ namespace MonoDevelop.CSharpBinding
 			content.ContentName = "/a.cs";
 			content.Data.MimeType = "text/x-csharp";
 
-			var doc = new Document (tww);
+			var doc = new Document(tww);
 
-			var sb = new StringBuilder ();
+			var sb = new StringBuilder();
 			int cursorPosition = 0, selectionStart = -1, selectionEnd = -1;
 
-			for (int i = 0; i < input.Length; i++) {
-				var ch = input [i];
-				switch (ch) {
-				case '$':
-					cursorPosition = sb.Length;
-					break;
-				case '<':
-					if (i + 1 < input.Length) {
-						if (input [i + 1] == '-') {
-							selectionStart = sb.Length;
-							i++;
-							break;
+			for (int i = 0; i < input.Length; i++)
+			{
+				var ch = input[i];
+				switch (ch)
+				{
+					case '$':
+						cursorPosition = sb.Length;
+						break;
+					case '<':
+						if (i + 1 < input.Length)
+						{
+							if (input[i + 1] == '-')
+							{
+								selectionStart = sb.Length;
+								i++;
+								break;
+							}
 						}
-					}
-					goto default;
-				case '-':
-					if (i + 1 < input.Length) {
-						var next = input [i + 1];
-						if (next == '>') {
-							selectionEnd = sb.Length;
-							i++;
-							break;
+						goto default;
+					case '-':
+						if (i + 1 < input.Length)
+						{
+							var next = input[i + 1];
+							if (next == '>')
+							{
+								selectionEnd = sb.Length;
+								i++;
+								break;
+							}
 						}
-					}
-					goto default;
-				default:
-					sb.Append (ch);
-					break;
+						goto default;
+					default:
+						sb.Append(ch);
+						break;
 				}
 			}
-			content.Text = sb.ToString ();
+			content.Text = sb.ToString();
 			content.CursorPosition = cursorPosition;
 
-			var project = Services.ProjectService.CreateProject ("C#");
+			var project = Services.ProjectService.CreateProject("C#");
 			project.Name = "test";
 			project.FileName = "test.csproj";
-			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile)); 
-			project.Policies.Set (Projects.Policies.PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (), CSharpFormatter.MimeType);
+			project.Files.Add(new ProjectFile(content.ContentName, BuildAction.Compile));
+			var textStylePolicy = Projects.Policies.PolicyService.InvariantPolicies.Get<TextStylePolicy>().WithTabsToSpaces(true);
 
-			var solution = new MonoDevelop.Projects.Solution ();
-			solution.AddConfiguration ("", true); 
-			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
+			project.Policies.Set(textStylePolicy, content.Data.MimeType);
+			project.Policies.Set(formattingPolicy  ?? Projects.Policies.PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy>(), content.Data.MimeType);
+
+			var solution = new MonoDevelop.Projects.Solution();
+			solution.AddConfiguration("", true);
+			solution.DefaultSolutionFolder.AddItem(project);
+			using (var monitor = new ProgressMonitor())
+				await TypeSystemService.Load(solution, monitor);
 			content.Project = project;
-			doc.SetProject (project);
-
+			doc.SetProject(project);
 			var compExt = new CSharpCompletionTextEditorExtension ();
 			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
@@ -613,10 +623,10 @@ namespace FormatSelectionTest
 					IndentStyle = IndentStyle.Virtual,
 					DefaultEolMarker = "\r\n"
 				};
-				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'}', '}', Gdk.ModifierType.None));
+				ext.KeyPress(KeyDescriptor.FromGtk((Gdk.Key)'}', '}', Gdk.ModifierType.None));
 
 				var newText = content.Text;
-				Assert.AreEqual ("public class Application\r\n{\r\n\tstatic void Main (string[] args)\r\n\t{\r\n\t\t// abcd\r\n\t\t{\r\n\t\t}\r\n", newText);
+				Assert.AreEqual("public class Application\r\n{\r\n\tstatic void Main (string[] args)\r\n\t{\r\n\t\t// abcd\r\n\t\t{\r\n\t\t}\r\n", newText);
 			});
 		}
 
@@ -666,5 +676,38 @@ class MyContext
 			});
 		}
 
+		/// <summary>
+		/// Bug 59287 - [VSFeedback Ticket] #490276 - Automatic Space Inserted in Parenthesis (edit)
+		/// </summary>
+		[Test]
+		public async Task TestBug59287()
+		{
+			var policy = Projects.Policies.PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy>();
+			policy = policy.Clone();
+			policy.SpaceWithinOtherParentheses = true;
+
+			await Simulate(@"
+using System;
+
+class MyContext
+{
+	public static void Main()
+	{
+		if (something == f$)
+	}
+}", (content, ext) => {
+				ext.KeyPress(KeyDescriptor.FromGtk((Gdk.Key)'f', 'f', Gdk.ModifierType.None));
+				Assert.AreEqual(@"
+using System;
+
+class MyContext
+{
+	public static void Main()
+	{
+		if (something == f)
+	}
+}", content.Text);
+			}, policy);
+		}
 	}
 }

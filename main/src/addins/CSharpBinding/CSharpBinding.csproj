@@ -223,6 +223,12 @@
     <EmbeddedResource Include="templates\SharedAssetsProject.xpt.xml">
       <LogicalName>SharedAssetsProject.xpt.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoDevelopCSharpPolicy.xml">
+      <LogicalName>MonoDevelopCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoTextStylePolicy.xml">
+      <LogicalName>MonoTextStylePolicy.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />

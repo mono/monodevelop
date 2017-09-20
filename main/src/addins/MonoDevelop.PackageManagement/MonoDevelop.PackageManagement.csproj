@@ -125,6 +125,10 @@
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -392,6 +396,7 @@
     <Compile Include="MonoDevelop.PackageManagement\HttpClientFactory.cs" />
     <Compile Include="NuGet.CommandLine\SettingsCredentialProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UninstallNuGetPackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Refactoring\NuGetPackageServicesProxy.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageReferenceNuGetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\HasNuGetPackageOrReferenceFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\SolutionClosingDialog.UI.cs">
@@ -401,6 +406,8 @@
     <Compile Include="MonoDevelop.PackageManagement\PendingPackageActionsInformation.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageActionType.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PendingPackageActionsHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ISolutionManagerExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementPathResolver.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopMSBuildNuGetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopBuildIntegratedRestorer.cs" />
   </ItemGroup>

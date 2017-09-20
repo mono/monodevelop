@@ -229,6 +229,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Task.Run (async delegate {
 				var projects = new ConcurrentBag<ProjectInfo> ();
 				var mdProjects = solution.GetAllProjects ();
+				foreach (var p in projectionList)
+					p.Dispose ();
 				projectionList = projectionList.Clear ();
 				projectIdMap.Clear ();
 				projectIdToMdProjectMap = projectIdToMdProjectMap.Clear ();
@@ -476,7 +478,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				cp != null ? cp.CreateCompilationOptions () : null,
 				cp != null ? cp.CreateParseOptions (config) : null,
 				documents.Item1,
-				CreateProjectReferences (p, token),
+				await CreateProjectReferences (p, token),
 				references,
 				additionalDocuments: documents.Item2
 			);
@@ -494,6 +496,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var entry in projectionList) {
 					if (entry?.File?.FilePath == projectFile.FilePath) {
 						projectionList = projectionList.Remove (entry);
+						entry.Dispose ();
 						break;
 					}
 				}
@@ -531,10 +534,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal class ProjectionEntry
+		internal class ProjectionEntry : IDisposable
 		{
 			public MonoDevelop.Projects.ProjectFile File;
 			public IReadOnlyList<Projection> Projections;
+
+			public void Dispose ()
+			{
+				foreach (var p in Projections)
+					p.Dispose ();
+			}
 		}
 
 		static bool CanGenerateAnalysisContextForNonCompileable (MonoDevelop.Projects.Project p, MonoDevelop.Projects.ProjectFile f)
@@ -684,38 +693,35 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 
-		IEnumerable<ProjectReference> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
+		async Task<IEnumerable<ProjectReference>> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
 		{
 			var netProj = p as MonoDevelop.Projects.DotNetProject;
 			if (netProj == null)
-				yield break;
+				return Enumerable.Empty<ProjectReference> ();
 
-			//GetReferencedAssemblyProjects returns filtered projects, like:
-			//MSBuild Condtion='something'
-			//pref.ReferenceOutputAssembly
-			//and for iOS/Android extensions
-			MonoDevelop.Projects.DotNetProject [] referencedProjects;
+			List<MonoDevelop.Projects.AssemblyReference> references;
 			try {
-				referencedProjects = netProj.GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default).ToArray ();
+				var config = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default;
+				references = await netProj.GetReferences (config, token).ConfigureAwait (false);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting referenced projects.", e);
-				yield break;
+				return Enumerable.Empty<ProjectReference> ();
 			};
+			return CreateProjectReferences (netProj, references);
+		}
+
+		IEnumerable<ProjectReference> CreateProjectReferences (MonoDevelop.Projects.DotNetProject p, List<MonoDevelop.Projects.AssemblyReference> references)
+		{
 			var addedProjects = new HashSet<MonoDevelop.Projects.DotNetProject> ();
-			foreach (var pr in netProj.References.Where (pr => pr.ReferenceType == MonoDevelop.Projects.ReferenceType.Project)) {
-				//But since GetReferencedAssemblyProjects is returing DotNetProject, we lose information about
-				//reference Aliases, hence we have to loop over references
-				var referencedProject = pr.ResolveProject (p.ParentSolution) as MonoDevelop.Projects.DotNetProject;
-				if (referencedProject == null)
-					continue;
-				if (!referencedProjects.Contains (referencedProject))
-					continue;
-				if (!addedProjects.Add (referencedProject))
+			foreach (var pr in references.Where (r => r.IsProjectReference && r.ReferenceOutputAssembly)) {
+				var referencedProject = pr.GetReferencedItem (p.ParentSolution) as MonoDevelop.Projects.DotNetProject;
+				if (referencedProject == null || !addedProjects.Add (referencedProject))
 					continue;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject))
 					continue;
-				var splittedAliases = (pr.Aliases ?? "").Split (new [] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
-				yield return new ProjectReference (GetOrCreateProjectId (referencedProject), ImmutableArray<string>.Empty.AddRange (splittedAliases));
+				yield return new ProjectReference (
+					GetOrCreateProjectId (referencedProject),
+					ImmutableArray<string>.Empty.AddRange (pr.EnumerateAliases ()));
 			}
 		}
 
@@ -1337,13 +1343,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		List<MonoDevelop.Projects.DotNetProject> modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
 		object projectModifyLock = new object ();
 		bool freezeProjectModify;
-		async void OnProjectModified (object sender, MonoDevelop.Projects.SolutionItemModifiedEventArgs args)
+		void OnProjectModified (object sender, MonoDevelop.Projects.SolutionItemModifiedEventArgs args)
 		{
 			lock (projectModifyLock) {
 				if (freezeProjectModify)
 					return;
 				try {
-					if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References" || x.Hint == "CompilerParameters"))
+					if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References" || x.Hint == "CompilerParameters" || x.Hint == "Files"))
 						return;
 					var project = sender as MonoDevelop.Projects.DotNetProject;
 					if (project == null)

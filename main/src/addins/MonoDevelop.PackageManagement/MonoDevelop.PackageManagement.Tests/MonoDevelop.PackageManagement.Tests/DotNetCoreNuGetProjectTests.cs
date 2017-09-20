@@ -500,5 +500,16 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("References", modifiedHintMainProject);
 			Assert.IsNull (modifiedHintProjectWithReference);
 		}
+
+		[Test]
+		public async Task GetCacheFilePathAsync_BaseIntermediatePathNotSet_BaseIntermediatePathUsedForCacheFilePath ()
+		{
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string expectedCacheFilePath = @"d:\projects\MyProject\obj\MyProject.csproj.nuget.cache".ToNativePath ();
+
+			string cacheFilePath = await project.GetCacheFilePathAsync ();
+
+			Assert.AreEqual (expectedCacheFilePath, cacheFilePath);
+		}
 	}
 }

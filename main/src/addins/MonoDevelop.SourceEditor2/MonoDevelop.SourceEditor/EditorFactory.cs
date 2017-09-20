@@ -71,14 +71,29 @@ namespace MonoDevelop.SourceEditor
 			return new SourceEditorView ();
 		}
 
-        ITextEditorImpl ITextEditorFactory.CreateNewEditor(string fileName, string mimeType)
-        {
-            return new SourceEditorView(fileName, mimeType);
-        }
+		ITextEditorImpl ITextEditorFactory.CreateNewEditor (string fileName, string mimeType)
+		{
+			return new SourceEditorView (fileName, mimeType);
+		}
 
-        ITextEditorImpl ITextEditorFactory.CreateNewEditor (IReadonlyTextDocument document)
+		ITextEditorImpl ITextEditorFactory.CreateNewEditor (IReadonlyTextDocument document)
 		{
 			return new SourceEditorView (document);
+		}
+
+		ITextEditorImpl ITextEditorFactory.CreateNewEditor (TextEditorType textEditorType)
+		{
+			return new SourceEditorView (textEditorType);
+		}
+
+		ITextEditorImpl ITextEditorFactory.CreateNewEditor (string fileName, string mimeType, TextEditorType textEditorType)
+		{
+			return new SourceEditorView (fileName, mimeType, textEditorType);
+		}
+
+		ITextEditorImpl ITextEditorFactory.CreateNewEditor (IReadonlyTextDocument document, TextEditorType textEditorType)
+		{
+			return new SourceEditorView (document, textEditorType);
 		}
 
 		string[] ITextEditorFactory.GetSyntaxProperties (string mimeType, string name)
