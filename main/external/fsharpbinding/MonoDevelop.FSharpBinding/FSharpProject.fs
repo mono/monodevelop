@@ -57,11 +57,13 @@ type FSharpProject() as self =
     let fixProjectFormatForVisualStudio (project:MSBuildProject) =
         // Merge ItemGroups into one group ordered by folder name
         // so that VS for Windows can load it.
+        let sharedAssetFiles = CompilerArguments.getSharedAssetFilesFromReferences self
         let projectPath = project.FileName.ParentDirectory |> string
         let projectFiles =
             self.Files
             |> Seq.filter(fun f -> f.BuildAction <> "Folder" && 
-                                   f.BuildAction <> "Reference" && 
+                                   f.BuildAction <> "Reference" &&
+                                   not (sharedAssetFiles.Contains f.FilePath) && 
                                    f.Include <> null && 
                                    (not f.IsImported))
             |> Seq.mapi(fun i f -> i, f)
