@@ -39,15 +39,6 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	partial class ProjectBuilder
 	{
-		IEngineLogWriter currentLogWriter;
-		StringBuilder log = new StringBuilder ();
-		List<LogEvent> logMessages = new List<LogEvent> ();
-
-		bool flushingLog;
-		Timer flushTimer;
-		object flushLogLock = new object ();
-		const int LogFlushTimeout = 100;
-
 		public void Dispose ()
 		{
 			buildEngine.UnloadProject (file);
@@ -64,102 +55,8 @@ namespace MonoDevelop.Projects.MSBuild
 			buildEngine.SetUnsavedProjectContent (file, projectContent);
 		}
 
-		/// <summary>
-		/// Prepares the logging infrastructure
-		/// </summary>
-		void InitLogger (IEngineLogWriter logWriter)
-		{
-			currentLogWriter = logWriter;
-			if (currentLogWriter != null) {
-				log.Clear ();
-				logMessages.Clear ();
-				flushingLog = false;
-				flushTimer = new Timer (o => FlushLog ());
-			}
-		}
 
-		/// <summary>
-		/// Flushes the log that has not yet been sent and disposes the logging infrastructure
-		/// </summary>
-		void DisposeLogger ()
-		{
-			lock (flushLogLock)
-				lock (log) {
-					if (currentLogWriter != null) {
-						try {
-							flushTimer.Dispose ();
-							FlushLog ();
-						} catch {
-							// Ignoree
-						} finally {
-							// This needs to be done inside the finally, to make sure it is called even in
-							// the case the thread is being aborted.
-							flushTimer = null;
-							currentLogWriter = null;
-						}
-					}
-			}
-		}
-
-		void LogWriteLine (string txt)
-		{
-			LogWrite (txt + Environment.NewLine);
-		}
-
-		void LogWrite (string txt)
-		{
-			lock (log) {
-				if (currentLogWriter != null) {
-					// Append the line to the log, and schedule the flush of the log, unless it has already been done
-					log.Append (txt);
-					if (!flushingLog) {
-						// Flush the log after 100ms
-						flushingLog = true;
-						flushTimer.Change (LogFlushTimeout, Timeout.Infinite);
-					}
-				}
-			}
-		}
-
-		void LogEvent (LogEvent msg)
-		{
-			lock (log) {
-				if (currentLogWriter != null) {
-					// Append the line to the log, and schedule the flush of the log, unless it has already been done
-					logMessages.Add (msg);
-					if (!flushingLog) {
-						// Flush the log after 100ms
-						flushingLog = true;
-						flushTimer.Change (LogFlushTimeout, Timeout.Infinite);
-					}
-				}
-			}
-		}
-
-		void FlushLog ()
-		{
-			// We need a lock for the whole method here because it is called from the timer
-			// and from DisposeLogger, and we want to make sure a flush is complete before
-			// trying another one
-
-			lock (flushLogLock) {
-				string txt;
-				List<LogEvent> messages;
-				lock (log) {
-					// Don't flush the log inside the lock since that would prevent LogWriteLine from writing
-					// more log while the current log is being flushed (that would slow down the whole build)
-					txt = log.ToString ();
-					log.Clear ();
-					messages = new List<LogEvent> (logMessages);
-					logMessages.Clear ();
-					flushingLog = false;
-				}
-				if (currentLogWriter != null && (txt.Length > 0 || messages.Count > 0))
-					currentLogWriter.Write (txt.Length > 0 ? txt : null, messages.Count > 0 ? messages.ToArray () : null);
-			}
-		}
-
-		LoggerVerbosity GetVerbosity (MSBuildVerbosity verbosity)
+		public static LoggerVerbosity GetVerbosity (MSBuildVerbosity verbosity)
 		{
 			switch (verbosity) {
 			case MSBuildVerbosity.Quiet:
@@ -188,7 +85,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return str;
 		}
 
-		string GenerateSolutionConfigurationContents (ProjectConfigurationInfo[] configurations)
+		internal static string GenerateSolutionConfigurationContents (ProjectConfigurationInfo[] configurations)
 		{
 			// can't use XDocument because of the 2.0 builder
 			// and don't just build a string because things may need escaping

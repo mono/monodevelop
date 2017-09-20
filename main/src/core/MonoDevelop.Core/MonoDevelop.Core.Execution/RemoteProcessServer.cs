@@ -321,7 +321,7 @@ namespace MonoDevelop.Core.Execution
 					response.ProcessingTime = sw.ElapsedMilliseconds;
 					server.SendResponse (response);
 				} else if (!msg.OneWay)
-					server.SendResponse (msg.CreateErrorResponse ("Got no response from server", true));
+					server.SendResponse (msg.CreateErrorResponse ("Got no response from server for message: " + msg, true));
 			}
 
 			public string TargetId {
