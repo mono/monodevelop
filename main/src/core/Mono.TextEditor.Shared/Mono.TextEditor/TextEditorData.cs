@@ -1261,7 +1261,7 @@ namespace Mono.TextEditor
 		sealed class CachedIndentationTracker : IndentationTracker, IDisposable
 		{
 			const int maximumCachedLines = 100;
-			readonly TextEditorData textEditorData;
+			readonly TextDocument textDocument;
 			readonly IndentationTracker baseTracker;
 
 			Dictionary<int, string> indentationCache = new Dictionary<int, string>();
@@ -1274,9 +1274,9 @@ namespace Mono.TextEditor
 
 			public CachedIndentationTracker (TextEditorData textEditorData, IndentationTracker baseTracker)
 			{
-				this.textEditorData = textEditorData;
+				this.textDocument = textEditorData.Document;
 				this.baseTracker = baseTracker;
-				textEditorData.Document.TextChanged += Document_TextChanged;
+				textDocument.TextChanged += Document_TextChanged;
 			}
 
 			void Document_TextChanged (object sender, TextChangeEventArgs e)
@@ -1298,7 +1298,7 @@ namespace Mono.TextEditor
 
 			public void Dispose()
 			{
-				textEditorData.Document.TextChanged -= Document_TextChanged;
+				textDocument.TextChanged -= Document_TextChanged;
 				if (baseTracker is IDisposable)
 					((IDisposable)baseTracker).Dispose ();
 			}
