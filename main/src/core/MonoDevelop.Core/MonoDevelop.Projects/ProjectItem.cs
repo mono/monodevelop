@@ -114,6 +114,10 @@ namespace MonoDevelop.Projects
 			get { return (Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden; }
 		}
 
+		public bool IsImported {
+			get { return backingEvalItem?.IsImported == true; }
+		}
+
 		internal protected virtual void Read (Project project, IMSBuildItemEvaluated buildItem)
 		{
 			ItemName = buildItem.Name;
