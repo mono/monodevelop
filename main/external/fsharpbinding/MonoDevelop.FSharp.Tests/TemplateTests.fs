@@ -57,7 +57,7 @@ type ``Template tests``() =
     let getErrorsForProject (solution:Solution) =
         asyncSeq {
 
-            let ctx = TargetEvaluationContext (LogVerbosity=MSBuildVerbosity.Diagnostic)
+            let ctx = TargetEvaluationContext (LogVerbosity=MSBuildVerbosity.Quiet)
             let! result = solution.Build(monitor, solution.DefaultConfigurationSelector, ctx) |> Async.AwaitTask
             match result.HasWarnings, result.HasErrors with
             //| "Xamarin.tvOS.FSharp.SingleViewApp", _, false //MTOUCH : warning MT0094: Both profiling (--profiling) and incremental builds (--fastdev) is not supported when building for tvOS. Incremental builds have ben disabled.]
@@ -73,7 +73,6 @@ type ``Template tests``() =
                     let! refs = project.GetReferencedAssemblies (CompilerArguments.getConfig()) |> Async.AwaitTask
 
                     let projectOptions = languageService.GetProjectOptionsFromProjectFile (project, refs)
-                    printfn "%A" projectOptions
                     let! checkResult = checker.ParseAndCheckProject projectOptions.Value
                     for error in checkResult.Errors do
                         yield "Editor error", error.FileName, error.Message
@@ -102,7 +101,7 @@ type ``Template tests``() =
             cinfo.Parameters.["UseIPhone"] <- "False"
             cinfo.Parameters.["CreateiOSUITest"] <- "False"
             cinfo.Parameters.["CreateAndroidUITest"] <- "False"
-            cinfo.Parameters.["MinimumOSVersion"] <- "10.7"
+            cinfo.Parameters.["MinimumOSVersion"] <- "10.2"
             cinfo.Parameters.["AppIdentifier"] <- tt
             cinfo.Parameters.["AndroidMinSdkVersionAttribute"] <- "android:minSdkVersion=\"10\""
             cinfo.Parameters.["AndroidThemeAttribute"] <- ""
