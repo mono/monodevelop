@@ -1245,7 +1245,8 @@ namespace Mono.TextEditor
 			}
 			set {
 				DisposeIndentationTracker();
-				indentationTracker = new CachedIndentationTracker (this, value);
+				if (value != null)
+					indentationTracker = new CachedIndentationTracker (this, value);
 			}
 		}
 
