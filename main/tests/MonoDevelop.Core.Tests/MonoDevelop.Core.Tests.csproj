@@ -34,7 +34,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
