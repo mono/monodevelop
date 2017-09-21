@@ -54,14 +54,14 @@ type ``Template tests``() =
 
     let templatesDir = FilePath(".").FullPath.ToString() / "buildtemplates"
 
-    let testWithParameters (tt:string, parameters:string) =
+    let testWithParameters (tt:string, buildFolder:string, parameters:string) =
         if not MonoDevelop.Core.Platform.IsMac then
             Assert.Ignore ()
         //if tt = "FSharpPortableLibrary" then
             //Assert.Ignore ("A platform service implementation has not been found")
         toTask <| async {
             let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = tt)
-            let dir = FilePath (templatesDir/projectTemplate.Id)
+            let dir = FilePath (templatesDir/buildFolder)
             dir.Delete()
             Directory.CreateDirectory (dir |> string) |> ignore
             let cinfo = new ProjectCreateInformation (ProjectBasePath = dir, ProjectName = tt, SolutionName = tt, SolutionPath = dir)
@@ -149,7 +149,7 @@ type ``Template tests``() =
             | errors -> Assert.Fail (sprintf "%A" errors)
         }
 
-    let test (tt:string) = testWithParameters (tt, "")
+    let test (tt:string) = testWithParameters (tt, tt, "")
 
     [<TestFixtureSetUp>]
     member x.Setup() =
@@ -195,4 +195,4 @@ type ``Template tests``() =
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpNUnitLibraryProject``()= test "FSharpNUnitLibraryProject"
     [<Test;AsyncStateMachine(typeof<Task>)>]
     member x.``Xamarin Forms FSharp FormsApp Shared``() =
-        testWithParameters ("Xamarin.Forms.FSharp.FormsApp", "CreateSharedAssetsProject=True;CreatePortableDotNetProject=False")
+        testWithParameters ("Xamarin.Forms.FSharp.FormsApp", "Xamarin.Forms.FSharp.FormsApp.Shared", "CreateSharedAssetsProject=True;CreatePortableDotNetProject=False")
