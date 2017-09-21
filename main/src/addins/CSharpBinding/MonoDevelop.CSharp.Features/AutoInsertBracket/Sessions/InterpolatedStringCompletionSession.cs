@@ -69,17 +69,16 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 					return false;
 				}
 			}
-
-			if (editor[start] != '$')
+			if (editor [start] != '$')
 			{
 				return false;
 			}
 
-			var tree = ctx.AnalysisDocument.GetSyntaxTreeAsync (cancellationToken).WaitAndGetResult(cancellationToken);
-			var token = tree.GetRoot(cancellationToken).FindTokenOnLeftOfPosition(start);
-
-			return tree.IsExpressionContext(start, token, attributes: false, cancellationToken: cancellationToken)
-				       || tree.IsStatementContext(start, token, cancellationToken);
+			var root = ctx.AnalysisDocument.GetSyntaxRootSynchronously (cancellationToken);
+			var token = root.FindTokenOnLeftOfPosition (start);
+			return true;
+			return root.SyntaxTree.IsExpressionContext (start, token, attributes: false, cancellationToken: cancellationToken)
+				|| root.SyntaxTree.IsStatementContext (start, token, cancellationToken);
 		}
 	}
 }
