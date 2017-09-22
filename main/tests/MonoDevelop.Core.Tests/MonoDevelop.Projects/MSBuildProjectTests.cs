@@ -432,6 +432,16 @@ namespace MonoDevelop.Projects
 			var specialFolder = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
 			Assert.AreEqual (specialFolder, p.EvaluatedProperties.GetValue ("EnumFolderPath"));
 
+			var basePath = Path.GetDirectoryName (p.FileName);
+			var targets = Path.Combine (basePath, "false.targets");
+
+			Assert.AreEqual (targets, p.EvaluatedProperties.GetValue ("PathOfFileAbove"));
+			Assert.AreEqual (targets, p.EvaluatedProperties.GetValue ("DirectoryNameOfFileAbove"));
+
+			Assert.AreEqual ("a/", p.EvaluatedProperties.GetValue ("EnsureTrailingSlash"));
+			Assert.AreEqual (Path.Combine (Environment.CurrentDirectory, "a/"), p.EvaluatedProperties.GetValue ("NormalizeDirectory"));
+			Assert.AreEqual (Path.Combine (Environment.CurrentDirectory, "a"), p.EvaluatedProperties.GetValue ("NormalizePath"));
+
 			p.Dispose ();
 		}
 

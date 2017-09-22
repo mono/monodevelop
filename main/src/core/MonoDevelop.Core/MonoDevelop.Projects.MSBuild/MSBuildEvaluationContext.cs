@@ -695,6 +695,13 @@ namespace MonoDevelop.Projects.MSBuild
 					numArgs--;
 				}
 
+				if (method.DeclaringType == typeof (IntrinsicFunctions) && method.Name == "GetPathOfFileAbove" && parameterValues.Length == methodParams.Length - 1) {
+					string startingDirectory = String.IsNullOrWhiteSpace (FullFileName) ? String.Empty : Path.GetDirectoryName (FullFileName);
+					var last = convertedArgs.Length - 1;
+					convertedArgs [last] = ConvertArg (method, last, startingDirectory, methodParams [last].ParameterType);
+					numArgs = 1;
+				}
+
 				int n;
 				for (n = 0; n < numArgs; n++)
 					convertedArgs [n] = ConvertArg (method, n, parameterValues [n], methodParams [n].ParameterType);
@@ -784,8 +791,11 @@ namespace MonoDevelop.Projects.MSBuild
 					methodWithParams = m;
 					continue;
 				}
-				if (args.Length != argInfo.Length)
-					continue;
+				if (args.Length != argInfo.Length) {
+					if (m.DeclaringType != typeof (IntrinsicFunctions) || m.Name != "GetPathOfFileAbove") {
+						continue;
+					}
+				}
 
 				bool isValid = true;
 				for (int n = 0; n < args.Length; n++) {
