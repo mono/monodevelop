@@ -697,6 +697,7 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildSolutionExtension.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngine.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngineManager.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\FileUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
