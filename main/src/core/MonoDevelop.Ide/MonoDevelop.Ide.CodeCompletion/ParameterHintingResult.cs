@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			this.data = data;
 			ParameterListStart = startOffset;
-			ApplicableSpan = new TextSpan (startOffset, int.MaxValue);
+			ApplicableSpan = new TextSpan (startOffset, 0);
 		}
 
 		public ParameterHintingResult (List<ParameterHintingData> data)
