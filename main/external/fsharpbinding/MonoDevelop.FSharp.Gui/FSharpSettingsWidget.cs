@@ -8,13 +8,14 @@ namespace MonoDevelop.FSharp.Gui
 		{
 			this.Build ();
 		}
-		public Gtk.CheckButton AdvanceLine { get { return advanceToNextLineCheckbox; } }
-		public Gtk.CheckButton CheckCompilerUseDefault { get { return checkCompilerUseDefault; } }
+        public Gtk.CheckButton AdvanceLine => advanceToNextLineCheckbox;
+        public Gtk.CheckButton CheckCompilerUseDefault => checkCompilerUseDefault;
 
-		public Gtk.Button ButtonCompilerBrowse { get { return buttonCompilerBrowse; } }
-		public Gtk.Entry EntryCompilerPath { get { return entryCompilerPath; } }
-		public Gtk.CheckButton CheckHighlightMutables { get { return checkHighlightMutables; } }
-		public Gtk.CheckButton CheckTypeSignatures { get { return checkTypeSignatures; } }
+        public Gtk.Button ButtonCompilerBrowse => buttonCompilerBrowse;
+        public Gtk.Entry EntryCompilerPath => entryCompilerPath;
+        public Gtk.CheckButton CheckHighlightMutables => checkHighlightMutables;
+        public Gtk.CheckButton CheckTypeSignatures => checkTypeSignatures;
+        public Gtk.CheckButton CheckStatusBarTooltips => checkStatusBarTooltips;
 
-	}
+    }
 }
