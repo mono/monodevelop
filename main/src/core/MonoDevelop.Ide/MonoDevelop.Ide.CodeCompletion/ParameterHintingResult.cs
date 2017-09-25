@@ -82,6 +82,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		#region IReadOnlyList implementation
 		public ParameterHintingData this [int index] {
 			get {
+				if (index < 0)
+					throw new ArgumentOutOfRangeException (nameof (index), "index < 0");
+				if (index >= data.Count)
+					throw new ArgumentOutOfRangeException (nameof (index), "index was >= " + data.Count + " was " + index);
 				return data [index];
 			}
 		}
