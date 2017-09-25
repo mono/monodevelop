@@ -254,7 +254,7 @@ module TooltipXmlDoc =
                    return docXml.OuterXml}
         | FieldPropertyOrEvent (parentId, name) ->
             maybe {let! doc = tryGetDoc (parentId)
-                   let docXml = doc.SelectSingleNode (typeMemberFormatter name)
+                   let! docXml = doc.SelectSingleNode (typeMemberFormatter name) |> Option.ofObj
                    return docXml.OuterXml }
         | Method(parentId, name, _count, args) ->
             maybe {

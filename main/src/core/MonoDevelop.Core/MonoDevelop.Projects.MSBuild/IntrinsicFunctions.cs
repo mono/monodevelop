@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 //-----------------------------------------------------------------------
 // </copyright>
@@ -8,148 +8,162 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-using Microsoft.Win32;
+using Microsoft.Build.Internal;
 using Microsoft.Build.Shared;
+using Microsoft.Win32;
+
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 
+
 namespace Microsoft.Build.Evaluation
 {
-    /// <summary>
-    /// The Intrinsic class provides static methods that can be accessed from MSBuild's
-    /// property functions using $([MSBuild]::Function(x,y))
-    /// </summary>
-    internal static class IntrinsicFunctions
-    {
-        /// <summary>
-        /// Add two doubles
-        /// </summary>
-        internal static double Add(double a, double b)
-        {
-            return a + b;
-        }
+	/// <summary>
+	/// The Intrinsic class provides static methods that can be accessed from MSBuild's
+	/// property functions using $([MSBuild]::Function(x,y))
+	/// </summary>
+	internal static class IntrinsicFunctions
+	{
+		private static Lazy<string> _validOsPlatforms = new Lazy<string> (
+			() => typeof (OSPlatform).GetTypeInfo ()
+				.GetProperties (BindingFlags.Static | BindingFlags.Public)
+				.Where (pi => pi.PropertyType == typeof (OSPlatform))
+				.Select (pi => pi.Name)
+				.Aggregate ("", (a, b) => string.IsNullOrEmpty (a) ? b : $"{a}, {b}"),
+			true);
 
-        /// <summary>
-        /// Add two longs
-        /// </summary>
-        internal static long Add(long a, long b)
-        {
-            return a + b;
-        }
+		/// <summary>
+		/// Add two doubles
+		/// </summary>
+		internal static double Add (double a, double b)
+		{
+			return a + b;
+		}
 
-        /// <summary>
-        /// Subtract two doubles
-        /// </summary>
-        internal static double Subtract(double a, double b)
-        {
-            return a - b;
-        }
+		/// <summary>
+		/// Add two longs
+		/// </summary>
+		internal static long Add (long a, long b)
+		{
+			return a + b;
+		}
 
-        /// <summary>
-        /// Subtract two longs
-        /// </summary>
-        internal static long Subtract(long a, long b)
-        {
-            return a - b;
-        }
+		/// <summary>
+		/// Subtract two doubles
+		/// </summary>
+		internal static double Subtract (double a, double b)
+		{
+			return a - b;
+		}
 
-        /// <summary>
-        /// Multiply two doubles
-        /// </summary>
-        internal static double Multiply(double a, double b)
-        {
-            return a * b;
-        }
+		/// <summary>
+		/// Subtract two longs
+		/// </summary>
+		internal static long Subtract (long a, long b)
+		{
+			return a - b;
+		}
 
-        /// <summary>
-        /// Multiply two longs
-        /// </summary>
-        internal static long Multiply(long a, long b)
-        {
-            return a * b;
-        }
+		/// <summary>
+		/// Multiply two doubles
+		/// </summary>
+		internal static double Multiply (double a, double b)
+		{
+			return a * b;
+		}
 
-        /// <summary>
-        /// Divide two doubles
-        /// </summary>
-        internal static double Divide(double a, double b)
-        {
-            return a / b;
-        }
+		/// <summary>
+		/// Multiply two longs
+		/// </summary>
+		internal static long Multiply (long a, long b)
+		{
+			return a * b;
+		}
 
-        /// <summary>
-        /// Divide two longs
-        /// </summary>
-        internal static long Divide(long a, long b)
-        {
-            return a / b;
-        }
+		/// <summary>
+		/// Divide two doubles
+		/// </summary>
+		internal static double Divide (double a, double b)
+		{
+			return a / b;
+		}
 
-        /// <summary>
-        /// Modulo two doubles
-        /// </summary>
-        internal static double Modulo(double a, double b)
-        {
-            return a % b;
-        }
+		/// <summary>
+		/// Divide two longs
+		/// </summary>
+		internal static long Divide (long a, long b)
+		{
+			return a / b;
+		}
 
-        /// <summary>
-        /// Modulo two longs
-        /// </summary>
-        internal static long Modulo(long a, long b)
-        {
-            return a % b;
-        }
+		/// <summary>
+		/// Modulo two doubles
+		/// </summary>
+		internal static double Modulo (double a, double b)
+		{
+			return a % b;
+		}
 
-        /// <summary>
-        /// Escape the string according to MSBuild's escaping rules
-        /// </summary>
-        internal static string Escape(string unescaped)
-        {
-            return EscapingUtilities.Escape(unescaped);
-        }
+		/// <summary>
+		/// Modulo two longs
+		/// </summary>
+		internal static long Modulo (long a, long b)
+		{
+			return a % b;
+		}
 
-        /// <summary>
-        /// Unescape the string according to MSBuild's escaping rules
-        /// </summary>
-        internal static string Unescape(string escaped)
-        {
-            return EscapingUtilities.UnescapeAll(escaped);
-        }
+		/// <summary>
+		/// Escape the string according to MSBuild's escaping rules
+		/// </summary>
+		internal static string Escape (string unescaped)
+		{
+			return EscapingUtilities.Escape (unescaped);
+		}
 
-        /// <summary>
-        /// Perform a bitwise OR on the first and second (first | second) 
-        /// </summary>
-        internal static int BitwiseOr(int first, int second)
-        {
-            return first | second;
-        }
+		/// <summary>
+		/// Unescape the string according to MSBuild's escaping rules
+		/// </summary>
+		internal static string Unescape (string escaped)
+		{
+			return EscapingUtilities.UnescapeAll (escaped);
+		}
 
-        /// <summary>
-        /// Perform a bitwise AND on the first and second (first &amp; second) 
-        /// </summary>
-        internal static int BitwiseAnd(int first, int second)
-        {
-            return first & second;
-        }
+		/// <summary>
+		/// Perform a bitwise OR on the first and second (first | second)
+		/// </summary>
+		internal static int BitwiseOr (int first, int second)
+		{
+			return first | second;
+		}
 
-        /// <summary>
-        /// Perform a bitwise XOR on the first and second (first ^ second) 
-        /// </summary>
-        internal static int BitwiseXor(int first, int second)
-        {
-            return first ^ second;
-        }
+		/// <summary>
+		/// Perform a bitwise AND on the first and second (first &amp; second)
+		/// </summary>
+		internal static int BitwiseAnd (int first, int second)
+		{
+			return first & second;
+		}
 
-        /// <summary>
-        /// Perform a bitwise NOT on the first and second (~first) 
-        /// </summary>
-        internal static int BitwiseNot(int first)
-        {
-            return ~first;
-        }
+		/// <summary>
+		/// Perform a bitwise XOR on the first and second (first ^ second)
+		/// </summary>
+		internal static int BitwiseXor (int first, int second)
+		{
+			return first ^ second;
+		}
+
+		/// <summary>
+		/// Perform a bitwise NOT on the first and second (~first)
+		/// </summary>
+		internal static int BitwiseNot (int first)
+		{
+			return ~first;
+		}
 
         /// <summary>
         /// Get the value of the registry key and value, default value is null
@@ -165,14 +179,6 @@ namespace Microsoft.Build.Evaluation
         internal static object GetRegistryValue(string keyName, string valueName, object defaultValue)
         {
             return Registry.GetValue(keyName, valueName, defaultValue);
-        }
-
-        /// <summary>
-        /// Get the value of the registry key from one of the RegistryView's specified
-        /// </summary>
-        internal static object GetRegistryValueFromView(string keyName, string valueName, object defaultValue, object view)
-        {
-            return GetRegistryValueFromView (keyName, valueName, defaultValue, new [] { view });
         }
 
         /// <summary>
@@ -209,7 +215,7 @@ namespace Microsoft.Build.Evaluation
                     // of that error.
                     RegistryView view = (RegistryView)Enum.Parse(typeof(RegistryView), viewAsString, true);
 
-                    if (!Platform.IsWindows && !keyName.StartsWith("HKEY_CURRENT_USER", StringComparison.OrdinalIgnoreCase))
+					if (!Platform.IsWindows && !keyName.StartsWith("HKEY_CURRENT_USER", StringComparison.OrdinalIgnoreCase))
                     {
                         // Fake common requests to HKLM that we can resolve
 
@@ -222,7 +228,7 @@ namespace Microsoft.Build.Evaluation
                         {
 							var mr = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime as MonoTargetRuntime;
 							if (mr != null)
-	                            return Path.Combine(mr.MonoDirectory, m.Groups[0].Value) + Path.DirectorySeparatorChar;
+								return Path.Combine (mr.MonoDirectory, m.Groups [0].Value) + Path.DirectorySeparatorChar;
                         }
 
                         return string.Empty;
@@ -255,97 +261,196 @@ namespace Microsoft.Build.Evaluation
             return result;
         }
 
-        /// <summary>
-        /// Given the absolute location of a file, and a disc location, returns relative file path to that disk location. 
-        /// Throws UriFormatException.
-        /// </summary>
-        /// <param name="basePath">
-        /// The base path we want to relativize to. Must be absolute.  
-        /// Should <i>not</i> include a filename as the last segment will be interpreted as a directory.
-        /// </param>
-        /// <param name="path">
-        /// The path we need to make relative to basePath.  The path can be either absolute path or a relative path in which case it is relative to the base path.
-        /// If the path cannot be made relative to the base path (for example, it is on another drive), it is returned verbatim.
-        /// </param>
-        /// <returns>relative path (can be the full path)</returns>
-        internal static string MakeRelative(string basePath, string path)
-        {
-            string result = FileService.AbsoluteToRelativePath (basePath, path);
+		/// <summary>
+		/// Given the absolute location of a file, and a disc location, returns relative file path to that disk location.
+		/// Throws UriFormatException.
+		/// </summary>
+		/// <param name="basePath">
+		/// The base path we want to relativize to. Must be absolute.
+		/// Should <i>not</i> include a filename as the last segment will be interpreted as a directory.
+		/// </param>
+		/// <param name="path">
+		/// The path we need to make relative to basePath.  The path can be either absolute path or a relative path in which case it is relative to the base path.
+		/// If the path cannot be made relative to the base path (for example, it is on another drive), it is returned verbatim.
+		/// </param>
+		/// <returns>relative path (can be the full path)</returns>
+		internal static string MakeRelative (string basePath, string path)
+		{
+			string result = FileService.AbsoluteToRelativePath (basePath, path);
 
-            return result;
-        }
+			return result;
+		}
 
-        /// <summary>
-        /// Locate a file in either the directory specified or a location in the
-        /// direcorty structure above that directory.
-        /// </summary>
-        internal static string GetDirectoryNameOfFileAbove(string startingDirectory, string fileName)
-        {
-            // Canonicalize our starting location
-            string lookInDirectory = Path.GetFullPath(startingDirectory);
+		/// <summary>
+		/// Locate a file in either the directory specified or a location in the
+		/// direcorty structure above that directory.
+		/// </summary>
+		internal static string GetDirectoryNameOfFileAbove (string startingDirectory, string fileName)
+		{
+			// Canonicalize our starting location
+			string lookInDirectory = Path.GetFullPath (startingDirectory);
 
-            do
-            {
-                // Construct the path that we will use to test against
-                string possibleFileDirectory = Path.Combine(lookInDirectory, fileName);
+			do {
+				// Construct the path that we will use to test against
+				string possibleFileDirectory = Path.Combine (lookInDirectory, fileName);
 
-                // If we successfully locate the file in the directory that we're
-                // looking in, simply return that location. Otherwise we'll
-                // keep moving up the tree.
-                if (File.Exists(possibleFileDirectory))
-                {
-                    // We've found the file, return the directory we found it in
-                    return lookInDirectory;
-                }
-                else
-                {
-                    // GetDirectoryName will return null when we reach the root
-                    // terminating our search
-                    lookInDirectory = Path.GetDirectoryName(lookInDirectory);
-                }
-            }
-            while (lookInDirectory != null);
+				// If we successfully locate the file in the directory that we're
+				// looking in, simply return that location. Otherwise we'll
+				// keep moving up the tree.
+				if (File.Exists (possibleFileDirectory)) {
+					// We've found the file, return the directory we found it in
+					return lookInDirectory;
+				} else {
+					// GetDirectoryName will return null when we reach the root
+					// terminating our search
+					lookInDirectory = Path.GetDirectoryName (lookInDirectory);
+				}
+			}
+			while (lookInDirectory != null);
 
-            // When we didn't find the location, then return an empty string
-            return String.Empty;
-        }
+			// When we didn't find the location, then return an empty string
+			return String.Empty;
+		}
 
-        /// <summary>
-        /// Return the string in parameter 'defaultValue' only if parameter 'conditionValue' is empty
-        /// else, return the value conditionValue
-        /// </summary>
-        internal static string ValueOrDefault(string conditionValue, string defaultValue)
-        {
-            if (String.IsNullOrEmpty(conditionValue))
-            {
-                return defaultValue;
-            }
-            else
-            {
-                return conditionValue;
-            }
-        }
+		/// <summary>
+		/// Searches for a file based on the specified <see cref="IElementLocation"/>.
+		/// </summary>
+		/// <param name="file">The file to search for.</param>
+		/// <param name="startingDirectory">An optional directory to start the search in.  The default location is the directory
+		/// of the file containing the property funciton.</param>
+		/// <returns>The full path of the file if it is found, otherwise an empty string.</returns>
+		internal static string GetPathOfFileAbove (string file, string startingDirectory)
+		{
+			// This method does not accept a path, only a file name
+			if (file.Any (i => i.Equals (Path.DirectorySeparatorChar) || i.Equals (Path.AltDirectorySeparatorChar))) {
+				throw new ArgumentException ("InvalidGetPathOfFileAboveParameter", file);
+			}
 
-        /// <summary>
-        /// Returns true if a task host exists that can service the requested runtime and architecture
-        /// values, and false otherwise. 
-        /// </summary>
-        internal static bool DoesTaskHostExist(string runtime, string architecture)
-        {
+			// Search for a directory that contains that file
+			string directoryName = GetDirectoryNameOfFileAbove (startingDirectory, file);
+
+			return String.IsNullOrWhiteSpace (directoryName) ? String.Empty : NormalizePath (directoryName, file);
+		}
+
+		/// <summary>
+		/// Return the string in parameter 'defaultValue' only if parameter 'conditionValue' is empty
+		/// else, return the value conditionValue
+		/// </summary>
+		internal static string ValueOrDefault (string conditionValue, string defaultValue)
+		{
+			if (String.IsNullOrEmpty (conditionValue)) {
+				return defaultValue;
+			} else {
+				return conditionValue;
+			}
+		}
+
+		/// <summary>
+		/// Returns true if a task host exists that can service the requested runtime and architecture
+		/// values, and false otherwise.
+		/// </summary>
+		internal static bool DoesTaskHostExist (string runtime, string architecture)
+		{
 			return false;
-        }
+		}
 
-        #region Debug only intrinsics
+		/// <summary>
+		/// If the given path doesn't have a trailing slash then add one.
+		/// If the path is an empty string, does not modify it.
+		/// </summary>
+		/// <param name="path">The path to check.</param>
+		/// <returns>The specified path with a trailing slash.</returns>
+		internal static string EnsureTrailingSlash (string path)
+		{
+			return FileUtilities.EnsureTrailingSlash (path);
+		}
 
-        /// <summary>
-        /// returns if the string contains escaped wildcards
-        /// </summary>
-        internal static List<string> __GetListTest()
-        {
-            return new List<string> { "A", "B", "C", "D" };
-        }
+		/// <summary>
+		/// Gets the canonicalized full path of the provided directory and ensures it contains the correct directory separator characters for the current operating system
+		/// while ensuring it has a trailing slash.
+		/// </summary>
+		/// <param name="path">One or more directory paths to combine and normalize.</param>
+		/// <returns>A canonicalized full directory path with the correct directory separators and a trailing slash.</returns>
+		internal static string NormalizeDirectory (params string [] path)
+		{
+			return EnsureTrailingSlash (NormalizePath (path));
+		}
 
-        #endregion
+		/// <summary>
+		/// Gets the canonicalized full path of the provided path and ensures it contains the correct directory separator characters for the current operating system.
+		/// </summary>
+		/// <param name="path">One or more paths to combine and normalize.</param>
+		/// <returns>A canonicalized full path with the correct directory separators.</returns>
+		internal static string NormalizePath (params string [] path)
+		{
+			return FileUtilities.NormalizePath (Path.Combine (path));
+		}
+
+		/// <summary>
+		/// Specify whether the current OS platform is <paramref name="platformString"/>
+		/// </summary>
+		/// <param name="platformString">The platform string. Must be a member of <see cref="OSPlatform"/>. Case Insensitive</param>
+		/// <returns></returns>
+		internal static bool IsOSPlatform (string platformString)
+		{
+			return RuntimeInformation.IsOSPlatform (OSPlatform.Create (platformString.ToUpperInvariant ()));
+		}
+
+		/// <summary>
+		/// True if current OS is a Unix system.
+		/// </summary>
+		/// <returns></returns>
+		internal static bool IsOsUnixLike ()
+		{
+			return !Platform.IsWindows;
+		}
+
+		//public static string GetCurrentToolsDirectory ()
+		//{
+		//	return BuildEnvironmentHelper.Instance.CurrentMSBuildToolsDirectory;
+		//}
+
+		//public static string GetToolsDirectory32 ()
+		//{
+		//	return BuildEnvironmentHelper.Instance.MSBuildToolsDirectory32;
+		//}
+
+		//public static string GetToolsDirectory64 ()
+		//{
+		//	return BuildEnvironmentHelper.Instance.MSBuildToolsDirectory64;
+		//}
+
+		//public static string GetMSBuildSDKsPath ()
+		//{
+		//	return BuildEnvironmentHelper.Instance.MSBuildSDKsPath;
+		//}
+
+		//public static string GetVsInstallRoot ()
+		//{
+		//	return BuildEnvironmentHelper.Instance.VisualStudioInstallRootDirectory;
+		//}
+
+		//public static string GetProgramFiles32 ()
+		//{
+		//	return FrameworkLocationHelper.programFiles32;
+		//}
+
+		//public static string GetMSBuildExtensionsPath ()
+		//{
+		//	return BuildEnvironmentHelper.Instance.MSBuildExtensionsPath;
+		//}
+
+		#region Debug only intrinsics
+
+		/// <summary>
+		/// returns if the string contains escaped wildcards
+		/// </summary>
+		internal static List<string> __GetListTest ()
+		{
+			return new List<string> { "A", "B", "C", "D" };
+		}
+
+		#endregion
 
         /// <summary>
         /// Following function will parse a keyName and returns the basekey for it.
@@ -365,11 +470,11 @@ namespace Microsoft.Build.Evaluation
             int i = keyName.IndexOf('\\');
             if (i != -1)
             {
-                basekeyName = keyName.Substring(0, i).ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+                basekeyName = keyName.Substring(0, i).ToUpperInvariant();
             }
             else
             {
-                basekeyName = keyName.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+                basekeyName = keyName.ToUpperInvariant();
             }
 
             RegistryKey basekey = null;
@@ -398,7 +503,7 @@ namespace Microsoft.Build.Evaluation
                     basekey = RegistryKey.OpenBaseKey(RegistryHive.DynData, view);
                     break;
                 default:
-                    throw new ArgumentException(keyName);
+					throw new ArgumentException (keyName);
             }
 
             if (i == -1 || i == keyName.Length)
@@ -412,5 +517,5 @@ namespace Microsoft.Build.Evaluation
 
             return basekey;
         }
-    }
+	}
 }
