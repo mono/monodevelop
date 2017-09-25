@@ -701,6 +701,25 @@ namespace MonoDevelop.Projects
 			await app.Build (Util.GetMonitor (false), sol.Configurations ["Debug|x86"].Selector, false);
 			Assert.IsTrue (File.Exists (app.ItemDirectory.Combine ("bin", "Debug", "libextra.dll")));
 		}
+
+		[Test]
+		public async Task BuilderReloadIgnoresDeletedTargets ()
+		{
+			// If a target file is deleted, the importing project should still build
+			FilePath solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			// Create a .user file that will be loaded by the project
+			var userFile = solFile.ParentDirectory.Combine ("ConsoleProject", "ConsoleProject.csproj.user");
+			File.WriteAllText (userFile, "<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' />");
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			await sol.Build (Util.GetMonitor (), "Debug|x86");
+
+			File.Delete (userFile);
+
+			var res = await sol.Build (Util.GetMonitor (), "Debug|x86");
+			Assert.IsFalse (res.HasErrors);
+		}
 	}
 
 	[TestFixture]
