@@ -970,6 +970,7 @@ namespace MonoDevelop.Ide.Editor
 				return;
 
 			// Break fileTypeCondition circular event handling reference.
+			Runtime.AssertMainThread ();
 			fileTypeCondition = null;
 			isDisposed = true;
 			DetachExtensionChain ();
@@ -1147,6 +1148,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (documentContext == null)
 				throw new ArgumentNullException (nameof (documentContext));
+			Runtime.AssertMainThread ();
 			DetachExtensionChain ();
 			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
 			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
