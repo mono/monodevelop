@@ -239,6 +239,34 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return new Backtrace (new VSCodeDebuggerBacktrace (this, (int)threadId));
 		}
 
+		string EvaluateTrace(int frameId, string exp)
+		{
+			var sb = new StringBuilder();
+			int last = 0;
+			int i = exp.IndexOf('{');
+			while (i != -1)
+			{
+				if (i < exp.Length - 1 && exp[i + 1] == '{')
+				{
+					sb.Append(exp, last, i - last + 1);
+					last = i + 2;
+					i = exp.IndexOf('{', i + 2);
+					continue;
+				}
+				int j = exp.IndexOf('}', i + 1);
+				if (j == -1)
+					break;
+				string se = exp.Substring(i + 1, j - i - 1);
+				se = protocolClient.SendRequestSync(new EvaluateRequest(se, frameId)).Result;
+				sb.Append(exp, last, i - last);
+				sb.Append(se);
+				last = j + 1;
+				i = exp.IndexOf('{', last);
+			}
+			sb.Append(exp, last, exp.Length - last);
+			return sb.ToString();
+		}
+
 		protected void HandleEvent (object sender, EventReceivedEventArgs obj)
 		{
 			Task.Run (() => {
@@ -251,7 +279,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					var body = (StoppedEvent)obj.Body;
 					switch (body.Reason) {
 					case StoppedEvent.ReasonValue.Breakpoint:
-						var stackFrame = this.GetThreadBacktrace (body.ThreadId ?? -1).GetFrame (0);
+						var stackFrame = (VsCodeStackFrame)this.GetThreadBacktrace (body.ThreadId ?? -1).GetFrame (0);
 						args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint);
 						var bp = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().FirstOrDefault (b => b.FileName == stackFrame.SourceLocation.FileName && b.Line == stackFrame.SourceLocation.Line);
 						if (bp == null) {
@@ -259,6 +287,14 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 							args = new TargetEventArgs (TargetEventType.TargetStopped);
 						} else {
 							args.BreakEvent = bp;
+							if (breakpoints.TryGetValue (bp, out var binfo)) {
+								if ((bp.HitAction & HitAction.PrintExpression) != HitAction.None) {
+									string exp = EvaluateTrace (stackFrame.frameId, bp.TraceExpression);
+									binfo.UpdateLastTraceValue (exp);
+									OnContinue ();
+									return;
+								}
+							}
 						}
 						break;
 					case StoppedEvent.ReasonValue.Step:
