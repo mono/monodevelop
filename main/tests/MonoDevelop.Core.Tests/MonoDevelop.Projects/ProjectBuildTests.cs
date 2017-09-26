@@ -624,6 +624,44 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Test]
+		public async Task Bug59727_BuildFailsAfterMovingFile ()
+		{
+			FilePath solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var project = (Project)sol.Items.First ();
+
+			var filePath = solFile.ParentDirectory.Combine ("ConsoleProject", "Program.cs");
+			var destFilePath = solFile.ParentDirectory.Combine ("ConsoleProject", "Properties", "Program.cs");
+
+			// Do a change in the project
+
+			var file = project.GetProjectFile (filePath);
+			file.CopyToOutputDirectory = FileCopyMode.Always;
+
+			// Build the project without saving. This will force the builder to load the project from memory.
+			await sol.Build (Util.GetMonitor (false), "Debug|x86");
+
+			// Move the file to the Properties folder
+
+			project.Files.Remove (file);
+
+			FileService.MoveFile (filePath, destFilePath);
+
+			var destFile = project.AddFile (destFilePath);
+
+			// Verify that the project model has been updated
+			Assert.IsNull (project.GetProjectFile (filePath));
+			Assert.IsNotNull (project.GetProjectFile (destFilePath));
+
+			// Save the project. The builder will be unloaded.
+			// The bug was that the copy of the project in memory was not unloaded in the builder.
+			await sol.SaveAsync (Util.GetMonitor ());
+
+			// Build the project. It should work.
+			var res = await sol.Build (Util.GetMonitor (false), "Debug|x86");
+			Assert.IsFalse (res.HasErrors);
+		}
 
 		[Test]
 		public async Task BuilderReloadIgnoresDeletedTargets ()
