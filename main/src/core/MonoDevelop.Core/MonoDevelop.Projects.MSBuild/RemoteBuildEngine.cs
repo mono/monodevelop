@@ -294,6 +294,11 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		public void DisposeGracefully ()
+		{
+			Task.WhenAny (connection.ProcessQueuedMessages (), Task.Delay (5000)).ContinueWith (t => Dispose ());
+		}
+
 		[MessageHandler]
 		void OnLogMessage (LogMessage msg)
 		{
