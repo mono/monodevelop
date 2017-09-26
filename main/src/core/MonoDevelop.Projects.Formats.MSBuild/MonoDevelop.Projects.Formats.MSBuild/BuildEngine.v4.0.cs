@@ -88,6 +88,10 @@ namespace MonoDevelop.Projects.MSBuild
 				if (loadedProjects.Length == 0)
 					return;
 
+				lock (unsavedProjects) {
+					unsavedProjects.Remove (file);
+				}
+
 				var rootElement = loadedProjects[0].Xml;
 
 				foreach (var p in loadedProjects)
