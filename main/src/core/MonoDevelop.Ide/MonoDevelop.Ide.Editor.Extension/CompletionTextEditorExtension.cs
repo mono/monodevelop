@@ -652,9 +652,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 				completionTokenSrc.Cancel ();
 				parameterHintingSrc.Cancel ();
 
-                CompletionWindowManager.HideWindow();
-                ParameterInformationWindowManager.HideWindow(this, CompletionWidget);
-
+				if (CurrentCompletionContext != null) {
+					CompletionWindowManager.HideWindow ();
+					ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
+				}
                 disposed = true;
                 Editor.FocusLost -= HandleFocusOutEvent;
                 //				document.Editor.Paste -= HandlePaste;
