@@ -3767,6 +3767,7 @@ namespace MonoDevelop.Projects
 			return BindTask (ct => Runtime.RunInMainThread (async () => {
 				using (await writeProjectLock.EnterAsync ()) {
 					var oldCapabilities = new HashSet<string> (projectCapabilities);
+					bool oldSupportsExecute = SupportsExecute ();
 
 					try {
 						IsReevaluating = true;
@@ -3792,8 +3793,31 @@ namespace MonoDevelop.Projects
 						NotifyProjectCapabilitiesChanged ();
 
 					NotifyExecutionTargetsChanged (); // Maybe...
+
+					if (oldSupportsExecute != SupportsExecute ()) {
+						OnSupportsExecuteChanged (!oldSupportsExecute);
+					}
 				}
 			}));
+		}
+
+		/// <summary>
+		/// If the project's SupportsExecute has changed then check if the solution's startup
+		/// configuration needs to be refreshed. If the solution has no startup item and
+		/// the project can now be executed then refresh the startup configuration since a
+		/// startup item can now be set for the solution. If the solution's startup item is
+		/// this project and can no longer be executed then refresh the startup configuration
+		/// so another startup item can be selected.
+		/// </summary>
+		void OnSupportsExecuteChanged (bool supportsExecute)
+		{
+			if (ParentSolution == null)
+				return;
+
+			if ((!supportsExecute && ParentSolution.StartupItem == this) ||
+				(supportsExecute && ParentSolution.StartupConfiguration == null)) {
+				ParentSolution.RefreshStartupConfiguration ();
+			}
 		}
 
 		protected virtual async Task OnReevaluateProject (ProgressMonitor monitor)

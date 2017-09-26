@@ -139,6 +139,52 @@ namespace MonoDevelop.Projects
 
 			item.Dispose ();
 		}
+
+		[Test]
+		public async Task SolutionStartupItemChangedAfterReevaluation ()
+		{
+			var node = new TestCapabilityNode ();
+			WorkspaceObject.RegisterCustomExtension (node);
+
+			try {
+				string solFile = Util.GetSampleProject ("project-capability-tests", "Library", "Library.sln");
+				var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var item = solution.GetAllProjects ().Single ();
+
+				string projectExtension = "TestCapabilityExtension";
+				Func<ProjectExtension, bool> isMatch = f => f.GetType ().Name == projectExtension;
+				var ext = item.GetFlavors ().FirstOrDefault (isMatch);
+				Assert.IsNull (ext);
+
+				// Library project is the only project in the solution so the startup item
+				// should be null.
+				Assert.IsNull (solution.StartupItem);
+
+				// Now activate "TestCapability" capability which enables the project to
+				// support execution.
+				var import = item.MSBuildProject.AddNewImport ("testcapability.targets");
+				await item.ReevaluateProject (Util.GetMonitor ());
+
+				ext = item.GetFlavors ().FirstOrDefault (isMatch);
+				Assert.IsNotNull (ext);
+
+				// Startup item is not set for the solution.
+				Assert.AreEqual (item, solution.StartupItem);
+
+				item.MSBuildProject.RemoveImport (import);
+				await item.ReevaluateProject (Util.GetMonitor ());
+
+				ext = item.GetFlavors ().FirstOrDefault (isMatch);
+				Assert.IsNull (ext);
+
+				// Startup item is now set to null since no project can be executed.
+				Assert.IsNull (solution.StartupItem);
+
+				item.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (node);
+			}
+		}
 	}
 
 	class CustomCapabilityNode : SolutionItemExtensionNode
@@ -156,5 +202,26 @@ namespace MonoDevelop.Projects
 
 	class CustomCapabilityExtension : ProjectExtension
 	{
+	}
+
+	class TestCapabilityNode : SolutionItemExtensionNode
+	{
+		public TestCapabilityNode ()
+		{
+			ProjectCapability = "TestCapability";
+		}
+
+		public override object CreateInstance ()
+		{
+			return new TestCapabilityExtension ();
+		}
+	}
+
+	class TestCapabilityExtension : ProjectExtension
+	{
+		protected internal override ProjectFeatures OnGetSupportedFeatures ()
+		{
+			return ProjectFeatures.Execute;
+		}
 	}
 }
