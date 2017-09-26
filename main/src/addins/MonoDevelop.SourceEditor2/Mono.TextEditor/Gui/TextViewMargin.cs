@@ -646,12 +646,14 @@ namespace Mono.TextEditor
 		{
 			using (var metrics = textEditor.PangoContext.GetMetrics(font, textEditor.PangoContext.Language)) {
 #if MAC
+				double baseHeight;
 				if (fontName != null) {
-					lineHeight = (int)(OSXEditor.GetLineHeight(fontName) * textEditor.Options.Zoom);
+					baseHeight = OSXEditor.GetLineHeight(fontName) * textEditor.Options.Zoom;
 				} else {
-					lineHeight = System.Math.Ceiling(0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);				
+					baseHeight = (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale;
 				}
-#else 
+				lineHeight = System.Math.Ceiling (0.5 + baseHeight);
+#else
 				lineHeight = System.Math.Ceiling(0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
 #endif
 				underlinePosition = metrics.UnderlinePosition;
