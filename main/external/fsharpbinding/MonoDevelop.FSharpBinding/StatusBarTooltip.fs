@@ -15,7 +15,7 @@ module statusBarTooltip =
         |> Option.iter(fun ast ->
             async {
                 let lineText = editor.GetLineText(editor.CaretLine)
-                let! tooltip = ast.GetToolTip(editor.CaretLine, editor.CaretColumn, lineText)
+                let! tooltip = ast.GetToolTip(editor.CaretLine, editor.CaretColumn-1, lineText)
                 tooltip |> Option.iter(fun (tip, _lineNr) ->
                     let firstResult = function
                         | FSharpToolTipElement.Group items ->
