@@ -639,7 +639,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (engine.ReferenceCount == 0) {
 				engine.CancelScheduledDisposal ();
 				builders.Remove (engine);
-				engine.Dispose ();
+				engine.DisposeGracefully ();
 			}
 		}
 
@@ -650,7 +650,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (engine.IsShuttingDown) {
 				// If the engine is being shut down, dispose it now.
 				builders.Remove (engine);
-				engine.Dispose ();
+				engine.DisposeGracefully ();
 			} else {
 				// Wait a bit before disposing the engine. We may need to use it again.
 				engine.ScheduleForDisposal (EngineDisposalDelay).ContinueWith (async t => {
@@ -663,7 +663,7 @@ namespace MonoDevelop.Projects.MSBuild
 						// If after the wait there are still 0 references, dispose the builder
 						if (engine.ReferenceCount == 0) {
 							builders.Remove (engine);
-							engine.Dispose ();
+							engine.DisposeGracefully ();
 						}
 					}
 				}, TaskContinuationOptions.NotOnCanceled);

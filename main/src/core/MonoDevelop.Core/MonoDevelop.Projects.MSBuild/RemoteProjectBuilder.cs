@@ -240,9 +240,9 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			lock (usageLock) {
 				if (--references == 0) {
-					RemoteBuildEngineManager.ReleaseProjectBuilder (engine).Ignore ();
 					if (shuttingDown)
 						Dispose ();
+					RemoteBuildEngineManager.ReleaseProjectBuilder (engine).Ignore ();
 				}
 			}
 		}
