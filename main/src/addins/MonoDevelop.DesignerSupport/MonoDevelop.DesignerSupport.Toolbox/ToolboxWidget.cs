@@ -1138,7 +1138,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public string Text {
 			get {
 				if (node != null) {
-					var t = GLib.Markup.EscapeText (node.Name);
+					var t = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (node.Name);
 					if (!string.IsNullOrEmpty (node.Source)) {
 						var c = MonoDevelop.Ide.Gui.Styles.SecondaryTextColorHexString;
 						t = string.Format ("{2} <span size=\"smaller\" color=\"{1}\">{0}</span>", node.Source, c, t);
@@ -1191,7 +1191,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public Item (Xwt.Drawing.Image icon, string text, string tooltip, object tag)
 		{
 			this.icon    = icon;
-			this.text    = GLib.Markup.EscapeText (text);
+			this.text    = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (text);
 			this.tooltip = tooltip;
 			this.tag     = tag;
 		}
