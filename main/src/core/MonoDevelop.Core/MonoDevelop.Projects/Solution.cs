@@ -284,12 +284,17 @@ namespace MonoDevelop.Projects
 
 			if (!startupConfigSet) {
 				// Startup configuration has not been set by legacy properties. Do it now.
-				var sconfig = UserProperties.GetValue<string> ("StartupConfiguration");
-				if (!string.IsNullOrEmpty (sconfig))
-					StartupConfiguration = GetRunConfigurations ().FirstOrDefault (c => c.Id == sconfig);
-				else
-					StartupConfiguration = GetRunConfigurations ().FirstOrDefault ();
+				RefreshStartupConfiguration ();
 			}
+		}
+
+		internal void RefreshStartupConfiguration ()
+		{
+			var sconfig = UserProperties.GetValue<string> ("StartupConfiguration");
+			if (!string.IsNullOrEmpty (sconfig))
+				StartupConfiguration = GetRunConfigurations ().FirstOrDefault (c => c.Id == sconfig);
+			else
+				StartupConfiguration = GetRunConfigurations ().FirstOrDefault ();
 		}
 
 		internal protected override Task OnSave (ProgressMonitor monitor)
