@@ -9,6 +9,7 @@ using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.WebReferences.Commands
 {
@@ -105,7 +106,7 @@ namespace MonoDevelop.WebReferences.Commands
 					foreach (var project in items.Select (i => i.Project).Distinct ())
 						await IdeApp.ProjectOperations.SaveAsync (project);
 				}
-				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetPluralString ("Updated Web Reference {0}", "Updated Web References", items.Count, items [0].Name));
+				StatusService.MainContext.ShowMessage (GettextCatalog.GetPluralString ("Updated Web Reference {0}", "Updated Web References", items.Count, items [0].Name));
 			} finally {
 				updatingReferences = false;
 			}
@@ -120,7 +121,7 @@ namespace MonoDevelop.WebReferences.Commands
 				return;
 			item.Delete();
 			IdeApp.ProjectOperations.SaveAsync (item.Project);
-			IdeApp.Workbench.StatusBar.ShowMessage(GettextCatalog.GetString ("Deleted Web Reference {0}", item.Name));
+			StatusService.MainContext.ShowMessage(GettextCatalog.GetString ("Deleted Web Reference {0}", item.Name));
 		}
 		
 		/// <summary>Execute the command for removing all web references from a project.</summary>
@@ -140,7 +141,7 @@ namespace MonoDevelop.WebReferences.Commands
 				item.Delete();
 
 			IdeApp.ProjectOperations.SaveAsync(project);
-			IdeApp.Workbench.StatusBar.ShowMessage(GettextCatalog.GetString ("Deleted all Web References"));
+			StatusService.MainContext.ShowMessage(GettextCatalog.GetString ("Deleted all Web References"));
 		}
 
 		[CommandUpdateHandler (WebReferenceCommands.Configure)]

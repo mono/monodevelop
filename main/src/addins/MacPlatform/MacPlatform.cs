@@ -1019,7 +1019,7 @@ namespace MonoDevelop.MacIntegration
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Yosemite)
 				w.TitleVisibility = NSWindowTitleVisibility.Hidden;
 
-			w.Toolbar = nativeToolbar.widget;
+			w.Toolbar = nativeToolbar.toolbar;
 			nativeToolbar.Initialize ();
 		}
 

@@ -42,6 +42,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using Microsoft.CodeAnalysis.Text;
 using Mono.Posix;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -742,7 +743,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 
 				if (IdeApp.IsInitialized)
-					statusIcon = IdeApp.Workbench?.StatusBar.ShowStatusIcon (ImageService.GetIcon (Gui.Stock.Parser));
+					statusIcon = StatusService.ShowStatusIcon (ImageService.GetIcon (Gui.Stock.Parser));
 				if (statusIcon != null)
 					statusIcon.ToolTip = GettextCatalog.GetString ("Gathering class information");
 			});

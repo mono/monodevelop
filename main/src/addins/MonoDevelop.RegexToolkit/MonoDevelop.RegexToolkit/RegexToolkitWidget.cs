@@ -32,6 +32,7 @@ using MonoDevelop.Ide;
 using System.IO;
 using System.Xml;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.RegexToolkit
 {
@@ -177,7 +178,7 @@ namespace MonoDevelop.RegexToolkit
 				Thread.ResetAbort ();
 			} catch (ArgumentException) {
 				Application.Invoke ((o, args) => {
-					Ide.IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Invalid expression"));
+					StatusService.MainContext.ShowError (GettextCatalog.GetString ("Invalid expression"));
 				});
 			} finally {
 				regexThread = null;
@@ -195,7 +196,7 @@ namespace MonoDevelop.RegexToolkit
 		
 		void UpdateStartButtonSensitivity (object sender, EventArgs args)
 		{
-			Ide.IdeApp.Workbench.StatusBar.ShowReady ();
+			StatusService.MainContext.ShowReady ();
 			UpdateRegex ();
 		}
 		

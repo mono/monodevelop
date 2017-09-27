@@ -41,6 +41,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Components.Extensions;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -550,10 +551,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 			Find (currentSearch.NextMatch ());
 
 			if (currentSearch.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.ShowMessage (
+				StatusService.MainContext.ShowMessage (
 					Gtk.Stock.Find, GettextCatalog.GetString ("Reached top, continued from bottom"));
 			} else {
-				IdeApp.Workbench.StatusBar.ShowReady ();
+				StatusService.MainContext.ShowReady ();
 			}
 		}
 
@@ -566,10 +567,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 			Find (currentSearch.PreviousMatch ());
 
 			if (currentSearch.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.ShowMessage (
+				StatusService.MainContext.ShowMessage (
 					Gtk.Stock.Find, GettextCatalog.GetString ("Reached bottom, continued from top"));
 			} else {
-				IdeApp.Workbench.StatusBar.ShowReady ();
+				StatusService.MainContext.ShowReady ();
 			}
 		}
 
@@ -586,7 +587,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				resultInformLabel.TextColor = searchEntry.Style.Foreground (Gtk.StateType.Insensitive).ToXwtColor();
 			} else if (string.IsNullOrEmpty (searchEntry.Entry.Text)) {
 				resultInformLabel.Text = string.Empty;
-				IdeApp.Workbench.StatusBar.ShowReady ();
+				StatusService.MainContext.ShowReady ();
 			} else {
 				resultInformLabel.Text = GettextCatalog.GetString ("0 of 0");
 				resultInformLabel.TextColor = Ide.Gui.Styles.Editor.SearchErrorForegroundColor;

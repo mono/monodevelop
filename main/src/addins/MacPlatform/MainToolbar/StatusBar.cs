@@ -38,6 +38,7 @@ using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.Status;
 using MonoDevelop.Components.Mac;
 using System.Threading;
 
@@ -456,7 +457,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	}
 
 	[Register]
-	class StatusBar : NSFocusButton, MonoDevelop.Ide.StatusBar
+	class StatusBar : NSFocusButton, IStatusBar
 	{
 		public enum MessageType
 		{
@@ -469,8 +470,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		const string ProgressLayerFadingId = "ProgressLayerFading";
 		const string growthAnimationKey = "bounds";
 		StatusBarContextHandler ctxHandler;
+		CancellationTokenSource cts;
 		string text;
-		MessageType messageType;
+		MessageType lastMessageType;
 		NSColor textColor;
 		NSImage image;
 		IconId icon;
@@ -479,7 +481,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		readonly BuildResultsView buildResults;
 		readonly CancelButton cancelButton;
 
-		NSAttributedString GetStatusString (string text, NSColor color)
+		NSAttributedString GetStatusString (string statusText, NSColor color)
 		{
 			nfloat fontSize = NSFont.SystemFontSize;
 			if (Window != null && Window.Screen != null) {
@@ -488,7 +490,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				fontSize -= 1;
 			}
 
-			return new NSAttributedString (text, new NSStringAttributes {
+			return new NSAttributedString (statusText, new NSStringAttributes {
 				ForegroundColor = color,
 				ParagraphStyle = new NSMutableParagraphStyle {
 					HeadIndent = imageView.Frame.Width,
@@ -563,7 +565,33 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				cts?.Cancel ();
 			};
 
-			ctxHandler = new StatusBarContextHandler (this);
+			ctxHandler = new StatusBarContextHandler();
+			ctxHandler.MessageChanged += (object sender, StatusMessageContextMessageChangedArgs e) => {
+				if (e.Context != null) {
+					SetMessageSourcePad (e.Context.StatusSourcePad);
+					SetCancellationTokenSource(e.Context.CancellationTokenSource);
+				}
+				ShowMessage (e.Image, e.Message, e.IsMarkup);
+			};
+			ctxHandler.ProgressChanged += (object sender, StatusMessageContextProgressChangedArgs e) => {
+				switch (e.EventType) {
+				case StatusMessageContextProgressChangedArgs.ProgressChangedType.Begin:
+					BeginProgress (e.Context.AutoPulse);
+					break;
+
+				case StatusMessageContextProgressChangedArgs.ProgressChangedType.Finish:
+					EndProgress ();
+					break;
+
+				case StatusMessageContextProgressChangedArgs.ProgressChangedType.Fraction:
+					SetProgressFraction (e.Work);
+					break;
+
+				case StatusMessageContextProgressChangedArgs.ProgressChangedType.Pulse:
+					// Nothing
+					break;
+				}
+			};
 
 			updateHandler = delegate {
 				int ec = 0, wc = 0;
@@ -636,7 +664,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			UpdateApplicationNamePlaceholderText ();
-			textColor = ColorForType (messageType);
+			textColor = ColorForType (lastMessageType);
 			ReconstructString ();
 		}
 
@@ -706,13 +734,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		// Used by AutoTest.
 		internal string[] StatusIcons => statusIcons.Select(x => x.ToolTip).ToArray ();
 
-		internal void RemoveStatusIcon (StatusIcon icon)
+		internal void RemoveStatusIcon (StatusIcon statusIcon)
 		{
-			statusIcons.Remove (icon);
+			statusIcons.Remove (statusIcon);
 
-			icon.Entered -= ShowPopoverForIcon;
-			icon.Exited -= DestroyPopover;
-			icon.Clicked -= DestroyPopover;
+			statusIcon.Entered -= ShowPopoverForIcon;
+			statusIcon.Exited -= DestroyPopover;
+			statusIcon.Clicked -= DestroyPopover;
 
 			if (!popoverForStatus && popover != null)
 				DestroyPopover (null, null);
@@ -819,18 +847,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return statusIcon;
 		}
 
-		public StatusBarContext CreateContext ()
-		{
-			return ctxHandler.CreateContext ();
-		}
-
-		public void ShowReady ()
-		{
-			ShowMessage (null, "", false, MessageType.Ready);
-			SetMessageSourcePad (null);
-		}
-
-		static Pad sourcePad;
+		Pad sourcePad;
 		public void SetMessageSourcePad (Pad pad)
 		{
 			sourcePad = pad;
@@ -886,7 +903,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return false;
 
 			text = message;
-			messageType = statusType;
+			lastMessageType = statusType;
 			textColor = ColorForType (statusType);
 
 			var nsa = (INSAccessibility)textField;
@@ -944,17 +961,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			iconLoaded = true;
 		}
 
-		public void BeginProgress (string name)
-		{
-			BeginProgress (null, name);
-		}
-
-		public void BeginProgress (IconId image, string name)
+		public void BeginProgress (bool autoPulse)
 		{
 			EndProgress ();
-			ShowMessage (image, name);
 
-			if (AutoPulse)
+			if (autoPulse)
 				progressView.StartProgressAutoPulse ();
 			else
 				progressView.BeginProgress ();
@@ -976,17 +987,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// Nothing to do here.
 		}
 
-		public MonoDevelop.Ide.StatusBar MainContext {
-			get {
-				return ctxHandler.MainContext;
-			}
-		}
-
-		public bool AutoPulse {
-			get;
-			set;
-		}
-
 		static NSAttributedString GetPopoverString (string text)
 		{
 			return new NSAttributedString (text, new NSStringAttributes {
@@ -1000,14 +1000,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		NSPopover popover;
 		bool popoverForStatus;
 
-		void CreatePopoverCommon (nfloat width, string text)
+		void CreatePopoverCommon (nfloat width, string statusText)
 		{
 			popover = new NSPopover {
 				ContentViewController = new NSViewController (null, null),
 				Animates = false
 			};
 
-			var attrString = GetPopoverString (text);
+			var attrString = GetPopoverString (statusText);
 
 			var height = attrString.BoundingRectWithSize (new CGSize (width, nfloat.MaxValue),
 				NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin).Height;
@@ -1022,9 +1022,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			((NSTextField)popover.ContentViewController.View).AttributedStringValue = attrString;
 		}
 
-		bool CreatePopoverForIcon (StatusBarIcon icon)
+		bool CreatePopoverForIcon (StatusBarIcon statusIcon)
 		{
-			string tooltip = icon.ToolTip;
+			string tooltip = statusIcon.ToolTip;
 			if (tooltip == null)
 				return false;
 
@@ -1043,12 +1043,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return;
 
 			popoverForStatus = false;
-			var icon = (StatusIcon) sender;
+			var statusIcon = (StatusIcon) sender;
 
-			if (!CreatePopoverForIcon (icon))
+			if (!CreatePopoverForIcon (statusIcon))
 				return;
 
-			popover.Show (icon.Frame, this, NSRectEdge.MinYEdge);
+			popover.Show (statusIcon.Frame, this, NSRectEdge.MinYEdge);
 		}
 
 		void ShowPopoverForStatusBar ()
@@ -1123,8 +1123,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
-		CancellationTokenSource cts;
-		public void SetCancellationTokenSource (CancellationTokenSource source)
+		void SetCancellationTokenSource (CancellationTokenSource source)
 		{
 			cts = source;
 

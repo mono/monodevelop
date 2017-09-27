@@ -36,6 +36,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Execution;
 using System.Text;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -49,7 +50,7 @@ namespace MonoDevelop.Components.MainToolbar
 			private set;
 		}
 
-		internal StatusBar StatusBar {
+		internal IStatusBar StatusBar {
 			get { return ToolbarView.StatusBar; }
 		}
 
@@ -121,7 +122,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				IdeApp.ProjectOperations.CurrentSelectedSolutionChanged -= HandleUpdateCombos;
 
-				StatusBar.ShowReady ();
+				StatusService.MainContext.ShowMessage (null, "", false);
 			};
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;

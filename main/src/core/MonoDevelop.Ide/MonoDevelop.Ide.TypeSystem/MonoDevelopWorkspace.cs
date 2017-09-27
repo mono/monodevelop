@@ -54,6 +54,7 @@ using Microsoft.CodeAnalysis.Shared.Utilities;
 using Microsoft.CodeAnalysis.SolutionCrawler;
 using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.RoslynServices;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Ide.TypeSystem
 {

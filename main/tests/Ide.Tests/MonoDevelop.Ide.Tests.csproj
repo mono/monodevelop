@@ -132,6 +132,7 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\ExportedServicesAndWorkspaceServicesTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\DocumentReloadTests.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\FullSolutionAnalysisTests.cs" />
+    <Compile Include="MonoDevelop.Ide\StatusServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">

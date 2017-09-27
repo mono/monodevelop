@@ -36,6 +36,7 @@ using System.ComponentModel;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -194,17 +195,17 @@ namespace MonoDevelop.VersionControl.Views
 					RemoveLocal (toEditor.GetTextEditorData ());
 					box.SetItem (string.Format (GettextCatalog.GetString ("Revision {0}\t{1}\t{2}"), result.Key, result.Key.Time, result.Key.Author), null, result.Key);
 					toEditor.Text = result.Value;
-					IdeApp.Workbench.StatusBar.AutoPulse = false;
-					IdeApp.Workbench.StatusBar.EndProgress ();
-					IdeApp.Workbench.StatusBar.ShowReady ();
+					StatusService.MainContext.AutoPulse = false;
+					StatusService.MainContext.EndProgress ();
+					StatusService.MainContext.ShowReady ();
 					box.Sensitive = true;
 					UpdateDiff ();
 				});
 			};
 			
 			worker.RunWorkerAsync (rev);
-			IdeApp.Workbench.StatusBar.BeginProgress (string.Format (GettextCatalog.GetString ("Retrieving revision {0}..."), rev.ToString ()));
-			IdeApp.Workbench.StatusBar.AutoPulse = true;
+			StatusService.MainContext.BeginProgress (string.Format (GettextCatalog.GetString ("Retrieving revision {0}..."), rev.ToString ()));
+			StatusService.MainContext.AutoPulse = true;
 			
 			if (toEditor == editors[0]) {
 				diffRevision = rev;

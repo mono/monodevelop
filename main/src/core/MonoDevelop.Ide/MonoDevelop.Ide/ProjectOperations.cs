@@ -48,6 +48,11 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
+using System.Collections.Immutable;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Components.Extensions;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Ide
 {
@@ -1108,7 +1113,7 @@ namespace MonoDevelop.Ide
 
 			var error = monitor.Errors.FirstOrDefault ();
 			if (error != null) {
-				IdeApp.Workbench.StatusBar.ShowError (error.DisplayMessage);
+				StatusService.MainContext.ShowError (error.DisplayMessage);
 				metadata.SetFailure ();
 				Counters.TrackingBuildAndDeploy = false;
 				Counters.BuildAndDeploy.EndTiming ();

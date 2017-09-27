@@ -51,6 +51,7 @@ using MonoDevelop.Ide.Templates;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.RoslynServices.Options;
 using MonoDevelop.Ide.RoslynServices;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Ide
 {
@@ -345,7 +346,7 @@ namespace MonoDevelop.Ide
 
 		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)
 		{
-			Ide.IdeApp.Workbench.StatusBar.ShowWarning (e.Message);
+			StatusService.MainContext.ShowWarning (e.Message);
 		}
 
 		static readonly uint fmTimeoutMs = 2500;
@@ -658,7 +659,7 @@ namespace MonoDevelop.Ide
 		{
 			if (IdeApp.Preferences.EnableInstrumentation) {
 				if (instrumentationStatusIcon == null) {
-					instrumentationStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.StatusInstrumentation));
+					instrumentationStatusIcon = StatusService.ShowStatusIcon (ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.StatusInstrumentation));
 					instrumentationStatusIcon.Title = GettextCatalog.GetString ("Instrumentation");
 					instrumentationStatusIcon.ToolTip = GettextCatalog.GetString ("Instrumentation service enabled");
 					instrumentationStatusIcon.Help = GettextCatalog.GetString ("Information about the Instrumentation Service");

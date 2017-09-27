@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.ProgressMonitoring;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -42,7 +43,7 @@ namespace MonoDevelop.Ide.Gui
 		bool lockGui;
 		bool showCancelButton;
 		string title;
-		StatusBarContext statusBar;
+		StatusMessageContext statusContext;
 		Pad statusSourcePad;
 		
 		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui, Pad statusSourcePad, bool showCancelButton): base (Runtime.MainSynchronizationContext)
@@ -55,11 +56,11 @@ namespace MonoDevelop.Ide.Gui
 			this.statusSourcePad = statusSourcePad;
 			this.showCancelButton = showCancelButton;
 			icon = iconName;
-			statusBar = IdeApp.Workbench.StatusBar.CreateContext ();
-			statusBar.StatusSourcePad = statusSourcePad;
+			statusContext = StatusService.CreateContext ();
+			statusContext.StatusSourcePad = statusSourcePad;
 			if (showCancelButton)
-				statusBar.CancellationTokenSource = CancellationTokenSource;
-			statusBar.BeginProgress (iconName, title);
+				statusContext.CancellationTokenSource = CancellationTokenSource;
+			statusContext.BeginProgress (iconName, title);
 			if (lockGui)
 				IdeApp.Workbench.LockGui ();
 		}
@@ -67,9 +68,9 @@ namespace MonoDevelop.Ide.Gui
 		protected override void OnProgressChanged ()
 		{
 			if (showTaskTitles)
-				statusBar.ShowMessage (icon, CurrentTaskName);
+				statusContext.ShowMessage (icon, CurrentTaskName);
 			if (!ProgressIsUnknown) {
-				statusBar.SetProgressFraction (Progress);
+				statusContext.SetProgressFraction (Progress);
 				DesktopService.SetGlobalProgress (Progress);
 			} else
 				DesktopService.ShowGlobalProgressIndeterminate ();
@@ -78,13 +79,13 @@ namespace MonoDevelop.Ide.Gui
 		public void UpdateStatusBar ()
 		{
 			if (showTaskTitles)
-				statusBar.ShowMessage (icon, CurrentTaskName);
+				statusContext.ShowMessage (icon, CurrentTaskName);
 			else
-				statusBar.ShowMessage (icon, title);
+				statusContext.ShowMessage (icon, title);
 			if (!ProgressIsUnknown)
-				statusBar.SetProgressFraction (Progress);
+				statusContext.SetProgressFraction (Progress);
 			else
-				statusBar.SetProgressFraction (0);
+				statusContext.SetProgressFraction (0);
 		}
 		
 		protected override void OnCompleted ()
@@ -92,14 +93,17 @@ namespace MonoDevelop.Ide.Gui
 			if (lockGui)
 				IdeApp.Workbench.UnlockGui ();
 
-			statusBar.EndProgress ();
+			// We want any errors to remain on the statusbar,
+			// so dispose the context here and use the main context
+			statusContext.EndProgress ();
+			statusContext.Dispose ();
 
 			try {
 				if (Errors.Length > 0 || Warnings.Length > 0) {
 					if (Errors.Length > 0) {
-						statusBar.ShowError (Errors [Errors.Length - 1].DisplayMessage);
+						StatusService.MainContext.ShowError (Errors [Errors.Length - 1].DisplayMessage);
 					} else if (SuccessMessages.Length == 0) {
-						statusBar.ShowWarning (Warnings [Warnings.Length - 1]);
+						StatusService.MainContext.ShowWarning (Warnings [Warnings.Length - 1]);
 					}
 
 					DesktopService.ShowGlobalProgressError ();
@@ -112,11 +116,10 @@ namespace MonoDevelop.Ide.Gui
 				}
 
 				if (SuccessMessages.Length > 0)
-					statusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Length - 1]);
+					StatusService.MainContext.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Length - 1]);
 
 			} finally {
-				statusBar.StatusSourcePad = statusSourcePad;
-				statusBar.Dispose ();
+				StatusService.MainContext.StatusSourcePad = statusSourcePad;
 			}
 
 			DesktopService.SetGlobalProgress (Progress);

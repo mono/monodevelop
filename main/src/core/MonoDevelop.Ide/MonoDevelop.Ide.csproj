@@ -3665,12 +3665,8 @@
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageTipOfTheDaySection.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockItemTitleTab.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageFirstRun.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\StatusBar.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\StatusBarContextBase.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\StatusBarContext.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\IStatusBar.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StatusBarIcon.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\StatusBarContextImpl.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\MainStatusBarContextImpl.cs" />
     <Compile Include="MonoDevelop.Components.Commands\ICommandDelegator.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\ResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Components\CellRendererImage.cs" />
@@ -4169,6 +4165,8 @@
     <Compile Include="MonoDevelop.Ide.Gui.Components\InfoBar.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopAddMetadataReferenceCodeActionOperationFactoryWorkspaceService.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopDocumentSupportsFeatureService.cs" />
+    <Compile Include="MonoDevelop.Ide.StatusService\StatusService.cs" />
+    <Compile Include="MonoDevelop.Ide.StatusService\StatusMessageContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />
@@ -4207,6 +4205,9 @@
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\OSSREADME.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\language-configuration.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\package.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Ide.StatusService\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">
