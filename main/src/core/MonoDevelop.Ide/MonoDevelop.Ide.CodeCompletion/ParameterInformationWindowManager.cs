@@ -34,6 +34,7 @@ using Gdk;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Threading;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -129,19 +130,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// Called after the key has been processed by the editor
 			if (currentMethodGroup == null)
 				return;
-
 			var actualMethodGroup = new MethodData ();
 			actualMethodGroup.CompletionContext = widget.CurrentCodeCompletionContext;
-			actualMethodGroup.MethodProvider = await ext.ParameterCompletionCommand (widget.CurrentCodeCompletionContext);
+			if (!currentMethodGroup.MethodProvider.ApplicableSpan.Contains (ext.Editor.CaretOffset)) {
+				actualMethodGroup.MethodProvider = await ext.ParameterCompletionCommand (widget.CurrentCodeCompletionContext);
+				if (actualMethodGroup.MethodProvider == null)
+					HideWindow (ext, widget);
+			}
 			if (actualMethodGroup.MethodProvider != null && (currentMethodGroup == null || !actualMethodGroup.MethodProvider.Equals (currentMethodGroup.MethodProvider)))
 				currentMethodGroup = actualMethodGroup;
 			try {
-				int pos = await ext.GetCurrentParameterIndex (currentMethodGroup.MethodProvider.StartOffset, token);
+				
+				int pos = await ext.GetCurrentParameterIndex (currentMethodGroup.MethodProvider.ApplicableSpan.Start, token);
 				if (pos == -1) {
 					if (actualMethodGroup.MethodProvider == null) {
 						currentMethodGroup = null;
 					} else {
-						pos = await ext.GetCurrentParameterIndex (actualMethodGroup.MethodProvider.StartOffset, token);
+						pos = await ext.GetCurrentParameterIndex (actualMethodGroup.MethodProvider.ApplicableSpan.Start, token);
 						currentMethodGroup = pos >= 0 ? actualMethodGroup : null;
 					}
 				}
@@ -152,7 +157,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 				// Refresh.
 				UpdateWindow (ext, widget);
-			} catch (OperationCanceledException) { }
+			}
+			catch (OperationCanceledException) { 
+			}
+			catch(Exception e) {
+				LoggingService.LogError ("Error while updating cursor position for parameter info window.", e);
+			}
 		}
 
 		internal static void RepositionWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
@@ -274,7 +284,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		static async void PositionParameterInfoWindow ()
 		{
 			var geometry = window.Visible ? window.Screen.VisibleBounds : Xwt.MessageDialog.RootWindow.Screen.VisibleBounds;
-			int cparam = window.Ext != null ? await window.Ext.GetCurrentParameterIndex (currentMethodGroup.MethodProvider.StartOffset) : 0;
+			int cparam = window.Ext != null ? await window.Ext.GetCurrentParameterIndex (currentMethodGroup.MethodProvider.ParameterListStart) : 0;
 			window.ShowParameterInfo (currentMethodGroup.MethodProvider, currentMethodGroup.CurrentOverload, cparam - 1, (int)geometry.Width);
 			window.UpdateParameterInfoLocation ();
 			lastW = (int)window.Width;

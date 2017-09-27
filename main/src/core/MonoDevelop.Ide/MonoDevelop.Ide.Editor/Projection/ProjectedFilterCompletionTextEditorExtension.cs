@@ -146,9 +146,9 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return completionTextEditorExtension.HandleCodeCompletionAsync (completionContext, triggerInfo, token);
 		}
 
-		public override System.Threading.Tasks.Task<CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletion.CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)
+		public override System.Threading.Tasks.Task<CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletion.CodeCompletionContext completionContext, SignatureHelpTriggerInfo triggerInfo, System.Threading.CancellationToken token)
 		{
-			return completionTextEditorExtension.HandleParameterCompletionAsync (completionContext, completionChar, token);
+			return completionTextEditorExtension.HandleParameterCompletionAsync (completionContext, triggerInfo, token);
 		}
 
 		public override bool GetCompletionCommandOffset (out int cpos, out int wlen)

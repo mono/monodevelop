@@ -25,58 +25,44 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
 	public class ParameterHintingResult : IReadOnlyList<ParameterHintingData>
 	{
-		public static readonly ParameterHintingResult Empty = new ParameterHintingResult (new List<ParameterHintingData> (), -1);
+		public static readonly ParameterHintingResult Empty = new ParameterHintingResult (new List<ParameterHintingData> ());
 
 		protected readonly List<ParameterHintingData> data;
-		/// <summary>
-		/// Gets the start offset of the parameter expression node.
-		/// </summary>
-		public int StartOffset { 
-			get;
-			private set;
-		}
 
-		protected ParameterHintingResult (int startOffset)
-		{
-			this.data = new List<ParameterHintingData> ();
-			this.StartOffset = startOffset;
-		}
+		public int? SelectedItemIndex { get; set; }
 
+		public TextSpan ApplicableSpan { get; set; }
+
+		/// <summary>Used for positioning the parameter list tooltip</summary>
+		public int ParameterListStart { get; set; }
+
+		[Obsolete("Use ParameterHintingResult (List<ParameterHintingData> data). startOffset got replaced with ApplicableSpan.")]
 		public ParameterHintingResult (List<ParameterHintingData> data, int startOffset)
 		{
 			this.data = data;
-			this.StartOffset = startOffset;
+			ParameterListStart = startOffset;
+			ApplicableSpan = new TextSpan (startOffset, 0);
+		}
+
+		public ParameterHintingResult (List<ParameterHintingData> data)
+		{
+			this.data = data;
 		}
 
 		public override int GetHashCode ()
 		{
-			return StartOffset ^ data.GetHashCode ();
+			return ApplicableSpan.GetHashCode () ^ data.GetHashCode ();
 		}
 
 		public override bool Equals (object obj)
 		{
-			if (ReferenceEquals (this, obj))
-				return true;
-			var other = obj as ParameterHintingResult;
-			if (other == null)
-				return false;
-			foreach (var thisData in this.data) {
-				var found = false;
-				foreach (var otherData in other.data) {
-					if (thisData.Symbol.Equals (otherData.Symbol)) {
-						found = true;
-						break;
-					}
-				}
-				if (!found)
-					return false;
-			}
-			return true;
+			return ReferenceEquals (this, obj);
 		}
 
 		#region IEnumerable implementation
@@ -96,6 +82,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		#region IReadOnlyList implementation
 		public ParameterHintingData this [int index] {
 			get {
+				if (index < 0)
+					throw new ArgumentOutOfRangeException (nameof (index), "index < 0");
+				if (index >= data.Count)
+					throw new ArgumentOutOfRangeException (nameof (index), "index was >= " + data.Count + " was " + index);
 				return data [index];
 			}
 		}
@@ -107,6 +97,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return data.Count;
 			}
 		}
+
+
 		#endregion
 	}
 

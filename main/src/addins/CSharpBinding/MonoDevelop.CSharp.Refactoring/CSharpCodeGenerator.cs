@@ -114,7 +114,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					return ns + "." + name;
 
 
-				return RoslynCompletionData.SafeMinimalDisplayString (type, model, Editor.CaretOffset, Ambience.LabelFormat);
+				return CSharpAmbience.SafeMinimalDisplayString (type, model, Editor.CaretOffset, Ambience.LabelFormat);
 			}
 		}
 
@@ -330,7 +330,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
-			result.Append(RoslynCompletionData.SafeMinimalDisplayString (type, options.SemanticModel, options.Part.SourceSpan.Start, Ambience.LabelFormat));
+			result.Append(CSharpAmbience.SafeMinimalDisplayString (type, options.SemanticModel, options.Part.SourceSpan.Start, Ambience.LabelFormat));
 
 			//			var implementingType = options.Part;
 			//			var loc = implementingType.Region.End;

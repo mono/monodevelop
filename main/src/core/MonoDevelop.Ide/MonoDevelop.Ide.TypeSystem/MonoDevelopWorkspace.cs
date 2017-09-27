@@ -104,7 +104,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					LoggingService.LogError ("Error - can't load host service assembly: " + asmName, ex);
 				}
 			}
-			assemblies.Add (typeof(MonoDevelopWorkspace).Assembly);
 			foreach (var node in AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/TypeService/MefHostServices")) {
 				var assemblyNode = node as AssemblyExtensionNode;
 				if (assemblyNode == null)

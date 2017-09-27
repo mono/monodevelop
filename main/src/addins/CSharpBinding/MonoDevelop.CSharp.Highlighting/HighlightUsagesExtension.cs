@@ -78,7 +78,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					.ToArray ();
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading highlighters.", e);
-
+				highlighters = Array.Empty<IHighlighter> ();
 			}
 		}
 		protected override void Initialize ()

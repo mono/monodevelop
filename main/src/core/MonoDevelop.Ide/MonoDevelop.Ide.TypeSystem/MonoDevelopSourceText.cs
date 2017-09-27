@@ -35,9 +35,75 @@ using System.Reflection;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.Platform;
+using System.Text;
+using Microsoft.VisualStudio.Text;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	abstract class SnapshotSourceText : SourceText
+	{
+		protected abstract ITextSnapshot Snapshot { get; }
+
+		protected Encoding encoding;
+
+		public override char this [int position] => Snapshot [position];
+
+		public override Encoding Encoding => encoding;
+
+		public override int Length => Snapshot.Length;
+
+		public override void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			Snapshot.CopyTo (sourceIndex, destination, destinationIndex, count);
+		}
+
+		#region Lines
+		protected override TextLineCollection GetLinesCore ()
+		{
+			return new LineInfo (this);
+		}
+
+		private class LineInfo : TextLineCollection
+		{
+			private readonly SnapshotSourceText sourceText;
+
+			public LineInfo (SnapshotSourceText sourceText)
+			{
+				this.sourceText = sourceText;
+			}
+
+			public override int Count {
+				get { return sourceText.Snapshot.LineCount; }
+			}
+
+			public override TextLine this [int index] {
+				get {
+					var line = sourceText.Snapshot.GetLineFromLineNumber (index);
+					return TextLine.FromSpan (sourceText, TextSpan.FromBounds (line.Start, line.End));
+				}
+			}
+
+			public override int IndexOf (int position)
+			{
+				return sourceText.Snapshot.GetLineNumberFromPosition (position);
+			}
+
+			public override TextLine GetLineFromPosition (int position)
+			{
+				return this [this.IndexOf (position)];
+			}
+
+			public override LinePosition GetLinePosition (int position)
+			{
+				var textLine = sourceText.Snapshot.GetLineFromPosition (position);
+				return new LinePosition (textLine.LineNumber, position - textLine.Start);
+			}
+		}
+		#endregion
+	}
+
 	sealed class MonoDevelopSourceText : SourceText
 	{
 		readonly ITextSource doc;
@@ -54,6 +120,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (doc == null)
 				throw new ArgumentNullException (nameof (doc));
 			this.doc = doc;
+		}
+
+		public override SourceText WithChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
+		{
+			if (!changes.Any ())
+				return this;
+			return base.WithChanges (changes);
 		}
 
 		protected override TextLineCollection GetLinesCore ()
@@ -84,17 +157,17 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			public override TextLine this[int index] {
+			public override TextLine this [int index] {
 				get {
 					var line = textDoc.GetLine (index + 1);
-					return TextLine.FromSpan (parent, new TextSpan(line.Offset, line.Length));
+					return TextLine.FromSpan (parent, new TextSpan (line.Offset, line.Length));
 				}
 			}
 
 			public override TextLine GetLineFromPosition (int position)
 			{
 				var line = textDoc.GetLineByOffset (position);
-				return TextLine.FromSpan (parent, new TextSpan(line.Offset, line.Length));
+				return TextLine.FromSpan (parent, new TextSpan (line.Offset, line.Length));
 			}
 
 			public override LinePosition GetLinePosition (int position)
@@ -110,7 +183,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#region implemented abstract members of SourceText
-		public override void CopyTo (int sourceIndex, char[] destination, int destinationIndex, int count)
+		public override void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
 		{
 			doc.CopyTo (sourceIndex, destination, destinationIndex, count);
 		}
@@ -127,6 +200,66 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		#endregion
+
+		public static SourceText Create (TextEditor editor, MonoDevelopSourceTextContainer container)
+		{
+			return new ChangedSourceText (editor.GetPlatformTextBuffer ().CurrentSnapshot, editor.Encoding, container);
+		}
+
+		public static SourceText Create (ITextSource doc)
+		{
+			return new MonoDevelopSourceText (doc);
+		}
+
+		class ChangedSourceText : SnapshotSourceText
+		{
+			ITextSnapshot buffer;
+			readonly MonoDevelopSourceTextContainer container;
+
+			protected override ITextSnapshot Snapshot {
+				get {
+					return buffer;
+				}
+			}
+
+			public override SourceTextContainer Container {
+				get {
+					return container ?? base.Container;
+				}
+			}
+
+			public ChangedSourceText (ITextSnapshot  buffer, Encoding encoding, MonoDevelopSourceTextContainer container)
+			{
+				this.buffer = buffer;
+				this.encoding = encoding;
+				this.container = container;
+			} 
+
+			public override IReadOnlyList<TextChangeRange> GetChangeRanges (SourceText oldText)
+			{
+				if (oldText == this)
+					return TextChangeRange.NoChanges;
+
+				return ImmutableArray.Create<TextChangeRange> (new TextChangeRange (new TextSpan (0, oldText.Length), this.Length));
+			}
+
+			public override SourceText WithChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
+			{
+				if (!changes.Any ())
+					return this;
+
+				var span = new Microsoft.VisualStudio.Text.SnapshotSpan (buffer, 0, buffer.Length);
+				var changedBuffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (span, buffer.ContentType);
+
+				using (var edit = changedBuffer.CreateEdit ()) {
+					foreach (var change in changes) {
+						edit.Replace (new Microsoft.VisualStudio.Text.Span (change.Span.Start, change.Span.Length), change.NewText);
+					}
+					edit.Apply ();
+				}
+				return new ChangedSourceText (changedBuffer.CurrentSnapshot, Encoding, container);
+			}
+		}
 	}
 	
 }

@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public event EventHandler SelectionChanged {
 			add { window.SelectionChanged += value; }
-			remove { window.SelectionChanged += value; }
+			remove { window.SelectionChanged -= value; }
 		}
 
 
@@ -931,6 +931,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (declarationviewwindow == null) {
 				declarationviewwindow = new TooltipInformationWindow ();
+				declarationviewwindow.LabelMaxWidth = 380;
 			} else {
 				declarationviewwindow.SetDefaultScheme ();
 			}

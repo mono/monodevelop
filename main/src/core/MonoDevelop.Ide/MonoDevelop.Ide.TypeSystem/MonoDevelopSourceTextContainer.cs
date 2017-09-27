@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	sealed class MonoDevelopSourceTextContainer : SourceTextContainer, IDisposable
 	{
 		readonly MonoDevelopWorkspace workspace;
-		readonly TextEditor document;
+		readonly TextEditor editor;
 		bool isDisposed;
 		SourceText currentText;
 
@@ -50,16 +50,22 @@ namespace MonoDevelop.Ide.TypeSystem
 			private set;
 		}
 
+		internal TextEditor Editor {
+			get {
+				return editor;
+			}
+		}
+
 		public MonoDevelopSourceTextContainer (MonoDevelopWorkspace workspace, DocumentId documentId, TextEditor document) : this (document)
 		{
 			this.workspace = workspace;
 			Id = documentId;
 		}
 
-		public MonoDevelopSourceTextContainer (TextEditor document)
+		public MonoDevelopSourceTextContainer (TextEditor editor)
 		{
-			this.document = document;
-			this.document.TextChanging += HandleTextReplacing;
+			this.editor = editor;
+			this.editor.TextChanging += HandleTextReplacing;
 		}
 		object replaceLock = new object ();
 		void HandleTextReplacing (object sender, Core.Text.TextChangeEventArgs e)
@@ -81,11 +87,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					try {
 						handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, changeRanges));
 					} catch (ArgumentException ae) {
-						LoggingService.LogWarning (ae.Message + " re opening " + document.FileName + " as roslyn source text.");
-						workspace.InformDocumentClose (Id, document.FileName);
+						LoggingService.LogWarning (ae.Message + " re opening " + editor.FileName + " as roslyn source text.");
+						workspace.InformDocumentClose (Id, editor.FileName);
 						Dispose (); // 100% ensure that this object is disposed
 						if (workspace.GetDocument (Id) != null)
-							TypeSystemService.InformDocumentOpen (Id, document);
+							TypeSystemService.InformDocumentOpen (Id, editor);
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error while text replacing", ex);
 					}
@@ -98,7 +104,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (isDisposed)
 				return;
 			currentText = null;
-			document.TextChanging -= HandleTextReplacing;
+			editor.TextChanging -= HandleTextReplacing;
 			isDisposed = true;
 		}
 
@@ -106,7 +112,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public override SourceText CurrentText {
 			get {
 				if (currentText == null) {
-					currentText = new MonoDevelopSourceText (document.CreateDocumentSnapshot ());
+					currentText = MonoDevelopSourceText.Create (editor, this);
 				}
 				return currentText;
 			}
@@ -114,7 +120,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public ITextDocument Document {
 			get {
-				return document;
+				return editor;
 			}
 		}
 

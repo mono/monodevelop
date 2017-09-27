@@ -58,7 +58,8 @@ namespace ICSharpCode.NRefactory6
 						if (Directory.Exists (rootDir))
 							Directory.Delete (rootDir, true);
 						InternalSetup (rootDir);
-					} catch (Exception) {
+					} catch (Exception e) {
+						Console.WriteLine (e);
 					}
 				}
 			}
@@ -66,13 +67,13 @@ namespace ICSharpCode.NRefactory6
 
 		protected virtual void InternalSetup (string rootDir)
 		{
+			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
 			Util.ClearTmpDir ();
 			Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir);
 			Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir);
 			Runtime.Initialize (true);
-			Xwt.Application.Initialize ();
-			Gtk.Application.Init ();
 			DesktopService.Initialize ();
+
 			global::MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
 				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_0);
 		}

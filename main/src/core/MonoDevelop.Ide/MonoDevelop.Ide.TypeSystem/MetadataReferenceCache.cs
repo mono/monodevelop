@@ -31,6 +31,7 @@ using System.IO;
 using MonoDevelop.Core;
 using System.Threading;
 using System.Reflection;
+using System.Globalization;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -174,6 +175,8 @@ namespace MonoDevelop.Ide.TypeSystem
 							string xmlName = Path.ChangeExtension (path, ".xml");
 							if (File.Exists (xmlName)) {
 								provider = Microsoft.CodeAnalysis.XmlDocumentationProvider.CreateFromFile (xmlName);
+							} else {
+								provider = RoslynDocumentationProvider.Instance;
 							}
 						} catch (Exception e) {
 							LoggingService.LogError ("Error while creating xml documentation provider for: " + path, e);
@@ -182,6 +185,31 @@ namespace MonoDevelop.Ide.TypeSystem
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while loading reference " + path + ": " + e.Message, e); 
 					}
+				}
+			}
+
+
+			class RoslynDocumentationProvider : DocumentationProvider
+			{
+				internal static readonly DocumentationProvider Instance = new RoslynDocumentationProvider ();
+
+				RoslynDocumentationProvider ()
+				{
+				}
+
+				public override bool Equals (object obj)
+				{
+					return ReferenceEquals (this, obj);
+				}
+
+				public override int GetHashCode ()
+				{
+					return 42; // singleton
+				}
+
+				protected override string GetDocumentationForSymbol (string documentationMemberID, CultureInfo preferredCulture, CancellationToken cancellationToken = default (CancellationToken))
+				{
+					return MonoDocDocumentationProvider.GetDocumentation (documentationMemberID);
 				}
 			}
 		}

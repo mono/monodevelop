@@ -188,39 +188,39 @@ namespace MonoDevelop.Ide.CodeTemplates
 						CurrentContext.DocumentContext.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext,
 						CompletionTriggerInfo.CodeCompletionCommand).Result;
 				
-				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
-					if (data.Symbol == null)
-						continue;
-					var type = data.Symbol.GetReturnType ();
-					if (type == null)
-						continue;
-					if (GetElementType (compilation, type) != null) {
-						var method = data as IMethodSymbol;
-						if (method != null) {
-							if (method.Parameters.Length == 0)
-								result.Add (new CodeTemplateVariableValue (data.Symbol.Name + " ()", ((CompletionData)data).Icon));
-							continue;
-						}
-						if (!result.Any (r => r.Text == data.Symbol.Name))
-							result.Add (new CodeTemplateVariableValue (data.Symbol.Name, ((CompletionData)data).Icon));
-					}
-				}
+				//foreach (var data in list.OfType<ISymbolCompletionData> ()) {
+				//	if (data.Symbol == null)
+				//		continue;
+				//	var type = data.Symbol.GetReturnType ();
+				//	if (type == null)
+				//		continue;
+				//	if (GetElementType (compilation, type) != null) {
+				//		var method = data as IMethodSymbol;
+				//		if (method != null) {
+				//			if (method.Parameters.Length == 0)
+				//				result.Add (new CodeTemplateVariableValue (data.Symbol.Name + " ()", ((CompletionData)data).Icon));
+				//			continue;
+				//		}
+				//		if (!result.Any (r => r.Text == data.Symbol.Name))
+				//			result.Add (new CodeTemplateVariableValue (data.Symbol.Name, ((CompletionData)data).Icon));
+				//	}
+				//}
 				
-				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
-					var m = data.Symbol as IParameterSymbol;
-					if (m != null) {
-						if (GetElementType (compilation, m.Type) != null && !result.Any (r => r.Text == m.Name))
-							result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
-					}
-				}
+				//foreach (var data in list.OfType<ISymbolCompletionData> ()) {
+				//	var m = data.Symbol as IParameterSymbol;
+				//	if (m != null) {
+				//		if (GetElementType (compilation, m.Type) != null && !result.Any (r => r.Text == m.Name))
+				//			result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
+				//	}
+				//}
 				
-				foreach (var sym in list.OfType<ISymbolCompletionData> ()) {
-					var m = sym.Symbol as ILocalSymbol;
-					if (m == null)
-						continue;
-					if (GetElementType (compilation, m.Type) != null && !result.Any (r => r.Text == m.Name))
-						result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)sym).Icon));
-				}
+				//foreach (var sym in list.OfType<ISymbolCompletionData> ()) {
+				//	var m = sym.Symbol as ILocalSymbol;
+				//	if (m == null)
+				//		continue;
+				//	if (GetElementType (compilation, m.Type) != null && !result.Any (r => r.Text == m.Name))
+				//		result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)sym).Icon));
+				//}
 			}
 			return new CodeTemplateListDataProvider (result);
 		}

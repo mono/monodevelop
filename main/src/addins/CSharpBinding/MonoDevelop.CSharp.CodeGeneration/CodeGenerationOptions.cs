@@ -39,6 +39,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
+using System;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -135,7 +136,7 @@ namespace MonoDevelop.CodeGeneration
 
 		public string CreateShortType (ITypeSymbol fullType)
 		{
-			return RoslynCompletionData.SafeMinimalDisplayString (fullType, CurrentState, offset);
+			return CSharp.CSharpAmbience.SafeMinimalDisplayString (fullType, CurrentState, offset);
 		}
 
 		public static CodeGenerationOptions CreateCodeGenerationOptions (TextEditor document, DocumentContext ctx)

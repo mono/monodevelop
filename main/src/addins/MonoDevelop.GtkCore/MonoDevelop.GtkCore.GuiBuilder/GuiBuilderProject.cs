@@ -40,8 +40,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using ICSharpCode.NRefactory6.CSharp.Completion;
-using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.GtkCore.GuiBuilder

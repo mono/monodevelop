@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Completion;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Extension;
 
@@ -44,6 +45,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual string DisplayText { get; set; }
 		public virtual string Description { get; set; }
 		public virtual string CompletionText { get; set; }
+		public virtual CompletionItemRules Rules { get { return CompletionItemRules.Default; } }
 
 		/// <summary>
 		/// int.MaxValue == highest prioriy,
@@ -177,7 +179,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return -1;
 			if (a == null && b != null)
 				return 1;
-
+			if (a.Rules != null && b.Rules != null) {
+				if (a.Rules.MatchPriority != b.Rules.MatchPriority) {
+					return b.Rules.MatchPriority.CompareTo (a.Rules.MatchPriority);
+				}
+			}
 			bool aIsObsolete = (a.DisplayFlags & DisplayFlags.Obsolete) != 0;
 			bool bIsObsolete = (b.DisplayFlags & DisplayFlags.Obsolete) != 0;
 			if (!aIsObsolete && bIsObsolete)
@@ -252,34 +258,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual bool MuteCharacter (char keyChar, string partialWord)
 		{
 			return false;
-		}
-	}
-
-	public class ISymbolCompletionData : CompletionData
-	{
-		public virtual Microsoft.CodeAnalysis.ISymbol Symbol {
-			get;
-			protected set;
-		}
-
-		public ISymbolCompletionData ()
-		{
-		}
-
-		public ISymbolCompletionData (string text) : base (text)
-		{
-		}
-
-		public ISymbolCompletionData (string text, MonoDevelop.Core.IconId icon) : base (text, icon)
-		{
-		}
-
-		public ISymbolCompletionData (string text, MonoDevelop.Core.IconId icon, string description) : base (text, icon, description)
-		{
-		}
-
-		public ISymbolCompletionData (string displayText, MonoDevelop.Core.IconId icon, string description, string completionText) : base (displayText, icon, description, completionText)
-		{
 		}
 	}
 }

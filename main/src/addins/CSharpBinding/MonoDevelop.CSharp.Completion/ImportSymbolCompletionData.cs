@@ -29,24 +29,29 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor;
 using System.Text;
+using Microsoft.CodeAnalysis.Completion;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class ImportSymbolCompletionData : RoslynSymbolCompletionData
+	class ImportSymbolCompletionData : CompletionData
 	{
 		CSharpCompletionTextEditorExtension completionExt;
 		ISymbol type;
 		bool useFullName;
+
+		public ISymbol Symbol { get { return type; } }
 
 		public override IconId Icon {
 			get {
 				return type.GetStockIcon ();
 			}
 		}
+		static CompletionItemRules rules = CompletionItemRules.Create (matchPriority: -10000);
+        public override CompletionItemRules Rules => rules;
 
-		public override int PriorityGroup { get { return int.MinValue; } }
+        public override int PriorityGroup { get { return int.MinValue; } }
 
-		public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, RoslynCodeCompletionFactory factory, ISymbol type, bool useFullName) : base (null, factory, type)
+		public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, ISymbol type, bool useFullName) 
 		{
 			this.completionExt = ext;
 			this.useFullName = useFullName;
@@ -66,6 +71,11 @@ namespace MonoDevelop.CSharp.Completion
 				return;
 			generateUsing = !useFullName;
 			insertNamespace = useFullName;
+		}
+
+		public override string GetDisplayTextMarkup ()
+		{
+			return useFullName ? type.ToDisplayString (Ambience.NameFormat) : type.Name;
 		}
 
 		static string GetDefaultDisplaySelection (string description, bool isSelected)

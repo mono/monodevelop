@@ -104,6 +104,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				LoggingService.LogError ("Error while adding overload : " + data, e);
 			}
 		}
+		int labelMaxWidth = 480;
+
+		public int LabelMaxWidth { get { return labelMaxWidth; } set { labelMaxWidth = Math.Max (100, value); } }
 
 		void ShowOverload ()
 		{
@@ -115,9 +118,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				headLabel.Markup = o.SignatureMarkup;
 				headLabel.Visible = !string.IsNullOrEmpty (o.SignatureMarkup);
 
-				headLabel.MaxWidth = 480;
+				headLabel.MaxWidth = LabelMaxWidth;
 				if (Visible)
-					headLabel.MaxWidth = ((int) (Screen?.VisibleBounds.Width / 5 ?? 480));
+					headLabel.MaxWidth = ((int) (Screen?.VisibleBounds.Width / 5 ?? LabelMaxWidth));
 
 				if (Theme.DrawPager && overloads.Count > 1) {
 					headLabel.WidthRequest = headLabel.RealWidth + 70;
@@ -125,11 +128,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					headLabel.WidthRequest = -1;
 				}
 				foreach (var cat in o.Categories) {
-					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (cat.Item1), cat.Item2, foreColor, Theme.Font.ToPangoFont ()), true, true, 4);
+					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (cat.Item1), cat.Item2, foreColor, Theme.Font.ToPangoFont (), LabelMaxWidth - 80), true, true, 4);
 				}
 
 				if (!string.IsNullOrEmpty (o.SummaryMarkup)) {
-					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (GettextCatalog.GetString ("Summary")), o.SummaryMarkup, foreColor, Theme.Font.ToPangoFont ()), true, true, 4);
+					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (GettextCatalog.GetString ("Summary")), o.SummaryMarkup, foreColor, Theme.Font.ToPangoFont (), LabelMaxWidth - 80), true, true, 4);
 				}
 				if (!string.IsNullOrEmpty (o.FooterMarkup)) {
 
@@ -137,7 +140,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					contentLabel.Wrap = Pango.WrapMode.WordChar;
 					contentLabel.BreakOnCamelCasing = false;
 					contentLabel.BreakOnPunctuation = false;
-					contentLabel.MaxWidth = 400;
+					contentLabel.MaxWidth = LabelMaxWidth - 80;
 					contentLabel.Markup = o.FooterMarkup.Trim ();
 					contentLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 					contentLabel.FontDescription = Theme.Font.ToPangoFont ();
@@ -211,7 +214,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			current_overload = 0;
 		}
 
-		internal static VBox CreateCategory (string categoryName, string categoryContentMarkup, Cairo.Color foreColor, Pango.FontDescription font)
+		internal static VBox CreateCategory (string categoryName, string categoryContentMarkup, Cairo.Color foreColor, Pango.FontDescription font, int labelMaxWidth = 400)
 		{
 			var vbox = new VBox ();
 
@@ -237,7 +240,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			contentLabel.Spacing = 1;
 			contentLabel.BreakOnCamelCasing = false;
 			contentLabel.BreakOnPunctuation = false;
-			contentLabel.MaxWidth = 400;
+			contentLabel.MaxWidth = labelMaxWidth;
 			contentLabel.Markup = categoryContentMarkup.Trim ();
 			contentLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 			contentLabel.FontDescription = font;

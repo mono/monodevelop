@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var lineHeight = (int)Ext.Editor.LineHeight;
 			var cmg = ParameterInformationWindowManager.CurrentMethodGroup;
 			var geometry = Visible ? Screen.VisibleBounds : Xwt.MessageDialog.RootWindow.Screen.VisibleBounds;
-			int cparam = Ext != null ? await Ext.GetCurrentParameterIndex (cmg.MethodProvider.StartOffset) : 0;
+			int cparam = Ext != null ? await Ext.GetCurrentParameterIndex (cmg.MethodProvider.ApplicableSpan.Start) : 0;
 			var lastW = (int)Width;
 			var lastH = (int)Height;
 

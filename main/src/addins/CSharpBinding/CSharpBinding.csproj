@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -111,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Drawing" />
     <Reference Include="Mono.Posix" />
@@ -171,6 +171,14 @@
       <HintPath>..\..\..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Data">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Text.Data.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.CoreUtility">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\ConsoleProject.xpt.xml">
@@ -225,6 +233,7 @@
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\RoslynParameterHintingEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\CSharpSyntaxMode.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextEditorIndentation.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.cs" />
@@ -255,7 +264,6 @@
     <Compile Include="MonoDevelop.CSharp\PathedDocumentTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\HelperMethods.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpFoldingParser.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\AbstractGenerateAction.cs" />
@@ -284,33 +292,22 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpProjectExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\PortableCSharpProjectFlavor.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\RoslynSymbolCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\RoslynCodeCompletionFactory.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\RoslynParameterHintingFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\CSharpOutlineTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineSortingPreferencesDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.ClassOutline.OutlineSortingPreferencesDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineSettings.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineNodeComparer.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\CreateOverrideCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\CreatePartialCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\TextEditorResolverProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpParsedDocument.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\DebuggerExpressionResolver.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ImportSymbolCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\IExtensionContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\AnonymousMethodCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\ObjectCreationCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\CastCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\RoslynCompletionData.cs" />
     <Compile Include="MonoDevelop.JSon\JSonIndentationTracker.cs" />
     <Compile Include="MonoDevelop.JSon\JSonIndentEngine.cs" />
     <Compile Include="MonoDevelop.JSon\JSonTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethodCommandHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\RefactoryCommands.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\GotoDeclarationHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\RoslynCompletionCategory.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\PredefinedCodeRefactoringProviderNames.cs" />
     <Compile Include="MonoDevelop.CSharp.Diagnostics\IDEDiagnosticIds.cs" />
     <Compile Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\MonoTODODiagnosticAnalyzer.cs" />
@@ -330,41 +327,10 @@
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\ITextPasteHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\NullIStateMachineIndentEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\TextPasteIndentEngine.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\IParameterHintingData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\IParameterHintingDataFactory.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\ParameterHintingEngine.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\ParameterHintingResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\ParameterUtil.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\SemanticHighlighting\SemanticHighlightingVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\CSharpEditorFormattingService.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\FormattingOptionsFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\Indent.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\AttributeNamedParameterContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionContext.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionEngine.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\EditorBrowsableBehavior.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ICompletionDataFactory.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\CastCompletionContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\CompletionContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\DelegateCreationContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\EnumMemberContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\ExplicitInterfaceContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\ExternAliasContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\FormatItemContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\KeywordContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\NamedParameterContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\ObjectCreationContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\ObjectInitializerContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\OverrideContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\PartialContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\PreProcessorExpressionContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\RoslynRecommendationsCompletionContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\SenderCompletionContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\SnippetContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\SpeculativeNameContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\SpeculativeTContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\XmlDocCommentContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp\DeclaredSymbolInfo.cs" />
     <Compile Include="MonoDevelop.CSharp\ProjectSearchCategory.cs" />
     <Compile Include="Util\7BitEncodedInts.cs" />
@@ -385,7 +351,6 @@
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\TypeGuessing.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\Resources.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpNavigationTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\RegexContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFindReferencesProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpJumpToDeclarationHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.UnitTests\CSharpNUnitSourceCodeLocationFinder.cs" />
@@ -430,13 +395,20 @@
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionHelpers.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionService.cs" />
     <Compile Include="Util\PortingExtensions.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\FormatItemCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\CastCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\RegexCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpSnippetInfoService.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ParameterUtil.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\DelegateCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\EnumMemberCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\EventSenderCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\ProtocolMemberCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Tooltips\QuickInfoProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="MonoDevelop.CSharp.Completion\MethodParameterDataProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
     <None Include="packages.config" />
   </ItemGroup>
@@ -453,8 +425,4 @@
     </InternalsVisibleTo>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="icons\" />
-    <Folder Include="MonoDevelop.CSharp.NRefactoryWrapper\" />
-  </ItemGroup>
-</Project>
+ </Project>

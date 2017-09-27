@@ -44,7 +44,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.SourceEditor
 {
-	class LanguageItemTooltipProvider: TooltipProvider, IDisposable
+	class LanguageItemTooltipProvider : TooltipProvider, IDisposable
 	{
 		#region ITooltipProvider implementation 
 		public override async Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken))
@@ -139,7 +139,7 @@ namespace MonoDevelop.SourceEditor
 					return result;
 				
 				if (symbol != null) {
-					result = await RoslynSymbolCompletionData.CreateTooltipInformation (CancellationToken.None, editor, doc, symbol, false, true);
+					result = await QuickInfoProvider.GetQuickInfoAsync (editor, doc, symbol);
 				}
 				
 				return result;
@@ -156,7 +156,42 @@ namespace MonoDevelop.SourceEditor
 			xalign = 0.5;
 		}
 
-		#endregion 
+		#endregion
 
+		public static Task<TooltipInformation> CreateTooltipInformation (CancellationToken ctoken, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol entity, bool smartWrap, bool createFooter = false, SemanticModel model = null)
+		{
+			var tooltipInfo = new TooltipInformation ();
+
+			var sig = new SignatureMarkupCreator (ctx, editor != null ? editor.CaretOffset : 0);
+			sig.SemanticModel = model;
+			sig.BreakLineAfterReturnType = smartWrap;
+
+			return Task.Run (() => {
+				if (ctoken.IsCancellationRequested)
+					return null;
+				try {
+					tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
+				} catch (Exception e) {
+					LoggingService.LogError ("Got exception while creating markup for :" + entity, e);
+					return new TooltipInformation ();
+				}
+
+				if (ctoken.IsCancellationRequested)
+					return null;
+
+				tooltipInfo.SummaryMarkup = Ambience.GetSummaryMarkup (entity) ?? "";
+
+				if (entity is IMethodSymbol) {
+					var method = (IMethodSymbol)entity;
+					if (method.IsExtensionMethod) {
+						tooltipInfo.AddCategory (GettextCatalog.GetString ("Extension Method from"), method.ContainingType.Name);
+					}
+				}
+				if (createFooter) {
+					tooltipInfo.FooterMarkup = sig.CreateFooter (entity);
+				}
+				return tooltipInfo;
+			});
+		}
 	}
 }

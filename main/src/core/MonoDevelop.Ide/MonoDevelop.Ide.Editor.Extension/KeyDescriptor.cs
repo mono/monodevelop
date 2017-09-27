@@ -34,6 +34,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 	{
 		public static KeyDescriptor Empty = new KeyDescriptor (SpecialKey.None, '\0', ModifierKeys.None, null);
 		public static KeyDescriptor Tab = new KeyDescriptor (SpecialKey.Tab, '\t', ModifierKeys.None, null);
+		public static KeyDescriptor Up = new KeyDescriptor (SpecialKey.Up, '\t', ModifierKeys.None, null);
+		public static KeyDescriptor Down = new KeyDescriptor (SpecialKey.Down, '\t', ModifierKeys.None, null);
+		public static KeyDescriptor PageUp = new KeyDescriptor (SpecialKey.PageUp, '\t', ModifierKeys.None, null);
+		public static KeyDescriptor PageDown = new KeyDescriptor (SpecialKey.PageDown, '\t', ModifierKeys.None, null);
 
 		public readonly SpecialKey SpecialKey;
 		public readonly char KeyChar;

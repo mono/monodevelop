@@ -118,9 +118,11 @@ namespace ICSharpCode.NRefactory6
 			{
 				List<Assembly> assemblies = new List<Assembly> ();
 
-				assemblies.Add (typeof(TypeSystemService).Assembly);
-				assemblies.Add (typeof(Microsoft.CodeAnalysis.AdhocWorkspace).Assembly);
-				assemblies.Add (typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions).Assembly);
+				assemblies.Add (typeof (TypeSystemService).Assembly);
+				assemblies.Add (typeof (Microsoft.CodeAnalysis.AdhocWorkspace).Assembly);
+				assemblies.Add (typeof (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions).Assembly);
+				assemblies.Add (typeof (Microsoft.CodeAnalysis.Completion.CompletionService).Assembly);
+				assemblies.Add (typeof (Microsoft.CodeAnalysis.CSharp.Completion.CSharpCompletionService).Assembly);
 
 				services = Microsoft.CodeAnalysis.Host.Mef.MefHostServices.Create (assemblies);
 			}

@@ -148,12 +148,12 @@ namespace MonoDevelop.CSharp
 				//ToMinimalDisplayString can use little outdated model this is fine
 				//but in case of Sketches where user usually is at end of document when typing text this can throw exception
 				//because offset can be >= Length
-				displayString = model != null ? RoslynCompletionData.SafeMinimalDisplayString (type, model, Math.Min (model.SyntaxTree.Length - 1, offset), MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat) : type.Name;
+				displayString = model != null ? CSharpAmbience.SafeMinimalDisplayString (type, model, Math.Min (model.SyntaxTree.Length - 1, offset), MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat) : type.Name;
 			} else {
 				displayString = type.ToDisplayString (MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat);
 			}
 
-			if (ICSharpCode.NRefactory6.CSharp.Completion.ObjectCreationContextHandler.primitiveTypesKeywords.Contains (displayString))
+			if (SyntaxFacts.IsPredefinedType(SyntaxFacts.GetKeywordKind (displayString)))
 				return Highlight (displayString, GetThemeColor (keywordType));
 			var text = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (displayString);
 			return highlight ? HighlightSemantically (text, GetThemeColor (userTypes)) : text;
