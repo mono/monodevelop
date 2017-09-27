@@ -50,6 +50,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -1102,7 +1103,7 @@ namespace MonoDevelop.SourceEditor
 				searchAndReplaceWidget = null;
 				result = true;
 				//clears any message it may have set
-				IdeApp.Workbench.StatusBar.ShowReady ();
+				StatusService.MainContext.ShowReady ();
 			}
 			
 			if (gotoLineNumberWidgetFrame != null) {

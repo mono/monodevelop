@@ -36,6 +36,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Execution;
 using System.Text;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -49,7 +50,7 @@ namespace MonoDevelop.Components.MainToolbar
 			private set;
 		}
 
-		internal StatusBar StatusBar {
+		internal IStatusBar StatusBar {
 			get { return ToolbarView.StatusBar; }
 		}
 
@@ -99,7 +100,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			executionTargetsChanged = (sender, e) => UpdateCombos ();
 
-			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => StatusBar.ShowReady ();
+			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => StatusService.MainContext.ShowMessage (null, "", false);
 			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
 			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateCombos ();
 

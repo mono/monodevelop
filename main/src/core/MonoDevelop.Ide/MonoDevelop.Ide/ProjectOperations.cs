@@ -57,6 +57,7 @@ using System.Collections.Immutable;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Components.Extensions;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Ide
 {
@@ -1095,7 +1096,7 @@ namespace MonoDevelop.Ide
 
 			var error = monitor.Errors.FirstOrDefault ();
 			if (error != null)
-				IdeApp.Workbench.StatusBar.ShowError (error.DisplayMessage);
+				StatusService.MainContext.ShowError (error.DisplayMessage);
 			currentRunOperationOwners.Remove (entry);
 		}
 		

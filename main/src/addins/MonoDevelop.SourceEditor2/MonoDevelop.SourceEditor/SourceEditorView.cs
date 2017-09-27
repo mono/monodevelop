@@ -62,6 +62,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Immutable;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.SourceEditor
 {	
@@ -1120,7 +1121,7 @@ namespace MonoDevelop.SourceEditor
 				try {
 					writeAllowed = FileService.RequestFileEdit (ContentName);
 				} catch (Exception e) {
-					IdeApp.Workbench.StatusBar.ShowError (e.Message); 
+					StatusService.MainContext.ShowError (e.Message);
 					writeAllowed = false;
 				}
 			}

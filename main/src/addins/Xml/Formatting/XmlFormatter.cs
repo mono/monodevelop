@@ -34,6 +34,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Xml.Formatting
 {
@@ -51,12 +52,12 @@ namespace MonoDevelop.Xml.Formatting
 				if (ex.Message == "Root element is missing.")
 					return input;
 				MonoDevelop.Core.LoggingService.LogWarning ("Error formatting XML file", ex);
-				IdeApp.Workbench.StatusBar.ShowError ("Error formatting file: " + ex.Message);
+				StatusService.MainContext.ShowError ("Error formatting file: " + ex.Message);
 				return input;
 			} catch (Exception ex) {
 				// Ignore malformed xml
 				MonoDevelop.Core.LoggingService.LogWarning ("Error formatting XML file", ex);
-				IdeApp.Workbench.StatusBar.ShowError ("Error formatting file: " + ex.Message);
+				StatusService.MainContext.ShowError ("Error formatting file: " + ex.Message);
 				return input;
 			}
 			

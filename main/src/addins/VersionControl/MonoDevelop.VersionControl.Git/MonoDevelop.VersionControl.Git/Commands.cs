@@ -33,6 +33,7 @@ using MonoDevelop.Ide.ProgressMonitoring;
 using System.Threading;
 using LibGit2Sharp;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -164,7 +165,7 @@ namespace MonoDevelop.VersionControl.Git
 								}
 
 								Runtime.RunInMainThread (delegate {
-									IdeApp.Workbench.StatusBar.ShowMessage (msg);
+									StatusService.MainContext.ShowMessage (msg);
 								});
 							}
 
