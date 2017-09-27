@@ -25,72 +25,99 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Timers;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Components.MainToolbar
 {
 	class StatusBarContextHandler
 	{
-		readonly MainStatusBarContextImpl mainContext;
-		readonly List<StatusBarContextImpl> contexts = new List<StatusBarContextImpl> ();
-		StatusBarContextImpl activeContext;
+		public event EventHandler<StatusMessageContextMessageChangedArgs> MessageChanged;
+		public event EventHandler<StatusMessageContextProgressChangedArgs> ProgressChanged;
 
-		internal StatusBar StatusBar {
-			get;
-			private set;
-		}
+		readonly List<StatusMessageContext> activeContexts = new List<StatusMessageContext> ();
 
-		public StatusBarContextHandler (StatusBar statusBar)
+		public StatusBarContextHandler ()
 		{
-			StatusBar = statusBar;
-			mainContext = new MainStatusBarContextImpl (this);
-			activeContext = mainContext;
-			contexts.Add (mainContext);
+			StatusService.ContextAdded += StatusServiceContextAdded;
+			StatusService.ContextRemoved += StatusServiceContextRemoved;
+			StatusService.MainContext.MessageChanged += ContextMessageChanged;
+			StatusService.MainContext.ProgressChanged += ContextProgressChanged;
 		}
 
-		internal StatusBar MainContext {
-			get { return mainContext; }
-		}
-
-		public StatusBarContext CreateContext ()
+		void StatusServiceContextAdded (object sender, StatusServiceContextEventArgs e)
 		{
-			var ctx = new StatusBarContextImpl (this);
-			contexts.Add (ctx);
-			return ctx;
+			e.Context.MessageChanged += ContextMessageChanged;
+			e.Context.ProgressChanged += ContextProgressChanged;
+
+			// This will be added to the active contexts once a message or progress has been set.
 		}
 
-		public bool IsCurrentContext (StatusBarContextImpl ctx)
+		void StatusServiceContextRemoved (object sender, StatusServiceContextEventArgs e)
 		{
-			return ctx == activeContext;
-		}
+			e.Context.MessageChanged -= ContextMessageChanged;
+			e.Context.ProgressChanged -= ContextProgressChanged;
 
-		public void Remove (StatusBarContextImpl ctx)
-		{
-			if (ctx == mainContext)
-				return;
+			bool wasActive = (activeContexts[0] == e.Context);
+			activeContexts.Remove (e.Context);
 
-			StatusBarContextImpl oldActive = activeContext;
-			contexts.Remove (ctx);
-			UpdateActiveContext ();
-			if (oldActive != activeContext) {
-				// Removed the active context. Update the status bar.
-				activeContext.Update ();
+			if (wasActive) {
+				UpdateMessage ();
 			}
 		}
 
-		public void UpdateActiveContext ()
+		void ContextMessageChanged (object sender, StatusMessageContextMessageChangedArgs e)
 		{
-			for (int n = contexts.Count - 1; n >= 0; n--) {
-				StatusBarContextImpl ctx = contexts [n];
-				if (ctx.StatusChanged) {
-					if (ctx != activeContext) {
-						activeContext = ctx;
-						activeContext.Update ();
-					}
-					return;
+			StatusMessageContext ctx = (StatusMessageContext)sender;
+			if (!activeContexts.Contains (ctx)) {
+				activeContexts.Insert (0, ctx);
+			}
+
+			if (activeContexts [0] == ctx) {
+				UpdateMessage ();
+			}
+		}
+
+		void ContextProgressChanged (object sender, StatusMessageContextProgressChangedArgs e)
+		{
+			StatusMessageContext ctxt = (StatusMessageContext) sender;
+			if (!activeContexts.Contains(ctxt)) {
+				activeContexts.Insert(0, ctxt);
+			}
+
+			if (activeContexts[0] == ctxt) {
+				if (ProgressChanged != null) {
+					Runtime.RunInMainThread(() => ProgressChanged (this, e));
 				}
 			}
-			throw new InvalidOperationException (); // There must be at least the main context
+		}
+
+		void OnMessageChanged (StatusMessageContext context)
+		{
+			string message = context != null ? context.Message : "";
+			bool isMarkup = context != null && context.IsMarkup;
+			IconId image = context != null ? context.Image : IconId.Null;
+
+			if (MessageChanged != null) {
+				var args = new StatusMessageContextMessageChangedArgs (context, message, isMarkup, image);
+
+				// Enforce dispatch on GUI thread so clients don't need to care.
+				Runtime.RunInMainThread (() => MessageChanged (this, args));
+			}
+		}
+
+		void UpdateMessage ()
+		{
+			if (activeContexts.Count != 0) {
+				// Display the newest active context
+				var ctx = activeContexts[0];
+				OnMessageChanged (ctx);
+			} else {
+				OnMessageChanged (null);
+			}
 		}
 	}
 }

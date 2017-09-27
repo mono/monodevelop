@@ -32,6 +32,7 @@ using MonoDevelop.Ide.ProgressMonitoring;
 using System.Threading;
 using System.Threading.Tasks;
 using LibGit2Sharp;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -164,13 +165,13 @@ namespace MonoDevelop.VersionControl.Git
 			if (status == StashApplyStatus.Conflicts) {
 				string msg = GettextCatalog.GetString ("Stash applied with conflicts");
 				Runtime.RunInMainThread (delegate {
-					IdeApp.Workbench.StatusBar.ShowWarning (msg);
+					StatusService.MainContext.ShowWarning (msg);
 				});
 			}
 			else {
 				string msg = GettextCatalog.GetString ("Stash successfully applied");
 				Runtime.RunInMainThread (delegate {
-					IdeApp.Workbench.StatusBar.ShowMessage (msg);
+					StatusService.MainContext.ShowMessage (msg);
 				});
 			}
 		}

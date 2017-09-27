@@ -49,6 +49,7 @@ using Mono.Addins;
 using MonoDevelop.Core.AddIns;
 using Microsoft.CodeAnalysis.Shared.Utilities;
 using MonoDevelop.Ide.Composition;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -154,7 +155,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				workspacesLoading++;
 				if (statusIcon != null)
 					return;
-				statusIcon = IdeApp.Workbench?.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-parser"));
+				statusIcon = StatusService.ShowStatusIcon (ImageService.GetIcon ("md-parser"));
 				if (statusIcon != null)
 					statusIcon.ToolTip = GettextCatalog.GetString ("Gathering class information");
 			});

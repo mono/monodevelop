@@ -44,6 +44,7 @@ using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Desktop;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -438,7 +439,7 @@ namespace MonoDevelop.Ide.Tasks
 				return new TaskNavigationPoint (currentLocationTask);
 			}
 			else {
-				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("End of list"));
+				StatusService.MainContext.ShowMessage (GettextCatalog.GetString ("End of list"));
 				return null;
 			}
 		}
@@ -512,7 +513,7 @@ namespace MonoDevelop.Ide.Tasks
 				return new TaskNavigationPoint (currentLocationTask);
 			}
 			else {
-				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("End of list"));
+				StatusService.MainContext.ShowMessage (GettextCatalog.GetString ("End of list"));
 				return null;
 			}
 		}
