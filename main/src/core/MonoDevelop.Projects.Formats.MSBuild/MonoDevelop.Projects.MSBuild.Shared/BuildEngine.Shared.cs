@@ -177,15 +177,6 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		[MessageHandler]
-		public BinaryMessage DisposeProject (DisposeProjectRequest msg)
-		{
-			var pb = GetProject (msg.ProjectId);
-			if (pb != null)
-				pb.Dispose ();
-			return msg.CreateResponse ();
-		}
-
-		[MessageHandler]
 		public BinaryMessage RefreshProject (RefreshProjectRequest msg)
 		{
 			var pb = GetProject (msg.ProjectId);
@@ -212,6 +203,21 @@ namespace MonoDevelop.Projects.MSBuild
 				var res = pb.Run (msg.Configurations, logger, msg.Verbosity, msg.RunTargets, msg.EvaluateItems, msg.EvaluateProperties, msg.GlobalProperties, msg.TaskId);
 				return new RunProjectResponse { Result = res };
 			}
+			return msg.CreateResponse ();
+		}
+
+		[MessageHandler]
+		public BinaryMessage BeginBuild (BeginBuildRequest msg)
+		{
+			var logger = msg.LogWriterId != -1 ? (IEngineLogWriter)new LogWriter (msg.LogWriterId, msg.EnabledLogEvents) : (IEngineLogWriter)new NullLogWriter ();
+			BeginBuildOperation (logger, msg.Verbosity, msg.Configurations);
+			return msg.CreateResponse ();
+		}
+
+		[MessageHandler]
+		public BinaryMessage EndBuild (EndBuildRequest msg)
+		{
+			EndBuildOperation ();
 			return msg.CreateResponse ();
 		}
 

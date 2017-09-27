@@ -51,9 +51,8 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 			var snapshot = ctx.AnalysisDocument.GetSyntaxTreeAsync (cancellationToken).WaitAndGetResult(cancellationToken);
 			var position = editor.CaretOffset - 1;
 			var token = AbstractTokenBraceCompletionSession.FindToken(snapshot, position, cancellationToken);
-
-			return token.IsKind(SyntaxKind.OpenBraceToken)
-				        && token.SpanStart == position;
+			return token.IsKind (SyntaxKind.InterpolatedStringStartToken, SyntaxKind.InterpolatedVerbatimStringStartToken)
+				&& token.Span.End - 1 == position;
 		}
 
 		public static bool IsContext(TextEditor editor, DocumentContext ctx,  int position, CancellationToken cancellationToken)

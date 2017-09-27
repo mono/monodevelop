@@ -110,7 +110,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.2.3.0-beta1\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -694,6 +694,10 @@
     <Compile Include="MonoDevelop.Core\StringTable.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\FalseCondition.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\TrueCondition.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildSolutionExtension.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngine.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngineManager.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\FileUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

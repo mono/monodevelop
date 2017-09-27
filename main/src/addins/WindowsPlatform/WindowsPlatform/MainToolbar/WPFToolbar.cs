@@ -295,6 +295,17 @@ namespace WindowsPlatform.MainToolbar
 				PropertyChanged (this, new System.ComponentModel.PropertyChangedEventArgs (propName));
 		}
 
+		public void Focus ()
+		{
+			FocusSearchBar ();
+		}
+
+		public void Focus (System.Action exitAction)
+		{
+			FocusSearchBar ();
+			exitAction ();
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 		public event EventHandler RunConfigurationChanged;
 	}

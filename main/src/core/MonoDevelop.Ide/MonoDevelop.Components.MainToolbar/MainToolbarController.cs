@@ -704,14 +704,12 @@ namespace MonoDevelop.Components.MainToolbar
 			if (e.Key == Xwt.Key.Escape) {
 				DestroyPopup();
 				var doc = IdeApp.Workbench.ActiveDocument;
-				if (doc != null) {
+				if (doc != null) 
 					doc.Select ();
-				}
 				return;
 			}
-			if (popup != null) {
+			if (popup != null) 
 				e.Handled = popup.ProcessKey (e.Key, e.Modifiers);
-			}
 		}
 
 		string lastSearchText = string.Empty;

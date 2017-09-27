@@ -543,10 +543,33 @@ namespace MonoDevelop.Core.Execution
 
 		List<Task> pendingMessageTasks = new List<Task> ();
 
+		/// <summary>
+		/// Waits for all messages received from the server to be processed.
+		/// Useful for example to ensure that all logging messages sent by
+		/// the server during a build operation are processed before closing the
+		/// connection.
+		/// </summary>
+		/// <returns>The pending messages.</returns>
 		public Task ProcessPendingMessages ()
 		{
 			lock (pendingMessageTasks)
 				return Task.WhenAll (pendingMessageTasks.ToArray ());
+		}
+
+		/// <summary>
+		/// Waits for all queued messages to be processed. That is, when the
+		/// returned task completes, all messages in progess will have received
+		/// a response and all responses will have been processed.
+		/// </summary>
+		/// <returns>The queued messages.</returns>
+		public async Task ProcessQueuedMessages ()
+		{
+			Task[] waiters;
+			lock (messageWaiters)
+				waiters = messageWaiters.Values.Select (w => w.TaskSource.Task).ToArray ();
+
+			await Task.WhenAll (waiters);
+			await ProcessPendingMessages ();
 		}
 
 		BinaryMessage LoadMessageData (BinaryMessage msg)

@@ -91,5 +91,13 @@ namespace MonoDevelop.Projects.MSBuild
 				return content;
 			}
 		}
+
+		void BeginBuildOperation (IEngineLogWriter logWriter, MSBuildVerbosity verbosity, ProjectConfigurationInfo [] configurations)
+		{
+		}
+
+		void EndBuildOperation ()
+		{
+		}
 	}
 }

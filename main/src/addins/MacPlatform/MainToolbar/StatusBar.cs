@@ -456,7 +456,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	}
 
 	[Register]
-	class StatusBar : NSButton, MonoDevelop.Ide.StatusBar
+	class StatusBar : NSFocusButton, MonoDevelop.Ide.StatusBar
 	{
 		public enum MessageType
 		{

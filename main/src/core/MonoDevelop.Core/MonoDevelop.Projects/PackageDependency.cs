@@ -33,7 +33,7 @@ namespace MonoDevelop.Projects
 	{
 		string[] dependencies;
 
-		PackageDependency (string type, MSBuildEvaluatedItem item)
+		PackageDependency (string type, IMSBuildItemEvaluated item)
 		{
 			Type = type;
 			Init (item);
@@ -51,35 +51,13 @@ namespace MonoDevelop.Projects
 		public bool IsTargetFramework { get; private set; }
 		public bool IsPackage { get; private set; }
 
-		internal static PackageDependency Create (MSBuildEvaluatedItem item)
+		internal static PackageDependency Create (IMSBuildItemEvaluated item)
 		{
-			string type = GetMetadataValue ("Type", item);
+			string type = item.Metadata.GetValue ("Type", "");
 			return Create (type, item);
 		}
 
-		static string GetMetadataValue (string name, MSBuildEvaluatedItem item)
-		{
-			string result;
-			if (item.Metadata.TryGetValue (name, out result))
-				return result;
-
-			return string.Empty;
-		}
-
-		static bool GetMetadataBoolValue (string name, MSBuildEvaluatedItem item, bool defaultValue = false)
-		{
-			string value = GetMetadataValue (name, item);
-			if (string.IsNullOrEmpty (value))
-				return defaultValue;
-
-			bool result;
-			if (bool.TryParse (value, out result))
-				return result;
-
-			return defaultValue;
-		}
-
-		static PackageDependency Create (string type, MSBuildEvaluatedItem item)
+		static PackageDependency Create (string type, IMSBuildItemEvaluated item)
 		{
 			switch (type) {
 				case "Target":
@@ -91,30 +69,20 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		void Init (MSBuildEvaluatedItem item)
+		void Init (IMSBuildItemEvaluated item)
 		{
 			if (Type == "Package") {
-				Name = GetMetadataValue ("Name", item);
-				Version = GetMetadataValue ("Version", item);
-				Resolved = GetMetadataBoolValue ("Resolved", item);
+				Name = item.Metadata.GetValue ("Name", "");
+				Version = item.Metadata.GetValue ("Version", "");
+				Resolved = item.Metadata.GetValue ("Resolved", false);
 				IsPackage = true;
 			} else if (Type == "Target") {
-				Name = GetMetadataValue ("FrameworkName", item);
-				Version = GetMetadataValue ("FrameworkVersion", item);
+				Name = item.Metadata.GetValue ("FrameworkName", "");
+				Version = item.Metadata.GetValue ("FrameworkVersion", "");
 				Resolved = true;
 				IsTargetFramework = true;
 			}
-
-			dependencies = GetDependencies (item);
-		}
-
-		string[] GetDependencies (MSBuildEvaluatedItem item)
-		{
-			string value = GetMetadataValue ("Dependencies", item);
-			if (string.IsNullOrEmpty (value))
-				return new string[0];
-
-			return value.Split (';');
+			dependencies = item.Metadata.GetValue ("Dependencies", "").Split (new char [] { ';' }, System.StringSplitOptions.RemoveEmptyEntries);
 		}
 	}
 }

@@ -1,9 +1,10 @@
-﻿// MdsTests.cs
+﻿//
+// Cursor.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       mkrueger <>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2017 ${CopyrightHolder}
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,43 +23,41 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
+#if MAC
+using System;
 using System.IO;
-using NUnit.Framework;
-using UnitTests;
-using System.Threading.Tasks;
+using AppKit;
+using CoreImage;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Ide.Editor
 {
-	[TestFixture]
-	public class MdsTests: TestBase
+	class OSXEditor
 	{
-		[Test]
-		public async Task TestSaveWorkspace ()
-		{
-			// Saving a workspace must save all solutions and projects it contains
-			
-			string dir = Util.CreateTmpDir ("TestSaveWorkspace");
-			Workspace ws = new Workspace ();
-			ws.FileName = Path.Combine (dir, "workspace");
-			
-			Solution sol = new Solution ();
-			sol.FileName = Path.Combine (dir, "thesolution");
-			ws.Items.Add (sol);
-			
-			DotNetProject p = Services.ProjectService.CreateDotNetProject ("C#");
-			p.FileName = Path.Combine (dir, "theproject");
-			sol.RootFolder.Items.Add (p);
-			
-			await ws.SaveAsync (Util.GetMonitor ());
-			
-			Assert.IsTrue (File.Exists (ws.FileName));
-			Assert.IsTrue (File.Exists (sol.FileName));
-			Assert.IsTrue (File.Exists (p.FileName));
+		static Xwt.Drawing.Image image;
 
-			ws.Dispose ();
+		public static Xwt.Drawing.Image IBeamCursorImage {
+			get {
+				if (image != null)
+					return image;
+				var cacheFileName = Path.Combine(UserProfile.Current.CacheDir, "MacCursorImage.tiff");
+				if (!File.Exists(cacheFileName))
+					NSCursor.IBeamCursor.Image.AsTiff().Save(cacheFileName, true);
+				var img = Xwt.Drawing.Image.FromFile(cacheFileName);
+				var size = NSCursor.IBeamCursor.Image.Size;
+				image = img.WithSize(size.Width, size.Height);
+				return image;
+			}
+		}
+
+		public static double GetLineHeight(string fontName)
+		{
+			var editorFont = Xwt.Drawing.Font.FromName(fontName);
+
+			using (var nsFont = NSFont.FromFontName(editorFont.Family, (nfloat)editorFont.Size))
+				using (var lm = new NSLayoutManager())
+			 		return lm.DefaultLineHeightForFont(nsFont);
 		}
 	}
 }
+#endif

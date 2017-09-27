@@ -271,6 +271,11 @@ namespace MonoDevelop.Projects.MSBuild
 					exclude += ";" + excludePath;
 			}
 		}
+
+		public override string ToString()
+		{
+			return $"<Name='{Name}' Include='{Include}' />";
+		}
 	}
 
 	class MSBuildItemEvaluated: IMSBuildItemEvaluated

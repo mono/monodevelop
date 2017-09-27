@@ -489,7 +489,10 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			var eventBox = new EventBox ();
 			eventBox.ModifyBg (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor.ToGdkColor ()); // top and bottom padders
 			var vbox = new VBox ();
-			vbox.PackStart (InnerExceptionsTreeView, true, true, 12);
+			var scroll = new ScrolledWindow ();
+			scroll.WidthRequest = 200;
+			scroll.Child = InnerExceptionsTreeView;
+			vbox.PackStart (scroll, true, true, 12);
 			eventBox.Add (vbox);
 			eventBox.ShowAll ();
 			return eventBox;

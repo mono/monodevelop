@@ -274,7 +274,6 @@ namespace Mono.TextEditor
 			this.textEditor = textEditor;
 
 			textEditor.Document.TextChanged += HandleTextReplaced;
-			base.cursor = xtermCursor;
 			textEditor.HighlightSearchPatternChanged += TextEditor_HighlightSearchPatternChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
 			markerLayout = PangoUtil.CreateLayout (textEditor);
@@ -483,8 +482,49 @@ namespace Mono.TextEditor
 		}
 
 		System.ComponentModel.BackgroundWorker searchPatternWorker;
-		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
-		Gdk.Cursor textLinkCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
+		static Cursor xtermCursor = new Cursor(CursorType.Xterm);
+		static Cursor xtermCursorInverted;
+		static Cursor textLinkCursor = new Cursor (CursorType.Hand1);
+
+		static TextViewMargin()
+		{
+#if MAC
+			var img = OSXEditor.IBeamCursorImage;
+			xtermCursorInverted = new Cursor(xtermCursor.Display, (InvertCursorPixbuf (img.ToPixbuf())), (int)img.Width / 2, (int)img.Height / 2);
+#else
+			xtermCursorInverted = xtermCursor;
+#endif
+		} 
+
+		unsafe static Pixbuf InvertCursorPixbuf(Pixbuf src)
+		{
+			var dest = new Pixbuf(src.Colorspace, src.HasAlpha, src.BitsPerSample, src.Width, src.Height);
+
+			var src_start = (byte*)src.Pixels;
+			var dst_start = (byte*)dest.Pixels;
+
+			for (int i = 0; i < src.Height; i++) {
+				var sp = src_start + i * src.Rowstride;
+				var dp = dst_start + i * dest.Rowstride;
+
+				for (int j = 0; j < src.Width; j++) {
+					var r = *(dp++) = (byte)(*(sp++) ^ 0xFF);
+					var g = *(dp++) = (byte)(*(sp++) ^ 0xFF);
+					var b = *(dp++) = (byte)(*(sp++) ^ 0xFF);
+
+					if (src.HasAlpha) {
+						if (r + g + b < 750) {
+							*(dp++) = 0;
+							sp++;
+						} else {
+							*(dp++) = *(sp++);
+						}
+					}
+				}
+			}
+
+			return dest;
+		}
 
 		static readonly string[] markerTexts = {
 			"<EOF>",
@@ -535,11 +575,12 @@ namespace Mono.TextEditor
 			markerLayoutFont.Weight = Pango.Weight.Normal;
 			markerLayout.FontDescription = markerLayoutFont;
 
-			defaultLayout.FontDescription = textEditor.Options.Font;
-			using (var metrics = textEditor.PangoContext.GetMetrics (textEditor.Options.Font, textEditor.PangoContext.Language)) {
-				this.textEditor.GetTextEditorData ().LineHeight = System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
-				this.charWidth = metrics.ApproximateCharWidth / Pango.Scale.PangoScale;
-			}
+			// Gutter font may be bigger
+			GetFontMetrics(textEditor.Options.GutterFont, textEditor.Options.GutterFontName, out double gutterFontLineHeight, out double fontCharWidth, out underlinePosition, out underLineThickness);
+			GetFontMetrics(textEditor.Options.Font, textEditor.Options.FontName, out double fontLineHeight, out fontCharWidth, out underlinePosition, out underLineThickness);
+			this.textEditor.GetTextEditorData().LineHeight = fontLineHeight;
+			this.charWidth = fontCharWidth;
+
 			var family = textEditor.PangoContext.Families.FirstOrDefault (f => f.Name == textEditor.Options.Font.Family);
 			if (family != null) {
 				isMonospacedFont = family.IsMonospace;
@@ -547,11 +588,6 @@ namespace Mono.TextEditor
 				isMonospacedFont = false;
 			}
 			          
-			// Gutter font may be bigger
-			using (var metrics = textEditor.PangoContext.GetMetrics (textEditor.Options.GutterFont, textEditor.PangoContext.Language)) {
-				this.textEditor.GetTextEditorData ().LineHeight = System.Math.Max (this.textEditor.GetTextEditorData ().LineHeight, System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale));
-			}
-
 			textEditor.LineHeight = System.Math.Max (1, LineHeight);
 
 			if (eolMarkerLayout == null) {
@@ -594,6 +630,7 @@ namespace Mono.TextEditor
 
 			DisposeLayoutDict ();
 			caretX = caretY = -LineHeight;
+			base.cursor = GetDefaultTextCursor();
 		}
 
 		void DisposeGCs ()
@@ -601,6 +638,29 @@ namespace Mono.TextEditor
 			ShowTooltip (TextSegment.Invalid, Gdk.Rectangle.Zero);
 		}
 
+		int underlinePosition, underLineThickness;
+		public int UnderlinePosition => underlinePosition;
+		public int UnderLineThickness => underLineThickness;
+
+		void GetFontMetrics(Pango.FontDescription font, string fontName, out double lineHeight, out double charWidth, out int underlinePosition, out int underLineThickness)
+		{
+			using (var metrics = textEditor.PangoContext.GetMetrics(font, textEditor.PangoContext.Language)) {
+#if MAC
+				double baseHeight;
+				if (fontName != null) {
+					baseHeight = OSXEditor.GetLineHeight(fontName) * textEditor.Options.Zoom;
+				} else {
+					baseHeight = (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale;
+				}
+				lineHeight = System.Math.Ceiling (0.5 + baseHeight);
+#else
+				lineHeight = System.Math.Ceiling(0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
+#endif
+				underlinePosition = metrics.UnderlinePosition;
+				underLineThickness = metrics.UnderlineThickness;
+				charWidth = metrics.ApproximateCharWidth / Pango.Scale.PangoScale;
+			}
+		}
 		public override void Dispose ()
 		{
 			CancelCodeSegmentTooltip ();
@@ -615,9 +675,6 @@ namespace Mono.TextEditor
 			textEditor.TextArea.FocusOutEvent -= HandleFocusOutEvent;
 
 			textEditor.GetTextEditorData ().SearchChanged -= HandleSearchChanged;
-
-			textLinkCursor.Dispose ();
-			xtermCursor.Dispose ();
 
 			DisposeGCs ();
 			if (markerLayout != null)
@@ -2538,6 +2595,13 @@ namespace Mono.TextEditor
 
 		List<IActionTextLineMarker> oldMarkers = new List<IActionTextLineMarker> ();
 		List<IActionTextLineMarker> newMarkers = new List<IActionTextLineMarker> ();
+
+		Cursor GetDefaultTextCursor()
+		{
+			var baseColor = textEditor.Style.Background(StateType.Normal);
+			return  HslColor.Brightness(baseColor) < 0.5 ? xtermCursorInverted : xtermCursor;
+		}
+
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
 			var loc = PointToLocation (args.X, args.Y, snapCharacters: true);
@@ -2577,7 +2641,7 @@ namespace Mono.TextEditor
 			} else {
 				oldMarkers.Clear ();
 			}
-			base.cursor = hoverResult.HasCursor ? hoverResult.Cursor : xtermCursor;
+			base.cursor = hoverResult.HasCursor ? hoverResult.Cursor : GetDefaultTextCursor ();
 			if (textEditor.TooltipMarkup != hoverResult.TooltipMarkup) {
 				textEditor.TooltipMarkup = null;
 				textEditor.TriggerTooltipQuery ();
@@ -2600,7 +2664,7 @@ namespace Mono.TextEditor
 				if (!String.IsNullOrEmpty (link)) {
 					base.cursor = textLinkCursor;
 				} else {
-					base.cursor = hoverResult.HasCursor ? hoverResult.Cursor : xtermCursor;
+					base.cursor = hoverResult.HasCursor ? hoverResult.Cursor : GetDefaultTextCursor ();
 				}
 				return;
 			}

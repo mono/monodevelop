@@ -289,13 +289,15 @@ module CompilerArguments =
           | _ -> "--debug+"
       | false, _ -> "--debug-"
 
-  let getCompiledFiles (project:DotNetProject) =
-      let sharedAssetFiles = 
-          project.References
-          |> Seq.filter (fun r -> r.ExtendedProperties.Contains("MSBuild.SharedAssetsProject"))
-          |> Seq.collect (fun r -> (r.ResolveProject project.ParentSolution).Files)
-          |> Seq.map (fun f -> f.FilePath)
-          |> Set.ofSeq
+  let getSharedAssetFilesFromReferences (project:DotNetProject) =
+      project.References
+      |> Seq.filter (fun r -> r.ExtendedProperties.Contains("MSBuild.SharedAssetsProject"))
+      |> Seq.collect (fun r -> (r.ResolveProject project.ParentSolution).Files)
+      |> Seq.map (fun f -> f.FilePath)
+      |> Set.ofSeq
+
+  let getCompiledFiles project =
+      let sharedAssetFiles = getSharedAssetFilesFromReferences project
 
       project.Files
       // Shared Asset files need to be referenced first
@@ -317,7 +319,9 @@ module CompilerArguments =
     [
        yield "--simpleresolution"
        yield "--noframework"
-       yield "--out:" + project.GetOutputFileName(configSelector).ToString()
+       let outputFile = project.GetOutputFileName(configSelector).ToString()
+       if not (String.IsNullOrWhiteSpace outputFile) then 
+           yield "--out:" + outputFile
        if Project.isPortable project || Project.isDotNetCoreProject project then
            yield "--targetprofile:netcore"
        if not (String.IsNullOrWhiteSpace fsconfig.PlatformTarget) then

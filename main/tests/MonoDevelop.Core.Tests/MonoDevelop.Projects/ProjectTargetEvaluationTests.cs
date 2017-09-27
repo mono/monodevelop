@@ -36,16 +36,13 @@ namespace MonoDevelop.Projects
 	public class ProjectTargetEvaluationTests: TestBase
 	{
 		[Test]
-		[TestCase(true)]
-		[TestCase(false)]
-		public async Task EvaluateUnknownPropertyDuringBuild(bool requiresMSBuild)
+		public async Task EvaluateUnknownPropertyDuringBuild ()
 		{
 			string solFile = Util.GetSampleProject("console-project", "ConsoleProject.sln");
 
 			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem(Util.GetMonitor(), solFile);
 
 			var project = ((Project)sol.Items[0]);
-			project.RequiresMicrosoftBuild = requiresMSBuild;
 
 			var context = new TargetEvaluationContext();
 			context.PropertiesToEvaluate.Add("TestUnknownPropertyToEvaluate");
