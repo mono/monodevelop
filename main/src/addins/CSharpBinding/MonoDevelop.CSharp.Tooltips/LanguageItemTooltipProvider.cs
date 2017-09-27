@@ -156,6 +156,10 @@ namespace MonoDevelop.SourceEditor
 			xalign = 0.5;
 		}
 
+		public override bool IsInteractive(TextEditor editor, Components.Window tipWindow)
+		{
+			return true;
+		}
 		#endregion
 
 		public static Task<TooltipInformation> CreateTooltipInformation (CancellationToken ctoken, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol entity, bool smartWrap, bool createFooter = false, SemanticModel model = null)

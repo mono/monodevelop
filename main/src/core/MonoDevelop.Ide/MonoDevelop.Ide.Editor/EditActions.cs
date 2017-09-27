@@ -189,6 +189,11 @@ namespace MonoDevelop.Ide.Editor
 			textEditor.EditorActionHost.MoveNextSubWord ();
 		}
 
+		public static void ShowQuickInfo (TextEditor textEditor)
+		{
+			textEditor.EditorActionHost.ShowQuickInfo ();
+		}      
+
 
 		public static void TransposeCharacters (TextEditor textEditor)
 		{

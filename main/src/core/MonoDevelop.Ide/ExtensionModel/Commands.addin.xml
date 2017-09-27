@@ -1131,7 +1131,12 @@
 			_description = "Animates the text editor caret to help find it"
 			shortcut = "Ctrl||"
 			macShortcut = "Meta||" />
-			
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowQuickInfo"
+			_label = "Show quick info"
+			_description = "Shows the tooltip at editor positon"
+			shortcut = "Ctrl|F1"
+			macShortcut = "Meta|F1" />
+
 	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.Toggle"
 			disabledVisible = "false"
 			_label = "Hide Current Message"

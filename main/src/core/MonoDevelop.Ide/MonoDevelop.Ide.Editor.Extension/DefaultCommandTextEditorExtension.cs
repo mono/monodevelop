@@ -653,6 +653,12 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var region = Editor.SelectionRegion;
 			ci.Enabled = region.BeginLine != region.EndLine;
 		}
+
+		[CommandHandler (TextEditorCommands.ShowQuickInfo)]
+		void ShowQuickInfo ()
+		{
+			EditActions.ShowQuickInfo (Editor);
+		}
 		#endregion	
 	}
 }
