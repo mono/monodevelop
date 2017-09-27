@@ -19,6 +19,7 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Composition;
 
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -28,56 +29,17 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.Platform
 {
+    [Export]
     public class PlatformCatalog
     {
-        public static readonly PlatformCatalog Instance = new PlatformCatalog();
-
-        public CompositionContainer CompositionContainer { get; }
-
-        PlatformCatalog()
-        {
-            var container = PlatformCatalog.CreateContainer();
-            container.SatisfyImportsOnce(this);
-
-            this.CompositionContainer = container;
-        }
-
-        static CompositionContainer CreateContainer()
-        {
-            // TODO: Read these from manifest.addin.xml?
-            AggregateCatalog catalog = new AggregateCatalog();
-            catalog.Catalogs.Add(new AssemblyCatalog(typeof(PlatformCatalog).Assembly));
-
-            foreach (var node in AddinManager.GetExtensionNodes("/MonoDevelop/Ide/TypeService/PlatformMefHostServices"))
-            {
-                var assemblyNode = node as AssemblyExtensionNode;
-                if (assemblyNode != null)
-                {
-                    try
-                    {
-						// Make sure the add-in that registered the assembly is loaded, since it can bring other
-						// other assemblies required to load this one
-						AddinManager.LoadAddin(null, assemblyNode.Addin.Id);
-
-                        var assemblyFilePath = assemblyNode.Addin.GetFilePath(assemblyNode.FileName);
-                        var assembly = MonoDevelop.Core.Runtime.SystemAssemblyService.LoadAssemblyFrom(assemblyFilePath);
-                        catalog.Catalogs.Add(new AssemblyCatalog(assembly));
-                    }
-                    catch (Exception e)
-                    {
-                        LoggingService.LogError("Workspace can't load assembly " + assemblyNode.FileName + " to host mef services.", e);
-                    }
-                }
-            }
-
-            //Create the CompositionContainer with the parts in the catalog
-            CompositionContainer container = new CompositionContainer(catalog,
-                                                                      CompositionOptions.DisableSilentRejection |
-                                                                      CompositionOptions.IsThreadSafe |
-                                                                      CompositionOptions.ExportCompositionService);
-
-            return container;
-        }
+		static PlatformCatalog instance;
+		public static PlatformCatalog Instance {
+			get {
+				if (instance == null) {
+					instance = CompositionManager.GetExportedValue<PlatformCatalog> ();
+				return instance;
+			}
+		}
 
         [Import]
         internal ITextBufferFactoryService _textBufferFactoryService { get; private set; }
