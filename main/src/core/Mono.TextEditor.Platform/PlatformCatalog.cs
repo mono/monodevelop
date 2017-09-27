@@ -37,6 +37,8 @@ namespace Microsoft.VisualStudio.Platform
 			get {
 				if (instance == null) {
 					instance = CompositionManager.GetExportedValue<PlatformCatalog> ();
+				}
+
 				return instance;
 			}
 		}
