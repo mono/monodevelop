@@ -156,7 +156,7 @@ namespace MonoDevelop.Projects.MSBuild
 			// Reload referenced projects if they have changed in disk. ProjectCollection doesn't do it automatically.
 
 			foreach (var p in project.Imports) {
-				if (p.ImportedProject.LastWriteTimeWhenRead != File.GetLastWriteTime (p.ImportedProject.FullPath))
+				if (File.Exists (p.ImportedProject.FullPath) && p.ImportedProject.LastWriteTimeWhenRead != File.GetLastWriteTime (p.ImportedProject.FullPath))
 					p.ImportedProject.Reload (false);
 			}
 
