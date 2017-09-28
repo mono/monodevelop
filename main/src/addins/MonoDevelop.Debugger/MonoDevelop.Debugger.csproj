@@ -207,6 +207,7 @@
     <Compile Include="MonoDevelop.Debugger\DebugApplicationDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\Styles.cs" />
     <Compile Include="MonoDevelop.Debugger\ProcessAttacher.cs" />
+    <Compile Include="MonoDevelop.Debugger\NoSourceView.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

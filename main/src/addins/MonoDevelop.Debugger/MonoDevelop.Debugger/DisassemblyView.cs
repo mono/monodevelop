@@ -133,7 +133,7 @@ namespace MonoDevelop.Debugger
 				var newFilePath = dlg.SelectedFile;
 				try {
 					if (File.Exists (newFilePath)) {
-						if (SourceCodeLookup.CheckFileMd5 (newFilePath, sf.SourceLocation.FileHash)) {
+						if (SourceCodeLookup.CheckFileHash (newFilePath, sf.SourceLocation.FileHash)) {
 							SourceCodeLookup.AddLoadedFile (newFilePath, sf.SourceLocation.FileName);
 							sf.UpdateSourceFile (newFilePath);
 							if (IdeApp.Workbench.OpenDocument (newFilePath, null, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger) != null) {

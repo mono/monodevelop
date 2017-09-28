@@ -54,7 +54,7 @@ namespace MonoDevelop.Debugger
 				//relativePath = System/Net/Http/HttpClient.cs
 				var newFile = folder.Item2.Combine (relativePath);
 				//newPossiblePath = C:\GIT\mono_source\System\Net\Http\HttpClient.cs
-				if (CheckFileMd5 (newFile, hash)) {
+				if (CheckFileHash (newFile, hash)) {
 					directMapping.Add (originalFile, newFile);
 					return newFile;
 				}
@@ -62,7 +62,7 @@ namespace MonoDevelop.Debugger
 			foreach (var document in IdeApp.Workbench.Documents.Where((d) => d.FileName.FileName == originalFile.FileName)) {
 				//Check if it's already added to avoid MD5 checking
 				if (!directMapping.ContainsKey (originalFile)) {
-					if (CheckFileMd5 (document.FileName, hash)) {
+					if (CheckFileHash (document.FileName, hash)) {
 						AddLoadedFile (document.FileName, originalFile);
 						return document.FileName;
 					}
@@ -71,7 +71,7 @@ namespace MonoDevelop.Debugger
 			foreach (var bp in DebuggingService.Breakpoints.GetBreakpoints().Where((bp) => Path.GetFileName(bp.FileName) == originalFile.FileName)) {
 				//Check if it's already added to avoid MD5 checking
 				if (!directMapping.ContainsKey (originalFile)) {
-					if (CheckFileMd5 (bp.FileName, hash)) {
+					if (CheckFileHash (bp.FileName, hash)) {
 						AddLoadedFile (bp.FileName, originalFile);
 						return bp.FileName;
 					}
@@ -80,12 +80,19 @@ namespace MonoDevelop.Debugger
 			return FilePath.Null;
 		}
 
-		public static bool CheckFileMd5 (FilePath file, byte[] hash)
+		public static bool CheckFileHash (FilePath file, byte[] hash)
 		{
 			if (hash == null)
 				return false;
 			if (File.Exists (file)) {
 				using (var fs = File.OpenRead (file)) {
+					// Roslyn SHA1 checksum always starts with 20
+					if (hash.Length > 0 && hash [0] == 20)
+						using (var sha1 = SHA1.Create ()) {
+							if (sha1.ComputeHash (fs).Take (15).SequenceEqual (hash.Skip (1))) {
+								return true;
+							}
+						}
 					using (var md5 = MD5.Create ()) {
 						if (md5.ComputeHash (fs).SequenceEqual (hash)) {
 							return true;
