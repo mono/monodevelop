@@ -362,7 +362,10 @@ namespace MonoDevelop.Xml.Editor
 
 					var result = await GetAttributeValueCompletions (attributedOb, att, token);
 					if (result != null) {
-						result.TriggerWordLength = Tracker.Engine.CurrentStateLength - 1;
+						if (GetCompletionCommandOffset (out var cpos, out var wlen))
+							result.TriggerWordLength = wlen;
+						else
+							result.TriggerWordLength = 0;
 						return result;
 					}
 					return null;
@@ -378,16 +381,6 @@ namespace MonoDevelop.Xml.Editor
 					Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
 				
 				if (attributedOb == null || !attributedOb.Name.IsValid)
-					return null;
-
-				var currentIsNameStart = XmlNameState.IsValidNameStart (currentChar);
-				var currentIsWhiteSpace = char.IsWhiteSpace (currentChar);
-				var previousIsWhiteSpace = char.IsWhiteSpace (previousChar);
-
-				bool shouldTriggerAttributeCompletion = forced
-					|| (currentIsNameStart && previousIsWhiteSpace)
-					|| currentIsWhiteSpace || ShouldTriggerAttributeCompletion(currentChar);
-				if (!shouldTriggerAttributeCompletion)
 					return null;
 
 				// Parse rest of element to get all attributes
@@ -409,9 +402,11 @@ namespace MonoDevelop.Xml.Editor
 				Tracker.UpdateEngine ();
 				var result = await GetAttributeCompletions (attributedOb, existingAtts, token);
 				if (result != null) {
-					if (!forced && currentIsNameStart)
-						result.TriggerWordLength = 1;
-					result.AutoSelect = !currentIsWhiteSpace;
+					if (GetCompletionCommandOffset (out var cpos, out var wlen))
+						result.TriggerWordLength = wlen;
+					else
+						result.TriggerWordLength = 0;
+					result.AutoSelect = !char.IsWhiteSpace (currentChar);
 					result.AddKeyHandler (new AttributeKeyHandler());
 					return result;
 				}
@@ -419,14 +414,18 @@ namespace MonoDevelop.Xml.Editor
 
 			//element completion
 			if ((currentChar == '<' && tracker.Engine.CurrentState is XmlRootState) ||
-				(ShouldTriggerElementCompletion (currentChar) && tracker.Engine.CurrentState is XmlNameState) ||
-				(tracker.Engine.CurrentState is XmlNameState && forced)) {
+				tracker.Engine.CurrentState is XmlNameState) {
 				var list = await GetElementCompletions (token);
 				if (completionContext.TriggerLine == 1 && completionContext.TriggerOffset == 1) {
 					var encoding = Editor.Encoding.WebName;
 					list.Add (new BaseXmlCompletionData($"?xml version=\"1.0\" encoding=\"{encoding}\" ?>"));
 				}
 				AddCloseTag (list, Tracker.Engine.Nodes);
+				if (tracker.Engine.CurrentState is XmlNameState)
+					if (GetCompletionCommandOffset (out var cpos, out var wlen))
+						list.TriggerWordLength = wlen;
+					else
+						list.TriggerWordLength = 0;
 				return list.Count > 0 ? list : null;
 			}
 
@@ -704,16 +703,6 @@ namespace MonoDevelop.Xml.Editor
 			}
 			wlen = pos - cpos;
 			return true;
-		}
-
-		protected virtual bool ShouldTriggerAttributeCompletion (char c)
-		{
-			return false;
-		}
-
-		protected virtual bool ShouldTriggerElementCompletion (char c)
-		{
-			return false;
 		}
 
 		#endregion
