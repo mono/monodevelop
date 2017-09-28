@@ -918,6 +918,38 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Tests that the %(FileName) metadata is correctly applied to a file from a Update glob.
+		///
+		/// Compile Update="**\*.xaml.cs" DependentUpon="%(Filename)"
+		/// </summary>
+		[Test]
+		public async Task DependentUponUsingFileNameMetadataProperty ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-metadata-prop.csproj");
+				var xamlCSharpFileName = projFile.ParentDirectory.Combine ("test.xaml.cs");
+				File.WriteAllText (xamlCSharpFileName, "csharp");
+				var xamlFileName = projFile.ParentDirectory.Combine ("test.xaml");
+				File.WriteAllText (xamlFileName, "xaml");
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				var xamlCSharpFile = p.Files.Single (fi => fi.FilePath.FileName == "test.xaml.cs");
+				var xamlFile = p.Files.Single (fi => fi.FilePath.FileName == "test.xaml");
+
+				Assert.AreEqual (xamlFileName.ToString (), xamlCSharpFile.DependsOn);
+				Assert.AreEqual (xamlCSharpFile.DependsOnFile, xamlFile);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
 		{
 			internal protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
