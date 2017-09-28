@@ -2845,8 +2845,14 @@ namespace Mono.TextEditor
 			             (int)mx,
 			             (int)my);
 		}
+
+		public void ShowQuickInfo ()
+		{
+			var p = LocationToPoint (Caret.Location);
+			ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y, 0);
+		}
 		
-		void ShowTooltip (Gdk.ModifierType modifierState, int offset, int xloc, int yloc)
+		void ShowTooltip (Gdk.ModifierType modifierState, int offset, int xloc, int yloc, uint timeOut = TooltipTimeout)
 		{
 			CancelScheduledShow ();
 			if (textEditorData.SuppressTooltips)
@@ -2867,10 +2873,9 @@ namespace Mono.TextEditor
 			nextTipOffset = offset;
 			nextTipModifierState = modifierState;
 			nextTipScheduledTime = DateTime.Now + TimeSpan.FromMilliseconds (TooltipTimeout);
-
 			// If a tooltip is already scheduled, there is no need to create a new timer.
 			if (tipShowTimeoutId == 0)
-				tipShowTimeoutId = GLib.Timeout.Add (TooltipTimeout, () => { TooltipTimer (); return false; });
+				tipShowTimeoutId = GLib.Timeout.Add (timeOut, () => { TooltipTimer (); return false; });
 		}
 		
 		async void TooltipTimer ()
@@ -2936,7 +2941,6 @@ namespace Mono.TextEditor
 					return;
 				
 				CancelScheduledShow ();
-
 				tipWindow = tw;
 				currentTooltipProvider = provider;
 				

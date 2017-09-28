@@ -101,7 +101,9 @@ namespace MonoDevelop.Ide.Commands
 
 		DynamicAbbrev,
 
-		PulseCaret
+		PulseCaret,
+
+		ShowQuickInfo
 	}
 	
 	public class ToggleCompletionSuggestionModeHandler : CommandHandler

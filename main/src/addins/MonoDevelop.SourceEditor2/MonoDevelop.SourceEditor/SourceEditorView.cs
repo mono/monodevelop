@@ -3481,6 +3481,11 @@ namespace MonoDevelop.SourceEditor
 			MiscActions.RemoveTab (widget.TextEditor.GetTextEditorData ());
 		}
 
+		void IEditorActionHost.ShowQuickInfo ()
+		{
+			widget.TextEditor.TextArea.ShowQuickInfo ();
+		}
+
 		#endregion
 
 

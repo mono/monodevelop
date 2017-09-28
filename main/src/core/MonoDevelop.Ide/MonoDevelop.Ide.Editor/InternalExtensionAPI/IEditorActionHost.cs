@@ -119,5 +119,7 @@ namespace MonoDevelop.Ide.Editor
 		void IndentSelection ();
 
 		void UnIndentSelection ();
+
+		void ShowQuickInfo ();
 	}
 }
