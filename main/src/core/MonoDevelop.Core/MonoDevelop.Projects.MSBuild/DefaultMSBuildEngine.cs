@@ -321,11 +321,12 @@ namespace MonoDevelop.Projects.MSBuild
 
 					var it = CreateEvaluatedItem (context, project, project.Project, item, update);
 
+					var updateContext = new MSBuildEvaluationContext (context);
 					if (update.IndexOf (';') == -1)
-						UpdateItem (project, item, update, trueCond, it);
+						UpdateItem (project, updateContext, item, update, trueCond, it);
 					else {
 						foreach (var inc in update.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries))
-							UpdateItem (project, item, inc, trueCond, it);
+							UpdateItem (project, updateContext, item, inc, trueCond, it);
 					}
 				} else if (!string.IsNullOrEmpty (item.Remove)) {
 					var remove = context.EvaluateString (item.Remove);
@@ -362,31 +363,38 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		static void UpdateItem (ProjectInfo project, MSBuildItem item, string update, bool trueCond, MSBuildItemEvaluated it)
+		void UpdateItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string update, bool trueCond, MSBuildItemEvaluated it)
 		{
 			if (IsWildcardInclude (update)) {
 				var rootProject = project.GetRootMSBuildProject ();
-				foreach (var f in GetIncludesForWildcardFilePath (rootProject, update))
-					UpdateEvaluatedItemInAllProjects (project, item, f, trueCond, it);
+				foreach (var f in GetIncludesForWildcardFilePath (rootProject, update)) {
+					var fileName = rootProject.BaseDirectory.Combine (f);
+					context.SetItemContext (update, fileName, null);
+					UpdateEvaluatedItemInAllProjects (project, context, item, f, trueCond, it);
+				}
 			} else
-				UpdateEvaluatedItemInAllProjects (project, item, update, trueCond, it);
+				UpdateEvaluatedItemInAllProjects (project, null, item, update, trueCond, it);
 		}
 
-		static void UpdateEvaluatedItemInAllProjects (ProjectInfo project, MSBuildItem item, string include, bool trueCond, MSBuildItemEvaluated it)
+		void UpdateEvaluatedItemInAllProjects (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string include, bool trueCond, MSBuildItemEvaluated it)
 		{
 			do {
-				UpdateEvaluatedItem (project, item, include, trueCond, it);
+				UpdateEvaluatedItem (project, context, item, include, trueCond, it);
 				project = project.Parent;
 			} while (project != null);
 		}
 
-		static void UpdateEvaluatedItem (ProjectInfo project, MSBuildItem item, string include, bool trueCond, MSBuildItemEvaluated it)
+		void UpdateEvaluatedItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string include, bool trueCond, MSBuildItemEvaluated it)
 		{
 			if (trueCond) {
 				foreach (var item2 in project.EvaluatedItems) {
 					if (item2.Name == item.Name && item2.Include == include) {
-						foreach (var evaluatedProp in ((MSBuildPropertyGroupEvaluated)it.Metadata).GetProperties ()) {
-							((MSBuildPropertyGroupEvaluated)item2.Metadata).SetProperty (evaluatedProp.Name, evaluatedProp);
+						if (context != null) {
+							UpdateProperties (project, context, item, item2);
+						} else {
+							foreach (var evaluatedProp in ((MSBuildPropertyGroupEvaluated)it.Metadata).GetProperties ()) {
+								((MSBuildPropertyGroupEvaluated)item2.Metadata).SetProperty (evaluatedProp.Name, evaluatedProp);
+							}
 						}
 						item2.AddSourceItem (item);
 					}
@@ -395,10 +403,24 @@ namespace MonoDevelop.Projects.MSBuild
 
 			foreach (var item2 in project.EvaluatedItemsIgnoringCondition) {
 				if (item2.Name == item.Name && item2.Include == include) {
-					foreach (var evaluatedProp in ((MSBuildPropertyGroupEvaluated)it.Metadata).GetProperties ()) {
-						((MSBuildPropertyGroupEvaluated)item2.Metadata).SetProperty (evaluatedProp.Name, evaluatedProp);
+					if (context != null) {
+						UpdateProperties (project, context, item, item2);
+					} else {
+						foreach (var evaluatedProp in ((MSBuildPropertyGroupEvaluated)it.Metadata).GetProperties ()) {
+							((MSBuildPropertyGroupEvaluated)item2.Metadata).SetProperty (evaluatedProp.Name, evaluatedProp);
+						}
 					}
 					item2.AddSourceItem (item);
+				}
+			}
+		}
+
+		void UpdateProperties (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated evaluatedItem)
+		{
+			foreach (var p in item.Metadata.GetProperties ()) {
+				if (string.IsNullOrEmpty (p.Condition) || SafeParseAndEvaluate (project, context, p.Condition, true)) {
+					var evaluatedProp = new MSBuildPropertyEvaluated (project.Project, p.Name, p.Value, context.EvaluateString (p.Value)) { Condition = p.Condition };
+					((MSBuildPropertyGroupEvaluated)evaluatedItem.Metadata).SetProperty (evaluatedProp.Name, evaluatedProp);
 				}
 			}
 		}
