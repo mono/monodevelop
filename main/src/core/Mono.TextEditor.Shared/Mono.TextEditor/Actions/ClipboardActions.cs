@@ -339,8 +339,12 @@ namespace Mono.TextEditor
 										if (curLine.Length + 1 < lineCol) {
 											result += lineCol - curLine.Length;
 											data.Insert (curLine.Offset + curLine.Length, new string (' ', lineCol - curLine.Length));
+											curLine = data.Document.GetLine (lineNr + i);
 										}
-										data.Insert (curLine.Offset + lineCol, lines [i]);
+										if (curLine.Length == 0)
+											data.Insert(curLine.Offset, lines[i]);
+										else
+											data.Insert (curLine.Offset + lineCol, lines [i]);
 										result += lines [i].Length;
 									}
 									if (!preserveState)

@@ -212,13 +212,15 @@ namespace Mono.TextEditor
 			int offset = Offset;
 			var tabSize = editor.Options.TabSize;
 			if (editor.Options.IndentStyle == IndentStyle.Virtual && Length == 0 && logicalColumn > DocumentLocation.MinColumn) {
-				foreach (char ch in editor.GetIndentationString (Offset)) {
+				var indentString = editor.GetIndentationString (Offset);
+				foreach (char ch in indentString) {
 					if (ch == '\t') {
 						result += tabSize;
 						continue;
 					}
 					result++;
 				}
+				result += Math.Max (0, logicalColumn - indentString.Length - 1);
 				return result;
 			}
 
