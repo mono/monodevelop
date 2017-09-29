@@ -2687,20 +2687,16 @@ namespace Mono.TextEditor
 
 			switch (this.mouseSelectionMode) {
 			case MouseSelectionMode.SingleChar:
-					if (loc.Line != Caret.Line || !textEditor.GetTextEditorData().IsCaretInVirtualLocation)
-					{
-						if (!InSelectionDrag)
-						{
-							textEditor.SetSelection(loc, loc);
-						}
-						else
-						{
-							textEditor.ExtendSelectionTo(loc);
-						}
-						//Caret.Location = loc;
+				if (loc.Line != Caret.Line || !textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
+					if (!InSelectionDrag) {
+						textEditor.SetSelection (loc, loc);
+					} else {
+						textEditor.ExtendSelectionTo (loc);
 					}
-					else
-						return;
+					//Caret.Location = loc;
+				}
+				else
+					return;
 				break;
 			case MouseSelectionMode.Word:
 				if (loc.Line != Caret.Line || !textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {

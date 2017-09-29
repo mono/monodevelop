@@ -1259,7 +1259,7 @@ namespace Mono.TextEditor
 					else
 					{
 						int selectionRange = Math.Abs(selection.Anchor.Column - selection.Lead.Column) * (Math.Abs(selection.Anchor.Line - selection.Lead.Line) + 1);
-						selectionRange -= selection.GetVirtualSpacesCount(textEditorData);
+						selectionRange -= selection.GetVirtualSpacesCount (textEditorData);
 						if (Math.Min(selection.GetAnchorOffset(textEditorData), selection.GetLeadOffset(textEditorData)) < dragOffset)
 							dragOffset -= selectionRange;
 					}
