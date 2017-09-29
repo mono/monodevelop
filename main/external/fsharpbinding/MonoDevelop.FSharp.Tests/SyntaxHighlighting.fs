@@ -1,22 +1,15 @@
 ﻿namespace MonoDevelopTests
 
 open System
+open System.IO
+open System.Threading
 open NUnit.Framework
-open MonoDevelop.FSharp
-open Mono.TextEditor
 open MonoDevelop.Ide.Editor.Highlighting
 open MonoDevelop.Ide.Editor
-open FsUnit
-open System.Threading
-open System.IO
 
 [<TestFixture>]
 type SyntaxHighlighting() =
-    do
-        FixtureSetup.initialiseMonoDevelop()
-
-    let getEditor() =
-        let editor = TextEditorFactory.CreateNewEditor()
+    let setupHighlighting (editor:TextEditor) =
         editor.MimeType <- "text/x-fsharp"
         let assembly = typeof<MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlighting>.Assembly
         use stream = assembly.GetManifestResourceStream("F#.sublime-syntax")
@@ -24,14 +17,14 @@ type SyntaxHighlighting() =
         let highlighting = Sublime3Format.ReadHighlighting(reader)
         highlighting.PrepareMatches()
         editor.SyntaxHighlighting <- new MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlighting(highlighting, editor)
-        editor
 
     let assertStyle (input:string, expectedStyle:string) =
         let offset = input.IndexOf("$")
         let length = input.LastIndexOf("$") - offset - 1
         let input = input.Replace("$", "")
-        let editor = getEditor ()
-        editor.Text <- " " + input
+        let doc = TestHelpers.createDocWithoutParsing (" " + input) "defined"
+        let editor = doc.Editor
+        setupHighlighting editor
         let stack = editor.GetScopeStackAsync(offset+1, CancellationToken.None) |> Async.AwaitTask |> Async.RunSynchronously
         let first = stack |> Seq.head
 
@@ -85,6 +78,7 @@ type SyntaxHighlighting() =
     [<TestCase("let mutable x$ = $1", "source.fs")>]
     [<TestCase("c.Style$ |> $should equal", "source.fs")>]
     [<TestCase("c.Style |> $should$ equal", "entity.name.function")>]
+    [<TestCase("1 |> $fun$ x -> x", "keyword.source.fs")>]
     [<TestCase("match $x$ with", "entity.name.field")>]
     [<TestCase("Unchecked.defaultof<$_$>", "source.fs")>]
     [<TestCase("Seq.$add$", "entity.name.function")>]
