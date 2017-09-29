@@ -8,6 +8,7 @@ open System
 open System.Collections.Generic
 open System.Text.RegularExpressions
 open System.Threading.Tasks
+open Microsoft.CodeAnalysis.Text
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop
 open MonoDevelop.Core
@@ -590,7 +591,7 @@ module Completion =
         }
 
 type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
-    inherit ParameterHintingData (null)
+    inherit ParameterHintingData ()
 
     let getTooltipInformation symbol paramIndex =
         async {
@@ -616,7 +617,7 @@ type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
         Async.StartAsTask(getTooltipInformation symbol (Math.Max(paramIndex, 0)), cancellationToken = cancel)
 
 type FsiParameterHintingData (tooltip: MonoDevelop.FSharp.Shared.ParameterTooltip) =
-    inherit ParameterHintingData (null)
+    inherit ParameterHintingData ()
 
     override x.ParameterCount =
        match tooltip with
@@ -708,7 +709,7 @@ module ParameterHinting =
                             |> Array.map (fun meth -> FsiParameterHintingData (meth) :> ParameterHintingData)
                             |> ResizeArray.ofArray
                         if hintingData.Count > 0 then
-                            return ParameterHintingResult(hintingData, startOffset)
+                            return ParameterHintingResult(hintingData, ApplicableSpan = new TextSpan(startOffset, 0))
                         else
                             return ParameterHintingResult.Empty
                     | _ -> return ParameterHintingResult.Empty
@@ -735,7 +736,7 @@ module ParameterHinting =
                     |> List.map (fun meth -> FSharpParameterHintingData (meth) :> ParameterHintingData)
                     |> ResizeArray.ofList
 
-                return ParameterHintingResult(hintingData, startOffset)
+                return ParameterHintingResult(hintingData, ApplicableSpan = new TextSpan(startOffset, 0))
             | _ -> LoggingService.logWarning "FSharpTextEditorCompletion: Getting Parameter Info: no methods found"
                    return ParameterHintingResult.Empty
         with
