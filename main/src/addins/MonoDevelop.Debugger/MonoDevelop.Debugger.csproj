@@ -208,6 +208,8 @@
     <Compile Include="MonoDevelop.Debugger\Styles.cs" />
     <Compile Include="MonoDevelop.Debugger\ProcessAttacher.cs" />
     <Compile Include="MonoDevelop.Debugger\NoSourceView.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebugSourceFilesOptionsPanel.cs" />
+    <Compile Include="MonoDevelop.Debugger\SolutionHasDebugSourceFilesCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

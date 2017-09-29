@@ -30,6 +30,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Linq;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Debugger
 {
@@ -37,6 +38,7 @@ namespace MonoDevelop.Debugger
 	{
 		readonly static List<Tuple<FilePath,FilePath>> possiblePaths = new List<Tuple<FilePath, FilePath>> ();
 		readonly static Dictionary<FilePath,FilePath> directMapping = new Dictionary<FilePath, FilePath> ();
+		const string DebugSourceFoldersKey = "Debugger.DebugSourceFolders";
 
 		/// <summary>
 		/// Finds the source file.
@@ -74,6 +76,27 @@ namespace MonoDevelop.Debugger
 					if (CheckFileHash (bp.FileName, hash)) {
 						AddLoadedFile (bp.FileName, originalFile);
 						return bp.FileName;
+					}
+				}
+			}
+			var debugSourceFolders = IdeApp.Workspace.GetAllSolutions ().SelectMany (s => s.UserProperties.GetValue<string []> (DebugSourceFoldersKey, Array.Empty<string> ()));
+			if (debugSourceFolders.Any ()) {
+				var folders = ((string)originalFile).Split ('/', '\\');
+				//originalFile=/tmp/ci_build/mono/System/Net/Http/HttpClient.cs
+				for (int i = 0; i < folders.Length; i++) {
+					var partiallyCombined = Path.Combine (folders.Skip (i).ToArray ());
+					//i=0 partiallyCombined=tmp/ci_build/mono/System/Net/Http/HttpClient.cs
+					//i=1 partiallyCombined=ci_build/mono/System/Net/Http/HttpClient.cs
+					//i=2 partiallyCombined=mono/System/Net/Http/HttpClient.cs
+					//i=3 partiallyCombined=System/Net/Http/HttpClient.cs
+					//...
+					//Idea here is... Try with combining longest possbile path 1st
+					foreach (var debugSourceFolder in debugSourceFolders) {
+						var potentialPath = Path.Combine (debugSourceFolder, partiallyCombined);
+						if (CheckFileHash (potentialPath, hash)) {
+							AddLoadedFile (potentialPath, originalFile);
+							return potentialPath;
+						}
 					}
 				}
 			}
@@ -122,6 +145,7 @@ namespace MonoDevelop.Debugger
 			if (fileParent == originalParent) {
 				//This can happen if file was renamed
 				possiblePaths.Add (new Tuple<FilePath, FilePath> (originalParent, fileParent));
+				AddPathToDebugSourceFolders (fileParent);
 			} else {
 				while (fileParent.FileName == originalParent.FileName) {
 					fileParent = fileParent.ParentDirectory;
@@ -130,7 +154,29 @@ namespace MonoDevelop.Debugger
 				//fileParent = C:\GIT\mono_source\
 				//originalParent = /tmp/ci_build/mono/
 				possiblePaths.Add (new Tuple<FilePath, FilePath> (originalParent, fileParent));
+				AddPathToDebugSourceFolders (fileParent);
 			}
+		}
+
+		static void AddPathToDebugSourceFolders (string path)
+		{
+			foreach (var sol in IdeApp.Workspace.GetAllSolutions ()) {
+				var debugSourceFolders = sol.UserProperties.GetValue (DebugSourceFoldersKey, Array.Empty<string> ());
+				if (debugSourceFolders.Contains (path))
+					continue;
+				sol.UserProperties.SetValue (DebugSourceFoldersKey, debugSourceFolders.Union (new [] { path }).ToArray ());
+				sol.SaveUserProperties ().Ignore ();
+			}
+		}
+
+		public static string [] GetDebugSourceFolders (Solution solution)
+		{
+			return solution.UserProperties.GetValue (DebugSourceFoldersKey, Array.Empty<string> ());
+		}
+
+		public static void SetDebugSourceFolders (Solution solution, string [] folders)
+		{
+			solution.UserProperties.SetValue (DebugSourceFoldersKey, folders);
 		}
 	}
 }
