@@ -2,6 +2,7 @@ namespace MonoDevelop.FSharp
 
 open System
 open System.Collections.Generic
+open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Ide.Editor
 open MonoDevelop.UnitTesting
@@ -109,23 +110,21 @@ module unitTestGatherer =
 type FSharpUnitTestTextEditorExtension() =
     inherit AbstractUnitTestTextEditorExtension()
 
+    let emptyResult = ResizeArray<UnitTestLocation>() :> IList<_>
     override x.GatherUnitTests (unitTestMarkers, cancellationToken) =
-        let tests = ResizeArray<UnitTestLocation>()
-
         if x.DocumentContext = null || 
             x.DocumentContext.ParsedDocument = null || 
             not (unitTestGatherer.hasNUnitReference x.DocumentContext.Project) then
-                Threading.Tasks.Task.FromResult (tests :> IList<_>)
+                Threading.Tasks.Task.FromResult emptyResult
         else
         Async.StartAsTask (
             cancellationToken = cancellationToken,
             computation = async {
-                match x.DocumentContext.ParsedDocument.Ast with
-                | :? ParseAndCheckResults as ast ->
+                match x.DocumentContext.TryGetAst() with
+                | Some ast ->
                     let! symbols = ast.GetAllUsesOfAllSymbolsInFile()
-                    tests.AddRange (unitTestGatherer.gatherUnitTests (unitTestMarkers, x.Editor, symbols))
-                | _ -> ()
-                return tests :> IList<_>})
+                    return unitTestGatherer.gatherUnitTests (unitTestMarkers, x.Editor, symbols) :> IList<_>
+                | None -> return emptyResult })
 
 type FSharpNUnitSourceCodeLocationFinder() =
     inherit NUnitSourceCodeLocationFinder()
