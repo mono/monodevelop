@@ -90,6 +90,8 @@ type FsiMemberCompletionData(displayText, completionText, icon) =
                            DisplayFlags = DisplayFlags.DescriptionHasMarkup,
                            Icon = icon)
 
+    let emptyTooltip = TooltipInformation()
+
     override x.CreateTooltipInformation (_smartWrap, cancel) =
         match FSharpInteractivePad.Fsi with
         | Some pad ->
@@ -106,11 +108,11 @@ type FsiMemberCompletionData(displayText, completionText, icon) =
                             let! tooltipInfo = SymbolTooltips.getTooltipInformationFromTip (signature, xmldoc, footer)
                             return tooltipInfo
                         | MonoDevelop.FSharp.Shared.ToolTips.EmptyTip ->
-                            return TooltipInformation()
+                            return emptyTooltip
                     }
                 Async.StartAsTask(computation, cancellationToken = cancel)
-            | _ -> Task.FromResult (TooltipInformation())
-        | _ -> Task.FromResult (TooltipInformation())
+            | _ -> Task.FromResult emptyTooltip
+        | _ -> Task.FromResult emptyTooltip
 
 module Completion = 
     type Context = { 
