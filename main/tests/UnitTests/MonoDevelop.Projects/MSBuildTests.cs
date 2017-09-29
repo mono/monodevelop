@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Xml;
 using NUnit.Framework;
@@ -3037,6 +3038,40 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (4, asms.Length);
 
 			p.Dispose ();
+		}
+
+		/// <summary>
+		/// Tests that metadata from the imported file globs for the Compile update items is not saved
+		/// in the main project file. The DependentUpon property was being saved with the evaluated
+		/// filename.
+		/// 
+		/// Compile Update="**\*.xaml$(DefaultLanguageSourceExtension)" DependentUpon="%(Filename)" SubType="Code"
+		/// </summary>
+		[Test]
+		public async Task SaveNetStandardProjectWithXamarinFormsVersion24PackageReference ()
+		{
+			FilePath solFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms.sln");
+
+			var process = Process.Start ("msbuild", $"/t:Restore {solFile}");
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+			Assert.AreEqual (0, process.ExitCode);
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (Project)sol.Items [0];
+			string expectedProjectXml = File.ReadAllText (p.FileName);
+
+			var xamlCSharpFile = p.Files.Single (fi => fi.FilePath.FileName == "MyPage.xaml.cs");
+			var xamlFile = p.Files.Single (fi => fi.FilePath.FileName == "MyPage.xaml");
+
+			Assert.AreEqual (xamlFile, xamlCSharpFile.DependsOnFile);
+
+			// Ensure the expanded %(FileName) does not get added to the main project on saving.
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (expectedProjectXml, projectXml);
+
+			sol.Dispose ();
 		}
 	}
 

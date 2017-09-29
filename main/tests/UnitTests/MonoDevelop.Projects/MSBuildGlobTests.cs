@@ -694,6 +694,8 @@ namespace MonoDevelop.Projects
 
 			try {
 				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-metadata-prop.csproj");
+				string expectedProjectXml = File.ReadAllText (projFile);
+
 				var xamlCSharpFileName = projFile.ParentDirectory.Combine ("test.xaml.cs");
 				File.WriteAllText (xamlCSharpFileName, "csharp");
 				var xamlFileName = projFile.ParentDirectory.Combine ("test.xaml");
@@ -706,6 +708,12 @@ namespace MonoDevelop.Projects
 
 				Assert.AreEqual (xamlFileName.ToString (), xamlCSharpFile.DependsOn);
 				Assert.AreEqual (xamlCSharpFile.DependsOnFile, xamlFile);
+
+				// Ensure the expanded %(FileName) does not get added to the main project on saving.
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
 
 				p.Dispose ();
 			} finally {
