@@ -417,9 +417,20 @@ namespace MonoDevelop.Projects.MSBuild
 
 		void UpdateProperties (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated evaluatedItem)
 		{
+			var rootProject = project.GetRootMSBuildProject ();
+
 			foreach (var p in item.Metadata.GetProperties ()) {
 				if (string.IsNullOrEmpty (p.Condition) || SafeParseAndEvaluate (project, context, p.Condition, true)) {
-					var evaluatedProp = new MSBuildPropertyEvaluated (project.Project, p.Name, p.Value, context.EvaluateString (p.Value)) { Condition = p.Condition };
+					string evaluatedValue = context.EvaluateString (p.Value);
+					string unevaluatedValue = p.Value;
+
+					if (rootProject != item.ParentProject) {
+						// Use the same evaluated value as the property value so expanded metadata properties from a wildcard
+						// item are not saved in the project file.
+						unevaluatedValue = evaluatedValue;
+					}
+
+					var evaluatedProp = new MSBuildPropertyEvaluated (project.Project, p.Name, unevaluatedValue, evaluatedValue) { Condition = p.Condition };
 					((MSBuildPropertyGroupEvaluated)evaluatedItem.Metadata).SetProperty (evaluatedProp.Name, evaluatedProp);
 				}
 			}
