@@ -202,7 +202,10 @@ contexts:
         2: source.fs
         3: punctuation.section.brackets
   functions2:
-    
+    - match: '(\|>\s?)(fun|function)'
+      captures:
+        1: source.fs
+        2: keyword.source.fs
     - match: '(\|>\s?)([a-z]{1}\w*|``[^`]*``)'
       captures:
         1: source.fs
