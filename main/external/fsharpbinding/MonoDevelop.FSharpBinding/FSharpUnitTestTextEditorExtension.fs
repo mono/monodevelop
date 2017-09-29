@@ -129,10 +129,33 @@ type FSharpUnitTestTextEditorExtension() =
                     return unitTestGatherer.gatherUnitTests (unitTestMarkers, x.Editor, symbols) :> IList<_>
                 | None -> return emptyResult })
 
+module nunitSourceCodeLocationFinder =
+    let tryFindTest fixtureNamespace fixtureTypeName testName (topmostEntity:FSharpEntity) = 
+        let matchesType (ent:FSharpEntity) =
+            let matchesNamespace() = 
+                match topmostEntity.Namespace with
+                | Some ns -> ns = fixtureNamespace
+                | None -> fixtureNamespace = null
+
+            ent.DisplayName = fixtureTypeName && matchesNamespace()
+
+        let rec getEntityAndNestedEntities (entity:FSharpEntity) =
+            seq { yield entity
+                  for child in entity.NestedEntities do
+                      yield! getEntityAndNestedEntities child }
+
+        getEntityAndNestedEntities topmostEntity
+        |> Seq.filter matchesType
+        |> Seq.collect (fun e -> e.MembersFunctionsAndValues)
+        |> Seq.tryFind (fun m -> m.CompiledName = testName)
+
+open nunitSourceCodeLocationFinder
+
 type FSharpNUnitSourceCodeLocationFinder() =
     inherit NUnitSourceCodeLocationFinder()
 
     override x.GetSourceCodeLocationAsync(_project, fixtureNamespace, fixtureTypeName, testName, token) =
+        let tryFindTest' = tryFindTest fixtureNamespace fixtureTypeName testName 
         let computation =
             async {
                 let idx = testName.IndexOf("<") //reasons
@@ -142,25 +165,15 @@ type FSharpNUnitSourceCodeLocationFinder() =
                     else
                         testName
 
-                let matchesType (entity:FSharpEntity) =
-                    let matchesNamespace() = 
-                        match entity.Namespace with
-                        | Some ns -> ns = fixtureNamespace
-                        | _ -> fixtureNamespace = null
-
-                    entity.DisplayName = fixtureTypeName && matchesNamespace()
-
                 let symbol = 
                     Search.getAllFSharpProjects()
                     |> Seq.filter unitTestGatherer.hasNUnitReference
                     |> Seq.map languageService.GetCachedProjectCheckResult
-                    |> Seq.choose (fun c -> c)
-                    |> Seq.filter (fun c -> not c.HasCriticalErrors)       
+                    |> Seq.choose id
+                    |> Seq.filter (fun c -> not c.HasCriticalErrors)
                     |> Seq.collect (fun c -> c.AssemblySignature.Entities)
-                    |> Seq.filter matchesType
-                    |> Seq.collect (fun e -> e.MembersFunctionsAndValues)
-                    |> Seq.tryFind (fun m -> m.CompiledName = testName)
-                             
+                    |> Seq.tryPick tryFindTest'
+
                 match symbol with
                 | Some sym ->
                     let location = sym.ImplementationLocation
