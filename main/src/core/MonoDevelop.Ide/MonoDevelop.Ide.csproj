@@ -9657,6 +9657,7 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\RoslynCompletionData.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\DotNetCompileTargetSelector.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\OSXEditor.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\LineSeparatorTextEditorExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
