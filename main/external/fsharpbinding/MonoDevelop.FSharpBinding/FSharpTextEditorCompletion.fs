@@ -12,7 +12,6 @@ open Microsoft.CodeAnalysis.Text
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop
 open MonoDevelop.Core
-open MonoDevelop.Core.Text
 open MonoDevelop.FSharp.Shared
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
@@ -188,9 +187,9 @@ module Completion =
         else
             None
 
-    let (|LetIdentifier|_|) context =
-        if Regex.IsMatch(context.lineToCaret, "\s?(let!?|override|member|for)\s+[^=:]+$", RegexOptions.Compiled) then
-             Some LetIdentifier
+    let (|OtherIdentifier|_|) context =
+        if Regex.IsMatch(context.lineToCaret, "\s?(let!?|Some|override|member|for)\s+[^=:]+$", RegexOptions.Compiled) then
+             Some OtherIdentifier
         else
             None
 
@@ -574,7 +573,7 @@ module Completion =
                 | FunctionIdentifier -> 
                     return CompletionDataList()
                 | ModuleOrTypeIdentifier
-                | LetIdentifier ->
+                | OtherIdentifier ->
                     return getModifiers completionContext
                 | _ ->
                     if documentContext :? FsiDocumentContext then
