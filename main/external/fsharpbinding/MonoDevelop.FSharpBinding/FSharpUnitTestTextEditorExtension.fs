@@ -11,9 +11,12 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module unitTestGatherer =
     let hasAttributeNamed (att:FSharpAttribute) (unitTestMarkers: IUnitTestMarkers[]) (filter:  string -> IUnitTestMarkers -> bool) =
-        let attributeName = att.AttributeType.FullName
-        unitTestMarkers
-        |> Seq.exists (filter attributeName)
+        let attributeName = att.AttributeType.TryFullName
+        match attributeName with
+        | Some name ->
+            unitTestMarkers
+            |> Seq.exists (filter name)
+        | None -> false
 
     let createTestCase (tc:FSharpAttribute) =
         let sb = Text.StringBuilder()
