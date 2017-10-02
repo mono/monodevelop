@@ -61,7 +61,7 @@ namespace MonoDevelop.Debugger
 
 			label = new Label (BrandingService.BrandApplicationName (GettextCatalog.GetString ("Folders where MonoDevelop should look for debug source files:")));
 			label.Xalign = 0;
-			PackStart (label);
+			PackStart (label, false, false, 0);
 			selector.Directories = new List<string> (SourceCodeLookup.GetDebugSourceFolders (solution));
 			PackStart (selector, true, true, 0);
 			ShowAll ();
