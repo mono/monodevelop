@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Editor
 		[TestCase]
 		public void TestBug58764 ()
 		{
+			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
 			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
 			tww.ViewContent = content;
