@@ -89,6 +89,9 @@ namespace MonoDevelop.Projects.MSBuild
 			public Regex DirectoryExcludeRegex;
 			public Regex RemoveRegex;
 			public bool Condition;
+
+			public List<GlobInfo> Updates;
+			public Regex UpdateRegex;
 		}
 
 		#region implemented abstract members of MSBuildEngine
@@ -366,6 +369,7 @@ namespace MonoDevelop.Projects.MSBuild
 		void UpdateItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string update, bool trueCond, MSBuildItemEvaluated it)
 		{
 			if (IsWildcardInclude (update)) {
+				AddUpdateToGlobInclude (project, item, update);
 				var rootProject = project.GetRootMSBuildProject ();
 				foreach (var f in GetIncludesForWildcardFilePath (rootProject, update)) {
 					var fileName = rootProject.BaseDirectory.Combine (f);
@@ -374,6 +378,19 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			} else
 				UpdateEvaluatedItemInAllProjects (project, null, item, update, trueCond, it);
+		}
+
+		void AddUpdateToGlobInclude (ProjectInfo project, MSBuildItem item, string update)
+		{
+			do {
+				foreach (var globInclude in project.GlobIncludes.Where (g => g.Item.Name == item.Name)) {
+					if (globInclude.Updates == null)
+						globInclude.Updates = new List<GlobInfo> ();
+					var regex = new Regex (ExcludeToRegex (update));
+					globInclude.Updates.Add (new GlobInfo { Include = update, Item = item, UpdateRegex = regex });
+				}
+				project = project.Parent;
+			} while (project != null);
 		}
 
 		void UpdateEvaluatedItemInAllProjects (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string include, bool trueCond, MSBuildItemEvaluated it)
@@ -1370,6 +1387,18 @@ namespace MonoDevelop.Projects.MSBuild
 							continue;
 					}
 					yield return g.Item;
+				}
+			}
+		}
+
+		internal override IEnumerable<MSBuildItem> FindUpdateGlobItemsIncludingFile (object projectInstance, string include, MSBuildItem globItem)
+		{
+			var pi = (ProjectInfo)projectInstance;
+			foreach (var g in pi.GlobIncludes.Where (g => g.Condition && g.Item == globItem && g.Updates != null)) {
+				foreach (var update in g.Updates) {
+					if (update.UpdateRegex.IsMatch (include)) {
+						yield return update.Item;
+					}
 				}
 			}
 		}

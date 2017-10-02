@@ -738,6 +738,8 @@ namespace MonoDevelop.Projects
 				File.WriteAllText (xamlFileName1, "xaml1");
 				var xamlFileName2 = projFile.ParentDirectory.Combine ("MyView2.xaml");
 				File.WriteAllText (xamlFileName2, "xaml2");
+				var xamlCSharpFileName = projFile.ParentDirectory.Combine ("MyView2.xaml.cs");
+				File.WriteAllText (xamlCSharpFileName, "csharpxaml");
 
 				var xamlFile1 = new ProjectFile (xamlFileName1, BuildAction.EmbeddedResource);
 				p.Files.Add (xamlFile1);
@@ -746,6 +748,9 @@ namespace MonoDevelop.Projects
 				var xamlFile2 = new ProjectFile (xamlFileName2, BuildAction.EmbeddedResource);
 				xamlFile2.Generator = "MSBuild:UpdateDesignTimeXaml";
 				p.Files.Add (xamlFile2);
+
+				var xamlCSharpFile = p.AddFile (xamlCSharpFileName);
+				xamlCSharpFile.DependsOn = "MyView2.xaml";
 
 				// Ensure no items are added to the project on saving.
 				await p.SaveAsync (Util.GetMonitor ());
