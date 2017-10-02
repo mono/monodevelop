@@ -176,6 +176,9 @@ namespace MonoDevelop.Debugger
 
 		public static void SetDebugSourceFolders (Solution solution, string [] folders)
 		{
+			// Invalidate existing mappings so new DebugSourceFolders are used.
+			directMapping.Clear ();
+			possiblePaths.Clear ();
 			solution.UserProperties.SetValue (DebugSourceFoldersKey, folders);
 		}
 	}
