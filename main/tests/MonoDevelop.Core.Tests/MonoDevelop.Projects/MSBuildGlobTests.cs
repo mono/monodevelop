@@ -958,6 +958,51 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Test]
+		public async Task AddFile_WildCardHasMetadataProperties ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-metadata-prop.csproj");
+				string expectedProjectXml = File.ReadAllText (projFile);
+
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				var xamlFileName1 = projFile.ParentDirectory.Combine ("MyView1.xaml");
+				File.WriteAllText (xamlFileName1, "xaml1");
+				var xamlFileName2 = projFile.ParentDirectory.Combine ("MyView2.xaml");
+				File.WriteAllText (xamlFileName2, "xaml2");
+
+				var xamlFile1 = new ProjectFile (xamlFileName1, BuildAction.EmbeddedResource);
+				p.Files.Add (xamlFile1);
+
+				// Xaml file but with Generator set that matches that defined in the glob.
+				var xamlFile2 = new ProjectFile (xamlFileName2, BuildAction.EmbeddedResource);
+				xamlFile2.Generator = "MSBuild:UpdateDesignTimeXaml";
+				p.Files.Add (xamlFile2);
+
+				// Ensure no items are added to the project on saving.
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				// Save again. A second save was adding an include for the .xaml file whilst
+				// the first save was not.
+				await p.SaveAsync (Util.GetMonitor ());
+
+				projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
 		{
 			internal protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
