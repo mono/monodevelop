@@ -69,6 +69,7 @@ namespace MonoDevelop.Debugger
 				headerLabel.Font = label.Font.WithScaledSize (2);
 				optionsLabel.Font = label.Font.WithScaledSize (1.5);
 				box.PackStart (browseAndFindLabel);
+				box.PackStart (new Label (GettextCatalog.GetString ("You can manage the locations used to find source files in the Solution Options.")));
 			} else {
 				ContentName = GettextCatalog.GetString ("Source Not Available");
 				var headerLabel = new Label (GettextCatalog.GetString ("Source Not Available"));
