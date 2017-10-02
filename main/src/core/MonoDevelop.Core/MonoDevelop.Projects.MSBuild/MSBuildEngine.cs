@@ -103,6 +103,8 @@ namespace MonoDevelop.Projects.MSBuild
 		public abstract ConditionedPropertyCollection GetConditionedProperties (object projectInstance);
 
 		public abstract IEnumerable<MSBuildItem> FindGlobItemsIncludingFile  (object projectInstance, string include);
+
+		internal abstract IEnumerable<MSBuildItem> FindUpdateGlobItemsIncludingFile (object projectInstance, string include, MSBuildItem globItem);
 	}
 }
 
