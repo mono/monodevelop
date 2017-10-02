@@ -3439,6 +3439,16 @@ namespace MonoDevelop.Projects
 								buildItem = new MSBuildItem (item.ItemName) { Update = item.Include };
 								msproject.AddItem (buildItem);
 							}
+						} else {
+							buildItem = globItem;
+
+							var evaluatedItem = CreateFakeEvaluatedItem (msproject, buildItem, item.Include, sourceItems);
+
+							// Updating properties in the project item may fire events which assume they are
+							// on the UI thread.
+							Runtime.RunInMainThread (() => {
+								item.Read (this, evaluatedItem);
+							}).Wait ();
 						}
 					} else if (item.IsFromWildcardItem && item.ItemName != item.WildcardItem.Name) {
 						include = item.Include;
@@ -3447,8 +3457,10 @@ namespace MonoDevelop.Projects
 					}
 
 					// Add remove item if file is included in a glob with a different MSBuild item type.
+					// But do not add the remove item if the item is already removed with another glob.
 					var removeGlobItem = matchingGlobItems.FirstOrDefault (gi => gi.Name != item.ItemName);
-					if (removeGlobItem != null) {
+					var alreadyRemovedGlobItem = matchingGlobItems.FirstOrDefault (gi => gi.Name == item.ItemName);
+					if (removeGlobItem != null && alreadyRemovedGlobItem == null) {
 						// Do not add the remove item if one already exists or if the Items contains
 						// an include for the item.
 						if (!msproject.GetAllItems ().Any (it => it.Name == removeGlobItem.Name && it.Remove == item.Include) &&
