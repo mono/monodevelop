@@ -3408,8 +3408,9 @@ namespace MonoDevelop.Projects
 					var globItem = matchingGlobItems.FirstOrDefault (gi => gi.Name == item.ItemName);
 
 					if (globItem != null) {
+						var updateGlobItems = msproject.FindUpdateGlobItemsIncludingFile (item.Include, globItem).ToList ();
 						// Globbing magic can only be done if there is no metadata (for now)
-						if (globItem.Metadata.GetProperties ().Count () == 0) {
+						if (globItem.Metadata.GetProperties ().Count () == 0 && !updateGlobItems.Any ()) {
 							var it = new MSBuildItem (item.ItemName);
 							item.Write (this, it);
 							if (it.Metadata.GetProperties ().Count () == 0)
@@ -3439,6 +3440,9 @@ namespace MonoDevelop.Projects
 								buildItem = new MSBuildItem (item.ItemName) { Update = item.Include };
 								msproject.AddItem (buildItem);
 							}
+						} else if (updateGlobItems.Any ()) {
+							// Multiple update items not supported yet.
+							buildItem = updateGlobItems [0];
 						} else {
 							buildItem = globItem;
 
