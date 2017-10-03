@@ -2478,14 +2478,14 @@ namespace Mono.TextEditor
 
 		uint codeSegmentTooltipTimeoutId = 0;
 
-		void ShowTooltip (ISegment segment, Rectangle hintRectangle)
+		internal void ShowTooltip (ISegment segment, Rectangle hintRectangle)
 		{
 			if (previewWindow != null && previewWindow.Segment.Equals (segment))
 				return;
 			CancelCodeSegmentTooltip ();
-			HideCodeSegmentPreviewWindow ();
 			if (segment.IsInvalid () || segment.Length == 0)
 				return;
+			HideCodeSegmentPreviewWindow ();
 			codeSegmentTooltipTimeoutId = GLib.Timeout.Add (650, delegate {
 				codeSegmentTooltipTimeoutId = 0;
 				previewWindow = new CodeSegmentPreviewWindow (textEditor, false, segment);

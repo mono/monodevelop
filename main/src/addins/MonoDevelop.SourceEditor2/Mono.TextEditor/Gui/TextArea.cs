@@ -1047,9 +1047,14 @@ namespace Mono.TextEditor
 			}
 			uint keyVal = (uint)key;
 			CurrentMode.SelectValidShortcut (accels, out key, out mod);
-			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
+			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ShiftMask) {
 				var p = LocationToPoint (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
+				var folding = Document.GetStartFoldings (Caret.Line).FirstOrDefault();
+				if (folding != null) {
+					var height = (int)editor.LineHeight;
+					TextViewMargin.ShowTooltip (folding, new Rectangle (0, height, p.X, p.Y));
+				}
 				return true;
 			}
 			if (key == Gdk.Key.F2 && textViewMargin.IsCodeSegmentPreviewWindowShown) {
@@ -1468,20 +1473,17 @@ namespace Mono.TextEditor
 		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
 		{
 			isMouseTrapped = true;
+			textViewMargin.HideCodeSegmentPreviewWindow ();
 			return base.OnEnterNotifyEvent (evnt);
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{
 			isMouseTrapped = false;
-			if (tipWindow != null && currentTooltipProvider != null) {
+    		if (tipWindow != null && currentTooltipProvider != null)
 				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
 					DelayedHideTooltip ();
-			} else {
-				HideTooltip ();
-			}
-			textViewMargin.HideCodeSegmentPreviewWindow ();
-			
+			HideTooltip ();
 			if (GdkWindow != null)
 				SetCursor (null);
 			if (oldMargin != null)
