@@ -55,21 +55,25 @@ namespace MonoDevelop.Debugger
 			box.Spacing = 10;
 			if (!string.IsNullOrEmpty (fileName)) {
 				ContentName = GettextCatalog.GetString ("Source Not Found");
-				var headerLabel = new Label (GettextCatalog.GetString ("{0} not found", fileName));
+				var headerLabel = new Label ();
+				headerLabel.Markup = GettextCatalog.GetString ("{0} file not found", $"<b>{fileName}</b>");
 				box.PackStart (headerLabel);
-				var label = new Label (GettextCatalog.GetString ("You need to find {0} to view the source for the current call stack frame", fileName));
-				box.PackStart (label);
-
-				var optionsLabel = new Label (GettextCatalog.GetString ("Try one of the following options:"));
-				box.PackStart (optionsLabel);
-
-				var browseAndFindLabel = new Label ();
-				browseAndFindLabel.Markup = $"    - <a href=\"clicked\">{GettextCatalog.GetString ("Browse and find {0}...", fileName)}</a>";
-				browseAndFindLabel.LinkClicked += OpenFindSourceFileDialog;
-				headerLabel.Font = label.Font.WithScaledSize (2);
-				optionsLabel.Font = label.Font.WithScaledSize (1.5);
-				box.PackStart (browseAndFindLabel);
-				box.PackStart (new Label (GettextCatalog.GetString ("You can manage the locations used to find source files in the Solution Options.")));
+				var actionsBox = new HBox ();
+				var buttonBrowseAndFind = new Button (GettextCatalog.GetString ($"Browse and find {fileName}"));
+				buttonBrowseAndFind.Clicked += OpenFindSourceFileDialog;
+				actionsBox.PackStart (buttonBrowseAndFind);
+				box.PackStart (actionsBox);
+				if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
+					var manageLookupsLabel = new Label ();
+					manageLookupsLabel.Markup = GettextCatalog.GetString ("Manage the locations used to find source files in the {0}", $"<a href=\"clicked\">{GettextCatalog.GetString ("Solution Options")}</a>");
+					manageLookupsLabel.LinkClicked += (sender, e) => {
+						if (IdeApp.ProjectOperations.CurrentSelectedSolution == null)
+							return;
+						IdeApp.ProjectOperations.ShowOptions (IdeApp.ProjectOperations.CurrentSelectedSolution, "DebugSourceFiles");
+					};
+					box.PackStart (manageLookupsLabel);
+				}
+				headerLabel.Font = headerLabel.Font.WithScaledSize (2);
 			} else {
 				ContentName = GettextCatalog.GetString ("Source Not Available");
 				var headerLabel = new Label (GettextCatalog.GetString ("Source Not Available"));
@@ -80,7 +84,7 @@ namespace MonoDevelop.Debugger
 			}
 			if (!disassemblyNotSupported) {
 				var labelDisassembly = new Label ();
-				labelDisassembly.Markup = GettextCatalog.GetString ("You can {0} in the Disassembly window.", $"<a href=\"clicked\">{GettextCatalog.GetString ("view disassembly")}</a>");
+				labelDisassembly.Markup = GettextCatalog.GetString ("View disassembly in the {0}", $"<a href=\"clicked\">{GettextCatalog.GetString ("Disassembly Tab")}</a>");
 				labelDisassembly.LinkClicked += (sender, e) => {
 					DebuggingService.ShowDisassembly ();
 					this.WorkbenchWindow.CloseWindow (false);
@@ -100,7 +104,7 @@ namespace MonoDevelop.Debugger
 			return fileName;
 		}
 
-		private void OpenFindSourceFileDialog (object sender, LinkEventArgs e)
+		private void OpenFindSourceFileDialog (object sender, EventArgs e)
 		{
 			var sf = DebuggingService.CurrentFrame;
 			if (sf == null) {
