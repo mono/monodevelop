@@ -369,7 +369,8 @@ namespace MonoDevelop.Projects.MSBuild
 		void UpdateItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string update, bool trueCond, MSBuildItemEvaluated it)
 		{
 			if (IsWildcardInclude (update)) {
-				AddUpdateToGlobInclude (project, item, update);
+				var regex = new Regex (ExcludeToRegex (update));
+				AddUpdateToGlobInclude (project, item, update, regex);
 				var rootProject = project.GetRootMSBuildProject ();
 				foreach (var f in GetIncludesForWildcardFilePath (rootProject, update)) {
 					var fileName = rootProject.BaseDirectory.Combine (f);
@@ -380,14 +381,16 @@ namespace MonoDevelop.Projects.MSBuild
 				UpdateEvaluatedItemInAllProjects (project, null, item, update, trueCond, it);
 		}
 
-		void AddUpdateToGlobInclude (ProjectInfo project, MSBuildItem item, string update)
+		void AddUpdateToGlobInclude (ProjectInfo project, MSBuildItem item, string update, Regex updateRegex)
 		{
 			do {
-				foreach (var globInclude in project.GlobIncludes.Where (g => g.Item.Name == item.Name)) {
+				foreach (var globInclude in project.GlobIncludes) {
+					if (globInclude.Item.Name != item.Name)
+						continue;
+
 					if (globInclude.Updates == null)
 						globInclude.Updates = new List<GlobInfo> ();
-					var regex = new Regex (ExcludeToRegex (update));
-					globInclude.Updates.Add (new GlobInfo { Include = update, Item = item, UpdateRegex = regex });
+					globInclude.Updates.Add (new GlobInfo { Include = update, Item = item, UpdateRegex = updateRegex });
 				}
 				project = project.Parent;
 			} while (project != null);
