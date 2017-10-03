@@ -27,6 +27,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
@@ -76,7 +77,7 @@ namespace MonoDevelop.Xml.Formatting
 
 			labelScopes = new Label {
 				Xalign = 0F,
-				Text = GettextCatalog.GetString ("Enter one or several xpath expressions to which this format applies:")
+				Text = GettextCatalog.GetString ("Enter one or more XPath expressions to which this format applies")
 			};
 
 			tableScopes = new Table (3, 3, false) {
@@ -220,6 +221,11 @@ namespace MonoDevelop.Xml.Formatting
 				la.Xalign = 0;
 				tableScopes.Attach (la, 0, 1, n, n + 1, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
 				var en = new Entry ();
+				en.Accessible.SetCommonAttributes("XmlFormattingPolicyPanel.Entry",
+				                                  null, GettextCatalog.GetString("Enter a new XPath expression to which this format applies"));
+				en.Accessible.SetTitleUIElement(la.Accessible);
+				la.Accessible.SetTitleFor(en.Accessible);
+
 				en.Text = currentFormat.ScopeXPath[capn];
 				tableScopes.Attach (en, 1, 2, n, n + 1, AttachOptions.Expand | AttachOptions.Fill, AttachOptions.Shrink, 0, 0);
 				en.Changed += delegate {
@@ -229,6 +235,9 @@ namespace MonoDevelop.Xml.Formatting
 				uint c = 2;
 				if (currentFormat.ScopeXPath.Count != 1) {
 					var butRem = new Button (new ImageView (Stock.Remove, IconSize.Menu));
+					butRem.Accessible.SetCommonAttributes("XmlFormattingPolicyPanel.Remove",
+					                                      GettextCatalog.GetString("Remove Scope"),
+					                                      GettextCatalog.GetString("Remove this scope expression"));
 					tableScopes.Attach (butRem, 2, 3, n, n + 1, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
 					butRem.Clicked += delegate {
 						currentFormat.ScopeXPath.RemoveAt (capn);
@@ -239,6 +248,9 @@ namespace MonoDevelop.Xml.Formatting
 				}
 				if (n == currentFormat.ScopeXPath.Count - 1) {
 					var butAdd = new Button (new ImageView (Stock.Add, IconSize.Menu));
+					butAdd.Accessible.SetCommonAttributes("XmlFormattingPolicyPanel.Add",
+					                                      GettextCatalog.GetString("Add Scope"),
+					                                      GettextCatalog.GetString("Add a new scope expression"));
 					tableScopes.Attach (butAdd, c, c + 1, n, n + 1, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
 					butAdd.Clicked += delegate {
 						currentFormat.ScopeXPath.Add ("");
