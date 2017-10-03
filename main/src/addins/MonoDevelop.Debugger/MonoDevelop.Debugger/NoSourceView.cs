@@ -59,13 +59,13 @@ namespace MonoDevelop.Debugger
 				headerLabel.Markup = GettextCatalog.GetString ("{0} file not found", $"<b>{fileName}</b>");
 				box.PackStart (headerLabel);
 				var actionsBox = new HBox ();
-				var buttonBrowseAndFind = new Button (GettextCatalog.GetString ($"Browse and find {fileName}"));
+				var buttonBrowseAndFind = new Button (GettextCatalog.GetString ("Browse and find {0}", fileName));
 				buttonBrowseAndFind.Clicked += OpenFindSourceFileDialog;
 				actionsBox.PackStart (buttonBrowseAndFind);
 				box.PackStart (actionsBox);
 				if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
 					var manageLookupsLabel = new Label ();
-					manageLookupsLabel.Markup = GettextCatalog.GetString ("Manage the locations used to find source files in the {0}", $"<a href=\"clicked\">{GettextCatalog.GetString ("Solution Options")}</a>");
+					manageLookupsLabel.Markup = GettextCatalog.GetString ("Manage the locations used to find source files in the {0}", "<a href=\"clicked\">" + GettextCatalog.GetString ("Solution Options") + "</a>");
 					manageLookupsLabel.LinkClicked += (sender, e) => {
 						if (IdeApp.ProjectOperations.CurrentSelectedSolution == null)
 							return;
@@ -84,7 +84,7 @@ namespace MonoDevelop.Debugger
 			}
 			if (!disassemblyNotSupported) {
 				var labelDisassembly = new Label ();
-				labelDisassembly.Markup = GettextCatalog.GetString ("View disassembly in the {0}", $"<a href=\"clicked\">{GettextCatalog.GetString ("Disassembly Tab")}</a>");
+				labelDisassembly.Markup = GettextCatalog.GetString ("View disassembly in the {0}", "<a href=\"clicked\">" + GettextCatalog.GetString ("Disassembly Tab") + "</a>");
 				labelDisassembly.LinkClicked += (sender, e) => {
 					DebuggingService.ShowDisassembly ();
 					this.WorkbenchWindow.CloseWindow (false);
