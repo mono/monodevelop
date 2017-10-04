@@ -1252,8 +1252,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		bool FocusNextArea (DirectionType direction)
 		{
-			var hasUsages = usageCache.Count > 0;
-			var hasTasks = taskCache.Count > 0;
+			var hasUsages = usageCache == null ? false : usageCache.Count > 0;
+			var hasTasks = taskCache == null ? false : taskCache.Count > 0;
 
 			switch (currentFocus) {
 			case FocusWidget.None:

@@ -210,7 +210,7 @@ type ``Template tests``() =
             | errors -> Assert.Fail (sprintf "%A" errors)
         } |> toTask
 
-    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Forms FSharp FormsApp``()= test "Xamarin.Forms.FSharp.FormsApp"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Forms FSharp FormsApp``()= testWithParameters "Xamarin.Forms.FSharp.FormsApp" "Xamarin.Forms.FSharp.FormsApp" "SafeUserDefinedProjectName=Xamarin_Forms_FSharp_FormsApp_Shared"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpPortableLibrary``()= test "FSharpPortableLibrary"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Forms FSharp ClassLibrary``()= test "Xamarin.Forms.FSharp.ClassLibrary"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Forms FSharp UITestApp-Mac``()= test "Xamarin.Forms.FSharp.UITestApp-Mac"
@@ -230,4 +230,4 @@ type ``Template tests``() =
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpNUnitLibraryProject``()= test "FSharpNUnitLibraryProject"
     [<Test;AsyncStateMachine(typeof<Task>)>]
     member x.``Xamarin Forms FSharp FormsApp Shared``() =
-        testWithParameters "Xamarin.Forms.FSharp.FormsApp" "Xamarin.Forms.FSharp.FormsApp.Shared" "CreateSharedAssetsProject=True;CreatePortableDotNetProject=False"
+        testWithParameters "Xamarin.Forms.FSharp.FormsApp" "Xamarin.Forms.FSharp.FormsApp.Shared" "SafeUserDefinedProjectName=Xamarin_Forms_FSharp_FormsApp_Shared;CreateSharedAssetsProject=True;CreatePortableDotNetProject=False"
