@@ -119,6 +119,16 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Text (string text, bool exact)
 		{
+			if (ResultObject is NSTableView) {
+				var control = (NSTableView)ResultObject;
+				for (int i = 0; i < control.ColumnCount;i ++)
+				{
+					var cell = control.GetCell (i, index);
+					var possibleValues = new [] { cell.StringValue, cell.Title, cell.AccessibilityLabel, cell.Identifier, cell.AccessibilityTitle };
+					if (possibleValues.Any (haystack => CheckForText (text, haystack, exact)))
+						return this;
+				}
+			}
 			if (ResultObject is NSControl) {
 				NSControl control = (NSControl)ResultObject;
 				string value = control.StringValue;
@@ -181,6 +191,18 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		public override List<AppResult> Children (bool recursive = true)
+		{
+			if (ResultObject is NSTableView) {
+				var control = (NSTableView)ResultObject;
+				var children = new List<AppResult> ();
+				for (int i = 0; i < control.RowCount; i++)
+					children.Add (new NSObjectResult (control, i));
+				return children;
+			}
+			return base.Children(recursive);
+		}
+
 		public override ObjectProperties Properties ()
 		{
 			return GetProperties (ResultObject);
@@ -188,6 +210,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool Select ()
 		{
+			if (ResultObject is NSTableView) {
+				var control = (NSTableView)ResultObject;
+				control.SelectRow (index, true);
+				control.PerformClick (0, index);
+			}
 			return false;
 		}
 
