@@ -226,10 +226,6 @@ namespace MonoDevelop.Projects.MSBuild
 					list.Insert (index++, new MSBuildImport { Sdk = sdkPath, Project = "Sdk.props" });
 					list.Add (new MSBuildImport { Sdk = sdkPath, Project = "Sdk.targets" });
 				}
-				var nugetPropsPath = $"$(BaseIntermediateOutputPath)\\{pi.Project.FileName.FileName}.nuget.g.props";
-				var nugetTargetsPath = $"$(BaseIntermediateOutputPath)\\{pi.Project.FileName.FileName}.nuget.g.targets";
-				list.Insert (index, new MSBuildImport { Project = nugetPropsPath, Condition = $"Exists('{nugetPropsPath}')" });
-				list.Add (new MSBuildImport { Project = nugetTargetsPath, Condition = $"Exists('{nugetTargetsPath}')" });
 				objects = list;
 			}
 
