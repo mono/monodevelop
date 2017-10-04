@@ -125,6 +125,8 @@ namespace MonoDevelop.CSharp
 				return;
 
 			var selectionAnnotation = ExpandSelectionHandler.GetSelectionAnnotation (doc.Editor);
+			if (selectionAnnotation.Stack.Count == 0)
+				return;
 			selectionAnnotation.Stack.Pop ();
 			if (selectionAnnotation.Stack.Count > 0) {
 				var node = selectionAnnotation.Stack.Peek ();
