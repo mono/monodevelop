@@ -1220,6 +1220,13 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// ProjectName.nuget.g.props and ProjectName.nuget.g.targets files are imported by Microsoft.Common.props
+		/// and Microsoft.Common.targets that are included with Mono:
+		///
+		/// /Library/Frameworks/Mono.framework/Versions/5.4.0/lib/mono/xbuild/15.0/Microsoft.Common.props
+		/// /Library/Frameworks/Mono.framework/Versions/5.4.0/lib/mono/msbuild/15.0/bin/Microsoft.Common.targets
+		/// </summary>
 		[Test]
 		public async Task GeneratedNuGetMSBuildFilesAreImportedWithDotNetCoreProject ()
 		{
