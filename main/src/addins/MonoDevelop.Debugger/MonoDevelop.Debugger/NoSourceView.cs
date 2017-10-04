@@ -116,6 +116,9 @@ namespace MonoDevelop.Debugger
 				ShowEncodingSelector = true,
 				ShowViewerSelector = true
 			};
+			dlg.DirectoryChangedHandler = (s, path) => {
+				return SourceCodeLookup.TryDebugSourceFolders (sf.SourceLocation.FileName, sf.SourceLocation.FileHash, new string [] { path });
+			};
 			if (!dlg.Run ())
 				return;
 			var newFilePath = dlg.SelectedFile;

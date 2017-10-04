@@ -56,7 +56,15 @@ namespace MonoDevelop.MacIntegration
 						CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0,
 					};
 				}
-
+				bool pathAlreadySet = false;
+				panel.DidChangeToDirectory += (sender, e) => {
+					var selectedPath = data.OnDirectoryChanged (this, e.NewDirectoryUrl.AbsoluteString);
+					if (selectedPath.IsNull)
+						return;
+					data.SelectedFiles = new FilePath [] { selectedPath };
+					pathAlreadySet = true;
+					panel.Cancel (panel);
+				};
 				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
 				
 				SelectEncodingPopUpButton encodingSelector = null;
@@ -164,12 +172,12 @@ namespace MonoDevelop.MacIntegration
 						encodingSelector.Enabled = !slnViewerSelected;
 				};
 
-				if (panel.RunModal () == 0) {
+				if (panel.RunModal () == 0 && !pathAlreadySet) {
 					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 					return false;
 				}
-
-				data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
+				if (!pathAlreadySet)
+					data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
 				
 				if (encodingSelector != null)
 					data.Encoding = encodingSelector.SelectedEncodingId > 0 ? Encoding.GetEncoding (encodingSelector.SelectedEncodingId) : null;

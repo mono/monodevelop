@@ -31,6 +31,7 @@ using System.Security.Cryptography;
 using System.Linq;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
@@ -79,24 +80,32 @@ namespace MonoDevelop.Debugger
 					}
 				}
 			}
-			var debugSourceFolders = IdeApp.Workspace.GetAllSolutions ().SelectMany (s => s.UserProperties.GetValue<string []> (DebugSourceFoldersKey, Array.Empty<string> ()));
+			var debugSourceFolders = IdeApp.Workspace.GetAllSolutions ().SelectMany (s => s.UserProperties.GetValue (DebugSourceFoldersKey, Array.Empty<string> ()));
 			if (debugSourceFolders.Any ()) {
-				var folders = ((string)originalFile).Split ('/', '\\');
-				//originalFile=/tmp/ci_build/mono/System/Net/Http/HttpClient.cs
-				for (int i = 0; i < folders.Length; i++) {
-					var partiallyCombined = Path.Combine (folders.Skip (i).ToArray ());
-					//i=0 partiallyCombined=tmp/ci_build/mono/System/Net/Http/HttpClient.cs
-					//i=1 partiallyCombined=ci_build/mono/System/Net/Http/HttpClient.cs
-					//i=2 partiallyCombined=mono/System/Net/Http/HttpClient.cs
-					//i=3 partiallyCombined=System/Net/Http/HttpClient.cs
-					//...
-					//Idea here is... Try with combining longest possbile path 1st
-					foreach (var debugSourceFolder in debugSourceFolders) {
-						var potentialPath = Path.Combine (debugSourceFolder, partiallyCombined);
-						if (CheckFileHash (potentialPath, hash)) {
-							AddLoadedFile (potentialPath, originalFile);
-							return potentialPath;
-						}
+				var result = TryDebugSourceFolders (originalFile, hash, debugSourceFolders);
+				if (result.IsNotNull)
+					return result;
+			}
+			return FilePath.Null;
+		}
+
+		public static FilePath TryDebugSourceFolders (FilePath originalFile, byte[] hash, IEnumerable<string> debugSourceFolders)
+		{
+			var folders = ((string)originalFile).Split ('/', '\\');
+			//originalFile=/tmp/ci_build/mono/System/Net/Http/HttpClient.cs
+			for (int i = 0; i < folders.Length; i++) {
+				var partiallyCombined = Path.Combine (folders.Skip (i).ToArray ());
+				//i=0 partiallyCombined=tmp/ci_build/mono/System/Net/Http/HttpClient.cs
+				//i=1 partiallyCombined=ci_build/mono/System/Net/Http/HttpClient.cs
+				//i=2 partiallyCombined=mono/System/Net/Http/HttpClient.cs
+				//i=3 partiallyCombined=System/Net/Http/HttpClient.cs
+				//...
+				//Idea here is... Try with combining longest possbile path 1st
+				foreach (var debugSourceFolder in debugSourceFolders) {
+					var potentialPath = Path.Combine (debugSourceFolder, partiallyCombined);
+					if (CheckFileHash (potentialPath, hash)) {
+						AddLoadedFile (potentialPath, originalFile);
+						return potentialPath;
 					}
 				}
 			}
