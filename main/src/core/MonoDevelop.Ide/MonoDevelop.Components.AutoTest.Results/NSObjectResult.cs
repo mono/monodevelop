@@ -212,8 +212,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			if (ResultObject is NSTableView) {
 				var control = (NSTableView)ResultObject;
-				control.SelectRow (index, true);
-				control.PerformClick (0, index);
+				LoggingService.LogInfo($"Found NSTableView with index: {index}");
+				if (index >= 0)
+				{
+					LoggingService.LogInfo ($"Selecting row '{index}' of ");
+					control.SelectRow(index, true);
+					control.PerformClick(0, index);
+				}
 				return true;
 			}
 			return false;
