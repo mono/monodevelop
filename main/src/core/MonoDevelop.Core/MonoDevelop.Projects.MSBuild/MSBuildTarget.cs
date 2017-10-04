@@ -229,6 +229,11 @@ namespace MonoDevelop.Projects.MSBuild
 			task.RemoveIndent ();
 			ChildNodes = ChildNodes.Remove (task);
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("<Target Name='{0}'>", Name);
+		}
 	}
 
 	public interface IMSBuildTargetEvaluated
