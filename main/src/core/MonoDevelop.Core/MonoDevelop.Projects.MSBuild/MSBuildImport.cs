@@ -126,6 +126,11 @@ namespace MonoDevelop.Projects.MSBuild
 			writer.WriteAttributeString ("Condition", cond);
 			writer.WriteEndElement ();
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("<Import Project='{0}'>", Project);
+		}
 	}
 
 }
