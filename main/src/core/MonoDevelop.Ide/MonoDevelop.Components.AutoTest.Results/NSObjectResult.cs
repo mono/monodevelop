@@ -214,6 +214,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				var control = (NSTableView)ResultObject;
 				control.SelectRow (index, true);
 				control.PerformClick (0, index);
+				return true;
 			}
 			return false;
 		}
