@@ -56,7 +56,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override string ToString ()
 		{
-			return string.Format ("NSObject: Type: {0}", ResultObject.GetType ().FullName);
+			return string.Format ("NSObject: Type: {0} {1}", ResultObject.GetType ().FullName, this.index);
 		}
 
 		public override void ToXml (XmlElement element)
@@ -126,7 +126,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 				for (int i = 0; i < control.ColumnCount;i ++)
 				{
 					var cell = control.GetCell (i, index);
-					if (GetPossibleNSCellValues(cell).Any (haystack => CheckForText (text, haystack, exact)))
+					var possValues = GetPossibleNSCellValues (cell);
+					LoggingService.LogInfo ($"Possible values for NSTableView with column {i} and row {index} -> "+string.Join (", ", possValues));
+					if (possValues.Any (haystack => CheckForText (text, haystack, exact)))
 						return this;
 				}
 			}
@@ -197,8 +199,10 @@ namespace MonoDevelop.Components.AutoTest.Results
 			if (ResultObject is NSTableView) {
 				var control = (NSTableView)ResultObject;
 				var children = new List<AppResult> ();
-				for (int i = 0; i < control.RowCount; i++)
+				for (int i = 0; i < control.RowCount; i++) {
+					LoggingService.LogInfo ($"Found row {i} of NSTableView -  {control.Identifier} - {control.AccessibilityIdentifier}");
 					children.Add (new NSObjectResult (control, i));
+				}
 				return children;
 			}
 			return base.Children(recursive);
