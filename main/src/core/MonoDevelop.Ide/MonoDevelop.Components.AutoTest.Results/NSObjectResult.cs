@@ -117,6 +117,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		protected string[] GetPossibleNSCellValues (NSCell cell) =>
+		new [] { cell.StringValue, cell.Title, cell.AccessibilityLabel, cell.Identifier, cell.AccessibilityTitle };
 		public override AppResult Text (string text, bool exact)
 		{
 			if (ResultObject is NSTableView) {
@@ -124,8 +126,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				for (int i = 0; i < control.ColumnCount;i ++)
 				{
 					var cell = control.GetCell (i, index);
-					var possibleValues = new [] { cell.StringValue, cell.Title, cell.AccessibilityLabel, cell.Identifier, cell.AccessibilityTitle };
-					if (possibleValues.Any (haystack => CheckForText (text, haystack, exact)))
+					if (GetPossibleNSCellValues(cell).Any (haystack => CheckForText (text, haystack, exact)))
 						return this;
 				}
 			}
