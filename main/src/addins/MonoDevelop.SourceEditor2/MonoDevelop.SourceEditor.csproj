@@ -12,6 +12,7 @@
     <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
+    <CopyNuGetImplementations>false</CopyNuGetImplementations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

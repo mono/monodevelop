@@ -23,6 +23,7 @@
     <ConsolePause>False</ConsolePause>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.xml</DocumentationFile>
+    <CopyNuGetImplementations>false</CopyNuGetImplementations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
