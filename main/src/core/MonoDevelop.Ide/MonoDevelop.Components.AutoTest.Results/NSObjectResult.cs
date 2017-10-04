@@ -103,11 +103,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
-		public override AppResult Selected ()
-		{
-			return null;
-		}
-
 		public override AppResult CheckType (Type desiredType)
 		{
 			if (ResultObject.GetType () == desiredType || ResultObject.GetType ().IsSubclassOf (desiredType)) {
@@ -221,6 +216,16 @@ namespace MonoDevelop.Components.AutoTest.Results
 				control.PerformClick (0, index);
 			}
 			return false;
+		}
+
+		public override AppResult Selected ()
+		{
+			if (ResultObject is NSTableView) {
+				var control = (NSTableView)ResultObject;
+				if(control.SelectedRow == index || control.SelectedRows.Contains((nuint)index))
+					return this;
+			}
+			return null;
 		}
 
 		public override bool Click ()
