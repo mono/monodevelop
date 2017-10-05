@@ -51,7 +51,7 @@ csproj_clean:
 
 sln_build:
 	@echo Building $(MAIN_SLN)
-	$(XBUILD) $(XBUILD_ARGS) /bl:MonoDevelop.binlog $(MAIN_SLN) $(XBUILD_PROFILE)
+	ok=:; $(XBUILD) $(XBUILD_ARGS) /bl:MonoDevelop.binlog $(MAIN_SLN) $(XBUILD_PROFILE) || ok=false; echo @MonkeyWrench: AddFile: $$(pwd)/MonoDevelop.binlog; $$ok
 
 sln_clean:
 	@echo Cleaning $(MAIN_SLN)
