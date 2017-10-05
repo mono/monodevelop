@@ -453,7 +453,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var entry in projectionList) {
 					if (entry?.File?.FilePath == projectFile.FilePath) {
 						projectionList = projectionList.Remove (entry);
-						entry.Dispose ();
+						// Since it's disposing projected editor, it needs to dispose in MainThread.
+						Runtime.RunInMainThread(() => entry.Dispose()).Ignore();
 						break;
 					}
 				}
