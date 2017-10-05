@@ -722,6 +722,10 @@ namespace Mono.TextEditor
 
 		bool UpdateCaret ()
 		{
+			if (!Settings.Default.CursorBlink) {
+				caretBlink = true;
+				return true;
+			}
 			caretBlink = !caretBlink;
 			textEditor.TextArea.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom,
 			                          (int)(caretRectangle.Y + (textEditor.VAdjustment.Value - caretVAdjustmentValue)),
