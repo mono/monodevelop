@@ -260,8 +260,9 @@ namespace MonoDevelop.Components
 
 	internal class TextIndexer
 	{
+		static System.Collections.Generic.List<int> emptyList = new System.Collections.Generic.List<int> ();
 		int [] indexToByteIndex;
-		int [] byteIndexToIndex;
+		System.Collections.Generic.List<int> byteIndexToIndex;
 
 		public TextIndexer (string text)
 		{
@@ -285,24 +286,27 @@ namespace MonoDevelop.Components
 
 		public void SetupTables (string text)
 		{
-			if (text == null) {
-				this.indexToByteIndex = new int [0];
-				this.byteIndexToIndex = new int [0];
+			if (string.IsNullOrEmpty (text)) {
+				this.indexToByteIndex = Array.Empty<int> ();
+				this.byteIndexToIndex = emptyList;
 				return;
 			}
 
-			var arr = text.ToCharArray ();
 			int byteIndex = 0;
-			int [] indexToByteIndex = new int [arr.Length];
-			var byteIndexToIndex = new System.Collections.Generic.List<int> ();
-			for (int i = 0; i < arr.Length; i++) {
-				indexToByteIndex [i] = byteIndex;
-				byteIndex += System.Text.Encoding.UTF8.GetByteCount (arr, i, 1);
-				while (byteIndexToIndex.Count < byteIndex)
-					byteIndexToIndex.Add (i);
+			int [] indexToByteIndex = new int [text.Length];
+			var byteIndexToIndex = new System.Collections.Generic.List<int> (text.Length);
+			unsafe {
+				fixed (char *p = text) {
+					for (int i = 0; i < text.Length; i++) {
+						indexToByteIndex [i] = byteIndex;
+						byteIndex += System.Text.Encoding.UTF8.GetByteCount (p + i, 1);
+						while (byteIndexToIndex.Count < byteIndex)
+							byteIndexToIndex.Add (i);
+						}
+					}
 			}
 			this.indexToByteIndex = indexToByteIndex;
-			this.byteIndexToIndex = byteIndexToIndex.ToArray ();
+			this.byteIndexToIndex = byteIndexToIndex;
 		}
 	}
 }
