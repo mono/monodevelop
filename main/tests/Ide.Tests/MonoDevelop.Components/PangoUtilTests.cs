@@ -33,6 +33,7 @@ namespace MonoDevelop.Components
 	{
 		[TestCase ("Test", 3, 3, 3, 3)]
 		[TestCase ("バージョン", 1, 3, 3, 1)]
+		[TestCase ("バージョン", 1, 3, 4, 1)]
 		public void TextIndexerWorks (string arg, int index, int indexToByteIndex, int byteIndex, int byteIndexToIndex)
 		{
 			var indexer = new TextIndexer (arg);
