@@ -1330,6 +1330,9 @@ namespace MonoDevelop.Components
 				buffer.Clear ();
 				var mark = buffer.CreateMark (null, iter, false);
 				var attrIter = attrList.Iterator;
+				//HACK: the parsed attribute indexes are byte based and need to be converted
+				//      to char indexes. Otherwise they won't match multibyte characters.
+				var indexer = new TextIndexer (text);
 
 				do {
 					int start, end;
@@ -1337,9 +1340,12 @@ namespace MonoDevelop.Components
 					attrIter.Range (out start, out end);
 
 					if (end == int.MaxValue) // last chunk
-						end = text.Length - 1;
+						end = indexer.IndexToByteIndex (text.Length - 1);
 					if (end <= start)
 						break;
+
+					start = indexer.ByteIndexToIndex (start);
+					end = indexer.ByteIndexToIndex (end);
 
 					TextTag tag;
 					if (attrIter.GetTagForAttributes (null, out tag)) {

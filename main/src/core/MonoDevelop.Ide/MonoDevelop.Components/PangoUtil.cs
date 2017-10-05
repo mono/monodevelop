@@ -257,4 +257,52 @@ namespace MonoDevelop.Components
 			});
 		}
 	}
+
+	internal class TextIndexer
+	{
+		int [] indexToByteIndex;
+		int [] byteIndexToIndex;
+
+		public TextIndexer (string text)
+		{
+			SetupTables (text);
+		}
+
+		public int IndexToByteIndex (int i)
+		{
+			if (i >= indexToByteIndex.Length)
+				// if the index exceeds the byte index range, return the last byte index + 1
+				// telling pango to span the attribute to the end of the string
+				// this happens if the string contains multibyte characters
+				return indexToByteIndex [i - 1] + 1;
+			return indexToByteIndex [i];
+		}
+
+		public int ByteIndexToIndex (int i)
+		{
+			return byteIndexToIndex [i];
+		}
+
+		public void SetupTables (string text)
+		{
+			if (text == null) {
+				this.indexToByteIndex = new int [0];
+				this.byteIndexToIndex = new int [0];
+				return;
+			}
+
+			var arr = text.ToCharArray ();
+			int byteIndex = 0;
+			int [] indexToByteIndex = new int [arr.Length];
+			var byteIndexToIndex = new System.Collections.Generic.List<int> ();
+			for (int i = 0; i < arr.Length; i++) {
+				indexToByteIndex [i] = byteIndex;
+				byteIndex += System.Text.Encoding.UTF8.GetByteCount (arr, i, 1);
+				while (byteIndexToIndex.Count < byteIndex)
+					byteIndexToIndex.Add (i);
+			}
+			this.indexToByteIndex = indexToByteIndex;
+			this.byteIndexToIndex = byteIndexToIndex.ToArray ();
+		}
+	}
 }
