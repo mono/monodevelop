@@ -2,6 +2,10 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
+    <ReferencesVSEditorCopyToOutput>true</ReferencesVSEditorCopyToOutput>
+  </PropertyGroup>
+  <Import Project="$(ReferencesVSEditor)" />
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{7525BB88-6142-4A26-93B9-A30C6983390A}</ProjectGuid>
