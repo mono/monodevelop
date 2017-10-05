@@ -56,7 +56,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override string ToString ()
 		{
-			return string.Format ("NSObject: Type: {0}", ResultObject.GetType ().FullName);
+			return string.Format ("NSObject: Type: {0} {1}", ResultObject.GetType ().FullName, this.index);
 		}
 
 		public override void ToXml (XmlElement element)
@@ -103,11 +103,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
-		public override AppResult Selected ()
-		{
-			return null;
-		}
-
 		public override AppResult CheckType (Type desiredType)
 		{
 			if (ResultObject.GetType () == desiredType || ResultObject.GetType ().IsSubclassOf (desiredType)) {
@@ -117,8 +112,21 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		protected string[] GetPossibleNSCellValues (NSCell cell) =>
+		new [] { cell.StringValue, cell.Title, cell.AccessibilityLabel, cell.Identifier, cell.AccessibilityTitle };
 		public override AppResult Text (string text, bool exact)
 		{
+			if (ResultObject is NSTableView) {
+				var control = (NSTableView)ResultObject;
+				for (int i = 0; i < control.ColumnCount;i ++)
+				{
+					var cell = control.GetCell (i, index);
+					var possValues = GetPossibleNSCellValues (cell);
+					LoggingService.LogInfo ($"Possible values for NSTableView with column {i} and row {index} -> "+string.Join (", ", possValues));
+					if (possValues.Any (haystack => CheckForText (text, haystack, exact)))
+						return this;
+				}
+			}
 			if (ResultObject is NSControl) {
 				NSControl control = (NSControl)ResultObject;
 				string value = control.StringValue;
@@ -181,6 +189,20 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		public override List<AppResult> Children (bool recursive = true)
+		{
+			if (ResultObject is NSTableView) {
+				var control = (NSTableView)ResultObject;
+				var children = new List<AppResult> ();
+				for (int i = 0; i < control.RowCount; i++) {
+					LoggingService.LogInfo ($"Found row {i} of NSTableView -  {control.Identifier} - {control.AccessibilityIdentifier}");
+					children.Add (new NSObjectResult (control, i));
+				}
+				return children;
+			}
+			return base.Children(recursive);
+		}
+
 		public override ObjectProperties Properties ()
 		{
 			return GetProperties (ResultObject);
@@ -188,7 +210,28 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool Select ()
 		{
+			if (ResultObject is NSTableView) {
+				var control = (NSTableView)ResultObject;
+				LoggingService.LogInfo($"Found NSTableView with index: {index}");
+				if (index >= 0)
+				{
+					LoggingService.LogInfo ($"Selecting row '{index}' of ");
+					control.SelectRow(index, true);
+					control.PerformClick(0, index);
+				}
+				return true;
+			}
 			return false;
+		}
+
+		public override AppResult Selected ()
+		{
+			if (ResultObject is NSTableView) {
+				var control = (NSTableView)ResultObject;
+				if(control.SelectedRow == index || control.SelectedRows.Contains((nuint)index))
+					return this;
+			}
+			return null;
 		}
 
 		public override bool Click ()
