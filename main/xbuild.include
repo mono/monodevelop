@@ -51,7 +51,7 @@ csproj_clean:
 
 sln_build:
 	@echo Building $(MAIN_SLN)
-	$(XBUILD) $(XBUILD_ARGS) $(MAIN_SLN) $(XBUILD_PROFILE)
+	$(XBUILD) $(XBUILD_ARGS) /bl:MonoDevelop.binlog $(MAIN_SLN) $(XBUILD_PROFILE)
 
 sln_clean:
 	@echo Cleaning $(MAIN_SLN)
