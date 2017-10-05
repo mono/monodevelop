@@ -257,6 +257,7 @@ namespace MonoDevelop.Components
 				}
 			}
 
+			TextElement[] textElements;
 			void CalcAccessibility ()
 			{
 				var columnElement = new AtkCocoaHelper.AccessibilityElementProxy ();
@@ -264,7 +265,9 @@ namespace MonoDevelop.Components
 				columnElement.SetRole (AtkCocoa.Roles.AXColumn);
 				Accessible.AddAccessibleElement (columnElement);
 
-				for (int i = 0; i < win.DataProvider.IconCount; i++) {
+				int count = win.DataProvider.IconCount;
+				textElements = new TextElement[count];
+				for (int i = 0; i < count; i++) {
 					var rowElement = new AtkCocoaHelper.AccessibilityElementProxy ();
 					rowElement.GtkParent = this;
 					rowElement.SetRole (AtkCocoa.Roles.AXRow);
@@ -276,7 +279,7 @@ namespace MonoDevelop.Components
 					columnElement.AddAccessibleChild (cellElement);
 					rowElement.AddAccessibleChild (cellElement);
 
-					var textElement = new TextElement ();
+					var textElement = textElements[i] = new TextElement ();
 					textElement.RowIndex = i;
 					textElement.PerformPress += PerformPress;
 					textElement.GtkParent = this;
@@ -287,7 +290,7 @@ namespace MonoDevelop.Components
 
 			void PerformPress (object sender, EventArgs args)
 			{
-				var element = sender as TextElement;
+				var element = (TextElement)sender;
 				win.DataProvider.ActivateItem (element.RowIndex);
 			}
 
@@ -313,6 +316,13 @@ namespace MonoDevelop.Components
 
 			protected override void OnDestroyed ()
 			{
+				if (textElements != null) {
+					foreach (var textElement in textElements) {
+						textElement.PerformPress -= PerformPress;
+					}
+					textElements = null;
+				}
+
 				if (layout != null) {
 					layout.Dispose ();
 					layout = null;
