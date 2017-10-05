@@ -383,8 +383,13 @@ namespace MonoDevelop.Components
 		
 		public void Dispose ()
 		{
+			if (Accessible != null) {
+				Accessible.PerformPress -= OnTabPressed;
+				Accessible = null;
+			}
+
 			if (layout != null)
-				layout.Dispose ();
+				layout.Dispose();
 		}
 
 		public AtkCocoaHelper.AccessibilityElementProxy Accessible { get; private set; }
