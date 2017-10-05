@@ -44,7 +44,7 @@ namespace MonoDevelop.Components
 		Right
 	}
 	
-	public class PathEntry 
+	public class PathEntry : IDisposable
 	{
 		Xwt.Drawing.Image darkIcon;
 
@@ -135,6 +135,14 @@ namespace MonoDevelop.Components
 		void OnPerformShowMenu (object sender, EventArgs e)
 		{
 			PerformShowMenu?.Invoke (this, EventArgs.Empty);
+		}
+
+		public void Dispose ()
+		{
+			if (accessible != null) {
+				accessible.PerformPress -= OnPerformShowMenu;
+				accessible = null;
+			}
 		}
 	}
 	
@@ -233,11 +241,22 @@ namespace MonoDevelop.Components
 			Accessible.ReplaceAccessibilityElements (elements);
 		}
 
+		void DisposeProxies()
+		{
+			if (Path == null)
+				return;
+
+			foreach (var entry in Path) {
+				entry.PerformShowMenu -= PerformShowMenu;
+			}
+		}
+
 		public void SetPath (PathEntry[] path)
 		{
 			if (ArrSame (this.leftPath, path))
 				return;
 
+			DisposeProxies ();
 			HideMenu ();
 
 			this.Path = path ?? new PathEntry[0];

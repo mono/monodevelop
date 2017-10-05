@@ -155,8 +155,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (mapMode != null) {
 				mapMode.Destroy ();
 				mapMode = null;
+			}
+			if (overviewMode != null) {
+				overviewMode.Destroy ();
 				overviewMode = null;
 			}
+
 			if (EnableFancyFeatures) {
 				switch (ScrollBarMode) {
 				case ScrollBarMode.Overview:
