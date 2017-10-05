@@ -3346,14 +3346,6 @@ namespace MonoDevelop.Projects
 							buildItem = updateGlobItems [0];
 						} else {
 							buildItem = globItem;
-
-							var evaluatedItem = CreateFakeEvaluatedItem (msproject, buildItem, item.Include, sourceItems);
-
-							// Updating properties in the project item may fire events which assume they are
-							// on the UI thread.
-							Runtime.RunInMainThread (() => {
-								item.Read (this, evaluatedItem);
-							}).Wait ();
 						}
 					} else if (item.IsFromWildcardItem && item.ItemName != item.WildcardItem.Name) {
 						include = item.Include;

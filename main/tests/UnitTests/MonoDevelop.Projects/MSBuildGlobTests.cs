@@ -736,21 +736,17 @@ namespace MonoDevelop.Projects
 
 				var xamlFileName1 = projFile.ParentDirectory.Combine ("MyView1.xaml");
 				File.WriteAllText (xamlFileName1, "xaml1");
-				var xamlFileName2 = projFile.ParentDirectory.Combine ("MyView2.xaml");
-				File.WriteAllText (xamlFileName2, "xaml2");
-				var xamlCSharpFileName = projFile.ParentDirectory.Combine ("MyView2.xaml.cs");
+				var xamlCSharpFileName = projFile.ParentDirectory.Combine ("MyView1.xaml.cs");
 				File.WriteAllText (xamlCSharpFileName, "csharpxaml");
 
+				// Xaml file with Generator and Subtype set to match that defined in the glob.
 				var xamlFile1 = new ProjectFile (xamlFileName1, BuildAction.EmbeddedResource);
+				xamlFile1.Generator = "MSBuild:UpdateDesignTimeXaml";
+				xamlFile1.ContentType = "Designer";
 				p.Files.Add (xamlFile1);
 
-				// Xaml file but with Generator set that matches that defined in the glob.
-				var xamlFile2 = new ProjectFile (xamlFileName2, BuildAction.EmbeddedResource);
-				xamlFile2.Generator = "MSBuild:UpdateDesignTimeXaml";
-				p.Files.Add (xamlFile2);
-
 				var xamlCSharpFile = p.AddFile (xamlCSharpFileName);
-				xamlCSharpFile.DependsOn = "MyView2.xaml";
+				xamlCSharpFile.DependsOn = "MyView1.xaml";
 
 				// Ensure no items are added to the project on saving.
 				await p.SaveAsync (Util.GetMonitor ());
