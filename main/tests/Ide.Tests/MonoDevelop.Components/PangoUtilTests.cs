@@ -31,15 +31,56 @@ namespace MonoDevelop.Components
 	[TestFixture]
 	public class PangoUtilTests
 	{
-		[TestCase ("Test", 3, 3, 3, 3)]
-		[TestCase ("バージョン", 1, 3, 3, 1)]
-		[TestCase ("バージョン", 1, 3, 4, 1)]
-		public void TextIndexerWorks (string arg, int index, int indexToByteIndex, int byteIndex, int byteIndexToIndex)
+		[Test]
+		public void TextIndexerAscii ()
 		{
-			var indexer = new TextIndexer (arg);
+			var str = "Test";
+			var indexer = new TextIndexer (str);
 
-			Assert.AreEqual (indexToByteIndex, indexer.IndexToByteIndex (index));
-			Assert.AreEqual (byteIndexToIndex, indexer.ByteIndexToIndex (byteIndex));
+			Assert.AreEqual (0, indexer.IndexToByteIndex (0));
+			Assert.AreEqual (0, indexer.ByteIndexToIndex (0));
+			Assert.AreEqual (1, indexer.IndexToByteIndex (1));
+			Assert.AreEqual (1, indexer.ByteIndexToIndex (1));
+			Assert.AreEqual (2, indexer.IndexToByteIndex (2));
+			Assert.AreEqual (2, indexer.ByteIndexToIndex (2));
+			Assert.AreEqual (3, indexer.IndexToByteIndex (3));
+			Assert.AreEqual (3, indexer.ByteIndexToIndex (3));
+		}
+
+		[Test]
+		public void TextIndexerUnicode ()
+		{
+			var str = "バージョン";
+			var indexer = new TextIndexer (str);
+
+			Assert.AreEqual (0, indexer.IndexToByteIndex (0));
+			Assert.AreEqual (3, indexer.IndexToByteIndex (1));
+			Assert.AreEqual (6, indexer.IndexToByteIndex (2));
+
+			Assert.AreEqual (0, indexer.ByteIndexToIndex (0));
+			Assert.AreEqual (0, indexer.ByteIndexToIndex (1));
+			Assert.AreEqual (0, indexer.ByteIndexToIndex (2));
+			Assert.AreEqual (1, indexer.ByteIndexToIndex (3));
+			Assert.AreEqual (1, indexer.ByteIndexToIndex (4));
+			Assert.AreEqual (1, indexer.ByteIndexToIndex (5));
+		}
+
+		[Test]
+		public void TextIndexerMixed ()
+		{
+			var str = "バAジョン";
+			var indexer = new TextIndexer (str);
+
+			Assert.AreEqual (0, indexer.IndexToByteIndex (0));
+			Assert.AreEqual (3, indexer.IndexToByteIndex (1));
+			Assert.AreEqual (4, indexer.IndexToByteIndex (2));
+
+			Assert.AreEqual (0, indexer.ByteIndexToIndex (0));
+			Assert.AreEqual (0, indexer.ByteIndexToIndex (1));
+			Assert.AreEqual (0, indexer.ByteIndexToIndex (2));
+			Assert.AreEqual (1, indexer.ByteIndexToIndex (3));
+			Assert.AreEqual (2, indexer.ByteIndexToIndex (4));
+			Assert.AreEqual (2, indexer.ByteIndexToIndex (5));
 		}
 	}
 }
