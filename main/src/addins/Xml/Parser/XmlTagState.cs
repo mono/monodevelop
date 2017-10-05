@@ -131,7 +131,7 @@ namespace MonoDevelop.Xml.Parser
 				return NameState;
 			}
 
-			if (context.CurrentStateLength > 1 && XmlChar.IsFirstNameChar (c)) {
+			if (context.CurrentStateLength > 0 && XmlChar.IsFirstNameChar (c)) {
 				rollback = string.Empty;
 				return AttributeState;
 			}

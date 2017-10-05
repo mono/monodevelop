@@ -124,6 +124,7 @@
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\PolicyTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpAutoInsertBracketHandlerTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\ExpandSelectionHandlerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">

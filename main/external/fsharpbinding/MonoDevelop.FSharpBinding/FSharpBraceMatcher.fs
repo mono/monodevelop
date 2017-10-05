@@ -7,6 +7,8 @@ open MonoDevelop.Ide.Editor
 open Microsoft.FSharp.Compiler
 
 module braceMatcher =
+    let noMatch = Nullable()
+
     let getMatchingBraces (editor:IReadonlyTextDocument) (context:DocumentContext) caretOffset =
         async {
             let getOffset (range:Range.range) =
@@ -36,7 +38,7 @@ module braceMatcher =
                     let startOffset = getOffset startBrace
                     let endOffset = getOffset endBrace
                     Nullable(new BraceMatchingResult(new TextSegment(startOffset, 1), new TextSegment(endOffset, 1), isLeft))
-                | None -> Nullable()
+                | None -> noMatch
         }
 
 type FSharpBraceMatcher() =

@@ -673,7 +673,15 @@ namespace MonoDevelop.Debugger
 				DebuggingService.SetNextStatement (doc.FileName, doc.Editor.CaretLine, doc.Editor.CaretColumn);
 			} catch (Exception e) {
 				if (e is NotSupportedException || e.InnerException is NotSupportedException) {
-					MessageService.ShowError ("Unable to set the next statement to this location.");
+					string message;
+					if (e is NotSupportedException)
+						message = e.Message;
+					else
+						message = e.InnerException.Message;
+					if (message == "Unable to set the next statement. The next statement cannot be set to another function.")
+						MessageService.ShowError (GettextCatalog.GetString ("Unable to set the next statement. The next statement cannot be set to another function."));
+					else
+						MessageService.ShowError (GettextCatalog.GetString ("Unable to set the next statement to this location."));
 				} else {
 					throw;
 				}

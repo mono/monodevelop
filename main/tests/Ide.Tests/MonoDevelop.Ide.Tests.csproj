@@ -102,6 +102,7 @@
     <Compile Include="TypeSystemServiceTestExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\SkipCharSessionTests.cs" />
     <Compile Include="MonoDevelop.Ide\StatusServiceTests.cs" />
+    <Compile Include="MonoDevelop.Components\PangoUtilTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -167,5 +168,6 @@
     <Folder Include="MonoDevelop.Ide.Templates\" />
     <Folder Include="MonoDevelop.Components.PropertyGrid\" />
     <Folder Include="MonoDevelop.SourceEditor\" />
+    <Folder Include="MonoDevelop.Components\" />
   </ItemGroup>
 </Project>

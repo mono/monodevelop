@@ -178,7 +178,7 @@ namespace MonoDevelop.Components.AutoTest
 							result = new ObjectResult (value);
 						propertiesObject.Add (property.Name, result, property);
 					} catch (Exception e) {
-						MonoDevelop.Core.LoggingService.LogInfo ("Failed to fetch property '{0}' on '{1}' with Exception: {2}", property, resultObject, e);
+						MonoDevelop.Core.LoggingService.LogInfo ("Failed to fetch property '{0}' on '{1}' with Exception: {2}", property, resultObject, e.Message);
 					}
 				}
 			}
