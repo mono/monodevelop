@@ -1060,7 +1060,6 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		}
 
 		protected Gtk.Widget parent;
-		INSAccessibility parentElement;
 		Rectangle realFrame;
 
 		void UpdateActions ()
@@ -1088,7 +1087,6 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 			set {
 				parent = value;
-				parentElement = AtkCocoaMacExtensions.GetNSAccessibilityElement (parent.Accessible);
 			}
 		}
 
