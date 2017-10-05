@@ -33,7 +33,7 @@ using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components.DockNotebook
 {
-	class DockNotebookTab: IAnimatable
+	class DockNotebookTab: IAnimatable, IDisposable
 	{
 		DockNotebook notebook;
 		readonly TabStrip strip;
@@ -223,7 +223,7 @@ namespace MonoDevelop.Components.DockNotebook
 			CloseButtonAccessible.PerformPress += OnPressCloseButton;
 			CloseButtonAccessible.SetRole (AtkCocoa.Roles.AXButton);
 			CloseButtonAccessible.GtkParent = strip;
-			CloseButtonAccessible.PerformShowMenu += OnShowMenu;
+			CloseButtonAccessible.PerformShowMenu += OnCloseButtonShowMenu;
 			CloseButtonAccessible.Title = Core.GettextCatalog.GetString ("Close document");
 			CloseButtonAccessible.Identifier = "DockNotebook.Tab.CloseButton";
 			Accessible.AddAccessibleChild (CloseButtonAccessible);
@@ -267,6 +267,14 @@ namespace MonoDevelop.Components.DockNotebook
 		void OnCloseButtonShowMenu (object sender, EventArgs args)
 		{
 			AccessibilityShowMenu?.Invoke (this, args);
+		}
+
+		public void Dispose ()
+		{
+			Accessible.PerformPress -= OnPressTab;
+			Accessible.PerformShowMenu -= OnShowMenu;
+			CloseButtonAccessible.PerformShowMenu -= OnCloseButtonShowMenu;
+			CloseButtonAccessible.PerformPress -= OnPressCloseButton;
 		}
 	}
 }
