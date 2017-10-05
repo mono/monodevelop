@@ -110,7 +110,8 @@ namespace MonoDevelop.Components
 
 		public void SelectItem (object item)
 		{
-			for (int i = 0; i < DataProvider.IconCount; i++) {
+			int count = DataProvider.IconCount;
+			for (int i = 0; i < count; i++) {
 				if (DataProvider.GetTag (i) == item) {
 					list.Selection = i;
 					vScrollbar.Vadjustment.Value = Math.Max (0, i * list.RowHeight - vScrollbar.Vadjustment.PageSize / 2);
@@ -122,7 +123,8 @@ namespace MonoDevelop.Components
 		void SwitchToSeletedWord ()
 		{
 			string selection = list.WordSelection.ToString ();
-			for (int i = 0; i < DataProvider.IconCount; i++) {
+			int count = DataProvider.IconCount;
+			for (int i = 0; i < count; i++) {
 				if (DataProvider.GetMarkup (i).StartsWith (selection, StringComparison.OrdinalIgnoreCase)) {
 					list.Selection = i;
 					list.WordSelection.Append (selection);
@@ -537,8 +539,9 @@ namespace MonoDevelop.Components
 					return 0;
 				int longest = 0;
 				string longestText = win.DataProvider.GetMarkup (0) ?? "";
-				
-				for (int i = 1; i < win.DataProvider.IconCount; i++) {
+
+				int count = win.DataProvider.IconCount;
+				for (int i = 1; i < count; i++) {
 					string curText = win.DataProvider.GetMarkup (i) ?? "";
 					if (curText.Length > longestText.Length) {
 						longestText = curText;
