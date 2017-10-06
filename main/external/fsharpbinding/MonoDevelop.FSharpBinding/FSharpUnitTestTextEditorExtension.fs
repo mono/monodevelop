@@ -158,13 +158,6 @@ type FSharpNUnitSourceCodeLocationFinder() =
         let tryFindTest' = tryFindTest fixtureNamespace fixtureTypeName testName 
         let computation =
             async {
-                let idx = testName.IndexOf("<") //reasons
-                let testName =
-                    if idx > - 1 then
-                        testName.Substring(0, idx)
-                    else
-                        testName
-
                 let symbol = 
                     Search.getAllFSharpProjects()
                     |> Seq.filter unitTestGatherer.hasNUnitReference

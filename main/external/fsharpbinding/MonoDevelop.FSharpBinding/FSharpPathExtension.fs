@@ -222,9 +222,9 @@ type FSharpPathExtension() as x =
       
             if ownerProjects.Count > 1 then
                 let p = x.DocumentContext.Project
-                newPath.Add (PathEntry(icon = ImageService.GetIcon(p.StockIcon.Name, Gtk.IconSize.Menu),
-                                      markup = GLib.Markup.EscapeText (p.Name),
-                                      Tag=p))
+                newPath.Add (new PathEntry(icon = ImageService.GetIcon(p.StockIcon.Name, Gtk.IconSize.Menu),
+                                           markup = GLib.Markup.EscapeText (p.Name),
+                                           Tag=p))
       
             for top in topLevelTypesInsideCursor do
                 let name = top.Declaration.Name
@@ -234,9 +234,9 @@ type FSharpPathExtension() as x =
                         toplevel |> Array.filter (fun decl -> decl.Declaration.Name.StartsWith(nameparts))
                     else toplevel
       
-                newPath.Add(PathEntry(icon = ImageService.GetIcon(ServiceUtils.getIcon top.Declaration, Gtk.IconSize.Menu),
-                                      markup =x.GetEntityMarkup(top.Declaration),
-                                      Tag = navitems))
+                newPath.Add(new PathEntry(icon = ImageService.GetIcon(ServiceUtils.getIcon top.Declaration, Gtk.IconSize.Menu),
+                                          markup =x.GetEntityMarkup(top.Declaration),
+                                          Tag = navitems))
       
             if topLevelTypesInsideCursor.Length > 0 then
                 let lastToplevel = topLevelTypesInsideCursor.Last()
@@ -246,16 +246,16 @@ type FSharpPathExtension() as x =
                     |> Array.tryFind (fun tl -> let range = tl.Range
                                                 isInside caretLocation ((range.StartColumn, range.StartLine),(range.EndColumn, range.EndLine)))
                 match child with
-                | Some(c) -> newPath.Add(PathEntry(icon = ImageService.GetIcon(ServiceUtils.getIcon c, Gtk.IconSize.Menu),
-                                                   markup = x.GetEntityMarkup(c),
-                                                   Tag = lastToplevel))
-                | None -> newPath.Add(PathEntry("No selection", Tag = lastToplevel))
+                | Some(c) -> newPath.Add(new PathEntry(icon = ImageService.GetIcon(ServiceUtils.getIcon c, Gtk.IconSize.Menu),
+                                                       markup = x.GetEntityMarkup(c),
+                                                       Tag = lastToplevel))
+                | None -> newPath.Add(new PathEntry("No selection", Tag = lastToplevel))
       
             let previousPath = currentPath
             //ensure the path has changed from the previous one before setting and raising event.
             let samePath = Seq.forall2 (fun (p1:PathEntry) (p2:PathEntry) -> p1.Markup = p2.Markup) previousPath newPath
             if not samePath then
-                if newPath.Count = 0 then currentPath <- [|PathEntry("No selection", Tag = null)|]
+                if newPath.Count = 0 then currentPath <- [|new PathEntry("No selection", Tag = null)|]
                 else currentPath <- newPath.ToArray()
       
                 //invoke pathChanged
