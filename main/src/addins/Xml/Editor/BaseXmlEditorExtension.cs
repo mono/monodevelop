@@ -961,7 +961,7 @@ namespace MonoDevelop.Xml.Editor
 			var path = new List<PathEntry> ();
 			if (ownerProjects.Count > 1) {
 				// Current project if there is more than one
-				path.Add (new PathEntry (ImageService.GetIcon (DocumentContext.Project.StockIcon), GLib.Markup.EscapeText (DocumentContext.Project.Name)) { Tag = DocumentContext.Project });
+				path.Add (new PathEntry (ImageService.GetIcon (DocumentContext.Project.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (DocumentContext.Project.Name)) { Tag = DocumentContext.Project });
 			}
 			if (l != null) {
 				for (int i = 0; i < l.Count; i++) {
