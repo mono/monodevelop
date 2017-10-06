@@ -104,6 +104,7 @@ namespace Mono.TextEditor
 	/// </summary>
 	class MarginMarker : TextLineMarker
 	{
+		public MarginDrawMetrics MarginDrawMetrics { get; set; }
 		/// <summary>
 		/// Determines whether this margin marker can draw the background of the specified margin.
 		/// </summary>

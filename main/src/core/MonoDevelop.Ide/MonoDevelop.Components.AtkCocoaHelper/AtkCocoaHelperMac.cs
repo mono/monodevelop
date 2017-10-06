@@ -658,6 +658,19 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			realProxyElement.AccessibilityAddChildElement (realChild);
 		}
 
+		public void AddAccessibleChildren(IEnumerable<IAccessibilityElementProxy> children)
+		{
+			foreach (var child in children)
+				AddAccessibleChild(child);
+		}
+
+		public void ResetAccessibilityChildren()
+		{
+			if (realProxyElement == null || realProxyElement.AccessibilityChildren == null)
+				return;
+			realProxyElement.AccessibilityChildren = new NSObject[0];
+		}
+
 		public void SetRole (string role, string description = null)
 		{
 			realProxyElement.SetRole (role, description);
