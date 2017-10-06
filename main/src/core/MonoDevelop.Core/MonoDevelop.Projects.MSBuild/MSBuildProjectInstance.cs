@@ -231,6 +231,11 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			return engine?.FindGlobItemsIncludingFile (projectInstance, include);
 		}
+
+		internal IEnumerable<MSBuildItem> FindUpdateGlobItemsIncludingFile (string include, MSBuildItem globItem)
+		{
+			return engine?.FindUpdateGlobItemsIncludingFile (projectInstance, include, globItem);
+		}
 	}
 
 	class MSBuildProjectInstanceInfo

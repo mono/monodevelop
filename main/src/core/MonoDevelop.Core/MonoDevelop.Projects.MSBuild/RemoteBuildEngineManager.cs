@@ -547,6 +547,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 					var vcTargetsPath = Path.Combine (extensionsPath, "Common7", "IDE", "VC", "VCTargets");
 					SetMSBuildConfigProperty (toolset, "VCTargetsPath", vcTargetsPath);
+				} else {
+					var path = MSBuildProjectService.GetProjectImportSearchPaths (runtime, false).FirstOrDefault (p => p.Property == "MSBuildSDKsPath");
+					if (path != null)
+						SetMSBuildConfigProperty (toolset, path.Property, path.Path);
 				}
 
 				var projectImportSearchPaths = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ()?.Element ("projectImportSearchPaths");
