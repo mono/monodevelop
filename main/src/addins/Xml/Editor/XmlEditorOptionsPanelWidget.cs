@@ -34,7 +34,7 @@ namespace MonoDevelop.Xml.Editor
 {
 	class XmlEditorOptionsPanelWidget : VBox
 	{
-		readonly CheckButton autoCompleteElementsCheck, autoAddPunctuationCheck, showSchemaAnnotationCheck;
+		readonly CheckButton autoCompleteElementsCheck, autoAddPunctuationCheck, showSchemaAnnotationCheck, autoShowCodeCompletionCheck;
 
 		public XmlEditorOptionsPanelWidget ()
 		{
@@ -48,27 +48,36 @@ namespace MonoDevelop.Xml.Editor
 			                                                          GettextCatalog.GetString ("Check to enable automatic punctuation insertion"));
 			showSchemaAnnotationCheck = new CheckButton (GettextCatalog.GetString ("Show schema annotation"));
 
+			autoShowCodeCompletionCheck = new CheckButton (GettextCatalog.GetString ("Automatically show code completion"));
+			autoShowCodeCompletionCheck.SetCommonAccessibilityAttributes ("XmlOptionsPanel.autoShowCompletion", "",
+																	  GettextCatalog.GetString ("Check to enable automatic showing of code completion"));
+
 			PackStart (autoCompleteElementsCheck, false, false, 0);
 			PackStart (autoAddPunctuationCheck, false, false, 0);
-
 			//PackStart (showSchemaAnnotationCheck, false, false, 0);
+			PackStart (autoShowCodeCompletionCheck, false, false, 0);
 
 			ShowAll ();
 		}
-		
+
 		public bool AutoCompleteElements {
 			get { return autoCompleteElementsCheck.Active; }
 			set { autoCompleteElementsCheck.Active = value; }
 		}
-		
+
 		public bool ShowSchemaAnnotation {
 			get { return showSchemaAnnotationCheck.Active; }
 			set { showSchemaAnnotationCheck.Active = value; }
 		}
-		
+
 		public bool AutoInsertFragments {
 			get { return autoAddPunctuationCheck.Active; }
 			set { autoAddPunctuationCheck.Active = value; }
+		}
+
+		public bool AutoShowCodeCompletion {
+			get { return autoShowCodeCompletionCheck.Active; }
+			set { autoShowCodeCompletionCheck.Active = value; }
 		}
 	}
 }

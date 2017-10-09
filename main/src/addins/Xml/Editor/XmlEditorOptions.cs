@@ -39,9 +39,10 @@ namespace MonoDevelop.Xml.Editor
 		static readonly string AutoCompleteElementsPropertyName = "AutoCompleteElements";
 		static readonly string AutoInsertFragmentsPropertyName = "AutoInsertFragment";
 		static readonly string AssociationPrefix = "Association";
+		static readonly string AutoShowCodeCompletionPropertyName = "AutoShowCodeCompletion";
 		
 		static readonly Properties properties;
-		static bool showSchemaAnnotation, autoCompleteElements, autoInsertFragments;
+		static bool showSchemaAnnotation, autoCompleteElements, autoInsertFragments, autoShowCodeCompletion;
 
 		static XmlEditorOptions ()
  		{
@@ -51,6 +52,7 @@ namespace MonoDevelop.Xml.Editor
 			showSchemaAnnotation = properties.Get<bool> (ShowSchemaAnnotationPropertyName, false);
 			autoCompleteElements = properties.Get<bool> (AutoCompleteElementsPropertyName, false);
 			autoInsertFragments = properties.Get<bool> (AutoInsertFragmentsPropertyName, true);
+			autoShowCodeCompletion = properties.Get<bool> (AutoShowCodeCompletionPropertyName, true);
 		}
 
  		static void HandlePropertiesPropertyChanged (object sender, PropertyChangedEventArgs e)
@@ -65,6 +67,8 @@ namespace MonoDevelop.Xml.Editor
 				var ext = e.Key.Substring (AssociationPrefix.Length);
 				var assoc = e.NewValue as XmlFileAssociation;
 				XmlFileAssociationChanged (null, new XmlFileAssociationChangedEventArgs (ext, assoc));
+			} else if (e.Key == AutoShowCodeCompletionPropertyName) {
+				autoShowCodeCompletion = (bool)e.NewValue;
 			}
  		}
 
@@ -155,7 +159,19 @@ namespace MonoDevelop.Xml.Editor
 				properties.Set (AutoInsertFragmentsPropertyName, value);
 			}
 		}
-		
+
+		public static bool AutoShowCodeCompletion {
+			get {
+				return autoShowCodeCompletion;
+			}
+			set {
+				if (autoShowCodeCompletion == value)
+					return;
+				autoShowCodeCompletion = value;
+				properties.Set (AutoShowCodeCompletionPropertyName, value);
+			}
+		}
+
 		#endregion
 	}
 	
