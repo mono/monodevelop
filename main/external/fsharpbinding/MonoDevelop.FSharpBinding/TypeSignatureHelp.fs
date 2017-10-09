@@ -102,7 +102,7 @@ module signatureHelp =
             | true, true ->
                 mfv.ImplementedAbstractSignatures
                 |> Seq.tryHead
-                |> Option.bind(fun s -> Some s.DeclaringType)
+                |> Option.map(fun s -> s.DeclaringType)
                 |> Option.bind typeDefinitionSafe
             | _ -> mfv.EnclosingEntity
 
