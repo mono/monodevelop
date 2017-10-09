@@ -346,11 +346,12 @@ namespace MonoDevelop.Xml.Editor
 
 			//attribute value completion
 			//determine whether to trigger completion within attribute values quotes
-			if ((Tracker.Engine.CurrentState is XmlAttributeValueState)
-			    //trigger on the opening quote
-			    && ((Tracker.Engine.CurrentStateLength == 1 && (currentChar == '\'' || currentChar == '"'))
-			    //or trigger on first letter of value, if unforced
-			    || (forced || Tracker.Engine.CurrentStateLength == 2))) {
+			if ((XmlEditorOptions.AutoShowCodeCompletion && Tracker.Engine.CurrentState is XmlAttributeValueState) ||
+				((Tracker.Engine.CurrentState is XmlAttributeValueState)
+				//trigger on the opening quote
+				&& ((Tracker.Engine.CurrentStateLength == 1 && (currentChar == '\'' || currentChar == '"'))
+				//or trigger on first letter of value, if unforced
+				|| (forced || Tracker.Engine.CurrentStateLength == 2)))) {
 				var att = (XAttribute)Tracker.Engine.Nodes.Peek ();
 
 				if (att.IsNamed) {
@@ -371,15 +372,15 @@ namespace MonoDevelop.Xml.Editor
 					return null;
 				}
 			}
-			
+
 			//attribute name completion
 			if ((forced && Tracker.Engine.Nodes.Peek () is XAttribute && !tracker.Engine.Nodes.Peek ().IsEnded)
-			     || ((Tracker.Engine.CurrentState is XmlNameState
-			    && Tracker.Engine.CurrentState.Parent is XmlAttributeState) ||
-			    Tracker.Engine.CurrentState is XmlTagState)) {
-				IAttributedXObject attributedOb = (Tracker.Engine.Nodes.Peek () as IAttributedXObject) ?? 
+				 || (((Tracker.Engine.CurrentState is XmlNameState && Tracker.Engine.CurrentState.Parent is XmlAttributeState) ||
+						Tracker.Engine.CurrentState is XmlTagState)
+					&& (XmlEditorOptions.AutoShowCodeCompletion || forced || Tracker.Engine.CurrentStateLength == 1))) {
+				IAttributedXObject attributedOb = (Tracker.Engine.Nodes.Peek () as IAttributedXObject) ??
 					Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
-				
+
 				if (attributedOb == null || !attributedOb.Name.IsValid)
 					return null;
 
@@ -407,18 +408,18 @@ namespace MonoDevelop.Xml.Editor
 					else
 						result.TriggerWordLength = 0;
 					result.AutoSelect = !char.IsWhiteSpace (currentChar);
-					result.AddKeyHandler (new AttributeKeyHandler());
+					result.AddKeyHandler (new AttributeKeyHandler ());
 					return result;
 				}
 			}
 
 			//element completion
-			if ((currentChar == '<' && tracker.Engine.CurrentState is XmlRootState) ||
-				tracker.Engine.CurrentState is XmlNameState) {
+			if (currentChar == '<' && tracker.Engine.CurrentState is XmlRootState ||
+			    (tracker.Engine.CurrentState is XmlNameState && (forced || XmlEditorOptions.AutoShowCodeCompletion))) {
 				var list = await GetElementCompletions (token);
 				if (completionContext.TriggerLine == 1 && completionContext.TriggerOffset == 1) {
 					var encoding = Editor.Encoding.WebName;
-					list.Add (new BaseXmlCompletionData($"?xml version=\"1.0\" encoding=\"{encoding}\" ?>"));
+					list.Add (new BaseXmlCompletionData ($"?xml version=\"1.0\" encoding=\"{encoding}\" ?>"));
 				}
 				AddCloseTag (list, Tracker.Engine.Nodes);
 				if (tracker.Engine.CurrentState is XmlNameState)

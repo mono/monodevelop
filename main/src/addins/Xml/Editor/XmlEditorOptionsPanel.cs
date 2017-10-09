@@ -42,6 +42,7 @@ namespace MonoDevelop.Xml.Editor
 			widget.AutoCompleteElements = XmlEditorOptions.AutoCompleteElements;
 			widget.AutoInsertFragments = XmlEditorOptions.AutoInsertFragments;
 			widget.ShowSchemaAnnotation = XmlEditorOptions.ShowSchemaAnnotation;
+			widget.AutoShowCodeCompletion = XmlEditorOptions.AutoShowCodeCompletion;
 			return widget;
 		}
 		
@@ -50,6 +51,7 @@ namespace MonoDevelop.Xml.Editor
 			XmlEditorOptions.AutoCompleteElements = widget.AutoCompleteElements;
 			XmlEditorOptions.AutoInsertFragments = widget.AutoInsertFragments;
 			XmlEditorOptions.ShowSchemaAnnotation = widget.ShowSchemaAnnotation;
+			XmlEditorOptions.AutoShowCodeCompletion = widget.AutoShowCodeCompletion;
 		}
 	}
 }
