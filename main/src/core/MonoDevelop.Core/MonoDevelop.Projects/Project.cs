@@ -3237,7 +3237,7 @@ namespace MonoDevelop.Projects
 						if (file != null) {
 							if (File.Exists (file.FilePath)) {
 								AddRemoveItemIfMissing (msproject, file);
-							} else {
+							} else if (!string.IsNullOrEmpty (it.Include)) {
 								// Remove any "Remove" items that match if the file has been deleted.
 								var toRemove = msproject.GetAllItems ().Where (i => i.Remove == it.Include).ToList ();
 								foreach (var item in toRemove) {
