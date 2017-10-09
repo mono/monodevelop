@@ -88,13 +88,13 @@ contexts:
     - match: '\b([A-Z][\w]*)\b'
       scope: entity.name.class
     - match: '(module|type|and)(\s+)({{typemodifiers}})\s+(\w+|``[^`]+``)'
-      captures: 
+      captures:
         1: keyword.source.fs
         2: source.fs
         3: keyword.source.fs
         4: entity.name.class
     - match: '(module|type|and)(\s+)(\w+|``[^`]+``)'
-      captures: 
+      captures:
         1: keyword.source.fs
         2: source.fs
         3: entity.name.class
@@ -110,7 +110,7 @@ contexts:
     - match: '(:\s*)([''\w]+)\b'
       captures:
         1: source.fs
-        2: entity.name.class 
+        2: entity.name.class
     - match: '''\w+'
       scope: entity.name.class
     - match: '\^\w+'
@@ -272,9 +272,9 @@ contexts:
       push:
         - match: '\\.'
           scope: constant.character.escape.source.fs
-        - match: '("|$\n?)'
+        - match: '"'
           pop: true
-  
+
   preprocessor:
     - match: '^\s*#(if|else|elif|endif|load|r|reference|I|nowarn|time|q|quit|help|include")\b'
       scope: meta.preprocessor.source.fs

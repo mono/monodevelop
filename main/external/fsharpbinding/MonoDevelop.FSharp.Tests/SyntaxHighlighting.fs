@@ -137,6 +137,7 @@ type SyntaxHighlighting() =
     [<TestCase(@"namespace $rec$ MonoDevelop", "keyword.source.fs")>]
     [<TestCase(@"$type$ internal SomeType", "keyword.source.fs")>]
     [<TestCase(@"$#I$ /some/path", "meta.preprocessor.source.fs")>]
+    [<TestCase("sprintf \"Some multi\n$line string$\"", "string.quoted.double.source.fs")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 
@@ -145,6 +146,5 @@ type SyntaxHighlighting() =
     [<TestCase(@"-> $^T$ :", "entity.name.class")>]
     [<TestCase(@"   -> $seq$<'T>", "entity.name.class")>]
     [<TestCase(@"   $list$ :", "entity.name.field")>]
-
     member x.``Tooltip highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
