@@ -88,21 +88,27 @@ module signatureHelp =
         |> Option.fill ""
 
     let isFSharp (mfv: FSharpMemberOrFunctionOrValue) =
-        match mfv.IsOverrideOrExplicitInterfaceImplementation with
-        | true ->
-            match mfv.EnclosingEntity with
-            | Some ent ->
-                match ent.BaseType with
-                | Some baseType ->
-                    match baseType.HasTypeDefinition with
-                    | true -> baseType.TypeDefinition.IsFSharp
-                    | false -> true
-                | None -> false
-            | None -> true
-        | false ->
-            match mfv.EnclosingEntity with
-            | Some ent -> ent.IsFSharp
-            | None -> true
+        let typeDefinitionSafe (t:FSharpType) =
+            match t.HasTypeDefinition with
+            | true -> Some t.TypeDefinition
+            | false -> None
+
+        let baseType =
+            match mfv.IsOverrideOrExplicitInterfaceImplementation, mfv.IsExplicitInterfaceImplementation with
+            | true, false ->
+                mfv.EnclosingEntity
+                |> Option.bind(fun ent -> ent.BaseType)
+                |> Option.bind typeDefinitionSafe
+            | true, true ->
+                mfv.ImplementedAbstractSignatures
+                |> Seq.tryHead
+                |> Option.map(fun s -> s.DeclaringType)
+                |> Option.bind typeDefinitionSafe
+            | _ -> mfv.EnclosingEntity
+
+        baseType
+        |> Option.map(fun ent -> ent.IsFSharp)
+        |> Option.defaultValue true
 
     let getFunctionInformation (symbolUse:FSharpSymbolUse) =
         match symbolUse with 
