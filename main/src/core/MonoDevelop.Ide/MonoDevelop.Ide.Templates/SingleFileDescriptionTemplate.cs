@@ -59,6 +59,7 @@ namespace MonoDevelop.Ide.Templates
 		string buildAction;
 		string customTool;
 		string customToolNamespace;
+		string subType;
 		List<string> references = new List<string> ();
 		
 		public override void Load (XmlElement filenode, FilePath baseDirectory)
@@ -70,6 +71,7 @@ namespace MonoDevelop.Ide.Templates
 			dependsOn = filenode.GetAttribute ("DependsOn");
 			customTool = filenode.GetAttribute ("CustomTool");
 			customToolNamespace = filenode.GetAttribute ("CustomToolNamespace");
+			subType = filenode.GetAttribute ("SubType");
 			
 			buildAction = BuildAction.Compile;
 			buildAction = filenode.GetAttribute ("BuildAction");
@@ -136,7 +138,10 @@ namespace MonoDevelop.Ide.Templates
 					var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, name, generatedFile);
 					projectFile.CustomToolNamespace = StringParserService.Parse (customToolNamespace, model);
 				}
-				
+
+				if (!string.IsNullOrEmpty (subType))
+					projectFile.ContentType = subType;
+
 				DotNetProject netProject = project as DotNetProject;
 				if (netProject != null) {
 					// Add required references
