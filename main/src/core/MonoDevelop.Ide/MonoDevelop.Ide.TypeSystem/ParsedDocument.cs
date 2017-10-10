@@ -99,11 +99,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			return foldings.Where (f => f.Type == FoldType.UserRegion);
 		}
 
-		public abstract Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken));
+		[Obsolete("Use GetErrorsAsync (bool isAdhocProject, CancellationToken cancellationToken = default (CancellationToken))")]
+		public virtual Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default (CancellationToken))
+		{
+			return GetErrorsAsync (false, cancellationToken);
+		}
+
+		public virtual Task<IReadOnlyList<Error>> GetErrorsAsync (bool isAdhocProject, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			return GetErrorsAsync (cancellationToken);
+		}
+
 
 		public async Task<bool> HasErrorsAsync (CancellationToken cancellationToken = default (CancellationToken))
 		{
-			return (await GetErrorsAsync (cancellationToken).ConfigureAwait (false)).Any (e => e.ErrorType == ErrorType.Error);
+			return (await GetErrorsAsync (false, cancellationToken).ConfigureAwait (false)).Any (e => e.ErrorType == ErrorType.Error);
 		}
 
 		[Obsolete ("Use the HasErrorsAsync method for cancellation and async support.")]
