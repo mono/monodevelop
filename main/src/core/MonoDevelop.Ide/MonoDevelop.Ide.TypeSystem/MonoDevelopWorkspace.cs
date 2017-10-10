@@ -543,8 +543,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public void Dispose ()
 			{
-				foreach (var p in Projections)
-					p.Dispose ();
+				Runtime.RunInMainThread (delegate {
+					foreach (var p in Projections)
+						p.Dispose ();
+				});
 			}
 		}
 
