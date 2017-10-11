@@ -1059,6 +1059,56 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Add a file and then remove it but do not delete it.
+		/// </summary>
+		[Test]
+		public async Task Remove_WildCardHasMetadataProperties ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-metadata-prop.csproj");
+				string expectedProjectXml = File.ReadAllText (projFile);
+
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				var xamlFileName1 = projFile.ParentDirectory.Combine ("MyView1.xaml");
+				File.WriteAllText (xamlFileName1, "xaml1");
+				var xamlCSharpFileName = projFile.ParentDirectory.Combine ("MyView1.xaml.cs");
+				File.WriteAllText (xamlCSharpFileName, "csharpxaml");
+
+				var xamlFile1 = new ProjectFile (xamlFileName1, BuildAction.EmbeddedResource);
+				xamlFile1.Generator = "MSBuild:UpdateDesignTimeXaml";
+				xamlFile1.ContentType = "Designer";
+				p.Files.Add (xamlFile1);
+
+				var xamlCSharpFile = p.AddFile (xamlCSharpFileName);
+				xamlCSharpFile.DependsOn = "MyView1.xaml";
+
+				// Ensure no items are added to the project on saving.
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				// Remove .xaml.cs file but do not delete it.
+				p.Files.Remove (xamlCSharpFile);
+				await p.SaveAsync (Util.GetMonitor ());
+
+				// Remove item should be added for .xaml.cs file.
+				projectXml = File.ReadAllText (p.FileName);
+				expectedProjectXml = File.ReadAllText (p.FileName.ChangeName ("glob-import-metadata-prop-saved1"));
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
 		{
 			internal protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
