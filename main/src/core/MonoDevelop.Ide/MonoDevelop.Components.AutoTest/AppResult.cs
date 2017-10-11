@@ -109,6 +109,11 @@ namespace MonoDevelop.Components.AutoTest
 
 		public void SetProperty (object o, string propertyName, object value)
 		{
+			var splitProperties = propertyName.Split(new[] { '.' });
+			propertyName = splitProperties.Last();
+			var exceptLast = splitProperties.Except(new List<string> { propertyName });
+			o = GetRecursiveObjectProperty(string.Join(".", exceptLast), o);
+
 			// Find the property for the name
 			PropertyInfo propertyInfo = o.GetType().GetProperty(propertyName,
 				BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
@@ -188,14 +193,20 @@ namespace MonoDevelop.Components.AutoTest
 
 		protected AppResult MatchProperty (string propertyName, object objectToCompare, object value)
 		{
-			foreach (var singleProperty in propertyName.Split (new [] { '.' })) {
-				objectToCompare = GetPropertyValue (singleProperty, objectToCompare);
-			}
+			objectToCompare = GetRecursiveObjectProperty(propertyName, objectToCompare);
 			if (objectToCompare != null && value != null &&
-				CheckForText (objectToCompare.ToString (), value.ToString (), false)) {
+				CheckForText(objectToCompare.ToString(), value.ToString(), false)) {
 				return this;
 			}
 			return null;
+		}
+
+		protected object GetRecursiveObjectProperty (string propertyName, object obj)
+		{
+			foreach (var singleProperty in propertyName.Split(new[] { '.' })) {
+				obj = GetPropertyValue(singleProperty, obj);
+			}
+			return obj;
 		}
 
 		protected bool CheckForText (string haystack, string needle, bool exact)
