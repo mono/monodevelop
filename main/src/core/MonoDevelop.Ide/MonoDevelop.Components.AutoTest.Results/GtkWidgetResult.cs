@@ -192,7 +192,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				AttributeCollection attrs = TypeDescriptor.GetAttributes (model);
 				attr = (SemanticModelAttribute)attrs [typeof(SemanticModelAttribute)];
 				if (attr == null) {
-					if(column.StartsWith("column__")){
+					if(column.StartsWith("column__")) {
 						int columnNum;
 						if (int.TryParse(column.Replace("column__", string.Empty), out columnNum))
 							return columnNum;
