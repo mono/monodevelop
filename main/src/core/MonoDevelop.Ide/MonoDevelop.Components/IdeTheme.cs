@@ -349,6 +349,8 @@ namespace MonoDevelop.Components
 					window.BackgroundColor = NSColor.FromPatternImage (image.ToBitmap().ToNSImage());
 				}
 			}
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.HighSierra)
+				window.TitlebarAppearsTransparent = true;
 			window.StyleMask |= NSWindowStyle.TexturedBackground;
 		}
 
