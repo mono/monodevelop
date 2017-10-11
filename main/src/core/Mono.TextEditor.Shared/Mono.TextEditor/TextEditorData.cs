@@ -153,7 +153,7 @@ namespace Mono.TextEditor
 		bool? customHighlightCaretLine;
 		public bool HighlightCaretLine {
 			get {
-				return customHighlightCaretLine.HasValue ? customHighlightCaretLine.Value : options.HighlightCaretLine;
+				return !this.IsSomethingSelected && (customHighlightCaretLine.HasValue ? customHighlightCaretLine.Value : options.HighlightCaretLine);
 			}
 			set {
 				customHighlightCaretLine = value;
