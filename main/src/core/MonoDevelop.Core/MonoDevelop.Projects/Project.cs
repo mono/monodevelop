@@ -3300,6 +3300,7 @@ namespace MonoDevelop.Projects
 
 			MSBuildItem buildItem = null;
 			IEnumerable<MSBuildItem> sourceItems = null;
+			MSBuildEvaluationContext context = null;
 
 			if (item.BackingItem?.ParentObject != null && item.BackingItem.Name == item.ItemName) {
 				buildItem = item.BackingItem;
@@ -3353,6 +3354,8 @@ namespace MonoDevelop.Projects
 						} else if (updateGlobItems.Any ()) {
 							// Multiple update items not supported yet.
 							buildItem = updateGlobItems [0];
+							sourceItems = new [] { globItem, buildItem };
+							context = CreateEvaluationContext (item);
 						} else {
 							buildItem = globItem;
 						}
@@ -3379,7 +3382,7 @@ namespace MonoDevelop.Projects
 				if (buildItem == null)
 					buildItem = msproject.AddNewItem (item.ItemName, include);
 				item.BackingItem = buildItem;
-				item.BackingEvalItem = CreateFakeEvaluatedItem (msproject, buildItem, include, sourceItems);
+				item.BackingEvalItem = CreateFakeEvaluatedItem (msproject, buildItem, include, sourceItems, context);
 			}
 
 			loadedItems.Add (buildItem);
@@ -3608,7 +3611,18 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 
-		IMSBuildItemEvaluated CreateFakeEvaluatedItem (MSBuildProject msproject, MSBuildItem item, string include, IEnumerable<MSBuildItem> sourceItems)
+		MSBuildEvaluationContext CreateEvaluationContext (ProjectItem item)
+		{
+			if (item is ProjectFile file) {
+				var context = new MSBuildEvaluationContext ();
+				context.SetItemContext (item.Include, file.FilePath, null);
+				return context;
+			}
+
+			return null;
+		}
+
+		IMSBuildItemEvaluated CreateFakeEvaluatedItem (MSBuildProject msproject, MSBuildItem item, string include, IEnumerable<MSBuildItem> sourceItems, MSBuildEvaluationContext context = null)
 		{
 			// Create the item
 			var eit = new MSBuildItemEvaluated (msproject, item.Name, item.Include, include);
@@ -3616,8 +3630,15 @@ namespace MonoDevelop.Projects
 			// Copy the metadata
 			var md = new Dictionary<string, IMSBuildPropertyEvaluated> ();
 			var col = (MSBuildPropertyGroupEvaluated)eit.Metadata;
-			foreach (var p in item.Metadata.GetProperties ())
-				md [p.Name] = new MSBuildPropertyEvaluated (msproject, p.Name, p.UnevaluatedValue, p.Value);
+			foreach (var p in item.Metadata.GetProperties ()) {
+				// Use evaluated value for value and unevaluated value. Otherwise
+				// an Update item will be generated for a '%(FileName)' property
+				// when GenerateItemDiff is called since it compares the value with
+				// the unevaluated value. If the project file is loaded from disk
+				// the unevaluated value would be the evaluated filename.
+				string evaluatedValue = context?.EvaluateString (p.Value) ?? p.Value;
+				md [p.Name] = new MSBuildPropertyEvaluated (msproject, p.Name, evaluatedValue, evaluatedValue);
+			}
 			((MSBuildPropertyGroupEvaluated)eit.Metadata).SetProperties (md);
 			if (sourceItems != null) {
 				foreach (var s in sourceItems)
