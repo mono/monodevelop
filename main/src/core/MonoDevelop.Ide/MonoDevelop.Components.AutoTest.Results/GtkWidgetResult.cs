@@ -192,7 +192,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 				AttributeCollection attrs = TypeDescriptor.GetAttributes (model);
 				attr = (SemanticModelAttribute)attrs [typeof(SemanticModelAttribute)];
 				if (attr == null) {
-					return -1;
+					if (column.StartsWith ("column__")) {
+						int columnNum;
+						if (int.TryParse (column.Replace ("column__", string.Empty), out columnNum))
+							return columnNum;
+					}
+					else
+						return -1;
 				}
 			}
 			return Array.IndexOf (attr.ColumnNames, column);
@@ -522,7 +528,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override void SetProperty (string propertyName, object value)
 		{
-			SetProperty (resultWidget, propertyName, value);
+			base.SetProperty (resultWidget, propertyName, value);
 		}
 	}
 }

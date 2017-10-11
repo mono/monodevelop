@@ -279,7 +279,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			if (resultIter.HasValue) {
 				var modelValue = TModel.GetValue ((TreeIter)resultIter, Column);
 
-				SetProperty (modelValue, propertyName, value);
+				base.SetProperty (modelValue, propertyName, value);
 			}
 		}
 	}
