@@ -188,7 +188,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				int lastMatch = -1;
 				var highlightedSegment = new TextSegment (startOffset, length);
 				string lineText = text.GetTextAt (startOffset, length);
+
+				int timeoutOccursAt;
+				unchecked {
+					timeoutOccursAt = Environment.TickCount + (int)matchTimeout.TotalMilliseconds;
+				}
 			restart:
+				if (Environment.TickCount >= timeoutOccursAt)
+					goto end;
 				if (lastMatch == offset) {
 					if (lastContexts.Contains (currentContext)) {
 						offset++;
