@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (parsedDocument == null || isDisposed)
 				return;
 			try {
-				var errors = await parsedDocument.GetErrorsAsync(ctx.IsAdHocProject, token).ConfigureAwait (false);
+				var errors = await parsedDocument.GetErrorsAsync(token).ConfigureAwait (false);
 				Application.Invoke ((o, args) => {
 					if (token.IsCancellationRequested || isDisposed)
 						return;
@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 					newTasks.Add (newTask);
 				}
 
-				foreach (var error in await doc.GetErrorsAsync(ctx.IsAdHocProject, token).ConfigureAwait (false)) {
+				foreach (var error in await doc.GetErrorsAsync(token).ConfigureAwait (false)) {
 					if (token.IsCancellationRequested)
 						return;
 					int offset;

@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public Document RoslynDocument { get; set; }
 		public ParsedDocument OldParsedDocument { get; internal set; }
+		public bool IsAdhocProject { get; internal set; }
 	}
 
 	[Flags]

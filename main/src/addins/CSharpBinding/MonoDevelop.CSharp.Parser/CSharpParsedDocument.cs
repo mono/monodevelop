@@ -59,9 +59,11 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			tagComments = MonoDevelop.Ide.Tasks.CommentTag.SpecialCommentTags.Select (t => t.Tag).ToArray ();
 		}
+		Ide.TypeSystem.ParseOptions options;
 
-		public CSharpParsedDocument (string fileName) : base (fileName)
+		public CSharpParsedDocument (Ide.TypeSystem.ParseOptions options,  string fileName) : base (fileName)
 		{
+			this.options = options;
 		}
 		
 
@@ -514,7 +516,7 @@ namespace MonoDevelop.CSharp.Parser
 			return isAdhocProject && !lexicalError.Contains (errorId);
 		}
 
-		public override async Task<IReadOnlyList<Error>> GetErrorsAsync (bool isAdhocProject, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var model = GetAst<SemanticModel> ();
 			if (model == null)
@@ -526,7 +528,7 @@ namespace MonoDevelop.CSharp.Parser
 				try {
 					errors = model
 						.GetDiagnostics (null, cancellationToken)
-						.Where (diag => !SkipError(isAdhocProject, diag.Id) && (diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning))
+						.Where (diag => !SkipError(options.IsAdhocProject, diag.Id) && (diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning))
 						.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.Id, diag.GetMessage (), GetRegion (diag)) { Tag = diag })
 						.ToList ();
 				} catch (OperationCanceledException) {

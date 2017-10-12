@@ -791,7 +791,8 @@ namespace MonoDevelop.Ide.Gui
 					Content = currentParseText,
 					FileName = currentParseFile,
 					OldParsedDocument = parsedDocument,
-					RoslynDocument = AnalysisDocument
+					RoslynDocument = AnalysisDocument,
+					IsAdhocProject = IsAdHocProject
 				};
 
 				if (project != null && TypeSystemService.CanParseProjections (project, Editor.MimeType, FileName)) {
@@ -1025,7 +1026,8 @@ namespace MonoDevelop.Ide.Gui
 						Content = currentParseText,
 						FileName = currentParseFile,
 						OldParsedDocument = parsedDocument,
-						RoslynDocument = AnalysisDocument
+						RoslynDocument = AnalysisDocument,
+						IsAdhocProject =  IsAdHocProject
 					};
 					if (projectFile != null)
 						options.BuildAction = projectFile.BuildAction;
