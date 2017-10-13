@@ -116,43 +116,43 @@
       <HintPath>..\..\..\packages\JetBrains.SharpZipLib.Stripped.0.87.20170615.10\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.2.3.0-beta1\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.2.3.0-beta1\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.Features.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.Features.2.3.0-beta1\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.2.3.0-beta1\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.EditorFeatures">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.EditorFeatures.2.3.2\lib\net46\Microsoft.CodeAnalysis.EditorFeatures.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.EditorFeatures.2.3.0-beta1\lib\net46\Microsoft.CodeAnalysis.EditorFeatures.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.EditorFeatures.Text">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.EditorFeatures.Text.2.3.2\lib\net46\Microsoft.CodeAnalysis.EditorFeatures.Text.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.EditorFeatures.Text.2.3.0-beta1\lib\net46\Microsoft.CodeAnalysis.EditorFeatures.Text.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Elfie">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Elfie.1.0.0-rc9\lib\net45\Microsoft.CodeAnalysis.Elfie.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Features">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Features.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.Features.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Features.2.3.0-beta1\lib\netstandard1.3\Microsoft.CodeAnalysis.Features.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.VisualBasic">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.2.3.0-beta1\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Features">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.Features.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.Features.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.Features.2.3.0-beta1\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.Features.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.Workspaces.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.Workspaces.2.3.0-beta1\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.2.3.2\lib\net46\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.2.3.0-beta1\lib\net46\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.2.3.2\lib\net46\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.2.3.0-beta1\lib\net46\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TemplateEngine.Abstractions">
       <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Abstractions.1.0.0-beta2-20170523-241\lib\net45\Microsoft.TemplateEngine.Abstractions.dll</HintPath>
