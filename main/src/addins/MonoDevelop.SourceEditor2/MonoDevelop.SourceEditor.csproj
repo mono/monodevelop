@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesVSEditor)" />
@@ -266,7 +266,6 @@
     <Compile Include="Mono.TextEditor.Theatrics\SmartScrolledWindow.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\Stage.cs" />
     <Compile Include="VSEditor\ConnectionManager.cs" />
-    <Compile Include="VSEditor\ITextEditorFactoryService.cs" />
     <Compile Include="VSEditor\SmartIndentationService.cs" />
     <Compile Include="VSEditor\TextCaret.cs" />
     <Compile Include="VSEditor\TextEditorFactoryService.cs" />
