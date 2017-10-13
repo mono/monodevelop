@@ -227,11 +227,6 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\TextViewRoleSet.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\VacuousTextDataModel.cs" />
 
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\MdView\TextCaret.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\MdView\TextEditorFactoryService.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\MdView\TextSelection.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\MdView\TextView.cs" />
-
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Util\TextDataUtil\ArgumentValidation.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Util\TextDataUtil\BufferTracker.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Util\TextDataUtil\DifferenceCollection.cs" />
