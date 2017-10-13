@@ -110,7 +110,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.2.3.0-beta1\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />

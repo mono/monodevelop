@@ -76,8 +76,8 @@ namespace MonoDevelop.Refactoring.PackageInstaller
 			void UninstallPackage (MonoDevelop.Projects.Project project, string packageId, bool removeDependencies);
 
 			Task<IEnumerable<(string PackageName, string Version, int Rank)>> FindPackagesWithAssemblyAsync (string source, string assemblyName, CancellationToken cancellationToken);
-			Task<IEnumerable<(string PackageName, string TypeName, string Version, int Rank, ImmutableArray<string> ContainingNamespaceNames)>> FindPackagesWithTypeAsync (string source, string name, int arity, CancellationToken cancellationToken);
-			Task<IEnumerable<(string AssemblyName, string TypeName, ImmutableArray<string> ContainingNamespaceNames)>> FindReferenceAssembliesWithTypeAsync (string name, int arity, CancellationToken cancellationToken);
+			Task<IEnumerable<(string PackageName, string TypeName, string Version, int Rank, IReadOnlyList<string> ContainingNamespaceNames)>> FindPackagesWithTypeAsync (string source, string name, int arity, CancellationToken cancellationToken);
+			Task<IEnumerable<(string AssemblyName, string TypeName, IReadOnlyList<string> ContainingNamespaceNames)>> FindReferenceAssembliesWithTypeAsync (string name, int arity, CancellationToken cancellationToken);
 			ImmutableArray<string> GetInstalledVersions (string packageName);
 			IEnumerable<MonoDevelop.Projects.Project> GetProjectsWithInstalledPackage (MonoDevelop.Projects.Solution solution, string packageName, string version);
 			void ShowManagePackagesDialog (string packageName);
@@ -98,6 +98,13 @@ namespace MonoDevelop.Refactoring.PackageInstaller
 		class PackageInstallerService : IPackageInstallerService
 		{
 			readonly ConcurrentDictionary<ProjectId, Dictionary<string, string>> _projectToInstalledPackageAndVersion = new ConcurrentDictionary<ProjectId, Dictionary<string, string>> ();
+
+			public bool IsEnabled {
+				get {
+					return true;
+				}
+			}
+
 
 			public ImmutableArray<PackageSource> PackageSources {
 				get {
@@ -151,11 +158,6 @@ namespace MonoDevelop.Refactoring.PackageInstaller
 				}
 
 				return false;
-			}
-
-			public bool IsEnabled (ProjectId projectId)
-			{
-				return true;
 			}
 		}
 	}
