@@ -9,8 +9,6 @@
     <Import_RootNamespace>Mono.TextEditor.Platform</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-      <Compile Include="$(MSBuildThisFileDirectory)TagBasedSyntaxHighlighting.cs" />
-
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Core\Impl\ContentType\ContentTypeImpl.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Core\Impl\ContentType\ContentTypeRegistryServiceImpl.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Core\Impl\ContentType\FileExtensionRegistryServiceImpl.cs" />
