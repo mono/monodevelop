@@ -222,11 +222,6 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextBufferUndoManager\TextBufferUndoManager.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextBufferUndoManager\TextBufferUndoManagerProvider.cs" />
 
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\ConnectionManager.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\SmartIndentationService.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\TextViewRoleSet.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\VacuousTextDataModel.cs" />
-
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Util\TextDataUtil\ArgumentValidation.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Util\TextDataUtil\BufferTracker.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Util\TextDataUtil\DifferenceCollection.cs" />
