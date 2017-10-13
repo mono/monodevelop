@@ -1,4 +1,4 @@
-﻿//
+//
 // XwtPopoverWindowTheme.cs
 //
 // Author:
@@ -280,6 +280,10 @@ namespace MonoDevelop.Components
 			if (ShadowColor.Alpha <= 0)
 				return;
 			double r = CornerRadius;
+
+			// if we proceed with r == 0 the .Arc below will throw anyway
+			if (r <= 0)
+				return;
 			double x = region.X + 0.5, y = region.Y + 0.5, w = region.Width - 1, h = region.Height - 1;
 			context.MoveTo (x + w, y + h - r);
 			context.Arc (x + w - r, y + h - r, r, 0, 90);
