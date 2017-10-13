@@ -67,15 +67,9 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
-		[TestCase (
-			"Microsoft.Common.Library.CSharp",
-			"UseNetStandard1x=true;Framework=netstandard1.0")]
-		[TestCase (
-			"Microsoft.Common.Library.CSharp",
-			"UseNetStandard1x=true;Framework=netstandard1.5")]
-		[TestCase (
-			"Microsoft.Common.Library.FSharp",
-			"UseNetStandard1x=true;Framework=netstandard1.6")]
+		[TestCase ("Microsoft.Common.Library.CSharp", "UseNetStandard1x=true;Framework=netstandard1.0")]
+		[TestCase ("Microsoft.Common.Library.CSharp", "UseNetStandard1x=true;Framework=netstandard1.5")]
+		[TestCase ("Microsoft.Common.Library.FSharp", "UseNetStandard1x=true;Framework=netstandard1.6")]
 		public async Task NetStandard1x (string templateId, string parameters)
 		{
 			var config = CreateNewProjectConfig ("NetStandard1x", templateId, parameters);
@@ -85,54 +79,26 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
-		[TestCase (
-			"Microsoft.Common.Console.CSharp",
-			"UseNetCore1x=true;Framework=netcoreapp1.0")]
-		[TestCase (
-			"Microsoft.Common.Console.CSharp",
-			"UseNetCore1x=true;Framework=netcoreapp1.1")]
+		[TestCase ("Microsoft.Common.Console.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
+		[TestCase ("Microsoft.Common.Console.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
 
-		[TestCase (
-			"Microsoft.Common.Library.CSharp-netcoreapp",
-			"UseNetCore1x=true;Framework=netcoreapp1.0")]
-		[TestCase (
-			"Microsoft.Common.Library.CSharp-netcoreapp",
-			"UseNetCore1x=true;Framework=netcoreapp1.1")]
+		[TestCase ("Microsoft.Common.Library.CSharp-netcoreapp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
+		[TestCase ("Microsoft.Common.Library.CSharp-netcoreapp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
 
-		[TestCase (
-			"Microsoft.Test.xUnit.CSharp",
-			"UseNetCore1x=true;Framework=netcoreapp1.0")]
-		[TestCase (
-			"Microsoft.Test.xUnit.CSharp",
-			"UseNetCore1x=true;Framework=netcoreapp1.1")]
+		[TestCase ("Microsoft.Test.xUnit.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
+		[TestCase ("Microsoft.Test.xUnit.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
 
-		[TestCase (
-			"Microsoft.Test.MSTest.CSharp",
-			"UseNetCore1x=true;Framework=netcoreapp1.0")]
-		[TestCase (
-			"Microsoft.Test.MSTest.CSharp",
-			"UseNetCore1x=true;Framework=netcoreapp1.1")]
+		[TestCase ("Microsoft.Test.MSTest.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
+		[TestCase ("Microsoft.Test.MSTest.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
 
-		[TestCase (
-			"Microsoft.Common.Console.FSharp",
-			"UseNetCore1x=true;Framework=netcoreapp1.0")]
-		[TestCase (
-			"Microsoft.Common.Console.FSharp",
-			"UseNetCore1x=true;Framework=netcoreapp1.1")]
+		[TestCase ("Microsoft.Common.Console.FSharp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
+		[TestCase ("Microsoft.Common.Console.FSharp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
 
-		[TestCase (
-			"Microsoft.Test.xUnit.FSharp",
-			"UseNetCore1x=true;Framework=netcoreapp1.0")]
-		[TestCase (
-			"Microsoft.Test.xUnit.FSharp",
-			"UseNetCore1x=true;Framework=netcoreapp1.1")]
+		[TestCase ("Microsoft.Test.xUnit.FSharp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
+		[TestCase ("Microsoft.Test.xUnit.FSharp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
 
-		[TestCase (
-			"Microsoft.Test.MSTest.FSharp",
-			"UseNetCore1x=true;Framework=netcoreapp1.0")]
-		[TestCase (
-			"Microsoft.Test.MSTest.FSharp",
-			"UseNetCore1x=true;Framework=netcoreapp1.1")]
+		[TestCase ("Microsoft.Test.MSTest.FSharp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
+		[TestCase ("Microsoft.Test.MSTest.FSharp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
 		public async Task NetCore1x (string templateId, string parameters)
 		{
 			if (!DotNetCoreRuntime.IsInstalled) {
@@ -146,12 +112,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
-		[TestCase (
-			"Microsoft.Common.Library.CSharp",
-			"UseNetStandard20=true")]
-		[TestCase (
-			"Microsoft.Common.Library.FSharp",
-			"UseNetStandard20=true")]
+		[TestCase ("Microsoft.Common.Library.CSharp", "UseNetStandard20=true")]
+		[TestCase ("Microsoft.Common.Library.FSharp", "UseNetStandard20=true")]
 		public async Task NetStandard20 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk20Installed ()) {
@@ -164,41 +126,61 @@ namespace MonoDevelop.DotNetCore.Tests
 			await CreateAndBuild (template, config);
 		}
 
-		[TestCase (
-			"Microsoft.Common.Console.CSharp",
-			"UseNetCore20=true")]
+		[TestCase ("Microsoft.Common.Console.CSharp","UseNetCore20=true")]
+		[TestCase ("Microsoft.Common.Library.CSharp-netcoreapp", "UseNetCore20=true;Framework=netcoreapp2.0")]
+		[TestCase ("Microsoft.Test.xUnit.CSharp", "UseNetCore20=true")]
+		[TestCase ("Microsoft.Test.MSTest.CSharp", "UseNetCore20=true")]
 
-		[TestCase (
-			"Microsoft.Common.Library.CSharp-netcoreapp",
-			"UseNetCore20=true;Framework=netcoreapp2.0")]
-
-		[TestCase (
-			"Microsoft.Test.xUnit.CSharp",
-			"UseNetCore20=true")]
-
-		[TestCase (
-			"Microsoft.Test.MSTest.CSharp",
-			"UseNetCore20=true")]
-		[TestCase (
-			"Microsoft.Test.MSTest.CSharp",
-			"UseNetCore20=true")]
-
-		[TestCase (
-			"Microsoft.Common.Console.FSharp",
-			"UseNetCore20=true")]
-
-		[TestCase (
-			"Microsoft.Common.Library.FSharp-netcoreapp",
-			"UseNetCore20=true;Framework=netcoreapp2.0")]
-
-		[TestCase (
-			"Microsoft.Test.xUnit.FSharp",
-			"UseNetCore20=true")]
-
-		[TestCase (
-			"Microsoft.Test.MSTest.FSharp",
-			"UseNetCore20=true")]
+		[TestCase ("Microsoft.Common.Console.FSharp", "UseNetCore20=true")]
+		[TestCase ("Microsoft.Common.Library.FSharp-netcoreapp", "UseNetCore20=true;Framework=netcoreapp2.0")]
+		[TestCase ("Microsoft.Test.xUnit.FSharp", "UseNetCore20=true")]
+		[TestCase ("Microsoft.Test.MSTest.FSharp", "UseNetCore20=true")]
 		public async Task NetCore20 (string templateId, string parameters)
+		{
+			if (!IsDotNetCoreSdk20Installed ()) {
+				Assert.Ignore (".NET Core 2.0 SDK is not installed - required by project template.");
+			}
+
+			var config = CreateNewProjectConfig ("NetCore2x", templateId, parameters);
+			SolutionTemplate template = FindTemplate (templateId, config);
+
+			await CreateAndBuild (template, config);
+		}
+
+		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
+		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
+
+		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
+		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
+
+		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
+		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
+
+		[TestCase ("Microsoft.Web.Mvc.FSharp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
+		[TestCase ("Microsoft.Web.Mvc.FSharp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
+
+		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
+		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
+		public async Task AspNetCore1x (string templateId, string parameters)
+		{
+			if (!DotNetCoreRuntime.IsInstalled) {
+				Assert.Ignore (".NET Core runtime is not installed - required by project template.");
+			}
+
+			var config = CreateNewProjectConfig ("AspNetCore1x", templateId, parameters);
+			SolutionTemplate template = FindTemplate (templateId, config);
+
+			await CreateAndBuild (template, config);
+		}
+
+		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore20=true")]
+		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore20=true")]
+		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore20=true")]
+		[TestCase ("Microsoft.Web.Mvc.FSharp", "UseNetCore20=true")]
+		[TestCase ("Microsoft.Web.RazorPages.CSharp.2.0", "UseNetCore20=true")]
+		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore20=true")]
+		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore20=true")]
+		public async Task AspNetCore20 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk20Installed ()) {
 				Assert.Ignore (".NET Core 2.0 SDK is not installed - required by project template.");
@@ -244,6 +226,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			return templateId.Replace ("Microsoft.Test.", "")
 				.Replace ("Microsoft.Common.", "")
+				.Replace ("Microsoft.", "")
 				.Replace (".", "");
 		}
 
