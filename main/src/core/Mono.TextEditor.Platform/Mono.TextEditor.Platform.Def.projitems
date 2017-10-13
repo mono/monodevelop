@@ -9,10 +9,6 @@
     <Import_RootNamespace>Mono.TextEditor.Platform</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-      <Compile Include="$(MSBuildThisFileDirectory)PlatformCatalog.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)PlatformExtensions.cs" />
-
-
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ITextEditorFactoryService.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ConnectionReason.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\IWpfTextView.cs" />
