@@ -12,7 +12,6 @@
       <Compile Include="$(MSBuildThisFileDirectory)PlatformCatalog.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)PlatformExtensions.cs" />
 
-      <Compile Include="$(MSBuildThisFileDirectory)Platform\Imaging\Impl\ImageMoniker.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ITextEditorFactoryService.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ConnectionReason.cs" />
