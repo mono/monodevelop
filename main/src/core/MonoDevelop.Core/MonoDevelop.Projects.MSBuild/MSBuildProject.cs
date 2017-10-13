@@ -683,6 +683,11 @@ namespace MonoDevelop.Projects.MSBuild
 			return mainProjectInstance.FindGlobItemsIncludingFile (include);
 		}
 
+		internal IEnumerable<MSBuildItem> FindUpdateGlobItemsIncludingFile (string include, MSBuildItem globItem)
+		{
+			return mainProjectInstance.FindUpdateGlobItemsIncludingFile (include, globItem);
+		}
+
 		public MSBuildPropertyGroup GetGlobalPropertyGroup ()
 		{
 			return PropertyGroups.FirstOrDefault (g => g.Condition.Length == 0);

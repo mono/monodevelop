@@ -681,6 +681,92 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Tests that the %(FileName) metadata is correctly applied to a file from a Update glob.
+		///
+		/// Compile Update="**\*.xaml.cs" DependentUpon="%(Filename)"
+		/// </summary>
+		[Test]
+		public async Task DependentUponUsingFileNameMetadataProperty ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-metadata-prop.csproj");
+				string expectedProjectXml = File.ReadAllText (projFile);
+
+				var xamlCSharpFileName = projFile.ParentDirectory.Combine ("test.xaml.cs");
+				File.WriteAllText (xamlCSharpFileName, "csharp");
+				var xamlFileName = projFile.ParentDirectory.Combine ("test.xaml");
+				File.WriteAllText (xamlFileName, "xaml");
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				var xamlCSharpFile = p.Files.Single (fi => fi.FilePath.FileName == "test.xaml.cs");
+				var xamlFile = p.Files.Single (fi => fi.FilePath.FileName == "test.xaml");
+
+				Assert.AreEqual (xamlFileName.ToString (), xamlCSharpFile.DependsOn);
+				Assert.AreEqual (xamlCSharpFile.DependsOnFile, xamlFile);
+
+				// Ensure the expanded %(FileName) does not get added to the main project on saving.
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
+		public async Task AddFile_WildCardHasMetadataProperties ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-metadata-prop.csproj");
+				string expectedProjectXml = File.ReadAllText (projFile);
+
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				var xamlFileName1 = projFile.ParentDirectory.Combine ("MyView1.xaml");
+				File.WriteAllText (xamlFileName1, "xaml1");
+				var xamlCSharpFileName = projFile.ParentDirectory.Combine ("MyView1.xaml.cs");
+				File.WriteAllText (xamlCSharpFileName, "csharpxaml");
+
+				// Xaml file with Generator and Subtype set to match that defined in the glob.
+				var xamlFile1 = new ProjectFile (xamlFileName1, BuildAction.EmbeddedResource);
+				xamlFile1.Generator = "MSBuild:UpdateDesignTimeXaml";
+				xamlFile1.ContentType = "Designer";
+				p.Files.Add (xamlFile1);
+
+				var xamlCSharpFile = p.AddFile (xamlCSharpFileName);
+				xamlCSharpFile.DependsOn = "MyView1.xaml";
+
+				// Ensure no items are added to the project on saving.
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				// Save again. A second save was adding an include for the .xaml file whilst
+				// the first save was not.
+				await p.SaveAsync (Util.GetMonitor ());
+
+				projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
 		{
 			protected internal override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
