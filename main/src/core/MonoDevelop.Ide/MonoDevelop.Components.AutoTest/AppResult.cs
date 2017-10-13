@@ -112,7 +112,8 @@ namespace MonoDevelop.Components.AutoTest
 			var splitProperties = propertyName.Split(new[] { '.' });
 			propertyName = splitProperties.Last();
 			var exceptLast = splitProperties.Except(new List<string> { propertyName });
-			o = GetRecursiveObjectProperty(string.Join(".", exceptLast), o);
+			if (exceptLast.Any ())
+				o = GetRecursiveObjectProperty (string.Join (".", exceptLast), o);
 
 			// Find the property for the name
 			PropertyInfo propertyInfo = o.GetType().GetProperty(propertyName,
@@ -203,8 +204,12 @@ namespace MonoDevelop.Components.AutoTest
 
 		protected object GetRecursiveObjectProperty (string propertyName, object obj)
 		{
-			foreach (var singleProperty in propertyName.Split(new[] { '.' })) {
-				obj = GetPropertyValue(singleProperty, obj);
+			if (propertyName != null && !string.IsNullOrEmpty (propertyName.Trim()))
+			{
+				foreach (var singleProperty in propertyName.Split (new[] { '.' }))
+				{
+					obj = GetPropertyValue (singleProperty, obj);
+				}
 			}
 			return obj;
 		}
