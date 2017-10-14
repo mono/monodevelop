@@ -3,6 +3,7 @@
   <PropertyGroup>
     <RootDirectory>$(MSBuildThisFileDirectory)</RootDirectory>
     <PackagesDirectory>$(RootDirectory)packages</PackagesDirectory>
+    <ReferencesRoslyn>$(RootDirectory)\msbuild\ReferencesRoslyn.props</ReferencesRoslyn>
     <ReferencesVSEditor>$(RootDirectory)\msbuild\ReferencesVSEditor.props</ReferencesVSEditor>
   </PropertyGroup>
 
