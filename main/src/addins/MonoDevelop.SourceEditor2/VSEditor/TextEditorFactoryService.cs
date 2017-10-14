@@ -1,4 +1,4 @@
-﻿//
+//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -65,11 +65,11 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         internal ITextStructureNavigatorSelectorService TextStructureNavigatorSelectorService { get; set; }
 
 
-        [ImportMany(typeof(IWpfTextViewCreationListener))]
-        internal List<Lazy<IWpfTextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>> TextViewCreationListeners { get; set; }
+        [ImportMany(typeof(ITextViewCreationListener))]
+        internal List<Lazy<ITextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>> TextViewCreationListeners { get; set; }
 
-        [ImportMany(typeof(IWpfTextViewConnectionListener))]
-        internal List<Lazy<IWpfTextViewConnectionListener, IContentTypeAndTextViewRoleMetadata>> TextViewConnectionListeners { get; set; }
+        [ImportMany(typeof(ITextViewConnectionListener))]
+        internal List<Lazy<ITextViewConnectionListener, IContentTypeAndTextViewRoleMetadata>> TextViewConnectionListeners { get; set; }
 
         [Import]
         internal ISmartIndentationService SmartIndentationService { get; set; }
@@ -100,7 +100,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                                                                                      PredefinedTextViewRoles.Structured,
                                                                                      PredefinedTextViewRoles.Zoomable);
 
-        public IWpfTextView CreateTextView (MonoDevelop.Ide.Editor.TextEditor textEditor, ITextViewRoleSet roles = null, IEditorOptions parentOptions = null)
+        public ITextView CreateTextView (MonoDevelop.Ide.Editor.TextEditor textEditor, ITextViewRoleSet roles = null, IEditorOptions parentOptions = null)
         {
             if (textEditor == null)
             {

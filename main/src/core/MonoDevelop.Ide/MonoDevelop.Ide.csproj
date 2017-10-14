@@ -8593,6 +8593,7 @@
     <Compile Include="MonoDevelop.Ide.Commands\ViewCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\WindowCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\JoinableTaskContextHost.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PlatformCatalog.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PlatformExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorFactoryService.cs" />
@@ -9692,7 +9693,6 @@
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\language-configuration.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\package.json" />
   </ItemGroup>
-  <Import Project="..\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems" Label="Shared" Condition="Exists('..\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems')" />
   <ItemGroup>
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Components\Xwt\" />

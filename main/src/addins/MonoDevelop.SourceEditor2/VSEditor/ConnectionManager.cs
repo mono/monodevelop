@@ -1,4 +1,4 @@
-﻿//
+//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -20,11 +20,11 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     {
         private class Listener
         {
-            private readonly Lazy<IWpfTextViewConnectionListener, IContentTypeAndTextViewRoleMetadata> importInfo;
-            private IWpfTextViewConnectionListener listener;
+            private readonly Lazy<ITextViewConnectionListener, IContentTypeAndTextViewRoleMetadata> importInfo;
+            private ITextViewConnectionListener listener;
             private readonly GuardedOperations guardedOperations;
 
-            public Listener(Lazy<IWpfTextViewConnectionListener, IContentTypeAndTextViewRoleMetadata> importInfo, GuardedOperations guardedOperations)
+            public Listener(Lazy<ITextViewConnectionListener, IContentTypeAndTextViewRoleMetadata> importInfo, GuardedOperations guardedOperations)
             {
                 this.importInfo = importInfo;
                 this.guardedOperations = guardedOperations;
@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                 get { return importInfo.Metadata; }
             }
 
-            public IWpfTextViewConnectionListener Instance
+            public ITextViewConnectionListener Instance
             {
                 get
                 {
@@ -48,12 +48,12 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             }
         }
 
-        IWpfTextView _textView;
+        ITextView _textView;
         List<Listener> listeners = new List<Listener>();
         GuardedOperations _guardedOperations;
 
-        public ConnectionManager(IWpfTextView textView, 
-                                 ICollection<Lazy<IWpfTextViewConnectionListener, IContentTypeAndTextViewRoleMetadata>> textViewConnectionListeners,
+        public ConnectionManager(ITextView textView, 
+                                 ICollection<Lazy<ITextViewConnectionListener, IContentTypeAndTextViewRoleMetadata>> textViewConnectionListeners,
                                  GuardedOperations guardedOperations)
         {
             if (textView == null)
@@ -72,7 +72,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             _textView = textView;
             _guardedOperations = guardedOperations;
 
-            List<Lazy<IWpfTextViewConnectionListener, IContentTypeAndTextViewRoleMetadata>> filteredListeners =
+            List<Lazy<ITextViewConnectionListener, IContentTypeAndTextViewRoleMetadata>> filteredListeners =
                 UIExtensionSelector.SelectMatchingExtensions(textViewConnectionListeners, _textView.Roles);
 
             if (filteredListeners.Count > 0)
@@ -189,8 +189,8 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         private void OnGraphBufferContentTypeChanged(object sender, GraphBufferContentTypeChangedEventArgs args)
         {
-            var connectedListeners = new List<IWpfTextViewConnectionListener>();
-            var disconnectedListeners = new List<IWpfTextViewConnectionListener>();
+            var connectedListeners = new List<ITextViewConnectionListener>();
+            var disconnectedListeners = new List<ITextViewConnectionListener>();
 
             foreach (Listener listener in this.listeners)
             {
