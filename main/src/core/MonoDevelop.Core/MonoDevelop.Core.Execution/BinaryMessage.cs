@@ -228,53 +228,105 @@ namespace MonoDevelop.Core.Execution
 		void WriteArray (BinaryWriter bw, object val)
 		{
 			Array array = (Array)val;
-			bw.Write (array.Length);
+			int rank = array.Rank;
+			bw.Write (array.Rank);
+			for (int i = 0; i < rank; ++i)
+				bw.Write (array.GetLength (rank));
 
-			var et = val.GetType ().GetElementType ();
+			var type = val.GetType ();
+			var et = type.GetElementType ();
 
-			if (et == typeof(byte)) {
-				bw.Write ((byte)TypeCode.Byte);
-				bw.Write ((byte [])val);
-			} else if (et == typeof(short)) {
-				bw.Write ((byte)TypeCode.Int16);
-				foreach (var v in (short [])val)
-					bw.Write (v);
-			} else if (et == typeof(int)) {
-				bw.Write ((byte)TypeCode.Int32);
-				foreach (var v in (int [])val)
-					bw.Write (v);
-			} else if (et == typeof(long)) {
-				bw.Write ((byte)TypeCode.Int64);
-				foreach (var v in (long [])val)
-					bw.Write (v);
-			} else if (et == typeof(float)) {
-				bw.Write ((byte)TypeCode.Single);
-				foreach (var v in (float [])val)
-					bw.Write (v);
-			} else if (et == typeof(double)) {
-				bw.Write ((byte)TypeCode.Double);
-				foreach (var v in (double [])val)
-					bw.Write (v);
-			} else if (et == typeof(string)) {
-				bw.Write ((byte)TypeCode.String);
-				foreach (var v in (string [])val)
-					bw.Write (v ?? NullString);
-			} else if (et == typeof(bool)) {
-				bw.Write ((byte)TypeCode.Boolean);
-				foreach (var v in (bool [])val)
-					bw.Write (v);
-			} else if (et == typeof(DateTime)) {
-				bw.Write ((byte)TypeCode.DateTime);
-				foreach (var v in (DateTime [])val)
-					bw.Write (v.Ticks);
-			} else if (et == typeof(TimeSpan)) {
-				bw.Write ((byte)TypeCode.TimeSpan);
-				foreach (var v in (TimeSpan [])val)
-					bw.Write (v.Ticks);
+			if (rank == 1) {
+				if (et == typeof (byte)) {
+					bw.Write ((byte)TypeCode.Byte);
+					bw.Write ((byte [])val);
+				} else if (et == typeof (short)) {
+					bw.Write ((byte)TypeCode.Int16);
+					foreach (var v in (short [])val)
+						bw.Write (v);
+				} else if (et == typeof (int)) {
+					bw.Write ((byte)TypeCode.Int32);
+					foreach (var v in (int [])val)
+						bw.Write (v);
+				} else if (et == typeof (long)) {
+					bw.Write ((byte)TypeCode.Int64);
+					foreach (var v in (long [])val)
+						bw.Write (v);
+				} else if (et == typeof (float)) {
+					bw.Write ((byte)TypeCode.Single);
+					foreach (var v in (float [])val)
+						bw.Write (v);
+				} else if (et == typeof (double)) {
+					bw.Write ((byte)TypeCode.Double);
+					foreach (var v in (double [])val)
+						bw.Write (v);
+				} else if (et == typeof (string)) {
+					bw.Write ((byte)TypeCode.String);
+					foreach (var v in (string [])val)
+						bw.Write (v ?? NullString);
+				} else if (et == typeof (bool)) {
+					bw.Write ((byte)TypeCode.Boolean);
+					foreach (var v in (bool [])val)
+						bw.Write (v);
+				} else if (et == typeof (DateTime)) {
+					bw.Write ((byte)TypeCode.DateTime);
+					foreach (var v in (DateTime [])val)
+						bw.Write (v.Ticks);
+				} else if (et == typeof (TimeSpan)) {
+					bw.Write ((byte)TypeCode.TimeSpan);
+					foreach (var v in (TimeSpan [])val)
+						bw.Write (v.Ticks);
+				} else {
+					bw.Write ((byte)TypeCode.Object);
+					foreach (var elem in array)
+						WriteValue (bw, elem);
+				}
 			} else {
-				bw.Write ((byte)TypeCode.Object);
-				foreach (var elem in array)
-					WriteValue (bw, elem);
+				if (et == typeof (byte)) {
+					bw.Write ((byte)TypeCode.Byte);
+					foreach (byte v in array)
+						bw.Write (v);
+				} else if (et == typeof (short)) {
+					bw.Write ((byte)TypeCode.Int16);
+					foreach (short v in array)
+						bw.Write (v);
+				} else if (et == typeof (int)) {
+					bw.Write ((byte)TypeCode.Int32);
+					foreach (int v in array)
+						bw.Write (v);
+				} else if (et == typeof (long)) {
+					bw.Write ((byte)TypeCode.Int64);
+					foreach (long v in array)
+						bw.Write (v);
+				} else if (et == typeof (float)) {
+					bw.Write ((byte)TypeCode.Single);
+					foreach (float v in array)
+						bw.Write (v);
+				} else if (et == typeof (double)) {
+					bw.Write ((byte)TypeCode.Double);
+					foreach (double v in array)
+						bw.Write (v);
+				} else if (et == typeof (string)) {
+					bw.Write ((byte)TypeCode.String);
+					foreach (string v in array)
+						bw.Write (v ?? NullString);
+				} else if (et == typeof (bool)) {
+					bw.Write ((byte)TypeCode.Boolean);
+					foreach (bool v in array)
+						bw.Write (v);
+				} else if (et == typeof (DateTime)) {
+					bw.Write ((byte)TypeCode.DateTime);
+					foreach (DateTime v in array)
+						bw.Write (v.Ticks);
+				} else if (et == typeof (TimeSpan)) {
+					bw.Write ((byte)TypeCode.TimeSpan);
+					foreach (TimeSpan v in array)
+						bw.Write (v.Ticks);
+				} else {
+					bw.Write ((byte)TypeCode.Object);
+					foreach (var elem in array)
+						WriteValue (bw, elem);
+				}
 			}
 		}
 
@@ -340,78 +392,207 @@ namespace MonoDevelop.Core.Execution
 			throw new NotSupportedException ("code: " + t);
 		}
 
+		internal class MultiDimensionalIterator
+		{
+			Array arr;
+			readonly int [] indices, lengths;
+			bool first;
+
+			public MultiDimensionalIterator (Array arr)
+			{
+				this.arr = arr;
+				lengths = new int [arr.Rank];
+				indices = new int [arr.Rank];
+				first = true;
+
+				for (int i = 0; i < arr.Rank; ++i)
+					lengths [i] = arr.GetLength (i);
+			}
+
+			public void Fill (Func<object> fill)
+			{
+				(bool, int []) res;
+				while ((res = TryMoveNext ()).Item1) {
+					arr.SetValue (fill (), res.Item2);
+				}
+			}
+
+			public (bool, int []) TryMoveNext ()
+			{
+				return TryMoveNextInternal (indices.Length - 1);
+			}
+
+			(bool, int []) TryMoveNextInternal (int lastRank)
+			{
+				if (lastRank == -1)
+					return (false, indices);
+
+				if (lengths [lastRank] != 0) {
+					if (first) {
+						first = false;
+						return (true, indices);
+					}
+
+					indices [lastRank]++;
+					// We reached the last element, try bumping previous dimension
+					if (indices [lastRank] != lengths [lastRank])
+						return (true, indices);
+
+					// We're done.
+					if (lastRank == 0)
+						return (false, indices);
+
+					for (int i = lastRank; i < indices.Length; ++i)
+						indices [i] = 0;
+
+				}
+				int newRank = lastRank - 1;
+				return TryMoveNextInternal (newRank);
+			}
+		}
+
 		static object ReadArray (BinaryReader br)
 		{
-			int count = br.ReadInt32 ();
+			int rank = br.ReadInt32 ();
+			int[] lengths = new int [rank];
+
 			var type = (TypeCode)br.ReadByte ();
 
-			switch (type) {
-			case TypeCode.Object: {
-					var a = new object [count];
-					for (int n = 0; n < count; n++)
-						a [n] = ReadValue (br);
-					return a;
-				}
-			case TypeCode.Double: {
-					var a = new double [count];
-					for (int n = 0; n < count; n++)
-						a [n] = br.ReadDouble ();
-					return a;
-				}
-			case TypeCode.Byte: {
-					return br.ReadBytes (count);
-				}
-			case TypeCode.Int16: {
-					var a = new short [count];
-					for (int n = 0; n < count; n++)
-						a [n] = br.ReadInt16 ();
-					return a;
-				}
-			case TypeCode.Int32: {
-					var a = new int [count];
-					for (int n = 0; n < count; n++)
-						a [n] = br.ReadInt32 ();
-					return a;
-				}
-			case TypeCode.Int64: {
-					var a = new long [count];
-					for (int n = 0; n < count; n++)
-						a [n] = br.ReadInt64 ();
-					return a;
-				}
-			case TypeCode.Single: {
-					var a = new float [count];
-					for (int n = 0; n < count; n++)
-						a [n] = br.ReadSingle ();
-					return a;
-				}
-			case TypeCode.String: {
-					var a = new string [count];
-					for (int n = 0; n < count; n++) {
-						string s = br.ReadString ();
-						if (s == NullString)
-							s = null;
-						a [n] = s;
+			if (rank == 1) {
+				int count = lengths [0];
+				switch (type) {
+				case TypeCode.Object: {
+						var a = new object [count];
+						for (int n = 0; n < count; n++)
+							a [n] = ReadValue (br);
+						return a;
 					}
-					return a;
+				case TypeCode.Double: {
+						var a = new double [count];
+						for (int n = 0; n < count; n++)
+							a [n] = br.ReadDouble ();
+						return a;
+					}
+				case TypeCode.Byte: {
+						return br.ReadBytes (count);
+					}
+				case TypeCode.Int16: {
+						var a = new short [count];
+						for (int n = 0; n < count; n++)
+							a [n] = br.ReadInt16 ();
+						return a;
+					}
+				case TypeCode.Int32: {
+						var a = new int [count];
+						for (int n = 0; n < count; n++)
+							a [n] = br.ReadInt32 ();
+						return a;
+					}
+				case TypeCode.Int64: {
+						var a = new long [count];
+						for (int n = 0; n < count; n++)
+							a [n] = br.ReadInt64 ();
+						return a;
+					}
+				case TypeCode.Single: {
+						var a = new float [count];
+						for (int n = 0; n < count; n++)
+							a [n] = br.ReadSingle ();
+						return a;
+					}
+				case TypeCode.String: {
+						var a = new string [count];
+						for (int n = 0; n < count; n++) {
+							string s = br.ReadString ();
+							if (s == NullString)
+								s = null;
+							a [n] = s;
+						}
+						return a;
+					}
+				case TypeCode.Boolean: {
+						var a = new bool [count];
+						for (int n = 0; n < count; n++)
+							a [n] = br.ReadBoolean ();
+						return a;
+					}
+				case TypeCode.DateTime: {
+						var a = new DateTime [count];
+						for (int n = 0; n < count; n++)
+							a [n] = new DateTime (br.ReadInt64 ());
+						return a;
+					}
+				case TypeCode.TimeSpan: {
+						var a = new TimeSpan [count];
+						for (int n = 0; n < count; n++)
+							a [n] = new TimeSpan (br.ReadInt64 ());
+						return a;
+					}
 				}
-			case TypeCode.Boolean: {
-					var a = new bool [count];
-					for (int n = 0; n < count; n++)
-						a [n] = br.ReadBoolean ();
-					return a;
+			} else {
+				int [] indices = new int [lengths.Length];
+				switch (type) {
+				case TypeCode.Object: {
+						var a = Array.CreateInstance (typeof (object), lengths);
+						new MultiDimensionalIterator (a).Fill (() => ReadValue (br));
+						return a;
 				}
-			case TypeCode.DateTime: {
-					var a = new DateTime [count];
-					for (int n = 0; n < count; n++)
-						a [n] = new DateTime (br.ReadInt64 ());
-					return a;
-				}
-			case TypeCode.TimeSpan: {
-					var a = new TimeSpan [count];
-					for (int n = 0; n < count; n++)
-						a [n] = new TimeSpan (br.ReadInt64 ());
-					return a;
+				case TypeCode.Double: {
+						var a = Array.CreateInstance (typeof (double), lengths);
+						new MultiDimensionalIterator (a).Fill (() => br.ReadDouble ());
+						return a;
+					}
+				case TypeCode.Byte: {
+						var a = Array.CreateInstance (typeof (byte), lengths);
+						new MultiDimensionalIterator (a).Fill (() => br.ReadByte ());
+						return a;
+						//return br.ReadBytes (count);
+					}
+				case TypeCode.Int16: {
+						var a = Array.CreateInstance (typeof (short), lengths);
+						new MultiDimensionalIterator (a).Fill (() => br.ReadInt16 ());
+						return a;
+					}
+				case TypeCode.Int32: {
+						var a = Array.CreateInstance (typeof (int), lengths);
+						new MultiDimensionalIterator (a).Fill (() => br.ReadInt32 ());
+						return a;
+					}
+				case TypeCode.Int64: {
+						var a = Array.CreateInstance (typeof (long), lengths);
+						new MultiDimensionalIterator (a).Fill (() => br.ReadInt64 ());
+						return a;
+					}
+				case TypeCode.Single: {
+						var a = Array.CreateInstance (typeof (float), lengths);
+						new MultiDimensionalIterator (a).Fill (() => br.ReadSingle ());
+						return a;
+					}
+				case TypeCode.String: {
+						var a = Array.CreateInstance (typeof (string), lengths);
+						new MultiDimensionalIterator (a).Fill (() => {
+							string s = br.ReadString ();
+							if (s == NullString)
+								s = null;
+							return s;
+						});
+						return a;
+					}
+				case TypeCode.Boolean: {
+						var a = Array.CreateInstance (typeof (bool), lengths);
+						new MultiDimensionalIterator (a).Fill (() => br.ReadBoolean ());
+						return a;
+					}
+				case TypeCode.DateTime: {
+						var a = Array.CreateInstance (typeof (DateTime), lengths);
+						new MultiDimensionalIterator (a).Fill (() => new DateTime (br.ReadInt64 ()));
+						return a;
+					}
+				case TypeCode.TimeSpan: {
+						var a = Array.CreateInstance (typeof (TimeSpan), lengths);
+						new MultiDimensionalIterator (a).Fill (() => new TimeSpan (br.ReadInt64 ()));
+						return a;
+					}
 				}
 			}
 			throw new NotSupportedException ("Array of " + type);
