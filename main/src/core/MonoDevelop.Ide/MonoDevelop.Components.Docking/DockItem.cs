@@ -220,11 +220,11 @@ namespace MonoDevelop.Components.Docking
 					return toolbarTop;
 				case DockPositionType.Bottom:
 					if (toolbarBottom == null)
-	                    toolbarBottom = new DockItemToolbar (this, DockPositionType.Bottom);
+						toolbarBottom = new DockItemToolbar (this, DockPositionType.Bottom);
 					return toolbarBottom;
 				case DockPositionType.Left:
 					if (toolbarLeft == null)
-	                    toolbarLeft = new DockItemToolbar (this, DockPositionType.Left);
+						toolbarLeft = new DockItemToolbar (this, DockPositionType.Left);
 					return toolbarLeft;
 				case DockPositionType.Right:
 					if (toolbarRight == null)
