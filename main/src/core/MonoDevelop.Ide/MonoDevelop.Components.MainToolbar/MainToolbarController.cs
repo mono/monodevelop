@@ -956,8 +956,8 @@ namespace MonoDevelop.Components.MainToolbar
 					throw new ArgumentNullException (nameof (target));
 				
 				ExecutionTarget = target;
-				image = target?.Image;
-				tooltip = target?.Tooltip;
+				image = target.Image;
+				tooltip = target.Tooltip;
 
 				this.fullText = fullText;
 				Project = project;
