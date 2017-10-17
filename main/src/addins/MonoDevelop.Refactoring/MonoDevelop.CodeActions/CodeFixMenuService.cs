@@ -100,14 +100,13 @@ namespace MonoDevelop.CodeActions
 				AddFixMenuItem (editor, menu, ref mnemonic, fix.CodeAction);
 			}
 
-			first = false;
-
 			var warningsAtCaret = (await editor.DocumentContext.AnalysisDocument.GetSemanticModelAsync (cancellationToken))
 				.GetDiagnostics (new TextSpan (editor.CaretOffset, 0))
 				.Where (diag => diag.Severity == DiagnosticSeverity.Warning).ToList ();
 
 			var caretSpan = new TextSpan (editor.CaretOffset, 0);
 
+			first = true;
 			foreach (var warning in warningsAtCaret) {
 
 				var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", warning.Descriptor.Title);
@@ -126,6 +125,7 @@ namespace MonoDevelop.CodeActions
 				}
 			}
 
+			first = true;
 			foreach (var diag in fixes.DiagnosticsAtCaret) {
 				var notConfigurable = DescriptorHasTag (diag.Descriptor, WellKnownDiagnosticTags.NotConfigurable);
 
