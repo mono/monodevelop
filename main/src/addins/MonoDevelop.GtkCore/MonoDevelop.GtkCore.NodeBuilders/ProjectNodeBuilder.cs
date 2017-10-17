@@ -50,6 +50,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		protected override void Initialize ()
 		{
+			base.Initialize ();
+
 			lock (typeof (ProjectNodeBuilder))
 				instance = this;
 		}
@@ -58,6 +60,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		{
 			lock (typeof (ProjectNodeBuilder))
 				instance = null;
+
+			base.Dispose ();
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

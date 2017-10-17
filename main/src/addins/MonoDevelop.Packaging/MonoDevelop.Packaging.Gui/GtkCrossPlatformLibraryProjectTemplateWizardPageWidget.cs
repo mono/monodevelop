@@ -169,6 +169,8 @@ namespace MonoDevelop.Packaging.Gui
 		{
 			Dispose (nameTooltip);
 			Dispose (backgroundImage);
+
+			base.Dispose ();
 		}
 
 		void Dispose (IDisposable disposable)
