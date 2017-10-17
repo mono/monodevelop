@@ -802,7 +802,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		//FIXME: this should NOT be async. our implementation is doing some very expensive things like formatting that it shouldn't need to do.
 		protected override void ApplyDocumentTextChanged (DocumentId id, SourceText text)
 		{
-			tryApplyState_documentTextChangedTasks.Add (ApplyDocumentTextChangedCore (id, text));
+			lock (projectModifyLock)
+				tryApplyState_documentTextChangedTasks.Add (ApplyDocumentTextChangedCore (id, text));
 		}
 
 		async Task ApplyDocumentTextChangedCore (DocumentId id, SourceText text)
