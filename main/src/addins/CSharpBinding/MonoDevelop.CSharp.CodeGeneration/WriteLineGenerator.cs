@@ -134,6 +134,7 @@ namespace MonoDevelop.CodeGeneration
 					format.Append ("={");
 					format.Append (member.ToString ());
 					format.Append ("}");
+					i++;
 				}
 				format.Append ("\"");
 				var arguments = new List<ArgumentSyntax> ();
