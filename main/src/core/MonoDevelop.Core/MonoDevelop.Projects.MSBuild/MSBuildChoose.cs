@@ -83,12 +83,9 @@ namespace MonoDevelop.Projects.MSBuild
 				case "Choose": ob = new MSBuildChoose (); break;
 				default: ob = new MSBuildXmlElement (); break;
 			}
-			if (ob != null) {
-				ob.ParentNode = this;
-				ob.Read (reader);
-				ChildNodes = ChildNodes.Add (ob);
-			} else
-				reader.Read ();
+			ob.ParentNode = this;
+			ob.Read (reader);
+			ChildNodes = ChildNodes.Add (ob);
 		}
 
 		internal override string GetElementName ()
