@@ -360,21 +360,25 @@ namespace MonoDevelop.Ide.Navigation
 		
 		static void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
 		{
-			bool historyChanged = false;
-			bool closedHistoryChanged = false;
-			foreach (ProjectFileRenamedEventInfo args in e) {
-				foreach (NavigationHistoryItem point in history) {
+			foreach (NavigationHistoryItem point in history) {
+				foreach (ProjectFileRenamedEventInfo args in e) {
 					var dp = point.NavigationPoint as DocumentNavigationPoint;
-					historyChanged |= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
-					closedHistoryChanged |= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
-					if (historyChanged && closedHistoryChanged)
+					if (dp?.HandleRenameEvent (args.OldName, args.NewName) == true) {
+						OnHistoryChanged ();
 						break;
+					}
 				}
 			}
-			if (historyChanged)
-				OnHistoryChanged ();
-			if (closedHistoryChanged)
-				OnClosedHistoryChanged ();
+
+			foreach (var point in closedHistory) {
+				foreach (ProjectFileRenamedEventInfo args in e) {
+					var dp = point.Item1 as DocumentNavigationPoint;
+					if (dp?.HandleRenameEvent (args.OldName, args.NewName) == true) {
+						OnClosedHistoryChanged ();
+						break;
+					}
+				}
+			}
 		}
 		
 		#endregion
