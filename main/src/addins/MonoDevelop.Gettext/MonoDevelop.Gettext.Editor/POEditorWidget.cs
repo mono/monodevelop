@@ -649,7 +649,7 @@ namespace MonoDevelop.Gettext
 						if (textView == null)
 							continue;
 						textView.ClearSelection ();
-						textView.Text = entry != null ?  entry.GetTranslation (i) : "";
+						textView.Text = entry.GetTranslation (i);
 						EditActions.MoveCaretToDocumentEnd (textView);
 					}
 					
