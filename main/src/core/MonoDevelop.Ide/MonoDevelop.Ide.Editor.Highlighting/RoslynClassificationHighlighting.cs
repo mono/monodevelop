@@ -49,6 +49,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		readonly Dictionary<string, string> classificationMap = new Dictionary<string, string> ();
 
+		public DocumentId DocumentId => documentId;
+
 		public RoslynClassificationHighlighting (MonoDevelopWorkspace workspace, DocumentId documentId, string defaultScope)
 		{
 			this.workspace = workspace;
@@ -56,51 +58,51 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			this.defaultScope = defaultScope;
 			this.defaultScopeStack = new ScopeStack (defaultScope);
 
-			classificationMap[ClassificationTypeNames.Comment] = "comment." + defaultScope;
-			classificationMap[ClassificationTypeNames.ExcludedCode] = "comment.excluded." + defaultScope;
-			classificationMap[ClassificationTypeNames.Identifier] = defaultScope;
-			classificationMap[ClassificationTypeNames.Keyword] = "keyword." + defaultScope;
-			classificationMap[ClassificationTypeNames.NumericLiteral] = "constant.numeric." + defaultScope;
-			classificationMap[ClassificationTypeNames.Operator] = defaultScope;
-			classificationMap[ClassificationTypeNames.PreprocessorKeyword] = "meta.preprocessor." + defaultScope;
-			classificationMap[ClassificationTypeNames.StringLiteral] = "string." + defaultScope;
-			classificationMap[ClassificationTypeNames.WhiteSpace] = "text." + defaultScope;
-			classificationMap[ClassificationTypeNames.Text] = "text." + defaultScope;
-		
-			classificationMap[ClassificationTypeNames.PreprocessorText] = "meta.preprocessor.region.name." + defaultScope;
-			classificationMap[ClassificationTypeNames.Punctuation] = "punctuation." + defaultScope;
-			classificationMap[ClassificationTypeNames.VerbatimStringLiteral] = "string.verbatim." + defaultScope;
+			classificationMap [ClassificationTypeNames.Comment] = "comment." + defaultScope;
+			classificationMap [ClassificationTypeNames.ExcludedCode] = "comment.excluded." + defaultScope;
+			classificationMap [ClassificationTypeNames.Identifier] = defaultScope;
+			classificationMap [ClassificationTypeNames.Keyword] = "keyword." + defaultScope;
+			classificationMap [ClassificationTypeNames.NumericLiteral] = "constant.numeric." + defaultScope;
+			classificationMap [ClassificationTypeNames.Operator] = defaultScope;
+			classificationMap [ClassificationTypeNames.PreprocessorKeyword] = "meta.preprocessor." + defaultScope;
+			classificationMap [ClassificationTypeNames.StringLiteral] = "string." + defaultScope;
+			classificationMap [ClassificationTypeNames.WhiteSpace] = "text." + defaultScope;
+			classificationMap [ClassificationTypeNames.Text] = "text." + defaultScope;
 
-			classificationMap[ClassificationTypeNames.ClassName] = "entity.name.class." + defaultScope;
-			classificationMap[ClassificationTypeNames.DelegateName] = "entity.name.delegate." + defaultScope;
-			classificationMap[ClassificationTypeNames.EnumName] = "entity.name.enum." + defaultScope;
-			classificationMap[ClassificationTypeNames.InterfaceName] = "entity.name.interface." + defaultScope;
-			classificationMap[ClassificationTypeNames.ModuleName] = "entity.name.module." + defaultScope;
-			classificationMap[ClassificationTypeNames.StructName] = "entity.name.struct." + defaultScope;
-			classificationMap[ClassificationTypeNames.TypeParameterName] = "entity.name.typeparameter." + defaultScope;
+			classificationMap [ClassificationTypeNames.PreprocessorText] = "meta.preprocessor.region.name." + defaultScope;
+			classificationMap [ClassificationTypeNames.Punctuation] = "punctuation." + defaultScope;
+			classificationMap [ClassificationTypeNames.VerbatimStringLiteral] = "string.verbatim." + defaultScope;
 
-			classificationMap[ClassificationTypeNames.XmlDocCommentAttributeName] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentAttributeQuotes] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentAttributeValue] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentCDataSection] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentComment] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentDelimiter] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentEntityReference] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentName] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentProcessingInstruction] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentText] = "comment.line.documentation." + defaultScope;
+			classificationMap [ClassificationTypeNames.ClassName] = "entity.name.class." + defaultScope;
+			classificationMap [ClassificationTypeNames.DelegateName] = "entity.name.delegate." + defaultScope;
+			classificationMap [ClassificationTypeNames.EnumName] = "entity.name.enum." + defaultScope;
+			classificationMap [ClassificationTypeNames.InterfaceName] = "entity.name.interface." + defaultScope;
+			classificationMap [ClassificationTypeNames.ModuleName] = "entity.name.module." + defaultScope;
+			classificationMap [ClassificationTypeNames.StructName] = "entity.name.struct." + defaultScope;
+			classificationMap [ClassificationTypeNames.TypeParameterName] = "entity.name.typeparameter." + defaultScope;
 
-			classificationMap[ClassificationTypeNames.XmlLiteralAttributeName] = "entity.other.attribute-name." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralAttributeQuotes] = "punctuation.definition.string." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralAttributeValue] = "string.quoted." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralCDataSection] = "text." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralComment] = "comment.block." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralDelimiter] = defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralEmbeddedExpression] = defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralEntityReference] = defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralName] = "entity.name.tag.localname." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralProcessingInstruction] = defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralText] = "text." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlDocCommentAttributeName] = "comment.line.documentation." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlDocCommentAttributeQuotes] = "comment.line.documentation." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlDocCommentAttributeValue] = "comment.line.documentation." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlDocCommentCDataSection] = "comment.line.documentation." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlDocCommentComment] = "comment.line.documentation." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlDocCommentDelimiter] = "comment.line.documentation." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlDocCommentEntityReference] = "comment.line.documentation." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlDocCommentName] = "comment.line.documentation." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlDocCommentProcessingInstruction] = "comment.line.documentation." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlDocCommentText] = "comment.line.documentation." + defaultScope;
+
+			classificationMap [ClassificationTypeNames.XmlLiteralAttributeName] = "entity.other.attribute-name." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlLiteralAttributeQuotes] = "punctuation.definition.string." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlLiteralAttributeValue] = "string.quoted." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlLiteralCDataSection] = "text." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlLiteralComment] = "comment.block." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlLiteralDelimiter] = defaultScope;
+			classificationMap [ClassificationTypeNames.XmlLiteralEmbeddedExpression] = defaultScope;
+			classificationMap [ClassificationTypeNames.XmlLiteralEntityReference] = defaultScope;
+			classificationMap [ClassificationTypeNames.XmlLiteralName] = "entity.name.tag.localname." + defaultScope;
+			classificationMap [ClassificationTypeNames.XmlLiteralProcessingInstruction] = defaultScope;
+			classificationMap [ClassificationTypeNames.XmlLiteralText] = "text." + defaultScope;
 		}
 
 		protected virtual void OnHighlightingStateChanged (global::MonoDevelop.Ide.Editor.LineEventArgs e)
@@ -118,7 +120,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			int length = line.Length;
 			var span = new TextSpan (offset, length);
 
-			var classifications = Classifier.GetClassifiedSpans (await workspace.GetDocument (documentId).GetSemanticModelAsync (), span, workspace, cancellationToken);
+			var classifications = Classifier.GetClassifiedSpans (await workspace.GetDocument (DocumentId).GetSemanticModelAsync (), span, workspace, cancellationToken);
 
 			int lastClassifiedOffsetEnd = offset;
 			ScopeStack scopeStack;
