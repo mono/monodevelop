@@ -390,7 +390,7 @@ namespace MonoDevelop.Components
 		{
 			trackingHover = false;
 			SetHoverIndex (-1);
-			return base.OnEnterNotifyEvent (evnt);
+			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
