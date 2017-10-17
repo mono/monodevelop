@@ -196,13 +196,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (aIsImport && !bIsImport)
 				return 1;
 
-			result = StringComparer.Ordinal.Compare (a.Description, b.Description);
-			if (result != 0)
-				return result;
-
-			if (!a.Icon.IsNull && !b.Icon.IsNull)
-				return string.Compare (a.Icon.Name, b.Icon.Name, StringComparison.Ordinal);
-
 			return 0;
 		}
 
