@@ -55,6 +55,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		protected override void Initialize ()
 		{
+			base.Initialize ();
+
 			IdeApp.Workspace.FileAddedToProject += OnAddFile;
 			IdeApp.Workspace.FileRemovedFromProject += OnRemoveFile;
 			IdeApp.Workspace.FileRenamedInProject += OnRenameFile;
@@ -71,6 +73,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.Workspace.FilePropertyChangedInProject -= OnFilePropertyChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged -= IdeAppWorkspaceActiveConfigurationChanged;
 			FileService.FileRemoved -= OnSystemFileDeleted;
+
+			base.Dispose ();
 		}
 
 		public override void OnNodeAdded (object dataObject)

@@ -82,6 +82,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			while (markers.Count > 0)
 				Editor.RemoveMarker (markers.Dequeue ());
 			disposed = true;
+			base.Dispose ();
 		}
 		
 		bool enabled;

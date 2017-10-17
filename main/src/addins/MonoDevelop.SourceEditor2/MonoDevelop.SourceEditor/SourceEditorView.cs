@@ -1111,6 +1111,8 @@ namespace MonoDevelop.SourceEditor
 			RemoveMarkerQueue ();
 			widget.Dispose ();
 			this.Project = null;
+
+			base.Dispose ();
 		}
 
 		bool CheckReadOnly (int line)
