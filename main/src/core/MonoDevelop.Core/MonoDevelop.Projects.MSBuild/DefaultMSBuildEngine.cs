@@ -1230,10 +1230,9 @@ namespace MonoDevelop.Projects.MSBuild
 				try {
 					ConditionExpression ce;
 					lock (conditionCache) {
-						if (conditionCache == null || !conditionCache.TryGetValue (condition, out ce))
+						if (!conditionCache.TryGetValue (condition, out ce))
 							ce = ConditionParser.ParseCondition (condition);
-						if (conditionCache != null)
-							conditionCache [condition] = ce;
+						conditionCache [condition] = ce;
 					}
 
 					if (!ce.CanEvaluateToBool (context))
