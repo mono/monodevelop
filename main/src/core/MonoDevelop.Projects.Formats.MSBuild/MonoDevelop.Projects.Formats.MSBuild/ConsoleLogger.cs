@@ -745,8 +745,6 @@ namespace MonoDevelop.Projects.MSBuild {
 			WriteLine (String.Empty);
 			WriteLine ("Initial Items:");
 			ResetColor ();
-			if (items == null)
-				return;
 
 			var items_table = new SortedDictionary<string, List<ITaskItem>> ();
 			foreach (DictionaryEntry de in items) {
