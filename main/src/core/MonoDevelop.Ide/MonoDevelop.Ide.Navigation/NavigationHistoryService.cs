@@ -365,8 +365,8 @@ namespace MonoDevelop.Ide.Navigation
 			foreach (ProjectFileRenamedEventInfo args in e) {
 				foreach (NavigationHistoryItem point in history) {
 					var dp = point.NavigationPoint as DocumentNavigationPoint;
-					historyChanged &= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
-					closedHistoryChanged &= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
+					historyChanged |= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
+					closedHistoryChanged |= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
 					if (historyChanged && closedHistoryChanged)
 						break;
 				}
