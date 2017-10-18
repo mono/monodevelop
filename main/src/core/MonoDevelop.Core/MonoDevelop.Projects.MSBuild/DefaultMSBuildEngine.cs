@@ -200,7 +200,9 @@ namespace MonoDevelop.Projects.MSBuild
 					context.SetPropertyValue (p.Key, p.Value);
 					pi.Properties [p.Key] = new PropertyInfo { Name = p.Key, Value = p.Value, FinalValue = p.Value };
 				}
-				//context.Log = new ConsoleMSBuildEngineLogger ();
+#if MSBUILD_EVALUATION_STATS
+				context.Log = new ConsoleMSBuildEngineLogger ();
+#endif
 				LogBeginEvaluationStage (context, "Evaluating Project: " + pi.Project.FileName);
 				LogInitialEnvironment (context);
 				EvaluateProject (pi, context);
