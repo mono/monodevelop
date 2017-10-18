@@ -99,8 +99,11 @@ namespace MonoDevelop.Ide.Gui
 				if (attachable == null)
 					continue;
 
-				if (attachable.CanAttachTo (workbenchWindow.ViewContent))
-					workbenchWindow.InsertViewContent (index++, attachable.CreateViewContent (workbenchWindow.ViewContent));
+				if (attachable.CanAttachTo (workbenchWindow.ViewContent)) {
+					var subViewContent = attachable.CreateViewContent (workbenchWindow.ViewContent);
+					workbenchWindow.InsertViewContent (index++, subViewContent);
+					subViewContent.WorkbenchWindow = workbenchWindow;
+				}
 			}
 		}
 
