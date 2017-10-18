@@ -214,6 +214,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		static char [] sdkPathSeparator = { ';' };
 		void EvaluateProject (ProjectInfo pi, MSBuildEvaluationContext context)
 		{
 			context.InitEvaluation (pi.Project);
