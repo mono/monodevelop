@@ -43,6 +43,9 @@ namespace Stetic.Wrapper {
 		internal protected override void GenerateBuildCode (GeneratorContext ctx, CodeExpression var)
 		{
 			if (Text.Length > 0) {
+				PropertyDescriptor prop = (PropertyDescriptor)this.ClassDescriptor ["Text"];
+				bool trans = prop.IsTranslated (Wrapped);
+
 				ctx.Statements.Add (
 					new CodeAssignStatement (
 						new CodePropertyReferenceExpression (
@@ -52,7 +55,7 @@ namespace Stetic.Wrapper {
 							),
 							"Text"
 						),
-						new CodePrimitiveExpression (Text)
+						ctx.GenerateValue (Text, typeof(string), trans)
 					)
 				);
 			}
