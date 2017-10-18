@@ -228,10 +228,11 @@ namespace MonoDevelop.Core.Execution
 		void WriteArray (BinaryWriter bw, object val)
 		{
 			Array array = (Array)val;
+
 			int rank = array.Rank;
-			bw.Write (array.Rank);
+			bw.Write (rank);
 			for (int i = 0; i < rank; ++i)
-				bw.Write (array.GetLength (rank));
+				bw.Write (array.GetLength (i));
 
 			var type = val.GetType ();
 			var et = type.GetElementType ();
@@ -454,7 +455,10 @@ namespace MonoDevelop.Core.Execution
 		static object ReadArray (BinaryReader br)
 		{
 			int rank = br.ReadInt32 ();
+
 			int[] lengths = new int [rank];
+			for (int i = 0; i < rank; ++i)
+				lengths [i] = br.ReadInt32 ();
 
 			var type = (TypeCode)br.ReadByte ();
 
