@@ -237,6 +237,8 @@ namespace MonoDevelop.Projects.MSBuild
 			if (File.Exists (pi.Project.FileName + ".user"))
 				objects = objects.Concat (new MSBuildImport { Project = pi.Project.FileName + ".user" });
 
+			objects = objects.ToList ();
+
 			LogBeginEvaluationStage (context, "Evaluating Properies");
 			LogBeginEvalProject (context, pi);
 
