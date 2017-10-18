@@ -221,15 +221,16 @@ namespace MonoDevelop.Projects.MSBuild
 			var objects = pi.Project.GetAllObjects ();
 
 			if (!string.IsNullOrEmpty (pi.Project.Sdk)) {
-				var list = objects.ToList ();
 				var rootProject = pi.GetRootMSBuildProject ();
-				var sdkPaths = pi.Project.Sdk.Replace ('/', '\\');
-				int index = 0;
-				foreach (var sdkPath in sdkPaths.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0)) {
-					list.Insert (index++, new MSBuildImport { Sdk = sdkPath, Project = "Sdk.props" });
-					list.Add (new MSBuildImport { Sdk = sdkPath, Project = "Sdk.targets" });
-				}
-				objects = list;
+				var sdkPaths = pi.Project.Sdk.Replace ('/', '\\')
+				                 .Split (sdkPathSeparator, StringSplitOptions.RemoveEmptyEntries)
+				                 .Select (s => s.Trim ())
+				                 .Where (s => s.Length > 0)
+				                 .ToList ();
+
+				objects = sdkPaths.Select (sdkPath => new MSBuildImport { Sdk = sdkPath, Project = "Sdk.props" })
+				                  .Concat (objects)
+				                  .Concat (sdkPaths.Select (sdkPath => new MSBuildImport { Sdk = sdkPath, Project = "Sdk.targets" }));
 			}
 
 			// If there is a .user project file load it using a fake import item added at the end of the objects list
