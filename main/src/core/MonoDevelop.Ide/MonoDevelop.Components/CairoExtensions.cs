@@ -545,6 +545,7 @@ namespace MonoDevelop.Components
 
 				// Only want to dispose when the Delete failed
 				img.Dispose ();
+				throw;
 			}
 			return img;
 		}
