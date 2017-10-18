@@ -121,7 +121,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public async Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
 		{
-			List<ColoredSegment> coloredSegments = new List<ColoredSegment> ();
+			// Empirical testing shows that we end up not reallocating the list if we pre-allocate that we have at least 2 times more colored segments than classifiers per line.
+			// Current Roslyn API does not allow for a Count getting without iteration, so leave it with a magic number which yields similar results.
+			List<ColoredSegment> coloredSegments = new List<ColoredSegment> (32);
 
 			int offset = line.Offset;
 			int length = line.Length;
