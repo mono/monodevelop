@@ -48,7 +48,7 @@ namespace MonoDevelop.Core.Setup
 			if (!Repositories.ContainsRepository (url)) {
 				var rep = Repositories.RegisterRepository (null, url, false);
 				rep.Name = BrandingService.BrandApplicationName ("MonoDevelop Extension Repository");
-				if (level != UpdateLevel.Stable)
+				if (level != StaticUpdateLevel.Stable)
 					rep.Name += " (" + level + " channel)";
 				if (!enable)
 					Repositories.SetRepositoryEnabled (url, false);

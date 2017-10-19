@@ -702,6 +702,9 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngine.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngineManager.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\FileUtilities.cs" />
+    <Compile Include="MonoDevelop.Core.Setup\DynamicUpdateLevel.cs" />
+    <Compile Include="MonoDevelop.Core.Setup\IUpdateLevel.cs" />
+    <Compile Include="MonoDevelop.Core.Setup\StaticUpdateLevel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

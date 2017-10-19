@@ -153,7 +153,7 @@ namespace MonoDevelop.Core
 		
 		static void RegisterAddinRepositories ()
 		{
-			var validUrls = Enum.GetValues (typeof(UpdateLevel)).Cast<UpdateLevel> ().Select (v => setupService.GetMainRepositoryUrl (v)).ToList ();
+			var validUrls = StaticUpdateLevel.DefaultLevels.Select (v => setupService.GetMainRepositoryUrl (v)).ToList ();
 			
 			// Remove old repositories
 			
@@ -166,15 +166,15 @@ namespace MonoDevelop.Core
 					reps.RemoveRepository (rep.Url);
 			}
 			
-			if (!setupService.IsMainRepositoryRegistered (UpdateLevel.Stable)) {
-				setupService.RegisterMainRepository (UpdateLevel.Stable, true);
-				setupService.RegisterMainRepository (UpdateLevel.Beta, true);
+			if (!setupService.IsMainRepositoryRegistered (StaticUpdateLevel.Stable)) {
+				setupService.RegisterMainRepository (StaticUpdateLevel.Stable, true);
+				setupService.RegisterMainRepository (StaticUpdateLevel.Beta, true);
 			}
-			if (!setupService.IsMainRepositoryRegistered (UpdateLevel.Beta))
-				setupService.RegisterMainRepository (UpdateLevel.Beta, false);
+			if (!setupService.IsMainRepositoryRegistered (StaticUpdateLevel.Beta))
+				setupService.RegisterMainRepository (StaticUpdateLevel.Beta, false);
 
-			if (!setupService.IsMainRepositoryRegistered (UpdateLevel.Alpha))
-				setupService.RegisterMainRepository (UpdateLevel.Alpha, false);
+			if (!setupService.IsMainRepositoryRegistered (StaticUpdateLevel.Alpha))
+				setupService.RegisterMainRepository (StaticUpdateLevel.Alpha, false);
 		}
 		
 		internal static string GetRepoUrl (string quality)

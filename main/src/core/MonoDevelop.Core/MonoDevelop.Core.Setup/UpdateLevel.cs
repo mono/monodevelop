@@ -24,13 +24,116 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Xml.Serialization;
+
 namespace MonoDevelop.Core.Setup
 {
-	public enum UpdateLevel
+	[XmlInclude (typeof (StaticUpdateLevel))]
+	[XmlInclude (typeof (DynamicUpdateLevel))]
+	public class UpdateLevel
 	{
-		Stable = 0,
-		Beta = 1,
-		Alpha = 2,
-		Test = 3
+		public string publicName { get; set; }
+		public string name { get; set; }
+		public int idx { get; set; }
+
+		public UpdateLevel (string publicName, string name, int idx)
+		{
+			this.publicName = publicName;
+			this.name = name;
+			this.idx = idx;
+		}
+
+		public UpdateLevel () { }
+
+		public override bool Equals (System.Object obj)
+		{
+			if (obj == null) {
+				return false;
+			}
+
+			UpdateLevel a = obj as UpdateLevel;
+			if ((System.Object)a == null) {
+				return false;
+			}
+
+			return a.idx == idx;
+		}
+
+		public bool Equals (UpdateLevel a)
+		{
+			if ((object)a == null) {
+				return false;
+			}
+			return (a.idx == idx);
+		}
+
+		public static bool operator == (UpdateLevel a, UpdateLevel b)
+		{
+			if (Object.ReferenceEquals (a, null) && Object.ReferenceEquals (b, null)) {
+				return true;
+			}
+			if (Object.ReferenceEquals (a, null) || Object.ReferenceEquals (b, null)) {
+				return false;
+			}
+			return a.idx == b.idx;
+		}
+
+		public static bool operator != (UpdateLevel a, UpdateLevel b)
+		{
+			if (Object.ReferenceEquals (a, null) && Object.ReferenceEquals (b, null)) {
+				return false;
+			}
+			if (Object.ReferenceEquals (a, null) || Object.ReferenceEquals (b, null)) {
+				return true;
+			}
+			return a.idx != b.idx;
+		}
+
+		public static bool operator <= (UpdateLevel a, UpdateLevel b)
+		{
+			if (Object.ReferenceEquals (a, null)) {
+				return true;
+			}
+			if (Object.ReferenceEquals (b, null)) {
+				return false;
+			}
+			return a.idx <= b.idx;
+		}
+
+		public static bool operator >= (UpdateLevel a, UpdateLevel b)
+		{
+			if (Object.ReferenceEquals (a, null))
+				return false;
+			if (Object.ReferenceEquals (b, null))
+				return true;
+			return a.idx >= b.idx;
+		}
+
+
+		public override int GetHashCode ()
+		{
+			return idx;
+		}
+
+		public override string ToString ()
+		{
+			return name;
+		}
+
+		public int ToInt32 ()
+		{
+			return idx;
+		}
+
+		public static implicit operator int (UpdateLevel a)
+		{
+			return a.ToInt32 ();
+		}
+
+		public static implicit operator string (UpdateLevel a)
+		{
+			return a.ToString ();
+		}
 	}
 }

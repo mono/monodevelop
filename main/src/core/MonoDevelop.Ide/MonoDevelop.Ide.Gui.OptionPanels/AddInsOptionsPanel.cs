@@ -76,11 +76,18 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			else if (UpdateService.UpdateSpanUnit == UpdateSpanUnit.Month)
 				radioMonth.Active = true;
 			
-			switch (UpdateService.UpdateLevel) {
-			case UpdateLevel.Beta: radioBeta.Active = true; checkUnstable.Active = true; break;
-			case UpdateLevel.Alpha: radioAlpha.Active = true; checkUnstable.Active = true; break;
-			case UpdateLevel.Test: radioTest.Visible = true; radioTest.Active = true; checkUnstable.Active = true; break;
-			default: checkUnstable.Active = false; break;
+			if (UpdateService.UpdateLevel == StaticUpdateLevel.Beta) {
+				radioBeta.Active = true;
+				checkUnstable.Active = true;
+			} else if (UpdateService.UpdateLevel == StaticUpdateLevel.Alpha) {
+				radioAlpha.Active = true;
+				checkUnstable.Active = true;
+			} else if (UpdateService.UpdateLevel == StaticUpdateLevel.Test) {
+				radioTest.Visible = true;
+				radioTest.Active = true;
+				checkUnstable.Active = true;
+			} else {
+				checkUnstable.Active = false;
 			}
 			
 			if (UpdateService.TestModeEnabled)
@@ -101,13 +108,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			if (checkUnstable.Active) {
 				if (radioBeta.Active)
-					UpdateService.UpdateLevel = UpdateLevel.Beta;
+					UpdateService.UpdateLevel = StaticUpdateLevel.Beta;
 				else if (radioAlpha.Active)
-					UpdateService.UpdateLevel = UpdateLevel.Alpha;
+					UpdateService.UpdateLevel = StaticUpdateLevel.Alpha;
 				else if (radioTest.Active)
-					UpdateService.UpdateLevel = UpdateLevel.Test;
+					UpdateService.UpdateLevel = StaticUpdateLevel.Test;
 			} else
-				UpdateService.UpdateLevel = UpdateLevel.Stable;
+				UpdateService.UpdateLevel = StaticUpdateLevel.Stable;
 
 		}
 		
