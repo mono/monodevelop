@@ -657,6 +657,8 @@ namespace MonoDevelop.Ide
 					LoggingService.LogError ("Exception in LoadingUserPreferences.", ex);
 				}
 			}
+
+			UserPreferencesLoaded?.Invoke (this, EventArgs.Empty);
 		}
 		
 		string GetBestDefaultConfiguration ()
@@ -1277,6 +1279,8 @@ namespace MonoDevelop.Ide
 		/// stored in the StoringUserPreferences event.
 		/// </remarks>
 		public event AsyncEventHandler<UserPreferencesEventArgs> LoadingUserPreferences;
+
+		internal event EventHandler UserPreferencesLoaded;
 		
 		/// <summary>
 		/// Fired when an item (a project, solution or workspace) is going to be unloaded.

@@ -100,13 +100,28 @@ namespace MonoDevelop.Components.MainToolbar
 			executionTargetsChanged = (sender, e) => UpdateCombos ();
 
 			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => StatusBar.ShowReady ();
-			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
-			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateCombos ();
-
-			IdeApp.Workspace.SolutionLoaded += (sender, e) => UpdateCombos ();
-			IdeApp.Workspace.SolutionUnloaded += (sender, e) => UpdateCombos ();
-
 			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
+
+			IdeApp.Workspace.UserPreferencesLoaded += (sender, e) => {
+				IdeApp.Workspace.ConfigurationsChanged += HandleUpdateCombos;
+				IdeApp.Workspace.ActiveConfigurationChanged += HandleUpdateCombos;
+
+				IdeApp.Workspace.SolutionLoaded += HandleUpdateCombos;
+				IdeApp.Workspace.SolutionUnloaded += HandleUpdateCombos;
+				IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleUpdateCombos;
+
+				UpdateCombos ();
+			};
+
+			IdeApp.Workspace.StoringUserPreferences += (sender, e) => {
+				IdeApp.Workspace.ConfigurationsChanged -= HandleUpdateCombos;
+				IdeApp.Workspace.ActiveConfigurationChanged -= HandleUpdateCombos;
+
+				IdeApp.Workspace.SolutionLoaded -= HandleUpdateCombos;
+				IdeApp.Workspace.SolutionUnloaded -= HandleUpdateCombos;
+
+				IdeApp.ProjectOperations.CurrentSelectedSolutionChanged -= HandleUpdateCombos;
+			};
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
@@ -545,6 +560,11 @@ namespace MonoDevelop.Components.MainToolbar
 			return project.GetExecutionTargets (confSelector);
 		}
 
+		void HandleUpdateCombos (object sender, EventArgs e)
+		{
+			UpdateCombos ();
+		}
+
 		void HandleCurrentSelectedSolutionChanged (object sender, SolutionEventArgs e)
 		{
 			if (currentSolution != null) {
@@ -562,8 +582,6 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 
 			TrackStartupProject ();
-
-			UpdateCombos ();
 		}
 
 		void TrackStartupProject ()
