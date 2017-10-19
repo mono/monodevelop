@@ -30,15 +30,17 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
 using System.Xml;
 
 
 namespace MonoDevelop.Projects.MSBuild
 {
-	public abstract class MSBuildObject: MSBuildNode
+	public abstract class MSBuildObject : MSBuildNode
 	{
 		List<UnknownAttribute> unknownAttributes;
 		internal string [] attributeOrder;
+		ImmutableList<MSBuildNode>.Builder childrenBuilder = ImmutableList.CreateBuilder<MSBuildNode> ();
 		ImmutableList<MSBuildNode> children = ImmutableList<MSBuildNode>.Empty;
 		EmptyElementMode emptyElementMode;
 
@@ -123,12 +125,12 @@ namespace MonoDevelop.Projects.MSBuild
 						}
 					}
 
-					#if ATTR_STATS
+#if ATTR_STATS
 					var atts = GetType().Name + " - " + string.Join (", ", (attributeOrder ?? knownAtts));
 					if (attributeOrder == null)
 						atts += " *";
 					KnownAttOrder.Add (atts);
-					#endif
+#endif
 				}
 			}
 			reader.MoveToElement ();
@@ -139,6 +141,7 @@ namespace MonoDevelop.Projects.MSBuild
 				throw new MSBuildFileFormatException ("XML namespace prefixes are not supported for " + reader.LocalName + " elements");
 
 			ReadContent (reader);
+			FinishReading ();
 
 			while (reader.IsWhitespace)
 				reader.ReadAndStoreWhitespace ();
@@ -187,7 +190,7 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 					var tn = new MSBuildXmlTextNode ();
 					tn.Read (reader);
-					ChildNodes = ChildNodes.Add (tn);
+					AddChild (tn);
 				} else if (reader.NodeType == XmlNodeType.CDATA) {
 					if (!childFound) {
 						childFound = true;
@@ -195,7 +198,7 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 					var tn = new MSBuildXmlCDataNode ();
 					tn.Read (reader);
-					ChildNodes = ChildNodes.Add (tn);
+					AddChild (tn);
 				} else if (reader.NodeType == XmlNodeType.Comment) {
 					if (!childFound) {
 						childFound = true;
@@ -203,7 +206,7 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 					var tn = new MSBuildXmlCommentNode ();
 					tn.Read (reader);
-					ChildNodes = ChildNodes.Add (tn);
+					AddChild (tn);
 				} else if (reader.IsWhitespace) {
 					reader.ReadAndStoreWhitespace ();
 				} else if (reader.EOF)
@@ -219,7 +222,7 @@ namespace MonoDevelop.Projects.MSBuild
 		internal override void Write (XmlWriter writer, WriteContext context)
 		{
 			MSBuildWhitespace.Write (StartWhitespace, writer);
-			
+
 			writer.WriteStartElement (NamespacePrefix, GetElementName (), Namespace);
 
 			if (unknownAttributes != null) {
@@ -328,7 +331,7 @@ namespace MonoDevelop.Projects.MSBuild
 				var n = new MSBuildXmlElement ();
 				n.Read (reader);
 				n.ParentNode = this;
-				ChildNodes = ChildNodes.Add (n);
+				AddChild (n);
 			}
 		}
 
@@ -347,15 +350,6 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal abstract string GetElementName ();
 
-		internal virtual ImmutableList<MSBuildNode> ChildNodes {
-			get {
-				return children;
-			}
-			set {
-				children = value;
-			}
-		}
-
 		internal override IEnumerable<MSBuildNode> GetChildren ()
 		{
 			return children;
@@ -365,7 +359,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			if (ParentProject == null)
 				return;
-			
+
 			ResetIndent (closeInNewLine, ParentProject, ParentObject, GetPreviousSibling ());
 		}
 
@@ -403,9 +397,189 @@ namespace MonoDevelop.Projects.MSBuild
 		internal void RemoveIndent ()
 		{
 		}
+
+		#region Children Operations
+
+		protected bool isBuilding = true;
+		internal void AddChild (MSBuildNode child)
+		{
+			if (isBuilding)
+				ChildrenContainer.childrenBuilder.Add (child);
+			else
+				ChildrenContainer.children = ChildrenContainer.children.Add (child);
+		}
+
+		internal void AddChildren (IEnumerable<MSBuildNode> child)
+		{
+			if (isBuilding)
+				ChildrenContainer.childrenBuilder.AddRange (child);
+			else
+				ChildrenContainer.children = ChildrenContainer.children.AddRange (child);
+		}
+
+		internal void InsertChild (int index, MSBuildNode child)
+		{
+			if (isBuilding)
+				ChildrenContainer.childrenBuilder.Insert (index, child);
+			else
+				ChildrenContainer.children = ChildrenContainer.children.Insert (index, child);
+		}
+
+		internal int IndexOfChild (MSBuildNode child)
+		{
+			if (isBuilding)
+				return ChildrenContainer.childrenBuilder.IndexOf (child);
+			return ChildrenContainer.children.IndexOf (child);
+		}
+
+		internal void RemoveChild (MSBuildNode child)
+		{
+			if (isBuilding)
+				ChildrenContainer.childrenBuilder.Remove (child);
+			else
+				ChildrenContainer.children = children.Remove (child);
+		}
+
+		internal void RemoveChildAt (int i)
+		{
+			if (isBuilding)
+				ChildrenContainer.childrenBuilder.RemoveAt (i);
+			else
+				ChildrenContainer.children = children.RemoveAt (i);
+		}
+
+		internal void SetChild (int i, MSBuildNode child)
+		{
+			if (isBuilding)
+				ChildrenContainer.childrenBuilder [i] = child;
+			else
+				ChildrenContainer.children = ChildrenContainer.children.SetItem (i, child);
+		}
+
+		internal void ClearChildren ()
+		{
+			if (isBuilding)
+				ChildrenContainer.childrenBuilder.Clear ();
+			else
+				ChildrenContainer.children = children.Clear ();
+		}
+
+		internal MSBuildNode ChildAt (int i)
+		{
+			if (isBuilding)
+				return ChildrenContainer.childrenBuilder [i];
+			return ChildrenContainer.children [i];
+		}
+
+		internal int ChildrenCount {
+			get {
+				if (isBuilding)
+					return ChildrenContainer.childrenBuilder.Count;
+				return ChildrenContainer.children.Count;
+			}
+		}
+
+		internal IEnumerable<T> ChildrenOfType<T> () where T : MSBuildNode
+		{
+			if (isBuilding)
+				return ChildrenContainer.childrenBuilder.OfType<T> ();
+			return ChildrenContainer.children.OfType<T> ();
+		}
+
+		internal MSBuildNode FirstChildOrDefault (Func<MSBuildNode, bool> match)
+		{
+			if (isBuilding)
+				return ChildrenContainer.childrenBuilder.FirstOrDefault (match);
+			return ChildrenContainer.children.FirstOrDefault (match);
+		}
+
+		internal int FindChildIndex (Predicate<MSBuildNode> match)
+		{
+			if (isBuilding)
+				return ChildrenContainer.childrenBuilder.FindIndex (match);
+			return ChildrenContainer.children.FindIndex (match);
+		}
+
+		internal int FindLastChildIndex (Predicate<MSBuildNode> match)
+		{
+			if (isBuilding)
+				return ChildrenContainer.childrenBuilder.FindLastIndex (match);
+			return ChildrenContainer.children.FindLastIndex (match);
+		}
+
+		internal bool AnyChild (Func<MSBuildNode, bool> match)
+		{
+			if (isBuilding)
+				return ChildrenContainer.childrenBuilder.Any (match);
+			return ChildrenContainer.children.Any (match);
+		}
+
+		internal IEnumerable<MSBuildProperty> GetPropertiesInternal ()
+		{
+			if (isBuilding) {
+				foreach (var node in childrenBuilder) {
+					if (node is MSBuildProperty prop)
+						yield return prop;
+				}
+			} else {
+				foreach (var node in children) {
+					if (node is MSBuildProperty prop)
+						yield return prop;
+				}
+			}
+		}
+
+		internal IEnumerable<MSBuildTask> GetTasksInternal ()
+		{
+			if (isBuilding) {
+				foreach (var node in childrenBuilder) {
+					if (node is MSBuildTask task)
+						yield return task;
+				}
+			} else {
+				foreach (var node in children) {
+					if (node is MSBuildTask task)
+						yield return task;
+				}
+			}
+		}
+
+		internal string GetTextInternal ()
+		{
+			StringBuilder sb = new StringBuilder ();
+			if (isBuilding) {
+				foreach (var c in childrenBuilder) {
+					if (c is MSBuildXmlTextNode || c is MSBuildXmlCDataNode)
+						sb.Append (((MSBuildXmlValueNode)c).Value);
+				}
+			} else {
+				foreach (var c in children) {
+					if (c is MSBuildXmlTextNode || c is MSBuildXmlCDataNode)
+						sb.Append (((MSBuildXmlValueNode)c).Value);
+				}
+			}
+			return sb.ToString ();
+		}
+
+		internal IEnumerable<MSBuildNode> IterateChildren ()
+		{
+			if (isBuilding)
+				return childrenBuilder;
+			return children;
+		}
+
+		internal virtual MSBuildObject ChildrenContainer => this;
+
+		internal void FinishReading ()
+		{
+			isBuilding = false;
+			children = childrenBuilder.ToImmutable ();
+		}
+
+		#endregion
 	}
 
-	#if ATTR_STATS
+#if ATTR_STATS
 	public class StringCounter
 	{
 		Dictionary<string, int> dict = new Dictionary<string, int> ();
@@ -427,5 +601,5 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 	}
-	#endif
+#endif
 }

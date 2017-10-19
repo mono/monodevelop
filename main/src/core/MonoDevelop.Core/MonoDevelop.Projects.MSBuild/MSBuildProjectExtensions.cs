@@ -58,13 +58,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal bool IsEmpty {
 			get {
-				return !ChildNodes.OfType<MSBuildXmlElement> ().Any ();
+				return !ChildrenOfType<MSBuildXmlElement> ().Any ();
 			}
 		}
 
 		public XmlElement GetProjectExtension (string section)
 		{
-			var elem = ChildNodes.OfType<MSBuildXmlElement> ().FirstOrDefault (n => n.Name == section);
+			var elem = ChildrenOfType<MSBuildXmlElement> ().FirstOrDefault (n => n.Name == section);
 			if (elem != null) {
 				var w = new StringWriter ();
 				using (var tw = new XmlTextWriter (w))
@@ -88,12 +88,12 @@ namespace MonoDevelop.Projects.MSBuild
 			MSBuildXmlElement elem = new MSBuildXmlElement ();
 			elem.Read (cr);
 
-			int i = ChildNodes.FindIndex (n => (n is MSBuildXmlElement) && ((MSBuildXmlElement)n).Name == section);
+			int i = FindChildIndex (n => (n is MSBuildXmlElement) && ((MSBuildXmlElement)n).Name == section);
 			if (i == -1)
-				ChildNodes = ChildNodes.Add (elem);
+				AddChild (elem);
 			else {
-				ChildNodes = ChildNodes.RemoveAt (i);
-				ChildNodes = ChildNodes.Insert (i, elem);
+				RemoveChildAt (i);
+				InsertChild (i, elem);
 			}
 			elem.ParentNode = this;
 			elem.ResetIndent (false);
@@ -103,9 +103,9 @@ namespace MonoDevelop.Projects.MSBuild
 		public void RemoveProjectExtension (string section)
 		{
 			AssertCanModify ();
-			int i = ChildNodes.FindIndex (n => (n is MSBuildXmlElement) && ((MSBuildXmlElement)n).Name == section);
+			int i = FindChildIndex (n => (n is MSBuildXmlElement) && ((MSBuildXmlElement)n).Name == section);
 			if (i != -1) {
-				ChildNodes = ChildNodes.RemoveAt (i);
+				RemoveChildAt (i);
 				NotifyChanged ();
 			}
 		}

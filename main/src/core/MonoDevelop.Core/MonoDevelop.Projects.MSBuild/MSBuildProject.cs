@@ -264,7 +264,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			AssertCanModify ();
 			DisposeMainInstance ();
-			ChildNodes = ChildNodes.Clear ();
+			ClearChildren ();
 			conditionedProperties = new ConditionedPropertyCollection ();
 			bestGroups = null;
 			hadXmlDeclaration = false;
@@ -343,7 +343,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (ob != null) {
 				ob.ParentNode = this;
 				ob.Read (reader);
-				ChildNodes = ChildNodes.Add (ob);
+				AddChild (ob);
 			} else
 				base.ReadChildElement (reader);
 		}
@@ -598,9 +598,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 			int index = -1;
 			if (beforeObject != null)
-				index = ChildNodes.IndexOf (beforeObject);
+				index = IndexOfChild (beforeObject);
 			else {
-				index = ChildNodes.FindLastIndex (ob => ob is MSBuildImport);
+				index = FindLastChildIndex (ob => ob is MSBuildImport);
 				if (index != -1)
 					index++;
 			}
@@ -608,9 +608,9 @@ namespace MonoDevelop.Projects.MSBuild
 			import.ParentNode = this;
 
 			if (index != -1)
-				ChildNodes = ChildNodes.Insert (index, import);
+				InsertChild (index, import);
 			else
-				ChildNodes = ChildNodes.Add (import);
+				AddChild (import);
 
 			import.ResetIndent (false);
 			NotifyChanged ();
@@ -628,7 +628,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var i = GetImport (name, condition);
 			if (i != null) {
 				i.RemoveIndent ();
-				ChildNodes = ChildNodes.Remove (i);
+				RemoveChild (i);
 				NotifyChanged ();
 			}
 		}
@@ -641,7 +641,7 @@ namespace MonoDevelop.Projects.MSBuild
 			
 			if (import.ParentObject == this) {
 				import.RemoveIndent ();
-				ChildNodes = ChildNodes.Remove (import);
+				RemoveChild (import);
 				NotifyChanged ();
 			} else
 				((MSBuildImportGroup)import.ParentObject).RemoveImport (import);
@@ -715,32 +715,32 @@ namespace MonoDevelop.Projects.MSBuild
 
 			bool added = false;
 			if (beforeObject != null) {
-				var index = ChildNodes.IndexOf (beforeObject);
+				var index = IndexOfChild (beforeObject);
 				if (index != -1) {
-					ChildNodes = ChildNodes.Insert (index, group);
+					InsertChild (index, group);
 					added = true;
 				}
 			}
 			if (!added) {
 				if (insertAtEnd) {
-					var last = ChildNodes.FindLastIndex (g => g is MSBuildPropertyGroup);
+					var last = FindLastChildIndex (g => g is MSBuildPropertyGroup);
 					if (last != -1) {
-						ChildNodes = ChildNodes.Insert (last + 1, group);
+						InsertChild (last + 1, group);
 						added = true;
 					}
 				} else {
-					var first = ChildNodes.FindIndex (g => g is MSBuildPropertyGroup);
+					var first = FindChildIndex (g => g is MSBuildPropertyGroup);
 					if (first != -1) {
-						ChildNodes = ChildNodes.Insert (first, group);
+						InsertChild (first, group);
 						added = true;
 					}
 				}
 				if (!added) {
-					var first = ChildNodes.FindIndex (g => g is MSBuildItemGroup);
+					var first = FindChildIndex (g => g is MSBuildItemGroup);
 					if (first != -1)
-						ChildNodes = ChildNodes.Insert (first, group);
+						InsertChild (first, group);
 					else
-						ChildNodes = ChildNodes.Add (group);
+						AddChild (group);
 				}
 			}
 
@@ -750,12 +750,12 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public IEnumerable<MSBuildObject> GetAllObjects ()
 		{
-			return ChildNodes.OfType<MSBuildObject> ();
+			return ChildrenOfType<MSBuildObject> ();
 		}
 
 		public IEnumerable<MSBuildItem> GetAllItems ()
 		{
-			return GetAllItems (ChildNodes.OfType<MSBuildObject> ());
+			return GetAllItems (ChildrenOfType<MSBuildObject> ());
 		}
 
 		IEnumerable<MSBuildItem> GetAllItems (IEnumerable<MSBuildObject> list)
@@ -775,27 +775,27 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public IEnumerable<MSBuildPropertyGroup> PropertyGroups
 		{
-			get { return ChildNodes.OfType<MSBuildPropertyGroup> (); }
+			get { return ChildrenOfType<MSBuildPropertyGroup> (); }
 		}
 
 		public IEnumerable<MSBuildItemGroup> ItemGroups
 		{
-			get { return ChildNodes.OfType<MSBuildItemGroup> (); }
+			get { return ChildrenOfType<MSBuildItemGroup> (); }
 		}
 
 		public IEnumerable<MSBuildImportGroup> ImportGroups
 		{
-			get { return ChildNodes.OfType<MSBuildImportGroup> (); }
+			get { return ChildrenOfType<MSBuildImportGroup> (); }
 		}
 
 		public IEnumerable<MSBuildTarget> Targets
 		{
-			get { return ChildNodes.OfType<MSBuildTarget> (); }
+			get { return ChildrenOfType<MSBuildTarget> (); }
 		}
 
 		public IEnumerable<MSBuildImport> Imports
 		{
-			get { return ChildNodes.OfType<MSBuildImport> (); }
+			get { return ChildrenOfType<MSBuildImport> (); }
 		}
 
 		public MSBuildItemGroup AddNewItemGroup ()
@@ -820,11 +820,11 @@ namespace MonoDevelop.Projects.MSBuild
 
 			group.ParentNode = this;
 			if (beforeObject != null)
-				ChildNodes = ChildNodes.Insert (ChildNodes.IndexOf (beforeObject), group);
+				InsertChild (IndexOfChild (beforeObject), group);
 			else if (refNode != null)
-				ChildNodes = ChildNodes.Insert (ChildNodes.IndexOf (refNode) + 1, group);
+				InsertChild (IndexOfChild (refNode) + 1, group);
 			else
-				ChildNodes = ChildNodes.Add (group);
+				AddChild (group);
 
 			group.ResetIndent (true);
 			NotifyChanged ();
@@ -933,7 +933,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public XmlElement GetProjectExtension (string section)
 		{
-			var ext = (MSBuildProjectExtensions)ChildNodes.FirstOrDefault (ob => ob is MSBuildProjectExtensions);
+			var ext = (MSBuildProjectExtensions)FirstChildOrDefault (ob => ob is MSBuildProjectExtensions);
 			if (ext != null)
 				return ext.GetProjectExtension (section);
 			return null;
@@ -975,11 +975,11 @@ namespace MonoDevelop.Projects.MSBuild
 		public void SetProjectExtension (XmlElement value)
 		{
 			AssertCanModify ();
-			var ext = (MSBuildProjectExtensions)ChildNodes.FirstOrDefault (ob => ob is MSBuildProjectExtensions);
+			var ext = (MSBuildProjectExtensions)FirstChildOrDefault (ob => ob is MSBuildProjectExtensions);
 			if (ext == null) {
 				ext = new MSBuildProjectExtensions ();
 				ext.ParentNode = this;
-				ChildNodes = ChildNodes.Add (ext);
+				AddChild (ext);
 				ext.ResetIndent (false);
 			}
 			ext.SetProjectExtension (value);
@@ -1020,7 +1020,7 @@ namespace MonoDevelop.Projects.MSBuild
 		public void RemoveProjectExtension (string section)
 		{
 			AssertCanModify ();
-			var ext = (MSBuildProjectExtensions)ChildNodes.FirstOrDefault (ob => ob is MSBuildProjectExtensions);
+			var ext = (MSBuildProjectExtensions)FirstChildOrDefault (ob => ob is MSBuildProjectExtensions);
 			if (ext != null) {
 				ext.RemoveProjectExtension (section);
 				if (ext.IsEmpty)
@@ -1051,7 +1051,7 @@ namespace MonoDevelop.Projects.MSBuild
 			AssertCanModify ();
 			if (ob.ParentObject == this) {
 				ob.RemoveIndent ();
-				ChildNodes = ChildNodes.Remove (ob);
+				RemoveChild (ob);
 				ob.ParentNode = null;
 			}
 		}

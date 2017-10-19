@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects.MSBuild
 				var item = new MSBuildImport ();
 				item.ParentNode = this;
 				item.Read (reader);
-				ChildNodes = ChildNodes.Add (item);
+				AddChild (item);
 			} else
 				base.ReadChildElement (reader);
 		}
@@ -62,12 +62,12 @@ namespace MonoDevelop.Projects.MSBuild
 
 			int insertIndex = -1;
 			if (beforeImport != null)
-				insertIndex = ChildNodes.IndexOf (beforeImport);
+				IndexOfChild (beforeImport);
 
 			if (insertIndex != -1)
-				ChildNodes = ChildNodes.Insert (insertIndex, import);
+				InsertChild (insertIndex, import);
 			else
-				ChildNodes = ChildNodes.Add (import);
+				AddChild (import);
 
 			import.ResetIndent (false);
 			NotifyChanged ();
@@ -79,13 +79,13 @@ namespace MonoDevelop.Projects.MSBuild
 			AssertCanModify ();
 			if (import.ParentObject == this) {
 				import.RemoveIndent ();
-				ChildNodes = ChildNodes.Remove (import);
+				RemoveChild (import);
 				NotifyChanged ();
 			}
 		}
 
 		public IEnumerable<MSBuildImport> Imports {
-			get { return ChildNodes.OfType<MSBuildImport> (); }
+			get { return ChildrenOfType<MSBuildImport> (); }
 		}
 	}
 }

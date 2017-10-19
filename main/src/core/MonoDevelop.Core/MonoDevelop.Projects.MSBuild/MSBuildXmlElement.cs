@@ -115,7 +115,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal string GetInnerXml ()
 		{
-			if (StartInnerWhitespace == null && EndInnerWhitespace == null && ChildNodes.Count == 0)
+			if (StartInnerWhitespace == null && EndInnerWhitespace == null && ChildrenCount == 0)
 				return string.Empty;
 
 			var c = new WriteContext ();
@@ -140,15 +140,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return s.Substring (si, ei - si);
 		}
 
-		internal string GetText ()
-		{
-			StringBuilder sb = new StringBuilder ();
-			foreach (var c in ChildNodes) {
-				if (c is MSBuildXmlTextNode || c is MSBuildXmlCDataNode)
-					sb.Append (((MSBuildXmlValueNode)c).Value);
-			}
-			return sb.ToString ();
-		}
+		internal string GetText () => GetTextInternal ();
 	}
 	
 }

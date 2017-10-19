@@ -808,7 +808,7 @@ namespace MonoDevelop.Projects
 
 			var p = new MSBuildProject ();
 			p.LoadXml (projectXml);
-			var propertyGroup = (MSBuildPropertyGroup)p.ChildNodes[1];
+			var propertyGroup = (MSBuildPropertyGroup)p.ChildAt (1);
 			var customCommand = new CustomCommand {
 				Command = "Test"
 			};

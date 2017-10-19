@@ -180,14 +180,14 @@ namespace MonoDevelop.Projects.MSBuild
 			if (ob != null) {
 				ob.ParentNode = this;
 				ob.Read (reader);
-				ChildNodes = ChildNodes.Add (ob);
+				AddChild (ob);
 				return;
 			}
 
 			var task = new MSBuildTask ();
 			task.ParentNode = this;
 			task.Read (reader);
-			ChildNodes = ChildNodes.Add (task);
+			AddChild (task);
 		}
 
 		internal override void Write (XmlWriter writer, WriteContext context)
@@ -202,7 +202,7 @@ namespace MonoDevelop.Projects.MSBuild
 		public MSBuildTarget (string name, IEnumerable<MSBuildTask> tasks)
 		{
 			this.name = name;
-			ChildNodes = ChildNodes.AddRange (tasks);
+			AddChildren (tasks);
 		}
 
 		public string Name {
@@ -211,15 +211,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public bool IsImported { get; internal set; }
 
-		public IEnumerable<MSBuildTask> Tasks {
-			get {
-				foreach (var node in ChildNodes) {
-					var task = node as MSBuildTask;
-					if (task != null)
-						yield return task;
-				}
-			}
-		}
+		public IEnumerable<MSBuildTask> Tasks => GetTasksInternal ();
 
 		public void RemoveTask (MSBuildTask task)
 		{
@@ -227,7 +219,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (task.ParentObject != this)
 				throw new InvalidOperationException ("Task doesn't belong to the target");
 			task.RemoveIndent ();
-			ChildNodes = ChildNodes.Remove (task);
+			RemoveChild (task);
 		}
 
 		public override string ToString ()

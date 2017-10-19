@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (op != null) {
 				op.ParentNode = this;
 				op.Read (reader);
-				ChildNodes = ChildNodes.Add (op);
+				AddChild (op);
 			} else
 				base.ReadChildElement (reader);
 		}
@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal IEnumerable<MSBuildChooseOption> GetOptions ()
 		{
-			return ChildNodes.OfType<MSBuildChooseOption> ();
+			return ChildrenOfType<MSBuildChooseOption> ();
 		}
 	}
 
@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (ob != null) {
 				ob.ParentNode = this;
 				ob.Read (reader);
-				ChildNodes = ChildNodes.Add (ob);
+				AddChild (ob);
 			} else
 				reader.Read ();
 		}
@@ -98,7 +98,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public IEnumerable<MSBuildObject> GetAllObjects ()
 		{
-			return ChildNodes.OfType<MSBuildObject> ();
+			return ChildrenOfType<MSBuildObject> ();
 		}
 	}
 }

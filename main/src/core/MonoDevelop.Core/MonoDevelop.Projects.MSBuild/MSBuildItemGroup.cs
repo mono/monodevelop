@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var item = new MSBuildItem ();
 			item.ParentNode = this;
 			item.Read (reader);
-			ChildNodes = ChildNodes.Add (item);
+			AddChild (item);
 		}
 
 		internal override string GetElementName ()
@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			AssertCanModify ();
 			item.ParentNode = this;
-			ChildNodes = ChildNodes.Add (item);
+			AddChild (item);
 			item.ResetIndent (false);
 			if (ParentProject != null)
 				ParentProject.NotifyChanged ();
@@ -81,10 +81,10 @@ namespace MonoDevelop.Projects.MSBuild
 			item.ParentNode = this;
 
 			int i;
-			if (beforeItem != null && (i = ChildNodes.IndexOf (beforeItem)) != -1)
-				ChildNodes = ChildNodes.Insert (i, item);
+			if (beforeItem != null && (i = IndexOfChild (beforeItem)) != -1)
+				InsertChild (i, item);
 			else
-				ChildNodes = ChildNodes.Add (item);
+				AddChild (item);
 			
 			item.ResetIndent (false);
 			if (ParentProject != null)
@@ -93,16 +93,16 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public IEnumerable<MSBuildItem> Items {
 			get {
-				return ChildNodes.OfType<MSBuildItem> ();
+				return ChildrenOfType<MSBuildItem> ();
 			}
 		}
 
 		internal void RemoveItem (MSBuildItem item)
 		{
 			AssertCanModify ();
-			if (ChildNodes.Contains (item)) {
+			if (IndexOfChild (item) != -1) {
 				item.RemoveIndent ();
-				ChildNodes = ChildNodes.Remove (item);
+				RemoveChild (item);
 				item.ParentNode = null;
 				NotifyChanged ();
 			}

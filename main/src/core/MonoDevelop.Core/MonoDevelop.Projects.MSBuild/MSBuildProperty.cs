@@ -150,15 +150,15 @@ namespace MonoDevelop.Projects.MSBuild
 			elem.ParentNode = this;
 			elem.ReadContent (reader);
 
-			if (elem.ChildNodes.Count == 0) {
+			if (elem.ChildrenCount == 0) {
 				StartInnerWhitespace = elem.StartInnerWhitespace;
 				EndInnerWhitespace = elem.EndInnerWhitespace;
 				rawValue = elem.GetInnerXml ();
 				return string.Empty;
 			}
 
-			if (elem.ChildNodes.Count == 1) {
-				var node = elem.ChildNodes [0] as MSBuildXmlValueNode;
+			if (elem.ChildrenCount == 1) {
+				var node = elem.ChildAt (0) as MSBuildXmlValueNode;
 				if (node != null) {
 					StartInnerWhitespace = elem.StartInnerWhitespace;
 					StartInnerWhitespace = MSBuildWhitespace.AppendSpace (StartInnerWhitespace, node.StartWhitespace);
@@ -174,7 +174,7 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 
-			if (elem.ChildNodes.Any (n => n is MSBuildXmlElement))
+			if (elem.AnyChild (n => n is MSBuildXmlElement))
 				return elem.GetInnerXml ();
 			else {
 				rawValue = elem.GetInnerXml ();
