@@ -400,7 +400,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		#region Children Operations
 
-		protected bool isBuilding = true;
+		bool isBuilding = true;
 		internal void AddChild (MSBuildNode child)
 		{
 			if (isBuilding)
@@ -574,6 +574,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			isBuilding = false;
 			children = childrenBuilder.ToImmutable ();
+			childrenBuilder = null;
 		}
 
 		#endregion

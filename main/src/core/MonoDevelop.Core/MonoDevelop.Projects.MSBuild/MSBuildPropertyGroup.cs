@@ -246,7 +246,7 @@ namespace MonoDevelop.Projects.MSBuild
 				} else {
 					foundProp = FindExistingProperty (i + 1, 1);
 					if (foundProp != null)
-						IndexOfChild (foundProp);
+						insertIndex = IndexOfChild (foundProp);
 				}
 			}
 

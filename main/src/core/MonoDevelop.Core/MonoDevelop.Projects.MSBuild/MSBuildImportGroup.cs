@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			int insertIndex = -1;
 			if (beforeImport != null)
-				IndexOfChild (beforeImport);
+				insertIndex = IndexOfChild (beforeImport);
 
 			if (insertIndex != -1)
 				InsertChild (insertIndex, import);
