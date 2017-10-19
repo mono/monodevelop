@@ -139,7 +139,7 @@
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Composition.15.3.38\lib\net45\Microsoft.VisualStudio.Composition.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Threading, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Threading.15.4.4\lib\net45\Microsoft.VisualStudio.Composition.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Threading.15.4.4\lib\net45\Microsoft.VisualStudio.Threading.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Validation, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Validation.15.3.15\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
@@ -8555,6 +8555,10 @@
     <Compile Include="MonoDevelop.Ide.Commands\ViewCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\WindowCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\JoinableTaskContextHost.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\PlatformCatalog.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\PlatformExtensions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ITextEditorFactoryService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBindingService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\BackgroundProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StatusProgressMonitor.cs" />
@@ -9651,7 +9655,6 @@
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\language-configuration.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\package.json" />
   </ItemGroup>
-  <Import Project="..\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems" Label="Shared" Condition="Exists('..\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems')" />
   <ItemGroup>
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Components\Xwt\" />

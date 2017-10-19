@@ -1,4 +1,4 @@
-﻿//
+//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -22,7 +22,7 @@ using Microsoft.VisualStudio.Platform;
 
 namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
-    internal class TextView : IWpfTextView
+    internal class TextView : ITextView
     {
         #region Private Members
         private TextEditor _textEditor;
@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         private IEditorOptions _editorOptions;
 
-        private List<Lazy<IWpfTextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>> _deferredTextViewListeners;
+        private List<Lazy<ITextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>> _deferredTextViewListeners;
 
         private ITextCaret _caret;
 
@@ -443,7 +443,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                         {
                             if (_deferredTextViewListeners == null)
                             {
-                                _deferredTextViewListeners = new List<Lazy<IWpfTextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>>();
+                                _deferredTextViewListeners = new List<Lazy<ITextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>>();
                             }
                             _deferredTextViewListeners.Add(extension);
                             continue;
