@@ -1,29 +1,37 @@
 <Project>
 
   <PropertyGroup>
-    <NuGetVersionVSEditor>15.0.26201</NuGetVersionVSEditor>
+    <NuGetVersionVSEditor>15.3.1710.203</NuGetVersionVSEditor>
     <ReferencesVSEditorCopyToOutput Condition="$(ReferencesVSEditorCopyToOutput) == ''">false</ReferencesVSEditorCopyToOutput>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.CoreUtility">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.CoreUtility.$(NuGetVersionVSEditor)\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.CoreUtility.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.Data">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Data.$(NuGetVersionVSEditor)\lib\net45\Microsoft.VisualStudio.Text.Data.dll</HintPath>
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Data.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.Data.dll</HintPath>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Internal">
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Internal.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.Internal.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.Logic">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Logic.$(NuGetVersionVSEditor)\lib\net45\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Logic.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.UI">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.$(NuGetVersionVSEditor)\lib\net45\Microsoft.VisualStudio.Text.UI.dll</HintPath>
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.UI.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Language.StandardClassification">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.StandardClassification.$(NuGetVersionVSEditor)\lib\net45\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.StandardClassification.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Implementation">
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Implementation.15.0.0\lib\net46\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
   </ItemGroup>
