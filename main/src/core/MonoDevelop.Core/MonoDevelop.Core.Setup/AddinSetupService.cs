@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AddinSetupService.cs
 //  
 // Author:
@@ -48,7 +48,7 @@ namespace MonoDevelop.Core.Setup
 			if (!Repositories.ContainsRepository (url)) {
 				var rep = Repositories.RegisterRepository (null, url, false);
 				rep.Name = BrandingService.BrandApplicationName ("MonoDevelop Extension Repository");
-				if (level != StaticUpdateLevel.Stable)
+				if (level != UpdateLevel.Stable)
 					rep.Name += " (" + level + " channel)";
 				if (!enable)
 					Repositories.SetRepositoryEnabled (url, false);

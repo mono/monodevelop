@@ -25,23 +25,26 @@
 // THE SOFTWARE.
 
 using System;
-using System.Xml.Serialization;
 
 namespace MonoDevelop.Core.Setup
 {
-	[XmlInclude (typeof (StaticUpdateLevel))]
-	[XmlInclude (typeof (DynamicUpdateLevel))]
 	public class UpdateLevel
 	{
-		public string publicName { get; set; }
-		public string name { get; set; }
-		public int idx { get; set; }
+		public static readonly UpdateLevel Stable = new UpdateLevel ("Stable", "Stable", 0);
+		public static readonly UpdateLevel Beta = new UpdateLevel ("Beta", "Beta", 1);
+		public static readonly UpdateLevel Alpha = new UpdateLevel ("Alpha", "Alpha", 2);
+		public static readonly UpdateLevel Test = new UpdateLevel ("Test", "Test", 100);
+		public static readonly UpdateLevel [] DefaultLevels = { Stable, Beta, Alpha };
 
-		public UpdateLevel (string publicName, string name, int idx)
+		public string Id { get; set; }
+		public string Name { get; set; }
+		public int Idx { get; set; }
+
+		public UpdateLevel (string id, string name, int Idx)
 		{
-			this.publicName = publicName;
-			this.name = name;
-			this.idx = idx;
+			this.Id = id;
+			this.Name = name;
+			this.Idx = Idx;
 		}
 
 		public UpdateLevel () { }
@@ -57,7 +60,7 @@ namespace MonoDevelop.Core.Setup
 				return false;
 			}
 
-			return a.idx == idx;
+			return a.Idx == Idx;
 		}
 
 		public bool Equals (UpdateLevel a)
@@ -65,7 +68,7 @@ namespace MonoDevelop.Core.Setup
 			if ((object)a == null) {
 				return false;
 			}
-			return (a.idx == idx);
+			return (a.Idx == Idx);
 		}
 
 		public static bool operator == (UpdateLevel a, UpdateLevel b)
@@ -76,7 +79,7 @@ namespace MonoDevelop.Core.Setup
 			if (Object.ReferenceEquals (a, null) || Object.ReferenceEquals (b, null)) {
 				return false;
 			}
-			return a.idx == b.idx;
+			return a.Idx == b.Idx;
 		}
 
 		public static bool operator != (UpdateLevel a, UpdateLevel b)
@@ -87,7 +90,7 @@ namespace MonoDevelop.Core.Setup
 			if (Object.ReferenceEquals (a, null) || Object.ReferenceEquals (b, null)) {
 				return true;
 			}
-			return a.idx != b.idx;
+			return a.Idx != b.Idx;
 		}
 
 		public static bool operator <= (UpdateLevel a, UpdateLevel b)
@@ -98,7 +101,7 @@ namespace MonoDevelop.Core.Setup
 			if (Object.ReferenceEquals (b, null)) {
 				return false;
 			}
-			return a.idx <= b.idx;
+			return a.Idx <= b.Idx;
 		}
 
 		public static bool operator >= (UpdateLevel a, UpdateLevel b)
@@ -107,23 +110,23 @@ namespace MonoDevelop.Core.Setup
 				return false;
 			if (Object.ReferenceEquals (b, null))
 				return true;
-			return a.idx >= b.idx;
+			return a.Idx >= b.Idx;
 		}
 
 
 		public override int GetHashCode ()
 		{
-			return idx;
+			return Idx;
 		}
 
 		public override string ToString ()
 		{
-			return name;
+			return Id;
 		}
 
 		public int ToInt32 ()
 		{
-			return idx;
+			return Idx;
 		}
 
 		public static implicit operator int (UpdateLevel a)

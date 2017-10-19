@@ -1,4 +1,4 @@
-//
+﻿//
 // AddInsOptionsPanel.cs
 //
 // Author:
@@ -76,13 +76,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			else if (UpdateService.UpdateSpanUnit == UpdateSpanUnit.Month)
 				radioMonth.Active = true;
 			
-			if (UpdateService.UpdateLevel == StaticUpdateLevel.Beta) {
+			if (UpdateService.UpdateLevel == UpdateLevel.Beta) {
 				radioBeta.Active = true;
 				checkUnstable.Active = true;
-			} else if (UpdateService.UpdateLevel == StaticUpdateLevel.Alpha) {
+			} else if (UpdateService.UpdateLevel == UpdateLevel.Alpha) {
 				radioAlpha.Active = true;
 				checkUnstable.Active = true;
-			} else if (UpdateService.UpdateLevel == StaticUpdateLevel.Test) {
+			} else if (UpdateService.UpdateLevel == UpdateLevel.Test) {
 				radioTest.Visible = true;
 				radioTest.Active = true;
 				checkUnstable.Active = true;
@@ -108,13 +108,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			if (checkUnstable.Active) {
 				if (radioBeta.Active)
-					UpdateService.UpdateLevel = StaticUpdateLevel.Beta;
+					UpdateService.UpdateLevel = UpdateLevel.Beta;
 				else if (radioAlpha.Active)
-					UpdateService.UpdateLevel = StaticUpdateLevel.Alpha;
+					UpdateService.UpdateLevel = UpdateLevel.Alpha;
 				else if (radioTest.Active)
-					UpdateService.UpdateLevel = StaticUpdateLevel.Test;
+					UpdateService.UpdateLevel = UpdateLevel.Test;
 			} else
-				UpdateService.UpdateLevel = StaticUpdateLevel.Stable;
+				UpdateService.UpdateLevel = UpdateLevel.Stable;
 
 		}
 		

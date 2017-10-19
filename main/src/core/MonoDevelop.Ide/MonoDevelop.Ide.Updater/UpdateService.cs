@@ -78,11 +78,12 @@ namespace MonoDevelop.Ide.Updater
 
 		public static UpdateLevel UpdateLevel {
 			get {
-				var prop = PropertyService.Get<UpdateLevel> ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", StaticUpdateLevel.Stable);
-				return prop == null ? StaticUpdateLevel.Stable : prop;
+				// Returned Saved Update Level
+				var prop = PropertyService.Get<string> ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", UpdateLevel.Stable.Id);
+				return new UpdateLevel(prop, prop, 0);
 			}
 			set {
-				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", value);
+				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", value.Id);
 			}
 		}
 
