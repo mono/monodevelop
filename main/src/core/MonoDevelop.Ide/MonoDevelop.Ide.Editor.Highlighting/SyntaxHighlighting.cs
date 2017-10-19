@@ -194,8 +194,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					timeoutOccursAt = Environment.TickCount + (int)matchTimeout.TotalMilliseconds;
 				}
 			restart:
-				if (Environment.TickCount >= timeoutOccursAt)
-					goto end;
 				if (lastMatch == offset) {
 					if (lastContexts.Contains (currentContext)) {
 						offset++;
@@ -237,6 +235,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						m.GotTimeout = true;
 						continue;
 					}
+				}
+				if (Environment.TickCount >= timeoutOccursAt) {
+					curMatch.GotTimeout = true;
+					goto end;
 				}
 
 				if (match != null) {
