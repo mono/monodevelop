@@ -411,7 +411,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			// Remove properties that have been modified and have the default value. Usually such properties
 			// would be removed when assigning the value, but that won't happen if IgnoreDefaultValues=true
-			foreach (MSBuildProperty prop in GetProperties ()) {
+			foreach (MSBuildProperty prop in GetProperties ().ToList ()) {
 				if ((prop.Modified && prop.HasDefaultValue && !prop.EvaluatedValueModified) || (!prop.Modified && prop.IsNew))
 					RemoveProperty (prop.Name);
 				prop.Modified = false;
