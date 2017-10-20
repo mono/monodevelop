@@ -87,7 +87,10 @@ namespace MonoDevelop.Projects.Extensions
 
 		public virtual Project CreateProject (params string[] flavorGuids)
 		{
-			var p = (Project) CreateSolutionItem (new ProgressMonitor (), null, null).Result;
+			Project p;
+			using (var monitor = new ProgressMonitor ()) {
+				p = (Project)CreateSolutionItem (monitor, null, null).Result;
+			}
 			p.SetCreationContext (Project.CreationContext.Create (Guid, flavorGuids));
 			return p;
 		}
