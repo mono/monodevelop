@@ -876,6 +876,7 @@ namespace MonoDevelop.Core
 		}
 
 		List<EventData> events = new List<EventData> ();
+		readonly object lockObject = new object ();
 
 		int frozen;
 		object defaultSourceObject;
@@ -891,7 +892,7 @@ namespace MonoDevelop.Core
 
 		public void Freeze ()
 		{
-			lock (events) {
+			lock (lockObject) {
 				frozen++;
 			}
 		}
@@ -927,7 +928,7 @@ namespace MonoDevelop.Core
 
 		public void RaiseEvent<TArgs> (EventHandler<TArgs> del, object thisObj, TArgs args) where TArgs:EventArgs
 		{
-			lock (events) {
+			lock (lockObject) {
 				if (frozen > 0) {
 					var ed = new EventData<TArgs> ();
 					ed.Delegate = del;
