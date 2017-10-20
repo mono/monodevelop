@@ -42,7 +42,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		const string MainToolbarId = "XSMainToolbar";
 		const string AwesomeBarId = "AwesomeBarToolbarItem";
 
-		internal NSToolbar widget;
+		internal NSToolbar toolbar;
 		internal Gtk.Window gtkWindow;
 
 		public static bool IsFullscreen { get; private set; }
@@ -52,7 +52,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			get { return awesomeBar.RunButton; }
 		}
 
-		StatusBar statusBar {
+		IStatusBar statusBar {
 			get { return awesomeBar.StatusBar; }
 		}
 
@@ -116,7 +116,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public MainToolbar (Gtk.Window window)
 		{
 			gtkWindow = window;
-			widget = new NSToolbar (MainToolbarId) {
+			toolbar = new NSToolbar (MainToolbarId) {
 				DisplayMode = NSToolbarDisplayMode.Icon,
 			};
 
@@ -148,7 +148,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					RuntimeChanged (sender, ea);
 			};
 
-			widget.WillInsertItem = (tool, id, send) => {
+			toolbar.WillInsertItem = (tool, id, send) => {
 				switch (id) {
 				case AwesomeBarId:
 					return new NSToolbarItem (AwesomeBarId) {
@@ -168,7 +168,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					return;
 				}
 
-				var item = widget.Items[0];
+				var item = toolbar.Items[0];
 
 				var abFrameInWindow = awesomeBar.ConvertRectToView (awesomeBar.Frame, null);
 				var awesomebarHeight = AwesomeBar.ToolbarWidgetHeight;
@@ -191,7 +191,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		internal void Initialize ()
 		{
-			widget.InsertItem (AwesomeBarId, 0);
+			toolbar.InsertItem (AwesomeBarId, 0);
 		}
 
 		#region IMainToolbarView implementation
@@ -366,7 +366,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
-		public MonoDevelop.Ide.StatusBar StatusBar {
+		public IStatusBar StatusBar {
 			get { return statusBar; }
 		}
 		#endregion

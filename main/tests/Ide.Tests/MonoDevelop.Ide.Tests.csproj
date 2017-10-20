@@ -101,6 +101,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\TestDocument.cs" />
     <Compile Include="TypeSystemServiceTestExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\SkipCharSessionTests.cs" />
+    <Compile Include="MonoDevelop.Ide\StatusServiceTests.cs" />
     <Compile Include="MonoDevelop.Components\PangoUtilTests.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\DotNetCoreProjectTests.cs" />
   </ItemGroup>

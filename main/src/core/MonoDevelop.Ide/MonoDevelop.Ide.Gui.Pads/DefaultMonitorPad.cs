@@ -42,6 +42,7 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {	
@@ -190,14 +191,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 				
 				if (monitor.Errors.Length > 0) {
 					var e = monitor.Errors [monitor.Errors.Length - 1];
-					IdeApp.Workbench.StatusBar.ShowMessage (Stock.Error, e.DisplayMessage);
-					IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
+					StatusService.MainContext.ShowMessage (Stock.Error, e.DisplayMessage);
+					StatusService.MainContext.StatusSourcePad = statusSourcePad;
 				} else if (monitor.SuccessMessages.Length > 0) {
-					IdeApp.Workbench.StatusBar.ShowMessage (monitor.SuccessMessages [monitor.SuccessMessages.Length - 1]);
-					IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
+					StatusService.MainContext.ShowMessage (monitor.SuccessMessages [monitor.SuccessMessages.Length - 1]);
+					StatusService.MainContext.StatusSourcePad = statusSourcePad;
 				} else if (monitor.Warnings.Length > 0) {
-					IdeApp.Workbench.StatusBar.ShowMessage (Stock.Warning, monitor.Warnings [monitor.Warnings.Length - 1]);
-					IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
+					StatusService.MainContext.ShowMessage (Stock.Warning, monitor.Warnings [monitor.Warnings.Length - 1]);
+					StatusService.MainContext.StatusSourcePad = statusSourcePad;
 				}
 			});
 		}

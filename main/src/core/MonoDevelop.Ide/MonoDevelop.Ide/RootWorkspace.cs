@@ -44,6 +44,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.Execution;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Ide
 {
@@ -501,7 +502,7 @@ namespace MonoDevelop.Ide
 			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
 			if (item != null) {
 				IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = item;
-				IdeApp.Workbench.StatusBar.ShowWarning (GettextCatalog.GetString ("{0} is already opened", item.FileName.FileName));
+				StatusService.MainContext.ShowWarning (GettextCatalog.GetString ("{0} is already opened", item.FileName.FileName));
 				return true;
 			}
 

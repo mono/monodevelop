@@ -1,10 +1,10 @@
 //
-// StatusBarContext.cs
+// IStatusBar.cs
 //
 // Author:
-//       Lluis Sanchez <lluis@xamarin.com>
+//       Iain Holmes <iaholmes@microsoft.com>
 //
-// Copyright (c) 2012 Xamarin Inc.
+// Copyright (c) 2017 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,17 +26,6 @@
 
 using System;
 using MonoDevelop.Core;
-using Gtk;
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Ide.Gui;
-using System.Collections.Generic;
-using MonoDevelop.Components.Docking;
-using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Components;
-using MonoDevelop.Components.MainToolbar;
-
-using StockIcons = MonoDevelop.Ide.Gui.Stock;
-using System.Threading;
 
 namespace MonoDevelop.Ide
 {
@@ -45,15 +34,13 @@ namespace MonoDevelop.Ide
 	/// The MonoDevelop status bar.
 	/// </summary>
 	
-	public interface StatusBarContext: StatusBarContextBase
+	public interface IStatusBar
 	{
-		Pad StatusSourcePad { get; set; }
-
 		/// <summary>
-		/// When set, the status bar can be cancelled via this cancellation source.
+		/// Shows a status icon in the toolbar. The icon can be removed by disposing
+		/// the StatusBarIcon instance.
 		/// </summary>
-		/// <value>The cancellation token.</value>
-		CancellationTokenSource CancellationTokenSource { get; set; }
+		StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf);
 	}
 	
 }
