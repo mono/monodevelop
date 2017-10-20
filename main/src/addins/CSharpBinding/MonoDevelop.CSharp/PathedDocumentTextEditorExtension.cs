@@ -348,7 +348,7 @@ namespace MonoDevelop.CSharp
 			var sol = (Projects.Solution) sender;
 			var p = sol.StartupItem as DotNetProject;
 			if (p != null && ownerProjects.Contains (p))
-				DocumentContext.AttachToProject (p);
+				DocumentContext?.AttachToProject (p);
 		}
 
 		#region IPathedDocument implementation
