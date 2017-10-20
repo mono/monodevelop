@@ -99,28 +99,29 @@ namespace MonoDevelop.Components.MainToolbar
 
 			executionTargetsChanged = (sender, e) => UpdateCombos ();
 
-			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => StatusBar.ShowReady ();
 			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
 
-			IdeApp.Workspace.UserPreferencesLoaded += (sender, e) => {
+			IdeApp.Workspace.FirstWorkspaceItemRestored += (sender, e) => {
 				IdeApp.Workspace.ConfigurationsChanged += HandleUpdateCombos;
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleUpdateCombos;
 
-				IdeApp.Workspace.SolutionLoaded += HandleUpdateCombos;
+				IdeApp.Workspace.SolutionLoaded += HandleSolutionLoaded;
 				IdeApp.Workspace.SolutionUnloaded += HandleUpdateCombos;
 				IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleUpdateCombos;
 
 				UpdateCombos ();
 			};
 
-			IdeApp.Workspace.StoringUserPreferences += (sender, e) => {
+			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => {
 				IdeApp.Workspace.ConfigurationsChanged -= HandleUpdateCombos;
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleUpdateCombos;
 
-				IdeApp.Workspace.SolutionLoaded -= HandleUpdateCombos;
+				IdeApp.Workspace.SolutionLoaded -= HandleSolutionLoaded;
 				IdeApp.Workspace.SolutionUnloaded -= HandleUpdateCombos;
 
 				IdeApp.ProjectOperations.CurrentSelectedSolutionChanged -= HandleUpdateCombos;
+
+				StatusBar.ShowReady ();
 			};
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
@@ -543,8 +544,17 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		void HandleSolutionLoaded (object sender, EventArgs e)
+		{
+			if (currentSolution != null)
+				return;
+
+			UpdateCombos ();
+		}
+
 		void HandleUpdateCombos (object sender, EventArgs e)
 		{
+
 			UpdateCombos ();
 		}
 
