@@ -88,13 +88,15 @@ namespace MonoDevelop.CSharp.Highlighting
 			Editor.SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Editor, DocumentContext));
 			UpdateHighlighting ();
 			DocumentContext.AnalysisDocumentChanged += delegate {
-				UpdateHighlighting ();
+				Runtime.RunInMainThread (delegate {
+					UpdateHighlighting ();
+				});
 			};
 		}
 
 		void UpdateHighlighting ()
 		{
-			if (DocumentContext.AnalysisDocument == null)
+			if (DocumentContext?.AnalysisDocument == null)
 				return;
 			var old = Editor.SyntaxHighlighting as RoslynClassificationHighlighting;
 			if (old == null || old.DocumentId != DocumentContext.AnalysisDocument.Id) {
