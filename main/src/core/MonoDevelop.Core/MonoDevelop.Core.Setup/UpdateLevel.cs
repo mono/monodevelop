@@ -30,21 +30,23 @@ namespace MonoDevelop.Core.Setup
 {
 	public class UpdateLevel
 	{
-		public static readonly UpdateLevel Stable = new UpdateLevel ("Stable", "Stable", 0);
-		public static readonly UpdateLevel Beta = new UpdateLevel ("Beta", "Beta", 1);
-		public static readonly UpdateLevel Alpha = new UpdateLevel ("Alpha", "Alpha", 2);
-		public static readonly UpdateLevel Test = new UpdateLevel ("Test", "Test", 100);
+		public static readonly UpdateLevel Stable = new UpdateLevel ("Stable", "Stable", "", 0);
+		public static readonly UpdateLevel Beta = new UpdateLevel ("Beta", "Beta", "", 1);
+		public static readonly UpdateLevel Alpha = new UpdateLevel ("Alpha", "Alpha", "", 2);
+		public static readonly UpdateLevel Test = new UpdateLevel ("Test", "Test", "", 100);
 		public static readonly UpdateLevel [] DefaultLevels = { Stable, Beta, Alpha };
 
 		public string Id { get; set; }
 		public string Name { get; set; }
+		public string BannerMessage { get; set; }
 		public int Idx { get; set; }
 
-		public UpdateLevel (string id, string name, int Idx)
+		public UpdateLevel (string id, string name, string bannerMessage, int idx)
 		{
 			this.Id = id;
 			this.Name = name;
-			this.Idx = Idx;
+			this.BannerMessage = bannerMessage;
+			this.Idx = idx;
 		}
 
 		public UpdateLevel () { }

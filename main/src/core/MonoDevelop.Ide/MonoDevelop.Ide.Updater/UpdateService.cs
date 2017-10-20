@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Updater
 			get {
 				// Returned Saved Update Level
 				var prop = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", UpdateLevel.Stable.Id);
-				return new UpdateLevel(prop, prop, 0);
+				return new UpdateLevel(prop, prop, "", 0);
 			}
 			set {
 				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", value.Id);
