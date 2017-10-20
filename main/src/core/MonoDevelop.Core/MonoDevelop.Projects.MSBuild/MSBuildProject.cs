@@ -701,7 +701,7 @@ namespace MonoDevelop.Projects.MSBuild
 		public MSBuildPropertyGroup AddNewPropertyGroup (bool insertAtEnd = true, MSBuildObject beforeObject = null)
 		{
 			var group = new MSBuildPropertyGroup ();
-			AddPropertyGroup (group, insertAtEnd, beforeProject);
+			AddPropertyGroup (group, insertAtEnd, beforeObject);
 			return group;
 		}
 
