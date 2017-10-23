@@ -36,7 +36,7 @@ using UnitTests;
 namespace MonoDevelop.DotNetCore.Tests
 {
 	[TestFixture]
-	class DotNetCoreProjectExtensionTests : TestBase
+	class DotNetCoreProjectExtensionTests : DotNetCoreTestBase
 	{
 		/// <summary>
 		/// ProjectGuid and DefaultTargets should not be added to .NET Core project when it is saved.
