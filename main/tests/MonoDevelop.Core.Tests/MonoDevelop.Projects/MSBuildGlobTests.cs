@@ -992,6 +992,28 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task RemoveFile_WhenNotUsingAdvancedGlobSupport_ShouldNotAddRemoveItemWhenFileNotDeleted ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			string expectedProjectXml = File.ReadAllText (p.FileName);
+
+			string fileName = p.BaseDirectory.Combine ("test.txt");
+			File.WriteAllText (fileName, "Test");
+			var projectFile = p.AddFile (fileName);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			p.Files.Remove (projectFile);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (expectedProjectXml, projectXml);
+
+			p.Dispose ();
+		}
+
+		[Test]
 		public async Task AddFile_WildCardHasMetadataProperties ()
 		{
 			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
