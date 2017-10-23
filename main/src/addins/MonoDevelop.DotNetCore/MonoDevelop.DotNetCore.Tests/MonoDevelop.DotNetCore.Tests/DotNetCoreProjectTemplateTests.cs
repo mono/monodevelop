@@ -43,9 +43,8 @@ namespace MonoDevelop.DotNetCore.Tests
 	/// Creates and builds .NET Core projects.
 	/// </summary>
 	[TestFixture]
-	class DotNetCoreProjectTemplateTests : TestBase
+	class DotNetCoreProjectTemplateTests : DotNetCoreTestBase
 	{
-		static bool firstRun;
 		TemplatingService templatingService;
 
 		[TestFixtureSetUp]
@@ -58,10 +57,7 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			templatingService = new TemplatingService ();
 
-			if (!firstRun) {
-				firstRun = true;
-				Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
-				DesktopService.Initialize ();
+			if (!IdeApp.IsInitialized) {
 				IdeApp.Initialize (Util.GetMonitor ());
 			}
 		}
