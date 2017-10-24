@@ -174,7 +174,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 		string GetConsoleOutput (TestResult result)
 		{
 			if (result.Messages != null) {
-				return string.Join (Environment.NewLine, result.Messages);
+				return string.Join (Environment.NewLine, result.Messages.Select (message => message.Text));
 			}
 
 			return string.Empty;
