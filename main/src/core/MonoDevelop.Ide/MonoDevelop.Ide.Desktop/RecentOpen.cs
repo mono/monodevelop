@@ -127,9 +127,10 @@ namespace MonoDevelop.Ide.Desktop
 			}
 		}
 		
-		protected override void OnNotifyFileRemoved (string fileName)
+		public override void NotifyFileRemoved (string fileName)
 		{
 			try {
+				SetFavoriteFile (fileName, false);
 				recentFiles.RemoveItem (RecentFileStorage.ToUri (fileName));
 			} catch (Exception e) {
 				LoggingService.LogError ("Can't remove from recent files list.", e);
@@ -189,7 +190,7 @@ namespace MonoDevelop.Ide.Desktop
 		public abstract void ClearFiles ();
 		public abstract void AddFile (string fileName, string displayName);
 		public abstract void AddProject (string fileName, string displayName);
-		protected abstract void OnNotifyFileRemoved (string filename);
+		public abstract void NotifyFileRemoved (string filename);
 		public abstract void NotifyFileRenamed (string oldName, string newName);
 		
 		protected abstract IList<RecentFile> OnGetProjects ();
@@ -202,12 +203,6 @@ namespace MonoDevelop.Ide.Desktop
 				string.Format ("{0} [{1}]", Path.GetFileName (fileName), projectName) 
 				: Path.GetFileName (fileName);
 			AddFile (fileName, displayName);
-		}
-
-		public void NotifyFileRemoved (string filename)
-		{
-			SetFavoriteFile (filename, false);
-			OnNotifyFileRemoved (filename);
 		}
 
 		internal void SetFavoriteFile (FilePath file, bool favorite)
