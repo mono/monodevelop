@@ -83,6 +83,11 @@
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
       <Name>MonoDevelop.UnitTesting</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.DotNetCore\MonoDevelop.DotNetCore.csproj">
+      <Project>{6868153E-41EA-43A4-A81A-C1E7256373F7}</Project>
+      <Name>MonoDevelop.DotNetCore</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

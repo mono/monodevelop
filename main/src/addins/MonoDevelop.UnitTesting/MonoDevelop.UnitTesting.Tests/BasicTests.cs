@@ -23,6 +23,7 @@ using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
+using MonoDevelop.DotNetCore;
 using System.Diagnostics;
 using System.Threading;
 
@@ -42,13 +43,17 @@ namespace MonoDevelop.UnitTesting.Tests
 		[Test()]
 		public async Task TestsXUnitDotNetFull()
 		{
-			await CommonTestDiscovery("unit-testing-xunit-dotnetcore");
+			await CommonTestDiscovery("unit-testing-xunit-dotnetfull");
 		}
 
 		[Test()]
 		public async Task TestsXUnitDotNetCore()
 		{
-			await CommonTestDiscovery("unit-testing-xunit-dotnetfull");
+			if (!DotNetCoreRuntime.IsInstalled) {
+				Assert.Ignore (".NET Core needs to be installed.");
+			}
+
+			await CommonTestDiscovery("unit-testing-xunit-dotnetcore");
 		}
 
 		async Task CommonTestDiscovery(string projectName)
