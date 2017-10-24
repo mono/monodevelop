@@ -23,7 +23,6 @@ using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
-using MonoDevelop.PackageManagement;
 using System.Diagnostics;
 using System.Threading;
 

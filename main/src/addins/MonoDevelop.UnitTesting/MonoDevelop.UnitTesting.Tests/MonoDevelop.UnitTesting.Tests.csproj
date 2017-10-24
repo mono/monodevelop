@@ -83,10 +83,6 @@
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
       <Name>MonoDevelop.UnitTesting</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.csproj">
-      <Project>{F218643D-2E74-4309-820E-206A54B7133F}</Project>
-      <Name>MonoDevelop.PackageManagement</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
