@@ -31,17 +31,33 @@ namespace MonoDevelop.Ide.Templates
 {
 	class ProjectCapabilityFileTemplateCondition : FileTemplateCondition
 	{
-		string capabilityExpression;
+		bool useName;
+		string name;
+		string expression;
+
 		public override void Load (XmlElement element)
 		{
-			capabilityExpression = element.GetAttribute ("CapabilityExpression");
-			if (string.IsNullOrWhiteSpace (capabilityExpression))
-				throw new InvalidOperationException ("Invalid value for Capability condition in template.");
+			name = element.GetAttribute ("Name");
+			bool nameHasValue = !string.IsNullOrWhiteSpace (name);
+			expression = element.GetAttribute ("Expression");
+			bool expressionHasValue = !string.IsNullOrWhiteSpace (expression);
+			if (!expressionHasValue && !nameHasValue)
+				throw new InvalidOperationException ("Name or Expression must be set.");
+			if (nameHasValue && expressionHasValue)
+				throw new InvalidOperationException ("Set Name or Expression, but you can not set both at same time.");
+			useName = nameHasValue;
 		}
 
 		public override bool ShouldEnableFor (Project proj, string projectPath)
 		{
-			return proj is DotNetProject dnp && dnp.IsCapabilityMatch (capabilityExpression);
+			if (!(proj is DotNetProject dnp))
+				return false;
+			if (!useName)
+				return dnp.IsCapabilityMatch (expression);
+			foreach (var cap in dnp.GetProjectCapabilities ())
+				if (cap == name)
+					return true;
+			return false;
 		}
 	}
 }
