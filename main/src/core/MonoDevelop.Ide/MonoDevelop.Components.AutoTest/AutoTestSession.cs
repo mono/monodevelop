@@ -70,7 +70,7 @@ namespace MonoDevelop.Components.AutoTest
 		[Serializable]
 		public struct MemoryStats {
 			public long PrivateMemory;
-			public long VirtualMemorySize;
+			public long VirtualMemory;
 			public long WorkingSet;
 			public long PeakVirtualMemory;
 			public long PagedSystemMemory;
