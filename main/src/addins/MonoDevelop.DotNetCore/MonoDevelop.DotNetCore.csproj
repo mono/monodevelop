@@ -373,6 +373,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.AspNetCore" />
     <InternalsVisibleTo Include="DotNetCore.Debugger" />
+    <InternalsVisibleTo Include="MonoDevelop.UnitTesting" />
     <InternalsVisibleTo Include="MonoDevelop.DotNetCore.Tests" />
   </ItemGroup>
   <ItemGroup>
