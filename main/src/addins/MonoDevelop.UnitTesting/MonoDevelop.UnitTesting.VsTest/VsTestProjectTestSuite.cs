@@ -78,7 +78,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 			if (assemblyFileName.IsNull)
 				return false;
 			if (Project is DotNetProject dnp) {
-				if (Project.HasFlavor<DotNetCoreProjectExtension> ())
+				if (Project.HasFlavor<DotNetCoreProjectExtension> () && dnp.TargetFramework.Id.Identifier.IndexOf ("netcoreapp", StringComparison.OrdinalIgnoreCase) != -1)
 					return executionContext.CanExecute (new DotNetCoreExecutionCommand (Path.GetDirectoryName (assemblyFileName), assemblyFileName, ""));
 				else
 					return executionContext.CanExecute (new DotNetExecutionCommand ());

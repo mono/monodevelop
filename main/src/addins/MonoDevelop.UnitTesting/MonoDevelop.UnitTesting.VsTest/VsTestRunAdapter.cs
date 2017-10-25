@@ -242,7 +242,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 			ExecutionCommand command;
 
 			if (runJobInProgress.Project is DotNetProject dnp) {
-				if (dnp.HasFlavor<DotNetCoreProjectExtension> ()) {
+				if (dnp.HasFlavor<DotNetCoreProjectExtension> () && dnp.TargetFramework.Id.Identifier.IndexOf ("netcoreapp", StringComparison.OrdinalIgnoreCase) != -1) {
 					command = new DotNetCoreExecutionCommand (
 						startInfo.WorkingDirectory,
 						startInfo.FileName,
