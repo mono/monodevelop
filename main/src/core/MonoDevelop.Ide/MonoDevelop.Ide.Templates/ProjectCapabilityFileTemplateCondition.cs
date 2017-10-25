@@ -29,7 +29,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class ProjectCapabilityFileTemplateCondition : FileTemplateCondition
+	class ProjectCapabilityFileTemplateCondition : FileTemplateCondition
 	{
 		string capabilityExpression;
 		public override void Load (XmlElement element)

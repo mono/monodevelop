@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class OrFileTemplateCondition : FileTemplateCondition
+	class OrFileTemplateCondition : FileTemplateCondition
 	{
 		XmlElement[] childNodes;
 		public override void Load (XmlElement element)
