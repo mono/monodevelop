@@ -9615,6 +9615,8 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\RoslynCompletionData.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\DotNetCompileTargetSelector.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\OSXEditor.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProjectCapabilityFileTemplateCondition.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\OrFileTemplateCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
