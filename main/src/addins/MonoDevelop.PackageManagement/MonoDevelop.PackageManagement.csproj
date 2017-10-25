@@ -410,6 +410,8 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementPathResolver.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopMSBuildNuGetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopBuildIntegratedRestorer.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetProjectServices.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectSystemReferencesReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
