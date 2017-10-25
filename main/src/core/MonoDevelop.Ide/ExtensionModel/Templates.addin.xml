@@ -105,6 +105,8 @@
 	<FileTemplateConditionType name = "ClrVersion" class = "MonoDevelop.Ide.Templates.ClrVersionFileTemplateCondition"/>
 	<FileTemplateConditionType name = "PartialTypeSupport" class = "MonoDevelop.Ide.Templates.PartialTypeFileTemplateCondition"/>
 	<FileTemplateConditionType name = "ParentProject" class = "MonoDevelop.Ide.Templates.ParentProjectFileTemplateCondition"/>
+	<FileTemplateConditionType name = "ProjectCapability" class = "MonoDevelop.Ide.Templates.ProjectCapabilityFileTemplateCondition"/>
+	<FileTemplateConditionType name = "Or" class = "MonoDevelop.Ide.Templates.OrFileTemplateCondition"/>
 </Extension>
 
 <Extension path = "/MonoDevelop/Ide/ProjectTemplates">
