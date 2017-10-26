@@ -247,8 +247,10 @@ namespace MonoDevelop.UnitTesting.VsTest
 			var result = UnitTestResult.CreateSuccess ();
 			foreach (UnitTest test in parent.Tests) {
 				UnitTestResult childResult = test.GetLastResult ();
-				result.Add (childResult);
-				UpdateCounts (result, childResult);
+				if (childResult != null) {
+					result.Add (childResult);
+					UpdateCounts (result, childResult);
+				}
 			}
 			return result;
 		}

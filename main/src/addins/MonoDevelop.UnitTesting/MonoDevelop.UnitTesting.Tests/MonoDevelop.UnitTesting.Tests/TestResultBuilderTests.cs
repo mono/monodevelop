@@ -50,19 +50,29 @@ namespace MonoDevelop.UnitTesting.Tests
 			builder = new TestResultBuilder (context, testProvider);
 		}
 
-		VsTestUnitTest CreateVsUnitTest (string fullyQualifedName)
+		VsTestUnitTest CreateVsUnitTest (string fullyQualifiedName)
 		{
-			var testCase = new TestCase {
-				DisplayName = fullyQualifedName,
-				FullyQualifiedName = fullyQualifedName,
+			var testCase = CreateTestCase (fullyQualifiedName);
+			return new VsTestUnitTest (null, testCase, null);
+		}
+
+		TestCase CreateTestCase (string fullyQualifiedName)
+		{
+			return new TestCase {
+				DisplayName = fullyQualifiedName,
+				FullyQualifiedName = fullyQualifiedName,
 				CodeFilePath = "test.cs"
 			};
-			return new VsTestUnitTest (null, testCase, null);
 		}
 
 		TestRunChangedEventArgs CreateTestRunChangedEventArgsWithTestResults (params TestResult[] newTestResults)
 		{
 			return new TestRunChangedEventArgs (null, newTestResults, null);
+		}
+
+		VsTestNamespaceTestGroup CreateVsUnitTestNamespace (string name)
+		{
+			return new VsTestNamespaceTestGroup (null, null, null, name);
 		}
 
 		[Test]
@@ -109,6 +119,126 @@ namespace MonoDevelop.UnitTesting.Tests
 			Assert.AreEqual (0, builder.TestResult.Ignored);
 			Assert.AreEqual (0, builder.TestResult.Passed);
 			Assert.AreEqual (0, builder.TestResult.Inconclusive);
+		}
+
+		[Test]
+		public void AddTests_TestClassUsesRootNamespace ()
+		{
+			var testNamespace = CreateVsUnitTestNamespace ("RootNamespace");
+			var testCase = CreateTestCase ("RootNamespace.MyClass.MyTest");
+
+			testNamespace.AddTests (new [] { testCase });
+
+			Assert.AreEqual ("RootNamespace", testNamespace.FixtureTypeNamespace);
+			Assert.AreEqual ("RootNamespace", testNamespace.Name);
+			Assert.AreEqual ("RootNamespace", testNamespace.FullName);
+			Assert.IsTrue (testNamespace.HasTests);
+			Assert.AreEqual (1, testNamespace.Tests.Count);
+
+			var testClass = testNamespace.Tests [0] as VsTestTestClass;
+			Assert.AreEqual ("MyClass", testClass.Name);
+			Assert.AreEqual ("RootNamespace.MyClass", testClass.FullName);
+			Assert.IsTrue (testClass.HasTests);
+			Assert.AreEqual (1, testClass.Tests.Count);
+
+			var test = testClass.Tests [0] as VsTestUnitTest;
+			Assert.AreEqual ("MyTest", test.Name);
+			Assert.AreEqual ("RootNamespace", test.FixtureTypeNamespace);
+			Assert.AreEqual ("RootNamespace.MyClass.MyTest", test.FullName);
+		}
+
+		[Test]
+		public void OnTestRunChanged_SingleTest_RunTestsFromNamespace_TestPasses ()
+		{
+			var testNamespace = CreateVsUnitTestNamespace ("RootNamespace");
+			var testCase = CreateTestCase ("RootNamespace.MyClass.MyTest");
+			testNamespace.AddTests (new [] { testCase });
+			CreateTestResultBuilder (testNamespace);
+			var testClass = testNamespace.Tests [0] as VsTestTestClass;
+			var test = testClass.Tests [0] as VsTestUnitTest;
+			testClass.Status = TestStatus.Running;
+			test.Status = TestStatus.Running;
+			var testResult = new TestResult (testCase) {
+				Outcome = TestOutcome.Passed
+			};
+			var eventArgs = CreateTestRunChangedEventArgsWithTestResults (testResult);
+
+			builder.OnTestRunChanged (eventArgs);
+
+			var result = test.GetLastResult ();
+			Assert.AreEqual (ResultStatus.Success, result.Status);
+			result = testClass.GetLastResult ();
+			Assert.AreEqual (ResultStatus.Success, result.Status);
+			Assert.AreEqual (TestStatus.Ready, testClass.Status);
+			Assert.AreEqual (TestStatus.Ready, test.Status);
+		}
+
+		[Test]
+		public void OnTestRunChanged_TwoTests_RunOneTestInNamespace_TestPasses ()
+		{
+			var testNamespace = CreateVsUnitTestNamespace ("RootNamespace");
+			var testCase1 = CreateTestCase ("RootNamespace.MyClass.MyTest1");
+			testNamespace.AddTests (new [] { testCase1 });
+			var testCase2 = CreateTestCase ("RootNamespace.MyClass.MyTest2");
+			testNamespace.AddTests (new [] { testCase2 });
+			var testClass = testNamespace.Tests [0] as VsTestTestClass;
+			var test1 = testClass.Tests [0] as VsTestUnitTest;
+			var test2 = testClass.Tests [1] as VsTestUnitTest;
+			testClass.Status = TestStatus.Running;
+			test1.Status = TestStatus.Running;
+			test2.Status = TestStatus.Running;
+			CreateTestResultBuilder (testNamespace);
+			var testResult = new TestResult (testCase1) {
+				Outcome = TestOutcome.Passed
+			};
+			var eventArgs = CreateTestRunChangedEventArgsWithTestResults (testResult);
+
+			builder.OnTestRunChanged (eventArgs);
+
+			var result = test1.GetLastResult ();
+			Assert.AreEqual (ResultStatus.Success, result.Status);
+			result = test2.GetLastResult ();
+			Assert.IsNull (result);
+			Assert.AreEqual (TestStatus.Running, testClass.Status);
+			Assert.AreEqual (TestStatus.Ready, test1.Status);
+			Assert.AreEqual (TestStatus.Running, test2.Status);
+		}
+
+		/// <summary>
+		/// As above but a result is not obtained for the second test but its
+		/// status is changed to Ready and then a test result is returned which
+		/// will cause a null test result to be returned from the UnitTest's
+		/// GetLastResult method. Not sure exactly how this happens in practice
+		/// but all existing code that uses the GetLastResult method always checks
+		/// for null which the TestResultBuilder was not doing.
+		/// </summary>
+		[Test]
+		public void OnTestRunChanged_TwoTests_RunOneTestInNamespace_NullTestResult_TestPasses ()
+		{
+			var testNamespace = CreateVsUnitTestNamespace ("RootNamespace");
+			var testCase1 = CreateTestCase ("RootNamespace.MyClass.MyTest1");
+			testNamespace.AddTests (new [] { testCase1 });
+			var testCase2 = CreateTestCase ("RootNamespace.MyClass.MyTest2");
+			testNamespace.AddTests (new [] { testCase2 });
+			var testClass = testNamespace.Tests [0] as VsTestTestClass;
+			var test1 = testClass.Tests [0] as VsTestUnitTest;
+			var test2 = testClass.Tests [1] as VsTestUnitTest;
+			testClass.Status = TestStatus.Running;
+			test1.Status = TestStatus.Running;
+			test2.Status = TestStatus.Ready;
+			CreateTestResultBuilder (testNamespace);
+			var testResult = new TestResult (testCase1) {
+				Outcome = TestOutcome.Passed
+			};
+			var eventArgs = CreateTestRunChangedEventArgsWithTestResults (testResult);
+
+			builder.OnTestRunChanged (eventArgs);
+
+			var result = test1.GetLastResult ();
+			Assert.AreEqual (ResultStatus.Success, result.Status);
+			result = test2.GetLastResult ();
+			Assert.IsNull (result);
+			Assert.AreEqual (TestStatus.Ready, test1.Status);
 		}
 	}
 }
