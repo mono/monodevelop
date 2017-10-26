@@ -16,7 +16,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	[ExportWorkspaceServiceFactory (typeof (ITemporaryStorageService), MonoDevelopWorkspace.ServiceLayer), Shared]
+	[ExportWorkspaceServiceFactory (typeof (ITemporaryStorageService), ServiceLayer.Host), Shared]
 	sealed class MonoDevelopTemporaryStorageServiceFactory : IWorkspaceServiceFactory
 	{
 		static IWorkspaceServiceFactory microsoftFactory;
