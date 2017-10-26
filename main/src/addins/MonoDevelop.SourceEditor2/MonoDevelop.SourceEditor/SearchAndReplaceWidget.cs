@@ -507,6 +507,10 @@ But I leave it in in the case I've missed something. Mike
 						if (!((Button)o).HasFocus)
 							((Button)o).Click ();
 					}*/
+				if (o == searchEntry.Entry && (args.Event.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
+					UpdateSearchHistory (SearchPattern);
+					FindPrevious (textEditor);
+				}
 				break;
 			case Gdk.Key.Down:
 			case Gdk.Key.Up:
