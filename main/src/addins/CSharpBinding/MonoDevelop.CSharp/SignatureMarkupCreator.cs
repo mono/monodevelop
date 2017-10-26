@@ -51,7 +51,7 @@ using System.Threading;
 
 namespace MonoDevelop.CSharp
 {
-	class SignatureMarkupCreator
+	public class SignatureMarkupCreator
 	{
 		const double optionalAlpha = 0.7;
 		readonly DocumentContext ctx;
@@ -1583,7 +1583,7 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		public SemanticModel SemanticModel { get; internal set; }
+		public SemanticModel SemanticModel { get; set; }
 
 		void AppendParameterList (StringBuilder result, ImmutableArray<IParameterSymbol> parameterList, bool spaceBefore, bool spaceAfter, bool newLine = true)
 		{
