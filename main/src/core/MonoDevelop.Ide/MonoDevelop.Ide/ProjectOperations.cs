@@ -1388,7 +1388,7 @@ namespace MonoDevelop.Ide
 			var res = MessageService.AskQuestion (
 				GettextCatalog.GetString ("Outdated Build"),
 				GettextCatalog.GetString ("The project you are executing has changes done after the last time it was compiled. Do you want to continue?"),
-				2,
+				1,
 				AlertButton.Cancel,
 				bBuild,
 				bRun);
