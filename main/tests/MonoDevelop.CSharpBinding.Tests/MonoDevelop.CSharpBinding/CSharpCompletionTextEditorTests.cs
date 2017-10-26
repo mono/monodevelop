@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Completion;
@@ -41,15 +42,15 @@ namespace MonoDevelop.CSharpBinding
 	public class CSharpCompletionTextEditorTests : UnitTests.TestBase
 	{
 		[Test]
-		public async Task TestBug58473()
+		public async Task TestBug58473 ()
 		{
-			await TestCompletion(@"$", list => Assert.IsNotNull(list));
+			await TestCompletion (@"$", list => Assert.IsNotNull (list));
 		}
 
 		[Test]
-		public async Task TestBug57170()
+		public async Task TestBug57170 ()
 		{
-			await TestCompletion(@"using System;
+			await TestCompletion (@"using System;
 
 namespace console61
 {
@@ -68,41 +69,102 @@ namespace console61
 		}
 	}
 }
-", list => Assert.IsFalse(list.AutoSelect), new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, '_'));
+", list => Assert.IsFalse (list.AutoSelect), new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, '_'));
 
 		}
 
-		static Task TestCompletion(string text, Action<ICompletionDataList> action)
+		[Test]
+		public async Task TestImportCompletionExtensionMethods ()
 		{
-			return TestCompletion(text, action, CompletionTriggerInfo.CodeCompletionCommand);
+			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = true;
+			await TestCompletion (@"using System;
+
+namespace console61
+{
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			args.$
 		}
 
-		static async Task TestCompletion(string text, Action<ICompletionDataList> action, CompletionTriggerInfo triggerInfo)
-		{
-			DesktopService.Initialize();
+	}
+}
+", list => Assert.IsTrue (list.Any (d => d.CompletionText == "Any")));
 
-			int endPos = text.IndexOf('$');
+		}
+
+		[Test]
+		public async Task TestImportCompletionTypes ()
+		{
+			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = true;
+			await TestCompletion (@"
+namespace console61
+{
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			C$
+		}
+
+	}
+}
+", list => Assert.IsTrue (list.Any (d => d.CompletionText == "Console")));
+
+		}
+
+		[Test]
+		public async Task TestImportCompletionTurnedOff ()
+		{
+			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = false;
+			await TestCompletion (@"
+namespace console61
+{
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			C$
+		}
+
+	}
+}
+", list => Assert.IsFalse (list.Any (d => d.CompletionText == "Console")));
+
+		}
+
+		static Task TestCompletion (string text, Action<ICompletionDataList> action)
+		{
+			return TestCompletion (text, action, CompletionTriggerInfo.CodeCompletionCommand);
+		}
+
+		static async Task TestCompletion (string text, Action<ICompletionDataList> action, CompletionTriggerInfo triggerInfo)
+		{
+			DesktopService.Initialize ();
+
+			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
-				text = text.Substring(0, endPos) + text.Substring(endPos + 1);
+				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
-			var project = Ide.Services.ProjectService.CreateDotNetProject("C#");
+			var project = Ide.Services.ProjectService.CreateDotNetProject ("C#");
 			project.Name = "test";
-			project.References.Add(MonoDevelop.Projects.ProjectReference.CreateAssemblyReference("mscorlib"));
-			project.References.Add(MonoDevelop.Projects.ProjectReference.CreateAssemblyReference("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add(MonoDevelop.Projects.ProjectReference.CreateAssemblyReference("System.Core"));
+			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("mscorlib"));
+			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System.Core"));
 
 			project.FileName = "test.csproj";
-			project.Files.Add(new ProjectFile("/a.cs", BuildAction.Compile));
+			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile));
 
-			var solution = new MonoDevelop.Projects.Solution();
-			solution.AddConfiguration("", true);
-			solution.DefaultSolutionFolder.AddItem(project);
-			using (var monitor = new ProgressMonitor())
-				await TypeSystemService.Load(solution, monitor);
-			
+			var solution = new MonoDevelop.Projects.Solution ();
+			solution.AddConfiguration ("", true);
+			solution.DefaultSolutionFolder.AddItem (project);
+			using (var monitor = new ProgressMonitor ())
+				await TypeSystemService.Load (solution, monitor);
 
-			var tww = new TestWorkbenchWindow();
-			var content = new TestViewContent();
+
+			var tww = new TestWorkbenchWindow ();
+			var content = new TestViewContent ();
 			tww.ViewContent = content;
 			content.ContentName = "/a.cs";
 			content.Data.MimeType = "text/x-csharp";
@@ -110,28 +172,28 @@ namespace console61
 
 
 			content.Text = text;
-			content.CursorPosition = Math.Max(0, endPos);
-			var doc = new MonoDevelop.Ide.Gui.Document(tww);
-			doc.SetProject(project);
+			content.CursorPosition = Math.Max (0, endPos);
+			var doc = new MonoDevelop.Ide.Gui.Document (tww);
+			doc.SetProject (project);
 
-			var compExt = new CSharpCompletionTextEditorExtension();
-			compExt.Initialize(doc.Editor, doc);
+			var compExt = new CSharpCompletionTextEditorExtension ();
+			compExt.Initialize (doc.Editor, doc);
 			compExt.CurrentCompletionContext = new CodeCompletionContext {
 				TriggerOffset = content.CursorPosition,
 				TriggerWordLength = 1
 			};
-			content.Contents.Add(compExt);
+			content.Contents.Add (compExt);
 
-			await doc.UpdateParseDocument();
+			await doc.UpdateParseDocument ();
 
 			var tmp = IdeApp.Preferences.EnableAutoCodeCompletion;
-			IdeApp.Preferences.EnableAutoCodeCompletion.Set(false);
-			var list = await compExt.HandleCodeCompletionAsync(compExt.CurrentCompletionContext, triggerInfo);
+			IdeApp.Preferences.EnableAutoCodeCompletion.Set (false);
+			var list = await compExt.HandleCodeCompletionAsync (compExt.CurrentCompletionContext, triggerInfo);
 			try {
-				action(list);
+				action (list);
 			} finally {
-				IdeApp.Preferences.EnableAutoCodeCompletion.Set(tmp);
-				project.Dispose();
+				IdeApp.Preferences.EnableAutoCodeCompletion.Set (tmp);
+				project.Dispose ();
 			}
 		}
 	}

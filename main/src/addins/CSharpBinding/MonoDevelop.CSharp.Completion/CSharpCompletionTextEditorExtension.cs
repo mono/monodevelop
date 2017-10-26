@@ -476,7 +476,7 @@ namespace MonoDevelop.CSharp.Completion
 			var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
 			var syntaxContext = CSharpSyntaxContext.CreateContext (DocumentContext.RoslynWorkspace, semanticModel, completionContext.TriggerOffset, token);
 
-			if (forceSymbolCompletion || !syntaxContext.LeftToken.IsKind (SyntaxKind.DotToken)) {
+			if (forceSymbolCompletion || IdeApp.Preferences.AddImportedItemsToCompletionList) {
 				AddImportCompletionData (syntaxContext, result, semanticModel, completionContext.TriggerOffset, token);
 			}
 
