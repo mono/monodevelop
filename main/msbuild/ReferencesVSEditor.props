@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <NuGetVersionVSEditor>15.3.1710.203</NuGetVersionVSEditor>
+    <NuGetVersionVSEditor>15.6.150-preview</NuGetVersionVSEditor>
     <ReferencesVSEditorCopyToOutput Condition="$(ReferencesVSEditorCopyToOutput) == ''">false</ReferencesVSEditorCopyToOutput>
   </PropertyGroup>
 
@@ -31,7 +31,7 @@
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.Implementation">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Implementation.15.0.0\lib\net46\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Implementation.15.0.1\lib\net46\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
   </ItemGroup>
