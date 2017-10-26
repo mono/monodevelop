@@ -84,7 +84,7 @@ namespace MonoDevelop.Components.AutoTest
 			using (Process proc = Process.GetCurrentProcess ()) {
 				stats = new MemoryStats {
 					PrivateMemory = proc.PrivateMemorySize64,
-					VirtualMemorySize = proc.VirtualMemorySize64,
+					VirtualMemory = proc.VirtualMemorySize64,
 					WorkingSet = proc.WorkingSet64,
 					PeakVirtualMemory = proc.PeakVirtualMemorySize64,
 					PagedSystemMemory = proc.PagedSystemMemorySize64,
