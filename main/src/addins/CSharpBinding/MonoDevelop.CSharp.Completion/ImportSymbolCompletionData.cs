@@ -48,6 +48,8 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		static CompletionItemRules rules = CompletionItemRules.Create (matchPriority: -10000);
         public override CompletionItemRules Rules => rules;
+		public override string DisplayText { get => type.ToDisplayString (); }
+		public override string CompletionText { get =>  useFullName ? type.ContainingNamespace.GetFullName () + "." + type.Name : type.Name; }
 
         public override int PriorityGroup { get { return int.MinValue; } }
 
