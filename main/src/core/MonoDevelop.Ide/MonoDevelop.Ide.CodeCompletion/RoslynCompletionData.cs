@@ -160,7 +160,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			{ "EnumMember", "literal" },
 
-			{ "NewMethod", "newmethod" }
+			{ "NewMethod", "newmethod" },
+
+			{ "ExtensionMethod", "extensionmethod" }
 		};
 
 		string GetItemType ()
