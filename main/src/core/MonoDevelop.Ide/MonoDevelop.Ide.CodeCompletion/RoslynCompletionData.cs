@@ -90,9 +90,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				var modifier = GetItemModifier ();
 				var type = GetItemType ();
-				return "md-" + modifier + type;
+				var hash = modifier.GetHashCode() ^ type.GetHashCode();
+				if (!IconIdCache.ContainsKey(hash))
+					IconIdCache [hash] = "md-" + modifier + type;
+				return IconIdCache [hash];
 			}
 		}
+
+		static Dictionary<int, string> IconIdCache = new Dictionary<int, string>();
 
 		public RoslynCompletionData (Microsoft.CodeAnalysis.Document document, ITextSnapshot triggerSnapshot, CompletionService completionService, CompletionItem completionItem)
 		{
