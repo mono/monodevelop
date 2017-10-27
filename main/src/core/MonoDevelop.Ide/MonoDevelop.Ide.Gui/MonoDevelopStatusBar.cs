@@ -224,10 +224,10 @@ namespace MonoDevelop.Ide
 			string txt = !String.IsNullOrEmpty (message) ? " " + message.Replace ("\n", " ") : "";
 			if (isMarkup) {
 				statusLabel.Markup = txt;
-				statusLabel.TooltipMarkup = txt;
+                statusLabel.TooltipMarkup = message;
 			} else {
 				statusLabel.Text = txt;
-				statusLabel.TooltipText = txt;
+                statusLabel.TooltipText = message;
 			}
 			statusLabel.Accessible.SetValue (txt);
 		}
