@@ -28,7 +28,8 @@ module statusBarTooltip =
                     | FSharpToolTipText items ->
                         items
                         |> Seq.tryPick firstResult
-                        |> Option.iter(fun text -> runInMainThread(fun() -> Ide.IdeApp.Workbench.StatusBar.ShowMessage text)))
+                        |> Option.iter(fun text ->
+                            runInMainThread(fun() -> Ide.IdeApp.Workbench.BottomBar.ShowMessage(text, false))))
             } |> Async.StartImmediate)
 
 type StatusBarTooltipExtension() =
@@ -39,11 +40,7 @@ type StatusBarTooltipExtension() =
           [ x.Editor.CaretPositionChanged
             |> Observable.filter(fun _ -> PropertyService.Get(Settings.showStatusBarTooltips, false))
             |> Observable.throttle (TimeSpan.FromMilliseconds 500.0)
-            |> Observable.subscribe (fun _ -> statusBarTooltip.getTooltip x.Editor x.DocumentContext)
-
-            PropertyService.PropertyChanged.Subscribe
-                (fun p -> if p.Key = Settings.showStatusBarTooltips then
-                              Ide.IdeApp.Workbench.StatusBar.ShowReady()) ]
+            |> Observable.subscribe (fun _ -> statusBarTooltip.getTooltip x.Editor x.DocumentContext) ]
 
     override x.Dispose() =
         disposables |> List.iter(fun d -> d.Dispose())

@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide
 	{
 		MiniButton feedbackButton;
 		Gtk.EventBox resizeGrip = new Gtk.EventBox ();
-
+		readonly Label statusLabel = new Label ();
 		const int ResizeGripWidth = 14;
 
 		internal MonoDevelopStatusBar ()
@@ -63,13 +63,22 @@ namespace MonoDevelop.Ide
 			};
 			var mainBox = new HBox ();
 			mainBox.Accessible.Role = Atk.Role.Filler;
-			var alignment = new Alignment (0f, 0f, 0f, 0f);
+			var alignment = new Alignment (0f, 0.5f, 0f, 0f);
+			alignment.LeftPadding = 10;
 			alignment.Accessible.Role = Atk.Role.Filler;
 			mainBox.PackStart (alignment, true, true, 0);
 			hb.Add (mainBox);
 			hb.ShowAll ();
 			PackStart (hb, true, true, 0);
-			
+
+			statusLabel.SetAlignment (0, 0.5f);
+			statusLabel.Wrap = false;
+			Gtk.Icon.SizeLookup (IconSize.Menu, out int w, out int h);
+			statusLabel.HeightRequest = h + 6;
+			statusLabel.SetPadding (3, 3);
+			statusLabel.ShowAll ();
+			alignment.Add (statusLabel);
+
 			// Feedback button
 			
 			if (FeedbackService.Enabled) {
@@ -99,7 +108,7 @@ namespace MonoDevelop.Ide
 				mainBox.PackStart (fr, false, false, 0);
 				feedbackButton.Clicked += HandleFeedbackButtonClicked;
 				feedbackButton.ButtonPressEvent += HandleFeedbackButtonButtonPressEvent;
-				;
+
 				feedbackButton.ClickOnRelease = true;
 				FeedbackService.FeedbackPositionGetter = delegate {
 					int x, y;
@@ -199,6 +208,24 @@ namespace MonoDevelop.Ide
 		[Obsolete]
 		public void ClearCaretState ()
 		{
+		}
+
+		string lastText = null;
+		public void ShowMessage (string message, bool isMarkup)
+		{
+			if (message == lastText)
+				return;
+			lastText = message;
+			Runtime.AssertMainThread ();
+
+			string txt = !String.IsNullOrEmpty (message) ? " " + message.Replace ("\n", " ") : "";
+			if (isMarkup) {
+				statusLabel.Markup = txt;
+				statusLabel.TooltipMarkup = txt;
+			} else {
+				statusLabel.Text = txt;
+				statusLabel.TooltipText = txt;
+			}
 		}
 
 		bool hasResizeGrip;
