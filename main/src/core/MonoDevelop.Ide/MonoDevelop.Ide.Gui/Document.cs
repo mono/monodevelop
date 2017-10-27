@@ -853,6 +853,7 @@ namespace MonoDevelop.Ide.Gui
 					analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
 					if (analysisDocument != null) {
 						TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
+						OnAnalysisDocumentChanged (EventArgs.Empty);
 						return Task.CompletedTask;
 					}
 				}
@@ -896,6 +897,7 @@ namespace MonoDevelop.Ide.Gui
 							SubscribeRoslynWorkspace ();
 							analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
 							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
+							OnAnalysisDocumentChanged (EventArgs.Empty);
 						});
 					}
 				}

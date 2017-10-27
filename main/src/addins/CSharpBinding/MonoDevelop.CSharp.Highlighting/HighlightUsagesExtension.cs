@@ -48,6 +48,7 @@ using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -61,7 +62,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			get { return SymbolInfo != null ? SymbolInfo.Symbol ?? SymbolInfo.DeclaredSymbol : null; }
 		}
 	}
-	
+
 	class HighlightUsagesExtension : AbstractUsagesExtension<UsageData>
 	{
 		CSharpSyntaxMode syntaxMode;
@@ -85,8 +86,23 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			base.Initialize ();
 			Editor.SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Editor, DocumentContext));
-			syntaxMode = new CSharpSyntaxMode (Editor, DocumentContext);
-			Editor.SemanticHighlighting = syntaxMode;
+			UpdateHighlighting ();
+			DocumentContext.AnalysisDocumentChanged += delegate {
+				Runtime.RunInMainThread (delegate {
+					UpdateHighlighting ();
+				});
+			};
+		}
+
+		void UpdateHighlighting ()
+		{
+			if (DocumentContext?.AnalysisDocument == null)
+				return;
+			var old = Editor.SyntaxHighlighting as RoslynClassificationHighlighting;
+			if (old == null || old.DocumentId != DocumentContext.AnalysisDocument.Id) {
+				Editor.SyntaxHighlighting = new RoslynClassificationHighlighting ((MonoDevelopWorkspace)DocumentContext.RoslynWorkspace,
+																				  DocumentContext.AnalysisDocument.Id, "source.cs");
+			}
 		}
 
 		public override void Dispose ()
@@ -98,7 +114,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 			base.Dispose ();
 		}
-		
+
 		protected async override Task<UsageData> ResolveAsync (CancellationToken token)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -114,8 +130,8 @@ namespace MonoDevelop.CSharp.Highlighting
 					Document = analysisDocument,
 					Offset = doc.Editor.CaretOffset
 				};
-			
-			if (symbolInfo.Symbol != null && !symbolInfo.Node.IsKind (SyntaxKind.IdentifierName) && !symbolInfo.Node.IsKind (SyntaxKind.GenericName)) 
+
+			if (symbolInfo.Symbol != null && !symbolInfo.Node.IsKind (SyntaxKind.IdentifierName) && !symbolInfo.Node.IsKind (SyntaxKind.GenericName))
 				return new UsageData ();
 
 			return new UsageData {
@@ -151,7 +167,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 
 			var doc = resolveResult.Document;
-			var documents = ImmutableHashSet.Create (doc); 
+			var documents = ImmutableHashSet.Create (doc);
 
 			foreach (var symbol in await CSharpFindReferencesProvider.GatherSymbols (resolveResult.Symbol, resolveResult.Document.Project.Solution, token)) {
 				foreach (var loc in symbol.Locations) {
@@ -238,8 +254,8 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			if (node == null)
 				return ReferenceUsageType.Read;
-			
-			var parent = node.AncestorsAndSelf ().OfType<ExpressionSyntax> ().FirstOrDefault();
+
+			var parent = node.AncestorsAndSelf ().OfType<ExpressionSyntax> ().FirstOrDefault ();
 			if (parent == null)
 				return ReferenceUsageType.Read;
 			if (parent.IsOnlyWrittenTo ())
