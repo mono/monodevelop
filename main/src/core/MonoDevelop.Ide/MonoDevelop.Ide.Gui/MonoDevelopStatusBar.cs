@@ -71,6 +71,9 @@ namespace MonoDevelop.Ide
 			hb.ShowAll ();
 			PackStart (hb, true, true, 0);
 
+			statusLabel.Accessible.Name = "FooterBar.StatusLabel";
+			statusLabel.Accessible.SetLabel(GettextCatalog.GetString ("Footer status information"));
+			statusLabel.Accessible.Description = GettextCatalog.GetString ("Footer status information");
 			statusLabel.SetAlignment (0, 0.5f);
 			statusLabel.Wrap = false;
 			Gtk.Icon.SizeLookup (IconSize.Menu, out int w, out int h);
@@ -226,6 +229,7 @@ namespace MonoDevelop.Ide
 				statusLabel.Text = txt;
 				statusLabel.TooltipText = txt;
 			}
+			statusLabel.Accessible.SetValue (txt);
 		}
 
 		bool hasResizeGrip;
