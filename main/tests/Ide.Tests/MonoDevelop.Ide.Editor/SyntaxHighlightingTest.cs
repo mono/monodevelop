@@ -451,9 +451,15 @@ typedef struct
 		}
 
 
-
-
-
+		/// <summary>
+		/// Bug 60055 - UI hang on opening TypeScript file
+		/// </summary>
+		[Test]
+		public void TestBug60055 ()
+		{
+			Assert.AreEqual ("\\*=|(?<!\\()/=|%=|\\+=|\\-=", Sublime3Format.CompileRegex ("\\*=|(?<!\\()/=|%=|\\+=|\\-="));
+			Assert.AreEqual ("(?<=[!(+,=?\\[])", Sublime3Format.CompileRegex ("(?<=[=(,\\[?+!])"));
+		}
 
 		[Test]
 		public void TestGroupNameCorrection_Case2 ()
