@@ -239,12 +239,12 @@ namespace MonoDevelop.Xml.Editor
 		protected virtual void OnDocTypeChanged ()
 		{
 		}
-		
+
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
+			var newLine = Editor.CaretLine + 1;
+			var ret = base.KeyPress (descriptor);
 			if (Editor.Options.IndentStyle == IndentStyle.Smart) {
-				var newLine = Editor.CaretLine + 1;
-				var ret = base.KeyPress (descriptor);
 				if (descriptor.SpecialKey == SpecialKey.Return && Editor.CaretLine == newLine) {
 					string indent = GetLineIndent (newLine);
 					var oldIndent = Editor.GetLineIndent (newLine);
@@ -255,9 +255,23 @@ namespace MonoDevelop.Xml.Editor
 						}
 					}
 				}
-				return ret;
 			}
-			return base.KeyPress (descriptor);
+
+			if (descriptor.KeyChar == '>' && XmlEditorOptions.AutoCompleteElements) {
+				Tracker.UpdateEngine ();
+				if (tracker.Engine.CurrentState is XmlRootState) {
+					var el = tracker.Engine.Nodes.Peek () as XElement;
+					var buf = Editor;
+					if (el != null && el.Region.End >= buf.CaretLocation && !el.IsClosed && el.IsNamed) {
+						var tag = $"</{ el.Name.FullName}>";
+						using (var undo = buf.OpenUndoGroup ()) {
+							buf.InsertText (buf.CaretOffset, tag);
+							buf.CaretOffset -= tag.Length;
+						}
+					}
+				}
+			}
+			return ret;
 		}
 		
 		#region Code completion
@@ -453,63 +467,18 @@ namespace MonoDevelop.Xml.Editor
 		}
 
 		protected virtual ICompletionDataList ClosingTagCompletion (TextEditor buf, DocumentLocation currentLocation)
-
 		{
-
+			// This is handled sooner in UI thread before it's offloaded to background thread by code completion
+			if (XmlEditorOptions.AutoCompleteElements)
+				return null;
 			//get name of current node in document that's being ended
-
 			var el = tracker.Engine.Nodes.Peek () as XElement;
-
 			if (el != null && el.Region.End >= currentLocation && !el.IsClosed && el.IsNamed) {
-
 				string tag = String.Concat ("</", el.Name.FullName, ">");
-
-				if (XmlEditorOptions.AutoCompleteElements) {
-
-
-
-					//						//make sure we have a clean atomic undo so the user can undo the tag insertion
-
-					//						//independently of the >
-
-					//						bool wasInAtomicUndo = this.Editor.Document.IsInAtomicUndo;
-
-					//						if (wasInAtomicUndo)
-
-					//							this.Editor.Document.EndAtomicUndo ();
-
-
-
-					using (var undo = buf.OpenUndoGroup ()) {
-
-						buf.InsertText (buf.CaretOffset, tag);
-
-						buf.CaretOffset -= tag.Length;
-
-					}
-
-
-
-					//						if (wasInAtomicUndo)
-
-					//							this.Editor.Document.BeginAtomicUndo ();
-
-
-
-					return null;
-
-				} else {
-
-					var cp = new CompletionDataList ();
-
-					cp.Add (new XmlTagCompletionData (tag, 0, true));
-
-					return cp;
-
-				}
-
+				var cp = new CompletionDataList ();
+				cp.Add (new XmlTagCompletionData (tag, 0, true));
+				return cp;
 			}
-
 			return null;
 		}
 		
