@@ -236,6 +236,7 @@ namespace MonoDevelop.Xml.Formatting
 				}
 				case XmlNodeType.Element: {
 					XmlElement elem = (XmlElement) node;
+					writer.AttributesIndent = -1;
 					WriteStartElement (
 						elem.NamespaceURI == null || elem.NamespaceURI.Length == 0 ? String.Empty : elem.Prefix,
 						elem.LocalName,
@@ -865,6 +866,9 @@ namespace MonoDevelop.Xml.Formatting
 			else if (state != WriteState.Start)
 				writer.Write (' ');
 
+			if (writer.AttributesIndent == -1)
+				writer.AttributesIndent = writer.Column;
+
 			if (prefix.Length > 0) {
 				writer.Write (prefix);
 				writer.Write (':');
@@ -1310,8 +1314,17 @@ namespace MonoDevelop.Xml.Formatting
 
 		void WriteIndentAttribute ()
 		{
-			if (!WriteIndentCore (0, true))
-				writer.Write (' '); // space is required instead.
+			if (formatSettings.AlignAttributes && writer.AttributesIndent != -1) {
+				if (state != WriteState.Start)
+					writer.Write (newline);
+				if (TextPolicy.TabsToSpaces)
+					writer.Write (new string (' ', writer.AttributesIndent));
+				else
+					writer.Write (new string ('\t', writer.AttributesIndent / TextPolicy.TabWidth) + new string (' ', writer.AttributesIndent % TextPolicy.TabWidth));
+			} else {
+				if (!WriteIndentCore (0, true))
+					writer.Write (' '); // space is required instead.
+			}
 		}
 
 		bool WriteIndentCore (int nestFix, bool attribute)
@@ -1913,6 +1926,7 @@ namespace MonoDevelop.Xml.Formatting
 		
 		public int Column;
 		public int AttributesPerLine;
+		public int AttributesIndent;
 
 		public TextWriterWrapper (TextWriter wrapped, XmlFormatterWriter formatter)
 		{

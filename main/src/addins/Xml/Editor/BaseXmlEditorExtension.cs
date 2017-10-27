@@ -538,17 +538,22 @@ namespace MonoDevelop.Xml.Editor
 		{
 			return Task.FromResult (new CompletionDataList ());
 		}
-		
+
+
 		protected string GetLineIndent (int line)
 		{
 			var seg = Editor.GetLine (line);
 			
 			//reset the tracker to the beginning of the line
 			Tracker.UpdateEngine (seg.Offset);
-			
+			var attributeDepth = GetAttributeIndentDepth (Tracker.Engine.Nodes);
+			if (attributeDepth > 0) {
+				if (Editor.Options.TabsToSpaces)
+					return new string (' ', attributeDepth);
+				return new string ('\t', attributeDepth / Editor.Options.TabSize) + new string (' ', attributeDepth % Editor.Options.TabSize);
+			}
 			//calculate the indentation
 			var startElementDepth = GetElementIndentDepth (Tracker.Engine.Nodes);
-			//var attributeDepth = GetAttributeIndentDepth (Tracker.Engine.Nodes);
 			
 			//update the tracker to the end of the line 
 			Tracker.UpdateEngine (seg.Offset + seg.Length);
@@ -566,14 +571,29 @@ namespace MonoDevelop.Xml.Editor
 		{
 			return nodes.OfType<XElement> ().Count (el => !el.IsClosed);
 		}
-		
-		static int GetAttributeIndentDepth (NodeStack nodes)
+
+		int GetAttributeIndentDepth (NodeStack nodes)
 		{
+			if (!(Tracker.Engine.CurrentState is XmlTagState))
+				return 0;
 			var node = nodes.Peek ();
-			if (node is XElement && !node.IsEnded)
-				return 1;
-			if (node is XAttribute)
-				return node.IsEnded? 1 : 2;
+			if (node is XElement e) {
+				var firstAttribute = e.Attributes.FirstOrDefault ();
+				if (firstAttribute == null)
+					return 0;
+				// We are simulating VS here which aligns attributes only if 1st is on same line as element
+				if (firstAttribute.Region.BeginLine != e.Region.BeginLine)
+					return 0;
+				var textFromBegining = Editor.GetTextBetween (firstAttribute.Region.BeginLine, 0, firstAttribute.Region.BeginLine, firstAttribute.Region.BeginColumn);
+				int pos = 0;
+				foreach (var c in textFromBegining) {
+					if (c == '\t')
+						pos += Editor.Options.TabSize - pos % Editor.Options.TabSize;
+					else
+						pos++;
+				}
+				return pos;
+			}
 			return 0;
 		}
 		
