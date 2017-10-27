@@ -108,7 +108,8 @@ namespace MonoDevelop.UnitTesting
 					if (ContainsSingleUnitTestGroup (unitTestGroup)) {
 						var testCollection = unitTestGroup.Tests;
 						var singleChildTestGroup = testCollection [0] as UnitTestGroup;
-						stringBuilder.Append(".").Append (singleChildTestGroup.Title);
+						stringBuilder.Append (".")
+						             .Append (singleChildTestGroup.Title);
 						unitTestGroup = singleChildTestGroup;
 					} else
 						unitTestGroup = null;
@@ -140,8 +141,7 @@ namespace MonoDevelop.UnitTesting
 		}
 
 		static bool ContainsSingleUnitTestGroup(UnitTestGroup test) => 
-						test.Tests.Count  == 1 &&
-		       			test.Tests.OfType<UnitTestGroup> ().Count() == 1;
+				test.Tests.OfType<UnitTestGroup> ().SingleOrDefault () != null;
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
