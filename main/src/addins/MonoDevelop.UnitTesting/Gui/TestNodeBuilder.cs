@@ -72,7 +72,7 @@ namespace MonoDevelop.UnitTesting
 
 			var singleTestSuffix = String.Empty;
 			if (test is UnitTestGroup unitTestGroup) 
-				singleTestSuffix =  GetSuxffix (unitTestGroup);
+				singleTestSuffix =  GetSuffix (unitTestGroup);
 
 			var title = RemoveGenericArgument (test.Title);
 			title =  test.Title + singleTestSuffix ;
@@ -100,16 +100,15 @@ namespace MonoDevelop.UnitTesting
 			}
 		}
 
-		static string GetSuxffix (UnitTestGroup unitTestGroup)
+		static string GetSuffix (UnitTestGroup unitTestGroup)
 		{
-			var stringBuilder = new StringBuilder();
-			if (!(unitTestGroup is SolutionFolderTestGroup))
-				while (unitTestGroup != null)
-					if (ContainsSingleUnitTestGroup (unitTestGroup)) {
+			var stringBuilder = new StringBuilder ();
+			while (unitTestGroup != null)
+					if (ContainsSingleUnitTestGroup (unitTestGroup) && !(unitTestGroup is SolutionFolderTestGroup)) {
 						var testCollection = unitTestGroup.Tests;
 						var singleChildTestGroup = testCollection [0] as UnitTestGroup;
 						stringBuilder.Append (".")
-						             .Append (singleChildTestGroup.Title);
+									 .Append (singleChildTestGroup.Title);
 						unitTestGroup = singleChildTestGroup;
 					} else
 						unitTestGroup = null;
@@ -141,7 +140,7 @@ namespace MonoDevelop.UnitTesting
 		}
 
 		static bool ContainsSingleUnitTestGroup(UnitTestGroup test) => 
-				test.Tests.OfType<UnitTestGroup> ().SingleOrDefault () != null;
+						test.Tests.Count == 1 && test.Tests[0] is UnitTestGroup;
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
