@@ -240,34 +240,52 @@ namespace MonoDevelop.Xml.Editor
 		{
 		}
 
+		void FixIndent (int line)
+		{
+			var indent = GetLineIndent (line);
+			var oldIndent = Editor.GetLineIndent (line);
+			var seg = Editor.GetLine (line);
+			if (oldIndent != indent) {
+				Editor.ReplaceText (seg.Offset, oldIndent.Length, indent);
+			}
+		}
+
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
+			Tracker.UpdateEngine ();
+			bool returnInsideEmptyElement =
+					descriptor.SpecialKey == SpecialKey.Return &&
+					descriptor.ModifierKeys == ModifierKeys.None &&
+					Editor.CaretOffset > 0 && Editor.CaretOffset < Editor.Length &&
+					Editor.GetCharAt (Editor.CaretOffset - 1) == '>' &&
+					Editor.GetCharAt (Editor.CaretOffset) == '<' &&
+					Tracker.Engine.CurrentState is XmlRootState;
+
 			var newLine = Editor.CaretLine + 1;
 			var ret = base.KeyPress (descriptor);
 			if (Editor.Options.IndentStyle == IndentStyle.Smart) {
 				if (descriptor.SpecialKey == SpecialKey.Return && Editor.CaretLine == newLine) {
-					string indent = GetLineIndent (newLine);
-					var oldIndent = Editor.GetLineIndent (newLine);
-					var seg = Editor.GetLine (newLine);
-					if (oldIndent != indent) {
-						using (var undo = Editor.OpenUndoGroup ()) {
-							Editor.ReplaceText (seg.Offset, oldIndent.Length, indent);
+					using (var undo = Editor.OpenUndoGroup ()) {
+						FixIndent (newLine);
+						if (returnInsideEmptyElement) {
+							var oldOffset = Editor.CaretOffset;
+							Editor.ReplaceText (oldOffset, 0, Editor.EolMarker);
+							Editor.CaretOffset = oldOffset;
+							FixIndent (newLine);
+							FixIndent (newLine + 1);
 						}
 					}
 				}
 			}
-
-			if (descriptor.KeyChar == '>' && XmlEditorOptions.AutoCompleteElements) {
-				Tracker.UpdateEngine ();
-				if (tracker.Engine.CurrentState is XmlRootState) {
-					var el = tracker.Engine.Nodes.Peek () as XElement;
-					var buf = Editor;
-					if (el != null && el.Region.End >= buf.CaretLocation && !el.IsClosed && el.IsNamed) {
-						var tag = $"</{ el.Name.FullName}>";
-						using (var undo = buf.OpenUndoGroup ()) {
-							buf.InsertText (buf.CaretOffset, tag);
-							buf.CaretOffset -= tag.Length;
-						}
+			Tracker.UpdateEngine ();
+			if (descriptor.KeyChar == '>' && XmlEditorOptions.AutoCompleteElements && tracker.Engine.CurrentState is XmlRootState) {
+				var el = tracker.Engine.Nodes.Peek () as XElement;
+				var buf = Editor;
+				if (el != null && el.Region.End >= buf.CaretLocation && !el.IsClosed && el.IsNamed) {
+					var tag = $"</{ el.Name.FullName}>";
+					using (var undo = buf.OpenUndoGroup ()) {
+						buf.InsertText (buf.CaretOffset, tag);
+						buf.CaretOffset -= tag.Length;
 					}
 				}
 			}
