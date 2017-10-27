@@ -75,9 +75,7 @@ namespace MonoDevelop.UnitTesting
 				singleTestSuffix =  GetSuxffix (unitTestGroup);
 
 			var title = RemoveGenericArgument (test.Title);
-			title = String.IsNullOrEmpty (singleTestSuffix) ?
-						  test.Title :
-						  $"{test.Title}{singleTestSuffix}";
+			title =  test.Title + singleTestSuffix ;
 
 			if (test.Status == TestStatus.Running) {
 				nodeInfo.Label = Ambience.EscapeText (title);
@@ -104,14 +102,17 @@ namespace MonoDevelop.UnitTesting
 
 		static string GetSuxffix (UnitTestGroup unitTestGroup)
 		{
-			var result = String.Empty;
+			var stringBuilder = new StringBuilder();
 			if (!(unitTestGroup is SolutionFolderTestGroup))
-				if (ContainsSingleUnitTestGroup (unitTestGroup)) {
-					    var testCollection = unitTestGroup.Tests;
-						var singleChildTestGroup = testCollection.FirstOrDefault () as UnitTestGroup;
-						result = $".{singleChildTestGroup.Title}{GetSuxffix (singleChildTestGroup)}";
-				}
-			return result;
+				while (unitTestGroup != null)
+					if (ContainsSingleUnitTestGroup (unitTestGroup)) {
+						var testCollection = unitTestGroup.Tests;
+						var singleChildTestGroup = testCollection [0] as UnitTestGroup;
+						stringBuilder.Append(".").Append (singleChildTestGroup.Title);
+						unitTestGroup = singleChildTestGroup;
+					} else
+						unitTestGroup = null;
+			return stringBuilder.ToString ();
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -129,12 +130,9 @@ namespace MonoDevelop.UnitTesting
 
 		void BuildChildNodes (UnitTestGroup test, ITreeBuilder builder)
 		{
-			if (test == null || test.Tests == null)
-				return;
-
 			bool isSolution = test is SolutionFolderTestGroup;
 			if (!isSolution && ContainsSingleUnitTestGroup(test)) {
-				var unitTestGroup = test.Tests.First () as UnitTestGroup;
+				var unitTestGroup = test.Tests[0] as UnitTestGroup;
 				BuildChildNodes (unitTestGroup, builder);
 				return;
 			}
@@ -142,8 +140,8 @@ namespace MonoDevelop.UnitTesting
 		}
 
 		static bool ContainsSingleUnitTestGroup(UnitTestGroup test) => 
-						test.Tests.Count () == 1 &&
-		       			test.Tests.OfType<UnitTestGroup> ().Count () == 1;
+						test.Tests.Count  == 1 &&
+		       			test.Tests.OfType<UnitTestGroup> ().Count() == 1;
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
