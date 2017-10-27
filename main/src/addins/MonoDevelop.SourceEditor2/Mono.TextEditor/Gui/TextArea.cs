@@ -483,7 +483,10 @@ namespace Mono.TextEditor
 
 		void PreeditStringChanged (object sender, EventArgs e)
 		{
-			imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorCharIndex);
+			if (imContextNeedsReset)
+				preeditString = null;
+			else
+				imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorCharIndex);
 			if (!string.IsNullOrEmpty (preeditString)) {
 				if (preeditOffset < 0) {
 					preeditOffset = Caret.Offset;

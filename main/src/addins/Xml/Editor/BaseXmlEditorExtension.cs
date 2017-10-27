@@ -346,11 +346,7 @@ namespace MonoDevelop.Xml.Editor
 
 			//attribute value completion
 			//determine whether to trigger completion within attribute values quotes
-			if ((Tracker.Engine.CurrentState is XmlAttributeValueState)
-			    //trigger on the opening quote
-			    && ((Tracker.Engine.CurrentStateLength == 1 && (currentChar == '\'' || currentChar == '"'))
-			    //or trigger on first letter of value, if unforced
-			    || (forced || Tracker.Engine.CurrentStateLength == 2))) {
+			if (Tracker.Engine.CurrentState is XmlAttributeValueState) {
 				var att = (XAttribute)Tracker.Engine.Nodes.Peek ();
 
 				if (att.IsNamed) {
@@ -362,7 +358,10 @@ namespace MonoDevelop.Xml.Editor
 
 					var result = await GetAttributeValueCompletions (attributedOb, att, token);
 					if (result != null) {
-						result.TriggerWordLength = Tracker.Engine.CurrentStateLength - 1;
+						if (GetCompletionCommandOffset (out var cpos, out var wlen))
+							result.TriggerWordLength = wlen;
+						else
+							result.TriggerWordLength = 0;
 						return result;
 					}
 					return null;
@@ -380,41 +379,49 @@ namespace MonoDevelop.Xml.Editor
 				if (attributedOb == null || !attributedOb.Name.IsValid)
 					return null;
 
-				var currentIsNameStart = XmlNameState.IsValidNameStart (currentChar);
-				var currentIsWhiteSpace = char.IsWhiteSpace (currentChar);
-				var previousIsWhiteSpace = char.IsWhiteSpace (previousChar);
-
-				bool shouldTriggerAttributeCompletion = forced
-					|| (currentIsNameStart && previousIsWhiteSpace)
-					|| currentIsWhiteSpace;
-				if (!shouldTriggerAttributeCompletion)
-					return null;
-
-				var existingAtts = new Dictionary<string,string> (StringComparer.OrdinalIgnoreCase);
-
+				// Parse rest of element to get all attributes
+				for (int i = Tracker.Engine.Position; i < Editor.Length; i++) {
+					Tracker.Engine.Push (Editor.GetCharAt (i));
+					var currentState = Tracker.Engine.CurrentState;
+					if (currentState is XmlAttributeState ||
+						currentState is XmlAttributeValueState ||
+						currentState is XmlTagState ||
+						(currentState is XmlNameState && currentState.Parent is XmlAttributeState))
+						continue;
+					break;
+				}
+				var existingAtts = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 				foreach (XAttribute att in attributedOb.Attributes) {
 					existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
 				}
-
+				// Update engine to Caret position(revert parsed attributes from above)
+				Tracker.UpdateEngine ();
 				var result = await GetAttributeCompletions (attributedOb, existingAtts, token);
 				if (result != null) {
-					if (!forced && currentIsNameStart)
-						result.TriggerWordLength = 1;
-					result.AutoSelect = !currentIsWhiteSpace;
+					if (GetCompletionCommandOffset (out var cpos, out var wlen))
+						result.TriggerWordLength = wlen;
+					else
+						result.TriggerWordLength = 0;
+					result.AutoSelect = !char.IsWhiteSpace (currentChar);
 					result.AddKeyHandler (new AttributeKeyHandler());
 					return result;
 				}
 			}
 
 			//element completion
-			if (currentChar == '<' && tracker.Engine.CurrentState is XmlRootState ||
-				(tracker.Engine.CurrentState is XmlNameState && forced)) {
+			if ((currentChar == '<' && tracker.Engine.CurrentState is XmlRootState) ||
+				tracker.Engine.CurrentState is XmlNameState) {
 				var list = await GetElementCompletions (token);
 				if (completionContext.TriggerLine == 1 && completionContext.TriggerOffset == 1) {
 					var encoding = Editor.Encoding.WebName;
 					list.Add (new BaseXmlCompletionData($"?xml version=\"1.0\" encoding=\"{encoding}\" ?>"));
 				}
 				AddCloseTag (list, Tracker.Engine.Nodes);
+				if (tracker.Engine.CurrentState is XmlNameState)
+					if (GetCompletionCommandOffset (out var cpos, out var wlen))
+						list.TriggerWordLength = wlen;
+					else
+						list.TriggerWordLength = 0;
 				return list.Count > 0 ? list : null;
 			}
 
@@ -950,7 +957,7 @@ namespace MonoDevelop.Xml.Editor
 			var path = new List<PathEntry> ();
 			if (ownerProjects.Count > 1) {
 				// Current project if there is more than one
-				path.Add (new PathEntry (ImageService.GetIcon (DocumentContext.Project.StockIcon), GLib.Markup.EscapeText (DocumentContext.Project.Name)) { Tag = DocumentContext.Project });
+				path.Add (new PathEntry (ImageService.GetIcon (DocumentContext.Project.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (DocumentContext.Project.Name)) { Tag = DocumentContext.Project });
 			}
 			if (l != null) {
 				for (int i = 0; i < l.Count; i++) {

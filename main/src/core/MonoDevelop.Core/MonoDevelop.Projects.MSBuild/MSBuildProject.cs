@@ -638,7 +638,7 @@ namespace MonoDevelop.Projects.MSBuild
 			AssertCanModify ();
 			if (import.ParentProject != this)
 				throw new InvalidOperationException ("Import object does not belong to this project");
-			
+
 			if (import.ParentObject == this) {
 				import.RemoveIndent ();
 				ChildNodes = ChildNodes.Remove (import);
@@ -683,6 +683,11 @@ namespace MonoDevelop.Projects.MSBuild
 			return mainProjectInstance.FindGlobItemsIncludingFile (include);
 		}
 
+		internal IEnumerable<MSBuildItem> FindUpdateGlobItemsIncludingFile (string include, MSBuildItem globItem)
+		{
+			return mainProjectInstance.FindUpdateGlobItemsIncludingFile (include, globItem);
+		}
+
 		public MSBuildPropertyGroup GetGlobalPropertyGroup ()
 		{
 			return PropertyGroups.FirstOrDefault (g => g.Condition.Length == 0);
@@ -696,7 +701,7 @@ namespace MonoDevelop.Projects.MSBuild
 		public MSBuildPropertyGroup AddNewPropertyGroup (bool insertAtEnd = true, MSBuildObject beforeObject = null)
 		{
 			var group = new MSBuildPropertyGroup ();
-			AddPropertyGroup (group, insertAtEnd);
+			AddPropertyGroup (group, insertAtEnd, beforeObject);
 			return group;
 		}
 

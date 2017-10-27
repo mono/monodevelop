@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Diagnostics;
 using System.Xml;
 using NUnit.Framework;
 using UnitTests;
@@ -102,6 +103,13 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// ProjectName.nuget.g.props and ProjectName.nuget.g.targets files are imported by Microsoft.Common.props
+		/// and Microsoft.Common.targets that are included with Mono:
+		///
+		/// /Library/Frameworks/Mono.framework/Versions/5.4.0/lib/mono/xbuild/15.0/Microsoft.Common.props
+		/// /Library/Frameworks/Mono.framework/Versions/5.4.0/lib/mono/msbuild/15.0/bin/Microsoft.Common.targets
+		/// </summary>
 		[Test]
 		public async Task GeneratedNuGetMSBuildFilesAreImportedWithDotNetCoreProject ()
 		{
@@ -274,6 +282,82 @@ namespace MonoDevelop.Projects
 
 			Assert.That (capabilities, Contains.Item ("TestCapabilityNetStandard"));
 			Assert.That (capabilities, Has.None.EqualTo ("TestCapabilityNetCoreApp"));
+
+			sol.Dispose ();
+		}
+
+		/// <summary>
+		/// Tests that metadata from the imported file globs for the Compile update items is not saved
+		/// in the main project file. The DependentUpon property was being saved with the evaluated
+		/// filename.
+		/// 
+		/// Compile Update="**\*.xaml$(DefaultLanguageSourceExtension)" DependentUpon="%(Filename)" SubType="Code"
+		/// </summary>
+		[Test]
+		public async Task SaveNetStandardProjectWithXamarinFormsVersion24PackageReference ()
+		{
+			FilePath solFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms.sln");
+
+			var process = Process.Start ("msbuild", $"/t:Restore {solFile}");
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+			Assert.AreEqual (0, process.ExitCode);
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (Project)sol.Items [0];
+			string expectedProjectXml = File.ReadAllText (p.FileName);
+
+			var xamlCSharpFile = p.Files.Single (fi => fi.FilePath.FileName == "MyPage.xaml.cs");
+			var xamlFile = p.Files.Single (fi => fi.FilePath.FileName == "MyPage.xaml");
+
+			Assert.AreEqual (xamlFile, xamlCSharpFile.DependsOnFile);
+
+			// Ensure the expanded %(FileName) does not get added to the main project on saving.
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (expectedProjectXml, projectXml);
+		}
+
+		[Test]
+		public async Task AddFiles_NetStandardProjectWithXamarinFormsVersion24PackageReference ()
+		{
+			FilePath solFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms.sln");
+
+			var process = Process.Start ("msbuild", $"/t:Restore {solFile}");
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+			Assert.AreEqual (0, process.ExitCode);
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (Project)sol.Items [0];
+			string expectedProjectXml = File.ReadAllText (p.FileName);
+
+			// Add new xaml files.
+			var xamlFileName1 = p.BaseDirectory.Combine ("MyView1.xaml");
+			File.WriteAllText (xamlFileName1, "xaml1");
+			var xamlCSharpFileName = p.BaseDirectory.Combine ("MyView1.xaml.cs");
+			File.WriteAllText (xamlCSharpFileName, "csharpxaml");
+
+			// Xaml file with Generator and Subtype set to match that defined in the glob.
+			var xamlFile1 = new ProjectFile (xamlFileName1, BuildAction.EmbeddedResource);
+			xamlFile1.Generator = "MSBuild:UpdateDesignTimeXaml";
+			xamlFile1.ContentType = "Designer";
+			p.Files.Add (xamlFile1);
+
+			var xamlCSharpFile = p.AddFile (xamlCSharpFileName);
+			xamlCSharpFile.DependsOn = "MyView1.xaml";
+
+			// The project file should be unchanged after saving.
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (expectedProjectXml, projectXml);
+
+			// Save again. A second save was adding an include for the .xaml file whilst
+			// the first save was not.
+			await p.SaveAsync (Util.GetMonitor ());
+
+			projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (expectedProjectXml, projectXml);
 
 			sol.Dispose ();
 		}

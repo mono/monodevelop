@@ -185,5 +185,19 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (0, data.SelectionRange.Offset);
 			Assert.AreEqual (data.Document.Length, data.SelectionRange.EndOffset);
 		}
+
+		[Test]
+		public void TestSelectionDisablesCurrentLineHighlighting ()
+		{
+			TextEditorData data = Create (
+				@"1
+2
+3
+");
+			data.HighlightCaretLine = true;
+			Assert.AreEqual (true, data.HighlightCaretLine);
+			data.SetSelectLines (1, 4);
+			Assert.AreEqual (false, data.HighlightCaretLine);
+		}
 	}
 }

@@ -458,12 +458,16 @@ namespace MonoDevelop.CSharp.Completion
 
 			var result = new CompletionDataList ();
 			result.TriggerWordLength = triggerWordLength;
-
+			CSharpCompletionData defaultCompletionData = null;
 			foreach (var item in completionList.Items) {
 				if (string.IsNullOrEmpty (item.DisplayText))
 					continue;
 				var data = new CSharpCompletionData (analysisDocument, triggerSnapshot, cs, item);
 				result.Add (data);
+				if (item.Rules.MatchPriority > 0) {
+					if (defaultCompletionData == null || defaultCompletionData.Rules.MatchPriority < item.Rules.MatchPriority)
+						defaultCompletionData = data;
+				}
 			}
 
 			result.AutoCompleteUniqueMatch = (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand);
@@ -472,9 +476,12 @@ namespace MonoDevelop.CSharp.Completion
 			var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
 			var syntaxContext = CSharpSyntaxContext.CreateContext (DocumentContext.RoslynWorkspace, semanticModel, completionContext.TriggerOffset, token);
 
-			if (forceSymbolCompletion || !syntaxContext.LeftToken.IsKind (SyntaxKind.DotToken)) {
+			if (forceSymbolCompletion || IdeApp.Preferences.AddImportedItemsToCompletionList) {
 				AddImportCompletionData (syntaxContext, result, semanticModel, completionContext.TriggerOffset, token);
 			}
+
+			if (defaultCompletionData != null)
+				result.DefaultCompletionString = defaultCompletionData.DisplayText;
 
 			if (completionList.SuggestionModeItem != null) {
 				result.DefaultCompletionString = completionList.SuggestionModeItem.DisplayText;

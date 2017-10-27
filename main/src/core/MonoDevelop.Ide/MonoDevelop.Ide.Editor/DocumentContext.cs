@@ -104,6 +104,13 @@ namespace MonoDevelop.Ide.Editor
 			get;
 		}
 
+		public event EventHandler AnalysisDocumentChanged;
+
+		protected virtual void OnAnalysisDocumentChanged (global::System.EventArgs e)
+		{
+			AnalysisDocumentChanged?.Invoke (this, e);
+		}
+
 		/// <summary>
 		/// The parsed document. Contains all syntax information about the text.
 		/// </summary>

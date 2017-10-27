@@ -268,6 +268,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 			Accessible.RemoveAccessibleElement (tab.Accessible);
 
+			tab.Dispose ();
+
 			QueueResize ();
 
 			UpdateAccessibilityTabs ();

@@ -44,13 +44,15 @@ namespace MonoDevelop.Projects.MSBuild
 
 	class PathValueType: MSBuildValueType
 	{
+		static readonly char [] pathSep = { '\\' };
+
 		public override bool Equals (string ob1, string ob2)
 		{
 			if (base.Equals (ob1, ob2))
 				return true;
 			if (ob1 == null || ob2 == null)
 				return string.IsNullOrEmpty (ob1) && string.IsNullOrEmpty (ob2);//Empty or null path is same thing
-			return ob1.TrimEnd ('\\') == ob2.TrimEnd ('\\');
+			return ob1.TrimEnd (pathSep) == ob2.TrimEnd (pathSep);
 		}
 	}
 
@@ -64,10 +66,12 @@ namespace MonoDevelop.Projects.MSBuild
 
 	class GuidValueType: MSBuildValueType
 	{
+		static readonly char [] guidEnclosing = { '{', '}' };
+
 		public override bool Equals (string ob1, string ob2)
 		{
-			ob1 = ob1.Trim ('{', '}');
-			ob2 = ob2.Trim ('{', '}');
+			ob1 = ob1.Trim (guidEnclosing);
+			ob2 = ob2.Trim (guidEnclosing);
 			return ob1.Equals (ob2, StringComparison.OrdinalIgnoreCase);
 		}
 	}

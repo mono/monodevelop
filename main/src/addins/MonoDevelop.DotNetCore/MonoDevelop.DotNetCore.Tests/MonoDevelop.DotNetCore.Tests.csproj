@@ -41,6 +41,11 @@
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreMSBuildProjectTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreVersionTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreSdkTests.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTemplateTests.cs" />
+    <Compile Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.Templates\TemplateParameter.cs">
+      <Link>MonoDevelop.DotNetCore.Tests\TemplateParameter.cs</Link>
+    </Compile>
+    <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreTestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
@@ -70,6 +75,11 @@
     <ProjectReference Include="..\..\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.csproj">
       <Project>{F218643D-2E74-4309-820E-206A54B7133F}</Project>
       <Name>MonoDevelop.PackageManagement</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

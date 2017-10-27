@@ -99,14 +99,30 @@ namespace MonoDevelop.Components.MainToolbar
 
 			executionTargetsChanged = (sender, e) => UpdateCombos ();
 
-			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => StatusBar.ShowReady ();
-			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
-			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateCombos ();
-
-			IdeApp.Workspace.SolutionLoaded += (sender, e) => UpdateCombos ();
-			IdeApp.Workspace.SolutionUnloaded += (sender, e) => UpdateCombos ();
-
 			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
+
+			IdeApp.Workspace.FirstWorkspaceItemRestored += (sender, e) => {
+				IdeApp.Workspace.ConfigurationsChanged += HandleUpdateCombos;
+				IdeApp.Workspace.ActiveConfigurationChanged += HandleUpdateCombos;
+
+				IdeApp.Workspace.SolutionLoaded += HandleSolutionLoaded;
+				IdeApp.Workspace.SolutionUnloaded += HandleUpdateCombos;
+				IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleUpdateCombos;
+
+				UpdateCombos ();
+			};
+
+			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => {
+				IdeApp.Workspace.ConfigurationsChanged -= HandleUpdateCombos;
+				IdeApp.Workspace.ActiveConfigurationChanged -= HandleUpdateCombos;
+
+				IdeApp.Workspace.SolutionLoaded -= HandleSolutionLoaded;
+				IdeApp.Workspace.SolutionUnloaded -= HandleUpdateCombos;
+
+				IdeApp.ProjectOperations.CurrentSelectedSolutionChanged -= HandleUpdateCombos;
+
+				StatusBar.ShowReady ();
+			};
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
@@ -528,21 +544,18 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		static IEnumerable<ExecutionTarget> GetExecutionTargets (string configuration)
+		void HandleSolutionLoaded (object sender, EventArgs e)
 		{
-			var sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
-#pragma warning disable CS0618 // Type or member is obsolete
-			if (sol == null || !sol.SingleStartup || sol.StartupItem == null)
-#pragma warning restore CS0618 // Type or member is obsolete
-				return new ExecutionTarget [0];
-			var conf = sol.Configurations[configuration];
-			if (conf == null)
-				return new ExecutionTarget [0];
+			if (currentSolution != null)
+				return;
 
-			var project = sol.StartupItem;
-			var confSelector = conf.Selector;
+			UpdateCombos ();
+		}
 
-			return project.GetExecutionTargets (confSelector);
+		void HandleUpdateCombos (object sender, EventArgs e)
+		{
+
+			UpdateCombos ();
 		}
 
 		void HandleCurrentSelectedSolutionChanged (object sender, SolutionEventArgs e)
@@ -562,8 +575,6 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 
 			TrackStartupProject ();
-
-			UpdateCombos ();
 		}
 
 		void TrackStartupProject ()

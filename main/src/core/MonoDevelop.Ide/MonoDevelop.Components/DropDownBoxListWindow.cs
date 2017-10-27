@@ -110,7 +110,8 @@ namespace MonoDevelop.Components
 
 		public void SelectItem (object item)
 		{
-			for (int i = 0; i < DataProvider.IconCount; i++) {
+			int count = DataProvider.IconCount;
+			for (int i = 0; i < count; i++) {
 				if (DataProvider.GetTag (i) == item) {
 					list.Selection = i;
 					vScrollbar.Vadjustment.Value = Math.Max (0, i * list.RowHeight - vScrollbar.Vadjustment.PageSize / 2);
@@ -122,7 +123,8 @@ namespace MonoDevelop.Components
 		void SwitchToSeletedWord ()
 		{
 			string selection = list.WordSelection.ToString ();
-			for (int i = 0; i < DataProvider.IconCount; i++) {
+			int count = DataProvider.IconCount;
+			for (int i = 0; i < count; i++) {
 				if (DataProvider.GetMarkup (i).StartsWith (selection, StringComparison.OrdinalIgnoreCase)) {
 					list.Selection = i;
 					list.WordSelection.Append (selection);
@@ -257,6 +259,7 @@ namespace MonoDevelop.Components
 				}
 			}
 
+			TextElement[] textElements;
 			void CalcAccessibility ()
 			{
 				var columnElement = new AtkCocoaHelper.AccessibilityElementProxy ();
@@ -264,7 +267,9 @@ namespace MonoDevelop.Components
 				columnElement.SetRole (AtkCocoa.Roles.AXColumn);
 				Accessible.AddAccessibleElement (columnElement);
 
-				for (int i = 0; i < win.DataProvider.IconCount; i++) {
+				int count = win.DataProvider.IconCount;
+				textElements = new TextElement[count];
+				for (int i = 0; i < count; i++) {
 					var rowElement = new AtkCocoaHelper.AccessibilityElementProxy ();
 					rowElement.GtkParent = this;
 					rowElement.SetRole (AtkCocoa.Roles.AXRow);
@@ -276,7 +281,7 @@ namespace MonoDevelop.Components
 					columnElement.AddAccessibleChild (cellElement);
 					rowElement.AddAccessibleChild (cellElement);
 
-					var textElement = new TextElement ();
+					var textElement = textElements[i] = new TextElement ();
 					textElement.RowIndex = i;
 					textElement.PerformPress += PerformPress;
 					textElement.GtkParent = this;
@@ -287,7 +292,7 @@ namespace MonoDevelop.Components
 
 			void PerformPress (object sender, EventArgs args)
 			{
-				var element = sender as TextElement;
+				var element = (TextElement)sender;
 				win.DataProvider.ActivateItem (element.RowIndex);
 			}
 
@@ -313,6 +318,13 @@ namespace MonoDevelop.Components
 
 			protected override void OnDestroyed ()
 			{
+				if (textElements != null) {
+					foreach (var textElement in textElements) {
+						textElement.PerformPress -= PerformPress;
+					}
+					textElements = null;
+				}
+
 				if (layout != null) {
 					layout.Dispose ();
 					layout = null;
@@ -527,8 +539,9 @@ namespace MonoDevelop.Components
 					return 0;
 				int longest = 0;
 				string longestText = win.DataProvider.GetMarkup (0) ?? "";
-				
-				for (int i = 1; i < win.DataProvider.IconCount; i++) {
+
+				int count = win.DataProvider.IconCount;
+				for (int i = 1; i < count; i++) {
 					string curText = win.DataProvider.GetMarkup (i) ?? "";
 					if (curText.Length > longestText.Length) {
 						longestText = curText;

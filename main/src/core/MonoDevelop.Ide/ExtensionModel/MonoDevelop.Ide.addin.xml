@@ -408,6 +408,8 @@
 		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Features.dll" />
 		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll" />
 		<Assembly file="MonoDevelop.Ide.dll"/>
+		<Assembly file="Microsoft.VisualStudio.Text.Implementation.dll"/>
+		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.dll"/>
 	</Extension>
 
 </ExtensionModel>

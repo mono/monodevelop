@@ -44,63 +44,72 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	{
 		readonly DocumentId documentId;
 		readonly MonoDevelopWorkspace workspace;
-		readonly string defaultScope;
-		readonly ScopeStack defaultScopeStack;
+		readonly ScopeStack defaultScope;
+		readonly ScopeStack userScope;
 
-		readonly Dictionary<string, string> classificationMap = new Dictionary<string, string> ();
+		readonly Dictionary<string, ScopeStack> classificationMap;
+
+		public DocumentId DocumentId => documentId;
 
 		public RoslynClassificationHighlighting (MonoDevelopWorkspace workspace, DocumentId documentId, string defaultScope)
 		{
 			this.workspace = workspace;
 			this.documentId = documentId;
-			this.defaultScope = defaultScope;
-			this.defaultScopeStack = new ScopeStack (defaultScope);
+			this.defaultScope = new ScopeStack (defaultScope);
+			this.userScope = this.defaultScope.Push (EditorThemeColors.UserTypes);
 
-			classificationMap[ClassificationTypeNames.Comment] = "comment." + defaultScope;
-			classificationMap[ClassificationTypeNames.ExcludedCode] = "comment.excluded." + defaultScope;
-			classificationMap[ClassificationTypeNames.Identifier] = defaultScope;
-			classificationMap[ClassificationTypeNames.Keyword] = "keyword." + defaultScope;
-			classificationMap[ClassificationTypeNames.NumericLiteral] = "constant.numeric." + defaultScope;
-			classificationMap[ClassificationTypeNames.Operator] = defaultScope;
-			classificationMap[ClassificationTypeNames.PreprocessorKeyword] = "meta.preprocessor." + defaultScope;
-			classificationMap[ClassificationTypeNames.StringLiteral] = "string." + defaultScope;
-			classificationMap[ClassificationTypeNames.WhiteSpace] = "text." + defaultScope;
-			classificationMap[ClassificationTypeNames.Text] = "text." + defaultScope;
-		
-			classificationMap[ClassificationTypeNames.PreprocessorText] = "meta.preprocessor.region.name." + defaultScope;
-			classificationMap[ClassificationTypeNames.Punctuation] = "punctuation." + defaultScope;
-			classificationMap[ClassificationTypeNames.VerbatimStringLiteral] = "string.verbatim." + defaultScope;
+			classificationMap = new Dictionary<string, ScopeStack> {
+				[ClassificationTypeNames.Comment] = MakeScope ("comment." + defaultScope),
+				[ClassificationTypeNames.ExcludedCode] = MakeScope ("comment.excluded." + defaultScope),
+				[ClassificationTypeNames.Identifier] = MakeScope (defaultScope),
+				[ClassificationTypeNames.Keyword] = MakeScope ("keyword." + defaultScope),
+				[ClassificationTypeNames.NumericLiteral] = MakeScope ("constant.numeric." + defaultScope),
+				[ClassificationTypeNames.Operator] = MakeScope (defaultScope),
+				[ClassificationTypeNames.PreprocessorKeyword] = MakeScope ("meta.preprocessor." + defaultScope),
+				[ClassificationTypeNames.StringLiteral] = MakeScope ("string." + defaultScope),
+				[ClassificationTypeNames.WhiteSpace] = MakeScope ("text." + defaultScope),
+				[ClassificationTypeNames.Text] = MakeScope ("text." + defaultScope),
 
-			classificationMap[ClassificationTypeNames.ClassName] = "entity.name.class." + defaultScope;
-			classificationMap[ClassificationTypeNames.DelegateName] = "entity.name.delegate." + defaultScope;
-			classificationMap[ClassificationTypeNames.EnumName] = "entity.name.enum." + defaultScope;
-			classificationMap[ClassificationTypeNames.InterfaceName] = "entity.name.interface." + defaultScope;
-			classificationMap[ClassificationTypeNames.ModuleName] = "entity.name.module." + defaultScope;
-			classificationMap[ClassificationTypeNames.StructName] = "entity.name.struct." + defaultScope;
-			classificationMap[ClassificationTypeNames.TypeParameterName] = "entity.name.typeparameter." + defaultScope;
+				[ClassificationTypeNames.PreprocessorText] = MakeScope ("meta.preprocessor.region.name." + defaultScope),
+				[ClassificationTypeNames.Punctuation] = MakeScope ("punctuation." + defaultScope),
+				[ClassificationTypeNames.VerbatimStringLiteral] = MakeScope ("string.verbatim." + defaultScope),
 
-			classificationMap[ClassificationTypeNames.XmlDocCommentAttributeName] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentAttributeQuotes] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentAttributeValue] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentCDataSection] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentComment] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentDelimiter] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentEntityReference] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentName] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentProcessingInstruction] = "comment.line.documentation." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlDocCommentText] = "comment.line.documentation." + defaultScope;
+				[ClassificationTypeNames.ClassName] = MakeScope ("entity.name.class." + defaultScope),
+				[ClassificationTypeNames.DelegateName] = MakeScope ("entity.name.delegate." + defaultScope),
+				[ClassificationTypeNames.EnumName] = MakeScope ("entity.name.enum." + defaultScope),
+				[ClassificationTypeNames.InterfaceName] = MakeScope ("entity.name.interface." + defaultScope),
+				[ClassificationTypeNames.ModuleName] = MakeScope ("entity.name.module." + defaultScope),
+				[ClassificationTypeNames.StructName] = MakeScope ("entity.name.struct." + defaultScope),
+				[ClassificationTypeNames.TypeParameterName] = MakeScope ("entity.name.typeparameter." + defaultScope),
 
-			classificationMap[ClassificationTypeNames.XmlLiteralAttributeName] = "entity.other.attribute-name." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralAttributeQuotes] = "punctuation.definition.string." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralAttributeValue] = "string.quoted." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralCDataSection] = "text." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralComment] = "comment.block." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralDelimiter] = defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralEmbeddedExpression] = defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralEntityReference] = defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralName] = "entity.name.tag.localname." + defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralProcessingInstruction] = defaultScope;
-			classificationMap[ClassificationTypeNames.XmlLiteralText] = "text." + defaultScope;
+				[ClassificationTypeNames.XmlDocCommentAttributeName] = MakeScope ("comment.line.documentation." + defaultScope),
+				[ClassificationTypeNames.XmlDocCommentAttributeQuotes] = MakeScope ("comment.line.documentation." + defaultScope),
+				[ClassificationTypeNames.XmlDocCommentAttributeValue] = MakeScope ("comment.line.documentation." + defaultScope),
+				[ClassificationTypeNames.XmlDocCommentCDataSection] = MakeScope ("comment.line.documentation." + defaultScope),
+				[ClassificationTypeNames.XmlDocCommentComment] = MakeScope ("comment.line.documentation." + defaultScope),
+				[ClassificationTypeNames.XmlDocCommentDelimiter] = MakeScope ("comment.line.documentation." + defaultScope),
+				[ClassificationTypeNames.XmlDocCommentEntityReference] = MakeScope ("comment.line.documentation." + defaultScope),
+				[ClassificationTypeNames.XmlDocCommentName] = MakeScope ("comment.line.documentation." + defaultScope),
+				[ClassificationTypeNames.XmlDocCommentProcessingInstruction] = MakeScope ("comment.line.documentation." + defaultScope),
+				[ClassificationTypeNames.XmlDocCommentText] = MakeScope ("comment.line.documentation." + defaultScope),
+
+				[ClassificationTypeNames.XmlLiteralAttributeName] = MakeScope ("entity.other.attribute-name." + defaultScope),
+				[ClassificationTypeNames.XmlLiteralAttributeQuotes] = MakeScope ("punctuation.definition.string." + defaultScope),
+				[ClassificationTypeNames.XmlLiteralAttributeValue] = MakeScope ("string.quoted." + defaultScope),
+				[ClassificationTypeNames.XmlLiteralCDataSection] = MakeScope ("text." + defaultScope),
+				[ClassificationTypeNames.XmlLiteralComment] = MakeScope ("comment.block." + defaultScope),
+				[ClassificationTypeNames.XmlLiteralDelimiter] = MakeScope (defaultScope),
+				[ClassificationTypeNames.XmlLiteralEmbeddedExpression] = MakeScope (defaultScope),
+				[ClassificationTypeNames.XmlLiteralEntityReference] = MakeScope (defaultScope),
+				[ClassificationTypeNames.XmlLiteralName] = MakeScope ("entity.name.tag.localname." + defaultScope),
+				[ClassificationTypeNames.XmlLiteralProcessingInstruction] = MakeScope (defaultScope),
+				[ClassificationTypeNames.XmlLiteralText] = MakeScope ("text." + defaultScope),
+			};
+		}
+
+		ScopeStack MakeScope (string scope)
+		{
+			return defaultScope.Push (scope);
 		}
 
 		protected virtual void OnHighlightingStateChanged (global::MonoDevelop.Ide.Editor.LineEventArgs e)
@@ -112,26 +121,32 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public async Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
 		{
-			List<ColoredSegment> coloredSegments = new List<ColoredSegment> ();
+			var document = workspace.GetDocument (DocumentId);
+			if (document == null)
+				return await DefaultSyntaxHighlighting.Instance.GetHighlightedLineAsync (line, cancellationToken);
+
+			// Empirical testing shows that we end up not reallocating the list if we pre-allocate that we have at least 2 times more colored segments than classifiers per line.
+			// Current Roslyn API does not allow for a Count getting without iteration, so leave it with a magic number which yields similar results.
+			var coloredSegments = new List<ColoredSegment> (32);
 
 			int offset = line.Offset;
 			int length = line.Length;
 			var span = new TextSpan (offset, length);
 
-			var classifications = Classifier.GetClassifiedSpans (await workspace.GetDocument (documentId).GetSemanticModelAsync (), span, workspace, cancellationToken);
+
+			var classifications = Classifier.GetClassifiedSpans (await document.GetSemanticModelAsync (), span, workspace, cancellationToken);
 
 			int lastClassifiedOffsetEnd = offset;
 			ScopeStack scopeStack;
 
 			foreach (var curSpan in classifications) {
 				if (curSpan.TextSpan.Start > lastClassifiedOffsetEnd) {
-					scopeStack = defaultScopeStack.Push (EditorThemeColors.UserTypes);
+					scopeStack = userScope;
 					ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - offset, curSpan.TextSpan.Start - lastClassifiedOffsetEnd, scopeStack);
 					coloredSegments.Add (whitespaceSegment);
 				}
 
-				string styleName = GetStyleNameFromClassificationType (curSpan.ClassificationType);
-				scopeStack = defaultScopeStack.Push (styleName);
+				scopeStack = GetStyleScopeStackFromClassificationType (curSpan.ClassificationType);
 				ColoredSegment curColoredSegment = new ColoredSegment (curSpan.TextSpan.Start - offset, curSpan.TextSpan.Length, scopeStack);
 				coloredSegments.Add (curColoredSegment);
 
@@ -139,7 +154,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 
 			if (offset + length > lastClassifiedOffsetEnd) {
-				scopeStack = defaultScopeStack.Push (EditorThemeColors.UserTypes);
+				scopeStack = userScope;
 				ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - offset, offset + length - lastClassifiedOffsetEnd, scopeStack);
 				coloredSegments.Add (whitespaceSegment);
 			}
@@ -147,9 +162,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new HighlightedLine (line, coloredSegments);
 		}
 
-		string GetStyleNameFromClassificationType (string classificationType)
+		ScopeStack GetStyleScopeStackFromClassificationType (string classificationType)
 		{
-			string result;
+			ScopeStack result;
 			if (classificationMap.TryGetValue (classificationType, out result))
 				return result;
 			return defaultScope;
@@ -157,7 +172,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
-			return Task.FromResult (defaultScopeStack);
+			return Task.FromResult (defaultScope);
 		}
 
 		public void Dispose ()

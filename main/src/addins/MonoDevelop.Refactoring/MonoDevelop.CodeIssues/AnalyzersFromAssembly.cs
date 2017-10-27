@@ -78,6 +78,7 @@ namespace MonoDevelop.CodeIssues
 				case "Microsoft.CodeAnalysis.Features":
 				case "Microsoft.CodeAnalysis.VisualBasic.Features":
 				case "Microsoft.CodeAnalysis.CSharp.Features":
+				case "ClrHeapAllocationAnalyzer":
 					break;
 				//blacklist
 				case "FSharpBinding":

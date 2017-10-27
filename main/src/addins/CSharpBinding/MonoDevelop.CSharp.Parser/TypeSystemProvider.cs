@@ -42,7 +42,7 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			var fileName = options.FileName;
 			var project = options.Project;
-			var result = new CSharpParsedDocument (fileName);
+			var result = new CSharpParsedDocument (options, fileName);
 
 			if (project != null) {
 				
