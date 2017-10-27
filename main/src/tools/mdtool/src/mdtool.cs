@@ -42,6 +42,7 @@ using System.Threading.Tasks;
 
 class MonoDevelopProcessHost
 {
+	[STAThread]
 	public static int Main (string[] args)
 	{
 		try {
