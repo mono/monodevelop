@@ -254,10 +254,13 @@ namespace MonoDevelop.CodeActions
 				if (!suppressionProvider.CanBeSuppressedOrUnsuppressed (diag)) {
 					continue;
 				}
-
-				var fixes = await suppressionProvider.GetSuppressionsAsync (editor.DocumentContext.AnalysisDocument, span, new [] { diag }, default (CancellationToken)).ConfigureAwait (false);
-				foreach (var fix in fixes) {
-					AddFixMenuItem (editor, menu, fix.Action);
+				try {
+					var fixes = await suppressionProvider.GetSuppressionsAsync (editor.DocumentContext.AnalysisDocument, span, new [] { diag }, default (CancellationToken)).ConfigureAwait (false);
+					foreach (var fix in fixes) {
+						AddFixMenuItem (editor, menu, fix.Action);
+					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while adding fixes", e);
 				}
 			}
 		}
@@ -387,20 +390,9 @@ namespace MonoDevelop.CodeActions
 
 				var oldSolution = documentContext.AnalysisDocument.Project.Solution;
 				var updatedSolution = oldSolution;
-				if (RefactoringService.OptionSetCreation != null)
-					documentContext.RoslynWorkspace.Options = RefactoringService.OptionSetCreation (editor, documentContext);
 				using (var undo = editor.OpenUndoGroup ()) {
-					foreach (var operation in await act.GetOperationsAsync (token)) {
-						var applyChanges = operation as ApplyChangesOperation;
-						if (applyChanges == null) {
-							operation.TryApply (documentContext.RoslynWorkspace, new RoslynProgressTracker (), token);
-							continue;
-						}
-						if (updatedSolution == oldSolution) {
-							updatedSolution = applyChanges.ChangedSolution;
-						}
-						operation.TryApply (documentContext.RoslynWorkspace, new RoslynProgressTracker (), token);
-					}
+					updatedSolution = await act.GetChangedSolutionAsync (new RoslynProgressTracker (), token);
+					documentContext.RoslynWorkspace.TryApplyChanges (updatedSolution, new RoslynProgressTracker ());
 				}
 				await TryStartRenameSession (documentContext.RoslynWorkspace, oldSolution, updatedSolution, token);
 			}
