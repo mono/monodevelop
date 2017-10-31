@@ -14,7 +14,7 @@
 
 	<Extension path="/MonoDevelop/Ide/Templates">
 		<Template
-			id="Microsoft.AzureFunctions.ProjectTemplate.CSharp"
+			id="Microsoft.AzureFunctions.ProjectTemplate.CSharp.2.x"
 			_overrideDescription="Creates a new Azure Functions project."
 			path="Templates/Microsoft.AzureFunctions.ProjectTemplates.nupkg"
 			category="cloud/general/general"
