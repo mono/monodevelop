@@ -22,6 +22,14 @@
 			imageId="md-project-azurefunctions"
 		/>
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ItemTemplates">
+		<Template
+			id="Azure.Function.CSharp.BlobTrigger"
+			_overrideName="Blob trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
 		<Image id="md-project-azurefunctions" resource="project-azurefunctions-template.png" />
