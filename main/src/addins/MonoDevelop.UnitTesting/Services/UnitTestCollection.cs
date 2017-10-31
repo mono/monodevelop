@@ -35,9 +35,9 @@ namespace MonoDevelop.UnitTesting
 {
 	public class UnitTestCollection: Collection<UnitTest>
 	{
-		UnitTest owner;
+		UnitTestGroup owner;
 		
-		internal UnitTestCollection (UnitTest owner)
+		internal UnitTestCollection (UnitTestGroup owner)
 		{
 			this.owner = owner;
 		}
