@@ -53,6 +53,8 @@ namespace MonoDevelop.PackageManagement
 
 			string path = SettingsUtility.GetGlobalPackagesFolder (settings);
 			packagePathResolver = new VersionFolderPathResolver (path);
+
+			ProjectServices = new NuGetProjectServices (dotNetProject);
 		}
 
 		public Task SaveProject ()
