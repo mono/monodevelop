@@ -46,9 +46,12 @@ namespace MonoDevelop.Ide.Templates
 		List<TemplateWizard> projectTemplateWizards = new List<TemplateWizard> ();
 		List<ImageCodon> projectTemplateImages = new List<ImageCodon> ();
 
+		MicrosoftTemplateEngineItemTemplatingProvider itemTemplatingProvider;
+
 		public TemplatingService ()
 		{
 			RecentTemplates = new RecentTemplates ();
+			itemTemplatingProvider = new MicrosoftTemplateEngineItemTemplatingProvider ();
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplateCategories", OnTemplateCategoriesChanged);
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplatingProviders", OnTemplatingProvidersChanged);
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplateWizards", OnProjectTemplateWizardsChanged);
@@ -173,6 +176,21 @@ namespace MonoDevelop.Ide.Templates
 				return imageCodon.Addin.GetImageResource (imageCodon.Resource);
 			}
 			return null;
+		}
+
+		public IEnumerable<ItemTemplate> GetItemTemplates ()
+		{
+			return itemTemplatingProvider.GetTemplates ();
+		}
+
+		public IEnumerable<ItemTemplate> GetItemTemplates (Predicate<ItemTemplate> match)
+		{
+			return GetItemTemplates ().Where (template => match (template));
+		}
+
+		public Task ProcessTemplate (ItemTemplate template, Project project, NewItemConfiguration config)
+		{
+			return itemTemplatingProvider.ProcessTemplate (template, project, config);
 		}
 
 		public RecentTemplates RecentTemplates { get; private set; }

@@ -9620,6 +9620,12 @@
     <Compile Include="MonoDevelop.Ide.Editor\OSXEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectCapabilityFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\OrFileTemplateCondition.cs" />
+    <Compile Include="MonoDevelop.Ide.Codons\ItemTemplateExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineItemTemplatingProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ItemTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineItemTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngine.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\NewItemConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
