@@ -110,7 +110,11 @@
       <Link>Templates\Azure.Functions.Templates.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <MDDownload Include="https://dl.xamarin.com/uploads/at5p4wjtk44/azure-functions-cli-66a932fb.zip" SHA1="81a64e48067a1ef5da6396d151fcfbdfa75afa3c" OutputDir="$(OutputPath)" Unpack="True" />
+    <MDDownload Include="https://functionscdn.azureedge.net/public/2.0.1-beta.20/Azure.Functions.Cli.zip" 
+		OutputName=	"azure-functions-cli"
+		SHA2="c8724dc0e4b6065877cf5e330d7bdb138c5d07daa97ff5b1584b46cea0fe7bb8" 
+		OutputDir="$(OutputPath)" 
+		Unpack="True" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MDBuildTasks)\DownloadFile.targets" />
