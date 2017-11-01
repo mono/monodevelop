@@ -339,9 +339,12 @@ namespace MonoDevelop.Projects
 			userProperties.Dispose ();
 			userProperties = new PropertyBag ();
 
+			string oldPreferencesFileName = GetLegacyPreferencesFileName ();
 			string preferencesFileName = GetPreferencesFileName ();
 
 			return Task.Run (() => {
+				MigrateLegacyUserPreferencesFile (oldPreferencesFileName, preferencesFileName);
+
 				if (!File.Exists (preferencesFileName))
 					return;
 
@@ -373,7 +376,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual Task OnSaveUserProperties ()
 		{
-			string file = GetPreferencesFileName ();
+			FilePath file = GetPreferencesFileName ();
 			var userProps = userProperties;
 
 			return Task.Run (() => {
@@ -385,6 +388,8 @@ namespace MonoDevelop.Projects
 			
 				XmlTextWriter writer = null;
 				try {
+					Directory.CreateDirectory (file.ParentDirectory);
+
 					writer = new XmlTextWriter (file, System.Text.Encoding.UTF8);
 					writer.Formatting = Formatting.Indented;
 					XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
@@ -399,9 +404,48 @@ namespace MonoDevelop.Projects
 			});
 		}
 		
-		string GetPreferencesFileName ()
+		string GetLegacyPreferencesFileName ()
 		{
 			return FileName.ChangeExtension (".userprefs");
+		}
+
+		static void MigrateLegacyUserPreferencesFile (string legacyPreferencesFileName, FilePath preferencesFileName)
+		{
+			if (!File.Exists (legacyPreferencesFileName))
+				return;
+
+			if (!File.Exists (preferencesFileName)) {
+				Directory.CreateDirectory (preferencesFileName.ParentDirectory);
+
+				File.Move (legacyPreferencesFileName, preferencesFileName);
+			}
+		}
+
+		internal string GetPreferencesFileName ()
+		{
+			return GetPreferencesFileName (BrandingService.ApplicationName, BuildInfo.CompatVersion);
+		}
+
+		internal string GetPreferencesFileName (string appName, string appVersion)
+		{
+			bool isVisualStudio = appName == "Visual Studio";
+			string appNameDirectory = isVisualStudio ? ".vs" : ".md";
+			string appVersionDirectory = GetAppVersionDirectory (appVersion, isVisualStudio);
+
+			return BaseDirectory.Combine (appNameDirectory, Name, appVersionDirectory, "UserPrefs.xml");
+		}
+
+		static string GetAppVersionDirectory (string appVersion, bool isVisualStudio)
+		{
+			int index = appVersion.IndexOf ('.');
+			if (index != -1) {
+				appVersion = appVersion.Substring (0, index);
+			}
+
+			if (isVisualStudio) {
+				return "mac-v" + appVersion;
+			}
+			return "v" + appVersion;
 		}
 
 		public virtual StringTagModelDescription GetStringTagModelDescription ()
