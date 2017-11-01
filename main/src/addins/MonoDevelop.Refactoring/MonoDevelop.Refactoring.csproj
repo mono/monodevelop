@@ -11,6 +11,7 @@
     <AssemblyName>MonoDevelop.Refactoring</AssemblyName>
     <RootNamespace>MonoDevelop.Refactoring</RootNamespace>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <CopyNuGetImplementations>false</CopyNuGetImplementations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -83,10 +84,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.ValueTuple" Version="4.4.0">
-      <ExcludeAssets>runtime</ExcludeAssets>
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
