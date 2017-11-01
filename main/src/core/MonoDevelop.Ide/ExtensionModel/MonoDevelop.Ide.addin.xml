@@ -257,6 +257,11 @@
 						class = "MonoDevelop.Ide.Editor.TextEditorDisplayBinding" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding id    = "BuildLogViewer"
+						class = "MonoDevelop.Ide.Gui.Components.BuildLogDisplayBinding" />
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class = "MonoDevelop.Ide.Updater.UpdateCheckHandler"/>
 		<Class class = "MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayStartup"/>
