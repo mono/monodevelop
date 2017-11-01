@@ -263,9 +263,9 @@ namespace MonoDevelop.Ide.Templates
 			return MergeParameters (defaultParameters, cacheParameters, true);
 		}
 
-		public static string MergeSupportedParameters (string supportedParameters, ITemplateInfo templateInfo)
+		public static string GetSupportedParameters (ITemplateInfo templateInfo)
 		{
-			return MergeParameters (supportedParameters, templateInfo.CacheParameters, false);
+			return MergeParameters (null, templateInfo.CacheParameters, false);
 		}
 
 		static string MergeParameters (
