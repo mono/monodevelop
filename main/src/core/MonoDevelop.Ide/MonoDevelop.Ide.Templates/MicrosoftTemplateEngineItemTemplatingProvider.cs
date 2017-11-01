@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 			var parameters = new Dictionary<string, string> ();
 
-			var model = (IStringTagModel)config.Parameters;
+			var model = (IStringTagModel)config;
 			foreach (ITemplateParameter parameter in template.TemplateInfo.Parameters) {
 				string parameterValue = (string)model.GetValue (parameter.Name);
 				if (parameterValue != null)

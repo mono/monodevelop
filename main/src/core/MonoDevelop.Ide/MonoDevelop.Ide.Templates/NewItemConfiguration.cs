@@ -24,17 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using System.IO;
+using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class NewItemConfiguration
+	public class NewItemConfiguration : IStringTagModel
 	{
+		Dictionary<string, string> parameters;
+
+		public NewItemConfiguration ()
+		{
+			parameters = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
+		}
+
 		public string Directory { get; set; }
 		public string Name { get; set; }
-
-		public ProjectCreateParameters Parameters { get; private set; } = new ProjectCreateParameters ();
 
 		public string NameWithoutExtension {
 			get {
@@ -43,6 +51,27 @@ namespace MonoDevelop.Ide.Templates
 				}
 				return string.Empty;
 			}
+		}
+
+		public string this [string name] {
+			get {
+				string result;
+				if (parameters.TryGetValue (name, out result)) {
+					return result;
+				}
+				return string.Empty;
+			}
+			set {
+				parameters [name] = value;
+			}
+		}
+
+		object IStringTagModel.GetValue (string name)
+		{
+			string result;
+			if (parameters.TryGetValue (name, out result))
+				return result;
+			return null;
 		}
 	}
 }
