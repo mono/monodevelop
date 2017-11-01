@@ -259,46 +259,52 @@ namespace MonoDevelop.Ide.Templates
 
 		public static string MergeDefaultParameters (string defaultParameters, ITemplateInfo templateInfo)
 		{
-			List<TemplateParameter> priorityParameters = null;
-			var parameters = new List<string> ();
 			var cacheParameters = templateInfo.CacheParameters.Where (m => !string.IsNullOrEmpty (m.Value.DefaultValue));
-
-			if (!cacheParameters.Any ())
-				return defaultParameters;
-
-			if (!string.IsNullOrEmpty (defaultParameters)) {
-				priorityParameters = TemplateParameter.CreateParameters (defaultParameters).ToList ();
-				defaultParameters += ",";
-			}
-
-			foreach (var p in cacheParameters) {
-				if (priorityParameters == null || !priorityParameters.Exists (t => t.Name == p.Key))
-					parameters.Add ($"{p.Key}={p.Value.DefaultValue}");
-			}
-
-			return defaultParameters += string.Join (",", parameters);
+			return MergeParameters (defaultParameters, cacheParameters, true);
 		}
 
 		public static string MergeSupportedParameters (string supportedParameters, ITemplateInfo templateInfo)
 		{
+			return MergeParameters (supportedParameters, templateInfo.CacheParameters, false);
+		}
+
+		static string MergeParameters (
+			string parameterString,
+			IEnumerable<KeyValuePair<string, ICacheParameter>> cacheParameters,
+			bool includeDefaultValue)
+		{
 			List<TemplateParameter> priorityParameters = null;
 			var parameters = new List<string> ();
-			var cacheParameters = templateInfo.CacheParameters;
 
 			if (!cacheParameters.Any ())
-				return supportedParameters;
+				return parameterString;
 
-			if (!string.IsNullOrEmpty (supportedParameters)) {
-				priorityParameters = TemplateParameter.CreateParameters (supportedParameters).ToList ();
-				supportedParameters += ",";
+			if (!string.IsNullOrEmpty (parameterString)) {
+				priorityParameters = TemplateParameter.CreateParameters (parameterString).ToList ();
+				parameterString += ",";
 			}
 
 			foreach (var p in cacheParameters) {
-				if (priorityParameters == null || !priorityParameters.Exists (t => t.Name == p.Key))
-					parameters.Add ($"{p.Key}");
+				if (priorityParameters == null || !priorityParameters.Exists (t => t.Name == p.Key)) {
+					if (includeDefaultValue) {
+						parameters.Add ($"{p.Key}={p.Value.DefaultValue}");
+					} else {
+						parameters.Add ($"{p.Key}");
+					}
+				}
 			}
 
-			return supportedParameters += string.Join (",", parameters);
+			return parameterString += string.Join (",", parameters);
+		}
+
+		public static string GetLanguage (ITemplateInfo templateInfo)
+		{
+			ICacheTag languageTag;
+			if (templateInfo.Tags.TryGetValue ("language", out languageTag)) {
+				return languageTag.DefaultValue;
+			}
+
+			return string.Empty;
 		}
 
 		class MyTemplateEngineHost : DefaultTemplateEngineHost

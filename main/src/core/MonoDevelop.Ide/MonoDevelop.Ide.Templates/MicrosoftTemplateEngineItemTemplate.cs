@@ -36,22 +36,12 @@ namespace MonoDevelop.Ide.Templates
 		{
 			TemplateInfo = templateInfo;
 
-			Language = GetLanguage (templateInfo);
+			Language = MicrosoftTemplateEngine.GetLanguage (templateInfo);
 
 			SupportedParameters = MicrosoftTemplateEngine.MergeSupportedParameters (template.SupportedParameters, templateInfo);
 			DefaultParameters = MicrosoftTemplateEngine.MergeDefaultParameters (template.DefaultParameters, templateInfo);
 		}
 
 		internal ITemplateInfo TemplateInfo { get; private set; }
-
-		static string GetLanguage (ITemplateInfo templateInfo)
-		{
-			ICacheTag languageTag;
-			if (templateInfo.Tags.TryGetValue ("language", out languageTag)) {
-				return languageTag.DefaultValue;
-			}
-
-			return string.Empty;
-		}
 	}
 }
