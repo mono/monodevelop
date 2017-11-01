@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Templates
 			//ProjectFileExtension = template.FileExtension;
 			Wizard = template.Wizard;
 			SupportedParameters = template.SupportedParameters;
-			DefaultParameters = MergeDefaultParameters (template.DefaultParameters);
+			DefaultParameters = MicrosoftTemplateEngine.MergeDefaultParameters (template.DefaultParameters, templateInfo);
 			ImageId = template.ImageId;
 			//ImageFile = template.ImageFile;
 			//Visibility = GetVisibility (template.Visibility);
@@ -65,28 +65,6 @@ namespace MonoDevelop.Ide.Templates
 			: base (id, name, iconId)
 		{
 			this.templateInfo = templateInfo;
-		}
-
-		string MergeDefaultParameters (string defaultParameters)
-		{
-			List<TemplateParameter> priorityParameters = null;
-			var parameters = new List<string> ();
-			var cacheParameters = templateInfo.CacheParameters.Where (m => !string.IsNullOrEmpty (m.Value.DefaultValue));
-
-			if (!cacheParameters.Any ())
-				return defaultParameters;
-
-			if (!string.IsNullOrEmpty (defaultParameters)) {
-				priorityParameters = TemplateParameter.CreateParameters (defaultParameters).ToList ();
-				defaultParameters += ",";
-			}
-
-			foreach (var p in cacheParameters) {
-				if (priorityParameters != null && !priorityParameters.Exists (t => t.Name == p.Key))
-					parameters.Add ($"{p.Key}={p.Value.DefaultValue}");
-			}
-
-			return defaultParameters += string.Join (",", parameters);
 		}
 	}
 }

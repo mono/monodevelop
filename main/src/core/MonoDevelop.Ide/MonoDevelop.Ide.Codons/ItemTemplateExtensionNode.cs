@@ -58,5 +58,23 @@ namespace MonoDevelop.Ide.Codons
 				return overrideName;
 			}
 		}
+
+		[NodeAttribute ("defaultParameters", "Default parameters for template.")]
+		string defaultParameters;
+
+		public string DefaultParameters {
+			get {
+				return defaultParameters;
+			}
+		}
+
+		[NodeAttribute ("supportedParameters", "Parameters supported by the template.")]
+		string supportedParameters;
+
+		public string SupportedParameters {
+			get {
+				return supportedParameters;
+			}
+		}
 	}
 }

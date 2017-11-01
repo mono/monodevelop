@@ -39,5 +39,7 @@ namespace MonoDevelop.Ide.Templates
 		public string Id { get; private set; }
 		public string Name { get; private set; }
 		public string Language { get; set; }
+		public string SupportedParameters { get; set; }
+		public string DefaultParameters { get; set; }
 	}
 }

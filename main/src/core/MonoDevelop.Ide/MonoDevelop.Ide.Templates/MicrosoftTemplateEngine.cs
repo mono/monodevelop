@@ -257,6 +257,50 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
+		public static string MergeDefaultParameters (string defaultParameters, ITemplateInfo templateInfo)
+		{
+			List<TemplateParameter> priorityParameters = null;
+			var parameters = new List<string> ();
+			var cacheParameters = templateInfo.CacheParameters.Where (m => !string.IsNullOrEmpty (m.Value.DefaultValue));
+
+			if (!cacheParameters.Any ())
+				return defaultParameters;
+
+			if (!string.IsNullOrEmpty (defaultParameters)) {
+				priorityParameters = TemplateParameter.CreateParameters (defaultParameters).ToList ();
+				defaultParameters += ",";
+			}
+
+			foreach (var p in cacheParameters) {
+				if (priorityParameters == null || !priorityParameters.Exists (t => t.Name == p.Key))
+					parameters.Add ($"{p.Key}={p.Value.DefaultValue}");
+			}
+
+			return defaultParameters += string.Join (",", parameters);
+		}
+
+		public static string MergeSupportedParameters (string supportedParameters, ITemplateInfo templateInfo)
+		{
+			List<TemplateParameter> priorityParameters = null;
+			var parameters = new List<string> ();
+			var cacheParameters = templateInfo.CacheParameters;
+
+			if (!cacheParameters.Any ())
+				return supportedParameters;
+
+			if (!string.IsNullOrEmpty (supportedParameters)) {
+				priorityParameters = TemplateParameter.CreateParameters (supportedParameters).ToList ();
+				supportedParameters += ",";
+			}
+
+			foreach (var p in cacheParameters) {
+				if (priorityParameters == null || !priorityParameters.Exists (t => t.Name == p.Key))
+					parameters.Add ($"{p.Key}");
+			}
+
+			return supportedParameters += string.Join (",", parameters);
+		}
+
 		class MyTemplateEngineHost : DefaultTemplateEngineHost
 		{
 			public MyTemplateEngineHost ()
