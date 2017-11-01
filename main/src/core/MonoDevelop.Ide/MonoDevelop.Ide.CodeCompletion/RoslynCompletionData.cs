@@ -251,7 +251,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
 				markup.AppendLine ();
 				markup.AppendLine ();
-				markup.AppendTaggedText (theme, taggedParts.Skip (i + 1), 0, 50);
+				markup.AppendTaggedText (theme, taggedParts.Skip (i + 1));
 				markup.Append ("</span>");
 			}
 			return new TooltipInformation {

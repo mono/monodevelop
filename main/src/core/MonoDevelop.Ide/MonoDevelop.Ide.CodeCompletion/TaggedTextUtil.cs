@@ -38,6 +38,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public static void AppendTaggedText (this StringBuilder markup, EditorTheme theme, IEnumerable<TaggedText> text)
 		{
 			foreach (var part in text) {
+				if (part.Tag == TextTags.LineBreak) {
+					markup.AppendLine ();
+					continue;
+				}
 				if (part.Tag != TextTags.Text) {
 					markup.Append ("<span foreground=\"");
 					markup.Append (GetThemeColor (theme, GetThemeColor (part.Tag)));
@@ -53,6 +57,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public static void AppendTaggedText (this StringBuilder markup, EditorTheme theme, IEnumerable<TaggedText> text, int col, int maxColumn)
 		{
 			foreach (var part in text) {
+				if (part.Tag == TextTags.LineBreak) {
+					markup.AppendLine ();
+					col = 0;
+					continue;
+				}
 				if (part.Tag != TextTags.Text) {
 					markup.Append ("<span foreground=\"");
 					markup.Append (GetThemeColor (theme, GetThemeColor (part.Tag)));
