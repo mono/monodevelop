@@ -23,7 +23,6 @@
     <ConsolePause>False</ConsolePause>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.xml</DocumentationFile>
-    <CopyNuGetImplementations>false</CopyNuGetImplementations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -84,7 +83,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0">
+      <ExcludeAssets>runtime</ExcludeAssets>
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
