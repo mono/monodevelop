@@ -207,6 +207,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\ImportedPackageReferenceProjectTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectSystemReferencesReaderTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectJsonBuildIntegratedNuGetProjectTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ItemTemplateNuGetPackageInstallerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

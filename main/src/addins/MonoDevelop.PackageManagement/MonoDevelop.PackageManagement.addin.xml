@@ -122,6 +122,10 @@
 		<Class id="NuGet" class="MonoDevelop.PackageManagement.ProjectTemplateNuGetPackageInstaller" />
 	</Extension>
 
+	<Extension path="/MonoDevelop/Ide/ItemTemplatePackageInstallers">
+		<Class id="NuGet" class="MonoDevelop.PackageManagement.ItemTemplateNuGetPackageInstaller" />
+	</Extension>
+
 	<Extension path="/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesProjectNodeBuilderExtension" />
 		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesFolderNodeBuilder" />
