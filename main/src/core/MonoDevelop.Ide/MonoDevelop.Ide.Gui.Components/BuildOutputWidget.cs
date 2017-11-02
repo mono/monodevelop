@@ -96,61 +96,70 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		int currentTabPosition = 0;
 
-		private void InsertText (string text, bool incrementTab, bool decrementTab)
+		enum MSBuildEvent {
+			None,
+			Start,
+			End
+		};
+
+		private void InsertText (string text, MSBuildEvent ev)
 		{
-			if (incrementTab)
-				currentTabPosition++;
-			if (decrementTab)
+			if (ev == MSBuildEvent.End) {
 				currentTabPosition--;
+			}
 
 			for (int i = 0; i < currentTabPosition; i++)
 				buildOutput.Append ("\t");
 			buildOutput.AppendLine (text);
+
+			if (ev == MSBuildEvent.Start) {
+				currentTabPosition++;
+			}
 		}
 
 		private void BinLog_BuildStarted (object sender, BuildStartedEventArgs e)
 		{
-			InsertText (e.Message, true, false);
+			InsertText (e.Message, MSBuildEvent.Start);
 		}
 
 		private void BinLog_BuildFinished (object sender, BuildFinishedEventArgs e)
 		{
-			InsertText (e.Message, false, true);
+			InsertText (e.Message, MSBuildEvent.End);
 		}
 
 		private void BinLog_ErrorRaised (object sender, BuildErrorEventArgs e)
 		{
-			InsertText (e.Message, false, false);
+			InsertText (e.Message, MSBuildEvent.None);
 		}
 
 		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
 		{
-			InsertText (e.Message, true, false);
+			InsertText (e.Message, MSBuildEvent.Start);
 		}
 
 		private void BinLog_ProjectFinished (object sender, ProjectFinishedEventArgs e)
 		{
-			InsertText (e.Message, false, true);
+			InsertText (e.Message, MSBuildEvent.End);
 		}
 
 		private void BinLog_TargetStarted (object sender, TargetStartedEventArgs e)
 		{
-			InsertText (e.Message, true, false);
+			InsertText (e.Message, MSBuildEvent.Start);
 		}
 
 		private void BinLog_TargetFinished (object sender, TargetFinishedEventArgs e)
 		{
-			InsertText (e.Message, false, true);
+			InsertText (e.Message, MSBuildEvent.End);
 		}
 
 		private void BinLog_TaskStarted (object sender, TaskStartedEventArgs e)
 		{
-			InsertText (e.Message, true, false);
+			InsertText (e.Message, MSBuildEvent.Start);
 		}
 
 		private void BinLog_TaskFinished (object sender, TaskFinishedEventArgs e)
 		{
-			InsertText (e.Message, false, true);
+			InsertText (e.Message, MSBuildEvent.End);
 		}
 	}
 }
