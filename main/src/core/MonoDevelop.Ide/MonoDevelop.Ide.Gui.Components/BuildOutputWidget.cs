@@ -94,59 +94,63 @@ namespace MonoDevelop.Ide.Gui.Components
 			binlogReader.TaskFinished -= BinLog_TaskFinished;
 		}
 
-		private string GetSuccessString (bool succeeded)
+		int currentTabPosition = 0;
+
+		private void InsertText (string text, bool incrementTab, bool decrementTab)
 		{
-			return succeeded ? "successfully" : "with errors";
+			if (incrementTab)
+				currentTabPosition++;
+			if (decrementTab)
+				currentTabPosition--;
+
+			for (int i = 0; i < currentTabPosition; i++)
+				buildOutput.Append ("\t");
+			buildOutput.AppendLine (text);
 		}
 
-		private void InsertText (string text)
+		private void BinLog_BuildStarted (object sender, BuildStartedEventArgs e)
 		{
-			buildOutput.Append (text);
+			InsertText (e.Message, true, false);
 		}
 
-		private void BinLog_BuildStarted(object sender, BuildStartedEventArgs e)
+		private void BinLog_BuildFinished (object sender, BuildFinishedEventArgs e)
 		{
-			InsertText($"[{e.Timestamp}] Build started\n");
+			InsertText (e.Message, false, true);
 		}
 
-		private void BinLog_BuildFinished(object sender, BuildFinishedEventArgs e)
+		private void BinLog_ErrorRaised (object sender, BuildErrorEventArgs e)
 		{
-			InsertText($"[{e.Timestamp}] Build finished\n");
+			InsertText (e.Message, false, false);
 		}
 
-		private void BinLog_ErrorRaised(object sender, BuildErrorEventArgs e)
+		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
 		{
-			InsertText($"[{e.Timestamp}] Error: {e.Code}: {e.Message} at {e.ProjectFile}#{e.LineNumber}\n");
+			InsertText (e.Message, true, false);
 		}
 
-		private void BinLog_ProjectStarted(object sender, ProjectStartedEventArgs e)
+		private void BinLog_ProjectFinished (object sender, ProjectFinishedEventArgs e)
 		{
-			InsertText($"[{e.Timestamp}]\tProject {e.ProjectFile} started\n");
+			InsertText (e.Message, false, true);
 		}
 
-		private void BinLog_ProjectFinished(object sender, ProjectFinishedEventArgs e)
+		private void BinLog_TargetStarted (object sender, TargetStartedEventArgs e)
 		{
-			InsertText($"[{e.Timestamp}]\tProject {e.ProjectFile} finished {GetSuccessString(e.Succeeded)}\n");
+			InsertText (e.Message, true, false);
 		}
 
-		private void BinLog_TargetStarted(object sender, TargetStartedEventArgs e)
+		private void BinLog_TargetFinished (object sender, TargetFinishedEventArgs e)
 		{
-			InsertText($"[{e.Timestamp}]\t\tTarget {e.TargetName} started\n");
+			InsertText (e.Message, false, true);
 		}
 
-		private void BinLog_TargetFinished(object sender, TargetFinishedEventArgs e)
+		private void BinLog_TaskStarted (object sender, TaskStartedEventArgs e)
 		{
-			InsertText($"[{e.Timestamp}]\t\tTarget {e.TargetName} finished {GetSuccessString(e.Succeeded)}\n");
+			InsertText (e.Message, true, false);
 		}
 
-		private void BinLog_TaskStarted(object sender, TaskStartedEventArgs e)
+		private void BinLog_TaskFinished (object sender, TaskFinishedEventArgs e)
 		{
-			InsertText($"[{e.Timestamp}]\t\t\tTask {e.TaskName} started\n");
-		}
-
-		private void BinLog_TaskFinished(object sender, TaskFinishedEventArgs e)
-		{
-			InsertText($"[{e.Timestamp}]\t\t\tTask {e.TaskName} finished {GetSuccessString(e.Succeeded)}\n");
+			InsertText (e.Message, false, true);
 		}
 	}
 }
