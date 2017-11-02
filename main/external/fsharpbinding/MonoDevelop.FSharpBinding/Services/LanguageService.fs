@@ -296,6 +296,9 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
             else x.GetProjectCheckerOptions(projFilename)
         opts
 
+    member x.GetParsingOptionsFromProjectOptions(projectOptions) =
+        checker.GetParsingOptionsFromProjectOptions projectOptions
+
     /// Constructs options for the interactive checker for the given script file in the project under the given configuration.
     member x.GetScriptCheckerOptions(fileName, projFilename, source) =
         let opts =
@@ -533,7 +536,8 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         let options = x.GetCheckerOptions(filename, projectFilename, source)
         match options with
         | Some opts ->
-            checker.MatchBraces(filename, source, opts)
+            let parseOptions, _errors = x.GetParsingOptionsFromProjectOptions opts
+            checker.MatchBraces(filename, source, parseOptions)
         | None -> async { return [||] }
 
     /// Get all symbols derived from the specified symbol in the current project and optionally all dependent projects
