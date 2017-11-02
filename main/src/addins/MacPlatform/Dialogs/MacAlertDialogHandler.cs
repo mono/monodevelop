@@ -156,8 +156,8 @@ namespace MonoDevelop.MacIntegration
 				}
 				
 				if (!data.Message.CancellationToken.IsCancellationRequested) {
-
-					var result = (int)alert.RunModal () - (long)(int)NSAlertButtonReturn.First;
+					NSWindow parent = data.TransientFor ?? IdeApp.Workbench.RootWindow;
+					var result = (int)(parent == null ? alert.RunModal () : alert.RunSheetModal (parent)) - (long)(int)NSAlertButtonReturn.First;
 					
 					completed = true;
 					if (result >= 0 && result < buttons.Count) {

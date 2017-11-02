@@ -70,6 +70,9 @@ namespace MonoDevelop.Components
 		{
 			if (d is XwtWindowControl)
 				return (XwtWindowControl)d;
+			if (d?.nativeWidget is Gtk.Window)
+				return Mac.GtkMacInterop.GetNSWindow (d.GetNativeWidget<Gtk.Window> ());
+			
 			return d?.GetNativeWidget<AppKit.NSWindow> ();
 		}
 
