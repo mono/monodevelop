@@ -74,6 +74,9 @@ namespace MonoDevelop.AzureFunctions
 			DefaultRowSpacing = 6;
 			DefaultColumnSpacing = 6;
 
+			Configuration = new NewItemConfiguration ();
+			Template = template;
+
 			foreach (var item in EnumerateSymbolInfo (template)) {
 				JsonValue value;
 
@@ -149,6 +152,14 @@ namespace MonoDevelop.AzureFunctions
 				Add (label, 0, row);
 				Add (widget, 1, row, hexpand: true);
 			}
+		}
+
+		public ItemTemplate Template {
+			get; private set;
+		}
+
+		public NewItemConfiguration Configuration {
+			get; private set;
 		}
 
 		void BoolChanged (object sender, EventArgs e)

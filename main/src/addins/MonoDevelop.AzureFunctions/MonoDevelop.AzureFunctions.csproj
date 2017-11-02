@@ -60,6 +60,7 @@
     <Compile Include="Properties\AddinInfo.cs" />
     <Compile Include="AzureFunctionsProjectExtension.cs" />
     <Compile Include="AzureFunctionTemplateParameters.cs" />
+    <Compile Include="AzureFunctionTemplateDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml">
