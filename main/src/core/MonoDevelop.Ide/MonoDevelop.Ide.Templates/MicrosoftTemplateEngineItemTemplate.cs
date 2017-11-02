@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.IO;
 using Microsoft.TemplateEngine.Abstractions;
 using MonoDevelop.Ide.Codons;
 
@@ -47,5 +48,10 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		internal ITemplateInfo TemplateInfo { get; private set; }
+
+		public override Stream GetStream (string path)
+		{
+			return MicrosoftTemplateEngine.GetStream (TemplateInfo, path);
+		}
 	}
 }

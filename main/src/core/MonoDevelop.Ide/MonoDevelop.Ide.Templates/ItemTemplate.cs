@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -41,5 +42,10 @@ namespace MonoDevelop.Ide.Templates
 		public string Language { get; set; }
 		public string SupportedParameters { get; set; }
 		public string DefaultParameters { get; set; }
+
+		public virtual Stream GetStream (string path)
+		{
+			return null;
+		}
 	}
 }

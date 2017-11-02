@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.TemplateEngine.Abstractions;
+using Microsoft.TemplateEngine.Abstractions.Mount;
 using Microsoft.TemplateEngine.Edge;
 using Microsoft.TemplateEngine.Edge.Settings;
 using Microsoft.TemplateEngine.Edge.Template;
@@ -232,10 +233,15 @@ namespace MonoDevelop.Ide.Templates
 
 		public static string GetPath (ICreationPath path)
 		{
-			if (Path.DirectorySeparatorChar != '\\')
-				return path.Path.Replace ('\\', Path.DirectorySeparatorChar);
+			return NormalizePath (path.Path);
+		}
 
-			return path.Path;
+		static string NormalizePath (string path)
+		{
+			if (Path.DirectorySeparatorChar != '\\')
+				return path.Replace ('\\', Path.DirectorySeparatorChar);
+
+			return path;
 		}
 
 		public static async Task FormatFile (PolicyContainer policies, FilePath file)
@@ -305,6 +311,36 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			return string.Empty;
+		}
+
+		/// <summary>
+		/// Use '${TemplateConfigDirectory}/template.json' to get the template.json file
+		/// without having to specify the full path.
+		/// </summary>
+		public static Stream GetStream (ITemplateInfo template, string path)
+		{
+			path = NormalizePath (template, path);
+
+			var settingsLoader = (SettingsLoader)environmentSettings.SettingsLoader;
+
+			IMountPoint mountPoint;
+			IFile file;
+			if (settingsLoader.TryGetFileFromIdAndPath (template.ConfigMountPointId, path, out file, out mountPoint)) {
+				return file.OpenRead ();
+			}
+
+			return null;
+		}
+
+		static string NormalizePath (ITemplateInfo template, string path)
+		{
+			path = NormalizePath (path);
+
+			var tags = new string[,] {
+				{"TemplateConfigDirectory", Path.GetDirectoryName (template.ConfigPlace) }
+			};
+
+			return StringParserService.Parse (path, tags);
 		}
 
 		class MyTemplateEngineHost : DefaultTemplateEngineHost
