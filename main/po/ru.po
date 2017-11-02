@@ -348,7 +348,7 @@ msgstr "Закрыть проект"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:135
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:65
 msgid "Target Framework"
-msgstr "Целевая платформа"
+msgstr ""
 
 #: ../src/addins/MonoDevelop.DotNetCore/gtk-gui/MonoDevelop.DotNetCore.Gui.GtkDotNetCoreProjectTemplateWizardPageWidget.cs:97
 msgid "Target Framework:"
@@ -543,7 +543,7 @@ msgstr "Сборка"
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:290
 msgid "Version"
-msgstr "Версия"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:429
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:662
@@ -4492,12 +4492,12 @@ msgstr "Допустимое имя макета"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:76
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:274
 msgid "License"
-msgstr "Лицензия"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:107
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:86
 msgid "Copyright"
-msgstr "Авторское право"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs:66
 msgid "Failed to load version information."
@@ -5169,7 +5169,7 @@ msgstr "_Просмотреть конфликты"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:616
 msgid "This key combination is already bound to command '{0}'"
-msgstr "Это сочетание клавиш уже привязано к команде \"{0}\""
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:71
 msgid "Scheme:"
@@ -6436,7 +6436,7 @@ msgstr "Среда выполнения"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:346
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:121
 msgid "Security"
-msgstr "Безопасность"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:354
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:527
@@ -11409,7 +11409,7 @@ msgstr "Файлы VB.NET"
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:33
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:96
 msgid "General Options"
-msgstr "Общие параметры"
+msgstr ""
 
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:36
 msgid "Imports"
@@ -11435,7 +11435,7 @@ msgstr "Файл, определяющий атрибуты в сведения�
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.cs:118
 msgid "ChangeLog entries can't be generated"
-msgstr "Не удается создать записи в журнале изменений"
+msgstr ""
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.cs:119
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:103
@@ -11452,7 +11452,7 @@ msgstr "Параметры..."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:102
 msgid "ChangeLog entries can't be generated."
-msgstr "Не удается создать записи в журнале изменений."
+msgstr ""
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:104
 msgid "Configure user data"
@@ -11479,11 +11479,11 @@ msgstr "Нажмите кнопку \"Сведения\" для получени
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:124
 msgid "The following ChangeLog file will be updated:"
-msgstr "Будет обновлен следующий файл журнала изменений:"
+msgstr ""
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:129
 msgid "{0} ChangeLog files will be updated."
-msgstr "Будут обновлены файлы журнала изменений: {0}."
+msgstr ""
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:120
 msgid "{0} ChangeLog file not found. Some changes will not be logged."
@@ -17379,15 +17379,15 @@ msgstr "Целевая платформа:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:44
 msgid "<b>_Replace with source file</b>"
-msgstr "<b>_Заменить на исходный файл</b>"
+msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:45
 msgid "<b>_Keep existing target file</b>"
-msgstr "<b>_Сохранить текущий конечный файл</b>"
+msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:46
 msgid "<b>Use the _newest file</b>"
-msgstr "<b>Использовать самый _новый файл</b>"
+msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:88
 msgid "Replace existing file?"
@@ -18496,11 +18496,11 @@ msgstr "Префикс"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:160
 msgid "<b>Registered Schema</b>"
-msgstr "<b>Зарегистрированная схема</b>"
+msgstr ""
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:172
 msgid "<b>Default File Associations</b>"
-msgstr "<b>Сопоставления файлов по умолчанию</b>"
+msgstr ""
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:434
 msgid "Schema '{0}' could not be loaded."
@@ -19400,7 +19400,7 @@ msgstr "Протокол SSL:"
 
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:137
 msgid "SSL Key"
-msgstr "Ключ SSL"
+msgstr ""
 
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:140
 msgid "Key type:"
@@ -20484,7 +20484,7 @@ msgstr "мс"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:101
 msgid "Advanced options"
-msgstr "Дополнительные параметры"
+msgstr ""
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:103
 msgid "Enable diagnostic logging"
@@ -20505,7 +20505,7 @@ msgstr "[Внешний код]"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1047
 msgid "<b>{0}</b> has been thrown"
-msgstr "Возникло исключение <b>{0}</b>"
+msgstr ""
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs:22
 msgid "Value Visualizer"
@@ -23852,7 +23852,6 @@ msgstr "Просмотреть (панели)"
 msgid ""
 "This key combination is already bound to command '{0}' in the same context"
 msgstr ""
-"Это сочетание клавиш уже привязано к команде \"{0}\" в таком же контексте"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:808
 msgid "Conflicts:"
@@ -24753,7 +24752,7 @@ msgstr "Отмена выхода из приложения"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:93
 msgid "Privacy Statement"
-msgstr "Заявление о конфиденциальности"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs:81
 msgid ""
@@ -25405,9 +25404,6 @@ msgid ""
 "listed above.\n"
 "If you do not agree to the license terms click <b>Decline</b>."
 msgstr ""
-"Нажимая кнопку <b>Принять</b>, вы соглашаетесь соблюдать условия лицензии "
-"для перечисленных выше пакетов.\n"
-"Если вы не согласны с условиями лицензии, нажмите кнопку <b>Отклонить</b>."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:83
 msgid "Decline"
