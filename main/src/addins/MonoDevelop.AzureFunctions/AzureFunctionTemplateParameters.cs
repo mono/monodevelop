@@ -66,7 +66,7 @@ namespace MonoDevelop.AzureFunctions
 			}
 		}
 
-		public AzureFunctionTemplateParameters (FilePath template)
+		public AzureFunctionTemplateParameters (ItemTemplate template)
 		{
 			var symbols = LoadSymbols (template);
 			int row = 0;
@@ -295,16 +295,17 @@ namespace MonoDevelop.AzureFunctions
 			return entry;
 		}
 
-		internal static JsonObject LoadSymbols (FilePath template)
+		internal static JsonObject LoadSymbols (ItemTemplate template)
 		{
-			var content = File.ReadAllText (template.Combine (".template.config", "template.json"));
-			var json = JsonValue.Parse (content) as JsonObject;
-			JsonValue value;
+			using (var reader = new StreamReader (template.GetStream ("${TemplateConfigDirectory}/template.json"))) {
+				var json = JsonValue.Parse (reader.ReadToEnd ()) as JsonObject;
+				JsonValue value;
 
-			if (json == null || !json.TryGetValue ("symbols", out value) || value.JsonType != JsonType.Object)
-				throw new FormatException ("Invalid template.json format");
+				if (json == null || !json.TryGetValue ("symbols", out value) || value.JsonType != JsonType.Object)
+					throw new FormatException ("Invalid template.json format");
 
-			return (JsonObject) value;
+				return (JsonObject) value;
+			}
 		}
 
 		static bool TryParse (JsonObject json, out SymbolName name)
@@ -334,36 +335,37 @@ namespace MonoDevelop.AzureFunctions
 			return true;
 		}
 
-		internal static IEnumerable<SymbolInfo> EnumerateSymbolInfo (FilePath template)
+		internal static IEnumerable<SymbolInfo> EnumerateSymbolInfo (ItemTemplate template)
 		{
-			var content = File.ReadAllText (template.Combine (".template.config", "vs-2017.3.host.json"));
-			var json = JsonValue.Parse (content) as JsonObject;
-			JsonValue value;
+			using (var reader = new StreamReader (template.GetStream ("${TemplateConfigDirectory}/vs-2017.3.host.json"))) {
+				var json = JsonValue.Parse (reader.ReadToEnd ()) as JsonObject;
+				JsonValue value;
 
-			if (json == null || !json.TryGetValue ("symbolInfo", out value) || value.JsonType != JsonType.Array)
-				yield break;
+				if (json == null || !json.TryGetValue ("symbolInfo", out value) || value.JsonType != JsonType.Array)
+					yield break;
 
-			var symbolInfo = (JsonArray) value;
+				var symbolInfo = (JsonArray) value;
 
-			foreach (var item in symbolInfo.OfType<JsonObject> ()) {
-				if (!item.TryGetValue ("id", out value) || value.JsonType != JsonType.String)
-					continue;
+				foreach (var item in symbolInfo.OfType<JsonObject> ()) {
+					if (!item.TryGetValue ("id", out value) || value.JsonType != JsonType.String)
+						continue;
 
-				var id = value.ToString ();
-				SymbolName name;
+					var id = value.ToString ();
+					SymbolName name;
 
-				if (!item.TryGetValue ("name", out value) || value.JsonType != JsonType.Object)
-					continue;
+					if (!item.TryGetValue ("name", out value) || value.JsonType != JsonType.Object)
+						continue;
 
-				if (!TryParse ((JsonObject) value, out name))
-					continue;
+					if (!TryParse ((JsonObject) value, out name))
+						continue;
 
-				if (!item.TryGetValue ("isVisible", out value) || value.JsonType != JsonType.Boolean)
-					continue;
+					if (!item.TryGetValue ("isVisible", out value) || value.JsonType != JsonType.Boolean)
+						continue;
 
-				var visible = bool.Parse (value.ToString ());
+					var visible = bool.Parse (value.ToString ());
 
-				yield return new SymbolInfo (id, name, visible);
+					yield return new SymbolInfo (id, name, visible);
+				}
 			}
 
 			yield break;
