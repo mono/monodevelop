@@ -102,6 +102,7 @@ namespace MonoDevelop.UnitTesting
 
 		static string GetSuffix (UnitTestGroup unitTestGroup)
 		{
+			var rootTitle = unitTestGroup?.Title;
 			var stringBuilder = new StringBuilder ();
 			while (unitTestGroup != null)
 					if (ContainsSingleUnitTestGroup (unitTestGroup) && !(unitTestGroup is SolutionFolderTestGroup)) {
@@ -112,7 +113,11 @@ namespace MonoDevelop.UnitTesting
 						unitTestGroup = singleChildTestGroup;
 					} else
 						unitTestGroup = null;
-			return stringBuilder.ToString ();
+
+			var result = stringBuilder.ToString ();
+			if (result.TrimStart ('.') == rootTitle)
+				result = String.Empty;
+			return result; 
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
