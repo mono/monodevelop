@@ -35,7 +35,7 @@ using System.Text;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	public class BuildOutputWidget : VBox
+	class BuildOutputWidget : VBox
 	{
 		FilePath filename;
 		TextEditor editor;

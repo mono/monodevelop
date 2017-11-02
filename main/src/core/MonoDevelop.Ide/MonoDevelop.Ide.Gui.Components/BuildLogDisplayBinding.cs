@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	public class BuildLogDisplayBinding : IViewDisplayBinding
+	class BuildLogDisplayBinding : IViewDisplayBinding
 	{
 		public BuildLogDisplayBinding ()
 		{
@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		public string Name {
 			get {
-				return GettextCatalog.GetString ("Build output");
+				return GettextCatalog.GetString ("Build Output");
 			}
 		}
 

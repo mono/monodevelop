@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	public class BuildOutputViewContent : ViewContent
+	class BuildOutputViewContent : ViewContent
 	{
 		FilePath filename;
 		BuildOutputWidget control;
