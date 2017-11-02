@@ -45,6 +45,11 @@
 	<ExtensionNode name="Class" />
 </ExtensionPoint>
 
+<ExtensionPoint path = "/MonoDevelop/Ide/ItemTemplatePackageInstallers" name = "Item template package installers">
+	<Description>Installs packages defined in the template. Must implement MonoDevelop.Ide.Templates.ItemTemplatePackageInstaller</Description>
+	<ExtensionNode name="Class" />
+</ExtensionPoint>
+
 <ExtensionPoint path="/MonoDevelop/Ide/ProjectTemplatePackageRepositories">
 	<Description>Defines a path where NuGet packages are searched for when creating a project from a template.</Description>
 	<ExtensionNode name="PackageRepository" type="MonoDevelop.Ide.Templates.PackageRepositoryNode" />

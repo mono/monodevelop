@@ -65,6 +65,10 @@ namespace MonoDevelop.Ide.Templates
 				}
 
 				IdeApp.Workbench.OpenDocument (fullPath, project).Ignore ();
+
+				if (project != null) {
+					await InstallNuGetPackages (project, result.ResultInfo);
+				}
 			}
 		}
 
@@ -106,6 +110,52 @@ namespace MonoDevelop.Ide.Templates
 		static string GetPath (ICreationPath path)
 		{
 			return MicrosoftTemplateEngine.GetPath (path);
+		}
+
+		async Task InstallNuGetPackages (Project project, ICreationResult result)
+		{
+			var packageReferences = GetPackageReferences (result).ToList ();
+
+			if (!packageReferences.Any ())
+				return;
+
+			foreach (ItemTemplatePackageInstaller installer in AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ItemTemplatePackageInstallers")) {
+				await installer.Run (project, packageReferences);
+			}
+		}
+
+		IEnumerable<TemplatePackageReference> GetPackageReferences (ICreationResult result)
+		{
+			foreach (var postAction in result.PostActions) {
+				var packageReference = CreatePackageReference (postAction);
+				if (packageReference != null) {
+					yield return packageReference;
+				}
+			}
+		}
+
+		TemplatePackageReference CreatePackageReference (IPostAction action)
+		{
+			if (!IsInstallPackagePostAction (action))
+				return null;
+
+			if (!action.Args.TryGetValue ("reference", out string packageId))
+				return null;
+
+			if (!action.Args.TryGetValue ("version", out string packageVersion))
+				return null;
+
+			return new TemplatePackageReference (packageId, packageVersion);
+		}
+
+		static readonly Guid addReferencePostActionId = new Guid ("B17581D1-C5C9-4489-8F0A-004BE667B814");
+
+		static bool IsInstallPackagePostAction (IPostAction action)
+		{
+			return action.ActionId == addReferencePostActionId &&
+				action.Args != null &&
+				action.Args.TryGetValue ("referenceType", out string referenceType) &&
+				StringComparer.OrdinalIgnoreCase.Equals (referenceType, "package");
 		}
 	}
 }
