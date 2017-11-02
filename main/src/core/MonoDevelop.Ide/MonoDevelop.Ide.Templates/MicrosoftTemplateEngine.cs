@@ -265,42 +265,24 @@ namespace MonoDevelop.Ide.Templates
 
 		public static string MergeDefaultParameters (string defaultParameters, ITemplateInfo templateInfo)
 		{
-			var cacheParameters = templateInfo.CacheParameters.Where (m => !string.IsNullOrEmpty (m.Value.DefaultValue));
-			return MergeParameters (defaultParameters, cacheParameters, true);
-		}
-
-		public static string GetSupportedParameters (ITemplateInfo templateInfo)
-		{
-			return MergeParameters (null, templateInfo.CacheParameters, false);
-		}
-
-		static string MergeParameters (
-			string parameterString,
-			IEnumerable<KeyValuePair<string, ICacheParameter>> cacheParameters,
-			bool includeDefaultValue)
-		{
 			List<TemplateParameter> priorityParameters = null;
 			var parameters = new List<string> ();
+			var cacheParameters = templateInfo.CacheParameters.Where (m => !string.IsNullOrEmpty (m.Value.DefaultValue));
 
 			if (!cacheParameters.Any ())
-				return parameterString;
+				return defaultParameters;
 
-			if (!string.IsNullOrEmpty (parameterString)) {
-				priorityParameters = TemplateParameter.CreateParameters (parameterString).ToList ();
-				parameterString += ",";
+			if (!string.IsNullOrEmpty (defaultParameters)) {
+				priorityParameters = TemplateParameter.CreateParameters (defaultParameters).ToList ();
+				defaultParameters += ",";
 			}
 
 			foreach (var p in cacheParameters) {
-				if (priorityParameters == null || !priorityParameters.Exists (t => t.Name == p.Key)) {
-					if (includeDefaultValue) {
-						parameters.Add ($"{p.Key}={p.Value.DefaultValue}");
-					} else {
-						parameters.Add ($"{p.Key}");
-					}
-				}
+				if (priorityParameters == null || !priorityParameters.Exists (t => t.Name == p.Key))
+					parameters.Add ($"{p.Key}={p.Value.DefaultValue}");
 			}
 
-			return parameterString += string.Join (",", parameters);
+			return defaultParameters += string.Join (",", parameters);
 		}
 
 		public static string GetLanguage (ITemplateInfo templateInfo)

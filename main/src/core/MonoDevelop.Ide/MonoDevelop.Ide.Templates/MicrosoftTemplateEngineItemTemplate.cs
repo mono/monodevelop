@@ -38,13 +38,6 @@ namespace MonoDevelop.Ide.Templates
 			TemplateInfo = templateInfo;
 
 			Language = MicrosoftTemplateEngine.GetLanguage (templateInfo);
-
-			DefaultParameters = MicrosoftTemplateEngine.MergeDefaultParameters (template.DefaultParameters, templateInfo);
-
-			SupportedParameters = template.SupportedParameters;
-			if (string.IsNullOrEmpty (SupportedParameters)) {
-				SupportedParameters = MicrosoftTemplateEngine.GetSupportedParameters (templateInfo);
-			}
 		}
 
 		internal ITemplateInfo TemplateInfo { get; private set; }
