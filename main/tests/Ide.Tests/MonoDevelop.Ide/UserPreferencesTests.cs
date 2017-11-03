@@ -72,11 +72,11 @@ namespace MonoDevelop.Ide
 			sol.Dispose ();
 		}
 
-		[TestCase ("MonoDevelop", "7.0", new [] { ".md", "MySolution", "v7", "UserPrefs.xml" })]
-		[TestCase ("MonoDevelop", "8.0", new [] { ".md", "MySolution", "v8", "UserPrefs.xml" })]
-		[TestCase ("Visual Studio", "7.1", new [] { ".vs", "MySolution", "mac-v7", "UserPrefs.xml" })]
-		[TestCase ("Visual Studio", "8.1", new [] { ".vs", "MySolution", "mac-v8", "UserPrefs.xml" })]
-		public void UserPreferencesFileName (string appName, string appVersion, string[] paths)
+		[TestCase ("7.0", new [] { ".vs", "MySolution", "xs-v7", "UserPrefs.xml" })]
+		[TestCase ("8.0", new [] { ".vs", "MySolution", "xs-v8", "UserPrefs.xml" })]
+		[TestCase ("7.1", new [] { ".vs", "MySolution", "xs-v7", "UserPrefs.xml" })]
+		[TestCase ("8.1", new [] { ".vs", "MySolution", "xs-v8", "UserPrefs.xml" })]
+		public void UserPreferencesFileName (string appVersion, string[] paths)
 		{
 			FilePath directory = Util.CreateTmpDir ("MySolution");
 			var fileName = directory.Combine ("MySolution.sln");
@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide
 			solution.FileName = fileName;
 			string expectedFileName = solution.BaseDirectory.Combine (paths);
 
-			string userPreferencesFileName = solution.GetPreferencesFileName (appName, appVersion);
+			string userPreferencesFileName = solution.GetPreferencesFileName (appVersion);
 
 			Assert.AreEqual (expectedFileName, userPreferencesFileName);
 		}
