@@ -214,11 +214,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			var currentBuffer = editor.GetPlatformTextBuffer ();
 			var textChange = completionChange.TextChange;
-
 			var triggerSnapshotSpan = new SnapshotSpan (triggerSnapshot, new Span (textChange.Span.Start, textChange.Span.Length));
 			var mappedSpan = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
 			using (var undo = editor.OpenUndoGroup ()) {
-				editor.ReplaceText (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
+				// Work around for https://github.com/dotnet/roslyn/issues/22885
+				if (editor.GetCharAt (mappedSpan.Start) == '@') {
+					editor.ReplaceText (mappedSpan.Start + 1, mappedSpan.Length - 1, completionChange.TextChange.NewText);
+				} else
+					editor.ReplaceText (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
+			
 
 				if (completionChange.NewPosition.HasValue)
 					editor.CaretOffset = completionChange.NewPosition.Value;
