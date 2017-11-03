@@ -29,6 +29,86 @@
 			_overrideName="Blob trigger"
 			path="Templates/Azure.Functions.Templates.nupkg"
 		/>
+		<Template
+			id="Azure.Function.CSharp.EventHubTrigger"
+			_overrideName="Event hub trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.FaceLocator"
+			_overrideName="Face locator"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.GenericWebHook"
+			_overrideName="Generic WebHook"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.GitHubCommenter"
+			_overrideName="GitHub commenter"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.GitHubWebHook"
+			_overrideName="GitHub WebHook"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.HttpGetCRUD"
+			_overrideName="Http GET CRUD"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.HttpPostCRUD"
+			_overrideName="Http POST CRUD"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.HttpPutCRUD"
+			_overrideName="Http PUT CRUD"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.HttpTrigger"
+			_overrideName="Http trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.HttpTriggerWithParameters"
+			_overrideName="Http trigger with parameters"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.ImageResizer"
+			_overrideName="Image resizer"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.QueueTrigger"
+			_overrideName="Queue trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.SasToken"
+			_overrideName="SAS token"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.ServiceBusQueueTrigger"
+			_overrideName="Service Bus Queue trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.ServiceBusTopicTrigger"
+			_overrideName="Service Bus Topic trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.TimerTrigger"
+			_overrideName="Timer trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
