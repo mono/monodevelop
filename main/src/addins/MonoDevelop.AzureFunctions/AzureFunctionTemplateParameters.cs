@@ -71,8 +71,12 @@ namespace MonoDevelop.AzureFunctions
 			var symbols = LoadSymbols (template);
 			int row = 0;
 
-			DefaultRowSpacing = 6;
 			DefaultColumnSpacing = 6;
+			DefaultRowSpacing = 6;
+			MarginBottom = 6;
+			MarginRight = 6;
+			MarginLeft = 6;
+			MarginTop = 6;
 
 			Configuration = new NewItemConfiguration ();
 			Template = template;
@@ -91,13 +95,13 @@ namespace MonoDevelop.AzureFunctions
 				Widget widget;
 
 				if (symbol.TryGetValue ("defaultValue", out value) && value.JsonType == JsonType.String)
-					defaultValue = value.ToString ();
+					defaultValue = Unquote (value.ToString ());
 
 				if (symbol.TryGetValue ("description", out value) && value.JsonType == JsonType.String)
-					description = value.ToString ();
+					description = Unquote (value.ToString ());
 
 				if (symbol.TryGetValue ("datatype", out value))
-					datatype = value.ToString ();
+					datatype = Unquote (value.ToString ());
 				else
 					datatype = "string";
 
@@ -145,12 +149,14 @@ namespace MonoDevelop.AzureFunctions
 				}
 
 				var label = new Label (item.Name.Text + ":");
+				label.TextAlignment = Alignment.End;
 				label.Show ();
 
 				InsertRow (row, row + 1);
 
 				Add (label, 0, row);
 				Add (widget, 1, row, hexpand: true);
+				row++;
 			}
 		}
 
@@ -230,12 +236,12 @@ namespace MonoDevelop.AzureFunctions
 				if (!option.TryGetValue ("choice", out value) || value.JsonType != JsonType.String)
 					continue;
 
-				var choice = value.ToString ();
+				var choice = Unquote (value.ToString ());
 
 				if (!option.TryGetValue ("description", out value) || value.JsonType != JsonType.String)
 					continue;
 
-				var description = value.ToString ();
+				var description = Unquote (value.ToString ());
 
 				combo.Items.Add (choice, description);
 
@@ -306,6 +312,14 @@ namespace MonoDevelop.AzureFunctions
 			return entry;
 		}
 
+		static string Unquote (string text)
+		{
+			if (text.Length >= 2 && text[0] == '"' && text[text.Length - 1] == '"')
+				return text.Substring (1, text.Length - 2);
+
+			return text;
+		}
+
 		internal static JsonObject LoadSymbols (ItemTemplate template)
 		{
 			using (var reader = new StreamReader (template.GetStream ("${TemplateConfigDirectory}/template.json"))) {
@@ -329,17 +343,17 @@ namespace MonoDevelop.AzureFunctions
 			if (!json.TryGetValue ("id", out value) || value.JsonType != JsonType.String)
 				return false;
 
-			id = value.ToString ();
+			id = Unquote (value.ToString ());
 
 			if (!json.TryGetValue ("text", out value) || value.JsonType != JsonType.String)
 				return false;
 
-			text = value.ToString ();
+			text = Unquote (value.ToString ());
 
 			if (!json.TryGetValue ("package", out value) || value.JsonType != JsonType.String)
 				return false;
 
-			package = value.ToString ();
+			package = Unquote (value.ToString ());
 
 			name = new SymbolName (id, text, package);
 
@@ -361,8 +375,9 @@ namespace MonoDevelop.AzureFunctions
 					if (!item.TryGetValue ("id", out value) || value.JsonType != JsonType.String)
 						continue;
 
-					var id = value.ToString ();
+					var id = Unquote (value.ToString ());
 					SymbolName name;
+					bool visible;
 
 					if (!item.TryGetValue ("name", out value) || value.JsonType != JsonType.Object)
 						continue;
@@ -373,7 +388,7 @@ namespace MonoDevelop.AzureFunctions
 					if (!item.TryGetValue ("isVisible", out value) || value.JsonType != JsonType.Boolean)
 						continue;
 
-					var visible = bool.Parse (value.ToString ());
+					bool.TryParse (value.ToString (), out visible);
 
 					yield return new SymbolInfo (id, name, visible);
 				}

@@ -55,10 +55,13 @@ namespace MonoDevelop.AzureFunctions
 
 			this.project = project;
 
+			Width = 640;
+			Height = 480;
+
 			var listView = CreateItemTemplateList ();
 			listView.Show ();
 
-			scrollView = new ScrollView ();
+			scrollView = new ScrollView { BorderVisible = false };
 			scrollView.Show ();
 
 			var hbox = new HBox { Spacing = 6 };
