@@ -72,19 +72,17 @@ namespace MonoDevelop.Ide
 			sol.Dispose ();
 		}
 
-		[TestCase ("7.0", new [] { ".vs", "MySolution", "xs-v7", "UserPrefs.xml" })]
-		[TestCase ("8.0", new [] { ".vs", "MySolution", "xs-v8", "UserPrefs.xml" })]
-		[TestCase ("7.1", new [] { ".vs", "MySolution", "xs-v7", "UserPrefs.xml" })]
-		[TestCase ("8.1", new [] { ".vs", "MySolution", "xs-v8", "UserPrefs.xml" })]
-		public void UserPreferencesFileName (string appVersion, string[] paths)
+		[Test]
+		public void UserPreferencesFileName ()
 		{
 			FilePath directory = Util.CreateTmpDir ("MySolution");
 			var fileName = directory.Combine ("MySolution.sln");
 			var solution = new Solution ();
 			solution.FileName = fileName;
+			var paths = new [] { ".vs", "MySolution", "xs", "UserPrefs.xml" };
 			string expectedFileName = solution.BaseDirectory.Combine (paths);
 
-			string userPreferencesFileName = solution.GetPreferencesFileName (appVersion);
+			string userPreferencesFileName = solution.GetPreferencesFileName ();
 
 			Assert.AreEqual (expectedFileName, userPreferencesFileName);
 		}

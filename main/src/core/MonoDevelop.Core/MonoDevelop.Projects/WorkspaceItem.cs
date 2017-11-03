@@ -423,22 +423,7 @@ namespace MonoDevelop.Projects
 
 		internal string GetPreferencesFileName ()
 		{
-			return GetPreferencesFileName (BuildInfo.CompatVersion);
-		}
-
-		internal string GetPreferencesFileName (string appVersion)
-		{
-			return BaseDirectory.Combine (".vs", Name, GetAppVersionDirectory (appVersion), "UserPrefs.xml");
-		}
-
-		static string GetAppVersionDirectory (string appVersion)
-		{
-			int index = appVersion.IndexOf ('.');
-			if (index != -1) {
-				appVersion = appVersion.Substring (0, index);
-			}
-
-			return "xs-v" + appVersion;
+			return BaseDirectory.Combine (".vs", Name, "xs", "UserPrefs.xml");
 		}
 
 		public virtual StringTagModelDescription GetStringTagModelDescription ()
