@@ -229,8 +229,10 @@ namespace MonoDevelop.CSharp
 			static async Task UpdateDocument (ConcurrentDictionary<DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfoWrapper>>> result, Microsoft.CodeAnalysis.Document document, CancellationToken cancellationToken)
 			{
 				var syntaxFactsService = document.GetLanguageService<ISyntaxFactsService> ();
+				var declaredSymbolInfoService = document.GetLanguageService<IDeclaredSymbolInfoFactoryService> ();
 				var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 				var infos = new Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfoWrapper>> ();
+				var stringTable = Roslyn.Utilities.StringTable.GetInstance (); // TODO: fix this
 				foreach (var kind in AllKinds) {
 					infos [kind] = new List<DeclaredSymbolInfoWrapper> ();
 				}
@@ -240,7 +242,7 @@ namespace MonoDevelop.CSharp
 					if (kind == SyntaxKind.ConstructorDeclaration ||
 						kind == SyntaxKind.IndexerDeclaration)
 						continue;
-					if (syntaxFactsService.TryGetDeclaredSymbolInfo (current, out DeclaredSymbolInfo info)) {
+					if (declaredSymbolInfoService.TryGetDeclaredSymbolInfo (stringTable, current, out DeclaredSymbolInfo info)) {
 						var declaredSymbolInfo = new DeclaredSymbolInfoWrapper (current, document.Id, info);
 						infos[info.Kind].Add (declaredSymbolInfo);
 					}
