@@ -55,6 +55,7 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="AzureFunctionsProjectExtension.cs" />
     <Compile Include="AzureFunctionTemplateParameters.cs" />
     <Compile Include="AzureFunctionTemplateDialog.cs" />
+    <Compile Include="AddFunctionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml">

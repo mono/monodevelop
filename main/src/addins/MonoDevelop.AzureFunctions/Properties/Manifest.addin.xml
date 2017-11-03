@@ -38,4 +38,23 @@
 	<Extension path="/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid="md-project-azurefunctions" resource="project-azurefunctions-32.png" size="Dnd" />
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Commands">
+		<Category _name="Azure Functions" id="AzureFunctions">
+			<Command
+				id="MonoDevelop.AzureFunctions.Commands.AddFunction"
+				_description="Add an Azure function to the project"
+				_label="Add _Function..."
+				defaultHandler="MonoDevelop.AzureFunctions.AddFunctionHandler" />
+		</Category>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
+		<Condition id="ItemType" value="Project">
+			<CommandItem
+				id="MonoDevelop.AzureFunctions.Commands.AddFunction"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
+				insertbefore="MonoDevelop.WebReferences.WebReferenceCommands.Add" />
+		</Condition>
+	</Extension>
 </ExtensionModel>
