@@ -70,6 +70,8 @@ namespace MonoDevelop.Components.AutoTest
 		[Serializable]
 		public struct MemoryStats {
 			public long PrivateMemory;
+			public long VirtualMemory;
+			public long WorkingSet;
 			public long PeakVirtualMemory;
 			public long PagedSystemMemory;
 			public long PagedMemory;
@@ -82,6 +84,8 @@ namespace MonoDevelop.Components.AutoTest
 			using (Process proc = Process.GetCurrentProcess ()) {
 				stats = new MemoryStats {
 					PrivateMemory = proc.PrivateMemorySize64,
+					VirtualMemory = proc.VirtualMemorySize64,
+					WorkingSet = proc.WorkingSet64,
 					PeakVirtualMemory = proc.PeakVirtualMemorySize64,
 					PagedSystemMemory = proc.PagedSystemMemorySize64,
 					PagedMemory = proc.PagedMemorySize64,
