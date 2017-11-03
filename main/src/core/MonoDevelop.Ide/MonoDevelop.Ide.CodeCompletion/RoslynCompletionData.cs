@@ -90,9 +90,19 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				var modifier = GetItemModifier ();
 				var type = GetItemType ();
-				return "md-" + modifier + type;
+				var hash = CalculateHashCode (modifier, type);
+				if (!IconIdCache.ContainsKey (hash))
+					IconIdCache [hash] = "md-" + modifier + type;
+				return IconIdCache [hash];
 			}
 		}
+
+		internal static int CalculateHashCode (string modifier, string type)
+		{
+			return modifier.GetHashCode () ^ type.GetHashCode ();
+		}
+
+		static Dictionary<int, string> IconIdCache = new Dictionary<int, string>();
 
 		public RoslynCompletionData (Microsoft.CodeAnalysis.Document document, ITextSnapshot triggerSnapshot, CompletionService completionService, CompletionItem completionItem)
 		{
@@ -116,7 +126,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return null;
 		}
 
-		static Dictionary<string, string> roslynCompletionTypeTable = new Dictionary<string, string> {
+		internal static Dictionary<string, string> roslynCompletionTypeTable = new Dictionary<string, string> {
 			{ "Field", "field" },
 			{ "Alias", "field" },
 			{ "ArrayType", "field" },
@@ -160,7 +170,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			{ "EnumMember", "literal" },
 
-			{ "NewMethod", "newmethod" }
+			{ "NewMethod", "newmethod" },
+
+			{ "ExtensionMethod", "extensionmethod" }
 		};
 
 		string GetItemType ()
@@ -173,7 +185,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return "literal";
 		}
 
-		static Dictionary<string, string> modifierTypeTable = new Dictionary<string, string> {
+		internal static Dictionary<string, string> modifierTypeTable = new Dictionary<string, string> {
 			{ "Private", "private-" },
 			{ "ProtectedAndInternal", "ProtectedOrInternal-" },
 			{ "Protected", "protected-" },
