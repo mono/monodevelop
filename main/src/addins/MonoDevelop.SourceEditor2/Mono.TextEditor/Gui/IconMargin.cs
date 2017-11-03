@@ -26,10 +26,11 @@
 //
 
 using System;
+using System.Collections.Generic;
 using Gtk;
 using Gdk;
 using MonoDevelop.Ide.Editor.Highlighting;
-using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace Mono.TextEditor
 {
@@ -42,8 +43,24 @@ namespace Mono.TextEditor
 		public IconMargin (MonoTextEditor editor)
 		{
 			this.editor = editor;
+
+			editor.Document.MarkerAdded += OnMarkerAdded;
+			editor.Document.MarkerRemoved += OnMarkerRemoved;
 		}
-		
+
+		public override void Dispose ()
+		{
+			editor.Document.MarkerAdded -= OnMarkerAdded;
+			editor.Document.MarkerRemoved -= OnMarkerRemoved;
+
+			foreach (var proxy in markerToAccessible.Values) {
+				proxy.Dispose ();
+			}
+			markerToAccessible.Clear ();
+
+			base.Dispose ();
+		}
+
 		public override double Width {
 			get {
 				return marginWidth;
@@ -135,17 +152,115 @@ namespace Mono.TextEditor
 				foreach (var marker in editor.Document.GetMarkersOrderedByInsertion (lineSegment)) {
 					var marginMarker = marker as MarginMarker;
 					if (marginMarker != null && marginMarker.CanDrawForeground (this)) {
-						marginMarker.DrawForeground (editor, ctx, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
+						var metrics = new MarginDrawMetrics (this, area, lineSegment, line, x, y ,lineHeight);
+						marginMarker.DrawForeground (editor, ctx, metrics);
+
+						var accessible = markerToAccessible[marker];
+						if (accessible != null) {
+							accessible.Metrics = metrics;
+							accessible.UpdateAccessibilityDetails ();
+						}
 					}
 				}
 				if (DrawEvent != null) 
 					DrawEvent (this, new BookmarkMarginDrawEventArgs (editor, ctx, lineSegment, line, x, y));
 			}
 		}
-		
+
+		Dictionary<TextLineMarker, AccessibilityMarkerProxy> markerToAccessible = null;
+		void OnMarkerAdded (object sender, TextMarkerEvent e)
+		{
+			if (markerToAccessible == null) {
+				markerToAccessible = new Dictionary<TextLineMarker, AccessibilityMarkerProxy> ();
+			}
+
+			var proxy = new AccessibilityMarkerProxy (e.TextMarker, editor, this);
+			Accessible.AddAccessibleChild (proxy.Accessible);
+
+			markerToAccessible[e.TextMarker] = proxy;
+		}
+
+		void OnMarkerRemoved (object sender, TextMarkerEvent e)
+		{
+			if (markerToAccessible == null) {
+				return;
+			}
+
+			var proxy = markerToAccessible[e.TextMarker];
+			if (proxy == null) {
+				throw new Exception ("No accessible found for marker");
+			}
+
+			Accessible.RemoveAccessibleChild (proxy.Accessible);
+			markerToAccessible.Remove (e.TextMarker);
+		}
+
 		public EventHandler<BookmarkMarginDrawEventArgs> DrawEvent;
 	}
-	
+
+	class AccessibilityMarkerProxy : IDisposable
+	{
+		public AccessibilityElementProxy Accessible { get; private set; }
+
+		TextLineMarker marker;
+		MonoTextEditor editor;
+		Margin margin;
+
+		MarginDrawMetrics metrics;
+		public MarginDrawMetrics Metrics {
+			get {
+				return metrics;
+			}
+
+			set {
+				metrics = value;
+				Accessible.FrameInGtkParent = new Rectangle ((int)metrics.X, (int)metrics.Y, (int)metrics.Width, (int)metrics.Height);
+
+				var halfParentHeight = margin.RectInParent.Height / 2.0f;
+				var dy = metrics.Y - halfParentHeight;
+				var cocoaY = halfParentHeight - dy;
+
+				Accessible.FrameInParent = new Rectangle ((int)metrics.X, (int)cocoaY - (int)metrics.Height, (int)metrics.Width, (int)metrics.Height);
+			}
+		}
+
+		public void Dispose ()
+		{
+			Accessible.PerformPress -= PerformPress;
+		}
+
+		public void UpdateAccessibilityDetails ()
+		{
+			string label, help;
+			var marginMarker = marker as MarginMarker;
+
+			marginMarker.UpdateAccessibilityDetails (out label, out help);
+			Accessible.Label = label;
+			Accessible.Help = help;
+		}
+
+		public AccessibilityMarkerProxy (TextLineMarker marker, MonoTextEditor editor, Margin margin)
+		{
+			Accessible = AccessibilityElementProxy.ButtonElementProxy ();
+			Accessible.PerformPress += PerformPress;
+			Accessible.GtkParent = margin.Accessible.GtkParent;
+
+			this.marker = marker;
+			this.editor = editor;
+			this.margin = margin;
+		}
+
+		void PerformPress (object sender, EventArgs args)
+		{
+			var marginMarker = marker as MarginMarker;
+
+			if (marginMarker != null) {
+				var fakeArgs = new MarginMouseEventArgs (editor, EventType.ButtonRelease, 1, metrics.X, metrics.Y, ModifierType.None);
+				margin.MousePressed (fakeArgs);
+			}
+		}
+	}
+
 	class BookmarkMarginDrawEventArgs : EventArgs
 	{
 		public MonoTextEditor Editor {

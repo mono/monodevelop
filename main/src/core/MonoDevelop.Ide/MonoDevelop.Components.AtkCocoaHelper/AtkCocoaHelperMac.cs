@@ -664,6 +664,17 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			realProxyElement.AccessibilityAddChildElement (realChild);
 		}
 
+		public void RemoveAccessibleChild (IAccessibilityElementProxy child)
+		{
+			var proxy = (AccessibilityElementProxy)child;
+			var realChild = proxy.realProxyElement;
+
+			var children = realProxyElement.AccessibilityChildren.ToList ();
+			children.Remove (realChild);
+
+			realProxyElement.AccessibilityChildren = children.ToArray ();
+		}
+
 		public void SetRole (string role, string description = null)
 		{
 			realProxyElement.SetRole (role, description);

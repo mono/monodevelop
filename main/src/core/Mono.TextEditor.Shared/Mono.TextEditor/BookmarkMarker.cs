@@ -26,6 +26,7 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
 using Mono.TextEditor.Highlighting;
 
@@ -53,6 +54,12 @@ namespace Mono.TextEditor
 		{
 			if (DrawBookmarkFunc != null)
 				DrawBookmarkFunc (editor, cr, LineSegment, metrics.X, metrics.Y, metrics.Width, metrics.Height);
+		}
+
+		public override void UpdateAccessibilityDetails (out string label, out string help)
+		{
+			label = GettextCatalog.GetString ("Bookmark: line {0}", LineSegment.LineNumber);
+			help = "";
 		}
 
 		public static Action<MonoTextEditor, Cairo.Context, DocumentLine, double, double, double, double> DrawBookmarkFunc;

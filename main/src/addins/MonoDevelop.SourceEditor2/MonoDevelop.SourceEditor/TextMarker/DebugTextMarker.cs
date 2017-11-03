@@ -38,6 +38,7 @@ using Xwt.Drawing;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Editor.Highlighting;
 using Cairo;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -95,6 +96,12 @@ namespace MonoDevelop.SourceEditor
 				else if (args.Editor.TooltipText == Tooltip)
 					args.Editor.TooltipText = null;
 			}
+		}
+
+		public override void UpdateAccessibilityDetails (out string label, out string help)
+		{
+			label = GettextCatalog.GetString ("Breakpoint. Line {0}", LineSegment.LineNumber);
+			help = "";
 		}
 	}
 
