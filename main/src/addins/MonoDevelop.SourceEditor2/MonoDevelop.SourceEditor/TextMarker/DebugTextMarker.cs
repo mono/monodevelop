@@ -226,11 +226,11 @@ namespace MonoDevelop.SourceEditor
 		public DebugTextMarker TextMarker { get; protected set; }
 		protected TextDocument document;
 
-		internal void AddTo (TextDocument document, DocumentLine line)
+		internal void AddTo (TextDocument doc, DocumentLine line)
 		{
-			this.document = document;
-			document.AddMarker (line, IconMarker);
-			document.AddMarker (TextMarker);
+			this.document = doc;
+			doc.AddMarker (line, IconMarker);
+			doc.AddMarker (TextMarker);
 		}
 
 		internal void Remove ()

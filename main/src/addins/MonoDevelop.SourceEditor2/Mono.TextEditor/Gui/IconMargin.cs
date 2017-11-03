@@ -39,7 +39,7 @@ namespace Mono.TextEditor
 		MonoTextEditor editor;
 		Cairo.Color backgroundColor, separatorColor;
 		const int marginWidth = 22;
-		
+
 		public IconMargin (MonoTextEditor editor)
 		{
 			this.editor = editor;
@@ -66,36 +66,36 @@ namespace Mono.TextEditor
 				return marginWidth;
 			}
 		}
-		
+
 		internal protected override void OptionsChanged ()
 		{
 			backgroundColor = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.IndicatorMargin);
 			separatorColor = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.IndicatorMarginSeparator);
 		}
-		
+
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
-			
+
 			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
 				foreach (TextLineMarker marker in editor.Document.GetMarkers (lineSegment)) {
 					var marginMarker = marker as MarginMarker;
-					if (marginMarker != null) 
+					if (marginMarker != null)
 						marginMarker.InformMousePress (editor, this, args);
 				}
 			}
 		}
-		
+
 		internal protected override void MouseReleased (MarginMouseEventArgs args)
 		{
 			base.MouseReleased (args);
-			
+
 			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
 				foreach (TextLineMarker marker in editor.Document.GetMarkers (lineSegment)) {
 					var marginMarker = marker as MarginMarker;
-					if (marginMarker != null) 
+					if (marginMarker != null)
 						marginMarker.InformMouseRelease (editor, this, args);
 				}
 			}
@@ -112,7 +112,7 @@ namespace Mono.TextEditor
 			if (lineSegment != null) {
 				foreach (TextLineMarker marker in editor.Document.GetMarkers (lineSegment)) {
 					var marginMarker = marker as MarginMarker;
-					if (marginMarker != null) 
+					if (marginMarker != null)
 						marginMarker.InformMouseHover (editor, this, args);
 				}
 			}
@@ -125,45 +125,45 @@ namespace Mono.TextEditor
 			base.MouseLeft ();
 		}
 
-		internal protected override void Draw (Cairo.Context ctx, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
+		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine line, int lineNumber, double x, double y, double lineHeight)
 		{
 			bool backgroundIsDrawn = false;
-			if (lineSegment != null) {
-				foreach (var marker in editor.Document.GetMarkersOrderedByInsertion (lineSegment)) {
+			if (line != null) {
+				foreach (var marker in editor.Document.GetMarkersOrderedByInsertion (line)) {
 					var marginMarker = marker as MarginMarker;
 					if (marginMarker != null && marginMarker.CanDrawBackground (this)) {
-						backgroundIsDrawn = marginMarker.DrawBackground (editor, ctx, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
+						backgroundIsDrawn = marginMarker.DrawBackground (editor, cr, new MarginDrawMetrics (this, area, line, lineNumber, x, y, lineHeight));
 					}
 				}
 			}
 
 			if (!backgroundIsDrawn) {
-				ctx.Rectangle (x, y, Width, lineHeight);
-				ctx.SetSourceColor (backgroundColor);
-				ctx.Fill ();
-				
-				ctx.MoveTo (x + Width - 0.5, y);
-				ctx.LineTo (x + Width - 0.5, y + lineHeight);
-				ctx.SetSourceColor (separatorColor);
-				ctx.Stroke ();
+				cr.Rectangle (x, y, Width, lineHeight);
+				cr.SetSourceColor (backgroundColor);
+				cr.Fill ();
+
+				cr.MoveTo (x + Width - 0.5, y);
+				cr.LineTo (x + Width - 0.5, y + lineHeight);
+				cr.SetSourceColor (separatorColor);
+				cr.Stroke ();
 			}
 
-			if (lineSegment != null && line <= editor.Document.LineCount) {
-				foreach (var marker in editor.Document.GetMarkersOrderedByInsertion (lineSegment)) {
+			if (line != null && lineNumber <= editor.Document.LineCount) {
+				foreach (var marker in editor.Document.GetMarkersOrderedByInsertion (line)) {
 					var marginMarker = marker as MarginMarker;
 					if (marginMarker != null && marginMarker.CanDrawForeground (this)) {
-						var metrics = new MarginDrawMetrics (this, area, lineSegment, line, x, y ,lineHeight);
-						marginMarker.DrawForeground (editor, ctx, metrics);
+						var metrics = new MarginDrawMetrics (this, area, line, lineNumber, x, y, lineHeight);
+						marginMarker.DrawForeground (editor, cr, metrics);
 
-						var accessible = markerToAccessible[marker];
+						var accessible = markerToAccessible [marker];
 						if (accessible != null) {
 							accessible.Metrics = metrics;
 							accessible.UpdateAccessibilityDetails ();
 						}
 					}
 				}
-				if (DrawEvent != null) 
-					DrawEvent (this, new BookmarkMarginDrawEventArgs (editor, ctx, lineSegment, line, x, y));
+				if (DrawEvent != null)
+					DrawEvent (this, new BookmarkMarginDrawEventArgs (editor, cr, line, lineNumber, x, y));
 			}
 		}
 
@@ -177,7 +177,7 @@ namespace Mono.TextEditor
 			var proxy = new AccessibilityMarkerProxy (e.TextMarker, editor, this);
 			Accessible.AddAccessibleChild (proxy.Accessible);
 
-			markerToAccessible[e.TextMarker] = proxy;
+			markerToAccessible [e.TextMarker] = proxy;
 		}
 
 		void OnMarkerRemoved (object sender, TextMarkerEvent e)
@@ -186,7 +186,7 @@ namespace Mono.TextEditor
 				return;
 			}
 
-			var proxy = markerToAccessible[e.TextMarker];
+			var proxy = markerToAccessible [e.TextMarker];
 			if (proxy == null) {
 				throw new Exception ("No accessible found for marker");
 			}
@@ -292,16 +292,16 @@ namespace Mono.TextEditor
 			get;
 			private set;
 		}
-		
+
 		public BookmarkMarginDrawEventArgs (MonoTextEditor editor, Cairo.Context context, DocumentLine line, int lineNumber, double xPos, double yPos)
 		{
 			this.Editor = editor;
-			this.Context    = context;
+			this.Context = context;
 			this.LineSegment = line;
-			this.Line   = lineNumber;
-			this.X      = xPos;
-			this.Y      = yPos;
+			this.Line = lineNumber;
+			this.X = xPos;
+			this.Y = yPos;
 		}
 	}
-	
+
 }
