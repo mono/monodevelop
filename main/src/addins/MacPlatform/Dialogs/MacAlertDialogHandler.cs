@@ -149,7 +149,10 @@ namespace MonoDevelop.MacIntegration
 					data.Message.CancellationToken.Register (delegate {
 						alert.InvokeOnMainThread (() => {
 							if (!completed) {
-								NSApplication.SharedApplication.AbortModal ();
+								if (alert.Window.IsSheet && alert.Window.SheetParent != null)
+									alert.Window.SheetParent.EndSheet (alert.Window);
+								else
+									NSApplication.SharedApplication.AbortModal ();
 							}
 						});
 					});
