@@ -1,15 +1,15 @@
 ﻿namespace MonoDevelop.FSharp
 open System
+open System.Collections.Generic
 open System.IO
 open System.Diagnostics
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open ExtCore
 open ExtCore.Control
 open ExtCore.Control.Collections
 open MonoDevelop.Core
 open MonoDevelop.Ide
-open MonoDevelop.Ide.Editor
+open MonoDevelop.Ide.TypeSystem
 open MonoDevelop.Projects
 open MonoDevelop.FSharp.Shared
 
@@ -202,7 +202,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
     let fakeDateTimeRepresentingTimeLoaded proj = DateTime(abs (int64 (match proj with null -> 0 | _ -> proj.GetHashCode())) % 103231L)
     let checkProjectResultsCache = Collections.Generic.Dictionary<string, _>()
 
-    let projectChecked (filename, _) =
+    let projectChecked filename =
         let computation =
             async {
                 let displayname = Path.GetFileName filename
@@ -240,6 +240,16 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                     | None -> () }
         Async.Start computation
 
+    let loadingProjects = HashSet<string>()
+
+    let showStatusIcon projectFileName =
+        if loadingProjects.Add projectFileName then
+            TypeSystemService.ShowTypeInformationGatheringIcon()
+
+    let hideStatusIcon projectFileName =
+        if loadingProjects.Remove projectFileName then
+            TypeSystemService.HideTypeInformationGatheringIcon()
+
     // Create an instance of interactive checker. The callback is called by the F# compiler service
     // when its view of the prior-typechecking-state of the start of a file has changed, for example
     // when the background typechecker has "caught up" after some other file has been changed,
@@ -252,7 +262,9 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         checker.FileParsed.Add (fun (filename, _) -> LoggingService.logDebug "LanguageService: File parsed: %s" filename)
         checker.FileChecked.Add (fun (filename, _) -> LoggingService.logDebug "LanguageService: File type checked: %s" filename)
 #endif
-        checker.ProjectChecked.Add projectChecked
+        checker.ProjectChecked.Add (fun (filename, _) -> 
+            projectChecked filename
+            hideStatusIcon filename)
         checker
 
     /// When creating new script file on Mac, the filename we get sometimes
@@ -396,6 +408,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                 projectInfoCache := cache
                 Some entry
             | _, cache ->
+                showStatusIcon projFilename
                 let project =
                     IdeApp.Workspace.GetAllProjects()
                     |> Seq.tryFind (fun p -> p.FileName.FullPath.ToString() = projFilename)
