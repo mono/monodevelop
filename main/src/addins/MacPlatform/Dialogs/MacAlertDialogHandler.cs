@@ -159,7 +159,9 @@ namespace MonoDevelop.MacIntegration
 				}
 				
 				if (!data.Message.CancellationToken.IsCancellationRequested) {
-					NSWindow parent = data.TransientFor ?? IdeApp.Workbench.RootWindow;
+					NSWindow parent = null;
+					if (IdeTheme.UserInterfaceTheme != Theme.Dark || MacSystemInformation.OsVersion < MacSystemInformation.HighSierra) // sheeting is broken on High Sierra with dark NSAppearance
+						parent = data.TransientFor ?? IdeApp.Workbench.RootWindow;
 					var result = (int)(parent == null ? alert.RunModal () : alert.RunSheetModal (parent)) - (long)(int)NSAlertButtonReturn.First;
 					
 					completed = true;
