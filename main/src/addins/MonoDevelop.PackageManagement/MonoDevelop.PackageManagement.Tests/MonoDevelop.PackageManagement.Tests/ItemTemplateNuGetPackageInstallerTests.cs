@@ -97,6 +97,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			return installer.Run (dotNetProject, packages);
 		}
 
+		void AddPackageToProject (string packageId, string packageVersion)
+		{
+			var packageReference = ProjectPackageReference.Create (packageId, packageVersion);
+			dotNetProject.Items.Add (packageReference);
+		}
+
 		[TearDown]
 		public override void TearDown ()
 		{
@@ -140,6 +146,69 @@ namespace MonoDevelop.PackageManagement.Tests
 			await installer.Run (dotNetProject, new TemplatePackageReference [0]);
 
 			Assert.IsNull (statusMessage);
+		}
+
+		[Test]
+		public async Task InstallOneNuGetPackage_PackageAlreadyInstalled_PackageIsNotInstalled ()
+		{
+			CreateInstaller ();
+			AddPackageToProject ("Test", "1.2");
+
+			await InstallOneNuGetPackage ("Test", "1.2");
+
+			Assert.AreEqual (0, actionsRun.Count);
+			Assert.IsNull (installActionRun);
+		}
+
+		[Test]
+		public async Task InstallOneNuGetPackage_PackageAlreadyInstalledWithDifferentCase_PackageIsNotInstalled ()
+		{
+			CreateInstaller ();
+			AddPackageToProject ("TEST", "1.2");
+
+			await InstallOneNuGetPackage ("Test", "1.2");
+
+			Assert.AreEqual (0, actionsRun.Count);
+			Assert.IsNull (installActionRun);
+		}
+
+		[Test]
+		public async Task InstallOneNuGetPackage_OlderPackageInstalled_PackageIsInstalled ()
+		{
+			CreateInstaller ();
+			AddPackageToProject ("Test", "1.1");
+
+			await InstallOneNuGetPackage ("Test", "1.2");
+
+			Assert.AreEqual (1, actionsRun.Count);
+			Assert.AreEqual ("Test", installActionRun.PackageId);
+			Assert.AreEqual ("1.2", installActionRun.Version.ToString ());
+		}
+
+		[Test]
+		public async Task InstallOnePrereleaseNuGetPackage_OlderPrereleasePackageInstalled_PackageIsInstalled ()
+		{
+			CreateInstaller ();
+			AddPackageToProject ("Test", "1.1-beta1");
+
+			await InstallOneNuGetPackage ("Test", "1.1-beta2");
+
+			Assert.AreEqual (1, actionsRun.Count);
+			Assert.AreEqual ("Test", installActionRun.PackageId);
+			Assert.AreEqual ("1.1-beta2", installActionRun.Version.ToString ());
+		}
+
+		[Test]
+		public async Task InstallOneNuGetPackage_PrereleasePackageInstalled_PackageIsInstalled ()
+		{
+			CreateInstaller ();
+			AddPackageToProject ("Test", "1.1-beta1");
+
+			await InstallOneNuGetPackage ("Test", "1.1");
+
+			Assert.AreEqual (1, actionsRun.Count);
+			Assert.AreEqual ("Test", installActionRun.PackageId);
+			Assert.AreEqual ("1.1", installActionRun.Version.ToString ());
 		}
 	}
 }

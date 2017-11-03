@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using NuGet.Packaging;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -33,6 +34,22 @@ namespace MonoDevelop.PackageManagement
 		public static bool IsFloating (this PackageReference packageReference)
 		{
 			return packageReference.HasAllowedVersions && packageReference.AllowedVersions.IsFloating;
+		}
+
+		public static bool IsAtLeastVersion (this PackageReference packageReference, NuGetVersion requestedVersion)
+		{
+			var comparer = VersionComparer.VersionRelease;
+			if (packageReference.HasAllowedVersions) {
+				var versionRange = packageReference.AllowedVersions;
+				if (versionRange.HasLowerBound) {
+					var result = comparer.Compare (versionRange.MinVersion, requestedVersion);
+					return versionRange.IsMinInclusive ? result <= 0 : result < 0;
+				}
+			} else if (packageReference.PackageIdentity.HasVersion) {
+				var packageVersion = packageReference.PackageIdentity.Version;
+				return comparer.Compare (requestedVersion, packageVersion) <= 0;
+			}
+			return false;
 		}
 	}
 }

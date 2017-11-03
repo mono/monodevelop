@@ -24,11 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
+using NuGet.Packaging;
 using NuGet.ProjectManagement;
 using NuGet.Versioning;
 
@@ -55,7 +58,7 @@ namespace MonoDevelop.PackageManagement
 			if (dotNetProject == null)
 				return;
 
-			var installPackageActions = CreatePackageActions (dotNetProject, packageReferences);
+			var installPackageActions = await CreatePackageActions (dotNetProject, packageReferences);
 			if (!installPackageActions.Any ())
 				return;
 
@@ -63,7 +66,7 @@ namespace MonoDevelop.PackageManagement
 			backgroundPackageActionRunner.Run (progressMessage, installPackageActions);
 		}
 
-		List<InstallNuGetPackageAction> CreatePackageActions (DotNetProject project, IEnumerable<TemplatePackageReference> packageReferences)
+		async Task<List<InstallNuGetPackageAction>> CreatePackageActions (DotNetProject project, IEnumerable<TemplatePackageReference> packageReferences)
 		{
 			var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
 			var repositories = repositoryProvider.GetRepositories ().ToList ();
@@ -75,16 +78,25 @@ namespace MonoDevelop.PackageManagement
 				FileConflictResolution = FileConflictAction.IgnoreAll
 			};
 
+			var dotNetProject = new DotNetProjectProxy (project);
+			var nugetProject = solutionManager.GetNuGetProject (dotNetProject);
+			var installedPackages = (await nugetProject.GetInstalledPackagesAsync (CancellationToken.None)).ToList ();
+
 			foreach (var packageReference in packageReferences) {
+				var version = new NuGetVersion (packageReference.Version);
+
+				if (!ShouldInstallPackage (packageReference.Id, version, installedPackages))
+					continue;
+
 				var action = new InstallNuGetPackageAction (
 					repositories,
 					solutionManager,
-					new DotNetProjectProxy (project),
+					dotNetProject,
 					context) {
 					LicensesMustBeAccepted = false,
 					OpenReadmeFile = false,
 					PackageId = packageReference.Id,
-					Version = new NuGetVersion (packageReference.Version)
+					Version = version
 				};
 
 				installPackageActions.Add (action);
@@ -100,6 +112,16 @@ namespace MonoDevelop.PackageManagement
 				return ProgressMonitorStatusMessageFactory.CreateInstallingSinglePackageMessage (packageId);
 			}
 			return ProgressMonitorStatusMessageFactory.CreateInstallingMultiplePackagesMessage (packageActions.Count);
+		}
+
+		/// <summary>
+		/// Package should be installed if it is not installed or if an older version is installed.
+		/// </summary>
+		bool ShouldInstallPackage (string packageId, NuGetVersion version, List<PackageReference> installedPackages)
+		{
+			return !installedPackages
+				.Where (package => StringComparer.OrdinalIgnoreCase.Equals (package.PackageIdentity.Id,  packageId))
+				.Any (package => package.IsAtLeastVersion (version));
 		}
 	}
 }
