@@ -745,13 +745,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			});
 		}
 
-		internal static void HideTypeInformationGatheringIcon ()
+		internal static void HideTypeInformationGatheringIcon (Action callback = null)
 		{
 			Gtk.Application.Invoke ((o, args) => {
 				workspacesLoading--;
 				if (workspacesLoading == 0 && statusIcon != null) {
 					statusIcon.Dispose ();
 					statusIcon = null;
+					if (callback != null)
+						callback ();
 				}
 			});
 		}
