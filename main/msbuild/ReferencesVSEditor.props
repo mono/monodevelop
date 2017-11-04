@@ -25,6 +25,10 @@
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.UI.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Language.Intellisense">
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.Intellisense.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.Intellisense.dll</HintPath>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.Language.StandardClassification">
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.StandardClassification.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
