@@ -113,6 +113,10 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.EditorFeatures">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.EditorFeatures.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.ValueTuple">
       <HintPath>..\..\..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>False</Private>

@@ -146,7 +146,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		internal static Task<Document> WithFrozenPartialSemanticsAsync (Document doc, CancellationToken token)
 		{
-			return doc.WithFrozenPartialSemanticsAsync (token);
+			return Task.FromResult (doc.WithFrozenPartialSemantics (token));
 		}
 
 		bool addEventHandlersInInitialization = true;
@@ -472,7 +472,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			result.AutoCompleteUniqueMatch = (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand);
 
-			var partialDoc = await analysisDocument.WithFrozenPartialSemanticsAsync (token).ConfigureAwait (false);
+			var partialDoc = analysisDocument.WithFrozenPartialSemantics (token);
 			var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
 			var syntaxContext = CSharpSyntaxContext.CreateContext (DocumentContext.RoslynWorkspace, semanticModel, completionContext.TriggerOffset, token);
 
@@ -754,7 +754,7 @@ namespace MonoDevelop.CSharp.Completion
 			var caretOffset = Editor.CaretOffset;
 			if (analysisDocument == null || startOffset > caretOffset)
 				return -1;
-			var partialDoc = await analysisDocument.WithFrozenPartialSemanticsAsync (token).ConfigureAwait (false);
+			var partialDoc = analysisDocument.WithFrozenPartialSemantics (token);
 			var result = await ParameterUtil.GetCurrentParameterIndex (partialDoc, startOffset, caretOffset, token).ConfigureAwait (false);
 			return result.ParameterIndex;
 		}

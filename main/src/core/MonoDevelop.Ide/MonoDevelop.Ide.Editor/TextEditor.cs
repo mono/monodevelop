@@ -1051,7 +1051,7 @@ namespace MonoDevelop.Ide.Editor
 			MimeTypeChanged += TextEditor_MimeTypeChanged;
 			TextEditor_MimeTypeChanged (null, null);
 
-			this.TextView = Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.TextEditorFactoryService.CreateTextView(this) as Microsoft.VisualStudio.Text.Editor.ITextView;
+			this.TextView = Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.TextEditorFactoryService.CreateTextView(this);
 		}
 
 		void TextEditor_FileNameChanged (object sender, EventArgs e)
