@@ -55,7 +55,7 @@ namespace MonoDevelop.AzureFunctions
 
 			this.project = project;
 
-			Width = 640;
+			Width = 800;
 			Height = 480;
 
 			var listView = CreateItemTemplateList ();
@@ -64,12 +64,12 @@ namespace MonoDevelop.AzureFunctions
 			scrollView = new ScrollView { BorderVisible = false };
 			scrollView.Show ();
 
-			var hbox = new HBox { Spacing = 6 };
-			hbox.PackStart (listView, true, true);
-			hbox.PackStart (scrollView, true, true);
-			hbox.Show ();
+			var paned = new HPaned ();
+			paned.Panel1.Content = listView;
+			paned.Panel2.Content = scrollView;
+			paned.Show ();
 
-			Content = hbox;
+			Content = paned;
 
 			if (model.RowCount > 0) {
 				listView.SelectRow (0);
@@ -137,10 +137,17 @@ namespace MonoDevelop.AzureFunctions
 
 		protected override async void OnCommandActivated (Command cmd)
 		{
-			if (cmd == Command.Ok)
-				await IdeApp.Services.TemplatingService.ProcessTemplate (parameters.Template, project, parameters.Configuration);
+			if (cmd == Command.Ok) {
+				var configuration = parameters.Configuration;
+
+				configuration.Directory = project.BaseDirectory;
+
+				await IdeApp.Services.TemplatingService.ProcessTemplate (parameters.Template, project, configuration);
+			}
 
 			base.OnCommandActivated (cmd);
+
+			Close ();
 		}
 	}
 }

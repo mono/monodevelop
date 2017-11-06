@@ -25,6 +25,7 @@ using System;
 using System.IO;
 using System.Json;
 using System.Linq;
+using System.Globalization;
 using System.Collections.Generic;
 
 using Xwt;
@@ -36,8 +37,6 @@ namespace MonoDevelop.AzureFunctions
 {
 	public class AzureFunctionTemplateParameters : Table
 	{
-		readonly Dictionary<string, object> parameters = new Dictionary<string, object> ();
-
 		internal class SymbolName
 		{
 			public readonly string Id;
@@ -78,7 +77,7 @@ namespace MonoDevelop.AzureFunctions
 			MarginLeft = 6;
 			MarginTop = 6;
 
-			Configuration = new NewItemConfiguration ();
+			Configuration = new NewItemConfiguration { Name = template.Name };
 			Template = template;
 
 			foreach (var item in EnumerateSymbolInfo (template)) {
@@ -172,7 +171,7 @@ namespace MonoDevelop.AzureFunctions
 		{
 			var toggle = (ToggleButton) sender;
 
-			parameters[toggle.Name] = toggle.Active;
+			Configuration[toggle.Name] = toggle.Active ? "true" : "false";
 
 			toggle.Label = toggle.Active ? GettextCatalog.GetString ("True") : GettextCatalog.GetString ("False");
 		}
@@ -181,35 +180,35 @@ namespace MonoDevelop.AzureFunctions
 		{
 			var combo = (ComboBox) sender;
 
-			parameters[combo.Name] = combo.SelectedItem;
+			Configuration[combo.Name] = (string) combo.SelectedItem;
 		}
 
 		void FloatChanged (object sender, EventArgs e)
 		{
 			var spin = (SpinButton) sender;
 
-			parameters[spin.Name] = spin.Value;
+			Configuration[spin.Name] = spin.Value.ToString (CultureInfo.InvariantCulture);
 		}
 
 		void HexChanged (object sender, EventArgs e)
 		{
 			var entry = (TextEntry) sender;
 
-			parameters[entry.Name] = entry.Text;
+			Configuration[entry.Name] = entry.Text;
 		}
 
 		void IntegerChanged (object sender, EventArgs e)
 		{
 			var spin = (SpinButton) sender;
 
-			parameters[spin.Name] = Convert.ToInt32 (spin.Value);
+			Configuration[spin.Name] = Convert.ToInt32 (spin.Value).ToString (CultureInfo.InvariantCulture);
 		}
 
 		void TextChanged (object sender, TextInputEventArgs e)
 		{
 			var entry = (TextEntry) sender;
 
-			parameters[entry.Name] = entry.Text;
+			Configuration[entry.Name] = entry.Text;
 		}
 
 		Widget CreateBool (string name, JsonObject symbol, string defaultValue)
@@ -260,7 +259,7 @@ namespace MonoDevelop.AzureFunctions
 
 		Widget CreateFloat (string name, JsonObject symbol, string defaultValue)
 		{
-			double.TryParse (defaultValue, out double value);
+			double.TryParse (defaultValue, NumberStyles.Float, CultureInfo.InvariantCulture, out double value);
 			var spin = new SpinButton {
 				MinimumValue = float.MinValue,
 				MaximumValue = float.MaxValue,
@@ -287,7 +286,7 @@ namespace MonoDevelop.AzureFunctions
 
 		Widget CreateInteger (string name, JsonObject symbol, string defaultValue)
 		{
-			int.TryParse (defaultValue, out int value);
+			int.TryParse (defaultValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value);
 			var spin = new SpinButton {
 				MinimumValue = int.MinValue,
 				MaximumValue = int.MaxValue,
