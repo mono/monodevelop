@@ -44,7 +44,7 @@ namespace MonoDevelop.UnitTesting
 	{
 		string name;
 		IResultsStore resultsStore;
-		protected UnitTestResult lastResult;
+		internal UnitTestResult lastResult;
 		UnitTest parent;
 		TestStatus status;
 		WorkspaceObject ownerSolutionItem;
@@ -149,7 +149,7 @@ namespace MonoDevelop.UnitTesting
 
 		public bool IsHistoricResult {
 			get { return historicResult; }
-			protected set { historicResult = value; }
+			internal set { historicResult = value; }
 		}
 		
 		public UnitTestCollection GetRegressions (DateTime fromDate, DateTime toDate)
