@@ -548,6 +548,7 @@ namespace MonoDevelop.Core
 		public readonly ConfigurationProperty<string> UserInterfaceLanguage = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceLanguage", "");
 		public readonly ConfigurationProperty<MonoDevelop.Projects.MSBuild.MSBuildVerbosity> MSBuildVerbosity = ConfigurationProperty.Create ("MonoDevelop.Ide.MSBuildVerbosity", MonoDevelop.Projects.MSBuild.MSBuildVerbosity.Normal);
 		public readonly ConfigurationProperty<bool> BuildWithMSBuild = ConfigurationProperty.Create ("MonoDevelop.Ide.BuildWithMSBuild", true);
+		public readonly ConfigurationProperty<bool> SkipBuildingUnmodifiedProjects = ConfigurationProperty.Create ("MonoDevelop.Ide.SkipBuildingUnmodifiedProjects", false);
 		public readonly ConfigurationProperty<bool> ParallelBuild = ConfigurationProperty.Create ("MonoDevelop.ParallelBuild", true);
 
 		public readonly ConfigurationProperty<string> AuthorName = ConfigurationProperty.Create ("Author.Name", Environment.UserName, oldName:"ChangeLogAddIn.Name");
