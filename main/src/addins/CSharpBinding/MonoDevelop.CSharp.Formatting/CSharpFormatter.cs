@@ -42,6 +42,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.Text;
+using Mono.Options;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -90,12 +91,12 @@ namespace MonoDevelop.CSharp.Formatting
 			OnTheFlyFormatter.Format (editor, context, startOffset, startOffset + length);
 		}
 
-		public static string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string input, int startOffset, int endOffset)
+		public static string FormatText (Microsoft.CodeAnalysis.Options.OptionSet optionSet, string input, int startOffset, int endOffset)
 		{
 			var inputTree = CSharpSyntaxTree.ParseText (input);
 
 			var root = inputTree.GetRoot ();
-			var doc = Formatter.Format (root, new TextSpan (startOffset, endOffset - startOffset), TypeSystemService.Workspace, policy.CreateOptions (textPolicy));
+			var doc = Formatter.Format (root, new TextSpan (startOffset, endOffset - startOffset), TypeSystemService.Workspace, optionSet);
 			var result = doc.ToFullString ();
 			return result.Substring (startOffset, endOffset + result.Length - input.Length - startOffset);
 		}
@@ -106,7 +107,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var policy = policyParent.Get<CSharpFormattingPolicy> (chain);
 			var textPolicy = policyParent.Get<TextStylePolicy> (chain);
 
-			return new StringTextSource (FormatText (policy, textPolicy, input.Text, startOffset, startOffset + length));
+			return new StringTextSource (FormatText (policy.CreateOptions (textPolicy), input.Text, startOffset, startOffset + length));
 		}
 	}
 }

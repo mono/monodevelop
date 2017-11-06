@@ -55,17 +55,6 @@ namespace MonoDevelop.CSharp.Formatting
 
 		readonly static IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 
-		CSharpFormattingPolicy Policy {
-			get {
-				return DocumentContext.GetPolicy<CSharpFormattingPolicy> (types);
-			}
-		}
-
-		TextStylePolicy TextStylePolicy {
-			get {
-				return DocumentContext.GetPolicy<TextStylePolicy> (types);
-			}
-		}
 
 		char lastCharInserted;
 
@@ -150,7 +139,7 @@ namespace MonoDevelop.CSharp.Formatting
 		void HandleTextOptionsChanged (object sender, EventArgs e)
 		{
 			//var options = Editor.CreateNRefactoryTextEditorOptions ();
-			optionSet = Policy.CreateOptions (Editor.Options);
+			optionSet = DocumentContext.AnalysisDocument.GetOptionsAsync ().WaitAndGetResult (default(CancellationToken));
 			//options.IndentBlankLines = true;
 			ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine indentEngine;
 			try {
