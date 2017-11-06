@@ -779,11 +779,9 @@ namespace MonoDevelop.Ide.Gui
 			// Shows the next item in a pad that implements ILocationListPad.
 			
 			if (activeLocationList != null) {
-				using (NavigationPoint next = activeLocationList.GetNextLocation ())
-				{
-					if (next != null)
-						next.ShowDocument ();
-				}
+				NavigationPoint next = activeLocationList.GetNextLocation ();
+				if (next != null)
+					next.ShowDocument ();
 			}
 		}
 		
@@ -792,11 +790,9 @@ namespace MonoDevelop.Ide.Gui
 			// Shows the previous item in a pad that implements ILocationListPad.
 			
 			if (activeLocationList != null) {
-				using (NavigationPoint next = activeLocationList.GetPreviousLocation ())
-				{
-					if (next != null)
-						next.ShowDocument ();
-				}
+				NavigationPoint next = activeLocationList.GetPreviousLocation ();
+				if (next != null)
+					next.ShowDocument ();
 			}
 		}
 		
