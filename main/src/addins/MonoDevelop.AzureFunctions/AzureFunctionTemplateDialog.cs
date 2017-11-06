@@ -55,6 +55,7 @@ namespace MonoDevelop.AzureFunctions
 
 			this.project = project;
 
+			Title = GettextCatalog.GetString ("New Azure Function");
 			Width = 800;
 			Height = 480;
 
@@ -78,6 +79,14 @@ namespace MonoDevelop.AzureFunctions
 			}
 
 			Buttons.Add (Command.Ok, Command.Cancel);
+		}
+
+		static string Unquote (string text)
+		{
+			if (text.Length >= 2 && text[0] == '"' && text[text.Length - 1] == '"')
+				return text.Substring (1, text.Length - 2);
+
+			return text;
 		}
 
 		ListView CreateItemTemplateList ()
@@ -105,12 +114,12 @@ namespace MonoDevelop.AzureFunctions
 					JsonValue value;
 
 					if (json != null && json.TryGetValue ("icon", out value) && value.JsonType == JsonType.String)
-						path = value.ToString ();
+						path = Unquote (value.ToString ());
 				}
 
 				if (path != null) {
 					try {
-						using (var stream = template.GetStream ("${TemplateConfigDirectory}" + path))
+						using (var stream = template.GetStream ("${TemplateConfigDirectory}/" + path))
 							icon = Image.FromStream (stream);
 					} catch {
 						icon = null;
