@@ -72,7 +72,7 @@ namespace MonoDevelop.UnitTesting
 
 			var singleTestSuffix = String.Empty;
 			if (test is UnitTestGroup unitTestGroup) 
-				singleTestSuffix =  GetSuffix (unitTestGroup);
+				singleTestSuffix =  GetSuffix (unitTestGroup, treeBuilder.Options ["CombineTestNamespaces"] );
 
 			var title = RemoveGenericArgument (test.Title);
 			title =  test.Title + singleTestSuffix ;
@@ -100,24 +100,21 @@ namespace MonoDevelop.UnitTesting
 			}
 		}
 
-		static string GetSuffix (UnitTestGroup unitTestGroup)
+		static string GetSuffix (UnitTestGroup unitTestGroup, bool combineNested )
 		{
 			var rootTitle = unitTestGroup?.Title;
 			var stringBuilder = new StringBuilder ();
 			while (unitTestGroup != null)
-					if (ContainsSingleUnitTestGroup (unitTestGroup) && !(unitTestGroup is SolutionFolderTestGroup)) {
-						var testCollection = unitTestGroup.Tests;
-						var singleChildTestGroup = testCollection [0] as UnitTestGroup;
-						stringBuilder.Append (".")
-									 .Append (singleChildTestGroup.Title);
+					if (ContainsUnitTestCanMerge (unitTestGroup) && 
+				        !(unitTestGroup is SolutionFolderTestGroup)) {
+							var testCollection = unitTestGroup.Tests;
+							var singleChildTestGroup = testCollection [0] as UnitTestGroup;
+							if(singleChildTestGroup.CanMergeWithParent && combineNested)
+								stringBuilder.Append (".").Append (singleChildTestGroup.Title);
 						unitTestGroup = singleChildTestGroup;
 					} else
 						unitTestGroup = null;
-
-			var result = stringBuilder.ToString ();
-			if (result.TrimStart ('.') == rootTitle)
-				result = String.Empty;
-			return result; 
+			return stringBuilder.ToString ();
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -126,7 +123,7 @@ namespace MonoDevelop.UnitTesting
 			if (test == null)
 				return;
 
-			if (ContainsSingleUnitTestGroup (test)) {
+			if (ContainsUnitTestCanMerge (test)  ) {
 				BuildChildNodes (test, builder);
 				return;
 			}
@@ -135,8 +132,9 @@ namespace MonoDevelop.UnitTesting
 
 		void BuildChildNodes (UnitTestGroup test, ITreeBuilder builder)
 		{
+			var combineTestNamespaces = builder.Options ["CombineTestNamespaces"];
 			bool isSolution = test is SolutionFolderTestGroup;
-			if (!isSolution && ContainsSingleUnitTestGroup(test)) {
+			if (!isSolution && ContainsUnitTestCanMerge(test) && combineTestNamespaces) {
 				var unitTestGroup = test.Tests[0] as UnitTestGroup;
 				BuildChildNodes (unitTestGroup, builder);
 				return;
@@ -144,8 +142,9 @@ namespace MonoDevelop.UnitTesting
 			builder.AddChildren (test.Tests);
 		}
 
-		static bool ContainsSingleUnitTestGroup(UnitTestGroup test) => 
-						test.Tests.Count == 1 && test.Tests[0] is UnitTestGroup;
+		static bool ContainsUnitTestCanMerge(UnitTestGroup test) => 
+						test.Tests.Count == 1 && test.Tests[0] is UnitTestGroup &&
+		                test.Tests [0].CanMergeWithParent;
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
