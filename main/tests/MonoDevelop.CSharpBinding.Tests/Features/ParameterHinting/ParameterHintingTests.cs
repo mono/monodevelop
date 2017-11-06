@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 	[TestFixture]
 	class ParameterHintingTests : TestBase
 	{
-		internal static MonoDevelop.Ide.CodeCompletion.ParameterHintingResult CreateProvider(string text)
+		internal static MonoDevelop.Ide.CodeCompletion.ParameterHintingResult CreateProvider(string text, bool force = false)
 		{
 			string parsedText;
 			string editorText;
@@ -113,7 +113,14 @@ namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 			}
 			var document = workspace.CurrentSolution.GetDocument(documentId);
 			var semanticModel = document.GetSemanticModelAsync().Result;
-			return engine.GetParameterDataProviderAsync(document, cursorPosition).Result;
+			if (force) {
+				var workspace1 = TypeSystemService.Workspace;
+				var mefExporter = (IMefHostExportProvider)workspace1.Services.HostServices;
+				var helpProviders = mefExporter.GetExports<ISignatureHelpProvider, LanguageMetadata> ()
+					.FilterToSpecificLanguage (LanguageNames.CSharp).ToList ();
+				return engine.GetParameterDataProviderAsync (helpProviders, document, cursorPosition, new SignatureHelpTriggerInfo (SignatureHelpTriggerReason.InvokeSignatureHelpCommand)).Result;
+			} else
+				return engine.GetParameterDataProviderAsync (document, cursorPosition).Result;
 		}
 		
 		/// <summary>
@@ -1358,6 +1365,23 @@ class Bar : Foo
 ");
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (2, provider.Count);
+		}
+
+		[Test]
+		public void TestConstructorInsideMethodCall()
+		{
+			var provider = CreateProvider (
+				@"
+class MainClass
+{
+	public static void Main(string[] args)
+	{
+		System.Console.WriteLine(new string($));
+	}
+}
+", true);
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (8, provider.Count);
 		}
 	}
 }
