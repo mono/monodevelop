@@ -88,11 +88,8 @@ namespace MonoDevelop.CSharp.Formatting
 								span = new TextSpan (parent.FullSpan.Start, editor.CaretOffset - parent.FullSpan.Start);
 						}
 					}
-
 					if (optionSet == null) {
-						var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-						var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
-						optionSet = policy.CreateOptions (textPolicy);
+						optionSet = await context.AnalysisDocument.GetOptionsAsync ();
 					}
 					var rules = Formatter.GetDefaultFormattingRules (analysisDocument);
 					var changes = Formatter.GetFormattedTextChanges (root, SpecializedCollections.SingletonEnumerable (span), context.RoslynWorkspace, optionSet, rules, default(CancellationToken));

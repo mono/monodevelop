@@ -719,7 +719,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 			var types = DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 			var textPolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
-			texteditor.Text = CSharpFormatter.FormatText (profile, textPolicy, text, 0, text.Length);
+
+			texteditor.Text = CSharpFormatter.FormatText (profile.CreateOptions (textPolicy), text, 0, text.Length);
 		}
 		
 		static PropertyInfo GetProperty (TreeModel model, TreeIter iter)

@@ -9620,6 +9620,7 @@
     <Compile Include="MonoDevelop.Ide.Editor\OSXEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectCapabilityFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\OrFileTemplateCondition.cs" />
+    <Compile Include="MonoDevelop.Ide.EditorConfig\EditorConfigDocumentOptionsProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9665,6 +9666,7 @@
     <Folder Include="MonoDevelop.Components\Xwt\" />
     <Folder Include="MonoDevelop.Components.AtkCocoaHelper\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Markdown\" />
+    <Folder Include="MonoDevelop.Ide.EditorConfig\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

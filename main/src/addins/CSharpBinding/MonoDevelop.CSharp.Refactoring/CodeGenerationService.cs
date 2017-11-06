@@ -120,9 +120,7 @@ namespace MonoDevelop.Refactoring
 
 			var newRoot = root.ReplaceNode (typeDecl, typeDecl.AddMembers ((MemberDeclarationSyntax)newMember.WithAdditionalAnnotations (Simplifier.Annotation, Formatter.Annotation)));
 			document = document.WithSyntaxRoot (newRoot);
-			var policy = project.Policies.Get<CSharpFormattingPolicy> ("text/x-csharp");
-			var textPolicy = project.Policies.Get<TextStylePolicy> ("text/x-csharp");
-			var projectOptions = policy.CreateOptions (textPolicy);
+			var projectOptions = await document.GetOptionsAsync (cancellationToken);
 
 			document = await Formatter.FormatAsync (document, Formatter.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
 			document = await Simplifier.ReduceAsync (document, Simplifier.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
@@ -159,9 +157,7 @@ namespace MonoDevelop.Refactoring
 
 			var newRoot = root.ReplaceNode (typeDecl, typeDecl.AddMembers ((MemberDeclarationSyntax)newMember.WithAdditionalAnnotations (Simplifier.Annotation, Formatter.Annotation, insertedMemberAnnotation)));
 
-			var policy = project.Policies.Get<CSharpFormattingPolicy> ("text/x-csharp");
-			var textPolicy = project.Policies.Get<TextStylePolicy> ("text/x-csharp");
-			var projectOptions = policy.CreateOptions (textPolicy);
+			var projectOptions = await document.GetOptionsAsync (cancellationToken);
 
 			document = document.WithSyntaxRoot (newRoot);
 			document = await Formatter.FormatAsync (document, Formatter.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
