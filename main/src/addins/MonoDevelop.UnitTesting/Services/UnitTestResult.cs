@@ -251,8 +251,27 @@ namespace MonoDevelop.UnitTesting
 			var unitTestResult =  obj as UnitTestResult;
 			if (unitTestResult == null)
 				return false;
-			return GetHashCode () == unitTestResult.GetHashCode ();
+			return EqualsHelper (this, unitTestResult);
 		}
+
+		bool EqualsHelper (UnitTestResult firstResult, UnitTestResult secondResult)
+		{
+			return  firstResult.Status == secondResult.Status &&
+					firstResult.IsFailure == secondResult.IsFailure &&
+					firstResult.IsSuccess == secondResult.IsSuccess &&
+					firstResult.IsInconclusive == secondResult.IsInconclusive &&
+					firstResult.IsNotRun == secondResult.IsNotRun &&
+					firstResult.Passed == secondResult.Passed &&
+					firstResult.Errors == secondResult.Errors &&
+					firstResult.Failures == secondResult.Failures &&
+					firstResult.ErrorsAndFailures == secondResult.ErrorsAndFailures &&
+					firstResult.TestsNotRun == secondResult.TestsNotRun &&
+					firstResult.Inconclusive == secondResult.Inconclusive &&
+					firstResult.NotRunnable == secondResult.NotRunnable &&
+					firstResult.Skipped == secondResult.Skipped &&
+					firstResult.Ignored == secondResult.Ignored;
+		}
+
 	}
 }
 
