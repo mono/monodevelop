@@ -28,6 +28,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.VisualStudio.CodingConventions;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -52,6 +53,7 @@ namespace MonoDevelop.Ide.Editor
 		static DefaultSourceEditorOptions instance;
 		//static TextStylePolicy defaultPolicy;
 		static bool inited;
+		ICodingConventionContext context;
 
 		public static DefaultSourceEditorOptions Instance {
 			get { return instance; }
@@ -278,7 +280,7 @@ namespace MonoDevelop.Ide.Editor
 			removeTrailingWhitespaces = currentPolicy.RemoveTrailingWhitespace; //PropertyService.Get ("RemoveTrailingWhitespaces", true);
 		}
 
-		public ITextEditorOptions WithTextStyle (MonoDevelop.Ide.Gui.Content.TextStylePolicy policy)
+		public DefaultSourceEditorOptions WithTextStyle (MonoDevelop.Ide.Gui.Content.TextStylePolicy policy)
 		{
 			if (policy == null)
 				throw new ArgumentNullException ("policy");
@@ -286,6 +288,12 @@ namespace MonoDevelop.Ide.Editor
 			result.UpdateStylePolicy (policy);
 			result.Changed = null;
 			return result;
+		}
+
+		internal void SetContext (ICodingConventionContext context)
+		{
+			this.context = context;
+
 		}
 
 		#region new options
@@ -411,6 +419,8 @@ namespace MonoDevelop.Ide.Editor
 		string defaultEolMarker = Environment.NewLine;
 		public string DefaultEolMarker {
 			get {
+				if (context != null && context.CurrentConventions.UniversalConventions.TryGetLineEnding (out string result))
+					return result;
 				return defaultEolMarker;
 			}
 			set {
@@ -463,6 +473,8 @@ namespace MonoDevelop.Ide.Editor
 		bool tabsToSpaces = true;
 		public bool TabsToSpaces {
 			get {
+				if (context != null && context.CurrentConventions.UniversalConventions.TryGetIndentStyle (out Microsoft.VisualStudio.CodingConventions.IndentStyle result))
+					return result == Microsoft.VisualStudio.CodingConventions.IndentStyle.Spaces;
 				return tabsToSpaces;
 			}
 			set {
@@ -477,6 +489,9 @@ namespace MonoDevelop.Ide.Editor
 		int indentationSize = 4;
 		public int IndentationSize {
 			get {
+				if (context != null && context.CurrentConventions.UniversalConventions.TryGetIndentSize (out int result)) {
+					return result;
+				}
 				return indentationSize;
 			}
 			set {
@@ -497,6 +512,9 @@ namespace MonoDevelop.Ide.Editor
 		
 		public int TabSize {
 			get {
+				if (context != null && context.CurrentConventions.UniversalConventions.TryGetTabWidth (out int result)) {
+					return result;
+				}
 				return IndentationSize;
 			}
 			set {
@@ -508,6 +526,8 @@ namespace MonoDevelop.Ide.Editor
 		bool removeTrailingWhitespaces = true;
 		public bool RemoveTrailingWhitespaces {
 			get {
+				if (context != null && context.CurrentConventions.UniversalConventions.TryGetAllowTrailingWhitespace (out bool result))
+					return result;
 				return removeTrailingWhitespaces;
 			}
 			set {
@@ -752,6 +772,7 @@ namespace MonoDevelop.Ide.Editor
 		public bool SmartBackspace{
 			get {
 				return smartBackspace;
+
 			}
 			set {
 				if (smartBackspace.Set (value))

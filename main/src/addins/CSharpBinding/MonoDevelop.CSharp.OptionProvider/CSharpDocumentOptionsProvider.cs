@@ -33,6 +33,11 @@ using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects.Policies;
+using Microsoft.VisualStudio.CodingConventions;
+using System.IO;
+using MonoDevelop.Core;
+using System.Linq;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.OptionProvider
 {
@@ -45,7 +50,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 			this.workspace = workspace;
 		}
 
-		Task<IDocumentOptions> IDocumentOptionsProvider.GetOptionsForDocumentAsync (Document document, CancellationToken cancellationToken)
+		async Task<IDocumentOptions> IDocumentOptionsProvider.GetOptionsForDocumentAsync (Document document, CancellationToken cancellationToken)
 		{
 			var mdws = (MonoDevelopWorkspace)workspace;
 			var project = mdws?.GetMonoProject (document.Project.Id);
@@ -59,28 +64,61 @@ namespace MonoDevelop.CSharp.OptionProvider
 				policy = policyParent.Get<CSharpFormattingPolicy> (CSharpFormatter.MimeType);
 				textpolicy = policyParent.Get<TextStylePolicy> (CSharpFormatter.MimeType);
 			}
-			Console.WriteLine ("create document options for : " + document.FilePath);
-			return Task.FromResult<IDocumentOptions>(new DocumentOptions(policy.CreateOptions (textpolicy)));
+			var path = GetPath (document);
+			ICodingConventionContext conventions = null;
+			try {
+				if (path != null)
+					conventions = await EditorConfigService.GetEditorConfigContext (path, cancellationToken);
+			} catch (Exception e) {
+				LoggingService.LogError("Error while loading coding conventions.", e);
+			}
+			return new DocumentOptions(policy.CreateOptions (textpolicy), conventions.CurrentConventions);
+		}
+
+		static string GetPath(Document document)
+		{
+			if (document.FilePath != null)
+				return document.FilePath;
+
+			// The file might not actually have a path yet, if it's a file being proposed by a code action. We'll guess a file path to use
+			if (document.Name != null && document.Project.FilePath != null) {
+				return Path.Combine (Path.GetDirectoryName (document.Project.FilePath), document.Name);
+			}
+
+			// Really no idea where this is going, so bail
+			return null;
 		}
 
 		class DocumentOptions : IDocumentOptions
 		{
-			OptionSet optionSet;
+			readonly OptionSet optionSet;
+			readonly ICodingConventionsSnapshot codingConventionsSnapshot;
 
-			public DocumentOptions (OptionSet optionSet)
+			public DocumentOptions (OptionSet optionSet, ICodingConventionsSnapshot codingConventionsSnapshot)
 			{
 				this.optionSet = optionSet;
+				this.codingConventionsSnapshot = codingConventionsSnapshot;
 			}
 
 			public bool TryGetDocumentOption (Document document, OptionKey option, OptionSet underlyingOptions, out object value)
 			{
-				Console.WriteLine ("Try get option : "+  option.Option.Name);
+				var editorConfigPersistence = option.Option.StorageLocations.OfType<IEditorConfigStorageLocation> ().SingleOrDefault ();
+				if (editorConfigPersistence != null) {
+					var allRawConventions = codingConventionsSnapshot.AllRawConventions;
+					try {
+						var underlyingOption = underlyingOptions.GetOption (option);
+						if (editorConfigPersistence.TryGetOption (underlyingOption, allRawConventions, option.Option.Type, out value))
+							return true;
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error while getting editor config preferences.", ex);
+					}
+				}
 				var result = optionSet.GetOption (option);
+
 				if (result == underlyingOptions.GetOption (option)) {
 					value = null;
 					return false;
 				}
-				Console.WriteLine ("found option !!!");
 				value = result;
 				return true;
 			}

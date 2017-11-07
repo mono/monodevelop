@@ -113,6 +113,7 @@ namespace MonoDevelop.CSharp.Formatting
 				HandleTextOptionsChanged (this, EventArgs.Empty);
 				Editor.TextChanging += HandleTextReplacing;
 				Editor.TextChanged += HandleTextReplaced;
+				DocumentContext.AnalysisDocumentChanged += HandleTextOptionsChanged;
 			}
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleTextOptionsChanged;
@@ -136,10 +137,15 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		void HandleTextOptionsChanged (object sender, EventArgs e)
+		async void HandleTextOptionsChanged (object sender, EventArgs e)
 		{
 			//var options = Editor.CreateNRefactoryTextEditorOptions ();
-			optionSet = DocumentContext.AnalysisDocument.GetOptionsAsync ().WaitAndGetResult (default(CancellationToken));
+			var optionTask = DocumentContext?.AnalysisDocument?.GetOptionsAsync ();
+			if (optionTask == null)
+				return;
+			optionSet = await optionTask;
+			if (optionSet == null)
+					return;
 			//options.IndentBlankLines = true;
 			ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine indentEngine;
 			try {
@@ -176,6 +182,7 @@ namespace MonoDevelop.CSharp.Formatting
 				Editor.IndentationTracker  = null;
 				Editor.TextChanging -= HandleTextReplacing;
 				Editor.TextChanged -= HandleTextReplaced;
+				DocumentContext.AnalysisDocumentChanged -= HandleTextOptionsChanged;
 			}
 			IdeApp.Workspace.ActiveConfigurationChanged -= HandleTextOptionsChanged;
 			CompletionWindowManager.WindowClosed -= CompletionWindowManager_WindowClosed;
