@@ -47,6 +47,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using System.Collections.Immutable;
 using System.Threading;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace Mono.TextEditor
 {
@@ -1335,15 +1336,9 @@ namespace Mono.TextEditor
 				return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
 			}
 			task.ContinueWith (t => {
-				if (token.IsCancellationRequested)
-					return;
-				Runtime.RunInMainThread (delegate {
-					if (token.IsCancellationRequested)
-						return;
-					cachedLines [lineNumber] = t.Result;
-					Document.CommitLineUpdate (line);
-				});
-			});
+				cachedLines [lineNumber] = t.Result;
+				Document.CommitLineUpdate (line);
+			}, token, TaskContinuationOptions.OnlyOnRanToCompletion, Runtime.MainTaskScheduler);
 			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
 		}
 
