@@ -1330,12 +1330,13 @@ namespace Mono.TextEditor
 			}
 			var token = cacheSrc.Token;
 			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
-			task.Wait (100);
 			if (task.IsCompleted) {
 				cachedLines [lineNumber] = task.Result;
 				return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
 			}
 			task.ContinueWith (t => {
+				if (token.IsCancellationRequested)
+					return;
 				Runtime.RunInMainThread (delegate {
 					if (token.IsCancellationRequested)
 						return;
