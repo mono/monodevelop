@@ -211,6 +211,29 @@
       <HintPath>..\..\..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <PropertyGroup> 
+    <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Windows_NT'">$(MSBuildToolsPath)\</MSBuild_OSS_BinDir> 
+    <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin` 
+         when building with msbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/msbuild/*/bin` 
+ 	       Prefer referencing msbuild 15.* assemblies over 14.1 . At runtime, we use correct one anyway 
+    --> 
+    <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Unix' and '$(MSBuild_OSS_BinDir)' == '' and Exists('$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\MSBuild.exe')">$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\</MSBuild_OSS_BinDir> 
+    <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Unix' and '$(MSBuild_OSS_BinDir)' == '' and Exists('$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\MSBuild.dll')">$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\</MSBuild_OSS_BinDir> 
+  </PropertyGroup> 
+  <ItemGroup> 
+    <Reference Include="Microsoft.Build"> 
+      <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.dll</HintPath> 
+      <Private>False</Private> 
+    </Reference> 
+    <Reference Include="Microsoft.Build.Framework"> 
+      <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.Framework.dll</HintPath> 
+      <Private>False</Private> 
+    </Reference> 
+    <Reference Include="Microsoft.Build.Utilities.Core"> 
+      <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.Utilities.Core.dll</HintPath> 
+      <Private>False</Private> 
+    </Reference>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
@@ -9620,6 +9643,9 @@
     <Compile Include="MonoDevelop.Ide.Editor\OSXEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectCapabilityFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\OrFileTemplateCondition.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\BuildLogDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\BuildOutputViewContent.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\BuildOutputWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
