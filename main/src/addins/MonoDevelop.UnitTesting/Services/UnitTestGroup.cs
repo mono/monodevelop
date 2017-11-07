@@ -78,7 +78,7 @@ namespace MonoDevelop.UnitTesting
 			int skipped = 0;
 			int uniqeCount = 0;
 
-			UnitTestResult lastRes = null;
+			ResultStatus ?lastStatus = null;
 			var resultStatus = ResultStatus.Inconclusive;
 
 			foreach (var test in tests) {
@@ -88,9 +88,10 @@ namespace MonoDevelop.UnitTesting
 				failures += res.Failures;
 				skipped += res.Skipped;
 
-				if(res != lastRes)
+				if(res.Status != lastStatus)
 					uniqeCount++;
-				lastRes = res;
+				
+				lastStatus = res.Status;
 			}
 
 			if (uniqeCount == 1)
