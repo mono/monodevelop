@@ -95,7 +95,7 @@ namespace MonoDevelop.UnitTesting
 			}
 
 			if (uniqeCount == 1)
-				resultStatus = tests.FirstOrDefault ().GetLastResult ().Status;
+				resultStatus = lastStatus.Value;
 			
 			var result = new UnitTestResult () {
 				Status = resultStatus,
