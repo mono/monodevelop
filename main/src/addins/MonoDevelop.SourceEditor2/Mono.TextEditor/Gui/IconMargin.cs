@@ -226,7 +226,12 @@ namespace Mono.TextEditor
 
 		public void Dispose ()
 		{
+			marker = null;
+			editor = null;
+			margin = null;
+
 			Accessible.PerformPress -= PerformPress;
+			Accessible = null;
 		}
 
 		public void UpdateAccessibilityDetails ()

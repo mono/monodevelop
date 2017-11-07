@@ -293,6 +293,12 @@ namespace Mono.TextEditor
 			layout = layout.Kill ();
 			foldings = null;
 			startFoldings = containingFoldings = endFoldings = null;
+
+			foreach (var a in accessibles.Values) {
+				Accessible.RemoveAccessibleChild (a.Accessible);
+				a.Dispose ();
+			}
+			accessibles.Clear ();
 		}
 		
 		void DrawFoldSegment (Cairo.Context ctx, double x, double y, bool isOpen, bool isSelected)
@@ -537,7 +543,12 @@ namespace Mono.TextEditor
 
 		public void Dispose ()
 		{
+			margin = null;
+			editor = null;
+			segment = null;
+
 			Accessible.PerformPress -= PerformPress;
+			Accessible = null;
 		}
 
 		void PerformPress (object sender, EventArgs args)
