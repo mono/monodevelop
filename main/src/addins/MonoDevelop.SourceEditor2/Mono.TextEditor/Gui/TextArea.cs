@@ -332,7 +332,6 @@ namespace Mono.TextEditor
 			textEditorData = new TextEditorData (doc);
 			textEditorData.RecenterEditor += TextEditorData_RecenterEditor; 
 			textEditorData.Document.TextChanged += OnDocumentStateChanged;
-			textEditorData.Document.TextSet += OnTextSet;
 			textEditorData.Document.MarkerAdded += HandleTextEditorDataDocumentMarkerChange;
 			textEditorData.Document.MarkerRemoved += HandleTextEditorDataDocumentMarkerChange;
 			
@@ -815,7 +814,6 @@ namespace Mono.TextEditor
 			HideTooltip ();
 			Document.HeightChanged -= TextEditorDatahandleUpdateAdjustmentsRequested;
 			Document.TextChanged -= OnDocumentStateChanged;
-			Document.TextSet -= OnTextSet;
 			Document.MarkerAdded -= HandleTextEditorDataDocumentMarkerChange;
 			Document.MarkerRemoved -= HandleTextEditorDataDocumentMarkerChange;
 
@@ -3042,18 +3040,6 @@ namespace Mono.TextEditor
 			//var line = e.Line.LineNumber;
 			//textEditorData.HeightTree.SetLineHeight (line, GetLineHeight (e.Line));
 			//RedrawLine (line);
-		}
-		
-		void OnTextSet (object sender, EventArgs e)
-		{
-			DocumentLine longest = Document.longestLineAtTextSet;
-			if (longest != longestLine && longest != null) {
-				int width = (int)(longest.Length * textViewMargin.CharWidth);
-				if (width > this.longestLineWidth) {
-					this.longestLineWidth = width;
-					this.longestLine = longest;
-				}
-			}
 		}
 		#endregion
 		

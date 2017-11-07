@@ -612,7 +612,6 @@ namespace Mono.TextEditor
 		public event EventHandler<TextChangeEventArgs> TextChanged;
 		public event EventHandler<TextChangeEventArgs> TextChanging;
 
-		public event EventHandler TextSet;
 		#endregion
 
 		#region Line Splitter operations
