@@ -604,6 +604,39 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task RemoveFileLink ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-file-link-test.csproj");
+
+				string linkedFile = Path.Combine (projFile.ParentDirectory, "..", "test.txt");
+				File.WriteAllText (linkedFile, "test");
+
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (4, p.Files.Count);
+
+				var f = p.Files.First (fi => fi.FilePath.FileName == "test.txt");
+				Assert.IsTrue (f.IsLink);
+				p.Files.Remove (f);
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string expectedProjectXml = File.ReadAllText (p.FileName.ChangeName ("glob-file-link-test-saved1"));
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
 		public async Task FileUpdateRemoveMetadataDefinedInGlob ()
 		{
 			// The glob item defines a metadata. All evaluated items have that value.
@@ -956,6 +989,28 @@ namespace MonoDevelop.Projects
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (fn);
 			}
+		}
+
+		[Test]
+		public async Task RemoveFile_WhenNotUsingAdvancedGlobSupport_ShouldNotAddRemoveItemWhenFileNotDeleted ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			string expectedProjectXml = File.ReadAllText (p.FileName);
+
+			string fileName = p.BaseDirectory.Combine ("test.txt");
+			File.WriteAllText (fileName, "Test");
+			var projectFile = p.AddFile (fileName);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			p.Files.Remove (projectFile);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (expectedProjectXml, projectXml);
+
+			p.Dispose ();
 		}
 
 		[Test]

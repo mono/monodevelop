@@ -3321,10 +3321,13 @@ namespace MonoDevelop.Projects
 					if (!it.IsWildcardItem || it.ParentProject == msproject) {
 						msproject.RemoveItem (it);
 
+						if (!UseAdvancedGlobSupport)
+							continue;
+
 						var file = loadedProjectItems.FirstOrDefault (i => {
 							return i.ItemName == it.Name && (i.Include == it.Include || i.Include == it.Update);
 						}) as ProjectFile;
-						if (file != null) {
+						if (file != null && !file.IsLink) {
 							if (File.Exists (file.FilePath)) {
 								AddRemoveItemIfMissing (msproject, file);
 							} else {
