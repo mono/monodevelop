@@ -829,7 +829,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public virtual Microsoft.VisualStudio.Text.INormalizedTextChangeCollection Changes {
+			public override Microsoft.VisualStudio.Text.INormalizedTextChangeCollection Changes {
 				get {
 					return null;
 				}
@@ -895,7 +895,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public virtual Microsoft.VisualStudio.Text.INormalizedTextChangeCollection Changes {
+			public override Microsoft.VisualStudio.Text.INormalizedTextChangeCollection Changes {
 				get {
 					return operations.Count > 0 ? operations [operations.Count - 1].Changes : null;
 				}
@@ -1476,9 +1476,7 @@ namespace Mono.TextEditor
 		
 		public void EnsureOffsetIsUnfolded (int offset)
 		{
-			bool needUpdate = false;
 			foreach (FoldSegment fold in GetFoldingsFromOffset (offset).Where (f => f.IsCollapsed && f.Offset < offset && offset < f.EndOffset)) {
-				needUpdate = true;
 				fold.IsCollapsed = false;
 				InformFoldChanged(new FoldSegmentEventArgs(fold));
 			}
@@ -1486,9 +1484,7 @@ namespace Mono.TextEditor
 
 		public void EnsureSegmentIsUnfolded (int offset, int length)
 		{
-			bool needUpdate = false;
 			foreach (var fold in GetFoldingContaining (offset, length).Where (f => f.IsCollapsed)) {
-				needUpdate = true;
 				fold.IsCollapsed = false;
 				InformFoldChanged(new FoldSegmentEventArgs(fold));
 			}
