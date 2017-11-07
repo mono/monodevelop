@@ -31,6 +31,7 @@ namespace MonoDevelop.CSharp.Completion
 		public async Task<ParameterHintingResult> GetParameterDataProviderAsync (List<ISignatureHelpProvider> providers, Document document, int position, SignatureHelpTriggerInfo triggerInfo, CancellationToken token = default (CancellationToken))
 		{
 			var hintingData = new List<ParameterHintingData> ();
+			SignatureHelpItems bestSignatureHelpItems = null;
 			foreach (var provider in providers) {
 				try {
 					if (triggerInfo.TriggerReason == SignatureHelpTriggerReason.TypeCharCommand && !provider.IsTriggerCharacter (triggerInfo.TriggerCharacter.Value))
@@ -40,23 +41,29 @@ namespace MonoDevelop.CSharp.Completion
 					var signatureHelpItems = await provider.GetItemsAsync (document, position, triggerInfo, token).ConfigureAwait (false);
 					if (signatureHelpItems == null)
 						continue;
-					foreach (var item in signatureHelpItems.Items) {
-						hintingData.Add (new SignatureHelpParameterHintingData (item));
-					}
-					var tree = await document.GetSyntaxTreeAsync (token);
-					var tokenLeftOfPosition = tree.GetRoot(token).FindTokenOnLeftOfPosition (position);
-					var syntaxNode = tokenLeftOfPosition.Parent;
-					var node = syntaxNode?.FirstAncestorOrSelf<ArgumentListSyntax> ();
-					return new ParameterHintingResult (hintingData) {
-						ApplicableSpan = signatureHelpItems.ApplicableSpan,
-						SelectedItemIndex = signatureHelpItems.SelectedItemIndex,
-						ParameterListStart = node != null ? node.SpanStart : signatureHelpItems.ApplicableSpan.Start
-					};
+					if (bestSignatureHelpItems == null)
+						bestSignatureHelpItems = signatureHelpItems;
+					else if (signatureHelpItems.ApplicableSpan.Start > bestSignatureHelpItems.ApplicableSpan.Start)
+						bestSignatureHelpItems = signatureHelpItems;
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting items from parameter provider " + provider, e);
 				}
 			}
 
+			if (bestSignatureHelpItems != null) {
+				foreach (var item in bestSignatureHelpItems.Items) {
+					hintingData.Add (new SignatureHelpParameterHintingData (item));
+				}
+				var tree = await document.GetSyntaxTreeAsync (token);
+				var tokenLeftOfPosition = tree.GetRoot (token).FindTokenOnLeftOfPosition (position);
+				var syntaxNode = tokenLeftOfPosition.Parent;
+				var node = syntaxNode?.FirstAncestorOrSelf<ArgumentListSyntax> ();
+				return new ParameterHintingResult (hintingData) {
+					ApplicableSpan = bestSignatureHelpItems.ApplicableSpan,
+					SelectedItemIndex = bestSignatureHelpItems.SelectedItemIndex,
+					ParameterListStart = node != null ? node.SpanStart : bestSignatureHelpItems.ApplicableSpan.Start
+				};
+			}
 			return ParameterHintingResult.Empty;
 		}
 	}
