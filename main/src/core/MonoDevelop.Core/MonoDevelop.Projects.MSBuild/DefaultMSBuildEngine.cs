@@ -200,7 +200,9 @@ namespace MonoDevelop.Projects.MSBuild
 					context.SetPropertyValue (p.Key, p.Value);
 					pi.Properties [p.Key] = new PropertyInfo { Name = p.Key, Value = p.Value, FinalValue = p.Value };
 				}
-				//context.Log = new ConsoleMSBuildEngineLogger ();
+#if MSBUILD_EVALUATION_STATS
+				context.Log = new ConsoleMSBuildEngineLogger ();
+#endif
 				LogBeginEvaluationStage (context, "Evaluating Project: " + pi.Project.FileName);
 				LogInitialEnvironment (context);
 				EvaluateProject (pi, context);
@@ -212,26 +214,30 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		static char [] sdkPathSeparator = { ';' };
 		void EvaluateProject (ProjectInfo pi, MSBuildEvaluationContext context)
 		{
 			context.InitEvaluation (pi.Project);
 			var objects = pi.Project.GetAllObjects ();
 
 			if (!string.IsNullOrEmpty (pi.Project.Sdk)) {
-				var list = objects.ToList ();
 				var rootProject = pi.GetRootMSBuildProject ();
-				var sdkPaths = pi.Project.Sdk.Replace ('/', '\\');
-				int index = 0;
-				foreach (var sdkPath in sdkPaths.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0)) {
-					list.Insert (index++, new MSBuildImport { Sdk = sdkPath, Project = "Sdk.props" });
-					list.Add (new MSBuildImport { Sdk = sdkPath, Project = "Sdk.targets" });
-				}
-				objects = list;
+				var sdkPaths = pi.Project.Sdk.Replace ('/', '\\')
+				                 .Split (sdkPathSeparator, StringSplitOptions.RemoveEmptyEntries)
+				                 .Select (s => s.Trim ())
+				                 .Where (s => s.Length > 0)
+				                 .ToList ();
+
+				objects = sdkPaths.Select (sdkPath => new MSBuildImport { Sdk = sdkPath, Project = "Sdk.props" })
+				                  .Concat (objects)
+				                  .Concat (sdkPaths.Select (sdkPath => new MSBuildImport { Sdk = sdkPath, Project = "Sdk.targets" }));
 			}
 
 			// If there is a .user project file load it using a fake import item added at the end of the objects list
 			if (File.Exists (pi.Project.FileName + ".user"))
 				objects = objects.Concat (new MSBuildImport { Project = pi.Project.FileName + ".user" });
+
+			objects = objects.ToList ();
 
 			LogBeginEvaluationStage (context, "Evaluating Properies");
 			LogBeginEvalProject (context, pi);
@@ -1230,10 +1236,9 @@ namespace MonoDevelop.Projects.MSBuild
 				try {
 					ConditionExpression ce;
 					lock (conditionCache) {
-						if (conditionCache == null || !conditionCache.TryGetValue (condition, out ce))
+						if (!conditionCache.TryGetValue (condition, out ce))
 							ce = ConditionParser.ParseCondition (condition);
-						if (conditionCache != null)
-							conditionCache [condition] = ce;
+						conditionCache [condition] = ce;
 					}
 
 					if (!ce.CanEvaluateToBool (context))

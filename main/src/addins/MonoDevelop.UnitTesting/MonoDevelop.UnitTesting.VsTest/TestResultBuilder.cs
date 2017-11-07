@@ -174,7 +174,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 		string GetConsoleOutput (TestResult result)
 		{
 			if (result.Messages != null) {
-				return string.Join (Environment.NewLine, result.Messages);
+				return string.Join (Environment.NewLine, result.Messages.Select (message => message.Text));
 			}
 
 			return string.Empty;
@@ -247,8 +247,10 @@ namespace MonoDevelop.UnitTesting.VsTest
 			var result = UnitTestResult.CreateSuccess ();
 			foreach (UnitTest test in parent.Tests) {
 				UnitTestResult childResult = test.GetLastResult ();
-				result.Add (childResult);
-				UpdateCounts (result, childResult);
+				if (childResult != null) {
+					result.Add (childResult);
+					UpdateCounts (result, childResult);
+				}
 			}
 			return result;
 		}

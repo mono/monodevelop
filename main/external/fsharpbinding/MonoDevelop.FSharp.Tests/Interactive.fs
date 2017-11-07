@@ -1,4 +1,5 @@
 ﻿namespace MonoDevelopTests
+open System
 open System.IO
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -99,6 +100,26 @@ module Interactive =
             session.SendInput "type CmdResult = ErrorLevel of string * int;;"
             let succeeded = finished.WaitOne(5000)
             if succeeded then results |> should equal "type CmdResult = | ErrorLevel of string * int\n"
+            else Assert.Fail "Timeout" } |> toTask
+
+    [<Test;AsyncStateMachine(typeof<Task>)>]
+    let ``Bug 56611``() =
+        async {
+            let mutable results = String.empty
+            let! session = createSession()
+            let finished = new AutoResetEvent(false)
+            session.TextReceived
+            |> Observable.throttle (TimeSpan.FromMilliseconds 500.0)
+            |> Observable.subscribe
+                (fun output -> results <- output
+                               finished.Set() |> ignore)
+            |> ignore
+            session.SendInput "type O = { X:string };;"
+            session.SendInput "[| {X=\"\"} |];;"
+            let succeeded = finished.WaitOne(5000)
+            if succeeded then 
+                results 
+                |> should equal "val it : O [] = [|{X = \"\";}|]\n"
             else Assert.Fail "Timeout" } |> toTask
 
     [<Test;Ignore;AsyncStateMachine(typeof<Task>)>]

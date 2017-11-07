@@ -29,6 +29,7 @@ using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Core.Serialization;
 using System.Diagnostics;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VBNetBinding
 {
@@ -96,6 +97,11 @@ namespace MonoDevelop.VBNetBinding
 		public string CodePage {
 			get { return codePage; }
 			set { codePage = value ?? string.Empty; }
+		}
+		protected override void OnGetDefaultImports (List<string> imports)
+		{
+			base.OnGetDefaultImports (imports);
+			imports.Add ("$(MSBuildBinPath)\\Microsoft.VisualBasic.targets");
 		}
 
 		protected override void OnInitialize ()

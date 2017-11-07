@@ -44,6 +44,7 @@ using MonoDevelop.CodeIssues;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Refactoring;
 using RefactoringEssentials;
@@ -100,14 +101,13 @@ namespace MonoDevelop.CodeActions
 				AddFixMenuItem (editor, menu, ref mnemonic, fix.CodeAction);
 			}
 
-			first = false;
-
 			var warningsAtCaret = (await editor.DocumentContext.AnalysisDocument.GetSemanticModelAsync (cancellationToken))
 				.GetDiagnostics (new TextSpan (editor.CaretOffset, 0))
 				.Where (diag => diag.Severity == DiagnosticSeverity.Warning).ToList ();
 
 			var caretSpan = new TextSpan (editor.CaretOffset, 0);
 
+			first = true;
 			foreach (var warning in warningsAtCaret) {
 
 				var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", warning.Descriptor.Title);
@@ -126,6 +126,7 @@ namespace MonoDevelop.CodeActions
 				}
 			}
 
+			first = true;
 			foreach (var diag in fixes.DiagnosticsAtCaret) {
 				var notConfigurable = DescriptorHasTag (diag.Descriptor, WellKnownDiagnosticTags.NotConfigurable);
 
@@ -192,12 +193,24 @@ namespace MonoDevelop.CodeActions
 
 			var analyzers = new [] { diagnosticAnalyzer }.ToImmutableArray ();
 
-			var fixAllDiagnosticProvider = new FixAllState.FixAllDiagnosticProvider (
-				diagnosticIds,
+			var codeFixService = CompositionManager.GetExportedValue<ICodeFixService> () as CodeFixService;
+			var fixAllDiagnosticProvider = codeFixService.CreateFixAllState (
+				provider,
+				editor.DocumentContext.AnalysisDocument,
+				FixAllProviderInfo.Create (null),
+				null,
+				null,
 				async (doc, diagnostics, token) => await GetDiagnosticsForDocument (analyzers, doc, diagnostics, token).ConfigureAwait (false),
 				(Project arg1, bool arg2, ImmutableHashSet<string> arg3, CancellationToken arg4) => {
-					return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic [] { });
-				});
+					return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic[] { });
+				}).DiagnosticProvider;
+
+			//var fixAllDiagnosticProvider = new FixAllState.FixAllDiagnosticProvider (
+			//	diagnosticIds,
+			//	async (doc, diagnostics, token) => await GetDiagnosticsForDocument (analyzers, doc, diagnostics, token).ConfigureAwait (false),
+			//	(Project arg1, bool arg2, ImmutableHashSet<string> arg3, CancellationToken arg4) => {
+			//		return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic [] { });
+			//	});
 
 			var ctx = new FixAllContext (
 				editor.DocumentContext.AnalysisDocument,
@@ -254,10 +267,13 @@ namespace MonoDevelop.CodeActions
 				if (!suppressionProvider.CanBeSuppressedOrUnsuppressed (diag)) {
 					continue;
 				}
-
-				var fixes = await suppressionProvider.GetSuppressionsAsync (editor.DocumentContext.AnalysisDocument, span, new [] { diag }, default (CancellationToken)).ConfigureAwait (false);
-				foreach (var fix in fixes) {
-					AddFixMenuItem (editor, menu, fix.Action);
+				try {
+					var fixes = await suppressionProvider.GetSuppressionsAsync (editor.DocumentContext.AnalysisDocument, span, new [] { diag }, default (CancellationToken)).ConfigureAwait (false);
+					foreach (var fix in fixes) {
+						AddFixMenuItem (editor, menu, fix.Action);
+					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while adding fixes", e);
 				}
 			}
 		}
@@ -387,20 +403,9 @@ namespace MonoDevelop.CodeActions
 
 				var oldSolution = documentContext.AnalysisDocument.Project.Solution;
 				var updatedSolution = oldSolution;
-				if (RefactoringService.OptionSetCreation != null)
-					documentContext.RoslynWorkspace.Options = RefactoringService.OptionSetCreation (editor, documentContext);
 				using (var undo = editor.OpenUndoGroup ()) {
-					foreach (var operation in await act.GetOperationsAsync (token)) {
-						var applyChanges = operation as ApplyChangesOperation;
-						if (applyChanges == null) {
-							operation.TryApply (documentContext.RoslynWorkspace, new RoslynProgressTracker (), token);
-							continue;
-						}
-						if (updatedSolution == oldSolution) {
-							updatedSolution = applyChanges.ChangedSolution;
-						}
-						operation.TryApply (documentContext.RoslynWorkspace, new RoslynProgressTracker (), token);
-					}
+					updatedSolution = await act.GetChangedSolutionAsync (new RoslynProgressTracker (), token);
+					documentContext.RoslynWorkspace.TryApplyChanges (updatedSolution, new RoslynProgressTracker ());
 				}
 				await TryStartRenameSession (documentContext.RoslynWorkspace, oldSolution, updatedSolution, token);
 			}

@@ -37,6 +37,7 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		CSharpCompletionTextEditorExtension completionExt;
 		ISymbol type;
+		string displayText;//This is just for caching, because Sorting completion list can call DisplayText many times
 		bool useFullName;
 
 		public ISymbol Symbol { get { return type; } }
@@ -48,6 +49,8 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		static CompletionItemRules rules = CompletionItemRules.Create (matchPriority: -10000);
         public override CompletionItemRules Rules => rules;
+		public override string DisplayText { get => displayText; }
+		public override string CompletionText { get =>  useFullName ? type.ContainingNamespace.GetFullName () + "." + type.Name : type.Name; }
 
         public override int PriorityGroup { get { return int.MinValue; } }
 
@@ -56,6 +59,7 @@ namespace MonoDevelop.CSharp.Completion
 			this.completionExt = ext;
 			this.useFullName = useFullName;
 			this.type = type;
+			this.displayText = type.ToDisplayString ();
 			this.DisplayFlags |= DisplayFlags.IsImportCompletion;
 		}
 

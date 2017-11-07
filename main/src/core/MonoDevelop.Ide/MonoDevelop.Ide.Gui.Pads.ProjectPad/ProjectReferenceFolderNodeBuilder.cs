@@ -55,6 +55,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		protected override void Initialize ()
 		{
+			base.Initialize ();
+
 			IdeApp.Workspace.ReferenceAddedToProject += OnAddReference;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnRemoveReference;
 		}
@@ -63,6 +65,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			IdeApp.Workspace.ReferenceAddedToProject -= OnAddReference;
 			IdeApp.Workspace.ReferenceRemovedFromProject -= OnRemoveReference;
+
+			base.Dispose ();
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)

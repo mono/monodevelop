@@ -730,5 +730,32 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
+		static StatusBarIcon statusIcon = null;
+		static int workspacesLoading = 0;
+
+		internal static void ShowTypeInformationGatheringIcon ()
+		{
+			Gtk.Application.Invoke ((o, args) => {
+				workspacesLoading++;
+				if (statusIcon != null)
+					return;
+				statusIcon = IdeApp.Workbench?.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-parser"));
+				if (statusIcon != null)
+					statusIcon.ToolTip = GettextCatalog.GetString ("Gathering class information");
+			});
+		}
+
+		internal static void HideTypeInformationGatheringIcon (Action callback = null)
+		{
+			Gtk.Application.Invoke ((o, args) => {
+				workspacesLoading--;
+				if (workspacesLoading == 0 && statusIcon != null) {
+					statusIcon.Dispose ();
+					statusIcon = null;
+					if (callback != null)
+						callback ();
+				}
+			});
+		}
 	}
 }

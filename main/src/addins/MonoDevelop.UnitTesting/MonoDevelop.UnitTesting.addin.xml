@@ -34,6 +34,7 @@
 		<SolutionPad id = "MonoDevelop.UnitTesting.TestPad" defaultLayout="*" defaultPlacement = "Right" defaultStatus="AutoHide" _label = "Unit Tests" icon = "nunit-pad-icon" class = "MonoDevelop.UnitTesting.TestPad" group="Unit Testing">
 			<PadOption id = "ShowTestTime" _label = "Show Test Time" defaultValue = "False" />
 			<PadOption id = "ShowTestCounters" _label = "Show Test Counters" defaultValue = "False" />
+			<PadOption id = "CombineTestNamespaces" _label = "Combine Test Namespaces" defaultValue = "True" />
 			<NodeBuilder id = "TestNode" class = "MonoDevelop.UnitTesting.TestNodeBuilder"/>
 		</SolutionPad>
 		<Pad id="MonoDevelop.UnitTesting.TestResultsPad" _label="Test Results" icon="nunit-pad-icon" class="MonoDevelop.UnitTesting.TestResultsPad" defaultPlacement = "Bottom" defaultLayout="UnitTesting" defaultStatus="AutoHide"  group="Unit Testing"/>

@@ -22,7 +22,7 @@
     <!-- Commands -->
     <PaketReferences Condition="!Exists('$(MSBuildProjectFullPath).paket.references')">$(MSBuildProjectDirectory)\paket.references</PaketReferences>
     <PaketReferences Condition="Exists('$(MSBuildProjectFullPath).paket.references')">$(MSBuildProjectFullPath).paket.references</PaketReferences>
-    <RestoreCommand>$(PaketCommand) restore --references-files "$(PaketReferences)"</RestoreCommand>
+    <RestoreCommand>$(PaketCommand) restore --references-file "$(PaketReferences)"</RestoreCommand>
     <DownloadPaketCommand>$(PaketBootStrapperCommand)</DownloadPaketCommand>
     <!-- We need to ensure packages are restored prior to assembly resolve -->
     <BuildDependsOn Condition="$(RestorePackages) == 'true'">RestorePackages; $(BuildDependsOn);</BuildDependsOn>

@@ -79,6 +79,7 @@
     <Compile Include="Mono.TextEditor.Tests\SearchAndReplaceTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\SemanticRuleTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextEditorDataTests.cs" />
+    <Compile Include="MonoDevelop.TextEditor.Extension\NavigationExtensionTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

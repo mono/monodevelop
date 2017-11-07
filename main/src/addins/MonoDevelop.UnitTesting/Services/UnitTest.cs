@@ -53,6 +53,8 @@ namespace MonoDevelop.UnitTesting
 		bool historicResult;
 		bool resultLoaded;
 
+		public virtual bool CanMergeWithParent => false;
+
 		public string FixtureTypeNamespace {
 			get;
 			set;

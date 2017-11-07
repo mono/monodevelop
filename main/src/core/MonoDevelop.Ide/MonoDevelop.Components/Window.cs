@@ -104,7 +104,7 @@ namespace MonoDevelop.Components
 				return null;
 
 			if (d is XwtWindowControl)
-				return d?.GetNativeWidget<Xwt.WindowFrame> ();
+				return d.GetNativeWidget<Xwt.WindowFrame> ();
 
 			if (d.nativeWidget is Gtk.Window)
 				return Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk).WrapWindow ((Gtk.Window)d);

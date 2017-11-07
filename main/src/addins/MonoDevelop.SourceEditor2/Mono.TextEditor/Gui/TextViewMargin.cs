@@ -282,6 +282,14 @@ namespace Mono.TextEditor
 			textEditor.TextArea.FocusInEvent += HandleFocusInEvent;
 			textEditor.TextArea.FocusOutEvent += HandleFocusOutEvent;
 			textEditor.VScroll += HandleVAdjustmentValueChanged;
+
+			textEditor.Document.SyntaxModeChanged += HandleSyntaxModeChanged;
+		}
+
+		void HandleSyntaxModeChanged(object sender, EventArgs e)
+		{
+			PurgeLayoutCache ();
+			textEditor.Document.CommitUpdateAll ();
 		}
 
 		void TextEditor_HighlightSearchPatternChanged (object sender, EventArgs e)
@@ -667,6 +675,7 @@ namespace Mono.TextEditor
 			StopCaretThread ();
 			DisposeSearchPatternWorker ();
 			HideCodeSegmentPreviewWindow ();
+			textEditor.Document.SyntaxModeChanged -= HandleSyntaxModeChanged;
 			textEditor.VScroll -= HandleVAdjustmentValueChanged;
 			textEditor.HighlightSearchPatternChanged -= TextEditor_HighlightSearchPatternChanged;
 

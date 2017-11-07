@@ -129,3 +129,13 @@ module TypeSignatureHelp =
         """
         |> getSignatureHelp
         |> should equal "(unit -> unit)"
+
+    [<Test>]
+    let ``C# Interface implementation``() =
+        """
+        type MyType() =
+            interface System.IComparable with
+                member this.Compa$reTo(other) = 1
+        """
+        |> getSignatureHelp
+        |> should equal "(obj: obj) -> int"

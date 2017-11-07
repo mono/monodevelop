@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public TooltipInformationWindow ()
 		{
 			headLabel = new FixedWidthWrapLabel ();
-			headLabel.Indent = -20;
+			headLabel.Indent = 0;
 			headLabel.Wrap = Pango.WrapMode.WordChar;
 			headLabel.BreakOnCamelCasing = false;
 			headLabel.BreakOnPunctuation = false;

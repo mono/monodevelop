@@ -175,7 +175,7 @@ namespace MonoDevelop.Components
 						arrow.Show ();
 						((HBox)label.Parent).PackEnd (arrow, false, false, 0);
 					}
-					arrow.ArrowType = value?? Gtk.ArrowType.Down;
+					arrow.ArrowType = value.Value;
 				}
 			}
 		}

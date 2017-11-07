@@ -76,7 +76,6 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 
 			var root = ctx.AnalysisDocument.GetSyntaxRootSynchronously (cancellationToken);
 			var token = root.FindTokenOnLeftOfPosition (start);
-			return true;
 			return root.SyntaxTree.IsExpressionContext (start, token, attributes: false, cancellationToken: cancellationToken)
 				|| root.SyntaxTree.IsStatementContext (start, token, cancellationToken);
 		}

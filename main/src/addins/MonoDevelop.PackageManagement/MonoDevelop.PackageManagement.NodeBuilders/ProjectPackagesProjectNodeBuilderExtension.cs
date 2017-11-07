@@ -105,6 +105,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			packageManagementEvents.PackageOperationsFinished -= PackageOperationsFinished;
 			packageManagementEvents.PackageOperationError -= PackageOperationError;
 			packageManagementEvents.UpdatedPackagesAvailable -= UpdatedPackagesAvailable;
+
+			base.Dispose ();
 		}
 
 		public override bool CanBuildNode (Type dataType)

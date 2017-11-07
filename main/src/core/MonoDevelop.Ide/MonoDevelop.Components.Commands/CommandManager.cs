@@ -48,6 +48,15 @@ namespace MonoDevelop.Components.Commands
 {
 	public class CommandManager: IDisposable
 	{
+		// Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/Headers/Events.h
+		enum JIS_VKS {
+			Yen         = 0x5d,
+			Underscore  = 0x5e,
+			KeypadComma = 0x5f,
+			Eisu        = 0x66,
+			Kana        = 0x68
+		}
+
 		Gtk.Window rootWidget;
 		KeyBindingManager bindings;
 		Gtk.AccelGroup accelGroup;
@@ -319,11 +328,16 @@ namespace MonoDevelop.Components.Commands
 				if (PerformDefaultNSAppAction (window, ev))
 					return null;
 
-				// If the window is a gtk window and is registered in the command manager
-				// process the events through the handler.
-				var gtkWindow = MonoDevelop.Components.Mac.GtkMacInterop.GetGtkWindow (window);
-				if (gtkWindow != null && !TopLevelWindowStack.Contains (gtkWindow))
-					return null;
+				// If this is Eisu or Kana on a Japanese keyboard make sure not to exit yet or
+				// the input source will not switch as expected.
+				if (ev.KeyCode != (ushort)JIS_VKS.Eisu && ev.KeyCode != (ushort)JIS_VKS.Kana)
+				{
+					// If the window is a gtk window and is registered in the command manager
+					// process the events through the handler.
+					var gtkWindow = MonoDevelop.Components.Mac.GtkMacInterop.GetGtkWindow(window);
+					if (gtkWindow != null && !TopLevelWindowStack.Contains(gtkWindow))
+						return null;
+				}
 			}
 
 			// If a modal dialog is running then the menus are disabled, even if the commands are not

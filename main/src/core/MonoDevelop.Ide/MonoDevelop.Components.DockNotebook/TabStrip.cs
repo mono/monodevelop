@@ -138,7 +138,7 @@ namespace MonoDevelop.Components.DockNotebook
 				var img = ((Xwt.Drawing.ThemedImage)tabActiveBackImage).GetImage (Xwt.Drawing.Context.GlobalStyles);
 				tabActiveBackImage9 = img as Xwt.Drawing.NinePatchImage;
 			} else
-				tabActiveBackImage9 = tabBackImage as Xwt.Drawing.NinePatchImage;
+				tabActiveBackImage9 = tabActiveBackImage as Xwt.Drawing.NinePatchImage;
 			TabActivePadding = tabActiveBackImage9.Padding;
 		}
 

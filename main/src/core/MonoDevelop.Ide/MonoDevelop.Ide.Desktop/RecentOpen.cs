@@ -130,6 +130,7 @@ namespace MonoDevelop.Ide.Desktop
 		public override void NotifyFileRemoved (string fileName)
 		{
 			try {
+				SetFavoriteFile (fileName, false);
 				recentFiles.RemoveItem (RecentFileStorage.ToUri (fileName));
 			} catch (Exception e) {
 				LoggingService.LogError ("Can't remove from recent files list.", e);
@@ -166,23 +167,12 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			var projects = OnGetProjects ();
 			List<RecentFile> result = new List<RecentFile> ();
-			List<string> toRemove = null;
 			foreach (var f in favoriteFiles) {
-				if (!File.Exists (f)) {
-					if (toRemove == null)
-						toRemove = new List<string> ();
-					toRemove.Add (f);
-					continue;
-				}
 				var entry = projects.FirstOrDefault (p => f == p.FileName);
 				if (entry != null)
 					result.Add (entry);
 				else
 					result.Add (new RecentFile (f, Path.GetFileNameWithoutExtension (f), DateTime.Now));
-			}
-			if (toRemove != null) {
-				foreach (var f in toRemove)
-					favoriteFiles.Remove (f);
 			}
 			foreach (var e in projects)
 				if (!result.Contains (e))

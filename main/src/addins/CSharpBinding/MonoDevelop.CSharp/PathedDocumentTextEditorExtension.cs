@@ -348,7 +348,7 @@ namespace MonoDevelop.CSharp
 			var sol = (Projects.Solution) sender;
 			var p = sol.StartupItem as DotNetProject;
 			if (p != null && ownerProjects.Contains (p))
-				DocumentContext.AttachToProject (p);
+				DocumentContext?.AttachToProject (p);
 		}
 
 		#region IPathedDocument implementation
@@ -669,12 +669,14 @@ namespace MonoDevelop.CSharp
 		async static Task<PathEntry> GetRegionEntry (ParsedDocument unit, DocumentLocation loc)
 		{
 			PathEntry entry;
-			FoldingRegion reg;
+			FoldingRegion reg = null;
 			try {
-				var regions = await unit.GetUserRegionsAsync ().ConfigureAwait (false);
-				if (unit == null || !regions.Any ())
-					return null;
-				reg = regions.LastOrDefault (r => r.Region.Contains (loc));
+				if (unit != null) {
+					var regions = await unit.GetUserRegionsAsync ().ConfigureAwait (false);
+					if (!regions.Any ())
+						return null;
+					reg = regions.LastOrDefault (r => r.Region.Contains (loc));
+				}
 			} catch (AggregateException) {
 				return null;
 			} catch (OperationCanceledException) {

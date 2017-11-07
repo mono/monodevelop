@@ -346,11 +346,7 @@ namespace MonoDevelop.Xml.Editor
 
 			//attribute value completion
 			//determine whether to trigger completion within attribute values quotes
-			if ((Tracker.Engine.CurrentState is XmlAttributeValueState)
-			    //trigger on the opening quote
-			    && ((Tracker.Engine.CurrentStateLength == 1 && (currentChar == '\'' || currentChar == '"'))
-			    //or trigger on first letter of value, if unforced
-			    || (forced || Tracker.Engine.CurrentStateLength == 2))) {
+			if (Tracker.Engine.CurrentState is XmlAttributeValueState) {
 				var att = (XAttribute)Tracker.Engine.Nodes.Peek ();
 
 				if (att.IsNamed) {

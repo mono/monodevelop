@@ -153,8 +153,6 @@ namespace MonoDevelop.CodeIssues
 		internal static async Task RunAction (DocumentContext context, CodeAction action, CancellationToken cancellationToken)
 		{
 			var operations = await action.GetOperationsAsync (cancellationToken).ConfigureAwait (false);
-			if (operations == null)
-				return;
 
 			foreach (var op in operations) {
 				if (op == null)

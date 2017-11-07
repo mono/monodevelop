@@ -3,7 +3,9 @@
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <ReferencesVSEditorCopyToOutput>true</ReferencesVSEditorCopyToOutput>
+    <ReferencesRoslynCopyToOutput>true</ReferencesRoslynCopyToOutput>
   </PropertyGroup>
+  <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesVSEditor)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -113,11 +115,11 @@
       <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.Utilities.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf">
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.Wpf.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.dll</HintPath>
     </Reference>

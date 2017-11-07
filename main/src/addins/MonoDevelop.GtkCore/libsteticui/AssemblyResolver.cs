@@ -63,7 +63,7 @@ namespace Stetic {
 	
 		public AssemblyDefinition Resolve (AssemblyNameReference name, string basePath)
 		{
-			if (_assemblies.TryGetValue (name.FullName, out var asm)) {
+			if (!_assemblies.TryGetValue (name.FullName, out var asm)) {
 				if (app != null) {
 					string ares = app.ResolveAssembly (name.Name);
 					if (ares != null) {
