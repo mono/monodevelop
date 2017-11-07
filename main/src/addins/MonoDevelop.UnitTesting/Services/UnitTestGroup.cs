@@ -65,26 +65,36 @@ namespace MonoDevelop.UnitTesting
 
 		public override void ResetLastResult ()
 		{
-			foreach (var t in new List<UnitTest> (Tests))
-				t.ResetLastResult();
+			foreach (var test in Tests)
+				test.ResetLastResult();
 			base.ResetLastResult ();
 		}
 
 		static UnitTestResult GetLastResultDynamicaly (IEnumerable<UnitTest> tests)
 		{
-			var results = tests.Select (tst => tst.GetLastResult ()).ToList ();
-			var passed = results.Sum (t => t.Passed);
-			var errors = results.Sum (t => t.Errors);
-			var failures = results.Sum (t => t.Failures);
-			var skipped = results.Sum (t => t.Skipped);
+			int passed = 0; 
+			int errors = 0;
+			int failures = 0;
+			int skipped = 0;
+			int uniqeCount = 0;
+
+			UnitTestResult lastRes = null;
 			var resultStatus = ResultStatus.Inconclusive;
-			var uniqe = results.Distinct ();
-			var count = uniqe.Count ();
-		
-			if (count == 1)
-				resultStatus = uniqe.First ().Status;
-			else if(uniqe.Any(u => u.IsFailure))  
-				resultStatus = ResultStatus.Inconclusive;
+
+			foreach (var test in tests) {
+				var res = test.GetLastResult ();
+				passed += res.Passed;
+				errors += res.Errors;
+				failures += res.Failures;
+				skipped += res.Skipped;
+
+				if(res != lastRes)
+					uniqeCount++;
+				lastRes = res;
+			}
+
+			if (uniqeCount == 1)
+				resultStatus = tests.FirstOrDefault ().GetLastResult ().Status;
 			
 			var result = new UnitTestResult () {
 				Status = resultStatus,
