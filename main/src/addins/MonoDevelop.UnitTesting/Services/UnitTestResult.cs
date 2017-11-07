@@ -264,7 +264,6 @@ namespace MonoDevelop.UnitTesting
 					firstResult.Passed == secondResult.Passed &&
 					firstResult.Errors == secondResult.Errors &&
 					firstResult.Failures == secondResult.Failures &&
-					firstResult.ErrorsAndFailures == secondResult.ErrorsAndFailures &&
 					firstResult.TestsNotRun == secondResult.TestsNotRun &&
 					firstResult.Inconclusive == secondResult.Inconclusive &&
 					firstResult.NotRunnable == secondResult.NotRunnable &&
