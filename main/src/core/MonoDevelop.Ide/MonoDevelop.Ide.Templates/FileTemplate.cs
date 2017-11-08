@@ -34,6 +34,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
 using Gtk;
 using Mono.Addins;
@@ -244,13 +245,13 @@ namespace MonoDevelop.Ide.Templates
 			return node == null ? null : LoadTemplate (node);
 		}
 
-		public virtual bool Create (SolutionFolderItem policyParent, Project project, string directory, string language, string name)
+		public virtual async Task<bool> Create (SolutionFolderItem policyParent, Project project, string directory, string language, string name)
 		{
 			if (!String.IsNullOrEmpty (WizardPath)) {
 				return false;
 			} else {
 				foreach (FileDescriptionTemplate newfile in Files)
-					if (!CreateFile (newfile, policyParent, project, directory, language, name))
+					if (!await CreateFile (newfile, policyParent, project, directory, language, name))
 						return false;
 				return true;
 			}
@@ -303,13 +304,13 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
-		protected virtual bool CreateFile (FileDescriptionTemplate newfile, SolutionFolderItem policyParent, Project project, string directory, string language, string name)
+		protected virtual async Task<bool> CreateFile (FileDescriptionTemplate newfile, SolutionFolderItem policyParent, Project project, string directory, string language, string name)
 		{
 			if (project != null) {
 				var model = project.GetStringTagModel (new DefaultConfigurationSelector ());
 				newfile.SetProjectTagModel (model);
 				try {
-					if (newfile.AddToProject (policyParent, project, language, directory, name)) {
+					if (await newfile.AddToProject (policyParent, project, language, directory, name)) {
 						newfile.Show ();
 						return true;
 					}
@@ -322,14 +323,14 @@ namespace MonoDevelop.Ide.Templates
 					throw new InvalidOperationException ("Single file template expected");
 
 				if (directory != null) {
-					string fileName = singleFile.SaveFile (policyParent, project, language, directory, name);
+					string fileName = await singleFile.SaveFile (policyParent, project, language, directory, name);
 					if (fileName != null) {
 						IdeApp.Workbench.OpenDocument (fileName, project);
 						return true;
 					}
 				} else {
 					string fileName = singleFile.GetFileName (policyParent, project, language, directory, name);
-					Stream stream = singleFile.CreateFileContent (policyParent, project, language, fileName, name);
+					Stream stream = await singleFile.CreateFileContent (policyParent, project, language, fileName, name);
 
 					string mimeType = GuessMimeType (fileName);
 					IdeApp.Workbench.NewDocument (fileName, mimeType, stream);

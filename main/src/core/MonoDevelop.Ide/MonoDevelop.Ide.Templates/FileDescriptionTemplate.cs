@@ -37,6 +37,7 @@ using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core.StringParsing;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -73,7 +74,7 @@ namespace MonoDevelop.Ide.Templates
 		public abstract string Name { get; }
 		
 		public abstract void Load (XmlElement filenode, FilePath baseDirectory);
-		public abstract bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name);
+		public abstract Task<bool> AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name);
 		public abstract void Show ();
 
 		internal string CreateCondition { get; private set; }
