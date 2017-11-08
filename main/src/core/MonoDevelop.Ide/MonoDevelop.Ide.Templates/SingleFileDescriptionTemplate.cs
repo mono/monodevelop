@@ -303,10 +303,16 @@ namespace MonoDevelop.Ide.Templates
 			
 			var ms = new MemoryStream ();
 			Encoding encoding = null; 
+			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> (mime ?? "text/plain")
+				: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (mime ?? "text/plain");
+			string eolMarker = TextStylePolicy.GetEolMarker (textPolicy.EolMarker);
 
 			var ctx = await EditorConfigService.GetEditorConfigContext (fileName);
-			if (ctx != null)
+			if (ctx != null) {
 				ctx.CurrentConventions.UniversalConventions.TryGetEncoding (out encoding);
+				if (ctx.CurrentConventions.UniversalConventions.TryGetLineEnding (out string lineEnding))
+					eolMarker = lineEnding;
+			}
 			if (encoding == null)
 				encoding = System.Text.Encoding.UTF8;
 			var bom = encoding.GetPreamble ();
@@ -323,13 +329,11 @@ namespace MonoDevelop.Ide.Templates
 			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = content;
 			
-			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> (mime ?? "text/plain")
-				: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (mime ?? "text/plain");
-			string eolMarker = TextStylePolicy.GetEolMarker (textPolicy.EolMarker);
+
 			byte[] eolMarkerBytes = encoding.GetBytes (eolMarker);
 			
 			var tabToSpaces = textPolicy.TabsToSpaces? new string (' ', textPolicy.TabWidth) : null;
-			
+			IDocumentLine lastLine = null;
 			foreach (var line in doc.GetLines ()) {
 				var lineText = doc.GetTextAt (line.Offset, line.Length);
 				if (tabToSpaces != null)
@@ -339,8 +343,15 @@ namespace MonoDevelop.Ide.Templates
 					ms.Write (data, 0, data.Length);
 					ms.Write (eolMarkerBytes, 0, eolMarkerBytes.Length);
 				}
+				lastLine = line;
 			}
-			
+			if (lastLine != null && lastLine.Length > 0) {
+				if (ctx.CurrentConventions.UniversalConventions.TryGetRequireFinalNewline (out bool requireNewLine)) {
+					if (requireNewLine)
+						ms.Write (eolMarkerBytes, 0, eolMarkerBytes.Length);
+				}
+			}
+
 			ms.Position = 0;
 			return ms;
 		}
