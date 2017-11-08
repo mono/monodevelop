@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading.Tasks;
 using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
@@ -68,14 +69,14 @@ namespace MonoDevelop.Ide.Templates
 				throw new InvalidOperationException ("Property is empty");
 		}
 
-		public override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
+		public override Task<bool> AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
 		{
 			var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, name, null);
 			var fileName = StringParserService.Parse (name, model);
 
 			project.ProjectProperties.SetValue (typeAtt.Value, string.IsNullOrEmpty (fileName) ? propertyInnerText : string.Concat (fileName, extension));
 
-			return true;
+			return Task.FromResult(true);
 		}
 	}
 }

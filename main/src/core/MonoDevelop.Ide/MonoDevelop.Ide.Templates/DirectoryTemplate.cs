@@ -30,6 +30,7 @@ using System.Xml;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -85,7 +86,7 @@ namespace MonoDevelop.Ide.Templates
 				t.Show ();
 		}
 			
-		public override bool AddToProject (SolutionFolderItem policyParent, Project project,
+		public override async Task<bool> AddToProject (SolutionFolderItem policyParent, Project project,
 		                                   string language, string directory, string name)
 		{
 			bool addedSomething = false;
@@ -98,7 +99,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			foreach (FileDescriptionTemplate t in templates) {
 				if (t.EvaluateCreateCondition ())
-					addedSomething |= t.AddToProject (policyParent, project, language, directory, name);
+					addedSomething |= await t.AddToProject (policyParent, project, language, directory, name);
 			}
 			return addedSomething;
 		}

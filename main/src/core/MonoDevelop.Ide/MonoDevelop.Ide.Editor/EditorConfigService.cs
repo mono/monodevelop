@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Editor
 		readonly static ICodingConventionsManager codingConventionsManager = CodingConventionsManagerFactory.CreateCodingConventionsManager ();
 		static ImmutableDictionary<string, ICodingConventionContext> contextCache = ImmutableDictionary<string, ICodingConventionContext>.Empty;
 
-		public async static Task<ICodingConventionContext> GetEditorConfigContext (string fileName, CancellationToken token)
+		public async static Task<ICodingConventionContext> GetEditorConfigContext (string fileName, CancellationToken token = default (CancellationToken))
 		{
 			if (contextCache.TryGetValue (fileName, out ICodingConventionContext result))
 				return result;

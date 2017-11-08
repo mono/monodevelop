@@ -34,6 +34,7 @@ using System.Xml;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.StringParsing;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -67,7 +68,7 @@ namespace MonoDevelop.Ide.Templates
 			get { return name;}
 		}
 		
-		public override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string entryName)
+		public override async Task<bool> AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string entryName)
 		{
 			string[,] customTags = new string[,] {
 				{"ProjectName", project.Name},
@@ -79,7 +80,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			foreach (FileDescriptionTemplate fdt in innerTemplate.Files) {
 				if (fdt.EvaluateCreateCondition ()) {
-					if (!fdt.AddToProject (policyParent, project, language, directory, substName))
+					if (!await fdt.AddToProject (policyParent, project, language, directory, substName))
 						return false;
 				}
 			}

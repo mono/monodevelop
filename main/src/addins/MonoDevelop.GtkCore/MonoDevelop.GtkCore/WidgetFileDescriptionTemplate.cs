@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Templates;
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
-
+using System.Threading.Tasks;
 
 namespace MonoDevelop.GtkCore
 {
@@ -77,7 +77,7 @@ namespace MonoDevelop.GtkCore
 			return (project is DotNetProject) && GtkDesignInfo.SupportsRefactoring (project as DotNetProject);
 		}
 		
-		public override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
+		public override async Task<bool> AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
 		{
 			if (!GtkDesignInfo.SupportsDesigner (project)) {
 				ReferenceManager mgr = new ReferenceManager (project as DotNetProject);
@@ -90,7 +90,7 @@ namespace MonoDevelop.GtkCore
 			GuiBuilderProject gproject = info.GuiBuilderProject;
 			
 			string fileName = fileTemplate.GetFileName (policyParent, project, language, directory, name);
-			fileTemplate.AddToProject (policyParent, project, language, directory, name);
+			await fileTemplate.AddToProject (policyParent, project, language, directory, name);
 
 			FileService.NotifyFileChanged (fileName);
 

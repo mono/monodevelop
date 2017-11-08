@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Templates
 			return project;
 		}
 
-		public void InitializeItem (SolutionFolderItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionItem item)
+		public async void InitializeItem (SolutionFolderItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionItem item)
 		{
 			MonoDevelop.Projects.Project project = item as MonoDevelop.Projects.Project;
 
@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.Templates
 				try {
 					if (!projectCreateInformation.ShouldCreate (resourceTemplate.CreateCondition))
 						continue;
-					var projectFile = new ProjectFile (resourceTemplate.SaveFile (policyParent, project, defaultLanguage, project.BaseDirectory, null));
+					var projectFile = new ProjectFile (await resourceTemplate.SaveFile (policyParent, project, defaultLanguage, project.BaseDirectory, null));
 					projectFile.BuildAction = BuildAction.EmbeddedResource;
 					project.Files.Add (projectFile);
 				} catch (Exception ex) {
