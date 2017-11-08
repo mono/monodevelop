@@ -229,15 +229,9 @@ namespace MonoDevelop.UnitTesting
 		{
 			var unknowObject = new {
 				Status,
-				IsFailure,
-				IsSuccess,
-				IsInconclusive,
-				IsNotRun,
 				Passed,
 				Errors,
 				Failures,
-				ErrorsAndFailures,
-				TestsNotRun,
 				Inconclusive,
 				NotRunnable,
 				Skipped,
@@ -257,14 +251,9 @@ namespace MonoDevelop.UnitTesting
 		bool EqualsHelper (UnitTestResult firstResult, UnitTestResult secondResult)
 		{
 			return  firstResult.Status == secondResult.Status &&
-					firstResult.IsFailure == secondResult.IsFailure &&
-					firstResult.IsSuccess == secondResult.IsSuccess &&
-					firstResult.IsInconclusive == secondResult.IsInconclusive &&
-					firstResult.IsNotRun == secondResult.IsNotRun &&
 					firstResult.Passed == secondResult.Passed &&
 					firstResult.Errors == secondResult.Errors &&
 					firstResult.Failures == secondResult.Failures &&
-					firstResult.TestsNotRun == secondResult.TestsNotRun &&
 					firstResult.Inconclusive == secondResult.Inconclusive &&
 					firstResult.NotRunnable == secondResult.NotRunnable &&
 					firstResult.Skipped == secondResult.Skipped &&
