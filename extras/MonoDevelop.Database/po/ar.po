@@ -90,7 +90,7 @@ msgstr[5] ""
 
 #: ../MonoDevelop.Database.Sql.MySql/MySqlDbFactory.cs:45
 msgid "MySql database"
-msgstr ""
+msgstr "قاعدة بيانات ماي إس كيو إل"
 
 #: ../MonoDevelop.Database.Sql.MySql/gtk-gui/MonoDevelop.Database.Sql.MySql.MySqlCreateDatabaseWidget.cs:60
 msgid "Character Set:"
@@ -104,7 +104,7 @@ msgstr ""
 
 #: ../MonoDevelop.Database.Sql.SqlServer/SqlServerDbFactory.cs:44
 msgid "SQL Server database"
-msgstr ""
+msgstr "سرفر قاعدة البيانات إس كيو إل"
 
 #: ../MonoDevelop.Database.Sql.SqlServer/gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget.cs:62
 #:  
@@ -112,46 +112,46 @@ msgstr ""
 #:  
 #: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:74
 msgid "Database:"
-msgstr ""
+msgstr "قاعدة البيانات"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteSchemaProvider.cs:235
 msgid "Database '{0}' already exists."
-msgstr ""
+msgstr "قاعدة البيانات '{0}' موجودة بالفعل"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteDbFactory.cs:45
 msgid "SQLite database"
-msgstr ""
+msgstr "قاعدة بيانات إس كيو إلّايت"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/Widgets/SqliteConnectionSettingsWidget.cs:60
 msgid "Open Database"
-msgstr ""
+msgstr "إفتح قاعدة بيانات"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/Widgets/SqliteConnectionSettingsWidget.cs:72
 msgid "SQLite databases"
-msgstr ""
+msgstr "قواعد بيانات إس كيو إلّايت"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/Widgets/SqliteConnectionSettingsWidget.cs:75
 #:  ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:108
 msgid "All files"
-msgstr ""
+msgstr "كل الملفات"
 
 #: ../MonoDevelop.Database.Sql.Oracle/OracleDbFactory.cs:41
 msgid "Oracle database"
-msgstr ""
+msgstr "قاعدة بيانات أوركل"
 
 #: ../MonoDevelop.Database.Sql.Npgsql/NpgsqlDbFactory.cs:44
 msgid "PostgreSQL database"
-msgstr ""
+msgstr "قاعدة بيانات بوستجري إس كيو إل"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:67
 #:  
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:72
 msgid "Database Connections"
-msgstr ""
+msgstr "إتصلات قاعدة البيانات"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:88
 msgid "Unable to connect:"
-msgstr ""
+msgstr "غير قادر علي الإتصال"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:168
 msgid "Are you sure you want to remove connection '{0}'?"
@@ -276,32 +276,32 @@ msgstr "اللغات"
 #:  
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/OperatorsNodeBuilder.cs:69
 msgid "Operators"
-msgstr ""
+msgstr "المُعاملات"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RolesNodeBuilder.cs:64
 #:  
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RolesNodeBuilder.cs:69
 msgid "Roles"
-msgstr ""
+msgstr "الأدوار"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RulesNodeBuilder.cs:64
 #:  
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/RulesNodeBuilder.cs:69
 msgid "Rules"
-msgstr ""
+msgstr "القواعد"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/SequencesNodeBuilder.cs:64
 #:  
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/SequencesNodeBuilder.cs:69
 msgid "Sequences"
-msgstr ""
+msgstr "المتسلسلات"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TriggersNodeBuilder.cs:64
 #:  
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TriggersNodeBuilder.cs:69
 #:  ../MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:96
 msgid "Triggers"
-msgstr ""
+msgstr "المُطلقات"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/TypesNodeBuilder.cs:64
 #:  
@@ -313,25 +313,25 @@ msgstr "الأنواع"
 #:  
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParametersNodeBuilder.cs:69
 msgid "Parameters"
-msgstr ""
+msgstr "العوامل"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ParameterNodeBuilder.cs:57
 msgid "Parameter"
-msgstr ""
+msgstr "العامل"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:27
 msgid "Database Browser"
-msgstr ""
+msgstr "مستعرض قواعد البيانات"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:28
 msgid "Show System Objects"
-msgstr ""
+msgstr "أظهر مكونات النظام"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:171
 #:  
 #: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:42
 msgid "Database"
-msgstr ""
+msgstr "قاعدة البيانات"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:176
 #:  
@@ -361,7 +361,7 @@ msgstr "قطع الإتصال"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:193
 msgid "Select *"
-msgstr ""
+msgstr "تحديد *"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:196
 msgid "Select x,y,..."
@@ -834,7 +834,7 @@ msgstr ""
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CheckConstraintEditorWidget.cs:118
 msgid "Check Condition"
-msgstr ""
+msgstr "تحقق من الوضع"
 
 #: ../MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:200
 msgid "Primary Key constraint '{0}' must be applied to one or more columns."
