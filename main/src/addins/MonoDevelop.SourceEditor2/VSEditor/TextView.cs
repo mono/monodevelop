@@ -350,11 +350,13 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         public event EventHandler Closed;
         public event EventHandler GotAggregateFocus;
         public event EventHandler LostAggregateFocus;
+#pragma warning disable CS0067
         public event EventHandler<TextViewLayoutChangedEventArgs> LayoutChanged;
         public event EventHandler ViewportLeftChanged;
         public event EventHandler ViewportHeightChanged;
         public event EventHandler ViewportWidthChanged;
         public event EventHandler<MouseHoverEventArgs> MouseHover;
+#pragma warning restore CS0067
 
         public void Close()
         {

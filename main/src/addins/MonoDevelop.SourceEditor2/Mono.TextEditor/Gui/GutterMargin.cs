@@ -47,14 +47,7 @@ namespace Mono.TextEditor
 			this.editor = editor;
 
 			this.editor.Document.TextChanged += UpdateWidth;
-			this.editor.Document.TextSet += HandleEditorDocumenthandleTextSet;
 			this.editor.Caret.PositionChanged += EditorCarethandlePositionChanged;
-		}
-
-
-		void HandleEditorDocumenthandleTextSet (object sender, EventArgs e)
-		{
-			UpdateWidth (null, null);
 		}
 
 		void EditorCarethandlePositionChanged (object sender, DocumentLocationEventArgs e)
@@ -184,7 +177,6 @@ namespace Mono.TextEditor
 			base.cursor = null;
 
 			this.editor.Caret.PositionChanged -= EditorCarethandlePositionChanged;
-			this.editor.Document.TextSet -= HandleEditorDocumenthandleTextSet;
 			this.editor.Document.TextChanged -= UpdateWidth;
 			//			layout = layout.Kill ();
 			base.Dispose ();

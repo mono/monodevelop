@@ -227,7 +227,6 @@ namespace Mono.TextEditor
 			document.Undone += DocumentHandleUndone;
 			document.Redone += DocumentHandleRedone;
 			document.TextChanged += HandleTextReplaced;
-			document.TextSet += HandleDocTextSet;
 			document.Folded += HandleTextEditorDataDocumentFolded;
 			document.FoldTreeUpdated += HandleFoldTreeUpdated;
 			document.HeightChanged += Document_HeightChanged;
@@ -241,17 +240,6 @@ namespace Mono.TextEditor
 		void HandleFoldTreeUpdated (object sender, EventArgs e)
 		{
 			HeightTree.Rebuild ();
-		}
-
-		void HandleDocTextSet (object sender, EventArgs e)
-		{
-			if (vadjustment != null)
-				vadjustment.Value = vadjustment.Lower;
-			if (hadjustment != null)
-				hadjustment.Value = hadjustment.Lower;
-			HeightTree.Rebuild ();
-			ClearSelection ();
-			caret.SetDocument (document);
 		}
 
 		public double GetLineHeight (DocumentLine line)
@@ -631,7 +619,6 @@ namespace Mono.TextEditor
 			document.Redone -= DocumentHandleRedone;
 			document.TextChanged -= HandleTextReplaced;
 
-			document.TextSet -= HandleDocTextSet;
 			document.Folded -= HandleTextEditorDataDocumentFolded;
 			document.FoldTreeUpdated -= HandleFoldTreeUpdated;
 			document.HeightChanged -= Document_HeightChanged;
