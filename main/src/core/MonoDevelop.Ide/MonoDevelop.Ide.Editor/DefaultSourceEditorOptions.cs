@@ -533,7 +533,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		
 		bool removeTrailingWhitespaces = true;
 		public bool RemoveTrailingWhitespaces {
 			get {
@@ -621,8 +620,14 @@ namespace MonoDevelop.Ide.Editor
 
 		int  rulerColumn = 120;
 
+
+
 		public int RulerColumn {
 			get {
+				if (context != null && context.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.MaxLineLengthConvention, out string result)) {
+					if (result != "off" && int.TryParse (result, out int i))
+						return i;
+				}
 				return rulerColumn;
 			}
 			set {
@@ -637,6 +642,15 @@ namespace MonoDevelop.Ide.Editor
 		ConfigurationProperty<bool> showRuler = ConfigurationProperty.Create ("ShowRuler", true);
 		public bool ShowRuler {
 			get {
+				if (context != null && context.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.MaxLineLengthConvention, out string result)) {
+					if (result == "off")
+						return false;
+					if (int.TryParse (result, out int i))
+						return true;
+					return false;
+				}
+					
+
 				return showRuler;
 			}
 			set {
