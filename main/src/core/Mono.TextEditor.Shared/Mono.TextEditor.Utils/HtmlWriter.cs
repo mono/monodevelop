@@ -32,6 +32,7 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor.Utils
@@ -43,7 +44,7 @@ namespace Mono.TextEditor.Utils
 	{
 		public static string GenerateHtml (TextEditorData data)
 		{
-			return GenerateHtml (ClipboardColoredText.GetChunks (data, new TextSegment (0, data.Length)), data.EditorTheme, data.Options);
+			return GenerateHtml (ClipboardColoredText.GetChunks (data, new TextSegment (0, data.Length)).WaitAndGetResult (default (System.Threading.CancellationToken)), data.EditorTheme, data.Options);
 		}
 
 		public static string GenerateHtml (List<List<ClipboardColoredText>> chunks, EditorTheme style, ITextEditorOptions options, bool includeBoilerplate = true)
