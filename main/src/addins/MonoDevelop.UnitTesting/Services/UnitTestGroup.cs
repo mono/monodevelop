@@ -82,7 +82,9 @@ namespace MonoDevelop.UnitTesting
 			var resultStatus = ResultStatus.Inconclusive;
 
 			foreach (var test in tests) {
-				var res = test.GetLastResult ();
+				var res = test?.GetLastResult ();
+				if (res == null) 
+					continue;
 				passed += res.Passed;
 				errors += res.Errors;
 				failures += res.Failures;
