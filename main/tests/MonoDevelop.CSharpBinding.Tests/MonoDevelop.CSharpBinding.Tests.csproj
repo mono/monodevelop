@@ -147,7 +147,7 @@
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\external\RefactoringEssentials\RefactoringEssentials.2017\RefactoringEssentials.csproj">
+    <ProjectReference Include="..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
       <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
       <Name>RefactoringEssentials</Name>
     </ProjectReference>
