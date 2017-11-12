@@ -62,15 +62,14 @@ namespace MonoDevelop.Ide.Gui.Components
 			base.OnDestroyed ();
 		}
 
-		StringBuilder buildOutput;
-
 		void ReadFile()
 		{
-			var processor = new BuildOutputProcessor (filename.FullPath);
+			var processor = new BuildOutputProcessor (filename.FullPath, false);
 			processor.Process ();
 
-			var (text, segments) = processor.ToTextEditor ();
+			var (text, segments) = processor.ToTextEditor (editor);
 			editor.Text = text;
+			editor.SetFoldings (segments);
 		}
 	}
 }

@@ -40,6 +40,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		Target,
 		Task,
 		Error,
+		Warning,
 		Message
 	}
 
@@ -56,12 +57,15 @@ namespace MonoDevelop.Ide.Gui.Components
 		List<BuildOutputNode> rootNodes;
 		BuildOutputNode currentNode;
 
-		public BuildOutputProcessor (string fileName)
+		public BuildOutputProcessor (string fileName, bool includeDiagnostics)
 		{
 			FileName = fileName;
+			IncludesDiagnostics = includeDiagnostics;
 		}
 
 		public string FileName { get; }
+
+		public bool IncludesDiagnostics { get; set; }
 
 		public void Process ()
 		{
@@ -69,6 +73,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			binlogReader.BuildStarted += BinLog_BuildStarted;
 			binlogReader.BuildFinished += BinLog_BuildFinished;
 			binlogReader.ErrorRaised += BinLog_ErrorRaised;
+			binlogReader.WarningRaised += BinLog_WarningRaised;
+			binlogReader.MessageRaised += BinlogReader_MessageRaised;
 			binlogReader.ProjectStarted += BinLog_ProjectStarted;
 			binlogReader.ProjectFinished += BinLog_ProjectFinished;
 			binlogReader.TargetStarted += BinLog_TargetStarted;
@@ -117,6 +123,18 @@ namespace MonoDevelop.Ide.Gui.Components
 			AddNode (BuildOutputNodeType.Error, e.Message, false);
 		}
 
+		private void BinLog_WarningRaised (object sender, BuildWarningEventArgs e)
+		{
+			AddNode (BuildOutputNodeType.Warning, e.Message, false);
+		}
+
+		void BinlogReader_MessageRaised (object sender, BuildMessageEventArgs e)
+		{
+			if (IncludesDiagnostics) {
+				AddNode (BuildOutputNodeType.Message, e.Message, false);
+			}
+		}
+
 		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
 		{
 			AddNode (BuildOutputNodeType.Project, e.Message, true);
@@ -147,30 +165,37 @@ namespace MonoDevelop.Ide.Gui.Components
 			EndCurrentNode (e.Message);
 		}
 
-		private void ProcessChildren (IList<BuildOutputNode> children, int tabPosition, StringBuilder buildOutput, List<IFoldSegment> segments)
+		private void ProcessChildren (TextEditor editor, IList<BuildOutputNode> children, int tabPosition, StringBuilder buildOutput, List<IFoldSegment> segments)
 		{
 			foreach (var child in children) {
-				ProcessNode (child, tabPosition + 1, buildOutput, segments); 
+				ProcessNode (editor, child, tabPosition + 1, buildOutput, segments); 
 			}
 		}
 
-		private void ProcessNode (BuildOutputNode node, int tabPosition, StringBuilder buildOutput, List<IFoldSegment> segments)
+		private void ProcessNode (TextEditor editor, BuildOutputNode node, int tabPosition, StringBuilder buildOutput, List<IFoldSegment> segments)
 		{
 			for (int i = 0; i < tabPosition; i++) buildOutput.Append ("\t");
 
 			int currentPosition = buildOutput.Length;
 			buildOutput.AppendLine (node.Message);
 
-			ProcessChildren (node.Children, tabPosition, buildOutput, segments);
+			if (node.Children.Count > 0) {
+				ProcessChildren (editor, node.Children, tabPosition, buildOutput, segments);
+
+				segments.Add (FoldSegmentFactory.CreateFoldSegment (editor, currentPosition, buildOutput.Length - currentPosition,
+																	node.Parent != null,
+																	"...",
+																	FoldingType.Region));
+			}
 		}
 
-		public (string, IList<IFoldSegment>) ToTextEditor ()
+		public (string, IList<IFoldSegment>) ToTextEditor (TextEditor editor)
 		{
 			var buildOutput = new StringBuilder ();
 			var foldingSegments = new List<IFoldSegment> ();
 
 			foreach (var node in rootNodes) {
-				ProcessNode (node, 0, buildOutput, foldingSegments);
+				ProcessNode (editor, node, 0, buildOutput, foldingSegments);
 			}
 
 			return (buildOutput.ToString (), foldingSegments);
