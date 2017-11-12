@@ -11,7 +11,7 @@ NUGET
       System.Reflection.Metadata (>= 1.4.2)
     FSharp.Core (4.1.0.2)
       System.ValueTuple (>= 4.3)
-    Mono.Cecil (0.9.6.4)
+    Mono.Cecil (0.10.0-beta6)
     Newtonsoft.Json (10.0.3)
     StrongNamer (0.0.6)
     System.Collections.Immutable (1.3.1)
