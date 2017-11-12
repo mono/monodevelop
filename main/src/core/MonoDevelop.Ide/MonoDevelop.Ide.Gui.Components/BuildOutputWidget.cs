@@ -29,8 +29,6 @@ using Gtk;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
-using Microsoft.Build.Logging;
-using Microsoft.Build.Framework;
 using System.Text;
 
 namespace MonoDevelop.Ide.Gui.Components
@@ -68,98 +66,11 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void ReadFile()
 		{
-			var binlogReader = new BinaryLogReplayEventSource ();
-			binlogReader.BuildStarted += BinLog_BuildStarted;
-			binlogReader.BuildFinished += BinLog_BuildFinished;
-			binlogReader.ErrorRaised += BinLog_ErrorRaised;
-			binlogReader.ProjectStarted += BinLog_ProjectStarted;
-			binlogReader.ProjectFinished += BinLog_ProjectFinished;
-			binlogReader.TargetStarted += BinLog_TargetStarted;
-			binlogReader.TargetFinished += BinLog_TargetFinished;
-			binlogReader.TaskStarted += BinLog_TaskStarted;
-			binlogReader.TaskFinished += BinLog_TaskFinished;
+			var processor = new BuildOutputProcessor (filename.FullPath);
+			processor.Process ();
 
-			buildOutput = new StringBuilder();
-			binlogReader.Replay (filename.FullPath);
-			editor.Text = buildOutput.ToString();
-
-			binlogReader.BuildStarted -= BinLog_BuildStarted;
-			binlogReader.BuildFinished -= BinLog_BuildFinished;
-			binlogReader.ErrorRaised -= BinLog_ErrorRaised;
-			binlogReader.ProjectStarted -= BinLog_ProjectStarted;
-			binlogReader.ProjectFinished -= BinLog_ProjectFinished;
-			binlogReader.TargetStarted -= BinLog_TargetStarted;
-			binlogReader.TargetFinished -= BinLog_TargetFinished;
-			binlogReader.TaskStarted -= BinLog_TaskStarted;
-			binlogReader.TaskFinished -= BinLog_TaskFinished;
-		}
-
-		int currentTabPosition = 0;
-
-		enum MSBuildEvent {
-			None,
-			Start,
-			End
-		};
-
-		private void InsertText (string text, MSBuildEvent ev)
-		{
-			if (ev == MSBuildEvent.End) {
-				currentTabPosition--;
-			}
-
-			for (int i = 0; i < currentTabPosition; i++)
-				buildOutput.Append ("\t");
-			buildOutput.AppendLine (text);
-
-			if (ev == MSBuildEvent.Start) {
-				currentTabPosition++;
-			}
-		}
-
-		private void BinLog_BuildStarted (object sender, BuildStartedEventArgs e)
-		{
-			InsertText (e.Message, MSBuildEvent.Start);
-		}
-
-		private void BinLog_BuildFinished (object sender, BuildFinishedEventArgs e)
-		{
-			InsertText (e.Message, MSBuildEvent.End);
-		}
-
-		private void BinLog_ErrorRaised (object sender, BuildErrorEventArgs e)
-		{
-			InsertText (e.Message, MSBuildEvent.None);
-		}
-
-		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
-		{
-			InsertText (e.Message, MSBuildEvent.Start);
-		}
-
-		private void BinLog_ProjectFinished (object sender, ProjectFinishedEventArgs e)
-		{
-			InsertText (e.Message, MSBuildEvent.End);
-		}
-
-		private void BinLog_TargetStarted (object sender, TargetStartedEventArgs e)
-		{
-			InsertText (e.Message, MSBuildEvent.Start);
-		}
-
-		private void BinLog_TargetFinished (object sender, TargetFinishedEventArgs e)
-		{
-			InsertText (e.Message, MSBuildEvent.End);
-		}
-
-		private void BinLog_TaskStarted (object sender, TaskStartedEventArgs e)
-		{
-			InsertText (e.Message, MSBuildEvent.Start);
-		}
-
-		private void BinLog_TaskFinished (object sender, TaskFinishedEventArgs e)
-		{
-			InsertText (e.Message, MSBuildEvent.End);
+			var (text, segments) = processor.ToTextEditor ();
+			editor.Text = text;
 		}
 	}
 }

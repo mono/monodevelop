@@ -9646,6 +9646,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Components\BuildLogDisplayBinding.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\BuildOutputViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\BuildOutputWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\BuildOutputProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
