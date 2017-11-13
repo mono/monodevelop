@@ -964,7 +964,7 @@ namespace MonoDevelop.Components.DockNotebook
 		void UpdateTabWidth (int width, bool adjustLast = false)
 		{
 			if (notebook.Tabs.Any ())
-				TargetWidth = Clamp (width / notebook.Tabs.Count, 50, 200);
+				TargetWidth = HelperMethods.Clamp (width / notebook.Tabs.Count, 50, 200);
 
 			if (adjustLast) {
 				// adjust to align close buttons properly
@@ -977,11 +977,6 @@ namespace MonoDevelop.Components.DockNotebook
 				TabWidth = TargetWidth;
 		}
 
-		static int Clamp (int val, int min, int max)
-		{
-			return Math.Max (min, Math.Min (max, val));
-		}
-
 		int GetRenderOffset ()
 		{
 			int tabArea = tabEndX - tabStartX;
@@ -991,7 +986,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 				int distanceToTabEdge = TargetWidth * notebook.CurrentTabIndex;
 				int window = normalizedArea - TargetWidth;
-				targetOffset = Math.Min (maxOffset, Clamp (renderOffset, distanceToTabEdge - window, distanceToTabEdge));
+				targetOffset = Math.Min (maxOffset, HelperMethods.Clamp (renderOffset, distanceToTabEdge - window, distanceToTabEdge));
 
 				if (targetOffset != animationTarget) {
 					this.Animate ("ScrollTabs",
@@ -1122,7 +1117,7 @@ namespace MonoDevelop.Components.DockNotebook
 			// This logic is stupid to have here, should be in the caller!
 			if (dragging) {
 				tabBounds.X = (int)(tabBounds.X + (dragX - tabBounds.X) * dragXProgress);
-				tabBounds.X = Clamp (tabBounds.X, tabStartX, tabEndX - tabBounds.Width);
+				tabBounds.X = HelperMethods.Clamp (tabBounds.X, tabStartX, tabEndX - tabBounds.Width);
 			}
 			double rightPadding = (active ? TabActivePadding.Right : TabPadding.Right) - (LeanWidth / 2);
 			rightPadding = (rightPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));

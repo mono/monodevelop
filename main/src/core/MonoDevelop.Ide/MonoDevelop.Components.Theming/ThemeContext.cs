@@ -42,7 +42,7 @@ namespace MonoDevelop.Components.Theming
 		private double fill_alpha = 1.0;
 		public double FillAlpha {
 			get { return fill_alpha; }
-			set { fill_alpha = Theme.Clamp (0.0, 1.0, value); }
+			set { fill_alpha = HelperMethods.Clamp (0.0, 1.0, value); }
 		}
 
 		private double line_width = 1.0;

@@ -238,15 +238,5 @@ namespace MonoDevelop.Components.Theming
 		}
 
 		#endregion
-
-		#region Static Utilities
-
-		public static double Clamp (double min, double max, double value)
-		{
-			return Math.Max (min, Math.Min (max, value));
-		}
-		
-		#endregion
-		
 	}
 }

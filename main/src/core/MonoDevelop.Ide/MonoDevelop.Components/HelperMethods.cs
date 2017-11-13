@@ -159,5 +159,15 @@ namespace MonoDevelop.Components
 		{
 			((IDisposable)cr).Dispose ();
 		}
+
+		public static double Clamp (double min, double max, double value)
+		{
+			return Math.Max (min, Math.Min (max, value));
+		}
+
+		public static int Clamp (int val, int min, int max)
+		{
+			return Math.Max (min, Math.Min (max, val));
+		}
 	}
 }

@@ -67,7 +67,7 @@ namespace MonoDevelop.Components.Theming
 		public override void DrawPie (double fraction)
 		{
 			// Calculate the pie path
-			fraction = Theme.Clamp (0.0, 1.0, fraction);
+			fraction = HelperMethods.Clamp (0.0, 1.0, fraction);
 			double a1 = 3.0 * Math.PI / 2.0;
 			double a2 = a1 + 2.0 * Math.PI * fraction;
 			
