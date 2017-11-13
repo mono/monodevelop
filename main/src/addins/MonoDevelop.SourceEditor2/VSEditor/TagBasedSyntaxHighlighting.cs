@@ -23,13 +23,14 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.Platform
 {
     [Export(typeof(ITagBasedSyntaxHighlightingFactory))]
     internal sealed class TagBasedSyntaxHighlightingFactory : ITagBasedSyntaxHighlightingFactory {
-        public ISyntaxHighlighting CreateSyntaxHighlighting (ITextBuffer textBuffer) {
-            return new TagBasedSyntaxHighlighting(textBuffer);
+        public ISyntaxHighlighting CreateSyntaxHighlighting (ITextView textView) {
+            return new TagBasedSyntaxHighlighting(textView);
         }
     }
 
@@ -37,16 +38,17 @@ namespace Microsoft.VisualStudio.Platform
     {
         private ITextBuffer textBuffer { get; }
         private IClassifier classifier { get; set; }
+        private MonoDevelop.Ide.Editor.ITextDocument textDocument { get; }
 
-        internal TagBasedSyntaxHighlighting(ITextBuffer textBuffer)
+        internal TagBasedSyntaxHighlighting(ITextView textView)
         {
-            this.textBuffer = textBuffer;
-
+            this.textBuffer = textView.TextBuffer;
+            this.textDocument = textView.GetTextEditor();
         }
 
         public Task<HighlightedLine> GetHighlightedLineAsync(IDocumentLine line, CancellationToken cancellationToken)
         {
-            ITextSnapshotLine snapshotLine = (line as Mono.TextEditor.TextDocument.DocumentLineFromTextSnapshotLine)?.Line;
+            ITextSnapshotLine snapshotLine = textBuffer.CurrentSnapshot.GetLineFromLineNumber (line.LineNumber - 1);
             if ((this.classifier == null) || (snapshotLine == null))
             {
                 return Task.FromResult(new HighlightedLine(line, new[] { new ColoredSegment(0, line.Length, ScopeStack.Empty) }));
@@ -132,7 +134,14 @@ namespace Microsoft.VisualStudio.Platform
             var handler = _highlightingStateChanged;
             if (handler != null)
             {
+                int startLineIndex = this.textDocument.OffsetToLineNumber (args.ChangeSpan.Start);
+                int endLineIndex = this.textDocument.OffsetToLineNumber (args.ChangeSpan.End);
 
+                IEnumerable<IDocumentLine> documentLines = this.textDocument.GetLinesBetween (startLineIndex, endLineIndex);
+                foreach(IDocumentLine documentLine in documentLines)
+                {
+                    handler(this, new LineEventArgs(documentLine));
+                }
             }
         }
 
