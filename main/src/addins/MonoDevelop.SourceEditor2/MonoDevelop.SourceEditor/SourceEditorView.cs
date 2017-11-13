@@ -3113,9 +3113,9 @@ namespace MonoDevelop.SourceEditor
 			case MarkupFormat.Pango:
 				return data.GetMarkup (offset, length, false, replaceTabs: false, fitIdeStyle: options.FitIdeStyle);
 			case MarkupFormat.Html:
-				return HtmlWriter.GenerateHtml (ClipboardColoredText.GetChunks (data, new TextSegment (offset, length)), data.ColorStyle, data.Options);
+				return HtmlWriter.GenerateHtml (ClipboardColoredText.GetChunks (data, new TextSegment (offset, length)).WaitAndGetResult (default (System.Threading.CancellationToken)), data.ColorStyle, data.Options);
 			case MarkupFormat.RichText:
-				return RtfWriter.GenerateRtf (ClipboardColoredText.GetChunks (data, new TextSegment (offset, length)), data.ColorStyle, data.Options);
+				return RtfWriter.GenerateRtf (ClipboardColoredText.GetChunks (data, new TextSegment (offset, length)).WaitAndGetResult (default (System.Threading.CancellationToken)), data.ColorStyle, data.Options);
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}

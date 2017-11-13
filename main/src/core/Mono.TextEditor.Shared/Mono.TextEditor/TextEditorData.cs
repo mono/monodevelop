@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using System.Threading;
 using MonoDevelop.Ide;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Mono.TextEditor
 {
@@ -438,7 +439,7 @@ namespace Mono.TextEditor
 					}
 				}
 
-				foreach (var chunk in GetChunks (line, curOffset, toOffset - curOffset)) {
+				foreach (var chunk in GetChunks (line, curOffset, toOffset - curOffset).WaitAndGetResult (default (CancellationToken))) {
 					if (chunk.Length == 0)
 						continue;
 					var chunkStyle = style.GetChunkStyle (chunk.ScopeStack);
@@ -483,12 +484,11 @@ namespace Mono.TextEditor
 			return result.ToString ();
 		}
 
-		internal IEnumerable<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> GetChunks (DocumentLine line, int offset, int length)
+		internal async Task<IEnumerable<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment>> GetChunks (DocumentLine line, int offset, int length)
 		{
 			var lineOffset = line.Offset;
 			return TextViewMargin.TrimChunks (
-				        document.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None)
-				        .WaitAndGetResult (CancellationToken.None)
+				(await document.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None).ConfigureAwait(false))
 				        .Segments
 				        .Select (c => c.WithOffset (c.Offset + lineOffset))
 				        .ToList (), offset, length);

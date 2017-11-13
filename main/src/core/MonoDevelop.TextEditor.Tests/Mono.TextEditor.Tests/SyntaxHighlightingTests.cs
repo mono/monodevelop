@@ -29,6 +29,7 @@ using NUnit.Framework;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Mono.TextEditor.Tests
 {
@@ -147,7 +148,7 @@ namespace Mono.TextEditor.Tests
 		}
 
 		[Test]
-		public void TestChunkValidity()
+		public async Task TestChunkValidity()
 		{
 			const string text = @"System.Console.WriteLine();";
 			var data = new TextEditorData (new TextDocument (@"namespace FooBar
@@ -160,7 +161,7 @@ namespace Mono.TextEditor.Tests
 			//data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
 			//data.ColorStyle = SyntaxModeService.GetColorStyle ("Light");
 			var line = data.GetLine (5);
-			var chunks = data.GetChunks (line, line.Offset + 3, line.Length - 3);
+			var chunks = await data.GetChunks (line, line.Offset + 3, line.Length - 3);
 			StringBuilder sb = new StringBuilder ();
 			foreach (var chunk in chunks)
 				sb.Append (data.GetTextAt (chunk));
