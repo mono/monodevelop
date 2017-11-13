@@ -137,18 +137,12 @@ type FsiPrompt(icon: Xwt.Drawing.Image) =
 
         let deltaX = size / 2.0 - icon.Width / 2.0 + 0.5
         let deltaY = size / 2.0 - icon.Height / 2.0 + 0.5
-
         cairoContext.DrawImage (editor, icon, Math.Round (x + deltaX), Math.Round (y + deltaY));
-    
-type FSharpInteractivePad() =
+
+type FSharpInteractivePad(editor:TextEditor) as this =
     inherit MonoDevelop.Ide.Gui.PadContent()
    
-    let ctx = FsiDocumentContext()
-    let doc = TextEditorFactory.CreateNewDocument()
-    do
-        doc.FileName <- FilePath ctx.Name
-
-    let editor = TextEditorFactory.CreateNewEditor(ctx, doc, TextEditorType.Default)
+    let ctx = editor.DocumentContext :?> FsiDocumentContext
     do
         let options = new CustomEditorOptions (editor.Options)
         editor.MimeType <- "text/x-fsharp"
@@ -184,22 +178,17 @@ type FSharpInteractivePad() =
         let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
         let textDocument = data.Document
 
-        let line = data.GetLine editor.CaretLine
+        let line = data.GetLineByOffset editor.Length
         let prompt = FsiPrompt image
+
         textDocument.AddMarker(line, prompt)
 
-    let setPrompt() =
-        editor.InsertAtCaret ("\n")
-        editor.ScrollTo editor.CaretLocation
-        addMarker promptIcon
+        textDocument.CommitUpdateAll()
 
-    let fsiOutput t =
-        if editor.CaretColumn <> 1 then
-            editor.InsertAtCaret ("\n")
-        editor.InsertAtCaret (nonBreakingSpace + t)
-        editor.CaretOffset <- editor.Text.Length
-        editor.ScrollTo editor.CaretLocation
-        lastLineOutput <- Some editor.CaretLine
+    let setPrompt() =
+        editor.InsertText(editor.Length, "\n")
+        editor.ScrollTo editor.Length
+        addMarker promptIcon
 
     let renderImage image =
         let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
@@ -220,7 +209,7 @@ type FSharpInteractivePad() =
             let ses = InteractiveSession(pathToExe)
             input.Clear()
             promptReceived <- false
-            let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
+            let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> this.FsiOutput t) |> ignore)
             let imageReceived = ses.ImageReceived.Subscribe(fun image -> Runtime.RunInMainThread(fun () -> renderImage image) |> Async.AwaitTask |> Async.RunSynchronously)
             let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived <- true; setPrompt() ) |> ignore)
 
@@ -231,7 +220,7 @@ type FSharpInteractivePad() =
                 if killIntent = NoIntent then
                     Runtime.RunInMainThread(fun () ->
                         LoggingService.LogDebug ("Interactive: process stopped")
-                        fsiOutput "\nSession termination detected. Press Enter to restart.") |> ignore
+                        this.FsiOutput "\nSession termination detected. Press Enter to restart.") |> ignore
                 elif killIntent = Restart then
                     Runtime.RunInMainThread (fun () -> editor.Text <- "") |> ignore
                 killIntent <- NoIntent)
@@ -264,8 +253,30 @@ type FSharpInteractivePad() =
             session |> Option.iter (fun (ses: InteractiveSession) -> ses.Kill())
             if intent = Restart then session <- setupSession()
 
+    new() =
+        let ctx = FsiDocumentContext()
+        let doc = TextEditorFactory.CreateNewDocument()
+        do
+            doc.FileName <- FilePath ctx.Name
+
+        let editor = TextEditorFactory.CreateNewEditor(ctx, doc, TextEditorType.Default)
+        new FSharpInteractivePad(editor)
+
+    member x.FsiOutput t : unit =
+        if editor.CaretColumn <> 1 then
+            editor.InsertAtCaret ("\n")
+        editor.InsertAtCaret (nonBreakingSpace + t)
+        editor.CaretOffset <- editor.Text.Length
+        editor.ScrollTo editor.CaretLocation
+        lastLineOutput <- Some editor.CaretLine
+
     member x.Text =
         editor.Text
+
+    member x.SetPrompt() =
+        editor.InsertText(editor.Length, "\n")
+        editor.ScrollTo editor.Length
+        addMarker promptIcon
 
     member x.AddMorePrompt() =
         addMarker newLineIcon
@@ -484,6 +495,7 @@ type FSharpFsiEditorCompletion() =
                         let lineStr = getLineText x.Editor line
                         x.Editor.CaretOffset <- line.EndOffset
                         x.Editor.InsertAtCaret "\n"
+
                         if not (lineStr.TrimEnd().EndsWith(";;")) then
                             fsi.AddMorePrompt()
                         fsi.LastOutputLine <- Some line.LineNumber
