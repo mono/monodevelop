@@ -1003,7 +1003,7 @@ namespace MonoDevelop.Components.DockNotebook
 				DockNotebookTab closingTab = closingTabs [index];
 				width = (int)(closingTab.WidthModifier * TabWidth);
 				int tmp = width;
-				return c => DrawTab (c, closingTab, Allocation, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, CreateTabLayout (closingTab), false);
+				return c => DrawTab (c, closingTab, Allocation, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, false);
 			}
 			return c => {
 			};
@@ -1047,9 +1047,9 @@ namespace MonoDevelop.Components.DockNotebook
 					int tmp = x;
 					drawActive = c => {
 						if (dragManager.IsDragging) {
-							DrawDraggingTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, CreateTabLayout (tab, true), focused);
+							DrawDraggingTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, focused);
 						} else {
-							DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, CreateTabLayout (tab, true), focused);
+							DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, focused);
 						}
 					};
 					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
@@ -1061,7 +1061,7 @@ namespace MonoDevelop.Components.DockNotebook
 						tmp = (int)(tab.SavedAllocation.X + (tmp - tab.SavedAllocation.X) * (1.0f - tab.SaveStrength));
 					}
 
-					drawCommands.Add (c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), false, CreateTabLayout (tab), focused));
+					drawCommands.Add (c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), false, focused));
 					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
 				}
 
@@ -1123,15 +1123,16 @@ namespace MonoDevelop.Components.DockNotebook
 			return new Xwt.WidgetSpacing (leftPadding, 0, rightPadding, bottomPadding); 
 		}
 
-		void DrawDraggingTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool active, Pango.Layout la, bool focused)
+		void DrawDraggingTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool active, bool focused)
 		{
 			tabBounds.X = (int)(tabBounds.X + (dragManager.X - tabBounds.X) * dragManager.Progress);
 			tabBounds.X = HelperMethods.Clamp (tabBounds.X, tabStartX, tabEndX - tabBounds.Width);
-			DrawTab (ctx, tab, allocation, tabBounds, active, la, focused);
+			DrawTab (ctx, tab, allocation, tabBounds, active, focused);
 		}
 
-		void DrawTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool active, Pango.Layout la, bool focused)
+		void DrawTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool active, bool focused)
 		{
+			var la = CreateTabLayout (tab, active);
 			ctx.LineWidth = 1;
 			ctx.NewPath ();
 
