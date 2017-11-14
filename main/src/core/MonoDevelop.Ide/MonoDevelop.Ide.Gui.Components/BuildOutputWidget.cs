@@ -46,6 +46,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			editor = TextEditorFactory.CreateNewEditor ();
 			editor.IsReadOnly = true;
 			editor.FileName = filename;
+			editor.Options = new CustomEditorOptions (editor.Options) {
+				ShowFoldMargin = true
+			};
 
 			scrolledWindow = new CompactScrolledWindow ();
 			scrolledWindow.Add (editor);
