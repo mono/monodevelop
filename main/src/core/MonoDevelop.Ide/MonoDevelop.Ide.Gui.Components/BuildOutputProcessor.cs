@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		public string Message { get; set; }
 		public BuildOutputNode Parent { get; set; }
 		public IList<BuildOutputNode> Children { get; } = new List<BuildOutputNode> ();
+		public bool HasErrors { get; set; }
 	}
 
 	class BuildOutputProcessor
@@ -99,6 +100,14 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			if (isStart) {
 				currentNode = node;
+			}
+
+			if (nodeType == BuildOutputNodeType.Error) {
+				var p = node;
+				while (p != null) {
+					p.HasErrors = true;
+					p = p.Parent;
+				}
 			}
 		}
 
@@ -185,7 +194,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				ProcessChildren (editor, node.Children, tabPosition, buildOutput, segments);
 
 				segments.Add (FoldSegmentFactory.CreateFoldSegment (editor, currentPosition, buildOutput.Length - currentPosition,
-																	node.Parent != null,
+				                                                    node.Parent != null && !node.HasErrors,
 				                                                    node.Message,
 																	FoldingType.Region));
 			}
