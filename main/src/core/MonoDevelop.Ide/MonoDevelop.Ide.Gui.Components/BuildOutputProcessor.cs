@@ -174,17 +174,19 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		private void ProcessNode (TextEditor editor, BuildOutputNode node, int tabPosition, StringBuilder buildOutput, List<IFoldSegment> segments)
 		{
+			buildOutput.AppendLine ();
+
 			for (int i = 0; i < tabPosition; i++) buildOutput.Append ("\t");
 
 			int currentPosition = buildOutput.Length;
-			buildOutput.AppendLine (node.Message);
+			buildOutput.Append (node.Message);
 
 			if (node.Children.Count > 0) {
 				ProcessChildren (editor, node.Children, tabPosition, buildOutput, segments);
 
 				segments.Add (FoldSegmentFactory.CreateFoldSegment (editor, currentPosition, buildOutput.Length - currentPosition,
 																	node.Parent != null,
-																	"...",
+				                                                    node.Message,
 																	FoldingType.Region));
 			}
 		}
