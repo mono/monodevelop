@@ -296,6 +296,15 @@ namespace MonoDevelop.AnalysisCore.Gui
 				}
 			}
 
+			static TextSegmentMarkerEffect GetSegmentMarkerEffect (IssueMarker marker)
+			{
+				if (marker == IssueMarker.GrayOut)
+					return TextSegmentMarkerEffect.GrayOut;
+				if (marker == IssueMarker.DottedLine)
+					return TextSegmentMarkerEffect.DottedLine;
+				return TextSegmentMarkerEffect.WavedLine;
+			}
+
 			//this runs as a glib idle handler so it can add/remove text editor markers
 			//in order to to block the GUI thread, we batch them in UPDATE_COUNT
 			bool IdleHandler ()
@@ -327,23 +336,16 @@ namespace MonoDevelop.AnalysisCore.Gui
 						int end = currentResult.Region.End;
 						if (start >= end)
 							continue;
-						if (currentResult.InspectionMark == IssueMarker.GrayOut) {
-							var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, TextSegmentMarkerEffect.GrayOut, TextSegment.FromBounds (start, end));
-							marker.IsVisible = currentResult.Underline;
-							marker.Tag = currentResult;
-							editor.AddMarker (marker);
-							ext.markers[id].Enqueue (marker);
-//							editor.Parent.TextViewMargin.RemoveCachedLine (editor.GetLineByOffset (start));
-//							editor.Parent.QueueDraw ();
-						} else {
-							var effect = currentResult.InspectionMark == IssueMarker.DottedLine ? TextSegmentMarkerEffect.DottedLine : TextSegmentMarkerEffect.WavedLine;
-							var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, effect, TextSegment.FromBounds (start, end));
+						var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, GetSegmentMarkerEffect (currentResult.InspectionMark), TextSegment.FromBounds (start, end));
+						marker.Tag = currentResult;
+						marker.IsVisible = currentResult.Underline;
+
+						if (currentResult.InspectionMark != IssueMarker.GrayOut) {
 							marker.Color = GetColor (editor, currentResult);
-							marker.IsVisible = currentResult.Underline && currentResult.Level != DiagnosticSeverity.Hidden;
-							marker.Tag = currentResult;
-							editor.AddMarker (marker);
-							ext.markers[id].Enqueue (marker);
+							marker.IsVisible &= currentResult.Level != DiagnosticSeverity.Hidden;
 						}
+						editor.AddMarker (marker);
+						ext.markers [id].Enqueue (marker);
 					}
 					builder.Add (new QuickTask (currentResult.Message, currentResult.Region.Start, currentResult.Level));
 				}
