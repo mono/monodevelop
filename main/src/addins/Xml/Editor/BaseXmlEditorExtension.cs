@@ -256,11 +256,32 @@ namespace MonoDevelop.Xml.Editor
 			bool returnInsideEmptyElement =
 					descriptor.SpecialKey == SpecialKey.Return &&
 					descriptor.ModifierKeys == ModifierKeys.None &&
-					Editor.CaretOffset > 0 && Editor.CaretOffset < Editor.Length &&
+					Editor.CaretOffset > 0 && Editor.CaretOffset + 1 < Editor.Length &&
 					Editor.GetCharAt (Editor.CaretOffset - 1) == '>' &&
 					Editor.GetCharAt (Editor.CaretOffset) == '<' &&
+					Editor.GetCharAt (Editor.CaretOffset + 1) == '/' &&
 					Tracker.Engine.CurrentState is XmlRootState;
-
+			if (returnInsideEmptyElement) {
+				var elementClosingText = new System.Text.StringBuilder ();
+				// Collect name of element in closing tag after </
+				for (int i = Editor.CaretOffset + 2; i < Editor.Length; i++) {
+					var c = Editor.GetCharAt (i);
+					if (char.IsWhiteSpace (c) || c == '>')
+						break;
+					elementClosingText.Append (c);
+				}
+				// and compare with current element to make sure it matches
+				if (Tracker.Engine.Nodes.Peek () is XElement element && element.Name.FullName == elementClosingText.ToString ()) {
+					for (int i = Editor.LocationToOffset (element.Region.Begin) + 1; i < Editor.CaretOffset; i++) {
+						// Make sure there is no child elements(e.g. <a><b></b>$</a>
+						if (Editor.GetCharAt (i) == '<') {
+							returnInsideEmptyElement = false;
+							break;
+						}
+					}
+				} else
+					returnInsideEmptyElement = false;
+			}
 			var newLine = Editor.CaretLine + 1;
 			var ret = base.KeyPress (descriptor);
 			if (Editor.Options.IndentStyle == IndentStyle.Smart) {
