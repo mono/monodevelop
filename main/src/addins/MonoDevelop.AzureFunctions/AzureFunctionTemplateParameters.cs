@@ -30,6 +30,7 @@ using System.Collections.Generic;
 
 using Xwt;
 
+using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
 
@@ -134,7 +135,7 @@ namespace MonoDevelop.AzureFunctions
 				widget.Show ();
 
 				if (!string.IsNullOrEmpty (description)) {
-					var icon = new ImageView (StockIcons.Information) {
+					var icon = new ImageView (ImageService.GetIcon ("md-information", Gtk.IconSize.Menu)) {
 						TooltipText = description
 					};
 					icon.Show ();

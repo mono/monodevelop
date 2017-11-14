@@ -78,7 +78,7 @@ namespace MonoDevelop.AzureFunctions
 				TemplateSelected (listView, null);
 			}
 
-			Buttons.Add (Command.Ok, Command.Cancel);
+			Buttons.Add (Command.Cancel, Command.Ok);
 		}
 
 		static string Unquote (string text)
