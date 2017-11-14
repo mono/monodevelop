@@ -1107,6 +1107,16 @@ namespace MonoDevelop.Components.DockNotebook
 			return base.OnExposeEvent (evnt);
 		}
 
+		static Xwt.WidgetSpacing GetPaddingSpacing (double width, bool active) 
+		{
+			double rightPadding = (active ? TabActivePadding.Right : TabPadding.Right) - (LeanWidth / 2);
+			rightPadding = (rightPadding * Math.Min (1.0, Math.Max (0.5, (width - 30) / 70.0)));
+			double leftPadding = (active ? TabActivePadding.Left : TabPadding.Left) - (LeanWidth / 2);
+			leftPadding = (leftPadding * Math.Min (1.0, Math.Max (0.5, (width - 30) / 70.0)));
+			double bottomPadding = active ? TabActivePadding.Bottom : TabPadding.Bottom;
+			return new Xwt.WidgetSpacing (leftPadding, 0, rightPadding, bottomPadding); 
+		}
+
 		void DrawTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool highlight, bool active, bool dragging, Pango.Layout la, bool focused)
 		{
 			// This logic is stupid to have here, should be in the caller!
@@ -1114,26 +1124,22 @@ namespace MonoDevelop.Components.DockNotebook
 				tabBounds.X = (int)(tabBounds.X + (dragManager.X - tabBounds.X) * dragManager.Progress);
 				tabBounds.X = HelperMethods.Clamp (tabBounds.X, tabStartX, tabEndX - tabBounds.Width);
 			}
-			double rightPadding = (active ? TabActivePadding.Right : TabPadding.Right) - (LeanWidth / 2);
-			rightPadding = (rightPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
-			double leftPadding = (active ? TabActivePadding.Left : TabPadding.Left) - (LeanWidth / 2);
-			leftPadding = (leftPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
-			double bottomPadding = active ? TabActivePadding.Bottom : TabPadding.Bottom;
 
 			ctx.LineWidth = 1;
 			ctx.NewPath ();
 
-			bool tabHovered = tracker.Hovered && tab.Allocation.Contains (tracker.MousePosition);
-
-			var closeButtonAllocation = new Cairo.Rectangle (tabBounds.Right - rightPadding - (tabCloseImage.Width / 2) - CloseButtonMarginRight,
-											 tabBounds.Height - bottomPadding - tabCloseImage.Height - CloseButtonMarginBottom,
+			var paddingSpacing = GetPaddingSpacing (tabBounds.Width, active);
+			var closeButtonAllocation = new Cairo.Rectangle (tabBounds.Right - paddingSpacing.Right - (tabCloseImage.Width / 2) - CloseButtonMarginRight,
+			                                                 tabBounds.Height - paddingSpacing.Bottom - tabCloseImage.Height - CloseButtonMarginBottom,
 											 tabCloseImage.Width, tabCloseImage.Height);
 
 			DrawTabBackground (this, ctx, allocation, tabBounds.Width, tabBounds.X, active);
 
+			bool tabHovered = tracker.Hovered && tab.Allocation.Contains (tracker.MousePosition);
+
 			bool drawButtons;
 			DrawTabIconsBar (ctx, tab, this, tracker, closeButtonAllocation, active, tabHovered, focused, out drawButtons);
-			DrawTabText (ctx, la, tab, tabBounds, closeButtonAllocation, leftPadding, rightPadding, bottomPadding, active, drawButtons);
+			DrawTabText (ctx, la, tab, tabBounds, closeButtonAllocation, paddingSpacing, active, drawButtons);
             la.Dispose ();
 		}
 
@@ -1193,16 +1199,16 @@ namespace MonoDevelop.Components.DockNotebook
 			drawButtons = drawCloseButton;
 		}
 
-		static void DrawTabText (Context ctx, Pango.Layout la, DockNotebookTab tab, Gdk.Rectangle tabBounds, Cairo.Rectangle closeButtonAllocation, double leftPadding, double rightPadding, double bottomPadding, bool active, bool drawButtons)
+		static void DrawTabText (Context ctx, Pango.Layout la, DockNotebookTab tab, Gdk.Rectangle tabBounds, Cairo.Rectangle closeButtonAllocation, Xwt.WidgetSpacing paddingSpacing, bool active, bool drawButtons)
 		{
 			// Render Text
-			double tw = tabBounds.Width - (leftPadding + rightPadding);
+			double tw = tabBounds.Width - (paddingSpacing.Left + paddingSpacing.Right);
 			if (drawButtons || tab.DirtyStrength > 0.5)
 				tw -= closeButtonAllocation.Width / 2;
 
-			double tx = tabBounds.X + leftPadding;
+			double tx = tabBounds.X + paddingSpacing.Left;
 			var baseline = la.GetLine (0).Layout.GetPixelBaseline ();
-			double ty = tabBounds.Height - bottomPadding - baseline;
+			double ty = tabBounds.Height - paddingSpacing.Bottom - baseline;
 
 			ctx.MoveTo (tx, ty);
 			if (!MonoDevelop.Core.Platform.IsMac && !MonoDevelop.Core.Platform.IsWindows) {
