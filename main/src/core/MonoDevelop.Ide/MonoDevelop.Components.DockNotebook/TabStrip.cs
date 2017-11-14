@@ -1120,65 +1120,24 @@ namespace MonoDevelop.Components.DockNotebook
 			leftPadding = (leftPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
 			double bottomPadding = active ? TabActivePadding.Bottom : TabPadding.Bottom;
 
-			DrawTabBackground (this, ctx, allocation, tabBounds.Width, tabBounds.X, active);
-
 			ctx.LineWidth = 1;
 			ctx.NewPath ();
 
-			// Render Close Button (do this first so we can tell how much text to render)
+			bool tabHovered = tracker.Hovered && tab.Allocation.Contains (tracker.MousePosition);
 
 			var closeButtonAlloation = new Cairo.Rectangle (tabBounds.Right - rightPadding - (tabCloseImage.Width / 2) - CloseButtonMarginRight,
-			                                 tabBounds.Height - bottomPadding - tabCloseImage.Height - CloseButtonMarginBottom,
-			                                 tabCloseImage.Width, tabCloseImage.Height);
-			
-			tab.CloseButtonActiveArea = closeButtonAlloation.Inflate (2, 2);
+											 tabBounds.Height - bottomPadding - tabCloseImage.Height - CloseButtonMarginBottom,
+											 tabCloseImage.Width, tabCloseImage.Height);
 
-			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonActiveArea.Contains (tracker.MousePosition);
-			bool tabHovered = tracker.Hovered && tab.Allocation.Contains (tracker.MousePosition);
-			bool drawCloseButton = active || tabHovered || focused;
+			DrawTabBackground (this, ctx, allocation, tabBounds.Width, tabBounds.X, active);
 
-			if (!closeButtonHovered && tab.DirtyStrength > 0.5) {
-				ctx.DrawImage (this, tabDirtyImage, closeButtonAlloation.X, closeButtonAlloation.Y);
-				drawCloseButton = false;
-			}
-
-			if (drawCloseButton)
-				ctx.DrawImage (this, tabCloseImage.WithAlpha ((closeButtonHovered ? 1.0 : 0.5) * tab.Opacity), closeButtonAlloation.X, closeButtonAlloation.Y);
-			
-			// Render Text
-			double tw = tabBounds.Width - (leftPadding + rightPadding);
-			if (drawCloseButton || tab.DirtyStrength > 0.5)
-				tw -= closeButtonAlloation.Width / 2;
-
-			double tx = tabBounds.X + leftPadding;
-			var baseline = la.GetLine (0).Layout.GetPixelBaseline ();
-			double ty = tabBounds.Height - bottomPadding - baseline;
-
-			ctx.MoveTo (tx, ty);
-			if (!MonoDevelop.Core.Platform.IsMac && !MonoDevelop.Core.Platform.IsWindows) {
-				// This is a work around for a linux specific problem.
-				// A bug in the proprietary ATI driver caused TAB text not to draw.
-				// If that bug get's fixed remove this HACK asap.
-				la.Ellipsize = Pango.EllipsizeMode.End;
-				la.Width = (int)(tw * Pango.Scale.PangoScale);
-				ctx.SetSourceColor ((tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor)).ToCairoColor ());
-				Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
-			} else {
-				// ellipses are for space wasting ..., we cant afford that
-				using (var lg = new LinearGradient (tx + tw - 10, 0, tx + tw, 0)) {
-					var color = (tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor)).ToCairoColor ();
-					color = color.MultiplyAlpha (tab.Opacity);
-					lg.AddColorStop (0, color);
-					color.A = 0;
-					lg.AddColorStop (1, color);
-					ctx.SetSource (lg);
-					Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
-				}
-			}
+			bool drawButtons;
+			DrawTabIconsBar (ctx, tab, closeButtonAlloation, active, tabHovered, focused, out drawButtons);
+			DrawTabText (ctx, la, tab, tabBounds, closeButtonAlloation, leftPadding, rightPadding, bottomPadding, active, drawButtons);
             la.Dispose ();
 		}
 
-		static void DrawTabBackground (Widget widget, Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, bool active = true)
+		void DrawTabBackground (Widget widget, Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, bool active = true)
 		{
 			int lean = Math.Min (LeanWidth, contentWidth / 2);
 			int halfLean = lean / 2;
@@ -1213,6 +1172,60 @@ namespace MonoDevelop.Components.DockNotebook
 			else if (!string.IsNullOrEmpty (tab.Text))
 				la.SetText (tab.Text);
 			return la;
+		}
+
+
+		void DrawTabIconsBar (Context ctx, DockNotebookTab tab, Cairo.Rectangle closeButtonAllocation, bool active, bool tabHovered, bool focused, out bool drawButtons)
+		{
+			// Render Close Button (do this first so we can tell how much text to render)
+			bool drawCloseButton = active || tabHovered || focused;
+
+			tab.CloseButtonActiveArea = closeButtonAllocation.Inflate (2, 2);
+
+			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonActiveArea.Contains (tracker.MousePosition);
+			if (!closeButtonHovered && tab.DirtyStrength > 0.5) {
+				ctx.DrawImage (this, tabDirtyImage, closeButtonAllocation.X, closeButtonAllocation.Y);
+				drawCloseButton = false;
+			}
+
+			if (drawCloseButton)
+				ctx.DrawImage (this, tabCloseImage.WithAlpha ((closeButtonHovered ? 1.0 : 0.5) * tab.Opacity), closeButtonAllocation.X, closeButtonAllocation.Y);
+
+			drawButtons = drawCloseButton;
+		}
+
+		void DrawTabText (Context ctx, Pango.Layout la, DockNotebookTab tab, Gdk.Rectangle tabBounds, Cairo.Rectangle closeButtonAllocation, double leftPadding, double rightPadding, double bottomPadding, bool active, bool drawButtons)
+		{
+			// Render Text
+			double tw = tabBounds.Width - (leftPadding + rightPadding);
+			if (drawButtons || tab.DirtyStrength > 0.5)
+				tw -= closeButtonAllocation.Width / 2;
+
+			double tx = tabBounds.X + leftPadding;
+			var baseline = la.GetLine (0).Layout.GetPixelBaseline ();
+			double ty = tabBounds.Height - bottomPadding - baseline;
+
+			ctx.MoveTo (tx, ty);
+			if (!MonoDevelop.Core.Platform.IsMac && !MonoDevelop.Core.Platform.IsWindows) {
+				// This is a work around for a linux specific problem.
+				// A bug in the proprietary ATI driver caused TAB text not to draw.
+				// If that bug get's fixed remove this HACK asap.
+				la.Ellipsize = Pango.EllipsizeMode.End;
+				la.Width = (int)(tw * Pango.Scale.PangoScale);
+				ctx.SetSourceColor ((tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor)).ToCairoColor ());
+				Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
+			} else {
+				// ellipses are for space wasting ..., we cant afford that
+				using (var lg = new LinearGradient (tx + tw - 10, 0, tx + tw, 0)) {
+					var color = (tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor)).ToCairoColor ();
+					color = color.MultiplyAlpha (tab.Opacity);
+					lg.AddColorStop (0, color);
+					color.A = 0;
+					lg.AddColorStop (1, color);
+					ctx.SetSource (lg);
+					Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
+				}
+			}
 		}
 
 		class DragTabManager
