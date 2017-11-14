@@ -1003,7 +1003,7 @@ namespace MonoDevelop.Components.DockNotebook
 				DockNotebookTab closingTab = closingTabs [index];
 				width = (int)(closingTab.WidthModifier * TabWidth);
 				int tmp = width;
-				return c => DrawTab (c, closingTab, Allocation, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, false, false, CreateTabLayout (closingTab), false);
+				return c => DrawTab (c, closingTab, Allocation, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, CreateTabLayout (closingTab), false);
 			}
 			return c => {
 			};
@@ -1045,7 +1045,13 @@ namespace MonoDevelop.Components.DockNotebook
 
 				if (active) {
 					int tmp = x;
-					drawActive = c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, dragManager.IsDragging, CreateTabLayout (tab, true), focused);
+					drawActive = c => {
+						if (dragManager.IsDragging) {
+							DrawDraggingTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, CreateTabLayout (tab, true), focused);
+						} else {
+							DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, CreateTabLayout (tab, true), focused);
+						}
+					};
 					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
 				} else {
 					int tmp = x;
@@ -1055,7 +1061,7 @@ namespace MonoDevelop.Components.DockNotebook
 						tmp = (int)(tab.SavedAllocation.X + (tmp - tab.SavedAllocation.X) * (1.0f - tab.SaveStrength));
 					}
 
-					drawCommands.Add (c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), highlighted, false, false, CreateTabLayout (tab), focused));
+					drawCommands.Add (c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), false, CreateTabLayout (tab), focused));
 					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
 				}
 
@@ -1117,21 +1123,22 @@ namespace MonoDevelop.Components.DockNotebook
 			return new Xwt.WidgetSpacing (leftPadding, 0, rightPadding, bottomPadding); 
 		}
 
-		void DrawTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool highlight, bool active, bool dragging, Pango.Layout la, bool focused)
+		void DrawDraggingTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool active, Pango.Layout la, bool focused)
 		{
-			// This logic is stupid to have here, should be in the caller!
-			if (dragging) {
-				tabBounds.X = (int)(tabBounds.X + (dragManager.X - tabBounds.X) * dragManager.Progress);
-				tabBounds.X = HelperMethods.Clamp (tabBounds.X, tabStartX, tabEndX - tabBounds.Width);
-			}
+			tabBounds.X = (int)(tabBounds.X + (dragManager.X - tabBounds.X) * dragManager.Progress);
+			tabBounds.X = HelperMethods.Clamp (tabBounds.X, tabStartX, tabEndX - tabBounds.Width);
+			DrawTab (ctx, tab, allocation, tabBounds, active, la, focused);
+		}
 
+		void DrawTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool active, Pango.Layout la, bool focused)
+		{
 			ctx.LineWidth = 1;
 			ctx.NewPath ();
 
 			var paddingSpacing = GetPaddingSpacing (tabBounds.Width, active);
 			var closeButtonAllocation = new Cairo.Rectangle (tabBounds.Right - paddingSpacing.Right - (tabCloseImage.Width / 2) - CloseButtonMarginRight,
 			                                                 tabBounds.Height - paddingSpacing.Bottom - tabCloseImage.Height - CloseButtonMarginBottom,
-											 tabCloseImage.Width, tabCloseImage.Height);
+			                                                 tabCloseImage.Width, tabCloseImage.Height);
 
 			DrawTabBackground (this, ctx, allocation, tabBounds.Width, tabBounds.X, active);
 
