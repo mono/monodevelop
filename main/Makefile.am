@@ -29,6 +29,8 @@ NUGET_RESTORE = mono external/nuget-binary/nuget.exe restore -DisableParallelPro
 restore-packages:
 	@$(NUGET_RESTORE)
 	msbuild /t:Restore /p:RestoreDisableParallel=true external/RefactoringEssentials/RefactoringEssentials/RefactoringEssentials.csproj
+	mono external/fsharpbinding/.paket/paket.bootstrapper.exe
+	pushd . && cd external/fsharpbinding && mono .paket/paket.exe restore && popd
 
 vcrevision:
 	touch vcrevision
