@@ -164,12 +164,15 @@ namespace MonoDevelop.CodeActions
 					
 					if (!provider.GetSupportedFixAllScopes ().Contains (FixAllScope.Document))
 						continue;
+					
+					var language = editor.DocumentContext.AnalysisDocument.Project.Language;
+					var diagnosticdDescriptor = fix.Diagnostic?.GetCodeDiagnosticDescriptor (language);
+					if (diagnosticdDescriptor == null)
+						continue;
 
 					var subMenu2 = new CodeFixMenu (GettextCatalog.GetString ("Fix all"));
 
-					var language = editor.DocumentContext.AnalysisDocument.Project.Language;
-
-					var diagnosticAnalyzer = fix.Diagnostic.GetCodeDiagnosticDescriptor (language).GetProvider ();
+					var diagnosticAnalyzer = diagnosticdDescriptor.GetProvider ();
 					if (!diagnosticAnalyzer.SupportedDiagnostics.Contains (diag.Descriptor))
 						continue;
 
