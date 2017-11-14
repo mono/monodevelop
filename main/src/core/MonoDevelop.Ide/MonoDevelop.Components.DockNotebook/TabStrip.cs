@@ -52,6 +52,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		HBox innerBox;
 
+		readonly DragTabManager dragManager;
 		readonly DockNotebook notebook;
 		DockNotebookTab highlightedTab;
 		bool overCloseButton;
@@ -60,11 +61,6 @@ namespace MonoDevelop.Components.DockNotebook
 		bool isActiveNotebook;
 
 		MouseTracker tracker;
-
-		bool draggingTab;
-		int dragX;
-		int dragOffset;
-		double dragXProgress;
 
 		int renderOffset;
 		int targetOffset;
@@ -146,6 +142,8 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			if (notebook == null)
 				throw new ArgumentNullException ("notebook");
+
+			dragManager = new DragTabManager ();
 
 			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
 
@@ -357,8 +355,6 @@ namespace MonoDevelop.Components.DockNotebook
 			get { return TotalHeight; }
 		}
 
-		int lastDragX;
-
 		void SetHighlightedTab (DockNotebookTab tab)
 		{
 			if (highlightedTab == tab)
@@ -420,7 +416,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
-			if (draggingTab && placeholderWindow == null && !mouseHasLeft)
+			if (dragManager.IsDragging && placeholderWindow == null && !mouseHasLeft)
 				mouseHasLeft = true;
 			return base.OnLeaveNotifyEvent (evnt);
 		}
@@ -453,7 +449,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
-			if (draggingTab && mouseHasLeft) {
+			if (dragManager.IsDragging && mouseHasLeft) {
 				var sr = GetScreenRect ();
 				sr.Height = BarHeight;
 				sr.Inflate (30, 30);
@@ -462,7 +458,7 @@ namespace MonoDevelop.Components.DockNotebook
 				Gdk.Display.Default.GetPointer (out x, out y);
 
 				if (x < sr.Left || x > sr.Right || y < sr.Top || y > sr.Bottom) {
-					draggingTab = false;
+					dragManager.IsDragging = false;
 					mouseHasLeft = false;
 					CreatePlaceholderWindow ();
 				}
@@ -476,7 +472,7 @@ namespace MonoDevelop.Components.DockNotebook
 				return base.OnMotionNotifyEvent (evnt);
 			}
 
-			if (!draggingTab) {
+			if (!dragManager.IsDragging) {
 				var t = FindTab ((int)evnt.X, (int)evnt.Y);
 
 				// If the user clicks and drags on the 'x' which closes the current
@@ -492,31 +488,31 @@ namespace MonoDevelop.Components.DockNotebook
 					overCloseButton = newOver;
 					QueueDraw ();
 				}
-				if (!overCloseButton && !draggingTab && buttonPressedOnTab) {
-					draggingTab = true;
+				if (!overCloseButton && !dragManager.IsDragging && buttonPressedOnTab) {
+					dragManager.IsDragging = true;
 					mouseHasLeft = false;
-					dragXProgress = 1.0f;
+					dragManager.Progress = 1.0f;
 					int x = (int)evnt.X;
-					dragOffset = x - t.Allocation.X;
-					dragX = x - dragOffset;
-					lastDragX = (int)evnt.X;
+					dragManager.Offset = x - t.Allocation.X;
+					dragManager.X = x - dragManager.Offset;
+					dragManager.LastX = (int)evnt.X;
 				} else if (t != null)
 					newTooltip = t.Tooltip;
 			} else if (evnt.State.HasFlag (ModifierType.Button1Mask)) {
-				dragX = (int)evnt.X - dragOffset;
+				dragManager.X = (int)evnt.X - dragManager.Offset;
 				QueueDraw ();
 
 				var t = FindTab ((int)evnt.X, (int)TabPadding.Top + 3);
 				if (t == null) {
 					var last = (DockNotebookTab)notebook.Tabs.Last ();
-					if (dragX > last.Allocation.Right)
+					if (dragManager.X > last.Allocation.Right)
 						t = last;
-					if (dragX < 0)
+					if (dragManager.X < 0)
 						t = (DockNotebookTab)notebook.Tabs.First ();
 				}
 				if (t != null && t != notebook.CurrentTab && (
-				        ((int)evnt.X > lastDragX && t.Index > notebook.CurrentTab.Index) ||
-				        ((int)evnt.X < lastDragX && t.Index < notebook.CurrentTab.Index))) {
+					((int)evnt.X > dragManager.LastX && t.Index > notebook.CurrentTab.Index) ||
+					((int)evnt.X < dragManager.LastX && t.Index < notebook.CurrentTab.Index))) {
 					t.SaveAllocation ();
 					t.SaveStrength = 1;
 					notebook.ReorderTab ((DockNotebookTab)notebook.CurrentTab, t);
@@ -527,7 +523,7 @@ namespace MonoDevelop.Components.DockNotebook
 						0.0f,
 						easing: Easing.CubicInOut);
 				}
-				lastDragX = (int)evnt.X;
+				dragManager.LastX = (int)evnt.X;
 			}
 
 			if (newTooltip != null && TooltipText != null && TooltipText != newTooltip)
@@ -589,7 +585,7 @@ namespace MonoDevelop.Components.DockNotebook
 				return base.OnButtonReleaseEvent (evnt);
 			}
 
-			if (!draggingTab && overCloseOnPress) {
+			if (!dragManager.IsDragging && overCloseOnPress) {
 				var t = FindTab ((int)evnt.X, (int)evnt.Y);
 				if (t != null && IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y)) {
 					notebook.OnCloseTab (t);
@@ -599,13 +595,13 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 			overCloseOnPress = false;
 			allowDoubleClick = true;
-			if (dragX != 0)
+			if (dragManager.X != 0)
 				this.Animate ("EndDrag",
-					f => dragXProgress = f,
+					f => dragManager.Progress = f,
 					1.0d,
 					0.0d,
 					easing: Easing.CubicOut,
-					finished: (f, a) => draggingTab = false);
+				              finished: (f, a) => dragManager.IsDragging = false);
 			QueueDraw ();
 			return base.OnButtonReleaseEvent (evnt);
 		}
@@ -921,8 +917,7 @@ namespace MonoDevelop.Components.DockNotebook
 			buttonPressedOnTab = false;
 			overCloseOnPress = false;
 			allowDoubleClick = true;
-			draggingTab = false;
-			dragX = 0;
+			dragManager.Cancel ();
 			this.AbortAnimation ("EndDrag");
 			base.OnUnrealized ();
 		}
@@ -1050,7 +1045,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 				if (active) {
 					int tmp = x;
-					drawActive = c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, draggingTab, CreateTabLayout (tab, true), focused);
+					drawActive = c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, dragManager.IsDragging, CreateTabLayout (tab, true), focused);
 					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
 				} else {
 					int tmp = x;
@@ -1116,7 +1111,7 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			// This logic is stupid to have here, should be in the caller!
 			if (dragging) {
-				tabBounds.X = (int)(tabBounds.X + (dragX - tabBounds.X) * dragXProgress);
+				tabBounds.X = (int)(tabBounds.X + (dragManager.X - tabBounds.X) * dragManager.Progress);
 				tabBounds.X = HelperMethods.Clamp (tabBounds.X, tabStartX, tabEndX - tabBounds.Width);
 			}
 			double rightPadding = (active ? TabActivePadding.Right : TabPadding.Right) - (LeanWidth / 2);
@@ -1218,6 +1213,26 @@ namespace MonoDevelop.Components.DockNotebook
 			else if (!string.IsNullOrEmpty (tab.Text))
 				la.SetText (tab.Text);
 			return la;
+		}
+
+		class DragTabManager
+		{
+			public int X { get; set; }
+			public int Offset { get; set; }
+			public bool IsDragging { get; set; }
+			public int LastX { get; internal set; }
+			public double Progress { get; internal set; }
+
+			public DragTabManager ()
+			{
+
+			}
+
+			public void Cancel ()
+			{
+				X = 0;
+				IsDragging = false;
+			}
 		}
 	}
 }
