@@ -1125,15 +1125,15 @@ namespace MonoDevelop.Components.DockNotebook
 
 			bool tabHovered = tracker.Hovered && tab.Allocation.Contains (tracker.MousePosition);
 
-			var closeButtonAlloation = new Cairo.Rectangle (tabBounds.Right - rightPadding - (tabCloseImage.Width / 2) - CloseButtonMarginRight,
+			var closeButtonAllocation = new Cairo.Rectangle (tabBounds.Right - rightPadding - (tabCloseImage.Width / 2) - CloseButtonMarginRight,
 											 tabBounds.Height - bottomPadding - tabCloseImage.Height - CloseButtonMarginBottom,
 											 tabCloseImage.Width, tabCloseImage.Height);
 
 			DrawTabBackground (this, ctx, allocation, tabBounds.Width, tabBounds.X, active);
 
 			bool drawButtons;
-			DrawTabIconsBar (ctx, tab, closeButtonAlloation, active, tabHovered, focused, out drawButtons);
-			DrawTabText (ctx, la, tab, tabBounds, closeButtonAlloation, leftPadding, rightPadding, bottomPadding, active, drawButtons);
+			DrawTabIconsBar (ctx, tab, this, tracker, closeButtonAllocation, active, tabHovered, focused, out drawButtons);
+			DrawTabText (ctx, la, tab, tabBounds, closeButtonAllocation, leftPadding, rightPadding, bottomPadding, active, drawButtons);
             la.Dispose ();
 		}
 
@@ -1174,8 +1174,7 @@ namespace MonoDevelop.Components.DockNotebook
 			return la;
 		}
 
-
-		void DrawTabIconsBar (Context ctx, DockNotebookTab tab, Cairo.Rectangle closeButtonAllocation, bool active, bool tabHovered, bool focused, out bool drawButtons)
+		static void DrawTabIconsBar (Context ctx, DockNotebookTab tab, Widget sender, MouseTracker tracker, Cairo.Rectangle closeButtonAllocation, bool active, bool tabHovered, bool focused, out bool drawButtons)
 		{
 			// Render Close Button (do this first so we can tell how much text to render)
 			bool drawCloseButton = active || tabHovered || focused;
@@ -1184,17 +1183,17 @@ namespace MonoDevelop.Components.DockNotebook
 
 			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonActiveArea.Contains (tracker.MousePosition);
 			if (!closeButtonHovered && tab.DirtyStrength > 0.5) {
-				ctx.DrawImage (this, tabDirtyImage, closeButtonAllocation.X, closeButtonAllocation.Y);
+				ctx.DrawImage (sender, tabDirtyImage, closeButtonAllocation.X, closeButtonAllocation.Y);
 				drawCloseButton = false;
 			}
 
 			if (drawCloseButton)
-				ctx.DrawImage (this, tabCloseImage.WithAlpha ((closeButtonHovered ? 1.0 : 0.5) * tab.Opacity), closeButtonAllocation.X, closeButtonAllocation.Y);
+				ctx.DrawImage (sender, tabCloseImage.WithAlpha ((closeButtonHovered ? 1.0 : 0.5) * tab.Opacity), closeButtonAllocation.X, closeButtonAllocation.Y);
 
 			drawButtons = drawCloseButton;
 		}
 
-		void DrawTabText (Context ctx, Pango.Layout la, DockNotebookTab tab, Gdk.Rectangle tabBounds, Cairo.Rectangle closeButtonAllocation, double leftPadding, double rightPadding, double bottomPadding, bool active, bool drawButtons)
+		static void DrawTabText (Context ctx, Pango.Layout la, DockNotebookTab tab, Gdk.Rectangle tabBounds, Cairo.Rectangle closeButtonAllocation, double leftPadding, double rightPadding, double bottomPadding, bool active, bool drawButtons)
 		{
 			// Render Text
 			double tw = tabBounds.Width - (leftPadding + rightPadding);
