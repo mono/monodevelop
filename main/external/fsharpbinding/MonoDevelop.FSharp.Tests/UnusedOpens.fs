@@ -65,22 +65,6 @@ module ``Highlight unused opens`` =
         assertUnusedOpens source []
 
     [<Test>]
-    let ``Auto open namespace not needed for nested module``() =
-        let source = 
-            """
-            namespace module1namespace
-            [<AutoOpen>]
-            module module1 =
-                module module2 =
-                    let x = 1
-            namespace consumernamespace
-            open module1namespace
-            module module3 =
-                let y = module2.x
-            """
-        assertUnusedOpens source ["module1namespace"]
-
-    [<Test>]
     let ``Duplicated open statements``() =
         let source = 
             """
