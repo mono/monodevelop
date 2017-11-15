@@ -279,13 +279,15 @@ namespace MonoDevelop.SourceEditor
 			public DocumentAndLoaded (string fileName, string mimeType) {
 				if (AutoSave.AutoSaveExists(fileName)) {
 					// Don't load the document now, let Load() handle it
-					this.Document = new TextDocument();
-					this.Document.MimeType = mimeType;
-					this.Document.FileName = fileName;
+					this.Document = new TextDocument(string.Empty, fileName, mimeType);
 
 					this.Loaded = false;
 				} else {
-					this.Document = new TextDocument(fileName, mimeType);
+					// HACK we really need to be told explicitly that the document is for an existing file (that we should load) or a new file (which will have the given name/mime type)
+					// so we don't need to use File.Exists().
+					this.Document = File.Exists(fileName)
+					                ? new TextDocument(fileName, mimeType)
+					                : new TextDocument(string.Empty, fileName, mimeType);
 
 					this.Loaded = true;
 				}

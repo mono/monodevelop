@@ -138,6 +138,7 @@ namespace Microsoft.VisualStudio.Platform
 			LinkTypes ("text/x-csharp", "csharp");
 
 			if (this.ContentTypeRegistryService.GetContentType ("css") != null) {
+				LinkTypes ("text/x-cshtml-web", "RazorCSharp");
 				LinkTypes ("text/x-css", "css");
 				LinkTypes ("text/x-less-web", "LESS");
 				LinkTypes ("text/x-scss-web", "SCSS");

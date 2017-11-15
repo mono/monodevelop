@@ -97,18 +97,12 @@ namespace MonoDevelop.Ide.Editor
 		{
 			TextEditor editor;
 
-			// HACK: this is a very poor test for whether to load the document. Maybe add an IsPlaceholder property to FilePath.
-			// Another alternative would be to add a parameter to CreateContent.
-			if (File.Exists(fileName))
-			{
-				editor = TextEditorFactory.CreateNewEditor(fileName, mimeType);
-			}
-			else
-			{
-				editor = TextEditorFactory.CreateNewEditor();
-				editor.FileName = fileName;
-				editor.MimeType = mimeType;
-			}
+			// HACK: CreateNewEditor really needs to know whether the document exists (& should be loaded)
+			// or we're creating an empty document with the given file name & mime type.
+			//
+			// That information could be added to FilePath but fileName is converted to a string below
+			// which means the information is lost.
+			editor = TextEditorFactory.CreateNewEditor(fileName, mimeType);
 
 			editor.GetViewContent ().Project = ownerProject;
 			return editor.GetViewContent (); 
