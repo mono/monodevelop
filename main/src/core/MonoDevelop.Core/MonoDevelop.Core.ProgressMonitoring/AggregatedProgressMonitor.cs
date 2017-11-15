@@ -48,7 +48,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		Cancel = 0x40,
 		FollowerCancel = 0x80,	// when the follower is cancelled, the whole aggregated monitor is cancelled.
 		ReportObject = 0x100,
-		All =  0xff
+		All =  0xfff
 	}
 	
 	public class AggregatedProgressMonitor: ProgressMonitor
