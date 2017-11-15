@@ -390,6 +390,31 @@ namespace MonoDevelop.Core
 			return m;
 		}
 
+		/// <summary>
+		/// Reports a custom status object
+		/// </summary>
+		/// <param name="statusObject">The object.</param>
+		/// <remarks>
+		/// This method allows using arbitrary objects to report status.
+		/// The type of the object has to be well known by the reporter and
+		/// by the monitor implementation
+		/// </remarks>
+		public void ReportObject (object statusObject)
+		{
+			if (ReportGlobalDataToParent && parentMonitor != null)
+				parentMonitor.ReportObject (statusObject);
+
+			if (context != null)
+				context.Post ((o) => OnObjectReported (statusObject), null);
+			else
+				OnObjectReported (statusObject);
+
+			if (followerMonitors != null) {
+				foreach (var sm in followerMonitors)
+					sm.ReportObject (statusObject);
+			}
+		}
+
 		public void ReportWarning (string message)
 		{
 			if (ReportGlobalDataToParent && parentMonitor != null)
@@ -571,6 +596,10 @@ namespace MonoDevelop.Core
 		protected virtual ProgressMonitor CreateAsyncStepMonitor ()
 		{
 			return new ProgressMonitor ();
+		}
+
+		protected virtual void OnObjectReported (object statusObject)
+		{
 		}
 
 		protected virtual void OnSuccessReported (string message)
