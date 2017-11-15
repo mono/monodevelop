@@ -24,22 +24,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 
 using Gtk;
 using Xwt.Motion;
 
 using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
+using System.Collections.Generic;
+using Cairo;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.DockNotebook
 {
 	class DockNotebookTab: IAnimatable, IDisposable
 	{
+		internal static Xwt.Drawing.Image tabActiveBackImage = Xwt.Drawing.Image.FromResource ("tabbar-active.9.png");
+		internal static Xwt.Drawing.Image tabBackImage = Xwt.Drawing.Image.FromResource ("tabbar-inactive.9.png");
+
+		readonly static DockNotebookTabRenderer renderer = new DockNotebookTabRenderer ();
+
+		static readonly int VerticalTextSize = 11;
+
+		public const string CloseButtonIdentifier = "DockNotebook.Tab.CloseButton";
+
+		List<DockNotebookTabButton> Buttons = new List<DockNotebookTabButton> ();
+
 		DockNotebook notebook;
 		readonly TabStrip strip;
 
 		internal AtkCocoaHelper.AccessibilityElementProxy Accessible { get; private set; }
-		internal AtkCocoaHelper.AccessibilityElementProxy CloseButtonAccessible { get; private set; }
+		internal event EventHandler AccessibilityShowMenu;
 
 		string text;
 		string markup;
@@ -65,30 +80,6 @@ namespace MonoDevelop.Components.DockNotebook
 				Accessible.FrameInParent = cocoaFrame;
 				Accessible.FrameInGtkParent = value;
 				allocation = value;
-			}
-		}
-
-		Cairo.Rectangle closeButtonActiveArea;
-		internal Cairo.Rectangle CloseButtonActiveArea {
-			get {
-				return closeButtonActiveArea;
-			}
-			set {
-				Gdk.Rectangle cocoaFrame;
-
-				// value is in the TabStrip's coordinate space, whereas we need to set the button in the tab space.
-				cocoaFrame.X = (int)value.X - allocation.X;
-				int halfParentWidth = allocation.Height / 2;
-				double dy = value.Y - halfParentWidth;
-				cocoaFrame.Y = (int) (halfParentWidth + dy) - allocation.Y;
-				cocoaFrame.Width = (int) value.Width;
-				cocoaFrame.Height = (int) value.Height;
-
-				CloseButtonAccessible.FrameInParent = cocoaFrame;
-
-				Gdk.Rectangle realFrame = new Gdk.Rectangle ((int) value.X, (int) value.Y, (int) value.Width, (int) value.Height);
-				CloseButtonAccessible.FrameInGtkParent = realFrame;
-				closeButtonActiveArea = value;
 			}
 		}
 
@@ -150,8 +141,9 @@ namespace MonoDevelop.Components.DockNotebook
 				}
 
 				Accessible.Title = accTitle;
-				CloseButtonAccessible.Title = string.Format (Core.GettextCatalog.GetString ("Close {0}"), value);
-
+				foreach (var button in Buttons) {
+					button.OnTabTextChanged (value);
+				}
 				strip.Update ();
 			}
 		}
@@ -173,8 +165,9 @@ namespace MonoDevelop.Components.DockNotebook
 				}
 
 				Accessible.Title = accTitle;
-				CloseButtonAccessible.Title = string.Format (Core.GettextCatalog.GetString ("Close {0}"), value);
-
+				foreach (var button in Buttons) {
+					button.OnTabMarkupChanged (value);
+				}
 				strip.Update ();
 			}
 		}
@@ -211,6 +204,9 @@ namespace MonoDevelop.Components.DockNotebook
 
 		internal DockNotebookTab (DockNotebook notebook, TabStrip strip)
 		{
+			this.notebook = notebook;
+			this.strip = strip;
+
 			Accessible = AccessibilityElementProxy.ButtonElementProxy ();
 			Accessible.PerformPress += OnPressTab;
 			// FIXME Should Role descriptions be translated?
@@ -219,17 +215,7 @@ namespace MonoDevelop.Components.DockNotebook
 			Accessible.PerformShowMenu += OnShowMenu;
 			Accessible.Identifier = "DockNotebook.Tab";
 
-			CloseButtonAccessible = AccessibilityElementProxy.ButtonElementProxy ();
-			CloseButtonAccessible.PerformPress += OnPressCloseButton;
-			CloseButtonAccessible.SetRole (AtkCocoa.Roles.AXButton);
-			CloseButtonAccessible.GtkParent = strip;
-			CloseButtonAccessible.PerformShowMenu += OnCloseButtonShowMenu;
-			CloseButtonAccessible.Title = Core.GettextCatalog.GetString ("Close document");
-			CloseButtonAccessible.Identifier = "DockNotebook.Tab.CloseButton";
-			Accessible.AddAccessibleChild (CloseButtonAccessible);
-
-			this.notebook = notebook;
-			this.strip = strip;
+			AddTabButton (CloseButtonIdentifier, Core.GettextCatalog.GetString ("Close document"));
 		}
 
 		internal Gdk.Rectangle SavedAllocation { get; private set; }
@@ -245,9 +231,13 @@ namespace MonoDevelop.Components.DockNotebook
 			strip.QueueDraw ();
 		}
 
+		public void OnDraw (Cairo.Context ctx, TabStrip tabStrip, Gdk.Rectangle tabBounds, bool active, bool focused) 
+		{
+			renderer.Draw (ctx, this, tabStrip, tabBounds, active, focused);
+		}
+
 		internal event EventHandler AccessibilityPressTab;
 		internal event EventHandler AccessibilityPressCloseButton;
-		internal event EventHandler AccessibilityShowMenu;
 
 		void OnPressTab (object sender, EventArgs args)
 		{
@@ -259,22 +249,164 @@ namespace MonoDevelop.Components.DockNotebook
 			AccessibilityShowMenu?.Invoke (this, args);
 		}
 
-		void OnPressCloseButton (object sender, EventArgs args)
+		#region Buttons
+
+		void AddTabButton (string identifier, string title)
 		{
-			AccessibilityPressCloseButton?.Invoke (this, args);
+			var button = new DockNotebookTabButton (this, strip, identifier, title);
+			button.ShowMenu += (sender, e) => AccessibilityShowMenu?.Invoke (sender, EventArgs.Empty);
+			button.Pressed += (sender, e) => {
+				if (e == CloseButtonIdentifier) {
+					AccessibilityPressCloseButton?.Invoke (sender, EventArgs.Empty);
+				}
+			};
+			Accessible.AddAccessibleChild (button.AccessibilityElement);
+			Buttons.Add (button);
 		}
 
-		void OnCloseButtonShowMenu (object sender, EventArgs args)
+		internal DockNotebookTabButton GetButton (string identifier)
 		{
-			AccessibilityShowMenu?.Invoke (this, args);
+			return Buttons.FirstOrDefault (s => s.Identifier == identifier);
 		}
+
+		internal DockNotebookTabButton GetCloseButton ()
+		{
+			return GetButton (DockNotebookTab.CloseButtonIdentifier);
+		}
+
+		internal bool IsOverButton (string identifier, int x, int y)
+		{
+			var buttonSelected = GetButton (identifier);
+			if (buttonSelected != null) {
+				return buttonSelected.Allocation.Contains (x, y);
+			}
+			return false;
+		}
+
+		internal bool IsOverCloseButton (int x, int y)
+		{
+			return IsOverButton (CloseButtonIdentifier, x, y);
+		}
+
+		#endregion
 
 		public void Dispose ()
 		{
 			Accessible.PerformPress -= OnPressTab;
 			Accessible.PerformShowMenu -= OnShowMenu;
-			CloseButtonAccessible.PerformShowMenu -= OnCloseButtonShowMenu;
-			CloseButtonAccessible.PerformPress -= OnPressCloseButton;
+			foreach (var button in Buttons) {
+				button.Dispose ();
+			}
+		}
+
+		class DockNotebookTabRenderer
+		{
+			public DockNotebookTabRenderer ()
+			{
+			}
+
+			public void Draw (Cairo.Context ctx, DockNotebookTab tab, TabStrip tabStrip, Gdk.Rectangle tabBounds, bool active, bool focused)
+			{
+				var la = CreateTabLayout (tabStrip.PangoContext, tab, active);
+				ctx.LineWidth = 1;
+				ctx.NewPath ();
+
+				var paddingSpacing = GetPaddingSpacing (tabBounds.Width, active);
+				var closeButtonAllocation = new Cairo.Rectangle (tabBounds.Right - paddingSpacing.Right - (DockNotebookTabButton.tabCloseImage.Width / 2) - DockNotebookTabButton.CloseButtonMarginRight,
+				                                                 tabBounds.Height - paddingSpacing.Bottom - DockNotebookTabButton.tabCloseImage.Height - DockNotebookTabButton.CloseButtonMarginBottom,
+				                                                 DockNotebookTabButton.tabCloseImage.Width, DockNotebookTabButton.tabCloseImage.Height);
+
+				DrawTabBackground (ctx, tabStrip, tabBounds.Width, tabBounds.X, active);
+
+				bool drawButtons = active || focused || tabStrip.IsElementHovered (tab);
+				if (drawButtons) {
+					tab.Buttons.ForEach (btn => btn.Draw (ctx, tabStrip, closeButtonAllocation));
+				}
+
+				DrawTabText (ctx, tab, la, tabBounds, closeButtonAllocation, paddingSpacing, active, drawButtons);
+				la.Dispose ();
+			}
+
+			void DrawTabBackground (Cairo.Context ctx, TabStrip tabStrip, int contentWidth, int px, bool active = true)
+			{
+				int lean = Math.Min (TabStrip.LeanWidth, contentWidth / 2);
+				int halfLean = lean / 2;
+
+				double x = px + TabStrip.TabSpacing - halfLean;
+				double y = 0;
+				double height = tabStrip.Allocation.Height;
+				double width = contentWidth - (TabStrip.TabSpacing * 2) + lean;
+
+				var image = active ? tabActiveBackImage : tabBackImage;
+				image = image.WithSize (width, height);
+
+				ctx.DrawImage (tabStrip, image, x, y);
+			}
+
+			void DrawTabText (Cairo.Context ctx, DockNotebookTab tab, Pango.Layout la, Gdk.Rectangle tabBounds, Cairo.Rectangle closeButtonAllocation, Xwt.WidgetSpacing paddingSpacing, bool active, bool drawButtons)
+			{
+				// Render Text
+				double tw = tabBounds.Width - (paddingSpacing.Left + paddingSpacing.Right);
+				if (drawButtons || tab.DirtyStrength > 0.5)
+					tw -= closeButtonAllocation.Width / 2;
+
+				double tx = tabBounds.X + paddingSpacing.Left;
+				var baseline = la.GetLine (0).Layout.GetPixelBaseline ();
+				double ty = tabBounds.Height - paddingSpacing.Bottom - baseline;
+
+				ctx.MoveTo (tx, ty);
+				if (!MonoDevelop.Core.Platform.IsMac && !MonoDevelop.Core.Platform.IsWindows) {
+					// This is a work around for a linux specific problem.
+					// A bug in the proprietary ATI driver caused TAB text not to draw.
+					// If that bug get's fixed remove this HACK asap.
+					la.Ellipsize = Pango.EllipsizeMode.End;
+					la.Width = (int)(tw * Pango.Scale.PangoScale);
+					ctx.SetSourceColor ((tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor)).ToCairoColor ());
+					Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
+				} else {
+					// ellipses are for space wasting ..., we cant afford that
+					using (var lg = new LinearGradient (tx + tw - 10, 0, tx + tw, 0)) {
+						var color = (tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor)).ToCairoColor ();
+						color = color.MultiplyAlpha (tab.Opacity);
+						lg.AddColorStop (0, color);
+						color.A = 0;
+						lg.AddColorStop (1, color);
+						ctx.SetSource (lg);
+						Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
+					}
+				}
+			}
+
+			static Xwt.WidgetSpacing GetPaddingSpacing (double width, bool active)
+			{
+				double rightPadding = (active ? TabStrip.TabActivePadding.Right : TabStrip.TabPadding.Right) - (TabStrip.LeanWidth / 2);
+				rightPadding = (rightPadding * Math.Min (1.0, Math.Max (0.5, (width - 30) / 70.0)));
+				double leftPadding = (active ? TabStrip.TabActivePadding.Left : TabStrip.TabPadding.Left) - (TabStrip.LeanWidth / 2);
+				leftPadding = (leftPadding * Math.Min (1.0, Math.Max (0.5, (width - 30) / 70.0)));
+				double bottomPadding = active ? TabStrip.TabActivePadding.Bottom : TabStrip.TabPadding.Bottom;
+				return new Xwt.WidgetSpacing (leftPadding, 0, rightPadding, bottomPadding);
+			}
+
+			static Pango.Layout CreateTabLayout (Pango.Context context, DockNotebookTab tab, bool active = false)
+			{
+				Pango.Layout la = CreateSizedLayout (context, active);
+				if (!string.IsNullOrEmpty (tab.Markup))
+					la.SetMarkup (tab.Markup);
+				else if (!string.IsNullOrEmpty (tab.Text))
+					la.SetText (tab.Text);
+				return la;
+			}
+
+			static Pango.Layout CreateSizedLayout (Pango.Context context, bool active)
+			{
+				var la = new Pango.Layout (context);
+				la.FontDescription = Ide.Fonts.FontService.SansFont.Copy ();
+				if (!Core.Platform.IsWindows)
+					la.FontDescription.Weight = Pango.Weight.Bold;
+				la.FontDescription.AbsoluteSize = Pango.Units.FromPixels (VerticalTextSize);
+
+				return la;
+			}
 		}
 	}
 }

@@ -44,11 +44,8 @@ namespace MonoDevelop.Components.DockNotebook
 	{
 		static Xwt.Drawing.Image tabbarPrevImage = Xwt.Drawing.Image.FromResource ("tabbar-prev-12.png");
 		static Xwt.Drawing.Image tabbarNextImage = Xwt.Drawing.Image.FromResource ("tabbar-next-12.png");
-		static Xwt.Drawing.Image tabActiveBackImage = Xwt.Drawing.Image.FromResource ("tabbar-active.9.png");
-		static Xwt.Drawing.Image tabBackImage = Xwt.Drawing.Image.FromResource ("tabbar-inactive.9.png");
 		static Xwt.Drawing.Image tabbarBackImage = Xwt.Drawing.Image.FromResource ("tabbar-back.9.png");
-		static Xwt.Drawing.Image tabCloseImage = Xwt.Drawing.Image.FromResource ("tab-close-9.png");
-		static Xwt.Drawing.Image tabDirtyImage = Xwt.Drawing.Image.FromResource ("tab-dirty-9.png");
+		readonly static TabStripRenderer renderer = new TabStripRenderer ();
 
 		HBox innerBox;
 
@@ -73,15 +70,12 @@ namespace MonoDevelop.Components.DockNotebook
 		public MenuButton DropDownButton;
 
 		static readonly int TotalHeight = 32;
-		static readonly Xwt.WidgetSpacing TabPadding;
-		static readonly Xwt.WidgetSpacing TabActivePadding;
+		internal static readonly Xwt.WidgetSpacing TabPadding;
+		internal static readonly Xwt.WidgetSpacing TabActivePadding;
 		static readonly int LeftBarPadding = 44;
 		static readonly int RightBarPadding = 22;
-		static readonly int VerticalTextSize = 11;
-		const int TabSpacing = 0;
-		const int LeanWidth = 12;
-		const double CloseButtonMarginRight = 0;
-		const double CloseButtonMarginBottom = -1.0;
+		internal const int TabSpacing = 0;
+		internal const int LeanWidth = 12;
 
 		const int TextOffset = 1;
 
@@ -121,20 +115,20 @@ namespace MonoDevelop.Components.DockNotebook
 		static TabStrip ()
 		{
 			Xwt.Drawing.NinePatchImage tabBackImage9;
-			if (tabBackImage is Xwt.Drawing.ThemedImage) {
-				var img = ((Xwt.Drawing.ThemedImage)tabBackImage).GetImage (Xwt.Drawing.Context.GlobalStyles);
+			if (DockNotebookTab.tabBackImage is Xwt.Drawing.ThemedImage) {
+				var img = ((Xwt.Drawing.ThemedImage)DockNotebookTab.tabBackImage).GetImage (Xwt.Drawing.Context.GlobalStyles);
 				tabBackImage9 = img as Xwt.Drawing.NinePatchImage;
 			} else
-				tabBackImage9 = tabBackImage as Xwt.Drawing.NinePatchImage;
+				tabBackImage9 = DockNotebookTab.tabBackImage as Xwt.Drawing.NinePatchImage;
 			TabPadding = tabBackImage9.Padding;
 
 
 			Xwt.Drawing.NinePatchImage tabActiveBackImage9;
-			if (tabActiveBackImage is Xwt.Drawing.ThemedImage) {
-				var img = ((Xwt.Drawing.ThemedImage)tabActiveBackImage).GetImage (Xwt.Drawing.Context.GlobalStyles);
+			if (DockNotebookTab.tabActiveBackImage is Xwt.Drawing.ThemedImage) {
+				var img = ((Xwt.Drawing.ThemedImage)DockNotebookTab.tabActiveBackImage).GetImage (Xwt.Drawing.Context.GlobalStyles);
 				tabActiveBackImage9 = img as Xwt.Drawing.NinePatchImage;
 			} else
-				tabActiveBackImage9 = tabActiveBackImage as Xwt.Drawing.NinePatchImage;
+				tabActiveBackImage9 = DockNotebookTab.tabActiveBackImage as Xwt.Drawing.NinePatchImage;
 			TabActivePadding = tabActiveBackImage9.Padding;
 		}
 
@@ -483,7 +477,7 @@ namespace MonoDevelop.Components.DockNotebook
 				}
 				SetHighlightedTab (t);
 
-				var newOver = IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y);
+				var newOver = t.IsOverCloseButton ((int)evnt.X, (int)evnt.Y);
 				if (newOver != overCloseButton) {
 					overCloseButton = newOver;
 					QueueDraw ();
@@ -548,7 +542,7 @@ namespace MonoDevelop.Components.DockNotebook
 					return true;
 				}
 				// Don't select the tab if we are clicking the close button
-				if (IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y)) {
+				if (t.IsOverCloseButton ((int)evnt.X, (int)evnt.Y)) {
 					overCloseOnPress = true;
 					return true;
 				}
@@ -587,7 +581,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 			if (!dragManager.IsDragging && overCloseOnPress) {
 				var t = FindTab ((int)evnt.X, (int)evnt.Y);
-				if (t != null && IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y)) {
+				if (t != null && t.IsOverCloseButton ((int)evnt.X, (int)evnt.Y)) {
 					notebook.OnCloseTab (t);
 					allowDoubleClick = false;
 					return true;
@@ -941,9 +935,14 @@ namespace MonoDevelop.Components.DockNotebook
 			return null;
 		}
 
-		static bool IsOverCloseButton (DockNotebookTab tab, int x, int y)
+		internal bool IsElementHovered (DockNotebookTab element) 
 		{
-			return tab != null && tab.CloseButtonActiveArea.Contains (x, y);
+			return tracker.Hovered && element.Allocation.Contains (tracker.MousePosition);
+		}
+
+		internal bool IsElementHovered (DockNotebookTabButton element)
+		{
+			return tracker.Hovered && element.Allocation.Contains (tracker.MousePosition);
 		}
 
 		public void Update ()
@@ -1003,262 +1002,149 @@ namespace MonoDevelop.Components.DockNotebook
 				DockNotebookTab closingTab = closingTabs [index];
 				width = (int)(closingTab.WidthModifier * TabWidth);
 				int tmp = width;
-				return c => DrawTab (c, closingTab, Allocation, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, false);
+				return c => closingTab.OnDraw (c, this, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, false);
 			}
 			return c => {
 			};
 		}
 
-		void Draw (Context ctx)
-		{
-			int tabArea = tabEndX - tabStartX;
-			int x = GetRenderOffset ();
-			const int y = 0;
-			int n = 0;
-			Action<Context> drawActive = null;
-			var drawCommands = new List<Action<Context>> ();
-
-			Gdk.Rectangle focusRect = new Gdk.Rectangle (0, 0, 0, 0);
-
-			for (; n < notebook.Tabs.Count; n++) {
-				if (x + TabWidth < tabStartX) {
-					x += TabWidth;
-					continue;
-				}
-
-				if (x > tabEndX)
-					break;
-
-				int closingWidth;
-				var cmd = DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, Allocation.Height), out closingWidth);
-				drawCommands.Add (cmd);
-				x += closingWidth;
-
-				var tab = (DockNotebookTab)notebook.Tabs [n];
-				bool active = tab == notebook.CurrentTab;
-				bool focused = (n == currentFocusTab);
-
-				int width = Math.Min (TabWidth, Math.Max (50, tabEndX - x - 1));
-				if (tab == notebook.Tabs.Last ())
-					width += LastTabWidthAdjustment;
-				width = (int)(width * tab.WidthModifier);
-
-				if (active) {
-					int tmp = x;
-					drawActive = c => {
-						if (dragManager.IsDragging) {
-							DrawDraggingTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, focused);
-						} else {
-							DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, focused);
-						}
-					};
-					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
-				} else {
-					int tmp = x;
-					bool highlighted = tab == highlightedTab;
-
-					if (tab.SaveStrength > 0.0f) {
-						tmp = (int)(tab.SavedAllocation.X + (tmp - tab.SavedAllocation.X) * (1.0f - tab.SaveStrength));
-					}
-
-					drawCommands.Add (c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), false, focused));
-					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
-				}
-
-				if (focused) {
-					if (currentFocusCloseButton) {
-						focusRect = new Gdk.Rectangle ((int)tab.CloseButtonActiveArea.X, (int)tab.CloseButtonActiveArea.Y, (int)tab.CloseButtonActiveArea.Width, (int)tab.CloseButtonActiveArea.Height);
-					} else {
-						focusRect = new Gdk.Rectangle (tab.Allocation.X + 5, tab.Allocation.Y + 10, tab.Allocation.Width - 30, tab.Allocation.Height - 15);
-					}
-				}
-				x += width;
-			}
-
-			var allocation = Allocation;
-			int tabWidth;
-			drawCommands.Add (DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, allocation.Height), out tabWidth));
-			drawCommands.Reverse ();
-
-			ctx.DrawImage (this, tabbarBackImage.WithSize (allocation.Width, allocation.Height), 0, 0);
-
-			// Draw breadcrumb bar header
-//			if (notebook.Tabs.Count > 0) {
-//				ctx.Rectangle (0, allocation.Height - BottomBarPadding, allocation.Width, BottomBarPadding);
-//				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor);
-//				ctx.Fill ();
-//			}
-
-			ctx.Rectangle (tabStartX - LeanWidth / 2, allocation.Y, tabArea + LeanWidth, allocation.Height);
-			ctx.Clip ();
-
-			foreach (var cmd in drawCommands)
-				cmd (ctx);
-
-			ctx.ResetClip ();
-
-			// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
-			drawActive?.Invoke (ctx);
-
-			if (HasFocus) {
-				Gtk.Style.PaintFocus (Style, GdkWindow, State, focusRect, this, "tab", focusRect.X, focusRect.Y, focusRect.Width, focusRect.Height);
-			}
-		}
-
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
-			using (var context = CairoHelper.Create (evnt.Window)) {
-				Draw (context);
-			}
+			renderer.Draw (evnt.Window, this);
 			return base.OnExposeEvent (evnt);
 		}
 
-		static Xwt.WidgetSpacing GetPaddingSpacing (double width, bool active) 
+		class TabStripRenderer
 		{
-			double rightPadding = (active ? TabActivePadding.Right : TabPadding.Right) - (LeanWidth / 2);
-			rightPadding = (rightPadding * Math.Min (1.0, Math.Max (0.5, (width - 30) / 70.0)));
-			double leftPadding = (active ? TabActivePadding.Left : TabPadding.Left) - (LeanWidth / 2);
-			leftPadding = (leftPadding * Math.Min (1.0, Math.Max (0.5, (width - 30) / 70.0)));
-			double bottomPadding = active ? TabActivePadding.Bottom : TabPadding.Bottom;
-			return new Xwt.WidgetSpacing (leftPadding, 0, rightPadding, bottomPadding); 
-		}
-
-		void DrawDraggingTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool active, bool focused)
-		{
-			tabBounds.X = (int)(tabBounds.X + (dragManager.X - tabBounds.X) * dragManager.Progress);
-			tabBounds.X = HelperMethods.Clamp (tabBounds.X, tabStartX, tabEndX - tabBounds.Width);
-			DrawTab (ctx, tab, allocation, tabBounds, active, focused);
-		}
-
-		void DrawTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool active, bool focused)
-		{
-			var la = CreateTabLayout (tab, active);
-			ctx.LineWidth = 1;
-			ctx.NewPath ();
-
-			var paddingSpacing = GetPaddingSpacing (tabBounds.Width, active);
-			var closeButtonAllocation = new Cairo.Rectangle (tabBounds.Right - paddingSpacing.Right - (tabCloseImage.Width / 2) - CloseButtonMarginRight,
-			                                                 tabBounds.Height - paddingSpacing.Bottom - tabCloseImage.Height - CloseButtonMarginBottom,
-			                                                 tabCloseImage.Width, tabCloseImage.Height);
-
-			DrawTabBackground (this, ctx, allocation, tabBounds.Width, tabBounds.X, active);
-
-			bool tabHovered = tracker.Hovered && tab.Allocation.Contains (tracker.MousePosition);
-
-			bool drawButtons;
-			DrawTabIconsBar (ctx, tab, this, tracker, closeButtonAllocation, active, tabHovered, focused, out drawButtons);
-			DrawTabText (ctx, la, tab, tabBounds, closeButtonAllocation, paddingSpacing, active, drawButtons);
-            la.Dispose ();
-		}
-
-		void DrawTabBackground (Widget widget, Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, bool active = true)
-		{
-			int lean = Math.Min (LeanWidth, contentWidth / 2);
-			int halfLean = lean / 2;
-
-			double x = px + TabSpacing - halfLean;
-			double y = 0;
-			double height = allocation.Height;
-			double width = contentWidth - (TabSpacing * 2) + lean;
-
-			var image = active ? tabActiveBackImage : tabBackImage;
-			image = image.WithSize (width, height);
-
-			ctx.DrawImage (widget, image, x, y);
-		}
-
-		Pango.Layout CreateSizedLayout (bool active)
-		{
-			var la = new Pango.Layout (PangoContext);
-			la.FontDescription = Ide.Fonts.FontService.SansFont.Copy ();
-			if (!Core.Platform.IsWindows)
-				la.FontDescription.Weight = Pango.Weight.Bold;
-			la.FontDescription.AbsoluteSize = Pango.Units.FromPixels (VerticalTextSize);
-
-			return la;
-		}
-
-		Pango.Layout CreateTabLayout (DockNotebookTab tab, bool active = false)
-		{
-			Pango.Layout la = CreateSizedLayout (active);
-			if (!string.IsNullOrEmpty (tab.Markup))
-				la.SetMarkup (tab.Markup);
-			else if (!string.IsNullOrEmpty (tab.Text))
-				la.SetText (tab.Text);
-			return la;
-		}
-
-		static void DrawTabIconsBar (Context ctx, DockNotebookTab tab, Widget sender, MouseTracker tracker, Cairo.Rectangle closeButtonAllocation, bool active, bool tabHovered, bool focused, out bool drawButtons)
-		{
-			// Render Close Button (do this first so we can tell how much text to render)
-			bool drawCloseButton = active || tabHovered || focused;
-
-			tab.CloseButtonActiveArea = closeButtonAllocation.Inflate (2, 2);
-
-			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonActiveArea.Contains (tracker.MousePosition);
-			if (!closeButtonHovered && tab.DirtyStrength > 0.5) {
-				ctx.DrawImage (sender, tabDirtyImage, closeButtonAllocation.X, closeButtonAllocation.Y);
-				drawCloseButton = false;
+			public void Draw (Gdk.Window window, TabStrip tabStrip)
+			{
+				using (var context = CairoHelper.Create (window)) {
+					OnDraw (context, tabStrip);
+				}
 			}
 
-			if (drawCloseButton)
-				ctx.DrawImage (sender, tabCloseImage.WithAlpha ((closeButtonHovered ? 1.0 : 0.5) * tab.Opacity), closeButtonAllocation.X, closeButtonAllocation.Y);
+			Gdk.Rectangle CalculateBounds (TabStrip tabStrip, Gdk.Rectangle tabBounds, bool dragged)
+			{
+				if (dragged) {
+					tabBounds.X = (int)(tabBounds.X + (tabStrip.dragManager.X - tabBounds.X) * tabStrip.dragManager.Progress);
+					tabBounds.X = HelperMethods.Clamp (tabBounds.X, tabStrip.tabStartX, tabStrip.tabEndX - tabBounds.Width);
+				}
+				return tabBounds;	
+			}
 
-			drawButtons = drawCloseButton;
-		}
+			void OnDraw (Context ctx, TabStrip tabStrip)
+			{
+				int tabArea = tabStrip.tabEndX - tabStrip.tabStartX;
+				int x = tabStrip.GetRenderOffset ();
+				const int y = 0;
+				int n = 0;
+				Action<Context> drawActive = null;
+				var drawCommands = new List<Action<Context>> ();
 
-		static void DrawTabText (Context ctx, Pango.Layout la, DockNotebookTab tab, Gdk.Rectangle tabBounds, Cairo.Rectangle closeButtonAllocation, Xwt.WidgetSpacing paddingSpacing, bool active, bool drawButtons)
-		{
-			// Render Text
-			double tw = tabBounds.Width - (paddingSpacing.Left + paddingSpacing.Right);
-			if (drawButtons || tab.DirtyStrength > 0.5)
-				tw -= closeButtonAllocation.Width / 2;
+				Gdk.Rectangle focusRect = new Gdk.Rectangle (0, 0, 0, 0);
 
-			double tx = tabBounds.X + paddingSpacing.Left;
-			var baseline = la.GetLine (0).Layout.GetPixelBaseline ();
-			double ty = tabBounds.Height - paddingSpacing.Bottom - baseline;
+				for (; n < tabStrip.notebook.Tabs.Count; n++) {
+					if (x + tabStrip.TabWidth < tabStrip.tabStartX) {
+						x += tabStrip.TabWidth;
+						continue;
+					}
 
-			ctx.MoveTo (tx, ty);
-			if (!MonoDevelop.Core.Platform.IsMac && !MonoDevelop.Core.Platform.IsWindows) {
-				// This is a work around for a linux specific problem.
-				// A bug in the proprietary ATI driver caused TAB text not to draw.
-				// If that bug get's fixed remove this HACK asap.
-				la.Ellipsize = Pango.EllipsizeMode.End;
-				la.Width = (int)(tw * Pango.Scale.PangoScale);
-				ctx.SetSourceColor ((tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor)).ToCairoColor ());
-				Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
-			} else {
-				// ellipses are for space wasting ..., we cant afford that
-				using (var lg = new LinearGradient (tx + tw - 10, 0, tx + tw, 0)) {
-					var color = (tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor)).ToCairoColor ();
-					color = color.MultiplyAlpha (tab.Opacity);
-					lg.AddColorStop (0, color);
-					color.A = 0;
-					lg.AddColorStop (1, color);
-					ctx.SetSource (lg);
-					Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
+					if (x > tabStrip.tabEndX)
+						break;
+
+					int closingWidth;
+					var cmd = tabStrip.DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, tabStrip.Allocation.Height), out closingWidth);
+					drawCommands.Add (cmd);
+					x += closingWidth;
+
+					var tab = (DockNotebookTab)tabStrip.notebook.Tabs [n];
+					bool active = tab == tabStrip.notebook.CurrentTab;
+					bool focused = (n == tabStrip.currentFocusTab);
+
+					int width = Math.Min (tabStrip.TabWidth, Math.Max (50, tabStrip.tabEndX - x - 1));
+					if (tab == tabStrip.notebook.Tabs.Last ())
+						width += tabStrip.LastTabWidthAdjustment;
+					width = (int)(width * tab.WidthModifier);
+
+					if (active) {
+						int tmp = x;
+						drawActive = c => {
+							var calculatedBounds = CalculateBounds (tabStrip, new Gdk.Rectangle (tmp, y, width, tabStrip.Allocation.Height), tabStrip.dragManager.IsDragging);
+							tab.OnDraw (c, tabStrip, calculatedBounds, true, focused);
+						};
+						tab.Allocation = new Gdk.Rectangle (tmp, tabStrip.Allocation.Y, width, tabStrip.Allocation.Height);
+					} else {
+						int tmp = x;
+						bool highlighted = tab == tabStrip.highlightedTab;
+
+						if (tab.SaveStrength > 0.0f) {
+							tmp = (int)(tab.SavedAllocation.X + (tmp - tab.SavedAllocation.X) * (1.0f - tab.SaveStrength));
+						}
+
+						drawCommands.Add (c => tab.OnDraw (c, tabStrip, new Gdk.Rectangle (tmp, y, width, tabStrip.Allocation.Height), false, focused));
+						tab.Allocation = new Gdk.Rectangle (tmp, tabStrip.Allocation.Y, width, tabStrip.Allocation.Height);
+					}
+
+					if (focused) {
+						if (tabStrip.currentFocusCloseButton) {
+							var closeButton = tab.GetCloseButton ();
+							focusRect = closeButton.Allocation.ToGdkRectangle ();
+						} else {
+							focusRect = new Gdk.Rectangle (tab.Allocation.X + 5, tab.Allocation.Y + 10, tab.Allocation.Width - 30, tab.Allocation.Height - 15);
+						}
+					}
+					x += width;
+				}
+
+				var allocation = tabStrip.Allocation;
+				int tabWidth;
+				drawCommands.Add (tabStrip.DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, allocation.Height), out tabWidth));
+				drawCommands.Reverse ();
+
+				ctx.DrawImage (tabStrip, tabbarBackImage.WithSize (allocation.Width, allocation.Height), 0, 0);
+
+				// Draw breadcrumb bar header
+				//			if (notebook.Tabs.Count > 0) {
+				//				ctx.Rectangle (0, allocation.Height - BottomBarPadding, allocation.Width, BottomBarPadding);
+				//				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor);
+				//				ctx.Fill ();
+				//			}
+
+				ctx.Rectangle (tabStrip.tabStartX - LeanWidth / 2, allocation.Y, tabArea + LeanWidth, allocation.Height);
+				ctx.Clip ();
+
+				foreach (var cmd in drawCommands)
+					cmd (ctx);
+
+				ctx.ResetClip ();
+
+				// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
+				drawActive?.Invoke (ctx);
+
+				if (tabStrip.HasFocus) {
+					Gtk.Style.PaintFocus (tabStrip.Style, tabStrip.GdkWindow, tabStrip.State, focusRect, tabStrip, "tab", focusRect.X, focusRect.Y, focusRect.Width, focusRect.Height);
 				}
 			}
 		}
+	}
 
-		class DragTabManager
+	class DragTabManager
+	{
+		public int X { get; set; }
+		public int Offset { get; set; }
+		public bool IsDragging { get; set; }
+		public int LastX { get; internal set; }
+		public double Progress { get; internal set; }
+
+		public DragTabManager ()
 		{
-			public int X { get; set; }
-			public int Offset { get; set; }
-			public bool IsDragging { get; set; }
-			public int LastX { get; internal set; }
-			public double Progress { get; internal set; }
 
-			public DragTabManager ()
-			{
+		}
 
-			}
-
-			public void Cancel ()
-			{
-				X = 0;
-				IsDragging = false;
-			}
+		public void Cancel ()
+		{
+			X = 0;
+			IsDragging = false;
 		}
 	}
 }
