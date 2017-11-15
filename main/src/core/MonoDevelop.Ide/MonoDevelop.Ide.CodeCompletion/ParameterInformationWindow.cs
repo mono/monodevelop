@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var ctx = Widget.CurrentCodeCompletionContext;
 			var lineHeight = (int)Ext.Editor.LineHeight;
 			var cmg = ParameterInformationWindowManager.CurrentMethodGroup;
-			var geometry = Visible ? Screen.VisibleBounds : Xwt.MessageDialog.RootWindow.Screen.VisibleBounds;
+
 			int cparam = Ext != null ? await Ext.GetCurrentParameterIndex (cmg.MethodProvider.ApplicableSpan.Start) : 0;
 			var lastW = (int)Width;
 			var lastH = (int)Height;
@@ -123,6 +123,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				// place below
 				Y = ctx.TriggerYCoord;
 			}
+			var screen = IdeApp.Workbench.RootWindow.Screen;
+			var geometry = DesktopService.GetUsableMonitorGeometry (screen.Number, screen.GetMonitorAtPoint (X, Y));
 
 			if (X + lastW > geometry.Right)
 				X = (int)geometry.Right - (int)lastW;
