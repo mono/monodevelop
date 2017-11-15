@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void BinlogReader_MessageRaised (object sender, BuildMessageEventArgs e)
 		{
-			if (IncludesDiagnostics) {
+			if (IncludesDiagnostics || e.Importance != MessageImportance.Low) {
 				AddNode (BuildOutputNodeType.Message, e.Message, false);
 			}
 		}
