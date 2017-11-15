@@ -103,6 +103,9 @@
     <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Unix' and '$(MSBuild_OSS_BinDir)' == '' and Exists('$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\MSBuild.dll')">$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\</MSBuild_OSS_BinDir>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Humanizer.Core">
+      <HintPath>..\..\..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Build">
       <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.dll</HintPath>
       <Private>False</Private>
@@ -116,10 +119,6 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.Wpf.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.dll</HintPath>
     </Reference>
