@@ -25,15 +25,17 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using Gtk;
+using Xwt;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
-using System.Text;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	class BuildOutputWidget : VBox
+	class BuildOutputWidget : Gtk.VBox
 	{
 		FilePath filename;
 		TextEditor editor;
@@ -43,20 +45,30 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			this.filename = filename;
 
+			var showDiagnosticsButton = new CheckButton (GettextCatalog.GetString ("Show Diagnostics")) {
+				BorderWidth = 0
+			};
+			showDiagnosticsButton.Clicked += (sender, e) => ReadFile (showDiagnosticsButton.Active);
+
+			var toolbar = new DocumentToolbar ();
+			toolbar.Add (showDiagnosticsButton); 
+			PackStart (toolbar.Container, false, true, 0);
+
 			editor = TextEditorFactory.CreateNewEditor ();
 			editor.IsReadOnly = true;
 			editor.FileName = filename;
 			editor.Options = new CustomEditorOptions (editor.Options) {
-				ShowFoldMargin = true
+				ShowFoldMargin = true,
+				TabsToSpaces = false
 			};
 
 			scrolledWindow = new CompactScrolledWindow ();
 			scrolledWindow.Add (editor);
 
-			PackStart (scrolledWindow);
+			PackStart (scrolledWindow, true, true, 0);
 			ShowAll ();
 
-			ReadFile ();
+			ReadFile (false);
 		}
 
 		protected override void OnDestroyed ()
@@ -65,14 +77,18 @@ namespace MonoDevelop.Ide.Gui.Components
 			base.OnDestroyed ();
 		}
 
-		void ReadFile()
+		void ReadFile (bool showDiagnostics)
 		{
-			var processor = new BuildOutputProcessor (filename.FullPath, false);
+			var processor = new BuildOutputProcessor (filename.FullPath, showDiagnostics);
 			processor.Process ();
 
 			var (text, segments) = processor.ToTextEditor (editor);
+
+			editor.SetFoldings (new List<IFoldSegment> ());
 			editor.Text = text;
-			editor.SetFoldings (segments);
+			if (segments != null) {
+				editor.SetFoldings (segments);
+			}
 		}
 	}
 }
