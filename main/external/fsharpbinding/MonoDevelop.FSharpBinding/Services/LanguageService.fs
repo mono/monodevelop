@@ -52,8 +52,9 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
             LoggingService.logDebug "GetDeclarations: '%A', '%s'" longName residue
             // Get items & generate output
             try
+                let partialName = QuickParse.GetPartialLongNameEx(lineStr, col)
                 let results =
-                    Async.RunSynchronously (checkResults.GetDeclarationListInfo( parseResults, line, col, lineStr, longName, residue, fun () -> []), timeout = ServiceSettings.blockingTimeout )
+                    Async.RunSynchronously (checkResults.GetDeclarationListInfo( parseResults, line, lineStr, partialName, fun () -> []), timeout = ServiceSettings.blockingTimeout )
                 Some (results, residue)
             with :? TimeoutException -> None
         | None, _ -> None
@@ -64,12 +65,13 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
         async {
             match infoOpt, parseResults with
             | Some checkResults, parseResults ->
-                  let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
-                  LoggingService.logDebug "GetDeclarationSymbols: '%A', '%s'" longName residue
                   // Get items & generate output
+                  let partialName = QuickParse.GetPartialLongNameEx(lineStr, col)
+
                   try
-                      let! results = checkResults.GetDeclarationListSymbols(parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false)
-                      return Some (results, residue)
+                      let! results = checkResults.GetDeclarationListSymbols(parseResults, line, lineStr, partialName)
+
+                      return Some (results, partialName.PartialIdent)
                   with :? TimeoutException -> return None
             | None, _ -> return None
         }
