@@ -29,7 +29,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory6.CSharp;
-using ICSharpCode.NRefactory6.CSharp.Analysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.CSharp;
@@ -46,6 +45,24 @@ namespace MonoDevelop.CSharp.Completion.Provider
 	[ExportCompletionProvider ("RegexCompletionProvider", LanguageNames.CSharp)]
 	class RegexCompletionProvider : CommonCompletionProvider
 	{
+		internal static bool IsRegexMatchMethod (SymbolInfo symbolInfo)
+		{
+			var symbol = symbolInfo.Symbol;
+			if (symbol == null)
+				return false;
+			return IsRegexType (symbol.ContainingType) && symbol.IsStatic && (symbol.Name == "IsMatch" || symbol.Name == "Match" || symbol.Name == "Matches");
+		}
+
+		internal static bool IsRegexConstructor (SymbolInfo symbolInfo)
+		{
+			return symbolInfo.Symbol?.ContainingType is INamedTypeSymbol && IsRegexType (symbolInfo.Symbol.ContainingType);
+		}
+
+		internal static bool IsRegexType (INamedTypeSymbol containingType)
+		{
+			return containingType != null && containingType.Name == "Regex" && containingType.ContainingNamespace.GetFullName () == "System.Text.RegularExpressions";
+		}
+
 		public override bool ShouldTriggerCompletion (SourceText text, int position, CompletionTrigger trigger, Microsoft.CodeAnalysis.Options.OptionSet options)
 		{
 			return trigger.Character == '\\';
@@ -70,13 +87,13 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					if (symbolInfo.Symbol == null)
 						return;
 
-					if (SemanticHighlightingVisitor<string>.IsRegexMatchMethod (symbolInfo)) {
+					if (IsRegexMatchMethod (symbolInfo)) {
 						if (((ArgumentListSyntax)argument.Parent).Arguments [1] != argument)
 							return;
 						AddFormatCompletionData (context, argument.Expression.ToString () [0] == '@');
 						return;
 					}
-					if (SemanticHighlightingVisitor<string>.IsRegexConstructor (symbolInfo)) {
+					if (IsRegexConstructor (symbolInfo)) {
 						if (((ArgumentListSyntax)argument.Parent).Arguments [0] != argument)
 							return;
 						AddFormatCompletionData (context, argument.Expression.ToString () [0] == '@');
@@ -109,7 +126,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					continue;
 				var invocation = node.Initializer.Value as InvocationExpressionSyntax;
 				var invocationSymbol = ctx.SemanticModel.GetSymbolInfo (invocation).Symbol;
-				if (invocationSymbol.Name == "Match" && SemanticHighlightingVisitor<string>.IsRegexType (invocationSymbol.ContainingType)) {
+				if (invocationSymbol.Name == "Match" && IsRegexType (invocationSymbol.ContainingType)) {
 					if (invocation.ArgumentList.Arguments.Count == 1) {
 						var memberAccess = invocation.Expression as MemberAccessExpressionSyntax;
 						if (memberAccess == null)
@@ -124,7 +141,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 						if (objectCreation == null)
 							continue;
 						var targetNodeSymbol = ctx.SemanticModel.GetSymbolInfo (objectCreation).Symbol;
-						if (SemanticHighlightingVisitor<string>.IsRegexType (targetNodeSymbol.ContainingType)) {
+						if (IsRegexType (targetNodeSymbol.ContainingType)) {
 							if (objectCreation.ArgumentList.Arguments.Count < 1)
 								continue;
 							val = ctx.SemanticModel.GetConstantValue (objectCreation.ArgumentList.Arguments [0].Expression);
