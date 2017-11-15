@@ -47,6 +47,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		Tasks = 0x20,
 		Cancel = 0x40,
 		FollowerCancel = 0x80,	// when the follower is cancelled, the whole aggregated monitor is cancelled.
+		ReportObject = 0x10,
 		All =  0xff
 	}
 	
@@ -156,7 +157,14 @@ namespace MonoDevelop.Core.ProgressMonitoring
 					info.Monitor.ErrorLog.Write (message);
 		}
 
-		protected override void OnSuccessReported (string message)
+        protected override void OnObjectReported(object statusObject)
+        {
+			foreach (MonitorInfo info in monitors)
+				if ((info.ActionMask & MonitorAction.ReportObject) != 0)
+					info.Monitor.ReportObject (statusObject);
+        }
+
+        protected override void OnSuccessReported (string message)
 		{
 			foreach (MonitorInfo info in monitors)
 				if ((info.ActionMask & MonitorAction.ReportSuccess) != 0)
