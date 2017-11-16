@@ -55,6 +55,8 @@ module MonoDevelop =
         member x.TryGetAst() =
             x.TryGetParsedDocument() >>= (fun pd -> pd.TryGetAst())
 
+        member x.TryGetCheckResults() =
+            x.TryGetAst() >>= (fun ast -> ast.CheckResults)
 
     let internal getConfig () =
         match IdeApp.Workspace with
