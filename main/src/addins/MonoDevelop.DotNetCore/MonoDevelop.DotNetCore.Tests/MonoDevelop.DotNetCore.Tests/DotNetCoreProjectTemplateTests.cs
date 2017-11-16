@@ -197,6 +197,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			FilePath solutionDirectory = Util.CreateTmpDir (baseName);
 
+			CreateNuGetConfigFile (solutionDirectory);
+
 			string projectName = GetProjectName (templateId);
 
 			var config = new NewProjectConfiguration {
@@ -216,6 +218,25 @@ namespace MonoDevelop.DotNetCore.Tests
 			Directory.CreateDirectory (config.ProjectLocation);
 
 			return config;
+		}
+
+		/// <summary>
+		/// Clear all other package sources and just use the main NuGet package source when
+		/// restoring the packages for the project temlate tests.
+		/// </summary>
+		void CreateNuGetConfigFile (FilePath directory)
+		{
+			var fileName = directory.Combine ("NuGet.Config");
+
+			string xml =
+				"<configuration>\r\n" +
+				"  <packageSources>\r\n" +
+				"    <clear />\r\n" +
+				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
+				"  </packageSources>\r\n" +
+				"</configuration>";
+
+			File.WriteAllText (fileName, xml);
 		}
 
 		static string GetProjectName (string templateId)
@@ -267,7 +288,9 @@ namespace MonoDevelop.DotNetCore.Tests
 			var solution = result.WorkspaceItems.FirstOrDefault () as Solution;
 			await solution.SaveAsync (Util.GetMonitor ());
 
-			RunMSBuild ($"/t:Restore {solution.FileName}");
+			// RestoreDisableParallel prevents parallel restores which sometimes cause
+			// the restore to fail on Mono.
+			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true {solution.FileName}");
 			RunMSBuild ($"/t:Build {solution.FileName}");
 		}
 

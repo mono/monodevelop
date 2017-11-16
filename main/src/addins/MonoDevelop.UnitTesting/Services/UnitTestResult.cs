@@ -224,6 +224,42 @@ namespace MonoDevelop.UnitTesting
 			Inconclusive += res.Inconclusive;
 			Skipped += res.Skipped;
 		}
+
+		public override int GetHashCode ()
+		{
+			var unknowObject = new {
+				Status,
+				Passed,
+				Errors,
+				Failures,
+				Inconclusive,
+				NotRunnable,
+				Skipped,
+				Ignored
+			};
+			return unknowObject.GetHashCode ();
+		}
+
+		public override bool Equals (object obj)
+		{
+			var unitTestResult =  obj as UnitTestResult;
+			if (unitTestResult == null)
+				return false;
+			return EqualsHelper (this, unitTestResult);
+		}
+
+		bool EqualsHelper (UnitTestResult firstResult, UnitTestResult secondResult)
+		{
+			return  firstResult.Status == secondResult.Status &&
+					firstResult.Passed == secondResult.Passed &&
+					firstResult.Errors == secondResult.Errors &&
+					firstResult.Failures == secondResult.Failures &&
+					firstResult.Inconclusive == secondResult.Inconclusive &&
+					firstResult.NotRunnable == secondResult.NotRunnable &&
+					firstResult.Skipped == secondResult.Skipped &&
+					firstResult.Ignored == secondResult.Ignored;
+		}
+
 	}
 }
 

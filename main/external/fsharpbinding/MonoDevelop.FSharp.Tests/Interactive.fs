@@ -9,8 +9,10 @@ open FsUnit
 open NUnit.Framework
 open MonoDevelop.Core
 open MonoDevelop.Core.ProgressMonitoring
+open MonoDevelop.Ide.Editor
 open MonoDevelop.FSharp
 open MonoDevelop.Projects
+open Mono.TextEditor
 
 [<TestFixture>]
 module Interactive =
@@ -154,3 +156,31 @@ module Interactive =
             let succeeded = finished.WaitOne(20000)
             if succeeded then results |> should equal "val jsonObj : string = \"[{\"Name\":\"Bad Boys\",\"Year\":1995}]\"\n"
             else Assert.Fail "Timeout" } |> toTask
+
+    let getPadAndEditor() =
+        FixtureSetup.initialiseMonoDevelop()
+        let ctx = FsiDocumentContext()
+        let doc = TextEditorFactory.CreateNewDocument()
+        do
+            doc.FileName <- FilePath ctx.Name
+
+        let editor = TextEditorFactory.CreateNewEditor(ctx, doc, TextEditorType.Default)
+        let pad = new FSharpInteractivePad(editor)
+
+        let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
+        let textDocument = data.Document
+        pad, editor, textDocument
+
+    [<Test>]
+    let ``Interactive doesn't remove prompt when text is added``() =
+        let pad, editor, doc = getPadAndEditor()
+        pad.SetPrompt()
+
+        let line1 = doc.GetLine editor.CaretLine
+        editor.CaretLine |> should equal 2
+        doc.GetMarkers line1 |> Seq.length |> should equal 1
+        pad.SetPrompt()
+
+        let line2 = doc.GetLine editor.CaretLine
+        editor.CaretLine |> should equal 3
+        doc.GetMarkers line2 |> Seq.length |> should equal 1

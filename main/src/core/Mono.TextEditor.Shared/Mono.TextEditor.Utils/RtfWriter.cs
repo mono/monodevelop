@@ -28,7 +28,7 @@ using System.Text;
 using System.Collections.Generic;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Core.Text;
-using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide;
 
 namespace Mono.TextEditor.Utils
 {
@@ -54,7 +54,7 @@ namespace Mono.TextEditor.Utils
 
 		public static string GenerateRtf (TextEditorData data)
 		{
-			return GenerateRtf (ClipboardColoredText.GetChunks (data, new TextSegment (0, data.Length)), data.ColorStyle, data.Options);
+			return GenerateRtf (ClipboardColoredText.GetChunks (data, new TextSegment (0, data.Length)).WaitAndGetResult (default (System.Threading.CancellationToken)), data.ColorStyle, data.Options);
 		}
 
 		static void AppendRtfText (StringBuilder rtfText, string text, ref bool appendSpace)

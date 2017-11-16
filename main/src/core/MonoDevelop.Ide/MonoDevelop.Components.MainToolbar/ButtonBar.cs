@@ -217,28 +217,30 @@ namespace MonoDevelop.Components.MainToolbar
 			if (newHeight <= img.Height)
 				return img;
 
-			Xwt.Drawing.ImageBuilder ib = new Xwt.Drawing.ImageBuilder (img.Width, newHeight);
-			int h1 = (int)img.Height / 2;
-			int h2 = (int)img.Height - h1;
+			using (Xwt.Drawing.ImageBuilder ib = new Xwt.Drawing.ImageBuilder (img.Width, newHeight))
+			{
+				int h1 = (int)img.Height / 2;
+				int h2 = (int)img.Height - h1;
 
-			var ctx = ib.Context;
-			ctx.Save ();
-			ctx.Rectangle (0, 0, img.Width, h1);
-			ctx.Clip ();
-			ctx.DrawImage (img, 0, 0);
-			ctx.Restore ();
+				var ctx = ib.Context;
+				ctx.Save ();
+				ctx.Rectangle (0, 0, img.Width, h1);
+				ctx.Clip ();
+				ctx.DrawImage (img, 0, 0);
+				ctx.Restore ();
 
-			ctx.Save ();
-			ctx.Rectangle (0, newHeight - h2, img.Width, h2);
-			ctx.Clip ();
-			ctx.DrawImage (img, 0, newHeight - img.Height);
-			ctx.Restore ();
+				ctx.Save ();
+				ctx.Rectangle (0, newHeight - h2, img.Width, h2);
+				ctx.Clip ();
+				ctx.DrawImage (img, 0, newHeight - img.Height);
+				ctx.Restore ();
 
-			ctx.Rectangle (0, h1, img.Width, newHeight - h1 - h2);
-			ctx.Clip ();
-			ctx.DrawImage (img, 0, 0, img.Width, newHeight);
+				ctx.Rectangle (0, h1, img.Width, newHeight - h1 - h2);
+				ctx.Clip ();
+				ctx.DrawImage (img, 0, 0, img.Width, newHeight);
 
-			return ib.ToVectorImage ();
+				return ib.ToVectorImage ();
+			}
 		}
 
 		public sealed class ClickEventArgs : EventArgs

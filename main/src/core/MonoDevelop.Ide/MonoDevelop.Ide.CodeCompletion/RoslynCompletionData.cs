@@ -90,9 +90,19 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				var modifier = GetItemModifier ();
 				var type = GetItemType ();
-				return "md-" + modifier + type;
+				var hash = CalculateHashCode (modifier, type);
+				if (!IconIdCache.ContainsKey (hash))
+					IconIdCache [hash] = "md-" + modifier + type;
+				return IconIdCache [hash];
 			}
 		}
+
+		internal static int CalculateHashCode (string modifier, string type)
+		{
+			return modifier.GetHashCode () ^ type.GetHashCode ();
+		}
+
+		static Dictionary<int, string> IconIdCache = new Dictionary<int, string>();
 
 		public RoslynCompletionData (Microsoft.CodeAnalysis.Document document, ITextSnapshot triggerSnapshot, CompletionService completionService, CompletionItem completionItem)
 		{
@@ -116,7 +126,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return null;
 		}
 
-		static Dictionary<string, string> roslynCompletionTypeTable = new Dictionary<string, string> {
+		internal static Dictionary<string, string> roslynCompletionTypeTable = new Dictionary<string, string> {
 			{ "Field", "field" },
 			{ "Alias", "field" },
 			{ "ArrayType", "field" },
@@ -160,7 +170,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			{ "EnumMember", "literal" },
 
-			{ "NewMethod", "newmethod" }
+			{ "NewMethod", "newmethod" },
+
+			{ "ExtensionMethod", "extensionmethod" }
 		};
 
 		string GetItemType ()
@@ -173,7 +185,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return "literal";
 		}
 
-		static Dictionary<string, string> modifierTypeTable = new Dictionary<string, string> {
+		internal static Dictionary<string, string> modifierTypeTable = new Dictionary<string, string> {
 			{ "Private", "private-" },
 			{ "ProtectedAndInternal", "ProtectedOrInternal-" },
 			{ "Protected", "protected-" },
@@ -214,11 +226,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			var currentBuffer = editor.GetPlatformTextBuffer ();
 			var textChange = completionChange.TextChange;
-
 			var triggerSnapshotSpan = new SnapshotSpan (triggerSnapshot, new Span (textChange.Span.Start, textChange.Span.Length));
 			var mappedSpan = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
 			using (var undo = editor.OpenUndoGroup ()) {
-				editor.ReplaceText (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
+				// Work around for https://github.com/dotnet/roslyn/issues/22885
+				if (editor.GetCharAt (mappedSpan.Start) == '@') {
+					editor.ReplaceText (mappedSpan.Start + 1, mappedSpan.Length - 1, completionChange.TextChange.NewText);
+				} else
+					editor.ReplaceText (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
+			
 
 				if (completionChange.NewPosition.HasValue)
 					editor.CaretOffset = completionChange.NewPosition.Value;
@@ -251,7 +267,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
 				markup.AppendLine ();
 				markup.AppendLine ();
-				markup.AppendTaggedText (theme, taggedParts.Skip (i + 1), 0, 50);
+				markup.AppendTaggedText (theme, taggedParts.Skip (i + 1));
 				markup.Append ("</span>");
 			}
 			return new TooltipInformation {

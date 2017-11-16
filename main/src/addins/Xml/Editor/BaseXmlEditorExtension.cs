@@ -239,25 +239,78 @@ namespace MonoDevelop.Xml.Editor
 		protected virtual void OnDocTypeChanged ()
 		{
 		}
-		
+
+		void FixIndent (int line)
+		{
+			var indent = GetLineIndent (line);
+			var oldIndent = Editor.GetLineIndent (line);
+			var seg = Editor.GetLine (line);
+			if (oldIndent != indent) {
+				Editor.ReplaceText (seg.Offset, oldIndent.Length, indent);
+			}
+		}
+
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
+			Tracker.UpdateEngine ();
+			bool returnInsideEmptyElement =
+					descriptor.SpecialKey == SpecialKey.Return &&
+					descriptor.ModifierKeys == ModifierKeys.None &&
+					Editor.CaretOffset > 0 && Editor.CaretOffset + 1 < Editor.Length &&
+					Editor.GetCharAt (Editor.CaretOffset - 1) == '>' &&
+					Editor.GetCharAt (Editor.CaretOffset) == '<' &&
+					Editor.GetCharAt (Editor.CaretOffset + 1) == '/' &&
+					Tracker.Engine.CurrentState is XmlRootState;
+			if (returnInsideEmptyElement) {
+				var elementClosingText = new System.Text.StringBuilder ();
+				// Collect name of element in closing tag after </
+				for (int i = Editor.CaretOffset + 2; i < Editor.Length; i++) {
+					var c = Editor.GetCharAt (i);
+					if (char.IsWhiteSpace (c) || c == '>')
+						break;
+					elementClosingText.Append (c);
+				}
+				// and compare with current element to make sure it matches
+				if (Tracker.Engine.Nodes.Peek () is XElement element && element.Name.FullName == elementClosingText.ToString ()) {
+					for (int i = Editor.LocationToOffset (element.Region.Begin) + 1; i < Editor.CaretOffset; i++) {
+						// Make sure there is no child elements(e.g. <a><b></b>$</a>
+						if (Editor.GetCharAt (i) == '<') {
+							returnInsideEmptyElement = false;
+							break;
+						}
+					}
+				} else
+					returnInsideEmptyElement = false;
+			}
+			var newLine = Editor.CaretLine + 1;
+			var ret = base.KeyPress (descriptor);
 			if (Editor.Options.IndentStyle == IndentStyle.Smart) {
-				var newLine = Editor.CaretLine + 1;
-				var ret = base.KeyPress (descriptor);
 				if (descriptor.SpecialKey == SpecialKey.Return && Editor.CaretLine == newLine) {
-					string indent = GetLineIndent (newLine);
-					var oldIndent = Editor.GetLineIndent (newLine);
-					var seg = Editor.GetLine (newLine);
-					if (oldIndent != indent) {
-						using (var undo = Editor.OpenUndoGroup ()) {
-							Editor.ReplaceText (seg.Offset, oldIndent.Length, indent);
+					using (var undo = Editor.OpenUndoGroup ()) {
+						FixIndent (newLine);
+						if (returnInsideEmptyElement) {
+							var oldOffset = Editor.CaretOffset;
+							Editor.ReplaceText (oldOffset, 0, Editor.EolMarker);
+							Editor.CaretOffset = oldOffset;
+							FixIndent (newLine);
+							FixIndent (newLine + 1);
 						}
 					}
 				}
-				return ret;
 			}
-			return base.KeyPress (descriptor);
+			Tracker.UpdateEngine ();
+			if (descriptor.KeyChar == '>' && XmlEditorOptions.AutoCompleteElements && tracker.Engine.CurrentState is XmlRootState) {
+				var el = tracker.Engine.Nodes.Peek () as XElement;
+				var buf = Editor;
+				if (el != null && el.Region.End >= buf.CaretLocation && !el.IsClosed && el.IsNamed) {
+					var tag = $"</{ el.Name.FullName}>";
+					using (var undo = buf.OpenUndoGroup ()) {
+						buf.InsertText (buf.CaretOffset, tag);
+						buf.CaretOffset -= tag.Length;
+					}
+				}
+			}
+			return ret;
 		}
 		
 		#region Code completion
@@ -453,63 +506,18 @@ namespace MonoDevelop.Xml.Editor
 		}
 
 		protected virtual ICompletionDataList ClosingTagCompletion (TextEditor buf, DocumentLocation currentLocation)
-
 		{
-
+			// This is handled sooner in UI thread before it's offloaded to background thread by code completion
+			if (XmlEditorOptions.AutoCompleteElements)
+				return null;
 			//get name of current node in document that's being ended
-
 			var el = tracker.Engine.Nodes.Peek () as XElement;
-
 			if (el != null && el.Region.End >= currentLocation && !el.IsClosed && el.IsNamed) {
-
 				string tag = String.Concat ("</", el.Name.FullName, ">");
-
-				if (XmlEditorOptions.AutoCompleteElements) {
-
-
-
-					//						//make sure we have a clean atomic undo so the user can undo the tag insertion
-
-					//						//independently of the >
-
-					//						bool wasInAtomicUndo = this.Editor.Document.IsInAtomicUndo;
-
-					//						if (wasInAtomicUndo)
-
-					//							this.Editor.Document.EndAtomicUndo ();
-
-
-
-					using (var undo = buf.OpenUndoGroup ()) {
-
-						buf.InsertText (buf.CaretOffset, tag);
-
-						buf.CaretOffset -= tag.Length;
-
-					}
-
-
-
-					//						if (wasInAtomicUndo)
-
-					//							this.Editor.Document.BeginAtomicUndo ();
-
-
-
-					return null;
-
-				} else {
-
-					var cp = new CompletionDataList ();
-
-					cp.Add (new XmlTagCompletionData (tag, 0, true));
-
-					return cp;
-
-				}
-
+				var cp = new CompletionDataList ();
+				cp.Add (new XmlTagCompletionData (tag, 0, true));
+				return cp;
 			}
-
 			return null;
 		}
 		
@@ -538,17 +546,22 @@ namespace MonoDevelop.Xml.Editor
 		{
 			return Task.FromResult (new CompletionDataList ());
 		}
-		
+
+
 		protected string GetLineIndent (int line)
 		{
 			var seg = Editor.GetLine (line);
 			
 			//reset the tracker to the beginning of the line
 			Tracker.UpdateEngine (seg.Offset);
-			
+			var attributeDepth = GetAttributeIndentDepth (Tracker.Engine.Nodes);
+			if (attributeDepth > 0) {
+				if (Editor.Options.TabsToSpaces)
+					return new string (' ', attributeDepth);
+				return new string ('\t', attributeDepth / Editor.Options.TabSize) + new string (' ', attributeDepth % Editor.Options.TabSize);
+			}
 			//calculate the indentation
 			var startElementDepth = GetElementIndentDepth (Tracker.Engine.Nodes);
-			//var attributeDepth = GetAttributeIndentDepth (Tracker.Engine.Nodes);
 			
 			//update the tracker to the end of the line 
 			Tracker.UpdateEngine (seg.Offset + seg.Length);
@@ -566,14 +579,29 @@ namespace MonoDevelop.Xml.Editor
 		{
 			return nodes.OfType<XElement> ().Count (el => !el.IsClosed);
 		}
-		
-		static int GetAttributeIndentDepth (NodeStack nodes)
+
+		int GetAttributeIndentDepth (NodeStack nodes)
 		{
+			if (!(Tracker.Engine.CurrentState is XmlTagState))
+				return 0;
 			var node = nodes.Peek ();
-			if (node is XElement && !node.IsEnded)
-				return 1;
-			if (node is XAttribute)
-				return node.IsEnded? 1 : 2;
+			if (node is XElement e) {
+				var firstAttribute = e.Attributes.FirstOrDefault ();
+				if (firstAttribute == null)
+					return 0;
+				// We are simulating VS here which aligns attributes only if 1st is on same line as element
+				if (firstAttribute.Region.BeginLine != e.Region.BeginLine)
+					return 0;
+				var textFromBegining = Editor.GetTextBetween (firstAttribute.Region.BeginLine, 0, firstAttribute.Region.BeginLine, firstAttribute.Region.BeginColumn);
+				int pos = 0;
+				foreach (var c in textFromBegining) {
+					if (c == '\t')
+						pos += Editor.Options.TabSize - pos % Editor.Options.TabSize;
+					else
+						pos++;
+				}
+				return pos;
+			}
 			return 0;
 		}
 		

@@ -121,9 +121,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			src = new CancellationTokenSource ();
 		}
 
-		static StatusBarIcon statusIcon = null;
-		static int workspacesLoading = 0;
-
 		internal static event EventHandler LoadingFinished;
 
 		static void OnLoadingFinished (EventArgs e)
@@ -135,14 +132,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void HideStatusIcon ()
 		{
-			Gtk.Application.Invoke ((o, args) => {
-				workspacesLoading--;
-				if (workspacesLoading == 0 && statusIcon != null) {
-					statusIcon.Dispose ();
-					statusIcon = null;
-					OnLoadingFinished (EventArgs.Empty);
-					WorkspaceLoaded?.Invoke (this, EventArgs.Empty);
-				}
+			TypeSystemService.HideTypeInformationGatheringIcon (() => {
+				OnLoadingFinished (EventArgs.Empty);
+				WorkspaceLoaded?.Invoke (this, EventArgs.Empty);
 			});
 		}
 
@@ -150,14 +142,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void ShowStatusIcon ()
 		{
-			Gtk.Application.Invoke ((o, args) => {
-				workspacesLoading++;
-				if (statusIcon != null)
-					return;
-				statusIcon = IdeApp.Workbench?.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-parser"));
-				if (statusIcon != null)
-					statusIcon.ToolTip = GettextCatalog.GetString ("Gathering class information");
-			});
+			TypeSystemService.ShowTypeInformationGatheringIcon ();
 		}
 
 		async void HandleActiveConfigurationChanged (object sender, EventArgs e)
@@ -1014,7 +999,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (projection != null) {
 					await UpdateProjectionsDocuments (document, data);
 				} else {
-					OnDocumentTextChanged (id, new MonoDevelopSourceText (data.CreateDocumentSnapshot ()), PreservationMode.PreserveValue);
+					OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				}
 			}
 		}

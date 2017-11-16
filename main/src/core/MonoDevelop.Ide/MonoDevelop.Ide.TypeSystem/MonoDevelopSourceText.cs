@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (doc == null)
 				throw new ArgumentNullException (nameof (doc));
-			this.doc = doc;
+			this.doc = doc.CreateSnapshot ();
 		}
 
 		public override SourceText WithChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)

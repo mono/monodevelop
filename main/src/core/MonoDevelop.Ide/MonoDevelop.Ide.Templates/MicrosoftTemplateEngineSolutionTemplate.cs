@@ -55,6 +55,7 @@ namespace MonoDevelop.Ide.Templates
 			SupportedParameters = template.SupportedParameters;
 			DefaultParameters = MergeDefaultParameters (template.DefaultParameters);
 			ImageId = template.ImageId;
+			FileFormattingExclude = template.FileFormatExclude;
 			//ImageFile = template.ImageFile;
 			//Visibility = GetVisibility (template.Visibility);
 
@@ -87,6 +88,41 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			return defaultParameters += string.Join (",", parameters);
+		}
+
+		internal string FileFormattingExclude { get; set; }
+
+		internal bool ShouldFormatFile (string fileName)
+		{
+			if (string.IsNullOrEmpty (FileFormattingExclude))
+				return true;
+
+			if (excludedFileEndings == null) {
+				excludedFileEndings = GetFileEndings (FileFormattingExclude);
+			}
+
+			foreach (string ending in excludedFileEndings) {
+				if (fileName.EndsWith (ending, StringComparison.OrdinalIgnoreCase)) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		List<string> excludedFileEndings;
+
+		static List<string> GetFileEndings (string exclude)
+		{
+			var result = new List<string> ();
+			foreach (string pattern in exclude.Split ('|')) {
+				if (pattern.StartsWith ("*.", StringComparison.Ordinal)) {
+					result.Add (pattern.Substring (1));
+				} else {
+					result.Add (pattern);
+				}
+			}
+			return result;
 		}
 	}
 }

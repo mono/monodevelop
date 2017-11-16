@@ -86,6 +86,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			return specs.Single ();
 		}
 
+		void AddRestoreProjectStyle (string restoreStyle)
+		{
+			dotNetProject.ProjectProperties.SetValue ("RestoreProjectStyle", restoreStyle);
+		}
+
 		[Test]
 		public async Task GetInstalledPackagesAsync_OnePackageReference_ReturnsOnePackageReference ()
 		{
@@ -286,6 +291,36 @@ namespace MonoDevelop.PackageManagement.Tests
 			var nugetProject = PackageReferenceNuGetProject.Create (dotNetProject);
 
 			Assert.IsNotNull (nugetProject);
+		}
+
+		/// <summary>
+		/// If a project has the MSBuild property RestoreProjectStyle set to PackageReference
+		/// then it should be restored in the same way as if it had PackageReferences
+		/// even if the project does not have any.
+		///
+		/// https://www.hanselman.com/blog/ReferencingNETStandardAssembliesFromBothNETCoreAndNETFramework.aspx
+		/// </summary>
+		[TestCase ("PackageReference")]
+		[TestCase ("packagereference")]
+		public void Create_RestoreProjectStyle_ReturnsNuGetProject (string restoreStyle)
+		{
+			CreateNuGetProject ();
+			AddRestoreProjectStyle (restoreStyle);
+
+			var nugetProject = PackageReferenceNuGetProject.Create (dotNetProject);
+
+			Assert.IsNotNull (nugetProject);
+		}
+
+		[Test]
+		public void Create_RestoreProjectStyleIsNotPackageReference_ReturnsNull ()
+		{
+			CreateNuGetProject ();
+			AddRestoreProjectStyle ("Unknown");
+
+			var nugetProject = PackageReferenceNuGetProject.Create (dotNetProject);
+
+			Assert.IsNull (nugetProject);
 		}
 	}
 }

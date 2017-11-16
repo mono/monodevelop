@@ -7,6 +7,7 @@
     <relPath>locale</relPath>
     <translations>
       <translations>
+			  <Translation isoCode="ar" />
         <Translation isoCode="ca" />
         <Translation isoCode="cs" />
         <Translation isoCode="da" />

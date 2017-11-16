@@ -205,6 +205,54 @@ namespace MonoDevelop.Ide
 			Assert.That (result.Actions, Contains.Item (library1FileToOpen));
 			Assert.That (result.Actions, Contains.Item (library2FileToOpen));
 		}
+
+		[TestCase ("*.xml")]
+		[TestCase ("*.XML")]
+		[TestCase ("*.txt|*.xml")]
+		[TestCase ("test.xml")]
+		[TestCase ("TEST.xml")]
+		[TestCase (null)]
+		public async Task DotNetCoreProjectTemplate_ExcludeFile (string exclude)
+		{
+			var templatingService = new TemplatingService ();
+
+			string templateId = "MonoDevelop.Ide.Tests.FileFormatExclude.CSharp";
+			string scanPath = Util.GetSampleProjectPath ("FileFormatExclude");
+
+			var xmlFilePath = Path.Combine (scanPath, "test.xml");
+			string expectedXml = "<root><child/></root>";
+			File.WriteAllText (xmlFilePath, expectedXml);
+
+			var template = MicrosoftTemplateEngineProjectTemplatingProvider.CreateTemplate (templateId, scanPath) as MicrosoftTemplateEngineSolutionTemplate;
+			template.FileFormattingExclude = exclude;
+
+			string tempDirectory = Util.CreateTmpDir ("FileFormatExcludeTest");
+
+			string projectDirectory = Path.Combine (tempDirectory, "FileFormatExcludeTestProject");
+			Directory.CreateDirectory (projectDirectory);
+
+			var result = await templatingService.ProcessTemplate (template, new NewProjectConfiguration () {
+				CreateSolution = true,
+				Location = tempDirectory,
+				SolutionName = "FileFormatExcludeTest",
+				ProjectName = "FileFormatExcludeTestProject",
+				CreateProjectDirectoryInsideSolutionDirectory = false,
+			}, null);
+
+			var solution = result.WorkspaceItems.OfType<Solution> ().Single ();
+
+			await solution.SaveAsync (Util.GetMonitor ());
+
+			xmlFilePath = Path.Combine (projectDirectory, "test.xml");
+			string xml = File.ReadAllText (xmlFilePath);
+
+			if (string.IsNullOrEmpty (exclude)) {
+				// Ensure formatting occurs if file is not excluded.
+				Assert.AreNotEqual (expectedXml, xml);
+			} else {
+				Assert.AreEqual (expectedXml, xml);
+			}
+		}
 	}
 }
 

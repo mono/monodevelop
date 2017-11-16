@@ -69,7 +69,7 @@ namespace MonoDevelop.Core.Assemblies
 
 			// Don't initialize until Current and Default Runtimes are set
 			foreach (TargetRuntime runtime in runtimes) {
-				runtime.Initialized += HandleRuntimeInitialized;
+				runtime.FrameworksInitialized += HandleRuntimeInitialized;
 			}
 
 			if (CurrentRuntime == null)
@@ -81,12 +81,6 @@ namespace MonoDevelop.Core.Assemblies
 			userAssemblyContext.Changed += delegate {
 				SaveUserAssemblyContext ();
 			};
-		}
-
-		void InitializeRuntime (TargetRuntime runtime)
-		{
-			runtime.Initialized += HandleRuntimeInitialized;
-			runtime.StartInitialization ();
 		}
 
 		void HandleRuntimeInitialized (object sender, EventArgs e)
@@ -139,10 +133,9 @@ namespace MonoDevelop.Core.Assemblies
 
 		public void RegisterRuntime (TargetRuntime runtime)
 		{
-			runtime.Initialized += HandleRuntimeInitialized;
+			runtime.FrameworksInitialized += HandleRuntimeInitialized;
 			runtimes.Add (runtime);
-			if (RuntimesChanged != null)
-				RuntimesChanged (this, EventArgs.Empty);
+			RuntimesChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		public void UnregisterRuntime (TargetRuntime runtime)
@@ -151,9 +144,8 @@ namespace MonoDevelop.Core.Assemblies
 				return;
 			DefaultRuntime = CurrentRuntime;
 			runtimes.Remove (runtime);
-			runtime.Initialized -= HandleRuntimeInitialized;
-			if (RuntimesChanged != null)
-				RuntimesChanged (this, EventArgs.Empty);
+			runtime.FrameworksInitialized -= HandleRuntimeInitialized;
+			RuntimesChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		internal IEnumerable<TargetFramework> GetKnownFrameworks ()

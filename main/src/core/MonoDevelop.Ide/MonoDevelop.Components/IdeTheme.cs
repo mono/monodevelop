@@ -337,9 +337,11 @@ namespace MonoDevelop.Components
 				return;
 			}
 
-			if (window is NSPanel || window.ContentView.Class.Name != "GdkQuartzView")
+			if (window is NSPanel || window.ContentView.Class.Name != "GdkQuartzView") {
 				window.BackgroundColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.ToNSColor ();
-			else {
+				if (MacSystemInformation.OsVersion <= MacSystemInformation.Sierra)
+					window.StyleMask |= NSWindowStyle.TexturedBackground;
+			} else {
 				object[] platforms = Mono.Addins.AddinManager.GetExtensionObjects ("/MonoDevelop/Core/PlatformService");
 				if (platforms.Length > 0) {
 					var platformService = (MonoDevelop.Ide.Desktop.PlatformService)platforms [0];
@@ -348,10 +350,10 @@ namespace MonoDevelop.Components
 					window.IsOpaque = false;
 					window.BackgroundColor = NSColor.FromPatternImage (image.ToBitmap().ToNSImage());
 				}
+				window.StyleMask |= NSWindowStyle.TexturedBackground;
 			}
-			if (MacSystemInformation.OsVersion >= MacSystemInformation.HighSierra)
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.HighSierra && !window.IsSheet)
 				window.TitlebarAppearsTransparent = true;
-			window.StyleMask |= NSWindowStyle.TexturedBackground;
 		}
 
 		static void OnClose (NSNotification note)

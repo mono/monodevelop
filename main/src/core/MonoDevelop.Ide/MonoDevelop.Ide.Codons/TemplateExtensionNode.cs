@@ -139,5 +139,14 @@ namespace MonoDevelop.Ide.Codons
 				return condition;
 			}
 		}
+
+		[NodeAttribute ("formatExclude", "Project files that should not be formatted. For example: readme.txt|*.xml")]
+		string fileFormatExclude;
+
+		public string FileFormatExclude {
+			get {
+				return fileFormatExclude;
+			}
+		}
 	}
 }
