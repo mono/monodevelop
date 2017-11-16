@@ -129,6 +129,18 @@ namespace MonoDevelop.Core.Setup
 			return Idx;
 		}
 
+		public UpdateLevel ToUpdateLevel() 
+		{
+			if (this.Id == Stable) {
+				return UpdateLevel.Stable;
+			}
+			if (this.Id == Beta) {
+				return UpdateLevel.Beta;
+			} 
+			// If Alpha or "dynamic", return Alpha.
+			return UpdateLevel.Alpha;
+		}
+
 		public static implicit operator int (UpdateChannel a)
 		{
 			return a.ToInt32 ();
