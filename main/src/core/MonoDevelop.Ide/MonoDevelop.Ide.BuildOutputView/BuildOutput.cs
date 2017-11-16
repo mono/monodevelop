@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			switch (Path.GetExtension (filePath)) {
 			case ".binlog":
-				AddProcessor (new MSBuildOutputProcessor (filePath, true));
+				AddProcessor (new MSBuildOutputProcessor (filePath));
 				break;
 			default:
 				LoggingService.LogError ($"Unknown file type {filePath}");
@@ -72,14 +72,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			projects.Add (processor); 
 		}
 
-		public (string, IList<IFoldSegment>) ToTextEditor (TextEditor editor)
+		public (string, IList<IFoldSegment>) ToTextEditor (TextEditor editor, bool includeDiagnostics)
 		{
 			var buildOutput = new StringBuilder ();
 			var foldingSegments = new List<IFoldSegment> ();
 
 			foreach (var p in projects) {
 				p.Process ();
-				var (s, l) = p.ToTextEditor (editor);
+				var (s, l) = p.ToTextEditor (editor, includeDiagnostics);
 				if (s.Length > 0) {
 					buildOutput.Append (s);
 					if (l.Count > 0) {
@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				if (File.Exists (pspe.LogFile)) {
 					BuildOutput.Load (pspe.LogFile); 
 				} else {
-					currentCustomProject = new BuildOutputProcessor (pspe.LogFile, true);
+					currentCustomProject = new BuildOutputProcessor (pspe.LogFile);
 					currentCustomProject.AddNode (BuildOutputNodeType.Project, "Custom project", true);
 					BuildOutput.AddProcessor (currentCustomProject);
 				}

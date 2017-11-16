@@ -39,7 +39,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Task,
 		Error,
 		Warning,
-		Message
+		Message,
+		Diagnostics
 	}
 
 	class BuildOutputNode
@@ -56,15 +57,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 		List<BuildOutputNode> rootNodes;
 		BuildOutputNode currentNode;
 
-		public BuildOutputProcessor (string fileName, bool includeDiagnostics)
+		public BuildOutputProcessor (string fileName)
 		{
 			FileName = fileName;
-			IncludesDiagnostics = includeDiagnostics;
 		}
 
 		public string FileName { get; }
-
-		public bool IncludesDiagnostics { get; set; }
 
 		protected bool NeedsProcessing { get; set; } = true;
 
@@ -109,15 +107,29 @@ namespace MonoDevelop.Ide.BuildOutputView
 			currentNode = currentNode?.Parent;
 		}
 
-		private void ProcessChildren (TextEditor editor, IList<BuildOutputNode> children, int tabPosition, StringBuilder buildOutput, List<IFoldSegment> segments)
+		private void ProcessChildren (TextEditor editor,
+		                              IList<BuildOutputNode> children,
+		                              int tabPosition,
+		                              StringBuilder buildOutput,
+		                              List<IFoldSegment> segments,
+		                              bool includeDiagnostics)
 		{
 			foreach (var child in children) {
-				ProcessNode (editor, child, tabPosition + 1, buildOutput, segments); 
+				ProcessNode (editor, child, tabPosition + 1, buildOutput, segments, includeDiagnostics); 
 			}
 		}
 
-		private void ProcessNode (TextEditor editor, BuildOutputNode node, int tabPosition, StringBuilder buildOutput, List<IFoldSegment> segments)
+		private void ProcessNode (TextEditor editor,
+		                          BuildOutputNode node,
+		                          int tabPosition,
+		                          StringBuilder buildOutput,
+		                          List<IFoldSegment> segments,
+		                          bool includeDiagnostics)
 		{
+			if (!includeDiagnostics && node.NodeType == BuildOutputNodeType.Diagnostics) {
+				return;
+			}
+
 			buildOutput.AppendLine ();
 
 			for (int i = 0; i < tabPosition; i++) buildOutput.Append ("\t");
@@ -126,7 +138,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			buildOutput.Append (node.Message);
 
 			if (node.Children.Count > 0) {
-				ProcessChildren (editor, node.Children, tabPosition, buildOutput, segments);
+				ProcessChildren (editor, node.Children, tabPosition, buildOutput, segments, includeDiagnostics);
 
 				segments.Add (FoldSegmentFactory.CreateFoldSegment (editor, currentPosition, buildOutput.Length - currentPosition,
 				                                                    node.Parent != null && !node.HasErrors,
@@ -135,13 +147,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public (string, IList<IFoldSegment>) ToTextEditor (TextEditor editor)
+		public (string, IList<IFoldSegment>) ToTextEditor (TextEditor editor, bool includeDiagnostics)
 		{
 			var buildOutput = new StringBuilder ();
 			var foldingSegments = new List<IFoldSegment> ();
 
 			foreach (var node in rootNodes) {
-				ProcessNode (editor, node, 0, buildOutput, foldingSegments);
+				ProcessNode (editor, node, 0, buildOutput, foldingSegments, includeDiagnostics);
 			}
 
 			return (buildOutput.ToString (), foldingSegments);

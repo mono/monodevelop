@@ -32,7 +32,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class MSBuildOutputProcessor : BuildOutputProcessor
 	{
-		public MSBuildOutputProcessor (string filePath, bool includeDiagnostics) : base (filePath, includeDiagnostics)
+		public MSBuildOutputProcessor (string filePath) : base (filePath)
 		{
 		}
 
@@ -82,9 +82,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		void BinlogReader_MessageRaised (object sender, BuildMessageEventArgs e)
 		{
-			if (IncludesDiagnostics || e.Importance != MessageImportance.Low) {
-				AddNode (BuildOutputNodeType.Message, e.Message, false);
-			}
+			AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message, e.Message, false);
 		}
 
 		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)

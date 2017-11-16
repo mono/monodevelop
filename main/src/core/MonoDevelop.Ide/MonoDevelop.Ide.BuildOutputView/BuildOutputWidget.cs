@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		void ProcessLogs (bool showDiagnostics)
 		{
-			var (text, segments) = BuildOutput.ToTextEditor (editor);
+			var (text, segments) = BuildOutput.ToTextEditor (editor, showDiagnostics);
 
 			editor.SetFoldings (new List<IFoldSegment> ());
 			editor.Text = text;
