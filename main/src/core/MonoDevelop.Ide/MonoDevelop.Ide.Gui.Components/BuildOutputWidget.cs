@@ -28,14 +28,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Gtk;
-using Xwt;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	class BuildOutputWidget : Gtk.VBox
+	class BuildOutputWidget : VBox
 	{
 		FilePath filename;
 		TextEditor editor;
@@ -52,7 +51,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			var toolbar = new DocumentToolbar ();
 			toolbar.Add (showDiagnosticsButton); 
-			PackStart (toolbar.Container, false, true, 0);
+			PackStart (toolbar.Container, expand: false, fill: true, padding: 0);
 
 			editor = TextEditorFactory.CreateNewEditor ();
 			editor.IsReadOnly = true;
@@ -65,7 +64,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			scrolledWindow = new CompactScrolledWindow ();
 			scrolledWindow.Add (editor);
 
-			PackStart (scrolledWindow, true, true, 0);
+			PackStart (scrolledWindow, expand: true, fill: true, padding: 0);
 			ShowAll ();
 
 			ReadFile (false);
