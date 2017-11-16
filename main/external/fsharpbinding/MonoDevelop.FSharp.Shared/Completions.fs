@@ -1,5 +1,6 @@
 ﻿namespace MonoDevelop.FSharp.Shared
 
+open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.Interactive.Shell
 open System
@@ -156,7 +157,10 @@ module Completion =
             if residue.Length > 0 && residue.[0] = '#' then
                 return hashDirectives |> Array.ofList
             else
-                let! symbols = checkResults.GetDeclarationListSymbols(Some parseResults, 1, column, input, longName, residue, fun (_,_) -> false)
+                let partialName = QuickParse.GetPartialLongNameEx(input, column-1)
+
+                let! symbols = checkResults.GetDeclarationListSymbols(Some parseResults, 1, input, partialName)
+
                 let results = symbols
                               |> List.choose symbolToCompletionData
 
