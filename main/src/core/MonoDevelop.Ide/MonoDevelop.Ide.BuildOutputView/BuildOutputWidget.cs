@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		void ReadFile (bool showDiagnostics)
 		{
-			var processor = new BuildOutputProcessor (filename.FullPath, showDiagnostics);
+			var processor = new MSBuildOutputProcessor (filename.FullPath, showDiagnostics);
 			processor.Process ();
 
 			var (text, segments) = processor.ToTextEditor (editor);

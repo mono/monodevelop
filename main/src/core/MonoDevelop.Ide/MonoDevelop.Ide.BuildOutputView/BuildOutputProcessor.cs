@@ -26,8 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Build.Logging;
-using Microsoft.Build.Framework;
 using MonoDevelop.Ide.Editor;
 using System.Text;
 
@@ -68,27 +66,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public bool IncludesDiagnostics { get; set; }
 
-		public void Process ()
+		public virtual void Process ()
 		{
-			var binlogReader = new BinaryLogReplayEventSource ();
-			binlogReader.BuildStarted += BinLog_BuildStarted;
-			binlogReader.BuildFinished += BinLog_BuildFinished;
-			binlogReader.ErrorRaised += BinLog_ErrorRaised;
-			binlogReader.WarningRaised += BinLog_WarningRaised;
-			binlogReader.MessageRaised += BinlogReader_MessageRaised;
-			binlogReader.ProjectStarted += BinLog_ProjectStarted;
-			binlogReader.ProjectFinished += BinLog_ProjectFinished;
-			binlogReader.TargetStarted += BinLog_TargetStarted;
-			binlogReader.TargetFinished += BinLog_TargetFinished;
-			binlogReader.TaskStarted += BinLog_TaskStarted;
-			binlogReader.TaskFinished += BinLog_TaskFinished;
-
 			currentNode = null;
 			rootNodes = new List<BuildOutputNode> ();
-			binlogReader.Replay (FileName);
 		}
 
-		private void AddNode (BuildOutputNodeType nodeType, string message, bool isStart)
+		public void AddNode (BuildOutputNodeType nodeType, string message, bool isStart)
 		{
 			var node = new BuildOutputNode { NodeType = nodeType, Message = message };
 			if (currentNode == null) {
@@ -111,67 +95,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		private void EndCurrentNode (string message)
+		public void EndCurrentNode (string message)
 		{
 			AddNode (BuildOutputNodeType.Message, message, false);
 			currentNode = currentNode?.Parent;
-		}
-
-		private void BinLog_BuildStarted (object sender, BuildStartedEventArgs e)
-		{
-			AddNode (BuildOutputNodeType.Build, e.Message, false);
-		}
-
-		private void BinLog_BuildFinished (object sender, BuildFinishedEventArgs e)
-		{
-			EndCurrentNode (e.Message);
-		}
-
-		private void BinLog_ErrorRaised (object sender, BuildErrorEventArgs e)
-		{
-			AddNode (BuildOutputNodeType.Error, e.Message, false);
-		}
-
-		private void BinLog_WarningRaised (object sender, BuildWarningEventArgs e)
-		{
-			AddNode (BuildOutputNodeType.Warning, e.Message, false);
-		}
-
-		void BinlogReader_MessageRaised (object sender, BuildMessageEventArgs e)
-		{
-			if (IncludesDiagnostics || e.Importance != MessageImportance.Low) {
-				AddNode (BuildOutputNodeType.Message, e.Message, false);
-			}
-		}
-
-		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
-		{
-			AddNode (BuildOutputNodeType.Project, e.Message, true);
-		}
-
-		private void BinLog_ProjectFinished (object sender, ProjectFinishedEventArgs e)
-		{
-			EndCurrentNode (e.Message);
-		}
-
-		private void BinLog_TargetStarted (object sender, TargetStartedEventArgs e)
-		{
-			AddNode (BuildOutputNodeType.Target, e.Message, true);
-		}
-
-		private void BinLog_TargetFinished (object sender, TargetFinishedEventArgs e)
-		{
-			EndCurrentNode (e.Message);
-		}
-
-		private void BinLog_TaskStarted (object sender, TaskStartedEventArgs e)
-		{
-			AddNode (BuildOutputNodeType.Task, e.Message, true);
-		}
-
-		private void BinLog_TaskFinished (object sender, TaskFinishedEventArgs e)
-		{
-			EndCurrentNode (e.Message);
 		}
 
 		private void ProcessChildren (TextEditor editor, IList<BuildOutputNode> children, int tabPosition, StringBuilder buildOutput, List<IFoldSegment> segments)

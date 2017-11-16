@@ -9650,6 +9650,8 @@
     <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildOutputProcessor.cs" />
     <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildOutputViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildOutputWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildOutput.cs" />
+    <Compile Include="MonoDevelop.Ide.BuildOutputView\MSBuildOutputProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

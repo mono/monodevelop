@@ -4,7 +4,7 @@
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2017 
+// Copyright (c) 2017 Microsoft Corp. (http://microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +23,79 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Collections.Generic;
+using System.IO;
+using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
+
 namespace MonoDevelop.Ide.BuildOutputView
 {
-	public class BuildOutput
+	class BuildOutput
 	{
+		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
+
 		public BuildOutput ()
 		{
+		}
+
+		public ProgressMonitor CreateProgressMonitor ()
+		{
+			return new BuildOutputProgressMonitor (this);
+		}
+
+		public void Load (string filePath)
+		{
+		}
+
+		public void Save (string filePath)
+		{
+		}
+
+		internal void AddProcessor (BuildOutputProcessor processor)
+		{
+			projects.Add (processor); 
+		}
+	}
+
+	class BuildOutputProgressMonitor : ProgressMonitor
+	{
+		BuildOutputProcessor currentCustomProject;
+
+		public BuildOutput BuildOutput { get; }
+
+		public BuildOutputProgressMonitor (BuildOutput output)
+		{
+			BuildOutput = output;
+		}
+
+		protected override void OnObjectReported (object statusObject)
+		{
+			switch (statusObject) {
+			case ProjectStartedProgressEvent pspe:
+				if (File.Exists (pspe.LogFile)) {
+					
+				} else {
+					currentCustomProject = new BuildOutputProcessor (pspe.LogFile, true);
+					currentCustomProject.AddNode (BuildOutputNodeType.Project, "Custom project", true);
+					BuildOutput.AddProcessor (currentCustomProject);
+				}
+				break;
+			case ProjectFinishedProgressEvent psfe:
+				if (currentCustomProject != null) {
+					currentCustomProject.EndCurrentNode (null);
+				}
+				currentCustomProject = null;
+				break;
+			}
+		}
+
+		protected override void OnWriteLog (string message)
+		{
+			if (currentCustomProject != null) {
+				currentCustomProject.AddNode (BuildOutputNodeType.Message, message, false);
+			}
 		}
 	}
 }
