@@ -64,8 +64,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 		internal string Identifier => AccessibilityElement.Identifier;
 
-		Cairo.Rectangle allocation;
-		internal Cairo.Rectangle Allocation {
+		Gdk.Rectangle allocation;
+		public override Gdk.Rectangle Allocation {
 			get {
 				return allocation;
 			}
@@ -120,7 +120,7 @@ namespace MonoDevelop.Components.DockNotebook
 			ShowMenu?.Invoke (this, AccessibilityElement.Identifier);
 		}
 
-		internal void Draw (Cairo.Context ctx, TabStrip tabStrip, Cairo.Rectangle closeButtonAllocation) {
+		internal void Draw (Cairo.Context ctx, TabStrip tabStrip, Gdk.Rectangle closeButtonAllocation) {
 			renderer.Draw (ctx, this, tab, tabStrip, closeButtonAllocation);
 		}
 
@@ -132,10 +132,10 @@ namespace MonoDevelop.Components.DockNotebook
 
 		class DockNotebookTabButtonRenderer
 		{
-			public void Draw (Cairo.Context ctx, DockNotebookTabButton button, DockNotebookTab tab, TabStrip tabStrip, Cairo.Rectangle buttonAllocation) 
+			public void Draw (Cairo.Context ctx, DockNotebookTabButton button, DockNotebookTab tab, TabStrip tabStrip, Gdk.Rectangle buttonAllocation) 
 			{
 				//TODO: This is not correct set from a render
-				button.Allocation = buttonAllocation.Inflate (2, 2);
+				button.Allocation = buttonAllocation.InflateRect (2, 2);
 
 				bool isButtonHovered = tabStrip.IsElementHovered (button);
 				if (!isButtonHovered && tab.DirtyStrength > 0.5) {

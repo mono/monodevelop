@@ -1088,7 +1088,7 @@ namespace MonoDevelop.Components.DockNotebook
 					if (focused) {
 						if (tabStrip.currentFocusCloseButton) {
 							var closeButton = tab.GetCloseButton ();
-							focusRect = closeButton.Allocation.ToGdkRectangle ();
+							focusRect = closeButton.Allocation;
 						} else {
 							focusRect = new Gdk.Rectangle (tab.Allocation.X + 5, tab.Allocation.Y + 10, tab.Allocation.Width - 30, tab.Allocation.Height - 15);
 						}

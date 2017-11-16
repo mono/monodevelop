@@ -131,9 +131,9 @@ namespace MonoDevelop.Components
 				(y >= rect.Y) && (y < (rect.Y + rect.Height)));
 		}
 
-		public static Cairo.Rectangle Inflate (this Cairo.Rectangle rect, double width, double height)
+		public static Gdk.Rectangle InflateRect (this Gdk.Rectangle rect, int width, int height)
 		{
-			return new Cairo.Rectangle(
+			return new Gdk.Rectangle (
 				rect.X - width,
 				rect.Y - height,
 				rect.Width + (width * 2),

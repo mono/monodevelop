@@ -312,9 +312,9 @@ namespace MonoDevelop.Components.DockNotebook
 				ctx.NewPath ();
 
 				var paddingSpacing = GetPaddingSpacing (tabBounds.Width, active);
-				var closeButtonAllocation = new Cairo.Rectangle (tabBounds.Right - paddingSpacing.Right - (DockNotebookTabButton.tabCloseImage.Width / 2) - DockNotebookTabButton.CloseButtonMarginRight,
-				                                                 tabBounds.Height - paddingSpacing.Bottom - DockNotebookTabButton.tabCloseImage.Height - DockNotebookTabButton.CloseButtonMarginBottom,
-				                                                 DockNotebookTabButton.tabCloseImage.Width, DockNotebookTabButton.tabCloseImage.Height);
+				var closeButtonAllocation = new Gdk.Rectangle ((int) (tabBounds.Right - paddingSpacing.Right - (DockNotebookTabButton.tabCloseImage.Width / 2) - DockNotebookTabButton.CloseButtonMarginRight),
+				                                               (int) (tabBounds.Height - paddingSpacing.Bottom - DockNotebookTabButton.tabCloseImage.Height - DockNotebookTabButton.CloseButtonMarginBottom),
+				                                               (int) DockNotebookTabButton.tabCloseImage.Width, (int) DockNotebookTabButton.tabCloseImage.Height);
 
 				DrawTabBackground (ctx, tabStrip, tabBounds.Width, tabBounds.X, active);
 
@@ -343,7 +343,7 @@ namespace MonoDevelop.Components.DockNotebook
 				ctx.DrawImage (tabStrip, image, x, y);
 			}
 
-			void DrawTabText (Cairo.Context ctx, DockNotebookTab tab, Pango.Layout la, Gdk.Rectangle tabBounds, Cairo.Rectangle closeButtonAllocation, Xwt.WidgetSpacing paddingSpacing, bool active, bool drawButtons)
+			void DrawTabText (Cairo.Context ctx, DockNotebookTab tab, Pango.Layout la, Gdk.Rectangle tabBounds, Gdk.Rectangle closeButtonAllocation, Xwt.WidgetSpacing paddingSpacing, bool active, bool drawButtons)
 			{
 				// Render Text
 				double tw = tabBounds.Width - (paddingSpacing.Left + paddingSpacing.Right);
