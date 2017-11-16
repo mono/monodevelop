@@ -317,41 +317,32 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				ns = name.Substring (0, i);
 				name = name.Substring (i + 1);
 			}
-			
+
 			if (saveToFile && !overwrite && File.Exists (fileName))
 				return fileName;
-			
+
 			if (item != null)
 				component = item.Component;
 			
 			CodeCompileUnit cu = new CodeCompileUnit ();
+			Stetic.CodeGenerationResult generationResult = null;
+
 			if (project.UsePartialTypes) {
 				CodeNamespace cns = new CodeNamespace (ns);
 				cu.Namespaces.Add (cns);
-				
-				CodeTypeDeclaration type = new CodeTypeDeclaration (name);
-				type.IsPartial = true;
-				type.Attributes = MemberAttributes.Public;
-				type.TypeAttributes = System.Reflection.TypeAttributes.Public;
-				cns.Types.Add (type);
-				type.Members.Add (
-					new CodeMemberMethod () {
-						Name = "Build"
-					}
-				);
-				
-				foreach (Stetic.ObjectBindInfo binfo in component.GetObjectBindInfo ()) {
-					// When a component is being renamed, we have to generate the 
-					// corresponding field using the old name, since it will be renamed
-					// later using refactory
-					string nname = args != null && args.NewName == binfo.Name ? args.OldName : binfo.Name;
-					type.Members.Add (
-						new CodeMemberField (
-							binfo.TypeName,
-							nname
-						)
-					);
-				}
+
+				var info = GtkDesignInfo.FromProject (project);
+
+				Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
+				options.UseGettext = info.GenerateGettext;
+				options.GettextClass = info.GettextClass;
+				options.ImageResourceLoaderClass = info.ImageResourceLoaderClass;
+				options.UsePartialClasses = project.UsePartialTypes;
+				options.GenerateSingleFile = false;
+				options.GenerateModifiedOnly = false;
+
+				generationResult = SteticApp.GenerateWidgetCode (options, component);
+				info.GuiBuilderProject.SteticProject.ResetModifiedWidgetFlags ();
 			} else {
 				if (!saveToFile)
 					return fileName;
@@ -363,15 +354,38 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			CodeDomProvider provider = project.LanguageBinding.GetCodeDomProvider ();
 			if (provider == null)
 				throw new UserException ("Code generation not supported for language: " + project.LanguageName);
-			
+
+			// Each stetic project has its own version of generated.cs with the same classes in the same namespace and when building
+			// a project that references multiple projects with stetic projects there is a warning about this. We disable it for c#
+			bool needsWarning436Pragma = (provider is Microsoft.CSharp.CSharpCodeProvider);
+
 			string text;
 			var pol = project.Policies.Get<TextStylePolicy> ();
+
 			using (var fileStream = new StringWriter ()) {
 				var options = new CodeGeneratorOptions () {
 					IndentString = pol.TabsToSpaces? new string (' ', pol.TabWidth) : "\t",
 					BlankLinesBetweenMembers = true,
 				};
-				provider.GenerateCodeFromCompileUnit (cu, fileStream, options);
+
+				if (needsWarning436Pragma) {
+					provider.GenerateCodeFromCompileUnit(new CodeSnippetCompileUnit("#pragma warning disable 436"), fileStream, options);
+				}
+
+				if (cu != null) {
+					provider.GenerateCodeFromCompileUnit (cu, fileStream, options);
+				} else if (generationResult != null) {
+					foreach (var u in generationResult.Units) {
+						provider.GenerateCodeFromCompileUnit (u, fileStream, options);
+					}
+				} else {
+					throw new Exception ("Error generating stetic files");
+				}
+
+				if (needsWarning436Pragma) {
+					provider.GenerateCodeFromCompileUnit(new CodeSnippetCompileUnit("#pragma warning restore 436"), fileStream, options);
+				}
+
 				text = fileStream.ToString ();
 				text = FormatGeneratedFile (fileName, text, project, provider);
 			}
@@ -394,7 +408,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (generating || !GtkDesignInfo.HasDesignedObjects (project))
 				return null;
-			
+
 			using (var timer = Counters.SteticFileGeneratedTimer.BeginTiming ()) {
 				
 				timer.Trace ("Checking references");
@@ -505,7 +519,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				CodeDomProvider provider = project.LanguageBinding.GetCodeDomProvider ();
 				if (provider == null)
 					throw new UserException ("Code generation not supported for language: " + project.LanguageName);
-				
+
+				// Each stetic project has its own version of generated.cs with the same classes in the same namespace and when building
+				// a project that references multiple projects with stetic projects there is a warning about this. We disable it for c#
+				bool needsWarning436Pragma = (provider is Microsoft.CSharp.CSharpCodeProvider);
+
 				string basePath = Path.GetDirectoryName (info.SteticGeneratedFile);
 				string ext = Path.GetExtension (info.SteticGeneratedFile);
 				
@@ -522,11 +540,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					else
 						fname = Path.Combine (basePath, unit.Name) + ext;
 					StringWriter sw = new StringWriter ();
+
 					try {
 						foreach (CodeNamespace ns in unit.Namespaces)
 							ns.Comments.Add (new CodeCommentStatement ("This file has been generated by the GUI designer. Do not modify."));
 						timer.Trace ("Generating code for " + unit.Name);
+						if (needsWarning436Pragma) {
+							provider.GenerateCodeFromCompileUnit(new CodeSnippetCompileUnit("#pragma warning disable 436"), sw, codeGeneratorOptions);
+						}
+
 						provider.GenerateCodeFromCompileUnit (unit, sw, codeGeneratorOptions);
+
+						if (needsWarning436Pragma) {
+							provider.GenerateCodeFromCompileUnit(new CodeSnippetCompileUnit("#pragma warning restore 436"), sw, codeGeneratorOptions);
+						}
+
 						string content = sw.ToString ();
 								
 						timer.Trace ("Formatting code");
@@ -594,16 +622,29 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = text;
-			int realStartLine = 0;
+			int headerStart = -1, headerEnd = -1;
+
+			// Work out where the autogenerated header is and remove it
+			// Microsoft.NET generates "auto-generated" tags where Mono generates "autogenerated" tags.
 			for (int i = 1; i <= doc.LineCount; i++) {
-				string lineText = doc.GetTextAt (doc.GetLine (i));
-				// Microsoft.NET generates "auto-generated" tags where Mono generates "autogenerated" tags.
+				var line = doc.GetLine (i);
+				string lineText = doc.GetTextAt (line);
+
+				if (lineText.Contains ("<autogenerated>") || lineText.Contains ("<auto-generated>")) {
+					headerStart = i - 1;
+				}
+
 				if (lineText.Contains ("</autogenerated>") || lineText.Contains ("</auto-generated>")) {
-					realStartLine = i + 2;
+					headerEnd = i + 1;
 					break;
 				}
 			}
-			
+
+			for (int i = headerEnd; i >= headerStart; i--) {
+				var line = doc.GetLine (i);
+				doc.RemoveText (line.Offset, line.LengthIncludingDelimiter);
+			}
+
 			// The Mono provider inserts additional blank lines, so strip them out
 			// But blank lines might actually be significant in other languages.
 			// We reformat the C# generated output to the user's coding style anyway, but the reformatter preserves blank lines
@@ -620,9 +661,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					previousWasBlank = isBlank || isBracket;
 				}
 			}
-			
-			int offset = doc.GetLine (realStartLine).Offset;
-			return doc.GetTextAt (offset, doc.Length - offset);
+
+			return doc.GetTextAt (0, doc.Length);
 		}
 
 		static void CheckLine (IReadonlyTextDocument doc, IDocumentLine line, out bool isBlank, out bool isBracket)

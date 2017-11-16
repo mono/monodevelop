@@ -132,6 +132,11 @@ namespace Stetic
 		{
 			return CodeGenerator.GenerateProjectCode (options, projects);
 		}
+
+		public CodeGenerationResult GenerateWidgetCode (GenerationOptions options, ObjectWrapper wrapper)
+		{
+			return CodeGenerator.GenerateWidgetCode (options, wrapper);
+		}
 		
 		public ArrayList GlobalWidgetLibraries {
 			get { return globalWidgetLibraries; }

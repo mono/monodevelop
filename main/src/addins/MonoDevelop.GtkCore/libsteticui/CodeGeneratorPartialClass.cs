@@ -11,15 +11,15 @@ namespace Stetic
 {
 	internal static class CodeGeneratorPartialClass
 	{
-		public static void GenerateProjectGuiCode (SteticCompilationUnit globalUnit, CodeNamespace globalNs, CodeTypeDeclaration globalType, GenerationOptions options, List<SteticCompilationUnit> units, ProjectBackend[] projects, ArrayList warnings)
+		internal static void GenerateProjectGuiCode (SteticCompilationUnit globalUnit, CodeNamespace globalNs, CodeTypeDeclaration globalType, GenerationOptions options, List<SteticCompilationUnit> units, ProjectBackend[] projects, ArrayList warnings)
 		{
 			// Generate code for each project
 			foreach (ProjectBackend gp in projects) {
-			
+
 				// Generate top levels
 				foreach (Gtk.Widget w in gp.Toplevels)
 					GenerateWidgetCode (globalUnit, globalNs, options, units, w, warnings, !options.GenerateModifiedOnly || gp.IsWidgetModified (w.Name));
-					
+
 				// Generate global action groups
 				foreach (Wrapper.ActionGroup agroup in gp.ActionGroups)
 					GenerateGlobalActionGroupCode (globalUnit, globalNs, options, units, agroup, warnings);
@@ -57,7 +57,7 @@ namespace Stetic
 		}
 		
 		
-		static void GenerateWidgetCode (SteticCompilationUnit globalUnit, CodeNamespace globalNs, GenerationOptions options, List<SteticCompilationUnit> units, Gtk.Widget w, ArrayList warnings, bool regenerateWidgetClass)
+		internal static void GenerateWidgetCode (SteticCompilationUnit globalUnit, CodeNamespace globalNs, GenerationOptions options, List<SteticCompilationUnit> units, Gtk.Widget w, ArrayList warnings, bool regenerateWidgetClass)
 		{
 			if (options.GenerateSingleFile)
 				regenerateWidgetClass = true;

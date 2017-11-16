@@ -418,7 +418,13 @@ namespace Stetic
 				
 			return Backend.GenerateProjectCode (options, pbs);
 		}
-		
+
+		public CodeGenerationResult GenerateWidgetCode (GenerationOptions options, Component component)
+		{
+			var b = (ObjectWrapper)component.Backend;
+			return Backend.GenerateWidgetCode (options, b);
+		}
+
 		public Designer ActiveDesigner {
 			get {
 				return activeDesigner; 

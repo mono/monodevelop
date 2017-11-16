@@ -658,6 +658,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					throw new UserException ("Code generation not supported for language: " + project.LanguageName);
 				GuiBuilderService.SteticApp.GenerateProjectCode (path, "Stetic", provider, null);
 			}
+
 			files.Add (path);
 
 			if (Windows != null) {
