@@ -153,7 +153,7 @@ namespace MonoDevelop.Core
 		
 		static void RegisterAddinRepositories ()
 		{
-			var validUrls = UpdateLevel.DefaultLevels.Select (v => setupService.GetMainRepositoryUrl (v)).ToList ();
+			var validUrls = UpdateChannel.DefaultLevels.Select (v => setupService.GetMainRepositoryUrl (v)).ToList ();
 			
 			// Remove old repositories
 			
@@ -166,16 +166,16 @@ namespace MonoDevelop.Core
 					reps.RemoveRepository (rep.Url);
 			}
 			
-			if (!setupService.IsMainRepositoryRegistered (UpdateLevel.Stable)) {
-				setupService.RegisterMainRepository (UpdateLevel.Stable, true);
-				setupService.RegisterMainRepository (UpdateLevel.Beta, true);
+			if (!setupService.IsMainRepositoryRegistered (UpdateChannel.Stable)) {
+				setupService.RegisterMainRepository (UpdateChannel.Stable, true);
+				setupService.RegisterMainRepository (UpdateChannel.Beta, true);
 			}
-			if (!setupService.IsMainRepositoryRegistered (UpdateLevel.Beta)) {
-				setupService.RegisterMainRepository (UpdateLevel.Beta, false);
+			if (!setupService.IsMainRepositoryRegistered (UpdateChannel.Beta)) {
+				setupService.RegisterMainRepository (UpdateChannel.Beta, false);
 			}
 
-			if (!setupService.IsMainRepositoryRegistered (UpdateLevel.Alpha)) {
-				setupService.RegisterMainRepository (UpdateLevel.Alpha, false);
+			if (!setupService.IsMainRepositoryRegistered (UpdateChannel.Alpha)) {
+				setupService.RegisterMainRepository (UpdateChannel.Alpha, false);
 			}
 		}
 		

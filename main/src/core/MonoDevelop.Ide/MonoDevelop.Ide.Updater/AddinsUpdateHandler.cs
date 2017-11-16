@@ -56,8 +56,8 @@ namespace MonoDevelop.Ide.Updater
 		{
 			updateMonitor = monitor;
 			try {
-				if (UpdateService.UpdateLevel == UpdateLevel.Test)
-					Runtime.AddinSetupService.RegisterMainRepository (UpdateLevel.Test, true);
+				if (UpdateService.UpdateChannel == UpdateChannel.Test)
+					Runtime.AddinSetupService.RegisterMainRepository (UpdateChannel.Test, true);
 
 				currentTask = Task.Run (delegate {
 					using (ProgressStatusMonitor pm = new ProgressStatusMonitor (monitor)) {

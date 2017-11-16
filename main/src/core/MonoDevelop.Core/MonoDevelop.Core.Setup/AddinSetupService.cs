@@ -36,26 +36,26 @@ namespace MonoDevelop.Core.Setup
 		{
 		}
 		
-		public bool IsMainRepositoryRegistered (UpdateLevel level)
+		public bool IsMainRepositoryRegistered (UpdateChannel level)
 		{
 			string url = GetMainRepositoryUrl (level);
 			return Repositories.ContainsRepository (url);
 		}
 		
-		public void RegisterMainRepository (UpdateLevel level, bool enable)
+		public void RegisterMainRepository (UpdateChannel level, bool enable)
 		{
 			string url = GetMainRepositoryUrl (level);
 			if (!Repositories.ContainsRepository (url)) {
 				var rep = Repositories.RegisterRepository (null, url, false);
 				rep.Name = BrandingService.BrandApplicationName ("MonoDevelop Extension Repository");
-				if (level != UpdateLevel.Stable)
+				if (level != UpdateChannel.Stable)
 					rep.Name += " (" + level + " channel)";
 				if (!enable)
 					Repositories.SetRepositoryEnabled (url, false);
 			}
 		}
 		
-		public string GetMainRepositoryUrl (UpdateLevel level)
+		public string GetMainRepositoryUrl (UpdateChannel level)
 		{
 			string platform;
 			if (Platform.IsWindows)

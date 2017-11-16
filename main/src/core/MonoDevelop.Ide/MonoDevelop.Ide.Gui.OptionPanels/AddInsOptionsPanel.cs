@@ -76,13 +76,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			else if (UpdateService.UpdateSpanUnit == UpdateSpanUnit.Month)
 				radioMonth.Active = true;
 			
-			if (UpdateService.UpdateLevel == UpdateLevel.Beta) {
+			if (UpdateService.UpdateChannel == UpdateChannel.Beta) {
 				radioBeta.Active = true;
 				checkUnstable.Active = true;
-			} else if (UpdateService.UpdateLevel == UpdateLevel.Alpha) {
+			} else if (UpdateService.UpdateChannel == UpdateChannel.Alpha) {
 				radioAlpha.Active = true;
 				checkUnstable.Active = true;
-			} else if (UpdateService.UpdateLevel == UpdateLevel.Test) {
+			} else if (UpdateService.UpdateChannel == UpdateChannel.Test) {
 				radioTest.Visible = true;
 				radioTest.Active = true;
 				checkUnstable.Active = true;
@@ -108,13 +108,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			if (checkUnstable.Active) {
 				if (radioBeta.Active)
-					UpdateService.UpdateLevel = UpdateLevel.Beta;
+					UpdateService.UpdateChannel = UpdateChannel.Beta;
 				else if (radioAlpha.Active)
-					UpdateService.UpdateLevel = UpdateLevel.Alpha;
+					UpdateService.UpdateChannel = UpdateChannel.Alpha;
 				else if (radioTest.Active)
-					UpdateService.UpdateLevel = UpdateLevel.Test;
+					UpdateService.UpdateChannel = UpdateChannel.Test;
 			} else
-				UpdateService.UpdateLevel = UpdateLevel.Stable;
+				UpdateService.UpdateChannel = UpdateChannel.Stable;
 
 		}
 		

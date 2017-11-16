@@ -702,6 +702,7 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngine.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngineManager.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\FileUtilities.cs" />
+    <Compile Include="MonoDevelop.Core.Setup\UpdateChannel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
