@@ -29,10 +29,11 @@ using System.Collections.Generic;
 using System.Text;
 using Gtk;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Gui.Components
+namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutputWidget : VBox
 	{

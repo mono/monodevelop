@@ -259,7 +259,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "BuildLogViewer"
-						class = "MonoDevelop.Ide.Gui.Components.BuildLogDisplayBinding" />
+						class = "MonoDevelop.Ide.BuildOutputView.BuildLogDisplayBinding" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">

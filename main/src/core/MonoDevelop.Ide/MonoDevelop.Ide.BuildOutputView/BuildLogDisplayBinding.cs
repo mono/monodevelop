@@ -1,5 +1,5 @@
 ﻿//
-// BuildOutputView.cs
+// BuildLogDisplayBinding.cs
 //
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
@@ -25,38 +25,39 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Components;
 
-namespace MonoDevelop.Ide.Gui.Components
+namespace MonoDevelop.Ide.BuildOutputView
 {
-	class BuildOutputViewContent : ViewContent
+	class BuildLogDisplayBinding : IViewDisplayBinding
 	{
-		FilePath filename;
-		BuildOutputWidget control;
-
-		public BuildOutputViewContent (FilePath filename)
+		public BuildLogDisplayBinding ()
 		{
-			this.filename = filename;
-			control = new BuildOutputWidget (filename);
 		}
 
-		public override Control Control {
+		public string Name {
 			get {
-				return control;
+				return GettextCatalog.GetString ("Build Output");
 			}
 		}
 
-		public override bool IsReadOnly {
+		public bool CanUseAsDefault {
 			get {
 				return true;
 			}
 		}
 
-		public override string TabPageLabel {
-			get {
-				return filename.FileName;
-			}
+		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
+		{
+			return fileName.IsNotNull && fileName.HasExtension (".binlog");
+		}
+
+		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		{
+			return new BuildOutputViewContent (fileName);
 		}
 	}
 }

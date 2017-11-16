@@ -9646,10 +9646,10 @@
     <Compile Include="MonoDevelop.Ide.Editor\OSXEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectCapabilityFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\OrFileTemplateCondition.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Components\BuildLogDisplayBinding.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Components\BuildOutputViewContent.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Components\BuildOutputWidget.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Components\BuildOutputProcessor.cs" />
+    <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildLogDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildOutputProcessor.cs" />
+    <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildOutputViewContent.cs" />
+    <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildOutputWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9695,6 +9695,7 @@
     <Folder Include="MonoDevelop.Components\Xwt\" />
     <Folder Include="MonoDevelop.Components.AtkCocoaHelper\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Markdown\" />
+    <Folder Include="MonoDevelop.Ide.BuildOutputView\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

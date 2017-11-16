@@ -31,7 +31,7 @@ using Microsoft.Build.Framework;
 using MonoDevelop.Ide.Editor;
 using System.Text;
 
-namespace MonoDevelop.Ide.Gui.Components
+namespace MonoDevelop.Ide.BuildOutputView
 {
 	enum BuildOutputNodeType
 	{
