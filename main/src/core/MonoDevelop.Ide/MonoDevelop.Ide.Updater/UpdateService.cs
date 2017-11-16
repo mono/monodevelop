@@ -1,4 +1,4 @@
-﻿//
+//
 // UpdateService.cs
 //
 // Author:
@@ -76,11 +76,20 @@ namespace MonoDevelop.Ide.Updater
 			}
 		}
 
+		public static UpdateLevel UpdateLevel {
+			get {
+				return PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", UpdateLevel.Stable);
+			}
+			set {
+				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", value);
+			}
+		}
+
 		public static UpdateChannel UpdateChannel {
 			get {
 				// Returned Saved Update Level
 				var prop = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateChannel", UpdateChannel.Stable.Id);
-				return new UpdateChannel(prop, prop, "", 0);
+				return new UpdateChannel (prop, prop, "", 0);
 			}
 			set {
 				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateChannel", value.Id);

@@ -1,4 +1,4 @@
-﻿//
+//
 // AddInsOptionsPanel.cs
 //
 // Author:
@@ -76,18 +76,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			else if (UpdateService.UpdateSpanUnit == UpdateSpanUnit.Month)
 				radioMonth.Active = true;
 			
-			if (UpdateService.UpdateChannel == UpdateChannel.Beta) {
-				radioBeta.Active = true;
-				checkUnstable.Active = true;
-			} else if (UpdateService.UpdateChannel == UpdateChannel.Alpha) {
-				radioAlpha.Active = true;
-				checkUnstable.Active = true;
-			} else if (UpdateService.UpdateChannel == UpdateChannel.Test) {
-				radioTest.Visible = true;
-				radioTest.Active = true;
-				checkUnstable.Active = true;
-			} else {
-				checkUnstable.Active = false;
+			switch (UpdateService.UpdateLevel) {
+			case UpdateLevel.Beta: radioBeta.Active = true; checkUnstable.Active = true; break;
+			case UpdateLevel.Alpha: radioAlpha.Active = true; checkUnstable.Active = true; break;
+			case UpdateLevel.Test: radioTest.Visible = true; radioTest.Active = true; checkUnstable.Active = true; break;
+			default: checkUnstable.Active = false; break;
 			}
 			
 			if (UpdateService.TestModeEnabled)
@@ -108,13 +101,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			if (checkUnstable.Active) {
 				if (radioBeta.Active)
-					UpdateService.UpdateChannel = UpdateChannel.Beta;
+					UpdateService.UpdateLevel = UpdateLevel.Beta;
 				else if (radioAlpha.Active)
-					UpdateService.UpdateChannel = UpdateChannel.Alpha;
+					UpdateService.UpdateLevel = UpdateLevel.Alpha;
 				else if (radioTest.Active)
-					UpdateService.UpdateChannel = UpdateChannel.Test;
+					UpdateService.UpdateLevel = UpdateLevel.Test;
 			} else
-				UpdateService.UpdateChannel = UpdateChannel.Stable;
+				UpdateService.UpdateLevel = UpdateLevel.Stable;
 
 		}
 		

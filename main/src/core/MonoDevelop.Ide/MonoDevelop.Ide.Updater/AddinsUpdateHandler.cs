@@ -1,4 +1,4 @@
-﻿//
+//
 // AddinsUpdateHandler.cs
 //
 // Author:
@@ -56,8 +56,8 @@ namespace MonoDevelop.Ide.Updater
 		{
 			updateMonitor = monitor;
 			try {
-				if (UpdateService.UpdateChannel == UpdateChannel.Test)
-					Runtime.AddinSetupService.RegisterMainRepository (UpdateChannel.Test, true);
+				if (UpdateService.UpdateLevel == UpdateLevel.Test)
+					Runtime.AddinSetupService.RegisterMainRepository (UpdateLevel.Test, true);
 
 				currentTask = Task.Run (delegate {
 					using (ProgressStatusMonitor pm = new ProgressStatusMonitor (monitor)) {

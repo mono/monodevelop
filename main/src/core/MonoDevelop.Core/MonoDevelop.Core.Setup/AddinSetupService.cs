@@ -1,4 +1,4 @@
-﻿// 
+// 
 // AddinSetupService.cs
 //  
 // Author:
@@ -36,26 +36,26 @@ namespace MonoDevelop.Core.Setup
 		{
 		}
 		
-		public bool IsMainRepositoryRegistered (UpdateChannel level)
+		public bool IsMainRepositoryRegistered (UpdateLevel level)
 		{
 			string url = GetMainRepositoryUrl (level);
 			return Repositories.ContainsRepository (url);
 		}
 		
-		public void RegisterMainRepository (UpdateChannel level, bool enable)
+		public void RegisterMainRepository (UpdateLevel level, bool enable)
 		{
 			string url = GetMainRepositoryUrl (level);
 			if (!Repositories.ContainsRepository (url)) {
 				var rep = Repositories.RegisterRepository (null, url, false);
 				rep.Name = BrandingService.BrandApplicationName ("MonoDevelop Extension Repository");
-				if (level != UpdateChannel.Stable)
+				if (level != UpdateLevel.Stable)
 					rep.Name += " (" + level + " channel)";
 				if (!enable)
 					Repositories.SetRepositoryEnabled (url, false);
 			}
 		}
 		
-		public string GetMainRepositoryUrl (UpdateChannel level)
+		public string GetMainRepositoryUrl (UpdateLevel level)
 		{
 			string platform;
 			if (Platform.IsWindows)
