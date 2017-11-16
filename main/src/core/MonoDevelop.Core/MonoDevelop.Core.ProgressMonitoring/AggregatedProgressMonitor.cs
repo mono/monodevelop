@@ -157,7 +157,14 @@ namespace MonoDevelop.Core.ProgressMonitoring
 					info.Monitor.ErrorLog.Write (message);
 		}
 
-		protected override void OnObjectReported(object statusObject)
+		protected override void OnWriteLogObject (object logObject)
+		{
+			foreach (MonitorInfo info in monitors)
+				if ((info.ActionMask & MonitorAction.WriteLog) != 0)
+					info.Monitor.LogObject (logObject);
+		}
+
+		protected override void OnObjectReported (object statusObject)
 		{
 			foreach (MonitorInfo info in monitors)
 				if ((info.ActionMask & MonitorAction.ReportObject) != 0)
