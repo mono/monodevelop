@@ -38,6 +38,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public override void Process ()
 		{
+			if (!NeedsProcessing) {
+				return;
+			}
+
+			Clear ();
 			base.Process ();
 
 			var binlogReader = new BinaryLogReplayEventSource ();

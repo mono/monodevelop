@@ -27,8 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -53,9 +55,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			switch (Path.GetExtension (filePath)) {
 			case ".binlog":
-				var msbuild = new MSBuildOutputProcessor (filePath, true);
-				msbuild.Process ();
-				AddProcessor (msbuild);
+				AddProcessor (new MSBuildOutputProcessor (filePath, true));
 				break;
 			default:
 				LoggingService.LogError ($"Unknown file type {filePath}");
@@ -70,6 +70,25 @@ namespace MonoDevelop.Ide.BuildOutputView
 		internal void AddProcessor (BuildOutputProcessor processor)
 		{
 			projects.Add (processor); 
+		}
+
+		public (string, IList<IFoldSegment>) ToTextEditor (TextEditor editor)
+		{
+			var buildOutput = new StringBuilder ();
+			var foldingSegments = new List<IFoldSegment> ();
+
+			foreach (var p in projects) {
+				p.Process ();
+				var (s, l) = p.ToTextEditor (editor);
+				if (s.Length > 0) {
+					buildOutput.Append (s);
+					if (l.Count > 0) {
+						foldingSegments.AddRange (l);
+					}
+				}
+			}
+
+			return (buildOutput.ToString (), foldingSegments);
 		}
 	}
 

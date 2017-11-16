@@ -66,10 +66,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public bool IncludesDiagnostics { get; set; }
 
-		public virtual void Process ()
+		protected bool NeedsProcessing { get; set; } = true;
+
+		protected void Clear ()
 		{
 			currentNode = null;
 			rootNodes = new List<BuildOutputNode> ();
+			NeedsProcessing = true;
+		}
+
+		public virtual void Process ()
+		{
+			NeedsProcessing = false;
 		}
 
 		public void AddNode (BuildOutputNodeType nodeType, string message, bool isStart)

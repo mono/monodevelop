@@ -37,26 +37,43 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutputWidget : VBox
 	{
-		FilePath filename;
 		TextEditor editor;
 		CompactScrolledWindow scrolledWindow;
 
-		public BuildOutputWidget (FilePath filename)
-		{
-			this.filename = filename;
+		public BuildOutput BuildOutput { get; }
 
+		public BuildOutputWidget (BuildOutput output)
+		{
+			Initialize ();
+
+			BuildOutput = output;
+			ProcessLogs (false);
+		}
+
+		public BuildOutputWidget (FilePath filePath)
+		{
+			Initialize ();
+
+			editor.FileName = filePath;
+
+			BuildOutput = new BuildOutput ();
+			BuildOutput.Load (filePath.FullPath);
+			ProcessLogs (false);
+		}
+
+		void Initialize ()
+		{
 			var showDiagnosticsButton = new CheckButton (GettextCatalog.GetString ("Show Diagnostics")) {
 				BorderWidth = 0
 			};
-			showDiagnosticsButton.Clicked += (sender, e) => ReadFile (showDiagnosticsButton.Active);
+			showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 
 			var toolbar = new DocumentToolbar ();
-			toolbar.Add (showDiagnosticsButton); 
+			toolbar.Add (showDiagnosticsButton);
 			PackStart (toolbar.Container, expand: false, fill: true, padding: 0);
 
 			editor = TextEditorFactory.CreateNewEditor ();
 			editor.IsReadOnly = true;
-			editor.FileName = filename;
 			editor.Options = new CustomEditorOptions (editor.Options) {
 				ShowFoldMargin = true,
 				TabsToSpaces = false
@@ -67,8 +84,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			PackStart (scrolledWindow, expand: true, fill: true, padding: 0);
 			ShowAll ();
-
-			ReadFile (false);
 		}
 
 		protected override void OnDestroyed ()
@@ -77,12 +92,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			base.OnDestroyed ();
 		}
 
-		void ReadFile (bool showDiagnostics)
+		void ProcessLogs (bool showDiagnostics)
 		{
-			var processor = new MSBuildOutputProcessor (filename.FullPath, showDiagnostics);
-			processor.Process ();
-
-			var (text, segments) = processor.ToTextEditor (editor);
+			var (text, segments) = BuildOutput.ToTextEditor (editor);
 
 			editor.SetFoldings (new List<IFoldSegment> ());
 			editor.Text = text;
