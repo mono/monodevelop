@@ -1050,6 +1050,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.SearchAndReplaceWidget" design-size="412 67">
     <property name="MemberName" />
+    <property name="GeneratePublic">false</property>
     <child>
       <widget class="Gtk.Table" id="table">
         <property name="MemberName" />
@@ -1282,6 +1283,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.GotoLineNumberWidget" design-size="221 33">
     <property name="MemberName" />
+    <property name="GeneratePublic">false</property>
     <child>
       <widget class="Gtk.HBox" id="hbox1">
         <property name="MemberName" />

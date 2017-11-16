@@ -31,7 +31,29 @@ namespace Stetic
 				}
 			}
 		}
-		
+
+		public static CodeGenerationResult GenerateWidgetCode (GenerationOptions options, ObjectWrapper wrapper)
+		{
+			ArrayList warningList = new ArrayList ();
+
+			List<SteticCompilationUnit> units = new List<SteticCompilationUnit> ();
+			SteticCompilationUnit globalUnit = new SteticCompilationUnit ("");
+			//units.Add (globalUnit);
+
+			if (options == null) {
+				options = new GenerationOptions ();
+			}
+			CodeNamespace globalNS = new CodeNamespace (options.GlobalNamespace);
+			globalUnit.Namespaces.Add (globalNS);
+
+			var widget = wrapper.Wrapped as Gtk.Widget;
+			if (widget == null) {
+				throw new Exception ("Not a gtk widget");
+			}
+			CodeGeneratorPartialClass.GenerateWidgetCode (globalUnit, globalNS, options, units, widget, warningList, true);
+			return new CodeGenerationResult (units.ToArray (), (string[]) warningList.ToArray (typeof (string)));
+		}
+
 		public static CodeGenerationResult GenerateProjectCode (GenerationOptions options, ProjectBackend[] projects)
 		{
 			ArrayList warningList = new ArrayList ();

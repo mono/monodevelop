@@ -49,6 +49,9 @@
     <EmbeddedResource Include="MonoDevelop.HexEditor.addin.xml">
       <LogicalName>MonoDevelop.HexEditor.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -87,6 +90,7 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.HexEditor\HexEditorVisualizer.cs" />
     <Compile Include="Mono.MHex\HexEditorDebugger.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

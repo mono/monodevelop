@@ -40,8 +40,10 @@ namespace MonoDevelop.Packaging.Gui
 
 		void Build ()
 		{
+#pragma warning disable 436
 			Stetic.Gui.Initialize (this);
 			Stetic.BinContainer.Attach (this);
+#pragma warning restore 436
 
 			var vbox = new VBox ();
 			vbox.Spacing = 6;

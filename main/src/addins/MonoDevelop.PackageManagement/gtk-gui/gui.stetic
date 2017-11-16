@@ -5,12 +5,14 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.PackageManagement.PackageSourcesWidget" design-size="452 300">
     <property name="MemberName" />
+    <property name="GeneratePublic">false</property>
     <property name="Visible">False</property>
     <child>
       <widget class="Gtk.VBox" id="mainVBox">
@@ -101,6 +103,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.PackageManagement.PackageManagementOptionsWidget" design-size="368 307">
     <property name="MemberName" />
+    <property name="GeneratePublic">false</property>
     <property name="Visible">False</property>
     <child>
       <widget class="Gtk.VBox" id="mainVBox">
