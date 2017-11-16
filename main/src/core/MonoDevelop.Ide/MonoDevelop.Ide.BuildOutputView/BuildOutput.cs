@@ -47,6 +47,20 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public void Load (string filePath)
 		{
+			if (!File.Exists (filePath)) {
+				return;
+			}
+
+			switch (Path.GetExtension (filePath)) {
+			case ".binlog":
+				var msbuild = new MSBuildOutputProcessor (filePath, true);
+				msbuild.Process ();
+				AddProcessor (msbuild);
+				break;
+			default:
+				LoggingService.LogError ($"Unknown file type {filePath}");
+				break;
+			}
 		}
 
 		public void Save (string filePath)
@@ -75,7 +89,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			switch (statusObject) {
 			case ProjectStartedProgressEvent pspe:
 				if (File.Exists (pspe.LogFile)) {
-					
+					BuildOutput.Load (pspe.LogFile); 
 				} else {
 					currentCustomProject = new BuildOutputProcessor (pspe.LogFile, true);
 					currentCustomProject.AddNode (BuildOutputNodeType.Project, "Custom project", true);
