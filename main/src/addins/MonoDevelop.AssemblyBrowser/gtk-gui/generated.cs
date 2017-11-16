@@ -87,3 +87,4 @@ namespace Stetic
 		}
 	}
 }
+#pragma warning restore 436
