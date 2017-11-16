@@ -22,6 +22,94 @@
 			imageId="md-project-azurefunctions"
 		/>
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ItemTemplates">
+		<Template
+			id="Azure.Function.CSharp.BlobTrigger"
+			_overrideName="Blob trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.EventHubTrigger"
+			_overrideName="Event hub trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.FaceLocator"
+			_overrideName="Face locator"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.GenericWebHook"
+			_overrideName="Generic WebHook"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.GitHubCommenter"
+			_overrideName="GitHub commenter"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.GitHubWebHook"
+			_overrideName="GitHub WebHook"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.HttpGetCRUD"
+			_overrideName="Http GET CRUD"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.HttpPostCRUD"
+			_overrideName="Http POST CRUD"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.HttpPutCRUD"
+			_overrideName="Http PUT CRUD"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.HttpTrigger"
+			_overrideName="Http trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.HttpTriggerWithParameters"
+			_overrideName="Http trigger with parameters"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.ImageResizer"
+			_overrideName="Image resizer"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.QueueTrigger"
+			_overrideName="Queue trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.SasToken"
+			_overrideName="SAS token"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.ServiceBusQueueTrigger"
+			_overrideName="Service Bus Queue trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.ServiceBusTopicTrigger"
+			_overrideName="Service Bus Topic trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+		<Template
+			id="Azure.Function.CSharp.TimerTrigger"
+			_overrideName="Timer trigger"
+			path="Templates/Azure.Functions.Templates.nupkg"
+		/>
+	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
 		<Image id="md-project-azurefunctions" resource="project-azurefunctions-template.png" />
@@ -29,5 +117,24 @@
 
 	<Extension path="/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid="md-project-azurefunctions" resource="project-azurefunctions-32.png" size="Dnd" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Commands">
+		<Category _name="Azure Functions" id="AzureFunctions">
+			<Command
+				id="MonoDevelop.AzureFunctions.Commands.AddFunction"
+				_description="Add an Azure function to the project"
+				_label="Add _Function..."
+				defaultHandler="MonoDevelop.AzureFunctions.AddFunctionHandler" />
+		</Category>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
+		<Condition id="ItemType" value="Project">
+			<CommandItem
+				id="MonoDevelop.AzureFunctions.Commands.AddFunction"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
+				insertbefore="MonoDevelop.WebReferences.WebReferenceCommands.Add" />
+		</Condition>
 	</Extension>
 </ExtensionModel>
