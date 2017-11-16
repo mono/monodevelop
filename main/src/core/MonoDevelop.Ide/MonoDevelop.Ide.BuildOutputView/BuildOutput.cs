@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MonoDevelop.Core;
-using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Projects;
 using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.BuildOutputView

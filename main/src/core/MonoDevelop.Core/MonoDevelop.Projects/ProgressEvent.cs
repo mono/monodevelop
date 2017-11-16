@@ -26,7 +26,7 @@
 
 using System;
 
-namespace MonoDevelop.Core.ProgressMonitoring
+namespace MonoDevelop.Projects
 {
 	public class ProgressEvent
 	{

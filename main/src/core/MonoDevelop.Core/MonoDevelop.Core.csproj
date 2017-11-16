@@ -704,7 +704,7 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngine.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngineManager.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\FileUtilities.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProgressEvent.cs" />
+    <Compile Include="MonoDevelop.Projects\ProgressEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
