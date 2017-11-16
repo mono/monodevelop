@@ -49,7 +49,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		HBox innerBox;
 
-		readonly DragTabManager dragManager;
+		readonly DragDockNotebookTabManager dragManager;
 		readonly DockNotebook notebook;
 		DockNotebookTab highlightedTab;
 		bool overCloseButton;
@@ -137,7 +137,7 @@ namespace MonoDevelop.Components.DockNotebook
 			if (notebook == null)
 				throw new ArgumentNullException ("notebook");
 
-			dragManager = new DragTabManager ();
+			dragManager = new DragDockNotebookTabManager ();
 
 			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
 
@@ -452,7 +452,7 @@ namespace MonoDevelop.Components.DockNotebook
 				Gdk.Display.Default.GetPointer (out x, out y);
 
 				if (x < sr.Left || x > sr.Right || y < sr.Top || y > sr.Bottom) {
-					dragManager.IsDragging = false;
+					dragManager.Cancel ();
 					mouseHasLeft = false;
 					CreatePlaceholderWindow ();
 				}
@@ -483,7 +483,7 @@ namespace MonoDevelop.Components.DockNotebook
 					QueueDraw ();
 				}
 				if (!overCloseButton && !dragManager.IsDragging && buttonPressedOnTab) {
-					dragManager.IsDragging = true;
+					dragManager.Start (t);
 					mouseHasLeft = false;
 					dragManager.Progress = 1.0f;
 					int x = (int)evnt.X;
@@ -595,7 +595,7 @@ namespace MonoDevelop.Components.DockNotebook
 					1.0d,
 					0.0d,
 					easing: Easing.CubicOut,
-				              finished: (f, a) => dragManager.IsDragging = false);
+				              finished: (f, a) => dragManager.Cancel ());
 			QueueDraw ();
 			return base.OnButtonReleaseEvent (evnt);
 		}
@@ -911,7 +911,7 @@ namespace MonoDevelop.Components.DockNotebook
 			buttonPressedOnTab = false;
 			overCloseOnPress = false;
 			allowDoubleClick = true;
-			dragManager.Cancel ();
+			dragManager.Reset ();
 			this.AbortAnimation ("EndDrag");
 			base.OnUnrealized ();
 		}
@@ -1125,26 +1125,6 @@ namespace MonoDevelop.Components.DockNotebook
 					Gtk.Style.PaintFocus (tabStrip.Style, tabStrip.GdkWindow, tabStrip.State, focusRect, tabStrip, "tab", focusRect.X, focusRect.Y, focusRect.Width, focusRect.Height);
 				}
 			}
-		}
-	}
-
-	class DragTabManager
-	{
-		public int X { get; set; }
-		public int Offset { get; set; }
-		public bool IsDragging { get; set; }
-		public int LastX { get; internal set; }
-		public double Progress { get; internal set; }
-
-		public DragTabManager ()
-		{
-
-		}
-
-		public void Cancel ()
-		{
-			X = 0;
-			IsDragging = false;
 		}
 	}
 }
