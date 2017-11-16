@@ -141,6 +141,20 @@ namespace MonoDevelop.Core.Setup
 			return UpdateLevel.Alpha;
 		}
 
+		public static UpdateChannel FromUpdateLevel(UpdateLevel level) {
+			switch (level) {
+				case UpdateLevel.Stable:
+					return UpdateChannel.Stable;
+				case UpdateLevel.Beta:
+					return UpdateChannel.Beta;
+				case UpdateLevel.Alpha:
+				case UpdateLevel.Test:
+					return UpdateChannel.Alpha;
+				default:
+					return UpdateChannel.Alpha;
+			}
+		}
+
 		public static implicit operator int (UpdateChannel a)
 		{
 			return a.ToInt32 ();
