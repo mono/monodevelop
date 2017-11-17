@@ -103,9 +103,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			BuildOutput = output;
 		}
 
-		protected override void OnObjectReported (object statusObject)
+		protected override void OnWriteLogObject (object logObject)
 		{
-			switch (statusObject) {
+			switch (logObject) {
 			case ProjectStartedProgressEvent pspe:
 				if (File.Exists (pspe.LogFile)) {
 					BuildOutput.Load (pspe.LogFile); 
