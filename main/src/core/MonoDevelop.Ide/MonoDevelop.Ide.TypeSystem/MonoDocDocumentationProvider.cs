@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							continue;
 						bool matched = true;
 						for (int i = 0; i < parameterTypes.Length; i++) {
-							if (CompareNames (parameterTypes [i], paramList [i].Attributes ["Type"].Value)) {
+							if (!CompareNames (parameterTypes [i], paramList [i].Attributes ["Type"].Value)) {
 								matched = false;
 								break;
 							}
