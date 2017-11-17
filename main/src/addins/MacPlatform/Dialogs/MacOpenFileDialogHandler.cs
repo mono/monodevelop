@@ -63,7 +63,12 @@ namespace MonoDevelop.MacIntegration
 						return;
 					data.SelectedFiles = new FilePath [] { selectedPath };
 					pathAlreadySet = true;
-					panel.Cancel (panel);
+
+					// We need to call Cancel on 1ms delay so it's executed after DidChangeToDirectory event handler is finished
+					// this is needed because it's possible that DidChangeToDirectory event is executed while dialog is opening
+					// in that case calling .Cancel() leaves dialog in weird state...
+					// Fun fact: DidChangeToDirectory event is called from Open on 10.12 but not on 10.13
+					System.Threading.Tasks.Task.Delay (1).ContinueWith (delegate { panel.Cancel (panel); }, Runtime.MainTaskScheduler);
 				};
 				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
 				
