@@ -407,6 +407,8 @@ namespace MonoDevelop.CodeActions
 				var oldSolution = documentContext.AnalysisDocument.Project.Solution;
 				var updatedSolution = oldSolution;
 				using (var undo = editor.OpenUndoGroup ()) {
+					// TODO: Fix workaround for https://devdiv.visualstudio.com/DevDiv/_workitems?id=518783&fullScreen=true&_a=edit
+					// Roslyn issue: https://github.com/dotnet/roslyn/issues/23239
 					updatedSolution = await act.GetChangedSolutionInternalAsync(true, token);
 					documentContext.RoslynWorkspace.TryApplyChanges (updatedSolution, new RoslynProgressTracker ());
 				}
