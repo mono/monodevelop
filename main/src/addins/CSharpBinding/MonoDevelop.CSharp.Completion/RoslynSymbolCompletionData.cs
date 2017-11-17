@@ -201,7 +201,7 @@ namespace MonoDevelop.CSharp.Completion
 			bool runCompletionCompletionCommand = false;
 			var method = Symbol as IMethodSymbol;
 
-			bool addParens = DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket;
+			bool addParens = false;
 			var Editor = ext.Editor;
 			var Policy = ext.FormattingPolicy;
 			var ctx = window.CodeCompletionContext;
