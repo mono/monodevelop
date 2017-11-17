@@ -49,6 +49,7 @@ using Mono.Addins;
 using MonoDevelop.Core.AddIns;
 using Microsoft.CodeAnalysis.Internal.Log;
 using Microsoft.CodeAnalysis.Shared.Utilities;
+using Microsoft.CodeAnalysis.SolutionCrawler;
 using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.TypeSystem
@@ -101,8 +102,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.Workspace != null && solution != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
+			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 			if (IdeApp.Preferences.EnableSourceAnalysis)
-				DiagnosticProvider.Enable (this, DiagnosticProvider.Options.Syntax);
+				solutionCrawler.Register (this);
 		}
 
 		protected override void Dispose (bool finalize)
@@ -110,7 +112,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			base.Dispose (finalize);
 			if (disposed)
 				return;
-			DiagnosticProvider.Disable (this);
+
+			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+			if (IdeApp.Preferences.EnableSourceAnalysis)
+				solutionCrawler.Unregister (this);
 			disposed = true;
 			CancelLoad ();
 			if (IdeApp.Workspace != null) {
