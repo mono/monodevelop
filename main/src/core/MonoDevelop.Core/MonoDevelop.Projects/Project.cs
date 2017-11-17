@@ -693,6 +693,8 @@ namespace MonoDevelop.Projects
 			base.OnEndLoad ();
 
 			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata (null));
+
+			InitializeFileWatcher ();
 		}
 
 		/// <summary>
@@ -1016,6 +1018,8 @@ namespace MonoDevelop.Projects
 
 		protected override void OnDispose ()
 		{
+			DisposeFileWatcher ();
+
 			foreach (ProjectConfiguration c in Configurations)
 				c.ProjectInstance?.Dispose ();
 			
@@ -3809,6 +3813,134 @@ namespace MonoDevelop.Projects
 
 		internal IList<DotNetProjectImport> ImportsRemoved {
 			get { return importsRemoved; }
+		}
+
+		bool useFileWatcher;
+
+		/// <summary>
+		/// When set to true with UseAdvancedGlobSupport also true then changes made to files inside the project externally
+		/// will be monitored and used to update the project.
+		/// </summary>
+		public bool UseFileWatcher {
+			get { return useFileWatcher; }
+			set {
+				if (useFileWatcher != value) {
+					useFileWatcher = value;
+					OnUseFileWatcherChanged ();
+				}
+			}
+		}
+
+		void OnUseFileWatcherChanged ()
+		{
+			if (useFileWatcher && UseAdvancedGlobSupport) {
+				CreateFileWatcher ();
+			} else {
+				DisposeFileWatcher ();
+			}
+		}
+
+		void InitializeFileWatcher ()
+		{
+			if (watcher != null) {
+				OnUseFileWatcherChanged ();
+			}
+		}
+
+		FSW.FileSystemWatcher watcher;
+
+		void CreateFileWatcher ()
+		{
+			DisposeFileWatcher ();
+
+			if (!Directory.Exists (BaseDirectory))
+				return;
+
+			watcher = new FSW.FileSystemWatcher (BaseDirectory);
+			watcher.IncludeSubdirectories = true;
+			watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName;
+			watcher.Created += OnFileCreated;
+			watcher.Deleted += OnFileDeleted;
+			watcher.Renamed += OnFileRenamed;
+			watcher.Error += OnFileWatcherError;
+			watcher.EnableRaisingEvents = true;
+		}
+
+		void DisposeFileWatcher ()
+		{
+			if (watcher != null) {
+				watcher.Dispose ();
+				watcher = null;
+			}
+		}
+
+		void OnFileWatcherError (object sender, ErrorEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine ("Error {0}", e.GetException ().Message);
+		}
+
+		void OnFileRenamed (object sender, RenamedEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine ("Renamed {0} to {1}", e.OldName, e.Name);
+
+			Runtime.RunInMainThread (() => {
+				if (Directory.Exists (e.FullPath)) {
+					OnDirectoryRenamedExternally (e.OldFullPath, e.FullPath);
+				} else {
+					OnFileCreatedExternally (e.FullPath);
+					OnFileDeletedExternally (e.OldFullPath);
+				}
+			});
+		}
+
+		void OnFileCreated (Object sender, FileSystemEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine ("Created {0}", e.FullPath);
+
+			if (Directory.Exists (e.FullPath) || Files.Any (file => file.FilePath == e.FullPath))
+				return;
+
+			Runtime.RunInMainThread (() => {
+				OnFileCreatedExternally (e.FullPath);
+			});
+		}
+
+		void OnFileDeleted (Object sender, FileSystemEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine ("Deleted {0}", e.FullPath);
+
+			Runtime.RunInMainThread (() => {
+				OnFileDeletedExternally (e.FullPath);
+			});
+		}
+
+		/// <summary>
+		/// Move all project files in the old directory to the new directory.
+		/// </summary>
+		void OnDirectoryRenamedExternally (string oldDirectory, string newDirectory)
+		{
+			FileService.NotifyDirectoryRenamed (oldDirectory, newDirectory);
+		}
+
+		void OnFileCreatedExternally (string fileName)
+		{
+			string include = MSBuildProjectService.ToMSBuildPath (ItemDirectory, fileName);
+			foreach (var it in sourceProject.FindGlobItemsIncludingFile (include).Where (it => it.Metadata.GetProperties ().Count () == 0)) {
+				var eit = CreateFakeEvaluatedItem (sourceProject, it, include, null);
+				var pi = CreateProjectItem (eit);
+				pi.Read (this, eit);
+				Items.Add (pi);
+			}
+		}
+
+		void OnFileDeletedExternally (string fileName)
+		{
+			if (Directory.Exists (fileName)) {
+				// Ensures directory is removed from Solution window.
+				FileService.NotifyFileRemoved (fileName);
+			} else {
+				Files.Remove (fileName);
+			}
 		}
 
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)
