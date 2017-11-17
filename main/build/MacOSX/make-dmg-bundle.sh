@@ -34,7 +34,7 @@ rm -f "$DMG_FILE.master"
  	
 # Compute an approximated image size in MB, and bloat by 1MB
 image_size=$(du -ck "$DMG_APP" | tail -n1 | cut -f1)
-image_size=$((($image_size + 40000) / 1000))
+image_size=$((($image_size *2) / 1000))
 
 echo "Creating disk image (${image_size}MB)..."
 hdiutil create "$DMG_FILE" -megabytes $image_size -volname "$VOLUME_NAME" -fs HFS+ -quiet || exit $?
