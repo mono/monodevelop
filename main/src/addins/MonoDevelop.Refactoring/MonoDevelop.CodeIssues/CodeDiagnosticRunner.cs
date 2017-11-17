@@ -164,7 +164,7 @@ namespace MonoDevelop.CodeIssues
 				Debug.Listeners.Add (consoleTraceListener);
 #endif
 
-				var resultList = new List<Result> ();
+				var resultList = new List<Result> (results.Length);
 				foreach (var data in results) {
 					if (data.Id.StartsWith ("CS", StringComparison.Ordinal))
 						continue;
