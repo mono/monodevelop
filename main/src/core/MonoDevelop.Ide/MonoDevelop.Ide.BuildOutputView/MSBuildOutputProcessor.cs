@@ -32,20 +32,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class MSBuildOutputProcessor : BuildOutputProcessor
 	{
+		readonly BinaryLogReplayEventSource binlogReader = new BinaryLogReplayEventSource ();
+
 		public MSBuildOutputProcessor (string filePath) : base (filePath)
 		{
-		}
-
-		public override void Process ()
-		{
-			if (!NeedsProcessing) {
-				return;
-			}
-
-			Clear ();
-			base.Process ();
-
-			var binlogReader = new BinaryLogReplayEventSource ();
 			binlogReader.BuildStarted += BinLog_BuildStarted;
 			binlogReader.BuildFinished += BinLog_BuildFinished;
 			binlogReader.ErrorRaised += BinLog_ErrorRaised;
@@ -57,6 +47,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 			binlogReader.TargetFinished += BinLog_TargetFinished;
 			binlogReader.TaskStarted += BinLog_TaskStarted;
 			binlogReader.TaskFinished += BinLog_TaskFinished;
+		}
+
+		public override void Process ()
+		{
+			if (!NeedsProcessing) {
+				return;
+			}
+
+			Clear ();
+			base.Process ();
+
 			binlogReader.Replay (FileName);
 		}
 
