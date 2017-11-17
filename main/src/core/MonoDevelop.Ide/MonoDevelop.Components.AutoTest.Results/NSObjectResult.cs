@@ -122,9 +122,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 				{
 					var cell = control.GetCell (i, index);
 					var possValues = GetPossibleNSCellValues (cell);
-					LoggingService.LogInfo ($"Possible values for NSTableView with column {i} and row {index} -> "+string.Join (", ", possValues));
-					if (possValues.Any (haystack => CheckForText (text, haystack, exact)))
+					LoggingService.LogInfo ($"Possible values for NSTableView with column {i} and row {index} with exact '{exact}' -> "+string.Join (", ", possValues.Select(x => $"'{x}'")));
+					if (possValues.Any (haystack => CheckForText (text, haystack, exact))) {
+						LoggingService.LogInfo ($"Found '{text}' in column {i}, row {index} with exact '{exact}'");
 						return this;
+					}
 				}
 			}
 			if (ResultObject is NSControl) {
