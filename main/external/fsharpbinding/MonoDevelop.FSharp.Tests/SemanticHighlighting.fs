@@ -84,6 +84,7 @@ module MyModule =
     [<TestCase("let $simpleBinding$ = 1", "entity.name.field")>]
     [<TestCase("type o = $System$.Object", "source.fs")>]
     [<TestCase("type o = System.$Object$", "entity.name.class")>]
+    [<TestCase("let x, $_y$ = 1, 2", "source.fs")>]
     member x.Semantic_highlighting(source, expectedStyle) =
         getStyle source |> should equal expectedStyle
         

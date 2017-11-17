@@ -254,6 +254,15 @@ module Patterns =
             | _ -> None
         | _ -> None
 
+    let (|WildcardIdentifier|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse ->
+            if symbolUse.Symbol.DisplayName.StartsWith "_" then
+                Some WildcardIdentifier
+            else
+                None
+        | _ -> None
+
     let (|ComputationExpression|_|) ts =
         match ts.ExtraColorInfo with
         | Some(_range, extra) when extra = SemanticClassificationType.ComputationExpression -> Some ts
@@ -284,6 +293,8 @@ module Patterns =
          
             let tryGetStyle =
                 match { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor } with
+                | WildcardIdentifier ->
+                    makeSeg "source.fs"
                 | InactiveCode ->
                     makeSeg "punctuation.definition.comment.source"
                 | ComputationExpression _name ->
