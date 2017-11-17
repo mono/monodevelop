@@ -42,6 +42,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using MonoDevelop.Ide.Editor;
 using System.Collections.Immutable;
+using System.Globalization;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -163,18 +164,16 @@ namespace MonoDevelop.CodeIssues
 #if DEBUG
 				Debug.Listeners.Add (consoleTraceListener);
 #endif
-
 				var resultList = new List<Result> (results.Length);
 				foreach (var data in results) {
 					if (data.Id.StartsWith ("CS", StringComparison.Ordinal))
 						continue;
 
-					var diagnostic = await data.ToDiagnosticAsync (input.AnalysisDocument.Project, cancellationToken);
-					if (DiagnosticResult.DescriptorHasTag (diagnostic.Descriptor, WellKnownDiagnosticTags.EditAndContinue))
+					if (DataHasTag (data, WellKnownDiagnosticTags.EditAndContinue))
 						continue;
-					
-					resultList.Add (new DiagnosticResult (diagnostic));
 
+					var diagnostic = await data.ToDiagnosticAsync (input.AnalysisDocument.Project, cancellationToken);
+					resultList.Add (new DiagnosticResult (diagnostic));
 				}
 				return resultList;
 			} catch (OperationCanceledException) {
@@ -186,6 +185,11 @@ namespace MonoDevelop.CodeIssues
 				LoggingService.LogError ("Error while running diagnostics.", e);
 				return Enumerable.Empty<Result> ();
 			}
+		}
+
+		static bool DataHasTag (DiagnosticData desc, string tag)
+		{
+			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
 		}
 
 	}
