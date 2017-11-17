@@ -50,9 +50,18 @@ namespace MonoDevelop.Core
 
 		class LogChunk
 		{
+			public LogChunk Next;
+		}
+
+		class StringLogChunk: LogChunk
+		{
 			public bool IsError;
 			public StringBuilder Log = new StringBuilder ();
-			public LogChunk Next;
+		}
+
+		class ObjectLogChunk: LogChunk
+		{
+			public Object Object;
 		}
 
 		int openStepWork = -1;
@@ -540,6 +549,11 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		public void LogObject (object logObject)
+		{
+			DoWriteLogObject (logObject);
+		}
+
 		public CancellationToken CancellationToken {
 			get {
 				if (parentMonitor != null)
@@ -619,19 +633,29 @@ namespace MonoDevelop.Core
 			if (context != null)
 				context.Post (o => {
 					while (logChain != null) {
-						if (logChain.IsError)
-							DoWriteErrorLog (logChain.Log.ToString ());
-						else
-							DoWriteLog (logChain.Log.ToString ());
+						if (logChain is ObjectLogChunk objectLogChain) {
+							DoWriteLogObject (objectLogChain.Object);
+						} else {
+							var stringLogChunk = logChain as StringLogChunk;
+							if (stringLogChunk.IsError)
+								DoWriteErrorLog (stringLogChunk.Log.ToString ());
+							else
+								DoWriteLog (stringLogChunk.Log.ToString ());
+						}
 						logChain = logChain.Next;
 					}
 				}, null);
 			else {
 				while (logChain != null) {
-					if (logChain.IsError)
-						DoWriteErrorLog (logChain.Log.ToString ());
-					else
-						DoWriteLog (logChain.Log.ToString ());
+					if (logChain is ObjectLogChunk objectLogChain) {
+						DoWriteLogObject (objectLogChain.Object);
+					} else {
+						var stringLogChunk = logChain as StringLogChunk;
+						if (stringLogChunk.IsError)
+							DoWriteErrorLog (stringLogChunk.Log.ToString ());
+						else
+							DoWriteLog (stringLogChunk.Log.ToString ());
+					}
 					logChain = logChain.Next;
 				}
             }
@@ -651,23 +675,45 @@ namespace MonoDevelop.Core
 			OnWriteErrorLog (message);
         }
 
+		void DoWriteLogObject (object logObject)
+		{
+			if (ReportGlobalDataToParent && parentMonitor != null)
+				AppendLogObject (logObject);
+			OnWriteLogObject (logObject);
+		}
+
 		void AppendLog (string message, bool error)
 		{
 			if (firstCachedLogChunk == null)
-				firstCachedLogChunk = lastCachedLogChunk = new LogChunk { IsError = error };
-			else if (lastCachedLogChunk.IsError != error) {
-				var newChunk = new LogChunk { IsError = error };
+				firstCachedLogChunk = lastCachedLogChunk = new StringLogChunk { IsError = error };
+			else if ((lastCachedLogChunk as StringLogChunk)?.IsError != error) {
+				var newChunk = new StringLogChunk { IsError = error };
 				lastCachedLogChunk.Next = newChunk;
 				lastCachedLogChunk = newChunk;
 			}
-			lastCachedLogChunk.Log.Append (message);
+			((StringLogChunk)lastCachedLogChunk).Log.Append (message);
         }
+
+		void AppendLogObject (object logObject)
+		{
+			if (firstCachedLogChunk == null)
+				firstCachedLogChunk = lastCachedLogChunk = new ObjectLogChunk { Object = logObject };
+			else {
+				var newChunk = new ObjectLogChunk { Object = logObject };
+				lastCachedLogChunk.Next = newChunk;
+				lastCachedLogChunk = newChunk;
+			}
+		}
 
 		protected virtual void OnWriteLog (string message)
 		{
 		}
 
 		protected virtual void OnWriteErrorLog (string message)
+		{
+		}
+
+		protected virtual void OnWriteLogObject (object logObject)
 		{
 		}
 
