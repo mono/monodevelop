@@ -131,6 +131,7 @@ namespace MonoDevelop.DotNetCore
 				Project.CompileTarget = dotNetCoreMSBuildProject.DefaultCompileTarget;
 
 			Project.UseAdvancedGlobSupport = true;
+			Project.UseFileWatcher = true;
 		}
 
 		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
