@@ -221,8 +221,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 					LoggingService.LogInfo ($"Selecting row '{index}' of ");
 					control.SelectRow(index, true);
 					control.PerformClick(0, index);
+					return true;
 				}
-				return true;
 			}
 			return false;
 		}
