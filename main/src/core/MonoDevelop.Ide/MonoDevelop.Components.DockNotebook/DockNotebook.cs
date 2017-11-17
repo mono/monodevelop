@@ -40,6 +40,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 	class DockNotebook : Gtk.VBox
 	{
+		readonly static ITabStripRenderer tabStripRenderer = new TabStrip.CairoTabStripRenderer ();
+
 		List<DockNotebookTab> pages = new List<DockNotebookTab> ();
 		List<DockNotebookTab> pagesHistory = new List<DockNotebookTab> ();
 		TabStrip tabStrip;
@@ -68,7 +70,7 @@ namespace MonoDevelop.Components.DockNotebook
 			pagesCol = new ReadOnlyCollection<DockNotebookTab> (pages);
 			AddEvents ((Int32)(EventMask.AllEventsMask));
 
-			tabStrip = new TabStrip (this);
+			tabStrip = new TabStrip (this, tabStripRenderer);
 
 			PackStart (tabStrip, false, false, 0);
 

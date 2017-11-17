@@ -40,12 +40,18 @@ using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Components.DockNotebook
 {
+	interface ITabStripRenderer
+	{
+		void Draw (Gdk.Window window, TabStrip tabStrip);
+	}
+
 	class TabStrip: EventBox, IAnimatable
 	{
 		static Xwt.Drawing.Image tabbarPrevImage = Xwt.Drawing.Image.FromResource ("tabbar-prev-12.png");
 		static Xwt.Drawing.Image tabbarNextImage = Xwt.Drawing.Image.FromResource ("tabbar-next-12.png");
 		static Xwt.Drawing.Image tabbarBackImage = Xwt.Drawing.Image.FromResource ("tabbar-back.9.png");
-		readonly static TabStripRenderer renderer = new TabStripRenderer ();
+
+		ITabStripRenderer renderer;
 
 		HBox innerBox;
 
@@ -132,10 +138,15 @@ namespace MonoDevelop.Components.DockNotebook
 			TabActivePadding = tabActiveBackImage9.Padding;
 		}
 
-		public TabStrip (DockNotebook notebook)
+		public TabStrip (DockNotebook notebook, ITabStripRenderer renderer)
 		{
 			if (notebook == null)
 				throw new ArgumentNullException ("notebook");
+
+			if (renderer == null)
+				throw new ArgumentNullException ("renderer");
+
+			this.renderer = renderer;
 
 			dragManager = new DragDockNotebookTabManager ();
 
@@ -154,6 +165,7 @@ namespace MonoDevelop.Components.DockNotebook
 			Add (innerBox);
 
 			this.notebook = notebook;
+
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			Events |= EventMask.PointerMotionMask | EventMask.LeaveNotifyMask | EventMask.ButtonPressMask;
 
@@ -995,32 +1007,62 @@ namespace MonoDevelop.Components.DockNotebook
 			return tabStartX - renderOffset;
 		}
 
-		Action<Context> DrawClosingTab (int index, Gdk.Rectangle region, out int width)
-		{
-			width = 0;
-			if (closingTabs.ContainsKey (index)) {
-				DockNotebookTab closingTab = closingTabs [index];
-				width = (int)(closingTab.WidthModifier * TabWidth);
-				int tmp = width;
-				return c => closingTab.OnDraw (c, this, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, false);
-			}
-			return c => {
-			};
-		}
-
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			renderer.Draw (evnt.Window, this);
 			return base.OnExposeEvent (evnt);
 		}
 
-		class TabStripRenderer
+		internal class CairoTabStripRenderer : ITabStripRenderer
 		{
+			static DockNotebookTab.CairoDockNotebookTabRenderer tabRenderer = new DockNotebookTab.CairoDockNotebookTabRenderer ();
+
+			public CairoTabStripRenderer ()
+			{
+				
+			}
+
 			public void Draw (Gdk.Window window, TabStrip tabStrip)
 			{
 				using (var context = CairoHelper.Create (window)) {
 					OnDraw (context, tabStrip);
 				}
+			}
+
+			Action<Context> DrawClosingTab (TabStrip tabStrip, int index, Gdk.Rectangle region, out int width)
+			{
+				width = 0;
+				if (tabStrip.closingTabs.ContainsKey (index)) {
+					DockNotebookTab closingTab = tabStrip.closingTabs [index];
+					width = (int)(closingTab.WidthModifier * tabStrip.TabWidth);
+					int tmp = width;
+					return c => tabRenderer.Draw (c, closingTab, tabStrip, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, false);
+				}
+				return c => {
+				};
+			}
+
+			int GetRenderOffset (TabStrip tabStrip)
+			{
+				int tabArea = tabStrip.tabEndX - tabStrip.tabStartX;
+				if (tabStrip.notebook.CurrentTabIndex >= 0) {
+					int normalizedArea = (tabArea / tabStrip.TargetWidth) * tabStrip.TargetWidth;
+					int maxOffset = Math.Max (0, (tabStrip.notebook.Tabs.Count * tabStrip.TargetWidth) - normalizedArea);
+
+					int distanceToTabEdge = tabStrip.TargetWidth * tabStrip.notebook.CurrentTabIndex;
+					int window = normalizedArea -tabStrip. TargetWidth;
+					tabStrip.targetOffset = Math.Min (maxOffset, HelperMethods.Clamp (tabStrip.renderOffset, distanceToTabEdge - window, distanceToTabEdge));
+
+					if (tabStrip.targetOffset != tabStrip.animationTarget) {
+						tabStrip.Animate ("ScrollTabs",
+						                  easing: Easing.CubicOut,
+						                  start: tabStrip.renderOffset,
+						                  end: tabStrip.targetOffset,
+						                  callback: f => tabStrip.renderOffset = (int)f);
+						tabStrip.animationTarget = tabStrip.targetOffset;
+					}
+				}
+				return tabStrip.tabStartX - tabStrip.renderOffset;
 			}
 
 			Gdk.Rectangle CalculateBounds (TabStrip tabStrip, Gdk.Rectangle tabBounds, bool dragged)
@@ -1053,7 +1095,7 @@ namespace MonoDevelop.Components.DockNotebook
 						break;
 
 					int closingWidth;
-					var cmd = tabStrip.DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, tabStrip.Allocation.Height), out closingWidth);
+					var cmd = DrawClosingTab (tabStrip, n, new Gdk.Rectangle (x, y, 0, tabStrip.Allocation.Height), out closingWidth);
 					drawCommands.Add (cmd);
 					x += closingWidth;
 
@@ -1070,7 +1112,7 @@ namespace MonoDevelop.Components.DockNotebook
 						int tmp = x;
 						drawActive = c => {
 							var calculatedBounds = CalculateBounds (tabStrip, new Gdk.Rectangle (tmp, y, width, tabStrip.Allocation.Height), tabStrip.dragManager.IsDragging);
-							tab.OnDraw (c, tabStrip, calculatedBounds, true, focused);
+							tabRenderer.Draw (c, tab, tabStrip, calculatedBounds, true, focused);
 						};
 						tab.Allocation = new Gdk.Rectangle (tmp, tabStrip.Allocation.Y, width, tabStrip.Allocation.Height);
 					} else {
@@ -1081,7 +1123,7 @@ namespace MonoDevelop.Components.DockNotebook
 							tmp = (int)(tab.SavedAllocation.X + (tmp - tab.SavedAllocation.X) * (1.0f - tab.SaveStrength));
 						}
 
-						drawCommands.Add (c => tab.OnDraw (c, tabStrip, new Gdk.Rectangle (tmp, y, width, tabStrip.Allocation.Height), false, focused));
+						drawCommands.Add (c => tabRenderer.Draw (c, tab, tabStrip, new Gdk.Rectangle (tmp, y, width, tabStrip.Allocation.Height), false, focused));
 						tab.Allocation = new Gdk.Rectangle (tmp, tabStrip.Allocation.Y, width, tabStrip.Allocation.Height);
 					}
 
@@ -1098,7 +1140,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 				var allocation = tabStrip.Allocation;
 				int tabWidth;
-				drawCommands.Add (tabStrip.DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, allocation.Height), out tabWidth));
+				drawCommands.Add (DrawClosingTab (tabStrip, n, new Gdk.Rectangle (x, y, 0, allocation.Height), out tabWidth));
 				drawCommands.Reverse ();
 
 				ctx.DrawImage (tabStrip, tabbarBackImage.WithSize (allocation.Width, allocation.Height), 0, 0);

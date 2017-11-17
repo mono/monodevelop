@@ -50,7 +50,7 @@ namespace MonoDevelop.Components.DockNotebook
 		internal static Xwt.Drawing.Image tabDirtyImage = Xwt.Drawing.Image.FromResource ("tab-dirty-9.png");
 		internal static Xwt.Drawing.Image tabCloseImage = Xwt.Drawing.Image.FromResource ("tab-close-9.png");
 
-		readonly static DockNotebookTabButtonRenderer renderer = new DockNotebookTabButtonRenderer ();
+		readonly static CairoDockNotebookTabButtonRenderer renderer = new CairoDockNotebookTabButtonRenderer ();
 
 		internal const double CloseButtonMarginRight = 0;
 		internal const double CloseButtonMarginBottom = -1.0;
@@ -120,17 +120,13 @@ namespace MonoDevelop.Components.DockNotebook
 			ShowMenu?.Invoke (this, AccessibilityElement.Identifier);
 		}
 
-		internal void Draw (Cairo.Context ctx, TabStrip tabStrip, Gdk.Rectangle closeButtonAllocation) {
-			renderer.Draw (ctx, this, tab, tabStrip, closeButtonAllocation);
-		}
-
 		public void Dispose ()
 		{
 			AccessibilityElement.PerformShowMenu -= OnCloseButtonShowMenu;
 			AccessibilityElement.PerformPress -= OnPressCloseButton;
 		}
 
-		class DockNotebookTabButtonRenderer
+		internal class CairoDockNotebookTabButtonRenderer
 		{
 			public void Draw (Cairo.Context ctx, DockNotebookTabButton button, DockNotebookTab tab, TabStrip tabStrip, Gdk.Rectangle buttonAllocation) 
 			{

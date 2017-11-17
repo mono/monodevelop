@@ -42,7 +42,6 @@ namespace MonoDevelop.Components.DockNotebook
 		internal static Xwt.Drawing.Image tabActiveBackImage = Xwt.Drawing.Image.FromResource ("tabbar-active.9.png");
 		internal static Xwt.Drawing.Image tabBackImage = Xwt.Drawing.Image.FromResource ("tabbar-inactive.9.png");
 
-		readonly static DockNotebookTabRenderer renderer = new DockNotebookTabRenderer ();
 
 		static readonly int VerticalTextSize = 11;
 
@@ -231,11 +230,6 @@ namespace MonoDevelop.Components.DockNotebook
 			strip.QueueDraw ();
 		}
 
-		public void OnDraw (Cairo.Context ctx, TabStrip tabStrip, Gdk.Rectangle tabBounds, bool active, bool focused) 
-		{
-			renderer.Draw (ctx, this, tabStrip, tabBounds, active, focused);
-		}
-
 		internal event EventHandler AccessibilityPressTab;
 		internal event EventHandler AccessibilityPressCloseButton;
 
@@ -299,9 +293,11 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 		}
 
-		class DockNotebookTabRenderer
+		internal class CairoDockNotebookTabRenderer
 		{
-			public DockNotebookTabRenderer ()
+			static DockNotebookTabButton.CairoDockNotebookTabButtonRenderer buttonRenderer = new DockNotebookTabButton.CairoDockNotebookTabButtonRenderer ();
+
+			public CairoDockNotebookTabRenderer ()
 			{
 			}
 
@@ -320,7 +316,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 				bool drawButtons = active || focused || tabStrip.IsElementHovered (tab);
 				if (drawButtons) {
-					tab.Buttons.ForEach (btn => btn.Draw (ctx, tabStrip, closeButtonAllocation));
+					tab.Buttons.ForEach (btn => buttonRenderer.Draw (ctx, btn, tab, tabStrip, closeButtonAllocation));
 				}
 
 				DrawTabText (ctx, tab, la, tabBounds, closeButtonAllocation, paddingSpacing, active, drawButtons);
