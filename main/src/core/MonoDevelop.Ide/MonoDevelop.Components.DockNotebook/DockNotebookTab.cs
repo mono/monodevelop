@@ -37,17 +37,16 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.DockNotebook
 {
-	class DockNotebookTab: IAnimatable, IDisposable
+	class DockNotebookTab: CanvasElement, IAnimatable, IDisposable
 	{
 		internal static Xwt.Drawing.Image tabActiveBackImage = Xwt.Drawing.Image.FromResource ("tabbar-active.9.png");
 		internal static Xwt.Drawing.Image tabBackImage = Xwt.Drawing.Image.FromResource ("tabbar-inactive.9.png");
-
 
 		static readonly int VerticalTextSize = 11;
 
 		public const string CloseButtonIdentifier = "DockNotebook.Tab.CloseButton";
 
-		List<DockNotebookTabButton> Buttons = new List<DockNotebookTabButton> ();
+		IEnumerable<DockNotebookTabButton> buttons => Children.OfType<DockNotebookTabButton> ();
 
 		DockNotebook notebook;
 		readonly TabStrip strip;
@@ -62,7 +61,7 @@ namespace MonoDevelop.Components.DockNotebook
 		Widget content;
 
 		Gdk.Rectangle allocation;
-		internal Gdk.Rectangle Allocation {
+		public override Gdk.Rectangle Allocation {
 			get {
 				return allocation;
 			}
@@ -140,7 +139,7 @@ namespace MonoDevelop.Components.DockNotebook
 				}
 
 				Accessible.Title = accTitle;
-				foreach (var button in Buttons) {
+				foreach (var button in buttons) {
 					button.OnTabTextChanged (value);
 				}
 				strip.Update ();
@@ -164,7 +163,7 @@ namespace MonoDevelop.Components.DockNotebook
 				}
 
 				Accessible.Title = accTitle;
-				foreach (var button in Buttons) {
+				foreach (var button in buttons) {
 					button.OnTabMarkupChanged (value);
 				}
 				strip.Update ();
@@ -214,7 +213,7 @@ namespace MonoDevelop.Components.DockNotebook
 			Accessible.PerformShowMenu += OnShowMenu;
 			Accessible.Identifier = "DockNotebook.Tab";
 
-			AddTabButton (CloseButtonIdentifier, Core.GettextCatalog.GetString ("Close document"));
+			AddButton (CloseButtonIdentifier, Core.GettextCatalog.GetString ("Close document"));
 		}
 
 		internal Gdk.Rectangle SavedAllocation { get; private set; }
@@ -245,41 +244,29 @@ namespace MonoDevelop.Components.DockNotebook
 
 		#region Buttons
 
-		void AddTabButton (string identifier, string title)
+		void AddButton (string identifier, string title)
 		{
 			var button = new DockNotebookTabButton (this, strip, identifier, title);
 			button.ShowMenu += (sender, e) => AccessibilityShowMenu?.Invoke (sender, EventArgs.Empty);
-			button.Pressed += (sender, e) => {
-				if (e == CloseButtonIdentifier) {
-					AccessibilityPressCloseButton?.Invoke (sender, EventArgs.Empty);
-				}
-			};
+			button.Pressed += OnButtonPressed;
+
+			button.MouseEnter += (sender, e) => OnNeedsRedraw ();
+			button.MouseLeave += (sender, e) => OnNeedsRedraw ();
+		
 			Accessible.AddAccessibleChild (button.AccessibilityElement);
-			Buttons.Add (button);
+			Children.Add (button);
 		}
 
-		internal DockNotebookTabButton GetButton (string identifier)
+		void OnButtonPressed (object sender, EventArgs e)
 		{
-			return Buttons.FirstOrDefault (s => s.Identifier == identifier);
-		}
-
-		internal DockNotebookTabButton GetCloseButton ()
-		{
-			return GetButton (DockNotebookTab.CloseButtonIdentifier);
-		}
-
-		internal bool IsOverButton (string identifier, int x, int y)
-		{
-			var buttonSelected = GetButton (identifier);
-			if (buttonSelected != null) {
-				return buttonSelected.Allocation.Contains (x, y);
+			if (((DockNotebookTabButton)sender).Identifier == CloseButtonIdentifier) {
+				AccessibilityPressCloseButton?.Invoke (this, EventArgs.Empty);
 			}
-			return false;
 		}
 
-		internal bool IsOverCloseButton (int x, int y)
+		internal DockNotebookTabButton GetButton (string identifier) 
 		{
-			return IsOverButton (CloseButtonIdentifier, x, y);
+			return buttons.FirstOrDefault (s => s.Identifier == identifier);
 		}
 
 		#endregion
@@ -288,7 +275,7 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			Accessible.PerformPress -= OnPressTab;
 			Accessible.PerformShowMenu -= OnShowMenu;
-			foreach (var button in Buttons) {
+			foreach (var button in buttons) {
 				button.Dispose ();
 			}
 		}
@@ -314,9 +301,11 @@ namespace MonoDevelop.Components.DockNotebook
 
 				DrawTabBackground (ctx, tabStrip, tabBounds.Width, tabBounds.X, active);
 
-				bool drawButtons = active || focused || tabStrip.IsElementHovered (tab);
+				bool drawButtons = active || focused || tab.IsHovered;
 				if (drawButtons) {
-					tab.Buttons.ForEach (btn => buttonRenderer.Draw (ctx, btn, tab, tabStrip, closeButtonAllocation));
+					foreach (var btn in tab.buttons) {
+						buttonRenderer.Draw (ctx, btn, tab, tabStrip, closeButtonAllocation);
+					}
 				}
 
 				DrawTabText (ctx, tab, la, tabBounds, closeButtonAllocation, paddingSpacing, active, drawButtons);

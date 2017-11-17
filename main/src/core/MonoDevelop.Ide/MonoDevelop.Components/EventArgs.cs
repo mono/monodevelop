@@ -1,10 +1,10 @@
 ﻿//
-// TabStrip.cs
+// EventArgs.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Jose Medrano <jose.medrano@microsoft.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Microsoft Corp.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,58 +23,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using System.Linq;
-using Gdk;
-using Gtk;
 using System;
-using System.Collections.Generic;
-using Cairo;
-using MonoDevelop.Components;
-using MonoDevelop.Components.AtkCocoaHelper;
-using Xwt.Motion;
-using MonoDevelop.Components.Docking;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide;
-using System.Runtime.InteropServices;
-
-namespace MonoDevelop.Components.DockNotebook
+namespace MonoDevelop.Components
 {
-	class DragDockNotebookTabManager
+	class HandledMotionEventArgs : EventArgs
 	{
-		public int X { get; set; }
-		public int Offset { get; set; }
+		public bool Handled { get; set; }
+		public int X => (int) EventMotion.X;
+		public int Y => (int)EventMotion.Y;
+		public Gdk.EventType EventType => EventMotion.Type;
 
-		public int LastX { get; internal set; }
-		public double Progress { get; internal set; }
+		public readonly Gdk.EventMotion EventMotion;
 
-		public bool IsDragging => Content != null;
-		public DockNotebookTab Content { get; private set; }
-
-		public DragDockNotebookTabManager ()
+		public HandledMotionEventArgs (Gdk.EventMotion eventButton)
 		{
-
+			this.EventMotion = eventButton;
 		}
+	}
 
-		public void Start (DockNotebookTab element, EventMotion evnt)
-		{
-			Content = element;
-			Progress = 1.0f;
-			int x = (int)evnt.X;
-			Offset = x - element.Allocation.X;
-			X = x - Offset;
-			LastX = (int)evnt.X;
-		}
+	class HandledButtonEventArgs : EventArgs
+	{
+		public bool Handled { get; set; }
+		public int X => (int)EventButton.X;
+		public int Y => (int)EventButton.Y;
+		public Gdk.EventType EventType => EventButton.Type;
+		public int Button => (int) EventButton.Button;
 
-		public void Cancel ()
-		{
-			Content = null;
-		}
+		public readonly Gdk.EventButton EventButton;
 
-		public void Reset ()
+		public HandledButtonEventArgs (Gdk.EventButton eventButton)
 		{
-			Cancel ();
-			X = 0;
+			this.EventButton = eventButton;
 		}
 	}
 }

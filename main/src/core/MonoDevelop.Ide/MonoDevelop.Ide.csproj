@@ -9652,6 +9652,8 @@
     <Compile Include="MonoDevelop.Ide.Gui.Components\BuildOutputProcessor.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookTabButton.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DragDockNotebookTabManager.cs" />
+    <Compile Include="MonoDevelop.Components\CanvasElement.cs" />
+    <Compile Include="MonoDevelop.Components\EventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

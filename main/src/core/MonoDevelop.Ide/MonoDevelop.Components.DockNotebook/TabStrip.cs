@@ -58,8 +58,6 @@ namespace MonoDevelop.Components.DockNotebook
 		readonly DragDockNotebookTabManager dragManager;
 		readonly DockNotebook notebook;
 		DockNotebookTab highlightedTab;
-		bool overCloseButton;
-		bool buttonPressedOnTab;
 		int tabStartX, tabEndX;
 		bool isActiveNotebook;
 
@@ -257,6 +255,11 @@ namespace MonoDevelop.Components.DockNotebook
 			tab.AccessibilityPressCloseButton += OnAccessibilityPressCloseButton;
 			tab.AccessibilityShowMenu += OnAccessibilityShowMenu;
 
+			tab.MouseButtonPress += Tab_MouseLeftButtonPress;
+			tab.NeedsRedraw += Tab_NeedsRedraw;
+			tab.MouseMove += Tab_MouseMove;
+			tab.PopupEvent += Tab_PopupEvent;
+
 			QueueResize ();
 
 			UpdateAccessibilityTabs ();
@@ -270,6 +273,11 @@ namespace MonoDevelop.Components.DockNotebook
 			tab.AccessibilityPressCloseButton -= OnAccessibilityPressCloseButton;
 			tab.AccessibilityShowMenu -= OnAccessibilityShowMenu;
 
+			tab.MouseButtonPress -= Tab_MouseLeftButtonPress;
+			tab.NeedsRedraw -= Tab_NeedsRedraw;
+			tab.MouseMove -= Tab_MouseMove;
+			tab.PopupEvent -= Tab_PopupEvent;
+
 			Accessible.RemoveAccessibleElement (tab.Accessible);
 
 			tab.Dispose ();
@@ -278,6 +286,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 			UpdateAccessibilityTabs ();
 		}
+
 
 		void PageReorderedHandler (DockNotebookTab tab, int oldPlacement, int newPlacement)
 		{
@@ -417,11 +426,13 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 		}
 
+		DockNotebookTab lastTabItemFocused;
 		PlaceholderWindow placeholderWindow;
 		bool mouseHasLeft;
 
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
+			InformFocusedChanged (null);
 			if (dragManager.IsDragging && placeholderWindow == null && !mouseHasLeft)
 				mouseHasLeft = true;
 			return base.OnLeaveNotifyEvent (evnt);
@@ -439,7 +450,6 @@ namespace MonoDevelop.Components.DockNotebook
 
 			placeholderWindow.Destroyed += delegate {
 				placeholderWindow = null;
-				buttonPressedOnTab = false;
 			};
 		}
 
@@ -453,8 +463,69 @@ namespace MonoDevelop.Components.DockNotebook
 			return alloc;
 		}
 
+		void InformFocusedChanged (DockNotebookTab element)
+		{
+			if (lastTabItemFocused != null) {
+				if (element != lastTabItemFocused) {
+					lastTabItemFocused?.OnMouseLeave (EventArgs.Empty);
+					element?.OnMouseEnter (EventArgs.Empty);
+					lastTabItemFocused = element;
+				}
+			} else {
+				element?.OnMouseEnter (EventArgs.Empty);
+				lastTabItemFocused = element;
+				return;
+			}
+		}
+
+		void Tab_PopupEvent (object sender, HandledButtonEventArgs e)
+		{
+			var t = (DockNotebookTab)sender;
+			DockNotebook.ActiveNotebook = notebook;
+			notebook.CurrentTab = t;
+			notebook.DoPopupMenu (notebook, t.Index, e.EventButton);
+		}
+
+		bool buttonPressedOnTab;
+
+		void Tab_MouseMove (object sender, HandledMotionEventArgs e)
+		{
+			if (!dragManager.IsDragging) {
+				SetHighlightedTab ((DockNotebookTab)sender);
+			}
+		}
+
+		void Tab_MouseLeftButtonPress (object sender, HandledButtonEventArgs e)
+		{
+			if (e.EventType == EventType.TwoButtonPress) {
+				notebook.OnActivateTab ((DockNotebookTab)sender);
+				buttonPressedOnTab = true;
+				e.Handled = true;
+				return;
+			}
+
+			if (e.Button == 2) {
+				notebook.OnCloseTab ((DockNotebookTab)sender);
+				e.Handled = true;
+				return;
+			}
+
+			DockNotebook.ActiveNotebook = notebook;
+			buttonPressedOnTab = true;
+			notebook.CurrentTab = (DockNotebookTab)sender;
+			e.Handled = true;
+		}
+
+		void Tab_NeedsRedraw (object sender, EventArgs e)
+		{
+			QueueDraw ();
+		}
+
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
+			var t = FindTab ((int)evnt.X, (int)evnt.Y);
+			InformFocusedChanged (t);
+
 			if (dragManager.IsDragging && mouseHasLeft) {
 				var sr = GetScreenRect ();
 				sr.Height = BarHeight;
@@ -479,36 +550,31 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 
 			if (!dragManager.IsDragging) {
-				var t = FindTab ((int)evnt.X, (int)evnt.Y);
-
+				
 				// If the user clicks and drags on the 'x' which closes the current
 				// tab we can end up with a null tab here
 				if (t == null) {
 					TooltipText = null;
 					return base.OnMotionNotifyEvent (evnt);
 				}
-				SetHighlightedTab (t);
 
-				var newOver = t.IsOverCloseButton ((int)evnt.X, (int)evnt.Y);
-				if (newOver != overCloseButton) {
-					overCloseButton = newOver;
-					QueueDraw ();
-				}
-				if (!overCloseButton && !dragManager.IsDragging && buttonPressedOnTab) {
-					dragManager.Start (t);
+				var args = new HandledMotionEventArgs (evnt);
+				t.OnInternalMotionNotifyEvent (args);
+				if (args.Handled)
+					return true;
+
+				if (buttonPressedOnTab) {
+					dragManager.Start (t, evnt);
 					mouseHasLeft = false;
-					dragManager.Progress = 1.0f;
-					int x = (int)evnt.X;
-					dragManager.Offset = x - t.Allocation.X;
-					dragManager.X = x - dragManager.Offset;
-					dragManager.LastX = (int)evnt.X;
-				} else if (t != null)
+				} else if (t != null){
 					newTooltip = t.Tooltip;
+				}
+
 			} else if (evnt.State.HasFlag (ModifierType.Button1Mask)) {
+				//we are dragging and button is pressed
 				dragManager.X = (int)evnt.X - dragManager.Offset;
 				QueueDraw ();
 
-				var t = FindTab ((int)evnt.X, (int)TabPadding.Top + 3);
 				if (t == null) {
 					var last = (DockNotebookTab)notebook.Tabs.Last ();
 					if (dragManager.X > last.Allocation.Right)
@@ -540,43 +606,23 @@ namespace MonoDevelop.Components.DockNotebook
 			return base.OnMotionNotifyEvent (evnt);
 		}
 
-		bool overCloseOnPress;
-		bool allowDoubleClick;
-
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			var t = FindTab ((int)evnt.X, (int)evnt.Y);
+			InformFocusedChanged (t);
+
 			if (t != null) {
 				if (evnt.IsContextMenuButton ()) {
-					DockNotebook.ActiveNotebook = notebook;
-					notebook.CurrentTab = t;
-					notebook.DoPopupMenu (notebook, t.Index, evnt);
-					return true;
-				}
-				// Don't select the tab if we are clicking the close button
-				if (t.IsOverCloseButton ((int)evnt.X, (int)evnt.Y)) {
-					overCloseOnPress = true;
-					return true;
-				}
-				overCloseOnPress = false;
-
-				if (evnt.Type == EventType.TwoButtonPress) {
-					if (allowDoubleClick) {
-						notebook.OnActivateTab (t);
-						buttonPressedOnTab = false;
-					}
-					return true;
-				}
-				if (evnt.Button == 2) {
-					notebook.OnCloseTab (t);
+					t.OnInternalPopupEvent (new HandledButtonEventArgs (evnt));
 					return true;
 				}
 
-				DockNotebook.ActiveNotebook = notebook;
-				buttonPressedOnTab = true;
-				notebook.CurrentTab = t;
-				return true;
+				var eventArgs = new HandledButtonEventArgs (evnt);
+				t.OnInternalButtonPressEvent (eventArgs);
+				if (eventArgs.Handled == true)
+					return true;
 			}
+
 			buttonPressedOnTab = true;
 			QueueDraw ();
 			return base.OnButtonPressEvent (evnt);
@@ -591,23 +637,27 @@ namespace MonoDevelop.Components.DockNotebook
 				return base.OnButtonReleaseEvent (evnt);
 			}
 
-			if (!dragManager.IsDragging && overCloseOnPress) {
-				var t = FindTab ((int)evnt.X, (int)evnt.Y);
-				if (t != null && t.IsOverCloseButton ((int)evnt.X, (int)evnt.Y)) {
-					notebook.OnCloseTab (t);
-					allowDoubleClick = false;
+			var t = FindTab ((int)evnt.X, (int)evnt.Y);
+			InformFocusedChanged (t);
+
+			if (t != null){
+				var eventArgs = new HandledButtonEventArgs (evnt);
+				t.OnInternalButtonReleaseEvent (eventArgs);
+				if (eventArgs.Handled == true)
 					return true;
-				}
 			}
-			overCloseOnPress = false;
-			allowDoubleClick = true;
-			if (dragManager.X != 0)
-				this.Animate ("EndDrag",
-					f => dragManager.Progress = f,
-					1.0d,
-					0.0d,
-					easing: Easing.CubicOut,
-				              finished: (f, a) => dragManager.Cancel ());
+
+			if (dragManager.IsDragging) {
+				if (dragManager.X != 0)
+					this.Animate ("EndDrag",
+						f => dragManager.Progress = f,
+						1.0d,
+						0.0d,
+						easing: Easing.CubicOut,
+								  finished: (f, a) => dragManager.Cancel ());
+				QueueDraw ();
+			}
+
 			QueueDraw ();
 			return base.OnButtonReleaseEvent (evnt);
 		}
@@ -921,8 +971,6 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			// Cancel drag operations and animations
 			buttonPressedOnTab = false;
-			overCloseOnPress = false;
-			allowDoubleClick = true;
 			dragManager.Reset ();
 			this.AbortAnimation ("EndDrag");
 			base.OnUnrealized ();
@@ -945,16 +993,6 @@ namespace MonoDevelop.Components.DockNotebook
 					return tab;
 			}
 			return null;
-		}
-
-		internal bool IsElementHovered (DockNotebookTab element) 
-		{
-			return tracker.Hovered && element.Allocation.Contains (tracker.MousePosition);
-		}
-
-		internal bool IsElementHovered (DockNotebookTabButton element)
-		{
-			return tracker.Hovered && element.Allocation.Contains (tracker.MousePosition);
 		}
 
 		public void Update ()
@@ -1077,7 +1115,7 @@ namespace MonoDevelop.Components.DockNotebook
 			void OnDraw (Context ctx, TabStrip tabStrip)
 			{
 				int tabArea = tabStrip.tabEndX - tabStrip.tabStartX;
-				int x = tabStrip.GetRenderOffset ();
+				int x = GetRenderOffset (tabStrip);
 				const int y = 0;
 				int n = 0;
 				Action<Context> drawActive = null;
@@ -1129,8 +1167,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 					if (focused) {
 						if (tabStrip.currentFocusCloseButton) {
-							var closeButton = tab.GetCloseButton ();
-							focusRect = closeButton.Allocation;
+							focusRect = tab.GetButton (DockNotebookTab.CloseButtonIdentifier).Allocation;
 						} else {
 							focusRect = new Gdk.Rectangle (tab.Allocation.X + 5, tab.Allocation.Y + 10, tab.Allocation.Width - 30, tab.Allocation.Height - 15);
 						}

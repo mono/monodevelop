@@ -4,7 +4,7 @@
 // Author:
 //       Jose Medrano <josmed@microsoft.com>
 //
-// Copyright (c) 2014 Microsoft Corp. (http://microsoft.com)
+// Copyright (c) 2017 Microsoft Corp. (http://microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,17 +35,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.DockNotebook
 {
-	static class CairoExtensions
-	{
-		public static Gdk.Rectangle ToGdkRectangle (this Cairo.Rectangle rectangle) {
-			return new Gdk.Rectangle ((int)rectangle.X,
-			                          (int)rectangle.Y,
-			                          (int)rectangle.Width,
-									  (int)rectangle.Height);
-		}
-	}
-
-	class DockNotebookTabButton : IDisposable
+	class DockNotebookTabButton : CanvasElement, IDisposable
 	{
 		internal static Xwt.Drawing.Image tabDirtyImage = Xwt.Drawing.Image.FromResource ("tab-dirty-9.png");
 		internal static Xwt.Drawing.Image tabCloseImage = Xwt.Drawing.Image.FromResource ("tab-close-9.png");
@@ -58,9 +48,9 @@ namespace MonoDevelop.Components.DockNotebook
 		internal AtkCocoaHelper.AccessibilityElementProxy AccessibilityElement { get; private set; }
 		readonly DockNotebookTab tab;
 
-
-		internal event EventHandler<string> Pressed;
-		internal event EventHandler<string> ShowMenu;
+		internal event EventHandler Pressed;
+		internal event EventHandler Released;
+		internal event EventHandler ShowMenu;
 
 		internal string Identifier => AccessibilityElement.Identifier;
 
@@ -92,12 +82,22 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			this.tab = tab;
 			AccessibilityElement = AccessibilityElementProxy.ButtonElementProxy ();
-			AccessibilityElement.PerformPress += OnPressCloseButton;
+			AccessibilityElement.PerformPress += OnButtonPressEvent;
 			AccessibilityElement.SetRole (AtkCocoa.Roles.AXButton);
 			AccessibilityElement.GtkParent = parent;
 			AccessibilityElement.PerformShowMenu += OnCloseButtonShowMenu;
 			AccessibilityElement.Title = title;
 			AccessibilityElement.Identifier = identifier;
+		}
+
+		protected override void OnButtonPressEvent (object sender, EventArgs args)
+		{
+			Pressed?.Invoke (this, args);
+		}
+
+		protected override void OnButtonReleaseEvent (object sender, EventArgs args)
+		{
+			Released?.Invoke (this, args);
 		}
 
 		internal void OnTabTextChanged (string text)
@@ -110,20 +110,15 @@ namespace MonoDevelop.Components.DockNotebook
 			AccessibilityElement.Title = string.Format (Core.GettextCatalog.GetString ("Close {0}"), text);
 		}
 
-		void OnPressCloseButton (object sender, EventArgs args)
-		{
-			Pressed?.Invoke (this, AccessibilityElement.Identifier);
-		}
-
 		void OnCloseButtonShowMenu (object sender, EventArgs args)
 		{
-			ShowMenu?.Invoke (this, AccessibilityElement.Identifier);
+			ShowMenu?.Invoke (this, args);
 		}
 
 		public void Dispose ()
 		{
 			AccessibilityElement.PerformShowMenu -= OnCloseButtonShowMenu;
-			AccessibilityElement.PerformPress -= OnPressCloseButton;
+			AccessibilityElement.PerformPress -= OnButtonPressEvent;
 		}
 
 		internal class CairoDockNotebookTabButtonRenderer
@@ -133,7 +128,7 @@ namespace MonoDevelop.Components.DockNotebook
 				//TODO: This is not correct set from a render
 				button.Allocation = buttonAllocation.InflateRect (2, 2);
 
-				bool isButtonHovered = tabStrip.IsElementHovered (button);
+				bool isButtonHovered = button.IsHovered;
 				if (!isButtonHovered && tab.DirtyStrength > 0.5) {
 					ctx.DrawImage (tabStrip, tabDirtyImage, buttonAllocation.X, buttonAllocation.Y);
 					return;

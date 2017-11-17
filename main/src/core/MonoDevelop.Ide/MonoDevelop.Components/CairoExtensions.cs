@@ -55,6 +55,14 @@ namespace MonoDevelop.Components
 			return new Cairo.Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
+		public static Gdk.Rectangle ToGdkRect (this Cairo.Rectangle rect)
+		{
+			return new Gdk.Rectangle ((int)rect.X,
+									  (int)rect.Y,
+									  (int)rect.Width,
+									  (int)rect.Height);
+		}
+
         public static Surface CreateSurfaceForPixbuf (Context cr, Pixbuf pixbuf)
         {
 			Surface surface;
