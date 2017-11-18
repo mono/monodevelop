@@ -1,10 +1,10 @@
 ﻿//
 // BuildOutputTests.cs
 //
-// Author:
+// // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2017 
+// Copyright (c) 2017 Microsoft Corp. (http://microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +23,40 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using NUnit.Framework;
+using MonoDevelop.Ide.BuildOutputView;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Editor;
+
 namespace MonoDevelop.Ide
 {
-	public class BuildOutputTests
+	public class BuildOutputTests : IdeTestBase
 	{
-		public BuildOutputTests ()
+		[Test]
+		public void ProgressMonitor_Instantiation ()
 		{
+			var bo = new BuildOutput ();
+			Assert.AreEqual (bo.GetProgressMonitor (), bo.GetProgressMonitor ());
+		}
+
+		[Test]
+		public void CustomProject_ToTextEditor ()
+		{
+			var bo = new BuildOutput ();
+			var monitor = bo.GetProgressMonitor ();
+
+			monitor.LogObject (new ProjectStartedProgressEvent ());
+			monitor.Log.Write ("Custom project built");
+			monitor.LogObject (new ProjectFinishedProgressEvent ());
+
+			var editor = TextEditorFactory.CreateNewEditor ();
+			var result = bo.ToTextEditor (editor, true);
+
+			Assert.That (result.Item1, Is.Not.Empty);
+			Assert.That (result.Item1, Contains.Substring ("Custom project built"));
+			Assert.NotNull (result.Item2);
 		}
 	}
 }
