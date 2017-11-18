@@ -36,15 +36,20 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutput
 	{
+		BuildOutputProgressMonitor progressMonitor;
 		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
 
 		public BuildOutput ()
 		{
 		}
 
-		public ProgressMonitor CreateProgressMonitor ()
+		public ProgressMonitor GetProgressMonitor ()
 		{
-			return new BuildOutputProgressMonitor (this);
+			if (progressMonitor == null) {
+				progressMonitor = new BuildOutputProgressMonitor (this);
+			}
+
+			return progressMonitor;
 		}
 
 		public void Load (string filePath)

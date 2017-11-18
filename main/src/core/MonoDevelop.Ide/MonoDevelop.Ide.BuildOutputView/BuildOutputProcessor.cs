@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputProcessor
 	{
-		List<BuildOutputNode> rootNodes;
+		List<BuildOutputNode> rootNodes = new List<BuildOutputNode> ();
 		BuildOutputNode currentNode;
 
 		public BuildOutputProcessor (string fileName)
