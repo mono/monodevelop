@@ -47,13 +47,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			Editor.LineShown += Editor_LineShown;
+			Editor.LineShowing += Editor_LineShowing;
 			Editor.TextChanged += Editor_TextChanged;
 		}
 
 		public override void Dispose ()
 		{
-			Editor.LineShown -= Editor_LineShown;
+			Editor.LineShowing -= Editor_LineShowing;
 			Editor.TextChanged -= Editor_TextChanged;
 			src.Cancel ();
 			DisposeUrlTextMarker ();
@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			scannedSegmentTree.Clear ();
 		}
 
-		void Editor_LineShown (object sender, LineEventArgs e)
+		void Editor_LineShowing (object sender, LineEventArgs e)
 		{
 			var matches = new List<Tuple<UrlType, Match>> ();
 			var input = Editor;
