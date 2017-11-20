@@ -267,7 +267,9 @@ namespace MonoDevelop.DotNetCore.Tests
 			var solution = result.WorkspaceItems.FirstOrDefault () as Solution;
 			await solution.SaveAsync (Util.GetMonitor ());
 
-			RunMSBuild ($"/t:Restore {solution.FileName}");
+			// RestoreDisableParallel prevents parallel restores which sometimes cause
+			// the restore to fail on Mono.
+			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true {solution.FileName}");
 			RunMSBuild ($"/t:Build {solution.FileName}");
 		}
 

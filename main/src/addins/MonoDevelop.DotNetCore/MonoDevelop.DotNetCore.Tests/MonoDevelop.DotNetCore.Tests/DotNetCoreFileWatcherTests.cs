@@ -52,11 +52,32 @@ namespace MonoDevelop.DotNetCore.Tests
 			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			project = solution.GetAllProjects ().Single () as DotNetProject;
 
+			CreateNuGetConfigFile (solution.BaseDirectory);
+
 			Assert.AreEqual (0, project.Files.Count);
 
 			RunMSBuild ($"/t:Restore {solution.FileName}");
 
 			return project;
+		}
+
+		/// <summary>
+		/// Clear all other package sources and just use the main NuGet package source when
+		/// restoring the packages for the project temlate tests.
+		/// </summary>
+		void CreateNuGetConfigFile (FilePath directory)
+		{
+			var fileName = directory.Combine ("NuGet.Config");
+
+			string xml =
+				"<configuration>\r\n" +
+				"  <packageSources>\r\n" +
+				"    <clear />\r\n" +
+				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
+				"  </packageSources>\r\n" +
+				"</configuration>";
+
+			File.WriteAllText (fileName, xml);
 		}
 
 		void RunMSBuild (string arguments)
