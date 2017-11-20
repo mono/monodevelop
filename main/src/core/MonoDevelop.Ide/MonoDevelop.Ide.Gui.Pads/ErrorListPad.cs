@@ -62,7 +62,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		HPaned control;
 		ScrolledWindow sw;
 		PadTreeView view;
-		BuildOutput outputView;
+		BuildOutputViewContent buildOutputViewContent;
+		BuildOutput buildOutput;
 		TreeStore store;
 		TreeModelFilter filter;
 		TreeModelSort sort;
@@ -75,7 +76,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		int errorCount;
 		int warningCount;
 		int infoCount;
-		bool initialLogShow = true;
 
 		Menu menu;
 		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
@@ -89,8 +89,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public readonly ConfigurationProperty<bool> ShowErrors = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowErrors", true);
 		public readonly ConfigurationProperty<bool> ShowWarnings = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowWarnings", true);
 		public readonly ConfigurationProperty<bool> ShowMessages = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowMessages", true);
-		public readonly ConfigurationProperty<double> LogSeparatorPosition = ConfigurationProperty.Create ("SharpDevelop.TaskList.LogSeparatorPosition", 0.5d);
-		//public readonly ConfigurationProperty<bool> OutputViewVisible = ConfigurationProperty.Create ("SharpDevelop.TaskList.OutputViewVisible", false);
 
 		static class DataColumns
 		{
@@ -206,8 +204,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logBtnLbl.Text = GettextCatalog.GetString ("Build Output");
 			logBtn.Accessible.SetTitle (logBtnLbl.Text);
 
-			logBtn.Clicked += HandleLogBtnToggled;
+			logBtn.Clicked += HandleLogBtnClicked;
 			toolbar.Add (logBtn);
+
+			buildOutput = new BuildOutput ();
 
 			//Dummy widget to take all space between "Build Output" button and SearchEntry
 			var spacer = new HBox ();
@@ -287,13 +287,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			control.Add1 (sw);
 
-			outputView = new BuildOutput ();
-
 			control.ShowAll ();
-
-			control.SizeAllocated += HandleControlSizeAllocated;
-
-			sw.SizeAllocated += HandleSwSizeAllocated;
 
 			// Load existing tasks
 			foreach (TaskListEntry t in TaskService.Errors) {
@@ -314,29 +308,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			base.Dispose ();
 		}
 
-		void HandleSwSizeAllocated (object o, SizeAllocatedArgs args)
-		{
-			if (!initialLogShow && outputView.Visible) {
-				var val = (double)((double)control.Position / (double)control.Allocation.Width);
-				LogSeparatorPosition.Value = val;
-			}
-		}
-
-		[GLib.ConnectBefore]
-		void HandleControlSizeAllocated (object o, SizeAllocatedArgs args)
-		{
-			if (initialLogShow && outputView.Visible) {
-				SetInitialOutputViewSize (args.Allocation.Width);
-				initialLogShow = false;
-			}
-		}
-
 		public ProgressMonitor GetBuildProgressMonitor ()
 		{ 
 			if (control == null)
 				CreateControl ();
-
-			return outputView.GetProgressMonitor ();
+			
+			return buildOutput.GetProgressMonitor ();
 		}
 
 		void HandleTaskServiceErrorsCurrentLocationTaskChanged (object sender, EventArgs e)
@@ -1039,28 +1016,19 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		internal void FocusOutputView ()
 		{
-			HandleLogBtnToggled (this, EventArgs.Empty);
+			HandleLogBtnClicked (this, EventArgs.Empty);
 		}
 
 		Document documentOutput;
-		void HandleLogBtnToggled (object sender, EventArgs e)
+		void HandleLogBtnClicked (object sender, EventArgs e)
 		{
 			var file = new FilePath (@"msbuild.binlog");
-			outputView.Load (file);
-			if (initialLogShow && control.IsRealized) {
+			buildOutput.Load (file);
+			if (control.IsRealized) {
+				buildOutputViewContent = new BuildOutputViewContent (buildOutput);
 				//TODO: we have to check whether the doc is already open or not
-				var buildOutputViewContent = new BuildOutputViewContent (outputView);
 				documentOutput = IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
-				SetInitialOutputViewSize (control.Allocation.Width);
 			} 
-		}
-		
-		void SetInitialOutputViewSize (int controlWidth)
-		{
-			double relPos = LogSeparatorPosition;
-			int pos = (int) (controlWidth * relPos);
-			pos = Math.Max (30, Math.Min (pos, controlWidth - 30));
-			control.Position = pos;
 		}
 
 		class DescriptionCellRendererText : CellRendererText
