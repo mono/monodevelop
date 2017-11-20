@@ -42,6 +42,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			control = new BuildOutputWidget (filename);
 		}
 
+		public BuildOutputViewContent (BuildOutput buildOutput)
+		{
+			control = new BuildOutputWidget (buildOutput);
+		}
+
 		public override Control Control {
 			get {
 				return control;

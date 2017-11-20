@@ -53,6 +53,7 @@ using MonoDevelop.Components.AtkCocoaHelper;
 using System.Linq;
 using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
+using MonoDevelop.Ide.BuildOutputView;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -61,11 +62,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		HPaned control;
 		ScrolledWindow sw;
 		PadTreeView view;
-		LogView outputView;
+		BuildOutput outputView;
 		TreeStore store;
 		TreeModelFilter filter;
 		TreeModelSort sort;
-		ToggleButton errorBtn, warnBtn, msgBtn, logBtn;
+		ToggleButton errorBtn, warnBtn, msgBtn;
+		Button logBtn;
 		Label errorBtnLbl, warnBtnLbl, msgBtnLbl, logBtnLbl;
 		SearchEntry searchEntry;
 		string currentSearchPattern = null;
@@ -88,7 +90,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public readonly ConfigurationProperty<bool> ShowWarnings = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowWarnings", true);
 		public readonly ConfigurationProperty<bool> ShowMessages = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowMessages", true);
 		public readonly ConfigurationProperty<double> LogSeparatorPosition = ConfigurationProperty.Create ("SharpDevelop.TaskList.LogSeparatorPosition", 0.5d);
-		public readonly ConfigurationProperty<bool> OutputViewVisible = ConfigurationProperty.Create ("SharpDevelop.TaskList.OutputViewVisible", false);
+		//public readonly ConfigurationProperty<bool> OutputViewVisible = ConfigurationProperty.Create ("SharpDevelop.TaskList.OutputViewVisible", false);
 
 		static class DataColumns
 		{
@@ -124,6 +126,26 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		ToggleButton MakeButton (string image, string name, bool active, out Label label)
 		{
+			var btnBox = MakeHBox (image, out label);
+
+			var btn = new ToggleButton { Name = name, Active = active };
+			btn.Child = btnBox;
+
+			return btn;
+		} 
+
+		Button MakeButton (string image, string name, out Label label) 
+		{
+			var btnBox = MakeHBox (image, out label);
+
+			var btn = new Button { Name = name };
+			btn.Child = btnBox;
+
+			return btn;
+		}
+
+		HBox MakeHBox (string image, out Label label)
+		{
 			var btnBox = new HBox (false, 2);
 			btnBox.Accessible.SetShouldIgnore (true);
 			var imageView = new ImageView (image, Gtk.IconSize.Menu);
@@ -134,11 +156,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			label.Accessible.SetShouldIgnore (true);
 			btnBox.PackStart (label);
 
-			var btn = new ToggleButton { Name = name };
-			btn.Active = active;
-			btn.Child = btnBox;
-
-			return btn;
+			return btnBox;
 		}
 
 		protected override void Initialize (IPadWindow window)
@@ -180,7 +198,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sep.Accessible.SetShouldIgnore (true);
 			toolbar.Add (sep);
 
-			logBtn = MakeButton ("md-message-log", "toggleBuildOutput", false, out logBtnLbl);
+			logBtn = MakeButton ("md-message-log", "toggleBuildOutput", out logBtnLbl);
 			logBtn.Accessible.Name = "ErrorPad.LogButton";
 			logBtn.TooltipText = GettextCatalog.GetString ("Show build output");
 			logBtn.Accessible.Description = GettextCatalog.GetString ("Show build output");
@@ -188,7 +206,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logBtnLbl.Text = GettextCatalog.GetString ("Build Output");
 			logBtn.Accessible.SetTitle (logBtnLbl.Text);
 
-			logBtn.Toggled += HandleLogBtnToggled;
+			logBtn.Clicked += HandleLogBtnToggled;
 			toolbar.Add (logBtn);
 
 			//Dummy widget to take all space between "Build Output" button and SearchEntry
@@ -269,20 +287,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			control.Add1 (sw);
 
-			outputView = new LogView { Name = "buildOutput" };
-			control.Add2 (outputView);
+			outputView = new BuildOutput ();
 
 			control.ShowAll ();
 
 			control.SizeAllocated += HandleControlSizeAllocated;
-
-			bool outputVisible = OutputViewVisible;
-			if (outputVisible) {
-				outputView.Visible = true;
-				logBtn.Active = true;
-			} else {
-				outputView.Hide ();
-			}
 
 			sw.SizeAllocated += HandleSwSizeAllocated;
 
@@ -290,8 +299,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			foreach (TaskListEntry t in TaskService.Errors) {
 				AddTask (t);
 			}
-
-			control.FocusChain = new Gtk.Widget [] { outputView };
 		}
 
 		public override void Dispose ()
@@ -325,9 +332,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		}
 
 		public ProgressMonitor GetBuildProgressMonitor ()
-		{
+		{ 
 			if (control == null)
 				CreateControl ();
+
 			return outputView.GetProgressMonitor ();
 		}
 
@@ -1031,20 +1039,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		internal void FocusOutputView ()
 		{
-			logBtn.Active = true;
 			HandleLogBtnToggled (this, EventArgs.Empty);
 		}
-		
+
+		Document documentOutput;
 		void HandleLogBtnToggled (object sender, EventArgs e)
 		{
-			var visible = logBtn.Active;
-			OutputViewVisible.Value = visible;
-			outputView.Visible = visible;
-			
-			if (initialLogShow && visible && control.IsRealized) {
-				initialLogShow = false;
+			var file = new FilePath (@"msbuild.binlog");
+			outputView.Load (file);
+			if (initialLogShow && control.IsRealized) {
+				//TODO: we have to check whether the doc is already open or not
+				var buildOutputViewContent = new BuildOutputViewContent (outputView);
+				documentOutput = IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
 				SetInitialOutputViewSize (control.Allocation.Width);
-			}
+			} 
 		}
 		
 		void SetInitialOutputViewSize (int controlWidth)

@@ -39,6 +39,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		BuildOutputProgressMonitor progressMonitor;
 		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
 
+		public bool Visible { get; internal set; }
+
 		public BuildOutput ()
 		{
 		}
