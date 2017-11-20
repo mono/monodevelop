@@ -498,9 +498,8 @@ namespace MonoDevelop.Projects
 
 							if (!ownerProject.CanReferenceProject (p, out reason))
 								return reason;
-						} else {
-							return GettextCatalog.GetString ("Assembly not found");
-						}
+						} else 
+							return GettextCatalog.GetString ("Project not found");
 					}
 				} else if (ReferenceType == ReferenceType.Assembly) {
 					if (!File.Exists (hintPath))
