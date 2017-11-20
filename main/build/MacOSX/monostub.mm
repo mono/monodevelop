@@ -238,6 +238,7 @@ correct_locale(void)
 
 	setenv("MONODEVELOP_STUB_LANGUAGE", [preferredLanguage UTF8String], 1);
 	setenv("LANGUAGE", [preferredLanguage UTF8String], 1);
+	setenv("LC_CTYPE", [preferredLanguage UTF8String], 1);
 }
 
 static void
