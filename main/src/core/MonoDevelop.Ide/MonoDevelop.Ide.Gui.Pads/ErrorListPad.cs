@@ -53,6 +53,7 @@ using MonoDevelop.Components.AtkCocoaHelper;
 using System.Linq;
 using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
+using MonoDevelop.Ide.BuildOutputView;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -61,11 +62,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		HPaned control;
 		ScrolledWindow sw;
 		PadTreeView view;
-		LogView outputView;
+		BuildOutputViewContent buildOutputViewContent;
+		BuildOutput buildOutput;
 		TreeStore store;
 		TreeModelFilter filter;
 		TreeModelSort sort;
-		ToggleButton errorBtn, warnBtn, msgBtn, logBtn;
+		ToggleButton errorBtn, warnBtn, msgBtn;
+		Button logBtn;
 		Label errorBtnLbl, warnBtnLbl, msgBtnLbl, logBtnLbl;
 		SearchEntry searchEntry;
 		string currentSearchPattern = null;
@@ -73,7 +76,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		int errorCount;
 		int warningCount;
 		int infoCount;
-		bool initialLogShow = true;
 
 		Menu menu;
 		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
@@ -87,8 +89,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public readonly ConfigurationProperty<bool> ShowErrors = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowErrors", true);
 		public readonly ConfigurationProperty<bool> ShowWarnings = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowWarnings", true);
 		public readonly ConfigurationProperty<bool> ShowMessages = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowMessages", true);
-		public readonly ConfigurationProperty<double> LogSeparatorPosition = ConfigurationProperty.Create ("SharpDevelop.TaskList.LogSeparatorPosition", 0.5d);
-		public readonly ConfigurationProperty<bool> OutputViewVisible = ConfigurationProperty.Create ("SharpDevelop.TaskList.OutputViewVisible", false);
 
 		static class DataColumns
 		{
@@ -124,6 +124,26 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		ToggleButton MakeButton (string image, string name, bool active, out Label label)
 		{
+			var btnBox = MakeHBox (image, out label);
+
+			var btn = new ToggleButton { Name = name, Active = active };
+			btn.Child = btnBox;
+
+			return btn;
+		} 
+
+		Button MakeButton (string image, string name, out Label label) 
+		{
+			var btnBox = MakeHBox (image, out label);
+
+			var btn = new Button { Name = name };
+			btn.Child = btnBox;
+
+			return btn;
+		}
+
+		HBox MakeHBox (string image, out Label label)
+		{
 			var btnBox = new HBox (false, 2);
 			btnBox.Accessible.SetShouldIgnore (true);
 			var imageView = new ImageView (image, Gtk.IconSize.Menu);
@@ -134,11 +154,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			label.Accessible.SetShouldIgnore (true);
 			btnBox.PackStart (label);
 
-			var btn = new ToggleButton { Name = name };
-			btn.Active = active;
-			btn.Child = btnBox;
-
-			return btn;
+			return btnBox;
 		}
 
 		protected override void Initialize (IPadWindow window)
@@ -180,7 +196,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sep.Accessible.SetShouldIgnore (true);
 			toolbar.Add (sep);
 
-			logBtn = MakeButton ("md-message-log", "toggleBuildOutput", false, out logBtnLbl);
+			logBtn = MakeButton ("md-message-log", "toggleBuildOutput", out logBtnLbl);
 			logBtn.Accessible.Name = "ErrorPad.LogButton";
 			logBtn.TooltipText = GettextCatalog.GetString ("Show build output");
 			logBtn.Accessible.Description = GettextCatalog.GetString ("Show build output");
@@ -188,8 +204,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logBtnLbl.Text = GettextCatalog.GetString ("Build Output");
 			logBtn.Accessible.SetTitle (logBtnLbl.Text);
 
-			logBtn.Toggled += HandleLogBtnToggled;
+			logBtn.Clicked += HandleLogBtnClicked;
 			toolbar.Add (logBtn);
+
+			buildOutput = new BuildOutput ();
 
 			//Dummy widget to take all space between "Build Output" button and SearchEntry
 			var spacer = new HBox ();
@@ -269,29 +287,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			control.Add1 (sw);
 
-			outputView = new LogView { Name = "buildOutput" };
-			control.Add2 (outputView);
-
 			control.ShowAll ();
-
-			control.SizeAllocated += HandleControlSizeAllocated;
-
-			bool outputVisible = OutputViewVisible;
-			if (outputVisible) {
-				outputView.Visible = true;
-				logBtn.Active = true;
-			} else {
-				outputView.Hide ();
-			}
-
-			sw.SizeAllocated += HandleSwSizeAllocated;
 
 			// Load existing tasks
 			foreach (TaskListEntry t in TaskService.Errors) {
 				AddTask (t);
 			}
-
-			control.FocusChain = new Gtk.Widget [] { outputView };
 		}
 
 		public override void Dispose ()
@@ -307,28 +308,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			base.Dispose ();
 		}
 
-		void HandleSwSizeAllocated (object o, SizeAllocatedArgs args)
-		{
-			if (!initialLogShow && outputView.Visible) {
-				var val = (double)((double)control.Position / (double)control.Allocation.Width);
-				LogSeparatorPosition.Value = val;
-			}
-		}
-
-		[GLib.ConnectBefore]
-		void HandleControlSizeAllocated (object o, SizeAllocatedArgs args)
-		{
-			if (initialLogShow && outputView.Visible) {
-				SetInitialOutputViewSize (args.Allocation.Width);
-				initialLogShow = false;
-			}
-		}
-
 		public ProgressMonitor GetBuildProgressMonitor ()
-		{
+		{ 
 			if (control == null)
 				CreateControl ();
-			return outputView.GetProgressMonitor ();
+			
+			return buildOutput.GetProgressMonitor ();
 		}
 
 		void HandleTaskServiceErrorsCurrentLocationTaskChanged (object sender, EventArgs e)
@@ -1031,28 +1016,19 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		internal void FocusOutputView ()
 		{
-			logBtn.Active = true;
-			HandleLogBtnToggled (this, EventArgs.Empty);
+			HandleLogBtnClicked (this, EventArgs.Empty);
 		}
-		
-		void HandleLogBtnToggled (object sender, EventArgs e)
+
+		Document documentOutput;
+		void HandleLogBtnClicked (object sender, EventArgs e)
 		{
-			var visible = logBtn.Active;
-			OutputViewVisible.Value = visible;
-			outputView.Visible = visible;
-			
-			if (initialLogShow && visible && control.IsRealized) {
-				initialLogShow = false;
-				SetInitialOutputViewSize (control.Allocation.Width);
-			}
-		}
-		
-		void SetInitialOutputViewSize (int controlWidth)
-		{
-			double relPos = LogSeparatorPosition;
-			int pos = (int) (controlWidth * relPos);
-			pos = Math.Max (30, Math.Min (pos, controlWidth - 30));
-			control.Position = pos;
+			var file = new FilePath (@"msbuild.binlog");
+			buildOutput.Load (file);
+			if (control.IsRealized) {
+				buildOutputViewContent = new BuildOutputViewContent (buildOutput);
+				//TODO: we have to check whether the doc is already open or not
+				documentOutput = IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
+			} 
 		}
 
 		class DescriptionCellRendererText : CellRendererText
