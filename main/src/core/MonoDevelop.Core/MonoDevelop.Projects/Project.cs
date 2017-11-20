@@ -3935,12 +3935,7 @@ namespace MonoDevelop.Projects
 
 		void OnFileDeletedExternally (string fileName)
 		{
-			if (Directory.Exists (fileName)) {
-				// Ensures directory is removed from Solution window.
-				FileService.NotifyFileRemoved (fileName);
-			} else {
-				Files.Remove (fileName);
-			}
+			Files.Remove (fileName);
 		}
 
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)
