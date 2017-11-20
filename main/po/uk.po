@@ -1407,7 +1407,7 @@ msgstr "Середовище виконання"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:346
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:121
 msgid "Security"
-msgstr ""
+msgstr "Безпека"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:354
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:527
@@ -5176,12 +5176,12 @@ msgstr "Назва конфігурації коректна"
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:290
 msgid "Version"
-msgstr ""
+msgstr "Версія"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:76
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:274
 msgid "License"
-msgstr ""
+msgstr "Ліцензія"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:93
 msgid "Privacy Statement"
@@ -5190,7 +5190,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:107
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:86
 msgid "Copyright"
-msgstr ""
+msgstr "Авторське право"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs:51
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:98
@@ -6125,11 +6125,11 @@ msgstr "Додати"
 #, fuzzy
 msgid ""
 "This key combination is already bound to command '{0}' in the same context"
-msgstr ""
+msgstr "Це сполучення клавіш вже пов'язане з командою '{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:616
 msgid "This key combination is already bound to command '{0}'"
-msgstr ""
+msgstr "Це сполучення клавіш вже пов'язане з командою '{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:808
 #, fuzzy
@@ -9766,7 +9766,7 @@ msgstr "Дивись також:"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:135
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:65
 msgid "Target Framework"
-msgstr ""
+msgstr "Цільовий фреймворк"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:144
 #, fuzzy
@@ -13519,7 +13519,7 @@ msgstr "Файли VB .NET"
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:33
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:96
 msgid "General Options"
-msgstr ""
+msgstr "Загальні параметри"
 
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:36
 msgid "Imports"
@@ -13562,7 +13562,7 @@ msgstr "Параметри..."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:102
 msgid "ChangeLog entries can't be generated."
-msgstr ""
+msgstr "Не вдалось створити записи в журналі змін."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:104
 msgid "Configure user data"
@@ -13593,11 +13593,11 @@ msgstr "Натисніть кнопку 'Детальніше', щоб отри�
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:124
 msgid "The following ChangeLog file will be updated:"
-msgstr ""
+msgstr "Буде оновлено такий файл журналу змін:"
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:129
 msgid "{0} ChangeLog files will be updated."
-msgstr ""
+msgstr "{0} журналів змін буде оновлено."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:120
 msgid "{0} ChangeLog file not found. Some changes will not be logged."
@@ -19777,15 +19777,15 @@ msgstr "Цільова платформа:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:44
 msgid "<b>_Replace with source file</b>"
-msgstr ""
+msgstr "<b>_Замінити джерельним файлом</b>"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:45
 msgid "<b>_Keep existing target file</b>"
-msgstr ""
+msgstr "<b>_Зберегти наявний цільовий файл</b>"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:46
 msgid "<b>Use the _newest file</b>"
-msgstr ""
+msgstr "<b>Використати _найновіший файл</b>"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:88
 msgid "Replace existing file?"
@@ -20894,11 +20894,11 @@ msgstr "Префікс"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:160
 msgid "<b>Registered Schema</b>"
-msgstr ""
+msgstr "<b>Зареєстрована схема</b>"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:172
 msgid "<b>Default File Associations</b>"
-msgstr ""
+msgstr "<b>Стандартні відповідності файлів</b>"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:434
 msgid "Schema '{0}' could not be loaded."
@@ -22029,7 +22029,7 @@ msgstr "Протокол SSL:"
 
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:137
 msgid "SSL Key"
-msgstr ""
+msgstr "Ключ SSL"
 
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:140
 msgid "Key type:"
@@ -23232,7 +23232,7 @@ msgstr "мс"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:101
 msgid "Advanced options"
-msgstr ""
+msgstr "Розширені параметри"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:103
 msgid "Enable diagnostic logging"
@@ -23294,7 +23294,7 @@ msgstr "_Показати лише мій код."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1047
 msgid "<b>{0}</b> has been thrown"
-msgstr ""
+msgstr "Було кинуто <b>{0}</b>"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs:22
 msgid "Value Visualizer"
@@ -23828,6 +23828,9 @@ msgid ""
 "listed above.\n"
 "If you do not agree to the license terms click <b>Decline</b>."
 msgstr ""
+"Натиснувши \"Гаразд\" ви погодитесь з ліцензійними вимогами для перелічених "
+"нижче пакунків.\n"
+"Якщо ви не згодні з ліцензійними вимогами, клацніть \"Скасувати\"."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:83
 #, fuzzy
