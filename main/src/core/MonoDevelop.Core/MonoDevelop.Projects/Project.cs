@@ -3893,7 +3893,7 @@ namespace MonoDevelop.Projects
 			});
 		}
 
-		void OnFileCreated (Object sender, FileSystemEventArgs e)
+		void OnFileCreated (object sender, FileSystemEventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine ("Created {0}", e.FullPath);
 
@@ -3905,7 +3905,7 @@ namespace MonoDevelop.Projects
 			});
 		}
 
-		void OnFileDeleted (Object sender, FileSystemEventArgs e)
+		void OnFileDeleted (object sender, FileSystemEventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine ("Deleted {0}", e.FullPath);
 
