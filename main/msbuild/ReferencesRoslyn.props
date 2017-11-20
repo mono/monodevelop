@@ -45,10 +45,6 @@
       <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.VisualBasic.$(NuGetVersionRoslyn)\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
       <Private>$(ReferencesRoslynCopyToOutput)</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.EditorFeatures">
-      <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.EditorFeatures.$(NuGetVersionRoslyn)\lib\net46\Microsoft.CodeAnalysis.VisualBasic.EditorFeatures.dll</HintPath>
-      <Private>$(ReferencesRoslynCopyToOutput)</Private>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Features">
       <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.VisualBasic.Features.$(NuGetVersionRoslyn)\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.Features.dll</HintPath>
       <Private>$(ReferencesRoslynCopyToOutput)</Private>
