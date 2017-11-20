@@ -345,7 +345,7 @@ msgstr "关闭项目"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:135
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:65
 msgid "Target Framework"
-msgstr ""
+msgstr "目标框架"
 
 #: ../src/addins/MonoDevelop.DotNetCore/gtk-gui/MonoDevelop.DotNetCore.Gui.GtkDotNetCoreProjectTemplateWizardPageWidget.cs:97
 msgid "Target Framework:"
@@ -535,7 +535,7 @@ msgstr "程序集"
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:290
 msgid "Version"
-msgstr ""
+msgstr "版本"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:429
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:662
@@ -4456,12 +4456,12 @@ msgstr "布局名称有效"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:76
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:274
 msgid "License"
-msgstr ""
+msgstr "许可证"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:107
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:86
 msgid "Copyright"
-msgstr ""
+msgstr "版权"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs:66
 msgid "Failed to load version information."
@@ -5145,7 +5145,7 @@ msgstr "查看冲突"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:616
 msgid "This key combination is already bound to command '{0}'"
-msgstr ""
+msgstr "此组合键已绑定到命令“{0}”"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:71
 msgid "Scheme:"
@@ -6326,7 +6326,7 @@ msgstr "运行时"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:346
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:121
 msgid "Security"
-msgstr ""
+msgstr "安全性"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:354
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:527
@@ -11228,7 +11228,7 @@ msgstr "VB.NET 文件"
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:33
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:96
 msgid "General Options"
-msgstr ""
+msgstr "常规选项"
 
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:36
 msgid "Imports"
@@ -11271,7 +11271,7 @@ msgstr "选项..."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:102
 msgid "ChangeLog entries can't be generated."
-msgstr ""
+msgstr "无法生成 ChangeLog 条目。"
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:104
 msgid "Configure user data"
@@ -11298,11 +11298,11 @@ msgstr "单击“详细信息”按钮以获取详细信息。"
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:124
 msgid "The following ChangeLog file will be updated:"
-msgstr ""
+msgstr "将更新以下 ChangeLog 文件:"
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:129
 msgid "{0} ChangeLog files will be updated."
-msgstr ""
+msgstr "将更新 {0} 个 ChangeLog 文件。"
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:120
 msgid "{0} ChangeLog file not found. Some changes will not be logged."
@@ -16865,15 +16865,15 @@ msgstr "目标平台:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:44
 msgid "<b>_Replace with source file</b>"
-msgstr ""
+msgstr "<b>替换为源文件(_R)</b>"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:45
 msgid "<b>_Keep existing target file</b>"
-msgstr ""
+msgstr "<b>保存现有目标文件(_K)</b>"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:46
 msgid "<b>Use the _newest file</b>"
-msgstr ""
+msgstr "<b>使用最新文件(_N)</b>"
 
 #  set the label properties
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:88
@@ -17959,15 +17959,15 @@ msgstr "前缀"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:160
 msgid "<b>Registered Schema</b>"
-msgstr ""
+msgstr "<b>已注册架构</b>"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:172
 msgid "<b>Default File Associations</b>"
-msgstr ""
+msgstr "<b>默认文件关联</b>"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:434
 msgid "Schema '{0}' could not be loaded."
-msgstr ""
+msgstr "无法加载架构“{0}”。"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:442
 msgid "Schema '{0}' has no target namespace."
@@ -18850,7 +18850,7 @@ msgstr "SSL 协议:"
 
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:137
 msgid "SSL Key"
-msgstr ""
+msgstr "SSL 密钥"
 
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:140
 msgid "Key type:"
@@ -19912,7 +19912,7 @@ msgstr "ms"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:101
 msgid "Advanced options"
-msgstr ""
+msgstr "高级选项"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:103
 msgid "Enable diagnostic logging"
@@ -19933,7 +19933,7 @@ msgstr "[外部代码#92;"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1047
 msgid "<b>{0}</b> has been thrown"
-msgstr ""
+msgstr "<b>{0}</b> 被引发"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs:22
 msgid "Value Visualizer"
@@ -23217,7 +23217,7 @@ msgstr "视图(板)"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:609
 msgid ""
 "This key combination is already bound to command '{0}' in the same context"
-msgstr ""
+msgstr "此组合键已与同一上下文中的命令“{0}”绑定"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:808
 msgid "Conflicts:"
@@ -24135,7 +24135,7 @@ msgstr "取消退出应用程序"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:93
 msgid "Privacy Statement"
-msgstr ""
+msgstr "隐私声明"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs:81
 msgid ""
@@ -24762,6 +24762,8 @@ msgid ""
 "listed above.\n"
 "If you do not agree to the license terms click <b>Decline</b>."
 msgstr ""
+"单击“接受”<b></b>即表示同意上文列出的包许可条款。\n"
+"如果不同意许可条款，请单击“拒绝”<b></b>。"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:83
 msgid "Decline"
