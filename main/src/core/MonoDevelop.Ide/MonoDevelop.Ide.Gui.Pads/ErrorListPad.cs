@@ -1022,13 +1022,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Document documentOutput;
 		void HandleLogBtnClicked (object sender, EventArgs e)
 		{
-			var file = new FilePath (@"msbuild.binlog");
-			buildOutput.Load (file);
-			if (control.IsRealized) {
-				buildOutputViewContent = new BuildOutputViewContent (buildOutput);
-				//TODO: we have to check whether the doc is already open or not
-				documentOutput = IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
-			} 
+			buildOutputViewContent = new BuildOutputViewContent (buildOutput);
+			//TODO: we have to check whether the doc is already open or not
+			documentOutput = IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
 		}
 
 		class DescriptionCellRendererText : CellRendererText
