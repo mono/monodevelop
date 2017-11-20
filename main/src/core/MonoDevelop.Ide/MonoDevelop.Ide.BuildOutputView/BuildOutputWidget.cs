@@ -39,15 +39,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 	{
 		TextEditor editor;
 		CompactScrolledWindow scrolledWindow;
+		CheckButton showDiagnosticsButton;
 
-		public BuildOutput BuildOutput { get; }
+		public BuildOutput BuildOutput { get; private set; }
 
 		public BuildOutputWidget (BuildOutput output)
 		{
 			Initialize ();
 
-			BuildOutput = output;
-			ProcessLogs (false);
+			SetupBuildOutput (output);
 		}
 
 		public BuildOutputWidget (FilePath filePath)
@@ -56,14 +56,28 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			editor.FileName = filePath;
 
-			BuildOutput = new BuildOutput ();
-			BuildOutput.Load (filePath.FullPath);
+			var output = new BuildOutput ();
+			output.Load (filePath.FullPath);
+			SetupBuildOutput (output);
+		}
+
+		void SetupBuildOutput (BuildOutput output)
+		{
+			BuildOutput = output;
 			ProcessLogs (false);
+
+			BuildOutput.OutputChanged += (sender, e) => {
+				if (Runtime.IsMainThread) {
+					ProcessLogs (showDiagnosticsButton.Active);
+				} else {
+					Runtime.RunInMainThread (() => ProcessLogs (showDiagnosticsButton.Active));
+				}
+			};
 		}
 
 		void Initialize ()
 		{
-			var showDiagnosticsButton = new CheckButton (GettextCatalog.GetString ("Show Diagnostics")) {
+			showDiagnosticsButton = new CheckButton (GettextCatalog.GetString ("Show Diagnostics")) {
 				BorderWidth = 0
 			};
 			showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);

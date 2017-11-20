@@ -39,9 +39,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		BuildOutputProgressMonitor progressMonitor;
 		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
 
-		public BuildOutput ()
-		{
-		}
+		public event EventHandler OutputChanged;
 
 		public ProgressMonitor GetProgressMonitor ()
 		{
@@ -77,6 +75,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			projects.Add (processor); 
 		}
 
+		internal void RaiseOutputChanged ()
+		{
+			OutputChanged?.Invoke (this, EventArgs.Empty);
+		}
+
 		public (string, IList<IFoldSegment>) ToTextEditor (TextEditor editor, bool includeDiagnostics)
 		{
 			var buildOutput = new StringBuilder ();
@@ -84,7 +87,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			foreach (var p in projects) {
 				p.Process ();
-				var (s, l) = p.ToTextEditor (editor, includeDiagnostics);
+				var (s, l) = p.ToTextEditor (editor, includeDiagnostics, buildOutput.Length);
 				if (s.Length > 0) {
 					buildOutput.Append (s);
 					if (l.Count > 0) {
@@ -125,6 +128,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					currentCustomProject.EndCurrentNode (null);
 				}
 				currentCustomProject = null;
+				BuildOutput.RaiseOutputChanged ();
 				break;
 			}
 		}

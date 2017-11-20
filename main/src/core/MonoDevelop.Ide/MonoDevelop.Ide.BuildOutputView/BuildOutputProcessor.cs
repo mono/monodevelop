@@ -112,10 +112,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 		                              int tabPosition,
 		                              StringBuilder buildOutput,
 		                              List<IFoldSegment> segments,
-		                              bool includeDiagnostics)
+		                              bool includeDiagnostics,
+		                              int startAtOffset)
 		{
 			foreach (var child in children) {
-				ProcessNode (editor, child, tabPosition + 1, buildOutput, segments, includeDiagnostics); 
+				ProcessNode (editor, child, tabPosition + 1, buildOutput, segments, includeDiagnostics, startAtOffset); 
 			}
 		}
 
@@ -124,7 +125,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		                          int tabPosition,
 		                          StringBuilder buildOutput,
 		                          List<IFoldSegment> segments,
-		                          bool includeDiagnostics)
+		                          bool includeDiagnostics,
+		                          int startAtOffset)
 		{
 			if (!includeDiagnostics && node.NodeType == BuildOutputNodeType.Diagnostics) {
 				return;
@@ -138,22 +140,22 @@ namespace MonoDevelop.Ide.BuildOutputView
 			buildOutput.Append (node.Message);
 
 			if (node.Children.Count > 0) {
-				ProcessChildren (editor, node.Children, tabPosition, buildOutput, segments, includeDiagnostics);
+				ProcessChildren (editor, node.Children, tabPosition, buildOutput, segments, includeDiagnostics, startAtOffset);
 
-				segments.Add (FoldSegmentFactory.CreateFoldSegment (editor, currentPosition, buildOutput.Length - currentPosition,
+				segments.Add (FoldSegmentFactory.CreateFoldSegment (editor, startAtOffset + currentPosition, buildOutput.Length - currentPosition,
 				                                                    node.Parent != null && !node.HasErrors,
 				                                                    node.Message,
 																	FoldingType.Region));
 			}
 		}
 
-		public (string, IList<IFoldSegment>) ToTextEditor (TextEditor editor, bool includeDiagnostics)
+		public (string, IList<IFoldSegment>) ToTextEditor (TextEditor editor, bool includeDiagnostics, int startAtOffset)
 		{
 			var buildOutput = new StringBuilder ();
 			var foldingSegments = new List<IFoldSegment> ();
 
 			foreach (var node in rootNodes) {
-				ProcessNode (editor, node, 0, buildOutput, foldingSegments, includeDiagnostics);
+				ProcessNode (editor, node, 0, buildOutput, foldingSegments, includeDiagnostics, startAtOffset);
 			}
 
 			return (buildOutput.ToString (), foldingSegments);
