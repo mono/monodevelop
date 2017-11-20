@@ -44,6 +44,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core;
 using MonoDevelop.PackageManagement;
+using System.Text;
 
 namespace MonoDevelop.UnitTesting.NUnit
 {
@@ -68,6 +69,16 @@ namespace MonoDevelop.UnitTesting.NUnit
 			this.project = project;
 			project.NameChanged += OnProjectRenamed;
 			IdeApp.ProjectOperations.EndBuild += OnProjectBuilt;
+			CheckReferencesErrors ();
+		}
+
+		void CheckReferencesErrors()
+		{
+			var errorReferenceCollection = project.References.Where (reference => !string.IsNullOrEmpty (reference.ValidationErrorMessage))
+			                                      			 .ToList ();
+			var stringBuilder = new StringBuilder ();
+			errorReferenceCollection.ForEach (reference => stringBuilder.AppendLine($"{reference.Reference}:{reference.ValidationErrorMessage}"));
+			ReferenceErrorMessage += stringBuilder.ToString ();
 		}
 
 		protected override async Task OnBuild ()

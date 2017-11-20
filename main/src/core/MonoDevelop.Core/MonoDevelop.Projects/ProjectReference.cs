@@ -498,6 +498,8 @@ namespace MonoDevelop.Projects
 
 							if (!ownerProject.CanReferenceProject (p, out reason))
 								return reason;
+						} else {
+							return GettextCatalog.GetString ("Assembly not found");
 						}
 					}
 				} else if (ReferenceType == ReferenceType.Assembly) {
@@ -628,7 +630,7 @@ namespace MonoDevelop.Projects
 		
 		void UpdatePackageReference ()
 		{
-			if (referenceType == ReferenceType.Package && ownerProject != null) {
+			if ((referenceType == ReferenceType.Package || referenceType == ReferenceType.Project) && ownerProject != null) {
 				notFound = false;
 				string cref = AssemblyContext.FindInstalledAssembly (reference, package, ownerProject.TargetFramework);
 				if (cref == null)

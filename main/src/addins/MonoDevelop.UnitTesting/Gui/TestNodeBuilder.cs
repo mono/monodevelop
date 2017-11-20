@@ -77,6 +77,13 @@ namespace MonoDevelop.UnitTesting
 			var title = RemoveGenericArgument (test.Title);
 			title =  test.Title + singleTestSuffix ;
 
+			if (!string.IsNullOrEmpty (test.ReferenceErrorMessage)) {
+				nodeInfo.Label = Ambience.EscapeText (title);
+				nodeInfo.StatusMessage = test.ReferenceErrorMessage;
+				nodeInfo.StatusSeverity = Ide.Tasks.TaskSeverity.Warning;
+				return;
+			}
+
 			if (test.Status == TestStatus.Running) {
 				nodeInfo.Label = Ambience.EscapeText (title);
 				return;
