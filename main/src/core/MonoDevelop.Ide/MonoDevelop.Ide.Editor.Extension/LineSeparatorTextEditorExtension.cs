@@ -47,18 +47,18 @@ namespace MonoDevelop.Ide.Editor.Extension
 		protected override void Initialize ()
 		{
 			DocumentContext.DocumentParsed += DocumentContext_DocumentParsed;
+			DefaultSourceEditorOptions.Instance.Changed += OptionsChanged;
 			OptionsChanged (this, EventArgs.Empty);
 		}
 
 		void EnableExtension ()
 		{
-			DefaultSourceEditorOptions.Instance.Changed += OptionsChanged;
 			enabled = true;
+			DocumentContext.ReparseDocument ();
 		}
 
 		void DisableExtension ()
 		{
-			DefaultSourceEditorOptions.Instance.Changed -= OptionsChanged;
 			RemoveMarkers ();
 			enabled = false;
 		}
@@ -85,6 +85,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			src.Cancel ();
 			src = new CancellationTokenSource ();
+			if (!enabled)
+				return;
 			var token = src.Token;
 
 			var lineSeparatorService = DocumentContext?.RoslynWorkspace?.Services.GetLanguageServices (LanguageNames.CSharp).GetService<ILineSeparatorService> ();
