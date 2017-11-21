@@ -1031,15 +1031,46 @@ namespace MonoDevelop.Components.DockNotebook
 
 		void Draw (Context ctx)
 		{
+			var allocation = Allocation;
+			var tabsData = CalculateTabs (allocation);
+
+			// background image based in preview tabs
+			ctx.DrawImage (this, tabbarBackImage.WithSize (allocation.Width, allocation.Height), 0, 0);
+
+			// Draw breadcrumb bar header
+//			if (notebook.Tabs.Count > 0) {
+//				ctx.Rectangle (0, allocation.Height - BottomBarPadding, allocation.Width, BottomBarPadding);
+//				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor);
+//				ctx.Fill ();
+//			}
+
+			ctx.Rectangle (tabStartX - LeanWidth / 2, allocation.Y, tabsData.tabArea + LeanWidth, allocation.Height);
+			ctx.Clip ();
+
+			foreach (var cmd in tabsData.drawCommands)
+				cmd (ctx);
+
+			ctx.ResetClip ();
+
+			// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
+			tabsData.drawActive?.Invoke (ctx);
+
+			if (HasFocus) {
+				Gtk.Style.PaintFocus (Style, GdkWindow, State, tabsData.focusRect, this, "tab", tabsData.focusRect.X, tabsData.focusRect.Y, tabsData.focusRect.Width, tabsData.focusRect.Height);
+			}
+		}
+
+		(int tabArea, List<Action<Context>> drawCommands, Action<Context> drawActive, Gdk.Rectangle focusRect) CalculateTabs (Gdk.Rectangle allocation)
+		{
+			Action<Context> drawActive = null;
+			var drawCommands = new List<Action<Context>> ();
+			Gdk.Rectangle focusRect = Gdk.Rectangle.Zero;
+
 			int tabArea = tabEndX - tabStartX;
 			int x = GetRenderOffset ();
 			const int y = 0;
+
 			int n = 0;
-			Action<Context> drawActive = null;
-			var drawCommands = new List<Action<Context>> ();
-
-			Gdk.Rectangle focusRect = new Gdk.Rectangle (0, 0, 0, 0);
-
 			for (; n < notebook.Tabs.Count; n++) {
 				if (x + TabWidth < tabStartX) {
 					x += TabWidth;
@@ -1089,34 +1120,10 @@ namespace MonoDevelop.Components.DockNotebook
 				x += width;
 			}
 
-			var allocation = Allocation;
 			int tabWidth;
 			drawCommands.Add (DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, allocation.Height), out tabWidth));
 			drawCommands.Reverse ();
-
-			ctx.DrawImage (this, tabbarBackImage.WithSize (allocation.Width, allocation.Height), 0, 0);
-
-			// Draw breadcrumb bar header
-//			if (notebook.Tabs.Count > 0) {
-//				ctx.Rectangle (0, allocation.Height - BottomBarPadding, allocation.Width, BottomBarPadding);
-//				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor);
-//				ctx.Fill ();
-//			}
-
-			ctx.Rectangle (tabStartX - LeanWidth / 2, allocation.Y, tabArea + LeanWidth, allocation.Height);
-			ctx.Clip ();
-
-			foreach (var cmd in drawCommands)
-				cmd (ctx);
-
-			ctx.ResetClip ();
-
-			// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
-			drawActive?.Invoke (ctx);
-
-			if (HasFocus) {
-				Gtk.Style.PaintFocus (Style, GdkWindow, State, focusRect, this, "tab", focusRect.X, focusRect.Y, focusRect.Width, focusRect.Height);
-			}
+			return (tabArea, drawCommands, drawActive, focusRect);
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
