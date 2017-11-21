@@ -64,8 +64,8 @@ namespace MonoDevelop.Ide.Execution
 			propertyGrid.CommitPendingChanges ();
 			if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to clear all specified options?"), AlertButton.Clear))
 				return;
-			config = new MonoExecutionParameters ();
-			propertyGrid.CurrentObject = config;
+			config.ResetProperties ();
+			propertyGrid.Refresh ();
 		}
 	}
 }
