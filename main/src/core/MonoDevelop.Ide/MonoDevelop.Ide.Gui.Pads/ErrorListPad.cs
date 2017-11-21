@@ -1019,12 +1019,23 @@ namespace MonoDevelop.Ide.Gui.Pads
 			HandleLogBtnClicked (this, EventArgs.Empty);
 		}
 
-		Document documentOutput;
+		Document buildOutputDoc;
 		void HandleLogBtnClicked (object sender, EventArgs e)
 		{
-			buildOutputViewContent = new BuildOutputViewContent (buildOutput);
-			//TODO: we have to check whether the doc is already open or not
-			documentOutput = IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
+			if (buildOutputViewContent == null) {
+				buildOutputViewContent = new BuildOutputViewContent (buildOutput);
+				buildOutputDoc = IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
+				buildOutputDoc.Closed += BuildOutputDocClosed;
+			} else if (buildOutputDoc != null) {
+				buildOutputDoc.Select ();
+			}
+		}
+
+		void BuildOutputDocClosed (object sender, EventArgs e)
+		{
+			buildOutputViewContent.Dispose ();
+			buildOutputViewContent = null;
+			buildOutputDoc = null;
 		}
 
 		class DescriptionCellRendererText : CellRendererText

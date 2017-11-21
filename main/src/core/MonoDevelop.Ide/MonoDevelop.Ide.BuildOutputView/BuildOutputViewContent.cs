@@ -76,5 +76,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return filename.FileName ?? GettextCatalog.GetString ("Build Output");
 			}
 		}
+
+		public override void Dispose ()
+		{
+			control.Dispose ();
+		}
 	}
 }
