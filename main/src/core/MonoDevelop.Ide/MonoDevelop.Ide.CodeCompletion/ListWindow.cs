@@ -557,17 +557,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return KeyActions.CloseWindow | KeyActions.Process;
 			}
 
-
-			/*		//don't input letters/punctuation etc when non-shift modifiers are active
-					bool nonShiftModifierActive = ((Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask
-						| Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask)
-						& modifier) != 0;
-					if (nonShiftModifierActive) {
-						if (modifier.HasFlag (Gdk.ModifierType.ControlMask) && char.IsLetterOrDigit ((char)key))
-							return KeyActions.Process | KeyActions.CloseWindow;
-						return KeyActions.Ignore;
-					}*/
-
+			if ((char.IsWhiteSpace(descriptor.KeyChar) || char.IsPunctuation(descriptor.KeyChar)) && SelectedItem == null)
+				return KeyActions.CloseWindow | KeyActions.Process;
 
 			return KeyActions.Process;
 		}
