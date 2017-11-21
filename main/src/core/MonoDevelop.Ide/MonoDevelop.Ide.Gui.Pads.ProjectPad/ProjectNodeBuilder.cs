@@ -63,6 +63,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.Workspace.FilePropertyChangedInProject += OnFilePropertyChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += IdeAppWorkspaceActiveConfigurationChanged;
 			FileService.FileRemoved += OnSystemFileDeleted;
+			FileService.FileCreated += OnSystemFileCreated;
 		}
 
 		public override void Dispose ()
@@ -73,6 +74,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.Workspace.FilePropertyChangedInProject -= OnFilePropertyChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged -= IdeAppWorkspaceActiveConfigurationChanged;
 			FileService.FileRemoved -= OnSystemFileDeleted;
+			FileService.FileCreated -= OnSystemFileCreated;
 
 			base.Dispose ();
 		}
@@ -216,6 +218,30 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				foreach (var dir in dirs) {
 					if (tb.MoveToObject (new ProjectFolder (dir, p)) && tb.MoveToParent ())
 						tb.UpdateAll ();
+				}
+			}
+		}
+
+		void OnSystemFileCreated (object sender, FileEventArgs args)
+		{
+			if (!args.Any (f => f.IsDirectory))
+				return;
+
+			// When a folder is created, we need to refresh the parent if the folder was created externally.
+			ITreeBuilder tb = Context.GetTreeBuilder ();
+			var dirs = args.Where (d => d.IsDirectory).Select (d => d.FileName).ToArray ();
+
+			foreach (var p in IdeApp.Workspace.GetAllProjects ()) {
+				foreach (var dir in dirs) {
+					if (tb.MoveToObject (new ProjectFolder (dir, p))) {
+						if (tb.MoveToParent ())
+							tb.UpdateAll ();
+					} else if (tb.MoveToObject (new ProjectFolder (dir.ParentDirectory, p))) {
+						tb.UpdateAll ();
+					} else if (dir.ParentDirectory == p.BaseDirectory) {
+						if (tb.MoveToObject (p))
+							tb.UpdateAll ();
+					}
 				}
 			}
 		}
