@@ -241,6 +241,11 @@ namespace MonoDevelop.Ide.Gui
 			string logDomain = GLib.Marshaller.Utf8PtrToString (logDomainPtr);
 			string message, extra = string.Empty;
 			try {
+				// Marshal message manually, because the text can contain invalid UTF-8.
+				// Specifically, with zh_CN, pango fails to render some characters and
+				// pango's error message contains the broken UTF-8, thus on marshalling
+				// we need to catch the exception, otherwise we end up in a recursive
+				// glib exception handling.
 				message = GLib.Marshaller.Utf8PtrToString (messagePtr);
 			} catch (Exception e) {
 				message = "Failed to convert message";
