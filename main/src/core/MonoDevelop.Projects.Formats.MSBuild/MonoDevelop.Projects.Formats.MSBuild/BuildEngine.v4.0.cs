@@ -109,7 +109,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public bool BuildOperationStarted { get; set; }
 
-		void BeginBuildOperation (IEngineLogWriter logWriter, string binlogFilePath, MSBuildVerbosity verbosity, ProjectConfigurationInfo [] configurations)
+		void BeginBuildOperation (IEngineLogWriter logWriter, string binLogFilePath, MSBuildVerbosity verbosity, ProjectConfigurationInfo [] configurations)
 		{
 			// Start a new MSBuild build session, sending log to the provided writter
 
@@ -122,9 +122,9 @@ namespace MonoDevelop.Projects.MSBuild
 				sessionLogWriter = logWriter;
 				loggerAdapter = new MSBuildLoggerAdapter (logWriter, verbosity);
 
-				if (!string.IsNullOrEmpty (binlogFilePath)) {
+				if (!string.IsNullOrEmpty (binLogFilePath)) {
 					var binaryLogger = new BinaryLogger {
-						Parameters = binlogFilePath,
+						Parameters = binLogFilePath,
 						Verbosity = LoggerVerbosity.Diagnostic
 					};
 

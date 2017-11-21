@@ -220,16 +220,16 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			buildSessionLoggerId = RegisterLogger (monitor.Log, logger);
 			try {
-				var binlogPath = Path.ChangeExtension (Path.GetTempFileName (), "binlog");
+				var binLogPath = Path.ChangeExtension (Path.GetTempFileName (), "binlog");
 				await connection.SendMessage (new BeginBuildRequest {
-					BinlogFilePath = binlogPath,
+					BinLogFilePath = binLogPath,
 					LogWriterId = buildSessionLoggerId,
 					EnabledLogEvents = logger != null ? logger.EnabledEvents : MSBuildEvent.None,
 					Verbosity = verbosity,
 					Configurations = configurations
 				});
 
-				monitor.LogObject (new ProjectStartedProgressEvent { LogFile = binlogPath });
+				monitor.LogObject (new ProjectStartedProgressEvent { LogFile = binLogPath });
 			} catch {
 				UnregisterLogger (buildSessionLoggerId);
 				await CheckDisconnected ();
