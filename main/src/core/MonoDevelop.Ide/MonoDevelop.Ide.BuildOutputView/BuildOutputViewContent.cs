@@ -59,9 +59,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
+		public override bool IsFile {
+			get {
+				return System.IO.File.Exists (filename.FullPath);
+			}
+		}
+
+		public override bool IsViewOnly {
+			get {
+				return true;
+			}
+		}
+
 		public override string TabPageLabel {
 			get {
-				return filename.FileName;
+				return filename.FileName ?? GettextCatalog.GetString ("Build Output");
 			}
 		}
 	}
