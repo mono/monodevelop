@@ -257,17 +257,12 @@ namespace MonoDevelop.Components.DockNotebook
 		void PageAddedHandler (object sender, TabEventArgs args)
 		{
 			var tab = args.Tab;
-			if (tab.IsPreview) {
-				previewTabs.Add (tab);
-			} else {
-				normalTabs.Add (tab);
-			}
-
 			Accessible.AddAccessibleElement (tab.Accessible);
 
 			tab.AccessibilityPressTab += OnAccessibilityPressTab;
 			tab.AccessibilityPressCloseButton += OnAccessibilityPressCloseButton;
 			tab.AccessibilityShowMenu += OnAccessibilityShowMenu;
+			tab.ContentChanged += OnTabContentChanged;
 
 			QueueResize ();
 
@@ -278,15 +273,15 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			var tab = args.Tab;
 
-			if (tab.IsPreview) {
+			if (previewTabs.Contains (tab))
 				previewTabs.Remove (tab);
-			} else {
+			if (normalTabs.Contains (tab))
 				normalTabs.Remove (tab);
-			}
 
 			tab.AccessibilityPressTab -= OnAccessibilityPressTab;
 			tab.AccessibilityPressCloseButton -= OnAccessibilityPressCloseButton;
 			tab.AccessibilityShowMenu -= OnAccessibilityShowMenu;
+			tab.ContentChanged -= OnTabContentChanged;
 
 			Accessible.RemoveAccessibleElement (tab.Accessible);
 
@@ -295,6 +290,16 @@ namespace MonoDevelop.Components.DockNotebook
 			QueueResize ();
 
 			UpdateAccessibilityTabs ();
+		}
+
+		void OnTabContentChanged (object sender, EventArgs args)
+		{
+			var tab = (DockNotebookTab)sender;
+			if (tab.IsPreview) {
+				previewTabs.Add (tab);
+			} else {
+				normalTabs.Add (tab);
+			}
 		}
 
 		void PageReorderedHandler (DockNotebookTab tab, int oldPlacement, int newPlacement)

@@ -198,7 +198,7 @@ namespace MonoDevelop.Components.DockNotebook
 			set {
 				content = value;
 				notebook.ShowContent (this);
-				ContentChanged?.Invoke (this, new TabEventArgs () { Tab = this } );
+				ContentChanged?.Invoke (this, EventArgs.Empty);
 			}
 		}
 
