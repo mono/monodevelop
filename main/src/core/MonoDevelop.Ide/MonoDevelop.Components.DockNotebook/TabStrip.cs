@@ -272,12 +272,14 @@ namespace MonoDevelop.Components.DockNotebook
 				tab.AccessibilityShowMenu += OnAccessibilityShowMenu;
 			}
 
+			tab.ContentChanged += OnTabContentChanged;
+
 			if (tab.IsPreview) {
 				previewTabs.Add (tab);
 			} else {
 				normalTabs.Add (tab);
 			}
-
+			
 			QueueResize ();
 
 			UpdateAccessibilityTabs ();
@@ -295,17 +297,28 @@ namespace MonoDevelop.Components.DockNotebook
 				Accessible.RemoveAccessibleElement (tab.Accessible);
 			}
 
-			if (tab.IsPreview) {
+			tab.ContentChanged -= OnTabContentChanged;
+
+			if (previewTabs.Contains (tab))
 				previewTabs.Remove (tab);
-			} else {
+			if (normalTabs.Contains (tab))
 				normalTabs.Remove (tab);
-			}
 
 			tab.Dispose ();
 
 			QueueResize ();
 
 			UpdateAccessibilityTabs ();
+		}
+
+		void OnTabContentChanged (object sender, EventArgs args)
+		{
+			var tab = (DockNotebookTab)sender;
+			if (tab.IsPreview) {
+				previewTabs.Add (tab);
+			} else {
+				normalTabs.Add (tab);
+			}
 		}
 
 		void PageReorderedHandler (DockNotebookTab tab, int oldPlacement, int newPlacement)
