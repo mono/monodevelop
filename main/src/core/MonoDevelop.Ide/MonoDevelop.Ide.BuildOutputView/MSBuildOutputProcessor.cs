@@ -58,7 +58,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 			Clear ();
 			base.Process ();
 
-			binlogReader.Replay (FileName);
+			try {
+				binlogReader.Replay (FileName);
+			} catch (Exception) {
+			}
 		}
 
 		private void BinLog_BuildStarted (object sender, BuildStartedEventArgs e)
