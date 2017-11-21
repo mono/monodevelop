@@ -31,6 +31,7 @@ using Microsoft.Build.Execution;
 using System.Linq;
 using Microsoft.Build.Logging;
 using Microsoft.Build.Framework;
+using System;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -122,13 +123,17 @@ namespace MonoDevelop.Projects.MSBuild
 				loggerAdapter = new MSBuildLoggerAdapter (logWriter, verbosity);
 
 				if (!string.IsNullOrEmpty (binlogFilePath)) {
-					engine.RegisterLogger (new BinaryLogger {
+					var binaryLogger = new BinaryLogger {
 						Parameters = binlogFilePath,
 						Verbosity = LoggerVerbosity.Diagnostic
-					});
-				}
+					};
 
-				parameters.Loggers = loggerAdapter.Loggers;
+					var loggers = new List<ILogger> (loggerAdapter.Loggers);
+					loggers.Add (binaryLogger);
+					parameters.Loggers = loggers;
+				} else {
+					parameters.Loggers = loggerAdapter.Loggers;
+				}
 
 				BuildManager.DefaultBuildManager.BeginBuild (parameters);
 			});
