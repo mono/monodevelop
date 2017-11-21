@@ -357,7 +357,9 @@ namespace MonoDevelop.Projects.MSBuild
 				foreach (var b in builders.GetAllBuilders ())
 					if (b.BuildSessionId == session) {
 						b.BuildSessionId = null;
-						await b.EndBuildOperation ();
+
+						var sessionInfo = session as SessionInfo;
+						await b.EndBuildOperation (sessionInfo.Monitor);
 					}
 			}
 		}

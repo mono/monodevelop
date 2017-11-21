@@ -241,11 +241,13 @@ namespace MonoDevelop.Projects.MSBuild
 		/// Indicates that a build session has finished.
 		/// </summary>
 		/// <returns>The build operation.</returns>
-		public async Task EndBuildOperation ()
+		public async Task EndBuildOperation (ProgressMonitor monitor)
 		{
 			try {
 				await connection.SendMessage (new EndBuildRequest ());
 				await connection.ProcessPendingMessages ();
+
+				monitor.LogObject (new ProjectFinishedProgressEvent ());
 			} catch {
 				await CheckDisconnected ();
 				throw;
