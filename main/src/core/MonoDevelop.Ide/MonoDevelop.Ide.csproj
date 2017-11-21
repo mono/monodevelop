@@ -6733,6 +6733,42 @@
     <EmbeddedResource Include="icons\status-instrumentation-16~dark%402x.png">
       <LogicalName>status-instrumentation-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-preview-active.9.png">
+      <LogicalName>tabbar-preview-active.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-preview-active%402x.9.png">
+      <LogicalName>tabbar-preview-active@2x.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-preview-active~dark.9.png">
+      <LogicalName>tabbar-preview-active~dark.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-preview-active~dark%402x.9.png">
+      <LogicalName>tabbar-preview-active~dark@2x.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-preview-inactive.9.png">
+      <LogicalName>tabbar-preview-inactive.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-preview-inactive%402x.9.png">
+      <LogicalName>tabbar-preview-inactive@2x.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-preview-inactive~dark.9.png">
+      <LogicalName>tabbar-preview-inactive~dark.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-preview-inactive~dark%402x.9.png">
+      <LogicalName>tabbar-preview-inactive~dark@2x.9.png</LogicalName>
+    </EmbeddedResource>
+   <EmbeddedResource Include="resources\tabbar-preview-back.9.png">
+      <LogicalName>tabbar-preview-back.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-preview-back%402x.9.png">
+      <LogicalName>tabbar-preview-back@2x.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-preview-back~dark.9.png">
+      <LogicalName>tabbar-preview-back~dark.9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\tabbar-preview-back~dark%402x.9.png">
+      <LogicalName>tabbar-preview-back~dark@2x.9.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="resources\tabbar-back.9.png">
       <LogicalName>tabbar-back.9.png</LogicalName>
     </EmbeddedResource>
