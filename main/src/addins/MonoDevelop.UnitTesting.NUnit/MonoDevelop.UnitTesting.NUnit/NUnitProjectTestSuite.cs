@@ -74,7 +74,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 
 		void CheckReferencesErrors()
 		{
-			var errorReferenceCollection = project.References.Where (reference => !string.IsNullOrEmpty (reference.ValidationErrorMessage))
+			var errorReferenceCollection = project.References.Where (reference => !reference.IsValid)
 			                                      			 .ToList ();
 			var stringBuilder = new StringBuilder ();
 			errorReferenceCollection.ForEach (reference => stringBuilder.AppendLine($"{reference.Reference}:{reference.ValidationErrorMessage}"));
