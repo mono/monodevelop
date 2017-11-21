@@ -44,9 +44,16 @@ namespace MonoDevelop.Components.DockNotebook
 	{
 		static Xwt.Drawing.Image tabbarPrevImage = Xwt.Drawing.Image.FromResource ("tabbar-prev-12.png");
 		static Xwt.Drawing.Image tabbarNextImage = Xwt.Drawing.Image.FromResource ("tabbar-next-12.png");
+
 		static Xwt.Drawing.Image tabActiveBackImage = Xwt.Drawing.Image.FromResource ("tabbar-active.9.png");
 		static Xwt.Drawing.Image tabBackImage = Xwt.Drawing.Image.FromResource ("tabbar-inactive.9.png");
+
+		static Xwt.Drawing.Image tabPreviewActiveBackImage = Xwt.Drawing.Image.FromResource ("tabbar-preview-active.9.png");
+		static Xwt.Drawing.Image tabPreviewBackImage = Xwt.Drawing.Image.FromResource ("tabbar-preview-inactive.9.png");
+
 		static Xwt.Drawing.Image tabbarBackImage = Xwt.Drawing.Image.FromResource ("tabbar-back.9.png");
+		static Xwt.Drawing.Image tabbarPreviewBackImage = Xwt.Drawing.Image.FromResource ("tabbar-preview-back.9.png");
+
 		static Xwt.Drawing.Image tabCloseImage = Xwt.Drawing.Image.FromResource ("tab-close-9.png");
 		static Xwt.Drawing.Image tabDirtyImage = Xwt.Drawing.Image.FromResource ("tab-dirty-9.png");
 
@@ -81,6 +88,10 @@ namespace MonoDevelop.Components.DockNotebook
 		static readonly Xwt.WidgetSpacing TabActivePadding;
 		static readonly int LeftBarPadding = 44;
 		static readonly int RightBarPadding = 22;
+
+		List<DockNotebookTab> previewTabs = new List<DockNotebookTab> ();
+		List<DockNotebookTab> normalTabs = new List<DockNotebookTab> ();
+
 		static readonly int VerticalTextSize = 11;
 		const int TabSpacing = 0;
 		const int LeanWidth = 12;
@@ -246,12 +257,12 @@ namespace MonoDevelop.Components.DockNotebook
 		void PageAddedHandler (object sender, TabEventArgs args)
 		{
 			var tab = args.Tab;
-
 			Accessible.AddAccessibleElement (tab.Accessible);
 
 			tab.AccessibilityPressTab += OnAccessibilityPressTab;
 			tab.AccessibilityPressCloseButton += OnAccessibilityPressCloseButton;
 			tab.AccessibilityShowMenu += OnAccessibilityShowMenu;
+			tab.ContentChanged += OnTabContentChanged;
 
 			QueueResize ();
 
@@ -262,9 +273,15 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			var tab = args.Tab;
 
+			if (previewTabs.Contains (tab))
+				previewTabs.Remove (tab);
+			if (normalTabs.Contains (tab))
+				normalTabs.Remove (tab);
+
 			tab.AccessibilityPressTab -= OnAccessibilityPressTab;
 			tab.AccessibilityPressCloseButton -= OnAccessibilityPressCloseButton;
 			tab.AccessibilityShowMenu -= OnAccessibilityShowMenu;
+			tab.ContentChanged -= OnTabContentChanged;
 
 			Accessible.RemoveAccessibleElement (tab.Accessible);
 
@@ -273,6 +290,16 @@ namespace MonoDevelop.Components.DockNotebook
 			QueueResize ();
 
 			UpdateAccessibilityTabs ();
+		}
+
+		void OnTabContentChanged (object sender, EventArgs args)
+		{
+			var tab = (DockNotebookTab)sender;
+			if (tab.IsPreview) {
+				previewTabs.Add (tab);
+			} else {
+				normalTabs.Add (tab);
+			}
 		}
 
 		void PageReorderedHandler (DockNotebookTab tab, int oldPlacement, int newPlacement)
@@ -1021,15 +1048,46 @@ namespace MonoDevelop.Components.DockNotebook
 
 		void Draw (Context ctx)
 		{
+			var allocation = Allocation;
+			var tabsData = CalculateTabs (allocation);
+
+			// background image based in preview tabs
+			ctx.DrawImage (this, (previewTabs.Count > 0 ? tabbarPreviewBackImage : tabbarBackImage).WithSize (allocation.Width, allocation.Height), 0, 0);
+
+			// Draw breadcrumb bar header
+//			if (notebook.Tabs.Count > 0) {
+//				ctx.Rectangle (0, allocation.Height - BottomBarPadding, allocation.Width, BottomBarPadding);
+//				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor);
+//				ctx.Fill ();
+//			}
+
+			ctx.Rectangle (tabStartX - LeanWidth / 2, allocation.Y, tabsData.tabArea + LeanWidth, allocation.Height);
+			ctx.Clip ();
+
+			foreach (var cmd in tabsData.drawCommands)
+				cmd (ctx);
+
+			ctx.ResetClip ();
+
+			// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
+			tabsData.drawActive?.Invoke (ctx);
+
+			if (HasFocus) {
+				Gtk.Style.PaintFocus (Style, GdkWindow, State, tabsData.focusRect, this, "tab", tabsData.focusRect.X, tabsData.focusRect.Y, tabsData.focusRect.Width, tabsData.focusRect.Height);
+			}
+		}
+
+		(int tabArea, List<Action<Context>> drawCommands, Action<Context> drawActive, Gdk.Rectangle focusRect) CalculateTabs (Gdk.Rectangle allocation)
+		{
+			Action<Context> drawActive = null;
+			var drawCommands = new List<Action<Context>> ();
+			Gdk.Rectangle focusRect = Gdk.Rectangle.Zero;
+
 			int tabArea = tabEndX - tabStartX;
 			int x = GetRenderOffset ();
 			const int y = 0;
+
 			int n = 0;
-			Action<Context> drawActive = null;
-			var drawCommands = new List<Action<Context>> ();
-
-			Gdk.Rectangle focusRect = new Gdk.Rectangle (0, 0, 0, 0);
-
 			for (; n < notebook.Tabs.Count; n++) {
 				if (x + TabWidth < tabStartX) {
 					x += TabWidth;
@@ -1044,7 +1102,7 @@ namespace MonoDevelop.Components.DockNotebook
 				drawCommands.Add (cmd);
 				x += closingWidth;
 
-				var tab = (DockNotebookTab)notebook.Tabs [n];
+				var tab = notebook.Tabs [n];
 				bool active = tab == notebook.CurrentTab;
 				bool focused = (n == currentFocusTab);
 
@@ -1079,34 +1137,10 @@ namespace MonoDevelop.Components.DockNotebook
 				x += width;
 			}
 
-			var allocation = Allocation;
 			int tabWidth;
 			drawCommands.Add (DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, allocation.Height), out tabWidth));
 			drawCommands.Reverse ();
-
-			ctx.DrawImage (this, tabbarBackImage.WithSize (allocation.Width, allocation.Height), 0, 0);
-
-			// Draw breadcrumb bar header
-//			if (notebook.Tabs.Count > 0) {
-//				ctx.Rectangle (0, allocation.Height - BottomBarPadding, allocation.Width, BottomBarPadding);
-//				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor);
-//				ctx.Fill ();
-//			}
-
-			ctx.Rectangle (tabStartX - LeanWidth / 2, allocation.Y, tabArea + LeanWidth, allocation.Height);
-			ctx.Clip ();
-
-			foreach (var cmd in drawCommands)
-				cmd (ctx);
-
-			ctx.ResetClip ();
-
-			// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
-			drawActive?.Invoke (ctx);
-
-			if (HasFocus) {
-				Gtk.Style.PaintFocus (Style, GdkWindow, State, focusRect, this, "tab", focusRect.X, focusRect.Y, focusRect.Width, focusRect.Height);
-			}
+			return (tabArea, drawCommands, drawActive, focusRect);
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
@@ -1130,7 +1164,7 @@ namespace MonoDevelop.Components.DockNotebook
 			leftPadding = (leftPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
 			double bottomPadding = active ? TabActivePadding.Bottom : TabPadding.Bottom;
 
-			DrawTabBackground (this, ctx, allocation, tabBounds.Width, tabBounds.X, active);
+			DrawTabBackground (this, tab, ctx, allocation, tabBounds.Width, tabBounds.X, active);
 
 			ctx.LineWidth = 1;
 			ctx.NewPath ();
@@ -1188,7 +1222,7 @@ namespace MonoDevelop.Components.DockNotebook
             la.Dispose ();
 		}
 
-		static void DrawTabBackground (Widget widget, Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, bool active = true)
+		static void DrawTabBackground (Widget widget, DockNotebookTab tab, Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, bool active = true)
 		{
 			int lean = Math.Min (LeanWidth, contentWidth / 2);
 			int halfLean = lean / 2;
@@ -1198,7 +1232,13 @@ namespace MonoDevelop.Components.DockNotebook
 			double height = allocation.Height;
 			double width = contentWidth - (TabSpacing * 2) + lean;
 
-			var image = active ? tabActiveBackImage : tabBackImage;
+			Xwt.Drawing.Image image;
+			if (tab.IsPreview) {
+				image = active ? tabPreviewActiveBackImage : tabPreviewBackImage;
+			} else {
+				image = active ? tabActiveBackImage : tabBackImage;
+			}
+		
 			image = image.WithSize (width, height);
 
 			ctx.DrawImage (widget, image, x, y);
