@@ -300,6 +300,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
 
+			buildOutput?.Dispose ();
+			buildOutputViewContent?.Dispose ();
+
 			// Set the model to null as it makes Gtk clean up faster
 			if (view != null) {
 				view.Model = null;

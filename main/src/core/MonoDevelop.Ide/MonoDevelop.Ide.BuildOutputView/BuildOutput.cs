@@ -34,7 +34,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
-	class BuildOutput
+	class BuildOutput : IDisposable
 	{
 		BuildOutputProgressMonitor progressMonitor;
 		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return progressMonitor;
 		}
 
-		public void Load (string filePath)
+		public void Load (string filePath, bool removeFileOnDispose)
 		{
 			if (!File.Exists (filePath)) {
 				return;
@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			switch (Path.GetExtension (filePath)) {
 			case ".binlog":
-				AddProcessor (new MSBuildOutputProcessor (filePath));
+				AddProcessor (new MSBuildOutputProcessor (filePath, removeFileOnDispose));
 				break;
 			default:
 				LoggingService.LogError ($"Unknown file type {filePath}");
@@ -98,6 +98,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			return (buildOutput.ToString (), foldingSegments);
 		}
+
+		~BuildOutput ()
+		{
+			Dispose (false);
+			GC.SuppressFinalize (this);
+		}
+
+		void Dispose (bool disposing)
+		{
+			if (disposing) {
+				foreach (var p in projects) {
+					p.Dispose ();
+				}
+			} 
+		}
+
+		public void Dispose ()
+		{
+			Dispose (true); 
+		}
 	}
 
 	class BuildOutputProgressMonitor : ProgressMonitor
@@ -116,9 +136,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			switch (logObject) {
 			case ProjectStartedProgressEvent pspe:
 				if (File.Exists (pspe.LogFile)) {
-					BuildOutput.Load (pspe.LogFile); 
+					BuildOutput.Load (pspe.LogFile, true); 
 				} else {
-					currentCustomProject = new BuildOutputProcessor (pspe.LogFile);
+					currentCustomProject = new BuildOutputProcessor (pspe.LogFile, false);
 					currentCustomProject.AddNode (BuildOutputNodeType.Project, "Custom project", true);
 					BuildOutput.AddProcessor (currentCustomProject);
 				}

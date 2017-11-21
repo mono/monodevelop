@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 	{
 		readonly BinaryLogReplayEventSource binlogReader = new BinaryLogReplayEventSource ();
 
-		public MSBuildOutputProcessor (string filePath) : base (filePath)
+		public MSBuildOutputProcessor (string filePath, bool removeFileOnDispose) : base (filePath, removeFileOnDispose)
 		{
 			binlogReader.BuildStarted += BinLog_BuildStarted;
 			binlogReader.BuildFinished += BinLog_BuildFinished;

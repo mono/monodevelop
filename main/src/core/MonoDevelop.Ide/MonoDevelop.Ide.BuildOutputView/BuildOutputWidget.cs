@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			editor.FileName = filePath;
 
 			var output = new BuildOutput ();
-			output.Load (filePath.FullPath);
+			output.Load (filePath.FullPath, false);
 			SetupBuildOutput (output);
 		}
 

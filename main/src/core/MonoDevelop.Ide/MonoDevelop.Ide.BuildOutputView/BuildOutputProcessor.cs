@@ -26,8 +26,9 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Ide.Editor;
+using System.IO;
 using System.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -52,19 +53,22 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public bool HasErrors { get; set; }
 	}
 
-	class BuildOutputProcessor
+	class BuildOutputProcessor : IDisposable
 	{
 		List<BuildOutputNode> rootNodes = new List<BuildOutputNode> ();
 		BuildOutputNode currentNode;
 
-		public BuildOutputProcessor (string fileName)
+		public BuildOutputProcessor (string fileName, bool removeFileOnDispose)
 		{
 			FileName = fileName;
+			RemoveFileOnDispose = removeFileOnDispose;
 		}
 
 		public string FileName { get; }
 
 		protected bool NeedsProcessing { get; set; } = true;
+
+		protected bool RemoveFileOnDispose { get; set; }
 
 		protected void Clear ()
 		{
@@ -159,6 +163,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			return (buildOutput.ToString (), foldingSegments);
+		}
+
+		~BuildOutputProcessor ()
+		{
+			Dispose (false);
+			GC.SuppressFinalize (this);
+		}
+
+		public void Dispose ()
+		{
+			Dispose (true); 
+		}
+
+		void Dispose (bool disposing)
+		{
+			if (disposing) {
+				if (RemoveFileOnDispose && File.Exists (FileName)) {
+					File.Delete (FileName);
+				}
+			}
 		}
 	}
 }
