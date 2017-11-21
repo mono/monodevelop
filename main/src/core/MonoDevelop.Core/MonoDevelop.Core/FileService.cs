@@ -343,8 +343,8 @@ namespace MonoDevelop.Core
 		{
 			try {
 				OnFileRenamed (new FileCopyEventArgs (oldPath, newPath, true));
-				//OnFileCreated (new FileEventArgs (newPath, true));
-				//OnFileRemoved (new FileEventArgs (oldPath, true));
+				OnFileCreated (new FileEventArgs (newPath, true));
+				OnFileRemoved (new FileEventArgs (oldPath, true));
 			} catch (Exception ex) {
 				LoggingService.LogError ("Directory rename notification failed", ex);
 			}

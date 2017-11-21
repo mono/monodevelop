@@ -45,6 +45,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		TaskCompletionSource<ProjectFile> fileAddedTaskCompletionSource;
 		TaskCompletionSource<ProjectFile> fileRemovedTaskCompletionSource;
 		TaskCompletionSource<FileCopyEventArgs> directoryRenamedCompletionSource;
+		TaskCompletionSource<FileEventArgs> directoryRemovedCompletionSource;
+		TaskCompletionSource<FileEventArgs> directoryCreatedCompletionSource;
 
 		async Task<DotNetProject> OpenProject ()
 		{
@@ -218,6 +220,46 @@ namespace MonoDevelop.DotNetCore.Tests
 			}
 		}
 
+		Task<FileEventArgs> WaitForSingleDirectoryCreated ()
+		{
+			directoryCreatedCompletionSource = new TaskCompletionSource<FileEventArgs> ();
+
+			FileService.FileCreated += FileServiceOnFileCreated;
+
+			return directoryCreatedCompletionSource.Task;
+		}
+
+		void FileServiceOnFileCreated (object sender, FileEventArgs e)
+		{
+			FileService.FileCreated -= FileServiceOnFileCreated;
+
+			try {
+				directoryCreatedCompletionSource.SetResult (e);
+			} catch (Exception ex) {
+				directoryCreatedCompletionSource.SetException (ex);
+			}
+		}
+
+		Task<FileEventArgs> WaitForSingleDirectoryRemoved ()
+		{
+			directoryRemovedCompletionSource = new TaskCompletionSource<FileEventArgs> ();
+
+			FileService.FileRemoved += FileServiceOnFileRemoved;
+
+			return directoryRemovedCompletionSource.Task;
+		}
+
+		void FileServiceOnFileRemoved (object sender, FileEventArgs e)
+		{
+			FileService.FileRemoved -= FileServiceOnFileRemoved;
+
+			try {
+				directoryRemovedCompletionSource.SetResult (e);
+			} catch (Exception ex) {
+				directoryRemovedCompletionSource.SetException (ex);
+			}
+		}
+
 		[Test]
 		public async Task AddRenameRemoveSingleFile ()
 		{
@@ -303,6 +345,44 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			Assert.AreEqual (1, project.Files.Count (file => file.FilePath == newCSharpFilePath));
 			Assert.AreNotEqual (fileAdded, finishedTask);
+		}
+
+		[Test]
+		public async Task MoveDirectoryUpToProjectRootDirectory_FileServiceEventsFired ()
+		{
+			var project = await OpenProject ();
+
+			// Create new C# file in new subdirectory.
+			var fileAdded = WaitForSingleFileAdded (project);
+			var directory = project.BaseDirectory.Combine ("Src", "Files");
+			Directory.CreateDirectory (directory);
+			var newCSharpFilePath = WriteFile (directory, "NewCSharpFile.cs");
+
+			await AssertFileAddedToProject (fileAdded, newCSharpFilePath, "Compile");
+
+			// Move directory
+			var directoryRenamed = WaitForSingleDirectoryRenamed ();
+			var directoryCreated = WaitForSingleDirectoryCreated ();
+			var directoryRemoved = WaitForSingleDirectoryRemoved ();
+			var combinedDirectoryTask = Task.WhenAll (directoryRenamed, directoryCreated, directoryRemoved);
+
+			var renamedDirectory = project.BaseDirectory.Combine ("Files");
+			var renamedCSharpFileName = renamedDirectory.Combine ("NewCSharpFile.cs");
+			Directory.Move (directory, renamedDirectory);
+
+			await WaitWithTimeout (combinedDirectoryTask, FileWatcherTimeout);
+
+			var directoryRenamedEventInfo = directoryRenamed.Result.Single ();
+			var directoryCreatedEventInfo = directoryCreated.Result.Single ();
+			var directoryRemovedEventInfo = directoryRemoved.Result.Single ();
+
+			Assert.AreEqual (renamedDirectory, directoryRenamedEventInfo.TargetFile);
+			Assert.AreEqual (directory, directoryRemovedEventInfo.FileName);
+			Assert.IsTrue (directoryRemovedEventInfo.IsDirectory);
+			Assert.AreEqual (renamedDirectory, directoryCreatedEventInfo.FileName);
+			Assert.IsTrue (directoryCreatedEventInfo.IsDirectory);
+			Assert.IsTrue (project.Files.Any (file => file.FilePath == renamedCSharpFileName), $"File not added to project '{renamedCSharpFileName}'");
+			Assert.IsFalse (project.Files.Any (file => file.FilePath == newCSharpFilePath), $"File not removed from project '{newCSharpFilePath}'");
 		}
 	}
 }
