@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.BuildOutputView
@@ -153,16 +154,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public (string, IList<IFoldSegment>) ToTextEditor (TextEditor editor, bool includeDiagnostics, int startAtOffset)
+		public Task<(string, IList<IFoldSegment>)> ToTextEditor (TextEditor editor, bool includeDiagnostics, int startAtOffset)
 		{
-			var buildOutput = new StringBuilder ();
-			var foldingSegments = new List<IFoldSegment> ();
+			return Task.Run (() => {
+				var buildOutput = new StringBuilder ();
+				var foldingSegments = new List<IFoldSegment> ();
 
-			foreach (var node in rootNodes) {
-				ProcessNode (editor, node, 0, buildOutput, foldingSegments, includeDiagnostics, startAtOffset);
-			}
+				foreach (var node in rootNodes) {
+					ProcessNode (editor, node, 0, buildOutput, foldingSegments, includeDiagnostics, startAtOffset);
+				}
 
-			return (buildOutput.ToString (), foldingSegments);
+				return (buildOutput.ToString (), (IList<IFoldSegment>)foldingSegments);
+			});
 		}
 
 		bool disposed = false;

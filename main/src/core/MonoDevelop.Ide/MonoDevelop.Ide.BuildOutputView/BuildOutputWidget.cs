@@ -27,6 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
 using Gtk;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
@@ -108,15 +110,22 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
+		CancellationTokenSource cts;
+
 		void ProcessLogs (bool showDiagnostics)
 		{
-			var (text, segments) = BuildOutput.ToTextEditor (editor, showDiagnostics);
+			cts?.Cancel ();
+			cts = new CancellationTokenSource ();
 
-			if (Runtime.IsMainThread) {
-				SetupTextEditor (text, segments);
-			} else {
-				Runtime.RunInMainThread (() => SetupTextEditor (text, segments));
-			}
+			Task.Run (async () => {
+				var (text, segments) = await BuildOutput.ToTextEditor (editor, showDiagnostics);
+
+				if (Runtime.IsMainThread) {
+					SetupTextEditor (text, segments);
+				} else {
+					await Runtime.RunInMainThread (() => SetupTextEditor (text, segments));
+				}
+			}, cts.Token);
 		}
 	}
 }
