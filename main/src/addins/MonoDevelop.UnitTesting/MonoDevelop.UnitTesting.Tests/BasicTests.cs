@@ -32,12 +32,23 @@ namespace MonoDevelop.UnitTesting.Tests
 	[TestFixture()]
 	public class BasicTests : TestBase
 	{
+		Solution sol;
+
 		[TestFixtureSetUp]
 		public void Start()
 		{
 			DesktopService.Initialize();
 			IdeApp.Initialize(new ProgressMonitor());
 			IdeApp.Workspace.ActiveConfigurationId = "Debug";
+		}
+
+		[TearDown]
+		public override void TearDown ()
+		{
+			sol?.Dispose ();
+			sol = null;
+
+			base.TearDown ();
 		}
 
 		[Test()]
@@ -64,7 +75,7 @@ namespace MonoDevelop.UnitTesting.Tests
 			Assert.IsTrue(process.WaitForExit(60000), "Timeout restoring nuget packages.");
 			Assert.AreEqual(0, process.ExitCode);
 
-			var sol = await Services.ProjectService.ReadWorkspaceItem(Util.GetMonitor(), solFile) as Solution;
+			sol = await Services.ProjectService.ReadWorkspaceItem(Util.GetMonitor(), solFile) as Solution;
 			Assert.AreEqual(0, (await sol.Build(Util.GetMonitor(), "Debug")).ErrorCount);
 			var project1 = sol.GetAllProjects().Single(p => p.Name == projectName);
 			var rootUnitTest1 = UnitTestService.BuildTest(project1) as UnitTestGroup;
