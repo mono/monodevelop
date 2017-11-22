@@ -344,7 +344,7 @@ msgstr "Projeyi Kapat"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:135
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:65
 msgid "Target Framework"
-msgstr ""
+msgstr "Hedef Çerçeve"
 
 #: ../src/addins/MonoDevelop.DotNetCore/gtk-gui/MonoDevelop.DotNetCore.Gui.GtkDotNetCoreProjectTemplateWizardPageWidget.cs:97
 msgid "Target Framework:"
@@ -537,7 +537,7 @@ msgstr "Bütünleştirilmiş kod"
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:290
 msgid "Version"
-msgstr ""
+msgstr "Sürüm"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:429
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:662
@@ -4478,12 +4478,12 @@ msgstr "Düzen adı geçerli "
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:76
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:274
 msgid "License"
-msgstr ""
+msgstr "Lisans"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:107
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:86
 msgid "Copyright"
-msgstr ""
+msgstr "Telif Hakkı"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs:66
 msgid "Failed to load version information."
@@ -5153,7 +5153,7 @@ msgstr "_Çakışmaları Görüntüle"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:616
 msgid "This key combination is already bound to command '{0}'"
-msgstr ""
+msgstr "Bu tuş bileşimi zaten '{0}' komutuna bağlı"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:71
 msgid "Scheme:"
@@ -6410,7 +6410,7 @@ msgstr "Çalışma Zamanı"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:346
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:121
 msgid "Security"
-msgstr ""
+msgstr "Güvenlik"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:354
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:527
@@ -11362,7 +11362,7 @@ msgstr "VB.NET Dosyaları"
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:33
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:96
 msgid "General Options"
-msgstr ""
+msgstr "Genel Seçenekler"
 
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:36
 msgid "Imports"
@@ -11388,7 +11388,7 @@ msgstr "Bütünleştirilmiş kod bilgileri özniteliklerini tanımlayan dosya."
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.cs:118
 msgid "ChangeLog entries can't be generated"
-msgstr ""
+msgstr "ChangeLog girdileri oluşturulamıyor"
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.cs:119
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:103
@@ -11434,11 +11434,11 @@ msgstr "Daha fazla bilgi için 'Ayrıntılar' düğmesine tıklayın."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:124
 msgid "The following ChangeLog file will be updated:"
-msgstr ""
+msgstr "Aşağıdaki ChangeLog dosyası güncelleştirildi:"
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:129
 msgid "{0} ChangeLog files will be updated."
-msgstr ""
+msgstr "{0} ChangeLog dosyası güncelleştirildi."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:120
 msgid "{0} ChangeLog file not found. Some changes will not be logged."
@@ -17300,19 +17300,19 @@ msgstr "Hedef platform:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:44
 msgid "<b>_Replace with source file</b>"
-msgstr ""
+msgstr "<b>_Kaynak dosya ile değiştir</b>"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:45
 msgid "<b>_Keep existing target file</b>"
-msgstr ""
+msgstr "<b>_Mevcut hedef dosyayı koru</b>"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:46
 msgid "<b>Use the _newest file</b>"
-msgstr ""
+msgstr "<b>_En yeni dosyayı kullan</b>"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:88
 msgid "Replace existing file?"
-msgstr ""
+msgstr "Mevcut dosya değiştirilsin mi?"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:123
 msgid "<b><big>Deploy file already exists. Do you want to replace it?</big></b>"
@@ -18410,11 +18410,11 @@ msgstr "Ön ek"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:160
 msgid "<b>Registered Schema</b>"
-msgstr ""
+msgstr "<b>Kayıtlı Şema</b>"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:172
 msgid "<b>Default File Associations</b>"
-msgstr ""
+msgstr "<b>Varsayılan Dosya İlişkilendirmeleri</b>"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:434
 msgid "Schema '{0}' could not be loaded."
@@ -19311,7 +19311,7 @@ msgstr "SSL protokolü:"
 
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:137
 msgid "SSL Key"
-msgstr ""
+msgstr "SSL Anahtarı"
 
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:140
 msgid "Key type:"
@@ -20391,7 +20391,7 @@ msgstr "ms"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:101
 msgid "Advanced options"
-msgstr ""
+msgstr "Gelişmiş seçenekler"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:103
 msgid "Enable diagnostic logging"
@@ -20412,7 +20412,7 @@ msgstr "[Dış Kod]"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1047
 msgid "<b>{0}</b> has been thrown"
-msgstr ""
+msgstr "<b>{0}</b> oluşturuldu"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs:22
 msgid "Value Visualizer"
@@ -23753,7 +23753,7 @@ msgstr "Görünüm (Tuş Takımları)"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:609
 msgid ""
 "This key combination is already bound to command '{0}' in the same context"
-msgstr ""
+msgstr "Bu tuş birleşimi aynı bağlamda '{0}' komutuna zaten bağlı"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:808
 msgid "Conflicts:"
@@ -24655,7 +24655,7 @@ msgstr "Uygulamadan çıkmayı iptal et"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:93
 msgid "Privacy Statement"
-msgstr ""
+msgstr "Gizlilik Bildirimi"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs:81
 msgid ""
@@ -25310,6 +25310,9 @@ msgid ""
 "listed above.\n"
 "If you do not agree to the license terms click <b>Decline</b>."
 msgstr ""
+"<b>Kabul Et</b>'e tıklayarak yukarıda listelenen paketlerin lisans "
+"koşullarını kabul etmiş olursunuz.\n"
+"Lisans koşullarını kabul etmiyorsanız <b>Reddet</b>'e tıklayın."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:83
 msgid "Decline"
