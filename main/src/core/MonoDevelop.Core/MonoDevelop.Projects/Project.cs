@@ -3826,7 +3826,15 @@ namespace MonoDevelop.Projects
 			set {
 				if (useFileWatcher != value) {
 					useFileWatcher = value;
-					OnUseFileWatcherChanged ();
+
+					// File watcher will be created in OnEndLoad.
+					if (Loading) {
+						if (!useFileWatcher) {
+							DisposeFileWatcher ();
+						}
+					} else {
+						OnUseFileWatcherChanged ();
+					}
 				}
 			}
 		}
@@ -3842,7 +3850,7 @@ namespace MonoDevelop.Projects
 
 		void InitializeFileWatcher ()
 		{
-			if (watcher != null) {
+			if (useFileWatcher) {
 				OnUseFileWatcherChanged ();
 			}
 		}
