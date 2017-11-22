@@ -186,7 +186,9 @@ namespace MonoDevelop.DotNetCore.Tests
 			projectLibA.Items.Add (packageReference);
 			await projectLibA.SaveAsync (Util.GetMonitor ());
 
-			var process = Process.Start ("msbuild", $"/t:Restore {solutionFileName}");
+			CreateNuGetConfigFile (solution.BaseDirectory);
+
+			var process = Process.Start ("msbuild", $"/t:Restore /p:RestoreDisableParallel=true {solutionFileName}");
 			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
 			Assert.AreEqual (0, process.ExitCode);
 
