@@ -46,6 +46,7 @@ namespace MonoDevelop.DotNetCore.Tests
 	class DotNetCoreProjectTemplateTests : DotNetCoreTestBase
 	{
 		TemplatingService templatingService;
+		Solution solution;
 
 		[TestFixtureSetUp]
 		public void SetUp ()
@@ -60,6 +61,15 @@ namespace MonoDevelop.DotNetCore.Tests
 			if (!IdeApp.IsInitialized) {
 				IdeApp.Initialize (Util.GetMonitor ());
 			}
+		}
+
+		[TearDown]
+		public override void TearDown ()
+		{
+			solution?.Dispose ();
+			solution = null;
+
+			base.TearDown ();
 		}
 
 		[Test]
@@ -264,7 +274,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			var result = await templatingService.ProcessTemplate (template, config, null);
 
-			var solution = result.WorkspaceItems.FirstOrDefault () as Solution;
+			solution = result.WorkspaceItems.FirstOrDefault () as Solution;
 			await solution.SaveAsync (Util.GetMonitor ());
 
 			// RestoreDisableParallel prevents parallel restores which sometimes cause

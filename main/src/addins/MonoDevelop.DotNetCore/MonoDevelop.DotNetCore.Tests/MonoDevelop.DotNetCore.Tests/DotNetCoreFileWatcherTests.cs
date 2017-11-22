@@ -41,6 +41,7 @@ namespace MonoDevelop.DotNetCore.Tests
 	{
 		const int FileWatcherTimeout = 2000; // ms
 
+		Solution solution;
 		DotNetProject project;
 		TaskCompletionSource<ProjectFile> fileAddedTaskCompletionSource;
 		TaskCompletionSource<ProjectFile> fileRemovedTaskCompletionSource;
@@ -48,17 +49,26 @@ namespace MonoDevelop.DotNetCore.Tests
 		TaskCompletionSource<FileEventArgs> directoryRemovedCompletionSource;
 		TaskCompletionSource<FileEventArgs> directoryCreatedCompletionSource;
 
+		[TearDown]
+		public override void TearDown ()
+		{
+			solution?.Dispose ();
+			solution = null;
+
+			base.TearDown ();
+		}
+
 		async Task<DotNetProject> OpenProject ()
 		{
 			string solutionFileName = Util.GetSampleProject ("DotNetCoreFileWatcherTests", "DotNetCoreFileWatcherTests.sln");
-			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			project = solution.GetAllProjects ().Single () as DotNetProject;
 
 			CreateNuGetConfigFile (solution.BaseDirectory);
 
 			Assert.AreEqual (0, project.Files.Count);
 
-			RunMSBuild ($"/t:Restore {solution.FileName}");
+			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true {solution.FileName}");
 
 			return project;
 		}
