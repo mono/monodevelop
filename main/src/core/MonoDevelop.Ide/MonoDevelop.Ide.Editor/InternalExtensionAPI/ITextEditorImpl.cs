@@ -223,7 +223,7 @@ namespace MonoDevelop.Ide.Editor
 		void GrabFocus ();
 		bool HasFocus { get; }
 
-		event EventHandler<LineEventArgs> LineShown;
+		event EventHandler<LineEventArgs> LineShowing;
 		event EventHandler FocusLost;
 
 		void ShowTooltipWindow (Components.Window window, TooltipWindowOptions options);

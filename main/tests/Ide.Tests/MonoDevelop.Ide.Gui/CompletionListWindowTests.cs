@@ -183,6 +183,7 @@ namespace MonoDevelop.Ide.Gui
 				if (isClosed)
 					break;
 			}
+			Assert.IsTrue (isClosed);
 		}
 		
 		class SimulationSettings {
@@ -216,6 +217,7 @@ namespace MonoDevelop.Ide.Gui
 			CompletionListWindow listWindow = CreateListWindow (settings);
 			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
 			SimulateInput (listWindow, settings.SimulatedInput);
+
 			return testCompletionWidget.CompletedWord;
 		}
 
@@ -1012,6 +1014,16 @@ namespace MonoDevelop.Ide.Gui
 				CompletionData = new string [] { "Random", "Random()" }
 			});
 			Assert.AreEqual ("Random()", output);
+		}
+
+		/// <summary>
+		/// Bug 526671 - Code completion is empty after typing 'new'
+		/// </summary>
+		[Test]
+		public void TestBug526671 ()
+		{
+			var output = RunSimulation ("", "s ", false, false, false, new [] { "list" });
+			Assert.AreEqual (null, output);
 		}
 	}
 }
