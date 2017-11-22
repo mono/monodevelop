@@ -66,13 +66,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			BuildOutput = output;
 			ProcessLogs (false);
 
-			BuildOutput.OutputChanged += (sender, e) => {
-				if (Runtime.IsMainThread) {
-					ProcessLogs (showDiagnosticsButton.Active);
-				} else {
-					Runtime.RunInMainThread (() => ProcessLogs (showDiagnosticsButton.Active));
-				}
-			};
+			BuildOutput.OutputChanged += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 		}
 
 		void Initialize ()
@@ -106,14 +100,22 @@ namespace MonoDevelop.Ide.BuildOutputView
 			base.OnDestroyed ();
 		}
 
+		void SetupTextEditor (string text, IList<IFoldSegment> segments)
+		{
+			editor.Text = text;
+			if (segments != null) {
+				editor.SetFoldings (segments);
+			}
+		}
+
 		void ProcessLogs (bool showDiagnostics)
 		{
 			var (text, segments) = BuildOutput.ToTextEditor (editor, showDiagnostics);
 
-			editor.SetFoldings (new List<IFoldSegment> ());
-			editor.Text = text;
-			if (segments != null) {
-				editor.SetFoldings (segments);
+			if (Runtime.IsMainThread) {
+				SetupTextEditor (text, segments);
+			} else {
+				Runtime.RunInMainThread (() => SetupTextEditor (text, segments));
 			}
 		}
 	}
