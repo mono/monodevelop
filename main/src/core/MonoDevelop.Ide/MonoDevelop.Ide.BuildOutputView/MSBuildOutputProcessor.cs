@@ -27,6 +27,7 @@
 using System;
 using Microsoft.Build.Logging;
 using Microsoft.Build.Framework;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -60,7 +61,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			try {
 				binlogReader.Replay (FileName);
-			} catch (Exception) {
+			} catch (Exception ex) {
+				LoggingService.LogError ($"Can't process {FileName}: {ex.ToString ()}");
 			}
 		}
 
