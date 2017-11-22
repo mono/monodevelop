@@ -99,17 +99,23 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return (buildOutput.ToString (), foldingSegments);
 		}
 
+		bool disposed = false;
+
 		~BuildOutput ()
 		{
 			Dispose (false);
-			GC.SuppressFinalize (this);
 		}
 
 		void Dispose (bool disposing)
 		{
-			if (disposing) {
+			if (!disposed) {
 				foreach (var p in projects) {
 					p.Dispose ();
+				}
+
+				disposed = true;
+				if (disposing) {
+					GC.SuppressFinalize (this);
 				}
 			} 
 		}

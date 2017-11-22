@@ -165,22 +165,28 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return (buildOutput.ToString (), foldingSegments);
 		}
 
+		bool disposed = false;
+
 		~BuildOutputProcessor ()
 		{
 			Dispose (false);
-			GC.SuppressFinalize (this);
 		}
 
 		public void Dispose ()
 		{
-			Dispose (true); 
+			Dispose (true);
 		}
 
 		void Dispose (bool disposing)
 		{
-			if (disposing) {
+			if (!disposed) {
 				if (RemoveFileOnDispose && File.Exists (FileName)) {
 					File.Delete (FileName);
+				}
+
+				disposed = true;
+				if (disposing) {
+					GC.SuppressFinalize (this);
 				}
 			}
 		}
