@@ -8546,6 +8546,9 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Markdown\Markdown.sublime-syntax">
       <LogicalName>Markdown.sublime-syntax</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\xml\syntaxes\xaml.json">
+      <LogicalName>xaml.json</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

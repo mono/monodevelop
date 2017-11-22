@@ -81,7 +81,8 @@ namespace MonoDevelop.Components.Chart
 		public TickEnumerator GetTickEnumerator (double minTickStep)
 		{
 			TickEnumerator e = CreateTickEnumerator (minTickStep);
-			e.axis = this;
+			if (e != null)
+				e.axis = this;
 			return e;
 		}
 		

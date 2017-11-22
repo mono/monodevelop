@@ -95,9 +95,12 @@ type FSharpPathExtension() as x =
             x.FindBestDefaultProject () |> Option.iter x.DocumentContext.AttachToProject
 
     let updateOwnerProjectsWithReset () =
-        updateOwnerProjects (IdeApp.Workspace.GetAllItems<DotNetProject> ())
+        IdeApp.Workspace
+        |> Option.ofObj
+        |> Option.iter(fun w -> updateOwnerProjects (w.GetAllItems<DotNetProject> ()))
+
         x.DocumentContext
-        |> Option.ofNull
+        |> Option.ofObj
         |> Option.iter (fun context ->
             match context.Project with
             | null -> resetOwnerProject ()
@@ -172,18 +175,24 @@ type FSharpPathExtension() as x =
         Gtk.Application.Invoke (fun _ _ -> updateOwnerProjectsWithReset()
                                            caretPositionChanged() )
 
+        let workspace = IdeApp.Workspace |> Option.ofObj
         subscriptions.AddRange
-            [ x.Editor.TextChanging.Subscribe(textChanging)
-              x.DocumentContext.DocumentParsed.Subscribe(docParsed)
-              IdeApp.Workspace.FileAddedToProject.Subscribe(projectChanged)
-              IdeApp.Workspace.FileRemovedFromProject.Subscribe(projectChanged)
-              IdeApp.Workspace.ItemAddedToSolution.Subscribe(projectChanged)
-              IdeApp.Workspace.WorkspaceItemUnloaded.Subscribe(workspaceItemUnloaded)
-              IdeApp.Workspace.WorkspaceItemLoaded.Subscribe(workspaceItemLoaded)
-              IdeApp.Workspace.ActiveConfigurationChanged.Subscribe(activeConfigurationChanged) ]
+            [ yield x.Editor.TextChanging.Subscribe(textChanging)
+              yield x.DocumentContext.DocumentParsed.Subscribe(docParsed)
+              if workspace.IsSome then
+                  let ws = workspace.Value
+                  yield ws.FileAddedToProject.Subscribe(projectChanged)
+                  yield ws.FileRemovedFromProject.Subscribe(projectChanged)
+                  yield ws.ItemAddedToSolution.Subscribe(projectChanged)
+                  yield ws.WorkspaceItemUnloaded.Subscribe(workspaceItemUnloaded)
+                  yield ws.WorkspaceItemLoaded.Subscribe(workspaceItemLoaded)
+                  yield ws.ActiveConfigurationChanged.Subscribe(activeConfigurationChanged) ]
         subscribeCaretChange()
 
     member private x.Update() =
+        match IdeApp.Workbench with
+        | null -> ()
+        | _ ->
         match IdeApp.Workbench.ActiveDocument with
         | null -> ()
         | context when context.Name <> x.DocumentContext.Name -> ()

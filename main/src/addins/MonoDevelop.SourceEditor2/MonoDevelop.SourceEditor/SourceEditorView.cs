@@ -222,10 +222,8 @@ namespace MonoDevelop.SourceEditor
 
 			widget.TextEditor.Document.TextChanged += OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = CheckReadOnly;
-			widget.TextEditor.Document.TextSet += HandleDocumentTextSet;
 
-
-			widget.TextEditor.TextViewMargin.LineShown += TextViewMargin_LineShown;
+			widget.TextEditor.TextViewMargin.LineShowing += TextViewMargin_LineShowing;
 			//			widget.TextEditor.Document.DocumentUpdated += delegate {
 			//				this.IsDirty = Document.IsDirty;
 			//			};
@@ -314,13 +312,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (Document.MimeType != null) {
 				widget.TextEditor.TextEditorResolverProvider = TextEditorResolverService.GetProvider (Document.MimeType);
-			}
-		}
-
-		void HandleDocumentTextSet (object sender, EventArgs e)
-		{
-			while (editSessions.Count > 0) {
-				EndSession ();
 			}
 		}
 
@@ -1076,9 +1067,8 @@ namespace MonoDevelop.SourceEditor
 
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
 			widget.TextEditor.Options.Changed -= HandleWidgetTextEditorOptionsChanged;
-			widget.TextEditor.TextViewMargin.LineShown -= TextViewMargin_LineShown;
+			widget.TextEditor.TextViewMargin.LineShowing -= TextViewMargin_LineShowing;
 			widget.TextEditor.TextArea.FocusOutEvent -= TextArea_FocusOutEvent;
-			widget.TextEditor.Document.TextSet -= HandleDocumentTextSet;
 			widget.TextEditor.Document.MimeTypeChanged -= Document_MimeTypeChanged;
 
 			TextEditorService.FileExtensionAdded -= HandleFileExtensionAdded;
@@ -3123,9 +3113,9 @@ namespace MonoDevelop.SourceEditor
 			case MarkupFormat.Pango:
 				return data.GetMarkup (offset, length, false, replaceTabs: false, fitIdeStyle: options.FitIdeStyle);
 			case MarkupFormat.Html:
-				return HtmlWriter.GenerateHtml (ClipboardColoredText.GetChunks (data, new TextSegment (offset, length)), data.ColorStyle, data.Options);
+				return HtmlWriter.GenerateHtml (ClipboardColoredText.GetChunks (data, new TextSegment (offset, length)).WaitAndGetResult (default (System.Threading.CancellationToken)), data.ColorStyle, data.Options);
 			case MarkupFormat.RichText:
-				return RtfWriter.GenerateRtf (ClipboardColoredText.GetChunks (data, new TextSegment (offset, length)), data.ColorStyle, data.Options);
+				return RtfWriter.GenerateRtf (ClipboardColoredText.GetChunks (data, new TextSegment (offset, length)).WaitAndGetResult (default (System.Threading.CancellationToken)), data.ColorStyle, data.Options);
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
@@ -3244,9 +3234,9 @@ namespace MonoDevelop.SourceEditor
 			widget.RemoveOverlay (messageOverlayContent.GetNativeWidget<Widget> ());
 		}
 
-		void TextViewMargin_LineShown (object sender, Mono.TextEditor.LineEventArgs e)
+		void TextViewMargin_LineShowing (object sender, Mono.TextEditor.LineEventArgs e)
 		{
-			LineShown?.Invoke (this, new Ide.Editor.LineEventArgs (e.Line));
+			LineShowing?.Invoke (this, new Ide.Editor.LineEventArgs (e.Line));
 		}
 
 		public IEnumerable<IDocumentLine> VisibleLines {
@@ -3257,7 +3247,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public event EventHandler<Ide.Editor.LineEventArgs> LineShown;
+		public event EventHandler<Ide.Editor.LineEventArgs> LineShowing;
 
 
 

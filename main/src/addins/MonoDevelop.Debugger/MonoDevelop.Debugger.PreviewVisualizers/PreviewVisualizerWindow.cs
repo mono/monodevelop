@@ -32,11 +32,14 @@ using Gtk;
 using MonoDevelop.Ide;
 using MonoDevelop.Debugger.PreviewVisualizers;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Debugger
 {
 	public class PreviewVisualizerWindow : PopoverWindow
 	{
+		GenericPreviewVisualizer genericPreview;
 		public PreviewVisualizerWindow (ObjectValue val, Gtk.Widget invokingWidget) : base (Gtk.WindowType.Toplevel)
 		{
 			this.TypeHint = WindowTypeHint.PopupMenu;
@@ -92,16 +95,15 @@ namespace MonoDevelop.Debugger
 			mainBox.ShowAll ();
 
 			var previewVisualizer = DebuggingService.GetPreviewVisualizer (val);
-			if (previewVisualizer == null)
-				previewVisualizer = new GenericPreviewVisualizer ();
 			Control widget = null;
 			try {
-				widget = previewVisualizer.GetVisualizerWidget (val);
+				widget = previewVisualizer?.GetVisualizerWidget (val);
 			} catch (Exception e) {
 				DebuggingService.DebuggerSession.LogWriter (true, "Exception during preview widget creation: " + e.Message);
 			}
 			if (widget == null) {
-				widget = new GenericPreviewVisualizer ().GetVisualizerWidget (val);
+				genericPreview = new GenericPreviewVisualizer ();
+				widget = genericPreview.GetVisualizerWidget (val);
 			}
 			var alignment = new Alignment (0, 0, 1, 1);
 			alignment.SetPadding (3, 5, 5, 5);
@@ -109,6 +111,18 @@ namespace MonoDevelop.Debugger
 			alignment.Add (widget);
 			mainBox.PackStart (alignment);
 			ContentBox.Add (mainBox);
+		}
+
+		[CommandUpdateHandler (EditCommands.Copy)]
+		protected void OnCopyUpdate (CommandInfo cmd)
+		{
+			cmd.Enabled = genericPreview!=null;
+		}
+
+		[CommandHandler (EditCommands.Copy)]
+		protected void OnCopy ()
+		{
+			genericPreview?.Copy ();
 		}
 	}
 }

@@ -97,7 +97,7 @@ namespace Mono.TextEditor
 						segment.Length += length;
 						segment.UpdateAugmentedData ();
 					}
-					var node = SearchFirstSegmentWithStartAfter (change.Offset);
+					var node = SearchFirstSegmentWithStartAfter (change.Offset + 1);
 					if (node != null) {
 						node.DistanceToPrevNode += length;
 						node.UpdateAugmentedData ();

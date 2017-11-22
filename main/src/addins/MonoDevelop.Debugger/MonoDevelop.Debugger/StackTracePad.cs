@@ -233,6 +233,12 @@ namespace MonoDevelop.Debugger
 
 		async void Update ()
 		{
+			if (tree.IsRealized)
+				tree.ScrollToPoint (0, 0);
+
+			needsUpdate = false;
+			store.Clear ();
+
 			if (!DebuggingService.IsPaused)
 				return;
 
@@ -250,13 +256,6 @@ namespace MonoDevelop.Debugger
 			// Another fetch of all data already in progress, return
 			if (token.IsCancellationRequested)
 				return;
-
-
-			if (tree.IsRealized)
-				tree.ScrollToPoint (0, 0);
-
-			needsUpdate = false;
-			store.Clear ();
 
 			var externalCodeIter = TreeIter.Zero;
 			for (int i = 0; i < stackFrames.Count; i++) {

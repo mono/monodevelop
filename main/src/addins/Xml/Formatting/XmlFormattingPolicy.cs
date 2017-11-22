@@ -96,14 +96,11 @@ namespace MonoDevelop.Xml.Formatting
 		
 		public XmlFormattingSettings ()
 		{
-			NewLineChars = "\n";
 			OmitXmlDeclaration = false;
 			IndentContent = true;
-			ContentIndentString = "\t";
 			
 			AttributesInNewLine = false;
 			MaxAttributesPerLine = 10;
-			AttributesIndentString = "\t";
 			AlignAttributes = false;
 			AlignAttributeValues = false;
 			WrapAttributes = false;
@@ -129,13 +126,10 @@ namespace MonoDevelop.Xml.Formatting
 				list.RemoveAt (n);
 			}
 			
-			return NewLineChars == other.NewLineChars &&
-				OmitXmlDeclaration == other.OmitXmlDeclaration &&
+			return OmitXmlDeclaration == other.OmitXmlDeclaration &&
 				IndentContent == other.IndentContent &&
-				ContentIndentString == other.ContentIndentString &&
 				AttributesInNewLine == other.AttributesInNewLine &&
 				MaxAttributesPerLine == other.MaxAttributesPerLine &&
-				AttributesIndentString == other.AttributesIndentString &&
 				AlignAttributes == other.AlignAttributes &&
 				WrapAttributes == other.WrapAttributes &&
 				AlignAttributeValues == other.AlignAttributeValues &&
@@ -168,26 +162,8 @@ namespace MonoDevelop.Xml.Formatting
 		
 		[ItemProperty]
 		[LocalizedCategory ("Document")]
-		[LocalizedDisplayName ("New line chars")]
-		[TypeConverter (typeof (CStringsConverter))]
-		public string NewLineChars { get; set; }
-		
-		[ItemProperty]
-		[LocalizedCategory ("Document")]
 		[LocalizedDisplayName ("Indent content")]
 		public bool IndentContent { get; set; }
-		
-		[ItemProperty]
-		[LocalizedCategory ("Document")]
-		[LocalizedDisplayName ("Indent string")]
-		[TypeConverter (typeof (CStringsConverter))]
-		public string ContentIndentString {
-			get { return ccc; }
-			set { ccc = value; }
-		}
-		string ccc;
-		
-		
 		
 		[ItemProperty]
 		[LocalizedCategory ("Attributes")]
@@ -198,12 +174,6 @@ namespace MonoDevelop.Xml.Formatting
 		[LocalizedCategory ("Attributes")]
 		[LocalizedDisplayName ("Max attributes per line")]
 		public int MaxAttributesPerLine { get; set; }
-		
-		[ItemProperty]
-		[LocalizedCategory ("Attributes")]
-		[LocalizedDisplayName ("Attributes indent string")]
-		[TypeConverter (typeof (CStringsConverter))]
-		public string AttributesIndentString { get; set; }
 		
 		[ItemProperty]
 		[LocalizedCategory ("Attributes")]

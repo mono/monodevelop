@@ -44,7 +44,7 @@ namespace MonoDevelop.UnitTesting
 	{
 		string name;
 		IResultsStore resultsStore;
-		UnitTestResult lastResult;
+		internal UnitTestResult lastResult;
 		UnitTest parent;
 		TestStatus status;
 		WorkspaceObject ownerSolutionItem;
@@ -52,7 +52,9 @@ namespace MonoDevelop.UnitTesting
 		UnitTestResultsStore results;
 		bool historicResult;
 		bool resultLoaded;
-		
+
+		public virtual bool CanMergeWithParent => false;
+
 		public string FixtureTypeNamespace {
 			get;
 			set;
@@ -141,7 +143,7 @@ namespace MonoDevelop.UnitTesting
 			return lastResult;
 		}
 		
-		public void ResetLastResult ()
+		public virtual void ResetLastResult ()
 		{
 			historicResult = true;
 			OnTestStatusChanged ();
@@ -149,6 +151,7 @@ namespace MonoDevelop.UnitTesting
 
 		public bool IsHistoricResult {
 			get { return historicResult; }
+			internal set { historicResult = value; }
 		}
 		
 		public UnitTestCollection GetRegressions (DateTime fromDate, DateTime toDate)
@@ -193,6 +196,7 @@ namespace MonoDevelop.UnitTesting
 			set {
 				status = value;
 				OnTestStatusChanged ();
+				(Parent as UnitTestGroup)?.UpdateStatusFromChildren ();
 			}
 		}
 
@@ -341,7 +345,7 @@ namespace MonoDevelop.UnitTesting
 			IResultsStore store = GetResultsStore ();
 			if (store != null)
 				store.RegisterResult (ActiveConfiguration, this, result);
-			OnTestStatusChanged ();
+				OnTestStatusChanged ();
 		}
 		
 		IResultsStore GetResultsStore ()

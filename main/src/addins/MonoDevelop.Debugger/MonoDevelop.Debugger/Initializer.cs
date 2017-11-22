@@ -39,21 +39,18 @@ namespace MonoDevelop.Debugger
 	{
 		Document disassemblyDoc;
 		DisassemblyView disassemblyView;
+		Document noSourceDoc;
+		NoSourceView noSourceView;
 		
 		protected override void Run ()
 		{
 			DebuggingService.CallStackChanged += OnStackChanged;
 			DebuggingService.CurrentFrameChanged += OnFrameChanged;
-			DebuggingService.ExecutionLocationChanged += OnExecLocationChanged;
 			DebuggingService.DisassemblyRequested += OnShowDisassembly;
 
 			IdeApp.CommandService.RegisterGlobalHandler (new GlobalRunMethodHandler ());
 		}
-		
-		void OnExecLocationChanged (object s, EventArgs a)
-		{
-		}
-		
+
 		void OnStackChanged (object s, EventArgs a)
 		{
 			if (disassemblyDoc == null || IdeApp.Workbench.ActiveDocument != disassemblyDoc) {
@@ -88,17 +85,37 @@ namespace MonoDevelop.Debugger
 				}
 			}
 
+			bool disassemblyNotSupported = false;
 			// If we don't have an address space, we can't disassemble
 			if (string.IsNullOrEmpty (frame.AddressSpace))
-				return;
+				disassemblyNotSupported = true;
 
 			if (!DebuggingService.CurrentSessionSupportsFeature (DebuggerFeatures.Disassembly))
-				return;
+				disassemblyNotSupported = true;
 
-			if (disassemblyDoc == null)
-				OnShowDisassembly (null, null);
-			else
+			if (disassemblyNotSupported && disassemblyDoc != null) {
+				disassemblyDoc.Close ().Ignore ();
+				disassemblyDoc = null;
+				disassemblyView = null;
+			}
+
+			// If disassembly is open don't show NoSourceView
+			if (disassemblyDoc == null) {
+				if (noSourceDoc == null) {
+					noSourceView = new NoSourceView ();
+					noSourceView.Update (disassemblyNotSupported);
+					noSourceDoc = IdeApp.Workbench.OpenDocument (noSourceView, true);
+					noSourceDoc.Closed += delegate {
+						noSourceDoc = null;
+						noSourceView = null;
+					};
+				} else {
+					noSourceView.Update (disassemblyNotSupported);
+					noSourceDoc.Select ();
+				}
+			} else {
 				disassemblyDoc.Select ();
+			}
 		}
 		
 		void OnShowDisassembly (object s, EventArgs a)

@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Options;
@@ -96,7 +97,11 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 					var rules = Formatter.GetDefaultFormattingRules (analysisDocument);
 					var changes = Formatter.GetFormattedTextChanges (root, SpecializedCollections.SingletonEnumerable (span), context.RoslynWorkspace, optionSet, rules, default(CancellationToken));
-					editor.ApplyTextChanges (changes);
+					editor.ApplyTextChanges (changes.Where(c => {
+						if (!exact)
+							return true;
+						return span.Contains (c.Span.Start);
+					}));
 				} catch (Exception e) {
 					LoggingService.LogError ("Error in on the fly formatter", e);
 				}

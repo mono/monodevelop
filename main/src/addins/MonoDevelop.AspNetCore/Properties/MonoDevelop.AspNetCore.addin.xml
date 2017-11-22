@@ -103,6 +103,7 @@
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 				condition="UseNetCore1x=true"
 				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.Mvc.FSharp"
@@ -114,6 +115,7 @@
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 				condition="UseNetCore1x=true"
 				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.WebApi.CSharp"
@@ -163,6 +165,7 @@
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 				condition="UseNetCore20=true"
 				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.Mvc.FSharp"
@@ -175,6 +178,7 @@
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 				condition="UseNetCore20=true"
 				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.RazorPages.CSharp.2.0"
@@ -187,6 +191,7 @@
 				supportedParameters="RazorPages"
 				condition="UseNetCore20=true"
 				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.WebApi.CSharp"

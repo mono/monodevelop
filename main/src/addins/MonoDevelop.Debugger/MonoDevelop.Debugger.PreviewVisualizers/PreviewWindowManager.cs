@@ -45,6 +45,7 @@ namespace MonoDevelop.Debugger
 		{
 			DestroyWindow ();
 			wnd = new PreviewVisualizerWindow (val, widget);
+			IdeApp.CommandService.RegisterTopWindow (wnd);
 			wnd.ShowPopup (widget, previewButtonArea, PopupPosition.Left);
 			wnd.Destroyed += HandleDestroyed;
 			OnWindowShown (EventArgs.Empty);

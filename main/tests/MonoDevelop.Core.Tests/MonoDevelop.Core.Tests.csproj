@@ -34,7 +34,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.$(NuGetVersionRoslyn)\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.ValueTuple">
@@ -94,6 +94,7 @@
     <Compile Include="MonoDevelop.Projects\NetStandardProjectTests.cs" />
     <Compile Include="MonoDevelop.Projects\BuilderManagerTests.cs" />
     <Compile Include="MonoDevelop.Core.Execution\BinaryMessageTests.cs" />
+    <Compile Include="MonoDevelop.Core\ProgressMonitorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Core\" />

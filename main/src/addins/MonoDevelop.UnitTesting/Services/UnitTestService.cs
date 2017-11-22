@@ -402,14 +402,7 @@ namespace MonoDevelop.UnitTesting
 
 		public static void ResetResult (UnitTest test)
 		{
-			if (test == null)
-				return;
-			test.ResetLastResult ();
-			UnitTestGroup group = test as UnitTestGroup;
-			if (group == null) 
-				return;
-			foreach (UnitTest t in new List<UnitTest> (group.Tests))
-				ResetResult (t);
+			test?.ResetLastResult ();
 		}
 
 		public static event EventHandler TestSuiteChanged;

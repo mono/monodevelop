@@ -65,7 +65,6 @@ namespace MonoDevelop.CSharp.Highlighting
 
 	class HighlightUsagesExtension : AbstractUsagesExtension<UsageData>
 	{
-		CSharpSyntaxMode syntaxMode;
 		static IHighlighter [] highlighters;
 
 		static HighlightUsagesExtension ()
@@ -86,6 +85,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			base.Initialize ();
 			Editor.SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Editor, DocumentContext));
+			fallbackHighlighting = Editor.SyntaxHighlighting;
 			UpdateHighlighting ();
 			DocumentContext.AnalysisDocumentChanged += delegate {
 				Runtime.RunInMainThread (delegate {
@@ -94,10 +94,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			};
 		}
 
+		ISyntaxHighlighting fallbackHighlighting;
 		void UpdateHighlighting ()
 		{
-			if (DocumentContext?.AnalysisDocument == null)
+			if (DocumentContext?.AnalysisDocument == null) {
+				if (Editor.SyntaxHighlighting != fallbackHighlighting)
+					Editor.SyntaxHighlighting = fallbackHighlighting;
 				return;
+			}
 			var old = Editor.SyntaxHighlighting as RoslynClassificationHighlighting;
 			if (old == null || old.DocumentId != DocumentContext.AnalysisDocument.Id) {
 				Editor.SyntaxHighlighting = new RoslynClassificationHighlighting ((MonoDevelopWorkspace)DocumentContext.RoslynWorkspace,
@@ -107,11 +111,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		public override void Dispose ()
 		{
-			if (syntaxMode != null) {
-				Editor.SemanticHighlighting = null;
-				syntaxMode.Dispose ();
-				syntaxMode = null;
-			}
+			Editor.SyntaxHighlighting = fallbackHighlighting;
 			base.Dispose ();
 		}
 
