@@ -334,7 +334,7 @@ namespace MonoDevelop.Projects.MSBuild
 		/// Starts a build session that can span multiple builders and projects
 		/// </summary>
 		/// <returns>The build session handle.</returns>
-		/// <param name="tw">Log writter</param>
+		/// <param name="monitor">Progress monitor.</param>
 		/// <param name="verbosity">MSBuild verbosity.</param>
 		internal static object StartBuildSession (ProgressMonitor monitor, MSBuildLogger logger, MSBuildVerbosity verbosity, ProjectConfigurationInfo[] configurations)
 		{
@@ -358,8 +358,8 @@ namespace MonoDevelop.Projects.MSBuild
 					if (b.BuildSessionId == session) {
 						b.BuildSessionId = null;
 
-						var sessionInfo = session as SessionInfo;
-						await b.EndBuildOperation (sessionInfo.Monitor);
+						var si = (SessionInfo)session;
+						await b.EndBuildOperation (si.Monitor);
 					}
 			}
 		}
