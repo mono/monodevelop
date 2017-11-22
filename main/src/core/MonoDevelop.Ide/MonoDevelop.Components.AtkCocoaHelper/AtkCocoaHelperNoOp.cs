@@ -157,6 +157,14 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public static void MakeAccessibilityAnnouncement (this Atk.Object o,  string message)
 		{
 		}
+
+		public void AddAccessibleChildren(IEnumerable<IAccessibilityElementProxy> children)
+		{
+		}
+
+		public void ResetAccessibilityChildren()
+		{
+		}
 	}
 
 	public class AccessibilityElementProxy : IAccessibilityElementProxy

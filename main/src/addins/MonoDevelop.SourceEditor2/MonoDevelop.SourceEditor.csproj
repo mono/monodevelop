@@ -276,6 +276,7 @@
     <Compile Include="VSEditor\TextViewRoleSet.cs" />
     <Compile Include="VSEditor\VacuousTextDataModel.cs" />
     <None Include="packages.config" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\HoverDebugIconMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

@@ -1505,7 +1505,7 @@ namespace MonoDevelop.SourceEditor
 			}
 
 			if (hoverDebugLineMarker == null && e.LineSegment != null && e.Editor.Document.GetMarkers (e.LineSegment).FirstOrDefault (m => m is DebugIconMarker) == null) {
-				hoverDebugLineMarker = new DebugIconMarker (hoverBreakpointIcon, true) {
+				hoverDebugLineMarker = new HoverDebugIconMarker (hoverBreakpointIcon, true) {
 					Tooltip = GettextCatalog.GetString ("Insert Breakpoint")
 				};
 				e.Editor.Document.AddMarker (e.LineSegment.LineNumber, hoverDebugLineMarker);

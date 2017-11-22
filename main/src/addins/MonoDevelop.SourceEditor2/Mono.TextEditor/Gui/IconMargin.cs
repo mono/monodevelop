@@ -30,6 +30,11 @@ using Gtk;
 using Gdk;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Core;
+using MonoDevelop.SourceEditor;
 
 namespace Mono.TextEditor
 {
@@ -49,7 +54,7 @@ namespace Mono.TextEditor
 				return marginWidth;
 			}
 		}
-		
+
 		internal protected override void OptionsChanged ()
 		{
 			backgroundColor = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.IndicatorMargin);
@@ -135,11 +140,58 @@ namespace Mono.TextEditor
 				foreach (var marker in editor.Document.GetMarkersOrderedByInsertion (lineSegment)) {
 					var marginMarker = marker as MarginMarker;
 					if (marginMarker != null && marginMarker.CanDrawForeground (this)) {
-						marginMarker.DrawForeground (editor, ctx, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
+						var metrics = new MarginDrawMetrics(this, area, lineSegment, line, x, y, lineHeight);
+						marginMarker.DrawForeground (editor, ctx, metrics);
+						marginMarker.MarginDrawMetrics = metrics;
 					}
 				}
 				if (DrawEvent != null) 
 					DrawEvent (this, new BookmarkMarginDrawEventArgs (editor, ctx, lineSegment, line, x, y));
+			}
+			UpdateAccessibility();
+		}
+
+		void UpdateAccessibility()
+		{
+			var children = GetAccessibleChildren();
+			Accessible.ResetAccessibilityChildren();
+			Accessible.AddAccessibleChildren(children);
+		}
+
+		Button fakeParent = new Button(); //margin can't be widget, and gtkparent can't be null  
+		IEnumerable<AccessibilityElementProxy> GetAccessibleChildren()
+		{
+			var result = editor.Document.Lines
+							   .SelectMany(line => editor.Document.GetMarkers(line))
+							   .OfType<MarginMarker>()
+							   .Where(mr => !(mr is HoverDebugIconMarker))
+			                   .Select(mark => new MarkerAccessible(fakeParent, mark).Accessible);
+			return result;
+		}
+
+		class MarkerAccessible
+		{
+			AccessibilityElementProxy accessible;
+			public AccessibilityElementProxy Accessible => accessible ?? (accessible = AccessibilityElementProxy.ButtonElementProxy());
+
+			public MarkerAccessible(Widget parent, MarginMarker marker)
+			{
+				Accessible.GtkParent = parent;
+				Accessible.Help = GettextCatalog.GetString("Marker");
+				var metrics = marker.MarginDrawMetrics;
+				if (metrics == null)
+					return;
+
+				var markerX = (int)metrics.X;
+				var markerY = (int)metrics.Y;
+				var markerWidth = (int)metrics.Width;
+				var markerHeight = (int)metrics.Height;
+				var marginHeight = metrics.Margin.RectInParent.Height;
+				var mirroredY = marginHeight - (int)metrics.Height - (int)metrics.Y;
+
+				Accessible.Title = GettextCatalog.GetString("Marker at line {0}", metrics.LineNumber);
+				Accessible.FrameInParent = new Rectangle(markerX, mirroredY, markerWidth, markerHeight);
+				Accessible.FrameInGtkParent = new Rectangle(markerX, markerY, markerWidth, markerHeight);
 			}
 		}
 		
