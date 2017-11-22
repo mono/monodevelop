@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			};
 
 			scrolledWindow = new CompactScrolledWindow ();
-			scrolledWindow.Add (editor);
+			scrolledWindow.AddWithViewport (editor);
 
 			PackStart (scrolledWindow, expand: true, fill: true, padding: 0);
 			ShowAll ();
