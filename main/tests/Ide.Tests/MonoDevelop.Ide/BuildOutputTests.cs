@@ -29,6 +29,7 @@ using NUnit.Framework;
 using MonoDevelop.Ide.BuildOutputView;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
@@ -42,7 +43,7 @@ namespace MonoDevelop.Ide
 		}
 
 		[Test]
-		public void CustomProject_ToTextEditor ()
+		public async Task CustomProject_ToTextEditor ()
 		{
 			var bo = new BuildOutput ();
 			var monitor = bo.GetProgressMonitor ();
@@ -52,7 +53,7 @@ namespace MonoDevelop.Ide
 			monitor.LogObject (new ProjectFinishedProgressEvent ());
 
 			var editor = TextEditorFactory.CreateNewEditor ();
-			var result = bo.ToTextEditor (editor, true);
+			var result = await bo.ToTextEditor (editor, true);
 
 			Assert.That (result.Item1, Is.Not.Empty);
 			Assert.That (result.Item1, Contains.Substring ("Custom project built"));
