@@ -519,6 +519,9 @@ namespace MonoDevelop.DotNetCore
 			if (Project.Loading)
 				return;
 
+			if (IdeApp.ProjectOperations == null)
+				return;
+
 			if (IdeApp.ProjectOperations.CurrentSelectedSolution != Project.ParentSolution)
 				return;
 
