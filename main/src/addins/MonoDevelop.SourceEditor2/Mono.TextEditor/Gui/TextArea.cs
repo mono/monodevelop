@@ -3048,17 +3048,8 @@ namespace Mono.TextEditor
 				var change = args.TextChanges[i];
 				var start = editor.Document.OffsetToLineNumber (change.NewOffset);
 				var end = editor.Document.OffsetToLineNumber (change.NewOffset + change.InsertionLength);
-				if (start != end)
-					editor.Document.CommitMultipleLineUpdate (start, end);
+				editor.Document.CommitMultipleLineUpdate (start, end);
 			}
-			// TODO: Not sure if the update is needed anymore (I don't think so atm - since extending text line markers update itself)
-			//if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
-			//	return;
-			//if (!e.Line.Markers.Any (m => m is IExtendingTextLineMarker))
-			//	return;
-			//var line = e.Line.LineNumber;
-			//textEditorData.HeightTree.SetLineHeight (line, GetLineHeight (e.Line));
-			//RedrawLine (line);
 		}
 		#endregion
 		
