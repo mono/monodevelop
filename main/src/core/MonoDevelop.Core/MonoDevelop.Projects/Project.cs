@@ -3905,7 +3905,7 @@ namespace MonoDevelop.Projects
 		{
 			System.Diagnostics.Debug.WriteLine ("Created {0}", e.FullPath);
 
-			if (Directory.Exists (e.FullPath) || Files.Any (file => file.FilePath == e.FullPath))
+			if (Directory.Exists (e.FullPath))
 				return;
 
 			Runtime.RunInMainThread (() => {
@@ -3932,6 +3932,12 @@ namespace MonoDevelop.Projects
 
 		void OnFileCreatedExternally (string fileName)
 		{
+			if (Files.Any (file => file.FilePath == fileName)) {
+				// File exists in project. This can happen if the file was added
+				// in the IDE and not externally.
+				return;
+			}
+
 			string include = MSBuildProjectService.ToMSBuildPath (ItemDirectory, fileName);
 			foreach (var it in sourceProject.FindGlobItemsIncludingFile (include).Where (it => it.Metadata.GetProperties ().Count () == 0)) {
 				var eit = CreateFakeEvaluatedItem (sourceProject, it, include, null);

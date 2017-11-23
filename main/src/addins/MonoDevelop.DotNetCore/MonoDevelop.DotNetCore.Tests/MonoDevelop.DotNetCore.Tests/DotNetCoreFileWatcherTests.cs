@@ -375,5 +375,35 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsTrue (project.Files.Any (file => file.FilePath == renamedCSharpFileName), $"File not added to project '{renamedCSharpFileName}'");
 			Assert.IsFalse (project.Files.Any (file => file.FilePath == newCSharpFilePath), $"File not removed from project '{newCSharpFilePath}'");
 		}
+
+		[Test]
+		public async Task FileRenamedInSolutionPad_FileWatcherRenameEventIsIgnored ()
+		{
+			var project = await OpenProject ();
+
+			var fileAdded = WaitForSingleFileAdded (project);
+			var csharpFilePath = WriteFile (project.BaseDirectory, "CSharpFile.cs");
+			await AssertFileAddedToProject (fileAdded, csharpFilePath, "Compile");
+
+			// Rename file.
+			var renamedCSharpFilePath = csharpFilePath.ChangeName ("RenamedCSharpFile");
+			FileService.RenameFile (csharpFilePath, renamedCSharpFilePath);
+
+			// Simulate the behaviour of the RootWorkspace after receiving a
+			// FileService.FileRenamed event.
+			solution.RootFolder.RenameFileInProjects (csharpFilePath, renamedCSharpFilePath);
+			Assert.AreEqual (1, project.Files.Count (file => file.FilePath == renamedCSharpFilePath));
+
+			fileAdded = WaitForSingleFileAdded (project);
+			var fileRemoved = WaitForSingleFileRemoved (project);
+
+			// Finished task should be the delay timeout. No file should be added or
+			// removed since it was already renamed in the project.
+			var finishedTask = await Task.WhenAny (fileAdded, fileRemoved, Task.Delay (500));
+
+			Assert.AreNotEqual (fileAdded, finishedTask);
+			Assert.AreNotEqual (fileRemoved, finishedTask);
+			Assert.AreEqual (1, project.Files.Count (file => file.FilePath == renamedCSharpFilePath));
+		}
 	}
 }
