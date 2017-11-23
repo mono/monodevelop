@@ -80,6 +80,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public override void Dispose ()
 		{
 			control.Dispose ();
+			base.Dispose ();
 		}
 	}
 }
