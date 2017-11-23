@@ -39,6 +39,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public BuildOutputViewContent (FilePath filename)
 		{
 			this.filename = filename;
+			this.ContentName = filename;
 			control = new BuildOutputWidget (filename);
 		}
 
