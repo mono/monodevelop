@@ -48,7 +48,9 @@ hdiutil attach "$DMG_FILE" -readwrite -noautoopen -mountpoint "$MOUNT_POINT" -qu
 
 echo "Populating image..."
 
-mv "$DMG_APP" "$MOUNT_POINT"
+# this used to be mv, but we need to preserve the bundle directory to do more checks on the contents
+# such as compatibility-check
+ditto "$DMG_APP" "$MOUNT_POINT/$DMG_APP"
 
 # This won't result in any deletions 
 #find "$MOUNT_POINT" -type d -iregex '.*\.svn$' &>/dev/null | xargs rm -rf
