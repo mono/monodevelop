@@ -80,7 +80,7 @@ namespace MonoDevelop.UnitTesting
 			if (!string.IsNullOrEmpty (test.ReferenceErrorMessage)) {
 				nodeInfo.Label = Ambience.EscapeText (title);
 				nodeInfo.StatusMessage = test.ReferenceErrorMessage;
-				nodeInfo.StatusSeverity = Ide.Tasks.TaskSeverity.Warning;
+				nodeInfo.StatusSeverity = Ide.Tasks.TaskSeverity.Error;
 				return;
 			}
 
