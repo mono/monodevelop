@@ -557,7 +557,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 				var t = FindAllTab ((int)evnt.X, (int)TabPadding.Top + 3);
 				if (t == null) {
-					if (IsOverNormalTabArea ((int)evnt.X)) {
+					if (normalTabs.Count > 0 && IsOverNormalTabArea ((int)evnt.X)) {
 						//We need detect if we are in a normal area or preview area
 						var last = (DockNotebookTab)normalTabs.Last ();
 						if (dragX > last.Allocation.Right)
