@@ -1339,7 +1339,6 @@ namespace Mono.TextEditor
 			}
 			task.ContinueWith (t => {
 				cachedLines [lineNumber] = t.Result;
-				Document.CommitLineUpdate (line);
 			}, token, TaskContinuationOptions.OnlyOnRanToCompletion, Runtime.MainTaskScheduler);
 			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
 		}
