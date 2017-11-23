@@ -993,10 +993,10 @@ namespace MonoDevelop.Components.DockNotebook
 
 		DockNotebookTab FindAllTab (int x, int y)
 		{
-			return FindTab (x, y, normalTabs, notebook.CurrentTab);
+			return FindTab (x, y, notebook.Tabs, notebook.CurrentTab);
 		}
 
-		static DockNotebookTab FindTab (int x, int y, List<DockNotebookTab> collection, DockNotebookTab currentTab)
+		static DockNotebookTab FindTab (int x, int y, IEnumerable<DockNotebookTab> collection, DockNotebookTab currentTab)
 		{
 			if (currentTab != null) {
 				var allocWithLean = currentTab.Allocation;
@@ -1006,8 +1006,8 @@ namespace MonoDevelop.Components.DockNotebook
 					return currentTab;
 			}
 
-			for (int n = 0; n < collection.Count; n++) {
-				var tab = (DockNotebookTab)collection [n];
+			for (int n = 0; n < collection.Count (); n++) {
+				var tab = (DockNotebookTab)collection.ElementAt (n);
 				if (tab.Allocation.Contains (x, y))
 					return tab;
 			}
