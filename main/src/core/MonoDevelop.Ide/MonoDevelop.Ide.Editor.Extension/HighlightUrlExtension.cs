@@ -82,10 +82,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				var startLine = Editor.GetLineByOffset (change.NewOffset);
 				var line = startLine;
 				int endOffset = change.NewOffset + change.InsertionLength;	
-				foreach (var u in Editor.GetLineMarkers (line).OfType<IUrlTextLineMarker> ()) {
-					Editor.RemoveMarker (u);
-					markers.Remove (u);
-				}
+			
 				var input = Editor.CreateSnapshot ();
 				var lineOffset = line.Offset;
 				if (src.TryGetValue (lineOffset, out CancellationTokenSource cts))
@@ -145,6 +142,15 @@ namespace MonoDevelop.Ide.Editor.Extension
 				Runtime.RunInMainThread (delegate {
 					if (token.IsCancellationRequested)
 						return;
+					line = startLine;
+					while (line != null && line.Offset < endOffset) {
+						foreach (var u in Editor.GetLineMarkers (line).OfType<IUrlTextLineMarker> ()) {
+							Editor.RemoveMarker (u);
+							markers.Remove (u);
+						}
+						line = line.NextLine;
+					}
+
 					foreach (var m in matches) {
 						var startCol = m.Item2.Index;
 						var url = m.Item2.Value;
