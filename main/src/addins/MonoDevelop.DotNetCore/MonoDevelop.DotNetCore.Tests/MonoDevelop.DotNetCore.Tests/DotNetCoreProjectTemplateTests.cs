@@ -230,25 +230,6 @@ namespace MonoDevelop.DotNetCore.Tests
 			return config;
 		}
 
-		/// <summary>
-		/// Clear all other package sources and just use the main NuGet package source when
-		/// restoring the packages for the project temlate tests.
-		/// </summary>
-		void CreateNuGetConfigFile (FilePath directory)
-		{
-			var fileName = directory.Combine ("NuGet.Config");
-
-			string xml =
-				"<configuration>\r\n" +
-				"  <packageSources>\r\n" +
-				"    <clear />\r\n" +
-				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
-				"  </packageSources>\r\n" +
-				"</configuration>";
-
-			File.WriteAllText (fileName, xml);
-		}
-
 		static string GetProjectName (string templateId)
 		{
 			return templateId.Replace ("Microsoft.Test.", "")
