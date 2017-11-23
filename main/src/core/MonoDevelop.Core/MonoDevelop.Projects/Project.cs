@@ -3908,6 +3908,10 @@ namespace MonoDevelop.Projects
 			if (Directory.Exists (e.FullPath))
 				return;
 
+			FilePath filePath = e.FullPath;
+			if (filePath.FileName == ".DS_Store")
+				return;
+
 			Runtime.RunInMainThread (() => {
 				OnFileCreatedExternally (e.FullPath);
 			});

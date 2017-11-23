@@ -405,5 +405,21 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreNotEqual (fileRemoved, finishedTask);
 			Assert.AreEqual (1, project.Files.Count (file => file.FilePath == renamedCSharpFilePath));
 		}
+
+		[Test]
+		public async Task DSStoreFileCreated_FileNotAddedToProject ()
+		{
+			var project = await OpenProject ();
+
+			// Create .DS_Store file.
+			var fileAdded = WaitForSingleFileAdded (project);
+			var dummyDSStoreFile = WriteFile (project.BaseDirectory, ".DS_Store");
+
+			var csharpFilePath = WriteFile (project.BaseDirectory, "CSharpFile.cs");
+			await AssertFileAddedToProject (fileAdded, csharpFilePath, "Compile");
+
+			Assert.IsTrue (project.Files.Any (file => file.FilePath == csharpFilePath), $"File not added to project '{csharpFilePath}'");
+			Assert.IsFalse (project.Files.Any (file => file.FilePath == dummyDSStoreFile), $"File not removed from project '{dummyDSStoreFile}'");
+		}
 	}
 }
