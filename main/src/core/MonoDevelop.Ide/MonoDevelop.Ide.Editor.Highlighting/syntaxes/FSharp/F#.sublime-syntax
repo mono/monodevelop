@@ -7,7 +7,7 @@ file_extensions:
 scope: source.fs
 variables:
   modifiers: 'static|abstract|default|override|public|extern|internal|mutable|rec|inline|private'
-  typemodifiers: 'public|private|internal'
+  typemodifiers: '(public|private|internal|rec)'
 contexts:
   main:
     - include: functions2
@@ -87,7 +87,20 @@ contexts:
       scope: entity.name.class
     - match: '\b([A-Z][\w]*)\b'
       scope: entity.name.class
-    - match: '(module|type|and)(\s+)({{typemodifiers}})\s+(\w+|``[^`]+``)'
+    - match: '(module)(\s+)({{typemodifiers}})\s+([\w\.]+)\b(\w+)\b'
+      captures:
+        1: keyword.source.fs
+        2: source.fs
+        3: keyword.source.fs
+        5: source.fs
+        6: entity.name.class
+    - match: '(module)(\s+)([\w\.]+)\b(\w+)\b'
+      captures:
+        1: keyword.source.fs
+        2: source.fs
+        3: source.fs
+        4: entity.name.class
+    - match: '(module)(\s+)({{typemodifiers}})\s+(\w+|``[^`]+``)'
       captures:
         1: keyword.source.fs
         2: source.fs
@@ -98,6 +111,12 @@ contexts:
         1: keyword.source.fs
         2: source.fs
         3: entity.name.class
+    - match: '(module|type|and)(\s+)({{typemodifiers}})\s+(\w+|``[^`]+``)'
+      captures:
+        1: keyword.source.fs
+        2: source.fs
+        3: keyword.source.fs
+        4: entity.name.class
     - match: '(of)(\s+)(\w+)'
       captures:
         1: keyword.source.fs

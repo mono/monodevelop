@@ -407,8 +407,17 @@ namespace MonoDevelop.CodeActions
 				var oldSolution = documentContext.AnalysisDocument.Project.Solution;
 				var updatedSolution = oldSolution;
 				using (var undo = editor.OpenUndoGroup ()) {
-					updatedSolution = await act.GetChangedSolutionAsync (new RoslynProgressTracker (), token);
-					documentContext.RoslynWorkspace.TryApplyChanges (updatedSolution, new RoslynProgressTracker ());
+					foreach (var operation in await act.GetOperationsAsync (token)) {
+						var applyChanges = operation as ApplyChangesOperation;
+						if (applyChanges == null) {
+							operation.TryApply (documentContext.RoslynWorkspace, new RoslynProgressTracker (), token);
+							continue;
+						}
+						if (updatedSolution == oldSolution) {
+							updatedSolution = applyChanges.ChangedSolution;
+						}
+						operation.TryApply (documentContext.RoslynWorkspace, new RoslynProgressTracker (), token);
+					}
 				}
 				await TryStartRenameSession (documentContext.RoslynWorkspace, oldSolution, updatedSolution, token);
 			}

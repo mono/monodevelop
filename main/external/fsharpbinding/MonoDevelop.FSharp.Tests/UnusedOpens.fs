@@ -7,7 +7,9 @@ open MonoDevelop.FSharp
 module ``Highlight unused opens`` =
     let assertUnusedOpens source expected =
         let doc = TestHelpers.createDoc source "defined"
-        let res = highlightUnusedCode.getUnusedCode doc doc.Editor
+        let res =
+            highlightUnusedCode.getUnusedCode doc doc.Editor
+            |> Async.RunSynchronously
         let opens = res.Value |> List.map(fun range -> highlightUnusedCode.textFromRange doc.Editor range)
         Assert.AreEqual(expected, opens, sprintf "%A" opens)
 
@@ -63,22 +65,6 @@ module ``Highlight unused opens`` =
                 | _ -> None
             """
         assertUnusedOpens source []
-
-    [<Test>]
-    let ``Auto open namespace not needed for nested module``() =
-        let source = 
-            """
-            namespace module1namespace
-            [<AutoOpen>]
-            module module1 =
-                module module2 =
-                    let x = 1
-            namespace consumernamespace
-            open module1namespace
-            module module3 =
-                let y = module2.x
-            """
-        assertUnusedOpens source ["module1namespace"]
 
     [<Test>]
     let ``Duplicated open statements``() =
@@ -165,5 +151,20 @@ module ``Highlight unused opens`` =
             open TypeExtension.ExtensionModule
             module myModule =
                 let x = "".SomeExtensionMethod()
+            """
+        assertUnusedOpens source []
+
+    [<Test>]
+    let ``open module``() =
+        let source =
+            """
+            module ElmishSample.Counter.Types
+
+            type Model = { count: int }
+
+            module ElmishSample.Counter.State
+
+            open Types
+            let init () = { count = 0 }
             """
         assertUnusedOpens source []

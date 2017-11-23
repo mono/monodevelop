@@ -165,13 +165,6 @@ module CompilerArguments =
             | None -> FSharpEnvironment.getDefaultDirectories(langVersion, targetFramework)
         FSharpEnvironment.resolveAssembly dirs filename
 
-    let tryGetReferenceFromAssembly (assemblyRef:string) (refToFind:string) =
-        let assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly(assemblyRef)
-        assembly.MainModule.AssemblyReferences
-        |> Seq.tryFind (fun name -> name.Name = refToFind)
-        |> Option.bind (fun assemblyNameRef -> let resolved = Mono.Cecil.DefaultAssemblyResolver().Resolve(assemblyNameRef)
-                                               Some (resolved.MainModule.FullyQualifiedName))
-
   let resolutionFailedMessage (n:string) = String.Format ("Resolution: Assembly resolution failed when trying to find default reference for: {0}", n)
   /// Generates references for the current project & configuration as a
   /// list of strings of the form [ "-r:<full-path>"; ... ]
