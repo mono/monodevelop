@@ -379,12 +379,13 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			if (NavigationButtonsVisible) {
 				tabStartX = /*allocation.X +*/ LeftBarPadding + LeanWidth / 2;
-				prevTabStartX = allocation.Width - RightBarPadding - previewTabsContainerWidth + tabContainerPading ;
 			} else {
-				prevTabStartX = tabStartX = LeanWidth / 2;
+				tabStartX = LeanWidth / 2;
 			}
-			tabEndX = allocation.Width - RightBarPadding;
-			prevTabEndX = prevTabStartX + previewTabsContainerWidth + tabContainerPading;
+			tabEndX = allocation.Width;
+
+			prevTabStartX = allocation.Width - RightBarPadding - previewTabsContainerWidth;
+			prevTabEndX = prevTabStartX + previewTabsContainerWidth + RightBarPadding;
 
 			base.OnSizeAllocated (allocation);
 			Update ();
@@ -1121,13 +1122,11 @@ namespace MonoDevelop.Components.DockNotebook
 			return previewTabsContainerAllocation.Contains (x, Allocation.Y);
 		}
 
-		Gdk.Rectangle normalTabsContainerAllocation => new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width - previewTabsContainerWidth - tabContainerPading, Allocation.Height);
-
-		Gdk.Rectangle previewTabsContainerAllocation => new Gdk.Rectangle (Allocation.Width - previewTabsContainerWidth + tabContainerPading, Allocation.Y, previewTabsContainerWidth - tabContainerPading, Allocation.Height);
+		Gdk.Rectangle normalTabsContainerAllocation => new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width - previewTabsContainerWidth - tabSeparationBorder, Allocation.Height);
+		Gdk.Rectangle previewTabsContainerAllocation => new Gdk.Rectangle (Allocation.Width - previewTabsContainerWidth + tabSeparationBorder, Allocation.Y, previewTabsContainerWidth - tabSeparationBorder, Allocation.Height);
 
 		int previewTabsContainerWidth => TabWidth * previewTabs.Count;
-
-		int tabContainerPading = 20;
+		int tabSeparationBorder = 20;
 
 		void Draw (Context ctx)
 		{
