@@ -92,65 +92,6 @@ namespace MonoDevelop.Debugger
 			DebuggingService.StoppedEvent += OnStop;
 		}
 
-		HBox messageOverlayContent;
-
-		void ShowLoadSourceFile (StackFrame sf)
-		{
-			if (messageOverlayContent != null) {
-				editor.RemoveOverlay (messageOverlayContent);
-				messageOverlayContent = null;
-			}
-			messageOverlayContent = new HBox ();
-
-			var hbox = new HBox ();
-			hbox.Spacing = 8;
-			var label = new Label (GettextCatalog.GetString ("{0} not found. Find source file at alternative location.", Path.GetFileName (sf.SourceLocation.FileName)));
-			hbox.TooltipText = sf.SourceLocation.FileName;
-
-			var color = SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), EditorThemeColors.NotificationText);
-			label.ModifyFg (StateType.Normal, color);
-
-			int w, h;
-			label.Layout.GetPixelSize (out w, out h);
-
-			hbox.PackStart (label, true, true, 0);
-			var openButton = new Button (Gtk.Stock.Open);
-			openButton.WidthRequest = 60;
-			hbox.PackEnd (openButton, false, false, 0); 
-
-			const int containerPadding = 8;
-			messageOverlayContent.PackStart (hbox, true, true, containerPadding);
-			editor.AddOverlay (messageOverlayContent,() => openButton.SizeRequest ().Width + w + hbox.Spacing * 5 + containerPadding * 2);
-
-			openButton.Clicked += delegate {
-				var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), MonoDevelop.Components.FileChooserAction.Open) {
-					TransientFor = IdeApp.Workbench.RootWindow,
-					ShowEncodingSelector = true,
-					ShowViewerSelector = true
-				};
-				if (!dlg.Run ())
-					return;
-				var newFilePath = dlg.SelectedFile;
-				try {
-					if (File.Exists (newFilePath)) {
-						if (SourceCodeLookup.CheckFileMd5 (newFilePath, sf.SourceLocation.FileHash)) {
-							SourceCodeLookup.AddLoadedFile (newFilePath, sf.SourceLocation.FileName);
-							sf.UpdateSourceFile (newFilePath);
-							if (IdeApp.Workbench.OpenDocument (newFilePath, null, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger) != null) {
-								this.WorkbenchWindow.CloseWindow (false);
-							}
-						} else {
-							MessageService.ShowWarning (GettextCatalog.GetString("File checksum doesn't match."));
-						}
-					} else {
-						MessageService.ShowWarning (GettextCatalog.GetString ("File not found."));
-					}
-				} catch (Exception) {
-					MessageService.ShowWarning (GettextCatalog.GetString ("Error opening file."));
-				}
-			};
-		}
-
 		public override string TabPageLabel {
 			get {
 				return GettextCatalog.GetString ("Disassembly");
@@ -178,24 +119,12 @@ namespace MonoDevelop.Debugger
 			}
 			
 			if (DebuggingService.CurrentFrame == null) {
-				if (messageOverlayContent != null) {
-					editor.RemoveOverlay (messageOverlayContent);
-					messageOverlayContent = null;
-				}
 				sw.Sensitive = false;
 				return;
 			}
 			
 			sw.Sensitive = true;
 			var sf = DebuggingService.CurrentFrame;
-			if (!string.IsNullOrWhiteSpace (sf.SourceLocation.FileName) && sf.SourceLocation.Line != -1 && sf.SourceLocation.FileHash != null) {
-				ShowLoadSourceFile (sf);
-			} else {
-				if (messageOverlayContent != null) {
-					editor.RemoveOverlay (messageOverlayContent);
-					messageOverlayContent = null;
-				}
-			}
 			if (!string.IsNullOrEmpty (sf.SourceLocation.FileName) && File.Exists (sf.SourceLocation.FileName))
 				FillWithSource ();
 			else
@@ -406,10 +335,6 @@ namespace MonoDevelop.Debugger
 				return;
 			addressLines.Clear ();
 			currentFile = null;
-			if (messageOverlayContent != null) {
-				editor.RemoveOverlay (messageOverlayContent);
-				messageOverlayContent = null;
-			}
 			sw.Sensitive = false;
 			autoRefill = false;
 			editor.Text = string.Empty;

@@ -172,6 +172,11 @@ namespace MonoDevelop.Projects
 
 		public MonoExecutionParameters ()
 		{
+			ResetProperties ();
+		}
+
+		public void ResetProperties ()
+		{
 			foreach (var kvp in itemPropertyAttributes) {
 				var prop = kvp.Key;
 				var propAttr = kvp.Value;
@@ -179,7 +184,7 @@ namespace MonoDevelop.Projects
 					prop.SetValue (this, propAttr.DefaultValue, null);
 			}
 		}
-		
+
 		public void GenerateOptions (IDictionary<string,string> envVars, out string options)
 		{
 			StringBuilder ops = new StringBuilder ();

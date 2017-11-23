@@ -190,7 +190,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				var caretOffset = Editor.CaretOffset;
 				var token = completionTokenSrc.Token;
 				try {
-					var task = Task.Run (() => HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, descriptor.KeyChar), token));
+					var task = HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, descriptor.KeyChar), token);
 					if (task != null) {
 						// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
 						// it doesn't show it. It is used only to process the keys while the completion data is being retrieved.

@@ -32,9 +32,13 @@ MOUNT_POINT="$VOLUME_NAME.mounted"
 rm -f "$DMG_FILE"
 rm -f "$DMG_FILE.master"
  	
-# Compute an approximated image size in MB, and bloat by 1MB
+# Compute an approximated image size in MB, and bloat by double
+# codesign adds a unknown amount of extra size requirements and there are some
+# files where the additional size required is even more "unknown". doubling
+# is a brute force approach, but doesn't really impact final distribution size
+# because the empty space is compressed to nothing.
 image_size=$(du -ck "$DMG_APP" | tail -n1 | cut -f1)
-image_size=$((($image_size + 40000) / 1000))
+image_size=$((($image_size *2) / 1000))
 
 echo "Creating disk image (${image_size}MB)..."
 hdiutil create "$DMG_FILE" -megabytes $image_size -volname "$VOLUME_NAME" -fs HFS+ -quiet || exit $?

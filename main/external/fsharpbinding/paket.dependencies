@@ -7,7 +7,7 @@ nuget FSharp.Core
 nuget System.ValueTuple
 nuget Fantomas framework: >= net45
 nuget FSharp.Compiler.CodeDom 0.9.2 framework: >= net40
-nuget Mono.Cecil framework: >= net40
+nuget Mono.Cecil 0.10.0-beta6 framework: >= net40
 nuget FAKE
 nuget Newtonsoft.Json
 nuget StrongNamer
