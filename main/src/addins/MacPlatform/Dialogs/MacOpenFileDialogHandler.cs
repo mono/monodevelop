@@ -58,7 +58,10 @@ namespace MonoDevelop.MacIntegration
 				}
 				bool pathAlreadySet = false;
 				panel.DidChangeToDirectory += (sender, e) => {
-					var selectedPath = data.OnDirectoryChanged (this, e.NewDirectoryUrl.AbsoluteString);
+					var directoryPath = e.NewDirectoryUrl?.AbsoluteString;
+					if (string.IsNullOrEmpty (directoryPath))
+						return;
+					var selectedPath = data.OnDirectoryChanged (this, directoryPath);
 					if (selectedPath.IsNull)
 						return;
 					data.SelectedFiles = new FilePath [] { selectedPath };

@@ -38,10 +38,10 @@ namespace MonoDevelop.Ide.Gui
 	{
 		#region Begin Workaround
 
-	public delegate void LogFunc (string log_domain, LogLevelFlags log_level, string message);
+		public delegate void LogFunc (IntPtr log_domain, LogLevelFlags log_level, IntPtr message);
 
 	[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
-	internal delegate void LogFunc2 (string log_domain, LogLevelFlags log_level, string message, LogFunc user_data);
+		internal delegate void LogFunc2 (IntPtr log_domain, LogLevelFlags log_level, IntPtr message, LogFunc user_data);
 
 	[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
 	public delegate void PrintFunc (string message);
@@ -96,15 +96,13 @@ namespace MonoDevelop.Ide.Gui
 		[DllImport (LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
 		static extern uint g_log_set_handler (IntPtr log_domain, LogLevelFlags flags, LogFunc2 log_func, LogFunc user_data);
 
-		static readonly LogFunc2 LogFuncTrampoline = (string domain, LogLevelFlags level, string message, LogFunc user_data) => {
+			static readonly LogFunc2 LogFuncTrampoline = (IntPtr domain, LogLevelFlags level, IntPtr message, LogFunc user_data) => {
 			user_data (domain, level, message);
 		};
 
-		public static uint SetLogHandler (string logDomain, LogLevelFlags flags, LogFunc logFunc)
+			public static uint SetLogHandler (IntPtr logDomain, LogLevelFlags flags, LogFunc logFunc)
 		{
-			IntPtr ndom = GLib.Marshaller.StringToPtrGStrdup (logDomain);
-			uint result = g_log_set_handler (ndom, flags, LogFuncTrampoline, logFunc);
-			GLib.Marshaller.Free (ndom);
+				uint result = g_log_set_handler (logDomain, flags, LogFuncTrampoline, logFunc);
 			EnsureHash ();
 			handlers[result] = logFunc;
 
@@ -222,8 +220,11 @@ namespace MonoDevelop.Ide.Gui
 				
 				if (value) {
 					handles = new uint[domains.Length];
-					for (int i = 0; i < domains.Length; i++)
-						handles[i] = GLibLogging.Log.SetLogHandler (domains[i], GLibLogging.LogLevelFlags.All, LoggerMethod);
+					for (int i = 0; i < domains.Length; i++) {
+						IntPtr domain = GLib.Marshaller.StringToPtrGStrdup (domains [i]);
+						handles [i] = GLibLogging.Log.SetLogHandler (domain, GLibLogging.LogLevelFlags.All, LoggerMethod);
+						GLib.Marshaller.Free (domain);
+					}
 				} else {
 					for (int i = 0; i < domains.Length; i++)
 						GLib.Log.RemoveLogHandler (domains[i], handles[i]);
@@ -232,14 +233,27 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		static void LoggerMethod (string logDomain, LogLevelFlags logLevel, string message)
+		static void LoggerMethod (IntPtr logDomainPtr, LogLevelFlags logLevel, IntPtr messagePtr)
 		{
 			if (RemainingBytes < 0)
 				return;
 
+			string logDomain = GLib.Marshaller.Utf8PtrToString (logDomainPtr);
+			string message, extra = string.Empty;
+			try {
+				// Marshal message manually, because the text can contain invalid UTF-8.
+				// Specifically, with zh_CN, pango fails to render some characters and
+				// pango's error message contains the broken UTF-8, thus on marshalling
+				// we need to catch the exception, otherwise we end up in a recursive
+				// glib exception handling.
+				message = GLib.Marshaller.Utf8PtrToString (messagePtr);
+			} catch (Exception e) {
+				message = "Failed to convert message";
+				extra = "\n" + e.ToString ();
+			}
 			System.Diagnostics.StackTrace trace = new System.Diagnostics.StackTrace (2, true);
-			string msg = string.Format ("{0}-{1}: {2}\nStack trace: \n{3}", 
-			    logDomain, logLevel, message, trace.ToString ());
+			string msg = string.Format ("{0}-{1}: {2}\nStack trace: \n{3}{4}", 
+			    logDomain, logLevel, message, trace.ToString (), extra);
 
 			switch (logLevel) {
 			case LogLevelFlags.Debug:
