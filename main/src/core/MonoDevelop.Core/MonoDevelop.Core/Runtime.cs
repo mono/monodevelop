@@ -555,5 +555,11 @@ namespace MonoDevelop.Core
 		public readonly ConfigurationProperty<string> AuthorCopyright = ConfigurationProperty.Create ("Author.Copyright", (string) null);
 		public readonly ConfigurationProperty<string> AuthorCompany = ConfigurationProperty.Create ("Author.Company", "");
 		public readonly ConfigurationProperty<string> AuthorTrademark = ConfigurationProperty.Create ("Author.Trademark", "");
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the updater should be enabled for the current session.
+		/// This value won't be stored in the user preferences.
+		/// </summary>
+		public bool EnableUpdaterForCurrentSession { get; set; } = true;
 	}
 }
