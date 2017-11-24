@@ -3953,6 +3953,14 @@ namespace MonoDevelop.Projects
 
 		void OnFileDeletedExternally (string fileName)
 		{
+			if (File.Exists (fileName)) {
+				// File has not been deleted. The delete event could have been due to
+				// the file being saved. Saving with TextFileUtility will result in
+				// FileService.SystemRename being called to move a temporary file
+				// to the file being saved which deletes and then creates the file.
+				return;
+			}
+
 			Files.Remove (fileName);
 		}
 

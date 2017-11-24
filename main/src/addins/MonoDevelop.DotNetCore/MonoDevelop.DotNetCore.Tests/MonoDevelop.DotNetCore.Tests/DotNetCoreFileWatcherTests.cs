@@ -28,8 +28,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using UnitTests;
@@ -420,6 +422,33 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			Assert.IsTrue (project.Files.Any (file => file.FilePath == csharpFilePath), $"File not added to project '{csharpFilePath}'");
 			Assert.IsFalse (project.Files.Any (file => file.FilePath == dummyDSStoreFile), $"File not removed from project '{dummyDSStoreFile}'");
+		}
+
+		/// <summary>
+		/// TextFileUtility uses FileService.SystemRename which causes the file to be deleted
+		/// and re-created when the file is saved. This would cause the file to be removed
+		/// from the project and then a new project item for the file added afterwards.
+		/// </summary>
+		[Test]
+		public async Task TextFileUtility_WriteText_FileNotRemovedAndAddedBackToProject ()
+		{
+			var project = await OpenProject ();
+
+			var fileAdded = WaitForSingleFileAdded (project);
+			var csharpFilePath = WriteFile (project.BaseDirectory, "CSharpFile.cs");
+			await AssertFileAddedToProject (fileAdded, csharpFilePath, "Compile");
+
+			fileAdded = WaitForSingleFileAdded (project);
+			var fileRemoved = WaitForSingleFileRemoved (project);
+
+			TextFileUtility.WriteText (csharpFilePath, "//", Encoding.UTF8);
+
+			// Finished task should be the delay timeout. No file should be added or
+			// removed when the C# file is saved.
+			var finishedTask = await Task.WhenAny (fileAdded, fileRemoved, Task.Delay (500));
+
+			Assert.AreNotEqual (fileAdded, finishedTask);
+			Assert.AreNotEqual (fileRemoved, finishedTask);
 		}
 	}
 }
