@@ -1938,11 +1938,9 @@ namespace Mono.TextEditor
 				}
 			}
 
-
 			for (int visualLineNumber = textEditorData.LogicalToVisualLine (startLine);; visualLineNumber++) {
 				int logicalLineNumber = textEditorData.VisualToLogicalLine (visualLineNumber);
 				var line = Document.GetLine (logicalLineNumber);
-
 				// Ensure that the correct line height is set.
 				if (line != null) {
 					var wrapper = textViewMargin.GetLayout (line);
@@ -1969,7 +1967,7 @@ namespace Mono.TextEditor
 					setLongestLine = true;
 				}
 				curY += lineHeight;
-				if (curY > cairoRectangle.Y + cairoRectangle.Height)
+				if (curY >= cairoRectangle.Y + cairoRectangle.Height)
 					break;
 			}
 			
@@ -3052,14 +3050,6 @@ namespace Mono.TextEditor
 				var end = editor.Document.OffsetToLineNumber (change.NewOffset + change.InsertionLength);
 				editor.Document.CommitMultipleLineUpdate (start, end);
 			}
-			// TODO: Not sure if the update is needed anymore (I don't think so atm - since extending text line markers update itself)
-			//if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
-			//	return;
-			//if (!e.Line.Markers.Any (m => m is IExtendingTextLineMarker))
-			//	return;
-			//var line = e.Line.LineNumber;
-			//textEditorData.HeightTree.SetLineHeight (line, GetLineHeight (e.Line));
-			//RedrawLine (line);
 		}
 		#endregion
 		
