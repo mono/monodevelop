@@ -27,8 +27,10 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Components;
 
-namespace MonoDevelop.Ide.Gui.Components
+namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildLogDisplayBinding : IViewDisplayBinding
 	{

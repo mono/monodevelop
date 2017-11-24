@@ -1,5 +1,5 @@
 ﻿//
-// BuildOutputProcessor.cs
+// MSBuildOutputProcessor.cs
 //
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
@@ -25,52 +25,18 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using Microsoft.Build.Logging;
 using Microsoft.Build.Framework;
-using MonoDevelop.Ide.Editor;
-using System.Text;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Gui.Components
+namespace MonoDevelop.Ide.BuildOutputView
 {
-	enum BuildOutputNodeType
+	class MSBuildOutputProcessor : BuildOutputProcessor
 	{
-		Build,
-		Project,
-		Target,
-		Task,
-		Error,
-		Warning,
-		Message
-	}
+		readonly BinaryLogReplayEventSource binlogReader = new BinaryLogReplayEventSource ();
 
-	class BuildOutputNode
-	{
-		public BuildOutputNodeType NodeType { get; set; }
-		public string Message { get; set; }
-		public BuildOutputNode Parent { get; set; }
-		public IList<BuildOutputNode> Children { get; } = new List<BuildOutputNode> ();
-		public bool HasErrors { get; set; }
-	}
-
-	class BuildOutputProcessor
-	{
-		List<BuildOutputNode> rootNodes;
-		BuildOutputNode currentNode;
-
-		public BuildOutputProcessor (string fileName, bool includeDiagnostics)
+		public MSBuildOutputProcessor (string filePath, bool removeFileOnDispose) : base (filePath, removeFileOnDispose)
 		{
-			FileName = fileName;
-			IncludesDiagnostics = includeDiagnostics;
-		}
-
-		public string FileName { get; }
-
-		public bool IncludesDiagnostics { get; set; }
-
-		public void Process ()
-		{
-			var binlogReader = new BinaryLogReplayEventSource ();
 			binlogReader.BuildStarted += BinLog_BuildStarted;
 			binlogReader.BuildFinished += BinLog_BuildFinished;
 			binlogReader.ErrorRaised += BinLog_ErrorRaised;
@@ -82,39 +48,22 @@ namespace MonoDevelop.Ide.Gui.Components
 			binlogReader.TargetFinished += BinLog_TargetFinished;
 			binlogReader.TaskStarted += BinLog_TaskStarted;
 			binlogReader.TaskFinished += BinLog_TaskFinished;
-
-			currentNode = null;
-			rootNodes = new List<BuildOutputNode> ();
-			binlogReader.Replay (FileName);
 		}
 
-		private void AddNode (BuildOutputNodeType nodeType, string message, bool isStart)
+		public override void Process ()
 		{
-			var node = new BuildOutputNode { NodeType = nodeType, Message = message };
-			if (currentNode == null) {
-				rootNodes.Add (node);
-			} else {
-				currentNode.Children.Add (node);
-				node.Parent = currentNode;
+			if (!NeedsProcessing) {
+				return;
 			}
 
-			if (isStart) {
-				currentNode = node;
-			}
+			Clear ();
+			base.Process ();
 
-			if (nodeType == BuildOutputNodeType.Error) {
-				var p = node;
-				while (p != null) {
-					p.HasErrors = true;
-					p = p.Parent;
-				}
+			try {
+				binlogReader.Replay (FileName);
+			} catch (Exception ex) {
+				LoggingService.LogError ($"Can't process {FileName}: {ex.ToString ()}");
 			}
-		}
-
-		private void EndCurrentNode (string message)
-		{
-			AddNode (BuildOutputNodeType.Message, message, false);
-			currentNode = currentNode?.Parent;
 		}
 
 		private void BinLog_BuildStarted (object sender, BuildStartedEventArgs e)
@@ -139,9 +88,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void BinlogReader_MessageRaised (object sender, BuildMessageEventArgs e)
 		{
-			if (IncludesDiagnostics || e.Importance != MessageImportance.Low) {
-				AddNode (BuildOutputNodeType.Message, e.Message, false);
-			}
+			AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message, e.Message, false);
 		}
 
 		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
@@ -172,44 +119,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		private void BinLog_TaskFinished (object sender, TaskFinishedEventArgs e)
 		{
 			EndCurrentNode (e.Message);
-		}
-
-		private void ProcessChildren (TextEditor editor, IList<BuildOutputNode> children, int tabPosition, StringBuilder buildOutput, List<IFoldSegment> segments)
-		{
-			foreach (var child in children) {
-				ProcessNode (editor, child, tabPosition + 1, buildOutput, segments); 
-			}
-		}
-
-		private void ProcessNode (TextEditor editor, BuildOutputNode node, int tabPosition, StringBuilder buildOutput, List<IFoldSegment> segments)
-		{
-			buildOutput.AppendLine ();
-
-			for (int i = 0; i < tabPosition; i++) buildOutput.Append ("\t");
-
-			int currentPosition = buildOutput.Length;
-			buildOutput.Append (node.Message);
-
-			if (node.Children.Count > 0) {
-				ProcessChildren (editor, node.Children, tabPosition, buildOutput, segments);
-
-				segments.Add (FoldSegmentFactory.CreateFoldSegment (editor, currentPosition, buildOutput.Length - currentPosition,
-				                                                    node.Parent != null && !node.HasErrors,
-				                                                    node.Message,
-																	FoldingType.Region));
-			}
-		}
-
-		public (string, IList<IFoldSegment>) ToTextEditor (TextEditor editor)
-		{
-			var buildOutput = new StringBuilder ();
-			var foldingSegments = new List<IFoldSegment> ();
-
-			foreach (var node in rootNodes) {
-				ProcessNode (editor, node, 0, buildOutput, foldingSegments);
-			}
-
-			return (buildOutput.ToString (), foldingSegments);
 		}
 	}
 }

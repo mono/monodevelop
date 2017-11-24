@@ -92,7 +92,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		void BeginBuildOperation (IEngineLogWriter logWriter, MSBuildVerbosity verbosity, ProjectConfigurationInfo [] configurations)
+		void BeginBuildOperation (IEngineLogWriter logWriter, string bingLogFilePath, MSBuildVerbosity verbosity, ProjectConfigurationInfo [] configurations)
 		{
 		}
 

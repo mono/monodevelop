@@ -216,16 +216,20 @@ namespace MonoDevelop.Projects.MSBuild
 		/// <summary>
 		/// Indicates that a build session is starting
 		/// </summary>
-		public async Task BeginBuildOperation (TextWriter logWriter, MSBuildLogger logger, MSBuildVerbosity verbosity, ProjectConfigurationInfo[] configurations)
+		public async Task BeginBuildOperation (ProgressMonitor monitor, MSBuildLogger logger, MSBuildVerbosity verbosity, ProjectConfigurationInfo[] configurations)
 		{
-			buildSessionLoggerId = RegisterLogger (logWriter, logger);
+			buildSessionLoggerId = RegisterLogger (monitor.Log, logger);
 			try {
+				var binLogPath = Path.ChangeExtension (Path.GetTempFileName (), "binlog");
 				await connection.SendMessage (new BeginBuildRequest {
+					BinLogFilePath = binLogPath,
 					LogWriterId = buildSessionLoggerId,
 					EnabledLogEvents = logger != null ? logger.EnabledEvents : MSBuildEvent.None,
 					Verbosity = verbosity,
 					Configurations = configurations
 				});
+
+				monitor.LogObject (new ProjectStartedProgressEvent { LogFile = binLogPath });
 			} catch {
 				UnregisterLogger (buildSessionLoggerId);
 				await CheckDisconnected ();
@@ -237,11 +241,13 @@ namespace MonoDevelop.Projects.MSBuild
 		/// Indicates that a build session has finished.
 		/// </summary>
 		/// <returns>The build operation.</returns>
-		public async Task EndBuildOperation ()
+		public async Task EndBuildOperation (ProgressMonitor monitor)
 		{
 			try {
 				await connection.SendMessage (new EndBuildRequest ());
 				await connection.ProcessPendingMessages ();
+
+				monitor.LogObject (new ProjectFinishedProgressEvent ());
 			} catch {
 				await CheckDisconnected ();
 				throw;

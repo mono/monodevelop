@@ -1,7 +1,7 @@
 ﻿//
-// BuildOutputView.cs
+// BuildOutputTests.cs
 //
-// Author:
+// // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
 // Copyright (c) 2017 Microsoft Corp. (http://microsoft.com)
@@ -25,38 +25,39 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Components;
-using MonoDevelop.Core;
+using NUnit.Framework;
+using MonoDevelop.Ide.BuildOutputView;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
-namespace MonoDevelop.Ide.Gui.Components
+namespace MonoDevelop.Ide
 {
-	class BuildOutputViewContent : ViewContent
+	public class BuildOutputTests : IdeTestBase
 	{
-		FilePath filename;
-		BuildOutputWidget control;
-
-		public BuildOutputViewContent (FilePath filename)
+		[Test]
+		public void ProgressMonitor_Instantiation ()
 		{
-			this.filename = filename;
-			control = new BuildOutputWidget (filename);
+			var bo = new BuildOutput ();
+			Assert.AreEqual (bo.GetProgressMonitor (), bo.GetProgressMonitor ());
 		}
 
-		public override Control Control {
-			get {
-				return control;
-			}
-		}
+		[Test]
+		public async Task CustomProject_ToTextEditor ()
+		{
+			var bo = new BuildOutput ();
+			var monitor = bo.GetProgressMonitor ();
 
-		public override bool IsReadOnly {
-			get {
-				return true;
-			}
-		}
+			monitor.LogObject (new ProjectStartedProgressEvent ());
+			monitor.Log.Write ("Custom project built");
+			monitor.LogObject (new ProjectFinishedProgressEvent ());
 
-		public override string TabPageLabel {
-			get {
-				return filename.FileName;
-			}
+			var editor = TextEditorFactory.CreateNewEditor ();
+			var result = await bo.ToTextEditor (editor, true);
+
+			Assert.That (result.Item1, Is.Not.Empty);
+			Assert.That (result.Item1, Contains.Substring ("Custom project built"));
+			Assert.NotNull (result.Item2);
 		}
 	}
 }

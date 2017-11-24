@@ -210,7 +210,7 @@ namespace MonoDevelop.Projects.MSBuild
 		public BinaryMessage BeginBuild (BeginBuildRequest msg)
 		{
 			var logger = msg.LogWriterId != -1 ? (IEngineLogWriter)new LogWriter (msg.LogWriterId, msg.EnabledLogEvents) : (IEngineLogWriter)new NullLogWriter ();
-			BeginBuildOperation (logger, msg.Verbosity, msg.Configurations);
+			BeginBuildOperation (logger, msg.BinLogFilePath, msg.Verbosity, msg.Configurations);
 			return msg.CreateResponse ();
 		}
 

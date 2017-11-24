@@ -29,6 +29,9 @@ using Microsoft.Build.Evaluation;
 using System.Globalization;
 using Microsoft.Build.Execution;
 using System.Linq;
+using Microsoft.Build.Logging;
+using Microsoft.Build.Framework;
+using System;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -106,7 +109,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public bool BuildOperationStarted { get; set; }
 
-		void BeginBuildOperation (IEngineLogWriter logWriter, MSBuildVerbosity verbosity, ProjectConfigurationInfo [] configurations)
+		void BeginBuildOperation (IEngineLogWriter logWriter, string binLogFilePath, MSBuildVerbosity verbosity, ProjectConfigurationInfo [] configurations)
 		{
 			// Start a new MSBuild build session, sending log to the provided writter
 
@@ -118,7 +121,20 @@ namespace MonoDevelop.Projects.MSBuild
 				BuildParameters parameters = new BuildParameters (engine);
 				sessionLogWriter = logWriter;
 				loggerAdapter = new MSBuildLoggerAdapter (logWriter, verbosity);
-				parameters.Loggers = loggerAdapter.Loggers;
+
+				if (!string.IsNullOrEmpty (binLogFilePath)) {
+					var binaryLogger = new BinaryLogger {
+						Parameters = binLogFilePath,
+						Verbosity = LoggerVerbosity.Diagnostic
+					};
+
+					var loggers = new List<ILogger> (loggerAdapter.Loggers);
+					loggers.Add (binaryLogger);
+					parameters.Loggers = loggers;
+				} else {
+					parameters.Loggers = loggerAdapter.Loggers;
+				}
+
 				BuildManager.DefaultBuildManager.BeginBuild (parameters);
 			});
 		}

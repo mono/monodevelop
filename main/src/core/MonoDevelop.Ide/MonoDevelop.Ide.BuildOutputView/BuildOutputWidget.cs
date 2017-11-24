@@ -27,47 +27,73 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
 using Gtk;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Gui.Components
+namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutputWidget : VBox
 	{
-		FilePath filename;
 		TextEditor editor;
 		CompactScrolledWindow scrolledWindow;
+		CheckButton showDiagnosticsButton;
 
-		public BuildOutputWidget (FilePath filename)
+		public BuildOutput BuildOutput { get; private set; }
+
+		public BuildOutputWidget (BuildOutput output)
 		{
-			this.filename = filename;
+			Initialize ();
 
-			var showDiagnosticsButton = new CheckButton (GettextCatalog.GetString ("Show Diagnostics")) {
+			SetupBuildOutput (output);
+		}
+
+		public BuildOutputWidget (FilePath filePath)
+		{
+			Initialize ();
+
+			editor.FileName = filePath;
+
+			var output = new BuildOutput ();
+			output.Load (filePath.FullPath, false);
+			SetupBuildOutput (output);
+		}
+
+		void SetupBuildOutput (BuildOutput output)
+		{
+			BuildOutput = output;
+			ProcessLogs (false);
+
+			BuildOutput.OutputChanged += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
+		}
+
+		void Initialize ()
+		{
+			showDiagnosticsButton = new CheckButton (GettextCatalog.GetString ("Show Diagnostics")) {
 				BorderWidth = 0
 			};
-			showDiagnosticsButton.Clicked += (sender, e) => ReadFile (showDiagnosticsButton.Active);
+			showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 
 			var toolbar = new DocumentToolbar ();
-			toolbar.Add (showDiagnosticsButton); 
+			toolbar.Add (showDiagnosticsButton);
 			PackStart (toolbar.Container, expand: false, fill: true, padding: 0);
 
 			editor = TextEditorFactory.CreateNewEditor ();
 			editor.IsReadOnly = true;
-			editor.FileName = filename;
 			editor.Options = new CustomEditorOptions (editor.Options) {
 				ShowFoldMargin = true,
 				TabsToSpaces = false
 			};
 
 			scrolledWindow = new CompactScrolledWindow ();
-			scrolledWindow.Add (editor);
+			scrolledWindow.AddWithViewport (editor);
 
 			PackStart (scrolledWindow, expand: true, fill: true, padding: 0);
 			ShowAll ();
-
-			ReadFile (false);
 		}
 
 		protected override void OnDestroyed ()
@@ -76,18 +102,30 @@ namespace MonoDevelop.Ide.Gui.Components
 			base.OnDestroyed ();
 		}
 
-		void ReadFile (bool showDiagnostics)
+		void SetupTextEditor (string text, IList<IFoldSegment> segments)
 		{
-			var processor = new BuildOutputProcessor (filename.FullPath, showDiagnostics);
-			processor.Process ();
-
-			var (text, segments) = processor.ToTextEditor (editor);
-
-			editor.SetFoldings (new List<IFoldSegment> ());
 			editor.Text = text;
 			if (segments != null) {
 				editor.SetFoldings (segments);
 			}
+		}
+
+		CancellationTokenSource cts;
+
+		void ProcessLogs (bool showDiagnostics)
+		{
+			cts?.Cancel ();
+			cts = new CancellationTokenSource ();
+
+			Task.Run (async () => {
+				var (text, segments) = await BuildOutput.ToTextEditor (editor, showDiagnostics);
+
+				if (Runtime.IsMainThread) {
+					SetupTextEditor (text, segments);
+				} else {
+					await Runtime.RunInMainThread (() => SetupTextEditor (text, segments));
+				}
+			}, cts.Token);
 		}
 	}
 }
