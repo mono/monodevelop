@@ -229,9 +229,6 @@
     <EmbeddedResource Include="Templates\images\project-aspnet-32~dark~sel%402x.png">
       <LogicalName>project-aspnet-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Templates\images\aspnet-wizard-page.png">
       <LogicalName>aspnet-wizard-page.png</LogicalName>
     </EmbeddedResource>
@@ -367,9 +364,8 @@
     <Compile Include="Razor\Dom\RazorWorkbenchService.cs" />
     <Compile Include="Razor\RazorCSharpParserContext.cs" />
     <Compile Include="Razor\OpenRazorDocument.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Projects\GtkAspNetProjectTemplateWizardPageWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.AspNet.Projects.GtkAspNetProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.AspNet.Projects.GtkAspNetProjectTemplateWizardPageWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -631,5 +627,6 @@
     <Folder Include="Templates\Projects\Files\" />
     <Folder Include="Templates\images\" />
     <Folder Include="WebForms\CSharp\" />
+    <Folder Include="Gui\" />
   </ItemGroup>
 </Project>
