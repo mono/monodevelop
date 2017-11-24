@@ -3884,13 +3884,11 @@ namespace MonoDevelop.Projects
 
 		void OnFileWatcherError (object sender, ErrorEventArgs e)
 		{
-			System.Diagnostics.Debug.WriteLine ("Error {0}", e.GetException ().Message);
+			LoggingService.LogError ("FileWatcher error", e.GetException ());
 		}
 
 		void OnFileRenamed (object sender, RenamedEventArgs e)
 		{
-			System.Diagnostics.Debug.WriteLine ("Renamed {0} to {1}", e.OldName, e.Name);
-
 			Runtime.RunInMainThread (() => {
 				if (Directory.Exists (e.FullPath)) {
 					OnDirectoryRenamedExternally (e.OldFullPath, e.FullPath);
@@ -3903,8 +3901,6 @@ namespace MonoDevelop.Projects
 
 		void OnFileCreated (object sender, FileSystemEventArgs e)
 		{
-			System.Diagnostics.Debug.WriteLine ("Created {0}", e.FullPath);
-
 			if (Directory.Exists (e.FullPath))
 				return;
 
@@ -3919,8 +3915,6 @@ namespace MonoDevelop.Projects
 
 		void OnFileDeleted (object sender, FileSystemEventArgs e)
 		{
-			System.Diagnostics.Debug.WriteLine ("Deleted {0}", e.FullPath);
-
 			Runtime.RunInMainThread (() => {
 				OnFileDeletedExternally (e.FullPath);
 			});
