@@ -629,7 +629,7 @@ namespace MonoDevelop.Projects
 		
 		void UpdatePackageReference ()
 		{
-			if ((referenceType == ReferenceType.Package || referenceType == ReferenceType.Project) && ownerProject != null) {
+			if (referenceType == ReferenceType.Package && ownerProject != null) {
 				notFound = false;
 				string cref = AssemblyContext.FindInstalledAssembly (reference, package, ownerProject.TargetFramework);
 				if (cref == null)

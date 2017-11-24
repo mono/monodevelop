@@ -334,9 +334,13 @@ namespace MonoDevelop.UnitTesting.NUnit
 						runner.Connect (ld.NUnitVersion).Wait ();
 						ld.Info = runner.GetTestInfo (ld.Path, ld.SupportAssemblies).Result;
 					}
-				} catch (Exception ex) {
-					Console.WriteLine (ex.InnerException);
-					ld.Error = ex.InnerException;
+				} catch (AggregateException exception){
+					var baseException = exception.GetBaseException ();
+					Console.WriteLine (baseException);
+					ld.Error = baseException;
+				} catch (Exception exception) {
+					Console.WriteLine (exception);
+					ld.Error = exception;
 				}
 				finally {
 					try {
