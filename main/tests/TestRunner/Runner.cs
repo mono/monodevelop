@@ -65,7 +65,7 @@ namespace MonoDevelop.Tests.TestRunner
 				}
 			}
 
-			PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.CheckForUpdates", false);
+			Runtime.Preferences.EnableUpdaterForCurrentSession = false;
 
 			if (guiUnitAsm != null) {
 				Xwt.XwtSynchronizationContext.AutoInstall = false;
