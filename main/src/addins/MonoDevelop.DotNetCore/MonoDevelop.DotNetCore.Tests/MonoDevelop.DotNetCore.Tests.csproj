@@ -46,7 +46,6 @@
       <Link>MonoDevelop.DotNetCore.Tests\TemplateParameter.cs</Link>
     </Compile>
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreTestBase.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreFileWatcherTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">

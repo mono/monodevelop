@@ -36,10 +36,10 @@ using MonoDevelop.Projects;
 using NUnit.Framework;
 using UnitTests;
 
-namespace MonoDevelop.DotNetCore.Tests
+namespace MonoDevelop.Projects
 {
 	[TestFixture]
-	class DotNetCoreFileWatcherTests : DotNetCoreTestBase
+	class DotNetCoreFileWatcherTests : TestBase
 	{
 		const int FileWatcherTimeout = 2000; // ms
 
@@ -73,6 +73,25 @@ namespace MonoDevelop.DotNetCore.Tests
 			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true {solution.FileName}");
 
 			return project;
+		}
+
+		/// <summary>
+		/// Clear all other package sources and just use the main NuGet package source when
+		/// restoring the packages for the project temlate tests.
+		/// </summary>
+		protected static void CreateNuGetConfigFile (FilePath directory)
+		{
+			var fileName = directory.Combine ("NuGet.Config");
+
+			string xml =
+				"<configuration>\r\n" +
+				"  <packageSources>\r\n" +
+				"    <clear />\r\n" +
+				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
+				"  </packageSources>\r\n" +
+				"</configuration>";
+
+			File.WriteAllText (fileName, xml);
 		}
 
 		void RunMSBuild (string arguments)
