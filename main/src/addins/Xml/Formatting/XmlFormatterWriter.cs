@@ -155,7 +155,6 @@ namespace MonoDevelop.Xml.Formatting
 			Initialize (writer);
 			allow_doc_fragment = true;
 			xmldecl_state = formatSettings.OmitXmlDeclaration ? XmlDeclState.Ignore : XmlDeclState.Allow;
-			newline = formatSettings.NewLineChars;
 			check_character_validity = false;
 			v2 = true;
 		}
@@ -170,7 +169,6 @@ namespace MonoDevelop.Xml.Formatting
 				base_stream = ((StreamWriter) writer).BaseStream;
 			source = writer;
 			nsmanager = new XmlNamespaceManager (name_table);
-			newline = writer.NewLine;
 
 			escaped_text_chars =
 				newline_handling != NewLineHandling.None ?
@@ -185,6 +183,7 @@ namespace MonoDevelop.Xml.Formatting
 		public void WriteNode (XmlNode node, XmlFormattingPolicy formattingPolicy, TextStylePolicy textPolicy)
 		{
 			this.TextPolicy = textPolicy;
+			newline = TextPolicy.GetEolMarker ();
 			formatMap.Clear ();
 			defaultFormatSettings = formattingPolicy.DefaultFormat;
 			foreach (XmlFormattingSettings format in formattingPolicy.Formats) {
@@ -237,6 +236,7 @@ namespace MonoDevelop.Xml.Formatting
 				}
 				case XmlNodeType.Element: {
 					XmlElement elem = (XmlElement) node;
+					writer.AttributesIndent = -1;
 					WriteStartElement (
 						elem.NamespaceURI == null || elem.NamespaceURI.Length == 0 ? String.Empty : elem.Prefix,
 						elem.LocalName,
@@ -866,6 +866,9 @@ namespace MonoDevelop.Xml.Formatting
 			else if (state != WriteState.Start)
 				writer.Write (' ');
 
+			if (writer.AttributesIndent == -1)
+				writer.AttributesIndent = writer.Column;
+
 			if (prefix.Length > 0) {
 				writer.Write (prefix);
 				writer.Write (':');
@@ -1311,8 +1314,17 @@ namespace MonoDevelop.Xml.Formatting
 
 		void WriteIndentAttribute ()
 		{
-			if (!WriteIndentCore (0, true))
-				writer.Write (' '); // space is required instead.
+			if (formatSettings.AlignAttributes && writer.AttributesIndent != -1) {
+				if (state != WriteState.Start)
+					writer.Write (newline);
+				if (TextPolicy.TabsToSpaces)
+					writer.Write (new string (' ', writer.AttributesIndent));
+				else
+					writer.Write (new string ('\t', writer.AttributesIndent / TextPolicy.TabWidth) + new string (' ', writer.AttributesIndent % TextPolicy.TabWidth));
+			} else {
+				if (!WriteIndentCore (0, true))
+					writer.Write (' '); // space is required instead.
+			}
 		}
 
 		bool WriteIndentCore (int nestFix, bool attribute)
@@ -1325,8 +1337,7 @@ namespace MonoDevelop.Xml.Formatting
 
 			if (state != WriteState.Start)
 				writer.Write (newline);
-			for (int i = 0; i < open_count + nestFix; i++)
-				writer.Write (attribute ? formatSettings.AttributesIndentString : formatSettings.ContentIndentString);
+			writer.Write (TextPolicy.TabsToSpaces ? new string (' ', (open_count + nestFix) * TextPolicy.TabWidth) : new string ('\t', open_count + nestFix));
 			return true;
 		}
 
@@ -1915,6 +1926,7 @@ namespace MonoDevelop.Xml.Formatting
 		
 		public int Column;
 		public int AttributesPerLine;
+		public int AttributesIndent;
 
 		public TextWriterWrapper (TextWriter wrapped, XmlFormatterWriter formatter)
 		{
@@ -1968,7 +1980,7 @@ namespace MonoDevelop.Xml.Formatting
 				Column = 0;
 			}
 			else {
-				if (c == '\t' && formatter.TextPolicy != null)
+				if (c == '\t')
 					Column += formatter.TextPolicy.TabWidth;
 				else
 					Column++;

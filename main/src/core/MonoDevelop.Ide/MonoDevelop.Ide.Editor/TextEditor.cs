@@ -1051,7 +1051,7 @@ namespace MonoDevelop.Ide.Editor
 			MimeTypeChanged += TextEditor_MimeTypeChanged;
 			TextEditor_MimeTypeChanged (null, null);
 
-			this.TextView = Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.TextEditorFactoryService.CreateTextView(this) as Microsoft.VisualStudio.Text.Editor.ITextView;
+			this.TextView = Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.TextEditorFactoryService.CreateTextView(this);
 		}
 
 		void TextEditor_FileNameChanged (object sender, EventArgs e)
@@ -1516,7 +1516,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		internal IEnumerable<IDocumentLine> VisibleLines { get { return textEditorImpl.VisibleLines; } }
-		internal event EventHandler<LineEventArgs> LineShown { add { textEditorImpl.LineShown += value; } remove { textEditorImpl.LineShown -= value; } }
+		internal event EventHandler<LineEventArgs> LineShowing { add { textEditorImpl.LineShowing += value; } remove { textEditorImpl.LineShowing -= value; } }
 
 		internal ITextEditorImpl Implementation { get { return this.textEditorImpl; } }
 

@@ -779,11 +779,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					break;
 				case '<':
 					if (readGroupName) {
-						recordGroupName = true;
 						readGroupName = false;
+						var nextChar = regex [i + 1];
+						if (nextChar == '=' || nextChar == '!') {
+							replaceGroup = false;
+							break;
+						}
+						recordGroupName = true;
 					}
 					break;
 				case '?':
+					if (curClass != null)
+						break;
 					if (groupStack.Count > 0 && result[result.Length - 1] == '(') {
 						readGroupName = true;
 						groupNumber--;

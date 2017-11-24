@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.Platform
         [Import]
         internal ITextBufferFactoryService _textBufferFactoryService { get; private set; }
 
-		public ITextBufferFactoryService2 TextBufferFactoryService => (ITextBufferFactoryService2)_textBufferFactoryService;
+		public ITextBufferFactoryService3 TextBufferFactoryService => (ITextBufferFactoryService3)_textBufferFactoryService;
 
 		[Import]
         internal ITextDocumentFactoryService TextDocumentFactoryService { get; private set; }
@@ -65,30 +65,6 @@ namespace Microsoft.VisualStudio.Platform
 
         [Import]
         internal IClassifierAggregatorService ClassifierAggregatorService { get; private set; }
-    }
-
-    [Export(typeof(IThreadHelper))]
-    public class PlatformThreadHelper : IThreadHelper
-    {
-        public Task RunOnUIThread(Action action)
-        {
-            return MonoDevelop.Core.Runtime.RunInMainThread(action);
-        }
-
-        public Task RunOnUIThread(UIThreadPriority priority, Action action)
-        {
-            return MonoDevelop.Core.Runtime.RunInMainThread(action);
-        }
-
-        public Task<T> RunOnUIThread<T>(Func<T> function)
-        {
-            return MonoDevelop.Core.Runtime.RunInMainThread(function);
-        }
-
-        public Task<T> RunOnUIThread<T>(UIThreadPriority priority, Func<T> function)
-        {
-            return MonoDevelop.Core.Runtime.RunInMainThread(function);
-        }
     }
 
     public interface IMimeToContentTypeRegistryService

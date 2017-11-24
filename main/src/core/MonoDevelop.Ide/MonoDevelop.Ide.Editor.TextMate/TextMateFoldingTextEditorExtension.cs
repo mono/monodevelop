@@ -55,6 +55,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		public override void Dispose ()
 		{
 			Editor.TextChanged -= UpdateFoldings;
+			base.Dispose ();
 		}
 
 		struct LineInfo {

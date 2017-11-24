@@ -1,4 +1,5 @@
 using MonoDevelop.Xml.Completion;
+using MonoDevelop.Xml.Editor;
 using NUnit.Framework;
 
 namespace MonoDevelop.Xml.Tests.CompletionData
@@ -14,17 +15,39 @@ namespace MonoDevelop.Xml.Tests.CompletionData
 		}
 		
 		[Test]
-		public void NamespaceUriCompletionString()
+		[TestCase (true)]
+		[TestCase (false)]
+		public void NamespaceUriCompletionString (bool autoInsertFragments)
 		{
-			XmlCompletionData data = new XmlCompletionData("foo", XmlCompletionData.DataType.NamespaceUri);
-			Assert.AreEqual("foo", data.CompletionText);
+			var settingBefore = XmlEditorOptions.AutoInsertFragments;
+			try {
+				XmlEditorOptions.AutoInsertFragments = autoInsertFragments;
+				XmlCompletionData data = new XmlCompletionData ("foo", XmlCompletionData.DataType.NamespaceUri);
+				if (autoInsertFragments)
+					Assert.AreEqual ("\"foo\"", data.CompletionText);
+				else
+					Assert.AreEqual ("foo", data.CompletionText);
+			} finally {
+				XmlEditorOptions.AutoInsertFragments = settingBefore;
+			}
 		}
-		
+
 		[Test]
-		public void AttributeCompletionString()
+		[TestCase (true)]
+		[TestCase (false)]
+		public void AttributeCompletionString (bool autoInsertFragments)
 		{
-			XmlCompletionData data = new XmlCompletionData("foo", XmlCompletionData.DataType.XmlAttribute);
-			Assert.AreEqual("foo", data.CompletionText);
+			var settingBefore = XmlEditorOptions.AutoInsertFragments;
+			try {
+				XmlEditorOptions.AutoInsertFragments = autoInsertFragments;
+				XmlCompletionData data = new XmlCompletionData ("foo", XmlCompletionData.DataType.XmlAttribute);
+				if (autoInsertFragments)
+					Assert.AreEqual ("foo=\"|\"", data.CompletionText);
+				else
+					Assert.AreEqual ("foo", data.CompletionText);
+			} finally {
+				XmlEditorOptions.AutoInsertFragments = settingBefore;
+			}
 		}
 		
 		[Test]

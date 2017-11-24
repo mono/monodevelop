@@ -1349,8 +1349,10 @@ namespace MonoDevelop.Components
 
 					TextTag tag;
 					if (attrIter.GetTagForAttributes (null, out tag)) {
-						buffer.TagTable.Add (tag);
-						buffer.InsertWithTags (ref iter, text.Substring (start, end - start), tag);
+						using (tag) {
+							buffer.TagTable.Add (tag);
+							buffer.InsertWithTags (ref iter, text.Substring (start, end - start), tag);
+						}
 					} else
 						buffer.Insert (ref iter, text.Substring (start, end - start));
 

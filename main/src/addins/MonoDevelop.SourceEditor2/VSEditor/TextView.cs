@@ -1,4 +1,4 @@
-﻿//
+//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -22,7 +22,7 @@ using Microsoft.VisualStudio.Platform;
 
 namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
-    internal class TextView : IWpfTextView
+    internal class TextView : ITextView
     {
         #region Private Members
         private TextEditor _textEditor;
@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         private IEditorOptions _editorOptions;
 
-        private List<Lazy<IWpfTextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>> _deferredTextViewListeners;
+        private List<Lazy<ITextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>> _deferredTextViewListeners;
 
         private ITextCaret _caret;
 
@@ -119,6 +119,9 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             _caret = new TextCaret(_textEditor, this);
 
             //			this.Loaded += OnLoaded;
+
+            // TODO: *Someone* needs to call this to execute UndoHistoryRegistry.RegisterHistory -- VS does this via the ShimCompletionControllerFactory.
+            _factoryService.EditorOperationsProvider.GetEditorOperations (this);
 
             _connectionManager = new ConnectionManager(this, _factoryService.TextViewConnectionListeners, _factoryService.GuardedOperations);
 
@@ -350,11 +353,13 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         public event EventHandler Closed;
         public event EventHandler GotAggregateFocus;
         public event EventHandler LostAggregateFocus;
+#pragma warning disable CS0067
         public event EventHandler<TextViewLayoutChangedEventArgs> LayoutChanged;
         public event EventHandler ViewportLeftChanged;
         public event EventHandler ViewportHeightChanged;
         public event EventHandler ViewportWidthChanged;
         public event EventHandler<MouseHoverEventArgs> MouseHover;
+#pragma warning restore CS0067
 
         public void Close()
         {
@@ -443,7 +448,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                         {
                             if (_deferredTextViewListeners == null)
                             {
-                                _deferredTextViewListeners = new List<Lazy<IWpfTextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>>();
+                                _deferredTextViewListeners = new List<Lazy<ITextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>>();
                             }
                             _deferredTextViewListeners.Add(extension);
                             continue;

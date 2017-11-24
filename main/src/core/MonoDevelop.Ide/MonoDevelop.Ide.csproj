@@ -139,7 +139,7 @@
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Composition.15.3.38\lib\net45\Microsoft.VisualStudio.Composition.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Threading, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Threading.15.4.4\lib\net45\Microsoft.VisualStudio.Composition.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Threading.15.4.4\lib\net45\Microsoft.VisualStudio.Threading.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Validation, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Validation.15.3.15\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
@@ -206,6 +206,9 @@
     </Reference>
     <Reference Include="YamlDotNet">
       <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -8543,6 +8546,9 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Markdown\Markdown.sublime-syntax">
       <LogicalName>Markdown.sublime-syntax</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\xml\syntaxes\xaml.json">
+      <LogicalName>xaml.json</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -8555,6 +8561,10 @@
     <Compile Include="MonoDevelop.Ide.Commands\ViewCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\WindowCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\JoinableTaskContextHost.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\PlatformCatalog.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\PlatformExtensions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ITextEditorFactoryService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBindingService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\BackgroundProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StatusProgressMonitor.cs" />
@@ -9611,6 +9621,8 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\RoslynCompletionData.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\DotNetCompileTargetSelector.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\OSXEditor.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProjectCapabilityFileTemplateCondition.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\OrFileTemplateCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9651,7 +9663,6 @@
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\language-configuration.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\package.json" />
   </ItemGroup>
-  <Import Project="..\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems" Label="Shared" Condition="Exists('..\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems')" />
   <ItemGroup>
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Components\Xwt\" />
@@ -9705,6 +9716,7 @@
     <InternalsVisibleTo Include="MonoDevelop.VBNetBinding" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
+    <InternalsVisibleTo Include="MonoDevelop.TextEditor.Tests" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

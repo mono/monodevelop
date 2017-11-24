@@ -791,7 +791,8 @@ namespace MonoDevelop.Ide.Gui
 					Content = currentParseText,
 					FileName = currentParseFile,
 					OldParsedDocument = parsedDocument,
-					RoslynDocument = AnalysisDocument
+					RoslynDocument = AnalysisDocument,
+					IsAdhocProject = IsAdHocProject
 				};
 
 				if (project != null && TypeSystemService.CanParseProjections (project, Editor.MimeType, FileName)) {
@@ -852,6 +853,7 @@ namespace MonoDevelop.Ide.Gui
 					analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
 					if (analysisDocument != null) {
 						TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
+						OnAnalysisDocumentChanged (EventArgs.Empty);
 						return Task.CompletedTask;
 					}
 				}
@@ -895,6 +897,7 @@ namespace MonoDevelop.Ide.Gui
 							SubscribeRoslynWorkspace ();
 							analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
 							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
+							OnAnalysisDocumentChanged (EventArgs.Empty);
 						});
 					}
 				}
@@ -1025,7 +1028,8 @@ namespace MonoDevelop.Ide.Gui
 						Content = currentParseText,
 						FileName = currentParseFile,
 						OldParsedDocument = parsedDocument,
-						RoslynDocument = AnalysisDocument
+						RoslynDocument = AnalysisDocument,
+						IsAdhocProject =  IsAdHocProject
 					};
 					if (projectFile != null)
 						options.BuildAction = projectFile.BuildAction;

@@ -40,7 +40,9 @@ namespace MonoDevelop.Components.Extensions
 	public interface ISelectFileDialogHandler : IDialogHandler<SelectFileDialogData>
 	{
 	}
-	
+
+	public delegate FilePath DirectoryChangedDelegate (object sender, string path);
+
 	/// <summary>
 	/// Data for the ISelectFileDialogHandler implementation
 	/// </summary>
@@ -61,8 +63,13 @@ namespace MonoDevelop.Components.Extensions
 			set { FilterSet.DefaultFilter = value; }
 		}
 		public bool ShowHidden { get; set; }
-	}	
-			
+		public DirectoryChangedDelegate DirectoryChangedHandler;
+		public FilePath OnDirectoryChanged (object sender, string path)
+		{
+			return DirectoryChangedHandler?.Invoke (sender, path) ?? FilePath.Null;
+		}
+	}
+
 	/// <summary>
 	/// Filter option to be displayed in file selector dialogs.
 	/// </summary>
@@ -326,6 +333,11 @@ namespace MonoDevelop.Components.Extensions
 				fdiag.Destroy ();
 				fdiag.Dispose ();
 			}
+		}
+
+		public DirectoryChangedDelegate DirectoryChangedHandler {
+			get { return data.DirectoryChangedHandler; }
+			set { data.DirectoryChangedHandler = value; }
 		}
 	}
 }

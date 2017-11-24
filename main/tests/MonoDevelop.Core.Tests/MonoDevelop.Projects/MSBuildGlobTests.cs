@@ -604,6 +604,39 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task RemoveFileLink ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-file-link-test.csproj");
+
+				string linkedFile = Path.Combine (projFile.ParentDirectory, "..", "test.txt");
+				File.WriteAllText (linkedFile, "test");
+
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (4, p.Files.Count);
+
+				var f = p.Files.First (fi => fi.FilePath.FileName == "test.txt");
+				Assert.IsTrue (f.IsLink);
+				p.Files.Remove (f);
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string expectedProjectXml = File.ReadAllText (p.FileName.ChangeName ("glob-file-link-test-saved1"));
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
 		public async Task FileUpdateRemoveMetadataDefinedInGlob ()
 		{
 			// The glob item defines a metadata. All evaluated items have that value.
@@ -959,6 +992,28 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task RemoveFile_WhenNotUsingAdvancedGlobSupport_ShouldNotAddRemoveItemWhenFileNotDeleted ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			string expectedProjectXml = File.ReadAllText (p.FileName);
+
+			string fileName = p.BaseDirectory.Combine ("test.txt");
+			File.WriteAllText (fileName, "Test");
+			var projectFile = p.AddFile (fileName);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			p.Files.Remove (projectFile);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (expectedProjectXml, projectXml);
+
+			p.Dispose ();
+		}
+
+		[Test]
 		public async Task AddFile_WildCardHasMetadataProperties ()
 		{
 			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
@@ -996,6 +1051,56 @@ namespace MonoDevelop.Projects
 				await p.SaveAsync (Util.GetMonitor ());
 
 				projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		/// <summary>
+		/// Add a file and then remove it but do not delete it.
+		/// </summary>
+		[Test]
+		public async Task Remove_WildCardHasMetadataProperties ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-metadata-prop.csproj");
+				string expectedProjectXml = File.ReadAllText (projFile);
+
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				var xamlFileName1 = projFile.ParentDirectory.Combine ("MyView1.xaml");
+				File.WriteAllText (xamlFileName1, "xaml1");
+				var xamlCSharpFileName = projFile.ParentDirectory.Combine ("MyView1.xaml.cs");
+				File.WriteAllText (xamlCSharpFileName, "csharpxaml");
+
+				var xamlFile1 = new ProjectFile (xamlFileName1, BuildAction.EmbeddedResource);
+				xamlFile1.Generator = "MSBuild:UpdateDesignTimeXaml";
+				xamlFile1.ContentType = "Designer";
+				p.Files.Add (xamlFile1);
+
+				var xamlCSharpFile = p.AddFile (xamlCSharpFileName);
+				xamlCSharpFile.DependsOn = "MyView1.xaml";
+
+				// Ensure no items are added to the project on saving.
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				// Remove .xaml.cs file but do not delete it.
+				p.Files.Remove (xamlCSharpFile);
+				await p.SaveAsync (Util.GetMonitor ());
+
+				// Remove item should be added for .xaml.cs file.
+				projectXml = File.ReadAllText (p.FileName);
+				expectedProjectXml = File.ReadAllText (p.FileName.ChangeName ("glob-import-metadata-prop-saved1"));
 				Assert.AreEqual (expectedProjectXml, projectXml);
 
 				p.Dispose ();

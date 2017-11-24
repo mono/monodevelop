@@ -47,6 +47,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using System.Collections.Immutable;
 using System.Threading;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace Mono.TextEditor
 {
@@ -282,6 +283,14 @@ namespace Mono.TextEditor
 			textEditor.TextArea.FocusInEvent += HandleFocusInEvent;
 			textEditor.TextArea.FocusOutEvent += HandleFocusOutEvent;
 			textEditor.VScroll += HandleVAdjustmentValueChanged;
+
+			textEditor.Document.SyntaxModeChanged += HandleSyntaxModeChanged;
+		}
+
+		void HandleSyntaxModeChanged(object sender, EventArgs e)
+		{
+			PurgeLayoutCache ();
+			textEditor.Document.CommitUpdateAll ();
 		}
 
 		void TextEditor_HighlightSearchPatternChanged (object sender, EventArgs e)
@@ -667,6 +676,7 @@ namespace Mono.TextEditor
 			StopCaretThread ();
 			DisposeSearchPatternWorker ();
 			HideCodeSegmentPreviewWindow ();
+			textEditor.Document.SyntaxModeChanged -= HandleSyntaxModeChanged;
 			textEditor.VScroll -= HandleVAdjustmentValueChanged;
 			textEditor.HighlightSearchPatternChanged -= TextEditor_HighlightSearchPatternChanged;
 
@@ -1004,6 +1014,9 @@ namespace Mono.TextEditor
 				descriptor.Dispose ();
 				layoutDict.Remove (lineNumber);
 			}
+
+			OnLineShowing (line);
+
 			var wrapper = new LayoutWrapper (this, textEditor.LayoutCache.RequestLayout ());
 			wrapper.IsUncached = containsPreedit;
 			if (logicalRulerColumn < 0)
@@ -1226,7 +1239,6 @@ namespace Mono.TextEditor
 					layoutDict [lineNumber] = descriptor;
 				}
 				//			textEditor.GetTextEditorData ().HeightTree.SetLineHeight (line.LineNumber, System.Math.Max (LineHeight, wrapper.Height));
-				OnLineShown (line);
 				return wrapper;
 			} finally {
 				sw.Stop ();
@@ -1254,12 +1266,12 @@ namespace Mono.TextEditor
 				throw new NotImplementedException ();
 			}
 
-		void OnLineShown (DocumentLine line)
+		void OnLineShowing (DocumentLine line)
 		{
-			LineShown?.Invoke (this, new LineEventArgs (line));
+			LineShowing?.Invoke (this, new LineEventArgs (line));
 		}
 
-		public event EventHandler<LineEventArgs> LineShown;
+		public event EventHandler<LineEventArgs> LineShowing;
 
 		public IEnumerable<DocumentLine> CachedLine {
 			get {
@@ -1321,19 +1333,14 @@ namespace Mono.TextEditor
 			}
 			var token = cacheSrc.Token;
 			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
-			task.Wait (100);
 			if (task.IsCompleted) {
 				cachedLines [lineNumber] = task.Result;
 				return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
 			}
 			task.ContinueWith (t => {
-				Runtime.RunInMainThread (delegate {
-					if (token.IsCancellationRequested)
-						return;
-					cachedLines [lineNumber] = t.Result;
-					Document.CommitLineUpdate (line);
-				});
-			});
+				cachedLines [lineNumber] = t.Result;
+				Document.CommitLineUpdate (line);
+			}, token, TaskContinuationOptions.OnlyOnRanToCompletion, Runtime.MainTaskScheduler);
 			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
 		}
 
@@ -3477,7 +3484,8 @@ namespace Mono.TextEditor
 			try {
 				index = (int)TranslateToUTF8Index (wrapper.Text, (uint)System.Math.Min (System.Math.Max (0, column), wrapper.Text.Length), ref curIndex, ref byteIndex);
 				pos = wrapper.IndexToPos (index);
-			} catch {
+			} catch (Exception ex) {
+				LoggingService.LogError ($"Error calculating X position for {line}@{column}", ex);
 				return 0;
 			} finally {
 				if (wrapper.IsUncached)

@@ -402,7 +402,7 @@ namespace MonoDevelop.Ide
 			}
 			return true;
 		}
-		
+
 		public async Task CloseWorkspaceItem (WorkspaceItem item, bool closeItemFiles = true)
 		{
 			if (!Items.Contains (item))
@@ -606,6 +606,10 @@ namespace MonoDevelop.Ide
 					timer.Trace ("Restoring workspace preferences");
 					await RestoreWorkspacePreferences (item);
 				}
+
+				if (Items.Count == 1 && !reloading)
+					FirstWorkspaceItemRestored?.Invoke (this, new WorkspaceItemEventArgs (item));
+
 				timer.Trace ("Reattaching documents");
 				ReattachDocumentProjects (null);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
@@ -1226,6 +1230,12 @@ namespace MonoDevelop.Ide
 		/// is no other item already open
 		/// </summary>
 		public event EventHandler<WorkspaceItemEventArgs> FirstWorkspaceItemOpened;
+
+		/// <summary>
+		/// Fired when a workspace item (a solution or workspace) is fully restored and there
+		/// is no other item already open 
+		/// </summary>
+		internal event EventHandler<WorkspaceItemEventArgs> FirstWorkspaceItemRestored;
 		
 		/// <summary>
 		/// Fired a workspace item loaded in the IDE is closed and there are no other

@@ -116,6 +116,10 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf">
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.Wpf.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.dll</HintPath>
     </Reference>

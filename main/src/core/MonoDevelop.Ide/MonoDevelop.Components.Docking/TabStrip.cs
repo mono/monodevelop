@@ -228,6 +228,10 @@ namespace MonoDevelop.Components.Docking
 			int tabsSize = 0;
 			var children = box.Children;
 
+			if (children == null || children.Length == 0) {
+				return;
+			}
+
 			foreach (DockItemTitleTab tab in children)
 				tabsSize += tab.LabelWidth;
 

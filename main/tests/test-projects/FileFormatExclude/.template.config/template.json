@@ -1,0 +1,22 @@
+﻿{
+	"$schema": "http://json.schemastore.org/template",
+	"author": "Microsoft",
+	"classifications": [ "Common", "Library" ],
+	"name": "Class library",
+	"description": "",
+	"groupIdentity": "MonoDevelop.Ide.Tests.FileFormatExclude",
+	"precedence": "2000",
+	"identity": "MonoDevelop.Ide.Tests.FileFormatExclude.CSharp",
+	"shortName": "fileformatexclude",
+	"tags": {
+		"language": "C#",
+		"type": "project"
+	},
+	"sourceName": "sourceName",
+	"guids": [
+		"{7F63CBE6-2FE7-47A7-8930-EA078DA05062}"
+	],
+	"primaryOutputs": [
+		{ "path": "library.csproj" },
+	]
+}

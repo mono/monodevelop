@@ -30,6 +30,7 @@ using Mono.TextEditor.Highlighting;
 using Gtk;
 using System.Collections.Immutable;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -49,6 +50,7 @@ namespace Mono.TextEditor
 		int endColumn;
 		UrlType urlType;
 		TextDocument doc;
+		Cairo.Color? color;
 		
 		public string Url {
 			get {
@@ -143,7 +145,14 @@ namespace Mono.TextEditor
 			@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
-				cr.DrawLine (editor.EditorTheme.GetForeground (editor.EditorTheme.GetChunkStyle (new ScopeStack (style))), @from + 0.5, y + editor.LineHeight - 1.5, to + 0.5, y + editor.LineHeight - 1.5);
+				if (color == null) {
+					foreach (var chunk in metrics.Layout.Chunks)
+						if (chunk.Contains (startOffset))
+							color = editor.EditorTheme.GetForeground (editor.EditorTheme.GetChunkStyle (chunk.ScopeStack));
+					if (color == null)
+						color = editor.EditorTheme.GetForeground (editor.EditorTheme.GetChunkStyle (new ScopeStack (style)));
+				}
+				cr.DrawLine (color.Value, @from + 0.5, y + editor.LineHeight - 1.5, to + 0.5, y + editor.LineHeight - 1.5);
 			}
 		}
 	}

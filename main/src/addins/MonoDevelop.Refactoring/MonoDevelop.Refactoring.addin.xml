@@ -41,7 +41,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Editor/TooltipProviders">
-		<Provider id="AnalysisResults" class="MonoDevelop.AnalysisCore.Gui.ResultTooltipProvider" insertafter="Debug" />
+		<Provider id="AnalysisResults" class="MonoDevelop.AnalysisCore.Gui.ResultTooltipProvider" insertafter="CompileError" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->

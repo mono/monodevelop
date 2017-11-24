@@ -1,8 +1,12 @@
 @echo off
 setlocal enableextensions enabledelayedexpansion
 
-rem try to find MSBuild in VS2017
-rem the "correct" way is to use a COM API. not easy here.
+if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (
+	FOR /F "delims=" %%E in ('"%ProgramFiles(x86)%\Microsoft Visual Studio\installer\vswhere.exe" -latest -property installationPath') DO (
+		set "MSBUILD_EXE=%%E\MSBuild\15.0\Bin\MSBuild.exe"
+		if exist "!MSBUILD_EXE!" goto :build
+	)
+)
 
 FOR %%E in (Enterprise, Professional, Community) DO (
 	set "MSBUILD_EXE=%ProgramFiles(x86)%\Microsoft Visual Studio\2017\%%E\MSBuild\15.0\Bin\MSBuild.exe"
@@ -35,7 +39,7 @@ set "CONFIG=DebugWin32"
 set "PLATFORM=Any CPU"
 
 rem only perform integrated restore on RefactoringEssentials, it fails on the whole solution
-"%MSBUILD_EXE%" external\RefactoringEssentials\RefactoringEssentials.2017.sln /target:Restore %* || goto :error
+"%MSBUILD_EXE%" external\RefactoringEssentials\RefactoringEssentials.sln /target:Restore %* || goto :error
 
 "%MSBUILD_EXE%" Main.sln /bl:MonoDevelop.binlog /m "/p:Configuration=%CONFIG%" "/p:Platform=%PLATFORM%" %* || goto :error
 goto :eof

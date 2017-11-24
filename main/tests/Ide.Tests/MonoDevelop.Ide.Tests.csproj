@@ -43,6 +43,9 @@
       <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ProjectTemplateTests.cs" />
@@ -103,6 +106,7 @@
     <Compile Include="MonoDevelop.Ide.Editor\SkipCharSessionTests.cs" />
     <Compile Include="MonoDevelop.Components\PangoUtilTests.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\DotNetCoreProjectTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\ReslynCompletionDataTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -169,5 +173,8 @@
     <Folder Include="MonoDevelop.Components.PropertyGrid\" />
     <Folder Include="MonoDevelop.SourceEditor\" />
     <Folder Include="MonoDevelop.Components\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

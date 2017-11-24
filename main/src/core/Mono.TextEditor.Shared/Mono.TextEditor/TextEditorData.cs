@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using System.Threading;
 using MonoDevelop.Ide;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Mono.TextEditor
 {
@@ -227,7 +228,6 @@ namespace Mono.TextEditor
 			document.Undone += DocumentHandleUndone;
 			document.Redone += DocumentHandleRedone;
 			document.TextChanged += HandleTextReplaced;
-			document.TextSet += HandleDocTextSet;
 			document.Folded += HandleTextEditorDataDocumentFolded;
 			document.FoldTreeUpdated += HandleFoldTreeUpdated;
 			document.HeightChanged += Document_HeightChanged;
@@ -241,17 +241,6 @@ namespace Mono.TextEditor
 		void HandleFoldTreeUpdated (object sender, EventArgs e)
 		{
 			HeightTree.Rebuild ();
-		}
-
-		void HandleDocTextSet (object sender, EventArgs e)
-		{
-			if (vadjustment != null)
-				vadjustment.Value = vadjustment.Lower;
-			if (hadjustment != null)
-				hadjustment.Value = hadjustment.Lower;
-			HeightTree.Rebuild ();
-			ClearSelection ();
-			caret.SetDocument (document);
 		}
 
 		public double GetLineHeight (DocumentLine line)
@@ -450,7 +439,7 @@ namespace Mono.TextEditor
 					}
 				}
 
-				foreach (var chunk in GetChunks (line, curOffset, toOffset - curOffset)) {
+				foreach (var chunk in GetChunks (line, curOffset, toOffset - curOffset).WaitAndGetResult (default (CancellationToken))) {
 					if (chunk.Length == 0)
 						continue;
 					var chunkStyle = style.GetChunkStyle (chunk.ScopeStack);
@@ -495,12 +484,11 @@ namespace Mono.TextEditor
 			return result.ToString ();
 		}
 
-		internal IEnumerable<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> GetChunks (DocumentLine line, int offset, int length)
+		internal async Task<IEnumerable<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment>> GetChunks (DocumentLine line, int offset, int length)
 		{
 			var lineOffset = line.Offset;
 			return TextViewMargin.TrimChunks (
-				        document.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None)
-				        .WaitAndGetResult (CancellationToken.None)
+				(await document.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None).ConfigureAwait(false))
 				        .Segments
 				        .Select (c => c.WithOffset (c.Offset + lineOffset))
 				        .ToList (), offset, length);
@@ -631,7 +619,6 @@ namespace Mono.TextEditor
 			document.Redone -= DocumentHandleRedone;
 			document.TextChanged -= HandleTextReplaced;
 
-			document.TextSet -= HandleDocTextSet;
 			document.Folded -= HandleTextEditorDataDocumentFolded;
 			document.FoldTreeUpdated -= HandleFoldTreeUpdated;
 			document.HeightChanged -= Document_HeightChanged;

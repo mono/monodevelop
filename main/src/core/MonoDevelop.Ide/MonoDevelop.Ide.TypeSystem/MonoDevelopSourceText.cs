@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (doc == null)
 				throw new ArgumentNullException (nameof (doc));
-			this.doc = doc;
+			this.doc = doc.CreateSnapshot ();
 		}
 
 		public override SourceText WithChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
@@ -233,31 +233,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.buffer = buffer;
 				this.encoding = encoding;
 				this.container = container;
-			} 
-
-			public override IReadOnlyList<TextChangeRange> GetChangeRanges (SourceText oldText)
-			{
-				if (oldText == this)
-					return TextChangeRange.NoChanges;
-
-				return ImmutableArray.Create<TextChangeRange> (new TextChangeRange (new TextSpan (0, oldText.Length), this.Length));
-			}
-
-			public override SourceText WithChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
-			{
-				if (!changes.Any ())
-					return this;
-
-				var span = new Microsoft.VisualStudio.Text.SnapshotSpan (buffer, 0, buffer.Length);
-				var changedBuffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (span, buffer.ContentType);
-
-				using (var edit = changedBuffer.CreateEdit ()) {
-					foreach (var change in changes) {
-						edit.Replace (new Microsoft.VisualStudio.Text.Span (change.Span.Start, change.Span.Length), change.NewText);
-					}
-					edit.Apply ();
-				}
-				return new ChangedSourceText (changedBuffer.CurrentSnapshot, Encoding, container);
 			}
 		}
 	}

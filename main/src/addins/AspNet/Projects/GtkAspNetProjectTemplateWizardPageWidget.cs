@@ -91,6 +91,7 @@ namespace MonoDevelop.AspNet.Projects
 		{
 			backgroundImageView.SizeRequested -= BackgroundImageViewSizeRequested;
 			Dispose (backgroundImage);
+			base.Dispose ();
 		}
 
 		void Dispose (IDisposable disposable)

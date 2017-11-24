@@ -88,6 +88,8 @@ namespace MonoDevelop.Core.Execution
 			foreach (var console in consoles) {
 				console.Dispose ();
 			}
+
+			base.Dispose ();
 		}
 
 		class MultipleTextWriters : TextWriter

@@ -277,14 +277,12 @@ namespace MonoDevelop.Ide.Navigation
 		
 		static void OnHistoryChanged ()
 		{
-			if (HistoryChanged != null)
-				HistoryChanged (null, EventArgs.Empty);
+			HistoryChanged?.Invoke (null, EventArgs.Empty);
 		}
 
 		static void OnClosedHistoryChanged ()
 		{
-			if (ClosedHistoryChanged != null)
-				ClosedHistoryChanged (null, EventArgs.Empty);
+			ClosedHistoryChanged?.Invoke (null, EventArgs.Empty);
 		}
 		
 		#region Handling active doc change events
@@ -360,19 +358,25 @@ namespace MonoDevelop.Ide.Navigation
 		
 		static void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
 		{
-			bool historyChanged = false;
-			bool closedHistoryChanged = false;
-			foreach (ProjectFileRenamedEventInfo args in e) {
-				foreach (NavigationHistoryItem point in history) {
+			bool historyChanged = false, closedHistoryChanged = false;
+
+			foreach (NavigationHistoryItem point in history) {
+				foreach (ProjectFileRenamedEventInfo args in e) {
 					var dp = point.NavigationPoint as DocumentNavigationPoint;
-					historyChanged &= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
-					closedHistoryChanged &= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
-					if (historyChanged && closedHistoryChanged)
-						break;
+					historyChanged |= (dp?.HandleRenameEvent (args.OldName, args.NewName)).GetValueOrDefault ();
 				}
 			}
+
 			if (historyChanged)
 				OnHistoryChanged ();
+
+			foreach (var point in closedHistory) {
+				foreach (ProjectFileRenamedEventInfo args in e) {
+					var dp = point.Item1 as DocumentNavigationPoint;
+					closedHistoryChanged |= (dp?.HandleRenameEvent (args.OldName, args.NewName)).GetValueOrDefault ();
+				}
+			}
+
 			if (closedHistoryChanged)
 				OnClosedHistoryChanged ();
 		}

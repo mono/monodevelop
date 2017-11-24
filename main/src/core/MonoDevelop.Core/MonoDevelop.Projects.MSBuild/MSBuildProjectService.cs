@@ -71,6 +71,7 @@ namespace MonoDevelop.Projects.MSBuild
 		static Dictionary<string, string> importRedirects = new Dictionary<string, string> ();
 		static UnknownProjectTypeNode [] unknownProjectTypeNodes;
 		static IDictionary<string, TypeExtensionNode> projecItemTypeNodes;
+		static ImportSearchPathExtensionNode [] searchPathNodes;
 
 		static Dictionary<TargetRuntime, List<ImportSearchPathExtensionNode>> defaultImportSearchPaths = new Dictionary<TargetRuntime, List<ImportSearchPathExtensionNode>> ();
 		static List<ImportSearchPathExtensionNode> importSearchPaths = new List<ImportSearchPathExtensionNode> ();
@@ -158,7 +159,8 @@ namespace MonoDevelop.Projects.MSBuild
 				args.Path == ImportRedirectsExtensionPath || 
 				args.Path == UnknownMSBuildProjectTypesExtensionPath || 
 				args.Path == GlobalPropertyProvidersExtensionPath ||
-				args.Path == MSBuildProjectItemTypesPath)
+				args.Path == MSBuildProjectItemTypesPath ||
+				args.Path == MSBuildImportSearchPathsPath)
 				LoadExtensionData ();
 
 			if (args.Path == MSBuildImportSearchPathsPath)
@@ -195,6 +197,8 @@ namespace MonoDevelop.Projects.MSBuild
 			unknownProjectTypeNodes = AddinManager.GetExtensionNodes<UnknownProjectTypeNode> (UnknownMSBuildProjectTypesExtensionPath).ToArray ();
 
 			projecItemTypeNodes = AddinManager.GetExtensionNodes<TypeExtensionNode> (MSBuildProjectItemTypesPath).ToDictionary (e => e.TypeName);
+
+			searchPathNodes = AddinManager.GetExtensionNodes<ImportSearchPathExtensionNode> (MSBuildImportSearchPathsPath).ToArray();
 		}
 
 		static Dictionary<string,Type> customProjectItemTypes = new Dictionary<string,Type> ();
@@ -259,7 +263,7 @@ namespace MonoDevelop.Projects.MSBuild
 		/// registered by RegisterProjectImportSearchPath.</param>
 		internal static IEnumerable<ImportSearchPathExtensionNode> GetProjectImportSearchPaths (TargetRuntime runtime, bool includeImplicitImports)
 		{
-			var result = AddinManager.GetExtensionNodes<ImportSearchPathExtensionNode> (MSBuildImportSearchPathsPath).Concat (importSearchPaths);
+			var result = searchPathNodes.Concat (importSearchPaths);
 			if (includeImplicitImports)
 				result = LoadDefaultProjectImportSearchPaths (runtime).Concat (result);
 			return result;

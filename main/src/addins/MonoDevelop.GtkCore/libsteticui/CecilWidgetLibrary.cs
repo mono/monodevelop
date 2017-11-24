@@ -152,7 +152,7 @@ namespace Stetic
 				cls = assembly.MainModule.GetType (name);
 				if (cls != null) {
 					// Find the nearest type that can be loaded
-					typeClassDescriptor = FindType (assembly, cls);
+					typeClassDescriptor = FindType (cls);
 					tname = cls.Name;
 					if (typeClassDescriptor != null) {
 						element.SetAttribute ("baseClassType", typeClassDescriptor.Name);
@@ -181,7 +181,7 @@ namespace Stetic
 			return cd;
 		}
 		
-		Stetic.ClassDescriptor FindType (AssemblyDefinition asm, TypeDefinition cls)
+		Stetic.ClassDescriptor FindType (TypeDefinition cls)
 		{
 			if (cls.BaseType == null)
 				return null;
@@ -192,7 +192,7 @@ namespace Stetic
 			if (bcls == null)
 				return null;
 
-			return FindType (asm, bcls);
+			return FindType (bcls);
 		}
 		
 		AssemblyDefinition ResolveAssembly (AssemblyNameReference aref)
@@ -202,17 +202,11 @@ namespace Stetic
 		
 		internal TypeDefinition FindTypeDefinition (string fullName)
 		{
-			TypeDefinition t = FindTypeDefinition (new Hashtable (), assembly, fullName);
-			return t;
+			return FindTypeDefinition (assembly, fullName);
 		}
 		
-		TypeDefinition FindTypeDefinition (Hashtable visited, AssemblyDefinition asm, string fullName)
+		TypeDefinition FindTypeDefinition (AssemblyDefinition asm, string fullName)
 		{
-			if (visited.Contains (asm))
-				return null;
-				
-			visited [asm] = asm;
-			
 			TypeDefinition cls = asm.MainModule.GetType (fullName);
 			if (cls != null)
 				return cls;
@@ -223,10 +217,7 @@ namespace Stetic
 					cls = basm.MainModule.GetType (fullName);
 					if (cls != null)
 						return cls;
-/*					cls = FindTypeDefinition (visited, basm, fullName);
-					if (cls != null)
-						return cls;
-*/				}
+				}
 			}
 			return null;
 		}

@@ -34,8 +34,11 @@
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.$(NuGetVersionRoslyn)\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -90,11 +93,14 @@
     <Compile Include="MonoDevelop.Projects\GenericProjectTests.cs" />
     <Compile Include="MonoDevelop.Projects\NetStandardProjectTests.cs" />
     <Compile Include="MonoDevelop.Projects\BuilderManagerTests.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\BinaryMessageTests.cs" />
+    <Compile Include="MonoDevelop.Core\ProgressMonitorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Core\" />
     <Folder Include="MonoDevelop.Core.Assemblies\" />
     <Folder Include="MonoDevelop.Projects\" />
+    <Folder Include="MonoDevelop.Core.Execution\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -115,6 +121,9 @@
       <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
       <Name>GuiUnit_NET_4_5</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

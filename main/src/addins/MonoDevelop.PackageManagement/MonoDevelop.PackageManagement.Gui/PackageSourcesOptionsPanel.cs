@@ -192,6 +192,7 @@ namespace MonoDevelop.PackageManagement.Gui
 			if (packageSourcesWidget != null) {
 				packageSourcesWidget.Dispose ();
 			}
+			base.Dispose ();
 		}
 
 		string GetGlobalNuGetConfigFileName ()

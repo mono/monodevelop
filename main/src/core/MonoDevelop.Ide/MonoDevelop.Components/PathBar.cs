@@ -880,6 +880,12 @@ namespace MonoDevelop.Components
 			return ret;
 		}
 
+		protected override bool OnFocusOutEvent(EventFocus evnt)
+		{
+			alreadyHaveFocus = false;
+			return base.OnFocusOutEvent(evnt);
+		}
+
 		protected override void OnActivate ()
 		{
 			if (focusedPathIndex < 0) {

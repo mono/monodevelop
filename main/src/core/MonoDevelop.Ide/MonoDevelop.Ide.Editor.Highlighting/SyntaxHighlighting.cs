@@ -188,6 +188,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				int lastMatch = -1;
 				var highlightedSegment = new TextSegment (startOffset, length);
 				string lineText = text.GetTextAt (startOffset, length);
+
+				int timeoutOccursAt;
+				unchecked {
+					timeoutOccursAt = Environment.TickCount + (int)matchTimeout.TotalMilliseconds;
+				}
 			restart:
 				if (lastMatch == offset) {
 					if (lastContexts.Contains (currentContext)) {
@@ -230,6 +235,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						m.GotTimeout = true;
 						continue;
 					}
+				}
+				if (Environment.TickCount >= timeoutOccursAt) {
+					curMatch.GotTimeout = true;
+					goto end;
 				}
 
 				if (match != null) {

@@ -9,8 +9,6 @@
     <Import_RootNamespace>Mono.TextEditor.Platform</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-      <Compile Include="$(MSBuildThisFileDirectory)TagBasedSyntaxHighlighting.cs" />
-
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Core\Impl\ContentType\ContentTypeImpl.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Core\Impl\ContentType\ContentTypeRegistryServiceImpl.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Core\Impl\ContentType\FileExtensionRegistryServiceImpl.cs" />
@@ -223,16 +221,6 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextBufferUndoManager\TextBufferChangeUndoPrimitive.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextBufferUndoManager\TextBufferUndoManager.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextBufferUndoManager\TextBufferUndoManagerProvider.cs" />
-
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\ConnectionManager.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\SmartIndentationService.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\TextViewRoleSet.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\VacuousTextDataModel.cs" />
-
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\MdView\TextCaret.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\MdView\TextEditorFactoryService.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\MdView\TextSelection.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\MdView\TextView.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Util\TextDataUtil\ArgumentValidation.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Util\TextDataUtil\BufferTracker.cs" />

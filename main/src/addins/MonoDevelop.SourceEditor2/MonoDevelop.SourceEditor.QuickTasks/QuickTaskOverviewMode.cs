@@ -310,8 +310,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				UpdatePrelightState (evnt.X, evnt.Y);
 			}
 
-			const ModifierType buttonMask = ModifierType.Button1Mask | ModifierType.Button2Mask |
-				ModifierType.Button3Mask | ModifierType.Button4Mask | ModifierType.Button5Mask;
 			if ((evnt.State & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
 				if (!ShowPreview (evnt.Y)) {
 					return base.OnMotionNotifyEvent (evnt);
