@@ -91,7 +91,7 @@ namespace Mono.TextEditor
 				var startLine = trackDocument.GetLineByOffset (change.NewOffset);
 				var endLine = trackDocument.GetLineByOffset (change.NewOffset + change.InsertionLength);
 				var lineNumber = startLine.LineNumber;
-				var oldState = lineStates [lineNumber];
+				var oldState = lineNumber < lineStates.Count ? lineStates [lineNumber] : null;
 				if (oldState != null && oldState.state == TextDocument.LineState.Dirty)
 					continue;
 				var insertedLines = endLine.LineNumber - lineNumber;
