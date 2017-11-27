@@ -56,10 +56,12 @@ namespace MonoDevelop.Core.Assemblies
 							isInstalled = true;
 							return true;
 						}
-						string firstAsm = Path.Combine (dir, framework.Assemblies [0].Name) + ".dll";
-						if (File.Exists (firstAsm)) {
-							isInstalled = true;
-							return true;
+						if (framework.Assemblies.Length > 0) {
+							string firstAsm = Path.Combine (dir, framework.Assemblies [0].Name) + ".dll";
+							if (File.Exists (firstAsm)) {
+								isInstalled = true;
+								return true;
+							}
 						}
 					}
 				}
