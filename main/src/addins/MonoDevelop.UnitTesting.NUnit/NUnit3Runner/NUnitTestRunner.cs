@@ -151,11 +151,12 @@ namespace NUnit3Runner
 		{
 			var elements = root.GetElementsByTagName ("properties");
 			var skipReasonString = string.Empty;
-			foreach (XmlElement element in elements) 
-				//Reason why i parse InnerXml - GetAttribute returns empty strings
-				if (element.InnerXml.Contains ("name=\"_SKIPREASON\""))
-					skipReasonString = (Regex.Match (element.InnerXml, "value=\"(.+?)\"")
-									   .ToString ().Substring (6).Trim ('\"'));
+			foreach (XmlElement element in elements) {
+				var nestedElement = element.FirstChild as XmlElement;
+				if (nestedElement != null)
+					if ("_SKIPREASON" == nestedElement.GetAttribute ("name"))
+						skipReasonString = nestedElement.GetAttribute ("value");
+			}
 			result = skipReasonString;
 			return !string.IsNullOrEmpty (skipReasonString);
 		}
