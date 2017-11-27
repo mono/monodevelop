@@ -69,16 +69,6 @@ namespace MonoDevelop.UnitTesting.NUnit
 			this.project = project;
 			project.NameChanged += OnProjectRenamed;
 			IdeApp.ProjectOperations.EndBuild += OnProjectBuilt;
-			CheckReferencesErrors ();
-		}
-
-		void CheckReferencesErrors()
-		{
-			var errorReferenceCollection = project.References.Where (reference => !reference.IsValid)
-			                                      			 .ToList ();
-			var stringBuilder = new StringBuilder ();
-			errorReferenceCollection.ForEach (reference => stringBuilder.AppendLine($"{reference.Reference}:{reference.ValidationErrorMessage}"));
-			ErrorMessage += stringBuilder.ToString ();
 		}
 
 		protected override async Task OnBuild ()

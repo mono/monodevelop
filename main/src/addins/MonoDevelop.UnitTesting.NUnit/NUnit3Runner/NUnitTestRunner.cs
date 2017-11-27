@@ -151,12 +151,12 @@ namespace NUnit3Runner
 		{
 			var elements = root.GetElementsByTagName ("properties");
 			var skipReasonString = string.Empty;
-			foreach (XmlElement element in elements) {
-				var nestedElement = element.FirstChild as XmlElement;
-				if (nestedElement != null)
-					if ("_SKIPREASON" == nestedElement.GetAttribute ("name"))
+			foreach (XmlElement element in elements)
+				if (element?.FirstChild is XmlElement nestedElement)
+					if ("_SKIPREASON" == nestedElement.GetAttribute ("name")) {
 						skipReasonString = nestedElement.GetAttribute ("value");
-			}
+						break;
+					}
 			result = skipReasonString;
 			return !string.IsNullOrEmpty (skipReasonString);
 		}
