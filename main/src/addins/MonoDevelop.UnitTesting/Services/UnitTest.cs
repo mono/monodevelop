@@ -55,7 +55,7 @@ namespace MonoDevelop.UnitTesting
 
 		public virtual bool CanMergeWithParent => false;
 
-		public string ReferenceErrorMessage { get; protected set; }
+		public string ErrorMessage { get; protected set; }
 
 		public string FixtureTypeNamespace {
 			get;

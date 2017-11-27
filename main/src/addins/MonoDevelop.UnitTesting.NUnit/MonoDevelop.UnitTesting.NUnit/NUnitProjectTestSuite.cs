@@ -78,7 +78,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 			                                      			 .ToList ();
 			var stringBuilder = new StringBuilder ();
 			errorReferenceCollection.ForEach (reference => stringBuilder.AppendLine($"{reference.Reference}:{reference.ValidationErrorMessage}"));
-			ReferenceErrorMessage += stringBuilder.ToString ();
+			ErrorMessage += stringBuilder.ToString ();
 		}
 
 		protected override async Task OnBuild ()

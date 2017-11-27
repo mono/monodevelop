@@ -208,7 +208,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 			ld.Callback = delegate {
 				Runtime.RunInMainThread (delegate {
 					if (ld.Error != null)
-						this.ReferenceErrorMessage = ld.Error.Message;
+						this.ErrorMessage = ld.Error.Message;
 					AsyncCreateTests (ld);
 				});
 			};
