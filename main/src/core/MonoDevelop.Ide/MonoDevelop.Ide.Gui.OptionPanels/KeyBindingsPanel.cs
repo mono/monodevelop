@@ -67,6 +67,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		Dictionary<string, HashSet<Command>> duplicates;
 		Dictionary<string, HashSet<Command>> conflicts;
+
+		CellRendererKeyButtons bindingRenderer;
 		
 		public KeyBindingsPanel ()
 		{
@@ -91,7 +93,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			bindingTVCol = new TreeViewColumn ();
 			bindingTVCol.Title = GettextCatalog.GetString ("Key Binding");
-			CellRendererKeyButtons bindingRenderer = new CellRendererKeyButtons (this);
+			bindingRenderer = new CellRendererKeyButtons (this);
 			bindingRenderer.KeyBindingSelected += BindingRenderer_KeyBindingSelected;
 			bindingTVCol.PackStart (bindingRenderer, false);
 			bindingTVCol.AddAttribute (bindingRenderer, "text", bindingCol);
@@ -693,6 +695,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			}
 		}
 
+		protected override void OnDestroyed()
+		{
+			bindingRenderer.KeyBindingSelected -= BindingRenderer_KeyBindingSelected;
+			base.OnDestroyed();
+		}
+
 		struct KeyBindingHitTestResult
 		{
 			public int SelectedKey { get; set; }
@@ -992,10 +1000,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				}
 			}
 
-			public override void Destroy ()
+			protected override void OnDestroyed()
 			{
 				HideConflictTooltip ();
-				base.Destroy ();
+				base.OnDestroyed();
 			}
 		}
 	}
