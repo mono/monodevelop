@@ -73,7 +73,8 @@ namespace MonoDevelop.Components
 			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
 			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
 
-			if (Platform.IsMac && NSUserDefaults.StandardUserDefaults.BoolForKey ("com.monodevelop.AccessibilityEnabled")) {
+			var disableA11y = Environment.GetEnvironmentVariable ("DISABLE_ATKCOCOA");
+			if (Platform.IsMac && (NSUserDefaults.StandardUserDefaults.BoolForKey ("com.monodevelop.AccessibilityEnabled") && string.IsNullOrEmpty (disableA11y))) {
 				// Load a private version of AtkCocoa stored in the XS app directory
 				var appDir = Directory.GetParent (AppDomain.CurrentDomain.BaseDirectory);
 				var gtkPath = $"{appDir.Parent.FullName}/lib/gtk-2.0";
