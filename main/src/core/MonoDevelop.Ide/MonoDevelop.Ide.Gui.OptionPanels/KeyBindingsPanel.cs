@@ -697,7 +697,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		protected override void OnDestroyed()
 		{
-			bindingRenderer.KeyBindingSelected -= BindingRenderer_KeyBindingSelected;
+			if (bindingRenderer != null) {
+				bindingRenderer.KeyBindingSelected -= BindingRenderer_KeyBindingSelected;
+				bindingRenderer = null;
+			}
 			base.OnDestroyed();
 		}
 
@@ -1002,6 +1005,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 			protected override void OnDestroyed()
 			{
+				keyBindingsPanel = null;
 				HideConflictTooltip ();
 				base.OnDestroyed();
 			}
