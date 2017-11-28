@@ -157,14 +157,12 @@ namespace MonoDevelop.CSharp
 							int rank = 0;
 							if (result.MatchKind == NavigateToMatchKind.Exact) {
 								rank = int.MaxValue;
-							} else if (result.MatchKind == NavigateToMatchKind.Prefix) {
-								rank = int.MaxValue - (result.Name.Length - 1) * 10 - index;
 							} else {
 								int patternLength = searchPattern.Pattern.Length;
 								rank = searchPattern.Pattern.Length - result.Name.Length;
 								rank -= index;
 
-								rank += laneLength * 100;
+								rank -= laneLength * 100;
 
 								// Favor matches with less splits. That is, 'abc def' is better than 'ab c def'.
 								int baseRank = (patternLength - laneLength - 1) * 5000;
