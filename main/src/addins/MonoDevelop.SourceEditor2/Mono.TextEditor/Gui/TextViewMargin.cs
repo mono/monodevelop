@@ -131,7 +131,7 @@ namespace Mono.TextEditor
 			get { return charWidth; }
 		}
 
-		class TextViewMarginAccessibilityProxy 
+		class TextViewMarginAccessibilityProxy : IDisposable
 		{
 			public AccessibilityElementProxy Accessible { get; private set; }
 			public TextViewMargin Margin { get; set; }
@@ -150,6 +150,12 @@ namespace Mono.TextEditor
 				Accessible.StyleRangeForIndex = GetStyleRangeForIndex;
 				Accessible.RangeForPosition = GetRangeForPosition;
 				Accessible.GetVisibleCharacterRange = GetVisibleCharacterRange;
+			}
+
+			public void Dispose ()
+			{
+				Accessible = null;
+				Margin = null;
 			}
 
 			int GetInsertionPointLineNumber ()
@@ -702,6 +708,8 @@ namespace Mono.TextEditor
 			DisposeLayoutDict ();
 			if (tabArray != null)
 				tabArray.Dispose ();
+			accessible?.Dispose ();
+			accessible = null;
 			base.Dispose ();
 		}
 
@@ -1014,6 +1022,9 @@ namespace Mono.TextEditor
 				descriptor.Dispose ();
 				layoutDict.Remove (lineNumber);
 			}
+
+			OnLineShowing (line);
+
 			var wrapper = new LayoutWrapper (this, textEditor.LayoutCache.RequestLayout ());
 			wrapper.IsUncached = containsPreedit;
 			if (logicalRulerColumn < 0)
@@ -1236,7 +1247,6 @@ namespace Mono.TextEditor
 					layoutDict [lineNumber] = descriptor;
 				}
 				//			textEditor.GetTextEditorData ().HeightTree.SetLineHeight (line.LineNumber, System.Math.Max (LineHeight, wrapper.Height));
-				OnLineShown (line);
 				return wrapper;
 			} finally {
 				sw.Stop ();
@@ -1264,12 +1274,12 @@ namespace Mono.TextEditor
 				throw new NotImplementedException ();
 			}
 
-		void OnLineShown (DocumentLine line)
+		void OnLineShowing (DocumentLine line)
 		{
-			LineShown?.Invoke (this, new LineEventArgs (line));
+			LineShowing?.Invoke (this, new LineEventArgs (line));
 		}
 
-		public event EventHandler<LineEventArgs> LineShown;
+		public event EventHandler<LineEventArgs> LineShowing;
 
 		public IEnumerable<DocumentLine> CachedLine {
 			get {
@@ -1337,7 +1347,7 @@ namespace Mono.TextEditor
 			}
 			task.ContinueWith (t => {
 				cachedLines [lineNumber] = t.Result;
-				Document.CommitLineUpdate (line);
+				Document.CommitLineUpdate (lineNumber); // Required for highlighting updates
 			}, token, TaskContinuationOptions.OnlyOnRanToCompletion, Runtime.MainTaskScheduler);
 			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
 		}
@@ -3482,7 +3492,8 @@ namespace Mono.TextEditor
 			try {
 				index = (int)TranslateToUTF8Index (wrapper.Text, (uint)System.Math.Min (System.Math.Max (0, column), wrapper.Text.Length), ref curIndex, ref byteIndex);
 				pos = wrapper.IndexToPos (index);
-			} catch {
+			} catch (Exception ex) {
+				LoggingService.LogError ($"Error calculating X position for {line}@{column}", ex);
 				return 0;
 			} finally {
 				if (wrapper.IsUncached)

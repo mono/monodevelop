@@ -37,7 +37,6 @@ using System.Threading.Tasks;
 using System.Runtime.Remoting.Messaging;
 using MonoDevelop.Core.StringParsing;
 using System.Threading;
-using System.Collections.Immutable;
 using MonoDevelop.Core.AddIns;
 
 
@@ -469,7 +468,7 @@ namespace MonoDevelop.Projects
 			var allExtensions = extensionChain.GetAllExtensions ().OfType<WorkspaceObjectExtension> ().ToList ();
 			var loadedNodes = allExtensions.Where (ex => ex.SourceExtensionNode != null)
 				.Select (ex => ex.SourceExtensionNode.Id).ToList ();
-			var newExtensions = ImmutableList<WorkspaceObjectExtension>.Empty;
+			var newExtensions = new List <WorkspaceObjectExtension> ();
 
 			ProjectModelExtensionNode lastAddedNode = null;
 
@@ -489,7 +488,7 @@ namespace MonoDevelop.Projects
 					var ext = node.CreateExtension ();
 					if (ext.SupportsObject (this)) {
 						ext.SourceExtensionNode = node;
-						newExtensions = newExtensions.Add (ext);
+						newExtensions.Add (ext);
 						if (lastAddedNode != null) {
 							// There is an extension before this one. Find it and add the new extension after it.
 							var prevExtension = allExtensions.FirstOrDefault (ex => ex.SourceExtensionNode?.Id == lastAddedNode.Id);

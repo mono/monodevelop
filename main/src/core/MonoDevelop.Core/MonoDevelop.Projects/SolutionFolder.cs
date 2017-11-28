@@ -38,7 +38,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
 using System.Threading.Tasks;
-using System.Collections.Immutable;
 using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
@@ -669,9 +668,9 @@ namespace MonoDevelop.Projects
 
 			// Create a dictionary with the status objects of all items
 
-			var buildStatus = ImmutableDictionary<SolutionItem, BuildStatus>.Empty;
+			var buildStatus = new Dictionary<SolutionItem, BuildStatus> ();
 			foreach (var it in toBuild)
-				buildStatus = buildStatus.Add (it, new BuildStatus ());
+				buildStatus.Add (it, new BuildStatus ());
 
 			// Start the build tasks for all itemsw
 

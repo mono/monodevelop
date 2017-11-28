@@ -53,16 +53,82 @@ namespace MonoDevelop.Core
 			agr.ReportObject (foo);
 			Assert.IsTrue (m.ReportedObjects.Contains (foo));
 		}
+
+		[Test]
+		public void TestLogObject ()
+		{
+			var m = new ReportObjectMonitor ();
+			var foo = new object ();
+			m.Log.Write ("one");
+			m.LogObject (foo);
+			m.Log.Write ("two");
+			Assert.AreEqual (3, m.LoggedObjects.Count);
+			Assert.AreEqual ("one", m.LoggedObjects [0]);
+			Assert.AreSame (foo, m.LoggedObjects [1]);
+			Assert.AreEqual ("two", m.LoggedObjects [2]);
+		}
+
+		[Test]
+		public void TestLogObjectToFollowers ()
+		{
+			var main = new ProgressMonitor ();
+			var m = new ReportObjectMonitor ();
+			var agr = new AggregatedProgressMonitor (main, m);
+			var foo = new object ();
+			agr.Log.Write ("one");
+			agr.LogObject (foo);
+			agr.Log.Write ("two");
+			Assert.AreEqual (3, m.LoggedObjects.Count);
+			Assert.AreEqual ("one", m.LoggedObjects [0]);
+			Assert.AreSame (foo, m.LoggedObjects [1]);
+			Assert.AreEqual ("two", m.LoggedObjects [2]);
+		}
+
+		[Test]
+		public void TestLogObjectSplit ()
+		{
+			var m = new ReportObjectMonitor ();
+			m.BeginTask (2);
+			var p1 = m.BeginAsyncStep (1);
+			var p2 = m.BeginAsyncStep (1);
+
+			var foo = new object ();
+			p2.LogObject (foo);
+			p2.Log.Write ("two");
+			p1.Log.Write ("one");
+
+			p1.Dispose ();
+			p2.Dispose ();
+
+			Assert.AreEqual (3, m.LoggedObjects.Count);
+			Assert.AreEqual ("one", m.LoggedObjects [0]);
+			Assert.AreSame (foo, m.LoggedObjects [1]);
+			Assert.AreEqual ("two", m.LoggedObjects [2]);
+		}
 	}
 
 	class ReportObjectMonitor: ProgressMonitor
 	{
 		public List<object> ReportedObjects = new List<object> ();
 
+		public List<object> LoggedObjects = new List<object> ();
+
         protected override void OnObjectReported(object statusObject)
         {
 			ReportedObjects.Add (statusObject);
 			base.OnObjectReported(statusObject);
+        }
+
+        protected override void OnWriteLog(string message)
+        {
+			LoggedObjects.Add (message);
+			base.OnWriteLog(message);
+        }
+
+        protected override void OnWriteLogObject(object logObject)
+        {
+			LoggedObjects.Add (logObject);
+			base.OnWriteLogObject(logObject);
         }
     }
 }
