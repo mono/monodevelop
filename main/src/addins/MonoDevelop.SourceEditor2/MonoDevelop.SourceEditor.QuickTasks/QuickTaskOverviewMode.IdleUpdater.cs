@@ -111,6 +111,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 
 			int drawingStep;
+			int curIndex = 0;
 			IEnumerator<ISegment> searchResults;
 			IEnumerator<Usage> allUsages;
 			IEnumerator<QuickTask> allTasks;
@@ -126,7 +127,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					return false;
 				}
 				bool nextStep = false;
-				int curIndex = 0;
 				switch (drawingStep) {
 				case 0:
 					for (int i = 0; i < 10 && !nextStep; i++) {
