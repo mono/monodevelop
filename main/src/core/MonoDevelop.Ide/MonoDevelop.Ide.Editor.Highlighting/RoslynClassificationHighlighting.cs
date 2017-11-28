@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var span = new TextSpan (offset, length);
 
 
-			var classifications = Classifier.GetClassifiedSpans (await document.GetSemanticModelAsync (), span, workspace, cancellationToken);
+			var classifications = Classifier.GetClassifiedSpans (await document.GetSemanticModelAsync ().ConfigureAwait (false), span, workspace, cancellationToken);
 
 			int lastClassifiedOffsetEnd = offset;
 			ScopeStack scopeStack;

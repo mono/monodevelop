@@ -106,6 +106,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 				DocumentContext.DocumentParsed -= HandleDocumentParsed;
 				isSubscribed = false;
 			}
+
+			base.Dispose ();
 		}
 
 		void HandleDocumentParsed (object sender, EventArgs e)

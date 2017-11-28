@@ -17,7 +17,11 @@ type TestOne() =
 let local|One = TestOne()
 let local|Two = localOne.Prope|rtyOne
 let localThree = local|One.PropertyOne
-let localFour = localOne.Property|One"""
+let localFour = localOne.Property|One
+
+type Test = { recordfield: string }
+let a = { recordfield = "A" }
+let x = a.record|field"""
 
     let getOffset expr =
         let startOffset = content.IndexOf (expr, StringComparison.Ordinal)
@@ -40,6 +44,7 @@ let localFour = localOne.Property|One"""
     [<TestCase("localOne.Prope|rtyOne", "localOne.PropertyOne")>]
     [<TestCase("local|One.PropertyOne", "localOne")>]
     [<TestCase("localOne.Property|One", "localOne.PropertyOne")>]
+    [<TestCase("a.record|field", "a.recordfield")>]
     member x.TestBasicLocalVariable(localVariable, expected) =
         let basicOffset = getOffset (localVariable)
         let doc = TestHelpers.createDoc (content.Replace("|" ,"")) ""

@@ -1,7 +1,6 @@
 <Project>
 
   <PropertyGroup>
-    <NuGetVersionVSEditor>15.6.150-preview</NuGetVersionVSEditor>
     <ReferencesVSEditorCopyToOutput Condition="$(ReferencesVSEditorCopyToOutput) == ''">false</ReferencesVSEditorCopyToOutput>
   </PropertyGroup>
 
@@ -26,12 +25,16 @@
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.UI.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Language.Intellisense">
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.Intellisense.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.Intellisense.dll</HintPath>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.Language.StandardClassification">
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.StandardClassification.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.Implementation">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Implementation.15.0.1\lib\net46\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Implementation.15.0.5-pre\lib\net46\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
   </ItemGroup>

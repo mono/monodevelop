@@ -105,7 +105,13 @@ namespace MonoDevelop.UnitTesting.VsTest
 				FixtureTypeName = string.Empty;
 			}
 
-			index = test.DisplayName.LastIndexOf ('.');
+			int openBraceIndex = test.DisplayName.IndexOf ('(');
+			if (openBraceIndex == -1) {
+				index = test.DisplayName.LastIndexOf ('.');
+			} else {
+				index = test.DisplayName.LastIndexOf ('.', openBraceIndex);
+			}
+
 			if (index > 0) {
 				name = test.DisplayName.Substring (index + 1);
 			} else {

@@ -132,14 +132,14 @@ namespace MonoDevelop.Debugger
 			Runtime.RunInMainThread (new Action (FillList)).Ignore ();
 		}
 
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			if (processAttacher != null) {
 				processAttacher.AttachableProcessesChanged -= ProcessAttacher_AttachableProcessesChanged;
 				processAttacher.Dispose ();
 			}
 			refreshLoopTokenSource.Cancel ();
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
 
 		void Refresh (object tokenObject)

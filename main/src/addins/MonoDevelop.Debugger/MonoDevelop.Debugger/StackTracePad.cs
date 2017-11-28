@@ -44,6 +44,9 @@ using MonoDevelop.Components;
 using System.Linq;
 using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace MonoDevelop.Debugger
 {
@@ -215,7 +218,20 @@ namespace MonoDevelop.Debugger
 			return options.EvaluationOptions.StackFrameFormat.ExternalCode ?? options.ProjectAssembliesOnly;
 		}
 
-		void Update ()
+		static List<(StackFrame frame, string text)> GetStackFrames ()
+		{
+			var backtrace = DebuggingService.CurrentCallStack;
+			var result = new List<(StackFrame frame, string text)> ();
+			for (int i = 0; i < backtrace.FrameCount; i++) {
+				var frame = backtrace.GetFrame (i);
+				result.Add ((frame, frame.FullStackframeText));
+			}
+			return result;
+		}
+
+		CancellationTokenSource cancelUpdate = new CancellationTokenSource ();
+
+		async void Update ()
 		{
 			if (tree.IsRealized)
 				tree.ScrollToPoint (0, 0);
@@ -226,12 +242,25 @@ namespace MonoDevelop.Debugger
 			if (!DebuggingService.IsPaused)
 				return;
 
-			var backtrace = DebuggingService.CurrentCallStack;
-			var externalCodeIter = TreeIter.Zero;
-			for (int i = 0; i < backtrace.FrameCount; i++) {
-				bool icon = i == DebuggingService.CurrentFrameIndex;
+			cancelUpdate.Cancel ();
+			cancelUpdate = new CancellationTokenSource ();
+			var token = cancelUpdate.Token;
 
-				StackFrame frame = backtrace.GetFrame (i);
+			List<(StackFrame frame, string text)> stackFrames;
+			try {
+				stackFrames = await Task.Run (() => GetStackFrames ());
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+				return;
+			}
+			// Another fetch of all data already in progress, return
+			if (token.IsCancellationRequested)
+				return;
+
+			var externalCodeIter = TreeIter.Zero;
+			for (int i = 0; i < stackFrames.Count; i++) {
+				bool icon = i == DebuggingService.CurrentFrameIndex;
+				StackFrame frame = stackFrames [i].frame;
 				if (frame.IsDebuggerHidden)
 					continue;
 
@@ -245,7 +274,7 @@ namespace MonoDevelop.Debugger
 					continue;
 				}
 				externalCodeIter = TreeIter.Zero;
-				var method = frame.FullStackframeText;
+				var method = stackFrames [i].text;
 
 				string file;
 				if (!string.IsNullOrEmpty (frame.SourceLocation.FileName)) {

@@ -33,6 +33,7 @@ using System.Linq;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Collections.Immutable;
+using System.Threading.Tasks;
 
 namespace Mono.TextEditor.Utils
 {
@@ -47,7 +48,7 @@ namespace Mono.TextEditor.Utils
 			this.Text = doc.GetTextAt (chunk);
 		}
 
-		public static List<List<ClipboardColoredText>> GetChunks (TextEditorData data, ISegment selectedSegment)
+		public static async Task<List<List<ClipboardColoredText>>> GetChunks (TextEditorData data, ISegment selectedSegment)
 		{
 			int startLineNumber = data.OffsetToLineNumber (selectedSegment.Offset);
 			int endLineNumber = data.OffsetToLineNumber (selectedSegment.EndOffset);
@@ -55,12 +56,13 @@ namespace Mono.TextEditor.Utils
 			foreach (var line in data.Document.GetLinesBetween (startLineNumber, endLineNumber)) {
 				var offset = System.Math.Max (selectedSegment.Offset, line.Offset);
 				var length = System.Math.Min (selectedSegment.EndOffset, line.EndOffset) - offset;
-				copiedColoredChunks.Add (
-					data.GetChunks (
-					line, 
+				var chunks = await data.GetChunks (
+					line,
 					offset,
 					length
-				)
+				);
+				copiedColoredChunks.Add (
+					chunks
 					.Select (chunk => new ClipboardColoredText (chunk, data.Document))
 					.ToList ()
 				);

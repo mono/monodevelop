@@ -259,7 +259,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Ide.Tests", "te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsPlatform.Tests", "tests\WindowsPlatform.Tests\WindowsPlatform.Tests.csproj", "{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefactoringEssentials", "external\RefactoringEssentials\RefactoringEssentials.2017\RefactoringEssentials.csproj", "{C465A5DC-AD28-49A2-89C0-F81838814A7E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefactoringEssentials", "external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj", "{C465A5DC-AD28-49A2-89C0-F81838814A7E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.CSharpBinding.Tests", "tests\MonoDevelop.CSharpBinding.Tests\MonoDevelop.CSharpBinding.Tests.csproj", "{84E22F5F-0562-4B51-8B9A-FD79FF33A8B5}"
 EndProject

@@ -537,14 +537,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			SyntaxHighlightingDefinition bestMatch = null;
 
-			string foundType = null;
+			string bestType = null;
+			int bestPosition = 0;
 			var fileNameStr = (string)fileName;
 			var name = fileName.FileName;
-
 			foreach (var bundle in languageBundles) {
 				foreach (var h in bundle.Highlightings) {
-					foreach (var fileType in h.FileTypes) {
-
+					for (int i = 0; i < h.FileTypes.Count; i++) {
+						var fileType = h.FileTypes [i];
 						if (!fileNameStr.EndsWith (fileType, StringComparison.OrdinalIgnoreCase))
 							continue;
 
@@ -559,10 +559,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 							continue;
 						}
 
-						//we have a valid match. but there may be a better/longer one
-						//e.g. 'xy' matches 'ab.nm.xy', but 'nm.xy' matches better
-						foundType = fileType;
-						bestMatch = h;
+						if (bestType == null || // 1st match we take anything
+							bestType.Length < fileType.Length || // longer match is better, e.g. 'xy' matches 'ab.nm.xy', but 'nm.xy' matches better
+							(bestType.Length == fileType.Length && bestPosition > i)) { //fileType is same... take higher on list(e.g. XAML specific will have .xaml at index 0, but XML general will have .xaml at index 68)
+							bestType = fileType;
+							bestPosition = i;
+							bestMatch = h;
+						}
 					}
 				}
 			}

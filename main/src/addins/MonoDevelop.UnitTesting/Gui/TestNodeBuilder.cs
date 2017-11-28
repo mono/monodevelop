@@ -29,6 +29,7 @@
 using System;
 using System.Globalization;
 using System.Text;
+using System.Linq;
 
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
@@ -69,8 +70,13 @@ namespace MonoDevelop.UnitTesting
 			UnitTest test = dataObject as UnitTest;
 			nodeInfo.Icon = test.StatusIcon;
 
+			var singleTestSuffix = String.Empty;
+			if (test is UnitTestGroup unitTestGroup) 
+				singleTestSuffix =  GetSuffix (unitTestGroup, treeBuilder.Options ["CombineTestNamespaces"] );
+
 			var title = RemoveGenericArgument (test.Title);
-			title = test.Title;
+			title =  test.Title + singleTestSuffix ;
+
 			if (test.Status == TestStatus.Running) {
 				nodeInfo.Label = Ambience.EscapeText (title);
 				return;
@@ -94,14 +100,51 @@ namespace MonoDevelop.UnitTesting
 			}
 		}
 
+		static string GetSuffix (UnitTestGroup unitTestGroup, bool combineNested )
+		{
+			var rootTitle = unitTestGroup?.Title;
+			var stringBuilder = new StringBuilder ();
+			while (unitTestGroup != null)
+					if (ContainsUnitTestCanMerge (unitTestGroup) && 
+				        !(unitTestGroup is SolutionFolderTestGroup)) {
+							var testCollection = unitTestGroup.Tests;
+							var singleChildTestGroup = testCollection [0] as UnitTestGroup;
+							if(singleChildTestGroup.CanMergeWithParent && combineNested)
+								stringBuilder.Append (".").Append (singleChildTestGroup.Title);
+						unitTestGroup = singleChildTestGroup;
+					} else
+						unitTestGroup = null;
+			return stringBuilder.ToString ();
+		}
+
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			UnitTestGroup test = dataObject as UnitTestGroup;
 			if (test == null)
 				return;
 
+			if (ContainsUnitTestCanMerge (test)  ) {
+				BuildChildNodes (test, builder);
+				return;
+			}
 			builder.AddChildren (test.Tests);
 		}
+
+		void BuildChildNodes (UnitTestGroup test, ITreeBuilder builder)
+		{
+			var combineTestNamespaces = builder.Options ["CombineTestNamespaces"];
+			bool isSolution = test is SolutionFolderTestGroup;
+			if (!isSolution && ContainsUnitTestCanMerge(test) && combineTestNamespaces) {
+				var unitTestGroup = test.Tests[0] as UnitTestGroup;
+				BuildChildNodes (unitTestGroup, builder);
+				return;
+			}
+			builder.AddChildren (test.Tests);
+		}
+
+		static bool ContainsUnitTestCanMerge(UnitTestGroup test) => 
+						test.Tests.Count == 1 && test.Tests[0] is UnitTestGroup &&
+		                test.Tests [0].CanMergeWithParent;
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{

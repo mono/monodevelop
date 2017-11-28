@@ -390,14 +390,20 @@ namespace MonoDevelop.Components.Docking
 					// Don't hide if the context menu for the item is being shown.
 					if (it.ShowingContextMenu)
 						return true;
-					// Don't hide the item if it has the focus. Try again later.
-					if (it.Widget.FocusChild != null && !force && autoShowFrame != null && ((Gtk.Window)autoShowFrame.Toplevel).HasToplevelFocus)
-						return true;
-					// Don't hide the item if the mouse pointer is still inside the window. Try again later.
-					int px, py;
-					it.Widget.GetPointer (out px, out py);
-					if (it.Widget.Visible && it.Widget.IsRealized && it.Widget.Allocation.Contains (px + it.Widget.Allocation.X, py + it.Widget.Allocation.Y) && !force)
-						return true;
+					if (!force) {
+						// Don't hide the item if it has the focus. Try again later.
+						if (it.Widget.FocusChild != null && autoShowFrame != null && ((Gtk.Window)autoShowFrame.Toplevel).HasToplevelFocus)
+							return true;
+						// Don't hide the item if the mouse pointer is still inside the window. Try again later.
+						int px, py;
+						it.Widget.GetPointer (out px, out py);
+						if (it.Widget.Visible && it.Widget.IsRealized && it.Widget.Allocation.Contains (px + it.Widget.Allocation.X, py + it.Widget.Allocation.Y))
+							return true;
+						// Don't hide if the mouse pointer is still inside the DockBar item
+						GetPointer (out px, out py);
+						if (Allocation.Contains (px + Allocation.X, py + Allocation.Y))
+							return true;
+					}
 					autoHideTimeout = uint.MaxValue;
 					AutoHide (true);
 					return false;

@@ -544,8 +544,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						}
 						continue;
 					}
-					if (getUserClass && !string.IsNullOrEmpty (cls.Locations.First ().SourceTree.FilePath) && ((FilePath)cls.Locations.First ().SourceTree.FilePath).IsChildPathOf (gui_folder))
-						continue;
 					return cls;
 				}
 			}

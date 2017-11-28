@@ -332,7 +332,6 @@ namespace Mono.TextEditor
 			textEditorData = new TextEditorData (doc);
 			textEditorData.RecenterEditor += TextEditorData_RecenterEditor; 
 			textEditorData.Document.TextChanged += OnDocumentStateChanged;
-			textEditorData.Document.TextSet += OnTextSet;
 			textEditorData.Document.MarkerAdded += HandleTextEditorDataDocumentMarkerChange;
 			textEditorData.Document.MarkerRemoved += HandleTextEditorDataDocumentMarkerChange;
 			
@@ -815,7 +814,6 @@ namespace Mono.TextEditor
 			HideTooltip ();
 			Document.HeightChanged -= TextEditorDatahandleUpdateAdjustmentsRequested;
 			Document.TextChanged -= OnDocumentStateChanged;
-			Document.TextSet -= OnTextSet;
 			Document.MarkerAdded -= HandleTextEditorDataDocumentMarkerChange;
 			Document.MarkerRemoved -= HandleTextEditorDataDocumentMarkerChange;
 
@@ -1323,8 +1321,28 @@ namespace Mono.TextEditor
 				handler (this, e);
 		}
 
+		bool dragging;
+		protected override void OnDragBegin (DragContext context)
+		{
+			dragging = true;
+			base.OnDragBegin (context);
+		}
+
+		protected override void OnDragEnd (DragContext context)
+		{
+			dragging = false;
+			base.OnDragEnd (context);
+		}
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
+			// This is workaround GTK behavior(bug?) that sometimes when dragging starts
+			// still calls OnMotionNotifyEvent 1 or 2 times before mouse move events go to
+			// dragging... What this results in... This method calls UpdateScrollWindowTimer
+			// which calls FireMotionEvent every 50ms which causes flickering cursor while dragging
+			// making dragging unusable.
+			if (dragging) {
+				return false;
+			}
 			OnBeginHover (new Xwt.MouseMovedEventArgs (e.Time, e.X, e.Y));
 			try {
 				// The coordinates have to be properly adjusted to the origin since
@@ -1920,11 +1938,9 @@ namespace Mono.TextEditor
 				}
 			}
 
-
 			for (int visualLineNumber = textEditorData.LogicalToVisualLine (startLine);; visualLineNumber++) {
 				int logicalLineNumber = textEditorData.VisualToLogicalLine (visualLineNumber);
 				var line = Document.GetLine (logicalLineNumber);
-
 				// Ensure that the correct line height is set.
 				if (line != null) {
 					var wrapper = textViewMargin.GetLayout (line);
@@ -1951,7 +1967,7 @@ namespace Mono.TextEditor
 					setLongestLine = true;
 				}
 				curY += lineHeight;
-				if (curY > cairoRectangle.Y + cairoRectangle.Height)
+				if (curY >= cairoRectangle.Y + cairoRectangle.Height)
 					break;
 			}
 			
@@ -3033,26 +3049,6 @@ namespace Mono.TextEditor
 				var start = editor.Document.OffsetToLineNumber (change.NewOffset);
 				var end = editor.Document.OffsetToLineNumber (change.NewOffset + change.InsertionLength);
 				editor.Document.CommitMultipleLineUpdate (start, end);
-			}
-			// TODO: Not sure if the update is needed anymore (I don't think so atm - since extending text line markers update itself)
-			//if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
-			//	return;
-			//if (!e.Line.Markers.Any (m => m is IExtendingTextLineMarker))
-			//	return;
-			//var line = e.Line.LineNumber;
-			//textEditorData.HeightTree.SetLineHeight (line, GetLineHeight (e.Line));
-			//RedrawLine (line);
-		}
-		
-		void OnTextSet (object sender, EventArgs e)
-		{
-			DocumentLine longest = Document.longestLineAtTextSet;
-			if (longest != longestLine && longest != null) {
-				int width = (int)(longest.Length * textViewMargin.CharWidth);
-				if (width > this.longestLineWidth) {
-					this.longestLineWidth = width;
-					this.longestLine = longest;
-				}
 			}
 		}
 		#endregion

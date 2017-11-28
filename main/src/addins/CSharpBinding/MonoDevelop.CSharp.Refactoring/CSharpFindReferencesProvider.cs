@@ -264,10 +264,10 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		public static async Task<IEnumerable<ISymbol>> GatherSymbols (ISymbol symbol, Solution solution, CancellationToken token)
 		{
+			var implementations = await SymbolFinder.FindImplementationsAsync (symbol, solution, null, token);
 			var result = new List<ISymbol> ();
 			result.Add (symbol);
-			foreach (var s in await SymbolFinder.FindImplementationsAsync (symbol, solution, null, token))
-				result.Add (s);
+			result.AddRange (implementations);
 			return result;
 		}
 

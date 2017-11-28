@@ -28,7 +28,9 @@ NUGET_RESTORE = mono external/nuget-binary/nuget.exe restore -DisableParallelPro
 #       see: https://github.com/kzu/NuGet.Restore
 restore-packages:
 	@$(NUGET_RESTORE)
-	msbuild /t:Restore /p:RestoreDisableParallel=true external/RefactoringEssentials/RefactoringEssentials.2017/RefactoringEssentials.csproj
+	msbuild /t:Restore /p:RestoreDisableParallel=true external/RefactoringEssentials/RefactoringEssentials/RefactoringEssentials.csproj
+	mono external/fsharpbinding/.paket/paket.bootstrapper.exe
+	pushd . && cd external/fsharpbinding && mono .paket/paket.exe restore && popd
 
 vcrevision:
 	touch vcrevision
@@ -206,7 +208,7 @@ EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(appdata_DATA) $(pixmap_DATA) \
 	md.targets
 
 DISTCLEANFILES = monodevelop intltool-extract intltool-merge intltool-update \
-	$(pkgconfig_DATA) 
+	$(pkgconfig_DATA)
 
 include $(top_srcdir)/Makefile.include
 

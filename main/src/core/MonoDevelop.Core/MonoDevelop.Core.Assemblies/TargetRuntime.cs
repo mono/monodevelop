@@ -52,6 +52,7 @@ namespace MonoDevelop.Core.Assemblies
 		object initLock = new object ();
 		object initEventLock = new object ();
 		bool initialized;
+		bool frameworksInitialized;
 		bool initializing;
 		bool backgroundInitialize;
 		bool extensionInitialized;
@@ -342,6 +343,7 @@ namespace MonoDevelop.Core.Assemblies
 		internal protected abstract IEnumerable<string> GetGacDirectories ();
 		
 		EventHandler initializedEvent;
+		EventHandler frameworksInitializedEvent;
 
 		/// <summary>
 		/// This event is fired when the runtime has finished initializing. Runtimes are initialized
@@ -363,6 +365,24 @@ namespace MonoDevelop.Core.Assemblies
 			remove {
 				lock (initEventLock) {
 					initializedEvent -= value;
+				}
+			}
+		}
+		
+		internal event EventHandler FrameworksInitialized {
+			add {
+				lock (initEventLock) {
+					if (frameworksInitialized) {
+						if (!ShuttingDown)
+							value (this, EventArgs.Empty);
+					}
+					else
+						frameworksInitializedEvent += value;
+				}
+			}
+			remove {
+				lock (initEventLock) {
+					frameworksInitializedEvent -= value;
 				}
 			}
 		}
@@ -436,6 +456,16 @@ namespace MonoDevelop.Core.Assemblies
 			if (ShuttingDown)
 				return;
 			
+			lock (initEventLock) {
+				frameworksInitialized = true;
+				try {
+					if (frameworksInitializedEvent != null && !ShuttingDown)
+						frameworksInitializedEvent (this, EventArgs.Empty);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while initializing the runtime: " + Id, ex);
+				}
+			}
+
 			timer.Trace ("Initializing frameworks");
 			OnInitialize ();
 		}

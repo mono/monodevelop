@@ -29,16 +29,13 @@ using Gtk;
 using System.Collections.Generic;
 using Gdk;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using System.Linq;
 using MonoDevelop.Components;
 using Mono.TextEditor.Theatrics;
 using MonoDevelop.Ide.Editor;
-using Xwt.Drawing;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
 using Mono.TextEditor;
-using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core.Text;
@@ -47,7 +44,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
-	class QuickTaskOverviewMode : DrawingArea, IMapMode
+	partial class QuickTaskOverviewMode : DrawingArea, IMapMode
 	{
 		static Xwt.Drawing.Image searchImage = Xwt.Drawing.Image.FromResource ("issues-busy-16.png");
 		static Xwt.Drawing.Image okImage = Xwt.Drawing.Image.FromResource ("issues-ok-16.png");
@@ -122,11 +119,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 
 		// These caches are updated when the bar is redrawn
-		internal int taskIterator = 0;
-		internal int usageIterator = 0;
-		internal List<QuickTask> taskCache;
-		internal List<Usage> usageCache;
-
 		public IEnumerable<QuickTask> AllTasks {
 			get {
 				return parentStrip.AllTasks;
@@ -310,8 +302,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				UpdatePrelightState (evnt.X, evnt.Y);
 			}
 
-			const ModifierType buttonMask = ModifierType.Button1Mask | ModifierType.Button2Mask |
-				ModifierType.Button3Mask | ModifierType.Button4Mask | ModifierType.Button5Mask;
 			if ((evnt.State & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
 				if (!ShowPreview (evnt.Y)) {
 					return base.OnMotionNotifyEvent (evnt);
@@ -564,24 +554,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 
-		Cairo.Color GetBarColor (DiagnosticSeverity severity)
-		{
-			var style = this.TextEditor.EditorTheme;
-			if (style == null)
-				return new Cairo.Color (0, 0, 0);
-			switch (severity) {
-			case DiagnosticSeverity.Error:
-				return SyntaxHighlightingService.GetColor (style, EditorThemeColors.UnderlineError);
-			case DiagnosticSeverity.Warning:
-				return SyntaxHighlightingService.GetColor (style, EditorThemeColors.UnderlineWarning);
-			case DiagnosticSeverity.Info:
-				return SyntaxHighlightingService.GetColor (style, EditorThemeColors.UnderlineSuggestion);
-			case DiagnosticSeverity.Hidden:
-				return SyntaxHighlightingService.GetColor (style, EditorThemeColors.Background);
-			default:
-				throw new ArgumentOutOfRangeException ();
-			}
-		}
 
 		internal virtual double IndicatorHeight {
 			get {
@@ -752,72 +724,77 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return y;
 		}
 
-		protected void DrawQuickTasks (Cairo.Context cr, IEnumerator<Usage> allUsages, IEnumerator<QuickTask> allTasks, ref bool nextStep, ref DiagnosticSeverity severity, List<HashSet<int>> lineCache)
+		void GetQuickTasks (IndicatorDrawingState state, IEnumerator<Usage> allUsages, IEnumerator<QuickTask> allTasks, ref bool nextStep)
 		{
 			if (allUsages.MoveNext ()) {
 				var usage = allUsages.Current;
 				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (usage.Offset));
-				bool isFocusedUsage = (HasFocus && currentFocus == FocusWidget.Usages && usageIterator == focusedUsageIndex);
-
-				if (lineCache [0].Contains (y) && !isFocusedUsage)
+				bool isFocusedUsage = (HasFocus && currentFocus == FocusWidget.Usages && state.usageIterator == focusedUsageIndex);
+				if (state.lineCache [0].Contains (y) && !isFocusedUsage)
 					return;
-				lineCache [0].Add (y);
-				var usageColor = (Cairo.Color)SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Foreground);
-				usageColor.A = 0.4;
-				HslColor color;
+				state.lineCache [0].Add (y);
+				int color;
 				if (isFocusedUsage) {
-					color = Styles.FocusColor.ToCairoColor ();
+					color = IndicatorDrawingState.FocusColor;
 				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Declaration) != 0) {
-					color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.ChangingUsagesRectangle);
-					if (color.Alpha == 0.0)
-						color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.UsagesRectangle);
+					color = IndicatorDrawingState.ChangingUsagesColor;
 				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Write) != 0) {
-					color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.ChangingUsagesRectangle);
-					if (color.Alpha == 0.0)
-						color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.UsagesRectangle);
+					color = IndicatorDrawingState.ChangingUsagesColor;
 				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Read) != 0 || (usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Keyword) != 0) {
-					color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.UsagesRectangle);
+					color = IndicatorDrawingState.UsagesRectangleColor;
 				} else {
-					color = usageColor;
+					color = IndicatorDrawingState.UsageColor;
 				}
-				color.L = 0.5;
-				cr.SetSourceColor (color);
+				state.UsageRectangles.Add ((y, color));
+				currentDrawingState.usageIterator++;
+			} else if (allTasks.MoveNext ()) {
+				var task = allTasks.Current;
+				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (task.Location));
+				bool isFocusedTask = (HasFocus && currentFocus == FocusWidget.Tasks && state.taskIterator == focusedTaskIndex);
+				if ((!state.lineCache [1].Contains (y) && task.Severity != DiagnosticSeverity.Hidden) || isFocusedTask) {
+					state.lineCache [1].Add (y);
+					int color;
+					if (HasFocus && currentFocus == FocusWidget.Tasks && state.taskIterator == focusedTaskIndex) {
+						color = IndicatorDrawingState.FocusColor;
+					} else {
+						color = IndicatorDrawingState.GetBarColor (task.Severity);
+					}
+					state.TaskRectangles.Add ((y, color));
+				}
+
+				if (task.Severity == DiagnosticSeverity.Error)
+					state.Severity = DiagnosticSeverity.Error;
+				else if (task.Severity == DiagnosticSeverity.Warning && state.Severity != DiagnosticSeverity.Error)
+					state.Severity = DiagnosticSeverity.Warning;
+
+				currentDrawingState.taskIterator++;
+			} else {
+				nextStep = true;
+			}
+		}
+
+		void DrawQuickTasks (Cairo.Context cr, IndicatorDrawingState state, int i, ref bool nextStep)
+		{
+			if (i < state.UsageRectangles.Count) {
+				var (y, color) = state.UsageRectangles [i];
+				cr.SetSourceColor (state.ColorCache [color]);
 				cr.MoveTo (0, y - 3);
 				cr.LineTo (5, y);
 				cr.LineTo (0, y + 3);
 				cr.LineTo (0, y - 3);
 				cr.ClosePath ();
 				cr.Fill ();
-
-				usageCache.Add (usage);
-				usageIterator++;
-			} else if (allTasks.MoveNext ()) {
-				var task = allTasks.Current;
-				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (task.Location));
-				bool isFocusedTask = (HasFocus && currentFocus == FocusWidget.Tasks && taskIterator == focusedTaskIndex);
-				if ((!lineCache [1].Contains (y) && task.Severity != DiagnosticSeverity.Hidden) || isFocusedTask) {
-					lineCache [1].Add (y);
-					Cairo.Color color;
-					if (HasFocus && currentFocus == FocusWidget.Tasks && taskIterator == focusedTaskIndex) {
-						color = Styles.FocusColor.ToCairoColor ();
-					} else {
-						color = GetBarColor (task.Severity);
-					}
-					cr.SetSourceColor (color);
-					cr.Rectangle (1, y - 1, Allocation.Width - 1, 2);
-					cr.Fill ();
-				}
-
-				if (task.Severity == DiagnosticSeverity.Error)
-					severity = DiagnosticSeverity.Error;
-				else if (task.Severity == DiagnosticSeverity.Warning && severity != DiagnosticSeverity.Error)
-					severity = DiagnosticSeverity.Warning;
-
-				taskCache.Add (task);
-				taskIterator++;
-			} else {
-				nextStep = true;
+				return;
 			}
+			var ti = i - state.UsageRectangles.Count;
+			if (ti < state.TaskRectangles.Count) {
+				var (y, color) = state.TaskRectangles [ti];
+				cr.SetSourceColor (state.ColorCache [color]);
+				cr.Rectangle (1, y - 1, Allocation.Width - 1, 2);
+				cr.Fill ();
+				return;
+			} 
+			nextStep = true;
 		}
 
 		protected void DrawLeftBorder (Cairo.Context cr)
@@ -903,8 +880,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return (c0 * a0 - cb * ab * (1 - aa)) / aa;
 		}
 
-
-		protected void DrawSearchResults (Cairo.Context cr, IEnumerator<ISegment> searchResults, ref bool nextStep)
+		void GetSearchResultIndicator (IndicatorDrawingState state, IEnumerator<ISegment> searchResults, ref bool nextStep)
 		{
 			if (!searchResults.MoveNext ()) {
 				nextStep = true;
@@ -914,10 +890,18 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			int line = TextEditor.OffsetToLineNumber (region.Offset);
 			double y = GetYPosition (line);
 			bool isMainSelection = false;
-			if (!TextEditor.TextViewMargin.MainSearchResult.IsInvalid ())
+			if (!TextEditor.TextViewMargin.MainSearchResult.IsInvalid ()) {
 				isMainSelection = region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset;
+				if (isMainSelection)
+					state.MainSelection = state.SearchResultIndicators.Count;
+			}
+			state.SearchResultIndicators.Add ((int)Math.Round (y) - 1);
+		}
+
+		void DrawSearchResults (Cairo.Context cr, IndicatorDrawingState state, int i)
+		{
 			var color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.FindHighlight);
-			if (isMainSelection) {
+			if (i == state.MainSelection) {
 				// TODO: EditorTheme does that look ok ?
 				if (HslColor.Brightness (color) < 0.5) {
 					color = color.AddLight (0.1);
@@ -926,10 +910,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				}
 			}
 			cr.SetSourceColor (color);
-			cr.Rectangle (barPadding, Math.Round (y) - 1, Allocation.Width - barPadding * 2, 2);
+			cr.Rectangle (barPadding, state.SearchResultIndicators[i], Allocation.Width - barPadding * 2, 2);
 			cr.Fill ();
 		}
-
+		IndicatorDrawingState currentDrawingState = IndicatorDrawingState.Create ();
 		SurfaceWrapper backgroundSurface, indicatorSurface, swapIndicatorSurface;
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
@@ -985,116 +969,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 
 		CancellationTokenSource src;
-
-		class IdleUpdater
-		{
-			readonly QuickTaskOverviewMode mode;
-			readonly CancellationToken token;
-			SurfaceWrapper surface;
-			Cairo.Context cr;
-			Gdk.Rectangle allocation;
-
-			public IdleUpdater (QuickTaskOverviewMode mode, System.Threading.CancellationToken token)
-			{
-				this.mode = mode;
-				this.token = token;
-			}
-
-			public void Start ()
-			{
-				allocation = mode.Allocation;
-				var swapSurface = mode.swapIndicatorSurface;
-				if (swapSurface != null) {
-					if (swapSurface.Width == allocation.Width && swapSurface.Height == allocation.Height) {
-						surface = swapSurface;
-					} else {
-						mode.DestroyIndicatorSwapSurface ();
-					}
-				}
-
-				var displayScale = Core.Platform.IsMac ? GtkWorkarounds.GetScaleFactor (mode) : 1.0;
-				if (surface == null) {
-					using (var similiar = CairoHelper.Create (IdeApp.Workbench.RootWindow.GdkWindow))
-						surface = new SurfaceWrapper (similiar, (int)(allocation.Width * displayScale), (int)(allocation.Height * displayScale));
-				}
-
-				searchResults = mode.TextEditor.TextViewMargin.SearchResults.ToList ().GetEnumerator ();
-				allUsages = mode.AllUsages.GetEnumerator ();
-				allTasks = mode.AllTasks.GetEnumerator ();
-				cr = new Cairo.Context (surface.Surface);
-				cr.Scale (displayScale, displayScale);
-				GLib.Idle.Add (RunHandler);
-			}
-
-			int drawingStep;
-			DiagnosticSeverity severity = DiagnosticSeverity.Hidden;
-			IEnumerator<ISegment> searchResults;
-			IEnumerator<Usage> allUsages;
-			IEnumerator<QuickTask> allTasks;
-
-			bool RunHandler ()
-			{
-			tokenExit:
-				if (token.IsCancellationRequested || mode.TextEditor.GetTextEditorData () == null) {
-					cr.Dispose ();
-					// if the surface was newly created dispose it otherwise it'll leak.
-					if (surface != mode.swapIndicatorSurface)
-						surface.Dispose ();
-					return false;
-				}
-				var lineCache = new List<HashSet<int>> ();
-				lineCache.Add (new HashSet<int> ());
-				lineCache.Add (new HashSet<int> ());
-				bool nextStep = false;
-				switch (drawingStep) {
-				case 0:
-					var displayScale = Core.Platform.IsMac ? GtkWorkarounds.GetScaleFactor (mode) : 1.0;
-					mode.DrawBackground (cr, allocation);
-					drawingStep++;
-
-					mode.taskIterator = 0;
-					mode.usageIterator = 0;
-					mode.taskCache = new List<QuickTask> ();
-					mode.usageCache = new List<Usage> ();
-					return true;
-				case 1:
-					for (int i = 0; i < 10 && !nextStep; i++) {
-						if (token.IsCancellationRequested)
-							goto tokenExit;
-						if (mode.TextEditor.HighlightSearchPattern) {
-							mode.DrawSearchResults (cr, searchResults, ref nextStep);
-						} else {
-							if (!Debugger.DebuggingService.IsDebugging) {
-								mode.DrawQuickTasks (cr, allUsages, allTasks, ref nextStep, ref severity, lineCache);
-							} else {
-								nextStep = true;
-							}
-						}
-					}
-					if (nextStep)
-						drawingStep++;
-					return true;
-				case 2:
-					if (mode.TextEditor.HighlightSearchPattern) {
-						mode.DrawSearchIndicator (cr);
-					} else {
-						if (!Debugger.DebuggingService.IsDebugging) {
-							mode.DrawIndicator (cr, severity);
-						}
-					}
-					drawingStep++;
-					return true;
-				default:
-					cr.Dispose ();
-					var tmp = mode.indicatorSurface;
-					mode.indicatorSurface = surface;
-					mode.swapIndicatorSurface = tmp;
-					mode.QueueDraw ();
-
-					return false;
-				}
-			}
-		}
 
 		uint indicatorIdleTimout;
 		void DrawIndicatorSurface (uint timeout = 250)
@@ -1225,13 +1099,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (direction == DirectionType.Down) {
 				if (currentFocus == FocusWidget.Tasks) {
 					focusedTaskIndex++;
-					if (focusedTaskIndex >= taskCache.Count) {
-						focusedTaskIndex = taskCache.Count - 1;
+					if (focusedTaskIndex >= currentDrawingState.Tasks.Count) {
+						focusedTaskIndex = currentDrawingState.Tasks.Count - 1;
 					}
 				} else if (currentFocus == FocusWidget.Usages) {
 					focusedUsageIndex++;
-					if (focusedUsageIndex >= usageCache.Count) {
-						focusedUsageIndex = usageCache.Count - 1;
+					if (focusedUsageIndex >= currentDrawingState.Usages.Count) {
+						focusedUsageIndex = currentDrawingState.Usages.Count - 1;
 					}
 				}
 			} else if (direction == DirectionType.Up) {
@@ -1253,8 +1127,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		bool FocusNextArea (DirectionType direction)
 		{
-			var hasUsages = usageCache == null ? false : usageCache.Count > 0;
-			var hasTasks = taskCache == null ? false : taskCache.Count > 0;
+			var hasUsages = currentDrawingState.Usages == null ? false : currentDrawingState.Usages.Count > 0;
+			var hasTasks = currentDrawingState.Tasks == null ? false : currentDrawingState.Tasks.Count > 0;
 
 			switch (currentFocus) {
 			case FocusWidget.None:
@@ -1262,10 +1136,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					currentFocus = FocusWidget.Indicator;
 				} else if (direction == DirectionType.TabBackward) {
 					if (hasUsages) {
-						focusedUsageIndex = usageCache.Count - 1;
+						focusedUsageIndex = currentDrawingState.Usages.Count - 1;
 						currentFocus = FocusWidget.Usages;
 					} else if (hasTasks) {
-						focusedTaskIndex = taskCache.Count - 1;
+						focusedTaskIndex = currentDrawingState.Tasks.Count - 1;
 						currentFocus = FocusWidget.Tasks;
 					} else {
 						currentFocus = FocusWidget.Indicator;
@@ -1360,11 +1234,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 				double y = -1;
 				if (currentFocus == FocusWidget.Tasks) {
-					var t = taskCache [focusedTaskIndex];
+					var t = currentDrawingState.Tasks [focusedTaskIndex];
 					parentStrip.GotoTask (t, false);
 					y = GetYPosition (TextEditor.OffsetToLineNumber (t.Location));
 				} else if (currentFocus == FocusWidget.Usages) {
-					var u = usageCache [focusedUsageIndex];
+					var u = currentDrawingState.Usages [focusedUsageIndex];
 					parentStrip.GotoUsage (u, false);
 					y = (int)GetYPosition (TextEditor.OffsetToLineNumber (u.Offset));
 				}
@@ -1391,10 +1265,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			HidePreview ();
 
 			if (currentFocus == FocusWidget.Tasks) {
-				var t = taskCache [focusedTaskIndex];
+				var t = currentDrawingState.Tasks [focusedTaskIndex];
 				parentStrip.GotoTask (t, true);
 			} else if (currentFocus == FocusWidget.Usages) {
-				var u = usageCache [focusedUsageIndex];
+				var u = currentDrawingState.Usages [focusedUsageIndex];
 				parentStrip.GotoUsage (u, false);
 			} else if (currentFocus == FocusWidget.Indicator) {
 				parentStrip.GotoTask (parentStrip.SearchNextTask (GetHoverMode ()));

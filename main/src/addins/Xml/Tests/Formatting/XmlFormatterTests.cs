@@ -78,6 +78,40 @@ namespace MonoDevelop.Xml.Tests.Formatting
 
 			Assert.AreEqual (expectedResult, result);
 		}
+
+		[Test]
+		public void AlignAttributesMaxOnePerLine ()
+		{
+			var myTextPolicy = textPolicy.WithTabsToSpaces (true);
+			var myXmlPolicy = xmlPolicy.Clone ();
+			myXmlPolicy.DefaultFormat.AlignAttributes = true;
+			myXmlPolicy.DefaultFormat.MaxAttributesPerLine = 1;
+			myXmlPolicy.DefaultFormat.OmitXmlDeclaration = true;
+			string input = @"<test123 abc=""x"" def=""y"" ghi=""z"" />";
+			//9 spaces = "<test123 ".Length
+			string expectedResult ="<test123 abc=\"x\"\n         def=\"y\"\n         ghi=\"z\" />";
+
+			string result = XmlFormatter.FormatXml (myTextPolicy, myXmlPolicy, input);
+
+			Assert.AreEqual (expectedResult, result);
+		}
+
+		[Test]
+		public void AlignAttributesMaxOnePerLineTabs ()
+		{
+			var myTextPolicy = textPolicy.WithTabsToSpaces (false).WithTabWidth(4);
+			var myXmlPolicy = xmlPolicy.Clone ();
+			myXmlPolicy.DefaultFormat.AlignAttributes = true;
+			myXmlPolicy.DefaultFormat.MaxAttributesPerLine = 1;
+			myXmlPolicy.DefaultFormat.OmitXmlDeclaration = true;
+			string input = @"<test123 abc=""x"" def=""y"" ghi=""z"" />";
+			//9 spaces = "<test123 ".Length
+			string expectedResult = "<test123 abc=\"x\"\n\t\t def=\"y\"\n\t\t ghi=\"z\" />";
+
+			string result = XmlFormatter.FormatXml (myTextPolicy, myXmlPolicy, input);
+
+			Assert.AreEqual (expectedResult, result);
+		}
 	}
 }
 

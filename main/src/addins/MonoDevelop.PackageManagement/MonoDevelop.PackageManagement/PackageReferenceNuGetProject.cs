@@ -93,7 +93,7 @@ namespace MonoDevelop.PackageManagement
 
 		public static NuGetProject Create (DotNetProject project)
 		{
-			if (project.HasPackageReferences ())
+			if (project.HasPackageReferences () || project.HasPackageReferenceRestoreProjectStyle ())
 				return new PackageReferenceNuGetProject (project);
 
 			return null;

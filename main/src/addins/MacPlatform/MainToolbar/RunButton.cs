@@ -181,8 +181,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				// However after switching theme this filter is removed and the colour set here is the actual colour
 				// displayed onscreen.
 
-				// This also seems to happen in fullscreen mode
-				if (MainToolbar.IsFullscreen) {
+				// This also seems to happen in fullscreen mode and always on High Sierra
+				if (MainToolbar.IsFullscreen || MacSystemInformation.OsVersion >= MacSystemInformation.HighSierra) {
 					Styles.DarkBorderColor.ToNSColor ().SetStroke ();
 				} else {
 					Styles.DarkBorderBrokenColor.ToNSColor ().SetStroke ();
@@ -205,8 +205,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			// In fullscreen mode with dark theme on El Capitan, the disabled icon picked is for the
 			// normal appearance so it is too dark. Hack this so it comes up lighter.
+			// This also happens in all modes on High Sierra.
 			// For further information see the comment in AwesomeBar.cs
-			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark && MainToolbar.IsFullscreen) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark && (MainToolbar.IsFullscreen || MacSystemInformation.OsVersion >= MacSystemInformation.HighSierra)) {
 				Enabled = true;
 			}
 			base.DrawInteriorWithFrame (cellFrame, inView);
