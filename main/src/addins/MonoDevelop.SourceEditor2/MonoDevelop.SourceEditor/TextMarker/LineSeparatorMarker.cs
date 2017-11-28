@@ -1,4 +1,4 @@
-﻿//
+//
 // LineSeparatorMarker.cs
 //
 // Author:
@@ -26,6 +26,7 @@
 using Mono.TextEditor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
