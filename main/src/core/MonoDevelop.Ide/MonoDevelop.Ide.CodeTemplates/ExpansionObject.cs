@@ -174,19 +174,21 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return "var";*/
 		}
 
-		ICompletionDataList list;
+		//ICompletionDataList list;
+		static CodeTemplateListDataProvider empty = new CodeTemplateListDataProvider (new List<CodeTemplateVariableValue> ());
 		public IListDataProvider<string> GetCollections ()
 		{
-			var result = new List<CodeTemplateVariableValue> ();
-			var ext = CurrentContext.DocumentContext.GetContent <CompletionTextEditorExtension> ();
-			var analysisProject = TypeSystemService.GetCodeAnalysisProject (CurrentContext.DocumentContext.Project);
-			var compilation = analysisProject != null ? analysisProject.GetCompilationAsync ().Result : null;
+			return empty;
+			//var result = new List<CodeTemplateVariableValue> ();
+			//var ext = CurrentContext.DocumentContext.GetContent <CompletionTextEditorExtension> ();
+			//var analysisProject = TypeSystemService.GetCodeAnalysisProject (CurrentContext.DocumentContext.Project);
+			//var compilation = analysisProject != null ? analysisProject.GetCompilationAsync ().Result : null;
 
-			if (ext != null) {
-				if (list == null)
-					list = ext.HandleCodeCompletionAsync (
-						CurrentContext.DocumentContext.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext,
-						CompletionTriggerInfo.CodeCompletionCommand).Result;
+			//if (ext != null) {
+				//if (list == null)
+					//list = ext.HandleCodeCompletionAsync (
+						//CurrentContext.DocumentContext.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext,
+						//CompletionTriggerInfo.CodeCompletionCommand).Result;
 				
 				//foreach (var data in list.OfType<ISymbolCompletionData> ()) {
 				//	if (data.Symbol == null)
@@ -221,8 +223,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				//	if (GetElementType (compilation, m.Type) != null && !result.Any (r => r.Text == m.Name))
 				//		result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)sym).Icon));
 				//}
-			}
-			return new CodeTemplateListDataProvider (result);
+			//}
+			//return new CodeTemplateListDataProvider (empty);
 		}
 		
 		public string GetSimpleTypeName (string fullTypeName)
