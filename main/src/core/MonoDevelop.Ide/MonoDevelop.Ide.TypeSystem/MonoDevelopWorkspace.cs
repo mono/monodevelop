@@ -114,8 +114,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 
 			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
-			if (IdeApp.Preferences.EnableSourceAnalysis)
-				solutionCrawler.Unregister (this);
+			solutionCrawler.Unregister (this);
 			disposed = true;
 			CancelLoad ();
 			if (IdeApp.Workspace != null) {
