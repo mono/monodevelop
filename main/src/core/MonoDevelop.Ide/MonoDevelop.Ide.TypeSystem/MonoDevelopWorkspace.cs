@@ -224,7 +224,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!added) {
 						added = true;
 						// HACK: https://github.com/dotnet/roslyn/issues/20581
-						RegisterPrimarySolutionForPersistentStorage (solutionId);
+						RegisterPrimarySolutionForPersistentStorage (solutionId, solution);
 						OnSolutionAdded (solutionInfo);
 					}
 				}
@@ -232,8 +232,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			});
 		}
 
-		void RegisterPrimarySolutionForPersistentStorage (SolutionId solutionId)
+		void RegisterPrimarySolutionForPersistentStorage (SolutionId solutionId, MonoDevelop.Projects.Solution solution)
 		{
+			var locService = (MonoDevelopPersistentStorageLocationService)Services.GetService<IPersistentStorageLocationService> ();
+			locService.storageMap.Add (solutionId, solution.GetPreferencesDirectory ());
+
 			var service = Services.GetService<IPersistentStorageService> () as Microsoft.CodeAnalysis.Storage.AbstractPersistentStorageService;
 			if (service == null) {
 				return;
@@ -244,6 +247,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void UnregisterPrimarySolutionForPersistentStorage (SolutionId solutionId, bool synchronousShutdown)
 		{
+			var locService = (MonoDevelopPersistentStorageLocationService)Services.GetService<IPersistentStorageLocationService> ();
+			locService.storageMap.Remove (solutionId);
+
 			var service = Services.GetService<IPersistentStorageService> () as Microsoft.CodeAnalysis.Storage.AbstractPersistentStorageService;
 			if (service == null) {
 				return;

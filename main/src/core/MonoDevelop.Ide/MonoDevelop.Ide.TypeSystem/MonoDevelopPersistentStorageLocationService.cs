@@ -25,8 +25,11 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Composition;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -37,9 +40,6 @@ using Microsoft.CodeAnalysis.SQLite;
 using Microsoft.CodeAnalysis.Storage;
 using Microsoft.CodeAnalysis.SolutionSize;
 using MonoDevelop.Core;
-using System.Text;
-using System.Collections.Generic;
-using System.Security.Cryptography;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -48,12 +48,13 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		public bool IsSupported (Workspace workspace) => workspace is MonoDevelopWorkspace;
 
+		// PERF: cache for the solution location. This is needed due to roslyn querying GetStorageLocation a lot of times.
+		internal ConditionalWeakTable<SolutionId, string> storageMap = new ConditionalWeakTable<SolutionId, string> ();
+
 		public string GetStorageLocation (Solution solution)
 		{
-			if (solution.FilePath == null)
-				return null;
-			var solutionDirectory = Path.GetDirectoryName(solution.FilePath);
-			return Path.Combine (solutionDirectory, ".vs", "v15-mac");
+			storageMap.TryGetValue (solution.Id, out var path);
+			return path;
 		}
 	}
 }
