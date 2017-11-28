@@ -792,7 +792,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.SetSourceColor (state.ColorCache [color]);
 				cr.Rectangle (1, y - 1, Allocation.Width - 1, 2);
 				cr.Fill ();
-				return;
 			} 
 			nextStep = true;
 		}
