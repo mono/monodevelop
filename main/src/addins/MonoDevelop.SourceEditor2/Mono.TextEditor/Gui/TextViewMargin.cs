@@ -154,6 +154,17 @@ namespace Mono.TextEditor
 
 			public void Dispose ()
 			{
+				Accessible.Contents = null;
+				Accessible.InsertionPointLineNumber = null;
+				Accessible.NumberOfCharacters = null;
+				Accessible.FrameForRange = null;
+				Accessible.LineForIndex = null;
+				Accessible.RangeForLine = null;
+				Accessible.StringForRange = null;
+				Accessible.RangeForIndex = null;
+				Accessible.StyleRangeForIndex = null;
+				Accessible.RangeForPosition = null;
+				Accessible.GetVisibleCharacterRange = null;
 				Accessible = null;
 				Margin = null;
 			}
