@@ -1119,22 +1119,47 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		void OnCompletionDataChanged (object s, EventArgs args)
 		{
-			ResetSizes ();
-			HideFooter ();
-			
-			//try to capture full selection state so as not to interrupt user
-
-			if (Visible) {
-				string last = List.AutoSelect ? CurrentCompletionText : PartialWord;
-				//don't reset the user-entered word when refilling the list
-				var tmp = List.AutoSelect;
-				// Fill the list before resetting so that we get the correct size
-				FillList ();
-				ResetSizes ();
-				List.AutoSelect = tmp;
-				if (last != null)
-					SelectEntry (last);
+			if (!Visible) {
+				return;
 			}
+			ResetSizes ();
+
+			//only hide the footer if it's finished
+			if (!mutableList.IsChanging) {
+				HideFooter ();
+			}
+
+			// try to capture full selection state so as not to interrupt user
+			// SelectedItemCompletionText is updated on every selection change
+			// so doesn't depend on the current state of the list, which changed
+			// immediately before this event was fired
+			string lastSelection = List.AutoSelect ? List.SelectedItemCompletionText : null;
+
+			var selectState = List.AutoSelect;
+
+			//clear the current filter state before doing anything else
+			//because most other things depend on it
+			List.ResetState ();
+
+			FillList ();
+
+			//this sets List.CompletionString, which refilters it
+			ResetSizes ();
+
+			List.AutoSelect = selectState;
+
+			//try to select the last selected item
+			var match = CompletionSelectionStatus.Empty;
+			if (lastSelection != null) {
+				match = FindMatchedEntry (lastSelection);
+			}
+
+			//if that fails, use the partial word
+			if (match.Index < 0) {
+				match = FindMatchedEntry (PartialWord);
+			}
+
+			List.SelectEntry (match);
 		}
 	}
 }

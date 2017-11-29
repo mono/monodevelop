@@ -62,6 +62,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		/// <returns>The filtered completion list, or null if the default list should be taken.</returns>
 		/// <param name="input">Contains all information needed to filter the list.</param>
 		CompletionListFilterResult FilterCompletionList (CompletionListFilterInput input);
+
+		//FIXME: the first argument of this is redundant
 		CompletionSelectionStatus FindMatchedEntry (ICompletionDataList completionDataList, MruCache cache, string partialWord, List<int> filteredItems);
 		int [] GetHighlightedIndices (CompletionData completionData, string completionString);
 	}
