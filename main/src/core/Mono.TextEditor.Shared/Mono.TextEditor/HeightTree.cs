@@ -66,11 +66,14 @@ namespace Mono.TextEditor
 
 		void Document_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
+			var oldHeight = TotalHeight;
 			Rebuild ();
-			for (int i = 0; i < e.TextChanges.Count; ++i) {
-				var change = e.TextChanges[i];
-				var lineNumber = this.editor.OffsetToLineNumber (change.NewOffset);
-				OnLineUpdateFrom (new HeightChangedEventArgs (lineNumber - 1));
+			if ((int)oldHeight != (int)TotalHeight) {
+				for (int i = 0; i < e.TextChanges.Count; ++i) {
+					var change = e.TextChanges [i];
+					var lineNumber = this.editor.OffsetToLineNumber (change.NewOffset);
+					OnLineUpdateFrom (new HeightChangedEventArgs (lineNumber - 1));
+				}
 			}
 		}
 

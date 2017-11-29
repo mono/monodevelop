@@ -278,7 +278,7 @@ namespace MonoDevelop.Ide.Projects
 			Destroy ();
 		}
 
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			if (popupMenu != null) {
 				popupMenu.Destroy ();
@@ -294,7 +294,7 @@ namespace MonoDevelop.Ide.Projects
 			controller.ProjectCreationFailed -= ProjectCreationFailed;
 			controller.ProjectCreated -= ProjectCreated;
 
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
 
 		void LoadTemplates ()

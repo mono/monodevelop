@@ -273,6 +273,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		CodeFormattingPanel panel;
 		Gtk.ListStore store;
 		OptionsDialog dialog;
+		CellRendererComboBox comboCell = new CellRendererComboBox();
 		
 		public CodeFormattingPanelWidget (CodeFormattingPanel panel, OptionsDialog dialog)
 		{
@@ -296,8 +297,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			col.AddAttribute (crt, "text", 2);
 			tree.AppendColumn (col);
 			store.SetSortColumnId (2, Gtk.SortType.Ascending);
-			
-			CellRendererComboBox comboCell = new CellRendererComboBox ();
+
 			comboCell.Changed += OnPolicySelectionChanged;
 			Gtk.TreeViewColumn polCol = tree.AppendColumn (GettextCatalog.GetString ("Policy"), comboCell, new Gtk.TreeCellDataFunc (OnSetPolicyData));
 			
@@ -455,10 +455,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			buttonRemove.Sensitive = buttonEdit.Sensitive = false;
 		}
 
-		public override void Destroy ()
+		protected override void OnDestroyed()
 		{
-			store.Clear ();
-			base.Destroy ();
+			store.Clear();
+			comboCell.Changed -= OnPolicySelectionChanged;
+			
+			base.OnDestroyed();
 		}
 	}
 }

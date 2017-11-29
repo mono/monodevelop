@@ -131,7 +131,7 @@ namespace Mono.TextEditor
 			get { return charWidth; }
 		}
 
-		class TextViewMarginAccessibilityProxy 
+		class TextViewMarginAccessibilityProxy : IDisposable
 		{
 			public AccessibilityElementProxy Accessible { get; private set; }
 			public TextViewMargin Margin { get; set; }
@@ -150,6 +150,12 @@ namespace Mono.TextEditor
 				Accessible.StyleRangeForIndex = GetStyleRangeForIndex;
 				Accessible.RangeForPosition = GetRangeForPosition;
 				Accessible.GetVisibleCharacterRange = GetVisibleCharacterRange;
+			}
+
+			public void Dispose ()
+			{
+				Accessible = null;
+				Margin = null;
 			}
 
 			int GetInsertionPointLineNumber ()
@@ -702,6 +708,8 @@ namespace Mono.TextEditor
 			DisposeLayoutDict ();
 			if (tabArray != null)
 				tabArray.Dispose ();
+			accessible?.Dispose ();
+			accessible = null;
 			base.Dispose ();
 		}
 
@@ -1339,7 +1347,7 @@ namespace Mono.TextEditor
 			}
 			task.ContinueWith (t => {
 				cachedLines [lineNumber] = t.Result;
-				Document.CommitLineUpdate (line);
+				Document.CommitLineUpdate (lineNumber); // Required for highlighting updates
 			}, token, TaskContinuationOptions.OnlyOnRanToCompletion, Runtime.MainTaskScheduler);
 			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
 		}

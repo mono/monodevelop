@@ -320,6 +320,7 @@
 		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateFoldingTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateIndentationTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateCompletionTextEditorExtension" />
+		<Class class = "MonoDevelop.Ide.Editor.Extension.LineSeparatorTextEditorExtension" />
 		<Class id="FinalStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
 	</Extension>
 	

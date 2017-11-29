@@ -64,6 +64,9 @@ namespace MonoDevelop.Tests.TestRunner
 					}
 				}
 			}
+
+			Runtime.Preferences.EnableUpdaterForCurrentSession = false;
+
 			if (guiUnitAsm != null) {
 				Xwt.XwtSynchronizationContext.AutoInstall = false;
 				var sc = new Xwt.XwtSynchronizationContext ();
