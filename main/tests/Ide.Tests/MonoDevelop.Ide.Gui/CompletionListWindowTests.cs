@@ -1041,8 +1041,6 @@ namespace MonoDevelop.Ide.Gui
 
 			CompletionListWindow listWindow = CreateListWindow (list);
 
-			listWindow.ShowListWindow (list, new CodeCompletionContext ());
-
 			SimulateInput (listWindow, "b", false);
 
 			Assert.AreEqual (1, listWindow.SelectedItemIndex);
