@@ -1108,7 +1108,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var hbox = new HBox ();
 				hbox.BorderWidth = 3;
 				hbox.PackStart (new ImageView ("md-parser", IconSize.Menu), false, false, 0);
-				var lab = new Label (GettextCatalog.GetString ("Gathering class information..."));
+				var lab = new Label (GettextCatalog.GetString ("Updating..."));
 				lab.Xalign = 0;
 				hbox.PackStart (lab, true, true, 3);
 				hbox.ShowAll ();
