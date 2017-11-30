@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_BuildStarted (object sender, BuildStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Build, e.Message, false);
+			AddNode (BuildOutputNodeType.Build, e.Message, true);
 		}
 
 		private void BinLog_BuildFinished (object sender, BuildFinishedEventArgs e)
@@ -88,7 +88,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		void BinlogReader_MessageRaised (object sender, BuildMessageEventArgs e)
 		{
-			AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message, e.Message, false);
+			if (e.BuildEventContext != null && (e.BuildEventContext.NodeId == 0 &&
+			                                    e.BuildEventContext.ProjectContextId == 0 &&
+			                                    e.BuildEventContext.ProjectInstanceId == 0 &&
+			                                    e.BuildEventContext.TargetId == 0 &&
+			                                    e.BuildEventContext.TaskId == 0)) {
+				// These are the "Detailed summary" lines
+				// TODO: we should probably parse them and associate those stats
+				// with the correct build step, so that we get stats for those
+			} else {
+				AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message, e.Message, false);
+			}
 		}
 
 		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
