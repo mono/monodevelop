@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public BuildOutputViewContent (BuildOutput buildOutput)
 		{
+			ContentName = GettextCatalog.GetString ("Build Output");
 			control = new BuildOutputWidget (buildOutput);
 		}
 
