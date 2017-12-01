@@ -5,7 +5,7 @@
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
 	"palette": [
-		{ "name": "monokai-white", "value": "#F8F8F2" },
+		{ "name": "monokai-white", "value": "#c9c99c" },
 		{ "name": "monokai-selection", "value": "#49483E" },
 		{ "name": "monokai-background", "value": "#272822" },
 		{ "name": "monokai-comment", "value": "#75715E" },
