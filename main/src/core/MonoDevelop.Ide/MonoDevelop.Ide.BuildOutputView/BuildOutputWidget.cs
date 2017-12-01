@@ -32,6 +32,7 @@ using System.Threading;
 using Gtk;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 
@@ -42,6 +43,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		TextEditor editor;
 		CompactScrolledWindow scrolledWindow;
 		CheckButton showDiagnosticsButton;
+		Button saveButton;
 
 		public BuildOutput BuildOutput { get; private set; }
 
@@ -78,8 +80,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 			};
 			showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 
+			saveButton = Button.NewWithLabel (GettextCatalog.GetString ("Save"));
+			saveButton.Clicked += async (sender, e) => {
+				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
+					TransientFor = IdeApp.Workbench.RootWindow
+				};
+				if (dlg.Run ()) {
+					await BuildOutput.Save (dlg.SelectedFile);
+				}
+			};
+
 			var toolbar = new DocumentToolbar ();
 			toolbar.Add (showDiagnosticsButton);
+			toolbar.Add (saveButton); 
 			PackStart (toolbar.Container, expand: false, fill: true, padding: 0);
 
 			editor = TextEditorFactory.CreateNewEditor ();
