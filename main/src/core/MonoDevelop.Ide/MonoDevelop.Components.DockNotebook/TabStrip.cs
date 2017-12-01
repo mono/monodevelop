@@ -1075,30 +1075,6 @@ namespace MonoDevelop.Components.DockNotebook
 			return tabStartX - renderOffset;
 		}
 
-		int GetPreviewRenderOffset ()
-		{
-			int tabArea = prevTabEndX - prevTabStartX;
-			if (notebook.CurrentTabIndex >= 0) {
-				int normalizedArea = (tabArea / TargetWidth) * TargetWidth;
-				int maxOffset = Math.Max (0, (previewTabs.Count * TargetWidth) - normalizedArea);
-
-				int distanceToTabEdge = TargetWidth * notebook.CurrentTabIndex;
-				int window = normalizedArea - TargetWidth;
-				targetOffset = Math.Min (maxOffset, Clamp (prevRenderOffset, distanceToTabEdge - window, distanceToTabEdge));
-
-				if (targetOffset != animationTarget) {
-					this.Animate ("ScrollTabs",
-						easing: Easing.CubicOut,
-					              start: prevRenderOffset,
-						end: targetOffset,
-					              callback: f => prevRenderOffset = (int)f);
-					animationTarget = targetOffset;
-				}
-			}
-
-			return prevTabStartX - prevRenderOffset;
-		}
-
 		Action<Context> DrawClosingTab (int index, Gdk.Rectangle region, out int width)
 		{
 			width = 0;
