@@ -32,6 +32,8 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Editor;
+using Microsoft.Build.Logging;
+using Microsoft.Build.Framework;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -67,8 +69,71 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public void Save (string filePath)
+		private class BuildOutputEventsSource : EventArgsDispatcher
 		{
+			public BuildFinishedEventArgs ProcessFile (string filePath, bool buildHasStarted)
+			{
+				BuildFinishedEventArgs buildFinishedEvent = null;
+
+				var eventsSource = new BinaryLogReplayEventSource ();
+				eventsSource.AnyEventRaised += (sender, e) => {
+					if (e is BuildStatusEventArgs && buildHasStarted) {
+						// We only want a single BuildStarted event
+						return;
+					} else if (e is BuildFinishedEventArgs) {
+						buildFinishedEvent = (BuildFinishedEventArgs)e;
+						return;
+					}
+
+					Dispatch (e);
+				};
+
+				eventsSource.Replay (filePath);
+
+				return buildFinishedEvent;
+			}
+		}
+
+		public Task Save (string filePath)
+		{
+			return Task.Run (() => {
+				var eventsSource = new BuildOutputEventsSource ();
+				var logger = new BinaryLogger {
+					CollectProjectImports = BinaryLogger.ProjectImportsCollectionMode.None,
+					Parameters = filePath,
+					Verbosity = LoggerVerbosity.Diagnostic
+				};
+
+				try {
+					bool buildHasStarted = false;
+					BuildFinishedEventArgs buildFinishedEvent = null;
+					logger.Initialize (eventsSource);
+
+					foreach (var proj in projects) {
+						switch (proj) {
+						case MSBuildOutputProcessor msbop:
+							buildFinishedEvent = eventsSource.ProcessFile (proj.FileName, buildHasStarted);
+							break;
+						case BuildOutputProcessor bop:
+							// FIXME
+							break;
+						default:
+							continue;
+						}
+
+						buildHasStarted = true;
+					}
+
+					// Emit BuildFinished event
+					if (buildHasStarted && buildFinishedEvent != null) {
+						eventsSource.Dispatch (buildFinishedEvent);
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError ($"Can't write to {filePath}: {ex.Message})");
+				} finally {
+					logger.Shutdown ();
+				}
+			});
 		}
 
 		internal void AddProcessor (BuildOutputProcessor processor)
