@@ -762,11 +762,6 @@ namespace MonoDevelop.Ide.Gui
 			ListenToProjectLoad (owner);
 		}
 
-		void ListenToProjectLoad (Project project)
-		{
-			ListenToProjectLoad ((WorkspaceObject)project);
-		}
-
 		void ListenToProjectLoad (WorkspaceObject owner)
 		{
 			StartReparseThread ();

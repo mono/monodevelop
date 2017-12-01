@@ -563,7 +563,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			string documentUrl, filename;
 			if (window.ViewContent.Owner != null) {
-				documentUrl = "file://" + window.ViewContent.Owner.BaseDirectory.FileName;
+				documentUrl = "file://" + window.ViewContent.Project.FileName;
 				filename = System.IO.Path.GetFileName (window.ViewContent.PathRelativeToProject);
 			} else {
 				documentUrl = string.Empty;

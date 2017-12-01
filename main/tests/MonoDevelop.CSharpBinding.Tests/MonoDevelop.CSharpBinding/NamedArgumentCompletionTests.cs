@@ -282,7 +282,7 @@ namespace MonoDevelop.CSharpBinding
 			using (var monitor = new ProgressMonitor ())
 				await TypeSystemService.Load (solution, monitor);
 			content.Project = project;
-			doc.SetProject (project);
+			doc.SetOwner (project);
 
 			var ext = new CSharpCompletionTextEditorExtension ();
 			ext.Initialize (doc.Editor, doc);

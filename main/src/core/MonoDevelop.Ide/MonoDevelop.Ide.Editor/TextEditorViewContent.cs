@@ -254,13 +254,6 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.ViewContent.DiscardChanges ();
 		}
 
-		protected override void OnSetProject (MonoDevelop.Projects.Project project)
-		{
-			base.OnSetProject (project);
-			textEditorImpl.ViewContent.Owner = project;
-			UpdateTextEditorOptions (null, null);
-		}
-
 		protected override void OnSetOwner (MonoDevelop.Projects.WorkspaceObject owner)
 		{
 			base.OnSetOwner (owner);
