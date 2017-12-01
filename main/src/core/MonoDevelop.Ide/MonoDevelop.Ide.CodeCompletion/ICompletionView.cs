@@ -1,10 +1,10 @@
 ﻿//
-// MruCache.cs
+// CodeCompletionSession.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,46 +25,49 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Gdk;
+using Gtk;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	/// <summary>
-	/// A cache that keeps a list of the most recently used completion items
-	/// </summary>
-	public class MruCache
+	interface ICompletionView
 	{
-		const int MaxItems = 42;
+		void Initialize (IListDataProvider provider, ICompletionViewEventSink eventSink);
+		void ShowFilteredItems (CompletionListFilterResult filterResult);
 
-		readonly List<string> lastItems = new List<string> (MaxItems);
-		readonly object mruLock = new object ();
+		void MoveCursor (int relative);
+		void PageDown ();
+		void PageUp ();
 
-		public void CommitCompletionData (CompletionData item)
-		{
-			lock (mruLock) {
-				var removed = lastItems.Remove (item.DisplayText);
-				if (!removed && lastItems.Count == MaxItems)
-					lastItems.RemoveAt (0);
+		void ResetState ();
+		void ResetSizes ();
 
-				lastItems.Add (item.DisplayText);
-			}
-		}
+		void ShowLoadingMessage ();
+		void HideLoadingMessage ();
 
-		/// <summary>
-		/// Lower is better. 1 == not in list.
-		/// </summary>
-		public int GetIndex (CompletionData item)
-		{
-			lock (mruLock) {
-				var index = lastItems.IndexOf (item.DisplayText);
-				return -index;
-			}
-		}
+		void Show ();
+		void Hide ();
+		void Destroy ();
 
-		public void Clear ()
-		{
-			lock (mruLock) {
-				lastItems.Clear ();
-			}
-		}
+		void Reposition (int triggerX, int triggerY, int triggerHeight, bool force);
+		void RepositionWindow (Xwt.Rectangle? r);
+
+		void ShowPreviewCompletionEntry ();
+		bool RepositionDeclarationViewWindow (TooltipInformationWindow declarationviewwindow, int selectedItem);
+
+		int SelectedItemIndex { get; set; }
+		bool InCategoryMode { get; set; }
+		bool SelectionEnabled { get; set; }
+
+		bool Visible { get; }
+
+		Xwt.Rectangle Allocation { get; }
+		int X { get; }
+		int Y { get; }
+
+		Gtk.Window TransientFor { get; set; }
 	}
 }

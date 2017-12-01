@@ -58,11 +58,13 @@ namespace MonoDevelop.Core.Instrumentation
 		TimerTrace lastTrace;
 		TimerCounter counter;
 		object linkedTrackers;
-		
+		long lastTraceTime;
+
 		internal TimeCounter (TimerCounter counter)
 		{
 			this.counter = counter;
-			traceList = new TimerTraceList ();
+			if (counter.Enabled)
+				traceList = new TimerTraceList ();
 			Begin ();
 		}
 
@@ -84,16 +86,22 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public void Trace (string message)
 		{
-			TimerTrace t = new TimerTrace ();
-			t.Timestamp = DateTime.Now;
-			t.Message = message;
-			if (lastTrace == null)
-				lastTrace = traceList.FirstTrace = t;
-			else {
-				lastTrace.Next = t;
-				lastTrace = t;
+			if (counter.Enabled) {
+				TimerTrace t = new TimerTrace ();
+				t.Timestamp = DateTime.Now;
+				t.Message = message;
+				if (lastTrace == null)
+					lastTrace = traceList.FirstTrace = t;
+				else {
+					lastTrace.Next = t;
+					lastTrace = t;
+				}
+				traceList.TotalTime = t.Timestamp - traceList.FirstTrace.Timestamp;
+			} else {
+				var time = stopWatch.ElapsedMilliseconds;
+				InstrumentationService.LogMessage (string.Format ("[{0} (+{1})] {2}", time, (time - lastTraceTime), message));
+				lastTraceTime = time;
 			}
-			traceList.TotalTime = t.Timestamp - traceList.FirstTrace.Timestamp;
 		}
 		
 		internal void Begin ()
@@ -109,11 +117,20 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 
 			stopWatch.Stop ();
-			traceList.TotalTime = TimeSpan.FromMilliseconds (stopWatch.ElapsedMilliseconds);
-			if (traceList.TotalTime.TotalSeconds < counter.MinSeconds)
-				counter.RemoveValue (traceList.ValueIndex);
-			else
-				counter.AddTime (traceList.TotalTime);
+
+			if (counter.LogMessages) {
+				var time = stopWatch.ElapsedMilliseconds;
+				InstrumentationService.LogMessage (string.Format ("[{0} (+{1})] END: {2}", time, (time - lastTraceTime), counter.Name));
+			}
+
+			if (counter.Enabled) {
+				traceList.TotalTime = TimeSpan.FromMilliseconds (stopWatch.ElapsedMilliseconds);
+				if (traceList.TotalTime.TotalSeconds < counter.MinSeconds)
+					counter.RemoveValue (traceList.ValueIndex);
+				else
+					counter.AddTime (traceList.TotalTime);
+			}
+
 			counter = null;
 
 			if (linkedTrackers is List<IDisposable>) {

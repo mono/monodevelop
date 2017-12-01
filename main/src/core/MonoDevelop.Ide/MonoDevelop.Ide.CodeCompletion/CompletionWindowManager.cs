@@ -75,6 +75,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (wnd != null)
 					wnd.AutoCompleteEmptyMatch = wnd.AutoSelect = !IdeApp.Preferences.ForceSuggestionMode;
 			};
+			IdeApp.Preferences.EnableCompletionCategoryMode.Changed += (s, a) => {
+				if (wnd != null)
+					wnd.InCategoryMode = IdeApp.Preferences.EnableCompletionCategoryMode.Value;
+			};
 		}
 
 		// ext may be null, but then parameter completion don't work
@@ -116,7 +120,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			var completionWidget = wnd.CompletionWidget;
 			var ext = wnd.Extension;
-			wnd.EndOffset = wnd.CompletionWidget.CaretOffset;
 			try {
 				isShowing = false;
 				if (!wnd.ShowListWindow (list, completionContext)) {
@@ -139,6 +142,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
+		public static void ToggleCategoryMode ()
+		{
+			IdeApp.Preferences.EnableCompletionCategoryMode.Set (!IdeApp.Preferences.EnableCompletionCategoryMode.Value);
+		}
+
 		static void HandleWndWordCompleted (object sender, CodeCompletionContextEventArgs e)
 		{
 			EventHandler<CodeCompletionContextEventArgs> handler = WordCompleted;
@@ -151,6 +159,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		static void DestroyWindow ()
 		{
 			if (wnd != null) {
+				wnd.WordCompleted -= HandleWndWordCompleted;
+				wnd.VisibleChanged -= HandleWndVisibleChanged;
 				wnd.Destroy ();
 				wnd = null;
 			}
@@ -200,18 +210,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public static void HideWindow ()
 		{
-			isShowing = false;
-			if (!IsVisible)
-				return;
-			if (wnd == null)
-				return;
-			ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);
-			wnd.HideWindow ();
-			OnWindowClosed (EventArgs.Empty);
-			//DestroyWindow ();
+			if (IsVisible && wnd != null)
+				wnd.HideWindow ();
 		}
-		
-		
+
+		static void HandleWndVisibleChanged (object sender, EventArgs args)
+		{
+			if (!wnd.Visible) {
+				isShowing = false;
+				if (!IsVisible)
+					return;
+				ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);
+				OnWindowClosed (EventArgs.Empty);
+			}
+		}
+
 		static void OnWindowClosed (EventArgs e)
 		{
 			var handler = WindowClosed;
