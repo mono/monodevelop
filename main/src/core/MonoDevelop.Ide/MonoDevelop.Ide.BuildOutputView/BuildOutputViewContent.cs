@@ -58,6 +58,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			ContentName = newName;
 		}
 
+		public override bool IsPreview => true;
+
 		public override Control Control {
 			get {
 				return control.ToGtkWidget ();

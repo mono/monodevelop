@@ -217,7 +217,7 @@ namespace MonoDevelop.Components.DockNotebook
 			set {
 				content = value;
 				notebook.ShowContent (this);
-				isPreview = (Content as Ide.Gui.SdiWorkspaceWindow)?.ViewContent is MonoDevelop.Ide.Gui.Components.BuildOutputViewContent;
+				isPreview = (Content as Ide.Gui.SdiWorkspaceWindow)?.ViewContent.IsPreview ?? false;
 				ContentChanged?.Invoke (this, EventArgs.Empty);
 			}
 		}
