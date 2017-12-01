@@ -1173,7 +1173,7 @@ namespace MonoDevelop.Components.DockNotebook
 			tabsPreviewData.drawActive?.Invoke (ctx);
 
 			if (HasFocus) {
-				Gtk.Style.PaintFocus (Style, GdkWindow, State, tabsData.focusRect, this, "tab", tabsData.focusRect.X, tabsData.focusRect.Y, tabsData.focusRect.Width, tabsData.focusRect.Height);
+				DrawFocusRectangle (tabsData.focusRect != Gdk.Rectangle.Zero ? tabsData.focusRect : tabsPreviewData.focusRect);
 			}
 		}
 
@@ -1263,7 +1263,6 @@ namespace MonoDevelop.Components.DockNotebook
 				if (!notebook.Tabs [n].IsPreview)
 					continue;
 
-
 				if (x + TabWidth < prevTabStartX) {
 					x += TabWidth;
 					continue;
@@ -1316,6 +1315,11 @@ namespace MonoDevelop.Components.DockNotebook
 			drawCommands.Add (DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, Allocation.Height), out tabWidth));
 			drawCommands.Reverse ();
 			return (tabArea, drawCommands, drawActive, focusRect);
+		}
+
+		void DrawFocusRectangle (Gdk.Rectangle rect)
+		{
+			Gtk.Style.PaintFocus (Style, GdkWindow, State, rect, this, "tab", rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
