@@ -449,11 +449,9 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 
-			CompletionList completionList = null;
-
 			Counters.ProcessCodeCompletion.Trace ("C#: Getting completions");
 
-			completionList = await Task.Run (() => cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, cancellationToken: token)).ConfigureAwait (false);
+			var completionList = await Task.Run (() => cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, cancellationToken: token)).ConfigureAwait (false);
 
 			Counters.ProcessCodeCompletion.Trace ("C#: Got completions");
 

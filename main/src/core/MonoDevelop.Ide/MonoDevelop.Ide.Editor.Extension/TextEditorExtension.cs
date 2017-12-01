@@ -80,9 +80,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		/// </summary>
 		public virtual bool KeyPress (KeyDescriptor descriptor)
 		{
-			var tt = System.Diagnostics.Stopwatch.StartNew ();
-			var r = Next == null || Next.KeyPress (descriptor);
-			return r;
+			return Next == null || Next.KeyPress (descriptor);
 		}
 
 		public virtual void Dispose ()

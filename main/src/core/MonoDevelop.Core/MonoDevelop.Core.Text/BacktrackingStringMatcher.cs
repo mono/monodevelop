@@ -38,16 +38,16 @@ namespace MonoDevelop.Core.Text
 		readonly string filterText;
 		int[] cachedResult;
 
-		public override StringMatcher Clone()
-        {
-			var clone = (BacktrackingStringMatcher)base.Clone();
+		public override StringMatcher Clone ()
+		{
+			var clone = (BacktrackingStringMatcher)base.Clone ();
 
 			// Don't reuse the results buffer for the clone
 			clone.cachedResult = null;
 			return clone;
-        }
+		}
 
-        public BacktrackingStringMatcher (string filterText)
+		public BacktrackingStringMatcher (string filterText)
 		{
 			this.filterText = filterText ?? "";
 			if (filterText != null) {
@@ -56,7 +56,7 @@ namespace MonoDevelop.Core.Text
 					filterIsNonLetter |= !char.IsLetterOrDigit (filterText [i]) ? 1ul << i : 0;
 					filterIsDigit |= char.IsDigit (filterText [i]) ? 1ul << i : 0;
 				}
-				
+
 				filterTextUpperCase = filterText.ToUpper ();
 			} else {
 				filterTextUpperCase = "";

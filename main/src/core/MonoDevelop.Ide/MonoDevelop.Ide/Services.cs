@@ -44,9 +44,6 @@ namespace MonoDevelop.Ide
 	
 	internal static class Counters
 	{
-		internal static System.Diagnostics.Stopwatch CompletionTime;
-		static long lastCompletionTime;
-
 		internal static TimerCounter Initialization = InstrumentationService.CreateTimerCounter ("IDE Initialization", "IDE", id:"Ide.Initialization");
 		internal static Counter OpenDocuments = InstrumentationService.CreateCounter ("Open documents", "IDE");
 		internal static Counter DocumentsInMemory = InstrumentationService.CreateCounter ("Documents in memory", "IDE");

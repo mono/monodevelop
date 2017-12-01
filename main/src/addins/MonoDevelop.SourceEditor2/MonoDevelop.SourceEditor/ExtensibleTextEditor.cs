@@ -264,7 +264,6 @@ namespace MonoDevelop.SourceEditor
 		bool ExtensionKeyPress (Gdk.Key key, uint ch, Gdk.ModifierType state)
 		{
 			isInKeyStroke = true;
-			MonoDevelop.Ide.Counters.CompletionTime = System.Diagnostics.Stopwatch.StartNew ();
 			try {
 				if (needToAddLastExtension) {
 					var ext = EditorExtension;

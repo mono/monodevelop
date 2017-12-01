@@ -66,7 +66,7 @@ namespace MonoDevelop.Tests.TestRunner
 			}
 
 			// Make sure the updater is disabled while running tests
-			PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.CheckForUpdates", false);
+			Runtime.Preferences.EnableUpdaterForCurrentSession = false;
 
 			if (guiUnitAsm != null) {
 				Xwt.XwtSynchronizationContext.AutoInstall = false;
