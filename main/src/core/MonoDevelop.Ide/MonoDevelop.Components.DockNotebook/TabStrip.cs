@@ -63,8 +63,6 @@ namespace MonoDevelop.Components.DockNotebook
 		DockNotebookTab highlightedTab;
 		bool overCloseButton;
 		bool buttonPressedOnTab;
-		int tabStartX, tabEndX;
-		int prevTabStartX, prevTabEndX;
 		bool isActiveNotebook;
 
 		MouseTracker tracker;
@@ -102,6 +100,25 @@ namespace MonoDevelop.Components.DockNotebook
 
 		const int TextOffset = 1;
 
+		internal int LastTabWidthAdjustment { get; set; }
+		internal int TabWidth { get; set; }
+
+		int targetWidth;
+
+		internal int TargetWidth {
+			get { return targetWidth; }
+			set {
+				targetWidth = value;
+				if (TabWidth != value) {
+					this.Animate ("TabWidth",
+					              f => TabWidth = (int)f,
+					              TabWidth,
+					              value,
+					              easing: Easing.CubicOut);
+				}
+			}
+		}
+
 		public bool  NavigationButtonsVisible {
 			get { return NextButton.Visible; }
 			set {
@@ -137,6 +154,9 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public TabStrip (DockNotebook notebook)
 		{
+			TabWidth = 125;
+			TargetWidth = 125;
+
 			if (notebook == null)
 				throw new ArgumentNullException ("notebook");
 
@@ -213,8 +233,6 @@ namespace MonoDevelop.Components.DockNotebook
 			tracker.HoveredChanged += (sender, e) => {
 				if (!tracker.Hovered) {
 					SetHighlightedTab (null);
-					tabContainer.UpdateTabWidth (tabEndX - tabStartX);
-					previewTabContainer.UpdateTabWidth (prevTabEndX - prevTabStartX);
 					QueueDraw ();
 				}
 			};
@@ -358,15 +376,15 @@ namespace MonoDevelop.Components.DockNotebook
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
-			if (NavigationButtonsVisible) {
-				tabStartX = /*allocation.X +*/ LeftBarPadding + LeanWidth / 2;
-			} else {
-				tabStartX = LeanWidth / 2;
-			}
-			tabEndX = allocation.Width;
+			previewTabContainer.ContentStartX = allocation.Width - RightBarPadding - previewTabContainer.Width;
+			previewTabContainer.ContentEndX = previewTabContainer.ContentStartX + previewTabContainer.Width;
 
-			prevTabStartX = allocation.Width - RightBarPadding - previewTabContainer.Width;
-			prevTabEndX = prevTabStartX + previewTabContainer.Width + RightBarPadding;
+			if (NavigationButtonsVisible) {
+				tabContainer.ContentStartX = /*allocation.X +*/ LeftBarPadding + LeanWidth / 2;
+			} else {
+				tabContainer.ContentStartX = LeanWidth / 2;
+			}
+			tabContainer.ContentEndX = previewTabContainer.ContentStartX - 12;
 
 			base.OnSizeAllocated (allocation);
 			Update ();
@@ -980,13 +998,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public void Update ()
 		{
-			if (!tracker.Hovered) {
-				tabContainer.UpdateTabWidth (tabEndX - tabStartX);
-				previewTabContainer.UpdateTabWidth (prevTabEndX - prevTabStartX);
-			} else if (closingTabs.ContainsKey (notebook.Tabs.Count)) {
-				tabContainer.UpdateTabWidth (closingTabs [notebook.Tabs.Count].Allocation.Right - tabStartX, true);
-				previewTabContainer.UpdateTabWidth (closingTabs [notebook.Tabs.Count].Allocation.Right - tabStartX, true);
-			}
+			UpdateTabWidthBasedInContentSize ();
 			QueueDraw ();
 		}
 
@@ -997,36 +1009,35 @@ namespace MonoDevelop.Components.DockNotebook
 
 		int GetRenderOffset ()
 		{
-			int tabArea = tabEndX - tabStartX;
-			if (notebook.CurrentTabIndex >= 0) {
-				int normalizedArea = (tabArea / tabContainer.TargetWidth) * tabContainer.TargetWidth;
-				int maxOffset = Math.Max (0, (tabContainer.Tabs.Count * tabContainer.TargetWidth) - normalizedArea);
+			//if (notebook.CurrentTabIndex >= 0) {
+			//	int normalizedArea = (tabContainer.ContentWidth / TargetWidth) * TargetWidth;
+			//	int maxOffset = Math.Max (0, (tabContainer.Tabs.Count * TargetWidth) - normalizedArea);
 
-				int distanceToTabEdge = tabContainer.TargetWidth * notebook.CurrentTabIndex;
-				int window = normalizedArea - tabContainer.TargetWidth;
-				targetOffset = Math.Min (maxOffset, Clamp (renderOffset, distanceToTabEdge - window, distanceToTabEdge));
+			//	int distanceToTabEdge = tabContainer.ContentWidth * notebook.CurrentTabIndex;
+			//	int window = normalizedArea - TargetWidth;
+			//	targetOffset = Math.Min (maxOffset, Clamp (renderOffset, distanceToTabEdge - window, distanceToTabEdge));
 
-				if (targetOffset != animationTarget) {
-					this.Animate ("ScrollTabs",
-						easing: Easing.CubicOut,
-						start: renderOffset,
-						end: targetOffset,
-						callback: f => renderOffset = (int)f);
-					animationTarget = targetOffset;
-				}
-			}
-
-			return tabStartX - renderOffset;
+			//	if (targetOffset != animationTarget) {
+			//		this.Animate ("ScrollTabs",
+			//			easing: Easing.CubicOut,
+			//			start: renderOffset,
+			//			end: targetOffset,
+			//			callback: f => renderOffset = (int)f);
+			//		animationTarget = targetOffset;
+			//	}
+			//}
+			//return tabContainer.ContentStartX - renderOffset;
+			return tabContainer.ContentStartX;
 		}
 
-		Action<Context> DrawClosingTab (int index, Gdk.Rectangle region, int tabWidth, out int width)
+		Action<Context> DrawClosingTab (TabContainer container, int index, Gdk.Rectangle region, int tabWidth, out int width)
 		{
 			width = 0;
 			if (closingTabs.ContainsKey (index)) {
 				DockNotebookTab closingTab = closingTabs [index];
 				width = (int)(closingTab.WidthModifier * tabWidth);
 				int tmp = width;
-				return c => DrawTab (c, closingTab, Allocation, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, false, false, CreateTabLayout (closingTab), false);
+				return c => DrawTab (c, closingTab, container, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, false, false, CreateTabLayout (closingTab), false);
 			}
 			return c => {
 			};
@@ -1035,9 +1046,12 @@ namespace MonoDevelop.Components.DockNotebook
 		void Draw (Context ctx)
 		{
 			var allocation = Allocation;
-			int tabArea = tabEndX - tabStartX;
-			var tabsData = CalculateTabs (tabContainer, tabStartX, tabEndX, GetRenderOffset (), false);
-			var tabsPreviewData = CalculateTabs (previewTabContainer, prevTabStartX, prevTabEndX, prevTabStartX, true);
+			int tabArea = tabContainer.ContentWidth;
+			var contentStartX = tabContainer.ContentStartX;
+			var contentEndX = tabContainer.ContentEndX;
+
+			var tabsData = CalculateTabs (tabContainer, GetRenderOffset (), false);
+			var tabsPreviewData = CalculateTabs (previewTabContainer, previewTabContainer.ContentStartX, true);
 
 			// background image based in preview tabs
 			ctx.DrawImage (this, (previewTabContainer.Tabs.Count > 0 ? tabbarPreviewBackImage : tabbarBackImage).WithSize (allocation.Width, allocation.Height), 0, 0);
@@ -1049,74 +1063,79 @@ namespace MonoDevelop.Components.DockNotebook
 			//				ctx.Fill ();
 			//			}
 
+			//Draw container background
 			//ctx.SetSourceColor (new Cairo.Color (0, 0.2, 0.3));
-			//ctx.Rectangle (tabsAllocation.X, tabsAllocation.Y, tabsAllocation.Width, tabsAllocation.Height);
+			//ctx.Rectangle (contentStartX, Allocation.Y, contentEndX - contentStartX , Allocation.Height);
 			//ctx.Fill ();
 
 			//ctx.SetSourceColor (new Cairo.Color (0.7, 0.6, 0.6));
-			//ctx.Rectangle (previewTabsAllocation.X, previewTabsAllocation.Y, previewTabsAllocation.Width, previewTabsAllocation.Height);
+			//ctx.Rectangle (previewTabContainer.ContentStartX, Allocation.Y, previewTabContainer.ContentEndX - previewTabContainer.ContentStartX, Allocation.Height);
 			//ctx.Fill ();
 
-			ctx.Rectangle (tabStartX - LeanWidth / 2, allocation.Y, tabsData.tabArea + LeanWidth, allocation.Height);
+			ctx.Rectangle (contentStartX - LeanWidth / 2, allocation.Y, allocation.Width - contentStartX - LeanWidth, allocation.Height);
 			ctx.Clip ();
 
-			foreach (var cmd in tabsData.drawCommands)
+			foreach (var cmd in tabsData.DrawCommands)
 				cmd (ctx);
 
-			foreach (var cmd in tabsPreviewData.drawCommands)
+			foreach (var cmd in tabsPreviewData.DrawCommands)
 				cmd (ctx);
 
 			ctx.ResetClip ();
 
 			// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
-			tabsData.drawActive?.Invoke (ctx);
-			tabsPreviewData.drawActive?.Invoke (ctx);
+			tabsData.DrawActive?.Invoke (ctx);
+			tabsPreviewData.DrawActive?.Invoke (ctx);
 
 			if (HasFocus) {
-				DrawFocusRectangle (tabsData.focusRect != Gdk.Rectangle.Zero ? tabsData.focusRect : tabsPreviewData.focusRect);
+				DrawFocusRectangle (tabsData.FocusRect != Gdk.Rectangle.Zero ? tabsData.FocusRect : tabsPreviewData.FocusRect);
 			}
 		}
 
-		(int tabArea, List<Action<Context>> drawCommands, Action<Context> drawActive, Gdk.Rectangle focusRect) CalculateTabs (TabContainer container, int startX, int endX, int offsetX, bool isPreview)
+		(List<Action<Context>> DrawCommands, Action<Context> DrawActive, Gdk.Rectangle FocusRect) CalculateTabs (TabContainer container, int offsetX, bool isPreview)
 		{
 			Action<Context> drawActive = null;
 			var drawCommands = new List<Action<Context>> ();
 
 			Gdk.Rectangle focusRect = Gdk.Rectangle.Zero;
-			int tabArea = endX - startX;
 			const int y = 0;
 
 			int n = 0;
+
+			DockNotebookTab tab = null;
 			for (; n < notebook.Tabs.Count; n++) {
 
 				if (notebook.Tabs [n].IsPreview != isPreview)
 					continue;
 
-				if (offsetX + container.TabWidth < startX) {
-					offsetX += container.TabWidth;
+				if (offsetX + TabWidth < container.ContentStartX) {
+					offsetX += TabWidth;
 					continue;
 				}
 
-				if (offsetX > endX)
+				if (offsetX > container.ContentEndX)
 					break;
 
+				tab = notebook.Tabs [n];
+
 				int closingWidth;
-				var cmd = DrawClosingTab (n, new Gdk.Rectangle (offsetX, y, 0, Allocation.Height), container.TabWidth, out closingWidth);
+
+				var cmd = DrawClosingTab (container, n, new Gdk.Rectangle (offsetX, y, 0, Allocation.Height), TabWidth, out closingWidth);
 				drawCommands.Add (cmd);
 				offsetX += closingWidth;
 
-				var tab = notebook.Tabs [n];
+
 				bool active = tab == notebook.CurrentTab;
 				bool focused = (n == currentFocusTab);
 
-				int width = Math.Min (container.TabWidth, Math.Max (50, endX - offsetX - 1));
+				int width = Math.Min (TabWidth, Math.Max (50, container.ContentEndX - offsetX - 1));
 				if (tab == notebook.Tabs.Last ())
-					width += container.LastTabWidthAdjustment;
+					width += LastTabWidthAdjustment;
 				width = (int)(width * tab.WidthModifier);
 
 				if (active) {
 					int tmp = offsetX;
-					drawActive = c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, draggingTab, CreateTabLayout (tab, true), focused);
+					drawActive = c => DrawTab (c, tab, container, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, draggingTab, CreateTabLayout (tab, true), focused);
 					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
 				} else {
 					int tmp = offsetX;
@@ -1126,7 +1145,7 @@ namespace MonoDevelop.Components.DockNotebook
 						tmp = (int)(tab.SavedAllocation.X + (tmp - tab.SavedAllocation.X) * (1.0f - tab.SaveStrength));
 					}
 
-					drawCommands.Add (c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), highlighted, false, false, CreateTabLayout (tab), focused));
+					drawCommands.Add (c => DrawTab (c, tab, container, new Gdk.Rectangle (tmp, y, width, Allocation.Height), highlighted, false, false, CreateTabLayout (tab), focused));
 					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
 				}
 
@@ -1141,9 +1160,9 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 
 			int expectedTabWidth;
-			drawCommands.Add (DrawClosingTab (n, new Gdk.Rectangle (offsetX, y, 0, Allocation.Height), container.TabWidth, out expectedTabWidth));
+			drawCommands.Add (DrawClosingTab (container, n, new Gdk.Rectangle (offsetX, y, 0, Allocation.Height), TabWidth, out expectedTabWidth));
 			drawCommands.Reverse ();
-			return (tabArea, drawCommands, drawActive, focusRect);
+			return (drawCommands, drawActive, focusRect);
 		}
 
 		void DrawFocusRectangle (Gdk.Rectangle rect)
@@ -1159,24 +1178,21 @@ namespace MonoDevelop.Components.DockNotebook
 			return base.OnExposeEvent (evnt);
 		}
 
-		void DrawTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool highlight, bool active, bool dragging, Pango.Layout la, bool focused)
+		void DrawTab (Context ctx, DockNotebookTab tab, TabContainer container, Gdk.Rectangle tabBounds, bool highlight, bool active, bool dragging, Pango.Layout la, bool focused)
 		{
 			// This logic is stupid to have here, should be in the caller!
 			if (dragging) {
 				tabBounds.X = (int)(tabBounds.X + (dragX - tabBounds.X) * dragXProgress);
-				if (tab.IsPreview) {
-					tabBounds.X = Clamp (tabBounds.X, prevTabStartX, prevTabEndX - tabBounds.Width);
-				} else {
-					tabBounds.X = Clamp (tabBounds.X, tabStartX, tabEndX - tabBounds.Width);
-				}
+				tabBounds.X = Clamp (tabBounds.X, container.ContentStartX, container.ContentEndX - tabBounds.Width);
 			}
+
 			double rightPadding = (active ? TabActivePadding.Right : TabPadding.Right) - (LeanWidth / 2);
 			rightPadding = (rightPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
 			double leftPadding = (active ? TabActivePadding.Left : TabPadding.Left) - (LeanWidth / 2);
 			leftPadding = (leftPadding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
 			double bottomPadding = active ? TabActivePadding.Bottom : TabPadding.Bottom;
 
-			DrawTabBackground (this, tab, ctx, allocation, tabBounds.Width, tabBounds.X, active);
+			DrawTabBackground (this, tab, ctx, Allocation.Height, tabBounds.Width, tabBounds.X, active);
 
 			ctx.LineWidth = 1;
 			ctx.NewPath ();
@@ -1234,14 +1250,13 @@ namespace MonoDevelop.Components.DockNotebook
             la.Dispose ();
 		}
 
-		static void DrawTabBackground (Widget widget, DockNotebookTab tab, Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, bool active = true)
+		static void DrawTabBackground (Widget widget, DockNotebookTab tab, Context ctx, int height, int contentWidth, int px, bool active = true)
 		{
 			int lean = Math.Min (LeanWidth, contentWidth / 2);
 			int halfLean = lean / 2;
 
 			double x = px + TabSpacing - halfLean;
 			double y = 0;
-			double height = allocation.Height;
 			double width = contentWidth - (TabSpacing * 2) + lean;
 
 			Xwt.Drawing.Image image;
@@ -1277,31 +1292,38 @@ namespace MonoDevelop.Components.DockNotebook
 			return la;
 		}
 
+		public void UpdateTabWidthBasedInContentSize ()
+		{
+			UpdateTabWidth (Allocation.Width - LeftBarPadding - RightBarPadding - 11);
+		}
+
+		public void UpdateTabWidth (int width, bool adjustLast = false)
+		{
+			if (width <= 0) {
+				return;
+			}
+			
+			if (notebook.Tabs.Any ()) {
+				TargetWidth = Clamp (width / notebook.Tabs.Count, 50, 200);
+			}
+
+			if (adjustLast) {
+				// adjust to align close buttons properly
+				LastTabWidthAdjustment = width - (TargetWidth * notebook.Tabs.Count) + 1;
+				LastTabWidthAdjustment = Math.Abs (LastTabWidthAdjustment) < 50 ? LastTabWidthAdjustment : 0;
+			} else {
+				LastTabWidthAdjustment = 0;
+			}
+			if (!IsRealized)
+				TabWidth = TargetWidth;
+		}
+
 		class TabContainer
 		{
 			public List<DockNotebookTab> Tabs = new List<DockNotebookTab> ();
 			readonly TabStrip tabStrip;
 
-			internal int LastTabWidthAdjustment { get; set; }
-			internal int TabWidth { get; set; }
-
-			int targetWidth;
-
-			internal int TargetWidth {
-				get { return targetWidth; }
-				set {
-					targetWidth = value;
-					if (TabWidth != value) {
-						tabStrip.Animate ("TabWidth",
-							f => TabWidth = (int)f,
-							TabWidth,
-							value,
-							easing: Easing.CubicOut);
-					}
-				}
-			}
-
-			public int Width => TabWidth * Tabs.Count;
+			public int Width => tabStrip.TabWidth * Tabs.Count;
 
 			public Gdk.Rectangle Allocation => new Gdk.Rectangle (tabStrip.Allocation.Width - Width + TabStrip.TabSeparationBorder, tabStrip.Allocation.Y, Width - TabStrip.TabSeparationBorder, tabStrip.Allocation.Height);
 
@@ -1309,8 +1331,7 @@ namespace MonoDevelop.Components.DockNotebook
 			{
 				this.tabStrip = tabStrip;
 
-				TabWidth = 125;
-				TargetWidth = 125;
+
 			}
 
 			public void Remove (DockNotebookTab tab)
@@ -1343,21 +1364,8 @@ namespace MonoDevelop.Components.DockNotebook
 				return null;
 			}
 
-			public void UpdateTabWidth (int width, bool adjustLast = false)
-			{
-				if (Tabs.Any ())
-					TargetWidth = Clamp (width / Tabs.Count, 50, 200);
-
-				if (adjustLast) {
-					// adjust to align close buttons properly
-					LastTabWidthAdjustment = width - (TargetWidth * Tabs.Count) + 1;
-					LastTabWidthAdjustment = Math.Abs (LastTabWidthAdjustment) < 50 ? LastTabWidthAdjustment : 0;
-				} else {
-					LastTabWidthAdjustment = 0;
-				}
-				if (!tabStrip.IsRealized)
-					TabWidth = TargetWidth;
-			}
+			internal int ContentStartX, ContentEndX;
+			internal int ContentWidth => ContentEndX - ContentStartX;
 
 			public bool IsOverArea (int x)
 			{
