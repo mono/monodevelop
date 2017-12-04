@@ -390,6 +390,31 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set {
 				completionDataList = value;
 				ListWidget.defaultComparer = null;
+
+				if (mutableList != null) {
+					mutableList.Changing -= OnCompletionDataChanging;
+					mutableList.Changed -= OnCompletionDataChanged;
+				}
+
+				mutableList = value as IMutableCompletionDataList;
+
+				if (mutableList != null) {
+					mutableList.Changing += OnCompletionDataChanging;
+					mutableList.Changed += OnCompletionDataChanged;
+
+					if (mutableList.IsChanging) {
+						OnCompletionDataChanging (null, null);
+					}
+				}
+
+				if (value != null) {
+					PreviewCompletionString = value.CompletionSelectionMode == CompletionSelectionMode.OwnTextField;
+					AutoSelect = value.AutoSelect;
+					AutoCompleteEmptyMatch = value.AutoCompleteEmptyMatch;
+					AutoCompleteEmptyMatchOnCurlyBrace = value.AutoCompleteEmptyMatchOnCurlyBrace;
+					CloseOnSquareBrackets = value.CloseOnSquareBrackets;
+					DefaultCompletionString = value.DefaultCompletionString ?? "";
+				}
 			}
 		}
 
@@ -491,7 +516,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationviewwindow.Destroy ();
 				declarationviewwindow = null;
 			}
-			
+
 			if (mutableList != null) {
 				mutableList.Changing -= OnCompletionDataChanging;
 				mutableList.Changed -= OnCompletionDataChanged;
@@ -644,11 +669,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				throw new ArgumentNullException ("completionWidget");
 			if (completionContext == null)
 				throw new ArgumentNullException ("completionContext");
+
 			if (mutableList != null) {
 				mutableList.Changing -= OnCompletionDataChanging;
 				mutableList.Changed -= OnCompletionDataChanged;
+				mutableList = null;
 				HideFooter ();
 			}
+
 			ResetState ();
 			CompletionWidget = completionWidget;
 			CodeCompletionContext = completionContext;
@@ -661,77 +689,59 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal bool ShowListWindow (ICompletionDataList list, CodeCompletionContext completionContext)
 		{
 			if (list == null)
-				throw new ArgumentNullException ("list");
+				throw new ArgumentNullException (nameof (list));
 			
+			ResetState ();
 			CodeCompletionContext = completionContext;
 			CompletionDataList = list;
-			ResetState ();
 
-			mutableList = completionDataList as IMutableCompletionDataList;
-			PreviewCompletionString = completionDataList.CompletionSelectionMode == CompletionSelectionMode.OwnTextField;
-
-			if (mutableList != null) {
-				mutableList.Changing += OnCompletionDataChanging;
-				mutableList.Changed += OnCompletionDataChanged;
-
-				if (mutableList.IsChanging)
-					OnCompletionDataChanging (null, null);
+			if ((completionDataList.Count == 0) && !IsChanging) {
+				CompletionWindowManager.HideWindow ();
+				return false;
 			}
 
-			if (FillList ()) {
-				AutoSelect = list.AutoSelect;
-				AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch;
-				AutoCompleteEmptyMatchOnCurlyBrace = list.AutoCompleteEmptyMatchOnCurlyBrace;
-				CloseOnSquareBrackets = list.CloseOnSquareBrackets;
-				// makes control-space in midle of words to work
-				string text = CompletionWidget.GetCompletionText (CodeCompletionContext);
-				DefaultCompletionString = completionDataList.DefaultCompletionString ?? "";
-				if (text.Length == 0) {
-					initialWordLength = 0;
-					//completionWidget.SelectedLength;
-					StartOffset = completionContext.TriggerOffset;
-					UpdateWordSelection ();
-					ResetSizes ();
-					ShowAll ();
-					UpdateWordSelection ();
-					UpdateDeclarationView ();
-					//if there is only one matching result we take it by default
-					if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
-						CompleteWord ();
-						CompletionWindowManager.HideWindow ();
-						return false;
-					}
-					return true;
-				}
+			Style = CompletionWidget.GtkStyle;
+			SortList ();
+			Reposition (true);
 
-				initialWordLength = CompletionWidget.SelectedLength > 0 ? 0 : text.Length;
-				StartOffset = CompletionWidget.CaretOffset - initialWordLength;
-				HideWhenWordDeleted = initialWordLength != 0;
-				ResetSizes ();
+			// makes control-space in midle of words to work
+			string text = CompletionWidget.GetCompletionText (CodeCompletionContext);
+			if (text.Length == 0) {
+				initialWordLength = 0;
+				//completionWidget.SelectedLength;
+				StartOffset = completionContext.TriggerOffset;
 				UpdateWordSelection ();
+				ResetSizes ();
+				ShowAll ();
+				UpdateWordSelection ();
+				UpdateDeclarationView ();
 				//if there is only one matching result we take it by default
-				if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
+				if (list.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
 					CompleteWord ();
 					CompletionWindowManager.HideWindow ();
 					return false;
 				}
-				ShowAll ();
-				UpdateDeclarationView ();
 				return true;
 			}
-			CompletionWindowManager.HideWindow ();
-			return false;
-		}
-		
 
-		
-		bool FillList ()
-		{
-			if ((completionDataList.Count == 0) && !IsChanging)
+			initialWordLength = CompletionWidget.SelectedLength > 0 ? 0 : text.Length;
+			StartOffset = CompletionWidget.CaretOffset - initialWordLength;
+			HideWhenWordDeleted = initialWordLength != 0;
+			ResetSizes ();
+			UpdateWordSelection ();
+			//if there is only one matching result we take it by default
+			if (list.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
+				CompleteWord ();
+				CompletionWindowManager.HideWindow ();
 				return false;
+			}
+			ShowAll ();
+			UpdateDeclarationView ();
+			return true;
+		}
 
-			Style = CompletionWidget.GtkStyle;
-
+		void SortList ()
+		{
 			//sort, sinking obsolete items to the bottoms
 			//the string comparison is ordinal as that makes it an order of magnitude faster, which 
 			//which makes completion triggering noticeably more responsive
@@ -742,8 +752,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					LoggingService.LogWarning ("Can't sort completion list.", e);
 				}
 			}
-			Reposition (true);
-			return true;
 		}
 		
 		enum WindowPositonY {
@@ -1102,13 +1110,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		void OnCompletionDataChanging (object s, EventArgs args)
 		{
+			if (!object.ReferenceEquals (s, mutableList)) {
+				return;
+			}
+
 			if (parsingMessage == null) {
 				var box = new VBox ();
 				box.PackStart (new HSeparator (), false, false, 0);
 				var hbox = new HBox ();
 				hbox.BorderWidth = 3;
 				hbox.PackStart (new ImageView ("md-parser", IconSize.Menu), false, false, 0);
-				var lab = new Label (GettextCatalog.GetString ("Gathering class information..."));
+				var lab = new Label (GettextCatalog.GetString ("Updating..."));
 				lab.Xalign = 0;
 				hbox.PackStart (lab, true, true, 3);
 				hbox.ShowAll ();
@@ -1119,22 +1131,49 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		void OnCompletionDataChanged (object s, EventArgs args)
 		{
-			ResetSizes ();
-			HideFooter ();
-			
-			//try to capture full selection state so as not to interrupt user
-
-			if (Visible) {
-				string last = List.AutoSelect ? CurrentCompletionText : PartialWord;
-				//don't reset the user-entered word when refilling the list
-				var tmp = List.AutoSelect;
-				// Fill the list before resetting so that we get the correct size
-				FillList ();
-				ResetSizes ();
-				List.AutoSelect = tmp;
-				if (last != null)
-					SelectEntry (last);
+			if (!object.ReferenceEquals (s, mutableList)) {
+				return;
 			}
+
+			ResetSizes ();
+
+			//only hide the footer if it's finished changing
+			if (!mutableList.IsChanging) {
+				HideFooter ();
+			}
+
+			// try to capture full selection state so as not to interrupt user
+			// SelectedItemCompletionText is updated on every selection change
+			// so doesn't depend on the current state of the list, which changed
+			// immediately before this event was fired
+			string lastSelection = List.AutoSelect ? List.SelectedItemCompletionText : null;
+
+			var selectState = List.AutoSelect;
+
+			//clear the current filter state before doing anything else
+			//because most other things depend on it
+			List.ResetState ();
+
+			SortList ();
+			Reposition (true);
+
+			//this sets List.CompletionString, which refilters it
+			ResetSizes ();
+
+			List.AutoSelect = selectState;
+
+			//try to select the last selected item
+			var match = CompletionSelectionStatus.Empty;
+			if (lastSelection != null) {
+				match = FindMatchedEntry (lastSelection);
+			}
+
+			//if that fails, use the partial word
+			if (match.Index < 0) {
+				match = FindMatchedEntry (PartialWord);
+			}
+
+			List.SelectEntry (match);
 		}
 	}
 }

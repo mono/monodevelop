@@ -641,22 +641,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public virtual void SelectEntry (string s)
 		{
-			/*list.FilterWords ();
-			 // disable this, because we select now the last selected entry by default (word history mode)
-			//when the list is empty, disable the selection or users get annoyed by it accepting
-			//the top entry automatically
-			if (string.IsNullOrEmpty (s)) {
-				ResetSizes ();
-				list.Selection = 0;
-				return;
-			}*/
-
 			var match = FindMatchedEntry (s);
-			//			ResetSizes ();
 			List.SelectEntry (match);
 		}
-
-
 
 		void OnScrolled (object o, ScrollEventArgs args)
 		{

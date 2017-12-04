@@ -271,6 +271,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			filteredItems.Clear ();
 			oldCompletionString = completionString = null;
 			selection = 0;
+			SelectedItemCompletionText = null;
 			AutoSelect = false;
 			listWidth = minSize;
 		}
@@ -291,6 +292,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 					SelectedItemIndex = filteredItems [value];
 			}
 		}
+
+		// this is precalculated instead of calling DataProvider.GetCompletionText (SelectedItemIndex)
+		// it's called from CompletionListWindow.OnChanged after the list changes and the existing index no longer applies
+		public string SelectedItemCompletionText { get; private set; }
 		
 		public int SelectedItemIndex {
 			get { 
@@ -301,6 +306,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set {
 				if (value != selection) {
 					selection = value;
+					SelectedItemCompletionText = selection >= 0? win.DataProvider.GetCompletionText (selection): null;
 					ScrollToSelectedItem ();
 					OnSelectionChanged (EventArgs.Empty);
 					QueueDraw ();
@@ -860,7 +866,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void SelectFirstItemInCategory ()
 		{
 			if (string.IsNullOrEmpty (CompletionString) && IdeApp.Preferences.EnableCompletionCategoryMode)
-				selection = categories.First ().Items.First ();
+				SelectionFilterIndex = categories.First ().Items.First ();
 		}
 
 		void SetAdjustments (bool scrollToSelectedItem = true)

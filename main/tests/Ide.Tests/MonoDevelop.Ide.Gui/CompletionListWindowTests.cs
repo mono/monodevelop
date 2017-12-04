@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Gui
 			StringBuilder sb = new StringBuilder ();
 		}
 		
-		static void SimulateInput (CompletionListWindow listWindow, string input)
+		static void SimulateInput (CompletionListWindow listWindow, string input, bool expectClosed = true)
 		{
 			var testCompletionWidget = ((TestCompletionWidget)listWindow.CompletionWidget);
 			bool isClosed = false;
@@ -183,7 +183,7 @@ namespace MonoDevelop.Ide.Gui
 				if (isClosed)
 					break;
 			}
-			Assert.IsTrue (isClosed);
+			Assert.AreEqual (expectClosed, isClosed);
 		}
 		
 		class SimulationSettings {
@@ -221,26 +221,33 @@ namespace MonoDevelop.Ide.Gui
 			return testCompletionWidget.CompletedWord;
 		}
 
-		static CompletionListWindow CreateListWindow (CompletionListWindowTests.SimulationSettings settings)
+		static CompletionListWindow CreateListWindow (SimulationSettings settings)
 		{
-			CompletionDataList dataList = new CompletionDataList ();
-			dataList.AutoSelect = settings.AutoSelect;
-			dataList.AddRange (settings.CompletionData);
-			dataList.DefaultCompletionString = settings.DefaultCompletionString;
-			CompletionListWindow listWindow = new CompletionListWindow () {
-				CompletionDataList = dataList,
-				CompletionWidget = new TestCompletionWidget (),
+			CompletionDataList dataList = new CompletionDataList {
 				AutoSelect = settings.AutoSelect,
-				CodeCompletionContext = new CodeCompletionContext (),
 				AutoCompleteEmptyMatch = settings.AutoCompleteEmptyMatch,
 				DefaultCompletionString = settings.DefaultCompletionString
+			};
+			dataList.AddRange (settings.CompletionData);
+
+			return CreateListWindow (dataList);
+		}
+
+		static CompletionListWindow CreateListWindow (ICompletionDataList list)
+		{
+			CompletionListWindow listWindow = new CompletionListWindow {
+				CompletionDataList = list,
+				CompletionWidget = new TestCompletionWidget (),
+				AutoSelect = list.AutoSelect,
+				CodeCompletionContext = new CodeCompletionContext (),
+				AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch,
+				DefaultCompletionString = list.DefaultCompletionString
 			};
 			listWindow.FilterWords ();
 			listWindow.UpdateWordSelection ();
 			listWindow.ResetSizes ();
 			return listWindow;
 		}
-
 		
 		[Test()]
 		public void TestPunctuationCompletion ()
@@ -1024,6 +1031,70 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var output = RunSimulation ("", "s ", false, false, false, new [] { "list" });
 			Assert.AreEqual (null, output);
+		}
+
+		[Test]
+		public void TestMutableList ()
+		{
+			var list = new TestMutableCompletionDataList ();
+			list.AddRange (new[] { "ax", "by", "cz" });
+
+			CompletionListWindow listWindow = CreateListWindow (list);
+
+			SimulateInput (listWindow, "b", false);
+
+			Assert.AreEqual (1, listWindow.SelectedItemIndex);
+			Assert.AreEqual (1, listWindow.FilteredItems.Count);
+			Assert.AreEqual (list [listWindow.SelectedItemIndex].CompletionText, "by");
+
+			//check that the same item matches, even when the index changes
+			list.Clear ();
+			list.AddRange (new [] { "bw", "bx", "by", "bz" });
+			list.FireChanged ();
+
+			Assert.AreEqual (2, listWindow.SelectedItemIndex);
+			Assert.AreEqual (4, listWindow.FilteredItems.Count);
+			Assert.AreEqual (list [listWindow.SelectedItemIndex].CompletionText, "by");
+
+			//check it finds the next item that matches what was typed
+			list.Clear ();
+			list.AddRange (new [] { "ax", "ax", "ay", "bz" });
+			list.FireChanged ();
+
+			Assert.AreEqual (3, listWindow.SelectedItemIndex);
+			Assert.AreEqual (1, listWindow.FilteredItems.Count);
+			Assert.AreEqual (list [listWindow.SelectedItemIndex].CompletionText, "bz");
+
+			//check if there are no matching items, it doesn't fail horribly
+			list.Clear ();
+			list.AddRange (new [] { "ax", "ax", "ay" });
+			list.FireChanged ();
+
+			Assert.AreEqual (-1, listWindow.SelectedItemIndex);
+
+			//check if we add matching items back in, it matches again
+			list.Clear ();
+			list.AddRange (new [] { "ax", "ax", "ay", "bz" });
+			list.FireChanged ();
+
+			Assert.AreEqual (3, listWindow.SelectedItemIndex);
+			Assert.AreEqual (list [listWindow.SelectedItemIndex].CompletionText, "bz");
+		}
+
+		class TestMutableCompletionDataList : CompletionDataList, IMutableCompletionDataList
+		{
+			public bool IsChanging { get; set; }
+			public bool IsDisposed { get; set; }
+
+			public void FireChanging () => Changing?.Invoke (this, null);
+			public void FireChanged () => Changed?.Invoke (this, null);
+			public event EventHandler Changing;
+			public event EventHandler Changed;
+
+			public void Dispose ()
+			{
+				IsDisposed = true;
+			}
 		}
 	}
 }

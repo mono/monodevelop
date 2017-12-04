@@ -62,6 +62,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		/// <returns>The filtered completion list, or null if the default list should be taken.</returns>
 		/// <param name="input">Contains all information needed to filter the list.</param>
 		CompletionListFilterResult FilterCompletionList (CompletionListFilterInput input);
+
+		//FIXME: the first argument of this is redundant
 		CompletionSelectionStatus FindMatchedEntry (ICompletionDataList completionDataList, MruCache cache, string partialWord, List<int> filteredItems);
 		int [] GetHighlightedIndices (CompletionData completionData, string completionString);
 	}
@@ -189,11 +191,39 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public virtual CompletionSelectionStatus FindMatchedEntry (ICompletionDataList completionDataList, MruCache cache, string partialWord, List<int> filteredItems)
 		{
-			                  // default - word with highest match rating in the list.
+			return CompletionDataListHelpers.FindMatchedEntry (completionDataList, cache, partialWord, filteredItems);
+		}
+
+		public virtual int [] GetHighlightedIndices (CompletionData completionData, string completionString)
+		{
+			return CompletionDataListHelpers.GetHighlightedIndices (completionData, completionString);
+		}
+
+		public event EventHandler CompletionListClosed;
+	}
+
+	/// <summary>
+	/// Default implementations for some core ICompletionDataList method. Provided as static methods
+	/// for use by ICompletionDataList implementations that do not subclass CompletionDataList.
+	/// </summary>
+	public static class CompletionDataListHelpers
+	{
+		public static int [] GetHighlightedIndices (CompletionData completionData, string completionString)
+		{
+			var matcher = CompletionMatcher.CreateCompletionMatcher (completionString);
+			return matcher.GetMatch (completionData.DisplayText);
+		}
+
+		public static CompletionSelectionStatus FindMatchedEntry (ICompletionDataList completionDataList, MruCache cache, string partialWord, List<int> filteredItems)
+		{
+			var defaultCompletionString = completionDataList.DefaultCompletionString;
+
+			// default - word with highest match rating in the list.
 			int idx = -1;
-			if (DefaultCompletionString != null && DefaultCompletionString.StartsWith (partialWord, StringComparison.OrdinalIgnoreCase)) {
-				partialWord = DefaultCompletionString;
+			if (defaultCompletionString != null && defaultCompletionString.StartsWith (partialWord, StringComparison.OrdinalIgnoreCase)) {
+				partialWord = defaultCompletionString;
 			}
+
 			StringMatcher matcher = null;
 			if (!string.IsNullOrEmpty (partialWord)) {
 				matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);
@@ -251,15 +281,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
-			return new CompletionSelectionStatus(idx);
+			return new CompletionSelectionStatus (idx);
 		}
-
-		public virtual int [] GetHighlightedIndices (CompletionData completionData, string completionString)
-		{
-			var matcher = CompletionMatcher.CreateCompletionMatcher (completionString);
-			return matcher.GetMatch (completionData.DisplayText);
-		}
-
-		public event EventHandler CompletionListClosed;
 	}
 }
