@@ -31,6 +31,7 @@ using NUnit.Engine;
 using System.Xml;
 using System.Globalization;
 using MonoDevelop.UnitTesting.NUnit;
+using System.Text;
 
 namespace NUnit3Runner
 {
@@ -47,9 +48,12 @@ namespace NUnit3Runner
 		public void SuiteFinished (XmlNode testResult)
 		{
 			var testName = testResult.Attributes["fullname"].Value;
+			var result = GetLocalTestResult (testResult);
+			if(output != null)
+				result.ConsoleOutput += output;
 			server.SendMessage (new SuiteFinishedMessage {
 				Suite = testName,
-				Result = GetLocalTestResult (testResult)
+				Result = result 
 			});
 		}
 
@@ -145,6 +149,8 @@ namespace NUnit3Runner
 			if (output != null) {
 				Console.WriteLine (output.InnerText);
 				res.ConsoleOutput = output.InnerText;
+					if(!string.IsNullOrEmpty (this.output))
+						res.ConsoleOutput += this.output;
 			}
 			
 			return res;
@@ -154,6 +160,36 @@ namespace NUnit3Runner
 		{
 		}
 
+		string GetOutput (string testOut)
+		{
+			if (string.IsNullOrEmpty (testOut))
+				return String.Empty;
+			
+			var xmlDocument = new XmlDocument ();
+			xmlDocument.LoadXml (testOut);
+
+			XmlNode testOutput = null;
+			var testOutputCollection =  xmlDocument.GetElementsByTagName ("test-output");
+			if (testOutputCollection.Count > 0)
+				testOutput = testOutputCollection [0];
+
+			if(testOutput == null && string.IsNullOrEmpty (testOutput.InnerText) )
+				return String.Empty;
+
+			var result = new StringBuilder ();
+			if(testOutput is XmlElement xmlElement){
+				var steamName = xmlElement.GetAttribute ("stream");
+				if(!string.IsNullOrEmpty (steamName))
+					result.Append("Output of ")
+					      .Append (steamName)
+					      .Append (": "); 
+			}
+
+			result.Append (testOutput.InnerText);
+			return result.ToString ();
+		}
+
+		string output;
 		void ITestEventListener.OnTestEvent (string report)
 		{
 			var doc = new XmlDocument();
@@ -168,6 +204,11 @@ namespace NUnit3Runner
 
 				case "test-suite":
 				SuiteFinished (testEvent);
+				break;
+
+				case "test-output":
+				output = string.Empty;
+				output = GetOutput (report);
 				break;
 			}
 		}
