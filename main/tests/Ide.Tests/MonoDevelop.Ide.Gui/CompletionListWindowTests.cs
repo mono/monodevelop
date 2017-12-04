@@ -298,19 +298,13 @@ namespace MonoDevelop.Ide.Gui
 			});
 		}
 
-		string GetCompletedWord (CompletionListWindow listWindow)
+		void CreateListWindow (SimulationSettings settings)
 		{
-			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
-			return testCompletionWidget.CompletedWord;
-		}
-
-		void CreateListWindow (CompletionListWindowTests.SimulationSettings settings)
-		{
-			completionView = new MockCompletionView ();
-			listWindow = new CompletionListWindow (completionView);
-
-			CompletionDataList dataList = new CompletionDataList ();
-			dataList.AutoSelect = settings.AutoSelect;
+			CompletionDataList dataList = new CompletionDataList {
+				AutoSelect = settings.AutoSelect,
+				AutoCompleteEmptyMatch = settings.AutoCompleteEmptyMatch,
+				DefaultCompletionString = settings.DefaultCompletionString
+			};
 
 			CompletionCategory currentCategory = null;
 			foreach (var item in settings.CompletionData) {
@@ -322,20 +316,21 @@ namespace MonoDevelop.Ide.Gui
 				data.CompletionCategory = currentCategory;
 				dataList.Add (data);
 			}
-			dataList.DefaultCompletionString = settings.DefaultCompletionString;
-			dataList.AutoCompleteEmptyMatch = settings.AutoCompleteEmptyMatch;
+
+			CreateListWindow (dataList);
+		}
+
+		void CreateListWindow (ICompletionDataList list)
+		{
+			completionView = new MockCompletionView ();
+			listWindow = new CompletionListWindow (completionView);
+			completionWidget = new TestCompletionWidget ();
 
 			var ctx = new CodeCompletionContext ();
 
-			completionWidget = new TestCompletionWidget ();
 			listWindow.InitializeListWindow (completionWidget, ctx);
-
-			listWindow.AutoSelect = settings.AutoSelect;
-			listWindow.AutoCompleteEmptyMatch = settings.AutoCompleteEmptyMatch;
-			listWindow.DefaultCompletionString = settings.DefaultCompletionString;
 			listWindow.ClearMruCache ();
-
-			listWindow.ShowListWindow (dataList, ctx);
+			listWindow.ShowListWindow (list, ctx);
 		}
 
 		void AssertCompletionList (params string[] items)
@@ -1371,6 +1366,77 @@ namespace MonoDevelop.Ide.Gui
 
 			AssertCompletionList ("[cat-02]", "Aaa081", "[cat-03]", "aaa08");
 			Assert.AreEqual (1, completionView.SelectedIndex);
-		}	
+		}
+
+		class TestMutableCompletionDataList : CompletionDataList, IMutableCompletionDataList
+		{
+			public bool IsChanging { get; set; }
+			public bool IsDisposed { get; set; }
+
+			public void FireChanging () => Changing?.Invoke (this, null);
+			public void FireChanged () => Changed?.Invoke (this, null);
+			public event EventHandler Changing;
+			public event EventHandler Changed;
+
+			public void Dispose ()
+			{
+				IsDisposed = true;
+			}
+		}
+
+		[Test]
+		public void TestMutableList ()
+		{
+			var list = new TestMutableCompletionDataList ();
+			list.AddRange (new [] { "ax", "by", "cz" });
+
+			CreateListWindow (list);
+
+			SimulateInput ("b");
+
+			AssertCompletionList ("by");
+			Assert.AreEqual (1, listWindow.SelectedItemIndex);
+
+			Assert.IsFalse (completionView.LoadingMessageVisible);
+
+			// Check that the same item matches, even when the index changes
+			list.FireChanging ();
+			list.Clear ();
+			list.AddRange (new [] { "bw", "bx", "by", "bz" });
+			Assert.IsTrue (completionView.LoadingMessageVisible);
+			list.FireChanged ();
+			Assert.IsFalse (completionView.LoadingMessageVisible);
+
+			AssertCompletionList ("bw", "bx", "by", "bz");
+			Assert.AreEqual (2, listWindow.SelectedItemIndex);
+
+			// Check it finds the next item that matches what was typed
+			list.FireChanging ();
+			list.Clear ();
+			list.AddRange (new [] { "ax", "ax", "ay", "bz" });
+			list.FireChanged ();
+
+			AssertCompletionList ("bz");
+			Assert.AreEqual (3, listWindow.SelectedItemIndex);
+
+			// Check if there are no matching items, it doesn't fail horribly
+			list.FireChanging ();
+			list.Clear ();
+			list.AddRange (new [] { "ax", "ax", "ay" });
+			list.FireChanged ();
+
+			AssertCompletionList (new string[0]);
+			Assert.AreEqual (-1, listWindow.SelectedItemIndex);
+
+			//check if we add matching items back in, it matches again
+			list.FireChanging ();
+			list.Clear ();
+			list.AddRange (new [] { "ax", "ax", "ay", "bz" });
+			list.FireChanged ();
+
+			AssertCompletionList ("bz");
+			Assert.AreEqual (3, listWindow.SelectedItemIndex);
+		}
+
 	}
 }

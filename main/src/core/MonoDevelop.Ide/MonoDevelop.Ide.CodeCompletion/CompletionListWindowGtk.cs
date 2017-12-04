@@ -311,7 +311,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var hbox = new Gtk.HBox ();
 				hbox.BorderWidth = 3;
 				hbox.PackStart (new Components.ImageView ("md-parser", Gtk.IconSize.Menu), false, false, 0);
-				var lab = new Gtk.Label (GettextCatalog.GetString ("Gathering class information..."));
+				var lab = new Gtk.Label (GettextCatalog.GetString ("Updating..."));
 				lab.Xalign = 0;
 				hbox.PackStart (lab, true, true, 3);
 				hbox.ShowAll ();

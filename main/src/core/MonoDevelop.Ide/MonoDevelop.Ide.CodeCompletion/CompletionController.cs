@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public bool ShowListWindow (ICompletionDataList list, CodeCompletionContext completionContext)
 		{
 			if (list == null)
-				throw new ArgumentNullException ("list");
+				throw new ArgumentNullException (nameof (list));
 
 			CodeCompletionContext = completionContext;
 			dataList = list;
@@ -149,13 +149,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			EndOffset = CompletionWidget.CaretOffset;
 
-			mutableList = dataList as IMutableCompletionDataList;
 			if (dataList.CompletionSelectionMode == CompletionSelectionMode.OwnTextField) {
 				view.ShowPreviewCompletionEntry ();
 				usingPreviewEntry = true;
 				previewCompletionEntryText = "";
 			}
 
+			mutableList = dataList as IMutableCompletionDataList;
 			if (mutableList != null) {
 				mutableList.Changing += OnCompletionDataChanging;
 				mutableList.Changed += OnCompletionDataChanged;
@@ -248,6 +248,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			previewCompletionEntryText = "";
 			StartOffset = 0;
 			HideWhenWordDeleted = false;
+			SelectedItemCompletionText = null;
 			ResetViewState();
 		}
 
@@ -387,25 +388,49 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		void OnCompletionDataChanged (object sender, EventArgs e)
 		{
+			if (!object.ReferenceEquals (sender, mutableList))
+				return;
+			
 			ResetSizes ();
-			view.HideLoadingMessage ();
 
-			//try to capture full selection state so as not to interrupt user
+			// Only hide the footer if it's finished changing
+			if (!mutableList.IsChanging)
+				view.HideLoadingMessage ();
 
-			if (view.Visible) {
-				string last = AutoSelect ? CurrentCompletionText : PartialWord;
-				//don't reset the user-entered word when refilling the list
-				var tmp = AutoSelect;
-				// Fill the list before resetting so that we get the correct size
-				ResetSizes ();
-				AutoSelect = tmp;
-				if (last != null)
-					SelectEntry (last);
-			}
+			// Try to capture full selection state so as not to interrupt user
+			// SelectedItemCompletionText is updated on every selection change
+			// so doesn't depend on the current state of the list, which changed
+			// immediately before this event was fired
+			string lastSelection = AutoSelect ? SelectedItemCompletionText : null;
+
+			var selectState = AutoSelect;
+
+			// Clear the current filter state before doing anything else
+			// because most other things depend on it
+			ResetState ();
+
+			// This sets List.CompletionString, which refilters it
+			ResetSizes ();
+
+			AutoSelect = selectState;
+
+			// Try to select the last selected item
+			var match = CompletionSelectionStatus.Empty;
+			if (lastSelection != null)
+				match = FindMatchedEntry (lastSelection);
+
+			// If that fails, use the partial word
+			if (match.Index < 0)
+				match = FindMatchedEntry (PartialWord);
+
+			SelectEntry (match);
 		}
 
 		void OnCompletionDataChanging (object sender, EventArgs e)
 		{
+			if (!object.ReferenceEquals (sender, mutableList))
+				return;
+			
 			view.ShowLoadingMessage ();
 		}
 
@@ -493,6 +518,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		void OnSelectionChanged ()
 		{
+			SelectedItemCompletionText = SelectedItemIndex >= 0 ? dataList [SelectedItemIndex].DisplayText : null;
 			var handler = SelectionChanged;
 			if (handler != null)
 				handler (this, EventArgs.Empty);
@@ -643,6 +669,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get => view.SelectedItemIndex;
 			set => view.SelectedItemIndex = value;
 		}
+
+		// This is precalculated instead of calling DataProvider.GetCompletionText (SelectedItemIndex)
+ 		// it's called from CompletionListWindow.OnChanged after the list changes and the existing index no longer applies
+		string SelectedItemCompletionText { get; set; }
 
 		public string PartialWord {
 			get {
@@ -1132,10 +1162,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void SelectEntry (string s)
 		{
 			var match = FindMatchedEntry (s);
+			SelectEntry (match);
+		}
+
+		void SelectEntry (CompletionSelectionStatus match)
+		{
 			if (match.IsSelected.HasValue)
 				AutoSelect = match.IsSelected.Value;
 			if (match.Index >= 0)
-				SelectedItemIndex = ViewIndexToItemIndex (match.Index);
+				// Don't use ViewIndexToItemIndex() to convert from match index to item index.
+				// Indices in 'match' are always relative to the filteredItems list.
+				SelectedItemIndex = filteredItems [match.Index];
 			UpdateDeclarationView ();
 		}
 
