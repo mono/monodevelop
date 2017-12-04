@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.Editor
 		ITextLineMarker CreateAsmLineMarker (TextEditor editor);
 		IUnitTestMarker CreateUnitTestMarker (TextEditor editor, UnitTestMarkerHost host, UnitTestLocation unitTestLocation);
 		IMessageBubbleLineMarker CreateMessageBubbleLineMarker (TextEditor editor);
+		ITextLineMarker CreateLineSeparatorMarker (TextEditor editor);
 		#endregion
 
 		#region Segment marker

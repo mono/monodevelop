@@ -57,6 +57,9 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 		protected override void OnDestroyed ()
 		{
+			addButton.Clicked -= AddLanguageBundle;
+			removeButton.Clicked -= RemoveLanguageBundle;
+
 			if (styleStore != null) {
 				styleStore.Dispose ();
 				styleStore = null;

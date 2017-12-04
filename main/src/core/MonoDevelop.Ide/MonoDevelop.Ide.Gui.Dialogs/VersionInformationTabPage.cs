@@ -151,10 +151,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return box;
 		}
 
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
-			base.Destroy ();
 			destroyed = true;
+			base.OnDestroyed ();
 		}
 	}
 }

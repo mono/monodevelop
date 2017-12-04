@@ -51,6 +51,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			string result;
 			if (commentCache.TryGetValue (idString, out result))
 				return result;
+			
 			XmlDocument doc = null;
 			try {
 				var helpTree = MonoDevelop.Projects.HelpService.HelpTree;
@@ -99,12 +100,19 @@ namespace MonoDevelop.Ide.TypeSystem
 							return curNode.SelectSingleNode ("Docs")?.OuterXml;
 					}
 					return null;
+				case 'P':
+				case 'F':
+				case 'E':
+					idx = idString.LastIndexOf ('.', idString.Length - 1 );
+					typeId = "T:" + idString.Substring (2, idx - 2);
+					doc = helpTree.GetHelpXml (typeId);
+					if (doc == null)
+						return null;
+					memberName = idString.Substring (idx + 1);
+					var memberNode = doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + memberName + "']/Docs");
+					return memberNode?.OuterXml;
 				}
-
-				doc = helpTree.GetHelpXml (idString);
-				if (doc == null)
-					return null;
-				return doc.SelectSingleNode ("/Type/Docs")?.OuterXml;
+				return null;
 			} catch (Exception e) {
 				hadError = true;
 				LoggingService.LogError ("Error while reading monodoc file.", e);

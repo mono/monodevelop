@@ -1,4 +1,4 @@
-<ExtensionModel>
+﻿<ExtensionModel>
 
 <ExtensionPoint path = "/MonoDevelop/Ide/GlobalOptionsDialog" name = "Global options panels">
 	<Description>Dialog panels for global MonoDevelop options.</Description>
@@ -46,6 +46,9 @@
 		<Condition id = "Branding" value = "MonoDevelop">
 			<Section id = "LogAgent" _label = "Feedback" class = "MonoDevelop.Ide.Gui.OptionPanels.LogAgentOptionsPanel" icon="md-prefs-feedback" fill="true" />
 			<Section id = "MonoDevelopMaintenance" _label = "MonoDevelop Maintenance" class = "MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanel" icon="md-prefs-maintenance" />
+		</Condition>
+		<Condition id="Platform" value="mac">
+			<Section id = "Accessibility" _label = "Accessibility" class = "MonoDevelop.Ide.Gui.OptionPanels.D152AccessibilityPanel" fill="true" />
 		</Condition>
 	</Section>
 </Extension>
