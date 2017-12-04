@@ -160,19 +160,8 @@ namespace NUnit3Runner
 		{
 		}
 
-		string GetOutput (string testOut)
+		string GetOutput (XmlNode testOutput)
 		{
-			if (string.IsNullOrEmpty (testOut))
-				return String.Empty;
-			
-			var xmlDocument = new XmlDocument ();
-			xmlDocument.LoadXml (testOut);
-
-			XmlNode testOutput = null;
-			var testOutputCollection =  xmlDocument.GetElementsByTagName ("test-output");
-			if (testOutputCollection.Count > 0)
-				testOutput = testOutputCollection [0];
-
 			if(testOutput == null && string.IsNullOrEmpty (testOutput.InnerText) )
 				return String.Empty;
 
@@ -208,7 +197,7 @@ namespace NUnit3Runner
 
 				case "test-output":
 				output = string.Empty;
-				output = GetOutput (report);
+				output = GetOutput (testEvent);
 				break;
 			}
 		}
