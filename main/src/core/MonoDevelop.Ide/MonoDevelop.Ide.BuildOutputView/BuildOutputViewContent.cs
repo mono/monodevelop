@@ -36,20 +36,23 @@ namespace MonoDevelop.Ide.BuildOutputView
 	class BuildOutputViewContent : ViewContent
 	{
 		string defaultName = "build ({0}).binlog";
-		BuildOutputWidget control;
 		bool isTemp;
+
+		public BuildOutputWidget Widget { get; }
 
 		public BuildOutputViewContent (FilePath filename)
 		{
 			this.ContentName = filename;
-			control = new BuildOutputWidget (filename);
+			Widget = new BuildOutputWidget (filename);
 		}
 
 		public BuildOutputViewContent (BuildOutput buildOutput)
 		{
-			control = new BuildOutputWidget (buildOutput);
+			Widget = new BuildOutputWidget (buildOutput);
+			//TODO: is there a better way to identify if the buildOutpu.FilePath is tmp or not? 
 			isTemp = Path.GetDirectoryName (buildOutput.FilePath).TrimEnd ('/') == Path.GetTempPath ().TrimEnd ('/');
 			this.ContentName = isTemp ? string.Format (defaultName, 1) : buildOutput.FilePath;
+			IsDirty = isTemp;
 		}
 
 		public override Task Save (FileSaveInformation fileSaveInformation)
@@ -59,21 +62,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (File.Exists (fileSaveInformation.FileName))
 				File.Delete (fileSaveInformation.FileName); //TODO: backup before removing?
 
-			File.Copy (control.BuildOutput.FilePath, fileSaveInformation.FileName);
+			File.Copy (Widget.BuildOutput.FilePath, fileSaveInformation.FileName);
 
 			result = File.Exists (fileSaveInformation.FileName);
 			if (result) {
-				control.BuildOutput.UpdateFilePath (fileSaveInformation.FileName);
+				Widget.BuildOutput.UpdateFilePath (fileSaveInformation.FileName);
 				this.IsDirty = isTemp = false;
 			}
 
 			return Task.FromResult (result);
-		}
-
-		public override Control Control {
-			get {
-				return control;
-			}
 		}
 
 		public override bool IsReadOnly {
@@ -101,10 +98,23 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
+		public override Control Control {
+			get {
+				return Widget;
+			}
+		}
+
 		public override void Dispose ()
 		{
-			control.Dispose ();
+			Widget.Dispose ();
 			base.Dispose ();
+		}
+
+		internal async Task UpdateContent ()
+		{
+			if (ContentName != Widget.BuildOutput.FilePath) {
+				await Save (new FileSaveInformation (ContentName, null));
+			}
 		}
 	}
 }
