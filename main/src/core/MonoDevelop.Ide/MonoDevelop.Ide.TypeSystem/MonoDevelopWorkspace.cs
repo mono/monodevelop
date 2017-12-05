@@ -171,11 +171,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Task.Run (async delegate {
 				var projects = new ConcurrentBag<ProjectInfo> ();
 				var mdProjects = solution.GetAllProjects ();
+				ImmutableList<ProjectionEntry> toDispose;
 				lock (projectionListUpdateLock) {
-					foreach (var p in projectionList)
-						p.Dispose ();
+					toDispose = projectionList;
 					projectionList = projectionList.Clear ();
 				}
+				foreach (var p in toDispose)
+					p.Dispose ();
+				
 				projectIdMap.Clear ();
 				projectIdToMdProjectMap = projectIdToMdProjectMap.Clear ();
 				projectDataMap.Clear ();
