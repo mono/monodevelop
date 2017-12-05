@@ -76,6 +76,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		int errorCount;
 		int warningCount;
 		int infoCount;
+		Document buildOutputDoc;
 
 		Menu menu;
 		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
@@ -209,6 +210,21 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			buildOutput = new BuildOutput ();
 			buildOutput.OutputChanged += BuildOutput_OutputChanged;
+			foreach (var doc in IdeApp.Workbench.Documents) {
+				var binlogdoc = doc.GetContent<BuildOutputViewContent> ();
+				if (binlogdoc == null)
+					continue;
+
+				var widget = binlogdoc.Control.GetNativeWidget<BuildOutputWidget> ();
+				if (widget == null)
+					continue;
+				
+				buildOutput = widget.BuildOutput;
+				buildOutputViewContent = binlogdoc;
+				buildOutputDoc = doc;
+				buildOutputDoc.Closed += BuildOutputDocClosed;
+				break;
+			}
 
 			//Dummy widget to take all space between "Build Output" button and SearchEntry
 			var spacer = new HBox ();
@@ -1023,7 +1039,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			HandleLogBtnClicked (this, EventArgs.Empty);
 		}
 
-		Document buildOutputDoc;
+
 		void HandleLogBtnClicked (object sender, EventArgs e)
 		{
 			if (buildOutputViewContent == null) {
@@ -1036,16 +1052,19 @@ namespace MonoDevelop.Ide.Gui.Pads
 		}
 
 		void BuildOutputDocClosed (object sender, EventArgs e)
-		{
+		{			
 			buildOutputViewContent.Dispose ();
 			buildOutputViewContent = null;
+			buildOutputDoc.Closed -= BuildOutputDocClosed;
 			buildOutputDoc = null;
 		}
 
-		void BuildOutput_OutputChanged (object sender, EventArgs e)
+		async void BuildOutput_OutputChanged (object sender, EventArgs e)
 		{
-			if (buildOutputDoc != null)
+			if (buildOutputDoc != null) {
 				buildOutputViewContent.IsDirty = true;
+				await buildOutputViewContent.UpdateContent ();
+			}
 		}
 
 		class DescriptionCellRendererText : CellRendererText
