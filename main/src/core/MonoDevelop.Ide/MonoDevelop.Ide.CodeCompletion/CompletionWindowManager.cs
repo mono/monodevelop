@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (IdeApp.Preferences.ForceSuggestionMode)
 					wnd.AutoSelect = false;
 				wnd.Show ();
-				OnWindowShown (EventArgs.Empty);
+				WindowShown?.Invoke (null, EventArgs.Empty);
 				return true;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Exception while showing completion window.", ex);
@@ -159,12 +159,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 		static void DestroyWindow ()
 		{
 			if (wnd != null) {
+				if (wnd.Visible)
+					wnd.HideWindow ();
 				wnd.WordCompleted -= HandleWndWordCompleted;
 				wnd.VisibleChanged -= HandleWndVisibleChanged;
 				wnd.Destroy ();
 				wnd = null;
 			}
-			OnWindowClosed (EventArgs.Empty);
 		}
 		
 		public static bool PreProcessKeyEvent (KeyDescriptor descriptor)
@@ -210,7 +211,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public static void HideWindow ()
 		{
-			if (IsVisible && wnd != null)
+			isShowing = false;
+			if (IsVisible)
 				wnd.HideWindow ();
 		}
 
@@ -218,29 +220,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (!wnd.Visible) {
 				isShowing = false;
-				if (!IsVisible)
-					return;
 				ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);
-				OnWindowClosed (EventArgs.Empty);
+				WindowClosed?.Invoke (null, EventArgs.Empty);
 			}
 		}
 
-		static void OnWindowClosed (EventArgs e)
-		{
-			var handler = WindowClosed;
-			if (handler != null)
-				handler (null, e);
-		}
-
 		public static event EventHandler WindowClosed;
-		
-		static void OnWindowShown (EventArgs e)
-		{
-			var handler = WindowShown;
-			if (handler != null)
-				handler (null, e);
-		}
-		
 		public static event EventHandler WindowShown;
 	}
 }

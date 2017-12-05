@@ -647,7 +647,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		int ViewIndexToItemIndex (int viewIndex)
 		{
-			if (viewIndex < 0 || viewIndex > filteredItems.Count)
+			if (viewIndex < 0 || viewIndex >= filteredItems.Count)
 				return -1;
 			
 			if (InCategoryMode) {
