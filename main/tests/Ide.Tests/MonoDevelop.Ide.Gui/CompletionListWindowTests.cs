@@ -1438,5 +1438,33 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual (3, listWindow.SelectedItemIndex);
 		}
 
+		[Test ()]
+		public void TestOrder3 ()
+		{
+			CreateListWindow ("", true, true,
+							  "ref",
+							  "return",
+							  "runtime",
+							  "Range",
+			                  "RandomMacro",
+			                  "RankException",
+							  "ResolveEventArgs",
+			                  "RandomNumberGenerator",
+			                  "RenameAnnotation",
+			                  "IReginAnnotation",
+							  "Random");
+
+			SimulateInput ("r");
+			AssertCompletionList ("ref", "return", "runtime", "Range", "Random", "RandomMacro", "RankException", "RenameAnnotation", "ResolveEventArgs", "RandomNumberGenerator", "IReginAnnotation");
+
+			SimulateInput ("a");
+			AssertCompletionList ("Range", "Random", "RandomMacro", "RankException", "RandomNumberGenerator", "RenameAnnotation", "ResolveEventArgs", "IReginAnnotation");
+
+			SimulateInput ("n");
+			AssertCompletionList ("Range", "Random", "RandomMacro", "RankException", "RandomNumberGenerator", "RenameAnnotation", "IReginAnnotation");
+
+			SimulateInput ("n");
+			AssertCompletionList ("RandomNumberGenerator", "RenameAnnotation", "IReginAnnotation");
+		}
 	}
 }

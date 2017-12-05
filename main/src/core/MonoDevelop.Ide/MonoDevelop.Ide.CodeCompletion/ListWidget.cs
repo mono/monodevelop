@@ -613,6 +613,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			CalcVisibleRows ();
 			SetAdjustments ();
+			QueueDraw ();
 		}
 
 		void SetAdjustments (bool scrollToSelectedItem = true)

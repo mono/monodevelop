@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override string DisplayText {
 			get {
 				if (displayText == null)
-					displayText = type.ToDisplayString ();
+					displayText = type.Name;
 				return displayText;
 			}
 		}
