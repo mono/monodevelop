@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
+using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -33,12 +35,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutputViewContent : ViewContent
 	{
-		FilePath filename;
+		string defaultName = "build ({0}).binlog";
 		BuildOutputWidget control;
+		bool isTemp;
 
 		public BuildOutputViewContent (FilePath filename)
 		{
-			this.filename = filename;
 			this.ContentName = filename;
 			control = new BuildOutputWidget (filename);
 		}
@@ -47,6 +49,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			ContentName = GettextCatalog.GetString ("Build Output");
 			control = new BuildOutputWidget (buildOutput);
+			isTemp = Path.GetDirectoryName (buildOutput.FilePath).TrimEnd ('/') == Path.GetTempPath ().TrimEnd ('/');
+			this.ContentName = isTemp ? string.Format (defaultName, 1) : buildOutput.FilePath;
+		}
+
+		public override Task Save (FileSaveInformation fileSaveInformation)
+		{
+			var result = false;
+
+			if (File.Exists (fileSaveInformation.FileName))
+				File.Delete (fileSaveInformation.FileName); //TODO: backup before removing?
+
+			File.Copy (control.BuildOutput.FilePath, fileSaveInformation.FileName);
+
+			result = File.Exists (fileSaveInformation.FileName);
+			if (result) {
+				control.BuildOutput.UpdateFilePath (fileSaveInformation.FileName);
+				this.IsDirty = isTemp = false;
+			}
+
+			return Task.FromResult (result);
 		}
 
 		public override Control Control {
@@ -57,25 +79,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public override bool IsReadOnly {
 			get {
-				return true;
+				return false;
 			}
 		}
 
 		public override bool IsFile {
 			get {
-				return System.IO.File.Exists (filename.FullPath);
+				//if isTemp = true, the ContentName contains default naming
+				return  isTemp ? true : File.Exists (ContentName);
 			}
 		}
 
 		public override bool IsViewOnly {
 			get {
-				return true;
+				return false;
 			}
 		}
 
 		public override string TabPageLabel {
 			get {
-				return filename.FileName ?? GettextCatalog.GetString ("Build Output");
+				return ContentName ?? GettextCatalog.GetString ("Build Output");
 			}
 		}
 
