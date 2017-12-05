@@ -208,6 +208,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toolbar.Add (logBtn);
 
 			buildOutput = new BuildOutput ();
+			buildOutput.OutputChanged += BuildOutput_OutputChanged;
 
 			//Dummy widget to take all space between "Build Output" button and SearchEntry
 			var spacer = new HBox ();
@@ -1039,6 +1040,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			buildOutputViewContent.Dispose ();
 			buildOutputViewContent = null;
 			buildOutputDoc = null;
+		}
+
+		void BuildOutput_OutputChanged (object sender, EventArgs e)
+		{
+			if (buildOutputDoc != null)
+				buildOutputViewContent.IsDirty = true;
 		}
 
 		class DescriptionCellRendererText : CellRendererText
