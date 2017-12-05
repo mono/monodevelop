@@ -152,7 +152,7 @@ namespace MonoDevelop.Core.Text
 					// cases don't match. Filter is upper char & letter is low, now prefer the match that does the word skip.
 					if (!(textCharIsUpper || (filterTextLowerCaseTable & flag) != 0) && j + 1 < text.Length) {
 						// Since we are looking for a char match that does the word skip, use onlyWordStart=true
-						int possibleBetterResult = GetMatchChar (text, i, j + 1, true);
+						int possibleBetterResult = GetMatchChar (text, i, j + 1, onlyWordStart:true);
 						if (possibleBetterResult >= 0)
 							return possibleBetterResult;
 					}

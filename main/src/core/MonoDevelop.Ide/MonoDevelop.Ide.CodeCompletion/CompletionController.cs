@@ -31,6 +31,7 @@ using Gdk;
 using Gtk;
 using MonoDevelop.Ide.Editor.Extension;
 using Xwt.Drawing;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -90,7 +91,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		bool currentVisible;
 
-		TooltipInformationWindow declarationviewwindow;
+		TooltipInformationWindow declarationViewWindow;
 		CompletionData currentData;
 		CancellationTokenSource declarationViewCancelSource;
 		bool declarationViewHidden = true;
@@ -286,8 +287,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationViewCancelSource = null;
 			}
 			RemoveDeclarationViewTimer ();
-			if (declarationviewwindow != null) {
-				declarationviewwindow.Hide ();
+			if (declarationViewWindow != null) {
+				declarationViewWindow.Hide ();
 			}
 			declarationViewHidden = true;
 		}
@@ -308,68 +309,72 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		async void DelayedTooltipShowAsync ()
 		{
-			var selectedItem = SelectedItemIndex;
-			if (selectedItem < 0 || selectedItem >= dataList.Count)
-				return;
-
-			var data = dataList [selectedItem];
-
-			IEnumerable<CompletionData> filteredOverloads;
-			if (data.HasOverloads) {
-				filteredOverloads = data.OverloadedData;
-			} else {
-				filteredOverloads = new CompletionData [] { data };
-			}
-
-			EnsureDeclarationViewWindow ();
-			if (data != currentData) {
-				declarationviewwindow.Clear ();
-				currentData = data;
-				var cs = new CancellationTokenSource ();
-				declarationViewCancelSource = cs;
-				var overloads = new List<CompletionData> (filteredOverloads);
-				overloads.Sort (MonoDevelop.Ide.CodeCompletion.CompletionDataList.overloadComparer);
-				foreach (var overload in overloads) {
-					await declarationviewwindow.AddOverload ((CompletionData)overload, cs.Token);
-				}
-
-				if (cs.IsCancellationRequested)
+			try {
+				var selectedItem = SelectedItemIndex;
+				if (selectedItem < 0 || selectedItem >= dataList.Count)
 					return;
 
-				if (declarationViewCancelSource == cs)
-					declarationViewCancelSource = null;
+				var data = dataList [selectedItem];
 
+				IEnumerable<CompletionData> filteredOverloads;
 				if (data.HasOverloads) {
-					for (int i = 0; i < overloads.Count; i++) {
-						if (!overloads [i].DisplayFlags.HasFlag (DisplayFlags.Obsolete)) {
-							declarationviewwindow.CurrentOverload = i;
-							break;
+					filteredOverloads = data.OverloadedData;
+				} else {
+					filteredOverloads = new CompletionData [] { data };
+				}
+
+				EnsureDeclarationViewWindow ();
+				if (data != currentData) {
+					declarationViewWindow.Clear ();
+					currentData = data;
+					var cs = new CancellationTokenSource ();
+					declarationViewCancelSource = cs;
+					var overloads = new List<CompletionData> (filteredOverloads);
+					overloads.Sort (MonoDevelop.Ide.CodeCompletion.CompletionDataList.overloadComparer);
+					foreach (var overload in overloads) {
+						await declarationViewWindow.AddOverload ((CompletionData)overload, cs.Token);
+					}
+
+					if (cs.IsCancellationRequested)
+						return;
+
+					if (declarationViewCancelSource == cs)
+						declarationViewCancelSource = null;
+
+					if (data.HasOverloads) {
+						for (int i = 0; i < overloads.Count; i++) {
+							if (!overloads [i].DisplayFlags.HasFlag (DisplayFlags.Obsolete)) {
+								declarationViewWindow.CurrentOverload = i;
+								break;
+							}
 						}
 					}
 				}
-			}
 
-			if (declarationviewwindow.Overloads == 0) {
-				HideDeclarationView ();
-				return;
-			}
+				if (declarationViewWindow.Overloads == 0) {
+					HideDeclarationView ();
+					return;
+				}
 
-			if (declarationViewHidden && view.Visible) {
-				RepositionDeclarationViewWindow ();
-			}
+				if (declarationViewHidden && view.Visible) {
+					RepositionDeclarationViewWindow ();
+				}
 
-			declarationViewTimer = 0;
+				declarationViewTimer = 0;
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
 		}
 
 		void EnsureDeclarationViewWindow ()
 		{
-			if (declarationviewwindow == null) {
-				declarationviewwindow = new TooltipInformationWindow ();
-				declarationviewwindow.LabelMaxWidth = 380;
+			if (declarationViewWindow == null) {
+				declarationViewWindow = new TooltipInformationWindow ();
+				declarationViewWindow.LabelMaxWidth = 380;
 			} else {
-				declarationviewwindow.SetDefaultScheme ();
+				declarationViewWindow.SetDefaultScheme ();
 			}
-			declarationviewwindow.Theme.SetBackgroundColor (Gui.Styles.CodeCompletion.BackgroundColor);
+			declarationViewWindow.Theme.SetBackgroundColor (Gui.Styles.CodeCompletion.BackgroundColor);
 		}
 
 		void RepositionDeclarationViewWindow ()
@@ -377,12 +382,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!view.Visible)
 				return;
 			EnsureDeclarationViewWindow ();
-			if (declarationviewwindow.Overloads == 0)
+			if (declarationViewWindow.Overloads == 0)
 				return;
 			var selectedItem = SelectedItemIndex;
-			declarationviewwindow.ShowArrow = true;
+			declarationViewWindow.ShowArrow = true;
 
-			if (view.RepositionDeclarationViewWindow (declarationviewwindow, selectedItem))
+			if (view.RepositionDeclarationViewWindow (declarationViewWindow, selectedItem))
 				declarationViewHidden = false;
 		}
 
@@ -451,9 +456,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			HideDeclarationView ();
 
-			if (declarationviewwindow != null) {
-				declarationviewwindow.Destroy ();
-				declarationviewwindow = null;
+			if (declarationViewWindow != null) {
+				declarationViewWindow.Destroy ();
+				declarationViewWindow = null;
 			}
 			ReleaseObjects ();
 			view.Destroy ();
@@ -519,9 +524,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void OnSelectionChanged ()
 		{
 			SelectedItemCompletionText = SelectedItemIndex >= 0 ? dataList [SelectedItemIndex].DisplayText : null;
-			var handler = SelectionChanged;
-			if (handler != null)
-				handler (this, EventArgs.Empty);
+			SelectionChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -531,9 +534,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		void OnWordCompleted (CodeCompletionContextEventArgs e)
 		{
-			var handler = WordCompleted;
-			if (handler != null)
-				handler (this, e);
+			WordCompleted?.Invoke (this, e);
 			if (usingPreviewEntry)
 				Dispose ();
 		}
@@ -819,11 +820,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 						return false;
 					}
 
-					if (declarationviewwindow != null && declarationviewwindow.Multiple) {
+					if (declarationViewWindow != null && declarationViewWindow.Multiple) {
 						if (descriptor.SpecialKey == SpecialKey.Left)
-							declarationviewwindow.OverloadLeft ();
+							declarationViewWindow.OverloadLeft ();
 						else
-							declarationviewwindow.OverloadRight ();
+							declarationViewWindow.OverloadRight ();
 					} else {
 						HideWindow ();
 						return false;
@@ -1126,8 +1127,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 							AddWordToHistory (PartialWord, cdItem.CompletionText);
 							OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
 							*/
-				if (item.HasOverloads && declarationviewwindow != null && declarationviewwindow.CurrentOverload >= 0 && declarationviewwindow.CurrentOverload < item.OverloadedData.Count) {
-					item.OverloadedData [declarationviewwindow.CurrentOverload].InsertCompletionText (listWindow, ref ka, descriptor);
+				if (item.HasOverloads && declarationViewWindow != null && declarationViewWindow.CurrentOverload >= 0 && declarationViewWindow.CurrentOverload < item.OverloadedData.Count) {
+					item.OverloadedData [declarationViewWindow.CurrentOverload].InsertCompletionText (listWindow, ref ka, descriptor);
 				} else {
 					item.InsertCompletionText (listWindow, ref ka, descriptor);
 				}

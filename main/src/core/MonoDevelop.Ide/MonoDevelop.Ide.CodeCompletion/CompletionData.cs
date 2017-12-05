@@ -299,14 +299,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (data.CurrentRankStatus == RankStatus.NotCalculated || data.LastMatcherId != MatcherId) {
 				data.LastMatcherId = MatcherId;
 				if (StringMatcher.CalcMatchRank (data.DisplayText, out matchRank)) {
-						data.CurrentRank = matchRank;
+					data.CurrentRank = matchRank;
 					data.CurrentRankStatus = RankStatus.HasRank;
 					return true;
 				}
 				data.CurrentRankStatus = RankStatus.HasNoRank;
 				return false;
 			} else if (data.CurrentRankStatus == RankStatus.HasRank) {
-					matchRank = data.CurrentRank;
+				matchRank = data.CurrentRank;
 				return true;
 			} else {
 				matchRank = int.MinValue;
