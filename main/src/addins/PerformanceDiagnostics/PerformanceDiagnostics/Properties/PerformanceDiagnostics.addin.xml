@@ -12,11 +12,16 @@
 		<Command id="PerformanceDiagnosticsAddIn.DumpLiveWidgetsHandler"
 			defaultHandler="PerformanceDiagnosticsAddIn.DumpLiveWidgetsHandler"
 			_label="Dump live widgets" />
+		<Command id="PerformanceDiagnosticsAddIn.ToggleProfileHandler"
+			defaultHandler="PerformanceDiagnosticsAddIn.ToggleProfileHandler"
+			type="check"
+			_label="Toggle profiling" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/MainMenu/Help">
 		<ItemSet id="Diagnostics" _label="_Diagnostics">
 			<CommandItem id="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler" />
 			<CommandItem id="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler" />
+			<CommandItem id="PerformanceDiagnosticsAddIn.ToggleProfileHandler" />
 			<CommandItem id="PerformanceDiagnosticsAddIn.DumpLiveWidgetsHandler" />
 		</ItemSet>
 	</Extension>

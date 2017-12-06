@@ -30,6 +30,20 @@ namespace PerformanceDiagnosticsAddIn
 		}
 	}
 
+	public class ToggleProfileHandler : CommandHandler
+	{
+		protected override void Update(CommandInfo info)
+		{
+			info.Checked = UIThreadMonitor.Instance.ToggleProfilingChecked;
+			base.Update(info);
+		}
+
+		protected override void Run ()
+		{
+			UIThreadMonitor.Instance.ToggleProfiling ();
+		}
+	}
+
 	public class InitializeGtkHelperHandler : CommandHandler
 	{
 		protected override void Run ()
