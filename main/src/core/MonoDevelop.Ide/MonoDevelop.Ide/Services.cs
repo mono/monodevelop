@@ -57,6 +57,7 @@ namespace MonoDevelop.Ide
 		internal static Counter PadShown = InstrumentationService.CreateCounter ("Pad focused", "IDE", id:"Ide.Shell.PadShown");
 		internal static TimerCounter SaveAllTimer = InstrumentationService.CreateTimerCounter ("Save all documents", "IDE", id:"Ide.Shell.SaveAll");
 		internal static TimerCounter CloseWorkspaceTimer = InstrumentationService.CreateTimerCounter ("Workspace closed", "IDE", id:"Ide.Shell.CloseWorkspace");
+		internal static Counter Startup = InstrumentationService.CreateTimerCounter ("IDE Startup", "IDE", id:"Ide.Startup");
 
 		internal static class ParserService {
 			public static TimerCounter FileParsed = InstrumentationService.CreateTimerCounter ("File parsed", "Parser Service");
@@ -84,6 +85,7 @@ namespace MonoDevelop.Ide
 			reports [12] = ParserService.ObjectDeserialized.ToString ();
 			reports [13] = ParserService.WorkspaceItemLoaded.ToString ();
 			reports [14] = ParserService.ProjectsLoaded.ToString ();
+			reports [15] = Startup.ToString ();
 
 			return reports;
 		}
