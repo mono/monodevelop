@@ -1201,8 +1201,9 @@ namespace MonoDevelop.Projects
 					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
 					}
 
-					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata (configuration));
-					var t2 = buildTimer != null ? buildTimer.BeginTiming (GetProjectEventMetadata (configuration)) : null;
+					var metadata = GetProjectEventMetadata (configuration);
+					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (metadata);
+					var t2 = buildTimer != null ? buildTimer.BeginTiming (metadata) : null;
 
 					IRemoteProjectBuilder builder = await GetProjectBuilder (monitor.CancellationToken, context, setBusy:operationRequiresExclusiveLock).ConfigureAwait (false);
 
@@ -1219,8 +1220,10 @@ namespace MonoDevelop.Projects
 					} finally {
 						builder.Dispose ();
 						t1.End ();
-						if (t2 != null)
+						if (t2 != null) {
+							AddRunMSBuildTargetTimerMetadata (metadata, result, target, configuration);
 							t2.End ();
+						}
 					}
 				});
 
@@ -1273,6 +1276,44 @@ namespace MonoDevelop.Projects
 				}
 			}
 			return null;
+		}
+
+		void AddRunMSBuildTargetTimerMetadata (
+			IDictionary<string, string> metadata,
+			MSBuildResult result,
+			string target,
+			ConfigurationSelector configuration)
+		{
+			if (target == "Build") {
+				metadata ["BuildType"] = "4";
+			} else if (target == "Clean") {
+				metadata ["BuildType"] = "1";
+			}
+			metadata ["BuildTypeString"] = target;
+
+			metadata ["ProjectID"] = ItemId;
+			metadata ["ProjectType"] = TypeGuid;
+			metadata ["ProjectFlavor"] = FlavorGuids.FirstOrDefault () ?? TypeGuid;
+
+			var c = GetConfiguration (configuration);
+			if (c != null) {
+				metadata ["Configuration"] = c.Id;
+				metadata ["Platform"] = GetExplicitPlatform (c);
+			}
+
+			bool success = false;
+			bool cancelled = false;
+
+			if (result != null) {
+				success = !result.Errors.Any (error => !error.IsWarning);
+
+				if (!success) {
+					cancelled = result.Errors [0].Message == "Build cancelled";
+				}
+			}
+
+			metadata ["Success"] = success.ToString ();
+			metadata ["Cancelled"] = cancelled.ToString ();
 		}
 
 		string activeTargetFramework;
