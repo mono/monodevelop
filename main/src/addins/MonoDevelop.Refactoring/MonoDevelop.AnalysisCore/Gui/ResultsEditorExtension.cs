@@ -135,7 +135,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			new ResultsUpdater (this, new Result[0], null, CancellationToken.None).Update ();
 		}
 		
-		CancellationTokenSource src = null;
+		CancellationTokenSource src = new CancellationTokenSource ();
 		object updateLock = new object();
 
 		void UpdateInitialDiagnostics ()
@@ -196,7 +196,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 
 		async void OnDiagnosticsUpdated (object sender, DiagnosticsUpdatedArgs e)
 		{
-			if (!AnalysisOptions.EnableFancyFeatures)
+			if (!enabled)
 				return;
 
 			var doc = DocumentContext.ParsedDocument;
@@ -264,19 +264,23 @@ namespace MonoDevelop.AnalysisCore.Gui
 				id = resultsId;
 				this.cancellationToken = cancellationToken;
 
-				if (!ext.markers.TryGetValue (id, out var oldMarkers))
-					ext.markers[id] = oldMarkers = new Queue<IGenericTextSegmentMarker> ();
-
-				this.oldMarkers = oldMarkers.Count;
+				Queue<IGenericTextSegmentMarker> oldMarkers;
+				if (resultsId != null) {
+					if (!ext.markers.TryGetValue (id, out oldMarkers))
+						ext.markers [id] = oldMarkers = new Queue<IGenericTextSegmentMarker> ();
+					this.oldMarkers = oldMarkers.Count;
+				}
+				
 				builder = ImmutableArray<QuickTask>.Empty.ToBuilder ();
 				enumerator = results.GetEnumerator ();
 			}
 			
 			public void Update ()
 			{
-				if (!AnalysisOptions.EnableFancyFeatures || cancellationToken.IsCancellationRequested)
+				if (cancellationToken.IsCancellationRequested)
 					return;
-				ext.tasks.Remove (id);
+				if (id != null)
+					ext.tasks.Remove (id);
 				GLib.Idle.Add (IdleHandler);
 			}
 
@@ -314,17 +318,28 @@ namespace MonoDevelop.AnalysisCore.Gui
 				var editor = ext.Editor;
 				if (editor == null)
 					return false;
+
+				if (id == null) {
+					foreach (var markerQueue in ext.markers) {
+						while (markerQueue.Value.Count != 0)
+							editor.RemoveMarker (markerQueue.Value.Dequeue ());
+					}
+					ext.markers.Clear ();
+					return false;
+				}
+
 				//clear the old results out at the same rate we add in the new ones
 				for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {
 					if (cancellationToken.IsCancellationRequested)
 						return false;
-					editor.RemoveMarker (ext.markers[id].Dequeue ());
+					editor.RemoveMarker (ext.markers [id].Dequeue ());
 					oldMarkers--;
 				}
+
 				//add in the new markers
 				for (int i = 0; i < UPDATE_COUNT; i++) {
 					if (!enumerator.MoveNext ()) {
-						ext.tasks[id] = builder.ToImmutable ();
+						ext.tasks [id] = builder.ToImmutable ();
 						ext.OnTasksUpdated (EventArgs.Empty);
 						return false;
 					}
