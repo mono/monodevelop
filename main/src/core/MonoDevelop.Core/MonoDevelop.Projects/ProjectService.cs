@@ -213,19 +213,41 @@ namespace MonoDevelop.Projects
 				if (!File.Exists (file))
 					throw new UserException (GettextCatalog.GetString ("File not found: {0}", file));
 				string fullpath = file.ResolveLinks ().FullPath;
-				using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
+				var metadata = GetReadWorkspaceItemMetadata ();
+				using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file, metadata)) {
 					fullpath = GetTargetFile (fullpath);
 					var r = GetObjectReaderForFile (file, typeof(WorkspaceItem));
 					if (r == null)
 						throw new InvalidOperationException ("Invalid file format: " + file);
 					WorkspaceItem item = await r.LoadWorkspaceItem (monitor, fullpath);
-					if (item != null)
+					if (item != null) {
 						item.NeedsReload = false;
-					else
+						UpdateReadWorkspaceItemMetadata (metadata, item);
+					} else
 						throw new InvalidOperationException ("Invalid file format: " + file);
 					return item;
 				}
 			});
+		}
+
+		static IDictionary<string, string> GetReadWorkspaceItemMetadata ()
+		{
+			var metadata = new Dictionary<string, string> ();
+
+			// Will be set to true after a successful load.
+			metadata ["LoadSucceed"] = bool.FalseString;
+
+			return metadata;
+		}
+
+		static void UpdateReadWorkspaceItemMetadata (IDictionary<string, string> metadata, WorkspaceItem item)
+		{
+			// Is this a workspace or a solution?
+			metadata ["IsSolution"] = (item is Solution).ToString ();
+			metadata ["LoadSucceed"] = bool.TrueString;
+			metadata ["OnStartup"] = bool.FalseString;
+			metadata ["Reason"] = "OpenSolution";
+			metadata ["TotalProjectCount"] = item.GetAllItems<Project> ().Count ().ToString ();
 		}
 		
 		public Task<string> Export (ProgressMonitor monitor, string rootSourceFile, string targetPath, MSBuildFileFormat format)
