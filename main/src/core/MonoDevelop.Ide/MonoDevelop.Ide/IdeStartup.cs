@@ -242,12 +242,13 @@ namespace MonoDevelop.Ide
 				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
 					openedProject = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
 					if (openedProject != null) {
-						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList), TaskScheduler.FromCurrentSynchronizationContext ());
+						var metadata = GetOpenWorkspaceOnStartupMetadata ();
+						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName, true, true, metadata).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList, metadata), TaskScheduler.FromCurrentSynchronizationContext ());
 						startupInfo.OpenedRecentProject = true;
 					}
 				}
 				if (openedProject == null) {
-					IdeApp.OpenFiles (startupInfo.RequestedFileList);
+					IdeApp.OpenFiles (startupInfo.RequestedFileList, GetOpenWorkspaceOnStartupMetadata ());
 					startupInfo.OpenedFiles = startupInfo.HasFiles;
 				}
 				
@@ -668,6 +669,13 @@ namespace MonoDevelop.Ide
 			metadata ["AssetTypeId"] = assetType.Id.ToString ();
 			metadata ["AssetTypeName"] = assetType.Name;
 
+			return metadata;
+		}
+
+		internal static IDictionary<string, string> GetOpenWorkspaceOnStartupMetadata ()
+		{
+			var metadata = new Dictionary<string, string> ();
+			metadata ["OnStartup"] = bool.TrueString;
 			return metadata;
 		}
 	}

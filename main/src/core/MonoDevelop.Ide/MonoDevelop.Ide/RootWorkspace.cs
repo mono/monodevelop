@@ -467,7 +467,12 @@ namespace MonoDevelop.Ide
 			return OpenWorkspaceItem (file, closeCurrent, true);
 		}
 
-		public async Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences)
+		public Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences)
+		{
+			return OpenWorkspaceItem (file, closeCurrent, loadPreferences, null);
+		}
+
+		internal async Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences, IDictionary<string, string> metadata)
 		{
 			lock (loadLock) {
 				if (++loadOperationsCount == 1)
@@ -484,7 +489,7 @@ namespace MonoDevelop.Ide
 			}
 
 			try {
-				return await OpenWorkspaceItemInternal (file, closeCurrent, loadPreferences);
+				return await OpenWorkspaceItemInternal (file, closeCurrent, loadPreferences, metadata);
 			}
 			finally {
 				lock (loadLock) {
@@ -496,7 +501,12 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public async Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences)
+		public Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences)
+		{
+			return OpenWorkspaceItemInternal (file, closeCurrent, loadPreferences, null);
+		}
+
+		async Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences, IDictionary<string, string> metadata)
 		{
 			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
 			if (item != null) {
@@ -518,7 +528,7 @@ namespace MonoDevelop.Ide
 			IdeApp.Workbench.LockGui ();
 			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming ();
 			try {
-				var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading, timer);
+				var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading, metadata, timer);
 				return await oper;
 			} finally {
 				timer.End ();
@@ -543,7 +553,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		async Task<bool> BackgroundLoadWorkspace (ProgressMonitor monitor, FilePath file, bool loadPreferences, bool reloading, ITimeTracker timer)
+		async Task<bool> BackgroundLoadWorkspace (ProgressMonitor monitor, FilePath file, bool loadPreferences, bool reloading, IDictionary<string, string> metadata, ITimeTracker timer)
 		{
 			WorkspaceItem item = null;
 
@@ -570,7 +580,7 @@ namespace MonoDevelop.Ide
 				
 				if (item == null) {
 					timer.Trace ("Reading item");
-					item = await Services.ProjectService.ReadWorkspaceItem (monitor, file);
+					item = await Services.ProjectService.ReadWorkspaceItem (monitor, file, metadata);
 					if (monitor.CancellationToken.IsCancellationRequested)
 						return false;
 				}

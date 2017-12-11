@@ -209,11 +209,16 @@ namespace MonoDevelop.Projects
 
 		public Task<WorkspaceItem> ReadWorkspaceItem (ProgressMonitor monitor, FilePath file)
 		{
+			return ReadWorkspaceItem (monitor, file, null);
+		}
+
+		public Task<WorkspaceItem> ReadWorkspaceItem (ProgressMonitor monitor, FilePath file, IDictionary<string, string> metadata)
+		{
 			return Runtime.RunInMainThread (async delegate {
 				if (!File.Exists (file))
 					throw new UserException (GettextCatalog.GetString ("File not found: {0}", file));
 				string fullpath = file.ResolveLinks ().FullPath;
-				var metadata = GetReadWorkspaceItemMetadata ();
+				metadata = GetReadWorkspaceItemMetadata (metadata);
 				using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file, metadata)) {
 					fullpath = GetTargetFile (fullpath);
 					var r = GetObjectReaderForFile (file, typeof(WorkspaceItem));
@@ -230,9 +235,12 @@ namespace MonoDevelop.Projects
 			});
 		}
 
-		static IDictionary<string, string> GetReadWorkspaceItemMetadata ()
+		static IDictionary<string, string> GetReadWorkspaceItemMetadata (IDictionary<string, string> metadata)
 		{
-			var metadata = new Dictionary<string, string> ();
+			if (metadata == null) {
+				metadata = new Dictionary<string, string> ();
+				metadata ["OnStartup"] = bool.FalseString;
+			}
 
 			// Will be set to true after a successful load.
 			metadata ["LoadSucceed"] = bool.FalseString;
@@ -245,7 +253,6 @@ namespace MonoDevelop.Projects
 			// Is this a workspace or a solution?
 			metadata ["IsSolution"] = (item is Solution).ToString ();
 			metadata ["LoadSucceed"] = bool.TrueString;
-			metadata ["OnStartup"] = bool.FalseString;
 			metadata ["Reason"] = "OpenSolution";
 			metadata ["TotalProjectCount"] = item.GetAllItems<Project> ().Count ().ToString ();
 		}
