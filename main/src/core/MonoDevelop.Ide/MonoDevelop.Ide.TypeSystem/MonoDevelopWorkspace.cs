@@ -105,6 +105,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 			if (IdeApp.Preferences.EnableSourceAnalysis)
 				solutionCrawler.Register (this);
+
+			IdeApp.Preferences.EnableSourceAnalysis.Changed += OnEnableSourceAnalysisChanged;
+		}
+
+		void OnEnableSourceAnalysisChanged(object sender, EventArgs args)
+		{
+			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+			if (IdeApp.Preferences.EnableSourceAnalysis)
+				solutionCrawler.Register (this);
+			else
+				solutionCrawler.Unregister (this);
 		}
 
 		protected override void Dispose (bool finalize)
@@ -112,10 +123,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			base.Dispose (finalize);
 			if (disposed)
 				return;
+			
+			disposed = true;
 
 			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 			solutionCrawler.Unregister (this);
-			disposed = true;
+			IdeApp.Preferences.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
+
 			CancelLoad ();
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
