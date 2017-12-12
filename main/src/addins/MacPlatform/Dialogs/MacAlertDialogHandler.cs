@@ -157,46 +157,51 @@ namespace MonoDevelop.MacIntegration
 						});
 					});
 				}
-				
+
+				int response = -1000;
+
 				if (!data.Message.CancellationToken.IsCancellationRequested) {
 					NSWindow parent = null;
 					if (IdeTheme.UserInterfaceTheme != Theme.Dark || MacSystemInformation.OsVersion < MacSystemInformation.HighSierra) // sheeting is broken on High Sierra with dark NSAppearance
 						parent = data.TransientFor ?? IdeApp.Workbench.RootWindow;
 
 					if (parent == null) {
-						OnAlertClosed ((NSModalResponse)(int)alert.RunModal ());
+						response = (int)alert.RunModal ();
 					} else {
-						alert.BeginSheet (parent, OnAlertClosed);
+						alert.BeginSheet (parent, (modalResponse) => {
+							response = (int)modalResponse;
+							NSApplication.SharedApplication.StopModal ();
+						});
+
+						NSApplication.SharedApplication.RunModalForWindow (alert.Window);
 					}
 				}
 
-				void OnAlertClosed (NSModalResponse response)
-				{
-					var result = (int)response - (long)(int)NSAlertButtonReturn.First;
+				var result = response - (long)(int)NSAlertButtonReturn.First;
 
-					completed = true;
-					if (result >= 0 && result < buttons.Count) {
-						data.ResultButton = buttons [(int)result];
-					} else {
-						data.ResultButton = null;
-					}
+				completed = true;
 
-					if (data.ResultButton == null || data.Message.CancellationToken.IsCancellationRequested) {
-						data.SetResultToCancelled ();
-					}
-
-					if (optionButtons != null) {
-						foreach (var button in optionButtons) {
-							var option = data.Options [(int)button.Tag];
-							data.Message.SetOptionValue (option.Id, button.State != 0);
-						}
-					}
-
-					if (applyToAllCheck != null && applyToAllCheck.State != 0)
-						data.ApplyToAll = true;
-
-					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+				if (result >= 0 && result < buttons.Count) {
+					data.ResultButton = buttons [(int)result];
+				} else {
+					data.ResultButton = null;
 				}
+
+				if (data.ResultButton == null || data.Message.CancellationToken.IsCancellationRequested) {
+					data.SetResultToCancelled ();
+				}
+
+				if (optionButtons != null) {
+					foreach (var button in optionButtons) {
+						var option = data.Options [(int)button.Tag];
+						data.Message.SetOptionValue (option.Id, button.State != 0);
+					}
+				}
+
+				if (applyToAllCheck != null && applyToAllCheck.State != 0)
+					data.ApplyToAll = true;
+
+				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 			}
 			
 			return true;
