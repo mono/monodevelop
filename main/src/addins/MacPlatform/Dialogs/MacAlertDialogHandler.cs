@@ -193,13 +193,15 @@ namespace MonoDevelop.MacIntegration
 
 				if (optionButtons != null) {
 					foreach (var button in optionButtons) {
-						var option = data.Options [(int)button.Tag];
+						var option = data.Options[(int)button.Tag];
 						data.Message.SetOptionValue (option.Id, button.State != 0);
 					}
 				}
-
+				
 				if (applyToAllCheck != null && applyToAllCheck.State != 0)
 					data.ApplyToAll = true;
+
+
 
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 			}
