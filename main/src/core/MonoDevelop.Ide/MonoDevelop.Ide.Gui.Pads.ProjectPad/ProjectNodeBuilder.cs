@@ -336,12 +336,25 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				} else {
 					// We can't use IsExternalToProject here since the ProjectFile has
 					// already been removed from the project
-					string parentPath = file.IsLink
+					FilePath parentPath = file.IsLink
 						? project.BaseDirectory.Combine (file.Link.IsNullOrEmpty? file.FilePath.FileName : file.Link.ToString ()).ParentDirectory
 						: file.FilePath.ParentDirectory;
 					
-					if (!tb.MoveToObject (new ProjectFolder (parentPath, project)))
-						return;
+					if (!tb.MoveToObject (new ProjectFolder (parentPath, project))) {
+						if (project.UseFileWatcher) {
+							// Keep looking for folder higher up the tree so any empty folders
+							// can be removed.
+							while (parentPath != project.BaseDirectory) {
+								parentPath = parentPath.ParentDirectory;
+								if (tb.MoveToObject (new ProjectFolder (parentPath, project))) {
+									tb.UpdateAll ();
+									break;
+								}
+							}
+						} else {
+							return;
+						}
+					}
 				}
 			}
 			
@@ -349,8 +362,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				ProjectFolder f = (ProjectFolder) tb.DataItem;
 				if (!Directory.Exists (f.Path) && !project.Files.GetFilesInVirtualPath (f.Path.ToRelative (project.BaseDirectory)).Any ())
 					tb.Remove (true);
-				else
+				else if (project.UseFileWatcher) {
+					// Ensure empty folders are removed if they are not part of the project.
+					while (!tb.HasChildren () && tb.MoveToParent ()) {
+						tb.UpdateAll ();
+					}
 					break;
+				} else {
+					break;
+				}
 			}
 		}
 		
