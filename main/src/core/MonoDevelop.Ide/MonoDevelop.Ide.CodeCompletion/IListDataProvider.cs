@@ -1,10 +1,9 @@
-﻿//
-// MruCache.cs
+﻿// ListWindow.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,48 +22,36 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+//
+//
+
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Gui.Content;
+using System.Linq;
+using Gdk;
+using Gtk;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	/// <summary>
-	/// A cache that keeps a list of the most recently used completion items
-	/// </summary>
-	public class MruCache
+	interface IListDataProvider
 	{
-		const int MaxItems = 42;
-
-		readonly List<string> lastItems = new List<string> (MaxItems);
-		readonly object mruLock = new object ();
-
-		public void CommitCompletionData (CompletionData item)
-		{
-			lock (mruLock) {
-				var removed = lastItems.Remove (item.DisplayText);
-				if (!removed && lastItems.Count == MaxItems)
-					lastItems.RemoveAt (0);
-
-				lastItems.Add (item.DisplayText);
-			}
-		}
-
-		/// <summary>
-		/// Lower is better. 1 == not in list.
-		/// </summary>
-		public int GetIndex (CompletionData item)
-		{
-			lock (mruLock) {
-				var index = lastItems.IndexOf (item.DisplayText);
-				return -index;
-			}
-		}
-
-		public void Clear ()
-		{
-			lock (mruLock) {
-				lastItems.Clear ();
-			}
-		}
+		int ItemCount { get; }
+		string GetText (int n);
+		int [] GetHighlightedTextIndices (int n);
+		string GetMarkup (int n);
+		bool HasMarkup (int n);
+		string GetCompletionText (int n);
+		CompletionData GetCompletionData (int n);
+		string GetDescription (int n, bool isSelected);
+		string GetRightSideDescription (int n, bool isSelected);
+		Xwt.Drawing.Image GetIcon (int n);
+		int CompareTo (int n, int m);
 	}
 }
+

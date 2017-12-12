@@ -33,6 +33,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Linq;
+using Gtk;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -133,59 +135,112 @@ namespace MonoDevelop.Ide.Gui
 			}
 			StringBuilder sb = new StringBuilder ();
 		}
-		
-		static void SimulateInput (CompletionListWindow listWindow, string input)
+
+		CompletionListWindow listWindow;
+		MockCompletionView completionView;
+		TestCompletionWidget completionWidget;
+
+		string SimulateInput (string input)
 		{
-			var testCompletionWidget = ((TestCompletionWidget)listWindow.CompletionWidget);
-			bool isClosed = false;
-			listWindow.WindowClosed += delegate {
-				isClosed = true;
-			};
-			foreach (char ch in input) {
-				switch (ch) {
-				case '8':
-					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Up, '\0', Gdk.ModifierType.None));
-					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Up, '\0', Gdk.ModifierType.None));
-					break;
-				case '2':
-					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Down, '\0', Gdk.ModifierType.None));
-					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Down, '\0', Gdk.ModifierType.None));
-					break;
-				case '4':
-					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Left, '\0', Gdk.ModifierType.None));
-					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Left, '\0', Gdk.ModifierType.None));
-					break;
-				case '6':
-					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Right, '\0', Gdk.ModifierType.None));
-					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Right, '\0', Gdk.ModifierType.None));
-					break;
+			for (int n = 0; n < input.Length; n++) {
+				var ch = input [n];
+				if (ch == '<') {
+					int i = input.IndexOf ('>', n + 1);
+					if (i != -1) {
+						var kd = CodeToKeyDescriptor (input.Substring (n + 1, i - n - 1));
+						if (kd.SpecialKey != SpecialKey.None) {
+							SimulateInput (kd);
+							n = i;
+							continue;
+						}
+					}
+				}
+				SimulateInput (ToKeyDescriptor (ch));
+			}
+			return completionWidget.CompletedWord;
+		}
+
+		string SimulateInput (params Gdk.Key[] keys)
+		{
+			foreach (var key in keys)
+				SimulateInput (ToKeyDescriptor (key));
+			return completionWidget.CompletedWord;
+		}
+
+		string SimulateInput (params KeyDescriptor[] keys)
+		{
+			foreach (var key in keys) {
+				listWindow.PreProcessKeyEvent (key);
+
+				switch (key.KeyChar) {
+				case '\0':
 				case '\t':
-					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None));
-					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None));
+				case '\n':
+					// Ignore
 					break;
 				case '\b':
-					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None));
-					testCompletionWidget.Backspace ();
-					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None));
-					break;
-				case '\n':
-					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
-					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
+					completionWidget.Backspace ();
 					break;
 				default:
-					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
-					testCompletionWidget.AddChar (ch);
-					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
+					completionWidget.AddChar (key.KeyChar);
 					break;
 				}
-				listWindow.ResetSizes ();
-				// window closed.
-				if (isClosed)
+
+				listWindow.PostProcessKeyEvent (key);
+
+				// Window closed, exit
+				if (!listWindow.Visible)
 					break;
 			}
-			Assert.IsTrue (isClosed);
+			return completionWidget.CompletedWord;
 		}
-		
+
+		KeyDescriptor ToKeyDescriptor (char ch)
+		{
+			switch (ch) {
+			case '\t': return KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
+			case '\b': return KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None);
+			case '\n': return KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
+			default: return KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None);
+			}
+		}
+
+		KeyDescriptor CodeToKeyDescriptor (string code)
+		{
+			switch (code) {
+			case "up": return KeyDescriptor.FromGtk (Gdk.Key.Up, '\0', Gdk.ModifierType.None);
+			case "down": return KeyDescriptor.FromGtk (Gdk.Key.Down, '\0', Gdk.ModifierType.None);
+			case "left": return KeyDescriptor.FromGtk (Gdk.Key.Left, '\0', Gdk.ModifierType.None);
+			case "right": return KeyDescriptor.FromGtk (Gdk.Key.Right, '\0', Gdk.ModifierType.None);
+			case "pageUp": return KeyDescriptor.FromGtk (Gdk.Key.Page_Up, '\0', Gdk.ModifierType.None);
+			case "pageDown": return KeyDescriptor.FromGtk (Gdk.Key.Page_Down, '\0', Gdk.ModifierType.None);
+			case "tab": return KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
+			case "backspace": return KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None);
+			default: return KeyDescriptor.Empty;
+			}
+		}
+
+		KeyDescriptor ToKeyDescriptor (Gdk.Key key)
+		{
+			switch (key) {
+			case Gdk.Key.Up:
+			case Gdk.Key.Down:
+			case Gdk.Key.Left:
+			case Gdk.Key.Right:
+			case Gdk.Key.Page_Up:
+			case Gdk.Key.Page_Down:
+				return KeyDescriptor.FromGtk (key, '\0', Gdk.ModifierType.None);
+			case Gdk.Key.Tab:
+				return KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
+			case Gdk.Key.BackSpace:
+				return KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None);
+			case Gdk.Key.Return:
+				return KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
 		class SimulationSettings {
 			public string SimulatedInput { get; set; }
 			public bool AutoSelect { get; set; }
@@ -195,13 +250,21 @@ namespace MonoDevelop.Ide.Gui
 			
 			public string[] CompletionData { get; set; }
 		}
-		
-		static string RunSimulation (string partialWord, string simulatedInput, bool autoSelect, bool completeWithSpaceOrPunctuation, params string[] completionData)
+
+		class CompletionCategoryCustom : CompletionCategory
+		{
+			public override int CompareTo (CompletionCategory other)
+			{
+				return DisplayText.CompareTo (other.DisplayText);
+			}
+		}
+
+		string RunSimulation (string partialWord, string simulatedInput, bool autoSelect, bool completeWithSpaceOrPunctuation, params string[] completionData)
 		{
 			return RunSimulation (partialWord, simulatedInput, autoSelect, completeWithSpaceOrPunctuation, true, completionData);
 		}
 		
-		static string RunSimulation (string partialWord, string simulatedInput, bool autoSelect, bool completeWithSpaceOrPunctuation, bool autoCompleteEmptyMatch, params string[] completionData)
+		string RunSimulation (string partialWord, string simulatedInput, bool autoSelect, bool completeWithSpaceOrPunctuation, bool autoCompleteEmptyMatch, params string[] completionData)
 		{
 			return RunSimulation (new SimulationSettings () {
 				SimulatedInput = simulatedInput,
@@ -211,37 +274,101 @@ namespace MonoDevelop.Ide.Gui
 				CompletionData = completionData
 			});
 		}
-		
-		static string RunSimulation (SimulationSettings settings)
-		{
-			CompletionListWindow listWindow = CreateListWindow (settings);
-			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
-			SimulateInput (listWindow, settings.SimulatedInput);
 
-			return testCompletionWidget.CompletedWord;
+		string RunSimulation (SimulationSettings settings)
+		{
+			CreateListWindow (settings);
+			SimulateInput (settings.SimulatedInput);
+			Assert.IsFalse (listWindow.Visible);
+			return completionWidget.CompletedWord;
 		}
 
-		static CompletionListWindow CreateListWindow (CompletionListWindowTests.SimulationSettings settings)
+		void CreateListWindow (string partialWord, bool autoSelect, bool completeWithSpaceOrPunctuation, params string [] completionData)
 		{
-			CompletionDataList dataList = new CompletionDataList ();
-			dataList.AutoSelect = settings.AutoSelect;
-			dataList.AddRange (settings.CompletionData);
-			dataList.DefaultCompletionString = settings.DefaultCompletionString;
-			CompletionListWindow listWindow = new CompletionListWindow () {
-				CompletionDataList = dataList,
-				CompletionWidget = new TestCompletionWidget (),
+			CreateListWindow (partialWord, autoSelect, completeWithSpaceOrPunctuation, true, completionData);
+		}
+
+		void CreateListWindow (string partialWord, bool autoSelect, bool completeWithSpaceOrPunctuation, bool autoCompleteEmptyMatch, params string [] completionData)
+		{
+			CreateListWindow (new SimulationSettings () {
+				AutoSelect = autoSelect,
+				CompleteWithSpaceOrPunctuation = completeWithSpaceOrPunctuation,
+				AutoCompleteEmptyMatch = autoCompleteEmptyMatch,
+				CompletionData = completionData
+			});
+		}
+
+		void CreateListWindow (SimulationSettings settings)
+		{
+			CompletionDataList dataList = new CompletionDataList {
 				AutoSelect = settings.AutoSelect,
-				CodeCompletionContext = new CodeCompletionContext (),
 				AutoCompleteEmptyMatch = settings.AutoCompleteEmptyMatch,
 				DefaultCompletionString = settings.DefaultCompletionString
 			};
-			listWindow.FilterWords ();
-			listWindow.UpdateWordSelection ();
-			listWindow.ResetSizes ();
-			return listWindow;
+
+			CompletionCategory currentCategory = null;
+			foreach (var item in settings.CompletionData) {
+				if (item.StartsWith ("[")) {
+					currentCategory = new CompletionCategoryCustom { DisplayText = item };
+					continue;
+				}
+				var data = new CompletionData (item);
+				data.CompletionCategory = currentCategory;
+				dataList.Add (data);
+			}
+
+			CreateListWindow (dataList);
 		}
 
-		
+		void CreateListWindow (ICompletionDataList list)
+		{
+			completionView = new MockCompletionView ();
+			listWindow = new CompletionListWindow (completionView);
+			completionWidget = new TestCompletionWidget ();
+
+			var ctx = new CodeCompletionContext ();
+
+			listWindow.InitializeListWindow (completionWidget, ctx);
+			listWindow.ClearMruCache ();
+			listWindow.ShowListWindow (list, ctx);
+		}
+
+		void AssertCompletionList (params string[] items)
+		{
+			var result = completionView.GetVisibleItemsAndCategories ().ToArray ();
+			Assert.That (result, Is.EqualTo (items));
+		}
+
+		[Test ()]
+		public void TestPunctuationCompletion1 ()
+		{
+			CreateListWindow ("", true, true,
+				"AbAb",
+				"AbAbAb",
+				"AbAbAbAb");
+			
+			SimulateInput ("a"); AssertCompletionList ("AbAb", "AbAbAb", "AbAbAbAb");
+			SimulateInput ("a"); AssertCompletionList ("AbAb", "AbAbAb", "AbAbAbAb");
+			SimulateInput ("a"); AssertCompletionList ("AbAbAb", "AbAbAbAb");
+			var output = SimulateInput (" ");
+
+			Assert.AreEqual ("AbAbAb", output);
+
+			output = RunSimulation ("", "aa.", true, true,
+				"AbAb",
+				"AbAbAb",
+				"AbAbAbAb");
+
+			Assert.AreEqual ("AbAb", output);
+
+			output = RunSimulation ("", "AbAbA.", true, true,
+				"AbAb",
+				"AbAbAb",
+				"AbAbAbAb");
+
+			Assert.AreEqual ("AbAbAb", output);
+		}
+
 		[Test()]
 		public void TestPunctuationCompletion ()
 		{
@@ -324,7 +451,7 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("AbAbAb", output);
 			
 			// now with cursor down
-			output = RunSimulation ("", "aaa2 ", true, true, 
+			output = RunSimulation ("", "aaa<down> ", true, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -344,7 +471,7 @@ namespace MonoDevelop.Ide.Gui
 			Assert.IsNull (output);
 			
 			// now with cursor down (shouldn't change selection)
-			output = RunSimulation ("", "aaa2 ", false, true, 
+			output = RunSimulation ("", "aaa<down> ", false, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -352,7 +479,7 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("AbAbAb", output);
 			
 			// now with 2x cursor down - shold select next item.
-			output = RunSimulation ("", "aaa22 ", false, true, 
+			output = RunSimulation ("", "aaa<down><down> ", false, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb",
@@ -557,7 +684,7 @@ namespace MonoDevelop.Ide.Gui
 		[Test]
 		public void TestDefaultCompletionStringList ()
 		{
-			CompletionListWindow listWindow = CreateListWindow (new SimulationSettings {
+			CreateListWindow (new SimulationSettings {
 				SimulatedInput = "\t",
 				AutoSelect = true,
 				CompleteWithSpaceOrPunctuation = true,
@@ -595,7 +722,7 @@ namespace MonoDevelop.Ide.Gui
 		[Test]
 		public void TestBug543938 ()
 		{
-			string output = RunSimulation ("", "2 ", true, true, false, "singleEntry");
+			string output = RunSimulation ("", "<down> ", true, true, false, "singleEntry");
 			
 			Assert.AreEqual ("singleEntry", output);
 			
@@ -854,16 +981,12 @@ namespace MonoDevelop.Ide.Gui
 			Assert.IsTrue (string.IsNullOrEmpty (output), "output was " + output);
 		}
 
-		static void ContinueSimulation (CompletionListWindow listWindow, ICompletionDataList list, ref TestCompletionWidget testCompletionWidget, string simulatedInput)
+		void ContinueSimulation (ICompletionDataList list, string simulatedInput)
 		{
-			listWindow.ResetState ();
-			listWindow.CodeCompletionContext = new CodeCompletionContext ();
-			listWindow.CompletionDataList = list;
-			listWindow.CompletionWidget = testCompletionWidget = new TestCompletionWidget ();
-			listWindow.FilterWords ();
-			listWindow.ResetSizes ();
-			listWindow.UpdateWordSelection ();
-			SimulateInput (listWindow, simulatedInput);
+			var ctx = new CodeCompletionContext ();
+			completionWidget = new TestCompletionWidget ();
+			listWindow.ShowListWindow (' ', list, completionWidget, ctx);
+			SimulateInput (simulatedInput);
 			listWindow.CompleteWord ();
 		}
 
@@ -877,18 +1000,17 @@ namespace MonoDevelop.Ide.Gui
 				CompletionData = new[] { "FooBar1", "Bar", "FooFoo2"}
 			};
 
-			var listWindow = CreateListWindow (settings);
+			CreateListWindow (settings);
 			var list = listWindow.CompletionDataList;
-			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
 
-			SimulateInput (listWindow, "FooBar\t");
-			Assert.AreEqual ("FooBar1", testCompletionWidget.CompletedWord);
+			SimulateInput ("FooBar\t");
+			Assert.AreEqual ("FooBar1", completionWidget.CompletedWord);
 
-			ContinueSimulation (listWindow, list, ref testCompletionWidget, "FooFoo\t");
-			Assert.AreEqual ("FooFoo2", testCompletionWidget.CompletedWord);
+			ContinueSimulation (list, "FooFoo\t");
+			Assert.AreEqual ("FooFoo2", completionWidget.CompletedWord);
 
-			ContinueSimulation (listWindow, list, ref testCompletionWidget, "F\t");
-			Assert.AreEqual ("FooFoo2", testCompletionWidget.CompletedWord);
+			ContinueSimulation (list, "F\t");
+			Assert.AreEqual ("FooFoo2", completionWidget.CompletedWord);
 		}
 
 		[Test]
@@ -901,18 +1023,17 @@ namespace MonoDevelop.Ide.Gui
 				CompletionData = new[] { "Foo", "Bar", "Test"}
 			};
 
-			var listWindow = CreateListWindow (settings);
+			CreateListWindow (settings);
 			var list = listWindow.CompletionDataList;
-			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
-			SimulateInput (listWindow, "Foo\t");
-			ContinueSimulation (listWindow, list, ref testCompletionWidget, "F\t");
-			Assert.AreEqual ("Foo", testCompletionWidget.CompletedWord);
+			SimulateInput ("Foo\t");
+			ContinueSimulation (list, "F\t");
+			Assert.AreEqual ("Foo", completionWidget.CompletedWord);
 
-			ContinueSimulation (listWindow, list, ref testCompletionWidget, "Bar\t");
-			Assert.AreEqual ("Bar", testCompletionWidget.CompletedWord);
+			ContinueSimulation (list, "Bar\t");
+			Assert.AreEqual ("Bar", completionWidget.CompletedWord);
 
-			ContinueSimulation (listWindow, list, ref testCompletionWidget, "\t");
-			Assert.AreEqual ("Bar", testCompletionWidget.CompletedWord);
+			ContinueSimulation (list, "\t");
+			Assert.AreEqual ("Bar", completionWidget.CompletedWord);
 		}
 
 		[Test]
@@ -974,18 +1095,17 @@ namespace MonoDevelop.Ide.Gui
 				CompletionData = new [] { "Test", "test" }
 			};
 
-			var listWindow = CreateListWindow (settings);
+			CreateListWindow (settings);
 			var list = listWindow.CompletionDataList;
-			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
 
-			SimulateInput (listWindow, "test\t");
-			Assert.AreEqual ("test", testCompletionWidget.CompletedWord);
+			SimulateInput ("test\t");
+			Assert.AreEqual ("test", completionWidget.CompletedWord);
 
-			ContinueSimulation (listWindow, list, ref testCompletionWidget, "t\t");
-			Assert.AreEqual ("test", testCompletionWidget.CompletedWord);
+			ContinueSimulation (list, "t\t");
+			Assert.AreEqual ("test", completionWidget.CompletedWord);
 
-			ContinueSimulation (listWindow, list, ref testCompletionWidget, "T\t");
-			Assert.AreEqual ("Test", testCompletionWidget.CompletedWord);
+			ContinueSimulation (list, "T\t");
+			Assert.AreEqual ("Test", completionWidget.CompletedWord);
 		}
 
 		[TestFixtureSetUp] 
@@ -1024,6 +1144,327 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var output = RunSimulation ("", "s ", false, false, false, new [] { "list" });
 			Assert.AreEqual (null, output);
+		}
+
+		[Test ()]
+		public void TestOrder1 ()
+		{
+			CreateListWindow ("", true, true,
+				"CcccXxxx",
+				"AaaaYyyy",
+				"BbbbZzzz");
+
+			AssertCompletionList ("AaaaYyyy", "BbbbZzzz", "CcccXxxx");
+		}
+
+		[Test ()]
+		public void TestOrder2 ()
+		{
+			CreateListWindow ("", true, true,
+				"AxxxxByyyy",
+				"AxxByy",
+				"Axx",
+				"AxxxBzzz");
+
+			SimulateInput ("a");
+			AssertCompletionList ("Axx", "AxxByy", "AxxxBzzz", "AxxxxByyyy");
+
+			SimulateInput ("b");
+			AssertCompletionList ("AxxByy", "AxxxBzzz", "AxxxxByyyy");
+
+			SimulateInput ("y");
+			AssertCompletionList ("AxxByy", "AxxxxByyyy");
+		}
+
+		[Test]
+		public void TestCategoryMode ()
+		{
+			CreateListWindow ("", true, true,
+				"[cat-02]",
+				"a01",
+				"a05",
+				"a04",
+				"[cat-03]",
+				"a12",
+				"a11",
+				"a00",
+				"a10",
+				"a09",
+				"a02",
+				"a06",
+				"a08",
+				"a03",
+				"[cat-01]",
+				"a07");
+
+			AssertCompletionList ("a00", "a01", "a02", "a03", "a04", "a05", "a06", "a07", "a08", "a09", "a10", "a11", "a12");
+
+			listWindow.InCategoryMode = true;
+
+			AssertCompletionList ("[cat-01]", "a07", "[cat-02]", "a01", "a04", "a05", "[cat-03]", "a00", "a02", "a03", "a06", "a08", "a09", "a10", "a11", "a12");
+
+			listWindow.InCategoryMode = false;
+
+			AssertCompletionList ("a00", "a01", "a02", "a03", "a04", "a05", "a06", "a07", "a08", "a09", "a10", "a11", "a12");
+		}
+
+		[Test]
+		public void TestSingleCategory ()
+		{
+			// If there is only one category, don't show it
+
+			CreateListWindow ("", true, true,
+				"[cat-01]",
+				"a01",
+				"a05",
+				"a04",
+				"a12",
+				"a11",
+				"a00",
+				"a10",
+				"a09",
+				"a02",
+				"a06",
+				"a08",
+				"a03",
+				"a07");
+
+			AssertCompletionList ("a00", "a01", "a02", "a03", "a04", "a05", "a06", "a07", "a08", "a09", "a10", "a11", "a12");
+
+			listWindow.InCategoryMode = true;
+
+			AssertCompletionList ("a00", "a01", "a02", "a03", "a04", "a05", "a06", "a07", "a08", "a09", "a10", "a11", "a12");
+		}
+
+		[Test]
+		public void TestUpDown ()
+		{
+			CreateListWindow ("", true, true,
+				"a03",
+				"a01",
+				"a00",
+				"a02");
+
+			AssertCompletionList ("a00", "a01", "a02", "a03");
+			Assert.AreEqual (0, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Down);
+			Assert.AreEqual (1, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Down);
+			Assert.AreEqual (2, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Down);
+			Assert.AreEqual (3, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Down);
+			Assert.AreEqual (3, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Up);
+			Assert.AreEqual (2, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Up);
+			Assert.AreEqual (1, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Up);
+			Assert.AreEqual (0, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Up);
+			Assert.AreEqual (0, completionView.SelectedIndex);
+
+			AssertCompletionList ("a00", "a01", "a02", "a03");
+		}
+
+		[Test ()]
+		public void TestPageUpDown ()
+		{
+			CreateListWindow ("", true, true,
+				"a01",
+				"a05",
+				"a04",
+				"a12",
+				"a11",
+				"a00",
+				"a10",
+				"a09",
+				"a02",
+				"a06",
+				"a08",
+				"a03",
+				"a07");
+
+			AssertCompletionList ("a00", "a01", "a02", "a03", "a04", "a05", "a06", "a07", "a08", "a09", "a10", "a11", "a12");
+			Assert.AreEqual (0, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Page_Down);
+			Assert.AreEqual (5, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Page_Down);
+			Assert.AreEqual (10, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Page_Down);
+			Assert.AreEqual (12, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Page_Up);
+			Assert.AreEqual (7, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Page_Up);
+			Assert.AreEqual (2, completionView.SelectedIndex);
+
+			SimulateInput (Gdk.Key.Page_Up);
+			Assert.AreEqual (0, completionView.SelectedIndex);
+
+			AssertCompletionList ("a00", "a01", "a02", "a03", "a04", "a05", "a06", "a07", "a08", "a09", "a10", "a11", "a12");
+		}
+
+		[Test]
+		public void TestCategorySort ()
+		{
+			CreateListWindow ("", true, true,
+				"[cat-02]",
+				"aaa01",
+				"Aaa081",
+				"aaa04",
+				"[cat-03]",
+				"aaa12",
+				"Aaa11",
+				"aaa00",
+				"aaa10",
+				"aaa09",
+				"aaa02",
+				"aaa06",
+				"aaa08",
+				"aaa03",
+				"[cat-01]",
+				"aaa07");
+
+			listWindow.InCategoryMode = true;
+
+			AssertCompletionList ("[cat-01]", "aaa07", "[cat-02]", "aaa01", "aaa04", "Aaa081", "[cat-03]", "aaa00", "aaa02", "aaa03", "aaa06", "aaa08", "aaa09", "aaa10", "Aaa11", "aaa12");
+
+			SimulateInput ("A");
+
+			AssertCompletionList ("[cat-01]", "aaa07", "[cat-02]", "Aaa081", "aaa01", "aaa04", "[cat-03]", "Aaa11", "aaa00", "aaa02", "aaa03", "aaa06", "aaa08", "aaa09", "aaa10", "aaa12");
+			Assert.AreEqual (4, completionView.SelectedIndex);
+
+			SimulateInput ("a");
+
+			AssertCompletionList ("[cat-01]", "aaa07", "[cat-02]", "Aaa081", "aaa01", "aaa04", "[cat-03]", "Aaa11", "aaa00", "aaa02", "aaa03", "aaa06", "aaa08", "aaa09", "aaa10", "aaa12");
+			Assert.AreEqual (4, completionView.SelectedIndex);
+
+			SimulateInput ("a");
+
+			AssertCompletionList ("[cat-01]", "aaa07", "[cat-02]", "Aaa081", "aaa01", "aaa04", "[cat-03]", "Aaa11", "aaa00", "aaa02", "aaa03", "aaa06", "aaa08", "aaa09", "aaa10", "aaa12");
+			Assert.AreEqual (4, completionView.SelectedIndex);
+
+			SimulateInput ("0");
+
+			AssertCompletionList ("[cat-01]", "aaa07", "[cat-02]", "Aaa081", "aaa01", "aaa04", "[cat-03]", "aaa00", "aaa02", "aaa03", "aaa06", "aaa08", "aaa09", "aaa10");
+			Assert.AreEqual (1, completionView.SelectedIndex);
+
+			SimulateInput ("8");
+
+			AssertCompletionList ("[cat-02]", "Aaa081", "[cat-03]", "aaa08");
+			Assert.AreEqual (1, completionView.SelectedIndex);
+		}
+
+		class TestMutableCompletionDataList : CompletionDataList, IMutableCompletionDataList
+		{
+			public bool IsChanging { get; set; }
+			public bool IsDisposed { get; set; }
+
+			public void FireChanging () => Changing?.Invoke (this, null);
+			public void FireChanged () => Changed?.Invoke (this, null);
+			public event EventHandler Changing;
+			public event EventHandler Changed;
+
+			public void Dispose ()
+			{
+				IsDisposed = true;
+			}
+		}
+
+		[Test]
+		public void TestMutableList ()
+		{
+			var list = new TestMutableCompletionDataList ();
+			list.AddRange (new [] { "ax", "by", "cz" });
+
+			CreateListWindow (list);
+
+			SimulateInput ("b");
+
+			AssertCompletionList ("by");
+			Assert.AreEqual (1, listWindow.SelectedItemIndex);
+
+			Assert.IsFalse (completionView.LoadingMessageVisible);
+
+			// Check that the same item matches, even when the index changes
+			list.FireChanging ();
+			list.Clear ();
+			list.AddRange (new [] { "bw", "bx", "by", "bz" });
+			Assert.IsTrue (completionView.LoadingMessageVisible);
+			list.FireChanged ();
+			Assert.IsFalse (completionView.LoadingMessageVisible);
+
+			AssertCompletionList ("bw", "bx", "by", "bz");
+			Assert.AreEqual (2, listWindow.SelectedItemIndex);
+
+			// Check it finds the next item that matches what was typed
+			list.FireChanging ();
+			list.Clear ();
+			list.AddRange (new [] { "ax", "ax", "ay", "bz" });
+			list.FireChanged ();
+
+			AssertCompletionList ("bz");
+			Assert.AreEqual (3, listWindow.SelectedItemIndex);
+
+			// Check if there are no matching items, it doesn't fail horribly
+			list.FireChanging ();
+			list.Clear ();
+			list.AddRange (new [] { "ax", "ax", "ay" });
+			list.FireChanged ();
+
+			AssertCompletionList (new string[0]);
+			Assert.AreEqual (-1, listWindow.SelectedItemIndex);
+
+			//check if we add matching items back in, it matches again
+			list.FireChanging ();
+			list.Clear ();
+			list.AddRange (new [] { "ax", "ax", "ay", "bz" });
+			list.FireChanged ();
+
+			AssertCompletionList ("bz");
+			Assert.AreEqual (3, listWindow.SelectedItemIndex);
+		}
+
+		[Test ()]
+		public void TestOrder3 ()
+		{
+			CreateListWindow ("", true, true,
+							  "ref",
+							  "return",
+							  "runtime",
+							  "Range",
+			                  "RandomMacro",
+			                  "RankException",
+							  "ResolveEventArgs",
+			                  "RandomNumberGenerator",
+			                  "RenameAnnotation",
+			                  "IReginAnnotation",
+							  "Random");
+
+			SimulateInput ("r");
+			AssertCompletionList ("ref", "return", "runtime", "Range", "Random", "RandomMacro", "RankException", "RenameAnnotation", "ResolveEventArgs", "RandomNumberGenerator", "IReginAnnotation");
+
+			SimulateInput ("a");
+			AssertCompletionList ("Range", "Random", "RandomMacro", "RankException", "RandomNumberGenerator", "RenameAnnotation", "ResolveEventArgs", "IReginAnnotation");
+
+			SimulateInput ("n");
+			AssertCompletionList ("Range", "Random", "RandomMacro", "RankException", "RandomNumberGenerator", "RenameAnnotation", "IReginAnnotation");
+
+			SimulateInput ("n");
+			AssertCompletionList ("RandomNumberGenerator", "RenameAnnotation", "IReginAnnotation");
 		}
 	}
 }

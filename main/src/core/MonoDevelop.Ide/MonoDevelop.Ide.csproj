@@ -8942,7 +8942,6 @@
     <Compile Include="MonoDevelop.Ide.WebBrowser\IWebBrowserLoader.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionListWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionWidget.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeCompletion\ListWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterInformationWindowManager.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterInformationWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionData.cs" />
@@ -9625,6 +9624,12 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\LineSeparatorTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectCapabilityFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\OrFileTemplateCondition.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionController.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionView.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionViewEventSink.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionListWindowGtk.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\KeyActions.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\D152AccessibilityPanel.cs" />
   </ItemGroup>
   <ItemGroup>

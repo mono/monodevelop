@@ -237,7 +237,6 @@ namespace MonoDevelop.CSharp.Completion
 			int triggerWordLength = 0;
 			switch (triggerInfo.CompletionTriggerReason) {
 			case CompletionTriggerReason.CharTyped:
-				//	var timer = Counters.ResolveTime.BeginTiming ();
 				try {
 					var completionChar = triggerInfo.TriggerCharacter.Value;
 					if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
@@ -253,9 +252,6 @@ namespace MonoDevelop.CSharp.Completion
 						"Line text: " + Editor.GetLineText (completionContext.TriggerLine),
 						e);
 					return null;
-				} finally {
-					//			if (timer != null)
-					//				timer.Dispose ();
 				}
 			case CompletionTriggerReason.BackspaceOrDeleteCommand:
 				//char completionChar = Editor.GetCharAt (completionContext.TriggerOffset - 1);
@@ -452,7 +448,13 @@ namespace MonoDevelop.CSharp.Completion
 					return EmptyCompletionDataList;
 				}
 			}
-			var completionList = await cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, cancellationToken: token);
+
+			Counters.ProcessCodeCompletion.Trace ("C#: Getting completions");
+
+			var completionList = await Task.Run (() => cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, cancellationToken: token)).ConfigureAwait (false);
+
+			Counters.ProcessCodeCompletion.Trace ("C#: Got completions");
+
 			if (completionList == null)
 				return EmptyCompletionDataList;
 
@@ -469,7 +471,6 @@ namespace MonoDevelop.CSharp.Completion
 						defaultCompletionData = data;
 				}
 			}
-
 			result.AutoCompleteUniqueMatch = (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand);
 
 			var partialDoc = analysisDocument.WithFrozenPartialSemantics (token);
@@ -477,7 +478,9 @@ namespace MonoDevelop.CSharp.Completion
 			var syntaxContext = CSharpSyntaxContext.CreateContext (DocumentContext.RoslynWorkspace, semanticModel, completionContext.TriggerOffset, token);
 
 			if (forceSymbolCompletion || IdeApp.Preferences.AddImportedItemsToCompletionList) {
+				Counters.ProcessCodeCompletion.Trace ("C#: Adding import completion data");
 				AddImportCompletionData (syntaxContext, result, semanticModel, completionContext.TriggerOffset, token);
+				Counters.ProcessCodeCompletion.Trace ("C#: Added import completion data");
 			}
 
 			if (defaultCompletionData != null)

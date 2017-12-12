@@ -1,10 +1,10 @@
 ﻿//
-// MruCache.cs
+// CodeCompletionSession.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,46 +25,28 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Gdk;
+using Gtk;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	/// <summary>
-	/// A cache that keeps a list of the most recently used completion items
-	/// </summary>
-	public class MruCache
+	interface ICompletionViewEventSink
 	{
-		const int MaxItems = 42;
-
-		readonly List<string> lastItems = new List<string> (MaxItems);
-		readonly object mruLock = new object ();
-
-		public void CommitCompletionData (CompletionData item)
-		{
-			lock (mruLock) {
-				var removed = lastItems.Remove (item.DisplayText);
-				if (!removed && lastItems.Count == MaxItems)
-					lastItems.RemoveAt (0);
-
-				lastItems.Add (item.DisplayText);
-			}
-		}
+		void OnDoubleClick ();
+		void OnListScrolled ();
+		void OnAllocationChanged ();
+		void OnPreviewCompletionEntryChanged (string text);
+		void OnPreviewCompletionEntryActivated ();
+		void OnPreviewCompletionEntryLostFocus ();
+		void OnSelectedItemChanged ();
 
 		/// <summary>
-		/// Lower is better. 1 == not in list.
+		/// Notifies that text in the preview completion widget entry has changed
 		/// </summary>
-		public int GetIndex (CompletionData item)
-		{
-			lock (mruLock) {
-				var index = lastItems.IndexOf (item.DisplayText);
-				return -index;
-			}
-		}
-
-		public void Clear ()
-		{
-			lock (mruLock) {
-				lastItems.Clear ();
-			}
-		}
+		/// <returns><c>true</c>, if the event has been processed, <c>false</c> otherwise.</returns>
+		bool OnPreProcessPreviewCompletionEntryKey (KeyDescriptor descriptor);
 	}
 }
