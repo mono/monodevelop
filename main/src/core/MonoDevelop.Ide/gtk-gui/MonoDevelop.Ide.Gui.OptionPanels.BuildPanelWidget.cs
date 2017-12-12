@@ -110,6 +110,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.skipBuildingUnmodifiedProjectsCheckbox.DrawIndicator = true;
 			this.skipBuildingUnmodifiedProjectsCheckbox.UseUnderline = true;
 			this.vbox66.Add(this.skipBuildingUnmodifiedProjectsCheckbox);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.skipBuildingUnmodifiedProjectsCheckbox]));
+			w6.Position = 5;
+			w6.Expand = false;
+			w6.Fill = false;
+			// Container child vbox66.Gtk.Box+BoxChild
 			this.buildAndRunOptionsLabel = new global::Gtk.Label();
 			this.buildAndRunOptionsLabel.Name = "buildAndRunOptionsLabel";
 			this.buildAndRunOptionsLabel.Xalign = 0F;
@@ -117,11 +122,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.buildAndRunOptionsLabel.LabelProp = global::Mono.Unix.Catalog.GetString("<b>File Save Options Before Building</b>");
 			this.buildAndRunOptionsLabel.UseMarkup = true;
 			this.vbox66.Add(this.buildAndRunOptionsLabel);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox66[this.buildAndRunOptionsLabel]));
-			w6.Position = 5;
-			w6.Expand = false;
-			w6.Fill = false;
-			w6.Padding = ((uint)(6));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox66[this.buildAndRunOptionsLabel]));
+			w7.Position = 6;
+			w7.Expand = false;
+			w7.Fill = false;
+			w7.Padding = ((uint)(6));
 			// Container child vbox66.Gtk.Box+BoxChild
 			this.hbox44 = new global::Gtk.HBox();
 			this.hbox44.Name = "hbox44";
@@ -133,10 +138,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label71.Yalign = 0F;
 			this.label71.LabelProp = "    ";
 			this.hbox44.Add(this.label71);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox44[this.label71]));
-			w7.Position = 0;
-			w7.Expand = false;
-			w7.Fill = false;
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox44[this.label71]));
+			w8.Position = 0;
+			w8.Expand = false;
+			w8.Fill = false;
 			// Container child hbox44.Gtk.Box+BoxChild
 			this.vbox67 = new global::Gtk.VBox();
 			this.vbox67.Name = "vbox67";
@@ -148,10 +153,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.saveChangesRadioButton.UseUnderline = true;
 			this.saveChangesRadioButton.Group = new global::GLib.SList(global::System.IntPtr.Zero);
 			this.vbox67.Add(this.saveChangesRadioButton);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox67[this.saveChangesRadioButton]));
-			w8.Position = 0;
-			w8.Expand = false;
-			w8.Fill = false;
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox67[this.saveChangesRadioButton]));
+			w9.Position = 0;
+			w9.Expand = false;
+			w9.Fill = false;
 			// Container child vbox67.Gtk.Box+BoxChild
 			this.promptChangesRadioButton = new global::Gtk.RadioButton(global::Mono.Unix.Catalog.GetString("_Prompt to save changes to open documents"));
 			this.promptChangesRadioButton.Name = "promptChangesRadioButton";
@@ -159,10 +164,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.promptChangesRadioButton.UseUnderline = true;
 			this.promptChangesRadioButton.Group = this.saveChangesRadioButton.Group;
 			this.vbox67.Add(this.promptChangesRadioButton);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox67[this.promptChangesRadioButton]));
-			w9.Position = 1;
-			w9.Expand = false;
-			w9.Fill = false;
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox67[this.promptChangesRadioButton]));
+			w10.Position = 1;
+			w10.Expand = false;
+			w10.Fill = false;
 			// Container child vbox67.Gtk.Box+BoxChild
 			this.noSaveRadioButton = new global::Gtk.RadioButton(global::Mono.Unix.Catalog.GetString("_Don\'t save changes to open documents "));
 			this.noSaveRadioButton.Name = "noSaveRadioButton";
@@ -170,17 +175,17 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.noSaveRadioButton.UseUnderline = true;
 			this.noSaveRadioButton.Group = this.saveChangesRadioButton.Group;
 			this.vbox67.Add(this.noSaveRadioButton);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox67[this.noSaveRadioButton]));
-			w10.Position = 2;
-			w10.Expand = false;
-			w10.Fill = false;
-			this.hbox44.Add(this.vbox67);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox44[this.vbox67]));
-			w11.Position = 1;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox67[this.noSaveRadioButton]));
+			w11.Position = 2;
 			w11.Expand = false;
+			w11.Fill = false;
+			this.hbox44.Add(this.vbox67);
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox44[this.vbox67]));
+			w12.Position = 1;
+			w12.Expand = false;
 			this.vbox66.Add(this.hbox44);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox66[this.hbox44]));
-			w12.Position = 6;
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox66[this.hbox44]));
+			w13.Position = 7;
 			this.Add(this.vbox66);
 			if ((this.Child != null))
 			{
