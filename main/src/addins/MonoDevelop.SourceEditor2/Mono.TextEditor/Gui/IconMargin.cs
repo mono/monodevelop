@@ -57,7 +57,7 @@ namespace Mono.TextEditor
 				foreach (var proxy in markerToAccessible.Values) {
 					proxy.Dispose ();
 				}
-				markerToAccessible.Clear ();
+				markerToAccessible = null;
 			}
 
 			base.Dispose ();
