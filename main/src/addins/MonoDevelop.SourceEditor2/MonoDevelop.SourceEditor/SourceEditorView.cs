@@ -223,7 +223,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.TextChanged += OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = CheckReadOnly;
 
-			widget.TextEditor.TextViewMargin.LineShown += TextViewMargin_LineShown;
+			widget.TextEditor.TextViewMargin.LineShowing += TextViewMargin_LineShowing;
 			//			widget.TextEditor.Document.DocumentUpdated += delegate {
 			//				this.IsDirty = Document.IsDirty;
 			//			};
@@ -1067,7 +1067,7 @@ namespace MonoDevelop.SourceEditor
 
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
 			widget.TextEditor.Options.Changed -= HandleWidgetTextEditorOptionsChanged;
-			widget.TextEditor.TextViewMargin.LineShown -= TextViewMargin_LineShown;
+			widget.TextEditor.TextViewMargin.LineShowing -= TextViewMargin_LineShowing;
 			widget.TextEditor.TextArea.FocusOutEvent -= TextArea_FocusOutEvent;
 			widget.TextEditor.Document.MimeTypeChanged -= Document_MimeTypeChanged;
 
@@ -3234,9 +3234,9 @@ namespace MonoDevelop.SourceEditor
 			widget.RemoveOverlay (messageOverlayContent.GetNativeWidget<Widget> ());
 		}
 
-		void TextViewMargin_LineShown (object sender, Mono.TextEditor.LineEventArgs e)
+		void TextViewMargin_LineShowing (object sender, Mono.TextEditor.LineEventArgs e)
 		{
-			LineShown?.Invoke (this, new Ide.Editor.LineEventArgs (e.Line));
+			LineShowing?.Invoke (this, new Ide.Editor.LineEventArgs (e.Line));
 		}
 
 		public IEnumerable<IDocumentLine> VisibleLines {
@@ -3247,7 +3247,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public event EventHandler<Ide.Editor.LineEventArgs> LineShown;
+		public event EventHandler<Ide.Editor.LineEventArgs> LineShowing;
 
 
 
@@ -3511,6 +3511,11 @@ namespace MonoDevelop.SourceEditor
 		IMessageBubbleLineMarker ITextMarkerFactory.CreateMessageBubbleLineMarker (MonoDevelop.Ide.Editor.TextEditor editor)
 		{
 			return new MessageBubbleTextMarker (messageBubbleCache);
+		}
+
+		ITextLineMarker ITextMarkerFactory.CreateLineSeparatorMarker (TextEditor editor)
+		{
+			return new LineSeparatorMarker ();
 		}
 
 		IGenericTextSegmentMarker ITextMarkerFactory.CreateGenericTextSegmentMarker (MonoDevelop.Ide.Editor.TextEditor editor, TextSegmentMarkerEffect effect, int offset, int length)

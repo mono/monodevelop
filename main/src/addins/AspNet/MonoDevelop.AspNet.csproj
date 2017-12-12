@@ -570,10 +570,10 @@
     <None Include="Templates\StylesheetTemplate.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Templates\StyleSheetTemplate.less">
+    <None Include="Templates\StylesheetTemplate.less">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Templates\StyleSheetTemplate.scss">
+    <None Include="Templates\StylesheetTemplate.scss">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Templates\JsonFileTemplate.json">

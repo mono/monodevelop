@@ -207,6 +207,8 @@ namespace MonoDevelop.UnitTesting.NUnit
 			ld.TestInfoCachePath = cacheLoaded ? null : TestInfoCachePath;
 			ld.Callback = delegate {
 				Runtime.RunInMainThread (delegate {
+					if (ld.Error != null)
+						this.ErrorMessage = ld.Error.Message;
 					AsyncCreateTests (ld);
 				});
 			};
@@ -332,9 +334,13 @@ namespace MonoDevelop.UnitTesting.NUnit
 						runner.Connect (ld.NUnitVersion).Wait ();
 						ld.Info = runner.GetTestInfo (ld.Path, ld.SupportAssemblies).Result;
 					}
-				} catch (Exception ex) {
-					Console.WriteLine (ex);
-					ld.Error = ex;
+				} catch (AggregateException exception){
+					var baseException = exception.GetBaseException ();
+					Console.WriteLine (baseException);
+					ld.Error = baseException;
+				} catch (Exception exception) {
+					Console.WriteLine (exception);
+					ld.Error = exception;
 				}
 				finally {
 					try {

@@ -296,6 +296,8 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
 
     member x.Checker = checker
 
+    member x.HideStatusIcon = hideStatusIcon
+
     member x.ClearProjectInfoCache() =
         LoggingService.logDebug "LanguageService: Clearing ProjectInfoCache"
         projectInfoCache := ExtCore.Caching.LruCache.create 50u

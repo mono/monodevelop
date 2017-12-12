@@ -171,9 +171,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Task.Run (async delegate {
 				var projects = new ConcurrentBag<ProjectInfo> ();
 				var mdProjects = solution.GetAllProjects ();
-				foreach (var p in projectionList)
+				ImmutableList<ProjectionEntry> toDispose;
+				lock (projectionListUpdateLock) {
+					toDispose = projectionList;
+					projectionList = projectionList.Clear ();
+				}
+				foreach (var p in toDispose)
 					p.Dispose ();
-				projectionList = projectionList.Clear ();
+				
 				projectIdMap.Clear ();
 				projectIdToMdProjectMap = projectIdToMdProjectMap.Clear ();
 				projectDataMap.Clear ();
@@ -566,7 +571,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					false
 				);
 			}
-			projectionList = projectionList.Add (entry);
+			lock (projectionListUpdateLock)
+				projectionList = projectionList.Add (entry);
 		}
 
 		internal static readonly string [] DefaultAssemblies = {

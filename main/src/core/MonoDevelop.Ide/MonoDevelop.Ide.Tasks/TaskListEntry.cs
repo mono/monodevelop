@@ -251,11 +251,14 @@ namespace MonoDevelop.Ide.Tasks
 			return false;
 		}
 
-		public virtual void JumpToPosition()
+		void ShowDocumentation ()
 		{
 			if (HasDocumentationLink ())
 				DesktopService.ShowUrl (DocumentationLink);
+		}
 
+		public virtual void JumpToPosition ()
+		{
 			if (!file.IsNullOrEmpty) {
 				if (System.IO.File.Exists (file)) {
 					var project = WorkspaceObject as Project;
@@ -263,6 +266,7 @@ namespace MonoDevelop.Ide.Tasks
 				} else {
 					var pad = IdeApp.Workbench.GetPad<ErrorListPad> ()?.Content as ErrorListPad;
 					pad?.FocusOutputView ();
+					ShowDocumentation ();
 				}
 			} else if (parentObject != null) {
 				Pad pad = IdeApp.Workbench.GetPad<ProjectSolutionPad> ();
@@ -273,6 +277,7 @@ namespace MonoDevelop.Ide.Tasks
 					nav.Selected = true;
 					nav.Expanded = true;
 				}
+				ShowDocumentation ();
 			}
 			TaskService.InformJumpToTask (this);
 		}

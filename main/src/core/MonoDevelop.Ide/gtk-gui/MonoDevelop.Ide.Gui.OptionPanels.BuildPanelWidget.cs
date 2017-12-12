@@ -16,6 +16,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		private global::Gtk.CheckButton buildWithMSBuildCheckBox;
 
+		private global::Gtk.CheckButton skipBuildingUnmodifiedProjectsCheckbox;
+
 		private global::Gtk.Label buildAndRunOptionsLabel;
 
 		private global::Gtk.HBox hbox44;
@@ -101,6 +103,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w5.Expand = false;
 			w5.Fill = false;
 			// Container child vbox66.Gtk.Box+BoxChild
+			this.skipBuildingUnmodifiedProjectsCheckbox = new global::Gtk.CheckButton();
+			this.skipBuildingUnmodifiedProjectsCheckbox.CanFocus = true;
+			this.skipBuildingUnmodifiedProjectsCheckbox.Name = "skipBuildingUnmodifiedProjectsCheckbox";
+			this.skipBuildingUnmodifiedProjectsCheckbox.Label = global::Mono.Unix.Catalog.GetString("Skip building unmodified projects");
+			this.skipBuildingUnmodifiedProjectsCheckbox.DrawIndicator = true;
+			this.skipBuildingUnmodifiedProjectsCheckbox.UseUnderline = true;
+			this.vbox66.Add(this.skipBuildingUnmodifiedProjectsCheckbox);
 			this.buildAndRunOptionsLabel = new global::Gtk.Label();
 			this.buildAndRunOptionsLabel.Name = "buildAndRunOptionsLabel";
 			this.buildAndRunOptionsLabel.Xalign = 0F;

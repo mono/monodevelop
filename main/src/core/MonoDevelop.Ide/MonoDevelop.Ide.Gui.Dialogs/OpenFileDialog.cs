@@ -98,6 +98,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			win.SelectedEncoding = Encoding != null ? Encoding.CodePage : 0;
 			win.ShowEncodingSelector = ShowEncodingSelector;
 			win.ShowViewerSelector = ShowViewerSelector;
+			bool pathAlreadySet = false;
+			win.CurrentFolderChanged += (s, e) => {
+				var selectedPath = data.OnDirectoryChanged (this, win.CurrentFolder);
+				if (selectedPath.IsNull)
+					return;
+				data.SelectedFiles = new FilePath [] { selectedPath };
+				pathAlreadySet = true;
+				win.Respond (Gtk.ResponseType.Cancel);
+			};
 			
 			SetDefaultProperties (win);
 			
@@ -110,7 +119,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					data.SelectedViewer = win.SelectedViewer;
 					return true;
 				} else
-					return false;
+					return pathAlreadySet;
 			} finally {
 				win.Destroy ();
 				win.Dispose ();

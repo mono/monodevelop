@@ -245,9 +245,10 @@ namespace MonoDevelop.Components
 		{
 			if (Path == null)
 				return;
-
+			
 			foreach (var entry in Path) {
 				entry.PerformShowMenu -= PerformShowMenu;
+				entry.Dispose ();
 			}
 		}
 
@@ -833,6 +834,8 @@ namespace MonoDevelop.Components
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
+
+			DisposeProxies ();
 			styleButton.Destroy ();
 			KillLayout ();
 			this.boldAtts.Dispose ();
@@ -878,6 +881,12 @@ namespace MonoDevelop.Components
 			alreadyHaveFocus = ret;
 			QueueDraw ();
 			return ret;
+		}
+
+		protected override bool OnFocusOutEvent(EventFocus evnt)
+		{
+			alreadyHaveFocus = false;
+			return base.OnFocusOutEvent(evnt);
 		}
 
 		protected override void OnActivate ()

@@ -113,7 +113,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="mscorlib" />
@@ -207,6 +207,9 @@
     <Compile Include="MonoDevelop.Debugger\DebugApplicationDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\Styles.cs" />
     <Compile Include="MonoDevelop.Debugger\ProcessAttacher.cs" />
+    <Compile Include="MonoDevelop.Debugger\NoSourceView.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebugSourceFilesOptionsPanel.cs" />
+    <Compile Include="MonoDevelop.Debugger\SolutionHasDebugSourceFilesCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

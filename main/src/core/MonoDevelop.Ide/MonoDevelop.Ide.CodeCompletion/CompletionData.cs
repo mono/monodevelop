@@ -34,12 +34,13 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Completion;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
 	public class CompletionData : IComparable
 	{
-		protected CompletionData () {}
+		protected CompletionData () { }
 
 		public virtual IconId Icon { get; set; }
 		public virtual string DisplayText { get; set; }
@@ -99,7 +100,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual IReadOnlyList<CompletionData> OverloadedData {
 			get {
 				if (overloads == null)
-					return new CompletionData[] { this };
+					return new CompletionData [] { this };
 
 				if (sorted == null) {
 					sorted = new List<CompletionData> ();
@@ -111,9 +112,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		public CompletionData (string text) : this (text, null, null) {}
-		public CompletionData (string text, IconId icon) : this (text, icon, null) {}
-		public CompletionData (string text, IconId icon, string description) : this (text, icon, description, text) {}
+		public CompletionData (string text) : this (text, null, null) { }
+		public CompletionData (string text, IconId icon) : this (text, icon, null) { }
+		public CompletionData (string text, IconId icon, string description) : this (text, icon, description, text) { }
 
 		public CompletionData (string displayText, IconId icon, string description, string completionText)
 		{
@@ -221,7 +222,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return ApplyDiplayFlagsFormatting (GLib.Markup.EscapeText (DisplayText));
 		}
 
-		[Obsolete("Use OverloadGroupEquals and GetOverloadGroupHashCode")]
+		[Obsolete ("Use OverloadGroupEquals and GetOverloadGroupHashCode")]
 		public virtual bool IsOverload (CompletionData other)
 		{
 			return true;
@@ -251,6 +252,75 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual bool MuteCharacter (char keyChar, string partialWord)
 		{
 			return false;
+		}
+
+		#region Matching helpers
+		internal int CurrentRank { get; set; }
+		internal RankStatus CurrentRankStatus { get; set; }
+		internal int LastMatcherId { get; set; }
+		#endregion
+	}
+
+	internal enum RankStatus
+	{
+		NotCalculated,
+		HasNoRank,
+		HasRank
+	}
+
+	/// <summary>
+	/// This class uses a StringMatcher to check for matches and for calculating
+	/// ranks. It caches the results on CompletionData objects, so that
+	/// several calls on the matching methods will be able to reuse
+	/// calculated data.
+	/// </summary>
+	internal class CompletionDataMatcher
+	{
+		public int MatcherId { get; set; }
+		public string MatchString { get; set; }
+		public StringMatcher StringMatcher { get; set; }
+
+		public CompletionDataMatcher Clone ()
+		{
+			return new CompletionDataMatcher {
+				MatcherId = MatcherId,
+				MatchString = MatchString,
+				StringMatcher = StringMatcher.Clone ()
+			};
+		}
+
+		public bool CalcMatchRank (CompletionData data, out int matchRank)
+		{
+			// Calculate the rank, and reuse the calculated value if possible.
+			// We compare matcher Ids instead of actual matcher instances
+			// because different but equivalent matchers may be created
+			// by different threads.
+
+			if (data.CurrentRankStatus == RankStatus.NotCalculated || data.LastMatcherId != MatcherId) {
+				data.LastMatcherId = MatcherId;
+				if (StringMatcher.CalcMatchRank (data.DisplayText, out matchRank)) {
+					data.CurrentRank = matchRank;
+					data.CurrentRankStatus = RankStatus.HasRank;
+					return true;
+				}
+				data.CurrentRankStatus = RankStatus.HasNoRank;
+				return false;
+			} else if (data.CurrentRankStatus == RankStatus.HasRank) {
+				matchRank = data.CurrentRank;
+				return true;
+			} else {
+				matchRank = int.MinValue;
+				return false;
+			}
+		}
+
+		public bool IsMatch (CompletionData data)
+		{
+			// Even though StringMatcher.CalcMatchRank() does a bit more work than
+			// IsMatch, CalcMatchRank will end being called anyway since we need
+			// it to sort the list by rank. So we call it now and we avoid
+			// an additional IsMatch call.
+			return CalcMatchRank (data, out int matchRank);
 		}
 	}
 }

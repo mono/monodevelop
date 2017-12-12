@@ -67,19 +67,32 @@ namespace MonoDevelop.Components
 			if (!Platform.IsLinux)
 				UpdateGtkTheme ();
 
-			if (Platform.IsMac) {
+#if MAC
+			// Early init Cocoa through xwt
+			var path = Path.GetDirectoryName (typeof (IdeTheme).Assembly.Location);
+			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
+			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
+
+			var disableA11y = Environment.GetEnvironmentVariable ("DISABLE_ATKCOCOA");
+			if (Platform.IsMac && (NSUserDefaults.StandardUserDefaults.BoolForKey ("com.monodevelop.AccessibilityEnabled") && string.IsNullOrEmpty (disableA11y))) {
 				// Load a private version of AtkCocoa stored in the XS app directory
 				var appDir = Directory.GetParent (AppDomain.CurrentDomain.BaseDirectory);
 				var gtkPath = $"{appDir.Parent.FullName}/lib/gtk-2.0";
 
 				LoggingService.LogInfo ($"Loading modules from {gtkPath}");
 				Environment.SetEnvironmentVariable ("GTK_MODULES", $"{gtkPath}/libatkcocoa.so");
+			} else {
+				// If we are restarted from a running instance when changing the accessibility setting then
+				// we inherit the environment from it
+				Environment.SetEnvironmentVariable ("GTK_MODULES", null);
+				LoggingService.LogInfo ("Accessibility disabled");
 			}
-
+#endif
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
 
 			// Reset our environment after initialization on Mac
 			if (Platform.IsMac) {
+				Environment.SetEnvironmentVariable ("GTK_MODULES", null);
 				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", DefaultGtk2RcFiles);
 			}
 		}

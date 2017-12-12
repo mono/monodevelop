@@ -87,11 +87,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			Editor.SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Editor, DocumentContext));
 			fallbackHighlighting = Editor.SyntaxHighlighting;
 			UpdateHighlighting ();
-			DocumentContext.AnalysisDocumentChanged += delegate {
-				Runtime.RunInMainThread (delegate {
-					UpdateHighlighting ();
-				});
-			};
+			DocumentContext.AnalysisDocumentChanged += HandleAnalysisDocumentChanged;
+		}
+
+		void HandleAnalysisDocumentChanged (object sender, EventArgs args)
+		{
+			Runtime.RunInMainThread (delegate {
+				UpdateHighlighting ();
+			});
 		}
 
 		ISyntaxHighlighting fallbackHighlighting;
@@ -111,6 +114,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		public override void Dispose ()
 		{
+			DocumentContext.AnalysisDocumentChanged -= HandleAnalysisDocumentChanged;
 			Editor.SyntaxHighlighting = fallbackHighlighting;
 			base.Dispose ();
 		}

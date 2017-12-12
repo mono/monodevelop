@@ -110,7 +110,7 @@ namespace MonoDevelop.PackageManagement
 				.CreateNuGetProject (project);
 		}
 
-		List<UpdatedNuGetPackagesInProject> CheckForUpdates (List<UpdatedNuGetPackagesProvider> providers, CancellationToken cancellationToken)
+		static async Task<List<UpdatedNuGetPackagesInProject>> CheckForUpdates (List<UpdatedNuGetPackagesProvider> providers, CancellationToken cancellationToken)
 		{
 			var updatedPackages = new List<UpdatedNuGetPackagesInProject> ();
 			foreach (UpdatedNuGetPackagesProvider provider in providers) {
@@ -118,7 +118,7 @@ namespace MonoDevelop.PackageManagement
 					break;
 				}
 
-				provider.FindUpdatedPackages ().Wait ();
+				await provider.FindUpdatedPackages ().ConfigureAwait (false);
 
 				if (provider.UpdatedPackagesInProject.AnyPackages ()) {
 					updatedPackages.Add (provider.UpdatedPackagesInProject);

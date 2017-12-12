@@ -49,6 +49,29 @@ namespace PerformanceDiagnosticsAddIn
 
 		TimeSpan forceProfileTime = TimeSpan.Zero;
 
+		public bool ToggleProfilingChecked => sampleProcessPid != -1;
+
+		int sampleProcessPid = -1;
+		public void ToggleProfiling ()
+		{
+			if (sampleProcessPid != -1) {
+				Mono.Unix.Native.Syscall.kill (sampleProcessPid, Mono.Unix.Native.Signum.SIGINT);
+				sampleProcessPid = -1;
+				return;
+			}
+
+			var outputFilePath = Path.GetTempFileName ();
+			var startInfo = new ProcessStartInfo ("sample");
+			startInfo.UseShellExecute = false;
+			startInfo.Arguments = $"{Process.GetCurrentProcess ().Id} 10000 -file {outputFilePath}";
+			var sampleProcess = Process.Start (startInfo);
+			sampleProcess.EnableRaisingEvents = true;
+			sampleProcess.Exited += delegate {
+				ConvertJITAddressesToMethodNames (outputFilePath, "Profile");
+			};
+			sampleProcessPid = sampleProcess.Id;
+		}
+
 		public void Profile (int seconds)
 		{
 			var outputFilePath = Path.GetTempFileName ();

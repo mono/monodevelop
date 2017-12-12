@@ -179,32 +179,27 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		static CompletionItemRules DelegateRules = CompletionItemRules.Create (matchPriority: 9999);
 		static CompletionItemRules NewMethodRules = CompletionItemRules.Create (matchPriority: 10000);
 
+		const string thisLineIndentMarker = "$thisLineIndent$";
+		const string oneIndentMarker = "$oneIndent$";
+		const string eolMarker = "\n";
+
 		void AddDelegateHandlers (CompletionContext context, SyntaxNode parent, SemanticModel semanticModel, ITypeSymbol delegateType, int position, string optDelegateName, CancellationToken cancellationToken)
 		{
 			var delegateMethod = delegateType.GetDelegateInvokeMethod ();
-
-			string thisLineIndent;
-			string oneIndent;
-			var editor = IdeApp.Workbench?.ActiveDocument?.Editor;
-			if (editor != null) {
-				thisLineIndent = editor.IndentationTracker.GetIndentationString (editor.OffsetToLineNumber (position));
-				oneIndent = editor.Options.TabsToSpaces ? new string (' ', editor.Options.TabSize) : "\t";
-			} else {
-				thisLineIndent = oneIndent = "\t";
-			}
 
 			string EolMarker = "\n";
 			bool addSemicolon = true;
 			bool addDefault = true;
 
-			string delegateEndString = EolMarker + thisLineIndent + "}" + (addSemicolon ? ";" : "");
+			string delegateEndString = EolMarker + thisLineIndentMarker + "}" + (addSemicolon ? ";" : "");
 			CompletionItem item;
 			if (addDefault) {
 				item = CreateCompletionItem (
 				   "delegate",
 				   "Creates anonymous delegate.",
-				   "delegate {" + EolMarker + thisLineIndent + oneIndent,
-				   delegateEndString
+				   "delegate {" + EolMarker + thisLineIndentMarker + eolMarker,
+				   delegateEndString,
+				   position
 			   );
 
 				if (!context.Items.Any (i => i.DisplayText == item.DisplayText))
@@ -215,8 +210,9 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				item = CreateCompletionItem (
 					"async delegate",
 					"Creates anonymous async delegate.",
-					"async delegate {" + EolMarker + thisLineIndent + oneIndent,
-					delegateEndString
+					"async delegate {" + EolMarker + thisLineIndentMarker + eolMarker,
+					delegateEndString,
+					position
 				);
 				if (!context.Items.Any (i => i.DisplayText == item.DisplayText))
 					context.AddItem (item);
@@ -244,7 +240,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					signature + " =>",
 					"Creates typed lambda expression.",
 					signature + " => ",
-					(addSemicolon ? ";" : "")
+					(addSemicolon ? ";" : ""),
+					position
 				);
 				//item.CompletionCategory = category;
 				if (!context.Items.Any (i => i.DisplayText == item.DisplayText))
@@ -256,7 +253,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					"async " + signature + " =>",
 					"Creates typed async lambda expression.",
 					"async " + signature + " => ",
-					(addSemicolon ? ";" : "")
+					(addSemicolon ? ";" : ""),
+					position
 				);
 				//item.CompletionCategory = category;
 				if (!context.Items.Any (i => i.DisplayText == item.DisplayText))
@@ -268,7 +266,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 						signatureWithoutTypes + " =>",
 						"Creates typed lambda expression.",
 						signatureWithoutTypes + " => ",
-						(addSemicolon ? ";" : "")
+						(addSemicolon ? ";" : ""),
+						position
 					);
 					//item.CompletionCategory = category;
 					if (!context.Items.Any (i => i.DisplayText == item.DisplayText)) {
@@ -281,7 +280,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 						"async " + signatureWithoutTypes + " =>",
 						"Creates typed async lambda expression.",
 						"async " + signatureWithoutTypes + " => ",
-						(addSemicolon ? ";" : "")
+						(addSemicolon ? ";" : ""),
+						position
 					);
 					//item.CompletionCategory = category;
 					if (!context.Items.Any (i => i.DisplayText == item.DisplayText))
@@ -303,7 +303,6 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			var sb = new StringBuilder ();
 			string varName = optDelegateName ?? "Handle" + delegateType.Name;
 
-			var editor = IdeApp.Workbench?.ActiveDocument?.Editor;
 			var curType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (position, cancellationToken);
 			var uniqueName = new UniqueNameGenerator (semanticModel).CreateUniqueMethodName (parent, varName);
 			var pDict = ImmutableDictionary<string, string>.Empty;
@@ -327,16 +326,17 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			}
 			sb.Append (")");
 
-			sb.Append (editor?.EolMarker ?? "\n");
+			sb.Append (eolMarker);
 			sb.Append (indent);
 			sb.Append ("{");
-			sb.Append (editor?.EolMarker ?? "\n");
+			sb.Append (eolMarker);
 			sb.Append (indent);
-			sb.Append (editor?.Options.GetIndentationString () ?? "\t");
+			sb.Append (oneIndentMarker);
 			//int cursorPos = pos + sb.Length;
 			sb.Append (indent);
 			sb.Append ("}");
-			sb.Append (editor?.EolMarker ?? "\n");
+			sb.Append (eolMarker);
+			pDict = pDict.Add ("Position", position.ToString ());
 			pDict = pDict.Add ("NewMethod", sb.ToString ());
 			pDict = pDict.Add ("MethodName", varName);
 
@@ -344,11 +344,12 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		}
 		static readonly ImmutableArray<string> newMethodTags = ImmutableArray<string>.Empty.AddRange (new [] { "NewMethod" });
 
-		CompletionItem CreateCompletionItem (string displayString, string description, string insertBefore, string insertAfter)
+		CompletionItem CreateCompletionItem (string displayString, string description, string insertBefore, string insertAfter, int position)
 		{
 			var pDict = ImmutableDictionary<string, string>.Empty;
 			if (description != null)
 				pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + description + "</span>");
+			pDict = pDict.Add ("Position", position.ToString ());
 			pDict = pDict.Add ("InsertBefore", insertBefore);
 			pDict = pDict.Add ("InsertAfter", insertAfter);
 
@@ -357,8 +358,10 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 		public override async Task<CompletionChange> GetChangeAsync (Document doc, CompletionItem item, char? commitKey = default (char?), CancellationToken cancellationToken = default (CancellationToken))
 		{
+			GetInsertText (item.Properties, out string beforeText, out string afterText, out string newMethod);
+
 			TextChange change;
-			if (item.Properties.ContainsKey ("NewMethod")) {
+			if (newMethod != null) {
 				change = new TextChange (new TextSpan (item.Span.Start, item.Span.Length), item.Properties ["MethodName"] + ";");
 				var document = IdeApp.Workbench.ActiveDocument;
 				var editor = document.Editor;
@@ -377,7 +380,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					point => {
 						if (!point.Success)
 							return;
-						point.InsertionPoint.Insert (document.Editor, document, item.Properties ["NewMethod"]);
+						point.InsertionPoint.Insert (document.Editor, document, newMethod);
 					}
 				);
 
@@ -385,8 +388,6 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 				return CompletionChange.Create (change);
 			}
-			var beforeText = item.Properties ["InsertBefore"];
-			var afterText = item.Properties ["InsertAfter"];
 			change = new TextChange (new TextSpan (item.Span.Start, item.Span.Length), beforeText + afterText);
 
 			return CompletionChange.Create (change, item.Span.Start + beforeText.Length);
@@ -394,10 +395,31 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 		protected override Task<TextChange?> GetTextChangeAsync (CompletionItem selectedItem, char? ch, CancellationToken cancellationToken)
 		{
-			var beforeText = selectedItem.Properties ["InsertBefore"];
-			var afterText = selectedItem.Properties ["InsertAfter"];
+			GetInsertText (selectedItem.Properties, out string beforeText, out string afterText, out string newMethod);
 			var change = new TextChange (new TextSpan (selectedItem.Span.Start, selectedItem.Span.Length), beforeText + afterText);
 			return Task.FromResult<TextChange?> (change);
+		}
+
+		void GetInsertText (ImmutableDictionary<string, string> properties, out string beforeText, out string afterText, out string newMethod)
+		{
+			string thisLineIndent;
+			string oneIndent;
+			var editor = IdeApp.Workbench?.ActiveDocument?.Editor;
+			if (editor != null) {
+				thisLineIndent = editor.IndentationTracker.GetIndentationString (editor.OffsetToLineNumber (int.Parse (properties ["Position"])));
+				oneIndent = editor.Options.TabsToSpaces ? new string (' ', editor.Options.TabSize) : "\t";
+			} else {
+				thisLineIndent = oneIndent = "\t";
+			}
+			var eol = editor?.EolMarker ?? "\n";
+
+			properties.TryGetValue ("InsertBefore", out beforeText);
+			properties.TryGetValue ("InsertAfter", out afterText);
+			properties.TryGetValue ("NewMethod", out newMethod);
+
+			beforeText = beforeText?.Replace ("\n", eol).Replace ("$thisLineIndent$", thisLineIndent).Replace ("$oneIndent$", oneIndent);
+			afterText = afterText?.Replace ("\n", eol).Replace ("$thisLineIndent$", thisLineIndent).Replace ("$oneIndent$", oneIndent);
+			newMethod = newMethod?.Replace ("\n", eol).Replace ("$thisLineIndent$", thisLineIndent).Replace ("$oneIndent$", oneIndent);
 		}
 	}
 }
