@@ -21,6 +21,10 @@
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.UI.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Language">
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.dll</HintPath>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense">
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.Intellisense.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.Intellisense.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
@@ -30,7 +34,7 @@
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.Implementation">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Implementation.15.0.5-pre\lib\net46\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Implementation.15.0.7-pre\lib\net46\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
   </ItemGroup>

@@ -31,8 +31,8 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     /// Provides a VisualStudio Service that aids in creation of Editor Views
     /// </summary>
     [Export(typeof(ITextEditorFactoryService))]
-    internal sealed class TextEditorFactoryService : ITextEditorFactoryService
-    {
+    internal sealed class TextEditorFactoryService : ITextEditorFactoryService, IPartImportsSatisfiedNotification
+	{
         [Import]
         internal GuardedOperations GuardedOperations { get; set; }
 
@@ -110,34 +110,32 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         public ITextView CreateTextView (MonoDevelop.Ide.Editor.TextEditor textEditor, ITextViewRoleSet roles = null, IEditorOptions parentOptions = null)
         {
-            if (textEditor == null)
+			if (textEditor == null)
             {
                 throw new ArgumentNullException("textEditor");
             }
 
-            if (roles == null) {
-                roles = _defaultRoles;
-            }
+			roles = roles ?? _defaultRoles;
+			var textView = ((MonoDevelop.SourceEditor.SourceEditorView)textEditor.Implementation).TextEditor.TextArea;
+			ITextBuffer textBuffer = textEditor.GetContent<Mono.TextEditor.ITextEditorDataProvider> ().GetTextEditorData ().Document.TextBuffer;
+			ITextDataModel dataModel = new VacuousTextDataModel (textBuffer);
 
-            ITextBuffer textBuffer = textEditor.GetContent<Mono.TextEditor.ITextEditorDataProvider>().GetTextEditorData().Document.TextBuffer;
-            ITextDataModel dataModel = new VacuousTextDataModel(textBuffer);
+			ITextViewModel viewModel = UIExtensionSelector.InvokeBestMatchingFactory
+							(TextViewModelProviders,
+							 dataModel.ContentType,
+							 roles,
+							 (provider) => (provider.CreateTextViewModel (dataModel, roles)),
+							 ContentTypeRegistryService,
+							 this.GuardedOperations,
+							 this) ?? new VacuousTextViewModel (dataModel);
 
-            ITextViewModel viewModel = UIExtensionSelector.InvokeBestMatchingFactory
-                            (TextViewModelProviders,
-                             dataModel.ContentType,
-                             roles,
-                             (provider) => (provider.CreateTextViewModel(dataModel, roles)),
-                             ContentTypeRegistryService,
-                             this.GuardedOperations,
-                             this) ?? new VacuousTextViewModel(dataModel);
+			textView.Initialize (viewModel, roles, parentOptions ?? this.EditorOptionsFactoryService.GlobalOptions, this);
+			textView.Properties.AddProperty (typeof (MonoDevelop.Ide.Editor.TextEditor), textEditor);
 
-            TextView view = new TextView(textEditor, viewModel, roles ?? this.DefaultRoles, parentOptions ?? this.EditorOptionsFactoryService.GlobalOptions, this);
-            view.Properties.AddProperty(typeof(MonoDevelop.Ide.Editor.TextEditor), textEditor);
+			this.TextViewCreated?.Invoke (this, new TextViewCreatedEventArgs (textView));
 
-            this.TextViewCreated?.Invoke(this, new TextViewCreatedEventArgs(view));
-
-            return view;
-        }
+			return textView;
+		}
 
         public ITextViewRoleSet NoRoles
         {
@@ -172,5 +170,17 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         {
             return new TextViewRoleSet(roles);
         }
-    }
+
+		[ImportMany]
+		private List<Lazy<SpaceReservationManagerDefinition, IOrderable>> _spaceReservationManagerDefinitions = null;
+		internal Dictionary<string, int> OrderedSpaceReservationManagerDefinitions = new Dictionary<string, int> ();
+
+		public void OnImportsSatisfied ()
+		{
+			IList<Lazy<SpaceReservationManagerDefinition, IOrderable>> orderedManagers = Orderer.Order (_spaceReservationManagerDefinitions);
+			for (int i = 0; (i < orderedManagers.Count); ++i) {
+				this.OrderedSpaceReservationManagerDefinitions.Add (orderedManagers[i].Metadata.Name, i);
+			}
+		}
+	}
 }

@@ -1,4 +1,4 @@
-﻿namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
+namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 {
     using System;
     using System.Collections.Generic;
@@ -12,27 +12,22 @@
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
+    using Microsoft.VisualStudio.Text.Utilities;
     using Microsoft.VisualStudio.Threading;
     using Microsoft.VisualStudio.Utilities;
 
     [Export(typeof(IAsyncQuickInfoBroker))]
-    internal sealed class AsyncQuickInfoBroker : IAsyncQuickInfoBroker,
-
-        // Bug #512117: Remove compatibility shims for 2nd gen. Quick Info APIs.
-        // This interface exists only to expose additional functionality required by the shims.
-#pragma warning disable 618
-        ILegacyQuickInfoBrokerSupport
+    internal sealed class AsyncQuickInfoBroker : IAsyncQuickInfoBroker
     {
-        private readonly IEnumerable<Lazy<IAsyncQuickInfoSourceProvider, ILegacyQuickInfoMetadata>> unorderedSourceProviders;
+        private readonly IEnumerable<Lazy<IAsyncQuickInfoSourceProvider, IOrderableContentTypeMetadata>> unorderedSourceProviders;
         private readonly IGuardedOperations guardedOperations;
         private readonly IToolTipService toolTipService;
         private readonly JoinableTaskContext joinableTaskContext;
-        private IEnumerable<Lazy<IAsyncQuickInfoSourceProvider, ILegacyQuickInfoMetadata>> orderedSourceProviders;
+        private IEnumerable<Lazy<IAsyncQuickInfoSourceProvider, IOrderableContentTypeMetadata>> orderedSourceProviders;
 
         [ImportingConstructor]
         public AsyncQuickInfoBroker(
-            [ImportMany]IEnumerable<Lazy<IAsyncQuickInfoSourceProvider, ILegacyQuickInfoMetadata>> unorderedSourceProviders,
-            [Import(AllowDefault = true)]ILegacyQuickInfoSourcesSupport legacyQuickInfoSourcesSupport,
+            [ImportMany]IEnumerable<Lazy<IAsyncQuickInfoSourceProvider, IOrderableContentTypeMetadata>> unorderedSourceProviders,
             IGuardedOperations guardedOperations,
             IToolTipService toolTipService,
             JoinableTaskContext joinableTaskContext)
@@ -40,10 +35,6 @@
             // Bug #512117: Remove compatibility shims for 2nd gen. Quick Info APIs.
             // Combines new + legacy providers into a single series for relative ordering.
             var combinedProviders = unorderedSourceProviders ?? throw new ArgumentNullException(nameof(unorderedSourceProviders));
-            if (legacyQuickInfoSourcesSupport != null)
-            {
-                combinedProviders = combinedProviders.Concat(legacyQuickInfoSourcesSupport.LegacySources);
-            }
 
             this.unorderedSourceProviders = combinedProviders;
 #pragma warning restore 618
@@ -66,93 +57,69 @@
 
         public bool IsQuickInfoActive(ITextView textView) => GetSession(textView) != null;
 
-        public Task<IAsyncQuickInfoSession> TriggerQuickInfoAsync(
-            ITextView textView,
-            ITrackingPoint triggerPoint,
-            QuickInfoSessionOptions options,
-            CancellationToken cancellationToken)
-        {
-            return this.TriggerQuickInfoAsync(
-                textView,
-                triggerPoint,
-                options,
-                cancellationToken,
-                null);
-        }
+		public async Task<IAsyncQuickInfoSession> TriggerQuickInfoAsync (
+		   ITextView textView,
+		   ITrackingPoint triggerPoint,
+		   QuickInfoSessionOptions options,
+		   CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested ();
 
-        #endregion
+			// Caret element requires UI thread.
+			await this.joinableTaskContext.Factory.SwitchToMainThreadAsync ();
 
-        // Bug #512117: Remove compatibility shims for 2nd gen. Quick Info APIs.
-        // This overload exists only to expose additional functionality required
-        // by the shims.
-        #region ILegacyQuickInfoBrokerSupport
+			// We switched threads and there is some latency, so ensure that we're still not canceled.
+			cancellationToken.ThrowIfCancellationRequested ();
 
-        public async Task<IAsyncQuickInfoSession> TriggerQuickInfoAsync(
-            ITextView textView,
-            ITrackingPoint triggerPoint,
-            QuickInfoSessionOptions options,
-            CancellationToken cancellationToken,
-            PropertyCollection propertyCollection)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
+			// Dismiss any currently open session.
+			var currentSession = this.GetSession (textView);
+			if (currentSession != null) {
+				await currentSession.DismissAsync ();
+			}
 
-            // Caret element requires UI thread.
-            await this.joinableTaskContext.Factory.SwitchToMainThreadAsync();
+			// Get the trigger point from the caret if none is provided.
+			triggerPoint = triggerPoint ?? textView.TextSnapshot.CreateTrackingPoint (
+				textView.Caret.Position.BufferPosition,
+				PointTrackingMode.Negative);
 
-            // We switched threads and there is some latency, so ensure that we're still not canceled.
-            cancellationToken.ThrowIfCancellationRequested();
+			var newSession = new AsyncQuickInfoSession (
+				this.OrderedSourceProviders,
+				this.guardedOperations,
+				this.joinableTaskContext,
+				this.toolTipService,
+				textView,
+				triggerPoint,
+				options,
+				null);
 
-            // Dismiss any currently open session.
-            var currentSession = this.GetSession(textView);
-            if (currentSession != null)
-            {
-                await currentSession.DismissAsync();
-            }
+			// StartAsync() is responsible for dispatching a StateChange
+			// event if canceled so no need to clean these up on cancellation.
+			newSession.StateChanged += this.OnStateChanged;
+			textView.Properties.AddProperty (typeof (AsyncQuickInfoSession), newSession);
 
-            // Get the trigger point from the caret if none is provided.
-            triggerPoint = triggerPoint ?? textView.TextSnapshot.CreateTrackingPoint(
-                textView.Caret.Position.BufferPosition,
-                PointTrackingMode.Negative);
+			try {
+				await newSession.StartAsync (cancellationToken);
+			}
+			catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested) {
+				// Don't throw OperationCanceledException unless the caller canceled us.
+				// This can happen if computation was canceled by a quick info source
+				// dismissing the session during computation, which we want to consider
+				// more of a 'N/A' than an error.
+				return null;
+			}
 
-            var newSession = new AsyncQuickInfoSession(
-                this.OrderedSourceProviders,
-                this.guardedOperations,
-                this.joinableTaskContext,
-                this.toolTipService,
-                textView,
-                triggerPoint,
-                options,
-                propertyCollection);
+			return newSession;
+		}
 
-            // StartAsync() is responsible for dispatching a StateChange
-            // event if canceled so no need to clean these up on cancellation.
-            newSession.StateChanged += this.OnStateChanged;
-            textView.Properties.AddProperty(typeof(AsyncQuickInfoSession), newSession);
 
-            try
-            {
-                await newSession.StartAsync(cancellationToken);
-            }
-            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-            {
-                // Don't throw OperationCanceledException unless the caller canceled us.
-                // This can happen if computation was canceled by a quick info source
-                // dismissing the session during computation, which we want to consider
-                // more of a 'N/A' than an error.
-                return null;
-            }
+		#endregion
 
-            return newSession;
-        }
+		#region Private Impl
 
-        #endregion
-
-        #region Private Impl
-
-        // Bug #512117: Remove compatibility shims for 2nd gen. Quick Info APIs.
-        // This interface exists only to expose additional functionality required by the shims.
+		// Bug #512117: Remove compatibility shims for 2nd gen. Quick Info APIs.
+		// This interface exists only to expose additional functionality required by the shims.
 #pragma warning disable 618
-        private IEnumerable<Lazy<IAsyncQuickInfoSourceProvider, ILegacyQuickInfoMetadata>> OrderedSourceProviders
+		private IEnumerable<Lazy<IAsyncQuickInfoSourceProvider, IOrderableContentTypeMetadata>> OrderedSourceProviders
             => this.orderedSourceProviders ?? (this.orderedSourceProviders = Orderer.Order(this.unorderedSourceProviders));
 #pragma warning restore 618
 

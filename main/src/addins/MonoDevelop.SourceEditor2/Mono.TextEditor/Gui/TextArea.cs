@@ -53,7 +53,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	class TextArea : Container, ITextEditorDataProvider
+	partial class TextArea : Container, ITextEditorDataProvider
 	{
 
 		TextEditorData textEditorData;
@@ -1923,7 +1923,7 @@ namespace Mono.TextEditor
 				curX += margin.Width;
 			}
 		}
-		
+
 		void RenderMargins (Cairo.Context cr, Cairo.Context textViewCr, Cairo.Rectangle cairoRectangle)
 		{
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - this.textEditorData.HAdjustment.Value;

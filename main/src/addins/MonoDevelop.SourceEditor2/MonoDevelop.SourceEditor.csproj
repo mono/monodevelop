@@ -126,6 +126,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.Threading, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Threading.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Posix" />
@@ -172,6 +176,10 @@
     </None>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="Mono.TextEditor\Gui\MdTextViewLine.cs" />
+    <Compile Include="Mono.TextEditor\Gui\MdTextViewLineCollection.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TextArea.ITextView.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TextArea.ITextView.MouseHover.cs" />
     <Compile Include="MonoDevelop.SourceEditor\EditActions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ExtensibleTextEditor.cs" />
     <Compile Include="MonoDevelop.SourceEditor\LanguageItemWindow.cs" />
@@ -269,16 +277,7 @@
     <Compile Include="Mono.TextEditor.Theatrics\SingleActorStage.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\SmartScrolledWindow.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\Stage.cs" />
-    <Compile Include="VSEditor\ConnectionManager.cs" />
-    <Compile Include="VSEditor\ITagBasedSyntaxHighlightingFactory.cs" />
-    <Compile Include="VSEditor\SmartIndentationService.cs" />
-    <Compile Include="VSEditor\TagBasedSyntaxHighlighting.cs" />
-    <Compile Include="VSEditor\TextCaret.cs" />
-    <Compile Include="VSEditor\TextEditorFactoryService.cs" />
-    <Compile Include="VSEditor\TextSelection.cs" />
-    <Compile Include="VSEditor\TextView.cs" />
-    <Compile Include="VSEditor\TextViewRoleSet.cs" />
-    <Compile Include="VSEditor\VacuousTextDataModel.cs" />
+    <Compile Include="VSEditor\**\*.cs" />
     <None Include="packages.config" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\LineSeparatorMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.IndicatorDrawingCache.cs" />
@@ -536,13 +535,5 @@
   </ItemGroup>
   <Import Project="..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="MonoDevelop.SourceEditor\" />
-    <Folder Include="MonoDevelop.SourceEditor.QuickTasks\" />
-    <Folder Include="MonoDevelop.SourceEditor.Wrappers\" />
-    <Folder Include="MonoDevelop.SourceEditor\TextMarker\" />
-    <Folder Include="Mono.TextEditor\" />
-    <Folder Include="Mono.TextEditor.PopupWindow\" />
-    <Folder Include="Mono.TextEditor.Theatrics\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

@@ -14,6 +14,9 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
     [Export(typeof(IIntellisenseSessionStackMapService))]
     internal sealed class IntellisenseSessionStackMapService : IIntellisenseSessionStackMapService
     {
+        [Import]
+        internal IToolTipProviderFactory ToolTipProviderFactory { get; set; }
+
         [Import(AllowDefault = true)]
         internal IObscuringTipManager TipManager { get; set; }
 
@@ -32,7 +35,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             IIntellisenseSessionStack stack = null;
             if (!textView.Properties.TryGetProperty<IIntellisenseSessionStack>(typeof(IIntellisenseSessionStack), out stack))
             {
-                IWpfTextView wpfTextView = textView as IWpfTextView;
+                var wpfTextView = textView as IMdTextView;
                 if (wpfTextView != null)
                 {
                     stack = new IntellisenseSessionStack(wpfTextView, this.TipManager);

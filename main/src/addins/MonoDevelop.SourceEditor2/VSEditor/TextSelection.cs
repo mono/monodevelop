@@ -1,4 +1,4 @@
-﻿//
+//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -16,16 +16,16 @@ using MonoDevelop.Ide.Editor;
 namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
     internal class TextSelection : ITextSelection
-    {
-        private TextEditor _textEditor;
-        private ITextView _textView;
+	{
+		private Mono.TextEditor.TextArea _textEditor;
+		private ITextView _textView;
 
-        public TextSelection(TextEditor textEditor, ITextView textView)
-        {
-            _textEditor = textEditor;
-            _textView = textView;
+		public TextSelection(Mono.TextEditor.TextArea textArea)
+		{
+			_textEditor = textArea;
+			_textView = textArea;
 
-            _textEditor.SelectionChanged += OnSelectionChanged;
+			_textEditor.SelectionChanged += OnSelectionChanged;
         }
 
         void OnSelectionChanged(object s, EventArgs args)
@@ -51,7 +51,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         {
             get
             {
-                int offset = _textEditor.SelectionLeadOffset;
+                int offset = _textEditor.SelectionLead;
                 if (offset == -1)
                     offset = _textEditor.SelectionRange.Offset;  // Selection is empty
 
@@ -66,7 +66,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         {
             get
             {
-                int offset = _textEditor.SelectionAnchorOffset;
+                int offset = _textEditor.SelectionAnchor;
                 if (offset == -1)
                     offset = _textEditor.SelectionRange.Offset;  // Selection is empty
 
@@ -147,7 +147,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                 else
                 {
                     IList<SnapshotSpan> spans = new List<SnapshotSpan>();
-                    foreach (MonoDevelop.Ide.Editor.Selection curSelection in _textEditor.Selections)
+                    foreach (MonoDevelop.Ide.Editor.Selection curSelection in new MonoDevelop.Ide.Editor.Selection[] { _textEditor.MainSelection })
                     {
                         for (int curLineIndex = curSelection.MinLine; curLineIndex <= curSelection.MaxLine; curLineIndex++)
                         {

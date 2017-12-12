@@ -1,4 +1,4 @@
-﻿//
+//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -15,16 +15,17 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
+    using MonoDevelop.Components;
 
     internal class SpaceReservationManager : ISpaceReservationManager
     {
         public readonly string Name;
         public readonly int Rank;
-        private readonly WpfTextView _view;
+        private readonly Mono.TextEditor.TextArea _view;
         private bool _hasAggregateFocus;
         internal IList<ISpaceReservationAgent> _agents = new List<ISpaceReservationAgent>();
 
-        public SpaceReservationManager(string name, int rank, WpfTextView view)
+        public SpaceReservationManager(string name, int rank, Mono.TextEditor.TextArea view)
         {
             this.Name = name;
             this.Rank = rank;
@@ -33,7 +34,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         }
 
         #region ISpaceReservationManager Members
-        public ISpaceReservationAgent CreatePopupAgent(ITrackingSpan visualSpan, PopupStyles styles, UIElement content)
+        public ISpaceReservationAgent CreatePopupAgent(ITrackingSpan visualSpan, PopupStyles styles, Xwt.Widget content)
         {
             return new PopupAgent(_view, this, visualSpan, styles, content);
         }
@@ -196,7 +197,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                {
                    if (_agents.Count != 0)
                    {
-                       if (_view.VisualElement.IsVisible)
+					   if (_view.Visible)
                        {
                            for (int i = _agents.Count - 1; (i >= 0); --i)
                            {

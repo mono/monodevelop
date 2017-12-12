@@ -1,4 +1,4 @@
-﻿////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -145,9 +145,9 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         }
 
         internal IEnumerable<ISignatureHelpSource> GetSignatureHelpSources(IIntellisenseSession session)
-        {
-            return Helpers.GetSources(session, this.CreateSourcesForBuffer);
-        }
+		{
+			return Helpers.GetSources (session, this.CreateSourcesForBuffer);
+		}
 
         private IList<Lazy<ISignatureHelpSourceProvider, IOrderableContentTypeMetadata>> _orderedSignatureHelpSourceProviderExports;
         private IList<Lazy<ISignatureHelpSourceProvider, IOrderableContentTypeMetadata>> OrderedSignatureHelpSourceProviderExports

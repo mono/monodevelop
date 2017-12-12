@@ -1,4 +1,4 @@
-﻿namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
+namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 {
     using System.ComponentModel.Composition;
     using Microsoft.VisualStudio.Text.Adornments;
@@ -20,26 +20,24 @@
         [Import]
         internal ToolTipStyleFactory styleFactory;
 
-        public IToolTipPresenter Create(ITextView textView, ToolTipParameters parameters)
-        {
-            if (parameters.TrackMouse)
-            {
-                return new MouseTrackingWpfToolTipPresenter(
-                    this.viewElementFactoryService,
-                    this.obscuringTipManager,
-                    textView,
-                    parameters,
-                    this.styleFactory.Style);
-            }
-            else
-            {
-                return new SpanTrackingWpfToolTipPresenter(
-                    this.viewElementFactoryService,
-                    this.obscuringTipManager,
-                    textView,
-                    parameters,
-                    this.styleFactory.Style);
-            }
-        }
+		public IToolTipPresenter Create (ITextView textView, ToolTipParameters parameters)
+		{
+			if (parameters.TrackMouse) {
+				return new MouseTrackingWpfToolTipPresenter (
+					this.viewElementFactoryService,
+					this.obscuringTipManager,
+					textView,
+					parameters,
+					this.styleFactory.Style);
+			}
+			else {
+				return new SpanTrackingWpfToolTipPresenter (
+					this.viewElementFactoryService,
+					this.obscuringTipManager,
+					textView,
+					parameters,
+					this.styleFactory.Style);
+			}
+		}
     }
 }

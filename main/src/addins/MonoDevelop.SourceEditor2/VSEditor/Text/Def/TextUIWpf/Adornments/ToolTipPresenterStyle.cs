@@ -1,6 +1,6 @@
-﻿namespace Microsoft.VisualStudio.Text.Adornments
+namespace Microsoft.VisualStudio.Text.Adornments
 {
-    using System.Windows.Media;
+    using Xwt.Drawing;
     using Microsoft.VisualStudio.Text.Editor;
 
     ///<summary>
@@ -25,11 +25,11 @@
         /// <summary>
         /// Gets a <see cref="Brush"/> that will be used to paint the borders in the ToolTip presenter.
         /// </summary>
-        public virtual Brush BorderBrush { get; protected set; }
+        public virtual Color BorderBrush { get; protected set; }
 
         /// <summary>
         /// Gets a <see cref="Brush"/> that will be used to paint the background of the ToolTip presenter.
         /// </summary>
-        public virtual Brush BackgroundBrush { get; protected set; }
+        public virtual Color BackgroundBrush { get; protected set; }
     }
 }

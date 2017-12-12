@@ -1,4 +1,4 @@
-//
+﻿//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -8,12 +8,12 @@
 namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 {
     using System;
-    using System.ComponentModel.Composition;
+    using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Utilities;
+    using System.ComponentModel.Composition;
 
-#pragma warning disable 618 // IToolTipProviderFactory is deprecated.
     [Export(typeof(IToolTipProviderFactory))]
     internal sealed class ToolTipProviderFactory : IToolTipProviderFactory
     {
@@ -26,15 +26,15 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
         #region IToolTipProviderFactory Members
         public IToolTipProvider GetToolTipProvider(ITextView textView)
         {
-            IWpfTextView wpfTextView = textView as IWpfTextView;
+            var wpfTextView = textView as IMdTextView;
             if (wpfTextView == null)
-                throw new ArgumentException(Strings.InvalidTextView);
+                throw new ArgumentException("Invalid TextView");
 
             return CreateToolTipProviderInternal(wpfTextView);
         }
         #endregion
 
-        internal static ToolTipProvider CreateToolTipProviderInternal(IWpfTextView view)
+        internal static ToolTipProvider CreateToolTipProviderInternal(IMdTextView view)
         {
             ToolTipProvider toolTipAdornmentProvider = view.Properties.GetOrCreateSingletonProperty<ToolTipProvider>(delegate
                                                                                                                     {
@@ -44,5 +44,4 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
             return toolTipAdornmentProvider;
         }
     }
-#pragma warning restore 618
 }

@@ -1,4 +1,4 @@
-﻿namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
+namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 {
     using System;
     using System.ComponentModel.Composition;
@@ -8,8 +8,9 @@
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Utilities;
+	using UIElement = Xwt.Widget;
 
-    [Export(typeof(IViewElementFactory))]
+	[Export(typeof(IViewElementFactory))]
     [Name("default ImageElement to UIElement")]
     [TypeConversion(from: typeof(ImageElement), to: typeof(UIElement))]
     [Order]
@@ -23,17 +24,16 @@
                 throw new ArgumentException($"Invalid type conversion. Unsupported {nameof(model)} or {nameof(TView)} type");
             }
 
-            var imageElement = new CrispImage()
-            {
-                Moniker = element.ImageId.ToImageMoniker()
-            };
+			var imageElement = new Xwt.ImageView ();
 
-            // Add a slight margin so we don't contact any ClassifiedTextElements directly following us.
-            imageElement.Margin = new Thickness(0, 0, 4, 4);
-            imageElement.HorizontalAlignment = HorizontalAlignment.Left;
-            imageElement.VerticalAlignment = VerticalAlignment.Top;
+			imageElement.Image = MonoDevelop.Ide.ImageService.GetIcon ("md-monodevelop");
 
-            return imageElement as TView;
+			// Add a slight margin so we don't contact any ClassifiedTextElements directly following us.
+			imageElement.Margin = new Xwt.WidgetSpacing (4, 4, 4, 4);
+			imageElement.HorizontalPlacement = Xwt.WidgetPlacement.Start;
+			imageElement.HorizontalPlacement = Xwt.WidgetPlacement.Start;
+
+			return imageElement as TView;
         }
     }
 }

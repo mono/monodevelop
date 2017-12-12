@@ -1,9 +1,10 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -22,18 +23,18 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
     internal class IntellisenseManagerConnectionListener : ITextViewConnectionListener
     {
         [ImportMany]
-        internal List<Lazy<IIntellisenseControllerProvider, IContentTypeMetadata>> IntellisenseControllerFactories { get; set; }
+        internal List<Lazy<IIntellisenseControllerProvider, IContentTypeMetadata>> IntellisenseControllerFactories 
+        { get; set; }
 
         [Import]
-        internal IGuardedOperations GuardedOperations { get; set; }
+        internal GuardedOperations GuardedOperations
+        { get; set; }
 
-        public void SubjectBuffersConnected(
-            ITextView textView,
-            ConnectionReason reason,
-            IReadOnlyCollection<ITextBuffer> subjectBuffers)
+        public void SubjectBuffersConnected(ITextView textView, 
+                                            ConnectionReason reason, 
+                                            IReadOnlyCollection<ITextBuffer> subjectBuffers)
         {
-            IntellisenseManager manager = textView.Properties.GetOrCreateSingletonProperty(
-                delegate { return new IntellisenseManager(this, textView); });
+            IntellisenseManager manager = textView.Properties.GetOrCreateSingletonProperty<IntellisenseManager>(delegate { return new IntellisenseManager(this, textView); }); 
 
             // Create the appropriate Intellisense controllers for the content types in the buffer graph. It's important that we do
             // this after creating the brokers, as the controllers will most likely start using the brokers immediately.
@@ -48,7 +49,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
                 {
                     foreach (ITextBuffer subjectBuffer in subjectBuffers)
                     {
-                        if (subjectBuffer.ContentType.IsOfType(factoryContentType) &&
+                        if (subjectBuffer.ContentType.IsOfType(factoryContentType) && 
                             !matchingSubjectBuffers.Contains(subjectBuffer))
                         {
                             matchingSubjectBuffers.Add(subjectBuffer);
@@ -65,7 +66,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
                     if (manager.Controllers[f] == null)
                     {
                         manager.Controllers[f] = this.GuardedOperations.InstantiateExtension
-                                                        (factory, factory,
+                                                        (factory, factory, 
                                                          provider => provider.TryCreateIntellisenseController(textView, matchingSubjectBuffers));
                     }
                     else
@@ -79,10 +80,9 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             }
         }
 
-        public void SubjectBuffersDisconnected(
-            ITextView textView,
-            ConnectionReason reason,
-            IReadOnlyCollection<ITextBuffer> subjectBuffers)
+        public void SubjectBuffersDisconnected(ITextView textView, 
+                                               ConnectionReason reason, 
+                                               IReadOnlyCollection<ITextBuffer> subjectBuffers)
         {
             // Notify controllers that subject buffer is no longer interesting. We let the controller figure out if the
             // buffer was interesting in the first place.
@@ -103,8 +103,8 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 
     internal class IntellisenseManager
     {
-        private readonly IntellisenseManagerConnectionListener _componentContext;
-        private readonly ITextView _associatedTextView;
+        private IntellisenseManagerConnectionListener _componentContext;
+        private ITextView _associatedTextView;
         public IIntellisenseController[] Controllers { get; private set; }
 
         internal IntellisenseManager(IntellisenseManagerConnectionListener componentContext, ITextView associatedTextView)

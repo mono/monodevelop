@@ -1,17 +1,18 @@
-﻿namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
+namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Windows;
-    using System.Windows.Controls.Primitives;
-    using System.Windows.Input;
-    using System.Windows.Media;
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Formatting;
+	using UIElement = Xwt.Widget;
+	using MouseEventArgs = Xwt.MouseMovedEventArgs;
+	using Xwt;
+	using Rect = Xwt.Rectangle;
+	using System.Windows.Input;
 
-    internal sealed class MouseTrackingWpfToolTipPresenter : BaseWpfToolTipPresenter
+	internal sealed class MouseTrackingWpfToolTipPresenter : BaseWpfToolTipPresenter
     {
         // The tooltip can cause flickering issues if shown on the pixel row immediately below text. This
         // offset is used to move all tooltips down in order to eliminate the flicker.
@@ -32,8 +33,8 @@
         {
             if (this.mouseContainer != null)
             {
-                this.mouseContainer.MouseLeave -= this.OnMouseLeaveContainer;
-                this.mouseContainer.MouseMove -= this.OnMouseMoveContainer;
+                this.mouseContainer.MouseExited -= this.OnMouseLeaveContainer;
+                this.mouseContainer.MouseMoved -= this.OnMouseMoveContainer;
                 this.mouseContainer = null;
             }
 
@@ -53,7 +54,7 @@
                 return;
             }
 
-            if (!this.popup.IsVisible)
+            if (!this.popup.Visible)
             {
                 this.SubscribeToContainerUnderMouse();
 
@@ -64,9 +65,7 @@
                     return;
                 }
 
-                this.popup.PlacementRectangle = presentationSpanRect.Value;
-                this.popup.Placement = PlacementMode.Custom;
-                this.popup.CustomPopupPlacementCallback = this.PlacePopup;
+				this.popup.Location = Xwt.Desktop.MouseLocation;
             }
 
             base.StartOrUpdate(applicableToSpan, content);
@@ -74,27 +73,26 @@
 
         private void SubscribeToContainerUnderMouse()
         {
-            if (!this.isDismissed
-                && (this.mouseContainer == null)
-                && (Mouse.DirectlyOver is UIElement mouseContainer))
-            {
-                mouseContainer.MouseLeave += this.OnMouseLeaveContainer;
-                mouseContainer.MouseMove += this.OnMouseMoveContainer;
-                this.mouseContainer = mouseContainer;
-            }
+			if (!this.isDismissed
+				&& (this.mouseContainer == null)
+				&& (((IMdTextView)textView).VisualElement.IsMouseOver () || (popup.IsMouseOver () && popup.Content != null))) {
+				mouseContainer = popup.IsMouseOver () ? popup.Content : Xwt.Toolkit.CurrentEngine.WrapWidget (((IMdTextView)textView).VisualElement);
+				mouseContainer.MouseExited += this.OnMouseLeaveContainer;
+				mouseContainer.MouseMoved += this.OnMouseMoveContainer;
+			}
         }
 
         private void UnsubscribeFromMouseContainer()
         {
             if (this.mouseContainer != null)
             {
-                this.mouseContainer.MouseLeave -= this.OnMouseLeaveContainer;
-                this.mouseContainer.MouseMove -= this.OnMouseMoveContainer;
+                this.mouseContainer.MouseExited -= this.OnMouseLeaveContainer;
+                this.mouseContainer.MouseMoved -= this.OnMouseMoveContainer;
                 this.mouseContainer = null;
             }
         }
 
-        private void OnMouseLeaveContainer(object sender, MouseEventArgs e)
+        private void OnMouseLeaveContainer(object sender, EventArgs e)
         {
             Debug.Assert(sender == this.mouseContainer);
 
@@ -107,18 +105,18 @@
             }
             else
             {
-                DismissIfMouseOutsideOfVisualSpan(e);
+                DismissIfMouseOutsideOfVisualSpan();
             }
         }
 
-        private void OnMouseMoveContainer(object sender, MouseEventArgs e)
-            => this.DismissIfMouseOutsideOfVisualSpan(e);
+        private void OnMouseMoveContainer(object sender, EventArgs e)
+            => this.DismissIfMouseOutsideOfVisualSpan();
 
-        private bool DismissIfMouseOutsideOfVisualSpan(MouseEventArgs e = null)
+        private bool DismissIfMouseOutsideOfVisualSpan()
         {
             var wpfTextView = this.WpfTextView;
 
-            if (wpfTextView == null || this.ShouldClearToolTipOnMouseMove(e))
+            if (wpfTextView == null || this.ShouldClearToolTipOnMouseMove())
             {
                 this.Dismiss();
                 return true;
@@ -127,7 +125,7 @@
             return false;
         }
 
-        private Point GetMousePosRelativeToView(MouseEventArgs e = null)
+        private Point GetMousePosRelativeToView()
         {
             var view = WpfTextView;
             if (view == null)
@@ -136,14 +134,14 @@
             }
 
             Point mousePoint;
-            if (e != null)
-            {
-                mousePoint = e.GetPosition(view.VisualElement);
-            }
-            else
-            {
+            //if (e != null)
+            //{
+            //    mousePoint = e.GetPosition(view.VisualElement);
+            //}
+            //else
+            //{
                 mousePoint = Mouse.GetPosition(view.VisualElement);
-            }
+            //}
 
             mousePoint.X += view.ViewportLeft;
             mousePoint.Y += view.ViewportTop;
@@ -151,48 +149,48 @@
             return mousePoint;
         }
 
-        private CustomPopupPlacement[] PlacePopup(Size popupSize, Size targetSize, Point offset)
-        {
-            Debug.Assert(!this.isDismissed);
+        //private CustomPopupPlacement[] PlacePopup(Size popupSize, Size targetSize, Point offset)
+        //{
+        //    Debug.Assert(!this.isDismissed);
 
-            if (WpfTextView.VisualElement == null || PresentationSource.FromVisual(WpfTextView.VisualElement) == null)
-            {
-                return new CustomPopupPlacement[] { };
-            }
+        //    if (WpfTextView.VisualElement == null || PresentationSource.FromVisual(WpfTextView.VisualElement) == null)
+        //    {
+        //        return new CustomPopupPlacement[] { };
+        //    }
 
-            double zoom = this.WpfTextView.ZoomLevel / 100.0;
+        //    double zoom = this.WpfTextView.ZoomLevel / 100.0;
 
-            // We need to provide a placement point relative to the top left corner of the popup placement rectangle.
-            // X would be the distance from mouse point to the left side of the placement rectangle so that the popup
-            // is positioned horizontally at mouse position.
-            Point mouseRelativeToView = GetMousePosRelativeToView();
-            Point popupTargetOrigin = new Point(mouseRelativeToView.X - this.WpfTextView.ViewportLeft - this.WpfTextView.VisualElement.PointFromScreen(this.popup.PlacementRectangle.BottomLeft).X, 0);
-            Matrix transformToDevice = PresentationSource.FromVisual(WpfTextView.VisualElement).CompositionTarget.TransformToDevice;
-            popupTargetOrigin = transformToDevice.Transform(popupTargetOrigin);
-            popupTargetOrigin.X *= zoom;
+        //    // We need to provide a placement point relative to the top left corner of the popup placement rectangle.
+        //    // X would be the distance from mouse point to the left side of the placement rectangle so that the popup
+        //    // is positioned horizontally at mouse position.
+        //    Point mouseRelativeToView = GetMousePosRelativeToView();
+        //    Point popupTargetOrigin = new Point(mouseRelativeToView.X - this.WpfTextView.ViewportLeft - this.WpfTextView.VisualElement.PointFromScreen(this.popup.PlacementRectangle.BottomLeft).X, 0);
+        //    Matrix transformToDevice = PresentationSource.FromVisual(WpfTextView.VisualElement).CompositionTarget.TransformToDevice;
+        //    popupTargetOrigin = transformToDevice.Transform(popupTargetOrigin);
+        //    popupTargetOrigin.X *= zoom;
 
-            // Y would be the height of the placement rectangle - so the popup is right below it
-            popupTargetOrigin.Y = targetSize.Height;
+        //    // Y would be the height of the placement rectangle - so the popup is right below it
+        //    popupTargetOrigin.Y = targetSize.Height;
 
-            return new CustomPopupPlacement[] { new CustomPopupPlacement(popupTargetOrigin, PopupPrimaryAxis.Horizontal) };
-        }
+        //    return new CustomPopupPlacement[] { new CustomPopupPlacement(popupTargetOrigin, PopupPrimaryAxis.Horizontal) };
+        //}
 
-        private bool ShouldClearToolTipOnMouseMove(MouseEventArgs e)
+        private bool ShouldClearToolTipOnMouseMove()
         {
             if (this.popup != null)
             {
-                if (this.popup.IsMouseOver || this.parameters.KeepOpen)
+                if (this.popup.IsMouseOver() || this.parameters.KeepOpen)
                 {
                     return false;
                 }
-                else if (this.WpfTextView != null && !this.WpfTextView.VisualElement.IsMouseOver)
+                else if (this.WpfTextView != null && !this.WpfTextView.VisualElement.IsMouseOver())
                 {
                     // The mouse is not over any interactive content and not over the text view either
                     return true;
                 }
             }
 
-            return ShouldClearToolTipOnMouseMove(GetMousePosRelativeToView(e));
+            return ShouldClearToolTipOnMouseMove(GetMousePosRelativeToView());
         }
 
         private bool ShouldClearToolTipOnMouseMove(Point pointRelativeToView)

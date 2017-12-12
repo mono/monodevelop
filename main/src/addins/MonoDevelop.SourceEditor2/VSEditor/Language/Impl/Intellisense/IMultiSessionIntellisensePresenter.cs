@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 
 namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
@@ -15,6 +15,6 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         void AttachToSession(TSession session);
         void DetachFromSession();
 
-        Rect? AllowableScreenSize { get; }
+		Xwt.Rectangle? AllowableScreenSize { get; }
     }
 }

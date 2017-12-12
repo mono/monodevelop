@@ -1,4 +1,4 @@
-﻿////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -6,6 +6,7 @@ using System;
 using System.Windows;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Adornments;
+using MonoDevelop.Components;
 
 namespace Microsoft.VisualStudio.Language.Intellisense
 {
@@ -15,11 +16,11 @@ namespace Microsoft.VisualStudio.Language.Intellisense
     /// </summary>
     public interface IPopupIntellisensePresenter : IIntellisensePresenter
     {
-        /// <summary>
-        /// Gets the WPF <see cref="UIElement"/> that the presenter wants to be displayed inside a
-        /// <see cref="Microsoft.VisualStudio.Text.Editor.ITextView"/> popup.
-        /// </summary>
-        UIElement SurfaceElement { get; }
+		/// <summary>
+		/// Gets the WPF <see cref="UIElement"/> that the presenter wants to be displayed inside a
+		/// <see cref="Microsoft.VisualStudio.Text.Editor.ITextView"/> popup.
+		/// </summary>
+		Xwt.Widget SurfaceElement { get; }
 
         /// <summary>
         /// Occurs when the WPF SurfaceElement is changed.

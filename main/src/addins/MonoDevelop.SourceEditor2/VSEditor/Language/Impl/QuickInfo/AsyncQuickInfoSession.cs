@@ -1,4 +1,4 @@
-﻿namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
+namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 {
     using System;
     using System.Collections.Generic;
@@ -20,11 +20,7 @@
 
     internal sealed class AsyncQuickInfoSession : IAsyncQuickInfoSession
     {
-#pragma warning disable 618
-        // Bug #512117: Remove compatibility shims for 2nd gen. Quick Info APIs.
-        // ILegacyQuickInfoMetadata should be removed and switched out for IOrderableContentTypeMetadata.
-        private readonly IEnumerable<Lazy<IAsyncQuickInfoSourceProvider, ILegacyQuickInfoMetadata>> orderedSourceProviders;
-#pragma warning restore 618
+        private readonly IEnumerable<Lazy<IAsyncQuickInfoSourceProvider, IOrderableContentTypeMetadata>> orderedSourceProviders;
 
         private readonly IGuardedOperations guardedOperations;
         private readonly IToolTipService toolTipService;
@@ -65,13 +61,10 @@
         internal IToolTipPresenter uiThreadOnlyPresenter;
 
         #endregion
-
-#pragma warning disable 618
-        // Bug #512117: Remove compatibility shims for 2nd gen. Quick Info APIs.
-        // ILegacyQuickInfoMetadata should be removed and switched out for IOrderableContentTypeMetadata.
-        public AsyncQuickInfoSession(
-            IEnumerable<Lazy<IAsyncQuickInfoSourceProvider, ILegacyQuickInfoMetadata>> orderedSourceProviders,
-            IGuardedOperations guardedOperations,
+		
+        public AsyncQuickInfoSession (
+			IEnumerable<Lazy<IAsyncQuickInfoSourceProvider, IOrderableContentTypeMetadata>> orderedSourceProviders,
+			IGuardedOperations guardedOperations,
             JoinableTaskContext joinableTaskContext,
             IToolTipService toolTipService,
             ITextView textView,
@@ -79,7 +72,6 @@
             QuickInfoSessionOptions options,
             PropertyCollection propertyCollection)
         {
-#pragma warning restore 618
             this.orderedSourceProviders = orderedSourceProviders ?? throw new ArgumentNullException(nameof(orderedSourceProviders));
             this.guardedOperations = guardedOperations ?? throw new ArgumentNullException(nameof(guardedOperations));
             this.joinableTaskContext = joinableTaskContext ?? throw new ArgumentNullException(nameof(joinableTaskContext));
@@ -400,9 +392,6 @@
 
             try
             {
-                // Bug #512117: Remove compatibility shims for 2nd gen. Quick Info APIs.
-                if (!await this.TryComputeContentFromLegacySourceAsync(source, items, applicableToSpans))
-                {
                     var result = await source.GetQuickInfoItemAsync(this, cancellationToken).ConfigureAwait(false);
                     if (result != null)
                     {
@@ -412,39 +401,12 @@
                             applicableToSpans.Add(result.ApplicableToSpan);
                         }
                     }
-                }
             }
             catch (Exception ex) when (ex.GetType() != typeof(OperationCanceledException))
             {
                 failures.Add(ex);
             }
         }
-
-#pragma warning disable 618
-        // Bug #512117: Remove compatibility shims for 2nd gen. Quick Info APIs.
-        private async Task<bool> TryComputeContentFromLegacySourceAsync(
-            IAsyncQuickInfoSource source,
-            IList<object> items,
-            IList<ITrackingSpan> applicableToSpans)
-        {
-            if (source is ILegacyQuickInfoSource legacySource)
-            {
-                // Legacy sources expect to be on the UI thread.
-                await this.joinableTaskContext.Factory.SwitchToMainThreadAsync();
-
-                legacySource.AugmentQuickInfoSession(this, items, out var applicableToSpan);
-
-                if (applicableToSpan != null)
-                {
-                    applicableToSpans.Add(applicableToSpan);
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-#pragma warning restore 618
 
         private void ComputeApplicableToSpan(IEnumerable<ITrackingSpan> applicableToSpans)
         {

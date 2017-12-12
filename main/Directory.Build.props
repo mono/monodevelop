@@ -6,7 +6,7 @@
     <ReferencesRoslyn>$(RootDirectory)\msbuild\ReferencesRoslyn.props</ReferencesRoslyn>
     <ReferencesVSEditor>$(RootDirectory)\msbuild\ReferencesVSEditor.props</ReferencesVSEditor>
     <NuGetVersionRoslyn>2.6.0-vs-for-mac-62317-08</NuGetVersionRoslyn>
-    <NuGetVersionVSEditor>15.6.161-preview</NuGetVersionVSEditor>
+    <NuGetVersionVSEditor>15.6.241-preview</NuGetVersionVSEditor>
   </PropertyGroup>
 
 </Project>
