@@ -53,10 +53,12 @@ namespace Mono.TextEditor
 			editor.Document.MarkerAdded -= OnMarkerAdded;
 			editor.Document.MarkerRemoved -= OnMarkerRemoved;
 
-			foreach (var proxy in markerToAccessible.Values) {
-				proxy.Dispose ();
+			if (markerToAccessible != null) {
+				foreach (var proxy in markerToAccessible.Values) {
+					proxy.Dispose ();
+				}
+				markerToAccessible.Clear ();
 			}
-			markerToAccessible.Clear ();
 
 			base.Dispose ();
 		}
