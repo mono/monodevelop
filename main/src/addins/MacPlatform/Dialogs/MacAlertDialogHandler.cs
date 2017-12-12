@@ -190,7 +190,7 @@ namespace MonoDevelop.MacIntegration
 				if (data.ResultButton == null || data.Message.CancellationToken.IsCancellationRequested) {
 					data.SetResultToCancelled ();
 				}
-
+				
 				if (optionButtons != null) {
 					foreach (var button in optionButtons) {
 						var option = data.Options[(int)button.Tag];
