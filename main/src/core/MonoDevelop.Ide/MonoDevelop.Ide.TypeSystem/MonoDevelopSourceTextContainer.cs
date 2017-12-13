@@ -127,12 +127,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public ITextDocument Document {
-			get {
-				return editor;
-			}
-		}
-
 		public override event EventHandler<Microsoft.CodeAnalysis.Text.TextChangeEventArgs> TextChanged;
 		#endregion
 	}
