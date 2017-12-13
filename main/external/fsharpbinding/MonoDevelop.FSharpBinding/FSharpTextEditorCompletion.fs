@@ -21,7 +21,9 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.TypeSystem
 open ExtCore.Control
 
-type FSharpMemberCompletionData(name, icon, overloads:FSharpSymbolUse list) =
+open Microsoft.FSharp.Compiler.Ast
+
+type FSharpMemberCompletionData(name, namespaceToOpen: string option, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
     inherit CompletionData(CompletionText = PrettyNaming.QuoteIdentifierIfNeeded name,
                            DisplayText = name,
                            DisplayFlags = DisplayFlags.DescriptionHasMarkup,
@@ -35,28 +37,30 @@ type FSharpMemberCompletionData(name, icon, overloads:FSharpSymbolUse list) =
             with _ -> None
         | _ -> None
 
+    member x.NamespaceToOpen = namespaceToOpen
     /// Check if the datatip has multiple overloads
     override x.HasOverloads = not (List.isEmpty overloads)
     override x.GetRightSideDescription _selected =
-        //let formatType (t:FSharpType) =
-        //    try "<small>" + syntaxHighlight (t.Format symbol.DisplayContext) + "</small>"
-        //    with ex -> ""
-        //returnType symbol
-        //|> Option.map formatType
-        //|> Option.fill ""
-        ""
+        match namespaceToOpen with
+        | Some ns -> sprintf "<small>(from %s)</small>" ns
+        | _ ->
+            let formatType (t:FSharpType) =
+                    try "<small>" + syntaxHighlight (t.Format symbol.DisplayContext) + "</small>"
+                    with ex -> ""
+            returnType symbol
+            |> Option.map formatType
+            |> Option.defaultValue ""
+
     /// Split apart the elements into separate overloads
     override x.OverloadedData =
-        //overloads
-        //|> List.map (fun symbol -> FSharpMemberCompletionData(name, icon, symbol, []) :> CompletionData)
-        []
+        overloads
+        |> List.map (fun symbol -> FSharpMemberCompletionData(name, None, icon, symbol, []) :> CompletionData)
         |> ResizeArray.ofList :> _
 
     override x.CreateTooltipInformation (_smartWrap, cancel) =
-        //MonoDevelop.FSharp.SymbolTooltips.getTooltipInformation symbol
-        //|> StartAsyncAsTask cancel
+        MonoDevelop.FSharp.SymbolTooltips.getTooltipInformation symbol
+        |> StartAsyncAsTask cancel
 
-        Task.FromResult( TooltipInformation())
     /// https://github.com/mono/monodevelop/issues/3798
     ///
     /// Determined that it is too difficult to detect all the occurrences of
@@ -70,6 +74,7 @@ type FSharpMemberCompletionData(name, icon, overloads:FSharpSymbolUse list) =
 
         //Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
         //Task.FromResult( TooltipInformation())
+
 
 
     type SimpleCategory(text) =
@@ -331,7 +336,7 @@ module Completion =
             with exn -> None
         category
 
-    let getCompletionData (symbols:FSharpSymbolUse list list) isInsideAttribute =
+    let getCompletionData (symbols:FSharpSymbolUse list list) (opens:Set<string>) isInsideAttribute =
         let categories = Dictionary<string, Category>()
         let getOrAddCategory symbol id =
             match categories.TryGetValue id with
@@ -353,19 +358,39 @@ module Completion =
                                     name.Remove(name.Length - 9)
                                 else
                                     name
-                            Some (FSharpMemberCompletionData(name, symbolToIcon head, head, tail) :> CompletionData)
+//<<<<<<< HEAD
+//                            Some (FSharpMemberCompletionData(name, symbolToIcon head, head, tail) :> CompletionData)
+//                        | _ -> None
+//                    else
+//                        Some (FSharpMemberCompletionData(head.Symbol.DisplayName, symbolToIcon head, head, tail) :> CompletionData)
+
+//                match tryGetCategory head, completion with
+//                | Some (id, ent), Some comp ->
+//=======
+                            Some (FSharpMemberCompletionData(name, None, symbolToIcon head, head, tail) :> CompletionData)
                         | _ -> None
                     else
-                        Some (FSharpMemberCompletionData(head.Symbol.DisplayName, symbolToIcon head, head, tail) :> CompletionData)
+                        let displayText =
+                            match head with
+                            | SymbolUse.Entity c ->
+                                let ns = c.Namespace |> Option.getOrElse (fun () -> c.AccessPath)
+                                match opens.Contains ns with
+                                | true -> None
+                                | false -> Some ns
+                            | _ -> None
+                        
+                        Some (FSharpMemberCompletionData(head.Symbol.DisplayName, displayText, symbolToIcon head, head, tail) :> CompletionData)
 
                 match tryGetCategory head, completion with
-                | Some (id, ent), Some comp ->
+                | Some (id, ent), Some comp -> 
+//>>>>>>> Update completion to use latest FCS api
                     let category = getOrAddCategory ent id
                     comp.CompletionCategory <- category
                 | _, _ -> ()
 
                 completion
             | _ -> None
+//<<<<<<< HEAD
 
         symbols |> List.choose symbolToCompletionData
 
@@ -404,8 +429,10 @@ module Completion =
 
         //        completion
         //    | _ -> None
+//=======
+//>>>>>>> Update completion to use latest FCS api
         
-        //symbols |> List.choose symbolToCompletionData
+        symbols |> List.choose symbolToCompletionData
 
     let compilerIdentifiers =
         let icon = Stock.Literal
@@ -520,6 +547,7 @@ module Completion =
                                 let displayText = lineToCaret.[token.LeftColumn..token.RightColumn]
                                 CompletionData(displayText, IconId "md-fs-field", displayText, displayText)
 
+                            // Add ident completions from the current line
                             // as the semantic parse might not be up to date
                             let lineCompletions =
                                 tokens
@@ -535,25 +563,23 @@ module Completion =
                 | None ->
                     addIdentCompletions()
                 | Some tyRes ->
+                    let opens =
+                        openStatements.getOpenStatements tyRes.ParseTree
+                        |> List.map fst
+                        |> Set.ofList
+
                     // Get declarations and generate list for MonoDevelop
-                    //let! symbols = tyRes.GetDeclarationSymbols(line, column, lineToCaret)
-                    let symbols = tyRes.GetDeclarations(line, column, lineToCaret)
+                    let! symbols = tyRes.GetDeclarationSymbols(line, column, lineToCaret)
                     match symbols with
-                    | Some (fsharpDeclarationListInfo, residue) ->
+                    | Some (symbols, residue) ->
                         let isInAttribute = 
                             match context with
                             | Attribute -> true
                             | _ -> false
 
-                        
-                        let data =
-                            fsharpDeclarationListInfo.Items
-                            |> Array.map(fun s -> FSharpMemberCompletionData(s.Name, Stock.Field , []))
-                            //|> Seq.ofArray
-                            |> Seq.cast<CompletionData>
-                        //let data = getCompletionData symbols isInAttribute
-                        //result.AddRange (filterResults data residue)
-                        result.AddRange data
+                        let data = getCompletionData symbols opens isInAttribute
+                        result.AddRange (filterResults data residue)
+
                         if completionChar <> '.' && result.Count > 0 then
                             LoggingService.logDebug "Completion: residue %s" residue
                             result.DefaultCompletionString <- residue
@@ -654,8 +680,7 @@ module Completion =
             results.IsSorted <- true
             results.AutoCompleteEmptyMatch <- false
             results.AutoCompleteUniqueMatch <- ctrlSpace
-
-            return results :> ICompletionDataList
+            return results :> ICompletionDataList 
         }
 
 type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
@@ -846,17 +871,21 @@ type FSharpTextEditorCompletion() =
 
     let mutable suppressParameterCompletion = false
 
+    let mutable disposables: IDisposable list = []
+
     let isValidParamCompletionDecriptor (d:KeyDescriptor) =
         d.KeyChar = '(' || d.KeyChar = '<' || d.KeyChar = ',' || (d.KeyChar = ' ' && d.ModifierKeys = ModifierKeys.Control)
 
     let validCompletionChar c =
         c = '(' || c = ',' || c = '<'
 
-
     override x.CompletionLanguage = "F#"
+
     override x.Initialize() =
-        do x.Editor.IndentationTracker <- FSharpIndentationTracker(x.Editor)
+        x.Editor.IndentationTracker <- FSharpIndentationTracker(x.Editor)
         base.Initialize()
+
+    override x.Dispose() = disposables |> List.iter(fun d -> d.Dispose())
 
     /// Provide parameter and method overload information when you type '(', '<' or ','
     override x.HandleParameterCompletionAsync (context, completionChar, token) =
@@ -871,11 +900,31 @@ type FSharpTextEditorCompletion() =
     override x.KeyPress (descriptor:KeyDescriptor) =
         suppressParameterCompletion <- not (isValidParamCompletionDecriptor descriptor)
         base.KeyPress (descriptor)
-
+  
+    // Run completion automatically when the user hits '.'
     override x.HandleCodeCompletionAsync(context, triggerInfo, token) =
         let ctrlSpace = triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CompletionCommand
         if IdeApp.Preferences.EnableAutoCodeCompletion.Value || ctrlSpace then
-            Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, ctrlSpace)
+            let computation =
+                async {
+                    match disposables with
+                    | [] ->
+                        let mutable selectedItem = None
+                        let wnd = CompletionWindowManager.Wnd
+                        disposables <-
+                            [ wnd.SelectionChanged.Subscribe(fun _ -> selectedItem <- wnd.SelectedItem |> Option.tryCast<FSharpMemberCompletionData>)
+                              wnd.WordCompleted.Subscribe(fun _ ->
+                                selectedItem
+                                |> Option.bind(fun c -> c.NamespaceToOpen)
+                                |> Option.iter(fun ns ->
+                                    x.DocumentContext.TryGetAst()
+                                    |> Option.bind(fun a -> a.ParseTree)
+                                    |> Option.iter(fun tree -> openStatements.addOpenStatement x.Editor tree ns)))]
+                    | _ -> ()
+
+                    return! Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, false)
+                }
+            computation
             |> StartAsyncAsTask token
         else
             Task.FromResult null

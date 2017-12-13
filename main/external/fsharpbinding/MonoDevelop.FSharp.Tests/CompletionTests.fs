@@ -204,6 +204,21 @@ type ``Completion Tests``() =
         results |> should be Empty
 
     [<Test>]
+    member x.``Can complete auto import item``() =
+        let results = getCompletions "P$" Parse
+        results |> should contain "Path (from System.IO)"
+
+    [<Test>]
+    member x.``Contains two Path items``() =
+        let results = getCompletions 
+                        """
+                        let Path = 1
+                        P$
+                        """ Parse
+        results |> should contain "Path"
+        results |> should contain "Path (from System.IO)"
+
+    [<Test>]
     member x.``Completes attribute``() =
         let input = 
             """

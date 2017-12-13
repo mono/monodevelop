@@ -159,8 +159,7 @@ module Completion =
             else
                 let partialName = QuickParse.GetPartialLongNameEx(input, column-1)
 
-                let! symbols = checkResults.GetDeclarationListSymbols(Some parseResults, 1, input, partialName)
-
+                let! symbols = checkResults.GetDeclarationListSymbols(Some parseResults, 1, input, partialName, fun() -> [])
                 let results = symbols
                               |> List.choose symbolToCompletionData
 
