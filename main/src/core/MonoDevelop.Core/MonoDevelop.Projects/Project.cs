@@ -1287,10 +1287,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		internal bool IsFirstBuild {
 			get {
-				if (UserProperties.HasValue ("FirstBuild")) {
-					return UserProperties.GetValue<bool> ("FirstBuild");
-				}
-				return false;
+				return UserProperties.GetValue ("FirstBuild", false);
 			}
 			set {
 				if (value) {
