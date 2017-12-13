@@ -1223,6 +1223,9 @@ namespace MonoDevelop.Projects
 						if (t2 != null) {
 							AddRunMSBuildTargetTimerMetadata (metadata, result, target, configuration);
 							t2.End ();
+							if (IsFirstBuild && target == "Build") {
+								await Runtime.RunInMainThread (() => IsFirstBuild = false);
+							}
 						}
 					}
 				});
@@ -1278,6 +1281,26 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
+		/// <summary>
+		/// Gets or sets the FirstBuild user property. This is true if this is a new
+		/// project and has not yet been built.
+		/// </summary>
+		internal bool IsFirstBuild {
+			get {
+				if (UserProperties.HasValue ("FirstBuild")) {
+					return UserProperties.GetValue<bool> ("FirstBuild");
+				}
+				return false;
+			}
+			set {
+				if (value) {
+					UserProperties.SetValue ("FirstBuild", value);
+				} else {
+					UserProperties.RemoveValue ("FirstBuild");
+				}
+			}
+		}
+
 		void AddRunMSBuildTargetTimerMetadata (
 			IDictionary<string, string> metadata,
 			MSBuildResult result,
@@ -1291,6 +1314,7 @@ namespace MonoDevelop.Projects
 			}
 			metadata ["BuildTypeString"] = target;
 
+			metadata ["FirstBuild"] = IsFirstBuild.ToString ();
 			metadata ["ProjectID"] = ItemId;
 			metadata ["ProjectType"] = TypeGuid;
 			metadata ["ProjectFlavor"] = FlavorGuids.FirstOrDefault () ?? TypeGuid;
