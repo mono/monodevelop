@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     /// Provides a VisualStudio Service that aids in creation of Editor Views
     /// </summary>
     [Export(typeof(ITextEditorFactoryService))]
-    internal sealed class TextEditorFactoryService : ITextEditorFactoryService
+    internal sealed class TextEditorFactoryService : ITextEditorFactoryService, IPartImportsSatisfiedNotification
     {
         [Import]
         internal GuardedOperations GuardedOperations { get; set; }
@@ -131,7 +131,8 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                              this.GuardedOperations,
                              this) ?? new VacuousTextViewModel(dataModel);
 
-            TextView view = new TextView(textEditor, viewModel, roles ?? this.DefaultRoles, parentOptions ?? this.EditorOptionsFactoryService.GlobalOptions, this);
+            var view = ((MonoDevelop.SourceEditor.SourceEditorView)textEditor.Implementation).TextEditor.TextArea;
+            view.Initialize(viewModel, roles, parentOptions ?? this.EditorOptionsFactoryService.GlobalOptions, this);
             view.Properties.AddProperty(typeof(MonoDevelop.Ide.Editor.TextEditor), textEditor);
 
             this.TextViewCreated?.Invoke(this, new TextViewCreatedEventArgs(view));
@@ -171,6 +172,19 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         private static ITextViewRoleSet RolesFromParameters (params string[] roles)
         {
             return new TextViewRoleSet(roles);
+        }
+
+        [ImportMany]
+        private List<Lazy<SpaceReservationManagerDefinition, IOrderable>> _spaceReservationManagerDefinitions = null;
+        internal Dictionary<string, int> OrderedSpaceReservationManagerDefinitions = new Dictionary<string, int>();
+
+        public void OnImportsSatisfied()
+        {
+            IList<Lazy<SpaceReservationManagerDefinition, IOrderable>> orderedManagers = Orderer.Order(_spaceReservationManagerDefinitions);
+            for (int i = 0; (i < orderedManagers.Count); ++i)
+            {
+                this.OrderedSpaceReservationManagerDefinitions.Add(orderedManagers[i].Metadata.Name, i);
+            }
         }
     }
 }

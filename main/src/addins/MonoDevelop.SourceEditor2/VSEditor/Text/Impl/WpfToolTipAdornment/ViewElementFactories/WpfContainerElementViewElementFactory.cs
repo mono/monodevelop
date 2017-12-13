@@ -1,16 +1,15 @@
-﻿namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
+namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 {
     using System;
     using System.ComponentModel.Composition;
     using System.Text;
-    using System.Windows;
-    using System.Windows.Automation;
-    using System.Windows.Controls;
+	using UIElement = Xwt.Widget;
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Utilities;
+	using Xwt;
 
-    [Export(typeof(IViewElementFactory))]
+	[Export(typeof(IViewElementFactory))]
     [Name("default ContainerElement to UIElement")]
     [TypeConversion(from: typeof(ContainerElement), to: typeof(UIElement))]
     [Order]
@@ -27,19 +26,19 @@
                 throw new ArgumentException($"Invalid type conversion. Unsupported {nameof(model)} or {nameof(TView)} type");
             }
 
-            Panel containerControl;
+            VBox containerControl;
 
             if (container.Style == ContainerElementStyle.Stacked)
             {
-                containerControl = new StackPanel();
+                containerControl = new VBox();
             }
             else
             {
-                containerControl = new WrapPanel();
+                containerControl = new VBox ();//TODO
             }
 
-            containerControl.HorizontalAlignment = HorizontalAlignment.Left;
-            containerControl.VerticalAlignment = VerticalAlignment.Top;
+			containerControl.HorizontalPlacement = WidgetPlacement.Start;
+			containerControl.VerticalPlacement = WidgetPlacement.Start;
 
             var automationNameBuffer = new StringBuilder();
 
@@ -49,19 +48,9 @@
 
                 if (convertedElement != null)
                 {
-                    containerControl.Children.Add(convertedElement);
-
-                    var elementAutomationName = convertedElement.GetValue(AutomationProperties.NameProperty)?.ToString();
-                    if (elementAutomationName?.Length > 0)
-                    {
-                        automationNameBuffer.Append(elementAutomationName);
-                        automationNameBuffer.Append('\r');
-                        automationNameBuffer.Append('\n');
-                    }
+                    containerControl.PackStart(convertedElement);
                 }
             }
-
-            containerControl.SetValue(AutomationProperties.NameProperty, automationNameBuffer.ToString());
 
             return containerControl as TView;
         }

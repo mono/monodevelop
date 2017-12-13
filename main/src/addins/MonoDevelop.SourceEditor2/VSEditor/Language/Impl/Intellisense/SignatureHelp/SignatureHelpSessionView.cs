@@ -7,11 +7,13 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Threading;
+using Gtk;
+using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
 
 namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 {
@@ -20,14 +22,14 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         private DefaultSignatureHelpPresenterProvider _componentContext;
         private ISignatureHelpSession _session;
         private string _pagerText;
-        private Visibility _pagerVisibility = Visibility.Collapsed;
+        private bool _pagerVisibility = false;
         private ITextBuffer _signatureTextBuffer;
-        private IWpfTextView _signatureWpfTextView;
+        private MonoDevelop.Components.FixedWidthWrapLabel _signatureWpfTextView;
         private string _signatureDocumentation;
-        private Visibility _signatureDocumentationVisibility;
+        private bool _signatureDocumentationVisibility;
         private string _currentParameterName;
         private string _currentParameterDocumentation;
-        private Visibility _currentParameterVisibility;
+        private bool _currentParameterVisibility;
         private IContentType _textContentType;
         private double _pagerWidth;
         private bool _isAutoSizePending = false;
@@ -58,7 +60,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             }
         }
 
-        public Visibility PagerVisibility
+        public bool PagerVisibility
         {
             get { return _pagerVisibility; }
             private set
@@ -68,7 +70,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             }
         }
 
-        public UIElement SignatureWpfViewVisualElement { get { return _signatureWpfTextView.VisualElement; } }
+        public FixedWidthWrapLabel SignatureWpfViewVisualElement { get { return _signatureWpfTextView; } }
 
         public string SignatureDocumentation
         {
@@ -80,7 +82,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             }
         }
 
-        public Visibility SignatureDocumentationVisibility
+        public bool SignatureDocumentationVisibility
         {
             get { return _signatureDocumentationVisibility; }
             private set
@@ -110,7 +112,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             }
         }
 
-        public Visibility CurrentParameterVisibility
+        public bool CurrentParameterVisibility
         {
             get { return _currentParameterVisibility; }
             private set
@@ -158,18 +160,10 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             }
         }
 
-        public SignatureHelpPresenterStyle PresenterStyle
-        {
-            get
-            {
-                return _componentContext.GetMergedPresenterStyle(this.Session);
-            }
-        }
-
         public void Dispose()
         {
             this.UnBindFromSession();
-            _signatureWpfTextView.Close();
+            _signatureWpfTextView.Dispose();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -179,12 +173,12 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             // Stop listening to CurrentParameterChanged on the old selected signature, and start listening on the new selected
             // signature.
             if (e.PreviousSelectedSignature != null)
-            { 
-                e.PreviousSelectedSignature.CurrentParameterChanged -= this.OnSelectedSignature_CurrentParameterChanged; 
+            {
+                e.PreviousSelectedSignature.CurrentParameterChanged -= this.OnSelectedSignature_CurrentParameterChanged;
             }
             if (e.NewSelectedSignature != null)
-            { 
-                e.NewSelectedSignature.CurrentParameterChanged += this.OnSelectedSignature_CurrentParameterChanged; 
+            {
+                e.NewSelectedSignature.CurrentParameterChanged += this.OnSelectedSignature_CurrentParameterChanged;
             }
 
             // Since the selected signature changed, we need to update the signature info being displayed.
@@ -205,23 +199,20 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         {
             IEditorOptions options = _componentContext.EditorOptionsFactoryService.CreateOptions();
             _signatureTextBuffer = _componentContext.TextBufferFactoryService.CreateTextBuffer();
+            _signatureWpfTextView = new MonoDevelop.Components.FixedWidthWrapLabel();
+            _signatureWpfTextView.Indent = -20;
 
-            // Make sure the appearance category on the text view is set properly.
-            if (!string.IsNullOrEmpty(this.PresenterStyle.SignatureAppearanceCategory))
-            {
-                options.SetOptionValue<string>
-                    (DefaultWpfViewOptions.AppearanceCategory, this.PresenterStyle.SignatureAppearanceCategory);
-            }
-
-            _signatureWpfTextView = Helpers.CreateTooltipTextView(_componentContext.TextEditorFactoryService, _signatureTextBuffer, options);
+            _signatureWpfTextView.Wrap = Pango.WrapMode.WordChar;
+            _signatureWpfTextView.BreakOnCamelCasing = false;
+            _signatureWpfTextView.BreakOnPunctuation = false;
         }
 
         private void BindToSession()
         {
             // No work to do if we don't have a session
             if ((_session == null) || (_session.IsDismissed))
-            { 
-                return; 
+            {
+                return;
             }
 
             // Create the signature text view (if it hasn't already been created)
@@ -239,7 +230,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             ((INotifyCollectionChanged)_session.Signatures).CollectionChanged += this.OnSignatures_CollectionChanged;
 
             // Ensure we watch the view for layouts and resize it to ensure its contents fit
-            _signatureWpfTextView.LayoutChanged += this.OnTextView_LayoutChanged;
+            _signatureWpfTextView.SizeAllocated += this.OnTextView_LayoutChanged;
 
             // Add the session as a property to the signature help text buffer.  This will be used by the current parameter bolding
             // classifier.
@@ -249,23 +240,17 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             this.UpdateSignatureInfo();
         }
 
-        private void OnTextView_LayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
+        private void OnTextView_LayoutChanged(object o, SizeAllocatedArgs args)
         {
-            // If the layout has formatted new content, ensure they fit in the view
-            if (!_isAutoSizePending && e.NewOrReformattedLines.Count > 0)
-            {
-                var view = (IWpfTextView)sender;
-                _isAutoSizePending = true;
-                view.VisualElement.Dispatcher.BeginInvoke(new Action(() => this.AutoSizeSignatureTextView()), DispatcherPriority.Normal);
-            }
+            AutoSizeSignatureTextView();
         }
 
         private void UnBindFromSession()
         {
             // Don't do anything with an invalid session (dismissed session is ok).
             if (_session == null)
-            { 
-                return; 
+            {
+                return;
             }
 
             // Unsubscribe from some events.
@@ -276,11 +261,11 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             }
             ((INotifyCollectionChanged)_session.Signatures).CollectionChanged -= this.OnSignatures_CollectionChanged;
 
-            _signatureWpfTextView.LayoutChanged -= this.OnTextView_LayoutChanged;
+            _signatureWpfTextView.SizeAllocated -= this.OnTextView_LayoutChanged;
 
-            this.PagerVisibility = Visibility.Collapsed;
-            this.SignatureDocumentationVisibility = Visibility.Collapsed;
-            this.CurrentParameterVisibility = Visibility.Collapsed;
+            this.PagerVisibility = false;
+            this.SignatureDocumentationVisibility = false;
+            this.CurrentParameterVisibility = false;
 
             // Make sure that our property added to the signature text buffer is released.  Also, the buffer should be empty.
             _signatureTextBuffer.Replace(new Span(0, _signatureTextBuffer.CurrentSnapshot.Length), string.Empty);
@@ -299,7 +284,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             PropertyChangedEventHandler tempHandler = this.PropertyChanged;
             if (tempHandler != null)
             {
-                tempHandler(this, new PropertyChangedEventArgs(propertyName));
+                tempHandler(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
             }
         }
 
@@ -327,13 +312,13 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             this.DisplayContent(sigToRender);
 
             // If all the content didn't fit in one line, then try the pretty printed content unless it's null (see Dev11 #376399)
-            if (_signatureWpfTextView.MaxTextRightCoordinate > this.ContainerMaxWidth - this.PagerWidth - 4 &&
+            if (_signatureWpfTextView.RealWidth > this.ContainerMaxWidth - this.PagerWidth - 4 &&
                 sigToRender.PrettyPrintedContent != null)
             {
                 this.DisplayPrettyPrintedContent(sigToRender);
 
                 // Ensure that the pretty printed content fits, otherwise, switch back to the regular content as a last resort
-                if (_signatureWpfTextView.MaxTextRightCoordinate > this.ContainerMaxWidth - this.PagerWidth - 4)
+                if (_signatureWpfTextView.RealWidth > this.ContainerMaxWidth - this.PagerWidth - 4)
                 {
                     this.DisplayContent(sigToRender);
                 }
@@ -343,11 +328,11 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             if (!string.IsNullOrEmpty(sigToRender.Documentation))
             {
                 this.SignatureDocumentation = sigToRender.Documentation;
-                this.SignatureDocumentationVisibility = Visibility.Visible;
+                this.SignatureDocumentationVisibility = true;
             }
             else
             {
-                this.SignatureDocumentationVisibility = Visibility.Collapsed;
+                this.SignatureDocumentationVisibility = false;
                 this.SignatureDocumentation = string.Empty;
             }
 
@@ -356,17 +341,15 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             {
                 // The pager should be enabled.
                 int selectionIndex = this.Session.Signatures.IndexOf(sigToRender);
-                this.PagerText = string.Format
-                    (CultureInfo.CurrentCulture,
-                     IntellisenseImpl.SignatureHelp_SignatureCountDisplay,
+                this.PagerText = GettextCatalog.GetString("{0} of {1}",
                      selectionIndex + 1,
                      this.Session.Signatures.Count);
-                this.PagerVisibility = Visibility.Visible;
+                this.PagerVisibility = true;
             }
             else
             {
                 // The pager should not be enabled.
-                this.PagerVisibility = Visibility.Collapsed;
+                this.PagerVisibility = false;
                 this.PagerText = string.Empty;
             }
 
@@ -378,10 +361,17 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         {
             // Ensure word-wrap is off initially. We only turn word-wrap on if we are forced to due to lack of
             // space on the screen
-            _signatureWpfTextView.Options.SetOptionValue(DefaultTextViewOptions.WordWrapStyleId, WordWrapStyles.None);
-
             _signatureTextBuffer.Properties[SignatureHelpParameterBoldingClassfier.UsePrettyPrintedContentKey] = false;
             _signatureTextBuffer.Replace(new Span(0, _signatureTextBuffer.CurrentSnapshot.Length), sigToRender.Content);
+            var classifierSpans = PlatformCatalog.Instance.ClassifierAggregatorService.GetClassifier(_signatureTextBuffer)?.GetClassificationSpans(new SnapshotSpan(_signatureTextBuffer.CurrentSnapshot, 0, _signatureTextBuffer.CurrentSnapshot.Length));
+            if (classifierSpans != null && classifierSpans.Count > 0)
+                _signatureWpfTextView.Markup = MDUtils.ClassificationsToMarkup(_signatureTextBuffer.CurrentSnapshot, classifierSpans, sigToRender.CurrentParameter?.Locus);
+            else
+            {
+                _signatureWpfTextView.Markup = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText(_signatureTextBuffer.CurrentSnapshot.GetText());
+                LoggingService.LogWarning("No classification spans found for signature helper:" + _signatureTextBuffer.ContentType);
+            }
+            _signatureWpfTextView.Visible = true;
         }
 
         private void DisplayPrettyPrintedContent(ISignature sigToRender)
@@ -389,10 +379,17 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             Debug.Assert(sigToRender.PrettyPrintedContent != null, "We shouldn't try to display null PrettyPrintedContent.");
             // Ensure word-wrap is off initially. We only turn word-wrap on if we are forced to due to lack of
             // space on the screen
-            _signatureWpfTextView.Options.SetOptionValue(DefaultTextViewOptions.WordWrapStyleId, WordWrapStyles.None);
-
             _signatureTextBuffer.Properties[SignatureHelpParameterBoldingClassfier.UsePrettyPrintedContentKey] = true;
             _signatureTextBuffer.Replace(new Span(0, _signatureTextBuffer.CurrentSnapshot.Length), sigToRender.PrettyPrintedContent);
+            var classifierSpans = PlatformCatalog.Instance.ClassifierAggregatorService.GetClassifier(_signatureTextBuffer)?.GetClassificationSpans(new SnapshotSpan(_signatureTextBuffer.CurrentSnapshot, 0, _signatureTextBuffer.CurrentSnapshot.Length));
+            if (classifierSpans != null && classifierSpans.Count > 0)
+                _signatureWpfTextView.Markup = MDUtils.ClassificationsToMarkup(_signatureTextBuffer.CurrentSnapshot, classifierSpans, sigToRender.CurrentParameter?.Locus);
+            else
+            {
+                _signatureWpfTextView.Markup = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText(_signatureTextBuffer.CurrentSnapshot.GetText());
+                LoggingService.LogWarning("No classification spans found for signature helper:" + _signatureTextBuffer.ContentType);
+            }
+            _signatureWpfTextView.Visible = true;
         }
 
         private void UpdateParameterInfo()
@@ -414,18 +411,16 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
                 string.IsNullOrEmpty(currentParam.Name) ||
                 string.IsNullOrEmpty(currentParam.Documentation))
             {
-                this.CurrentParameterVisibility = Visibility.Collapsed;
+                this.CurrentParameterVisibility = false;
                 this.CurrentParameterName = string.Empty;
                 this.CurrentParameterDocumentation = string.Empty;
             }
             else
             {
-                this.CurrentParameterName = string.Format
-                    (CultureInfo.CurrentCulture,
-                     IntellisenseImpl.SignatureHelp_ParameterName,
+                this.CurrentParameterName = GettextCatalog.GetString("{0}:",
                      currentParam.Name);
                 this.CurrentParameterDocumentation = currentParam.Documentation;
-                this.CurrentParameterVisibility = Visibility.Visible;
+                this.CurrentParameterVisibility = true;
             }
         }
 
@@ -451,7 +446,9 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 
             IContentType baseContentType = signature.ApplicableToSpan.TextBuffer.ContentType;
             string newContentTypeName = string.Format(CultureInfo.InvariantCulture, "{0} Signature Help", baseContentType.TypeName);
-
+            //TODO: Workaround VS bug
+            if (newContentTypeName == "HTMLXProjection Signature Help")
+                newContentTypeName = "CSharp Signature Help";
             IContentType sigHelpContentType = _componentContext.ContentTypeRegistryService.GetContentType(newContentTypeName);
 
             if (sigHelpContentType == null)
@@ -468,7 +465,8 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 
         private void AutoSizeSignatureTextView()
         {
-            Helpers.AutoSizeTextView(_signatureWpfTextView, this.ContainerMaxWidth - this.PagerWidth - 4 /* 4px of Margin */, this.ContainerMaxHeight);
+            //TODO
+            //Helpers.AutoSizeTextView(_signatureWpfTextView, this.ContainerMaxWidth - this.PagerWidth - 4 /* 4px of Margin */, this.ContainerMaxHeight);
             _isAutoSizePending = false;
         }
     }

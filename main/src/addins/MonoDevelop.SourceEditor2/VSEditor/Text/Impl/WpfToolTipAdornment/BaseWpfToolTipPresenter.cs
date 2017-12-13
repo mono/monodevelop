@@ -5,11 +5,12 @@
     using System.Diagnostics;
     using System.Linq;
     using System.Windows;
-    using System.Windows.Controls.Primitives;
     using System.Windows.Media;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
+    using MonoDevelop.Components;
+    using Xwt;
 
     internal abstract class BaseWpfToolTipPresenter : IToolTipPresenter, IObscuringTip
     {
@@ -19,7 +20,7 @@
         protected readonly ToolTipParameters parameters;
         protected readonly ToolTipPresenterStyle presenterStyle;
 
-        protected readonly Popup popup = new Popup();
+        protected readonly MonoDevelop.Components.XwtPopup popup = new MonoDevelop.Components.XwtPopup (Xwt.PopupWindow.PopupType.Tooltip);
         protected ITrackingSpan applicableToSpan;
         protected bool isDismissed;
 
@@ -41,7 +42,7 @@
 
         #region IObscuringTip
 
-        public double Opacity => this.popup?.Child.Opacity ?? 1.0;
+        public double Opacity => this.popup.Content.Opacity;
 
         bool IObscuringTip.Dismiss()
         {
@@ -53,7 +54,7 @@
 
         public void SetOpacity(double opacity)
         {
-            var child = this.popup.Child;
+            var child = this.popup.Content;
             if (child != null)
             {
                 child.Opacity = opacity;
@@ -71,8 +72,8 @@
             if (this.popup != null)
             {
                 this.popup.Closed -= this.OnPopupClosed;
-                this.popup.IsOpen = false;
-                this.popup.Child = null;
+				this.popup.Visible = false;
+                //this.popup.Content = null;
                 this.isDismissed = true;
                 this.obscuringTipManager.RemoveTip(this.textView, this);
             }
@@ -84,7 +85,7 @@
         {
             Debug.Assert(!this.isDismissed);
 
-            if (!this.popup.IsOpen)
+            if (!this.popup.Visible)
             {
                 this.Start(content);
             }
@@ -100,25 +101,21 @@
 
         private void Start(IEnumerable<object> content)
         {
-            Debug.Assert(!this.popup.IsOpen && !this.isDismissed);
+            Debug.Assert(!this.popup.Visible && !this.isDismissed);
 
             if (this.PresentationSpan == null)
             {
                 this.Dismiss();
                 return;
             }
-
-            this.popup.AllowsTransparency = true;
-            this.popup.UseLayoutRounding = true;
-            this.popup.SnapsToDevicePixels = true;
-            TextOptions.SetTextFormattingMode(this.popup, TextFormattingMode.Display);
+			
 
             this.Update(content);
 
             this.popup.Closed += this.OnPopupClosed;
 
-            this.popup.IsOpen = true;
-            this.popup.BringIntoView();
+            this.popup.Visible = true;
+           //todo this.popup.BringIntoView();
             this.obscuringTipManager.PushTip(this.textView, this);
         }
 
@@ -126,20 +123,22 @@
         {
             // Translate intermediate objects to UIElements.
             var contentViewElements = content.Select(
-                item => this.viewElementFactoryService.CreateViewElement<UIElement>(
+                item => this.viewElementFactoryService.CreateViewElement<Xwt.Widget>(
                     this.textView, item))
                     .Where(item => item != null);
 
-            var control = new WpfToolTipControl(this.WpfTextView)
-            {
-                // Translate intermediate to UI.
-                DataContext = new WpfToolTipViewModel(
-                    this.parameters,
-                    contentViewElements,
-                    this.presenterStyle)
-            };
-
-            this.popup.Child = control;
+			//var control = new WpfToolTipControl (this.WpfTextView) {
+			//	// Translate intermediate to UI.
+			//	DataContext = new WpfToolTipViewModel (
+			//		this.parameters,
+			//		contentViewElements,
+			//		this.presenterStyle)
+			//};
+			var vbox = new Xwt.VBox ();
+			foreach (var view in contentViewElements) {
+				vbox.PackStart (view);
+			}
+			this.popup.Content = vbox;
         }
 
         protected ITrackingSpan PresentationSpan
@@ -160,14 +159,14 @@
             }
         }
 
-        protected IWpfTextView WpfTextView => this.textView as IWpfTextView;
+        protected IMdTextView WpfTextView => this.textView as IMdTextView;
 
         protected Point GetScreenPointFromTextXY(double x, double y)
         {
             var view = WpfTextView;
             Debug.Assert(view != null);
 
-            return view.VisualElement.PointToScreen(new Point(x - view.ViewportLeft, y - view.ViewportTop));
+            return view.VisualElement.GetScreenCoordinates(new Gdk.Point((int)(x - view.ViewportLeft), (int)(y - view.ViewportTop))).ToXwtPoint();
         }
 
         private void OnPopupClosed(object sender, EventArgs e) => this.Dismiss();

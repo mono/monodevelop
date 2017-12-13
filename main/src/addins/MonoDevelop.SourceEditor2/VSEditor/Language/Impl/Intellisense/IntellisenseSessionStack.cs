@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Windows.Input;
-using System.Windows.Threading;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
@@ -49,7 +48,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
     internal sealed class IntellisenseSessionStack : IIntellisenseSessionStack, IIntellisenseCommandTarget
     {
         private readonly IObscuringTipManager _tipManager;
-        private IWpfTextView _textView;
+        private IMdTextView _textView;
         private StackList<IIntellisenseSession> _sessions = new StackList<IIntellisenseSession>();
         private ReadOnlyObservableCollection<IIntellisenseSession> _readOnlySessions;
         private Dictionary<IIntellisenseSession, ISpaceReservationAgent> _reservationAgentIndex =
@@ -59,7 +58,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         private IIntellisenseSession _keyboardSession;
         private IIntellisenseSession _sessionBeingRehosted;
 
-        public IntellisenseSessionStack(IWpfTextView textView, IObscuringTipManager tipManager)
+        public IntellisenseSessionStack(IMdTextView textView, IObscuringTipManager tipManager)
         {
             _textView = textView;
             _tipManager = tipManager;       // This can be null

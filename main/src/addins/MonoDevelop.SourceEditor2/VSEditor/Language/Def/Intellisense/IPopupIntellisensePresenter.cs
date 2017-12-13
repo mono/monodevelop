@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense
         /// Gets the WPF <see cref="UIElement"/> that the presenter wants to be displayed inside a
         /// <see cref="Microsoft.VisualStudio.Text.Editor.ITextView"/> popup.
         /// </summary>
-        UIElement SurfaceElement { get; }
+        Xwt.Widget SurfaceElement { get; }
 
         /// <summary>
         /// Occurs when the WPF SurfaceElement is changed.

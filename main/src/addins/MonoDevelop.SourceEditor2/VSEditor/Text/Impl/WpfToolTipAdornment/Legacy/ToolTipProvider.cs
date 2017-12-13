@@ -1,4 +1,4 @@
-//
+﻿//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -8,27 +8,26 @@
 namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 {
     using System;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics;
     using System.Windows;
-    using System.Windows.Controls;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
+    using MonoDevelop.Components;
 
     /// <summary>
     /// An adornment provider that can create and display ToolTips taking an arbitrary object as content.
     /// </summary>
-#pragma warning disable 618 // IToolTipProviderFactory is deprecated.
     internal class ToolTipProvider : IToolTipProvider
     {
-#pragma warning restore 618
-
         #region Private Members
-        private readonly IWpfTextView _textView;
+        private readonly IMdTextView _textView;
         internal readonly ISpaceReservationManager _spaceReservationManager;
         internal ISpaceReservationAgent _agent;
         #endregion
 
-        internal ToolTipProvider(IWpfTextView textView)
+        internal ToolTipProvider(IMdTextView textView)
         {
             _textView = textView;
             _spaceReservationManager = _textView.GetSpaceReservationManager("ToolTip");
@@ -56,11 +55,11 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
             if (span == null)
                 throw new ArgumentNullException("span");
             if (span.TextBuffer != _textView.TextBuffer)
-                throw new ArgumentException(Strings.InvalidSpan);
+                throw new ArgumentException("Invalid span");
             if (toolTipContent == null)
                 throw new ArgumentNullException("toolTipContent");
 
-            UIElement element = toolTipContent as UIElement;
+            var element = toolTipContent as Control;
             if (element == null)
             {
                 string toolTipContentAsString = toolTipContent as string;
@@ -70,7 +69,7 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
                 }
                 else
                 {
-                    throw new ArgumentException(Strings.InvalidContent);
+                    throw new ArgumentException("Invalid contnet", nameof(toolTipContent));
                 }
             }
 
@@ -85,20 +84,21 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
         }
         #endregion
 
-        internal static UIElement BuildTooltipUIElement(string toolTipText)
+        internal static Control BuildTooltipUIElement(string toolTipText)
         {
             // Make a pretty ToolTip-looking thing, using a border and a TextBlock.
-            TextBlock txt = new TextBlock();
-            txt.Text = toolTipText;
-            txt.Background = SystemColors.InfoBrush;
-            txt.Foreground = SystemColors.InfoTextBrush;
-            txt.Padding = new Thickness(1.0);
+            //TextBlock txt = new TextBlock();
+            //txt.Text = toolTipText;
+            //txt.Background = SystemColors.InfoBrush;
+            //txt.Foreground = SystemColors.InfoTextBrush;
+            //txt.Padding = new Thickness(1.0);
 
-            Border border = new Border();
-            border.BorderBrush = SystemColors.WindowFrameBrush;
-            border.BorderThickness = new Thickness(1.0);
-            border.Child = txt;
-            return border;
+            //Border border = new Border();
+            //border.BorderBrush = SystemColors.WindowFrameBrush;
+            //border.BorderThickness = new Thickness(1.0);
+            //border.Child = txt;
+            //return border;
+            return new XwtControl(new Xwt.Label(toolTipText));
         }
     }
 }

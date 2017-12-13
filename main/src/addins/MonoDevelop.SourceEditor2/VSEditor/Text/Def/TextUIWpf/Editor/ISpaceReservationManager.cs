@@ -5,9 +5,9 @@
 namespace Microsoft.VisualStudio.Text.Editor
 {
     using System.Collections.ObjectModel;
-    using System.Windows;
     using Microsoft.VisualStudio.Text.Adornments;
     using System;
+    using MonoDevelop.Components;
 
     /// <summary>
     /// Manages space reservation adornments.
@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.Text.Editor
         /// <param name="style">The style options for displaying the tip.</param>
         /// <param name="content">The UI element to be displayed in the tip.</param>
         /// <returns>An <see cref="ISpaceReservationAgent"/> that will display the desired content in a popup window.</returns>
-        ISpaceReservationAgent CreatePopupAgent(ITrackingSpan visualSpan, PopupStyles style, UIElement content);
+        ISpaceReservationAgent CreatePopupAgent(ITrackingSpan visualSpan, PopupStyles style, Xwt.Widget content);
 
         /// <summary>
         /// Updates <paramref name="agent"/> with the <paramref name="visualSpan"/>.

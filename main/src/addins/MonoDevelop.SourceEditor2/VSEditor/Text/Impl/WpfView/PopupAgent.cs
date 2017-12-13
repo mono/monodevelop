@@ -1,4 +1,4 @@
-﻿//
+//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -9,7 +9,6 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
     using System;
     using System.Windows;
-    using System.Windows.Controls.Primitives;
     using System.Windows.Media;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Adornments;
@@ -19,20 +18,23 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     using Microsoft.VisualStudio.Text.Utilities;
     using System.Windows.Input;
     using System.Collections.Generic;
-    using System.Windows.Controls;
+    using Xwt;
+    using Mono.TextEditor;
+    using MonoDevelop.Components;
+    using Rect = Xwt.Rectangle;
 
     class PopupAgent : ISpaceReservationAgent
     {
-        internal readonly WpfTextView _textView;
+        internal readonly Mono.TextEditor.TextArea _textView;
         internal readonly ISpaceReservationManager _manager;
         internal ITrackingSpan _visualSpan;
         internal PopupStyles _style;
-        internal IInputElement _mouseContainer;
+        internal Widget _mouseContainer;
         internal readonly PopupOrWindowContainer _popup;
         private const int MaxPopupCacheSize = 10;
         private const double BelowTheLineBufferHint = 3.0;
 
-        public PopupAgent(WpfTextView textView, ISpaceReservationManager manager, ITrackingSpan visualSpan, PopupStyles style, UIElement content)
+        public PopupAgent(Mono.TextEditor.TextArea textView, ISpaceReservationManager manager, ITrackingSpan visualSpan, PopupStyles style, Widget content)
         {
             if (textView == null)
                 throw new ArgumentNullException("textView");
@@ -89,8 +91,8 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             // initial check to make sure the mouse starts-off in the span.  If not, we should fail to position.
             if ((_style & (PopupStyles.DismissOnMouseLeaveText | PopupStyles.DismissOnMouseLeaveTextOrContent)) != 0)
             {
-                Point mousePt = Mouse.GetPosition(_textView.VisualElement);
-                if (this.ShouldClearToolTipOnMouseMove(mousePt))
+                _textView.VisualElement.GetPointer(out int x, out int y);
+                if (this.ShouldClearToolTipOnMouseMove(new Point(x, y)))
                     return null;
             }
 
@@ -152,7 +154,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                 Rect viewRect = new Rect(_textView.ViewportLeft, _textView.ViewportTop, _textView.ViewportWidth, _textView.ViewportHeight);
 
                 Rect spanRect = spanRectangle.Value;
-                spanRect.Intersect(viewRect);
+                spanRect = spanRect.Intersect(viewRect);
 
                 if (!spanRect.IsEmpty)
                 {
@@ -167,12 +169,13 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                                                                 this.GetScreenPointFromTextXY(spanRect.Right, spanRect.Bottom));
                     Rect spanRectWithBufferInScreenCoordinates = new Rect(this.GetScreenPointFromTextXY(spanRectWithBuffer.Left, spanRectWithBuffer.Top),
                                                                           this.GetScreenPointFromTextXY(spanRectWithBuffer.Right, spanRectWithBuffer.Bottom));
-                    Rect screenRect = WpfHelper.GetScreenRect(spanRectInScreenCoordinates.TopLeft);
+                    Rect screenRect = Xwt.Desktop.GetScreenAtLocation(spanRectInScreenCoordinates.TopLeft).Bounds;//TODO: Check if we should use VisualBounds
 
                     Size desiredSize = _popup.Size;
                     //The popup size specified in deivice pixels. Convert these to logical
                     //pixels for purposes of calculating the actual size of the popup.
-                    desiredSize = new Size(desiredSize.Width / WpfHelper.DeviceScaleX, desiredSize.Height / WpfHelper.DeviceScaleY);
+                    //TODO desiredSize = new Size (desiredSize.Width / WpfHelper.DeviceScaleX, desiredSize.Height / WpfHelper.DeviceScaleY);
+                    desiredSize = new Size(desiredSize.Width, desiredSize.Height);
 
                     PopupStyles alternateStyle = _style ^ PopupStyles.PreferLeftOrTopPosition;
 
@@ -245,7 +248,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                         };
                     }
 
-                    Rect location = Rect.Empty;
+                    Rect location = Rect.Zero;
                     foreach (var choice in positionChoices)
                     {
                         Rect locationToTry = GetLocation(choice.Item1, desiredSize, spanRectInScreenCoordinates, choice.Item2, screenRect);
@@ -258,7 +261,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                     }
 
                     // If we couldn't locate a place to live, tell the manager we want to go away.
-                    if (location == Rect.Empty)
+                    if (location == Rect.Zero)
                         return null;
 
                     if (!_popup.IsVisible)
@@ -282,7 +285,8 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         {
             get
             {
-                return _popup.IsVisible ? _popup.Content.IsMouseOver : false;
+                Gdk.Display.Default.GetPointer(out int x, out int y);
+                return _popup.IsVisible ? _popup.Content.ScreenBounds.Contains(x, y) : false;
             }
         }
 
@@ -314,12 +318,13 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             // For tooltips with style DismissOnMouseLeave
             if ((_style & (PopupStyles.DismissOnMouseLeaveText | PopupStyles.DismissOnMouseLeaveTextOrContent)) != 0)
             {
-                _textView.VisualElement.PreviewMouseMove += this.OnMouseMove;
+                _textView.VisualElement.MotionNotifyEvent += this.OnMouseMove;
 
-                _mouseContainer = Mouse.DirectlyOver;
+                //TODO: This used to be Mouse.DirectlyOver, is it ok just use popup.Content?
+                _mouseContainer = _popup.Content;
                 if (_mouseContainer != null)
                 {
-                    _mouseContainer.MouseLeave += this.OnMouseLeave;
+                    _mouseContainer.MouseExited += this.OnMouseLeave;
                 }
             }
 
@@ -327,17 +332,17 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             _popup.Content.LostFocus += this.OnContentLostFocus;
             _popup.Content.GotFocus += this.OnContentGotFocus;
 
-            FrameworkElement content = _popup.Content as FrameworkElement;
+            var content = _popup.Content as Widget;
             if (content != null)
             {
-                content.SizeChanged += this.OnContentSizeChanged;
+                content.BoundsChanged += this.OnContentSizeChanged;
             }
 
             // So we can dismiss the tooltip on window move / sizing.
-            Window hostWindow = Window.GetWindow(_textView.VisualElement);
+            var hostWindow = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
             if (hostWindow != null) // for tests
             {
-                hostWindow.LocationChanged += OnLocationChanged;
+                hostWindow.ConfigureEvent += OnLocationChanged;
             }
 
             // Register to be notified when outlining regions are collapsed.
@@ -352,10 +357,10 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             // For tooltips with style DismissOnMouseLeave
             if ((_style & (PopupStyles.DismissOnMouseLeaveText | PopupStyles.DismissOnMouseLeaveTextOrContent)) != 0)
             {
-                _textView.VisualElement.PreviewMouseMove -= this.OnMouseMove;
+                _textView.VisualElement.MotionNotifyEvent -= this.OnMouseMove;
                 if (_mouseContainer != null)
                 {
-                    _mouseContainer.MouseLeave -= this.OnMouseLeave;
+                    _mouseContainer.MouseExited -= this.OnMouseLeave;
                 }
             }
 
@@ -363,16 +368,16 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             _popup.Content.LostFocus -= this.OnContentLostFocus;
             _popup.Content.GotFocus -= this.OnContentGotFocus;
 
-            FrameworkElement content = _popup.Content as FrameworkElement;
+            var content = _popup.Content as Xwt.Widget;
             if (content != null)
             {
-                content.SizeChanged -= this.OnContentSizeChanged;
+                content.BoundsChanged -= this.OnContentSizeChanged;
             }
 
-            Window hostWindow = Window.GetWindow(_textView.VisualElement);
+            var hostWindow = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
             if (hostWindow != null) // for tests
             {
-                hostWindow.LocationChanged -= OnLocationChanged;
+                hostWindow.ConfigureEvent -= OnLocationChanged;
             }
 
             if (this.OutliningManager != null)
@@ -395,11 +400,11 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         }
 
         #region Event handlers
-        void OnMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        void OnMouseMove(object sender, Gtk.MotionNotifyEventArgs e)
         {
             if (_popup.IsVisible)
             {
-                Point mousePt = e.GetPosition(_textView.VisualElement);
+                Point mousePt = new Point(e.Event.X, e.Event.Y); //TODO: Check if we have to move to screen cordinate system
 
                 if (this.ShouldClearToolTipOnMouseMove(mousePt))
                 {
@@ -408,15 +413,17 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             }
         }
 
-        void OnMouseLeave(object sender, MouseEventArgs e)
+        void OnMouseLeave(object sender, EventArgs e)
         {
+            //TODO: This method, well whole MouseLeave logic is much simplefied in our case
+            //We just support on Popup mouse leave while WPF supports also DismissOnMouseLeaveText
             if (_mouseContainer != null)
             {
-                _mouseContainer.MouseLeave -= this.OnMouseLeave;
+                _mouseContainer.MouseExited -= this.OnMouseLeave;
                 _mouseContainer = null;
             }
 
-            IInputElement newContainer = e.MouseDevice.Target;
+            Widget newContainer = null;//e.MouseDevice.Target;
             bool shouldRemoveAgent = false;
 
             // First, check to see if the mouse left the view entirely.
@@ -430,8 +437,8 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             {
                 // The mouse left the element over which it was originally positioned.  This may or
                 // may not mean that the mouse left the span of text to which the popup is bound.
-                Point mousePt = e.GetPosition(_textView.VisualElement);
-                if (this.ShouldClearToolTipOnMouseMove(mousePt))
+                _textView.VisualElement.GetPointer (out int x, out int y);
+                if (this.ShouldClearToolTipOnMouseMove(new Point(x,y)))
                 {
                     shouldRemoveAgent = true;
                 }
@@ -446,25 +453,25 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             else
             {
                 _mouseContainer = newContainer;
-                _mouseContainer.MouseLeave += this.OnMouseLeave;
+                _mouseContainer.MouseExited += this.OnMouseLeave;
             }
         }
 
-        void OnContentLostFocus(object sender, RoutedEventArgs e)
+        void OnContentLostFocus(object sender, EventArgs e)
         {
             EventHandler lostFocus = this.LostFocus;
             if (lostFocus != null)
                 lostFocus(sender, e);
         }
 
-        void OnContentGotFocus(object sender, RoutedEventArgs e)
+        void OnContentGotFocus(object sender, EventArgs e)
         {
             EventHandler gotFocus = this.GotFocus;
             if (gotFocus != null)
                 gotFocus(sender, e);
         }
 
-        void OnContentSizeChanged(object sender, SizeChangedEventArgs e)
+        void OnContentSizeChanged(object sender, EventArgs e)
         {
             _textView.QueueSpaceReservationStackRefresh();
         }
@@ -514,7 +521,11 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         internal bool ShouldClearToolTipOnMouseMove(Point mousePt)
         {
-            if (!_textView.VisualElement.IsMouseOver)
+            _textView.VisualElement.GetPointer(out int x, out int y);
+            var topLeft = _textView.VisualElement.GetScreenCoordinates(new Gdk.Point(0, 0));
+            var bottomRight = _textView.VisualElement.GetScreenCoordinates(new Gdk.Point(_textView.VisualElement.WidthRequest, _textView.VisualElement.HeightRequest));
+            //TODO: Test if this is correct
+            if (!new Rect(topLeft.ToXwtPoint(), bottomRight.ToXwtPoint()).Contains(x, y))
                 return true;
 
             return this.InnerShouldClearToolTipOnMouseMove(mousePt);
@@ -563,7 +574,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         internal Point GetScreenPointFromTextXY(double x, double y)
         {
-            return _textView.VisualElement.PointToScreen(new Point(x - _textView.ViewportLeft, y - _textView.ViewportTop));
+            return _textView.VisualElement.GetScreenCoordinates(new Gdk.Point((int)(x - _textView.ViewportLeft), (int)(y - _textView.ViewportTop))).ToXwtPoint();
         }
 
         #region Static positioning helpers
@@ -631,7 +642,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             if ((width > 0.0) && (height > 0.0))
             {
                 Geometry insetLocation = new RectangleGeometry(new Rect(left, top, width, height));
-                return (reserved.FillContainsWithDetail(insetLocation) == IntersectionDetail.Empty);
+                return reserved.Bounds.IntersectsWith(insetLocation.Bounds);//TODO: This was simpliefied
             }
             else
                 return true;
@@ -646,15 +657,15 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         internal abstract class PopupOrWindowContainer
         {
-            private UIElement _content;
-            protected UIElement _placementTarget;
+            private Widget _content;
+            protected Mono.TextEditor.TextArea _placementTarget;
 
-            public static PopupOrWindowContainer Create(UIElement content, UIElement placementTarget)
+            public static PopupOrWindowContainer Create(Widget content, Mono.TextEditor.TextArea placementTarget)
             {
                 return new PopUpContainer(content, placementTarget);
             }
 
-            public PopupOrWindowContainer(UIElement content, UIElement placementTarget)
+            public PopupOrWindowContainer(Widget content, Mono.TextEditor.TextArea placementTarget)
             {
                 _content = content;
                 _placementTarget = placementTarget;
@@ -662,7 +673,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
             public abstract bool IsVisible { get; }
 
-            public UIElement Content { get { return _content; } }
+            public Widget Content { get { return _content; } }
 
             public abstract bool IsKeyboardFocusWithin { get; }
 
@@ -673,16 +684,35 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         private class PopUpContainer : PopupOrWindowContainer
         {
-            private class NoTopmostPopup : Popup
+#if WINDOWS
+            private class NoTopmostPopup : XwtThemedPopup
             {
-                protected override void OnOpened(EventArgs e)
+                protected override void OnShown ()
                 {
-                    base.OnOpened(e);
                     WpfHelper.SetNoTopmost(this.Child);
+                    base.OnShown ();
                 }
             }
 
-            Popup _popup = new NoTopmostPopup();
+        public static void SetNoTopmost(Visual visual)
+        {
+            if (visual != null)
+            {
+                HwndSource source = PresentationSource.FromVisual(visual) as HwndSource;
+                if (source != null)
+                {
+                    const int SWP_NOMOVE = 0x02;
+                    const int SWP_NOSIZE = 0x01;
+                    const int SWP_NOACTIVATE = 0x10;
+                    const int HWND_NOTOPMOST = -2;
+                    NativeMethods.SetWindowPos(source.Handle, (IntPtr)HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+                }
+            }
+        }
+        XwtThemedPopup _popup = new NoTopmostPopup ();
+#else
+            XwtThemedPopup _popup = new XwtThemedPopup();
+#endif
 
             // WPF popup doesn't detach its child from the visual tree when the popup is not open, 
             // even if we assign Child property to null. That prevents reusing of the popup content.
@@ -693,19 +723,14 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             // to that control instead of popup itself. Then we can safely (and more effectively)
             // detach popup content when popup has been closed and so significantly speed up
             // popup closing.
-            ContentControl _popupContentContainer = new ContentControl();
+            FrameBox _popupContentContainer = new FrameBox();
 
-            public PopUpContainer(UIElement content, UIElement placementTarget)
+            public PopUpContainer(Widget content, Mono.TextEditor.TextArea placementTarget)
                 : base(content, placementTarget)
             {
-                _popup.AllowsTransparency = true;
-                _popup.PlacementTarget = _placementTarget;
-                _popup.Placement = PlacementMode.Absolute;
-                _popup.UseLayoutRounding = true;
-                _popup.SnapsToDevicePixels = true;
-                _popup.Child = _popupContentContainer;
-                _popup.Closed += OnPopupClosed;
-                TextOptions.SetTextFormattingMode(_popup, TextFormattingMode.Display);
+                WindowTransparencyDecorator.Attach(_popup);//TODO: not sure we want this on all popus?
+                _popup.Content = _popupContentContainer;
+                _popup.Hidden += OnPopupClosed;
             }
 
             private void OnPopupClosed(object sender, EventArgs e)
@@ -717,15 +742,16 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             {
                 //The horizontal and verical offsets are specified in terms of device pixels
                 //so convert logical pixel position in point to device pixels.
-                _popup.HorizontalOffset = point.X * WpfHelper.DeviceScaleX;
-                _popup.VerticalOffset = point.Y * WpfHelper.DeviceScaleY;
+                //_popup.HorizontalOffset = point.X * WpfHelper.DeviceScaleX;
+                //_popup.VerticalOffset = point.Y * WpfHelper.DeviceScaleY;
+                _popup.Location = point;
 
                 if (base.Content != _popupContentContainer.Content)
                 {
-                    if (VisualTreeHelper.GetParent(base.Content) == null)
+                    if (base.Content.Parent == null)
                     {
                         _popupContentContainer.Content = base.Content;
-                        _popup.IsOpen = true;
+                        _popup.Show();
                     }
                     else
                     {
@@ -737,7 +763,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
             public override void Hide()
             {
-                _popup.IsOpen = false;
+                _popup.Hide();
             }
 
             public override bool IsVisible
@@ -752,8 +778,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             {
                 get
                 {
-                    base.Content.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                    return base.Content.DesiredSize;
+                    return ((IWidgetSurface)base.Content).GetPreferredSize();
                 }
             }
 
@@ -761,7 +786,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             {
                 get
                 {
-                    return _popup.IsKeyboardFocusWithin;
+                    return _popup.HasFocus;
                 }
             }
         }

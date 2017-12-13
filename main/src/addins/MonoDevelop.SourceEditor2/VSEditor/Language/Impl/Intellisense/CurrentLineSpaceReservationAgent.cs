@@ -13,6 +13,9 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
+using MonoDevelop.Components;
+using Rect = Xwt.Rectangle;
+using Point = Xwt.Point;
 
 namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 {
@@ -24,15 +27,15 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         private IIntellisenseSessionStack _sessionStack;
         private bool _isAttached = false;
 
-        [Export(typeof(IWpfTextViewCreationListener))]
+        [Export(typeof(ITextViewCreationListener))]
         [ContentType("Text")]
         [TextViewRole(PredefinedTextViewRoles.Editable)]
-        internal class CurrentLineSpaceReservationAgent_ViewCreationListener : IWpfTextViewCreationListener
+        internal class CurrentLineSpaceReservationAgent_ViewCreationListener : ITextViewCreationListener
         {
             [Import]
             internal IIntellisenseSessionStackMapService IntellisenseSessionStackMapService { get; set; }
 
-            public void TextViewCreated(IWpfTextView textView)
+            public void TextViewCreated(ITextView textView)
             {
                 var sessionStack = this.IntellisenseSessionStackMapService.GetStackForTextView(textView);
                 if (sessionStack != null)
@@ -183,14 +186,14 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
                     (caretLine.VisibilityState != VisibilityState.Unattached) &&
                     (caretLine.VisibilityState != VisibilityState.Hidden))
                 {
-                    Point topLeft = ((IWpfTextView)_textView).VisualElement.PointToScreen
-                        (new Point(_textView.ViewportLeft, caretLine.TextTop - _textView.ViewportTop));
+                    var topLeft = ((IMdTextView)_textView).VisualElement.GetScreenCoordinates
+                        (new Gdk.Point((int)_textView.ViewportLeft, (int)(caretLine.TextTop - _textView.ViewportTop)));
                     Rect screenRect = new Rect
                         (topLeft.X,
                          topLeft.Y,
-                         _textView.ViewportWidth / WpfHelper.DeviceScaleX,                                                           
-                         (caretLine.TextHeight / WpfHelper.DeviceScaleY) + 3); // Add some buffer to allow for the possibility of a smart
-                                                                           // tag tickler below the line.
+                         _textView.ViewportWidth,
+                         (caretLine.TextHeight) + 3); // Add some buffer to allow for the possibility of a smart
+                                                      // tag tickler below the line.
                     return new RectangleGeometry(screenRect);
                 }
                 else
@@ -207,7 +210,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             {
                 if (_currentLineSRManager == null)
                 {
-                    _currentLineSRManager = ((IWpfTextView)_textView).GetSpaceReservationManager(CurrentLineSRManagerName);
+                    _currentLineSRManager = ((IMdTextView)_textView).GetSpaceReservationManager(CurrentLineSRManagerName);
                 }
 
                 return _currentLineSRManager;

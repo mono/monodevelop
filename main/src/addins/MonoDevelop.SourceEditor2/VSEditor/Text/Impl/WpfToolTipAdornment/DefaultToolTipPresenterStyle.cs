@@ -1,7 +1,7 @@
-﻿namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
+namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 {
     using System.ComponentModel.Composition;
-    using System.Windows.Media;
+    using Xwt.Drawing;
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Utilities;
 
@@ -11,8 +11,8 @@
     {
         public DefaultToolTipPresenterStyle()
         {
-            this.BorderBrush = Brushes.Black;
-            this.BackgroundBrush = Brushes.LightGray;
+            this.BorderBrush = Colors.Black;
+            this.BackgroundBrush = Colors.LightGray;
         }
     }
 }

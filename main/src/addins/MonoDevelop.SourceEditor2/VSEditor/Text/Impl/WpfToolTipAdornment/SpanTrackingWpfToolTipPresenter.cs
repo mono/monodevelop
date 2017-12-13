@@ -1,14 +1,14 @@
-﻿namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
+namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 {
     using System;
     using System.Collections.Generic;
     using System.Windows;
-    using System.Windows.Controls.Primitives;
     using System.Windows.Input;
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
+	using MonoDevelop.Components;
 
-    internal sealed class SpanTrackingWpfToolTipPresenter : BaseWpfToolTipPresenter
+	internal sealed class SpanTrackingWpfToolTipPresenter : BaseWpfToolTipPresenter
     {
         public SpanTrackingWpfToolTipPresenter(
             IViewElementFactoryService viewElementFactoryService,
@@ -24,11 +24,11 @@
         {
             if (!this.isDismissed)
             {
-                this.popup.LayoutUpdated -= this.OnLayoutUpdated;
+                this.popup.BoundsChanged -= this.OnLayoutUpdated;
                 this.textView.LayoutChanged -= this.OnTextViewLayoutChanged;
                 this.WpfTextView.Caret.PositionChanged -= this.OnCaretPositionChanged;
-                this.WpfTextView.ZoomLevelChanged -= this.OnZoomLevelChanged;
-                this.WpfTextView.VisualElement.LostKeyboardFocus -= this.OnLostKeyboardFocus;
+                //this.WpfTextView.ZoomLevelChanged -= this.OnZoomLevelChanged;
+                this.WpfTextView.VisualElement.FocusOutEvent -= this.OnLostKeyboardFocus;
             }
 
             base.Dismiss();
@@ -37,24 +37,23 @@
         public override void StartOrUpdate(ITrackingSpan applicableToSpan, IEnumerable<object> content)
         {
             this.applicableToSpan = applicableToSpan;
-            this.popup.Placement = PlacementMode.RelativePoint;
-            this.popup.PlacementTarget = this.WpfTextView.VisualElement;
-            this.popup.HorizontalAlignment = HorizontalAlignment.Left;
-            this.popup.VerticalAlignment = VerticalAlignment.Top;
-
-            if (!this.popup.IsOpen)
+			this.popup.TransientFor = Xwt.Toolkit.CurrentEngine.WrapWidget (this.WpfTextView.VisualElement).ParentWindow;
+            //this.popup.HorizontalAlignment = HorizontalAlignment.Left;
+            //this.popup.VerticalAlignment = VerticalAlignment.Top;
+			
+            if (!this.popup.Visible)
             {
-                this.popup.LayoutUpdated += this.OnLayoutUpdated;
+                this.popup.BoundsChanged += this.OnLayoutUpdated;
                 this.textView.LayoutChanged += this.OnTextViewLayoutChanged;
                 this.WpfTextView.Caret.PositionChanged += this.OnCaretPositionChanged;
-                this.WpfTextView.ZoomLevelChanged += this.OnZoomLevelChanged;
-                this.WpfTextView.VisualElement.LostKeyboardFocus += this.OnLostKeyboardFocus;
+                //this.WpfTextView.ZoomLevelChanged += this.OnZoomLevelChanged;
+                this.WpfTextView.VisualElement.FocusOutEvent += this.OnLostKeyboardFocus;
             }
 
             base.StartOrUpdate(applicableToSpan, content);
         }
 
-        private void OnLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) => this.Dismiss();
+        private void OnLostKeyboardFocus(object sender, Gtk.FocusOutEventArgs e) => this.Dismiss();
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) => this.Dismiss();
 
@@ -62,7 +61,7 @@
         // to change size. Recompute position when this happens.
         private void OnLayoutUpdated(object sender, EventArgs e) => this.UpdatePopupPosition();
 
-        private void OnZoomLevelChanged(object sender, ZoomLevelChangedEventArgs e) => this.UpdatePopupPosition();
+        //private void OnZoomLevelChanged(object sender, ZoomLevelChangedEventArgs e) => this.UpdatePopupPosition();
 
         private void OnTextViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
@@ -99,15 +98,16 @@
                         verticalOffset = (startLine.Bottom - this.textView.ViewportTop);
                     }
 
-                    // WPF seems to have a bug where if the offsets are the same, the control doesn't move, even
-                    // if its relative target did. Force the popup to move by toggling the offsets.
-                    this.popup.HorizontalOffset = (startLine.GetCharacterBounds(startPoint).Leading - this.textView.ViewportLeft);
-                    this.popup.VerticalOffset = verticalOffset + 0.0001;
-                    this.popup.VerticalOffset = verticalOffset;
+					// WPF seems to have a bug where if the offsets are the same, the control doesn't move, even
+					// if its relative target did. Force the popup to move by toggling the offsets.
+					this.popup.Location = ((IMdTextView)textView).VisualElement.GetScreenCoordinates (new Gdk.Point ((int)(startLine.GetCharacterBounds (startPoint).Leading - this.textView.ViewportLeft), (int)verticalOffset)).ToXwtPoint ();
 
                     return;
                 }
-            }
+			}
+			else {
+				Console.WriteLine ();
+			}
 
             this.Dismiss();
         }

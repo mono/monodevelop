@@ -9,6 +9,10 @@ using Microsoft.VisualStudio.Language.Utilities;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Adornments;
 using Microsoft.VisualStudio.Text.Editor;
+using MonoDevelop.Components;
+using Xwt;
+using Xwt.Backends;
+using Rect = Xwt.Rectangle;
 
 namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 {
@@ -17,6 +21,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         private ISignatureHelpSession _session;
         private ITrackingSpan _presentationSpan = null;
         private DefaultSignatureHelpPresenterSurfaceElement _surfaceElement;
+        private Widget wrappedXwtWidget;
         private EventHandler _surfaceElementChangedEvent;
         private bool _isDisposed = false;
         private SignatureHelpSessionView _sessionView;
@@ -24,11 +29,11 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 
         public DefaultSignatureHelpPresenter(DefaultSignatureHelpPresenterProvider componentContext)
         {
-            _surfaceElement = new DefaultSignatureHelpPresenterSurfaceElement(this);
-            _surfaceElement.MouseLeftButtonDown += this.OnSigHelpLayoutGrid_MouseLeftButtonDown;
-            _surfaceElement.UpButton.Click += this.OnSurfaceElementUpButtonClick;
-            _surfaceElement.DownButton.Click += this.OnSurfaceElementDownButtonClick;
-
+            _surfaceElement = new DefaultSignatureHelpPresenterSurfaceElement();
+            wrappedXwtWidget = _surfaceElement.Content;
+            //TODO: _surfaceElement.MouseLeftButtonDown += this.OnSigHelpLayoutGrid_MouseLeftButtonDown;
+            _surfaceElement.UpButtonClick += this.OnSurfaceElementUpButtonClick;
+            _surfaceElement.DownButtonClick += this.OnSurfaceElementDownButtonClick;
             _sessionView = new SignatureHelpSessionView(componentContext);
         }
 
@@ -55,11 +60,11 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             return false;
         }
 
-        public UIElement SurfaceElement
+        public Xwt.Widget SurfaceElement
         {
             get
             {
-                return _surfaceElement;
+                return wrappedXwtWidget;
             }
         }
 
@@ -111,11 +116,11 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 
         public event EventHandler PresentationSpanChanged;
 
-        public double Opacity
-        {
-            get { return (_surfaceElement.Opacity); }
-            set { _surfaceElement.Opacity = value; }
-        }
+        public double Opacity {
+            get; set;
+            //get { return (_surfaceElement.Opacity); }
+            //set { _surfaceElement.Opacity = value; }
+            }
 
         public void Dispose()
         {
@@ -211,7 +216,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             this.DetachFromSession();
         }
 
-        private void OnSurfaceElementDownButtonClick(object sender, RoutedEventArgs e)
+        private void OnSurfaceElementDownButtonClick(object sender, EventArgs e)
         {
             this.NextSignature();
 
@@ -219,7 +224,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             this.FocusTheSessionView();
         }
 
-        private void OnSurfaceElementUpButtonClick(object sender, RoutedEventArgs e)
+        private void OnSurfaceElementUpButtonClick(object sender, EventArgs e)
         {
             this.PreviousSignature();
 
@@ -227,7 +232,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             this.FocusTheSessionView();
         }
 
-        private void OnSigHelpLayoutGrid_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnSigHelpLayoutGrid_MouseLeftButtonDown()
         {
             this.NextSignature();
 
@@ -267,10 +272,10 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
                 return;
             }
 
-            IWpfTextView textView = _session.TextView as IWpfTextView;
+            var textView = _session.TextView as IMdTextView;
             if (textView != null)
             {
-                textView.VisualElement.Focus();
+                textView.VisualElement.GrabFocus ();
             }
         }
 

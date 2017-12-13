@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         #region Private Members
         internal Dictionary<string, int> _orderedManagerDefinitions;
 
-        internal readonly WpfTextView _view;
+        internal readonly Mono.TextEditor.TextArea _view;
         internal readonly List<SpaceReservationManager> _managers = new List<SpaceReservationManager>();
         bool _hasAggregateFocus;
 
@@ -44,7 +44,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         #endregion // Private Members
 
-        public SpaceReservationStack(Dictionary<string, int> orderedManagerDefinitions, WpfTextView view)
+        public SpaceReservationStack(Dictionary<string, int> orderedManagerDefinitions, Mono.TextEditor.TextArea view)
         {
             _orderedManagerDefinitions = orderedManagerDefinitions;
             _view = view;

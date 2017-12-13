@@ -16,29 +16,29 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
     internal class TextCaret : ITextCaret
     {
-        private TextEditor _textEditor;
+        private TextArea _textEditor;
         private ITextView _textView;
 
         private VirtualSnapshotPoint _insertionPoint;
         private PositionAffinity _caretAffinity;
 
-        public TextCaret(TextEditor textEditor, ITextView textView)
+        public TextCaret(TextArea textEditor)
         {
             _textEditor = textEditor;
-            _textView = textView;
+            _textView = textEditor;
 
             // Set up initial values
             _caretAffinity = PositionAffinity.Successor;
-            _insertionPoint = new VirtualSnapshotPoint(new SnapshotPoint(_textView.TextSnapshot, 0));
+            _insertionPoint = new VirtualSnapshotPoint(new SnapshotPoint(textEditor.TextSnapshot, 0));
 
-            textEditor.Carets[0].PositionChanged += ImmediateCaretPositionChanged;
+            _textEditor.Caret.PositionChanged += ImmediateCaretPositionChanged;
         }
 
         void ImmediateCaretPositionChanged(object sender, CaretLocationEventArgs args)
         {
             // MD doesn't fire textEditor.CaretPositionChanged until after the command has gone completely through the command chain. 
             //   Too much VS stuff depends on it getting updated earlier, so we'll use this event which fires earlier.
-            int position = _textEditor.CaretOffset;
+            int position = _textEditor.Caret.Offset;
             VirtualSnapshotPoint vsp = new VirtualSnapshotPoint(_textView.TextSnapshot, position);
             
             _insertionPoint = vsp;
@@ -65,7 +65,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         {
             get
             {
-                throw new NotImplementedException();
+                return _textView.GetTextViewLineContainingBufferPosition (_insertionPoint.Position);
             }
         }
 
@@ -83,7 +83,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             {
                 ITextSnapshotLine snapshotLine = _textView.TextBuffer.CurrentSnapshot.GetLineFromPosition(Position.BufferPosition);
 
-                return _textEditor.CaretColumn > snapshotLine.Length + 1;
+                return _textEditor.Caret.Column > snapshotLine.Length + 1;
             }
         }
 
@@ -166,7 +166,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         public void EnsureVisible()
         {
-            _textEditor.ScrollTo(_textEditor.CaretLocation);
+            _textEditor.ScrollTo(_textEditor.Caret.Offset);
         }
 
         public CaretPosition MoveTo(SnapshotPoint bufferPosition)
@@ -249,7 +249,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                 col = requestedPosition - snapshotLine.Start + 1;
             }
 
-            _textEditor.SetCaretLocation(line, col, false, false);
+            _textEditor.SetCaretTo (line, col, false, false);
         }
     }
 }

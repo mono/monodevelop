@@ -53,7 +53,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	class TextArea : Container, ITextEditorDataProvider
+	partial class TextArea : Container, ITextEditorDataProvider
 	{
 
 		TextEditorData textEditorData;
