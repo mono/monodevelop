@@ -229,6 +229,7 @@ namespace MonoDevelop.Ide.Gui
 			case Gdk.Key.Right:
 			case Gdk.Key.Page_Up:
 			case Gdk.Key.Page_Down:
+			case Gdk.Key.Escape:
 				return KeyDescriptor.FromGtk (key, '\0', Gdk.ModifierType.None);
 			case Gdk.Key.Tab:
 				return KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
@@ -285,12 +286,24 @@ namespace MonoDevelop.Ide.Gui
 
 		void CreateListWindow (string partialWord, bool autoSelect, bool completeWithSpaceOrPunctuation, params string [] completionData)
 		{
-			CreateListWindow (partialWord, autoSelect, completeWithSpaceOrPunctuation, true, completionData);
+			PrepareListWindow ();
+			ShowListWindow (partialWord, autoSelect, completeWithSpaceOrPunctuation, completionData);
+		}
+
+		void ShowListWindow (string partialWord, bool autoSelect, bool completeWithSpaceOrPunctuation, params string [] completionData)
+		{
+			ShowListWindow (partialWord, autoSelect, completeWithSpaceOrPunctuation, true, completionData);
 		}
 
 		void CreateListWindow (string partialWord, bool autoSelect, bool completeWithSpaceOrPunctuation, bool autoCompleteEmptyMatch, params string [] completionData)
 		{
-			CreateListWindow (new SimulationSettings () {
+			PrepareListWindow ();
+			ShowListWindow (partialWord, autoSelect, completeWithSpaceOrPunctuation, autoCompleteEmptyMatch, completionData);
+		}
+
+		void ShowListWindow (string partialWord, bool autoSelect, bool completeWithSpaceOrPunctuation, bool autoCompleteEmptyMatch, params string [] completionData)
+		{
+			ShowListWindow (new SimulationSettings () {
 				AutoSelect = autoSelect,
 				CompleteWithSpaceOrPunctuation = completeWithSpaceOrPunctuation,
 				AutoCompleteEmptyMatch = autoCompleteEmptyMatch,
@@ -299,6 +312,12 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		void CreateListWindow (SimulationSettings settings)
+		{
+			PrepareListWindow ();
+			ShowListWindow (settings);
+		}
+
+		void ShowListWindow (SimulationSettings settings)
 		{
 			CompletionDataList dataList = new CompletionDataList {
 				AutoSelect = settings.AutoSelect,
@@ -317,10 +336,16 @@ namespace MonoDevelop.Ide.Gui
 				dataList.Add (data);
 			}
 
-			CreateListWindow (dataList);
+			ShowListWindow (dataList);
 		}
 
 		void CreateListWindow (ICompletionDataList list)
+		{
+			PrepareListWindow ();
+			listWindow.ShowListWindow (list);
+		}
+
+		void PrepareListWindow ()
 		{
 			completionView = new MockCompletionView ();
 			listWindow = new CompletionListWindow (completionView);
@@ -330,7 +355,11 @@ namespace MonoDevelop.Ide.Gui
 
 			listWindow.InitializeListWindow (completionWidget, ctx);
 			listWindow.ClearMruCache ();
-			listWindow.ShowListWindow (list, ctx);
+		}
+
+		void ShowListWindow (ICompletionDataList list)
+		{
+			listWindow.ShowListWindow (list);
 		}
 
 		void AssertCompletionList (params string[] items)
@@ -1465,6 +1494,67 @@ namespace MonoDevelop.Ide.Gui
 
 			SimulateInput ("n");
 			AssertCompletionList ("RandomNumberGenerator", "RenameAnnotation", "IReginAnnotation");
+		}
+
+		[Test]
+		public void TestPrepareShowWindow ()
+		{
+			PrepareListWindow ();
+
+			SimulateInput ("a");
+			SimulateInput ("b");
+
+			ShowListWindow ("", true, true,
+				"AxxxxByyyy",
+				"AxxByy",
+				"Axx",
+				"AxxxBzzz");
+
+			AssertCompletionList ("AxxByy", "AxxxBzzz", "AxxxxByyyy");
+
+			SimulateInput ("y");
+			AssertCompletionList ("AxxByy", "AxxxxByyyy");
+		}
+
+		[Test]
+		public void TestCancelShowWindow ()
+		{
+			PrepareListWindow ();
+
+			// Even if ShowWindow has not been called, the window can
+			// already process key input, so we consider it to be "visible".
+			Assert.IsTrue (listWindow.Visible);
+			bool visible = true;
+
+			listWindow.VisibleChanged += delegate {
+				visible = listWindow.Visible;
+			};
+
+			// Canceling should rise the VisibleChanged event
+			SimulateInput (Gdk.Key.Escape);
+
+			Assert.IsFalse (visible);
+			Assert.IsFalse (listWindow.Visible);
+		}
+
+		[Test]
+		public void TestHideBeforeShowWindow ()
+		{
+			PrepareListWindow ();
+
+			// Even if ShowWindow has not been called, the window can
+			// already process key input, so we consider it to be "visible".
+			Assert.IsTrue (listWindow.Visible);
+			bool visible = true;
+
+			listWindow.VisibleChanged += delegate {
+				visible = listWindow.Visible;
+			};
+
+			listWindow.HideWindow ();
+
+			Assert.IsFalse (visible);
+			Assert.IsFalse (listWindow.Visible);
 		}
 	}
 }

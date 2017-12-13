@@ -96,6 +96,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (wnd == null) {
 				wnd = new CompletionListWindow ();
 				wnd.WordCompleted += HandleWndWordCompleted;
+				wnd.VisibleChanged += HandleWndVisibleChanged;
 			}
 			if (ext != null) {
 				var widget = ext.Editor.GetNativeWidget<Gtk.Widget> ();
@@ -122,7 +123,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var ext = wnd.Extension;
 			try {
 				isShowing = false;
-				if (!wnd.ShowListWindow (list, completionContext)) {
+				if (!wnd.ShowListWindow (list)) {
 					if (list is IDisposable)
 						((IDisposable)list).Dispose ();
 					HideWindow ();
