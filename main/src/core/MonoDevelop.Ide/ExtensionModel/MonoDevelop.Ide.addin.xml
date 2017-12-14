@@ -401,6 +401,8 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/Composition">
+		<Assembly file="Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll"/>
+		<Assembly file="Microsoft.CodeAnalysis.EditorFeatures.dll"/>
 		<Assembly file="Microsoft.CodeAnalysis.Features.dll" />
 		<Assembly file="Microsoft.CodeAnalysis.Workspaces.dll" />
 		<Assembly file="Microsoft.CodeAnalysis.Workspaces.Desktop.dll" />
