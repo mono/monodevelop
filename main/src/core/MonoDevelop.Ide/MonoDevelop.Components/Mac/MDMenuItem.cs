@@ -101,7 +101,7 @@ namespace MonoDevelop.Components.Mac
 			}
 		}
 
-		int FindMeInParent (MDMenu parent)
+		int FindMeInParent (NSMenu parent)
 		{
 			for (int n = 0; n < parent.Count; n++)
 				if (parent.ItemAt (n) == this)
@@ -129,13 +129,13 @@ namespace MonoDevelop.Components.Mac
 		{
 			if (lastInfo != sender)
 				return;
-			var parent = (MDMenu)Menu;
+			var parent = Menu;
 			var ind = FindMeInParent (parent);
 			Update (parent, ref ind, lastInfo);
-			parent.UpdateSeparators ();
+			(parent as MDMenu)?.UpdateSeparators ();
 		}
 
-		void Update (MDMenu parent, ref int index, CommandInfo info)
+		void Update (NSMenu parent, ref int index, CommandInfo info)
 		{
 			if (!isArrayItem) {
 				SetItemValues (this, info, ce.DisabledVisible, ce.OverrideLabel);
