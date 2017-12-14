@@ -66,6 +66,12 @@ namespace MonoDevelop.Components.Mac
 
 		protected override void Dispose (bool disposing)
 		{
+			if (lastInfo != null) {
+				lastInfo.CancelAsyncUpdate ();
+				lastInfo.Changed -= OnLastInfoChanged;
+				lastInfo = null;
+			}
+			initialCommandTarget = null;
 			base.Dispose (disposing);
 		}
 
@@ -107,20 +113,24 @@ namespace MonoDevelop.Components.Mac
 		{
 			var info = manager.GetCommandInfo (ce.CommandId, new CommandTargetRoute (initialCommandTarget));
 			if (lastInfo != info) {
-				if (lastInfo != null)
+				if (lastInfo != null) {
 					lastInfo.CancelAsyncUpdate ();
+					lastInfo.Changed -= OnLastInfoChanged;
+				}
 				lastInfo = info;
 				if (lastInfo.IsUpdatingAsynchronously) {
-					lastInfo.Changed += delegate {
-						var ind = FindMeInParent (parent);
-						if (info == lastInfo) {
-							Update (parent, ref ind, info);
-							parent.UpdateSeparators ();
-						}
-					};
+					lastInfo.Changed += OnLastInfoChanged;
 				}
 			}
 			Update (parent, ref index, info);
+		}
+
+		void OnLastInfoChanged (object sender, EventArgs args)
+		{
+			var parent = (MDMenu)Menu;
+			var ind = FindMeInParent (parent);
+			Update (parent, ref ind, lastInfo);
+			parent.UpdateSeparators ();
 		}
 
 		void Update (MDMenu parent, ref int index, CommandInfo info)
