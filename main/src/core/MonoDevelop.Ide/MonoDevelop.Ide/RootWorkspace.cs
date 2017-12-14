@@ -526,7 +526,8 @@ namespace MonoDevelop.Ide
 			monitor = monitor.WithCancellationSource (openingItemCancellationSource);
 
 			IdeApp.Workbench.LockGui ();
-			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming ();
+			metadata = GetOpenWorkspaceItemMetadata (metadata);
+			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming (metadata);
 			try {
 				var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading, metadata, timer);
 				return await oper;
@@ -580,7 +581,7 @@ namespace MonoDevelop.Ide
 				
 				if (item == null) {
 					timer.Trace ("Reading item");
-					item = await Services.ProjectService.ReadWorkspaceItem (monitor, file, metadata);
+					item = await Services.ProjectService.ReadWorkspaceItem (monitor, file);
 					if (monitor.CancellationToken.IsCancellationRequested)
 						return false;
 				}
@@ -623,8 +624,32 @@ namespace MonoDevelop.Ide
 				timer.Trace ("Reattaching documents");
 				ReattachDocumentProjects (null);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
+
+				UpdateOpenWorkspaceItemMetadata (metadata, item);
 			}
 			return true;
+		}
+
+		static IDictionary<string, string> GetOpenWorkspaceItemMetadata (IDictionary<string, string> metadata)
+		{
+			if (metadata == null) {
+				metadata = new Dictionary<string, string> ();
+				metadata ["OnStartup"] = bool.FalseString;
+			}
+
+			// Will be set to true after a successful load.
+			metadata ["LoadSucceed"] = bool.FalseString;
+
+			return metadata;
+		}
+
+		static void UpdateOpenWorkspaceItemMetadata (IDictionary<string, string> metadata, WorkspaceItem item)
+		{
+			// Is this a workspace or a solution?
+			metadata ["IsSolution"] = (item is Solution).ToString ();
+			metadata ["LoadSucceed"] = bool.TrueString;
+			metadata ["Reason"] = "OpenSolution";
+			metadata ["TotalProjectCount"] = item.GetAllItems<Project> ().Count ().ToString ();
 		}
 
 		async Task RestoreWorkspacePreferences (WorkspaceItem item)
