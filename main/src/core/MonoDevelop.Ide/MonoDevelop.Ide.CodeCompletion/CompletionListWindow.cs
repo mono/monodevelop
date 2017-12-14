@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 		public bool Visible {
-			get { return window.Visible; }
+			get { return controller.Visible; }
 		}
 
 		public int X {
@@ -189,14 +189,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
 		{
 			controller.InitializeSession (completionWidget, completionContext);
-			return ShowListWindow (list, completionContext);
+			return ShowListWindow (list);
 		}
 
-		internal bool ShowListWindow (ICompletionDataList list, CodeCompletionContext completionContext)
+		internal bool ShowListWindow (ICompletionDataList list)
 		{
 			Counters.ProcessCodeCompletion.Trace ("Begin show completion window");
 
-			var r = controller.ShowListWindow (list, completionContext);
+			var r = controller.ShowListWindow (list);
 
 			Counters.ProcessCodeCompletion.Trace ("End show completion window");
 
