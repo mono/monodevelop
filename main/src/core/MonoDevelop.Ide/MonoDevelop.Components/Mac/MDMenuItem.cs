@@ -127,6 +127,8 @@ namespace MonoDevelop.Components.Mac
 
 		void OnLastInfoChanged (object sender, EventArgs args)
 		{
+			if (lastInfo != sender)
+				return;
 			var parent = (MDMenu)Menu;
 			var ind = FindMeInParent (parent);
 			Update (parent, ref ind, lastInfo);
