@@ -217,15 +217,12 @@
     -->
     <Reference Include="Microsoft.Build">
       <HintPath>$(MSBuildToolsPath)\Microsoft.Build.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Framework">
       <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Framework.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Utilities.Core">
       <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</HintPath>
-      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
