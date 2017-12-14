@@ -1,6 +1,7 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesVSEditor)" />
+  <Import Project="$(ReferencesRoslyn)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -142,30 +143,6 @@
     </Reference>
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Features">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.ValueTuple">
@@ -324,6 +301,16 @@
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\Indent.cs" />
     <Compile Include="MonoDevelop.CSharp\DeclaredSymbolInfo.cs" />
     <Compile Include="MonoDevelop.CSharp\ProjectSearchCategory.cs" />
+    <Compile Include="Razor\IMonoDevelopContainedLanguageHost.cs" />
+    <Compile Include="Razor\IMyRoslynCompletionDataProvider.cs" />
+    <Compile Include="Razor\MonoDevelopContainedDocument.cs" />
+    <Compile Include="Razor\MonoDevelopFormattingRuleFactoryServiceFactory.cs" />
+    <Compile Include="Razor\MyCSharpCompletionData.cs" />
+    <Compile Include="Razor\MyCSharpCompletionDataProvider.cs" />
+    <Compile Include="Razor\MyRoslynCompletionData.cs" />
+    <Compile Include="Razor\RoslynCommandTarget.cs" />
+    <Compile Include="Razor\RoslynCompletionPresenter.cs" />
+    <Compile Include="Razor\RoslynCompletionPresenterSession.cs" />
     <Compile Include="Util\7BitEncodedInts.cs" />
     <Compile Include="Util\ArgumentSyntaxExtensions.cs" />
     <Compile Include="Util\CloneableStack.cs" />

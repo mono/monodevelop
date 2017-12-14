@@ -100,6 +100,14 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                                                                                      PredefinedTextViewRoles.Structured,
                                                                                      PredefinedTextViewRoles.Zoomable);
 
+        public ITextView CreateTextView (ITextBuffer textBuffer)
+        {
+            MonoDevelop.Ide.Editor.ITextDocument textDocument = textBuffer.GetTextEditor();
+            TextEditor textEditor = textDocument as TextEditor;
+
+            return CreateTextView(textEditor);
+        }
+
         public ITextView CreateTextView (MonoDevelop.Ide.Editor.TextEditor textEditor, ITextViewRoleSet roles = null, IEditorOptions parentOptions = null)
         {
             if (textEditor == null)

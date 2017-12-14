@@ -1,4 +1,4 @@
-//
+﻿//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -48,6 +48,9 @@ namespace Microsoft.VisualStudio.Platform
 
         public Task<HighlightedLine> GetHighlightedLineAsync(IDocumentLine line, CancellationToken cancellationToken)
         {
+            //TODO verify that the snapshot line from this.textBuffer is equivalent to the document line converted to a snapshotline.
+            //Possibly take in a TextDataModel as a parameter and verify the buffers are appropriate.
+            //ITextSnapshotLine snapshotLine = (line as Mono.TextEditor.TextDocument.DocumentLineFromTextSnapshotLine)?.Line;
             ITextSnapshotLine snapshotLine = textBuffer.CurrentSnapshot.GetLineFromLineNumber (line.LineNumber - 1);
             if ((this.classifier == null) || (snapshotLine == null))
             {
@@ -194,6 +197,9 @@ namespace Microsoft.VisualStudio.Platform
                     styleName = "punctuation.separator.key-value.html";
                     break;
                 case "HTML Server-Side Script":
+                    //styleName = "punctuation.section.embedded.begin"; // suggested by mike, does nothing
+                    //styleName = "punctuation.section.embedded.begin.cs"; // suggested by mike, does nothing
+                    styleName = "meta.preprocessor.source.cs"; // TODO: Find a name to use here
                     //styleName = style.HtmlServerSideScript.Name;
                     break;
                 case "HTML Tag Delimiter":
@@ -257,7 +263,12 @@ namespace Microsoft.VisualStudio.Platform
                     styleName = "variable.other.less";
                     break;
                 default:
-                    styleName = EditorThemeColors.Foreground;
+                    // If the stylename looks like a textmate style, just use it
+                    if (classificationType.Classification.IndexOf('.') >= 0)
+                    {
+                        styleName = classificationType.Classification;
+                    }
+
                     break;
             }
 
