@@ -52,6 +52,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public BuildOutputNode Parent { get; set; }
 		public IList<BuildOutputNode> Children { get; } = new List<BuildOutputNode> ();
 		public bool HasErrors { get; set; }
+		public bool HasWarnings { get; set; }
+		public bool HasData { get; set; }
 	}
 
 	class BuildOutputProcessor : IDisposable
@@ -97,10 +99,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 				currentNode = node;
 			}
 
-			if (nodeType == BuildOutputNodeType.Error) {
+			if (nodeType == BuildOutputNodeType.Error || nodeType == BuildOutputNodeType.Message || nodeType == BuildOutputNodeType.Warning) {
 				var p = node;
 				while (p != null) {
-					p.HasErrors = true;
+					if (nodeType == BuildOutputNodeType.Error) {
+						p.HasErrors = true;
+					} else if (nodeType == BuildOutputNodeType.Warning) {
+						p.HasWarnings = true;
+					} else if (nodeType == BuildOutputNodeType.Message) {
+						p.HasData = true;
+					}
+
 					p = p.Parent;
 				}
 			}
@@ -108,7 +117,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public void EndCurrentNode (string message)
 		{
-			AddNode (BuildOutputNodeType.Message, message, false);
 			currentNode = currentNode?.Parent;
 		}
 
@@ -133,7 +141,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		                          bool includeDiagnostics,
 		                          int startAtOffset)
 		{
-			if (!includeDiagnostics && node.NodeType == BuildOutputNodeType.Diagnostics) {
+			// For non-diagnostics mode, only return nodes with data
+			if (!includeDiagnostics && (node.NodeType == BuildOutputNodeType.Diagnostics ||
+			                            (!node.HasData && !node.HasErrors && !node.HasWarnings))) {
 				return;
 			}
 
