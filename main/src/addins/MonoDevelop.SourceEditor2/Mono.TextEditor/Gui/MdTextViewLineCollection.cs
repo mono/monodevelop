@@ -17,7 +17,7 @@ namespace Mono.TextEditor
 		public MdTextViewLineCollection (TextArea textView) : base (64)
 		{
 			this.textView = textView;
-			foreach (var item in textView.TextViewMargin.CachedLine.OrderBy (l => l.LineNumber)) {
+			foreach (var item in textView.TextViewMargin.CachedLine.Where (l => l != null).OrderBy (l => l.LineNumber)) {
 				var textViewLine = new MdTextViewLine (textView, item);
 				Add (textViewLine);
 			}

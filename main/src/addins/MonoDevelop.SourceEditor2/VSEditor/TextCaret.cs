@@ -195,7 +195,9 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         public CaretPosition MoveTo(VirtualSnapshotPoint bufferPosition, PositionAffinity caretAffinity)
         {
-            throw new NotImplementedException();
+            this.InternalMoveTo(bufferPosition, caretAffinity, true, true, true);
+
+            return this.Position;
         }
 
         public CaretPosition MoveTo(ITextViewLine textLine, double xCoordinate)
