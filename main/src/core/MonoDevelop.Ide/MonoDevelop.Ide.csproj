@@ -211,28 +211,18 @@
       <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
-  </ItemGroup>
-  <PropertyGroup> 
-    <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Windows_NT'">$(MSBuildToolsPath)\</MSBuild_OSS_BinDir> 
-    <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin` 
-         when building with msbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/msbuild/*/bin` 
- 	       Prefer referencing msbuild 15.* assemblies over 14.1 . At runtime, we use correct one anyway 
-    --> 
-    <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Unix' and '$(MSBuild_OSS_BinDir)' == '' and Exists('$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\MSBuild.exe')">$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\</MSBuild_OSS_BinDir> 
-    <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Unix' and '$(MSBuild_OSS_BinDir)' == '' and Exists('$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\MSBuild.dll')">$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\</MSBuild_OSS_BinDir> 
-  </PropertyGroup> 
-  <ItemGroup> 
-    <Reference Include="Microsoft.Build"> 
-      <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.dll</HintPath> 
-      <Private>False</Private> 
-    </Reference> 
-    <Reference Include="Microsoft.Build.Framework"> 
-      <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.Framework.dll</HintPath> 
-      <Private>False</Private> 
-    </Reference> 
-    <Reference Include="Microsoft.Build.Utilities.Core"> 
-      <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.Utilities.Core.dll</HintPath> 
-      <Private>False</Private> 
+    <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin`
+    when building with msbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/msbuild/*/bin`
+    Prefer referencing msbuild 15.* assemblies over 14.1 . At runtime, we use correct one anyway
+    -->
+    <Reference Include="Microsoft.Build">
+      <HintPath>$(MSBuildToolsPath)\Microsoft.Build.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Framework">
+      <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Utilities.Core">
+      <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
