@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="$(MSBuildThisFileDirectory)Frameworks.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>$(TheFramework)</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
+    <ProjectCapability Include="TestCapabilityNetStandard10" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.1'">
+    <ProjectCapability Include="TestCapabilityNetStandard11" />
+  </ItemGroup>
+</Project>

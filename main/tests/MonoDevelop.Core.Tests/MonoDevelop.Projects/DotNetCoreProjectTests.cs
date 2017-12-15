@@ -287,6 +287,32 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Project defines an MSBuild property in an imported file which is used as the value of
+		/// TargetFrameworks in the main project file.
+		/// </summary>
+		[Test]
+		public async Task LoadDotNetCoreProjectWithMultipleTargetFrameworksDefinedByMSBuildProperty ()
+		{
+			FilePath solFile = Util.GetSampleProject ("DotNetCoreMultiTargetFrameworkProperty", "DotNetCoreMultiTargetFrameworkProperty.sln");
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (Project)sol.Items [0];
+			var capabilities = p.GetProjectCapabilities ().ToList ();
+
+			Assert.That (capabilities, Contains.Item ("TestCapabilityNetStandard10"));
+			Assert.That (capabilities, Has.None.EqualTo ("TestCapabilityNetStandard11"));
+
+			await p.ReevaluateProject (Util.GetMonitor ());
+
+			capabilities = p.GetProjectCapabilities ().ToList ();
+
+			Assert.That (capabilities, Contains.Item ("TestCapabilityNetStandard10"));
+			Assert.That (capabilities, Has.None.EqualTo ("TestCapabilityNetStandard11"));
+
+			sol.Dispose ();
+		}
+
+		/// <summary>
 		/// Tests that metadata from the imported file globs for the Compile update items is not saved
 		/// in the main project file. The DependentUpon property was being saved with the evaluated
 		/// filename.
