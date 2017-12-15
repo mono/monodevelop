@@ -86,7 +86,7 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public void Trace (string message)
 		{
-			if (counter.Enabled) {
+			if (traceList != null) {
 				TimerTrace t = new TimerTrace ();
 				t.Timestamp = DateTime.Now;
 				t.Message = message;
@@ -123,7 +123,7 @@ namespace MonoDevelop.Core.Instrumentation
 				InstrumentationService.LogMessage (string.Format ("[{0} (+{1})] END: {2}", time, (time - lastTraceTime), counter.Name));
 			}
 
-			if (counter.Enabled) {
+			if (traceList != null) {
 				traceList.TotalTime = TimeSpan.FromMilliseconds (stopWatch.ElapsedMilliseconds);
 				if (traceList.TotalTime.TotalSeconds < counter.MinSeconds)
 					counter.RemoveValue (traceList.ValueIndex);
