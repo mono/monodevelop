@@ -140,11 +140,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			NotifyVisibilityChange ();
 		}
 
-		public bool ShowListWindow (ICompletionDataList list)
+		public bool ShowListWindow (ICompletionDataList list, CodeCompletionContext completionContext)
 		{
 			if (list == null)
 				throw new ArgumentNullException (nameof (list));
 
+			CodeCompletionContext = completionContext;
 			dataList = list;
 			ResetState ();
 

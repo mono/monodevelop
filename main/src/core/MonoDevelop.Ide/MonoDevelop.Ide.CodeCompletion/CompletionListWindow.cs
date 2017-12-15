@@ -189,14 +189,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
 		{
 			controller.InitializeSession (completionWidget, completionContext);
-			return ShowListWindow (list);
+			return ShowListWindow (list, completionContext);
 		}
 
-		internal bool ShowListWindow (ICompletionDataList list)
+		internal bool ShowListWindow (ICompletionDataList list, CodeCompletionContext completionContext)
 		{
 			Counters.ProcessCodeCompletion.Trace ("Begin show completion window");
 
-			var r = controller.ShowListWindow (list);
+			var r = controller.ShowListWindow (list, completionContext);
 
 			Counters.ProcessCodeCompletion.Trace ("End show completion window");
 
