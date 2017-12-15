@@ -71,10 +71,9 @@ namespace MonoDevelop.DotNetCore
 
 		protected override bool OnGetSupportsFramework (TargetFramework framework)
 		{
-			if (framework.IsNetCoreApp () ||
-				framework.IsNetStandard ())
-				return true;
-			return base.OnGetSupportsFramework (framework);
+			// Allow all SDK style projects to be loaded even if the framework is unknown.
+			// A PackageReference may define the target framework with an imported MSBuild file.
+			return true;
 		}
 
 		/// <summary>
