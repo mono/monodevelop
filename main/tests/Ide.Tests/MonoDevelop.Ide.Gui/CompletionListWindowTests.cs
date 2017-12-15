@@ -342,7 +342,7 @@ namespace MonoDevelop.Ide.Gui
 		void CreateListWindow (ICompletionDataList list)
 		{
 			PrepareListWindow ();
-			listWindow.ShowListWindow (list);
+			listWindow.ShowListWindow (list, listWindow.CodeCompletionContext);
 		}
 
 		void PrepareListWindow ()
@@ -359,7 +359,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void ShowListWindow (ICompletionDataList list)
 		{
-			listWindow.ShowListWindow (list);
+			listWindow.ShowListWindow (list, listWindow.CodeCompletionContext);
 		}
 
 		void AssertCompletionList (params string[] items)

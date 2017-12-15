@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var ext = wnd.Extension;
 			try {
 				isShowing = false;
-				if (!wnd.ShowListWindow (list)) {
+				if (!wnd.ShowListWindow (list, completionContext)) {
 					if (list is IDisposable)
 						((IDisposable)list).Dispose ();
 					HideWindow ();
