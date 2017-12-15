@@ -167,13 +167,10 @@ namespace NUnit3Runner
 
 			var result = new StringBuilder ();
 			if(testOutput is XmlElement xmlElement){
-				var steamName = xmlElement.GetAttribute ("stream");
-				if(!string.IsNullOrEmpty (steamName))
-					result.Append("Output of ")
-					      .Append (steamName)
-					      .Append (": "); 
+				var streamName = xmlElement.GetAttribute ("stream");
+				if (!string.IsNullOrEmpty (streamName))
+					result.AppendLine ($"Output of {streamName}: ");
 			}
-
 			result.Append (testOutput.InnerText);
 			return result.ToString ();
 		}
