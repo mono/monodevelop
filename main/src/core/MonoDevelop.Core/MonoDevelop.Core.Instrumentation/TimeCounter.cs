@@ -63,8 +63,7 @@ namespace MonoDevelop.Core.Instrumentation
 		internal TimeCounter (TimerCounter counter)
 		{
 			this.counter = counter;
-			if (counter.Enabled)
-				traceList = new TimerTraceList ();
+			traceList = new TimerTraceList ();
 			Begin ();
 		}
 
