@@ -32,25 +32,17 @@ module openStatements =
                 seq { line - 1 .. -1 .. 1 }
                 |> Seq.takeWhile (fun i ->
                     let lineText = editor.GetLineText(i, false)
-                    printfn "%s" lineText
                     lineText.StartsWith(openPrefix) &&
                         (textToInsert < lineText))// || isSystem && not (lineText.StartsWith("open System")))) // todo: System<smth> namespaces
                 |> Seq.tryLast
                 |> Option.defaultValue line
-
-            //let lineToInsert = line
-            // add empty line after all open expressions if needed
-            let insertEmptyLine = false
-                //editor.GetLineText(line, false)
-                //|> String.IsNullOrWhiteSpace
-                //|> not
 
             let prevLineEndOffset =
                 if lineToInsert > 1 then
                     (editor.GetLine (lineToInsert - 1)).EndOffsetIncludingDelimiter
                 else 0
 
-            editor.InsertText(prevLineEndOffset, textToInsert + "\n" + (if insertEmptyLine then "\n" else ""))
+            editor.InsertText(prevLineEndOffset, textToInsert + "\n")
         | None -> ()
 
     let rec visitDecls decls currentLine =
