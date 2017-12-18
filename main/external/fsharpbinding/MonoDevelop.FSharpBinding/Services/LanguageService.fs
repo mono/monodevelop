@@ -91,14 +91,18 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
 
     /// Get the symbols for declarations at the current location in the specified document and the long ident residue
     /// e.g. The incomplete ident One.Two.Th will return Th
-    member x.GetDeclarationSymbols(line, col, lineStr) =
+    member x.GetDeclarationSymbols(line, col, lineStr, autoImport) =
         async {
             match infoOpt, parseResults with
             | Some checkResults, parseResults ->
                   // Get items & generate output
                   let partialName = QuickParse.GetPartialLongNameEx(lineStr, col-1)
                   try
-                      let! results = checkResults.GetDeclarationListSymbols(parseResults, line, lineStr, partialName, fun() -> getAllSymbols checkResults)
+                      let allEntitiesFunction = 
+                          match autoImport with
+                          | true -> fun() -> getAllSymbols checkResults
+                          | false -> fun() -> []
+                      let! results = checkResults.GetDeclarationListSymbols(parseResults, line, lineStr, partialName, allEntitiesFunction)
                       return Some (results, partialName.PartialIdent)
                   with :? TimeoutException -> return None
             | None, _ -> return None

@@ -53,23 +53,24 @@ module openStatements =
             editor.InsertText(prevLineEndOffset, textToInsert + "\n" + (if insertEmptyLine then "\n" else ""))
         | None -> ()
 
-    let rec visitDecls decls =
+    let rec visitDecls decls currentLine =
         [ for decl in decls do
             match decl with
             | SynModuleDecl.Open(longIdentWithDots, range) -> 
                 yield (longIdentWithDots.Lid |> List.map(fun l -> l.idText) |> String.concat "."), range
-            | SynModuleDecl.NestedModule (_, _, decls , _, _) ->
-                yield! visitDecls decls
+            | SynModuleDecl.NestedModule (_, _, decls , _, range) ->
+                if range.StartLine < currentLine && range.EndLine >= currentLine then
+                    yield! visitDecls decls currentLine
             | _ -> () ]
 
-    let private visitModulesAndNamespaces modulesOrNss =
+    let private visitModulesAndNamespaces modulesOrNss currentLine =
         [ for moduleOrNs in modulesOrNss do
             let (SynModuleOrNamespace(_lid, _isRec, _isMod, decls, _xml, _attrs, _, _m)) = moduleOrNs
-            yield! visitDecls decls ]
+            yield! visitDecls decls currentLine ]
 
-    let getOpenStatements (tree: ParsedInput option) = 
+    let getOpenStatements (tree: ParsedInput option) currentLine = 
         match tree with
         | Some (ParsedInput.ImplFile(implFile)) ->
             let (ParsedImplFileInput(_fn, _script, _name, _, _, modules, _)) = implFile
-            visitModulesAndNamespaces modules
+            visitModulesAndNamespaces modules currentLine
         | _ -> []
