@@ -7,16 +7,24 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module openStatements =
     let addOpenStatement (editor:TextEditor) (parseTree:ParsedInput) (fullName:string) =
-        let lineNumber = editor.CaretLine
+        let lineNumber = editor.CaretLine - 1
         let insertionPoint = OpenStatementInsertionPoint.Nearest
         let idents = fullName.Split '.'
         match ParsedInput.tryFindNearestPointToInsertOpenDeclaration lineNumber parseTree idents insertionPoint with
         | Some context ->
-            let getLineText = fun lineNumber -> editor.GetLineText(lineNumber, false)
+            let getLineText = fun lineNumber -> editor.GetLineText(lineNumber+1, false)
             let pos = context |> ParsedInput.adjustInsertionPoint getLineText
 
-            let isSystem = fullName.StartsWith("System.")
-            let openPrefix = String(' ', pos.Column) + "open "
+            let lineText = editor.GetLineText(pos.Line - 1, false)
+            let column =
+                if (lineText.TrimStart ' ').StartsWith "module" then
+                    let line = editor.GetLine(pos.Line - 1)
+                    let indentation = line.GetIndentation(editor.CreateDocumentSnapshot())
+                    editor.Options.IndentationSize + indentation.Length
+                else
+                    //FCS assumes indent of 4 - correct for user specified indent length
+                    pos.Column - 4 + editor.Options.IndentationSize
+            let openPrefix = String(' ', column) + "open "
             let textToInsert = openPrefix + fullName
 
             let line = pos.Line
@@ -24,34 +32,40 @@ module openStatements =
                 seq { line - 1 .. -1 .. 1 }
                 |> Seq.takeWhile (fun i ->
                     let lineText = editor.GetLineText(i, false)
+                    printfn "%s" lineText
                     lineText.StartsWith(openPrefix) &&
-                    (textToInsert < lineText || isSystem && not (lineText.StartsWith("open System")))) // todo: System<smth> namespaces
+                        (textToInsert < lineText))// || isSystem && not (lineText.StartsWith("open System")))) // todo: System<smth> namespaces
                 |> Seq.tryLast
                 |> Option.defaultValue line
 
+            //let lineToInsert = line
             // add empty line after all open expressions if needed
-            let insertEmptyLine =
-                editor.GetLineText(line, false)
-                |> String.IsNullOrWhiteSpace
-                |> not
+            let insertEmptyLine = false
+                //editor.GetLineText(line, false)
+                //|> String.IsNullOrWhiteSpace
+                //|> not
 
             let prevLineEndOffset =
-                if lineToInsert > 0 then
-                    (editor.GetLine (lineToInsert - 1 |> min 1)).EndOffsetIncludingDelimiter
+                if lineToInsert > 1 then
+                    (editor.GetLine (lineToInsert - 1)).EndOffsetIncludingDelimiter
                 else 0
 
             editor.InsertText(prevLineEndOffset, textToInsert + "\n" + (if insertEmptyLine then "\n" else ""))
         | None -> ()
 
+    let rec visitDecls decls =
+        [ for decl in decls do
+            match decl with
+            | SynModuleDecl.Open(longIdentWithDots, range) -> 
+                yield (longIdentWithDots.Lid |> List.map(fun l -> l.idText) |> String.concat "."), range
+            | SynModuleDecl.NestedModule (_, _, decls , _, _) ->
+                yield! visitDecls decls
+            | _ -> () ]
+
     let private visitModulesAndNamespaces modulesOrNss =
         [ for moduleOrNs in modulesOrNss do
             let (SynModuleOrNamespace(_lid, _isRec, _isMod, decls, _xml, _attrs, _, _m)) = moduleOrNs
-
-            for decl in decls do
-                match decl with
-                | SynModuleDecl.Open(longIdentWithDots, range) -> 
-                    yield (longIdentWithDots.Lid |> List.map(fun l -> l.idText) |> String.concat "."), range
-                | _ -> () ]
+            yield! visitDecls decls ]
 
     let getOpenStatements (tree: ParsedInput option) = 
         match tree with
