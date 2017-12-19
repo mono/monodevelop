@@ -150,10 +150,10 @@ namespace MonoDevelop.Debugger
 				return;
 
 			var context_menu = new ContextMenu ();
-			var copyExecution = new ContextMenuItem (GettextCatalog.GetString ("_Copy"));
-			copyExecution.Sensitive = true;
-			copyExecution.Clicked += CopyExecution_Clicked;;
-			context_menu.Items.Add (copyExecution);
+			var copyMenuItem = new ContextMenuItem (GettextCatalog.GetString ("_Copy"));
+			copyMenuItem.Sensitive = true;
+			copyMenuItem.Clicked += CopyExecution_Clicked;
+			context_menu.Items.Add (copyMenuItem);
 
 			var process = store.GetValue (selected, (int)Columns.Object) as ProcessInfo;
 			if (process != null) { //User right-clicked on thread and not process
@@ -178,13 +178,12 @@ namespace MonoDevelop.Debugger
 		void CopyExecution_Clicked (object sender, ContextMenuItemClickedEventArgs e)
 		{
 			TreeIter selected;
-			if (!tree.Selection.GetSelected (out selected))
-				return;
+			tree.Selection.GetSelected (out selected);
 
 			var infoObject = tree.Model.GetValue (selected, (int)Columns.Object);
 
 			string bufferText = string.Empty;
-			if(infoObject is ThreadInfo threadInfo)
+			if (infoObject is ThreadInfo threadInfo)
 				bufferText = $"{threadInfo.Id} {threadInfo.Name} {threadInfo.Location}";
 
 			if (infoObject is ProcessInfo processInfo) 
