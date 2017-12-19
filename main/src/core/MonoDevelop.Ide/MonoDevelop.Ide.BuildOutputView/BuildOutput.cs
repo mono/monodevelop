@@ -77,6 +77,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
+		internal void UpdateFilePath (FilePath fileName)
+		{
+			filePath = fileName;
+		}
+
 		private class BuildOutputEventsSource : EventArgsDispatcher
 		{
 			public BuildFinishedEventArgs ProcessFile (string filePath, bool buildHasStarted)
