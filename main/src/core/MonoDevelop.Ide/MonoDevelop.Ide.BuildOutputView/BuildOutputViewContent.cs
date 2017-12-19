@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutputViewContent : ViewContent
 	{
-		string defaultName = "build ({0}).binlog";
+		string defaultName = "Build Output {0}.binlog";
 		bool isTemp;
 
 		public BuildOutputWidget Widget { get; }
@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			Widget = new BuildOutputWidget (buildOutput);
 			//TODO: is there a better way to identify if the buildOutpu.FilePath is tmp or not? 
 			isTemp = Path.GetDirectoryName (buildOutput.FilePath).TrimEnd ('/') == Path.GetTempPath ().TrimEnd ('/');
-			this.ContentName = isTemp ? string.Format (defaultName, 1) : buildOutput.FilePath;
+			this.ContentName = isTemp ? string.Format (defaultName, DateTime.Now.ToString ("hh:mm:ss")) : buildOutput.FilePath;
 			IsDirty = isTemp;
 		}
 
