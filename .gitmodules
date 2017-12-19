@@ -1,53 +1,53 @@
-[submodule "main/external/mono-tools"]
-	path = main/external/mono-tools
-	url = git://github.com/mono/mono-tools.git
-[submodule "main/external/mdtestharness"]
-	path = main/external/mdtestharness
-	url = git://github.com/mono/mdtestharness.git
-[submodule "main/external/nrefactory"]
-	path = main/external/nrefactory
-	url = git://github.com/icsharpcode/NRefactory.git
-[submodule "main/external/mono-addins"]
-	path = main/external/mono-addins
-	url = git://github.com/mono/mono-addins.git
-	branch = master
 [submodule "main/external/debugger-libs"]
-	path = main/external/debugger-libs
-	url = git://github.com/mono/debugger-libs.git
-	branch = master
+    path = main/external/debugger-libs
+    url = git://github.com/mono/debugger-libs.git
+    branch = d15-6
 [submodule "main/external/guiunit"]
-	path = main/external/guiunit
-	url = git://github.com/mono/guiunit.git
-[submodule "main/external/nuget-binary"]
-	path = main/external/nuget-binary
-	url = git://github.com/mono/nuget-binary.git
-	branch = master
-[submodule "main/external/xwt"]
-	path = main/external/xwt
-	url = git://github.com/mono/xwt
-	branch = master
-[submodule "main/external/monomac"]
-	path = main/external/monomac
-	url = git://github.com/mono/monomac.git
-[submodule "main/external/sharpsvn-binary"]
-	path = main/external/sharpsvn-binary
-	url = git://github.com/mono/sharpsvn-binary.git
-[submodule "main/external/libgit2sharp"]
-	path = main/external/libgit2sharp
-	url = git://github.com/mono/libgit2sharp.git
-	branch = xs-5.10-v2
+    path = main/external/guiunit
+    url = git://github.com/mono/guiunit.git
 [submodule "main/external/libgit-binary"]
-	path = main/external/libgit-binary
-	url = git://github.com/mono/libgit-binary.git
-	branch = xs-5.10-v2
+    path = main/external/libgit-binary
+    url = git://github.com/mono/libgit-binary.git
+    branch = xs-5.10-v2
 [submodule "main/external/libgit2"]
-	path = main/external/libgit2
-	url = git://github.com/mono/libgit2.git
-	branch = xs-5.10-v2
-[submodule "main/external/RefactoringEssentials"]
-	path = main/external/RefactoringEssentials
-	url = git://github.com/icsharpcode/RefactoringEssentials.git
-	branch = master
+    path = main/external/libgit2
+    url = git://github.com/mono/libgit2.git
+    branch = xs-5.10-v2
+[submodule "main/external/libgit2sharp"]
+    path = main/external/libgit2sharp
+    url = git://github.com/mono/libgit2sharp.git
+    branch = xs-5.10-v2
 [submodule "main/external/macdoc"]
-	path = main/external/macdoc
-	url = git://github.com/xamarin/macdoc
+    path = main/external/macdoc
+    url = git://github.com/xamarin/macdoc
+[submodule "main/external/mdtestharness"]
+    path = main/external/mdtestharness
+    url = git://github.com/mono/mdtestharness.git
+[submodule "main/external/mono-addins"]
+    path = main/external/mono-addins
+    url = git://github.com/mono/mono-addins.git
+    branch = master
+[submodule "main/external/mono-tools"]
+    path = main/external/mono-tools
+    url = git://github.com/mono/mono-tools.git
+[submodule "main/external/monomac"]
+    path = main/external/monomac
+    url = git://github.com/mono/monomac.git
+[submodule "main/external/nrefactory"]
+    path = main/external/nrefactory
+    url = git://github.com/icsharpcode/NRefactory.git
+[submodule "main/external/nuget-binary"]
+    path = main/external/nuget-binary
+    url = git://github.com/mono/nuget-binary.git
+    branch = master
+[submodule "main/external/RefactoringEssentials"]
+    path = main/external/RefactoringEssentials
+    url = git://github.com/icsharpcode/RefactoringEssentials.git
+    branch = master
+[submodule "main/external/sharpsvn-binary"]
+    path = main/external/sharpsvn-binary
+    url = git://github.com/mono/sharpsvn-binary.git
+[submodule "main/external/xwt"]
+    path = main/external/xwt
+    url = git://github.com/mono/xwt
+    branch = d15-6
