@@ -43,6 +43,7 @@ using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace MonoDevelop.Debugger
 {
@@ -70,6 +71,7 @@ namespace MonoDevelop.Debugger
 		TreeStore store;
 		bool needsUpdate;
 		IPadWindow window;
+		Clipboard clipboard;
 
 		enum Columns
 		{
@@ -146,25 +148,54 @@ namespace MonoDevelop.Debugger
 
 			if (!tree.Selection.GetSelected (out selected))
 				return;
-			var process = store.GetValue (selected, (int)Columns.Object) as ProcessInfo;
-			if (process == null)
-				return;//User right-clicked on thread and not process
-			var session = store.GetValue (selected, (int)Columns.Session) as DebuggerSession;
+
 			var context_menu = new ContextMenu ();
-			var continueExecution = new ContextMenuItem (GettextCatalog.GetString ("Resume"));
-			continueExecution.Sensitive = !session.IsRunning;
-			continueExecution.Clicked += delegate {
-				session.Continue ();
-			};
-			context_menu.Items.Add (continueExecution);
-			var pauseExecution = new ContextMenuItem (GettextCatalog.GetString ("Pause"));
-			pauseExecution.Sensitive = session.IsRunning;
-			pauseExecution.Clicked += delegate {
-				session.Stop ();
-			};
-			context_menu.Items.Add (pauseExecution);
+			var copyExecution = new ContextMenuItem (GettextCatalog.GetString ("_Copy"));
+			copyExecution.Sensitive = true;
+			copyExecution.Clicked += CopyExecution_Clicked;;
+			context_menu.Items.Add (copyExecution);
+
+			var process = store.GetValue (selected, (int)Columns.Object) as ProcessInfo;
+			if (process != null) { //User right-clicked on thread and not process
+				context_menu.Items.Add (new SeparatorContextMenuItem ());
+				var session = store.GetValue (selected, (int)Columns.Session) as DebuggerSession;
+				var continueExecution = new ContextMenuItem (GettextCatalog.GetString ("Resume"));
+				continueExecution.Sensitive = !session.IsRunning;
+				continueExecution.Clicked += delegate {
+					session.Continue ();
+				};
+				context_menu.Items.Add (continueExecution);
+				var pauseExecution = new ContextMenuItem (GettextCatalog.GetString ("Pause"));
+				pauseExecution.Sensitive = session.IsRunning;
+				pauseExecution.Clicked += delegate {
+					session.Stop ();
+				};
+				context_menu.Items.Add (pauseExecution);
+			}
 			context_menu.Show (this, evt);
 		}
+
+		void CopyExecution_Clicked (object sender, ContextMenuItemClickedEventArgs e)
+		{
+			TreeIter selected;
+			if (!tree.Selection.GetSelected (out selected))
+				return;
+
+			var infoObject = tree.Model.GetValue (selected, (int)Columns.Object);
+
+			string bufferText = string.Empty;
+			if(infoObject is ThreadInfo threadInfo)
+				bufferText = $"{threadInfo.Id} {threadInfo.Name} {threadInfo.Location}";
+
+			if (infoObject is ProcessInfo processInfo) 
+				bufferText = $"{processInfo.Id} {processInfo.Name} {processInfo.Description}";
+
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = bufferText;
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			clipboard.Text = bufferText;
+		}
+
 		public override void Dispose ()
 		{
 			base.Dispose ();
