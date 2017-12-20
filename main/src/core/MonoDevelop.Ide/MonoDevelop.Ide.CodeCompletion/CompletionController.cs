@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.view = view;
 			AutoSelect = true;
 			DefaultCompletionString = "";
-			currentVisible = view.Visible;
+			currentVisible = false;
 		}
 
 		/// <summary>
@@ -137,6 +137,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			string text = CompletionWidget.GetCompletionText (CodeCompletionContext);
 			initialWordLength = CompletionWidget.SelectedLength > 0 ? 0 : text.Length;
 			StartOffset = CompletionWidget.CaretOffset - initialWordLength;
+			NotifyVisibilityChange ();
 		}
 
 		public bool ShowListWindow (ICompletionDataList list, CodeCompletionContext completionContext)
@@ -187,7 +188,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			string text = CompletionWidget.GetCompletionText (CodeCompletionContext);
 			if (text.Length == 0) {
 				initialWordLength = 0;
-				StartOffset = completionContext.TriggerOffset;
+				StartOffset = CodeCompletionContext.TriggerOffset;
 				ResetSizes ();
 				ShowWindow ();
 				UpdateWordSelection ();
@@ -235,10 +236,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 			NotifyVisibilityChange ();
 		}
 
+		public bool Visible {
+			get {
+				// Even if ShowWindow has not been called, the window can
+				// already process key input, so we consider it to be "visible".
+				if (dataList == null)
+					return CodeCompletionContext != null; // The session is initialized
+				else
+					return view.Visible;
+			}
+		}
+
 		void NotifyVisibilityChange ()
 		{
-			if (currentVisible != view.Visible) {
-				currentVisible = view.Visible;
+			if (currentVisible != Visible) {
+				currentVisible = Visible;
 				VisibleChanged?.Invoke (this, EventArgs.Empty);
 			}
 		}

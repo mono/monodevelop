@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 		public bool Visible {
-			get { return window.Visible; }
+			get { return controller.Visible; }
 		}
 
 		public int X {
