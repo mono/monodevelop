@@ -58,7 +58,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
                   |> Seq.groupBy (fun asm -> asm.FileName)
                   |> Seq.map (fun (fileName, asms) -> fileName, List.ofSeq asms)
                   |> Seq.toList
-                  |> List.rev // if mscorlib.dll is the first then FSC raises exception when we try to
+                  |> List.rev // if mscorlib.dll is the first then FCS raises exception when we try to
                               // get Content.Entities from it.
 
                 for fileName, signatures in assembliesByFileName do
@@ -66,9 +66,9 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
                   let content = AssemblyContentProvider.getAssemblyContent entityCache.cache.Locking contentType fileName signatures
                   let content =
                     content 
-                    |> List.filter(fun s -> match s.Namespace with
-                                            | Some ns -> ns <> [|"global"|]
-                                            | None -> true)
+                    |> List.filter(fun s -> match s.Symbol with
+                                            | :? FSharpEntity -> true
+                                            | _ -> false)
                   yield! content
               ]
             with
