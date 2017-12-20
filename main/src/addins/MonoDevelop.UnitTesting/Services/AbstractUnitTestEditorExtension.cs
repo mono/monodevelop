@@ -303,8 +303,12 @@ namespace MonoDevelop.UnitTesting
 						return;
 					}
 
-					await IdeApp.ProjectOperations.Build (project).Task;
-					await UnitTestService.RefreshTests (CancellationToken.None);
+					bool buildBeforeExecuting = IdeApp.Preferences.BuildBeforeExecuting;
+
+					if (buildBeforeExecuting) {
+						await IdeApp.ProjectOperations.Build (project).Task;
+						await UnitTestService.RefreshTests (CancellationToken.None);
+					}
 
 					foundTest = UnitTestService.SearchTestById (testCase);
 					if (foundTest != null)
