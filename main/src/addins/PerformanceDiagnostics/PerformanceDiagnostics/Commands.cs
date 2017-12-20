@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace PerformanceDiagnosticsAddIn
 {
@@ -27,6 +28,16 @@ namespace PerformanceDiagnosticsAddIn
 		protected override void Run ()
 		{
 			UIThreadMonitor.Instance.Profile (5);
+		}
+	}
+
+	public class EnhanceSampleFile : CommandHandler
+	{
+		protected override void Run ()
+		{
+			var dialog = new OpenFileDialog (GettextCatalog.GetString ("Sample file output"), MonoDevelop.Components.FileChooserAction.Open);
+			if (dialog.Run ())
+				UIThreadMonitor.ConvertJITAddressesToMethodNames (dialog.SelectedFile, "External");
 		}
 	}
 
