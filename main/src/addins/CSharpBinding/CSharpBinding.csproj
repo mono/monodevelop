@@ -178,7 +178,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.CodingConventions">
-      <HintPath>..\..\..\..\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
