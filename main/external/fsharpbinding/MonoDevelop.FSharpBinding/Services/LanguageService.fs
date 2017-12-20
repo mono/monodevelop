@@ -64,6 +64,11 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
                 for fileName, signatures in assembliesByFileName do
                   let contentType = AssemblyContentType.Public
                   let content = AssemblyContentProvider.getAssemblyContent entityCache.cache.Locking contentType fileName signatures
+                  let content =
+                    content 
+                    |> List.filter(fun s -> match s.Namespace with
+                                            | Some ns -> ns <> [|"global"|]
+                                            | None -> true)
                   yield! content
               ]
             with

@@ -219,6 +219,12 @@ type ``Completion Tests``() =
         results |> should contain "Path (from System.IO)"
 
     [<Test>]
+    member x.``Does not give global namespace completions``() =
+        let results = getCompletionsAndRhs "System$" Parse AutoImportOn
+        results |> shouldnot contain "System (from global)"
+        results |> should contain "System"
+
+    [<Test>]
     member x.``Contains two Path items``() =
         let results = getCompletionsAndRhs
                         """
