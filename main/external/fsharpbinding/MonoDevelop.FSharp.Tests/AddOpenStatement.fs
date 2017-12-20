@@ -1,9 +1,4 @@
-﻿//namespace test
-
-//module mymodule =
-    //open System
-
-namespace MonoDevelopTests
+﻿namespace MonoDevelopTests
 
 open System
 open NUnit.Framework

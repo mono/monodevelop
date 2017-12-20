@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Microsoft.Net.Compilers\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers\build\Microsoft.Net.Compilers.props')" Label="Paket" />
   <Import Project="..\..\..\MonoDevelop.props" />
@@ -77,50 +76,6 @@
   <Import Project="..\.paket\paket.targets" />
   <Import Project="templates.targets" />
   <ItemGroup>
-    <Reference Include="pango-sharp" />
-    <Reference Include="atk-sharp" />
-    <Reference Include="gdk-sharp" />
-    <Reference Include="gtk-sharp" />
-    <Reference Include="glib-sharp" />
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="mscorlib" />
-    <Reference Include="Mono.Cairo" />
-    <Reference Include="Mono.Posix" />
-    <Reference Include="Mono.Addins">
-      <Private>False</Private>
-      <HintPath>..\..\..\build\bin\Mono.Addins.dll</HintPath>
-    </Reference>
-    <Reference Include="Xwt">
-      <Private>False</Private>
-      <HintPath>..\..\..\build\bin\Xwt.dll</HintPath>
-    </Reference>
-    <Reference Include="Xwt.Gtk">
-      <Private>False</Private>
-      <HintPath>..\..\..\build\bin\Xwt.Gtk.dll</HintPath>
-    </Reference>
-    <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Xamarin.Mac">
-      <HintPath>..\..\..\build\bin\Xamarin.Mac.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Features">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Services\Extensions.fs" />
     <Compile Include="Services\CompilerLocationUtils.fs" />
     <Compile Include="Services\OrderAssemblyReferences.fs" />
@@ -181,6 +136,11 @@
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp" />
+    <Reference Include="atk-sharp" />
+    <Reference Include="gdk-sharp" />
+    <Reference Include="gtk-sharp" />
+    <Reference Include="glib-sharp" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -209,14 +169,34 @@
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
-      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
-      <Name>MonoDevelop.Refactoring</Name>
-      <Private>False</Private>
+    <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference Include="..\MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj">
+      <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
+      <Name>MonoDevelop.FSharp.Gui</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
-      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
-      <Name>MonoDevelop.Ide</Name>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Xamarin.Mac">
+      <HintPath>..\..\..\build\bin\Xamarin.Mac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Features">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <ProjectReference Include="..\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj">
+      <Project>{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}</Project>
+      <Name>MonoDevelop.FSharp.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
+      <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
+      <Name>MonoDevelop.Debugger</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -224,27 +204,24 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
       <Name>MonoDevelop.UnitTesting</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj">
-      <Project>{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}</Project>
-      <Name>MonoDevelop.FSharp.Shared</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj">
-      <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
-      <Name>MonoDevelop.FSharp.Gui</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
-      <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
-      <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
-      <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
-      <Name>MonoDevelop.Debugger</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\src\addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
@@ -347,22 +324,22 @@
       <ItemGroup>
         <Reference Include="Mono.Cecil">
           <HintPath>..\packages\Mono.Cecil\lib\net40\Mono.Cecil.dll</HintPath>
-          <Private>True</Private>
+          <Private>false</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Mono.Cecil.Mdb">
           <HintPath>..\packages\Mono.Cecil\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-          <Private>True</Private>
+          <Private>false</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Mono.Cecil.Pdb">
           <HintPath>..\packages\Mono.Cecil\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-          <Private>True</Private>
+          <Private>false</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Mono.Cecil.Rocks">
           <HintPath>..\packages\Mono.Cecil\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-          <Private>True</Private>
+          <Private>false</Private>
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
@@ -373,7 +350,7 @@
       <ItemGroup>
         <Reference Include="Newtonsoft.Json">
           <HintPath>..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
-          <Private>True</Private>
+          <Private>false</Private>
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
@@ -384,7 +361,7 @@
       <ItemGroup>
         <Reference Include="System.Collections.Immutable">
           <HintPath>..\packages\System.Collections.Immutable\lib\netstandard1.0\System.Collections.Immutable.dll</HintPath>
-          <Private>True</Private>
+          <Private>false</Private>
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
@@ -428,7 +405,7 @@
       <ItemGroup>
         <Reference Include="System.Reflection.Metadata">
           <HintPath>..\packages\System.Reflection.Metadata\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
-          <Private>True</Private>
+          <Private>false</Private>
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
@@ -450,6 +427,8 @@
           <HintPath>..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>false</Private>
           <Private>True</Private>
+          <HintPath>..\packages\System.ValueTuple\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+          <Private>false</Private>
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>

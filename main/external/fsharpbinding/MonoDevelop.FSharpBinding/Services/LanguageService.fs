@@ -44,36 +44,32 @@ module entityCache =
 /// various IntelliSense functions (such as completion & tool tips).
 /// Provides default empty/negative results if information is missing.
 type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults : FSharpParseFileResults option) =
-
     let getAllSymbols (checkResults: FSharpCheckFileResults) =
-        let res =
-            //AssemblyContentProvider.getAssemblySignatureContent AssemblyContentType.Full checkResults.PartialAssemblySignature
-            LoggingService.logDebug "GetDeclarations: getAllSymbols"
-            try
-              [
-                //yield! AssemblyContentProvider.getAssemblySignatureContent AssemblyContentType.Full checkResults.PartialAssemblySignature
+        LoggingService.logDebug "GetDeclarations: getAllSymbols"
+
+        try
+            [
                 let ctx = checkResults.ProjectContext
                 let assembliesByFileName =
-                  ctx.GetReferencedAssemblies()
-                  |> Seq.groupBy (fun asm -> asm.FileName)
-                  |> Seq.map (fun (fileName, asms) -> fileName, List.ofSeq asms)
-                  |> Seq.toList
-                  |> List.rev // if mscorlib.dll is the first then FCS raises exception when we try to
-                              // get Content.Entities from it.
+                    ctx.GetReferencedAssemblies()
+                    |> Seq.groupBy (fun asm -> asm.FileName)
+                    |> Seq.map (fun (fileName, asms) -> fileName, List.ofSeq asms)
+                    |> Seq.toList
+                    |> List.rev // if mscorlib.dll is the first then FCS raises exception when we try to
+                                // get Content.Entities from it.
 
                 for fileName, signatures in assembliesByFileName do
-                  let contentType = AssemblyContentType.Public
-                  let content = AssemblyContentProvider.getAssemblyContent entityCache.cache.Locking contentType fileName signatures
-                  let content =
-                    content 
-                    |> List.filter(fun s -> match s.Symbol with
-                                            | :? FSharpEntity -> true
-                                            | _ -> false)
-                  yield! content
-              ]
-            with
-            | _ -> []
-        res
+                    let contentType = AssemblyContentType.Public
+                    let content = AssemblyContentProvider.getAssemblyContent entityCache.cache.Locking contentType fileName signatures
+                    let content =
+                      content 
+                      |> List.filter(fun s -> match s.Symbol with
+                                              | :? FSharpEntity -> true
+                                              | _ -> false)
+                    yield! content
+            ]
+        with
+        | _ -> []
 
     /// Get declarations at the current location in the specified document and the long ident residue
     /// e.g. The incomplete ident One.Two.Th will return Th
