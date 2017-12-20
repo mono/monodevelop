@@ -1,13 +1,10 @@
 ﻿namespace MonoDevelopTests
 
-open System
 open NUnit.Framework
 open MonoDevelop.FSharp
 open MonoDevelop.FSharp.Completion
-open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.CodeCompletion
 open FsUnit
-open MonoDevelop
 
 type ParseBeforeCompletion = Parse | NoParse
 type AutoImport = AutoImportOn | AutoImportOff
@@ -221,8 +218,13 @@ type ``Completion Tests``() =
     [<Test>]
     member x.``Does not give global namespace completions``() =
         let results = getCompletionsAndRhs "System$" Parse AutoImportOn
+        let results = results |> List.filter(fun c -> c.StartsWith "System")
         results |> shouldnot contain "System (from global)"
-        results |> should contain "System"
+
+    [<Test>]
+    member x.``Auto import does not import functions``() =
+        let results = getCompletions "map$" Parse AutoImportOn
+        results |> shouldnot contain "map"
 
     [<Test>]
     member x.``Contains two Path items``() =
