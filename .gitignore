@@ -38,6 +38,7 @@ obj/
 /main/packages
 /main/.nuget/
 pull-package.exe
+/main/tests/StressTest/TestProject/bin
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files
@@ -63,6 +64,7 @@ autom4te.cache/
 tarballs/
 test-results/
 Thumbs.db
+.vs
 
 #Mac bundle stuff
 *.dmg

@@ -55,6 +55,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		bool enableQuickDiff;
 
+		bool showProcedureLineSeparators;
+
 		IncludeWhitespaces includeWhitespaces;
 
 		public MarkerPanel()
@@ -70,7 +72,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			showWhitespaces = DefaultSourceEditorOptions.Instance.ShowWhitespaces;
 			includeWhitespaces = DefaultSourceEditorOptions.Instance.IncludeWhitespaces;
 			enableQuickDiff = DefaultSourceEditorOptions.Instance.EnableQuickDiff;
-
+			showProcedureLineSeparators = DefaultSourceEditorOptions.Instance.ShowProcedureLineSeparators;
 			SetupAccessibility ();
 		}
 
@@ -160,6 +162,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.enableQuickDiffCheckbutton.Toggled += delegate {
 				DefaultSourceEditorOptions.Instance.EnableQuickDiff = this.enableQuickDiffCheckbutton.Active;
 			};
+
+			this.showProcedureLineSeparatorsCheckbutton.Active = showProcedureLineSeparators = DefaultSourceEditorOptions.Instance.ShowProcedureLineSeparators;
+
 			return this;
 		}
 
@@ -186,6 +191,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			drawIndentMarkers = this.drawIndentMarkersCheckbutton.Active;
 			showWhitespaces = (ShowWhitespaces) this.showWhitespacesCombobox.Active;
 			enableQuickDiff = this.enableQuickDiffCheckbutton.Active;
+			showProcedureLineSeparators = this.showProcedureLineSeparatorsCheckbutton.Active;
 
 			var include = IncludeWhitespaces.None;
 			if (checkbuttonSpaces.Active)
@@ -209,6 +215,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.ShowWhitespaces = showWhitespaces;
 			DefaultSourceEditorOptions.Instance.EnableQuickDiff = enableQuickDiff;
 			DefaultSourceEditorOptions.Instance.IncludeWhitespaces = includeWhitespaces;
+			DefaultSourceEditorOptions.Instance.ShowProcedureLineSeparators = showProcedureLineSeparators;
 			base.OnDestroyed ();
 		}
 

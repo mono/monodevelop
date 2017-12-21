@@ -208,7 +208,8 @@
       <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -8941,7 +8942,6 @@
     <Compile Include="MonoDevelop.Ide.WebBrowser\IWebBrowserLoader.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionListWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionWidget.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeCompletion\ListWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterInformationWindowManager.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterInformationWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionData.cs" />
@@ -9621,8 +9621,16 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\RoslynCompletionData.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\DotNetCompileTargetSelector.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\OSXEditor.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\LineSeparatorTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectCapabilityFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\OrFileTemplateCondition.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionController.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionView.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionViewEventSink.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionListWindowGtk.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\KeyActions.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\IListDataProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\D152AccessibilityPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

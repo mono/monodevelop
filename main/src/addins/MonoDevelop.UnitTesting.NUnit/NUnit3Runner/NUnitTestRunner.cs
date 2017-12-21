@@ -36,6 +36,7 @@ using NUnit.Engine;
 using System.Xml;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.UnitTesting.NUnit;
+using System.Text.RegularExpressions;
 
 namespace NUnit3Runner
 {
@@ -136,10 +137,28 @@ namespace NUnit3Runner
 			var tr = engine.GetRunner (package);
 			var r = tr.Explore (TestFilter.Empty);
 			var root = r.SelectSingleNode ("test-suite") as XmlElement;
-			if (root != null)
+
+			if (root != null) {
+				if(CheckXmlForError (root, out string errorString))
+					throw new Exception (errorString);
 				return BuildTestInfo (root);
+			}
 			else
 				return null;
+		}
+
+		bool CheckXmlForError(XmlElement root, out string result)
+		{
+			var elements = root.GetElementsByTagName ("properties");
+			var skipReasonString = string.Empty;
+			foreach (XmlElement element in elements)
+				if (element?.FirstChild is XmlElement nestedElement)
+					if ("_SKIPREASON" == nestedElement.GetAttribute ("name")) {
+						skipReasonString = nestedElement.GetAttribute ("value");
+						break;
+					}
+			result = skipReasonString;
+			return !string.IsNullOrEmpty (skipReasonString);
 		}
 		
 		internal NunitTestInfo BuildTestInfo (XmlElement test)

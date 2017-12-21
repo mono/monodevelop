@@ -125,6 +125,7 @@
     <Compile Include="MonoDevelop.CSharpBinding\PolicyTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpAutoInsertBracketHandlerTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\ExpandSelectionHandlerTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding.Parser\CSharpParsedDocumentTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
@@ -194,6 +195,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.CSharpBinding.Parser\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

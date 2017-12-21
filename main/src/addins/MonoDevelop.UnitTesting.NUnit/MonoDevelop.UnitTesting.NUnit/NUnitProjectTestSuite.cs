@@ -44,6 +44,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core;
 using MonoDevelop.PackageManagement;
+using System.Text;
 
 namespace MonoDevelop.UnitTesting.NUnit
 {

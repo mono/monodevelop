@@ -64,6 +64,10 @@ namespace MonoDevelop.Tests.TestRunner
 					}
 				}
 			}
+
+			// Make sure the updater is disabled while running tests
+			Runtime.Preferences.EnableUpdaterForCurrentSession = false;
+
 			if (guiUnitAsm != null) {
 				Xwt.XwtSynchronizationContext.AutoInstall = false;
 				var sc = new Xwt.XwtSynchronizationContext ();
