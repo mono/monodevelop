@@ -1,4 +1,4 @@
-﻿//
+//
 // CodeFixMenu.cs
 //
 // Author:

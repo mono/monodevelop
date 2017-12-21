@@ -1,6 +1,6 @@
 // 
 // CodeAnalysisRunner.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
@@ -42,6 +42,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using MonoDevelop.Ide.Editor;
 using System.Collections.Immutable;
+using System.Globalization;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -55,6 +56,7 @@ namespace MonoDevelop.CodeIssues
 			return (ctx.IsAdHocProject || !(ctx.Project is MonoDevelop.Projects.DotNetProject));
 		}
 
+		// Old code, until we get EditorFeatures into composition so we can switch code fix service.
 		public static async Task<IEnumerable<Result>> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken)
 		{
 			var input = analysisDocument.DocumentContext;
@@ -115,7 +117,7 @@ namespace MonoDevelop.CodeIssues
 					compilationWithAnalyzer = compilation.WithAnalyzers (analyzers, options);
 					if (input.ParsedDocument == null || cancellationToken.IsCancellationRequested)
 						return Enumerable.Empty<Result> ();
-					
+
 					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, cancellationToken).ConfigureAwait (false));
 					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSyntaxDiagnosticsAsync (model.SyntaxTree, cancellationToken).ConfigureAwait (false));
 				} catch (OperationCanceledException) {
@@ -151,6 +153,44 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
+		public static async Task<IEnumerable<Result>> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken, ImmutableArray<DiagnosticData> results)
+		{
+			var input = analysisDocument.DocumentContext;
+			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
+				return Enumerable.Empty<Result> ();
+			if (SkipContext (input))
+				return Enumerable.Empty<Result> ();
+			try {
+#if DEBUG
+				Debug.Listeners.Add (consoleTraceListener);
+#endif
+				var resultList = new List<Result> (results.Length);
+				foreach (var data in results) {
+					if (data.Id.StartsWith ("CS", StringComparison.Ordinal))
+						continue;
+
+					if (DataHasTag (data, WellKnownDiagnosticTags.EditAndContinue))
+						continue;
+
+					var diagnostic = await data.ToDiagnosticAsync (input.AnalysisDocument.Project, cancellationToken);
+					resultList.Add (new DiagnosticResult (diagnostic));
+				}
+				return resultList;
+			} catch (OperationCanceledException) {
+				return Enumerable.Empty<Result> ();
+			} catch (AggregateException ae) {
+				ae.Flatten ().Handle (ix => ix is OperationCanceledException);
+				return Enumerable.Empty<Result> ();
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while running diagnostics.", e);
+				return Enumerable.Empty<Result> ();
+			}
+		}
+
+		static bool DataHasTag (DiagnosticData desc, string tag)
+		{
+			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
+		}
 
 	}
 }

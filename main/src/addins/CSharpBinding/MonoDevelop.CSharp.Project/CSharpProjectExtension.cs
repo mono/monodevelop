@@ -51,11 +51,6 @@ namespace MonoDevelop.CSharp.Project
 		// Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
 		public static IList<string> SupportedPlatforms = new string[] { "anycpu", "x86", "x64", "itanium" };
 
-		static CSharpProject ()
-		{
-			ProjectSearchCategory.Init ();
-		}
-
 		public CSharpProject ()
 		{
 			Initialize (this);
