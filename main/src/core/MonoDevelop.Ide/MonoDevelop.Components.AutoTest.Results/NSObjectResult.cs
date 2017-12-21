@@ -85,6 +85,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Marked (string mark)
 		{
+			LoggingService.LogInfo ($"MarkedOperation: Type of the element is: {ResultObject.GetType ().FullName}");
 			if (CheckForText (ResultObject.GetType ().FullName, mark, true)) {
 				return this;
 			}
@@ -193,6 +194,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override List<AppResult> Children (bool recursive = true)
 		{
+			LoggingService.LogInfo ($"ChildrenOperation: Type of the element is: {ResultObject.GetType ().FullName}");
 			if (ResultObject is NSTableView) {
 				var control = (NSTableView)ResultObject;
 				var children = new List<AppResult> ();
@@ -212,7 +214,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool Select ()
 		{
-			LoggingService.LogInfo ($"Type of ResultObject is: {ResultObject.GetType().FullName} and index: {index}");
+			LoggingService.LogInfo ($"SelectOperation?L Type of ResultObject is: {ResultObject.GetType().FullName} and index: {index}");
 			if (ResultObject is NSTableView) {
 				var control = (NSTableView)ResultObject;
 				LoggingService.LogInfo($"Found NSTableView with index: {index}");
