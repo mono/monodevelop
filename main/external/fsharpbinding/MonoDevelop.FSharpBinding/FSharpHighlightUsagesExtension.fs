@@ -24,7 +24,7 @@ type HighlightUsagesExtension() =
         | null -> Task.FromResult(None)
         | doc when doc.FileName = FilePath.Null || doc.FileName <> x.Editor.FileName || x.DocumentContext.ParsedDocument = null -> Task.FromResult(None)
         | _doc ->
-            LoggingService.LogDebug("HighlightUsagesExtension: ResolveAsync starting on {0}", x.DocumentContext.Name |> IO.Path.GetFileName )
+            LoggingService.logDebug "HighlightUsagesExtension: ResolveAsync starting on %s" (x.DocumentContext.Name |> IO.Path.GetFileName )
             async {
                 try
                     let line, col, lineStr = x.Editor.GetLineInfoByCaretOffset ()
@@ -47,7 +47,7 @@ type HighlightUsagesExtension() =
                 try
                     match resolveResult with
                     | Some(fsSymbolName, references) ->
-                        LoggingService.LogDebug("HighlightUsagesExtension: GetReferences starting on {0}", x.DocumentContext.Name |> IO.Path.GetFileName)
+                        LoggingService.logDebug "HighlightUsagesExtension: GetReferences starting on %s" (x.DocumentContext.Name |> IO.Path.GetFileName)
                         //TODO: Can we use the DisplayName from the symbol rather than the last element in ident islands?
                         // If we could then we could remove the Parsing.findLongIdents in GetUsesOfSymbolAtLocationInFile.
                         references

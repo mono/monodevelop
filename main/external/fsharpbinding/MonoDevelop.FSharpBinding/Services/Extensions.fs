@@ -1,5 +1,6 @@
 ﻿namespace MonoDevelop.FSharp
 open System
+open System.Diagnostics
 open System.Text
 open System.IO
 open System.Threading.Tasks
@@ -238,11 +239,14 @@ module AsyncChoiceCE =
 
 module LoggingService =
     let inline private log f = Printf.kprintf f
-    //let logDebug format = log (log LoggingService.LogDebug "[F# Addin] %s") format
-    let logDebug format = log LoggingService.LogDebug format
-    let logError format = log LoggingService.LogError format
-    let logInfo format = log LoggingService.LogInfo format
-    let logWarning format = log LoggingService.LogWarning format
+
+    let inline private logWithThread f format =
+        log (log f "[UI - %b] %s" Runtime.IsMainThread) format
+
+    let logDebug format = logWithThread LoggingService.LogDebug format
+    let logError format = logWithThread LoggingService.LogError format
+    let logInfo format = logWithThread LoggingService.LogInfo format
+    let logWarning format = logWithThread LoggingService.LogWarning format
 
 module Async =
 

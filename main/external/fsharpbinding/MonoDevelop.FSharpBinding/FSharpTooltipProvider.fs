@@ -61,7 +61,7 @@ type FSharpTooltipProvider() =
             let tooltipComputation =
                 asyncChoice {
                     try
-                        LoggingService.LogDebug "TooltipProvider: Getting tool tip"
+                        LoggingService.logDebug "TooltipProvider: Getting tool tip"
 
                         let parseAndCheckResults = context.TryGetAst()
                         match parseAndCheckResults with
