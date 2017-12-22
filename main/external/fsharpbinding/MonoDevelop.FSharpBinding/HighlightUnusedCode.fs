@@ -97,17 +97,17 @@ module highlightUnusedCode =
 
     let highlightUnused (editor:TextEditor) (unusedOpenRanges: Range.range list) (previousUnused: Range.range list)=
         previousUnused |> removeMarkers editor
+        Runtime.RunInMainThread(fun () ->
+            unusedOpenRanges |> List.iter(fun range ->
+                let startOffset = getOffset editor range.Start
+                let markers = editor.GetTextSegmentMarkersAt startOffset |> Seq.toList
+                if markers.Length = 0 then
+                    let endOffset = getOffset editor range.End
 
-        unusedOpenRanges |> List.iter(fun range ->
-            let startOffset = getOffset editor range.Start
-            let markers = editor.GetTextSegmentMarkersAt startOffset |> Seq.toList
-            if markers.Length = 0 then
-                let endOffset = getOffset editor range.End
-
-                let segment = new Text.TextSegment(startOffset, endOffset - startOffset)
-                let marker = TextMarkerFactory.CreateGenericTextSegmentMarker(editor, TextSegmentMarkerEffect.GrayOut, segment)
-                marker.IsVisible <- true
-                Runtime.RunInMainThread(fun () -> editor.AddMarker(marker)) |> ignore) |> ignore
+                    let segment = new Text.TextSegment(startOffset, endOffset - startOffset)
+                    let marker = TextMarkerFactory.CreateGenericTextSegmentMarker(editor, TextSegmentMarkerEffect.GrayOut, segment)
+                    marker.IsVisible <- true
+                    editor.AddMarker(marker))) |> ignore
 
 type HighlightUnusedCode() =
     inherit TextEditorExtension()
