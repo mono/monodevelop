@@ -254,12 +254,13 @@ namespace MonoDevelop.UnitTesting
 							submenu.Add (menuItem);
 
 							const int maxLabelLength = 80;
-							if (label.Length > maxLabelLength) {
-								const string gap = "...";
-								int remainsLength = (maxLabelLength - gap.Length) / 2;
-								string start = label.Substring (0, remainsLength);
-								string end = label.Substring (label.Length - remainsLength, remainsLength);
-								label = $"{start}{gap}{end}";
+							var trimmedLabel = label.Trim ();
+							if (trimmedLabel.Length > maxLabelLength) {
+								const char gap = '\u2026';
+								int remainsLength = (maxLabelLength - 1) / 2;
+								string start = trimmedLabel.Substring (0, remainsLength);
+								string end = trimmedLabel.Substring (trimmedLabel.Length - remainsLength, remainsLength);
+								label = $"{start.TrimEnd()}{gap}{end.TrimStart ()}";
 							}
 
 							var subMenuItem = new ContextMenuItem (label);
