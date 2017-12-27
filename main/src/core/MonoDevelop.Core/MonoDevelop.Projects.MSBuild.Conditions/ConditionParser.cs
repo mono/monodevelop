@@ -36,7 +36,7 @@ using Microsoft.Build.Exceptions;
 
 namespace MonoDevelop.Projects.MSBuild.Conditions {
 
-	internal class ConditionParser {
+	internal sealed class ConditionParser {
 	
 		ConditionTokenizer tokenizer;
 		string conditionStr;

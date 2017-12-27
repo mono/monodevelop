@@ -234,12 +234,11 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 				}
 				
 				string temp = inputString.Substring(tokenPosition, tokenLength);
-				
-				if (keywords.ContainsKey (temp))
-					token = new Token (temp, keywords [temp], tokenPosition);
-				else
-					token = new Token (temp, TokenType.String, tokenPosition);
-					
+
+				if (!keywords.TryGetValue (temp, out TokenType tokenType))
+					tokenType = TokenType.String;
+				token = new Token (temp, tokenType, tokenPosition);
+
 			} else if (ch == '!' && PeekChar () == (int) '=') {
 				token = new Token ("!=", TokenType.NotEqual, tokenPosition);
 				ReadChar ();
