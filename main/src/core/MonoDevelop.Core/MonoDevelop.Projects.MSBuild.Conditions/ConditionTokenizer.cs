@@ -99,16 +99,12 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			return nextChar;
 		}
 		
-		int ReadChar ()
+		void ReadChar ()
 		{
-			try {
-				return nextChar;
-			} finally {
-				if (++position < inputString.Length)
-					nextChar = (int)inputString [position];
-				else
-					nextChar = -1;
-			}
+			if (++position < inputString.Length)
+				nextChar = inputString[position];
+			else
+				nextChar = -1;
 		}
 		
 		public void Expect (TokenType type)
@@ -164,10 +160,10 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			
 			tokenPosition = position;
 			tokenLength = 0;
-			
-//			int i = PeekChar ();
-			int i = ReadChar ();
-			
+
+			int i = PeekChar ();
+			ReadChar ();
+
 			if (i == -1) {
 				token = new Token (null, TokenType.EOF, tokenPosition);
 				return;
