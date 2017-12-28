@@ -46,7 +46,7 @@
 	branch = xs-5.10-v2
 [submodule "main/external/RefactoringEssentials"]
 	path = main/external/RefactoringEssentials
-	url = git://github.com/icsharpcode/RefactoringEssentials.git
+	url = git://github.com/mono/RefactoringEssentials.git
 	branch = master
 [submodule "main/external/macdoc"]
 	path = main/external/macdoc
