@@ -530,6 +530,23 @@ namespace MonoDevelop.Projects
 
 			sol.Dispose ();
 		}
+
+		[Test]
+		public async Task ProjectReferenceToSharedProjectThatExistsIsValid ()
+		{
+			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var pcs = sol.FindProjectByName ("Shared");
+			var pc1 = (DotNetProject)sol.FindProjectByName ("Console1");
+
+			var r = pc1.References.FirstOrDefault (re => re.Reference == "Shared");
+			Assert.IsNotNull (r);
+			Assert.AreEqual (string.Empty, r.ValidationErrorMessage);
+			Assert.IsTrue (r.IsValid);
+
+			sol.Dispose ();
+		}
 	}
 }
 
