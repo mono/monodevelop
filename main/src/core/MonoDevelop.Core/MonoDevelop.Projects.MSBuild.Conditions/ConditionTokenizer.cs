@@ -98,7 +98,8 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		{
 			return nextChar;
 		}
-		
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		void ReadChar ()
 		{
 			if (++position < inputString.Length)
