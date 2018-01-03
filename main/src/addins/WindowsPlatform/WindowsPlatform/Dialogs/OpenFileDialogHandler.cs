@@ -160,14 +160,12 @@ namespace MonoDevelop.Platform
 			uint count;
 
 			var hr = nativeDialog.GetSelectedItems(out resultsArray);
-			if (hr != 0x0000) {
+			if (hr != 0) {
 				var e = Marshal.GetExceptionForHR(hr);
 
 				//we get E_FAIL when there is no selection
-				if (e is COMException) {
-					if (hr == -2147467259) {
-						return filenames;
-					}
+				if (hr == -2147467259) {
+					return filenames;
 				} else if (e is FileNotFoundException) {
 					return filenames;
 				}
