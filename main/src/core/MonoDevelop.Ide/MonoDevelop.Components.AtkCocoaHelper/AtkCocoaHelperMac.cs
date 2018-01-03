@@ -540,6 +540,12 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 	public class AccessibilityElementProxy : IAccessibilityElementProxy
 	{
+		public static bool Enabled {
+			get {
+				return IdeTheme.AccessibilityEnabled;
+			}
+		}
+
 		RealAccessibilityElementProxy realProxyElement;
 		internal object Proxy {
 			get {
