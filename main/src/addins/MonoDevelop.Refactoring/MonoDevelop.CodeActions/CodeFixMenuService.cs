@@ -109,7 +109,8 @@ namespace MonoDevelop.CodeActions
 
 			first = true;
 			foreach (var warning in warningsAtCaret) {
-
+				if (string.IsNullOrWhiteSpace (warning.Descriptor.Title.ToString ()))
+					continue;
 				var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", warning.Descriptor.Title);
 				var subMenu = new CodeFixMenu (label);
 
@@ -128,6 +129,9 @@ namespace MonoDevelop.CodeActions
 
 			first = true;
 			foreach (var diag in fixes.DiagnosticsAtCaret) {
+				if (string.IsNullOrWhiteSpace (diag.Descriptor.Title.ToString ()))
+					continue;
+
 				var notConfigurable = DescriptorHasTag (diag.Descriptor, WellKnownDiagnosticTags.NotConfigurable);
 
 				var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", diag.Descriptor.Title);
