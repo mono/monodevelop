@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -73,14 +74,50 @@ namespace MonoDevelop.Ide.BuildOutputView
 			BuildOutput.OutputChanged += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 		}
 
+		Button MakeButton (string image, string name, out Label label)
+		{
+			var btnBox = MakeHBox (image, out label);
+
+			var btn = new Button { Name = name };
+			btn.Child = btnBox;
+
+			return btn;
+		}
+
+		HBox MakeHBox (string image, out Label label)
+		{
+			var btnBox = new HBox (false, 2);
+			btnBox.Accessible.SetShouldIgnore (true);
+			var imageView = new ImageView (image, Gtk.IconSize.Menu);
+			imageView.Accessible.SetShouldIgnore (true);
+			btnBox.PackStart (imageView);
+
+			label = new Label ();
+			label.Accessible.SetShouldIgnore (true);
+			btnBox.PackStart (label);
+
+			return btnBox;
+		}
+
 		void Initialize ()
 		{
 			showDiagnosticsButton = new CheckButton (GettextCatalog.GetString ("Show Diagnostics")) {
 				BorderWidth = 0
 			};
+			showDiagnosticsButton.Accessible.Name = "BuildOutputWidget.ShowDiagnosticsButton";
+			showDiagnosticsButton.TooltipText = GettextCatalog.GetString ("Show full (diagnostics enabled) or reduced log");
+			showDiagnosticsButton.Accessible.Description = GettextCatalog.GetString ("Show Diagnostics");
 			showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 
-			saveButton = Button.NewWithLabel (GettextCatalog.GetString ("Save"));
+			Label saveLbl;
+
+			saveButton = MakeButton (Gui.Stock.SaveIcon, GettextCatalog.GetString ("Save"), out saveLbl);
+			saveButton.Accessible.Name = "BuildOutputWidget.SaveButton";
+			saveButton.TooltipText = GettextCatalog.GetString ("Save build output");
+			saveButton.Accessible.Description = GettextCatalog.GetString ("Save build output");
+
+			saveLbl.Text = GettextCatalog.GetString ("Save");
+			saveButton.Accessible.SetTitle (saveLbl.Text);
 			saveButton.Clicked += async (sender, e) => {
 				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
 					TransientFor = IdeApp.Workbench.RootWindow
@@ -91,6 +128,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			};
 
 			var toolbar = new DocumentToolbar ();
+
+			// Dummy widget to take all space on the left
+			var spacer = new HBox ();
+			spacer.Accessible.SetShouldIgnore (true);
+			toolbar.Add (spacer, true);
+
 			toolbar.Add (showDiagnosticsButton);
 			toolbar.Add (saveButton); 
 			PackStart (toolbar.Container, expand: false, fill: true, padding: 0);
