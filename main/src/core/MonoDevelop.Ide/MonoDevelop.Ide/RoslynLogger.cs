@@ -26,19 +26,19 @@ namespace MonoDevelop.Ide
 
 		public void Log (FunctionId functionId, LogMessage logMessage)
 		{
-			LoggingService.LogError ("Roslyn error: {0} {1}", functionId.ToString(), logMessage?.ToString ());
+			LoggingService.LogError ("Roslyn error: {0} {1}", functionId.ToString(), logMessage?.GetMessage ());
 		}
 
 		public void LogBlockEnd (FunctionId functionId, LogMessage logMessage, int uniquePairId, int delta, CancellationToken cancellationToken)
 		{
 			// Fixme at some point
-			LoggingService.LogError ("Roslyn error: {0} {1}", functionId.ToString (), logMessage?.ToString ());
+			LoggingService.LogError ("Roslyn error: {0} {1}", functionId.ToString (), logMessage?.GetMessage ());
 		}
 
 		public void LogBlockStart (FunctionId functionId, LogMessage logMessage, int uniquePairId, CancellationToken cancellationToken)
 		{
 			// Fixme at some point
-			LoggingService.LogError ("Roslyn error: {0} {1}", functionId.ToString (), logMessage?.ToString ());
+			LoggingService.LogError ("Roslyn error: {0} {1}", functionId.ToString (), logMessage?.GetMessage ());
 		}
 	}
 }
