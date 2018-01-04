@@ -136,7 +136,13 @@ namespace MonoDevelop.Projects
 		static IDictionary<string, string> GetReadSolutionItemMetadata (string file, string typeGuid, string itemGuid)
 		{
 			var metadata = new Dictionary<string, string> ();
-			metadata ["FileNameExtension"] = Path.GetExtension (file);
+
+			string extension = Path.GetExtension (file);
+			if (!string.IsNullOrEmpty (extension) && extension [0] == '.') {
+				extension = extension.Substring (1);
+			}
+
+			metadata ["FileNameExtension"] = extension;
 
 			// Will be set to true later after a successful load
 			metadata ["LoadSucceed"] = bool.FalseString;
