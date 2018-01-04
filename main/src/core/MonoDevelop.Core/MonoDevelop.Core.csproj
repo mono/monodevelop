@@ -145,7 +145,7 @@
       <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build.Tasks.Core">
-      <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.Tasks.Core.dll</HintPath>
+      <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf">
