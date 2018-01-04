@@ -1,0 +1,5 @@
+<Project>
+    <PropertyGroup>
+        <TheFramework>netstandard1.0;netstandard1.1</TheFramework>
+    </PropertyGroup>
+</Project>
