@@ -533,7 +533,7 @@ namespace MonoDevelop.Ide
 				if (doc.Project == null && doc.IsFile) {
 					Project p = GetProjectsContainingFile (doc.FileName).FirstOrDefault ();
 					if (p != null)
-						doc.SetProject (p);
+						doc.SetOwner (p);
 				}
 			}
 			if (closedDocs != null) {
@@ -893,7 +893,7 @@ namespace MonoDevelop.Ide
 				if (doc.IsDirty)
 					hasUnsaved = true;
 				if (doc.ProjectReloadCapability != ProjectReloadCapability.None)
-					doc.SetProject (null);
+					doc.SetOwner (null);
 				else {
 					FilePath file = doc.IsFile ? doc.FileName : FilePath.Null;
 					EventHandler saved = delegate {

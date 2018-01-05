@@ -48,6 +48,7 @@ using Microsoft.CodeAnalysis;
 using Gdk;
 using MonoDevelop.Ide.CodeFormatting;
 using System.Collections.Immutable;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -110,7 +111,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void UpdateTextEditorOptions (object sender, EventArgs e)
 		{
-			UpdateStyleParent (Project, textEditor.MimeType);
+			UpdateStyleParent (Owner, textEditor.MimeType);
 		}
 
 		uint autoSaveTimer = 0;
@@ -145,7 +146,7 @@ namespace MonoDevelop.Ide.Editor
 				policyContainer.PolicyChanged -= HandlePolicyChanged;
 		}
 
-		void UpdateStyleParent (MonoDevelop.Projects.Project styleParent, string mimeType)
+		void UpdateStyleParent (MonoDevelop.Projects.WorkspaceObject styleParent, string mimeType)
 		{
 			RemovePolicyChangeHandler ();
 
@@ -154,10 +155,9 @@ namespace MonoDevelop.Ide.Editor
 
 			var mimeTypes = DesktopService.GetMimeTypeInheritanceChain (mimeType);
 
-			if (styleParent != null)
-				policyContainer = styleParent.Policies;
-			else
-				policyContainer = MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies;
+				policyContainer = ((styleParent as IPolicyProvider)
+									?.Policies)
+									?? MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies;
 			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
 
 			policyContainer.PolicyChanged += HandlePolicyChanged;
@@ -191,11 +191,11 @@ namespace MonoDevelop.Ide.Editor
 			} else {
 				var normalParser = TypeSystemService.GetParser (textEditor.MimeType);
 				if (normalParser != null) {
-					parsedDocument = await normalParser.Parse(
+					parsedDocument = await normalParser.Parse (
 						new TypeSystem.ParseOptions {
 							FileName = textEditor.FileName,
-							Content = new StringTextSource(text),
-							Project = Project
+							Content = new StringTextSource (text),
+							Owner = Owner
 						});
 				}
 			}
@@ -254,10 +254,10 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.ViewContent.DiscardChanges ();
 		}
 
-		protected override void OnSetProject (MonoDevelop.Projects.Project project)
+		protected override void OnSetOwner (MonoDevelop.Projects.WorkspaceObject owner)
 		{
-			base.OnSetProject (project);
-			textEditorImpl.ViewContent.Project = project;
+			base.OnSetOwner (owner);
+			textEditorImpl.ViewContent.Owner = owner;
 			UpdateTextEditorOptions (null, null);
 		}
 

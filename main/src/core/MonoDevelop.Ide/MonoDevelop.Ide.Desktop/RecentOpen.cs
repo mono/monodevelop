@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 using System.Linq;
 
 namespace MonoDevelop.Ide.Desktop
@@ -196,11 +197,16 @@ namespace MonoDevelop.Ide.Desktop
 		protected abstract IList<RecentFile> OnGetProjects ();
 		protected abstract IList<RecentFile> OnGetFiles ();
 
-		public void AddFile (string fileName, MonoDevelop.Projects.Project project)
+		public void AddFile (string fileName, Project project)
 		{
-			var projectName = project != null? project.Name : null;
-			var displayName = projectName != null?
-				string.Format ("{0} [{1}]", Path.GetFileName (fileName), projectName) 
+			AddFile (fileName, project as SolutionItem);
+		}
+
+		public void AddFile (string fileName, WorkspaceObject owner)
+		{
+			var projectName = owner?.Name;
+			var displayName = projectName != null ?
+				string.Format ("{0} [{1}]", Path.GetFileName (fileName), projectName)
 				: Path.GetFileName (fileName);
 			AddFile (fileName, displayName);
 		}

@@ -166,8 +166,10 @@ namespace MonoDevelop.Ide.Gui
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
-			if (window.ViewContent.Project != null)
-				window.ViewContent.Project.Modified += HandleProjectModified;
+			if (window.ViewContent.Owner is SolutionFolderItem solutionItem)
+				solutionItem.Modified += HandleProjectModified;
+			else if (window.ViewContent.Owner is WorkspaceItem workspaceItem)
+				workspaceItem.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
 			window.ViewContent.ContentNameChanged += ReloadAnalysisDocumentHandler;
 			MonoDevelopWorkspace.LoadingFinished += ReloadAnalysisDocumentHandler;
@@ -219,7 +221,7 @@ namespace MonoDevelop.Ide.Gui
 		Solution adhocSolution;
 
 		public override Project Project {
-			get { return (Window != null ? Window.ViewContent.Project : null) ?? adhocProject; }
+			get { return Owner as Project; }
 /*			set { 
 				Window.ViewContent.Project = value; 
 				if (value != null)
@@ -228,6 +230,10 @@ namespace MonoDevelop.Ide.Gui
 				// better solution: create the document with the project attached.
 				StartReparseThread ();
 			}*/
+		}
+
+		public override WorkspaceObject Owner {
+			get { return (Window != null ? Window.ViewContent.Owner : null) ?? adhocProject; }
 		}
 
 		internal override bool IsAdHocProject {
@@ -512,7 +518,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// do actual save
 			Window.ViewContent.ContentName = filename;
-			Window.ViewContent.Project = Workbench.GetProjectContainingFile (filename);
+			Window.ViewContent.Owner = Workbench.GetProjectContainingFile (filename);
 			await Window.ViewContent.Save (new FileSaveInformation (filename, encoding));
 			DesktopService.RecentFiles.AddFile (filename, (Project)null);
 			
@@ -589,8 +595,10 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
 
 			// Unsubscribe project events
-			if (window.ViewContent.Project != null)
-				window.ViewContent.Project.Modified -= HandleProjectModified;
+			if (window.ViewContent.Owner is SolutionFolderItem solutionItem)
+				solutionItem.Modified -= HandleProjectModified;
+			else if (window.ViewContent.Owner is WorkspaceItem workspaceItem)
+				workspaceItem.Modified -= HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
 			MonoDevelopWorkspace.LoadingFinished -= ReloadAnalysisDocumentHandler;
 
@@ -730,27 +738,31 @@ namespace MonoDevelop.Ide.Gui
 
 		public override void AttachToProject (Project project)
 		{
-			SetProject (project);
+			SetOwner (project);
 		}
 
-		internal void SetProject (Project project)
+		internal void SetOwner (WorkspaceObject owner)
 		{
-			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project || project == adhocProject)
+			if (Window == null || Window.ViewContent == null || Window.ViewContent.Owner == owner || owner == adhocProject)
 				return;
 			UnloadAdhocProject ();
 			if (adhocProject == null)
 				UnsubscribeAnalysisDocument ();
 			// Unsubscribe project events
-			if (Window.ViewContent.Project != null)
-				Window.ViewContent.Project.Modified -= HandleProjectModified;
-			Window.ViewContent.Project = project;
-			if (project != null)
-				project.Modified += HandleProjectModified;
+			if (window.ViewContent.Owner is SolutionFolderItem solutionItem)
+				solutionItem.Modified -= HandleProjectModified;
+			else if (window.ViewContent.Owner is WorkspaceItem workspaceItem)
+				workspaceItem.Modified -= HandleProjectModified;
+			Window.ViewContent.Owner = owner;
+			if (owner is SolutionFolderItem SolutionItem)
+				SolutionItem.Modified += HandleProjectModified;
+			else if (owner is WorkspaceItem workspaceItem)
+				workspaceItem.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
-			ListenToProjectLoad (project);
+			ListenToProjectLoad (owner);
 		}
 
-		void ListenToProjectLoad (Project project)
+		void ListenToProjectLoad (WorkspaceObject owner)
 		{
 			StartReparseThread ();
 		}
@@ -764,6 +776,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (!e.Any (x => x.Hint == "TargetFramework" || x.Hint == "References"))
 				return;
+			StartReparseThread ();
+		}
+
+		void HandleProjectModified (object sender, WorkspaceItemEventArgs e)
+		{
 			StartReparseThread ();
 		}
 
@@ -1081,8 +1098,8 @@ namespace MonoDevelop.Ide.Gui
 
 		void OnEntryRemoved (object sender, SolutionItemEventArgs args)
 		{
-			if (args.SolutionItem == window.ViewContent.Project)
-				window.ViewContent.Project = null;
+			if (args.SolutionItem == window.ViewContent.Owner)
+				window.ViewContent.Owner = null;
 		}
 		
 		public event EventHandler Closed;

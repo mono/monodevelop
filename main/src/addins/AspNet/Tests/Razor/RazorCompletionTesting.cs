@@ -128,7 +128,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 			project.AddFile (file);
 
 			var sev = new TestViewContent ();
-			sev.Project = project;
+			sev.Owner = project;
 			sev.ContentName = file;
 			sev.Text = editorText;
 			sev.CursorPosition = cursorPosition;

@@ -182,8 +182,8 @@ namespace MonoDevelop.CSharpBinding
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
 				await TypeSystemService.Load (solution, monitor);
-			content.Project = project;
-			doc.SetProject (project);
+			content.Owner = project;
+			doc.SetOwner (project);
 
 
 			var compExt = new CSharpCompletionTextEditorExtension ();

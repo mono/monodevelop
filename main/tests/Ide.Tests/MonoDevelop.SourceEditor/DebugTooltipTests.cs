@@ -69,13 +69,13 @@ namespace MonoDevelop.SourceEditor
 			tww.ViewContent = content;
 			content.ContentName = "/a.cs";
 			content.Data.MimeType = "text/x-csharp";
-			content.Project = project;
+			content.Owner = project;
 
 
 			content.Text = text;
 			content.CursorPosition = Math.Max (0, endPos);
 			var doc = new Document (tww);
-			doc.SetProject (project);
+			doc.SetOwner (project);
 
 			var compExt = new CSharpCompletionTextEditorExtension ();
 			compExt.Initialize (doc.Editor, doc);

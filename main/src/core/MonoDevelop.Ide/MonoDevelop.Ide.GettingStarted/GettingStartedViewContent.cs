@@ -13,7 +13,7 @@ namespace MonoDevelop.Ide.GettingStarted
 		
 		public GettingStartedViewContent (Project project, GettingStartedProvider provider)
 		{
-			Project = project;
+			Owner = project;
 			gettingStartedWidget = provider.GetGettingStartedWidget (project);
 			ContentName = GettextCatalog.GetString ("Getting Started");
 		}
@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.GettingStarted
 
 		public override object GetDocumentObject ()
 		{
-			return Project.GetGettingStartedNode ();
+			return Owner.GetGettingStartedNode ();
 		}
 	}
 }

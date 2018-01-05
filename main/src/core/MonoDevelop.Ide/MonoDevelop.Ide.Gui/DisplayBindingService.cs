@@ -57,6 +57,14 @@ namespace MonoDevelop.Ide.Gui
 			runtimeBindings.Remove(binding);
 		}
 
+		internal static IEnumerable<IDisplayBinding> GetDisplayBindings (FilePath filePath, string mimeType, WorkspaceObject owner)
+		{
+			//FIXME : this cannot be yet implemented without breaking IDisplayBinding.CanHandle API.
+			// it can be fixed when default  interface methods are added to the C# language.
+			// for now, just forward to the project version.
+			return GetDisplayBindings (filePath, mimeType, owner as Project);
+		}
+
 		internal static IEnumerable<IDisplayBinding> GetDisplayBindings (FilePath filePath, string mimeType, Project ownerProject)
 		{
 			if (mimeType == null && !filePath.IsNullOrEmpty)

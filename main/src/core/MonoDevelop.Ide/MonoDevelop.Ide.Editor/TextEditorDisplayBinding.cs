@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Editor
 				editor.MimeType = mimeType;
 			}
 
-			editor.GetViewContent ().Project = ownerProject;
+			editor.GetViewContent ().Owner = ownerProject;
 			return editor.GetViewContent (); 
 		}
 

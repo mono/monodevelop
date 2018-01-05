@@ -89,7 +89,7 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 			project.AddFile (file);
 
 			sev = new TestViewContent ();
-			sev.Project = project;
+			sev.Owner = project;
 			sev.ContentName = file;
 			sev.Text = editorText;
 			sev.CursorPosition = cursorPosition;

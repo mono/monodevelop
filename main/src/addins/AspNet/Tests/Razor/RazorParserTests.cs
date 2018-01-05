@@ -75,7 +75,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 				projectFile.Generator = "RazorTemplatePreprocessor";
 
 			var sev = new TestViewContent ();
-			sev.Project = project;
+			sev.Owner = project;
 			sev.ContentName = file;
 			sev.Text = text;
 

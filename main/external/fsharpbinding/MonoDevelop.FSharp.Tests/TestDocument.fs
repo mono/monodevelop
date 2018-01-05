@@ -8,7 +8,7 @@ type TestDocument(name, parsedDocument, editor: TextEditor) =
     inherit DocumentContext()
 
         override x.Name = name
-        override x.Project = null
+        override x.Owner = null
         override x.AnalysisDocument = null
         override x.ParsedDocument = parsedDocument
         override x.AttachToProject(_) = ()
