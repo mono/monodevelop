@@ -253,6 +253,16 @@ namespace MonoDevelop.UnitTesting
 							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier + id, project, true).Select;
 							submenu.Add (menuItem);
 
+							const int maxLabelLength = 80;
+							var trimmedLabel = label.Trim ();
+							if (trimmedLabel.Length > maxLabelLength) {
+								const char gap = '\u2026';
+								int remainsLength = (maxLabelLength - 1) / 2;
+								string start = trimmedLabel.Substring (0, remainsLength);
+								string end = trimmedLabel.Substring (trimmedLabel.Length - remainsLength, remainsLength);
+								label = $"{start.TrimEnd()}{gap}{end.TrimStart ()}";
+							}
+
 							var subMenuItem = new ContextMenuItem (label);
 							// if (!string.IsNullOrEmpty (tooltip))
 							//	subMenuItem.TooltipText = tooltip;
