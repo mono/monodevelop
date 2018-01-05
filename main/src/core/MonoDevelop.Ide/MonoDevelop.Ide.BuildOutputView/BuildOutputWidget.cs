@@ -129,11 +129,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			var toolbar = new DocumentToolbar ();
 
-			// Dummy widget to take all space on the left
-			var spacer = new HBox ();
-			spacer.Accessible.SetShouldIgnore (true);
-			toolbar.Add (spacer, true);
-
+			toolbar.AddSpace ();
 			toolbar.Add (showDiagnosticsButton);
 			toolbar.Add (saveButton); 
 			PackStart (toolbar.Container, expand: false, fill: true, padding: 0);
