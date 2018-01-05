@@ -216,8 +216,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 				var supportAssemblies = references.Where (r => !r.IsCopyLocal && (!r.IsProjectReference || r.ReferenceOutputAssembly) && !r.IsFrameworkFile && !r.IsImplicit && !IsGacReference (r))
 				                                  .Select (r => r.FilePath.FullPath.ToString ())
 				                                  .Where (File.Exists)
-				                                  .Distinct ()
-				                                  .ToList ();
+				                                  .Distinct ();
 				return supportAssemblies;
 			}
 
