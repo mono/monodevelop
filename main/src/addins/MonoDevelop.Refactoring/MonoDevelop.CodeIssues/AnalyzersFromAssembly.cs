@@ -60,6 +60,7 @@ namespace MonoDevelop.CodeIssues
 
 		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
 
+		const bool ClrHeapEnabled = false;
 		internal void AddAssembly (System.Reflection.Assembly asm, bool force = false)
 		{
 			//FIXME; this is a really hacky arbitrary heuristic
@@ -74,6 +75,8 @@ namespace MonoDevelop.CodeIssues
 				case "Microsoft.CodeAnalysis.VisualBasic.Features":
 				case "Microsoft.CodeAnalysis.CSharp.Features":
 				case "ClrHeapAllocationAnalyzer":
+					if (!ClrHeapEnabled)
+						return;
 					break;
 				//blacklist
 				case "FSharpBinding":
