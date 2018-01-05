@@ -90,6 +90,10 @@ namespace MonoDevelop.CodeIssues
 			try {
 				foreach (var type in asm.GetTypes ()) {
 
+					//HACK: Workaround for missing UI
+					if (type == typeof (Microsoft.CodeAnalysis.GenerateOverrides.GenerateOverridesCodeRefactoringProvider))
+						continue;
+
 					var analyzerAttr = (DiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof (DiagnosticAnalyzerAttribute), false).FirstOrDefault ();
 					if (analyzerAttr != null) {
 						try {
