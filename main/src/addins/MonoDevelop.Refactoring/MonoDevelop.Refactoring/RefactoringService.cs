@@ -242,16 +242,23 @@ namespace MonoDevelop.Refactoring
 		{
 			if (hintProject == null)
 				hintProject = IdeApp.Workbench.ActiveDocument?.Project;
+			ITimeTracker timer = null;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			try {
+				var metadata = new Dictionary<string, string> ();
+				metadata ["Result"] = "Success";
+				timer = Counters.FindReferences.BeginTiming (metadata);
+
 				foreach (var provider in findReferencesProvider) {
 					try {
 						foreach (var result in await provider.FindReferences (documentIdString, hintProject, monitor.CancellationToken)) {
 							monitor.ReportResult (result);
 						}
 					} catch (OperationCanceledException) {
+						metadata ["Result"] = "UserCancel";
 						return;
 					} catch (Exception ex) {
+						metadata ["Result"] = "Failure";
 						if (monitor != null)
 							monitor.ReportError ("Error finding references", ex);
 						LoggingService.LogError ("Error finding references", ex);
@@ -261,6 +268,8 @@ namespace MonoDevelop.Refactoring
 			} finally {
 				if (monitor != null)
 					monitor.Dispose ();
+				if (timer != null)
+					timer.Dispose ();
 			}
 		}
 
@@ -268,16 +277,22 @@ namespace MonoDevelop.Refactoring
 		{
 			if (hintProject == null)
 				hintProject = IdeApp.Workbench.ActiveDocument?.Project;
+			ITimeTracker timer = null;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			try {
+				var metadata = new Dictionary<string, string> ();
+				metadata ["Result"] = "Success";
+				timer = Counters.FindReferences.BeginTiming (metadata);
 				foreach (var provider in findReferencesProvider) {
 					try {
 						foreach (var result in await provider.FindAllReferences (documentIdString, hintProject, monitor.CancellationToken)) {
 							monitor.ReportResult (result);
 						}
 					} catch (OperationCanceledException) {
+						metadata ["Result"] = "UserCancel";
 						return;
 					} catch (Exception ex) {
+						metadata ["Result"] = "Failure";
 						if (monitor != null)
 							monitor.ReportError ("Error finding references", ex);
 						LoggingService.LogError ("Error finding references", ex);
@@ -287,6 +302,8 @@ namespace MonoDevelop.Refactoring
 			} finally {
 				if (monitor != null)
 					monitor.Dispose ();
+				if (timer != null)
+					timer.Dispose ();
 			}
 		}
 
@@ -307,5 +324,10 @@ namespace MonoDevelop.Refactoring
 
 			return false;
 		}
+	}
+
+	internal static class Counters
+	{
+		public static TimerCounter FindReferences = InstrumentationService.CreateTimerCounter ("Find references", "Code Navigation", id: "CodeNavigation.FindReferences");
 	}
 }
