@@ -574,7 +574,13 @@ namespace MonoDevelop.Ide
 					}
 
 					// It is a project, not a solution. Try to create a dummy solution and add the project to it
-					
+
+					if (File.Exists (Path.ChangeExtension (file, ".sln"))) {
+						metadata ["Reason"] = "OpenProject";
+					} else {
+						metadata ["Reason"] = "CreateSolution";
+					}
+
 					timer.Trace ("Getting wrapper solution");
 					item = await IdeApp.Services.ProjectService.GetWrapperSolution (monitor, file);
 				}
@@ -639,6 +645,7 @@ namespace MonoDevelop.Ide
 
 			// Will be set to true after a successful load.
 			metadata ["LoadSucceed"] = bool.FalseString;
+			metadata ["Reason"] = "OpenSolution";
 
 			return metadata;
 		}
@@ -648,7 +655,6 @@ namespace MonoDevelop.Ide
 			// Is this a workspace or a solution?
 			metadata ["IsSolution"] = (item is Solution).ToString ();
 			metadata ["LoadSucceed"] = bool.TrueString;
-			metadata ["Reason"] = "OpenSolution";
 			metadata ["TotalProjectCount"] = item.GetAllItems<Project> ().Count ().ToString ();
 		}
 
