@@ -753,6 +753,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		internal void InternalOnDocumentOpened (DocumentId documentId, SourceTextContainer textContainer, bool isCurrentContext = true)
+		{
+			OnDocumentOpened (documentId, textContainer, isCurrentContext);
+		}
+
+		internal void InternalOnDocumentClosed (DocumentId documentId, TextLoader reloader, bool updateActiveContext = false)
+		{
+			OnDocumentClosed (documentId, reloader, updateActiveContext);
+		}
+
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
 		internal void InformDocumentOpen (DocumentId documentId, TextEditor editor)
 		{
@@ -818,6 +828,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (openDoc != null) {
 						openDoc.Dispose ();
 						openDocuments.Remove (openDoc);
+					} else {
+						//Apparently something else opened this file via InternalOnDocumentOpened(e.g. .cshtml)
+						//it's job of whatever opened to also call InternalOnDocumentClosed
+						return;
 					}
 				}
 				if (!CurrentSolution.ContainsDocument (analysisDocument))
@@ -1198,6 +1212,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, mdProject?.FileName.ParentDirectory, true);
+			// If file is already part of project don't re-add it, example of this is .cshtml
+			if (mdProject?.IsFileInProject (path) == true) {
+				this.OnDocumentAdded (info);
+				return;
+			}
 			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
 
 			string formattedText;

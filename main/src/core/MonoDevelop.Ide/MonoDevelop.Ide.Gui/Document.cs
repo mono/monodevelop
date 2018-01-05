@@ -851,7 +851,7 @@ namespace MonoDevelop.Ide.Gui
 						return Task.CompletedTask;
 					SubscribeRoslynWorkspace ();
 					analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
-					if (analysisDocument != null) {
+					if (analysisDocument != null && !RoslynWorkspace.IsDocumentOpen(analysisDocument)) {
 						TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
 						OnAnalysisDocumentChanged (EventArgs.Empty);
 						return Task.CompletedTask;
