@@ -38,6 +38,7 @@ namespace MonoDevelop.AnalysisCore
 	partial class MonoDevelopWorkspaceDiagnosticAnalyzerProviderService : IWorkspaceDiagnosticAnalyzerProviderService
 	{
 		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
+		const bool ClrHeapEnabled = false;
 
 		static readonly AnalyzerAssemblyLoader analyzerAssemblyLoader = new AnalyzerAssemblyLoader ();
 		readonly ImmutableArray<HostDiagnosticAnalyzerPackage> hostDiagnosticAnalyzerInfo;
@@ -75,6 +76,8 @@ namespace MonoDevelop.AnalysisCore
 					case "Microsoft.CodeAnalysis.CSharp.Features":
 
 					case "ClrHeapAllocationAnalyzer":
+						if (!ClrHeapEnabled)
+							continue;
 						break;
 					//blacklist
 					case "FSharpBinding":
