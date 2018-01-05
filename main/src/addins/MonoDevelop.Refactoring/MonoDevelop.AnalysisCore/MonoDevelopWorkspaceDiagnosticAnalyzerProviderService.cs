@@ -71,10 +71,11 @@ namespace MonoDevelop.AnalysisCore
 					case "RefactoringEssentials":
 					case "Refactoring Essentials":
 					case "Microsoft.CodeAnalysis.CSharp":
+					case "Microsoft.CodeAnalysis.CSharp.Features":
 					case "Microsoft.CodeAnalysis.Features":
 					case "Microsoft.CodeAnalysis.VisualBasic.Features":
-					case "Microsoft.CodeAnalysis.CSharp.Features":
-
+					case "Microsoft.CodeAnalysis.VisualBasic":
+						break;
 					case "ClrHeapAllocationAnalyzer":
 						if (!ClrHeapEnabled)
 							continue;
