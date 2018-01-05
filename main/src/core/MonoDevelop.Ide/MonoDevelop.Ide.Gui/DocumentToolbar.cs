@@ -27,6 +27,7 @@ using System;
 using System.Linq;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -104,6 +105,13 @@ namespace MonoDevelop.Ide.Gui
 				Box.BoxChild bc = (Box.BoxChild) box [widget];
 				bc.Position = index;
 			}
+		}
+
+		public void AddSpace ()
+		{
+			var spacer = new HBox ();
+			spacer.Accessible.SetShouldIgnore (true);
+			Add (spacer, true); 
 		}
 
 		void ChangeColor (Gtk.Widget w)
