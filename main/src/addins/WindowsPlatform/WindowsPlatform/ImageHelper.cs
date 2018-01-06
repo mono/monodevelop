@@ -46,8 +46,10 @@ namespace WindowsPlatform
 				var resourceName = stockId + ".png";
 
 				// first check if such a resource exists to avoid a first-chance exception
-				if (typeof (ImageHelper).Assembly.GetManifestResourceStream (resourceName) != null) {
-					image = Image.FromResource (typeof (ImageHelper), resourceName);
+				using (var stream = typeof (ImageHelper).Assembly.GetManifestResourceStream (resourceName)) {
+					if (stream != null) {
+						image = Image.FromResource (typeof (ImageHelper), resourceName);
+					}
 				}
 
 				if (image == null) {
