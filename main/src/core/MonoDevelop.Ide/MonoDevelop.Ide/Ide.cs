@@ -298,9 +298,6 @@ namespace MonoDevelop.Ide
 				initializedEvent = null;
 			}
 			
-			//FIXME: we should really make this on-demand. consumers can display a "loading help cache" message like VS
-			MonoDevelop.Projects.HelpService.AsyncInitialize ();
-			
 			UpdateInstrumentationIcon ();
 			IdeApp.Preferences.EnableInstrumentation.Changed += delegate {
 				UpdateInstrumentationIcon ();

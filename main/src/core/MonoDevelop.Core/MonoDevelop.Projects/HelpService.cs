@@ -43,21 +43,6 @@ namespace MonoDevelop.Projects
 		static object helpTreeLock = new object ();
 		static HashSet<string> sources = new HashSet<string> ();
 		
-		/// <summary>
-		/// Starts loading the MonoDoc tree in the background.
-		/// </summary>
-		public static void AsyncInitialize ()
-		{
-			lock (helpTreeLock) {
-				if (helpTreeInitialized)
-					return;
-			}
-			ThreadPool.QueueUserWorkItem (delegate {
-				// Load the help tree asynchronously. Reduces startup time.
-				InitializeHelpTree ();
-			});
-		}
-		
 		//FIXME: allow adding sources without restart when extension installed (will need to be async)
 		// will also be tricky we cause we'll also have update any running MonoDoc viewer
 		static void InitializeHelpTree ()
@@ -107,11 +92,8 @@ namespace MonoDevelop.Projects
 		///  </remarks>
 		public static RootTree HelpTree {
 			get {
-				lock (helpTreeLock) {
-					if (!helpTreeInitialized)
-						InitializeHelpTree ();
-					return helpTree;
-				}
+				InitializeHelpTree ();
+				return helpTree;
 			}
 		}
 		
@@ -125,7 +107,10 @@ namespace MonoDevelop.Projects
 		}
 		
 		public static IEnumerable<string> Sources {
-			get { return sources; }
+			get {
+				InitializeHelpTree ();
+				return sources;
+			}
 		}
 		
 		//note: this method is very careful to check that the generated URLs exist in MonoDoc
