@@ -485,6 +485,7 @@ namespace MonoDevelop.Core
 			var path = systemAssemblyService.CurrentRuntime.GetMSBuildBinPath ("15.0");
 			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.dll"));
 			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Framework.dll"));
+			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Tasks.Core.dll"));
 			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Utilities.Core.dll"));
 
 			if (Type.GetType ("Mono.Runtime") == null) {
