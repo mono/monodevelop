@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Linq;
+using System.Threading;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.FindInFiles;
 using Microsoft.CodeAnalysis;
@@ -31,7 +33,6 @@ using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Refactoring;
-using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp.Navigation
@@ -47,10 +48,24 @@ namespace MonoDevelop.CSharp.Navigation
 
 		protected async override void Run ()
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			var sym = await GetNamedTypeAtCaret (doc);
-			if (sym != null)
-				FindExtensionMethods (await doc.GetCompilationAsync (), sym);
+			var metadata = Counters.CreateNavigateToMetadata ("ExtensionMethods");
+			using (var timer = Counters.NavigateTo.BeginTiming (metadata)) {
+				var doc = IdeApp.Workbench.ActiveDocument;
+				var sym = await GetNamedTypeAtCaret (doc);
+				if (sym == null) {
+					Counters.UpdateUserFault (metadata);
+					return;
+				}
+
+				using (var source = new CancellationTokenSource ()) {
+					try {
+						FindExtensionMethods (await doc.GetCompilationAsync (), sym, source);
+						Counters.UpdateNavigateResult (metadata, true);
+					} finally {
+						Counters.UpdateUserCancellation (metadata, source.Token);
+					}
+				}
+			}
 		}
 
 		internal static async System.Threading.Tasks.Task<INamedTypeSymbol> GetNamedTypeAtCaret (Ide.Gui.Document doc)
@@ -62,12 +77,14 @@ namespace MonoDevelop.CSharp.Navigation
 			return sym as INamedTypeSymbol;
 		}
 
-		void FindExtensionMethods (Compilation compilation, ISymbol sym)
+		void FindExtensionMethods (Compilation compilation, ISymbol sym, CancellationTokenSource cancellationTokenSource)
 		{
 			var symType = sym as ITypeSymbol;
 			if (symType == null)
 				return;
-			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+
+			var searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
+			using (var monitor = searchMonitor.WithCancellationSource (cancellationTokenSource)) {
 				foreach (var type in compilation.Assembly.GlobalNamespace.GetAllTypes (monitor.CancellationToken)) {
 					if (!type.MightContainExtensionMethods)
 						continue;
@@ -79,7 +96,7 @@ namespace MonoDevelop.CSharp.Navigation
 						var reducedMethod = extMethod.ReduceExtensionMethod (symType);
 						if (reducedMethod != null) {
 							var loc = extMethod.Locations.First ();
-							monitor.ReportResult (new MemberReference (extMethod, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+							searchMonitor.ReportResult (new MemberReference (extMethod, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
 						}
 					}
 				}

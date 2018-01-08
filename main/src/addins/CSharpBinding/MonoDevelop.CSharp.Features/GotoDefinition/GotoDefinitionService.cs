@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.CSharp.Navigation;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.GotoDefinition
 {
@@ -77,6 +78,21 @@ namespace ICSharpCode.NRefactory6.CSharp.Features.GotoDefinition
 		//		}
 
 		public static bool TryGoToDefinition (Document document, int position, CancellationToken cancellationToken)
+		{
+			var metadata = Counters.CreateNavigateToMetadata ("Declaration");
+
+			using (var timer = Counters.NavigateTo.BeginTiming (metadata)) {
+				try {
+					bool result = TryGoToDefinitionInternal (document, position, cancellationToken);
+					Counters.UpdateNavigateResult (metadata, result);
+					return result;
+				} finally {
+					Counters.UpdateUserCancellation (metadata, cancellationToken);
+				}
+			}
+		}
+
+		static bool TryGoToDefinitionInternal (Document document, int position, CancellationToken cancellationToken)
 		{
 			var symbol = FindSymbolAsync (document, position, cancellationToken).Result;
 

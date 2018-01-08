@@ -36,6 +36,7 @@ using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.CSharp.Navigation;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.FindInFiles;
@@ -60,13 +61,14 @@ namespace MonoDevelop.CSharp.Refactoring
 			return symbol.IsVirtual || symbol.IsAbstract || symbol.IsOverride;
 		}
 
-		public static void FindDerivedSymbols (ISymbol symbol)
+		static Task FindDerivedSymbols (ISymbol symbol, CancellationTokenSource cancellationTokenSource)
 		{
 			if (symbol == null)
-				return;
+				return Task.FromResult (0);
 			var solution = IdeApp.Workbench.ActiveDocument?.AnalysisDocument?.Project?.Solution ?? TypeSystemService.Workspace.CurrentSolution;
-			Task.Run (async delegate {
-				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+			return Task.Run (async delegate {
+				var searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
+				using (var monitor = searchMonitor.WithCancellationSource (cancellationTokenSource)) {
 					IEnumerable<ISymbol> result;
 					try {
 						if (symbol.ContainingType != null && symbol.ContainingType.TypeKind == TypeKind.Interface) {
@@ -87,7 +89,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						foreach (var foundSymbol in result) {
 							foreach (var loc in foundSymbol.Locations) {
 								monitor.CancellationToken.ThrowIfCancellationRequested ();
-								monitor.ReportResult (new MemberReference (foundSymbol, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+								searchMonitor.ReportResult (new MemberReference (foundSymbol, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
 							}
 						}
 					} catch (OperationCanceledException) {
@@ -120,9 +122,23 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		protected override async void Run (object dataItem)
 		{
-			var sym = await FindBaseSymbolsHandler.GetSymbolAtCaret (IdeApp.Workbench.ActiveDocument);
-			if (sym != null)
-				FindDerivedSymbols (sym);
+			var metadata = Navigation.Counters.CreateNavigateToMetadata ("DerivedSymbols");
+			using (var timer = Navigation.Counters.NavigateTo.BeginTiming (metadata)) {
+				var sym = await FindBaseSymbolsHandler.GetSymbolAtCaret (IdeApp.Workbench.ActiveDocument);
+				if (sym == null) {
+					Navigation.Counters.UpdateUserFault (metadata);
+					return;
+				}
+
+				using (var source = new CancellationTokenSource ()) {
+					try {
+						await FindDerivedSymbols (sym, source);
+						Navigation.Counters.UpdateNavigateResult (metadata, true);
+					} finally {
+						Navigation.Counters.UpdateUserCancellation (metadata, source.Token);
+					}
+				}
+			}
 		}
 	}
 }

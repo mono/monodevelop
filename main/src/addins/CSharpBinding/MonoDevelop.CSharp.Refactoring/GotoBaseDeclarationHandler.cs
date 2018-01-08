@@ -24,10 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Microsoft.CodeAnalysis;
-using MonoDevelop.Ide;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring
@@ -74,37 +75,46 @@ namespace MonoDevelop.CSharp.Refactoring
 			return false;
 		}
 
-		public static void GotoBase (MonoDevelop.Ide.Gui.Document doc, ISymbol symbol)
+		public static async Task GotoBase (MonoDevelop.Ide.Gui.Document doc, ISymbol symbol)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
 			if (symbol == null)
 				throw new ArgumentNullException ("symbol");
+
+			var metadata = Navigation.Counters.CreateNavigateToMetadata ("Base");
+			using (var timer = Navigation.Counters.NavigateTo.BeginTiming (metadata)) {
+				await GotoBaseInternal (doc, symbol);
+				Navigation.Counters.UpdateNavigateResult (metadata, true);
+			}
+		}
+
+		static Task GotoBaseInternal (MonoDevelop.Ide.Gui.Document doc, ISymbol symbol)
+		{
 			switch (symbol.Kind) {
 			case SymbolKind.NamedType:
-				RefactoringService.RoslynJumpToDeclaration (((ITypeSymbol)symbol).BaseType, doc.Project);
-				break;
+				return RefactoringService.RoslynJumpToDeclaration (((ITypeSymbol)symbol).BaseType, doc.Project);
 			case SymbolKind.Property:
 				var property = (IPropertySymbol)symbol;
 				if (property.OverriddenProperty != null)
-					RefactoringService.RoslynJumpToDeclaration (property.OverriddenProperty, doc.Project);
+					return RefactoringService.RoslynJumpToDeclaration (property.OverriddenProperty, doc.Project);
 				else
-					RefactoringService.RoslynJumpToDeclaration (property.ExplicitInterfaceImplementations.First (), doc.Project);
-				break;
+					return RefactoringService.RoslynJumpToDeclaration (property.ExplicitInterfaceImplementations.First (), doc.Project);
 			case SymbolKind.Event:
 				var evt = (IEventSymbol)symbol;
 				if (evt.OverriddenEvent != null)
-					RefactoringService.RoslynJumpToDeclaration (evt.OverriddenEvent, doc.Project);
+					return RefactoringService.RoslynJumpToDeclaration (evt.OverriddenEvent, doc.Project);
 				else
-					RefactoringService.RoslynJumpToDeclaration (evt.ExplicitInterfaceImplementations.First (), doc.Project);
-				break;
+					return RefactoringService.RoslynJumpToDeclaration (evt.ExplicitInterfaceImplementations.First (), doc.Project);
 			case SymbolKind.Method:
 				var method = (IMethodSymbol)symbol;
 				if (method.OverriddenMethod != null)
-					RefactoringService.RoslynJumpToDeclaration (method.OverriddenMethod, doc.Project);
+					return RefactoringService.RoslynJumpToDeclaration (method.OverriddenMethod, doc.Project);
 				else
-					RefactoringService.RoslynJumpToDeclaration (method.ExplicitInterfaceImplementations.First (), doc.Project);
-				break;
+					return RefactoringService.RoslynJumpToDeclaration (method.ExplicitInterfaceImplementations.First (), doc.Project);
+			default:
+				// CanGotoBase should prevent this from happening.
+				throw new ArgumentException (string.Format ("Invalid symbol.Kind {0}", symbol.Kind));
 			}
 		}
 	}
