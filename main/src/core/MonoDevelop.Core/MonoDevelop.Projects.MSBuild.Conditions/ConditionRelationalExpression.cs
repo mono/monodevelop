@@ -144,6 +144,11 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 				return string.Equals (l, r, StringComparison.OrdinalIgnoreCase);
 			case RelationOperator.NotEqual:
 				return !string.Equals (l, r, StringComparison.OrdinalIgnoreCase);
+			case RelationOperator.GreaterOrEqual:
+			case RelationOperator.LessOrEqual:
+				if (string.Equals (l, r, StringComparison.OrdinalIgnoreCase))
+					return true;
+				throw new NotSupportedException (String.Format ("Relational operator {0} is not supported.", op));
 			default:
 				throw new NotSupportedException (String.Format ("Relational operator {0} is not supported.", op));
 			}
