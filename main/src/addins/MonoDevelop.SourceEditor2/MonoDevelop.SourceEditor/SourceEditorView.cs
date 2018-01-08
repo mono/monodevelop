@@ -2772,8 +2772,9 @@ namespace MonoDevelop.SourceEditor
 
 			if (lineMarker is IUnitTestMarker) {
 				var actionMargin = TextEditor.ActionMargin;
-				if (actionMargin != null) {
+				if (actionMargin != null && !actionMargin.IsVisible) {
 					actionMargin.IsVisible = true;
+					TextEditor.QueueDraw ();
 				}
 			}
 
