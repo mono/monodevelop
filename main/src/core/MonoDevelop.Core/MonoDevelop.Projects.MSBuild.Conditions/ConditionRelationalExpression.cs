@@ -149,13 +149,13 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			}
 		}
 
+		// PERF: Cache this value to prevent recalculation.
+		List<string> combinedProperty = null;
+		List<string> combinedValue = null;
 		bool combinedPropertySet;
 		object conditionPropertiesLock = new object ();
 		public override void CollectConditionProperties (ConditionedPropertyCollection properties)
 		{
-			List<string> combinedProperty = null;
-			List<string> combinedValue = null;
-
 			lock (conditionPropertiesLock) {
 				if (!combinedPropertySet) {
 					combinedPropertySet = true;
