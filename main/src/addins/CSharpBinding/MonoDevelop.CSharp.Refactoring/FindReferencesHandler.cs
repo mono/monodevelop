@@ -51,8 +51,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				return;
 			Task.Run (async delegate {
 				ITimeTracker timer = null;
-				var metadata = new Dictionary<string, string> ();
-				metadata ["Result"] = "Success";
+				var metadata = MonoDevelop.Refactoring.Counters.CreateFindReferencesMetadata ();
 
 				try {
 					timer = MonoDevelop.Refactoring.Counters.FindReferences.BeginTiming (metadata);
@@ -104,7 +103,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 				} catch (OperationCanceledException) {
 				} catch (Exception ex) {
-					metadata ["Result"] = "Failure";
+					MonoDevelop.Refactoring.Counters.SetFailure (metadata);
 					if (monitor != null)
 						monitor.ReportError ("Error finding references", ex);
 					else
@@ -113,7 +112,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					if (monitor != null)
 						monitor.Dispose ();
 					if (monitor.CancellationToken.IsCancellationRequested)
-						metadata ["Result"] = "UserCancel";
+						MonoDevelop.Refactoring.Counters.SetUserCancel (metadata);
 					if (timer != null)
 						timer.Dispose ();
 				}

@@ -245,20 +245,18 @@ namespace MonoDevelop.Refactoring
 			ITimeTracker timer = null;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			try {
-				var metadata = new Dictionary<string, string> ();
-				metadata ["Result"] = "Success";
+				var metadata = Counters.CreateFindReferencesMetadata ();
 				timer = Counters.FindReferences.BeginTiming (metadata);
-
 				foreach (var provider in findReferencesProvider) {
 					try {
 						foreach (var result in await provider.FindReferences (documentIdString, hintProject, monitor.CancellationToken)) {
 							monitor.ReportResult (result);
 						}
 					} catch (OperationCanceledException) {
-						metadata ["Result"] = "UserCancel";
+						Counters.SetUserCancel (metadata);
 						return;
 					} catch (Exception ex) {
-						metadata ["Result"] = "Failure";
+						Counters.SetFailure (metadata);
 						if (monitor != null)
 							monitor.ReportError ("Error finding references", ex);
 						LoggingService.LogError ("Error finding references", ex);
@@ -280,8 +278,7 @@ namespace MonoDevelop.Refactoring
 			ITimeTracker timer = null;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			try {
-				var metadata = new Dictionary<string, string> ();
-				metadata ["Result"] = "Success";
+				var metadata = Counters.CreateFindReferencesMetadata ();
 				timer = Counters.FindReferences.BeginTiming (metadata);
 				foreach (var provider in findReferencesProvider) {
 					try {
@@ -289,10 +286,10 @@ namespace MonoDevelop.Refactoring
 							monitor.ReportResult (result);
 						}
 					} catch (OperationCanceledException) {
-						metadata ["Result"] = "UserCancel";
+						Counters.SetUserCancel (metadata);
 						return;
 					} catch (Exception ex) {
-						metadata ["Result"] = "Failure";
+						Counters.SetFailure (metadata);
 						if (monitor != null)
 							monitor.ReportError ("Error finding references", ex);
 						LoggingService.LogError ("Error finding references", ex);
@@ -329,5 +326,22 @@ namespace MonoDevelop.Refactoring
 	internal static class Counters
 	{
 		public static TimerCounter FindReferences = InstrumentationService.CreateTimerCounter ("Find references", "Code Navigation", id: "CodeNavigation.FindReferences");
+
+		public static IDictionary<string, string> CreateFindReferencesMetadata ()
+		{
+			var metadata = new Dictionary<string, string> ();
+			metadata ["Result"] = "Success";
+			return metadata;
+		}
+
+		public static void SetFailure (IDictionary<string, string> metadata)
+		{
+			metadata ["Result"] = "Failure";
+		}
+
+		public static void SetUserCancel (IDictionary<string, string> metadata)
+		{
+			metadata ["Result"] = "UserCancel";
+		}
 	}
 }
