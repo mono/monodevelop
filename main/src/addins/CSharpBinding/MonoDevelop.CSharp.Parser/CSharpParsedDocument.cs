@@ -228,10 +228,9 @@ namespace MonoDevelop.CSharp.Parser
 		}
 
 		// Tags are done via Ide.Tasks.CommentTasksProvider.
-		IReadOnlyList<Tag> emptyTags = Array.Empty<Tag> ();
 		public override Task<IReadOnlyList<Tag>> GetTagCommentsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return Task.FromResult (emptyTags);
+			return Task.FromResult<IReadOnlyList<Tag>> (null);
 		}
 
 		sealed class SemanticTagVisitor : CSharpSyntaxWalker
