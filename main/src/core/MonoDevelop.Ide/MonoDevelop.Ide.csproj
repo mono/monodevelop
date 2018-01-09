@@ -9636,6 +9636,7 @@
     <Compile Include="Gui\MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineImageLoader.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\BlockStructureFoldingTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Tasks\CommentTasksProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
