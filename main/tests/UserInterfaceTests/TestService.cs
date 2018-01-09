@@ -34,11 +34,11 @@ namespace UserInterfaceTests
 	{
 		public static AutoTestClientSession Session { get; private set; }
 
-		public static void StartSession (string monoDevelopBinPath = null, string profilePath = null)
+		public static void StartSession (string file = null, string profilePath = null, string args = null)
 		{
 			Session = new AutoTestClientSession ();
 
-			Session.StartApplication (file: monoDevelopBinPath, environment: new Dictionary<string,string> {
+			Session.StartApplication (file: file, args: args, environment: new Dictionary<string, string> {
 				{ "MONODEVELOP_PROFILE", profilePath ?? Util.CreateTmpDir ("profile") }
 			});
 
