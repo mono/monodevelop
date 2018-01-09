@@ -25,9 +25,11 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Immutable;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.CodingConventions;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -35,7 +37,7 @@ namespace MonoDevelop.Ide.Editor
 	{
 		public readonly static string MaxLineLengthConvention = "max_line_length";
 		readonly static object contextCacheLock = new object ();
-		readonly static ICodingConventionsManager codingConventionsManager = CodingConventionsManagerFactory.CreateCodingConventionsManager ();
+		readonly static ICodingConventionsManager codingConventionsManager = CodingConventionsManagerFactory.CreateCodingConventionsManager (new ConventionsFileManager());
 		static ImmutableDictionary<string, ICodingConventionContext> contextCache = ImmutableDictionary<string, ICodingConventionContext>.Empty;
 
 		public async static Task<ICodingConventionContext> GetEditorConfigContext (string fileName, CancellationToken token = default (CancellationToken))
@@ -48,7 +50,9 @@ namespace MonoDevelop.Ide.Editor
 			lock (contextCacheLock) {
 				if (contextCache.ContainsKey (fileName))
 					return contextCache [fileName];
+				
 				contextCache = contextCache.Add (fileName, result);
+
 				return result;
 			}
 		}
@@ -57,6 +61,60 @@ namespace MonoDevelop.Ide.Editor
 		{
 			lock (contextCacheLock) {
 				contextCache = contextCache.Remove (fileName);
+			}
+		}
+
+		class ConventionsFileManager : IFileWatcher
+		{
+			Dictionary<string, FileSystemWatcher> watchers = new Dictionary<string, FileSystemWatcher> ();
+
+			public event ConventionsFileChangedAsyncEventHandler ConventionFileChanged;
+			public event ContextFileMovedAsyncEventHandler ContextFileMoved;
+
+			public void Dispose ()
+			{
+				lock (watchers) {
+					foreach (var kv in watchers)
+						kv.Value.Dispose ();
+					watchers = null;
+				}
+			}
+
+			void OnChanged (object source, FileSystemEventArgs e)
+			{
+				var watcher = (FileSystemWatcher)source;
+				ConventionFileChanged?.Invoke (this, new ConventionsFileChangeEventArgs (watcher.Filter, watcher.Path, GetChangeType(e.ChangeType)));
+			}
+
+			static ChangeType GetChangeType(WatcherChangeTypes type)
+			{
+				switch (type) {
+				case WatcherChangeTypes.Changed:
+					return ChangeType.FileModified;
+				case WatcherChangeTypes.Deleted:
+					return ChangeType.FileDeleted;
+				}
+				return ChangeType.FileModified;
+			}
+
+			public void StartWatching (string fileName, string directoryPath)
+			{
+				var watcher = new FileSystemWatcher ();
+				watcher.Path = directoryPath;
+				watcher.Filter = fileName;
+				watcher.Changed += OnChanged;
+				watcher.Deleted += OnChanged;
+				watcher.EnableRaisingEvents = true;
+				lock (watchers) {
+					watchers.Add (directoryPath + Path.DirectorySeparatorChar.ToString () + fileName, watcher);
+				}
+			}
+
+			public void StopWatching (string fileName, string directoryPath)
+			{
+				lock (watchers) {
+					watchers.Remove (directoryPath + Path.DirectorySeparatorChar.ToString () + fileName);
+				}
 			}
 		}
 	}
