@@ -57,6 +57,7 @@ namespace MonoDevelop.Ide.Tasks
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
 				IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+				CommentTasksProvider.Initialize ();
 			}
 			errors.ItemName = GettextCatalog.GetString ("Warning/Error");
 			userTasks.ItemName = GettextCatalog.GetString ("User Task");
