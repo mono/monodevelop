@@ -70,6 +70,8 @@ Thumbs.db
 *.dmg
 *.app
 /main/build/MacOSX/render.exe
+/main/external/fsharpbinding/.paket
+/main/external/fsharpbinding/paket-files
 /main/external/Xamarin.Mac.registrar.full.a
 /main/external/Xamarin.Mac.dll*
 /main/external/libxammac.dylib
