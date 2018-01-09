@@ -1,4 +1,4 @@
-﻿//
+//
 // CommentTasksProvider.cs
 //
 // Author:
@@ -35,7 +35,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	static class CommentTasksProvider
+	static partial class CommentTasksProvider
 	{
 		static ITodoListProvider todoListProvider;
 
@@ -43,14 +43,29 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			todoListProvider = Ide.Composition.CompositionManager.GetExportedValue<ITodoListProvider> ();
 
-			todoListProvider.TodoListUpdated += TodoListUpdated;
-
 			Ide.IdeApp.Workspace.SolutionLoaded += OnSolutionLoaded;
 			CommentTag.SpecialCommentTagsChanged += OnSpecialTagsChanged;
 
-			TodoListUpdated += (sender, args) => {
-				var local = args;
+			todoListProvider.TodoListUpdated += (sender, args) => {
+				var ws = (MonoDevelopWorkspace)args.Workspace;
+				var doc = ws.GetDocument (args.DocumentId);
+				if (doc == null)
+					return;
+
+				var project = ws.GetMonoProject (args.ProjectId);
+				if (project == null)
+					return;
+
+				var file = doc.Name;
+				if (args.TodoItems.Length == 0)
+					TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, null, project));
+				else {
+					var items = args.TodoItems.SelectAsArray (x => new Tag (x.Message, new Editor.DocumentRegion (x.MappedLine, x.MappedColumn, x.MappedLine, x.MappedColumn)));
+					TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, items, project));
+				}
 			};
+
+			Legacy.Initialize ();
 		}
 
 		public static void Initialize ()
@@ -80,8 +95,6 @@ namespace MonoDevelop.Ide.Tasks
 			foreach (var ws in TypeSystemService.AllWorkspaces)
 				UpdateWorkspaceOptions (ws);
 		}
-
-		public static event EventHandler<TodoItemsUpdatedArgs> TodoListUpdated;
 
 		public static ImmutableArray<TodoItem> GetTodoItems (Microsoft.CodeAnalysis.Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
 		{
