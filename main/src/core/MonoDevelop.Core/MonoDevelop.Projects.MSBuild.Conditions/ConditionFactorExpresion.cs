@@ -65,47 +65,38 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			this.token = token;
 		}
 
-		Token EvaluateToken(IExpressionContext context)
-		{
-			// FIXME: in some situations items might not be allowed
-			string val = context.EvaluateString (token.Value);
-			return new Token (val, TokenType.String, 0);
-		}
-
 		public override bool BoolEvaluate (IExpressionContext context)
 		{
-			Token evaluatedToken = EvaluateToken (context);
+			string evaluatedString = StringEvaluate (context);
 		
-			if (trueValues [evaluatedToken.Value] != null)
+			if (trueValues [evaluatedString] != null)
 				return true;
-			else if (falseValues [evaluatedToken.Value] != null)
+			else if (falseValues [evaluatedString] != null)
 				return false;
 			else
 				throw new ExpressionEvaluationException (
 						String.Format ("Expression \"{0}\" evaluated to \"{1}\" instead of a boolean value",
-								token.Value, evaluatedToken.Value));
+								token.Value, evaluatedString));
 		}
 		
 		public override float NumberEvaluate (IExpressionContext context)
 		{
-			Token evaluatedToken = EvaluateToken (context);
-		
-			return Single.Parse (evaluatedToken.Value, CultureInfo.InvariantCulture);
+			string evaluatedString = StringEvaluate (context);
+			return Single.Parse (evaluatedString, CultureInfo.InvariantCulture);
 		}
 		
 		public override string StringEvaluate (IExpressionContext context)
 		{
-			Token evaluatedToken = EvaluateToken (context);
-		
-			return evaluatedToken.Value;
+			var evaluated = context.EvaluateString (token.Value);
+			return evaluated;
 		}
 		
 		// FIXME: check if we really can do it
 		public override bool CanEvaluateToBool (IExpressionContext context)
 		{
-			Token evaluatedToken = EvaluateToken (context);
+			string evaluatedToken = StringEvaluate (context);
 		
-			if (token.Type == TokenType.String && allValues [evaluatedToken.Value] != null)
+			if (token.Type == TokenType.String && allValues [evaluatedToken] != null)
 				return true;
 			else
 				return false;
@@ -132,10 +123,19 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			return true;
 		}
 
-		internal Conditions.Token Token {
-			get {
-				return this.token;
-			}
+		public override bool CanEvaluateToVersion (IExpressionContext context)
+		{
+			var text = StringEvaluate (context);
+			return Version.TryParse (text, out var version);
 		}
+
+		public override Version VersionEvaluate (IExpressionContext context)
+		{
+			var text = StringEvaluate (context);
+			Version.TryParse (text, out var version);
+			return version;
+		}
+
+		internal Token Token => token;
 	}
 }
