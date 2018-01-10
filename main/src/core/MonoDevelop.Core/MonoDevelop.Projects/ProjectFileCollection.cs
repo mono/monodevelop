@@ -149,18 +149,19 @@ namespace MonoDevelop.Projects
 			files = files.SetItem (e.NewPath, e.ProjectFile);
 		}
 
-		void AddProjectFile (ProjectFile item)
+		IEnumerable<KeyValuePair<FilePath, ProjectFile>> AddProjectFiles (IEnumerable<ProjectFile> items)
 		{
-			item.VirtualPathChanged += ProjectVirtualPathChanged;
-			item.PathChanged += FilePathChanged;
+			foreach (var item in items) {
+				item.VirtualPathChanged += ProjectVirtualPathChanged;
+				item.PathChanged += FilePathChanged;
 
-			if (item.Project != null) {
-				// Note: the ProjectVirtualPath is useless unless a Project is specified.
-				var node = root.Find (item.ProjectVirtualPath, true);
-				node.ProjectFile = item;
+				if (item.Project != null) {
+					// Note: the ProjectVirtualPath is useless unless a Project is specified.
+					var node = root.Find (item.ProjectVirtualPath, true);
+					node.ProjectFile = item;
+				}
+				yield return new KeyValuePair<FilePath, ProjectFile> (item.FilePath, item);
 			}
-
-			files = files.SetItem (item.FilePath, item);
 		}
 
 		void PruneEmptyParents (ProjectFileNode node)
@@ -189,8 +190,8 @@ namespace MonoDevelop.Projects
 		#region ItemCollection<T>
 		protected override void OnItemsAdded (IEnumerable<ProjectFile> items)
 		{
-			foreach (var item in items)
-				AddProjectFile (item);
+			var pairs = AddProjectFiles (items);
+			files = files.SetItems (pairs);
 			base.OnItemsAdded (items);
 		}
 
