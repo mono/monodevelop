@@ -81,6 +81,11 @@ namespace MonoDevelop.Ide.Templates
 
 			var result = await MicrosoftTemplateEngine.InstantiateAsync (templateInfo, config, parameters);
 
+			if (result.Status != CreationResultStatus.Success) {
+				string message = string.Format ("Could not create template. Id='{0}' {1} {2}", template.Id, result.Status, result.Message);
+				throw new InvalidOperationException (message);
+			}
+
 			var filesToOpen = new List<string> ();
 			foreach (var postAction in result.ResultInfo.PostActions) {
 				switch (postAction.ActionId.ToString ().ToUpper ()) {
