@@ -452,46 +452,61 @@ namespace MonoDevelop.CSharp.Completion
 					return EmptyCompletionDataList;
 				}
 			}
-			var completionList = await cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, cancellationToken: token);
-			if (completionList == null)
-				return EmptyCompletionDataList;
 
-			var result = new CompletionDataList ();
-			result.TriggerWordLength = triggerWordLength;
-			CSharpCompletionData defaultCompletionData = null;
-			foreach (var item in completionList.Items) {
-				if (string.IsNullOrEmpty (item.DisplayText))
-					continue;
-				var data = new CSharpCompletionData (analysisDocument, triggerSnapshot, cs, item);
-				result.Add (data);
-				if (item.Rules.MatchPriority > 0) {
-					if (defaultCompletionData == null || defaultCompletionData.Rules.MatchPriority < item.Rules.MatchPriority)
-						defaultCompletionData = data;
+			var metadata = new Dictionary<string, string> ();
+			metadata ["Result"] = "Success";
+			var timer = Counters.CodeCompletion.BeginTiming (metadata);
+
+			try {
+				var completionList = await cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, cancellationToken: token);
+				if (completionList == null)
+					return EmptyCompletionDataList;
+
+				var result = new CompletionDataList ();
+				result.TriggerWordLength = triggerWordLength;
+				CSharpCompletionData defaultCompletionData = null;
+				foreach (var item in completionList.Items) {
+					if (string.IsNullOrEmpty (item.DisplayText))
+						continue;
+					var data = new CSharpCompletionData (analysisDocument, triggerSnapshot, cs, item);
+					result.Add (data);
+					if (item.Rules.MatchPriority > 0) {
+						if (defaultCompletionData == null || defaultCompletionData.Rules.MatchPriority < item.Rules.MatchPriority)
+							defaultCompletionData = data;
+					}
 				}
+
+				result.AutoCompleteUniqueMatch = (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand);
+
+				var partialDoc = analysisDocument.WithFrozenPartialSemantics (token);
+				var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
+				var syntaxContext = CSharpSyntaxContext.CreateContext (DocumentContext.RoslynWorkspace, semanticModel, completionContext.TriggerOffset, token);
+
+				if (forceSymbolCompletion || IdeApp.Preferences.AddImportedItemsToCompletionList) {
+					AddImportCompletionData (syntaxContext, result, semanticModel, completionContext.TriggerOffset, token);
+				}
+
+				if (defaultCompletionData != null)
+					result.DefaultCompletionString = defaultCompletionData.DisplayText;
+
+				if (completionList.SuggestionModeItem != null) {
+					result.DefaultCompletionString = completionList.SuggestionModeItem.DisplayText;
+					result.AutoSelect = false;
+				}
+
+				if (triggerInfo.TriggerCharacter == '_' && triggerWordLength == 1)
+					result.AutoSelect = false;
+
+				return result;
+			} catch (Exception) {
+				metadata ["Result"] = "Failure";
+				throw;
+			} finally {
+				if (token.IsCancellationRequested) {
+					metadata ["Result"] = "UserCancel";
+				}
+				timer.Dispose ();
 			}
-
-			result.AutoCompleteUniqueMatch = (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand);
-
-			var partialDoc = analysisDocument.WithFrozenPartialSemantics (token);
-			var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
-			var syntaxContext = CSharpSyntaxContext.CreateContext (DocumentContext.RoslynWorkspace, semanticModel, completionContext.TriggerOffset, token);
-
-			if (forceSymbolCompletion || IdeApp.Preferences.AddImportedItemsToCompletionList) {
-				AddImportCompletionData (syntaxContext, result, semanticModel, completionContext.TriggerOffset, token);
-			}
-
-			if (defaultCompletionData != null)
-				result.DefaultCompletionString = defaultCompletionData.DisplayText;
-
-			if (completionList.SuggestionModeItem != null) {
-				result.DefaultCompletionString = completionList.SuggestionModeItem.DisplayText;
-				result.AutoSelect = false;
-			}
-
-			if (triggerInfo.TriggerCharacter == '_' && triggerWordLength == 1)
-				result.AutoSelect = false;
-
-			return result;
 		}
 
 		static bool HasAllUsedParameters (MonoDevelop.Ide.CodeCompletion.ParameterHintingData provider, string [] list)
