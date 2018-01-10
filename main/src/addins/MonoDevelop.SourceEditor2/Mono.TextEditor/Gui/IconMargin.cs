@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using Gtk;
 using Gdk;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace Mono.TextEditor
@@ -157,10 +158,12 @@ namespace Mono.TextEditor
 						var metrics = new MarginDrawMetrics (this, area, line, lineNumber, x, y, lineHeight);
 						marginMarker.DrawForeground (editor, cr, metrics);
 
-						var accessible = markerToAccessible [marker];
-						if (accessible != null) {
-							accessible.Metrics = metrics;
-							accessible.UpdateAccessibilityDetails ();
+						if (markerToAccessible != null) {
+							var accessible = markerToAccessible [marker];
+							if (accessible != null) {
+								accessible.Metrics = metrics;
+								accessible.UpdateAccessibilityDetails ();
+							}
 						}
 					}
 				}
@@ -172,6 +175,10 @@ namespace Mono.TextEditor
 		Dictionary<TextLineMarker, AccessibilityMarkerProxy> markerToAccessible = null;
 		void OnMarkerAdded (object sender, TextMarkerEvent e)
 		{
+			if (!IdeTheme.AccessibilityEnabled) {
+				return;
+			}
+
 			if (markerToAccessible == null) {
 				markerToAccessible = new Dictionary<TextLineMarker, AccessibilityMarkerProxy> ();
 			}
@@ -184,6 +191,10 @@ namespace Mono.TextEditor
 
 		void OnMarkerRemoved (object sender, TextMarkerEvent e)
 		{
+			if (!IdeTheme.AccessibilityEnabled) {
+				return;
+			}
+
 			if (markerToAccessible == null) {
 				return;
 			}

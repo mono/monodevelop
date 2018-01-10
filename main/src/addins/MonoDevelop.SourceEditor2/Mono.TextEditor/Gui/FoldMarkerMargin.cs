@@ -93,9 +93,16 @@ namespace Mono.TextEditor
 			editor.RedrawMargin (this);
 		}
 
-		Dictionary<FoldSegment, FoldingAccessible> accessibles = new Dictionary<FoldSegment, FoldingAccessible> ();
+		Dictionary<FoldSegment, FoldingAccessible> accessibles = null;
 		void UpdateAccessibility ()
 		{
+			if (!IdeTheme.AccessibilityEnabled) {
+				return;
+			}
+
+			if (accessibles == null) {
+				accessibles = new Dictionary<FoldSegment, FoldingAccessible> ();
+			}
 			foreach (var a in accessibles.Values) {
 				Accessible.RemoveAccessibleChild (a.Accessible);
 				a.Dispose ();
@@ -294,11 +301,13 @@ namespace Mono.TextEditor
 			foldings = null;
 			startFoldings = containingFoldings = endFoldings = null;
 
-			foreach (var a in accessibles.Values) {
-				Accessible.RemoveAccessibleChild (a.Accessible);
-				a.Dispose ();
+			if (accessibles != null) {
+				foreach (var a in accessibles.Values) {
+					Accessible.RemoveAccessibleChild (a.Accessible);
+					a.Dispose ();
+				}
+				accessibles.Clear ();
 			}
-			accessibles.Clear ();
 		}
 		
 		void DrawFoldSegment (Cairo.Context ctx, double x, double y, bool isOpen, bool isSelected)
