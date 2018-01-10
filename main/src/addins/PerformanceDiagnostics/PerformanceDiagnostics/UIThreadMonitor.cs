@@ -159,11 +159,31 @@ namespace PerformanceDiagnosticsAddIn
 
 		internal static void ConvertJITAddressesToMethodNames (string fileName, string profilingType)
 		{
-			var rx = new Regex (@"\?\?\?  \(in <unknown binary>\)  \[0x([0-9a-f]+)\]", RegexOptions.Compiled);
+			var regex = new Regex (@"\?\?\?  \(in <unknown binary>\)  \[0x([0-9a-f]+)\]", RegexOptions.Compiled);
 			if (File.Exists (fileName) && new FileInfo (fileName).Length > 0) {
 				var outputFilename = Path.Combine (Options.OutputPath, $"{BrandingService.ApplicationName}_{profilingType}_{DateTime.Now:yyyy-MM-dd__HH-mm-ss}.txt");
-				using (var sr = new StreamReader (fileName))
-				using (var sw = new StreamWriter (outputFilename)) {
+				ProcessFile (regex, fileName, outputFilename);
+
+				// Get inverted call tree.
+				var invertedFileName = fileName + "inverted";
+				var psi = new ProcessStartInfo ("filtercalltree", $"-invertCallTree '{fileName}'") {
+					RedirectStandardOutput = true,
+					UseShellExecute = false,
+				};
+				var ps = Process.Start (psi);
+				using (var sr = ps.StandardOutput) {
+					File.WriteAllText (invertedFileName, sr.ReadToEnd ());
+				}
+				ps.WaitForExit ();
+
+				var invertedOutputFilename = Path.Combine (Options.OutputPath, $"{BrandingService.ApplicationName}_{profilingType}_{DateTime.Now:yyyy-MM-dd__HH-mm-ss}-inverted.txt");
+				ProcessFile (regex, invertedFileName, invertedOutputFilename);
+			}
+
+			void ProcessFile (Regex rx, string input, string output)
+			{
+				using (var sr = new StreamReader (input))
+				using (var sw = new StreamWriter (output)) {
 					string line;
 					while ((line = sr.ReadLine ()) != null) {
 						if (rx.IsMatch (line)) {
