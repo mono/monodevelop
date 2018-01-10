@@ -259,12 +259,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return new NSAttributedString (GetTextForCell (cellId), new NSStringAttributes { Font = cell.Font }).Size.Width + iconSize;
 			}
 
-			nfloat GetWidthForPathCell (int cellId)
-			{
-				var cell = Cells [cellId];
-				return new NSAttributedString (cell.Title, new NSStringAttributes { Font = cell.Font }).Size.Width + iconSize;
-			}
-
 			NSMenu CreateSubMenuForRuntime (IRuntimeModel runtime)
 			{
 				if (!runtime.Children.Any ())
@@ -410,18 +404,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			int IndexOfCellAtX (nfloat x)
 			{
-				nfloat cx = 0;
-				for (int n = 0; n < VisibleCells.Length; n++) {
-					var cellWidth = GetWidthForPathCell (VisibleCellIds [n]);
-					if (x > cx && x <= cx + cellWidth)
-						return VisibleCellIds [n];
-					cx += cellWidth;
-					if (x >= cx && x < cx + SeparatorWidth)
-						// The > in the middle
-						return -1;
-					cx += SeparatorWidth;
-				}
-				return -1;
+				var cell = ((NSPathCell)Cell).GetPathComponent (new CGPoint (x, Frame.Height / 2), Frame, this);
+				var i = VisibleCells.IndexOf (cell);
+				if (i > -1)
+					i = VisibleCellIds [i];
+				return i;
 			}
 
 			public override bool AccessibilityPerformShowMenu ()
