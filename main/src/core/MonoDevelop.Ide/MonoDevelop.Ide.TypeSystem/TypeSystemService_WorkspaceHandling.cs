@@ -256,7 +256,29 @@ namespace MonoDevelop.Ide.TypeSystem
 			var parentSolution = project.ParentSolution;
 			var workspace = await GetWorkspaceAsync (parentSolution, cancellationToken);
 			var projectId = workspace.GetProjectId (project);
-			return projectId == null ? null : workspace.CurrentSolution.GetProject (projectId);
+			if (projectId == null)
+				throw new Exception ("Project not part of workspace");
+			var proj = workspace.CurrentSolution.GetProject (projectId);
+			if (proj != null)
+				return proj;
+			//We assume that since we have projectId and project is not found in solution
+			//project is being loaded(waiting MSBuild to return list of source files)
+			var taskSource = new TaskCompletionSource<Microsoft.CodeAnalysis.Project> ();
+			EventHandler<WorkspaceChangeEventArgs> del = (s, e) => {
+				if (e.Kind == WorkspaceChangeKind.SolutionAdded || e.Kind == WorkspaceChangeKind.SolutionReloaded) {
+					proj = workspace.CurrentSolution.GetProject (projectId);
+					if (proj != null)
+						taskSource.SetResult (proj);
+				}
+			};
+			cancellationToken.Register (taskSource.SetCanceled);
+			workspace.WorkspaceChanged += del;
+			try {
+				proj = await taskSource.Task;
+			} finally {
+				workspace.WorkspaceChanged -= del;
+			}
+			return proj;
 		}
 
 		public static Task<Compilation> GetCompilationAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))
