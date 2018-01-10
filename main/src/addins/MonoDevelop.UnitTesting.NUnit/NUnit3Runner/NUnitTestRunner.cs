@@ -205,8 +205,14 @@ namespace NUnit3Runner
 		void InitSupportAssemblies (string[] supportAssemblies)
 		{
 			// Preload support assemblies (they may not be in the test assembly directory nor in the gac)
-			foreach (string asm in supportAssemblies)
-				Assembly.LoadFrom (asm);
+			foreach (string asm in supportAssemblies) {
+				try {
+					Assembly.LoadFrom (asm);
+				} catch (Exception e) {
+					Console.WriteLine ("Couldn't load assembly {0}", asm);
+					Console.WriteLine (e);
+				}
+			}
 		}
 		
 		private TestFilter CreateTestFilter (string[] nameFilter)

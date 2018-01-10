@@ -28,7 +28,7 @@ using System.Text;
 
 namespace MonoDevelop.Core
 {
-	public class StringInternPool
+	public sealed class StringInternPool
 	{
 		readonly StringTable table = new StringTable ();
 
