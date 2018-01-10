@@ -1185,6 +1185,7 @@ namespace MonoDevelop.Projects
 			config.EnvironmentVariables.Add ("Test1", "Test1Value");
 
 			await p.SaveAsync (Util.GetMonitor ());
+			sol.Dispose ();
 
 			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			p = (DotNetProject)sol.Items [0];
