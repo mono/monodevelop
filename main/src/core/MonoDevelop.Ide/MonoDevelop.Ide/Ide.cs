@@ -607,14 +607,14 @@ namespace MonoDevelop.Ide
 	
 	public class IdeServices
 	{
-		readonly TemplatingService templatingService = new TemplatingService ();
+		readonly Lazy<TemplatingService> templatingService = new Lazy<TemplatingService> (() => new TemplatingService ());
 
 		public ProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}
 
 		public TemplatingService TemplatingService {
-			get { return templatingService; }
+			get { return templatingService.Value; }
 		}
 	}
 }

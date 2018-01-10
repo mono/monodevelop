@@ -376,7 +376,11 @@ namespace MonoDevelop.Ide
 
 		static Gtk.Window GetFocusedToplevel ()
 		{
-			return Gtk.Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus) ?? RootWindow;
+			// use the first "normal" toplevel window (skipping docks, popups, etc.) or the main IDE window
+			return Gtk.Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus &&
+			                                                   (w.TypeHint == Gdk.WindowTypeHint.Dialog ||
+			                                                    w.TypeHint == Gdk.WindowTypeHint.Normal ||
+			                                                    w.TypeHint == Gdk.WindowTypeHint.Utility)) ?? RootWindow;
 		}
 		
 		/// <summary>

@@ -131,7 +131,7 @@ namespace Mono.TextEditor
 			get { return charWidth; }
 		}
 
-		class TextViewMarginAccessibilityProxy 
+		class TextViewMarginAccessibilityProxy : IDisposable
 		{
 			public AccessibilityElementProxy Accessible { get; private set; }
 			public TextViewMargin Margin { get; set; }
@@ -150,6 +150,23 @@ namespace Mono.TextEditor
 				Accessible.StyleRangeForIndex = GetStyleRangeForIndex;
 				Accessible.RangeForPosition = GetRangeForPosition;
 				Accessible.GetVisibleCharacterRange = GetVisibleCharacterRange;
+			}
+
+			public void Dispose ()
+			{
+				Accessible.Contents = null;
+				Accessible.InsertionPointLineNumber = null;
+				Accessible.NumberOfCharacters = null;
+				Accessible.FrameForRange = null;
+				Accessible.LineForIndex = null;
+				Accessible.RangeForLine = null;
+				Accessible.StringForRange = null;
+				Accessible.RangeForIndex = null;
+				Accessible.StyleRangeForIndex = null;
+				Accessible.RangeForPosition = null;
+				Accessible.GetVisibleCharacterRange = null;
+				Accessible = null;
+				Margin = null;
 			}
 
 			int GetInsertionPointLineNumber ()
@@ -256,10 +273,10 @@ namespace Mono.TextEditor
 		TextViewMarginAccessibilityProxy accessible;
 		public override AccessibilityElementProxy Accessible {
 			get {
-				if (accessible == null) {
+				if (accessible == null && AccessibilityElementProxy.Enabled) {
 					accessible = new TextViewMarginAccessibilityProxy ();
 				}
-				return accessible.Accessible;
+				return accessible == null ? null : accessible.Accessible;
 			}
 		}
 
@@ -269,8 +286,13 @@ namespace Mono.TextEditor
 				throw new ArgumentNullException ("textEditor");
 
 			// Overwrite the default margin role
-			Accessible.SetRole (AtkCocoa.Roles.AXTextArea);
-			accessible.Margin = this;
+			if (Accessible != null) {
+				Accessible.SetRole (AtkCocoa.Roles.AXTextArea);
+			}
+
+			if (accessible != null) {
+				accessible.Margin = this;
+			}
 
 			this.textEditor = textEditor;
 
@@ -702,6 +724,8 @@ namespace Mono.TextEditor
 			DisposeLayoutDict ();
 			if (tabArray != null)
 				tabArray.Dispose ();
+			accessible?.Dispose ();
+			accessible = null;
 			base.Dispose ();
 		}
 
@@ -1339,7 +1363,7 @@ namespace Mono.TextEditor
 			}
 			task.ContinueWith (t => {
 				cachedLines [lineNumber] = t.Result;
-				Document.CommitLineUpdate (line);
+				Document.CommitLineUpdate (lineNumber); // Required for highlighting updates
 			}, token, TaskContinuationOptions.OnlyOnRanToCompletion, Runtime.MainTaskScheduler);
 			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
 		}

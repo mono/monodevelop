@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Updater
 
 		public static bool AutoCheckForUpdates {
 			get {
-				return PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.CheckForUpdates", true);
+				return PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.CheckForUpdates", true) && Runtime.Preferences.EnableUpdaterForCurrentSession;
 			}
 			set {
 				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.CheckForUpdates", value);

@@ -59,11 +59,11 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			tagComments = MonoDevelop.Ide.Tasks.CommentTag.SpecialCommentTags.Select (t => t.Tag).ToArray ();
 		}
-		Ide.TypeSystem.ParseOptions options;
+		bool isAdHocProject;
 
 		public CSharpParsedDocument (Ide.TypeSystem.ParseOptions options,  string fileName) : base (fileName)
 		{
-			this.options = options;
+			isAdHocProject = options.IsAdhocProject;
 		}
 		
 
@@ -528,7 +528,7 @@ namespace MonoDevelop.CSharp.Parser
 				try {
 					errors = model
 						.GetDiagnostics (null, cancellationToken)
-						.Where (diag => !SkipError(options.IsAdhocProject, diag.Id) && (diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning))
+						.Where (diag => !SkipError(isAdHocProject, diag.Id) && (diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning))
 						.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.Id, diag.GetMessage (), GetRegion (diag)) { Tag = diag })
 						.ToList ();
 				} catch (OperationCanceledException) {

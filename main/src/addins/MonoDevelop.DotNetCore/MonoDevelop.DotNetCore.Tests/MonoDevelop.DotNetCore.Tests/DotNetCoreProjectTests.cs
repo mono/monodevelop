@@ -229,5 +229,15 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsFalse (canReferenceNetCoreFromNetStandard);
 			Assert.IsTrue (canReferenceNetStandardFromNetCore);
 		}
+
+		[Test]
+		public async Task TizenProject_OpenProject_LoadedAsDotNetProjectNotUnknownSolutionItem ()
+		{
+			string solutionFileName = Util.GetSampleProject ("TizenProject", "TizenProject.sln");
+			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = solution.Items.Single (item => item.Name == "TizenProject");
+
+			Assert.IsInstanceOf<DotNetProject> (project);
+		}
 	}
 }

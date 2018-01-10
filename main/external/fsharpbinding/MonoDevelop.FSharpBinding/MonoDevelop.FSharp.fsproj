@@ -15,6 +15,8 @@
     <SignAssembly>true</SignAssembly>
     <OtherFlags>--publicsign</OtherFlags>
     <AssemblyOriginatorKeyFile>..\..\..\msbuild\MonoDevelop-Public.snk</AssemblyOriginatorKeyFile>
+    <FscDebugType>full</FscDebugType>
+    <FscDebugFileExt>.mdb</FscDebugFileExt>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -55,15 +57,15 @@
   <Target Name="BeforeBuild">
     <ItemGroup>
       <NuGetPackage Include="FSharp.Core">
-        <Name>FSharp.Core</Name>
+        <Name>fsharp.core</Name>
         <Version>4.1.0.2</Version>
       </NuGetPackage>
       <NuGetPackage Include="System.ValueTuple">
-        <Name>System.ValueTuple</Name>
-        <Version>4.3.1</Version>
+        <Name>system.valuetuple</Name>
+        <Version>4.4.0</Version>
       </NuGetPackage>
     </ItemGroup>
-    <Copy SourceFiles="..\packages\%(NuGetPackage.Name)\%(NuGetPackage.Name).%(NuGetPackage.Version).nupkg" DestinationFolder="$(OutputPath)/Packages" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\packages\%(NuGetPackage.Identity)\%(NuGetPackage.Name).%(NuGetPackage.Version).nupkg" DestinationFolder="$(OutputPath)/Packages" SkipUnchangedFiles="true" />
   </Target>
   <Target Name="AfterBuild">
   </Target>

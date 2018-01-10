@@ -159,6 +159,8 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Initializing Runtime");
 			Runtime.Initialize (true);
 
+			Composition.CompositionManager.InitializeAsync ().Ignore ();
+
 			IdeApp.Customizer.OnCoreInitialized ();
 
 			Counters.Initialization.Trace ("Initializing theme");

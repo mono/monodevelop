@@ -116,10 +116,6 @@ https://developer.gnome.org/hig/stable/
 
 http://freedesktop.org/Standards/
 
-**Integrating with GNOME** *(a little out of date)*
-
-http://developers.sun.com/solaris/articles/integrating_gnome.html
-
 **Bugzilla**
 
 http://bugzilla.mozilla.org/bugwritinghelp.html

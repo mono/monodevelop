@@ -38,6 +38,7 @@ obj/
 /main/packages
 /main/.nuget/
 pull-package.exe
+/main/tests/StressTest/TestProject/bin
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files
@@ -63,12 +64,15 @@ autom4te.cache/
 tarballs/
 test-results/
 Thumbs.db
+.vs
 
 #Mac bundle stuff
 *.dmg
 *.app
 /main/build/MacOSX/render.exe
 /main/build/MacOSX/*.o
+/main/external/fsharpbinding/.paket
+/main/external/fsharpbinding/paket-files
 /main/external/Xamarin.Mac.registrar.full.a
 /main/external/Xamarin.Mac.dll*
 /main/external/libxammac.dylib

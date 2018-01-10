@@ -2772,8 +2772,9 @@ namespace MonoDevelop.SourceEditor
 
 			if (lineMarker is IUnitTestMarker) {
 				var actionMargin = TextEditor.ActionMargin;
-				if (actionMargin != null) {
+				if (actionMargin != null && !actionMargin.IsVisible) {
 					actionMargin.IsVisible = true;
+					TextEditor.QueueDraw ();
 				}
 			}
 
@@ -3511,6 +3512,11 @@ namespace MonoDevelop.SourceEditor
 		IMessageBubbleLineMarker ITextMarkerFactory.CreateMessageBubbleLineMarker (MonoDevelop.Ide.Editor.TextEditor editor)
 		{
 			return new MessageBubbleTextMarker (messageBubbleCache);
+		}
+
+		ITextLineMarker ITextMarkerFactory.CreateLineSeparatorMarker (TextEditor editor)
+		{
+			return new LineSeparatorMarker ();
 		}
 
 		IGenericTextSegmentMarker ITextMarkerFactory.CreateGenericTextSegmentMarker (MonoDevelop.Ide.Editor.TextEditor editor, TextSegmentMarkerEffect effect, int offset, int length)

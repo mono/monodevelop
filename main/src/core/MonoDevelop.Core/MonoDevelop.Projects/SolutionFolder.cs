@@ -38,7 +38,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
 using System.Threading.Tasks;
-using System.Collections.Immutable;
 using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
@@ -641,7 +640,13 @@ namespace MonoDevelop.Projects
 			BuildResult result = null;
 
 			try {
-				
+
+				if (Runtime.Preferences.SkipBuildingUnmodifiedProjects)
+					allProjects = allProjects.Where (si => {
+						if (si is Project p)
+							return p.FastCheckNeedsBuild (configuration);
+						return true;//Don't filter things that don't have FastCheckNeedsBuild
+					}).ToList ().AsReadOnly ();
 				monitor.BeginTask (GettextCatalog.GetString ("Building Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
 
 				operationStarted = ParentSolution != null && await ParentSolution.BeginBuildOperation (monitor, configuration, operationContext);
@@ -669,9 +674,9 @@ namespace MonoDevelop.Projects
 
 			// Create a dictionary with the status objects of all items
 
-			var buildStatus = ImmutableDictionary<SolutionItem, BuildStatus>.Empty;
+			var buildStatus = new Dictionary<SolutionItem, BuildStatus> ();
 			foreach (var it in toBuild)
-				buildStatus = buildStatus.Add (it, new BuildStatus ());
+				buildStatus.Add (it, new BuildStatus ());
 
 			// Start the build tasks for all itemsw
 

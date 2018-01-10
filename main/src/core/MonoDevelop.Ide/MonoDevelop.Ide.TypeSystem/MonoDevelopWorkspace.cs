@@ -1,4 +1,4 @@
-﻿//
+//
 // MonoDevelopWorkspace.cs
 //
 // Author:
@@ -47,12 +47,13 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using Mono.Addins;
 using MonoDevelop.Core.AddIns;
+using Microsoft.CodeAnalysis.Internal.Log;
 using Microsoft.CodeAnalysis.Shared.Utilities;
+using Microsoft.CodeAnalysis.SolutionCrawler;
 using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-
 	public class MonoDevelopWorkspace : Workspace
 	{
 		public const string ServiceLayer = nameof(MonoDevelopWorkspace);
@@ -77,6 +78,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		static MonoDevelopWorkspace ()
+		{
+			Logger.SetLogger (AggregateLogger.Create (
+				new RoslynLogger (),
+				Logger.GetLogger ()
+			));
+		}
+
 		/// <summary>
 		/// This bypasses the type system service. Use with care.
 		/// </summary>
@@ -86,13 +95,27 @@ namespace MonoDevelop.Ide.TypeSystem
 			OnSolutionAdded (sInfo);
 		}
 
-		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (HostServices, "MonoDevelop")
+		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (HostServices, WorkspaceKind.Host)
 		{
 			this.monoDevelopSolution = solution;
 			this.Id = WorkspaceId.Next ();
 			if (IdeApp.Workspace != null && solution != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
+			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+			if (IdeApp.Preferences.EnableSourceAnalysis)
+				solutionCrawler.Register (this);
+
+			IdeApp.Preferences.EnableSourceAnalysis.Changed += OnEnableSourceAnalysisChanged;
+		}
+
+		void OnEnableSourceAnalysisChanged(object sender, EventArgs args)
+		{
+			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+			if (IdeApp.Preferences.EnableSourceAnalysis)
+				solutionCrawler.Register (this);
+			else
+				solutionCrawler.Unregister (this);
 		}
 
 		protected override void Dispose (bool finalize)
@@ -100,7 +123,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			base.Dispose (finalize);
 			if (disposed)
 				return;
+			
 			disposed = true;
+
+			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+			solutionCrawler.Unregister (this);
+			IdeApp.Preferences.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
+
 			CancelLoad ();
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
@@ -171,9 +200,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Task.Run (async delegate {
 				var projects = new ConcurrentBag<ProjectInfo> ();
 				var mdProjects = solution.GetAllProjects ();
-				foreach (var p in projectionList)
+				ImmutableList<ProjectionEntry> toDispose;
+				lock (projectionListUpdateLock) {
+					toDispose = projectionList;
+					projectionList = projectionList.Clear ();
+				}
+				foreach (var p in toDispose)
 					p.Dispose ();
-				projectionList = projectionList.Clear ();
+				
 				projectIdMap.Clear ();
 				projectIdToMdProjectMap = projectIdToMdProjectMap.Clear ();
 				projectDataMap.Clear ();
@@ -196,7 +230,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					return null;
 				var modifiedWhileLoading = modifiedProjects;
 				modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
-				var solutionInfo = SolutionInfo.Create (GetSolutionId (solution), VersionStamp.Create (), solution.FileName, projects);
+				var solutionId = GetSolutionId (solution);
+				var solutionInfo = SolutionInfo.Create (solutionId, VersionStamp.Create (), solution.FileName, projects);
 				foreach (var project in modifiedWhileLoading) {
 					if (solution.ContainsItem (project)) {
 						return await CreateSolutionInfo (solution, token).ConfigureAwait (false);
@@ -206,11 +241,39 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (addLock) {
 					if (!added) {
 						added = true;
+						// HACK: https://github.com/dotnet/roslyn/issues/20581
+						RegisterPrimarySolutionForPersistentStorage (solutionId, solution);
 						OnSolutionAdded (solutionInfo);
 					}
 				}
 				return solutionInfo;
 			});
+		}
+
+		void RegisterPrimarySolutionForPersistentStorage (SolutionId solutionId, MonoDevelop.Projects.Solution solution)
+		{
+			var locService = (MonoDevelopPersistentStorageLocationService)Services.GetService<IPersistentStorageLocationService> ();
+			locService.storageMap.Add (solutionId, solution.GetPreferencesDirectory ());
+
+			var service = Services.GetService<IPersistentStorageService> () as Microsoft.CodeAnalysis.Storage.AbstractPersistentStorageService;
+			if (service == null) {
+				return;
+			}
+
+			service.RegisterPrimarySolution (solutionId);
+		}
+
+		void UnregisterPrimarySolutionForPersistentStorage (SolutionId solutionId, bool synchronousShutdown)
+		{
+			var locService = (MonoDevelopPersistentStorageLocationService)Services.GetService<IPersistentStorageLocationService> ();
+			locService.storageMap.Remove (solutionId);
+
+			var service = Services.GetService<IPersistentStorageService> () as Microsoft.CodeAnalysis.Storage.AbstractPersistentStorageService;
+			if (service == null) {
+				return;
+			}
+
+			service.UnregisterPrimarySolution (solutionId, synchronousShutdown);
 		}
 
 		internal Task<SolutionInfo> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
@@ -220,7 +283,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void UnloadSolution ()
 		{
-			OnSolutionRemoved (); 
+			OnSolutionRemoved ();
+			UnregisterPrimarySolutionForPersistentStorage (CurrentSolution.Id, synchronousShutdown: false);
 		}
 
 		Dictionary<MonoDevelop.Projects.Solution, SolutionId> solutionIdMap = new Dictionary<MonoDevelop.Projects.Solution, SolutionId> ();
@@ -566,7 +630,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					false
 				);
 			}
-			projectionList = projectionList.Add (entry);
+			lock (projectionListUpdateLock)
+				projectionList = projectionList.Add (entry);
 		}
 
 		internal static readonly string [] DefaultAssemblies = {

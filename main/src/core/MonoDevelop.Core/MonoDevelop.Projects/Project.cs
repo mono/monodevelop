@@ -1320,7 +1320,7 @@ namespace MonoDevelop.Projects
 			if (propertyValue != null)
 				return null;
 
-			propertyValue = propertyGroup.GetValue ("TargetFrameworks", null);
+			propertyValue = project.EvaluatedProperties.GetValue ("TargetFrameworks", null);
 			if (propertyValue != null)
 				return propertyValue.Split (new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 

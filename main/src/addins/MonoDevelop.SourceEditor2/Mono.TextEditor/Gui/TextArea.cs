@@ -343,37 +343,47 @@ namespace Mono.TextEditor
 			textEditorData.Parent = editor;
 
 			iconMargin = new IconMargin (editor);
-			iconMargin.Accessible.Label = GettextCatalog.GetString ("Icon Margin");
-			iconMargin.Accessible.Help = GettextCatalog.GetString ("Icon margin contains breakpoints and bookmarks");
-			iconMargin.Accessible.Identifier = "TextArea.IconMargin";
-			iconMargin.Accessible.GtkParent = this;
-			Accessible.AddAccessibleElement (iconMargin.Accessible);
+			if (iconMargin.Accessible != null) {
+				iconMargin.Accessible.Label = GettextCatalog.GetString ("Icon Margin");
+				iconMargin.Accessible.Help = GettextCatalog.GetString ("Icon margin contains breakpoints and bookmarks");
+				iconMargin.Accessible.Identifier = "TextArea.IconMargin";
+				iconMargin.Accessible.GtkParent = this;
+				Accessible.AddAccessibleElement (iconMargin.Accessible);
+			}
 
 			gutterMargin = new GutterMargin (editor);
-			gutterMargin.Accessible.Label = GettextCatalog.GetString ("Line Numbers");
-			gutterMargin.Accessible.Help = GettextCatalog.GetString ("Shows the line numbers for the current file");
-			gutterMargin.Accessible.Identifier = "TextArea.GutterMargin";
-			gutterMargin.Accessible.GtkParent = this;
-			Accessible.AddAccessibleElement (gutterMargin.Accessible);
+			if (gutterMargin.Accessible != null) {
+				gutterMargin.Accessible.Label = GettextCatalog.GetString ("Line Numbers");
+				gutterMargin.Accessible.Help = GettextCatalog.GetString ("Shows the line numbers for the current file");
+				gutterMargin.Accessible.Identifier = "TextArea.GutterMargin";
+				gutterMargin.Accessible.GtkParent = this;
+				Accessible.AddAccessibleElement (gutterMargin.Accessible);
+			}
 
 			actionMargin = new ActionMargin (editor);
-			actionMargin.Accessible.Identifier = "TextArea.ActionMargin";
-			actionMargin.Accessible.GtkParent = this;
-			Accessible.AddAccessibleElement (actionMargin.Accessible);
+			if (actionMargin.Accessible != null) {
+				actionMargin.Accessible.Identifier = "TextArea.ActionMargin";
+				actionMargin.Accessible.GtkParent = this;
+				Accessible.AddAccessibleElement (actionMargin.Accessible);
+			}
 
 			foldMarkerMargin = new FoldMarkerMargin (editor);
-			foldMarkerMargin.Accessible.Label = GettextCatalog.GetString ("Fold Margin");
-			foldMarkerMargin.Accessible.Help = GettextCatalog.GetString ("Shows method and class folds");
-			foldMarkerMargin.Accessible.Identifier = "TextArea.FoldMarkerMargin";
-			foldMarkerMargin.Accessible.GtkParent = this;
-			Accessible.AddAccessibleElement (foldMarkerMargin.Accessible);
+			if (foldMarkerMargin.Accessible != null) {
+				foldMarkerMargin.Accessible.Label = GettextCatalog.GetString ("Fold Margin");
+				foldMarkerMargin.Accessible.Help = GettextCatalog.GetString ("Shows method and class folds");
+				foldMarkerMargin.Accessible.Identifier = "TextArea.FoldMarkerMargin";
+				foldMarkerMargin.Accessible.GtkParent = this;
+				Accessible.AddAccessibleElement (foldMarkerMargin.Accessible);
+			}
 
 			textViewMargin = new TextViewMargin (editor);
-			textViewMargin.Accessible.Label = GettextCatalog.GetString ("Text Editor");
-			textViewMargin.Accessible.Help = GettextCatalog.GetString ("Edit the current file");
-			textViewMargin.Accessible.Identifier = "TextArea.TextViewMargin";
-			textViewMargin.Accessible.GtkParent = this;
-			Accessible.AddAccessibleElement (textViewMargin.Accessible);
+			if (textViewMargin.Accessible != null) {
+				textViewMargin.Accessible.Label = GettextCatalog.GetString ("Text Editor");
+				textViewMargin.Accessible.Help = GettextCatalog.GetString ("Edit the current file");
+				textViewMargin.Accessible.Identifier = "TextArea.TextViewMargin";
+				textViewMargin.Accessible.GtkParent = this;
+				Accessible.AddAccessibleElement (textViewMargin.Accessible);
+			}
 
 			margins.Add (iconMargin);
 			margins.Add (gutterMargin);
@@ -1938,11 +1948,9 @@ namespace Mono.TextEditor
 				}
 			}
 
-
 			for (int visualLineNumber = textEditorData.LogicalToVisualLine (startLine);; visualLineNumber++) {
 				int logicalLineNumber = textEditorData.VisualToLogicalLine (visualLineNumber);
 				var line = Document.GetLine (logicalLineNumber);
-
 				// Ensure that the correct line height is set.
 				if (line != null) {
 					var wrapper = textViewMargin.GetLayout (line);
@@ -1969,7 +1977,7 @@ namespace Mono.TextEditor
 					setLongestLine = true;
 				}
 				curY += lineHeight;
-				if (curY > cairoRectangle.Y + cairoRectangle.Height)
+				if (curY >= cairoRectangle.Y + cairoRectangle.Height)
 					break;
 			}
 			
@@ -3052,14 +3060,6 @@ namespace Mono.TextEditor
 				var end = editor.Document.OffsetToLineNumber (change.NewOffset + change.InsertionLength);
 				editor.Document.CommitMultipleLineUpdate (start, end);
 			}
-			// TODO: Not sure if the update is needed anymore (I don't think so atm - since extending text line markers update itself)
-			//if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
-			//	return;
-			//if (!e.Line.Markers.Any (m => m is IExtendingTextLineMarker))
-			//	return;
-			//var line = e.Line.LineNumber;
-			//textEditorData.HeightTree.SetLineHeight (line, GetLineHeight (e.Line));
-			//RedrawLine (line);
 		}
 		#endregion
 		

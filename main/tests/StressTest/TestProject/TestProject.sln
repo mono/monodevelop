@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject.csproj", "{3DDE5347-7E00-40F6-806C-2697A42E25C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Addins", "..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj", "{91DD5A2D-9FE3-4C3C-9253-876141874DAD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3DDE5347-7E00-40F6-806C-2697A42E25C8}.Debug|x86.ActiveCfg = Debug|x86
+		{3DDE5347-7E00-40F6-806C-2697A42E25C8}.Debug|x86.Build.0 = Debug|x86
+		{3DDE5347-7E00-40F6-806C-2697A42E25C8}.Release|x86.ActiveCfg = Release|x86
+		{3DDE5347-7E00-40F6-806C-2697A42E25C8}.Release|x86.Build.0 = Release|x86
+		{91DD5A2D-9FE3-4C3C-9253-876141874DAD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{91DD5A2D-9FE3-4C3C-9253-876141874DAD}.Debug|x86.Build.0 = Debug|Any CPU
+		{91DD5A2D-9FE3-4C3C-9253-876141874DAD}.Release|x86.ActiveCfg = Release|Any CPU
+		{91DD5A2D-9FE3-4C3C-9253-876141874DAD}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

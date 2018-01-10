@@ -78,5 +78,16 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		{
 			return ParentNode.PackageDependencyCache.GetDependency (dependency);
 		}
+
+		/// <summary>
+		/// Returns a SDK node for the project whilst the package dependencies are still loading.
+		/// </summary>
+		public IEnumerable<PackageDependencyNode> GetDefaultNodes ()
+		{
+			if (Project.TargetFramework.IsNetCoreApp ())
+				yield return new PackageDependencyNode (ParentNode, "Microsoft.NETCore.App", true, true);
+			else if (Project.TargetFramework.IsNetStandard ())
+				yield return new PackageDependencyNode (ParentNode, "NETStandard.Library", true, true);
+		}
 	}
 }

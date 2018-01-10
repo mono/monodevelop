@@ -43,9 +43,16 @@ namespace WindowsPlatform
 				return null;
 			Image image;
 			if (!cachedIcons.TryGetValue (stockId, out image)) {
-				try {
-					image = Image.FromResource (typeof (ImageHelper), stockId + ".png");
-				} catch (InvalidOperationException) {
+				var resourceName = stockId + ".png";
+
+				// first check if such a resource exists to avoid a first-chance exception
+				using (var stream = typeof (ImageHelper).Assembly.GetManifestResourceStream (resourceName)) {
+					if (stream != null) {
+						image = Image.FromResource (typeof (ImageHelper), resourceName);
+					}
+				}
+
+				if (image == null) {
 					image = ImageService.GetIcon (stockId);
 				}
 			}
@@ -69,7 +76,7 @@ namespace WindowsPlatform
 
 		public static ImageSource GetImageSource (this Image image)
 		{
-			return (ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (image);	
+			return (ImageSource)MonoDevelop.Platform.WindowsPlatform.WPFToolkit.GetNativeImage (image);
 		}
 	}
 }

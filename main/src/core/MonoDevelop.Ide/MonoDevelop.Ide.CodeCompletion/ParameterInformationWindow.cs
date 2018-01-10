@@ -106,7 +106,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal async void UpdateParameterInfoLocation ()
 		{
 			var isCompletionWindowVisible = (CompletionWindowManager.Wnd?.Visible ?? false);
-			var ctx = Widget.CurrentCodeCompletionContext;
+			var ctx = Widget?.CurrentCodeCompletionContext;
+			if (ctx == null)
+				return;
 			var lineHeight = (int)Ext.Editor.LineHeight;
 			var geometry = Xwt.MessageDialog.RootWindow.Screen.VisibleBounds;
 			var cmg = ParameterInformationWindowManager.CurrentMethodGroup;

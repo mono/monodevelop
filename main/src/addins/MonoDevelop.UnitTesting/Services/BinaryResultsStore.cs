@@ -55,7 +55,17 @@ namespace MonoDevelop.UnitTesting
 		const string xmlExtension = ".xml";
 
 		FastSerializer fastSerializer = new FastSerializer();
-		XmlSerializer xmlSerializer = new XmlSerializer(typeof(TestRecord));
+		XmlSerializer xmlSerializer;
+
+		XmlSerializer XmlSerializer {
+			get {
+				if (xmlSerializer == null) {
+					xmlSerializer = new XmlSerializer (typeof (TestRecord));
+				}
+
+				return xmlSerializer;
+			}
+		}
 
 		public void Serialize (string xmlFilePath, TestRecord testRecord)
 		{
@@ -81,7 +91,7 @@ namespace MonoDevelop.UnitTesting
 			// deserialize from xml if the file exists
 			if (File.Exists(xmlFilePath)) {
 				using (var reader = new StreamReader (xmlFilePath)) {
-					return (TestRecord) xmlSerializer.Deserialize (reader);
+					return (TestRecord) XmlSerializer.Deserialize (reader);
 				}
 			}
 
