@@ -360,7 +360,7 @@ namespace MonoDevelop.Core
 					} catch (Exception ex) {
 						tcs.SetException (ex);
 					}
-				}, (ts, func));
+				}, (func, ts));
 			}
 			return ts.Task;
 		}
