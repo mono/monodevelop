@@ -128,6 +128,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
+		public override bool BecomeFirstResponder()
+		{
+			if (Window.FirstResponder != RealSelectorView)
+				return Window.MakeFirstResponder(RealSelectorView);
+			return false;
+		}
+
+		public override bool AcceptsFirstResponder()
+		{
+			return Window.FirstResponder != RealSelectorView;
+		}
+
 		#region PathSelectorView
 		[Register]
 		public class PathSelectorView : NSPathControl
@@ -443,7 +455,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				PopupMenuForCell (item);
 			}
 
-			int focusedCellIndex = 1;
+			int focusedCellIndex = 0;
 			NSPathComponentCellFocusable focusedItem;
 
 			public override void KeyDown (NSEvent theEvent)
@@ -461,7 +473,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						if (NextKeyView != null) {
 							Window.MakeFirstResponder (NextKeyView);
 							SetSelection ();
-							focusedCellIndex = 1;
+							focusedCellIndex = 0;
 							focusedItem = null;
 							return;
 						}
@@ -489,6 +501,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			{
 				SetSelection ();
 				return base.BecomeFirstResponder ();
+			}
+
+			public override bool ResignFirstResponder ()
+			{
+				focusedCellIndex = 0;
+				if (focusedItem != null) {
+					focusedItem.HasFocus = false;
+					focusedItem = null;
+				}
+				return base.ResignFirstResponder ();
 			}
 
 			void PopupMenuForCell (NSPathComponentCell item)
