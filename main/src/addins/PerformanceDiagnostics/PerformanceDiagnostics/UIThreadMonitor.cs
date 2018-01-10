@@ -171,8 +171,14 @@ namespace PerformanceDiagnosticsAddIn
 					UseShellExecute = false,
 				};
 				var ps = Process.Start (psi);
-				using (var sr = ps.StandardOutput) {
-					File.WriteAllText (invertedFileName, sr.ReadToEnd ());
+				using (var sr = ps.StandardOutput)
+				using (var fs = File.OpenWrite (invertedFileName))
+				using (var sw = new StreamWriter (fs)) {
+					var buffer = new char [8192];
+					int len;
+					while ((len = sr.Read (buffer, 0, buffer.Length)) > 0) {
+						sw.Write (buffer, 0, len);
+					}
 				}
 				ps.WaitForExit ();
 
