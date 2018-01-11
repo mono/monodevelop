@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
-		public override async Task<bool> AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
+		public override async Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
 		{
 			ProjectFile file = await template.AddFileToProject (policyParent, project, language, directory, name);
 			if (file != null) {

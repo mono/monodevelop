@@ -310,7 +310,11 @@ namespace MonoDevelop.Ide.Templates
 				var model = project.GetStringTagModel (new DefaultConfigurationSelector ());
 				newfile.SetProjectTagModel (model);
 				try {
-					if (await newfile.AddToProject (policyParent, project, language, directory, name)) {
+					if (newfile.AddToProject (policyParent, project, language, directory, name)) {
+						newfile.Show ();
+						return true;
+					}
+					if (await newfile.AddToProjectAsync (policyParent, project, language, directory, name)) {
 						newfile.Show ();
 						return true;
 					}
@@ -330,7 +334,7 @@ namespace MonoDevelop.Ide.Templates
 					}
 				} else {
 					string fileName = singleFile.GetFileName (policyParent, project, language, directory, name);
-					Stream stream = await singleFile.CreateFileContent (policyParent, project, language, fileName, name);
+					Stream stream = singleFile.CreateFileContent (policyParent, project, language, fileName, name) ?? await singleFile.CreateFileContentAsync (policyParent, project, language, fileName, name);
 
 					string mimeType = GuessMimeType (fileName);
 					IdeApp.Workbench.NewDocument (fileName, mimeType, stream);

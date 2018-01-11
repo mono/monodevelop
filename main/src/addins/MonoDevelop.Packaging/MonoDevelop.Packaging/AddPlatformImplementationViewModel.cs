@@ -203,6 +203,7 @@ namespace MonoDevelop.Packaging
 
 			fileTemplate.SetProjectTagModel(parameters);
 			fileTemplate.AddToProject (project.ParentFolder, project, "C#", project.BaseDirectory, "");
+			fileTemplate.AddToProjectAsync (project.ParentFolder, project, "C#", project.BaseDirectory, "");
 			fileTemplate.SetProjectTagModel(null);
 		}
 

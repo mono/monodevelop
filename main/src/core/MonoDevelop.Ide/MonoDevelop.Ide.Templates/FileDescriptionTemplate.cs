@@ -74,7 +74,14 @@ namespace MonoDevelop.Ide.Templates
 		public abstract string Name { get; }
 		
 		public abstract void Load (XmlElement filenode, FilePath baseDirectory);
-		public abstract Task<bool> AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name);
+
+		[Obsolete("Use public abstract Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string name)")]
+		public virtual bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
+		{
+			return false;
+		}
+
+		public abstract Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string name);
 		public abstract void Show ();
 
 		internal string CreateCondition { get; private set; }

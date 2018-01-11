@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Templates
 			set { addStandardHeader = value; }
 		}
 		
-		public sealed override async Task<bool> AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
+		public sealed override async Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
 		{
 			return await AddFileToProject (policyParent, project, language, directory, name) != null;
 		}
@@ -222,7 +222,7 @@ namespace MonoDevelop.Ide.Templates
 				Directory.CreateDirectory (Path.GetDirectoryName (file));
 
 			if (questionResult == null || questionResult == AlertButton.OverwriteFile) {
-				Stream stream = await CreateFileContent (policyParent, project, language, file, entryName);
+				Stream stream = CreateFileContent (policyParent, project, language, file, entryName) ?? await CreateFileContentAsync (policyParent, project, language, file, entryName);
 
 				byte [] buffer = new byte [2048];
 				int nr;
@@ -280,9 +280,15 @@ namespace MonoDevelop.Ide.Templates
 			return StringParserService.Parse (content, tags);
 		}
 
+		[Obsolete("Use public virtual async Task<Stream> CreateFileContentAsync (SolutionFolderItem policyParent, Project project, string language, string fileName, string identifier).")]
+		public virtual Stream CreateFileContent (SolutionFolderItem policyParent, Project project, string language, string fileName, string identifier)
+		{
+			return null;
+		}
+
 		// Returns a stream with the content of the file.
 		// project and language parameters are optional
-		public virtual async Task<Stream> CreateFileContent (SolutionFolderItem policyParent, Project project, string language, string fileName, string identifier)
+		public virtual async Task<Stream> CreateFileContentAsync (SolutionFolderItem policyParent, Project project, string language, string fileName, string identifier)
 		{
 			var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, identifier, fileName);
 

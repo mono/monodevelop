@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Templates
 				throw new InvalidOperationException ("Property is empty");
 		}
 
-		public override Task<bool> AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
+		public override Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
 		{
 			var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, name, null);
 			var fileName = StringParserService.Parse (name, model);
