@@ -50,12 +50,16 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			this.name = name;
 		}
 		
-		public override  bool BoolEvaluate (IExpressionContext context)
+		public override bool TryEvaluateToBool (IExpressionContext context, out bool result)
 		{
+			result = false;
 			Func<string, IExpressionContext, bool> func;
 			if (!functions.TryGetValue (name, out func)) {
+				return false;
+
+				// Not sure how this would be reached before.
 				// MSB4091
-				throw new Exception (string.Format ("Found a call to an undefined function \"{0}\".", name));
+				//throw new Exception (string.Format ("Found a call to an undefined function \"{0}\".", name));
 			}
 
 			if (args.Count != 1) {
@@ -63,8 +67,9 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 				throw new Exception (string.Format ("Incorrect number of arguments to function in condition \"{0}\". Found {1} argument(s) when expecting {2}.",
 					name, args.Count, 1));
 			}
-			
-			return func (args [0].StringEvaluate (context), context);
+
+			result = func (args [0].StringEvaluate (context), context);
+			return true;;
 		}
 		
 		public override float NumberEvaluate (IExpressionContext context)
@@ -75,11 +80,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		public override string StringEvaluate (IExpressionContext context)
 		{
 			throw new NotSupportedException ();
-		}
-		
-		public override bool CanEvaluateToBool (IExpressionContext context)
-		{
-			return functions.ContainsKey (name);
 		}
 		
 		public override bool CanEvaluateToNumber (IExpressionContext context)

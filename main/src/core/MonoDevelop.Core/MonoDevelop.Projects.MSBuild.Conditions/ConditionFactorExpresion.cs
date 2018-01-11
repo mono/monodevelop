@@ -43,19 +43,16 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			string[] trueValuesArray = new string[] {"true", "on", "yes"};
 			string[] falseValuesArray = new string[] {"false", "off", "no"};
 			
-			
-			allValues = CollectionsUtil.CreateCaseInsensitiveHashtable ();
+
 			trueValues = CollectionsUtil.CreateCaseInsensitiveHashtable ();
 			falseValues = CollectionsUtil.CreateCaseInsensitiveHashtable ();
 			
 			foreach (string s in trueValuesArray) {
 				trueValues.Add (s, s);
-				allValues.Add (s, s);
 			}
 			
 			foreach (string s in falseValuesArray) {
 				falseValues.Add (s, s);
-				allValues.Add (s, s);
 			}
 		}
 
@@ -63,20 +60,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		public ConditionFactorExpression (Token token)
 		{
 			this.token = token;
-		}
-
-		public override bool BoolEvaluate (IExpressionContext context)
-		{
-			string evaluatedString = StringEvaluate (context);
-		
-			if (trueValues [evaluatedString] != null)
-				return true;
-			else if (falseValues [evaluatedString] != null)
-				return false;
-			else
-				throw new ExpressionEvaluationException (
-						String.Format ("Expression \"{0}\" evaluated to \"{1}\" instead of a boolean value",
-								token.Value, evaluatedString));
 		}
 		
 		public override float NumberEvaluate (IExpressionContext context)
@@ -92,14 +75,24 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		}
 		
 		// FIXME: check if we really can do it
-		public override bool CanEvaluateToBool (IExpressionContext context)
+		public override bool TryEvaluateToBool (IExpressionContext context, out bool result)
 		{
 			string evaluatedToken = StringEvaluate (context);
 		
-			if (token.Type == TokenType.String && allValues [evaluatedToken] != null)
-				return true;
-			else
+			if (token.Type != TokenType.String) {
+				result = false;
 				return false;
+			}
+
+			if (trueValues [evaluatedToken] != null)
+				result = true;
+			else if (falseValues [evaluatedToken] != null)
+				result = false;
+			else
+				throw new ExpressionEvaluationException (
+						String.Format ("Expression \"{0}\" evaluated to \"{1}\" instead of a boolean value",
+								token.Value, evaluatedToken));
+			return true;
 		}
 		
 		public override bool CanEvaluateToNumber (IExpressionContext context)

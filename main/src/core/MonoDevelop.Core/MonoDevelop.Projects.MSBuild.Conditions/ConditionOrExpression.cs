@@ -48,15 +48,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		public ConditionExpression Right {
 			get { return right; }
 		}
-	
-		public override  bool BoolEvaluate (IExpressionContext context)
-		{
-			if (left.BoolEvaluate (context))
-				return true;
-			if (right.BoolEvaluate (context))
-				return true;
-			return false;
-		}
 		
 		public override float NumberEvaluate (IExpressionContext context)
 		{
@@ -69,9 +60,17 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		}
 		
 		// FIXME: check if we really can do it
-		public override bool CanEvaluateToBool (IExpressionContext context)
+		public override bool TryEvaluateToBool (IExpressionContext context, out bool result)
 		{
-			return true;
+			// Short-circuiting, check only left expr, right
+			// would be required only if left == false
+			if (!left.TryEvaluateToBool (context, out result))
+				return false;
+
+			if (result)
+				return true;
+
+			return right.TryEvaluateToBool (context, out result);
 		}
 		
 		public override bool CanEvaluateToNumber (IExpressionContext context)

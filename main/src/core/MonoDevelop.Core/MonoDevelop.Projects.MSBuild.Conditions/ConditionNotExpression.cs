@@ -40,12 +40,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			this.expression = expression;
 		}
 		
-		public override  bool BoolEvaluate (IExpressionContext context)
-		{
-			return !(expression.BoolEvaluate (context));
-		}
-		
-		
 		public override float NumberEvaluate (IExpressionContext context)
 		{
 			throw new NotSupportedException ();
@@ -56,9 +50,13 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			throw new NotSupportedException ();
 		}
 		
-		public override bool CanEvaluateToBool (IExpressionContext context)
+		public override bool TryEvaluateToBool (IExpressionContext context, out bool value)
 		{
-			return expression.CanEvaluateToBool (context);
+			var canEvaluate = expression.TryEvaluateToBool (context, out value);
+
+			value = !value;
+
+			return canEvaluate;
 		}
 		
 		public override bool CanEvaluateToNumber (IExpressionContext context)

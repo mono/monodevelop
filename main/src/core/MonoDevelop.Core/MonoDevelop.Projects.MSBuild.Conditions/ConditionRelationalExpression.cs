@@ -48,42 +48,46 @@ namespace MonoDevelop.Projects.MSBuild.Conditions
 			this.op = op;
 		}
 		
-		public override bool BoolEvaluate (IExpressionContext context)
+		public override bool TryEvaluateToBool (IExpressionContext context, out bool result)
 		{
-			if (left.CanEvaluateToBool (context) && right.CanEvaluateToBool (context)) {
-				bool l = left.BoolEvaluate (context);
-				bool r = right.BoolEvaluate (context);
-				return BoolCompare (l, r, op);
+			if (left.TryEvaluateToBool (context, out bool l) && right.TryEvaluateToBool (context, out bool r)) {
+				result = BoolCompare (l, r, op);
+				return true;
 			}
 
 			if (left.CanEvaluateToVersion (context)) {
 				if (right.CanEvaluateToVersion (context)) {
-					Version l = left.VersionEvaluate (context);
-					Version r = right.VersionEvaluate (context);
-					return VersionCompare (l, r, op);
+					Version vl = left.VersionEvaluate (context);
+					Version vr = right.VersionEvaluate (context);
+					result = VersionCompare (vl, vr, op);
+					return true;
 				}
 				else if (right.CanEvaluateToNumber (context)) {
-					Version l = left.VersionEvaluate (context);
-					float r = right.NumberEvaluate (context);
-					return VersionCompare (l, r, op);
+					Version vl = left.VersionEvaluate (context);
+					float vr = right.NumberEvaluate (context);
+					result = VersionCompare (vl, vr, op);
+					return true;
 				}
 			}
 			else if (left.CanEvaluateToNumber (context)) {
 				if (right.CanEvaluateToNumber (context)) {
-					float l = left.NumberEvaluate (context);
-					float r = right.NumberEvaluate (context);
-					return NumberCompare (l, r, op);
+					float fl = left.NumberEvaluate (context);
+					float fr = right.NumberEvaluate (context);
+					result = NumberCompare (fl, fr, op);
+					return true;
 				}
 				else if (right.CanEvaluateToVersion (context)) {
-					float l = left.NumberEvaluate (context);
-					Version r = right.VersionEvaluate (context);
-					return VersionCompare (l, r, op);
+					float fl = left.NumberEvaluate (context);
+					Version vr = right.VersionEvaluate (context);
+					result = VersionCompare (fl, vr, op);
+					return true;
 				}
 			}
 
 			string ls = left.StringEvaluate (context);
 			string rs = right.StringEvaluate (context);
-			return StringCompare (ls, rs, op);
+			result = StringCompare (ls, rs, op);
+			return true;
 		}
 		
 		public override float NumberEvaluate (IExpressionContext context)
@@ -94,12 +98,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions
 		public override string StringEvaluate (IExpressionContext context)
 		{
 			throw new NotSupportedException ();
-		}
-		
-		// FIXME: check if we really can do it
-		public override bool CanEvaluateToBool (IExpressionContext context)
-		{
-			return true;
 		}
 		
 		public override bool CanEvaluateToNumber (IExpressionContext context)
