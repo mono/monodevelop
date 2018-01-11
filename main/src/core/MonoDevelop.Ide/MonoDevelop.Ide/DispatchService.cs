@@ -54,17 +54,17 @@ namespace MonoDevelop.Ide
 			{
 				SendOrPostCallback d;
 				object state;
-				object lockObject;
+				ManualResetEventSlim resetEvent;
 
 				public TimeoutProxy (SendOrPostCallback d, object state) : this (d, state, null)
 				{
 				}
 
-				public TimeoutProxy (SendOrPostCallback d, object state, object lockObject)
+				public TimeoutProxy (SendOrPostCallback d, object state, ManualResetEventSlim lockObject)
 				{
 					this.d = d;
 					this.state = state;
-					this.lockObject = lockObject;
+					this.resetEvent = lockObject;
 				}
 
 				internal static readonly GSourceFuncInternal SourceHandler = HandlerInternal;
@@ -78,8 +78,7 @@ namespace MonoDevelop.Ide
 					} catch (Exception e) {
 						GLib.ExceptionManager.RaiseUnhandledException (e, false);
 					} finally {
-						if (proxy.lockObject != null)
-							Monitor.Pulse (proxy.lockObject);
+						proxy.resetEvent?.Set ();
 					}
 					return false;
 				}
@@ -109,12 +108,12 @@ namespace MonoDevelop.Ide
 					d (state);
 					return;
 				}
-				var ob = new object ();
-				var proxy = new TimeoutProxy (d, state, ob);
 
-				lock (ob) {
+				using (var ob = new ManualResetEventSlim (false)) {
+					var proxy = new TimeoutProxy (d, state, ob);
+
 					AddTimeout (proxy);
-					Monitor.Wait (ob);
+					ob.Wait ();
 				}
 			}
 
