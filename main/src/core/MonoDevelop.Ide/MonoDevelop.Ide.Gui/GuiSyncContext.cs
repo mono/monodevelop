@@ -37,8 +37,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Runtime.IsMainThread)
 				cb (ob);
-			else
-				Runtime.RunInMainThread (() => cb (ob)).Wait ();
+			else {
+				Runtime.MainSynchronizationContext.Send (state => RunCallback (state), (cb, ob));
+			}
 		}
 		
 		public override void AsyncDispatch (StatefulMessageHandler cb, object ob)
@@ -46,7 +47,13 @@ namespace MonoDevelop.Ide.Gui
 			if (Runtime.IsMainThread)
 				cb (ob);
 			else
-				Runtime.RunInMainThread (() => cb (ob));
+				Runtime.MainSynchronizationContext.Post (state => RunCallback (state), (cb, ob));
+		}
+
+		static void RunCallback (object state)
+		{
+			var (cb, ob) = (ValueTuple<StatefulMessageHandler, object>)state;
+			cb (ob);
 		}
 	}
 }
