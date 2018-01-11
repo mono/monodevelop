@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.Text;
@@ -10,12 +11,14 @@ namespace Mono.TextEditor
 		TextArea textArea;
 		private readonly DocumentLine item;
 		SnapshotSpan lineSpan;
+		int lineBreakLength;
 
 		public MdTextViewLine (TextArea textArea, DocumentLine item)
 		{
 			this.textArea = textArea;
 			this.item = item;
 			this.lineSpan = new SnapshotSpan (textArea.VisualSnapshot, item.Offset, item.LengthIncludingDelimiter);
+			this.lineBreakLength = item.DelimiterLength;
 		}
 
 		public object IdentityTag => throw new System.NotImplementedException ();
@@ -38,15 +41,15 @@ namespace Mono.TextEditor
 
 		public SnapshotPoint Start => lineSpan.Start;
 
-		public int Length => throw new System.NotImplementedException ();
+		public int Length => Length - LineBreakLength;
 
-		public int LengthIncludingLineBreak => throw new System.NotImplementedException ();
+		public int LengthIncludingLineBreak => lineSpan.Length;
 
-		public SnapshotPoint End => throw new System.NotImplementedException ();
+		public SnapshotPoint End => EndIncludingLineBreak - LineBreakLength;
 
 		public SnapshotPoint EndIncludingLineBreak => lineSpan.End;
 
-		public int LineBreakLength => throw new System.NotImplementedException ();
+		public int LineBreakLength => lineBreakLength;
 
 		public double Left => throw new System.NotImplementedException ();
 
@@ -99,6 +102,7 @@ namespace Mono.TextEditor
 
 			return bufferPosition;
 		}
+
 		public bool ContainsBufferPosition (SnapshotPoint bufferPosition)
 		{
 			bufferPosition = this.FixBufferPosition (bufferPosition);
