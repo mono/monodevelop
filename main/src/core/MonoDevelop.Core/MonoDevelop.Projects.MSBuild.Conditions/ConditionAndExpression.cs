@@ -47,11 +47,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		public ConditionExpression Right {
 			get { return right; }
 		}
-
-		public override float NumberEvaluate (IExpressionContext context)
-		{
-			throw new NotSupportedException ();
-		}
 		
 		public override string StringEvaluate (IExpressionContext context)
 		{
@@ -71,8 +66,9 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			return right.TryEvaluateToBool (context, out result);
 		}
 		
-		public override bool CanEvaluateToNumber (IExpressionContext context)
+		public override bool TryEvaluateToNumber (IExpressionContext context, out float result)
 		{
+			result = 0;
 			return false;
 		}
 		

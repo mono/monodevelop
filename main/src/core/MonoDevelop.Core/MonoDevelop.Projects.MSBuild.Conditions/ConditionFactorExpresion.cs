@@ -62,12 +62,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			this.token = token;
 		}
 		
-		public override float NumberEvaluate (IExpressionContext context)
-		{
-			string evaluatedString = StringEvaluate (context);
-			return Single.Parse (evaluatedString, CultureInfo.InvariantCulture);
-		}
-		
 		public override string StringEvaluate (IExpressionContext context)
 		{
 			var evaluated = context.EvaluateString (token.Value);
@@ -95,20 +89,17 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			return true;
 		}
 		
-		public override bool CanEvaluateToNumber (IExpressionContext context)
+		public override bool TryEvaluateToNumber (IExpressionContext context, out float result)
 		{
-			if (token.Type == TokenType.Number)
-				return true;
-			else if (token.Type == TokenType.String) {
-				var text = StringEvaluate (context);
-
-				// Use same styles used by Single.TryParse by default when culture not specified.
-				var styles = NumberStyles.Float | NumberStyles.AllowThousands;
-				Single number;
-				return Single.TryParse (text, styles, CultureInfo.InvariantCulture, out number);
-			}
-			else
+			result = 0;
+			if (token.Type != TokenType.Number && token.Type != TokenType.String)
 				return false;
+			
+			string evaluatedString = StringEvaluate (context);
+
+			// Use same styles used by Single.TryParse by default when culture not specified.
+			var styles = NumberStyles.Float | NumberStyles.AllowThousands;
+			return Single.TryParse (evaluatedString, styles, CultureInfo.InvariantCulture, out result);
 		}
 		
 		public override bool CanEvaluateToString (IExpressionContext context)

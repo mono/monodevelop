@@ -62,22 +62,18 @@ namespace MonoDevelop.Projects.MSBuild.Conditions
 					result = VersionCompare (vl, vr, op);
 					return true;
 				}
-				else if (right.CanEvaluateToNumber (context)) {
+				else if (right.TryEvaluateToNumber (context, out float vr)) {
 					Version vl = left.VersionEvaluate (context);
-					float vr = right.NumberEvaluate (context);
 					result = VersionCompare (vl, vr, op);
 					return true;
 				}
 			}
-			else if (left.CanEvaluateToNumber (context)) {
-				if (right.CanEvaluateToNumber (context)) {
-					float fl = left.NumberEvaluate (context);
-					float fr = right.NumberEvaluate (context);
+			else if (left.TryEvaluateToNumber (context, out float fl)) {
+				if (right.TryEvaluateToNumber (context, out float fr)) {
 					result = NumberCompare (fl, fr, op);
 					return true;
 				}
 				else if (right.CanEvaluateToVersion (context)) {
-					float fl = left.NumberEvaluate (context);
 					Version vr = right.VersionEvaluate (context);
 					result = VersionCompare (fl, vr, op);
 					return true;
@@ -90,18 +86,14 @@ namespace MonoDevelop.Projects.MSBuild.Conditions
 			return true;
 		}
 		
-		public override float NumberEvaluate (IExpressionContext context)
-		{
-			throw new NotSupportedException ();
-		}
-		
 		public override string StringEvaluate (IExpressionContext context)
 		{
 			throw new NotSupportedException ();
 		}
 		
-		public override bool CanEvaluateToNumber (IExpressionContext context)
+		public override bool TryEvaluateToNumber (IExpressionContext context, out float result)
 		{
+			result = 0;
 			return false;
 		}
 		
