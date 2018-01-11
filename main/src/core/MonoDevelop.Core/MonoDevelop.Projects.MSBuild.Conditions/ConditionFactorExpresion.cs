@@ -60,8 +60,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		{
 			this.token = token;
 		}
-		
-		// FIXME: check if we really can do it
+
 		public override bool TryEvaluateToBool (IExpressionContext context, out bool result)
 		{
 			result = false;

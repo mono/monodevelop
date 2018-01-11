@@ -48,8 +48,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		public ConditionExpression Right {
 			get { return right; }
 		}
-		
-		// FIXME: check if we really can do it
+
 		public override bool TryEvaluateToBool (IExpressionContext context, out bool result)
 		{
 			// Short-circuiting, check only left expr, right
