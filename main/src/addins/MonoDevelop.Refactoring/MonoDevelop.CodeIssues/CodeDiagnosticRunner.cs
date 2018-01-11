@@ -75,9 +75,8 @@ namespace MonoDevelop.CodeIssues
 
 				diagnostics = await CodeRefactoringService.GetCodeDiagnosticsAsync (analysisDocument.DocumentContext, language, cancellationToken);
 				foreach (var diagnostic in diagnostics) {
-					if (alreadyAdded.Contains (diagnostic.DiagnosticAnalyzerType))
+					if (!alreadyAdded.Add (diagnostic.DiagnosticAnalyzerType))
 						continue;
-					alreadyAdded.Add (diagnostic.DiagnosticAnalyzerType);
 					var provider = diagnostic.GetProvider ();
 					if (provider == null)
 						continue;
