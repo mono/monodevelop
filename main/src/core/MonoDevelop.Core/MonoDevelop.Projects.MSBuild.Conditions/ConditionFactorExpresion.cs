@@ -77,9 +77,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			else if (falseValues [evaluatedToken] != null)
 				result = false;
 			else
-				throw new ExpressionEvaluationException (
-						String.Format ("Expression \"{0}\" evaluated to \"{1}\" instead of a boolean value",
-								token.Value, evaluatedToken));
+				return false;
 			return true;
 		}
 		
