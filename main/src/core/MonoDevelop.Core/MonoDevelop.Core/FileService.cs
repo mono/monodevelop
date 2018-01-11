@@ -339,6 +339,17 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		internal static void NotifyDirectoryRenamed (string oldPath, string newPath)
+		{
+			try {
+				OnFileRenamed (new FileCopyEventArgs (oldPath, newPath, true));
+				OnFileCreated (new FileEventArgs (newPath, true));
+				OnFileRemoved (new FileEventArgs (oldPath, true));
+			} catch (Exception ex) {
+				LoggingService.LogError ("Directory rename notification failed", ex);
+			}
+		}
+
 		internal static FileSystemExtension GetFileSystemForPath (string path, bool isDirectory)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (path));

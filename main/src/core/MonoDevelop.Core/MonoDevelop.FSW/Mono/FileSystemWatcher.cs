@@ -1,10 +1,10 @@
 ﻿//
-// DotNetCoreTestBase.cs
+// FileSystemWatcher.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       ludovic <ludovic.henry@xamarin.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 ludovic
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.IO;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using UnitTests;
-
-namespace MonoDevelop.DotNetCore.Tests
+namespace MonoDevelop.FSW.Mono
 {
-	class DotNetCoreTestBase : TestBase
+	internal class FileSystemWatcher : System.IO.FileSystemWatcher
 	{
-		protected override void InternalSetup (string rootDir)
+		public FileSystemWatcher ()
+			: base ()
 		{
-			base.InternalSetup (rootDir);
-			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
-			DesktopService.Initialize ();
 		}
 
-		/// <summary>
-		/// Clear all other package sources and just use the main NuGet package source when
-		/// restoring the packages for the project temlate tests.
-		/// </summary>
-		protected static void CreateNuGetConfigFile (FilePath directory)
+		public FileSystemWatcher (string path)
+			: base (path)
 		{
-			var fileName = directory.Combine ("NuGet.Config");
+		}
 
-			string xml =
-				"<configuration>\r\n" +
-				"  <packageSources>\r\n" +
-				"    <clear />\r\n" +
-				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
-				"  </packageSources>\r\n" +
-				"</configuration>";
+		public FileSystemWatcher (string path, string filter)
+			: base (path, filter)
+		{
+		}
 
-			File.WriteAllText (fileName, xml);
+		protected internal new void OnChanged (System.IO.FileSystemEventArgs e)
+		{
+			base.OnChanged (e);
+		}
+
+		protected internal new void OnCreated (System.IO.FileSystemEventArgs e)
+		{
+			base.OnCreated (e);
+		}
+
+		protected internal new void OnDeleted (System.IO.FileSystemEventArgs e)
+		{
+			base.OnDeleted (e);
+		}
+
+		protected internal new void OnError (System.IO.ErrorEventArgs e)
+		{
+			base.OnError (e);
+		}
+
+		protected internal new void OnRenamed (System.IO.RenamedEventArgs e)
+		{
+			base.OnRenamed (e);
+		}
+
+		protected internal new void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
 		}
 	}
 }
