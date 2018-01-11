@@ -308,7 +308,11 @@ namespace MonoDevelop.Core
 		public static TaskScheduler MainTaskScheduler {
 			get {
 				if (taskScheduler == null)
-					RunInMainThread (() => taskScheduler = TaskScheduler.FromCurrentSynchronizationContext ()).Wait ();
+					RunInMainThread (() => {
+						if (taskScheduler == null)
+							taskScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+					}).Wait ();
+
 				return taskScheduler;
 			}
 		}
