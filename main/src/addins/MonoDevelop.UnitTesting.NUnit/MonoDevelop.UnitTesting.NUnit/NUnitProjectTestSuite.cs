@@ -205,21 +205,25 @@ namespace MonoDevelop.UnitTesting.NUnit
 		protected override string TestInfoCachePath {
 			get { return Path.Combine (resultsPath, storeId + ".test-cache"); }
 		}
-		
-		protected override IEnumerable<string> SupportAssemblies {
-			get {
+
+		protected override async Task<IEnumerable<string>> GetSupportAssembliesAsync ()
+		{
+			DotNetProject project = base.OwnerSolutionItem as DotNetProject;
+
+			if (project != null) {
+				var references = await project.GetReferences (IdeApp.Workspace.ActiveConfiguration).ConfigureAwait (false);
 				// Referenced assemblies which are not in the gac and which are not localy copied have to be preloaded
-				DotNetProject project = base.OwnerSolutionItem as DotNetProject;
-				if (project != null) {
-					foreach (var pr in project.References) {
-						if (pr.ReferenceType != ReferenceType.Package && !pr.LocalCopy && pr.ReferenceOutputAssembly) {
-							foreach (string file in pr.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration))
-								yield return file;
-						}
-					}
-				}
+				var supportAssemblies = references.Where (r => !r.IsCopyLocal && (!r.IsProjectReference || r.ReferenceOutputAssembly) && !r.IsFrameworkFile && !r.IsImplicit && !IsGacReference (r))
+				                                  .Select (r => r.FilePath.FullPath.ToString ())
+				                                  .Where (File.Exists)
+				                                  .Distinct ();
+				return supportAssemblies;
 			}
+
+			return Enumerable.Empty<string> ();
 		}
+
+		bool IsGacReference (AssemblyReference r) => string.Equals (r.Metadata.GetValue ("ResolvedFrom"), "{GAC}", StringComparison.OrdinalIgnoreCase);
 	}
 }
 

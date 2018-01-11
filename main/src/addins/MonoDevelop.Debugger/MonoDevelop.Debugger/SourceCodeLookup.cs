@@ -86,6 +86,14 @@ namespace MonoDevelop.Debugger
 				if (result.IsNotNull)
 					return result;
 			}
+			//Attempt to find source code inside solution, this is mostly useful for Docker which moves code to container and compiles there 
+			//so when user debug application we want to make connection to code opened inside IDE automaticlly
+			debugSourceFolders = IdeApp.Workspace.GetAllSolutions ().Select (s => s.BaseDirectory.ToString ());
+			if (debugSourceFolders.Any ()) {
+				var result = TryDebugSourceFolders (originalFile, hash, debugSourceFolders);
+				if (result.IsNotNull)
+					return result;
+			}
 			return FilePath.Null;
 		}
 
@@ -125,6 +133,15 @@ namespace MonoDevelop.Debugger
 								return true;
 							}
 						}
+					if (hash.Length == 20) {
+						using (var sha1 = SHA1.Create ()) {
+							fs.Position = 0;
+							if (sha1.ComputeHash (fs).SequenceEqual (hash)) {
+								return true;
+							}
+						}
+					}
+					fs.Position = 0;
 					using (var md5 = MD5.Create ()) {
 						if (md5.ComputeHash (fs).SequenceEqual (hash)) {
 							return true;

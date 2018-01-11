@@ -37,11 +37,12 @@ namespace MonoDevelop.StressTest
 	{
 		List<string> FoldersToClean = new List<string> ();
 		ITestScenario scenario;
+		StressTestOptions.ProfilerOptions ProfilerOptions;
 
 		public StressTestApp (StressTestOptions options)
 		{
 			Iterations = options.Iterations;
-
+			ProfilerOptions = options.Profiler;
 			if (!string.IsNullOrEmpty (options.MonoDevelopBinPath)) {
 				MonoDevelopBinPath = options.MonoDevelopBinPath;
 			}
@@ -53,6 +54,7 @@ namespace MonoDevelop.StressTest
 
 		public string MonoDevelopBinPath { get; set; }
 		public int Iterations { get; set; } = 1;
+		ProfilerProcessor profilerProcessor;
 
 		public void Start ()
 		{
@@ -62,8 +64,19 @@ namespace MonoDevelop.StressTest
 			string profilePath = Util.CreateTmpDir ();
 
 			FoldersToClean.Add (profilePath);
-
-			TestService.StartSession (MonoDevelopBinPath, profilePath);
+			if (ProfilerOptions.Type != StressTestOptions.ProfilerOptions.ProfilerType.Disabled) {
+				if (ProfilerOptions.MlpdOutputPath == null)
+					ProfilerOptions.MlpdOutputPath = Path.Combine (profilePath, "profiler.mlpd");
+				profilerProcessor = new ProfilerProcessor (ProfilerOptions);
+				string monoPath = Environment.GetEnvironmentVariable ("PATH")
+											 .Split (Path.PathSeparator)
+											 .Select (p => Path.Combine (p, "mono"))
+											 .FirstOrDefault (s => File.Exists (s));
+				TestService.StartSession (monoPath, profilePath, $"{profilerProcessor.GetMonoArguments ()} \"{MonoDevelopBinPath}\"");
+				Console.WriteLine ($"Profler is logging into {ProfilerOptions.MlpdOutputPath}");
+			} else {
+				TestService.StartSession (MonoDevelopBinPath, profilePath);
+			}
 			TestService.Session.DebugObject = new UITestDebug ();
 
 			TestService.Session.WaitForElement (IdeQuery.DefaultWorkbench);
@@ -126,6 +139,7 @@ namespace MonoDevelop.StressTest
 
 		void OnCleanUp ()
 		{
+			profilerProcessor?.Stop ();
 			foreach (string folder in FoldersToClean) {
 				try {
 					if (folder != null && Directory.Exists (folder)) {
@@ -141,6 +155,11 @@ namespace MonoDevelop.StressTest
 
 		void ReportMemoryUsage (int iteration)
 		{
+			UserInterfaceTests.Ide.WaitForIdeIdle ();//Make sure IDE stops doing what it was doing
+			if (profilerProcessor != null) {
+				profilerProcessor.TakeHeapshotAndMakeReport ().Wait ();
+			}
+
 			var memoryStats = TestService.Session.MemoryStats;
 
 			Console.WriteLine ("Run {0}", iteration + 1);

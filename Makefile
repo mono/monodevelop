@@ -35,8 +35,8 @@ CONFIG_MAKE=$(top_srcdir)/config.make
 	case $$2 in *=*) dk="exit 1" ;; *k*) dk=: ;; *) dk="exit 1" ;; esac; \
 	for dir in $(SUBDIRS); do \
 		case $$dir in \
-		.) PATH=$(PATH):/Library/Frameworks/Mono.framework/Versions/Current/bin $(MAKE) $*-local || { final_exit="exit 1"; $$dk; };;\
-		*) (cd $$dir && PATH=$(PATH):/Library/Frameworks/Mono.framework/Versions/Current/bin $(MAKE) $*) || { final_exit="exit 1"; $$dk; };;\
+		.) PATH="$(PATH):/Library/Frameworks/Mono.framework/Versions/Current/bin" $(MAKE) $*-local || { final_exit="exit 1"; $$dk; };;\
+		*) (cd $$dir && PATH="$(PATH):/Library/Frameworks/Mono.framework/Versions/Current/bin" $(MAKE) $*) || { final_exit="exit 1"; $$dk; };;\
 		esac \
 	done
 	$$final_exit
