@@ -49,11 +49,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			get { return right; }
 		}
 		
-		public override string StringEvaluate (IExpressionContext context)
-		{
-			throw new NotSupportedException ();
-		}
-		
 		// FIXME: check if we really can do it
 		public override bool TryEvaluateToBool (IExpressionContext context, out bool result)
 		{
@@ -74,8 +69,9 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			return false;
 		}
 		
-		public override bool CanEvaluateToString (IExpressionContext context)
+		public override bool TryEvaluateToString (IExpressionContext context, out string result)
 		{
+			result = null;
 			return false;
 		}
 

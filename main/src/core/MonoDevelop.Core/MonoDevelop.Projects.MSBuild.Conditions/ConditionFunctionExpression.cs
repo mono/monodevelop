@@ -68,13 +68,9 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 					name, args.Count, 1));
 			}
 
-			result = func (args [0].StringEvaluate (context), context);
+			bool canEvaluate = args [0].TryEvaluateToString (context, out string arg0);
+			result = func (arg0, context);
 			return true;;
-		}
-		
-		public override string StringEvaluate (IExpressionContext context)
-		{
-			throw new NotSupportedException ();
 		}
 		
 		public override bool TryEvaluateToNumber (IExpressionContext context, out float result)
@@ -83,8 +79,9 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			return false;
 		}
 		
-		public override bool CanEvaluateToString (IExpressionContext context)
+		public override bool TryEvaluateToString (IExpressionContext context, out string result)
 		{
+			result = null;
 			return false;
 		}
 

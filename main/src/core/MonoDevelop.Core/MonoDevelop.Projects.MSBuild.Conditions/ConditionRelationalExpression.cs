@@ -80,15 +80,13 @@ namespace MonoDevelop.Projects.MSBuild.Conditions
 				}
 			}
 
-			string ls = left.StringEvaluate (context);
-			string rs = right.StringEvaluate (context);
+			if (!left.TryEvaluateToString (context, out string ls) || !right.TryEvaluateToString (context, out string rs)) {
+				result = false;
+				return false;
+			}
+
 			result = StringCompare (ls, rs, op);
 			return true;
-		}
-		
-		public override string StringEvaluate (IExpressionContext context)
-		{
-			throw new NotSupportedException ();
 		}
 		
 		public override bool TryEvaluateToNumber (IExpressionContext context, out float result)
@@ -97,8 +95,9 @@ namespace MonoDevelop.Projects.MSBuild.Conditions
 			return false;
 		}
 		
-		public override bool CanEvaluateToString (IExpressionContext context)
+		public override bool TryEvaluateToString (IExpressionContext context, out string result)
 		{
+			result = null;
 			return false;
 		}
 		

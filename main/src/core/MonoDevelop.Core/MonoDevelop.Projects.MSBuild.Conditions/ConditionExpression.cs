@@ -31,12 +31,11 @@ using System.Xml;
 namespace MonoDevelop.Projects.MSBuild.Conditions {
 	internal abstract class ConditionExpression {
 		
-		public abstract string StringEvaluate (IExpressionContext context);
 		public virtual Version VersionEvaluate (IExpressionContext context) => throw new NotSupportedException();
 		
 		public abstract bool TryEvaluateToBool (IExpressionContext context, out bool result);
 		public abstract bool TryEvaluateToNumber (IExpressionContext context, out float result);
-		public abstract bool CanEvaluateToString (IExpressionContext context);
+		public abstract bool TryEvaluateToString (IExpressionContext context, out string result);
 		public virtual bool CanEvaluateToVersion (IExpressionContext context) => false;
 
 		public virtual void CollectConditionProperties (ConditionedPropertyCollection properties)

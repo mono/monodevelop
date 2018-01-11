@@ -40,11 +40,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			this.expression = expression;
 		}
 		
-		public override string StringEvaluate (IExpressionContext context)
-		{
-			throw new NotSupportedException ();
-		}
-		
 		public override bool TryEvaluateToBool (IExpressionContext context, out bool result)
 		{
 			var canEvaluate = expression.TryEvaluateToBool (context, out result);
@@ -60,8 +55,9 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			return false;
 		}
 		
-		public override bool CanEvaluateToString (IExpressionContext context)
+		public override bool TryEvaluateToString (IExpressionContext context, out string result)
 		{
+			result = null;
 			return false;
 		}
 

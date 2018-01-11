@@ -62,21 +62,17 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			this.token = token;
 		}
 		
-		public override string StringEvaluate (IExpressionContext context)
-		{
-			var evaluated = context.EvaluateString (token.Value);
-			return evaluated;
-		}
-		
 		// FIXME: check if we really can do it
 		public override bool TryEvaluateToBool (IExpressionContext context, out bool result)
 		{
-			string evaluatedToken = StringEvaluate (context);
-		
+			result = false;
 			if (token.Type != TokenType.String) {
-				result = false;
 				return false;
 			}
+
+			bool canEvaluate = TryEvaluateToString (context, out string evaluatedToken);
+			if (!canEvaluate)
+				return false;
 
 			if (trueValues [evaluatedToken] != null)
 				result = true;
@@ -95,27 +91,36 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			if (token.Type != TokenType.Number && token.Type != TokenType.String)
 				return false;
 			
-			string evaluatedString = StringEvaluate (context);
+			bool canEvaluate = TryEvaluateToString (context, out string evaluatedString);
+			if (!canEvaluate)
+				return false;
 
 			// Use same styles used by Single.TryParse by default when culture not specified.
 			var styles = NumberStyles.Float | NumberStyles.AllowThousands;
 			return Single.TryParse (evaluatedString, styles, CultureInfo.InvariantCulture, out result);
 		}
 		
-		public override bool CanEvaluateToString (IExpressionContext context)
+		public override bool TryEvaluateToString (IExpressionContext context, out string result)
 		{
+			result = context.EvaluateString (token.Value);
 			return true;
 		}
 
 		public override bool CanEvaluateToVersion (IExpressionContext context)
 		{
-			var text = StringEvaluate (context);
+			bool canEvaluate = TryEvaluateToString (context, out string text);
+			if (!canEvaluate)
+				return false;
+			
 			return Version.TryParse (text, out var version);
 		}
 
 		public override Version VersionEvaluate (IExpressionContext context)
 		{
-			var text = StringEvaluate (context);
+			bool canEvaluate = TryEvaluateToString (context, out string text);
+			if (!canEvaluate)
+				return null;
+			
 			Version.TryParse (text, out var version);
 			return version;
 		}
