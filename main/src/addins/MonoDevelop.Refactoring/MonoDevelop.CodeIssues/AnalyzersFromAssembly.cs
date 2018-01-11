@@ -106,12 +106,6 @@ namespace MonoDevelop.CodeIssues
 							if (analyzer.SupportedDiagnostics.Any (IsDiagnosticSupported)) {
 								Analyzers.Add (new CodeDiagnosticDescriptor (analyzerAttr.Languages, type));
 							}
-							foreach (var diag in analyzer.SupportedDiagnostics) {
-								//filter out E&C analyzers as we don't support E&C
-								if (diag.CustomTags.Contains (WellKnownDiagnosticTags.EditAndContinue)) {
-									continue;
-								}
-							}
 						} catch (Exception e) {
 							LoggingService.LogError ($"error while adding diagnostic analyzer {type}  from assembly {asm.FullName}", e);
 						}
