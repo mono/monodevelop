@@ -92,9 +92,21 @@ namespace Mono.TextEditor
 
 		public TextViewLineChange Change => throw new System.NotImplementedException ();
 
+		private SnapshotPoint FixBufferPosition (SnapshotPoint bufferPosition)
+		{
+			if (bufferPosition.Snapshot != this.lineSpan.Snapshot)
+				throw new ArgumentException ("The specified SnapshotPoint is on a different ITextSnapshot than this SnapshotPoint.");
+
+			return bufferPosition;
+		}
 		public bool ContainsBufferPosition (SnapshotPoint bufferPosition)
 		{
-			return lineSpan.Contains (bufferPosition);
+			bufferPosition = this.FixBufferPosition (bufferPosition);
+
+			return ((bufferPosition >= lineSpan.Start) &&
+					((bufferPosition < lineSpan.End) ||
+					 ((bufferPosition == lineSpan.End) &&
+					 (lineBreakLength == 0) && (lineSpan.End == lineSpan.Snapshot.Length))));
 		}
 
 		public TextBounds? GetAdornmentBounds (object identityTag)
