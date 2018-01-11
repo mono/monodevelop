@@ -33,8 +33,7 @@ using System.Xml;
 
 namespace MonoDevelop.Projects.MSBuild.Conditions {
 	internal sealed class ConditionFactorExpression : ConditionExpression {
-	
-		static Hashtable allValues;
+
 		static Hashtable trueValues;
 		static Hashtable falseValues;
 		
@@ -43,19 +42,16 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			string[] trueValuesArray = new string[] {"true", "on", "yes"};
 			string[] falseValuesArray = new string[] {"false", "off", "no"};
 			
-			
-			allValues = CollectionsUtil.CreateCaseInsensitiveHashtable ();
+
 			trueValues = CollectionsUtil.CreateCaseInsensitiveHashtable ();
 			falseValues = CollectionsUtil.CreateCaseInsensitiveHashtable ();
 			
 			foreach (string s in trueValuesArray) {
 				trueValues.Add (s, s);
-				allValues.Add (s, s);
 			}
 			
 			foreach (string s in falseValuesArray) {
 				falseValues.Add (s, s);
-				allValues.Add (s, s);
 			}
 		}
 
@@ -65,75 +61,48 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			this.token = token;
 		}
 
-		public override bool BoolEvaluate (IExpressionContext context)
+		public override bool TryEvaluateToBool (IExpressionContext context, out bool result)
 		{
-			string evaluatedString = StringEvaluate (context);
-		
-			if (trueValues [evaluatedString] != null)
-				return true;
-			else if (falseValues [evaluatedString] != null)
+			result = false;
+			if (token.Type != TokenType.String) {
 				return false;
-			else
-				throw new ExpressionEvaluationException (
-						String.Format ("Expression \"{0}\" evaluated to \"{1}\" instead of a boolean value",
-								token.Value, evaluatedString));
-		}
-		
-		public override float NumberEvaluate (IExpressionContext context)
-		{
-			string evaluatedString = StringEvaluate (context);
-			return Single.Parse (evaluatedString, CultureInfo.InvariantCulture);
-		}
-		
-		public override string StringEvaluate (IExpressionContext context)
-		{
-			var evaluated = context.EvaluateString (token.Value);
-			return evaluated;
-		}
-		
-		// FIXME: check if we really can do it
-		public override bool CanEvaluateToBool (IExpressionContext context)
-		{
-			string evaluatedToken = StringEvaluate (context);
-		
-			if (token.Type == TokenType.String && allValues [evaluatedToken] != null)
-				return true;
-			else
-				return false;
-		}
-		
-		public override bool CanEvaluateToNumber (IExpressionContext context)
-		{
-			if (token.Type == TokenType.Number)
-				return true;
-			else if (token.Type == TokenType.String) {
-				var text = StringEvaluate (context);
-
-				// Use same styles used by Single.TryParse by default when culture not specified.
-				var styles = NumberStyles.Float | NumberStyles.AllowThousands;
-				Single number;
-				return Single.TryParse (text, styles, CultureInfo.InvariantCulture, out number);
 			}
+
+			bool canEvaluate = TryEvaluateToString (context, out string evaluatedToken);
+			if (!canEvaluate)
+				return false;
+
+			if (trueValues [evaluatedToken] != null)
+				result = true;
+			else if (falseValues [evaluatedToken] != null)
+				result = false;
 			else
 				return false;
+			return true;
 		}
 		
-		public override bool CanEvaluateToString (IExpressionContext context)
+		public override bool TryEvaluateToNumber (IExpressionContext context, out float result)
 		{
+			result = 0;
+			if (token.Type != TokenType.Number && token.Type != TokenType.String)
+				return false;
+
+			// Use same styles used by Single.TryParse by default when culture not specified.
+			const NumberStyles styles = NumberStyles.Float | NumberStyles.AllowThousands;
+			return TryEvaluateToString (context, out string evaluatedString) &&
+				Single.TryParse (evaluatedString, styles, CultureInfo.InvariantCulture, out result);
+		}
+		
+		public override bool TryEvaluateToString (IExpressionContext context, out string result)
+		{
+			result = context.EvaluateString (token.Value);
 			return true;
 		}
 
-		public override bool CanEvaluateToVersion (IExpressionContext context)
+		public override bool TryEvaluateToVersion (IExpressionContext context, out Version result)
 		{
-			var text = StringEvaluate (context);
-			return Version.TryParse (text, out var version);
-		}
-
-		public override Version VersionEvaluate (IExpressionContext context)
-		{
-			var text = StringEvaluate (context);
-			Version.TryParse (text, out var version);
-			return version;
+			result = null;
+			return TryEvaluateToString (context, out string text) && Version.TryParse (text, out result);
 		}
 
 		internal Token Token => token;

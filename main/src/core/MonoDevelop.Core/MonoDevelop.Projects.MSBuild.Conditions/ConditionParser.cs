@@ -56,10 +56,10 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			try {
 				ConditionExpression ce = ParseCondition (condition);
 
-				if (!ce.CanEvaluateToBool (context))
+				if (!ce.TryEvaluateToBool (context, out bool result))
 					throw new InvalidProjectFileException (String.Format ("Can not evaluate \"{0}\" to bool.", condition));
 
-				return ce.BoolEvaluate (context);
+				return result;
 			} catch (ExpressionParseException epe) {
 				throw new InvalidProjectFileException (
 						String.Format ("Unable to parse condition \"{0}\" : {1}", condition, epe.Message),
