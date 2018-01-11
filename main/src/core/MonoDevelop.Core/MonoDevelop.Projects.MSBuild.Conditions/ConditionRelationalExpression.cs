@@ -85,18 +85,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions
 			return true;
 		}
 		
-		public override bool TryEvaluateToNumber (IExpressionContext context, out float result)
-		{
-			result = 0;
-			return false;
-		}
-		
-		public override bool TryEvaluateToString (IExpressionContext context, out string result)
-		{
-			result = null;
-			return false;
-		}
-		
 		static bool NumberCompare (float l,
 					   float r,
 					   RelationOperator op)

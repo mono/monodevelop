@@ -33,8 +33,7 @@ using System.Xml;
 
 namespace MonoDevelop.Projects.MSBuild.Conditions {
 	internal sealed class ConditionFactorExpression : ConditionExpression {
-	
-		static Hashtable allValues;
+
 		static Hashtable trueValues;
 		static Hashtable falseValues;
 		

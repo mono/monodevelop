@@ -30,10 +30,21 @@ using System.Xml;
 
 namespace MonoDevelop.Projects.MSBuild.Conditions {
 	internal abstract class ConditionExpression {
-		
+
 		public abstract bool TryEvaluateToBool (IExpressionContext context, out bool result);
-		public abstract bool TryEvaluateToNumber (IExpressionContext context, out float result);
-		public abstract bool TryEvaluateToString (IExpressionContext context, out string result);
+
+		public virtual bool TryEvaluateToNumber (IExpressionContext context, out float result)
+		{
+			result = 0;
+			return false;
+		}
+
+		public virtual bool TryEvaluateToString (IExpressionContext context, out string result)
+		{
+			result = null;
+			return false;
+		}
+
 		public virtual bool TryEvaluateToVersion (IExpressionContext context, out Version result)
 		{
 			result = null;

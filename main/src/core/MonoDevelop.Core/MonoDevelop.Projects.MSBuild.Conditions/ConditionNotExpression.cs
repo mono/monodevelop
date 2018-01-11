@@ -48,18 +48,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 
 			return canEvaluate;
 		}
-		
-		public override bool TryEvaluateToNumber (IExpressionContext context, out float result)
-		{
-			result = 0;
-			return false;
-		}
-		
-		public override bool TryEvaluateToString (IExpressionContext context, out string result)
-		{
-			result = null;
-			return false;
-		}
 
 		public override void CollectConditionProperties (ConditionedPropertyCollection properties)
 		{
