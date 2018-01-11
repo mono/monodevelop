@@ -88,14 +88,11 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			result = 0;
 			if (token.Type != TokenType.Number && token.Type != TokenType.String)
 				return false;
-			
-			bool canEvaluate = TryEvaluateToString (context, out string evaluatedString);
-			if (!canEvaluate)
-				return false;
 
 			// Use same styles used by Single.TryParse by default when culture not specified.
-			var styles = NumberStyles.Float | NumberStyles.AllowThousands;
-			return Single.TryParse (evaluatedString, styles, CultureInfo.InvariantCulture, out result);
+			const NumberStyles styles = NumberStyles.Float | NumberStyles.AllowThousands;
+			return TryEvaluateToString (context, out string evaluatedString) &&
+				Single.TryParse (evaluatedString, styles, CultureInfo.InvariantCulture, out result);
 		}
 		
 		public override bool TryEvaluateToString (IExpressionContext context, out string result)
@@ -107,11 +104,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		public override bool TryEvaluateToVersion (IExpressionContext context, out Version result)
 		{
 			result = null;
-			bool canEvaluate = TryEvaluateToString (context, out string text);
-			if (!canEvaluate)
-				return false;
-			
-			return Version.TryParse (text, out result);
+			return TryEvaluateToString (context, out string text) && Version.TryParse (text, out result);
 		}
 
 		internal Token Token => token;
