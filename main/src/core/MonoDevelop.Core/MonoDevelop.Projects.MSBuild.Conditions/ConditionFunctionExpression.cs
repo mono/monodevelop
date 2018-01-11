@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 
 			bool canEvaluate = args [0].TryEvaluateToString (context, out string arg0);
 			result = func (arg0, context);
-			return true;;
+			return true;
 		}
 
 #pragma warning disable 0169
