@@ -106,23 +106,14 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			return true;
 		}
 
-		public override bool CanEvaluateToVersion (IExpressionContext context)
+		public override bool TryEvaluateToVersion (IExpressionContext context, out Version result)
 		{
+			result = null;
 			bool canEvaluate = TryEvaluateToString (context, out string text);
 			if (!canEvaluate)
 				return false;
 			
-			return Version.TryParse (text, out var version);
-		}
-
-		public override Version VersionEvaluate (IExpressionContext context)
-		{
-			bool canEvaluate = TryEvaluateToString (context, out string text);
-			if (!canEvaluate)
-				return null;
-			
-			Version.TryParse (text, out var version);
-			return version;
+			return Version.TryParse (text, out result);
 		}
 
 		internal Token Token => token;

@@ -55,16 +55,13 @@ namespace MonoDevelop.Projects.MSBuild.Conditions
 				return true;
 			}
 
-			if (left.CanEvaluateToVersion (context)) {
-				if (right.CanEvaluateToVersion (context)) {
-					Version vl = left.VersionEvaluate (context);
-					Version vr = right.VersionEvaluate (context);
+			if (left.TryEvaluateToVersion (context, out Version vl)) {
+				if (right.TryEvaluateToVersion (context, out Version vr)) {
 					result = VersionCompare (vl, vr, op);
 					return true;
 				}
-				else if (right.TryEvaluateToNumber (context, out float vr)) {
-					Version vl = left.VersionEvaluate (context);
-					result = VersionCompare (vl, vr, op);
+				else if (right.TryEvaluateToNumber (context, out float fr)) {
+					result = VersionCompare (vl, fr, op);
 					return true;
 				}
 			}
@@ -73,8 +70,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions
 					result = NumberCompare (fl, fr, op);
 					return true;
 				}
-				else if (right.CanEvaluateToVersion (context)) {
-					Version vr = right.VersionEvaluate (context);
+				else if (right.TryEvaluateToVersion (context, out Version vr)) {
 					result = VersionCompare (fl, vr, op);
 					return true;
 				}
