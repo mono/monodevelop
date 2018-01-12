@@ -95,12 +95,17 @@ namespace MonoDevelop.CodeActions
 			var configureLabel = GettextCatalog.GetString ("_Options");
 			var configureMenu = new CodeFixMenu (configureLabel);
 
-			foreach (var cfa in fixes.CodeFixActions) {
-				// .SelectMany (x => x.Fixes).OrderByDescending (i => GetUsage (i.Action.EquivalenceKey))
+			foreach (var cfa in fixes.CodeFixActions.OrderByDescending (x => x.Fixes.Max(y => GetUsage (y.Action.EquivalenceKey)))) {
 				var state = cfa.FixAllState;
 				var scopes = cfa.SupportedScopes;
 
 				foreach (var fix in cfa.Fixes) {
+					var diag = fix.PrimaryDiagnostic;
+
+					var descriptor = await BuiltInCodeDiagnosticProvider.GetCodeDiagnosticDescriptorAsync (diag.Id);
+					if (!descriptor.IsEnabled)
+						continue;
+					
 					bool isSuppress = fix.Action is TopLevelSuppressionCodeAction;
 
 					if (isSuppress) {
@@ -110,11 +115,7 @@ namespace MonoDevelop.CodeActions
 
 					AddFixMenuItem (editor, menu, ref mnemonic, fix.Action);
 
-					var diag = fix.PrimaryDiagnostic;
 					var configurable = !DescriptorHasTag (diag.Descriptor, WellKnownDiagnosticTags.NotConfigurable);
-
-					var descriptor = BuiltInCodeDiagnosticProvider.GetCodeDiagnosticDescriptor (diag.Id);
-
 					if (descriptor != null && configurable) {
 						var optionsMenuItem = new CodeFixMenuEntry (GettextCatalog.GetString ("_Configure Rule \u2018{0}\u2019", diag.Descriptor.Title),
 							delegate {
@@ -139,7 +140,7 @@ namespace MonoDevelop.CodeActions
 						continue;
 
 					// FIXME: Use a real progress tracker.
-					var fixAll = await provider.GetFixAsync (fixState.CreateFixAllContext (new Microsoft.CodeAnalysis.Shared.Utilities.ProgressTracker (), cancellationToken));
+					var fixAll = await provider.GetFixAsync (fixState.CreateFixAllContext (new RoslynProgressTracker (), cancellationToken));
 					AddFixMenuItem (editor, fixAllMenu, ref mnemonic, fixAll);
 				}
 			}
@@ -152,8 +153,9 @@ namespace MonoDevelop.CodeActions
 					first = false;
 				}
 
-				foreach (var action in refactoring.Actions)
+				foreach (var action in refactoring.Actions) {
 					AddFixMenuItem (editor, menu, ref mnemonic, action);
+				}
 			}
 
 			first = true;
@@ -177,65 +179,6 @@ namespace MonoDevelop.CodeActions
 				first = false;
 			}
 			return menu;
-		}
-
-		static async Task FixAll (TextEditor editor, ValidCodeDiagnosticAction fix, FixAllProvider provider, DiagnosticAnalyzer diagnosticAnalyzer)
-		{
-			var diagnosticIds = diagnosticAnalyzer.SupportedDiagnostics.Select (d => d.Id).ToImmutableHashSet ();
-
-			var analyzers = new [] { diagnosticAnalyzer }.ToImmutableArray ();
-
-			var codeFixService = CompositionManager.GetExportedValue<ICodeFixService> () as CodeFixService;
-			var fixAllDiagnosticProvider = codeFixService.CreateFixAllState (
-				provider,
-				editor.DocumentContext.AnalysisDocument,
-				FixAllProviderInfo.Create (null),
-				null,
-				null,
-				async (doc, diagnostics, token) => await GetDiagnosticsForDocument (analyzers, doc, diagnostics, token).ConfigureAwait (false),
-				(Project arg1, bool arg2, ImmutableHashSet<string> arg3, CancellationToken arg4) => {
-					return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic[] { });
-				}).DiagnosticProvider;
-
-			var ctx = new FixAllContext (
-				editor.DocumentContext.AnalysisDocument,
-				fix.Diagnostic.GetCodeFixProvider (),
-				FixAllScope.Document,
-				fix.CodeAction.EquivalenceKey,
-				diagnosticIds,
-				fixAllDiagnosticProvider,
-				default (CancellationToken)
-			);
-
-			var fixAll = await provider.GetFixAsync (ctx);
-			using (var undo = editor.OpenUndoGroup ()) {
-				await CodeDiagnosticDescriptor.RunAction (editor.DocumentContext, fixAll, default (CancellationToken));
-			}
-		}
-
-		static async Task<ImmutableArray<Diagnostic>> GetDiagnosticsForDocument (ImmutableArray<DiagnosticAnalyzer> analyzers, Microsoft.CodeAnalysis.Document doc, ImmutableHashSet<string> diagnostics, CancellationToken token)
-		{
-			var sol = doc.Project.Solution;
-			var options = new CompilationWithAnalyzersOptions (
-				new WorkspaceAnalyzerOptions (
-					new AnalyzerOptions (ImmutableArray<AdditionalText>.Empty),
-					sol.Options,
-					sol),
-				delegate (Exception exception, DiagnosticAnalyzer analyzer, Diagnostic diag) {
-					LoggingService.LogError ("Exception in diagnostic analyzer " + diag.Id + ":" + diag.GetMessage (), exception);
-				},
-				true,
-				false
-			);
-
-			var model = await doc.GetSemanticModelAsync (token).ConfigureAwait (false);
-			var compilationWithAnalyzer = model.Compilation.WithAnalyzers (analyzers, options);
-
-			var diagnosticList = new List<Diagnostic> ();
-			diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, token).ConfigureAwait (false));
-			diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, token).ConfigureAwait (false));
-
-			return diagnosticList.ToImmutableArray ();
 		}
 
 		static bool DescriptorHasTag (DiagnosticDescriptor desc, string tag)
