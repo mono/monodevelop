@@ -68,6 +68,9 @@ namespace MonoDevelop.CodeIssues
 					if (input.IsAdHocProject && SkipError (data.Id))
 						continue;
 
+					if (data.IsSuppressed)
+						continue;
+
 					if (DataHasTag (data, WellKnownDiagnosticTags.EditAndContinue))
 						continue;
 
