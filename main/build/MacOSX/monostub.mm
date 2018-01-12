@@ -34,7 +34,7 @@ extern
 #if EXTERN_C
 "C"
 #endif
-int xamarin_create_classes ();
+void xamarin_create_classes ();
 #endif
 
 void *libmono, *libxammac;
