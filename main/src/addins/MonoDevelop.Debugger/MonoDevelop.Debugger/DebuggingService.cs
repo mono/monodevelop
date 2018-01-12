@@ -593,7 +593,6 @@ namespace MonoDevelop.Debugger
 			var session = debugger.CreateSession ();
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (proc.Name);
 			var sessionManager = new SessionManager (session, monitor.Console, debugger);
-			session.ExceptionHandler = ExceptionHandler;
 			SetupSession (sessionManager);
 			session.TargetExited += delegate {
 				monitor.Dispose ();
@@ -676,7 +675,6 @@ namespace MonoDevelop.Debugger
 				startInfo.CloseExternalConsoleOnExit = ((ExternalConsole)c).CloseOnDispose;
 
 			var session = factory.CreateSession ();
-			session.ExceptionHandler = ExceptionHandler;
 
 			SessionManager sessionManager;
 			// When using an external console, create a new internal console which will be used
@@ -692,6 +690,7 @@ namespace MonoDevelop.Debugger
 			try {
 				session.Run (startInfo, GetUserOptions ());
 			} catch {
+				sessionManager.SessionError = true;
 				Cleanup (sessionManager);
 				throw;
 			}
@@ -721,6 +720,7 @@ namespace MonoDevelop.Debugger
 			{
 				Engine = engine;
 				Session = session;
+				session.ExceptionHandler = ExceptionHandler;
 				this.console = console;
 				cancelRegistration = console.CancellationToken.Register (Cancel);
 				debugOperation = new DebugAsyncOperation (session);
@@ -761,12 +761,34 @@ namespace MonoDevelop.Debugger
 
 			public void Dispose ()
 			{
+				UpdateDebugSessionCounter ();
+
 				console?.Dispose ();
 				console = null;
 				Session.Dispose ();
 				debugOperation.Cleanup ();
 				cancelRegistration?.Dispose ();
 				cancelRegistration = null;
+			}
+
+			/// <summary>
+			/// Indicates whether the debug session failed to an exception or any debugger
+			/// operation failed and was reported to the user.
+			/// </summary>
+			public bool SessionError { get; set; }
+
+			void UpdateDebugSessionCounter ()
+			{
+				var metadata = new Dictionary<string, string> ();
+				metadata ["Success"] = (!SessionError).ToString ();
+
+				Counters.DebugSession.Inc (metadata);
+			}
+
+			bool ExceptionHandler (Exception ex)
+			{
+				SessionError = true;
+				return DebuggingService.ExceptionHandler (ex);
 			}
 		}
 
