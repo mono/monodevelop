@@ -61,7 +61,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal const int ConfigurationIdx = 1;
 		internal const int RuntimeIdx = 2;
 
-		internal const int SeparatorWidth = 10;
+		internal const int SeparatorWidth = 5;
 
 		internal PathSelectorView RealSelectorView { get; private set; }
 
@@ -128,6 +128,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
+		public override bool BecomeFirstResponder()
+		{
+			if (Window.FirstResponder != RealSelectorView)
+				return Window.MakeFirstResponder(RealSelectorView);
+			return false;
+		}
+
+		public override bool AcceptsFirstResponder()
+		{
+			return Window.FirstResponder != RealSelectorView;
+		}
+
 		#region PathSelectorView
 		[Register]
 		public class PathSelectorView : NSPathControl
@@ -178,22 +190,41 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			public override CGSize SizeThatFits (CGSize size)
 			{
-				int n = 0;
-				nfloat totalWidth = SeparatorWidth * VisibleCells.Length - 1;
-				nfloat allIconsWidth = iconSize * VisibleCells.Length;
+				// compatibility mode for older macOS versions
+				if (MacSystemInformation.OsVersion < MacSystemInformation.HighSierra) {
+					int n = 0;
+					nfloat totalWidth = SeparatorWidth * VisibleCellIds.Length - 1;
+					nfloat allIconsWidth = iconSize * VisibleCellIds.Length;
 
-				allIconsWidth -= iconSize;
-				totalWidth += AddCellSize (LastSelectedCell, totalWidth, size.Width, allIconsWidth);
-
-				for (;n < VisibleCells.Length; n++) {
-					var cellId = VisibleCellIds [n];
-					if (cellId == LastSelectedCell)
-						continue;
-					
 					allIconsWidth -= iconSize;
-					totalWidth += AddCellSize (cellId, totalWidth, size.Width, allIconsWidth);
+					totalWidth += AddCellSize (LastSelectedCell, totalWidth, size.Width, allIconsWidth);
+
+					for (; n < VisibleCellIds.Length; n++) {
+						var cellId = VisibleCellIds [n];
+						if (cellId == LastSelectedCell)
+							continue;
+
+						allIconsWidth -= iconSize;
+						totalWidth += AddCellSize (cellId, totalWidth, size.Width, allIconsWidth);
+					}
+					return new CGSize (totalWidth, size.Height);
 				}
-				return new CGSize (totalWidth, size.Height);
+
+				var fullSize = base.SizeThatFits (size);
+				if (size.Width > fullSize.Width) // use the default size calculation if there is enough space
+					return fullSize;
+
+				// show at least one component, either the last selected or the last one (device)
+				var fullWidthCellId = LastSelectedCell > -1 ? LastSelectedCell : VisibleCellIds.Length - 1;
+
+				// On High Sierra NSPathControl will always expand the selected or the last component
+				// and show only the icon for the others. The minimal size must include the selected cell
+				// width and the remaining cells with icons
+				var fullWidthCellSize = Cells[fullWidthCellId].Cell.CellSize.Width;
+				var minSize = (VisibleCellIds.Length - 1) * iconSize + fullWidthCellSize;
+
+				// if the shrinked min size is now smaller than the available space, expand the view to fill it
+				return new CGSize (Math.Max (minSize, size.Width), fullSize.Height);
 			}
 
 			string EllipsizeString (string s)
@@ -244,13 +275,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			nfloat GetRequiredWidthForPathCell (int cellId)
 			{
 				var cell = Cells [cellId];
-				return new NSAttributedString (GetTextForCell (cellId), new NSStringAttributes { Font = cell.Font }).Size.Width + iconSize;
-			}
-
-			nfloat GetWidthForPathCell (int cellId)
-			{
-				var cell = Cells [cellId];
-				return new NSAttributedString (cell.Title, new NSStringAttributes { Font = cell.Font }).Size.Width + iconSize;
+				return new NSAttributedString (GetTextForCell (cellId), new NSStringAttributes { Font = cell.Cell.Font }).Size.Width + iconSize;
 			}
 
 			NSMenu CreateSubMenuForRuntime (IRuntimeModel runtime)
@@ -313,9 +338,34 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			class NSPathComponentCellFocusable:NSPathComponentCell
 			{
+				CGRect frame = CGRect.Empty;
+
+				public NSPathComponentCellFocusable ()
+				{
+					AccessibilityRole = NSAccessibilityRoles.PopUpButtonRole;
+				}
+
+				public override CGRect AccessibilityFrame {
+					get {
+						if (ControlView?.Window == null)
+							return frame;
+						return ControlView.Window.ConvertRectToScreen (ControlView.ConvertRectToView (frame, null));
+					}
+					set {
+						base.AccessibilityFrame = value;
+					}
+				}
+
+				public override bool AccessibilityPerformPress ()
+				{
+					(ControlView as PathSelectorView)?.PopupMenuForCell (this);
+					return base.AccessibilityPerformPress ();
+				}
+
 				public bool HasFocus { set; get; }
 				public override void DrawWithFrame (CGRect cellFrame, NSView inView)
 				{
+					frame = cellFrame;
 					var isPathSelectorViewResponder = inView.Window.FirstResponder is PathSelectorView;
 					if (HasFocus && isPathSelectorViewResponder ) {
 						var focusRect = new CGRect (cellFrame.X , cellFrame.Y + 3, cellFrame.Width+2, cellFrame.Height - 6);
@@ -328,8 +378,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 			}
 
-			NSPathComponentCellFocusable [] Cells;
-			NSPathComponentCellFocusable [] VisibleCells;
+			CellWrapper [] Cells;
 			int [] VisibleCellIds;
 
 			int lastSelectedCell;
@@ -351,26 +400,36 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			NSImage lastDeviceImageDisabled;
 			public PathSelectorView (CGRect frameRect) : base (frameRect)
 			{
+				iconSize = new NSPathComponentCellFocusable { Image = projectImageDisabled, Title = string.Empty }.CellSize.Width;
+
+				// Depending on the current macOS version we must reuse existing cells to enforce the desired behaviour (before HighSierra),
+				// or we must recreate the whole path on each selection change (HighSierra). Using an additional wrapper class
+				// makes it possible to share most of the code between OS versions.
 				Cells = new [] {
-					new NSPathComponentCellFocusable {
+					new CellWrapper {
 						Image = projectImageDisabled,
 						Title = TextForActiveRunConfiguration,
 						Enabled = false,
 						Identifier = RunConfigurationIdentifier
 					},
-					new NSPathComponentCellFocusable {
+					new CellWrapper {
 						Image = projectImageDisabled,
 						Title = TextForActiveConfiguration,
 						Enabled = false,
 						Identifier = ConfigurationIdentifier
 					},
-					new NSPathComponentCellFocusable {
+					new CellWrapper {
 						Image = deviceImageDisabled,
 						Title = TextForRuntimeConfiguration,
 						Enabled = false,
 						Identifier = RuntimeIdentifier
 					}
 				};
+
+				AccessibilityRole = NSAccessibilityRoles.ListRole;
+				AccessibilityOrientation = NSAccessibilityOrientation.Horizontal;
+				AccessibilityElement = true;
+
 				SetVisibleCells (RunConfigurationIdx, ConfigurationIdx, RuntimeIdx);
 
 				UpdateStyle ();
@@ -386,30 +445,57 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				nsa.AccessibilityHelp = GettextCatalog.GetString ("Set the project runtime configuration");
 			}
 
-			void SetVisibleCells (params int[] ids)
+			void SetVisibleCells (params int [] ids)
 			{
 				VisibleCellIds = ids;
 				LastSelectedCell = ids [0];
-				VisibleCells = new NSPathComponentCellFocusable [ids.Length];
-				for (int n = 0; n < ids.Length; n++)
-					VisibleCells [n] = Cells [ids [n]];
-				PathComponentCells = VisibleCells;
+				var visibleCells = new NSPathComponentCell [ids.Length];
+
+				for (int n = 0; n < ids.Length; n++) {
+					var cellData = Cells [ids [n]];
+					// on HighSierra cells can't be reused without breaking the rendering
+					if (MacSystemInformation.OsVersion >= MacSystemInformation.HighSierra || cellData.Cell == null)
+						cellData.Cell = new NSPathComponentCellFocusable ();
+					visibleCells [n] = cellData.Cell;
+
+					switch (ids[n]) {
+					case RunConfigurationIdx:
+						cellData.Cell.AccessibilityTitle = GettextCatalog.GetString ("Startup project"); break;
+					case ConfigurationIdx:
+						cellData.Cell.AccessibilityTitle = GettextCatalog.GetString ("Run configuration"); break;
+					case RuntimeIdx:
+						cellData.Cell.AccessibilityTitle = GettextCatalog.GetString ("Runtime"); break;
+					}
+				}
+
+				// On HighSierra the NSPathControl doesn't render correctly without a valid URL and
+				// it won't remeasure cells with updated titles, hence we must always update the whole path
+				if (MacSystemInformation.OsVersion >= MacSystemInformation.HighSierra) {
+					var url = string.Empty;
+					for (int n = 0; n < ids.Length; n++)
+						url += Cells [ids [n]].Title + "/";
+
+					// we need to encode the url, to ensure that NSUrl.FromString doesn't fail for certain configuration names
+					var uri = new Uri ("md://configuration/" + url).GetComponents (UriComponents.HttpRequestUrl, UriFormat.UriEscaped);
+					Url = NSUrl.FromString (uri);
+
+					// path items must match the cells, including images
+					for (int n = 0; n < ids.Length; n++)
+						Cells [ids [n]].UpdatePathItem (PathItems [n]);
+				}
+
+				PathComponentCells = visibleCells;
+				UpdateStyle ();
+				AccessibilityChildren = visibleCells;
 			}
 
 			int IndexOfCellAtX (nfloat x)
 			{
-				nfloat cx = 0;
-				for (int n = 0; n < VisibleCells.Length; n++) {
-					var cellWidth = GetWidthForPathCell (VisibleCellIds [n]);
-					if (x > cx && x <= cx + cellWidth)
-						return VisibleCellIds [n];
-					cx += cellWidth;
-					if (x >= cx && x < cx + SeparatorWidth)
-						// The > in the middle
-						return -1;
-					cx += SeparatorWidth;
-				}
-				return -1;
+				var cell = ((NSPathCell)Cell).GetPathComponent (new CGPoint (x, Frame.Height / 2), Frame, this);
+				var i = PathComponentCells.IndexOf (cell);
+				if (i > -1)
+					i = VisibleCellIds [i];
+				return i;
 			}
 
 			public override bool AccessibilityPerformShowMenu ()
@@ -436,32 +522,32 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					return;
 				}
 
-				var item = Cells [cellIdx];
+				var item = Cells [cellIdx].Cell;
 				if (item == null || !item.Enabled)
 					return;
 
 				PopupMenuForCell (item);
 			}
 
-			int focusedCellIndex = 1;
+			int focusedCellIndex = 0;
 			NSPathComponentCellFocusable focusedItem;
 
 			public override void KeyDown (NSEvent theEvent)
 			{
 				if(theEvent.Characters == " ")
 				{
-					var item = Cells [focusedCellIndex];
+					var item = Cells [focusedCellIndex].Cell;
 					PopupMenuForCell (item);
 					return;
 				}
 
 				if (theEvent.Characters == "\t") {
 					focusedCellIndex++;
-					if(focusedCellIndex > VisibleCells.Count ()){
+					if(focusedCellIndex > VisibleCellIds.Length){
 						if (NextKeyView != null) {
 							Window.MakeFirstResponder (NextKeyView);
 							SetSelection ();
-							focusedCellIndex = 1;
+							focusedCellIndex = 0;
 							focusedItem = null;
 							return;
 						}
@@ -477,10 +563,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (focusedItem != null) {
 					focusedItem.HasFocus = false;
 				}
-				if (focusedCellIndex < Cells.Count ()) {
-					var item = Cells [focusedCellIndex];
+				if (focusedCellIndex < Cells.Length) {
+					var item = Cells [focusedCellIndex].Cell as NSPathComponentCellFocusable;
 					focusedItem = item;
-					item.HasFocus = true;
+					if (item != null)
+						item.HasFocus = true;
 				}
 				SetNeedsDisplay ();
 			}
@@ -489,6 +576,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			{
 				SetSelection ();
 				return base.BecomeFirstResponder ();
+			}
+
+			public override bool ResignFirstResponder ()
+			{
+				focusedCellIndex = 0;
+				if (focusedItem != null) {
+					focusedItem.HasFocus = false;
+					focusedItem = null;
+				}
+				return base.ResignFirstResponder ();
 			}
 
 			void PopupMenuForCell (NSPathComponentCell item)
@@ -586,9 +683,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void UpdateStyle (object sender = null, EventArgs e = null)
 			{
-				Cells [RunConfigurationIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
-				Cells [ConfigurationIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
-				Cells [RuntimeIdx].TextColor = Styles.BaseForegroundColor.ToNSColor ();
+				foreach (var cell in PathComponentCells)
+					cell.TextColor = Styles.BaseForegroundColor.ToNSColor ();
 
 				UpdateImages ();
 			}
@@ -616,15 +712,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				// fix the icon alignment, move it slightly up
 				var alignFix = new CGRect (0, Window.BackingScaleFactor == 2 ? -0.5f : -1f, 16, 16);
-				Cells [RunConfigurationIdx].Image.AlignmentRect = alignFix;
-				Cells [ConfigurationIdx].Image.AlignmentRect = alignFix;
-				Cells [RuntimeIdx].Image.AlignmentRect = alignFix;
+				foreach (var cell in Cells)
+					cell.Image.AlignmentRect = alignFix;
 			}
 
 			void UpdatePathText (int idx, string text)
 			{
 				Cells [idx].Title = text;
-				UpdateImages ();
+				// On HighSierra we must update the whole path, otherwise the rendering will break
+				if (MacSystemInformation.OsVersion >= MacSystemInformation.HighSierra)
+					SetVisibleCells (VisibleCellIds);
+				else
+					UpdateImages ();
 			}
 
 			static NSImage FixImageServiceImage (Xwt.Drawing.Image image, double scale, string[] styles)
@@ -826,6 +925,70 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 			}
 
+
+			class CellWrapper
+			{
+				NSPathComponentCell cell;
+				string title;
+				NSImage image;
+				string identifier;
+				bool enabled;
+
+				public NSPathComponentCell Cell {
+					get { return cell; }
+					set {
+						cell = value;
+						if (cell != null) {
+							cell.Title = title;
+							cell.Image = image;
+							cell.Identifier = identifier;
+							cell.Enabled = enabled;
+						}
+					}
+				}
+
+				public string Title {
+					get { return title; }
+					set {
+						title = value;
+						if (cell != null)
+							cell.Title = title;
+					}
+				}
+
+				public NSImage Image {
+					get { return image; }
+					set {
+						image = value;
+						if (cell != null)
+							cell.Image = image;
+					}
+				}
+
+				public string Identifier {
+					get { return identifier; }
+					set {
+						identifier = value;
+						if (cell != null)
+							cell.Identifier = identifier;
+					}
+				}
+
+				public bool Enabled {
+					get { return enabled; }
+					set {
+						enabled = value;
+						if (cell != null)
+							cell.Enabled = enabled;
+					}
+				}
+
+				public void UpdatePathItem (NSPathControlItem pathItem)
+				{
+					pathItem.Title = title;
+					pathItem.Image = image;
+				}
+			}
 		}
 		#endregion
 	}
