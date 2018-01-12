@@ -338,9 +338,34 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			class NSPathComponentCellFocusable:NSPathComponentCell
 			{
+				CGRect frame = CGRect.Empty;
+
+				public NSPathComponentCellFocusable ()
+				{
+					AccessibilityRole = NSAccessibilityRoles.PopUpButtonRole;
+				}
+
+				public override CGRect AccessibilityFrame {
+					get {
+						if (ControlView?.Window == null)
+							return frame;
+						return ControlView.Window.ConvertRectToScreen (ControlView.ConvertRectToView (frame, null));
+					}
+					set {
+						base.AccessibilityFrame = value;
+					}
+				}
+
+				public override bool AccessibilityPerformPress ()
+				{
+					(ControlView as PathSelectorView)?.PopupMenuForCell (this);
+					return base.AccessibilityPerformPress ();
+				}
+
 				public bool HasFocus { set; get; }
 				public override void DrawWithFrame (CGRect cellFrame, NSView inView)
 				{
+					frame = cellFrame;
 					var isPathSelectorViewResponder = inView.Window.FirstResponder is PathSelectorView;
 					if (HasFocus && isPathSelectorViewResponder ) {
 						var focusRect = new CGRect (cellFrame.X , cellFrame.Y + 3, cellFrame.Width+2, cellFrame.Height - 6);
@@ -400,6 +425,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						Identifier = RuntimeIdentifier
 					}
 				};
+
+				AccessibilityRole = NSAccessibilityRoles.ListRole;
+				AccessibilityOrientation = NSAccessibilityOrientation.Horizontal;
+				AccessibilityElement = true;
+
 				SetVisibleCells (RunConfigurationIdx, ConfigurationIdx, RuntimeIdx);
 
 				UpdateStyle ();
@@ -427,6 +457,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (MacSystemInformation.OsVersion >= MacSystemInformation.HighSierra || cellData.Cell == null)
 						cellData.Cell = new NSPathComponentCellFocusable ();
 					visibleCells [n] = cellData.Cell;
+
+					switch (ids[n]) {
+					case RunConfigurationIdx:
+						cellData.Cell.AccessibilityTitle = GettextCatalog.GetString ("Startup project"); break;
+					case ConfigurationIdx:
+						cellData.Cell.AccessibilityTitle = GettextCatalog.GetString ("Run configuration"); break;
+					case RuntimeIdx:
+						cellData.Cell.AccessibilityTitle = GettextCatalog.GetString ("Runtime"); break;
+					}
 				}
 
 				// On HighSierra the NSPathControl doesn't render correctly without a valid URL and
@@ -447,6 +486,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				PathComponentCells = visibleCells;
 				UpdateStyle ();
+				AccessibilityChildren = visibleCells;
 			}
 
 			int IndexOfCellAtX (nfloat x)
