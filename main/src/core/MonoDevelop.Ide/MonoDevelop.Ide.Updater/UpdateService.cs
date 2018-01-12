@@ -78,10 +78,7 @@ namespace MonoDevelop.Ide.Updater
 
 		public static UpdateLevel UpdateLevel {
 			get {
-				return PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", UpdateLevel.Stable);
-			}
-			set {
-				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", value);
+				return UpdateService.UpdateChannel.ToUpdateLevel ();
 			}
 		}
 
@@ -89,7 +86,9 @@ namespace MonoDevelop.Ide.Updater
 			get {
 				// Returned Saved Update Level
 				// If empty, use whatever "UpdateLevel" was set to.
-				var updateChannelId = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateChannel", UpdateChannel.FromUpdateLevel (UpdateService.UpdateLevel).Id);
+				var updateChannelId = PropertyService.Get<string> ("MonoDevelop.Ide.AddinUpdater.UpdateChannel");
+				if (string.IsNullOrEmpty (updateChannelId))
+					return UpdateChannel.FromUpdateLevel (PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", UpdateLevel.Stable));
 				return new UpdateChannel (updateChannelId, updateChannelId, "", 0);
 			}
 			set {
