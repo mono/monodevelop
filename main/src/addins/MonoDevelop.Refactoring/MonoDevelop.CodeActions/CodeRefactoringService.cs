@@ -71,24 +71,6 @@ namespace MonoDevelop.CodeActions
 			return result;
 		}
 
-		public async static Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixesAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
-		{
-			var result = new List<CodeDiagnosticFixDescriptor> ();
-			foreach (var provider in providers) {
-				result.AddRange (await provider.GetCodeFixDescriptorsAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
-			}
-			return result;
-		}
-
-		public async static Task<IEnumerable<CodeRefactoringDescriptor>> GetCodeRefactoringsAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
-		{
-			var result = new List<CodeRefactoringDescriptor> ();
-			foreach (var provider in providers) {
-				result.AddRange (await provider.GetCodeRefactoringDescriptorsAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
-			}
-			return result;
-		}
-
 		public static string MimeTypeToLanguage (string mimeType)
 		{
 			switch (mimeType) {

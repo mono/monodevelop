@@ -177,7 +177,6 @@
     <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\BuiltInCodeDiagnosticProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\AnalyzersFromAssembly.cs" />
-    <Compile Include="MonoDevelop.CodeActions\ValidCodeAction.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticFixDescriptor.cs" />
     <Compile Include="MonoDevelop.Refactoring\Commands.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringSymbolInfo.cs" />
