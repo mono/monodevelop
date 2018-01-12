@@ -342,6 +342,12 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						break;
 					}
 					break;
+				case "module":
+					var moduleEvent = (ModuleEvent)obj.Body;
+					if (moduleEvent.Reason == ModuleEvent.ReasonValue.New) {
+						OnAssemblyLoaded (moduleEvent.Module.Path);
+					}
+					break;
 				}
 			});
 		}
