@@ -86,110 +86,95 @@ namespace MonoDevelop.CodeActions
 
 			int mnemonic = 1;
 
-			foreach (var fix in fixes.CodeFixActions.OrderByDescending (i => GetUsage (i.CodeAction.EquivalenceKey))) {
-				AddFixMenuItem (editor, menu, ref mnemonic, fix.CodeAction);
+			var suppressLabel = GettextCatalog.GetString ("_Suppress");
+			var suppressMenu = new CodeFixMenu (suppressLabel);
+
+			var fixAllLabel = GettextCatalog.GetString ("_Fix all");
+			var fixAllMenu = new CodeFixMenu (fixAllLabel);
+
+			var configureLabel = GettextCatalog.GetString ("_Options");
+			var configureMenu = new CodeFixMenu (configureLabel);
+
+			foreach (var cfa in fixes.CodeFixActions) {
+				// .SelectMany (x => x.Fixes).OrderByDescending (i => GetUsage (i.Action.EquivalenceKey))
+				var state = cfa.FixAllState;
+				var scopes = cfa.SupportedScopes;
+
+				foreach (var fix in cfa.Fixes) {
+					bool isSuppress = fix.Action is TopLevelSuppressionCodeAction;
+
+					if (isSuppress) {
+						AddFixMenuItem (editor, suppressMenu, ref mnemonic, fix.Action);
+						continue;
+					}
+
+					AddFixMenuItem (editor, menu, ref mnemonic, fix.Action);
+
+					var diag = fix.PrimaryDiagnostic;
+					var configurable = !DescriptorHasTag (diag.Descriptor, WellKnownDiagnosticTags.NotConfigurable);
+
+					var descriptor = BuiltInCodeDiagnosticProvider.GetCodeDiagnosticDescriptor (diag.Id);
+
+					if (descriptor != null && configurable) {
+						var optionsMenuItem = new CodeFixMenuEntry (GettextCatalog.GetString ("_Configure Rule \u2018{0}\u2019", diag.Descriptor.Title),
+							delegate {
+								IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
+									var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
+									if (panel == null)
+										return;
+									panel.Widget.SelectCodeIssue (fix.PrimaryDiagnostic.Descriptor.Id);
+								});
+							});
+						configureMenu.Add (optionsMenuItem);
+					}
+
+					if (!scopes.Contains (FixAllScope.Document))
+						continue;
+					
+					// FIXME: No global undo yet to support fixall in project/solution
+					var fixState = state.WithScopeAndEquivalenceKey (FixAllScope.Document, fix.Action.EquivalenceKey);
+
+					var provider = state.FixAllProvider;
+					if (provider == null)
+						continue;
+
+					// FIXME: Use a real progress tracker.
+					var fixAll = await provider.GetFixAsync (fixState.CreateFixAllContext (new Microsoft.CodeAnalysis.Shared.Utilities.ProgressTracker (), cancellationToken));
+					AddFixMenuItem (editor, fixAllMenu, ref mnemonic, fixAll);
+				}
 			}
 
 			bool first = true;
-			foreach (var fix in fixes.CodeRefactoringActions) {
+			foreach (var refactoring in fixes.CodeRefactoringActions) {
 				if (first) {
 					if (menu.Items.Count > 0)
 						menu.Add (CodeFixMenuEntry.Separator);
 					first = false;
 				}
 
-				AddFixMenuItem (editor, menu, ref mnemonic, fix.CodeAction);
-			}
-
-			var warningsAtCaret = (await editor.DocumentContext.AnalysisDocument.GetSemanticModelAsync (cancellationToken))
-				.GetDiagnostics (new TextSpan (editor.CaretOffset, 0))
-				.Where (diag => diag.Severity == DiagnosticSeverity.Warning).ToList ();
-
-			var caretSpan = new TextSpan (editor.CaretOffset, 0);
-
-			first = true;
-			foreach (var warning in warningsAtCaret) {
-				if (string.IsNullOrWhiteSpace (warning.Descriptor.Title.ToString ()))
-					continue;
-				var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", warning.Descriptor.Title);
-				var subMenu = new CodeFixMenu (label);
-
-				await AddSuppressionMenuItems (subMenu, editor, warning, caretSpan);
-
-				if (subMenu.Items.Count > 0) {
-
-					if (first) {
-						menu.Add (CodeFixMenuEntry.Separator);
-						first = false;
-					}
-
-					menu.Add (subMenu);
-				}
+				foreach (var action in refactoring.Actions)
+					AddFixMenuItem (editor, menu, ref mnemonic, action);
 			}
 
 			first = true;
-			foreach (var diag in fixes.DiagnosticsAtCaret) {
-				if (string.IsNullOrWhiteSpace (diag.Descriptor.Title.ToString ()))
-					continue;
 
-				var notConfigurable = DescriptorHasTag (diag.Descriptor, WellKnownDiagnosticTags.NotConfigurable);
-
-				var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", diag.Descriptor.Title);
-				var subMenu = new CodeFixMenu (label);
-
-				if (first) {
+			if (fixAllMenu.Items.Count != 0) {
+				if (first)
 					menu.Add (CodeFixMenuEntry.Separator);
-					first = false;
-				}
-
-				await AddSuppressionMenuItems (subMenu, editor, diag, caretSpan);
-
-				var descriptor = BuiltInCodeDiagnosticProvider.GetCodeDiagnosticDescriptor (diag.Id);
-
-				if (descriptor != null && IsConfigurable (diag.Descriptor)) {
-					var optionsMenuItem = new CodeFixMenuEntry (GettextCatalog.GetString ("_Configure Rule"),
-						delegate {
-							IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
-								var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
-								if (panel == null)
-									return;
-								panel.Widget.SelectCodeIssue (diag.Descriptor.Id);
-							});
-						});
-					subMenu.Add (optionsMenuItem);
-				}
-
-				foreach (var fix in fixes.CodeFixActions.OrderByDescending (i => GetUsage (i.CodeAction.EquivalenceKey))) {
-					if (cancellationToken.IsCancellationRequested)
-						return null;
-					var provider = fix.Diagnostic.GetCodeFixProvider ().GetFixAllProvider ();
-					if (provider == null)
-						continue;
-					
-					if (!provider.GetSupportedFixAllScopes ().Contains (FixAllScope.Document))
-						continue;
-					
-					var language = editor.DocumentContext.AnalysisDocument.Project.Language;
-					var diagnosticdDescriptor = fix.Diagnostic?.GetCodeDiagnosticDescriptor (language);
-					if (diagnosticdDescriptor == null)
-						continue;
-
-					var subMenu2 = new CodeFixMenu (GettextCatalog.GetString ("Fix all"));
-
-					var diagnosticAnalyzer = diagnosticdDescriptor.GetProvider ();
-					if (!diagnosticAnalyzer.SupportedDiagnostics.Contains (diag.Descriptor))
-						continue;
-
-					var menuItem = new CodeFixMenuEntry (
-						GettextCatalog.GetString ("In _Document"),
-						async delegate { await FixAll (editor, fix, provider, diagnosticAnalyzer); }
-					);
-					subMenu2.Add (menuItem);
-					subMenu.Add (CodeFixMenuEntry.Separator);
-					subMenu.Add (subMenu2);
-				}
-
-				menu.Add (subMenu);
+				menu.Add (fixAllMenu);
+				first = false;
+			}
+			if (suppressMenu.Items.Count != 0) {
+				if (first)
+					menu.Add (CodeFixMenuEntry.Separator);
+				menu.Add (suppressMenu);
+				first = false;
+			}
+			if (configureMenu.Items.Count != 0) {
+				if (first)
+					menu.Add (CodeFixMenuEntry.Separator);
+				menu.Add (configureMenu);
+				first = false;
 			}
 			return menu;
 		}
@@ -200,12 +185,17 @@ namespace MonoDevelop.CodeActions
 
 			var analyzers = new [] { diagnosticAnalyzer }.ToImmutableArray ();
 
-			var dict = ImmutableDictionary<Document, ImmutableArray<Diagnostic>>.Empty;
-			var doc = editor.DocumentContext.AnalysisDocument;
-			var diagnostics = await GetDiagnosticsForDocument (analyzers, doc, diagnosticIds, CancellationToken.None);
-
-			dict = dict.Add (doc, diagnostics);
-			var fixAllDiagnosticProvider = new FixAllState.FixMultipleDiagnosticProvider (dict);
+			var codeFixService = CompositionManager.GetExportedValue<ICodeFixService> () as CodeFixService;
+			var fixAllDiagnosticProvider = codeFixService.CreateFixAllState (
+				provider,
+				editor.DocumentContext.AnalysisDocument,
+				FixAllProviderInfo.Create (null),
+				null,
+				null,
+				async (doc, diagnostics, token) => await GetDiagnosticsForDocument (analyzers, doc, diagnostics, token).ConfigureAwait (false),
+				(Project arg1, bool arg2, ImmutableHashSet<string> arg3, CancellationToken arg4) => {
+					return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic[] { });
+				}).DiagnosticProvider;
 
 			var ctx = new FixAllContext (
 				editor.DocumentContext.AnalysisDocument,
@@ -248,39 +238,9 @@ namespace MonoDevelop.CodeActions
 			return diagnosticList.ToImmutableArray ();
 		}
 
-		static async Task AddSuppressionMenuItems (CodeFixMenu menu, TextEditor editor, Diagnostic diag, TextSpan span)
-		{
-			var workspace = editor.DocumentContext.AnalysisDocument.Project.Solution.Workspace;
-			var language = editor.DocumentContext.AnalysisDocument.Project.Language;
-			var mefExporter = (IMefHostExportProvider)workspace.Services.HostServices;
-
-			//TODO: cache this
-			var suppressionProviders = mefExporter.GetExports<ISuppressionFixProvider, CodeChangeProviderMetadata> ()
-				.ToPerLanguageMapWithMultipleLanguages();
-
-			foreach (var suppressionProvider in suppressionProviders[LanguageNames.CSharp].Select (lz => lz.Value)) {
-				if (!suppressionProvider.CanBeSuppressedOrUnsuppressed (diag)) {
-					continue;
-				}
-				try {
-					var fixes = await suppressionProvider.GetSuppressionsAsync (editor.DocumentContext.AnalysisDocument, span, new [] { diag }, default (CancellationToken)).ConfigureAwait (false);
-					foreach (var fix in fixes) {
-						AddFixMenuItem (editor, menu, fix.Action);
-					}
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while adding fixes", e);
-				}
-			}
-		}
-
 		static bool DescriptorHasTag (DiagnosticDescriptor desc, string tag)
 		{
 			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
-		}
-
-		static bool IsConfigurable (DiagnosticDescriptor desc)
-		{
-			return !DescriptorHasTag (desc, WellKnownDiagnosticTags.NotConfigurable);
 		}
 
 		static CodeFixMenuEntry CreateFixMenuEntry (TextEditor editor, CodeAction fix)
