@@ -688,6 +688,7 @@ namespace MonoDevelop.Debugger
 			SetDebugLayout ();
 
 			try {
+				sessionManager.PrepareForRun ();
 				session.Run (startInfo, GetUserOptions ());
 			} catch {
 				sessionManager.SessionError = true;
@@ -712,6 +713,8 @@ namespace MonoDevelop.Debugger
 		{
 			OperationConsole console;
 			IDisposable cancelRegistration;
+			System.Diagnostics.Stopwatch firstAssemblyLoadTimer;
+
 			public readonly DebuggerSession Session;
 			public readonly DebugAsyncOperation debugOperation;
 			public readonly DebuggerEngine Engine;
@@ -721,6 +724,7 @@ namespace MonoDevelop.Debugger
 				Engine = engine;
 				Session = session;
 				session.ExceptionHandler = ExceptionHandler;
+				session.AssemblyLoaded += OnAssemblyLoaded;
 				this.console = console;
 				cancelRegistration = console.CancellationToken.Register (Cancel);
 				debugOperation = new DebugAsyncOperation (session);
@@ -765,6 +769,7 @@ namespace MonoDevelop.Debugger
 
 				console?.Dispose ();
 				console = null;
+				Session.AssemblyLoaded -= OnAssemblyLoaded;
 				Session.Dispose ();
 				debugOperation.Cleanup ();
 				cancelRegistration?.Dispose ();
@@ -782,6 +787,15 @@ namespace MonoDevelop.Debugger
 				var metadata = new Dictionary<string, string> ();
 				metadata ["Success"] = (!SessionError).ToString ();
 
+				if (firstAssemblyLoadTimer != null) {
+					if (firstAssemblyLoadTimer.IsRunning) {
+						// No first assembly load event.
+						firstAssemblyLoadTimer.Stop ();
+					} else {
+						metadata ["AssemblyFirstLoadDuration"] = firstAssemblyLoadTimer.ElapsedMilliseconds.ToString ();
+					}
+				}
+
 				Counters.DebugSession.Inc (metadata);
 			}
 
@@ -789,6 +803,21 @@ namespace MonoDevelop.Debugger
 			{
 				SessionError = true;
 				return DebuggingService.ExceptionHandler (ex);
+			}
+
+			/// <summary>
+			/// Called just before DebugSession.Run is called.
+			/// </summary>
+			public void PrepareForRun ()
+			{
+				firstAssemblyLoadTimer = new System.Diagnostics.Stopwatch ();
+				firstAssemblyLoadTimer.Start ();
+			}
+
+			void OnAssemblyLoaded (object sender, AssemblyEventArgs e)
+			{
+				DebuggerSession.AssemblyLoaded -= OnAssemblyLoaded;
+				firstAssemblyLoadTimer?.Stop ();
 			}
 		}
 
