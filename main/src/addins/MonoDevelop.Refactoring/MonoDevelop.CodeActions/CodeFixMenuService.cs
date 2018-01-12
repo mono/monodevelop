@@ -151,7 +151,8 @@ namespace MonoDevelop.CodeActions
 
 			bool first = true;
 			foreach (var refactoring in fixes.CodeRefactoringActions) {
-				if (!options.GetRefactoringDescriptor (refactoring.GetType ()).IsEnabled)
+				var descriptor = options.GetRefactoringDescriptor (refactoring.GetType ());
+				if (descriptor != null && !descriptor.IsEnabled)
 					continue;
 
 				if (first) {
