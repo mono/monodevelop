@@ -310,10 +310,6 @@ namespace MonoDevelop.Ide.Templates
 				var model = project.GetStringTagModel (new DefaultConfigurationSelector ());
 				newfile.SetProjectTagModel (model);
 				try {
-					if (newfile.AddToProject (policyParent, project, language, directory, name)) {
-						newfile.Show ();
-						return true;
-					}
 					if (await newfile.AddToProjectAsync (policyParent, project, language, directory, name)) {
 						newfile.Show ();
 						return true;

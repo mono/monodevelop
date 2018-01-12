@@ -190,7 +190,7 @@ namespace MonoDevelop.Packaging
 			return doc.DocumentElement;
 		}
 
-		void AddAssemblyInfoFile (Project project)
+		async void AddAssemblyInfoFile (Project project)
 		{
 			var doc = new XmlDocument ();
 			doc.LoadXml ("<FileTemplateReference TemplateID='CSharpAssemblyInfo' name='AssemblyInfo.cs' />");
@@ -202,8 +202,7 @@ namespace MonoDevelop.Packaging
 			parameters["AssemblyInfoVersion"] = "1.0.0.0";
 
 			fileTemplate.SetProjectTagModel(parameters);
-			fileTemplate.AddToProject (project.ParentFolder, project, "C#", project.BaseDirectory, "");
-			fileTemplate.AddToProjectAsync (project.ParentFolder, project, "C#", project.BaseDirectory, "");
+			await fileTemplate.AddToProjectAsync (project.ParentFolder, project, "C#", project.BaseDirectory, "");
 			fileTemplate.SetProjectTagModel(null);
 		}
 

@@ -90,7 +90,6 @@ namespace MonoDevelop.GtkCore
 			GuiBuilderProject gproject = info.GuiBuilderProject;
 			
 			string fileName = fileTemplate.GetFileName (policyParent, project, language, directory, name);
-			fileTemplate.AddToProject (policyParent, project, language, directory, name);
 			await fileTemplate.AddToProjectAsync (policyParent, project, language, directory, name);
 
 			FileService.NotifyFileChanged (fileName);

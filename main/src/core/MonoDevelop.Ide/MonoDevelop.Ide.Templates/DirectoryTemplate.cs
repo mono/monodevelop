@@ -99,7 +99,6 @@ namespace MonoDevelop.Ide.Templates
 			
 			foreach (FileDescriptionTemplate t in templates) {
 				if (t.EvaluateCreateCondition ()) {
-					addedSomething |= t.AddToProject (policyParent, project, language, directory, name);
 					addedSomething |= await t.AddToProjectAsync (policyParent, project, language, directory, name);
 				}
 			}

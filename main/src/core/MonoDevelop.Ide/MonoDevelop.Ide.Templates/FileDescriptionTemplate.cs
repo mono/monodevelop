@@ -81,7 +81,10 @@ namespace MonoDevelop.Ide.Templates
 			return false;
 		}
 
-		public abstract Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string name);
+		public virtual Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
+		{
+			return Task.FromResult(AddToProject (policyParent, project, language, directory, name));
+		}
 		public abstract void Show ();
 
 		internal string CreateCondition { get; private set; }

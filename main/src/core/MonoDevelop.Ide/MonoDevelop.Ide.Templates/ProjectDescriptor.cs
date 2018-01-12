@@ -192,8 +192,7 @@ namespace MonoDevelop.Ide.Templates
 					if (!projectCreateInformation.ShouldCreate (fileTemplate.CreateCondition))
 						continue;
 					fileTemplate.SetProjectTagModel (projectCreateInformation.Parameters);
-					fileTemplate.AddToProject (policyParent, project, defaultLanguage, project.BaseDirectory, null);
-					fileTemplate.AddToProjectAsync (policyParent, project, defaultLanguage, project.BaseDirectory, null);
+					await fileTemplate.AddToProjectAsync (policyParent, project, defaultLanguage, project.BaseDirectory, null);
 				} catch (Exception ex) {
 					if (!IdeApp.IsInitialized)
 						throw;
