@@ -786,6 +786,7 @@ namespace MonoDevelop.Debugger
 			{
 				var metadata = new Dictionary<string, string> ();
 				metadata ["Success"] = (!SessionError).ToString ();
+				metadata ["DebuggerType"] = Engine.Id;
 
 				if (firstAssemblyLoadTimer != null) {
 					if (firstAssemblyLoadTimer.IsRunning) {
