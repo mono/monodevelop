@@ -48,6 +48,7 @@ using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Refactoring;
 using RefactoringEssentials;
+using MonoDevelop.AnalysisCore;
 
 namespace MonoDevelop.CodeActions
 {
@@ -76,6 +77,8 @@ namespace MonoDevelop.CodeActions
 			usages.Set (id, CodeActionUsages [id]);
 		}
 
+		static MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable options =
+			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).Options;
 		public static async Task<CodeFixMenu> CreateFixMenu (TextEditor editor, CodeActionContainer fixes, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var menu = new CodeFixMenu ();
@@ -102,8 +105,9 @@ namespace MonoDevelop.CodeActions
 				foreach (var fix in cfa.Fixes) {
 					var diag = fix.PrimaryDiagnostic;
 
-					var descriptor = await BuiltInCodeDiagnosticProvider.GetCodeDiagnosticDescriptorAsync (diag.Id);
-					if (!descriptor.IsEnabled)
+					var descriptor = options.GetDiagnosticDescriptor (diag.Id);
+					var enabled = descriptor.GetIsEnabled (diag.Descriptor);
+					if (!enabled)
 						continue;
 					
 					bool isSuppress = fix.Action is TopLevelSuppressionCodeAction;
@@ -147,6 +151,9 @@ namespace MonoDevelop.CodeActions
 
 			bool first = true;
 			foreach (var refactoring in fixes.CodeRefactoringActions) {
+				if (!options.GetRefactoringDescriptor (refactoring.GetType ()).IsEnabled)
+					continue;
+
 				if (first) {
 					if (menu.Items.Count > 0)
 						menu.Add (CodeFixMenuEntry.Separator);

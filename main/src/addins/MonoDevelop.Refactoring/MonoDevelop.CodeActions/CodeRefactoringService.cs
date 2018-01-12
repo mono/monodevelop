@@ -43,34 +43,6 @@ namespace MonoDevelop.CodeActions
 {
 	static class CodeRefactoringService
 	{
-		readonly static List<CodeDiagnosticProvider> providers = new List<CodeDiagnosticProvider> ();
-
-		static CodeRefactoringService ()
-		{
-			providers.Add (new BuiltInCodeDiagnosticProvider ());
-
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeDiagnosticProvider", delegate (object sender, ExtensionNodeEventArgs args) {
-				var node = (TypeExtensionNode)args.ExtensionNode;
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					providers.Add ((CodeDiagnosticProvider)node.CreateInstance ());
-					break;
-				}
-			});
-		}
-
-		public async static Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeDiagnosticsAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
-		{
-			var result = new List<CodeDiagnosticDescriptor> ();
-
-			foreach (var provider in providers) {
-				if (cancellationToken.IsCancellationRequested)
-					return Enumerable.Empty<CodeDiagnosticDescriptor> ();
-				result.AddRange (await provider.GetCodeDiagnosticDescriptorsAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
-			}
-			return result;
-		}
-
 		public static string MimeTypeToLanguage (string mimeType)
 		{
 			switch (mimeType) {
