@@ -88,8 +88,9 @@ namespace MonoDevelop.Ide.Updater
 		public static UpdateChannel UpdateChannel {
 			get {
 				// Returned Saved Update Level
-				var prop = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateChannel", UpdateChannel.Stable.Id);
-				return new UpdateChannel (prop, prop, "", 0);
+				// If empty, use whatever "UpdateLevel" was set to.
+				var updateChannelId = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateChannel", UpdateChannel.FromUpdateLevel (UpdateService.UpdateLevel).Id);
+				return new UpdateChannel (updateChannelId, updateChannelId, "", 0);
 			}
 			set {
 				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateChannel", value.Id);
