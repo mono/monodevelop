@@ -3521,12 +3521,15 @@ namespace MonoDevelop.SourceEditor
 			return new LineSeparatorMarker ();
 		}
 
-		IGenericTextSegmentMarker ITextMarkerFactory.CreateGenericTextSegmentMarker (MonoDevelop.Ide.Editor.TextEditor editor, TextSegmentMarkerEffect effect, int offset, int length)
+		IGenericTextSegmentMarker ITextMarkerFactory.CreateGenericTextSegmentMarker (MonoDevelop.Ide.Editor.TextEditor editor, TextSegmentMarkerEffect effect, HslColor? color, int offset, int length)
 		{
 			switch (effect) {
 			case TextSegmentMarkerEffect.DottedLine:
-			case TextSegmentMarkerEffect.WavedLine:
-				return new GenericUnderlineMarker (new TextSegment (offset, length), effect);
+			case TextSegmentMarkerEffect.WavedLine: 
+				var result = new GenericUnderlineMarker (new TextSegment (offset, length), effect);
+				if (color.HasValue)
+					result.Color = color.Value;
+				return result;
 			case TextSegmentMarkerEffect.GrayOut:
 				return new GrayOutMarker (new TextSegment (offset, length));
 			default:
