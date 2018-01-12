@@ -308,7 +308,11 @@ namespace MonoDevelop.Core
 		public static TaskScheduler MainTaskScheduler {
 			get {
 				if (taskScheduler == null)
-					RunInMainThread (() => taskScheduler = TaskScheduler.FromCurrentSynchronizationContext ()).Wait ();
+					RunInMainThread (() => {
+						if (taskScheduler == null)
+							taskScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+					}).Wait ();
+
 				return taskScheduler;
 			}
 		}
@@ -327,14 +331,15 @@ namespace MonoDevelop.Core
 					ts.SetException (ex);
 				}
 			} else {
-				MainSynchronizationContext.Post (delegate {
+				MainSynchronizationContext.Post (state => {
+					var (act, tcs) = (ValueTuple<Action, TaskCompletionSource<int>>)state;
 					try {
-						action ();
-						ts.SetResult (0);
+						act ();
+						tcs.SetResult (0);
 					} catch (Exception ex) {
-						ts.SetException (ex);
+						tcs.SetException (ex);
 					}
-				}, null);
+				}, (action, ts));
 			}
 			return ts.Task;
 		}
@@ -352,13 +357,14 @@ namespace MonoDevelop.Core
 					ts.SetException (ex);
 				}
 			} else {
-				MainSynchronizationContext.Post (delegate {
+				MainSynchronizationContext.Post (state => {
+					var (fun, tcs) = (ValueTuple<Func<T>, TaskCompletionSource<T>>)state;
 					try {
-						ts.SetResult (func ());
+						tcs.SetResult (fun ());
 					} catch (Exception ex) {
-						ts.SetException (ex);
+						tcs.SetException (ex);
 					}
-				}, null);
+				}, (func, ts));
 			}
 			return ts.Task;
 		}
@@ -375,12 +381,13 @@ namespace MonoDevelop.Core
 			} else {
 				var ts = new TaskCompletionSource<T> ();
 				MainSynchronizationContext.Post (async state => {
+					var (fun, tcs) = (ValueTuple<Func<Task<T>>, TaskCompletionSource<T>>)state;
 					try {
-						ts.SetResult (await func ());
+						tcs.SetResult (await fun ());
 					} catch (Exception ex) {
-						ts.SetException (ex);
+						tcs.SetException (ex);
 					}
-				}, null);
+				}, (func, ts));
 				return ts.Task;
 			}
 		}
@@ -397,13 +404,14 @@ namespace MonoDevelop.Core
 			} else {
 				var ts = new TaskCompletionSource<int> ();
 				MainSynchronizationContext.Post (async state => {
+					var (fun, tcs) = (ValueTuple<Func<Task>, TaskCompletionSource<int>>)state;
 					try {
-						await func ();
-						ts.SetResult (0);
+						await fun ();
+						tcs.SetResult (0);
 					} catch (Exception ex) {
-						ts.SetException (ex);
+						tcs.SetException (ex);
 					}
-				}, null);
+				}, (func, ts));
 				return ts.Task;
 			}
 		}
@@ -485,6 +493,7 @@ namespace MonoDevelop.Core
 			var path = systemAssemblyService.CurrentRuntime.GetMSBuildBinPath ("15.0");
 			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.dll"));
 			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Framework.dll"));
+			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Tasks.Core.dll"));
 			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Utilities.Core.dll"));
 
 			if (Type.GetType ("Mono.Runtime") == null) {
@@ -548,6 +557,7 @@ namespace MonoDevelop.Core
 		public readonly ConfigurationProperty<string> UserInterfaceLanguage = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceLanguage", "");
 		public readonly ConfigurationProperty<MonoDevelop.Projects.MSBuild.MSBuildVerbosity> MSBuildVerbosity = ConfigurationProperty.Create ("MonoDevelop.Ide.MSBuildVerbosity", MonoDevelop.Projects.MSBuild.MSBuildVerbosity.Normal);
 		public readonly ConfigurationProperty<bool> BuildWithMSBuild = ConfigurationProperty.Create ("MonoDevelop.Ide.BuildWithMSBuild", true);
+		public readonly ConfigurationProperty<bool> SkipBuildingUnmodifiedProjects = ConfigurationProperty.Create ("MonoDevelop.Ide.SkipBuildingUnmodifiedProjects", false);
 		public readonly ConfigurationProperty<bool> ParallelBuild = ConfigurationProperty.Create ("MonoDevelop.ParallelBuild", true);
 
 		public readonly ConfigurationProperty<string> AuthorName = ConfigurationProperty.Create ("Author.Name", Environment.UserName, oldName:"ChangeLogAddIn.Name");
@@ -555,5 +565,11 @@ namespace MonoDevelop.Core
 		public readonly ConfigurationProperty<string> AuthorCopyright = ConfigurationProperty.Create ("Author.Copyright", (string) null);
 		public readonly ConfigurationProperty<string> AuthorCompany = ConfigurationProperty.Create ("Author.Company", "");
 		public readonly ConfigurationProperty<string> AuthorTrademark = ConfigurationProperty.Create ("Author.Trademark", "");
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the updater should be enabled for the current session.
+		/// This value won't be stored in the user preferences.
+		/// </summary>
+		public bool EnableUpdaterForCurrentSession { get; set; } = true;
 	}
 }

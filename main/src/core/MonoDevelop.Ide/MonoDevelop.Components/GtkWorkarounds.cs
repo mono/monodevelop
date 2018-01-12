@@ -1111,6 +1111,12 @@ namespace MonoDevelop.Components
 
 		public static void SetOverlayScrollbarPolicy (Gtk.ScrolledWindow sw, Gtk.PolicyType hpolicy, Gtk.PolicyType vpolicy)
 		{
+			// we know the .dll isn't there on Windows, so don't even try (avoids a first-chance DllNotFoundException)
+			if (Platform.IsWindows) {
+				canSetOverlayScrollbarPolicy = false;
+				return;
+			}
+
 			if (!canSetOverlayScrollbarPolicy) {
 				return;
 			}
@@ -1349,8 +1355,10 @@ namespace MonoDevelop.Components
 
 					TextTag tag;
 					if (attrIter.GetTagForAttributes (null, out tag)) {
-						buffer.TagTable.Add (tag);
-						buffer.InsertWithTags (ref iter, text.Substring (start, end - start), tag);
+						using (tag) {
+							buffer.TagTable.Add (tag);
+							buffer.InsertWithTags (ref iter, text.Substring (start, end - start), tag);
+						}
 					} else
 						buffer.Insert (ref iter, text.Substring (start, end - start));
 

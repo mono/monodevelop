@@ -74,8 +74,8 @@ namespace MonoDevelop.Components.MainToolbar
 			List<TargetPartition> partitions = new List<TargetPartition> ();
 			if (project != null) {
 				foreach (var conf in project.Configurations) {
-					var targets = project.GetExecutionTargets (conf.Selector, runConfig);
-					if (!targets.Any ()) {
+					var targets = project.GetExecutionTargets (conf.Selector, runConfig).ToArray ();
+					if (targets.Length == 0) {
 						targets = new ExecutionTarget[] { dummyExecutionTarget };
 					}
 					var parts = partitions.Where (p => targets.Any (p.Targets.Contains)).ToArray();

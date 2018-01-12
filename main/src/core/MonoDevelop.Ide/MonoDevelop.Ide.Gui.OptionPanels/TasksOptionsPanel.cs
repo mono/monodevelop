@@ -253,10 +253,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			return color;
 		}
 
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			Styles.Changed -= HandleUserInterfaceThemeChanged;
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
 	}
 	

@@ -517,14 +517,7 @@ namespace MonoDevelop.VersionControl.Views
 			protected void OnShowBlameBefore ()
 			{
 				var current = menuAnnotation?.Revision;
-				Revision rev;
-
-				if (current == null) {
-					rev = widget.info.History.FirstOrDefault ();
-				} else {
-					rev = current?.GetPrevious ();
-				}
-
+				Revision rev = current?.GetPrevious () ?? widget.info.History.FirstOrDefault ();
 				if (rev == null)
 					return;
 				

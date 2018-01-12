@@ -57,7 +57,7 @@ namespace MonoDevelop.CSharp
 			var analysisDocument = context.AnalysisDocument;
 			if (analysisDocument == null)
 				return null;
-			var partialDoc = await analysisDocument.WithFrozenPartialSemanticsAsync (cancellationToken).ConfigureAwait (false);
+			var partialDoc = analysisDocument.WithFrozenPartialSemantics (cancellationToken);
 			var root = await partialDoc.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 			if (offset < 0 || root.Span.End <= offset)
 				return null;

@@ -709,5 +709,33 @@ class MyContext
 }", content.Text);
 			}, policy);
 		}
+
+
+		/// <summary>
+		/// Bug 514890 - [Feedback] #region indentation changes when #if added to C# source file (VS 7.2 build 636).
+		/// </summary>
+		[Test]
+		public async Task TestBug514890 ()
+		{
+			var text = @"using System;
+namespace TestConsole
+{
+#if
+    public class Test
+    {
+        #region foo
+        public Test()
+        {
+        }
+        #endregion
+    }
+}
+";
+			await Simulate (text, (content, ext) => { 
+				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext, 39, 41);
+				Assert.AreEqual (text, content.Text);
+			});
+
+		} 
 	}
 }

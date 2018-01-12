@@ -24,11 +24,11 @@ type FSharpDebuggerExpressionResolver() =
                             | SymbolUse.ActivePatternCase apc ->
                                 Some (apc.DeclarationLocation, apc.DisplayName)
                             | SymbolUse.Entity _ent -> None
-                            | SymbolUse.Field field ->
-                                Some (field.DeclarationLocation, field.DisplayName)
+                            | SymbolUse.Field _field ->
+                                let loc = symbolUse.RangeAlternate
+                                Some (loc, lineTxt.[loc.StartColumn..loc.EndColumn-1])
                             | SymbolUse.GenericParameter gp ->
                                 Some (gp.DeclarationLocation, gp.DisplayName)
-                            //| CorePatterns.MemberFunctionOrValue
                             | SymbolUse.Parameter p ->
                                 Some (p.DeclarationLocation, p.DisplayName)
                             | SymbolUse.StaticParameter sp ->

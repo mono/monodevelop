@@ -339,6 +339,17 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		internal static void NotifyDirectoryRenamed (string oldPath, string newPath)
+		{
+			try {
+				OnFileRenamed (new FileCopyEventArgs (oldPath, newPath, true));
+				OnFileCreated (new FileEventArgs (newPath, true));
+				OnFileRemoved (new FileEventArgs (oldPath, true));
+			} catch (Exception ex) {
+				LoggingService.LogError ("Directory rename notification failed", ex);
+			}
+		}
+
 		internal static FileSystemExtension GetFileSystemForPath (string path, bool isDirectory)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (path));
@@ -876,6 +887,7 @@ namespace MonoDevelop.Core
 		}
 
 		List<EventData> events = new List<EventData> ();
+		readonly object lockObject = new object ();
 
 		int frozen;
 		object defaultSourceObject;
@@ -891,7 +903,7 @@ namespace MonoDevelop.Core
 
 		public void Freeze ()
 		{
-			lock (events) {
+			lock (lockObject) {
 				frozen++;
 			}
 		}
@@ -927,7 +939,7 @@ namespace MonoDevelop.Core
 
 		public void RaiseEvent<TArgs> (EventHandler<TArgs> del, object thisObj, TArgs args) where TArgs:EventArgs
 		{
-			lock (events) {
+			lock (lockObject) {
 				if (frozen > 0) {
 					var ed = new EventData<TArgs> ();
 					ed.Delegate = del;

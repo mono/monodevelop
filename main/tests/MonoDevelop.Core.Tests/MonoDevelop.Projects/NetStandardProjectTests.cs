@@ -41,13 +41,24 @@ namespace MonoDevelop.Projects
 	[TestFixture]
 	public class NetStandardProjectTests: TestBase
 	{
+		Solution sol;
+
+		[TearDown]
+		public override void TearDown ()
+		{
+			sol?.Dispose ();
+			sol = null;
+
+			base.TearDown ();
+		}
+
 		[Test]
 		public async Task NetStandardProjectReferenceIncludesFacades ()
 		{
 			// Test for https://bugzilla.xamarin.com/show_bug.cgi?id=55734
 
 			string solFile = Util.GetSampleProject ("netstandard-project", "NetStandardTest.sln");
-			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var p = (DotNetProject)sol.Items [0];
 			var asms = await p.GetReferencedAssemblies (p.Configurations [0].Selector);

@@ -58,13 +58,9 @@ namespace MonoDevelop.CodeIssues
 			Refactorings = new List<CodeRefactoringDescriptor> ();
 		}
 
-		internal static AnalyzersFromAssembly CreateFrom (System.Reflection.Assembly asm, bool force = false)
-		{
-			var result = new AnalyzersFromAssembly ();
-			result.AddAssembly (asm, force);
-			return result;
-		}
+		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
 
+		const bool ClrHeapEnabled = false;
 		internal void AddAssembly (System.Reflection.Assembly asm, bool force = false)
 		{
 			//FIXME; this is a really hacky arbitrary heuristic
@@ -78,6 +74,10 @@ namespace MonoDevelop.CodeIssues
 				case "Microsoft.CodeAnalysis.Features":
 				case "Microsoft.CodeAnalysis.VisualBasic.Features":
 				case "Microsoft.CodeAnalysis.CSharp.Features":
+					break;
+				case "ClrHeapAllocationAnalyzer":
+					if (!ClrHeapEnabled)
+						return;
 					break;
 				//blacklist
 				case "FSharpBinding":
@@ -93,10 +93,10 @@ namespace MonoDevelop.CodeIssues
 
 			try {
 				foreach (var type in asm.GetTypes ()) {
-					var notPortedYetAttribute = (NotPortedYetAttribute)type.GetCustomAttributes (typeof(NotPortedYetAttribute), false).FirstOrDefault ();
-					if (notPortedYetAttribute!= null) {
+
+					//HACK: Workaround for missing UI
+					if (type == typeof (Microsoft.CodeAnalysis.GenerateOverrides.GenerateOverridesCodeRefactoringProvider))
 						continue;
-					}
 
 					var analyzerAttr = (DiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof (DiagnosticAnalyzerAttribute), false).FirstOrDefault ();
 					if (analyzerAttr != null) {
@@ -105,12 +105,6 @@ namespace MonoDevelop.CodeIssues
 
 							if (analyzer.SupportedDiagnostics.Any (IsDiagnosticSupported)) {
 								Analyzers.Add (new CodeDiagnosticDescriptor (analyzerAttr.Languages, type));
-							}
-							foreach (var diag in analyzer.SupportedDiagnostics) {
-								//filter out E&C analyzers as we don't support E&C
-								if (diag.CustomTags.Contains (WellKnownDiagnosticTags.EditAndContinue)) {
-									continue;
-								}
 							}
 						} catch (Exception e) {
 							LoggingService.LogError ($"error while adding diagnostic analyzer {type}  from assembly {asm.FullName}", e);
@@ -134,8 +128,6 @@ namespace MonoDevelop.CodeIssues
 				throw;
 			}
 		}
-
-		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
 
 		static bool IsDiagnosticSupported (DiagnosticDescriptor diag)
 		{

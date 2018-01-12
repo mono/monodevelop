@@ -77,11 +77,11 @@ namespace MonoDevelop.Components.Mac
 			}
 		}
 
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
-			base.Destroy ();
 			if (nsview != null)
 				containers.Remove (nsview);
+			base.OnDestroyed ();
 		}
 
 		protected override void OnAdded (Widget widget)

@@ -33,6 +33,8 @@ using System.Collections;
 using MonoDevelop.Projects;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -60,7 +62,69 @@ namespace MonoDevelop.UnitTesting
 				return false;
 			}
 		}
-		
+
+		public override void ResetLastResult ()
+		{
+			foreach (var test in Tests)
+				test.ResetLastResult();
+			base.ResetLastResult ();
+		}
+
+		static UnitTestResult GetLastResultDynamicaly (IEnumerable<UnitTest> tests)
+		{
+			int passed = 0; 
+			int errors = 0;
+			int failures = 0;
+			int skipped = 0;
+			int uniqeCount = 0;
+
+			ResultStatus ?lastStatus = null;
+			var resultStatus = ResultStatus.Inconclusive;
+
+			foreach (var test in tests) {
+				var res = test?.GetLastResult ();
+				if (res == null) 
+					continue;
+				passed += res.Passed;
+				errors += res.Errors;
+				failures += res.Failures;
+				skipped += res.Skipped;
+
+				if(res.Status != lastStatus)
+					uniqeCount++;
+				
+				lastStatus = res.Status;
+			}
+
+			if (uniqeCount == 1)
+				resultStatus = lastStatus.Value;
+			
+			var result = new UnitTestResult () {
+				Status = resultStatus,
+				Passed = passed,
+				Errors = errors,
+				Skipped = skipped,
+				Failures = failures
+			};
+
+			return result;
+		}
+
+
+		internal void UpdateStatusFromChildren ()
+		{
+			if (this.Status == TestStatus.Running)
+				return;
+			var calculatedResult = GetLastResultDynamicaly (Tests);
+			var storedResult = GetLastResult ();
+			if(!calculatedResult.Equals (storedResult)){
+				lastResult = calculatedResult;
+				IsHistoricResult = Tests.Any (t => t.IsHistoricResult); 
+				OnTestStatusChanged ();
+			}
+			(Parent as UnitTestGroup)?.UpdateStatusFromChildren ();
+		}
+			
 		public UnitTestCollection Tests {
 			get {
 				if (tests == null) {

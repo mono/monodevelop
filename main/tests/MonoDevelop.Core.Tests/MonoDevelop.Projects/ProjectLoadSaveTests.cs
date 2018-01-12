@@ -1097,26 +1097,6 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		public async Task UserProperties ()
-		{
-			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			var p = (DotNetProject)sol.Items [0];
-			sol.UserProperties.SetValue ("SolProp", "foo");
-			p.UserProperties.SetValue ("ProjectProp", "bar");
-			await sol.SaveUserProperties ();
-			sol.Dispose ();
-
-			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			p = (DotNetProject)sol.Items [0];
-
-			Assert.AreEqual ("foo", sol.UserProperties.GetValue<string> ("SolProp"));
-			Assert.AreEqual ("bar", p.UserProperties.GetValue<string> ("ProjectProp"));
-
-			sol.Dispose ();
-		}
-
-		[Test]
 		public async Task AddImportThenRemoveImportAndThenAddImportAgain ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
@@ -1205,6 +1185,7 @@ namespace MonoDevelop.Projects
 			config.EnvironmentVariables.Add ("Test1", "Test1Value");
 
 			await p.SaveAsync (Util.GetMonitor ());
+			sol.Dispose ();
 
 			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			p = (DotNetProject)sol.Items [0];

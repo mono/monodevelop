@@ -113,8 +113,12 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.EditorFeatures">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.EditorFeatures.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Composition.TypedParts">
@@ -124,6 +128,15 @@
     <Reference Include="System.Composition.Hosting">
       <HintPath>..\..\..\build\bin\System.Composition.Hosting.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug' OR '$(Configuration)' == 'DebugMac' ">
+    <Reference Include="ClrHeapAllocationAnalyzer">
+      <HintPath>..\..\..\packages\ClrHeapAllocationAnalyzer.1.0.0.8\analyzers\dotnet\cs\ClrHeapAllocationAnalyzer.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +197,8 @@
     <Compile Include="MonoDevelop.CodeActions\RoslynProgressTracker.cs" />
     <Compile Include="MonoDevelop.Refactoring.ExtractInterface\ExtractInterfaceOptionService.cs" />
     <Compile Include="MonoDevelop.Refactoring.ExtractInterface\ExtractInterfaceDialog.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.AnalyzerAssemblyLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -320,7 +335,7 @@
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials.2017\RefactoringEssentials.csproj">
+    <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
       <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
       <Name>RefactoringEssentials</Name>
       <Private>True</Private>
@@ -373,6 +388,7 @@
     <None Include="MonoDevelop.CodeIssues\Pad\AnalysisState.cs" />
     <None Include="MonoDevelop.CodeIssues\Pad\AnalysisStateChangeEventArgs.cs" />
     <None Include="MonoDevelop.CodeIssues\Pad\CategoryGroupingProvider.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

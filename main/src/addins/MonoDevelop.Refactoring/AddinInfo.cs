@@ -16,4 +16,7 @@ using Mono.Addins.Description;
 [assembly:AddinDependency ("DesignerSupport", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("SourceEditor2", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("RegexToolkit", MonoDevelop.BuildInfo.Version)]
- 
+
+#if DEBUG
+[assembly: ImportAddinAssembly ("ClrHeapAllocationAnalyzer.dll", Scan = false)]
+#endif

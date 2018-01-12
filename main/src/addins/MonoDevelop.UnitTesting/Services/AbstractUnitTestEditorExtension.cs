@@ -253,6 +253,16 @@ namespace MonoDevelop.UnitTesting
 							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier + id, project, true).Select;
 							submenu.Add (menuItem);
 
+							const int maxLabelLength = 80;
+							var trimmedLabel = label.Trim ();
+							if (trimmedLabel.Length > maxLabelLength) {
+								const char gap = '\u2026';
+								int remainsLength = (maxLabelLength - 1) / 2;
+								string start = trimmedLabel.Substring (0, remainsLength);
+								string end = trimmedLabel.Substring (trimmedLabel.Length - remainsLength, remainsLength);
+								label = $"{start.TrimEnd()}{gap}{end.TrimStart ()}";
+							}
+
 							var subMenuItem = new ContextMenuItem (label);
 							// if (!string.IsNullOrEmpty (tooltip))
 							//	subMenuItem.TooltipText = tooltip;
@@ -303,8 +313,12 @@ namespace MonoDevelop.UnitTesting
 						return;
 					}
 
-					await IdeApp.ProjectOperations.Build (project).Task;
-					await UnitTestService.RefreshTests (CancellationToken.None);
+					bool buildBeforeExecuting = IdeApp.Preferences.BuildBeforeExecuting;
+
+					if (buildBeforeExecuting) {
+						await IdeApp.ProjectOperations.Build (project).Task;
+						await UnitTestService.RefreshTests (CancellationToken.None);
+					}
 
 					foundTest = UnitTestService.SearchTestById (testCase);
 					if (foundTest != null)

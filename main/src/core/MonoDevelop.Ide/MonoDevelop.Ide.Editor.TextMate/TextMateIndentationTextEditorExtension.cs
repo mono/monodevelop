@@ -32,6 +32,8 @@ namespace MonoDevelop.Ide.Editor.TextMate
 	{
         protected override void Initialize ()
 		{
+			base.Initialize ();
+
             Editor.MimeTypeChanged += Editor_MimeTypeChanged;
 			Editor_MimeTypeChanged (this, EventArgs.Empty);
 		}
@@ -47,6 +49,8 @@ namespace MonoDevelop.Ide.Editor.TextMate
         public override void Dispose ()
 		{
 			Editor.MimeTypeChanged -= Editor_MimeTypeChanged;
+
+			base.Dispose ();
 		}
 
 		public override bool KeyPress (KeyDescriptor descriptor)

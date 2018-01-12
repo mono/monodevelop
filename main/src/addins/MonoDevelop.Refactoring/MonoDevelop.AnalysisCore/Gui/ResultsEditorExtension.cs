@@ -27,15 +27,28 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Common;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.PooledObjects;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.AnalysisCore;
+using MonoDevelop.AnalysisCore.Gui;
+using MonoDevelop.CodeActions;
 using MonoDevelop.CodeIssues;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Gui;
+
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -56,6 +69,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 	public class ResultsEditorExtension : TextEditorExtension, IQuickTaskProvider
 	{
 		bool disposed;
+		static IDiagnosticService diagService = Ide.Composition.CompositionManager.GetExportedValue<IDiagnosticService> ();
 		
 		protected override void Initialize ()
 		{
@@ -75,13 +89,15 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (disposed) 
 				return;
 			enabled = false;
-			DocumentContext.DocumentParsed -= OnDocumentParsed;
+			diagService.DiagnosticsUpdated -= OnDiagnosticsUpdated;
 			CancelUpdateTimout ();
-			CancelTask ();
 			AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
-			while (markers.Count > 0)
-				Editor.RemoveMarker (markers.Dequeue ());
+			foreach (var queue in markers) {
+				while (queue.Value.Count > 0)
+					Editor.RemoveMarker (queue.Value.Dequeue ());
+			}
 			disposed = true;
+			base.Dispose ();
 		}
 		
 		bool enabled;
@@ -103,18 +119,10 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (enabled)
 				return;
 			enabled = true;
-			DocumentContext.DocumentParsed += OnDocumentParsed;
-			if (DocumentContext.ParsedDocument != null)
-				OnDocumentParsed (null, null);
-		}
 
-		void CancelTask ()
-		{
-			lock (updateLock) {
-				if (src != null) {
-					src.Cancel ();
-				}
-			}
+			diagService.DiagnosticsUpdated += OnDiagnosticsUpdated;
+			if (DocumentContext.ParsedDocument != null)
+				UpdateInitialDiagnostics ();
 		}
 		
 		void Disable ()
@@ -122,50 +130,115 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (!enabled)
 				return;
 			enabled = false;
-			DocumentContext.DocumentParsed -= OnDocumentParsed;
-			CancelTask ();
-			new ResultsUpdater (this, new Result[0], CancellationToken.None).Update ();
+			diagService.DiagnosticsUpdated -= OnDiagnosticsUpdated;
+			CancelUpdateTimout ();
+			new ResultsUpdater (this, new Result[0], null, CancellationToken.None).Update ();
 		}
 		
-		CancellationTokenSource src = null;
+		CancellationTokenSource src = new CancellationTokenSource ();
 		object updateLock = new object();
-		uint updateTimeout = 0;
 
-		void OnDocumentParsed (object sender, EventArgs args)
+		void UpdateInitialDiagnostics ()
 		{
 			if (!AnalysisOptions.EnableFancyFeatures)
 				return;
-			CancelUpdateTimout ();
+
 			var doc = DocumentContext.ParsedDocument;
 			if (doc == null || DocumentContext.IsAdHocProject)
 				return;
-			updateTimeout = GLib.Timeout.Add (250, delegate {
-				lock (updateLock) {
-					CancelTask ();
-					src = new CancellationTokenSource ();
-					var token = src.Token;
-					var ad = new AnalysisDocument (Editor, DocumentContext);
-					Task.Run (async () => {
-						try {
-							var result = await CodeDiagnosticRunner.Check (ad, token);
-							if (token.IsCancellationRequested)
-								return;
-							var updater = new ResultsUpdater (this, result, token);
-							updater.Update ();
-						} catch (Exception) {
-						}
-					});
-					updateTimeout = 0;
-					return false;
+
+			var ad = new AnalysisDocument (Editor, DocumentContext);
+
+			Task.Run (() => {
+				var ws = DocumentContext.RoslynWorkspace;
+				var project = DocumentContext.AnalysisDocument.Project.Id;
+				var document = DocumentContext.AnalysisDocument.Id;
+
+				// Force an initial diagnostic update from the engine.
+				foreach (var updateArgs in diagService.GetDiagnosticsUpdatedEventArgs (ws, project, document, src.Token)) {
+					var diagnostics = AdjustInitialDiagnostics (DocumentContext.AnalysisDocument.Project.Solution, updateArgs, src.Token);
+					if (diagnostics.Length == 0) {
+						continue;
+					}
+
+					var e = DiagnosticsUpdatedArgs.DiagnosticsCreated (
+						updateArgs.Id, updateArgs.Workspace, DocumentContext.AnalysisDocument.Project.Solution, updateArgs.ProjectId, updateArgs.DocumentId, diagnostics);
+
+					OnDiagnosticsUpdated (this, e);
 				}
 			});
 		}
 
+		private ImmutableArray<DiagnosticData> AdjustInitialDiagnostics (
+				Solution solution, UpdatedEventArgs args, CancellationToken cancellationToken)
+		{
+			// we only reach here if there is the document
+			var document = solution.GetDocument (args.DocumentId);
+			// if there is no source text for this document, we don't populate the initial tags. this behavior is equivalent of existing
+			// behavior in OnDiagnosticsUpdated.
+			if (!document.TryGetText (out var text)) {
+				return ImmutableArray<DiagnosticData>.Empty;
+			}
+
+			// GetDiagnostics returns whatever cached diagnostics in the service which can be stale ones. for example, build error will be most likely stale
+			// diagnostics. so here we make sure we filter out any diagnostics that is not in the text range.
+			var builder = ArrayBuilder<DiagnosticData>.GetInstance ();
+			var fullSpan = new TextSpan (0, text.Length);
+			foreach (var diagnostic in diagService.GetDiagnostics (
+				args.Workspace, args.ProjectId, args.DocumentId, args.Id, includeSuppressedDiagnostics: false, cancellationToken: cancellationToken)) {
+				if (fullSpan.Contains (diagnostic.GetExistingOrCalculatedTextSpan (text))) {
+					builder.Add (diagnostic);
+				}
+			}
+
+			return builder.ToImmutableAndFree ();
+		}
+
+		async void OnDiagnosticsUpdated (object sender, DiagnosticsUpdatedArgs e)
+		{
+			if (!enabled)
+				return;
+
+			var doc = DocumentContext.ParsedDocument;
+			if (doc == null || DocumentContext.IsAdHocProject)
+				return;
+
+			if (DocumentContext.AnalysisDocument == null)
+				return;
+			
+			if (e.DocumentId != DocumentContext.AnalysisDocument.Id || e.ProjectId != DocumentContext.AnalysisDocument.Project.Id)
+				return;
+
+			var token = CancelUpdateTimeout (e.Id);
+			var ad = new AnalysisDocument (Editor, DocumentContext);
+			try {
+				var result = await CodeDiagnosticRunner.Check (ad, token, e.Diagnostics).ConfigureAwait (false);
+				var updater = new ResultsUpdater (this, result, e.Id, token);
+				updater.Update ();
+			} catch (Exception) {
+			}
+		}
+
 		public void CancelUpdateTimout ()
 		{
-			if (updateTimeout != 0) {
-				GLib.Source.Remove (updateTimeout);
-				updateTimeout = 0;
+			lock (cancellations) {
+				foreach (var cts in cancellations)
+					cts.Value.Cancel ();
+				cancellations.Clear ();
+			}
+			
+			src?.Cancel ();
+			src = new CancellationTokenSource ();
+		}
+
+		CancellationToken CancelUpdateTimeout (object id)
+		{
+			lock (cancellations) {
+				if (cancellations.TryGetValue (id, out var cts))
+					cts.Cancel ();
+
+				cancellations[id] = cts = new CancellationTokenSource ();
+				return cts.Token;
 			}
 		}
 
@@ -179,25 +252,35 @@ namespace MonoDevelop.AnalysisCore.Gui
 			int oldMarkers;
 			IEnumerator<Result> enumerator;
 			ImmutableArray<QuickTask>.Builder builder;
+			object id;
 			
-			public ResultsUpdater (ResultsEditorExtension ext, IEnumerable<Result> results, CancellationToken cancellationToken)
+			public ResultsUpdater (ResultsEditorExtension ext, IEnumerable<Result> results, object resultsId, CancellationToken cancellationToken)
 			{
 				if (ext == null)
 					throw new ArgumentNullException ("ext");
 				if (results == null)
 					throw new ArgumentNullException ("results");
 				this.ext = ext;
+				id = resultsId;
 				this.cancellationToken = cancellationToken;
-				this.oldMarkers = ext.markers.Count;
+
+				Queue<IGenericTextSegmentMarker> oldMarkers;
+				if (resultsId != null) {
+					if (!ext.markers.TryGetValue (id, out oldMarkers))
+						ext.markers [id] = oldMarkers = new Queue<IGenericTextSegmentMarker> ();
+					this.oldMarkers = oldMarkers.Count;
+				}
+				
 				builder = ImmutableArray<QuickTask>.Empty.ToBuilder ();
-				enumerator = ((IEnumerable<Result>)results).GetEnumerator ();
+				enumerator = results.GetEnumerator ();
 			}
 			
 			public void Update ()
 			{
-				if (!AnalysisOptions.EnableFancyFeatures || cancellationToken.IsCancellationRequested)
+				if (cancellationToken.IsCancellationRequested)
 					return;
-				ext.tasks = ext.tasks.Clear ();
+				if (id != null)
+					ext.tasks.Remove (id);
 				GLib.Idle.Add (IdleHandler);
 			}
 
@@ -217,6 +300,15 @@ namespace MonoDevelop.AnalysisCore.Gui
 				}
 			}
 
+			static TextSegmentMarkerEffect GetSegmentMarkerEffect (IssueMarker marker)
+			{
+				if (marker == IssueMarker.GrayOut)
+					return TextSegmentMarkerEffect.GrayOut;
+				if (marker == IssueMarker.DottedLine)
+					return TextSegmentMarkerEffect.DottedLine;
+				return TextSegmentMarkerEffect.WavedLine;
+			}
+
 			//this runs as a glib idle handler so it can add/remove text editor markers
 			//in order to to block the GUI thread, we batch them in UPDATE_COUNT
 			bool IdleHandler ()
@@ -226,17 +318,28 @@ namespace MonoDevelop.AnalysisCore.Gui
 				var editor = ext.Editor;
 				if (editor == null)
 					return false;
+
+				if (id == null) {
+					foreach (var markerQueue in ext.markers) {
+						while (markerQueue.Value.Count != 0)
+							editor.RemoveMarker (markerQueue.Value.Dequeue ());
+					}
+					ext.markers.Clear ();
+					return false;
+				}
+
 				//clear the old results out at the same rate we add in the new ones
 				for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {
 					if (cancellationToken.IsCancellationRequested)
 						return false;
-					editor.RemoveMarker (ext.markers.Dequeue ());
+					editor.RemoveMarker (ext.markers [id].Dequeue ());
 					oldMarkers--;
 				}
+
 				//add in the new markers
 				for (int i = 0; i < UPDATE_COUNT; i++) {
 					if (!enumerator.MoveNext ()) {
-						ext.tasks = builder.ToImmutable ();
+						ext.tasks [id] = builder.ToImmutable ();
 						ext.OnTasksUpdated (EventArgs.Empty);
 						return false;
 					}
@@ -248,23 +351,16 @@ namespace MonoDevelop.AnalysisCore.Gui
 						int end = currentResult.Region.End;
 						if (start >= end)
 							continue;
-						if (currentResult.InspectionMark == IssueMarker.GrayOut) {
-							var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, TextSegmentMarkerEffect.GrayOut, TextSegment.FromBounds (start, end));
-							marker.IsVisible = currentResult.Underline;
-							marker.Tag = currentResult;
-							editor.AddMarker (marker);
-							ext.markers.Enqueue (marker);
-//							editor.Parent.TextViewMargin.RemoveCachedLine (editor.GetLineByOffset (start));
-//							editor.Parent.QueueDraw ();
-						} else {
-							var effect = currentResult.InspectionMark == IssueMarker.DottedLine ? TextSegmentMarkerEffect.DottedLine : TextSegmentMarkerEffect.WavedLine;
-							var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, effect, TextSegment.FromBounds (start, end));
+						var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, GetSegmentMarkerEffect (currentResult.InspectionMark), TextSegment.FromBounds (start, end));
+						marker.Tag = currentResult;
+						marker.IsVisible = currentResult.Underline;
+
+						if (currentResult.InspectionMark != IssueMarker.GrayOut) {
 							marker.Color = GetColor (editor, currentResult);
-							marker.IsVisible = currentResult.Underline && currentResult.Level != DiagnosticSeverity.Hidden;
-							marker.Tag = currentResult;
-							editor.AddMarker (marker);
-							ext.markers.Enqueue (marker);
+							marker.IsVisible &= currentResult.Level != DiagnosticSeverity.Hidden;
 						}
+						editor.AddMarker (marker);
+						ext.markers [id].Enqueue (marker);
 					}
 					builder.Add (new QuickTask (currentResult.Message, currentResult.Region.Start, currentResult.Level));
 				}
@@ -274,7 +370,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 		}
 		
 		//all markers known to be in the editor
-		Queue<IGenericTextSegmentMarker> markers = new Queue<IGenericTextSegmentMarker> ();
+		// Roslyn groups diagnostics by their provider. In this case, we rely on the id passed in to group markers by their id.
+		Dictionary<object, Queue<IGenericTextSegmentMarker>> markers = new Dictionary<object, Queue<IGenericTextSegmentMarker>> ();
+		Dictionary<object, CancellationTokenSource> cancellations = new Dictionary<object, CancellationTokenSource> ();
 		
 		const int UPDATE_COUNT = 20;
 		
@@ -296,11 +394,11 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		public IEnumerable<Result> GetResults ()
 		{
-			return markers.Select (m => m.Tag).OfType<Result> ();
+			return markers.SelectMany (x => x.Value).Select (m => m.Tag).OfType<Result> ();
 		}
 
 		#region IQuickTaskProvider implementation
-		ImmutableArray<QuickTask> tasks = ImmutableArray<QuickTask>.Empty;
+		Dictionary<object, ImmutableArray<QuickTask>> tasks = new Dictionary<object, ImmutableArray<QuickTask>> ();
 
 		public event EventHandler TasksUpdated;
 
@@ -313,7 +411,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		public ImmutableArray<QuickTask> QuickTasks {
 			get {
-				return tasks;
+				return tasks.SelectMany(x => x.Value).AsImmutable ();
 			}
 		}
 		

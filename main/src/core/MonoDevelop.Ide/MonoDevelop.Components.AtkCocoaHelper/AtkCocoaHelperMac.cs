@@ -540,6 +540,12 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 	public class AccessibilityElementProxy : IAccessibilityElementProxy
 	{
+		public static bool Enabled {
+			get {
+				return IdeTheme.AccessibilityEnabled;
+			}
+		}
+
 		RealAccessibilityElementProxy realProxyElement;
 		internal object Proxy {
 			get {
@@ -1059,7 +1065,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
-		protected Gtk.Widget parent;
+		protected WeakReference<Gtk.Widget> parentRef = new WeakReference<Gtk.Widget> (null);
 		Rectangle realFrame;
 
 		void UpdateActions ()
@@ -1083,10 +1089,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		// It is used to convert the frame
 		public Gtk.Widget GtkParent {
 			get {
+				parentRef.TryGetTarget (out var parent);
 				return parent;
 			}
 			set {
-				parent = value;
+				parentRef.SetTarget (value);
 			}
 		}
 
@@ -1225,6 +1232,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		[Export ("accessibilityHitTest:")]
 		public virtual NSObject GetAccessibilityHitTest (CGPoint pointOnScreen)
 		{
+			parentRef.TryGetTarget (out var parent);
+			if (parent == null) {
+				return null;
+			}
+
 			var gdkWindow = parent.GdkWindow;
 
 			if (gdkWindow == null) {
@@ -1341,9 +1353,17 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 		public override bool AccessibilityFocused {
 			get {
+				parentRef.TryGetTarget (out var parent);
+				if (parent == null) {
+					return false;
+				}
 				return parent.HasFocus;
 			}
 			set {
+				parentRef.TryGetTarget (out var parent);
+				if (parent == null) {
+					return;
+				}
 				parent.HasFocus = value;
 			}
 		}
@@ -1470,6 +1490,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		[Export ("accessibilityFrameForRange:")]
 		CGRect AccessibilityFrameForRange (NSRange range)
 		{
+			parentRef.TryGetTarget (out var parent);
+			if (parent == null) {
+				return CGRect.Empty;
+			}
+
 			var realRange = new AtkCocoa.Range { Location = (int)range.Location, Length = (int)range.Length };
 			var frame = GetFrameForRange (realRange);
 

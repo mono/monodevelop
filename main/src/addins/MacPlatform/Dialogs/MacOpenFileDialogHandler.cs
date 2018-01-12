@@ -56,7 +56,23 @@ namespace MonoDevelop.MacIntegration
 						CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0,
 					};
 				}
+				bool pathAlreadySet = false;
+				panel.DidChangeToDirectory += (sender, e) => {
+					var directoryPath = e.NewDirectoryUrl?.AbsoluteString;
+					if (string.IsNullOrEmpty (directoryPath))
+						return;
+					var selectedPath = data.OnDirectoryChanged (this, directoryPath);
+					if (selectedPath.IsNull)
+						return;
+					data.SelectedFiles = new FilePath [] { selectedPath };
+					pathAlreadySet = true;
 
+					// We need to call Cancel on 1ms delay so it's executed after DidChangeToDirectory event handler is finished
+					// this is needed because it's possible that DidChangeToDirectory event is executed while dialog is opening
+					// in that case calling .Cancel() leaves dialog in weird state...
+					// Fun fact: DidChangeToDirectory event is called from Open on 10.12 but not on 10.13
+					System.Threading.Tasks.Task.Delay (1).ContinueWith (delegate { panel.Cancel (panel); }, Runtime.MainTaskScheduler);
+				};
 				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
 				
 				SelectEncodingPopUpButton encodingSelector = null;
@@ -164,12 +180,12 @@ namespace MonoDevelop.MacIntegration
 						encodingSelector.Enabled = !slnViewerSelected;
 				};
 
-				if (panel.RunModal () == 0) {
+				if (panel.RunModal () == 0 && !pathAlreadySet) {
 					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 					return false;
 				}
-
-				data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
+				if (!pathAlreadySet)
+					data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
 				
 				if (encodingSelector != null)
 					data.Encoding = encodingSelector.SelectedEncodingId > 0 ? Encoding.GetEncoding (encodingSelector.SelectedEncodingId) : null;

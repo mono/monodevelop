@@ -383,13 +383,24 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create("LineEndingConversion", LineEndingConversion.LeaveAsIs);
+		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create ("LineEndingConversion", LineEndingConversion.LeaveAsIs);
 		public LineEndingConversion LineEndingConversion {
 			get {
 				return lineEndingConversion;
 			}
 			set {
 				if (lineEndingConversion.Set (value))
+					OnChanged (EventArgs.Empty);
+			}
+		}
+
+		ConfigurationProperty<bool> showProcedureLineSeparators = ConfigurationProperty.Create ("ShowProcedureLineSeparators", false);
+		public bool ShowProcedureLineSeparators {
+			get {
+				return showProcedureLineSeparators;
+			}
+			set {
+				if (showProcedureLineSeparators.Set (value))
 					OnChanged (EventArgs.Empty);
 			}
 		}

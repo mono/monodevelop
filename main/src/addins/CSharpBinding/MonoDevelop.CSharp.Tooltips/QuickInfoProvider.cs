@@ -53,6 +53,7 @@ using System.Collections.Immutable;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Ide.Fonts;
+using System.Linq;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -70,7 +71,6 @@ namespace MonoDevelop.SourceEditor
 			ImmutableArray<TaggedText> parts;
 
 			var sb = new StringBuilder ();
-			sb.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
 
 			var theme = editor.Options.GetEditorTheme ();
 
@@ -85,8 +85,9 @@ namespace MonoDevelop.SourceEditor
 
 			var formatter = ctx.RoslynWorkspace.Services.GetLanguageServices (model.Language).GetService<IDocumentationCommentFormattingService> ();
 			var documentation = symbol.GetDocumentationParts (model, editor.CaretOffset, formatter, cancellationToken);
+			sb.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
 
-			if (documentation != null) {
+			if (documentation != null && documentation.Any ()) {
 				sb.AppendLine ();
 				sb.AppendLine ();
 				TaggedTextUtil.AppendTaggedText (sb, theme, documentation);

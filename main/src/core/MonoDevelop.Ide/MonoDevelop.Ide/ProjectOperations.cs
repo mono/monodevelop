@@ -1388,7 +1388,7 @@ namespace MonoDevelop.Ide
 			var res = MessageService.AskQuestion (
 				GettextCatalog.GetString ("Outdated Build"),
 				GettextCatalog.GetString ("The project you are executing has changes done after the last time it was compiled. Do you want to continue?"),
-				2,
+				1,
 				AlertButton.Cancel,
 				bBuild,
 				bRun);
@@ -1803,13 +1803,14 @@ namespace MonoDevelop.Ide
 			//FIXME: it would be really nice if project.Files maintained these hashmaps
 			var vpathsInProject = new Dictionary<FilePath, ProjectFile> ();
 			var filesInProject = new Dictionary<FilePath,ProjectFile> ();
-			foreach (var pf in project.Files) {
-				filesInProject [pf.FilePath] = pf;
-				vpathsInProject [pf.ProjectVirtualPath] = pf;
-			}
 
 			using (monitor)
 			{
+				foreach (var pf in project.Files) {
+					filesInProject [pf.FilePath] = pf;
+					vpathsInProject [pf.ProjectVirtualPath] = pf;
+				}
+
 				for (int i = 0; i < files.Length; i++) {
 					FilePath file = files[i];
 					

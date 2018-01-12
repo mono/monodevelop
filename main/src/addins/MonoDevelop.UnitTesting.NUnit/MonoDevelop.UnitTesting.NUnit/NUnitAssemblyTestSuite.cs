@@ -207,10 +207,12 @@ namespace MonoDevelop.UnitTesting.NUnit
 			ld.TestInfoCachePath = cacheLoaded ? null : TestInfoCachePath;
 			ld.Callback = delegate {
 				Runtime.RunInMainThread (delegate {
+					if (ld.Error != null)
+						this.ErrorMessage = ld.Error.Message;
 					AsyncCreateTests (ld);
 				});
 			};
-			ld.SupportAssemblies = new List<string> (SupportAssemblies);
+			ld.SupportAssemblies = GetSupportAssembliesAsync ();
 			ld.NUnitVersion = NUnitVersion;
 			
 			AsyncLoadTest (ld);
@@ -330,11 +332,16 @@ namespace MonoDevelop.UnitTesting.NUnit
 					if (File.Exists (ld.Path)) {
 						runner = new ExternalTestRunner ();
 						runner.Connect (ld.NUnitVersion).Wait ();
-						ld.Info = runner.GetTestInfo (ld.Path, ld.SupportAssemblies).Result;
+						var supportAssemblies = new List<string> (ld.SupportAssemblies.Result);
+						ld.Info = runner.GetTestInfo (ld.Path, supportAssemblies).Result;
 					}
-				} catch (Exception ex) {
-					Console.WriteLine (ex);
-					ld.Error = ex;
+				} catch (AggregateException exception){
+					var baseException = exception.GetBaseException ();
+					Console.WriteLine (baseException);
+					ld.Error = baseException;
+				} catch (Exception exception) {
+					Console.WriteLine (exception);
+					ld.Error = exception;
 				}
 				finally {
 					try {
@@ -658,11 +665,19 @@ namespace MonoDevelop.UnitTesting.NUnit
 		protected abstract string AssemblyPath {
 			get;
 		}
-		
+
+		[Obsolete ("Override GetSupportAssembliesAsync instead")]
 		protected virtual IEnumerable<string> SupportAssemblies {
 			get { yield break; }
 		}
 		
+		protected virtual Task<IEnumerable<string>> GetSupportAssembliesAsync ()
+		{
+			#pragma warning disable 618
+			return Task.FromResult (SupportAssemblies);
+			#pragma warning restore 618
+		}
+
 		// File where cached test info for this test suite will be saved
 		// Returns null by default which means that test info will not be saved.
 		protected virtual string TestInfoCachePath {
@@ -677,7 +692,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 			public NunitTestInfo Info;
 			public TestInfoCache InfoCache;
 			public WaitCallback Callback;
-			public List<string> SupportAssemblies;
+			public Task<IEnumerable<string>> SupportAssemblies;
 			public NUnitVersion NUnitVersion;
 		}
 		

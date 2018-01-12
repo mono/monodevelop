@@ -76,7 +76,7 @@ namespace MonoDevelop.Components
 		AtkCocoaHelper.AccessibilityElementProxy accessible;
 		internal AtkCocoaHelper.AccessibilityElementProxy Accessible {
 			get {
-				if (accessible == null) {
+				if (accessible == null && AccessibilityElementProxy.Enabled) {
 					accessible = AccessibilityElementProxy.ButtonElementProxy ();
 					accessible.SetRole (AtkCocoa.Roles.AXPopUpButton);
 					accessible.Identifier = "Breadcrumb";
@@ -222,6 +222,10 @@ namespace MonoDevelop.Components
 
 		void UpdatePathAccessibility ()
 		{
+			if (!AccessibilityElementProxy.Enabled) {
+				return;
+			}
+
 			var elements = new AtkCocoaHelper.AccessibilityElementProxy [leftPath.Length + rightPath.Length];
 			int idx = 0;
 
@@ -245,9 +249,10 @@ namespace MonoDevelop.Components
 		{
 			if (Path == null)
 				return;
-
+			
 			foreach (var entry in Path) {
 				entry.PerformShowMenu -= PerformShowMenu;
+				entry.Dispose ();
 			}
 		}
 
@@ -319,6 +324,10 @@ namespace MonoDevelop.Components
 
 		void SetAccessibilityFrame (PathEntry entry, int x, int width)
 		{
+			if (!AccessibilityElementProxy.Enabled) {
+				return;
+			}
+
 			int y = topPadding - buttonPadding;
 			int height = Allocation.Height - topPadding - bottomPadding + buttonPadding * 2;
 			Gdk.Rectangle rect = new Gdk.Rectangle (x, y, width, height);
@@ -833,6 +842,8 @@ namespace MonoDevelop.Components
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
+
+			DisposeProxies ();
 			styleButton.Destroy ();
 			KillLayout ();
 			this.boldAtts.Dispose ();
@@ -878,6 +889,12 @@ namespace MonoDevelop.Components
 			alreadyHaveFocus = ret;
 			QueueDraw ();
 			return ret;
+		}
+
+		protected override bool OnFocusOutEvent(EventFocus evnt)
+		{
+			alreadyHaveFocus = false;
+			return base.OnFocusOutEvent(evnt);
 		}
 
 		protected override void OnActivate ()

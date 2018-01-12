@@ -40,6 +40,8 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		protected override void Initialize ()
 		{
+			base.Initialize ();
+
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 			packageManagementEvents.PackageOperationsFinished += PackageOperationsFinished;
 
@@ -52,6 +54,8 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			packageManagementEvents.PackageOperationsFinished -= PackageOperationsFinished;
 			IdeApp.Workspace.ReferenceAddedToProject -= OnReferencesChanged;
 			IdeApp.Workspace.ReferenceRemovedFromProject -= OnReferencesChanged;
+
+			base.Dispose ();
 		}
 
 		public override bool CanBuildNode (Type dataType)

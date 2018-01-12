@@ -43,10 +43,10 @@ namespace MonoDevelop.DotNetCore.Tests
 	/// Creates and builds .NET Core projects.
 	/// </summary>
 	[TestFixture]
-	class DotNetCoreProjectTemplateTests : TestBase
+	class DotNetCoreProjectTemplateTests : DotNetCoreTestBase
 	{
-		static bool firstRun;
 		TemplatingService templatingService;
+		Solution solution;
 
 		[TestFixtureSetUp]
 		public void SetUp ()
@@ -58,12 +58,18 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			templatingService = new TemplatingService ();
 
-			if (!firstRun) {
-				firstRun = true;
-				Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
-				DesktopService.Initialize ();
+			if (!IdeApp.IsInitialized) {
 				IdeApp.Initialize (Util.GetMonitor ());
 			}
+		}
+
+		[TearDown]
+		public override void TearDown ()
+		{
+			solution?.Dispose ();
+			solution = null;
+
+			base.TearDown ();
 		}
 
 		[Test]
@@ -201,6 +207,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			FilePath solutionDirectory = Util.CreateTmpDir (baseName);
 
+			CreateNuGetConfigFile (solutionDirectory);
+
 			string projectName = GetProjectName (templateId);
 
 			var config = new NewProjectConfiguration {
@@ -268,10 +276,12 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			var result = await templatingService.ProcessTemplate (template, config, null);
 
-			var solution = result.WorkspaceItems.FirstOrDefault () as Solution;
+			solution = result.WorkspaceItems.FirstOrDefault () as Solution;
 			await solution.SaveAsync (Util.GetMonitor ());
 
-			RunMSBuild ($"/t:Restore {solution.FileName}");
+			// RestoreDisableParallel prevents parallel restores which sometimes cause
+			// the restore to fail on Mono.
+			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true {solution.FileName}");
 			RunMSBuild ($"/t:Build {solution.FileName}");
 		}
 

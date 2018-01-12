@@ -693,6 +693,8 @@ namespace MonoDevelop.Projects
 			base.OnEndLoad ();
 
 			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata (null));
+
+			InitializeFileWatcher ();
 		}
 
 		/// <summary>
@@ -1016,6 +1018,8 @@ namespace MonoDevelop.Projects
 
 		protected override void OnDispose ()
 		{
+			DisposeFileWatcher ();
+
 			foreach (ProjectConfiguration c in Configurations)
 				c.ProjectInstance?.Dispose ();
 			
@@ -1316,7 +1320,7 @@ namespace MonoDevelop.Projects
 			if (propertyValue != null)
 				return null;
 
-			propertyValue = propertyGroup.GetValue ("TargetFrameworks", null);
+			propertyValue = project.EvaluatedProperties.GetValue ("TargetFrameworks", null);
 			if (propertyValue != null)
 				return propertyValue.Split (new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -3231,10 +3235,13 @@ namespace MonoDevelop.Projects
 					if (!it.IsWildcardItem || it.ParentProject == msproject) {
 						msproject.RemoveItem (it);
 
+						if (!UseAdvancedGlobSupport)
+							continue;
+
 						var file = loadedProjectItems.FirstOrDefault (i => {
 							return i.ItemName == it.Name && (i.Include == it.Include || i.Include == it.Update);
 						}) as ProjectFile;
-						if (file != null) {
+						if (file != null && !file.IsLink) {
 							if (File.Exists (file.FilePath)) {
 								AddRemoveItemIfMissing (msproject, file);
 							} else if (!string.IsNullOrEmpty (it.Include)) {
@@ -3300,6 +3307,7 @@ namespace MonoDevelop.Projects
 
 			MSBuildItem buildItem = null;
 			IEnumerable<MSBuildItem> sourceItems = null;
+			MSBuildEvaluationContext context = null;
 
 			if (item.BackingItem?.ParentObject != null && item.BackingItem.Name == item.ItemName) {
 				buildItem = item.BackingItem;
@@ -3353,6 +3361,8 @@ namespace MonoDevelop.Projects
 						} else if (updateGlobItems.Any ()) {
 							// Multiple update items not supported yet.
 							buildItem = updateGlobItems [0];
+							sourceItems = new [] { globItem, buildItem };
+							context = CreateEvaluationContext (item);
 						} else {
 							buildItem = globItem;
 						}
@@ -3379,7 +3389,7 @@ namespace MonoDevelop.Projects
 				if (buildItem == null)
 					buildItem = msproject.AddNewItem (item.ItemName, include);
 				item.BackingItem = buildItem;
-				item.BackingEvalItem = CreateFakeEvaluatedItem (msproject, buildItem, include, sourceItems);
+				item.BackingEvalItem = CreateFakeEvaluatedItem (msproject, buildItem, include, sourceItems, context);
 			}
 
 			loadedItems.Add (buildItem);
@@ -3608,7 +3618,18 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 
-		IMSBuildItemEvaluated CreateFakeEvaluatedItem (MSBuildProject msproject, MSBuildItem item, string include, IEnumerable<MSBuildItem> sourceItems)
+		MSBuildEvaluationContext CreateEvaluationContext (ProjectItem item)
+		{
+			if (item is ProjectFile file) {
+				var context = new MSBuildEvaluationContext ();
+				context.SetItemContext (item.Include, file.FilePath, null);
+				return context;
+			}
+
+			return null;
+		}
+
+		IMSBuildItemEvaluated CreateFakeEvaluatedItem (MSBuildProject msproject, MSBuildItem item, string include, IEnumerable<MSBuildItem> sourceItems, MSBuildEvaluationContext context = null)
 		{
 			// Create the item
 			var eit = new MSBuildItemEvaluated (msproject, item.Name, item.Include, include);
@@ -3616,8 +3637,15 @@ namespace MonoDevelop.Projects
 			// Copy the metadata
 			var md = new Dictionary<string, IMSBuildPropertyEvaluated> ();
 			var col = (MSBuildPropertyGroupEvaluated)eit.Metadata;
-			foreach (var p in item.Metadata.GetProperties ())
-				md [p.Name] = new MSBuildPropertyEvaluated (msproject, p.Name, p.UnevaluatedValue, p.Value);
+			foreach (var p in item.Metadata.GetProperties ()) {
+				// Use evaluated value for value and unevaluated value. Otherwise
+				// an Update item will be generated for a '%(FileName)' property
+				// when GenerateItemDiff is called since it compares the value with
+				// the unevaluated value. If the project file is loaded from disk
+				// the unevaluated value would be the evaluated filename.
+				string evaluatedValue = context?.EvaluateString (p.Value) ?? p.Value;
+				md [p.Name] = new MSBuildPropertyEvaluated (msproject, p.Name, evaluatedValue, evaluatedValue);
+			}
 			((MSBuildPropertyGroupEvaluated)eit.Metadata).SetProperties (md);
 			if (sourceItems != null) {
 				foreach (var s in sourceItems)
@@ -3785,6 +3813,149 @@ namespace MonoDevelop.Projects
 
 		internal IList<DotNetProjectImport> ImportsRemoved {
 			get { return importsRemoved; }
+		}
+
+		bool useFileWatcher;
+
+		/// <summary>
+		/// When set to true with UseAdvancedGlobSupport also true then changes made to files inside the project externally
+		/// will be monitored and used to update the project.
+		/// </summary>
+		public bool UseFileWatcher {
+			get { return useFileWatcher; }
+			set {
+				if (useFileWatcher != value) {
+					useFileWatcher = value;
+
+					// File watcher will be created in OnEndLoad.
+					if (Loading) {
+						if (!useFileWatcher) {
+							DisposeFileWatcher ();
+						}
+					} else {
+						OnUseFileWatcherChanged ();
+					}
+				}
+			}
+		}
+
+		void OnUseFileWatcherChanged ()
+		{
+			if (useFileWatcher && UseAdvancedGlobSupport) {
+				CreateFileWatcher ();
+			} else {
+				DisposeFileWatcher ();
+			}
+		}
+
+		void InitializeFileWatcher ()
+		{
+			if (useFileWatcher) {
+				OnUseFileWatcherChanged ();
+			}
+		}
+
+		FSW.FileSystemWatcher watcher;
+
+		void CreateFileWatcher ()
+		{
+			DisposeFileWatcher ();
+
+			if (!Directory.Exists (BaseDirectory))
+				return;
+
+			watcher = new FSW.FileSystemWatcher (BaseDirectory);
+			watcher.IncludeSubdirectories = true;
+			watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName;
+			watcher.Created += OnFileCreated;
+			watcher.Deleted += OnFileDeleted;
+			watcher.Renamed += OnFileRenamed;
+			watcher.Error += OnFileWatcherError;
+			watcher.EnableRaisingEvents = true;
+		}
+
+		void DisposeFileWatcher ()
+		{
+			if (watcher != null) {
+				watcher.Dispose ();
+				watcher = null;
+			}
+		}
+
+		void OnFileWatcherError (object sender, ErrorEventArgs e)
+		{
+			LoggingService.LogError ("FileWatcher error", e.GetException ());
+		}
+
+		void OnFileRenamed (object sender, RenamedEventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				if (Directory.Exists (e.FullPath)) {
+					OnDirectoryRenamedExternally (e.OldFullPath, e.FullPath);
+				} else {
+					OnFileCreatedExternally (e.FullPath);
+					OnFileDeletedExternally (e.OldFullPath);
+				}
+			});
+		}
+
+		void OnFileCreated (object sender, FileSystemEventArgs e)
+		{
+			if (Directory.Exists (e.FullPath))
+				return;
+
+			FilePath filePath = e.FullPath;
+			if (filePath.FileName == ".DS_Store")
+				return;
+
+			Runtime.RunInMainThread (() => {
+				OnFileCreatedExternally (e.FullPath);
+			});
+		}
+
+		void OnFileDeleted (object sender, FileSystemEventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				OnFileDeletedExternally (e.FullPath);
+			});
+		}
+
+		/// <summary>
+		/// Move all project files in the old directory to the new directory.
+		/// </summary>
+		void OnDirectoryRenamedExternally (string oldDirectory, string newDirectory)
+		{
+			FileService.NotifyDirectoryRenamed (oldDirectory, newDirectory);
+		}
+
+		void OnFileCreatedExternally (string fileName)
+		{
+			if (Files.Any (file => file.FilePath == fileName)) {
+				// File exists in project. This can happen if the file was added
+				// in the IDE and not externally.
+				return;
+			}
+
+			string include = MSBuildProjectService.ToMSBuildPath (ItemDirectory, fileName);
+			foreach (var it in sourceProject.FindGlobItemsIncludingFile (include).Where (it => it.Metadata.GetProperties ().Count () == 0)) {
+				var eit = CreateFakeEvaluatedItem (sourceProject, it, include, null);
+				var pi = CreateProjectItem (eit);
+				pi.Read (this, eit);
+				Items.Add (pi);
+			}
+		}
+
+		void OnFileDeletedExternally (string fileName)
+		{
+			if (File.Exists (fileName)) {
+				// File has not been deleted. The delete event could have been due to
+				// the file being saved. Saving with TextFileUtility will result in
+				// FileService.SystemRename being called to move a temporary file
+				// to the file being saved which deletes and then creates the file.
+				return;
+			}
+
+			Files.Remove (fileName);
 		}
 
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)

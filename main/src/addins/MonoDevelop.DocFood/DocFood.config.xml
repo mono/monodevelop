@@ -347,15 +347,12 @@
 					<Case wordCount="1">
 						<If paramCount="0">
 							<Section name="summary">${FirstAsVerb} this instance.</Section>
-							<IfNot returns="void">
-									<Section name="returns">The ${AllWords}.</Section>
-							</IfNot>
 						</If>
 						<IfNot paramCount="0">
 							<Section name="summary">${FirstAsVerb} the specified ${ParameterList}.</Section>
-							<IfNot returns="void">
-									<Section name="returns">The ${AllWords}.</Section>
-							</IfNot>
+						</IfNot>
+						<IfNot returns="void">
+							<Section name="returns">The ${AllWords}.</Section>
 						</IfNot>
 					</Case>
 					<Case endsWith="At,Between">

@@ -57,6 +57,8 @@ namespace MonoDevelop.Components
 			//IdeApp.Preferences.UserInterfaceTheme.Changed += (sender, e) => UpdateGtkTheme ();
 		}
 
+		internal static bool AccessibilityEnabled { get; private set; }
+
 		internal static void InitializeGtk (string progname, ref string[] args)
 		{
 			if (Gtk.Settings.Default != null)
@@ -67,19 +69,34 @@ namespace MonoDevelop.Components
 			if (!Platform.IsLinux)
 				UpdateGtkTheme ();
 
-			if (Platform.IsMac) {
+#if MAC
+			// Early init Cocoa through xwt
+			var path = Path.GetDirectoryName (typeof (IdeTheme).Assembly.Location);
+			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
+			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
+
+			var disableA11y = Environment.GetEnvironmentVariable ("DISABLE_ATKCOCOA");
+			if (Platform.IsMac && (NSUserDefaults.StandardUserDefaults.BoolForKey ("com.monodevelop.AccessibilityEnabled") && string.IsNullOrEmpty (disableA11y))) {
 				// Load a private version of AtkCocoa stored in the XS app directory
 				var appDir = Directory.GetParent (AppDomain.CurrentDomain.BaseDirectory);
 				var gtkPath = $"{appDir.Parent.FullName}/lib/gtk-2.0";
 
 				LoggingService.LogInfo ($"Loading modules from {gtkPath}");
 				Environment.SetEnvironmentVariable ("GTK_MODULES", $"{gtkPath}/libatkcocoa.so");
+				AccessibilityEnabled = true;
+			} else {
+				// If we are restarted from a running instance when changing the accessibility setting then
+				// we inherit the environment from it
+				Environment.SetEnvironmentVariable ("GTK_MODULES", null);
+				LoggingService.LogInfo ("Accessibility disabled");
+				AccessibilityEnabled = false;
 			}
-
+#endif
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
 
 			// Reset our environment after initialization on Mac
 			if (Platform.IsMac) {
+				Environment.SetEnvironmentVariable ("GTK_MODULES", null);
 				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", DefaultGtk2RcFiles);
 			}
 		}
@@ -337,9 +354,11 @@ namespace MonoDevelop.Components
 				return;
 			}
 
-			if (window is NSPanel || window.ContentView.Class.Name != "GdkQuartzView")
+			if (window is NSPanel || window.ContentView.Class.Name != "GdkQuartzView") {
 				window.BackgroundColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.ToNSColor ();
-			else {
+				if (MacSystemInformation.OsVersion <= MacSystemInformation.Sierra)
+					window.StyleMask |= NSWindowStyle.TexturedBackground;
+			} else {
 				object[] platforms = Mono.Addins.AddinManager.GetExtensionObjects ("/MonoDevelop/Core/PlatformService");
 				if (platforms.Length > 0) {
 					var platformService = (MonoDevelop.Ide.Desktop.PlatformService)platforms [0];
@@ -348,10 +367,10 @@ namespace MonoDevelop.Components
 					window.IsOpaque = false;
 					window.BackgroundColor = NSColor.FromPatternImage (image.ToBitmap().ToNSImage());
 				}
+				window.StyleMask |= NSWindowStyle.TexturedBackground;
 			}
-			if (MacSystemInformation.OsVersion >= MacSystemInformation.HighSierra)
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.HighSierra && !window.IsSheet)
 				window.TitlebarAppearsTransparent = true;
-			window.StyleMask |= NSWindowStyle.TexturedBackground;
 		}
 
 		static void OnClose (NSNotification note)

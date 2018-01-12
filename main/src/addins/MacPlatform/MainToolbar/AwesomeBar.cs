@@ -85,6 +85,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return;
 			}
 
+			// no hacks are required on HighSierra+
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.HighSierra) {
+				return;
+			}
+
 			// I'm sorry. I'm so so sorry.
 			// When the user has Graphite appearance set in System Preferences on El Capitan
 			// and they enter fullscreen mode, Cocoa doesn't respect the VibrantDark appearance

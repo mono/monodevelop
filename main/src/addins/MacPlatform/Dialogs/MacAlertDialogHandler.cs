@@ -149,24 +149,44 @@ namespace MonoDevelop.MacIntegration
 					data.Message.CancellationToken.Register (delegate {
 						alert.InvokeOnMainThread (() => {
 							if (!completed) {
-								NSApplication.SharedApplication.AbortModal ();
+								if (alert.Window.IsSheet && alert.Window.SheetParent != null)
+									alert.Window.SheetParent.EndSheet (alert.Window);
+								else
+									NSApplication.SharedApplication.AbortModal ();
 							}
 						});
 					});
 				}
-				
-				if (!data.Message.CancellationToken.IsCancellationRequested) {
 
-					var result = (int)alert.RunModal () - (long)(int)NSAlertButtonReturn.First;
-					
-					completed = true;
-					if (result >= 0 && result < buttons.Count) {
-						data.ResultButton = buttons [(int)result];
+				int response = -1000;
+
+				if (!data.Message.CancellationToken.IsCancellationRequested) {
+					NSWindow parent = null;
+					if (IdeTheme.UserInterfaceTheme != Theme.Dark || MacSystemInformation.OsVersion < MacSystemInformation.HighSierra) // sheeting is broken on High Sierra with dark NSAppearance
+						parent = data.TransientFor ?? IdeApp.Workbench.RootWindow;
+
+					if (parent == null) {
+						response = (int)alert.RunModal ();
 					} else {
-						data.ResultButton = null;
+						alert.BeginSheet (parent, (modalResponse) => {
+							response = (int)modalResponse;
+							NSApplication.SharedApplication.StopModal ();
+						});
+
+						NSApplication.SharedApplication.RunModalForWindow (alert.Window);
 					}
 				}
-				
+
+				var result = response - (long)(int)NSAlertButtonReturn.First;
+
+				completed = true;
+
+				if (result >= 0 && result < buttons.Count) {
+					data.ResultButton = buttons [(int)result];
+				} else {
+					data.ResultButton = null;
+				}
+
 				if (data.ResultButton == null || data.Message.CancellationToken.IsCancellationRequested) {
 					data.SetResultToCancelled ();
 				}

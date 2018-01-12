@@ -73,8 +73,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			public TableRow (PropertyGrid parentGrid)
 			{
 				this.parentGrid = parentGrid;
-				Accessible = new AccessibilityElementProxy ();
-				Accessible.SetRole (AtkCocoa.Roles.AXRow);
+				//Accessible = new AccessibilityElementProxy ();
+				//Accessible.SetRole (AtkCocoa.Roles.AXRow);
 			}
 
 			public bool IsCategory;
@@ -91,7 +91,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			public int ChildrenHeight;
 			public uint AnimationHandle;
 
-			internal IAccessibilityElementProxy Accessible { get; private set; }
+			//internal IAccessibilityElementProxy Accessible { get; private set; }
 
 			public bool IsExpandable {
 				get {

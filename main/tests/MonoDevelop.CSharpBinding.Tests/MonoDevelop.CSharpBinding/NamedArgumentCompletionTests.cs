@@ -250,5 +250,58 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 
+		// Bug 60365 - Escaped keywords autocomplete to the unescaped keyword https://bugzilla.xamarin.com/show_bug.cgi?id=60365
+		[Ignore("Crashes with an accessibility exception")]
+		[Test]
+		public async Task TestBug60365 ()
+		{
+			var tww = new TestWorkbenchWindow ();
+			TestViewContent content = new TestViewContent ();
+			tww.ViewContent = content;
+			content.ContentName = "/a.cs";
+			content.Data.MimeType = "text/x-csharp";
+
+			var doc = new MonoDevelop.Ide.Gui.Document (tww);
+
+			var text = "@c$";
+			int endPos = text.IndexOf ('$');
+			if (endPos >= 0)
+				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
+
+			content.Text = text;
+			content.CursorPosition = System.Math.Max (0, endPos);
+
+			var project = MonoDevelop.Projects.Services.ProjectService.CreateProject ("C#");
+			project.Name = "test";
+			project.FileName = "test.csproj";
+			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile));
+
+			var solution = new MonoDevelop.Projects.Solution ();
+			solution.AddConfiguration ("", true);
+			solution.DefaultSolutionFolder.AddItem (project);
+			using (var monitor = new ProgressMonitor ())
+				await TypeSystemService.Load (solution, monitor);
+			content.Project = project;
+			doc.SetProject (project);
+
+			var ext = new CSharpCompletionTextEditorExtension ();
+			ext.Initialize (doc.Editor, doc);
+			var listWindow = new CompletionListWindow ();
+			var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
+			listWindow.CompletionWidget = widget;
+			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
+
+			var list = await  ext.HandleCodeCompletionAsync (widget.CurrentCodeCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, 'c'));
+			var ka = KeyActions.Complete;
+			list.First (d => d.CompletionText  == "class").InsertCompletionText (listWindow, ref ka, KeyDescriptor.Tab);
+
+			Assert.AreEqual ("@class", content.Text);
+
+			content.Contents.Add (ext);
+
+			await doc.UpdateParseDocument ();
+			TypeSystemService.Unload (solution);
+		}
+
 	}
 }

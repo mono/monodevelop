@@ -30,7 +30,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	static class WelcomePageService
+	public static class WelcomePageService
 	{
 		static bool visible;
 		static WelcomePageFrame welcomePage;
@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		public static event EventHandler WelcomePageShown;
 		public static event EventHandler WelcomePageHidden;
 
-		public static void Initialize ()
+		internal static void Initialize ()
 		{
 			IdeApp.Workspace.FirstWorkspaceItemOpened += delegate {
 				HideWelcomePage ();

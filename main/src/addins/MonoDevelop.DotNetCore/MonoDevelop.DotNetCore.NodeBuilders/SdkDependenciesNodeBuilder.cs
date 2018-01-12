@@ -62,6 +62,8 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			var dependenciesNode = (SdkDependenciesNode)dataObject;
 			if (dependenciesNode.LoadedDependencies) {
 				AddLoadedDependencyNodes (treeBuilder, dependenciesNode);
+			} else {
+				treeBuilder.AddChildren (dependenciesNode.GetDefaultNodes ());
 			}
 		}
 
@@ -73,6 +75,10 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			} else if (frameworkNodes.Any ()) {
 				var frameworkNode = frameworkNodes.First ();
 				treeBuilder.AddChildren (frameworkNode.GetDependencyNodes ());
+			} else {
+				// Projects sometimes return no dependencies from MSBuild initially so
+				// add the default nodes until the dependencies are updated.
+				treeBuilder.AddChildren (dependenciesNode.GetDefaultNodes ());
 			}
 		}
 

@@ -469,104 +469,13 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			result.Append (')');
 		}
-		
-		internal static string GetIdString (IUnresolvedEntity member)
-		{
-			StringBuilder sb;
-			
-			switch (member.SymbolKind) {
-			case ICSharpCode.NRefactory.TypeSystem.SymbolKind.TypeDefinition:
-				var type = member as IUnresolvedTypeDefinition;
-				sb = new StringBuilder ();
-				sb.Append ("T:");
-				sb.Append (type.FullName);
-				if (type.TypeParameters.Count != 0) {
-					sb.Append ('`');
-					sb.Append (type.TypeParameters.Count);
-				}
-				return sb.ToString ();
-			case SymbolKind.Method:
-				var method = (IUnresolvedMethod)member;
-				sb = new StringBuilder ();
-				sb.Append ("M:");
-				sb.Append (method.DeclaringTypeDefinition.ReflectionName);
-				sb.Append (".");
-				sb.Append (method.Name);
-				if (method.TypeParameters.Count > 0) {
-					sb.Append ("`");
-					sb.Append (method.TypeParameters.Count);
-				}
-				AppendHelpParameterList (sb, method.Parameters);
-				return sb.ToString ();
-			case SymbolKind.Constructor:
-				var constructor = (IUnresolvedMethod)member;
-				sb = new StringBuilder ();
-				sb.Append ("M:");
-				sb.Append (constructor.DeclaringTypeDefinition.FullName);
-				sb.Append (".#ctor");
-				AppendHelpParameterList (sb, constructor.Parameters);
-				return sb.ToString ();
-			case SymbolKind.Destructor: // todo
-				return "todo";
-			case SymbolKind.Property:
-				sb = new StringBuilder ();
-				sb.Append ("P:");
-				sb.Append (member.DeclaringTypeDefinition.ReflectionName);
-				sb.Append (".");
-				sb.Append (member.Name);
-				return sb.ToString ();
-			case SymbolKind.Indexer:
-				var indexer = (IUnresolvedProperty)member;
-				sb = new StringBuilder ();
-				sb.Append ("P:");
-				sb.Append (indexer.DeclaringTypeDefinition.ReflectionName);
-				sb.Append (".Item");
-				AppendHelpParameterList (sb, indexer.Parameters);
-				return sb.ToString ();
-			case SymbolKind.Field:
-				sb = new StringBuilder ();
-				sb.Append ("F:");
-				sb.Append (member.DeclaringTypeDefinition.ReflectionName);
-				sb.Append (".");
-				sb.Append (member.Name);
-				return sb.ToString ();
-			case SymbolKind.Event:
-				sb = new StringBuilder ();
-				sb.Append ("E:");
-				sb.Append (member.DeclaringTypeDefinition.ReflectionName);
-				sb.Append (".");
-				sb.Append (member.Name);
-				return sb.ToString ();
-			case SymbolKind.Operator: // todo
-				return "todo";
-			}
-			return "unknown entity: " + member;
-		}
 
-		static string GetIdString (MethodDefinition methodDefinition)
+		internal string GetIdString (IUnresolvedEntity member)
 		{
-			var sb = new StringBuilder ();
-			sb.Append ("M:");
-			sb.Append (methodDefinition.FullName);
-			if (methodDefinition.HasGenericParameters) {
-				sb.Append ("`");
-				sb.Append (methodDefinition.GenericParameters.Count);
-			}
-//			AppendHelpParameterList (sb, method.Parameters);
-			return sb.ToString ();
+			var result = UnresolvedIdStringProvider.GetIdString (member);
+			// Console.WriteLine (result);
+			return result;
 		}
-
-		static string GetIdString (TypeDefinition typeDefinition)
-		{
-			var sb = new StringBuilder ();
-			sb.Append ("T:");
-			sb.Append (typeDefinition.FullName);
-			if (typeDefinition.HasGenericParameters) {
-				sb.Append ('`');
-				sb.Append (typeDefinition.GenericParameters.Count);
-			}
-			return sb.ToString ();
-		}		
 
 		bool IsMatch (ITreeNavigator nav, string helpUrl, bool searchType)
 		{

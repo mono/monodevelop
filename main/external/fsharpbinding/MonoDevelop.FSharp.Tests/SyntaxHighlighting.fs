@@ -138,6 +138,10 @@ type SyntaxHighlighting() =
     [<TestCase(@"$type$ internal SomeType", "keyword.source.fs")>]
     [<TestCase(@"$#I$ /some/path", "meta.preprocessor.source.fs")>]
     [<TestCase("sprintf \"Some multi\n$line string$\"", "string.quoted.double.source.fs")>]
+    [<TestCase("module $My.Namespace.$Module", "source.fs")>]
+    [<TestCase("module My.Namespace.$Module$", "entity.name.class")>]
+    [<TestCase("module rec My.Namespace.$Module$", "entity.name.class")>]
+    [<TestCase("module rec $My.Namespace$.Module", "source.fs")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 

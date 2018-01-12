@@ -85,10 +85,10 @@ namespace MonoDevelop.Packaging.Gui
 			ProjectHasMetadata = hasMetadata;
 		}
 
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			GtkNuGetPackageMetadataOptionsPanelWidget.OnProjectHasMetadataChanged = null;
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
 	}
 }

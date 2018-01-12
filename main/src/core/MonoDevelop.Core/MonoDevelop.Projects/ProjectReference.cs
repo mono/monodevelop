@@ -492,13 +492,15 @@ namespace MonoDevelop.Projects
 					}
 				} else if (ReferenceType == ReferenceType.Project) {
 					if (ownerProject != null && ownerProject.ParentSolution != null && ReferenceOutputAssembly) {
-						DotNetProject p = ResolveProject (ownerProject.ParentSolution) as DotNetProject;
-						if (p != null) {
+						var p = ResolveProject (ownerProject.ParentSolution);
+						var dotNetProject = p as DotNetProject;
+						if (dotNetProject != null) {
 							string reason;
 
-							if (!ownerProject.CanReferenceProject (p, out reason))
+							if (!ownerProject.CanReferenceProject (dotNetProject, out reason))
 								return reason;
-						}
+						} else if (p == null)
+							return GettextCatalog.GetString ("Project not found");
 					}
 				} else if (ReferenceType == ReferenceType.Assembly) {
 					if (!File.Exists (hintPath))

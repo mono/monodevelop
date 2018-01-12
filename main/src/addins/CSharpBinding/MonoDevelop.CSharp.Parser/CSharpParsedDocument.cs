@@ -59,9 +59,11 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			tagComments = MonoDevelop.Ide.Tasks.CommentTag.SpecialCommentTags.Select (t => t.Tag).ToArray ();
 		}
+		bool isAdHocProject;
 
-		public CSharpParsedDocument (string fileName) : base (fileName)
+		public CSharpParsedDocument (Ide.TypeSystem.ParseOptions options,  string fileName) : base (fileName)
 		{
+			isAdHocProject = options.IsAdhocProject;
 		}
 		
 
@@ -481,8 +483,38 @@ namespace MonoDevelop.CSharp.Parser
 		}
 
 		static readonly IReadOnlyList<Error> emptyErrors = new Error[0];
-		IReadOnlyList<Error> errors;
+
 		SemaphoreSlim errorLock = new SemaphoreSlim (1, 1);
+
+		static string [] lexicalError = {
+			"CS0594", // ERR_FloatOverflow
+			"CS0595", // ERR_InvalidReal
+			"CS1009", // ERR_IllegalEscape
+			"CS1010", // ERR_NewlineInConst
+			"CS1011", // ERR_EmptyCharConst
+			"CS1012", // ERR_TooManyCharsInConst
+			"CS1015", // ERR_TypeExpected
+			"CS1021", // ERR_IntOverflow
+			"CS1032", // ERR_PPDefFollowsTokenpp
+			"CS1035", // ERR_OpenEndedComment
+			"CS1039", // ERR_UnterminatedStringLit
+			"CS1040", // ERR_BadDirectivePlacementpp
+			"CS1056", // ERR_UnexpectedCharacter
+			"CS1056", // ERR_UnexpectedCharacter_EscapedBackslash
+			"CS1646", // ERR_ExpectedVerbatimLiteral
+			"CS0078", // WRN_LowercaseEllSuffix
+			"CS1002", // ; expected
+			"CS1519", // Invalid token ';' in class, struct, or interface member declaration
+			"CS1031", // Type expected
+			"CS0106", // The modifier 'readonly' is not valid for this item
+			"CS1576", // The line number specified for #line directive is missing or invalid
+			"CS1513" // } expected
+		};
+
+		static bool SkipError (bool isAdhocProject, string errorId)
+		{
+			return isAdhocProject && !lexicalError.Contains (errorId);
+		}
 
 		public override async Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -490,24 +522,20 @@ namespace MonoDevelop.CSharp.Parser
 			if (model == null)
 				return emptyErrors;
 
-			if (errors != null)
-				return errors;
-			
 			bool locked = await errorLock.WaitAsync (Timeout.Infinite, cancellationToken).ConfigureAwait (false);
+			IReadOnlyList<Error> errors;
 			try {
-				if (errors == null) {
-					try {
-						errors = model
-							.GetDiagnostics (null, cancellationToken)
-							.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
-							.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.Id, diag.GetMessage (), GetRegion (diag)) { Tag = diag })
-							.ToList ();
-					} catch (OperationCanceledException) {
-						errors = emptyErrors;
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while getting diagnostics.", e);
-						errors = emptyErrors;
-					}
+				try {
+					errors = model
+						.GetDiagnostics (null, cancellationToken)
+						.Where (diag => !SkipError(isAdHocProject, diag.Id) && (diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning))
+						.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.Id, diag.GetMessage (), GetRegion (diag)) { Tag = diag })
+						.ToList ();
+				} catch (OperationCanceledException) {
+					errors = emptyErrors;
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while getting diagnostics.", e);
+					errors = emptyErrors;
 				}
 			} finally {
 				if (locked)

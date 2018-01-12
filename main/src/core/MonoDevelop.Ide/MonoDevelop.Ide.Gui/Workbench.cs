@@ -890,6 +890,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 			IWorkbenchWindow window = (IWorkbenchWindow) sender;
 			var doc = FindDocument (window);
+			if (doc == null)
+				return;
+
 			window.Closing -= OnWindowClosing;
 			window.Closed -= OnWindowClosed;
 			documents = documents.Remove (doc);

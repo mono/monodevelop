@@ -318,6 +318,9 @@
     <Folder Include="MonoDevelop.UnitTesting.VsTest\" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.UnitTesting.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <VsTestConsole Include="..\..\..\packages\Microsoft.TestPlatform.15.5.0-preview-20170919-04\tools\net451\**\*.*">
       <Visible>false</Visible>
     </VsTestConsole>

@@ -43,6 +43,16 @@ namespace MonoDevelop.UnitTesting.NUnit
 			this.testInfo = tinfo;
 			this.rootSuite = rootSuite;
 			this.TestId = tinfo.TestId;
+			this.canMergeWithParent =  !string.IsNullOrEmpty (tinfo.PathName) &&
+									   string.IsNullOrEmpty (tinfo.FixtureTypeName) &&
+									   string.IsNullOrEmpty (tinfo.FixtureTypeNamespace);
+		}
+
+		bool canMergeWithParent;
+		public override bool CanMergeWithParent {
+			get {
+				return canMergeWithParent;
+			}
 		}
 		
 		public override bool HasTests {

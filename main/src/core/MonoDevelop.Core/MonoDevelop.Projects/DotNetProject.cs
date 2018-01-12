@@ -911,9 +911,9 @@ namespace MonoDevelop.Projects
 		{
 			List<AssemblyReference> result = new List<AssemblyReference> ();
 			if (CheckUseMSBuildEngine (configuration)) {
-					// Get the references list from the msbuild project
-					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-						result = await RunResolveAssemblyReferencesTarget (configuration);
+				// Get the references list from the msbuild project
+				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
+					result.AddRange (await RunResolveAssemblyReferencesTarget (configuration));
 			} else {
 				foreach (ProjectReference pref in References) {
 					if (pref.ReferenceType != ReferenceType.Project) {
