@@ -174,7 +174,6 @@
     <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticRunner.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionContainer.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\IssueMarker.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticFixDescriptor.cs" />
     <Compile Include="MonoDevelop.Refactoring\Commands.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringSymbolInfo.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeFix.cs" />
