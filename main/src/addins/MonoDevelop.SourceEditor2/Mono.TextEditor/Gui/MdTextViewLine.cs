@@ -95,7 +95,7 @@ namespace Mono.TextEditor
 
 		public TextViewLineChange Change => throw new System.NotImplementedException ();
 
-		private SnapshotPoint FixBufferPosition (SnapshotPoint bufferPosition)
+		SnapshotPoint FixBufferPosition (SnapshotPoint bufferPosition)
 		{
 			if (bufferPosition.Snapshot != this.lineSpan.Snapshot)
 				throw new ArgumentException ("The specified SnapshotPoint is on a different ITextSnapshot than this SnapshotPoint.");
