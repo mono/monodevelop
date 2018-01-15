@@ -1,4 +1,4 @@
-﻿//
+//
 // WavedLineMarker.cs
 //
 // Author:
@@ -34,14 +34,12 @@ namespace MonoDevelop.SourceEditor
 {
 	class GenericUnderlineMarker : UnderlineTextSegmentMarker, MonoDevelop.Ide.Editor.IGenericTextSegmentMarker
 	{
-		HslColor color;
-
 		HslColor MonoDevelop.Ide.Editor.IGenericTextSegmentMarker.Color {
 			get {
-				return color;
+				return Color;
 			}
 			set {
-				color = value;
+				Color = value;
 			}
 		}
 
@@ -95,7 +93,7 @@ namespace MonoDevelop.SourceEditor
 				return;
 			
 			double height = editor.LineHeight / 5;
-			cr.SetSourceColor (color);
+			cr.SetSourceColor (Color);
 			if (effect == MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.WavedLine) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, drawFrom, y + editor.LineHeight - height, drawTo - drawFrom, height);
 			} else if (effect == MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.DottedLine) {
