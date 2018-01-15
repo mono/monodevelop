@@ -301,6 +301,7 @@
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\Indent.cs" />
     <Compile Include="MonoDevelop.CSharp\DeclaredSymbolInfo.cs" />
     <Compile Include="MonoDevelop.CSharp\ProjectSearchCategory.cs" />
+    <Compile Include="Razor\ContainedDocumentPreserveFormattingRule.cs" />
     <Compile Include="Razor\IMonoDevelopContainedLanguageHost.cs" />
     <Compile Include="Razor\IMyRoslynCompletionDataProvider.cs" />
     <Compile Include="Razor\MonoDevelopContainedDocument.cs" />
