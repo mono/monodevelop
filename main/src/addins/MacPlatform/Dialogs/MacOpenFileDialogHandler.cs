@@ -123,33 +123,40 @@ namespace MonoDevelop.MacIntegration
 								if (encodingSelector != null)
 									encodingSelector.Enabled = !workbenchViewerSelected;
 								if (closeSolutionButton != null) {
-									if (closeSolutionButton.Hidden == workbenchViewerSelected) {
-										closeSolutionButton.Hidden = !workbenchViewerSelected;
-										CenterAccessoryView (box);
+									if (closeSolutionButton.Enabled != workbenchViewerSelected) {
+										closeSolutionButton.Enabled = workbenchViewerSelected;
+										closeSolutionButton.State = workbenchViewerSelected ? NSCellStateValue.On : NSCellStateValue.Off;
 									}
 								}
 							};
 						}
-						
+
+						if (IdeApp.Workspace.IsOpen) {
+							closeSolutionButton = new NSButton {
+								Title = GettextCatalog.GetString ("Close current workspace"),
+								Enabled = false,
+								State = NSCellStateValue.Off,
+							};
+
+							closeSolutionButton.SetButtonType (NSButtonType.Switch);
+							closeSolutionButton.SizeToFit ();
+
+							var closeSolutionLabelBox = new MDAlignment (new MDLabel (string.Empty), true);
+							var closeSolutionBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
+								{ closeSolutionLabelBox },
+								{ new MDAlignment (closeSolutionButton, true) { MinWidth = 200 } }
+							};
+
+							labels.Add (closeSolutionLabelBox);
+							box.Add (closeSolutionBox);
+						}
+
 						var viewSelLabel = new MDLabel (GettextCatalog.GetString ("Open with:"));
 						var viewSelBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
 							{ viewSelLabel, true },
 							{ new MDAlignment (viewerSelector, true) { MinWidth = 200 }  }
 						};
-						
-						if (IdeApp.Workspace.IsOpen) {
-							closeSolutionButton = new NSButton {
-								Title = GettextCatalog.GetString ("Close current workspace"),
-								Hidden = true,
-								State = NSCellStateValue.On,
-							};
-							
-							closeSolutionButton.SetButtonType (NSButtonType.Switch);
-							closeSolutionButton.SizeToFit ();
-							
-							viewSelBox.Add (closeSolutionButton, true);
-						}
-						
+
 						box.Add (viewSelBox);
 					}
 				}
@@ -172,9 +179,10 @@ namespace MonoDevelop.MacIntegration
 					bool slnViewerSelected = false;
 					if (viewerSelector != null) {
 						slnViewerSelected = FillViewers (currentViewers, viewerSelector, closeSolutionButton, selection);
-						if (closeSolutionButton != null)
-							closeSolutionButton.Hidden = !slnViewerSelected;
-						CenterAccessoryView (box);
+						if (closeSolutionButton != null) {
+							closeSolutionButton.Enabled = slnViewerSelected;
+							closeSolutionButton.State = slnViewerSelected ? NSCellStateValue.On : NSCellStateValue.Off;
+						}
 					} 
 					if (encodingSelector != null)
 						encodingSelector.Enabled = !slnViewerSelected;
@@ -261,24 +269,6 @@ namespace MonoDevelop.MacIntegration
 		static bool CanBeOpenedInAssemblyBrowser (FilePath filename)
 		{
 			return string.Equals (filename.Extension, ".exe", StringComparison.OrdinalIgnoreCase) || string.Equals (filename.Extension, ".dll", StringComparison.OrdinalIgnoreCase);
-		}
-
-		static void CenterAccessoryView (MDBox box)
-		{
-			box.Layout ();
-
-			//re-center the accessory view in its parent, Cocoa does this for us initially and after
-			//resizing the window, but we need to do it again after altering its layout
-			var superView = box.View.Superview;
-			if (superView == null)
-				return;
-			
-			var superFrame = superView.Frame;
-			var frame = box.View.Frame;
-			//not sure why it's ceiling, but this matches the Cocoa layout
-			frame.X = (float)Math.Ceiling ((superFrame.Width - frame.Width) / 2);
-			frame.Y = (float)Math.Ceiling ((superFrame.Height - frame.Height) / 2);
-			box.View.Frame = frame;
 		}
 	}
 }
