@@ -112,6 +112,7 @@ type ProjectTests() =
                 project.FileName <- FilePath(projectPath)
                 project.AddFile(path / "Controllers\\HomeController.fs", "Compile") |> ignore
                 do! project.SaveAsync(monitor)
+                project.Dispose()
                 let xml = File.ReadAllText projectPath
                 printfn "%s" xml
                 let expected =

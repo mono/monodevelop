@@ -49,11 +49,46 @@ namespace MonoDevelop.CodeIssues
 	static class CodeDiagnosticRunner
 	{
 		static IEnumerable<CodeDiagnosticDescriptor> diagnostics;
+		static Dictionary<string, CodeDiagnosticDescriptor> diagnosticTable;
+		static SemaphoreSlim diagnosticLock = new SemaphoreSlim (1, 1);
 		static TraceListener consoleTraceListener = new ConsoleTraceListener ();
 
 		static bool SkipContext (DocumentContext ctx)
 		{
 			return (ctx.IsAdHocProject || !(ctx.Project is MonoDevelop.Projects.DotNetProject));
+		}
+
+		static async Task GetDescriptorTable (AnalysisDocument analysisDocument, CancellationToken cancellationToken)
+		{
+			if (diagnosticTable != null)
+				return;
+			
+			bool locked = await diagnosticLock.WaitAsync (Timeout.Infinite, cancellationToken).ConfigureAwait (false);
+			if (diagnosticTable != null)
+				return;
+
+			try {
+				var language = CodeRefactoringService.MimeTypeToLanguage (analysisDocument.Editor.MimeType);
+				var alreadyAdded = new HashSet<Type> ();
+
+				var table = new Dictionary<string, CodeDiagnosticDescriptor> ();
+
+				diagnostics = await CodeRefactoringService.GetCodeDiagnosticsAsync (analysisDocument.DocumentContext, language, cancellationToken);
+				foreach (var diagnostic in diagnostics) {
+					if (!alreadyAdded.Add (diagnostic.DiagnosticAnalyzerType))
+						continue;
+					var provider = diagnostic.GetProvider ();
+					if (provider == null)
+						continue;
+					foreach (var diag in provider.SupportedDiagnostics)
+						table [diag.Id] = diagnostic;
+				}
+
+				diagnosticTable = table;
+			} finally {
+				if (locked)
+					diagnosticLock.Release ();
+			}
 		}
 
 		// Old code, until we get EditorFeatures into composition so we can switch code fix service.
@@ -73,23 +108,8 @@ namespace MonoDevelop.CodeIssues
 
 				var providers = new List<DiagnosticAnalyzer> ();
 				var alreadyAdded = new HashSet<Type>();
-				if (diagnostics == null) {
-					diagnostics = await CodeRefactoringService.GetCodeDiagnosticsAsync (analysisDocument.DocumentContext, language, cancellationToken);
-				}
-				var diagnosticTable = new Dictionary<string, CodeDiagnosticDescriptor> ();
-				foreach (var diagnostic in diagnostics) {
-					if (alreadyAdded.Contains (diagnostic.DiagnosticAnalyzerType))
-						continue;
-					if (!diagnostic.IsEnabled)
-						continue;
-					alreadyAdded.Add (diagnostic.DiagnosticAnalyzerType);
-					var provider = diagnostic.GetProvider ();
-					if (provider == null)
-						continue;
-					foreach (var diag in provider.SupportedDiagnostics)
-						diagnosticTable [diag.Id] = diagnostic;
-					providers.Add (provider);
-				}
+
+				await GetDescriptorTable (analysisDocument, cancellationToken);
 
 				if (providers.Count == 0 || cancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<Result> ();
@@ -164,6 +184,9 @@ namespace MonoDevelop.CodeIssues
 #if DEBUG
 				Debug.Listeners.Add (consoleTraceListener);
 #endif
+
+				await GetDescriptorTable (analysisDocument, cancellationToken);
+
 				var resultList = new List<Result> (results.Length);
 				foreach (var data in results) {
 					if (data.Id.StartsWith ("CS", StringComparison.Ordinal))
@@ -172,7 +195,10 @@ namespace MonoDevelop.CodeIssues
 					if (DataHasTag (data, WellKnownDiagnosticTags.EditAndContinue))
 						continue;
 
-					var diagnostic = await data.ToDiagnosticAsync (input.AnalysisDocument.Project, cancellationToken);
+					if (!diagnosticTable [data.Id].IsEnabled)
+						continue;
+					
+					var diagnostic = await data.ToDiagnosticAsync (analysisDocument, cancellationToken);
 					resultList.Add (new DiagnosticResult (diagnostic));
 				}
 				return resultList;
@@ -187,9 +213,27 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
+		static async Task<Diagnostic> ToDiagnosticAsync (this DiagnosticData data, AnalysisDocument analysisDocument, CancellationToken cancellationToken)
+		{
+			var project = analysisDocument.DocumentContext.AnalysisDocument.Project;
+			var location = await data.DataLocation.ConvertLocationAsync (project, cancellationToken).ConfigureAwait (false);
+			var additionalLocations = await data.AdditionalLocations.ConvertLocationsAsync (project, cancellationToken).ConfigureAwait (false);
+
+			var severity = diagnosticTable [data.Id].GetSeverity (data.Id, data.Severity);
+			return Diagnostic.Create (
+				data.Id, data.Category, data.Message, severity, data.DefaultSeverity,
+				data.IsEnabledByDefault, GetWarningLevel (severity), data.IsSuppressed, data.Title, data.Description, data.HelpLink,
+				location, additionalLocations, customTags: data.CustomTags, properties: data.Properties);
+		}
+
 		static bool DataHasTag (DiagnosticData desc, string tag)
 		{
 			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
+		}
+
+		static int GetWarningLevel (DiagnosticSeverity severity)
+		{
+			return severity == DiagnosticSeverity.Error ? 0 : 1;
 		}
 
 	}

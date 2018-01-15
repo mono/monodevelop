@@ -38,6 +38,7 @@ namespace MonoDevelop.AnalysisCore
 	partial class MonoDevelopWorkspaceDiagnosticAnalyzerProviderService : IWorkspaceDiagnosticAnalyzerProviderService
 	{
 		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
+		const bool ClrHeapEnabled = false;
 
 		static readonly AnalyzerAssemblyLoader analyzerAssemblyLoader = new AnalyzerAssemblyLoader ();
 		readonly ImmutableArray<HostDiagnosticAnalyzerPackage> hostDiagnosticAnalyzerInfo;
@@ -70,11 +71,14 @@ namespace MonoDevelop.AnalysisCore
 					case "RefactoringEssentials":
 					case "Refactoring Essentials":
 					case "Microsoft.CodeAnalysis.CSharp":
+					case "Microsoft.CodeAnalysis.CSharp.Features":
 					case "Microsoft.CodeAnalysis.Features":
 					case "Microsoft.CodeAnalysis.VisualBasic.Features":
-					case "Microsoft.CodeAnalysis.CSharp.Features":
-
+					case "Microsoft.CodeAnalysis.VisualBasic":
+						break;
 					case "ClrHeapAllocationAnalyzer":
+						if (!ClrHeapEnabled)
+							continue;
 						break;
 					//blacklist
 					case "FSharpBinding":

@@ -13,6 +13,10 @@
       <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.CSharp.$(NuGetVersionRoslyn)\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>$(ReferencesRoslynCopyToOutput)</Private>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.EditorFeatures">
+      <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.EditorFeatures.$(NuGetVersionRoslyn)\lib\net46\Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll</HintPath>
+      <Private>$(ReferencesRoslynCopyToOutput)</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
       <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.CSharp.Features.$(NuGetVersionRoslyn)\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
       <Private>$(ReferencesRoslynCopyToOutput)</Private>

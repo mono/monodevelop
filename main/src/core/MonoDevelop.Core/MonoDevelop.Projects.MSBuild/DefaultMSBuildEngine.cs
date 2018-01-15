@@ -1241,13 +1241,13 @@ namespace MonoDevelop.Projects.MSBuild
 						conditionCache [condition] = ce;
 					}
 
-					if (!ce.CanEvaluateToBool (context))
-						throw new InvalidProjectFileException (String.Format ("Can not evaluate \"{0}\" to bool.", condition));
-
 					if (collectConditionedProperties)
 						ce.CollectConditionProperties (project.ConditionedProperties);
 
-					return ce.BoolEvaluate (context);
+					if (!ce.TryEvaluateToBool (context, out bool value))
+						throw new InvalidProjectFileException (String.Format ("Can not evaluate \"{0}\" to bool.", condition));
+
+					return value;
 				} catch (ExpressionParseException epe) {
 					throw new InvalidProjectFileException (
 						String.Format ("Unable to parse condition \"{0}\" : {1}", condition, epe.Message),

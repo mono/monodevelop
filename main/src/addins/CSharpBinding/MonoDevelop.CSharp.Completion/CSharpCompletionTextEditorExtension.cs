@@ -254,15 +254,8 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				}
 			case CompletionTriggerReason.BackspaceOrDeleteCommand:
-				//char completionChar = Editor.GetCharAt (completionContext.TriggerOffset - 1);
-				//Console.WriteLine ("completion char: " + completionChar);
-				//	var timer = Counters.ResolveTime.BeginTiming ();
-				char ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
-				char ch2 = completionContext.TriggerOffset < Editor.Length ? Editor.GetCharAt (completionContext.TriggerOffset) : '\0';
-				if (!IsIdentifierPart (ch) && !IsIdentifierPart (ch2))
-					return null;
 				try {
-					return InternalHandleCodeCompletion (completionContext, new CompletionTriggerInfo (CompletionTriggerReason.BackspaceOrDeleteCommand, ch), triggerWordLength, token).ContinueWith (t => {
+					return InternalHandleCodeCompletion (completionContext, triggerInfo, triggerWordLength, token).ContinueWith (t => {
 						var result = (CompletionDataList)t.Result;
 						if (result == null)
 							return null;
@@ -282,7 +275,7 @@ namespace MonoDevelop.CSharp.Completion
 					//				timer.Dispose ();
 				}
 			default:
-				ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
+				var ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
 				return InternalHandleCodeCompletion (completionContext, new CompletionTriggerInfo (CompletionTriggerReason.CompletionCommand, ch), triggerWordLength, default (CancellationToken));
 			}
 		}
@@ -450,9 +443,9 @@ namespace MonoDevelop.CSharp.Completion
 			}
 
 			Counters.ProcessCodeCompletion.Trace ("C#: Getting completions");
+			var customOptions = DocumentContext.RoslynWorkspace.Options.WithChangedOption (CompletionOptions.TriggerOnDeletion, LanguageNames.CSharp, true);
 
-			var completionList = await Task.Run (() => cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, cancellationToken: token)).ConfigureAwait (false);
-
+			var completionList = await Task.Run (() => cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, options: customOptions, cancellationToken: token)).ConfigureAwait (false);
 			Counters.ProcessCodeCompletion.Trace ("C#: Got completions");
 
 			if (completionList == null)
