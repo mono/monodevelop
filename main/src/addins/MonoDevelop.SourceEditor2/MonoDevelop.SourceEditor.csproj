@@ -182,6 +182,7 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Mono.TextEditor\Gui\MdTextViewLine.cs" />
     <Compile Include="Mono.TextEditor\Gui\MdTextViewLineCollection.cs" />
+    <Compile Include="Mono.TextEditor\Gui\MdViewScroller.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextArea.ITextView.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextArea.ITextView.MouseHover.cs" />
     <Compile Include="MonoDevelop.SourceEditor\EditActions.cs" />
