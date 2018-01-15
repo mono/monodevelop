@@ -89,7 +89,7 @@ namespace MonoDevelop.MacIntegration
 					var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
 
 					if (filterPopup != null) {
-						var filterLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Show files:")) { Alignment = NSTextAlignment.Right }, true);
+						var filterLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Show Files:")) { Alignment = NSTextAlignment.Right }, true);
 						var filterPopupAlignment = new MDAlignment (filterPopup, true) { MinWidth = 200 };
 						var filterBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
 							{ filterLabel },
@@ -158,7 +158,7 @@ namespace MonoDevelop.MacIntegration
 							box.Add (closeSolutionBox);
 						}
 
-						var viewSelLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Open with:")) { Alignment = NSTextAlignment.Right }, true);
+						var viewSelLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Open With:")) { Alignment = NSTextAlignment.Right }, true);
 						var viewSelectorAlignemnt = new MDAlignment (viewerSelector, true) { MinWidth = 200 };
 						var viewSelBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
 							{ viewSelLabel },
