@@ -985,7 +985,7 @@ namespace MonoDevelop.Projects
 			return result;
 		}
 
-		AsyncCriticalSection referenceCacheLock = new AsyncCriticalSection ();
+		SemaphoreSlim referenceCacheLock = new SemaphoreSlim (1, 1);
 		Dictionary<string, List<AssemblyReference>> referenceCache = new Dictionary<string, List<AssemblyReference>> ();
 
 		async Task<List<AssemblyReference>> RunResolveAssemblyReferencesTarget (ConfigurationSelector configuration)
@@ -993,7 +993,8 @@ namespace MonoDevelop.Projects
 			List<AssemblyReference> refs = null;
 			var confId = (GetConfiguration (configuration) ?? DefaultConfiguration)?.Id ?? "";
 
-			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false)) {
+			try {
+				await referenceCacheLock.WaitAsync ().ConfigureAwait (false);
 				// Check the cache before starting the task
 				if (referenceCache.TryGetValue (confId, out refs))
 					return refs;
@@ -1011,6 +1012,8 @@ namespace MonoDevelop.Projects
 				refs = result.Items.Select (i => new AssemblyReference (i.Include, i.Metadata)).ToList ();
 
 				referenceCache [confId] = refs;
+			} finally {
+				referenceCacheLock.Release ();
 			}
 			return refs;
 		}
@@ -1035,14 +1038,15 @@ namespace MonoDevelop.Projects
 		}
 
 		Dictionary<string, List<PackageDependency>> packageDependenciesCache = new Dictionary<string, List<PackageDependency>> ();
-		AsyncCriticalSection packageDependenciesCacheLock = new AsyncCriticalSection ();
+		SemaphoreSlim packageDependenciesCacheLock = new SemaphoreSlim (1, 1);
 
 		async Task<List<PackageDependency>> RunResolvePackageDependenciesTarget (ConfigurationSelector configuration, CancellationToken cancellationToken)
 		{
 			List<PackageDependency> packageDependencies = null;
 			var confId = (GetConfiguration (configuration) ?? DefaultConfiguration)?.Id ?? "";
 
-			using (await packageDependenciesCacheLock.EnterAsync ().ConfigureAwait (false)) {
+			try {
+				await packageDependenciesCacheLock.WaitAsync ().ConfigureAwait (false);
 				// Check the cache before starting the task
 				if (packageDependenciesCache.TryGetValue (confId, out packageDependencies))
 					return packageDependencies;
@@ -1063,6 +1067,8 @@ namespace MonoDevelop.Projects
 				packageDependencies = result.Items.Select (i => PackageDependency.Create (i)).Where (dependency => dependency != null).ToList ();
 
 				packageDependenciesCache [confId] = packageDependencies;
+			} finally {
+				packageDependenciesCacheLock.Release ();
 			}
 
 			return packageDependencies;
@@ -1088,11 +1094,18 @@ namespace MonoDevelop.Projects
 		{
 			// Clean the reference and package cache
 
-			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false))
+			try {
+				await referenceCacheLock.WaitAsync ().ConfigureAwait (false);
 				referenceCache.Clear ();
-
-			using (await packageDependenciesCacheLock.EnterAsync ().ConfigureAwait (false))
+			} finally {
+				referenceCacheLock.Release ();
+			}
+			try {
+				await packageDependenciesCacheLock.WaitAsync ().ConfigureAwait (false);
 				packageDependenciesCache.Clear ();
+			} finally {
+				packageDependenciesCacheLock.Release ();
+			}
 			
 			await base.OnClearCachedData ();
 		}
