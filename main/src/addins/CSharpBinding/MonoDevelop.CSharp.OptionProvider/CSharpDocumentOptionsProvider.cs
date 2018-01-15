@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 			} catch (Exception e) {
 				LoggingService.LogError("Error while loading coding conventions.", e);
 			}
-			return new DocumentOptions(policy.CreateOptions (textpolicy), conventions.CurrentConventions);
+			return new DocumentOptions (policy.CreateOptions (textpolicy), conventions?.CurrentConventions);
 		}
 
 		static string GetPath(Document document)
@@ -102,15 +102,17 @@ namespace MonoDevelop.CSharp.OptionProvider
 
 			public bool TryGetDocumentOption (Document document, OptionKey option, OptionSet underlyingOptions, out object value)
 			{
-				var editorConfigPersistence = option.Option.StorageLocations.OfType<IEditorConfigStorageLocation> ().SingleOrDefault ();
-				if (editorConfigPersistence != null) {
-					var allRawConventions = codingConventionsSnapshot.AllRawConventions;
-					try {
-						var underlyingOption = underlyingOptions.GetOption (option);
-						if (editorConfigPersistence.TryGetOption (underlyingOption, allRawConventions, option.Option.Type, out value))
-							return true;
-					} catch (Exception ex) {
-						LoggingService.LogError ("Error while getting editor config preferences.", ex);
+				if (codingConventionsSnapshot != null) {
+					var editorConfigPersistence = option.Option.StorageLocations.OfType<IEditorConfigStorageLocation> ().SingleOrDefault ();
+					if (editorConfigPersistence != null) {
+						var allRawConventions = codingConventionsSnapshot.AllRawConventions;
+						try {
+							var underlyingOption = underlyingOptions.GetOption (option);
+							if (editorConfigPersistence.TryGetOption (underlyingOption, allRawConventions, option.Option.Type, out value))
+								return true;
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error while getting editor config preferences.", ex);
+						}
 					}
 				}
 				var result = optionSet.GetOption (option);

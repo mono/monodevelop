@@ -48,8 +48,8 @@ namespace MonoDevelop.Ide.Editor
 			if (result == null)
 				return null;
 			lock (contextCacheLock) {
-				if (contextCache.ContainsKey (fileName))
-					return contextCache [fileName];
+				if (contextCache.TryGetValue (fileName, out result))
+					return result;
 				
 				contextCache = contextCache.Add (fileName, result);
 
@@ -113,7 +113,11 @@ namespace MonoDevelop.Ide.Editor
 			public void StopWatching (string fileName, string directoryPath)
 			{
 				lock (watchers) {
-					watchers.Remove (directoryPath + Path.DirectorySeparatorChar.ToString () + fileName);
+					var key = directoryPath + Path.DirectorySeparatorChar.ToString () + fileName;
+					if (watchers.TryGetValue (key, out FileSystemWatcher watcher)) {
+						watcher.Dispose ();
+						watchers.Remove (key);
+					}
 				}
 			}
 		}

@@ -9678,7 +9678,6 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\KeyActions.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\D152AccessibilityPanel.cs" />
-    <Compile Include="MonoDevelop.Ide.EditorConfig\EditorConfigDocumentOptionsProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditorConfigService.cs" />
   </ItemGroup>
   <ItemGroup>
