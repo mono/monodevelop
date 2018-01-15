@@ -49,6 +49,8 @@ namespace Mono.TextEditor
 
 		bool _isClosed = false;
 
+		private IViewScroller _viewScroller;
+
 		private PropertyCollection _properties = new PropertyCollection ();
 
 		//Only one view at a time will have aggregate focus, so keep track of it so that (when sending aggregate focus changed events)
@@ -277,7 +279,7 @@ namespace Mono.TextEditor
 
 		public IViewScroller ViewScroller {
 			get {
-				throw new NotImplementedException ();
+				return _viewScroller ?? (_viewScroller = new MdViewScroller (this));
 			}
 		}
 
