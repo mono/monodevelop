@@ -133,6 +133,7 @@ namespace MonoDevelop.Components.MainToolbar
 				new SearchMenuModel (GettextCatalog.GetString ("Search Files"), "file"),
 				new SearchMenuModel (GettextCatalog.GetString ("Search Types"), "type"),
 				new SearchMenuModel (GettextCatalog.GetString ("Search Members"), "member"),
+				new SearchMenuModel (GettextCatalog.GetString ("Search Commands"), "command"),
 			};
 
 			// Attach menu category handlers.
