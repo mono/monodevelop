@@ -71,6 +71,16 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		internal bool EvaluatedValueModified {
+			get { return (flags & LinkedPropertyFlags.EvaluatedValueModified) != 0; }
+			set {
+				if (value)
+					flags |= LinkedPropertyFlags.EvaluatedValueModified;
+				else
+					flags &= ~LinkedPropertyFlags.EvaluatedValueModified;
+			}
+		}
+
 		public MSBuildProperty LinkedProperty {
 			get {
 				return linkedProperty;
