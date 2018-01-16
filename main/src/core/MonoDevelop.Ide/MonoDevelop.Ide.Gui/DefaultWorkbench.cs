@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
-				if (DockNotebook.ActiveNotebook == null || DockNotebook.ActiveNotebook.CurrentTabIndex < 0 || DockNotebook.ActiveNotebook.CurrentTabIndex >= DockNotebook.ActiveNotebook.TabCount)  {
+				if (DockNotebook.ActiveNotebook == null || DockNotebook.ActiveNotebook.CurrentTab == null || DockNotebook.ActiveNotebook.ContainsTab (DockNotebook.ActiveNotebook.CurrentTab))  {
 					return null;
 				}
 				return (IWorkbenchWindow) DockNotebook.ActiveNotebook.CurrentTab.Content;
@@ -1097,9 +1097,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal void ShowPopup (DockNotebook notebook, int tabIndex, Gdk.EventButton evt)
+		internal void ShowPopup (DockNotebook notebook, DockNotebookTab tab, Gdk.EventButton evt)
 		{
-			notebook.CurrentTabIndex = tabIndex;
+			notebook.CurrentTab = tab;
 			IdeApp.CommandService.ShowContextMenu (notebook, evt, "/MonoDevelop/Ide/ContextMenu/DocumentTab");
 		}
 		
@@ -1315,14 +1315,14 @@ namespace MonoDevelop.Ide.Gui
 			((SdiWorkspaceWindow)e.Tab.Content).CloseWindow (false, true).Ignore();
 		}
 
-		internal void RemoveTab (DockNotebook tabControl, int pageNum, bool animate)
+		internal void RemoveTab (DockNotebook tabControl, DockNotebookTab tab, bool animate)
 		{
 			try {
 				// Weird switch page events are fired when a tab is removed.
 				// This flag avoids unneeded events.
 				LockActiveWindowChangeEvent ();
 				IWorkbenchWindow w = ActiveWorkbenchWindow;
-				tabControl.RemoveTab (pageNum, animate);
+				tabControl.RemoveTab (tab, animate);
 			} finally {
 				UnlockActiveWindowChangeEvent ();
 			}

@@ -349,7 +349,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 				if (placementDelegate != null) {
 					var tab = notebook.CurrentTab;
-					notebook.RemoveTab (tab.Index, true); 
+					notebook.RemoveTab (tab, true); 
 					placementDelegate (notebook, tab, allocation, curX, curY);
 				} else {
 					((SdiWorkspaceWindow)frame.Content).SelectWindow ();

@@ -33,6 +33,7 @@ using System.Collections.ObjectModel;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -41,10 +42,12 @@ namespace MonoDevelop.Components.DockNotebook
 	class DockNotebook : Gtk.VBox
 	{
 		List<DockNotebookTab> pages = new List<DockNotebookTab> ();
-		List<DockNotebookTab> pagesHistory = new List<DockNotebookTab> ();
+		List<DockNotebookTab> previewPages = new List<DockNotebookTab> ();
+		List <DockNotebookTab> pagesHistory = new List<DockNotebookTab> ();
 		TabStrip tabStrip;
 		Gtk.EventBox contentBox;
 		ReadOnlyCollection<DockNotebookTab> pagesCol;
+		ReadOnlyCollection<DockNotebookTab> previewPagesCol;
 		const int MAX_LASTACTIVEWINDOWS = 10;
 
 		DockNotebookTab currentTab;
@@ -66,6 +69,7 @@ namespace MonoDevelop.Components.DockNotebook
 		public DockNotebook ()
 		{
 			pagesCol = new ReadOnlyCollection<DockNotebookTab> (pages);
+			previewPagesCol = new ReadOnlyCollection<DockNotebookTab> (previewPages);
 			AddEvents ((Int32)(EventMask.AllEventsMask));
 
 			tabStrip = new TabStrip (this);
@@ -131,6 +135,17 @@ namespace MonoDevelop.Components.DockNotebook
 
 		Cursor fleurCursor = new Cursor (CursorType.Fleur);
 
+		internal bool ContainsTab (DockNotebookTab tab)
+		{
+			if (Tabs.Any (t => tab == t)) {
+				return true;
+			}
+			if (PreviewTabs.Any (t => tab == t)) {
+				return true;
+			}
+			return false;
+		}
+
 		public event TabsReorderedHandler TabsReordered;
 		public event EventHandler<TabEventArgs> TabClosed;
 		public event EventHandler<TabEventArgs> TabActivated;
@@ -168,6 +183,10 @@ namespace MonoDevelop.Components.DockNotebook
 			get { return pagesCol; }
 		}
 
+		public ReadOnlyCollection<DockNotebookTab> PreviewTabs {
+			get { return previewPagesCol; }
+		}
+
 		public DockNotebookTab CurrentTab {
 			get { return currentTab; }
 			set {
@@ -196,18 +215,9 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 		}
 
-		public int CurrentTabIndex {
-			get { return currentTab != null ? currentTab.Index : -1; }
-			set { 
-				if (value > pages.Count - 1)
-					CurrentTab = null;
-				else
-					CurrentTab = pages [value]; 
-			}
-		}
-
-		void SelectLastActiveTab (int lastClosed)
+		void SelectLastActiveTab (DockNotebookTab lastClosed)
 		{
+			var container = lastClosed.IsPreview ? previewPages : pages;
 			if (pages.Count == 0) {
 				CurrentTab = null;
 				return;
@@ -219,10 +229,10 @@ namespace MonoDevelop.Components.DockNotebook
 			if (pagesHistory.Count > 0)
 				CurrentTab = pagesHistory [0];
 			else {
-				if (lastClosed + 1 < pages.Count)
-					CurrentTab = pages [lastClosed + 1];
+				if (lastClosed.Index + 1 < container.Count)
+					CurrentTab = container [lastClosed.Index + 1];
 				else
-					CurrentTab = pages [lastClosed - 1];
+					CurrentTab = container [lastClosed.Index - 1];
 			}
 		}
 
@@ -284,7 +294,7 @@ namespace MonoDevelop.Components.DockNotebook
 			return Container.GetPreviousNotebook (this);
 		}
 
-		public Action<DockNotebook, int,Gdk.EventButton> DoPopupMenu { get; set; }
+		public Action<DockNotebook, DockNotebookTab, Gdk.EventButton> DoPopupMenu { get; set; }
 
 		public DockNotebookTab AddTab (Gtk.Widget content = null)
 		{
@@ -330,26 +340,37 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public DockNotebookTab GetTab (int n)
 		{
-			if (n < 0 || n >= pages.Count)
-				return null;
-			else
-				return pages [n];
+			return GetBaseTab (pages, n);
 		}
 
-		public void RemoveTab (int page, bool animate)
+		public DockNotebookTab GetPreviewTab (int n)
 		{
-			var tab = pages [page];
+			return GetBaseTab (previewPages, n);
+		}
+
+		DockNotebookTab GetBaseTab (List<DockNotebookTab> col, int n)
+		{
+			if (n < 0 || n >= col.Count)
+				return null;
+			else
+				return col [n];
+		}
+
+		public void RemoveTab (DockNotebookTab tab, bool animate)
+		{
+			var list = tab.IsPreview ? previewPages : pages;
+			//var tab = list [page];
 			if (animate)
 				tabStrip.StartCloseAnimation ((DockNotebookTab)tab);
 			pagesHistory.Remove (tab);
-			if (pages.Count == 1)
+			if (list.Count == 1)
 				CurrentTab = null;
-			else if (page == CurrentTabIndex)
-				SelectLastActiveTab (page);
-			pages.RemoveAt (page);
-			UpdateIndexes (page);
+			else if (tab.Index == CurrentTab.Index)
+				SelectLastActiveTab (tab);
+			list.Remove (tab);
+			UpdateIndexes (tab.Index);
 			tabStrip.Update ();
-			tabStrip.DropDownButton.Sensitive = pages.Count > 0;
+			tabStrip.DropDownButton.Sensitive = list.Count > 0;
 
 			PageRemoved?.Invoke (this, new TabEventArgs { Tab = tab });
 
@@ -368,8 +389,9 @@ namespace MonoDevelop.Components.DockNotebook
 				pages.Insert (targetPos + 1, tab);
 				pages.RemoveAt (tab.Index);
 			}
-			if (TabsReordered != null)
+			if (TabsReordered != null) {
 				TabsReordered (tab, tab.Index, targetPos);
+			}
 			UpdateIndexes (Math.Min (tab.Index, targetPos));
 			tabStrip.Update ();
 		}

@@ -286,7 +286,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// The tab change must be done now to ensure that the content is created
 			// before exiting this method.
-			tabControl.CurrentTabIndex = tab.Index;
+			tabControl.CurrentTab = tab;
 
 			// Focus the tab in the next iteration since presenting the window may take some time
 			Application.Invoke ((o, args) => {
@@ -310,14 +310,14 @@ namespace MonoDevelop.Ide.Gui
 			var nextNotebook = TabControl.GetNextNotebook ();
 			if (nextNotebook == null) {
 				if (TabControl.Container.AllowRightInsert) {
-					TabControl.RemoveTab (tab.Index, true);
+					TabControl.RemoveTab (tab, true);
 					TabControl.Container.InsertRight (this);
 					SelectWindow ();
 				}
 				return;
 			}
 
-			TabControl.RemoveTab (tab.Index, true);
+			TabControl.RemoveTab (tab, true);
 			var newTab = nextNotebook.AddTab ();
 			newTab.Content = this;
 			SetDockNotebook (nextNotebook, newTab);
@@ -329,14 +329,14 @@ namespace MonoDevelop.Ide.Gui
 			var nextNotebook = TabControl.GetPreviousNotebook ();
 			if (nextNotebook == null) {
 				if (TabControl.Container.AllowLeftInsert) {
-					TabControl.RemoveTab (tab.Index, true);
+					TabControl.RemoveTab (tab, true);
 					TabControl.Container.InsertLeft (this);
 					SelectWindow ();
 				}
 				return;
 			}
 
-			TabControl.RemoveTab (tab.Index, true);
+			TabControl.RemoveTab (tab, true);
 			var newTab = nextNotebook.AddTab ();
 			newTab.Content = this;
 			SetDockNotebook (nextNotebook, newTab);
@@ -497,7 +497,7 @@ namespace MonoDevelop.Ide.Gui
 			if (args.Cancel)
 				return false;
 			
-			workbench.RemoveTab (tabControl, tab.Index, animate);
+			workbench.RemoveTab (tabControl, tab, animate);
 
 			OnClosed (args);
 

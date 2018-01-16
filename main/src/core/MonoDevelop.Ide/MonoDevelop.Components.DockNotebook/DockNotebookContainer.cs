@@ -134,7 +134,7 @@ namespace MonoDevelop.Components.DockNotebook
 				for (var i = 0; i < tabCount; i++) {
 					var tab = nb.GetTab (0);
 					var window = (SdiWorkspaceWindow)tab.Content;
-					nb.RemoveTab (0, false);
+					nb.RemoveTab (tab, false);
 
 					var newTab = single.AddTab (window);
 					window.SetDockNotebook (single, newTab);
