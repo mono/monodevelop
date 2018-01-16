@@ -697,7 +697,7 @@ namespace MonoDevelop.Core
 						else
 							mon.DoWriteLog (stringLogChunk.Log.ToString ());
 					}
-					chain = logChain.Next;
+					chain = chain.Next;
 				}
 			}
 		}
