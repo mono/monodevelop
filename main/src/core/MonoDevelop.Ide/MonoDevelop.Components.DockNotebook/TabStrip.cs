@@ -165,8 +165,8 @@ namespace MonoDevelop.Components.DockNotebook
 			// Handle focus for the tabs.
 			CanFocus = true;
 
-			previewTabContainer = new TabContainer (this);
-			tabContainer = new TabContainer (this);
+			previewTabContainer = new TabContainer (this, true);
+			tabContainer = new TabContainer (this, false);
 
 			tracker = new MouseTracker (this);
 			GtkWorkarounds.FixContainerLeak (this);
@@ -295,9 +295,6 @@ namespace MonoDevelop.Components.DockNotebook
 
 			tab.ContentChanged -= OnTabContentChanged;
 
-			tabContainer.Remove (tab);
-			previewTabContainer.Remove (tab);
-
 			tab.Dispose ();
 
 			QueueResize ();
@@ -309,10 +306,8 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			var tab = (DockNotebookTab)sender;
 			if (tab.IsPreview) {
-				previewTabContainer.Add (tab);
-			} else {
-				tabContainer.Add (tab);
-			}
+				notebook.ChangeTabToPreview (tab); 
+			} 
 		}
 
 		void PageReorderedHandler (DockNotebookTab tab, int oldPlacement, int newPlacement)
@@ -1314,27 +1309,17 @@ namespace MonoDevelop.Components.DockNotebook
 
 		class TabContainer
 		{
-			public List<DockNotebookTab> Tabs = new List<DockNotebookTab> ();
+			readonly public System.Collections.ObjectModel.ReadOnlyCollection<DockNotebookTab> Tabs;
 			readonly TabStrip tabStrip;
 
 			public int Width => tabStrip.TabWidth * Tabs.Count;
 
 			public Gdk.Rectangle Allocation => new Gdk.Rectangle (tabStrip.Allocation.Width - Width + TabStrip.TabSeparationBorder, tabStrip.Allocation.Y, Width - TabStrip.TabSeparationBorder, tabStrip.Allocation.Height);
 
-			public TabContainer (TabStrip tabStrip)
+			public TabContainer (TabStrip tabStrip, bool previewContainer)
 			{
 				this.tabStrip = tabStrip;
-			}
-
-			public void Remove (DockNotebookTab tab)
-			{
-				Tabs.Remove (tab);
-			}
-
-			public void Add (DockNotebookTab tab)
-			{
-				if (!Tabs.Contains (tab))
-					Tabs.Add (tab);
+				this.Tabs = previewContainer ? tabStrip.notebook.PreviewTabs : tabStrip.notebook.Tabs;
 			}
 
 			public DockNotebookTab FindTab (int x, int y)

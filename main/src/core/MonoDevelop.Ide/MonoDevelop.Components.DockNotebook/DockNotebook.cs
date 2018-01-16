@@ -313,7 +313,7 @@ namespace MonoDevelop.Components.DockNotebook
 			} else {
 				pages.Insert (index, tab);
 				tab.Index = index;
-				UpdateIndexes (index + 1);
+				UpdateIndexes (pages, index + 1);
 			}
 
 			pagesHistory.Add (tab);
@@ -332,10 +332,10 @@ namespace MonoDevelop.Components.DockNotebook
 			return tab;
 		}
 
-		void UpdateIndexes (int startIndex)
+		void UpdateIndexes (List<DockNotebookTab> tabs, int startIndex)
 		{
-			for (int n=startIndex; n < pages.Count; n++)
-				((DockNotebookTab)pages [n]).Index = n;
+			for (int n = startIndex; n < tabs.Count; n++)
+				((DockNotebookTab)tabs [n]).Index = n;
 		}
 
 		public DockNotebookTab GetTab (int n)
@@ -368,7 +368,8 @@ namespace MonoDevelop.Components.DockNotebook
 			else if (tab.Index == CurrentTab.Index)
 				SelectLastActiveTab (tab);
 			list.Remove (tab);
-			UpdateIndexes (tab.Index);
+			UpdateIndexes (list, tab.Index);
+
 			tabStrip.Update ();
 			tabStrip.DropDownButton.Sensitive = list.Count > 0;
 
@@ -377,22 +378,35 @@ namespace MonoDevelop.Components.DockNotebook
 			NotebookChanged?.Invoke (this, EventArgs.Empty);
 		}
 
+		internal void ChangeTabToPreview (DockNotebookTab tab)
+		{
+			if (pages.Exists (s => s == tab)){
+				pages.Remove (tab);
+			}
+
+			previewPages.Add (tab);
+
+			UpdateIndexes (pages, tab.Index);
+			UpdateIndexes (previewPages, 0);
+		}
+
 		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab)
 		{
+			var container = tab.IsPreview ? previewPages : pages;
 			if (tab == targetTab)
 				return;
 			int targetPos = targetTab.Index;
 			if (tab.Index > targetTab.Index) {
-				pages.RemoveAt (tab.Index);
-				pages.Insert (targetPos, tab);
+				container.RemoveAt (tab.Index);
+				container.Insert (targetPos, tab);
 			} else {
-				pages.Insert (targetPos + 1, tab);
-				pages.RemoveAt (tab.Index);
+				container.Insert (targetPos + 1, tab);
+				container.RemoveAt (tab.Index);
 			}
 			if (TabsReordered != null) {
 				TabsReordered (tab, tab.Index, targetPos);
 			}
-			UpdateIndexes (Math.Min (tab.Index, targetPos));
+			UpdateIndexes (container, Math.Min (tab.Index, targetPos));
 			tabStrip.Update ();
 		}
 
