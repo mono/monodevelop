@@ -161,6 +161,7 @@ namespace MonoDevelop.Ide.Gui
 				var info = openFiles [i];
 				if (info.Document == sourceEditorView) {
 					openFiles.RemoveAt (i);
+					info.Dispose ();
 					break;
 				}
 			}
@@ -204,7 +205,6 @@ namespace MonoDevelop.Ide.Gui
 
 		class DocumentInfo : IDisposable
 		{
-
 			public Document Document { get; private set; } 
 			public DateTime LastSaveTimeUtc { get; set; }
 
