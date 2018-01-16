@@ -178,8 +178,6 @@ namespace MonoDevelop.CodeIssues
 			var input = analysisDocument.DocumentContext;
 			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
 				return Enumerable.Empty<Result> ();
-			if (SkipContext (input))
-				return Enumerable.Empty<Result> ();
 			try {
 #if DEBUG
 				Debug.Listeners.Add (consoleTraceListener);
@@ -240,7 +238,7 @@ namespace MonoDevelop.CodeIssues
 
 		static bool SkipError (string errorId)
 		{
-			return isAdhocProject && !lexicalError.Contains (errorId);
+			return !lexicalError.Contains (errorId);
 		}
 
 		static async Task<Diagnostic> ToDiagnosticAsync (this DiagnosticData data, AnalysisDocument analysisDocument, CancellationToken cancellationToken)
