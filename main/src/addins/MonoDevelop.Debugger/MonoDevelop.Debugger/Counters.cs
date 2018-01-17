@@ -31,5 +31,6 @@ namespace MonoDevelop.Debugger
 	static class Counters
 	{
 		public static Counter DebugSession = InstrumentationService.CreateCounter ("Debug Session", "Debugger", id: "Debugger.DebugSession");
+		public static Counter EvaluationStats = InstrumentationService.CreateCounter ("Evaluation Statistics", "Debugger", id: "Debugger.EvaluationStatistics");
 	}
 }

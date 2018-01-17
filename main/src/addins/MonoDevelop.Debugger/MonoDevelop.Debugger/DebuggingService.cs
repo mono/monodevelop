@@ -766,6 +766,7 @@ namespace MonoDevelop.Debugger
 			public void Dispose ()
 			{
 				UpdateDebugSessionCounter ();
+				UpdateEvaluationStatsCounter ();
 
 				console?.Dispose ();
 				console = null;
@@ -798,6 +799,24 @@ namespace MonoDevelop.Debugger
 				}
 
 				Counters.DebugSession.Inc (metadata);
+			}
+
+			void UpdateEvaluationStatsCounter ()
+			{
+				if (Session.EvaluationStats.TimingsCount == 0) {
+					// No timings recorded.
+					return;
+				}
+
+				var metadata = new Dictionary<string, string> ();
+				metadata ["DebuggerType"] = Engine.Id;
+				metadata ["AverageDuration"] = Session.EvaluationStats.AverageTime.ToString ();
+				metadata ["MaximumDuration"] = Session.EvaluationStats.MaxTime.ToString ();
+				metadata ["MinimumDuration"] = Session.EvaluationStats.MinTime.ToString ();
+				metadata ["FailureCount"] = Session.EvaluationStats.FailureCount.ToString ();
+				metadata ["SuccessCount"] = Session.EvaluationStats.TimingsCount.ToString ();
+
+				Counters.EvaluationStats.Inc (metadata);
 			}
 
 			bool ExceptionHandler (Exception ex)
