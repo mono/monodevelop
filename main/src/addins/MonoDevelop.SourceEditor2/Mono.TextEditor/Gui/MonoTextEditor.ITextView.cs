@@ -45,8 +45,6 @@ namespace Mono.TextEditor
 
 		private List<Lazy<ITextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>> _deferredTextViewListeners;
 
-		private ITextCaret _caret;
-
 		bool _isClosed = false;
 
 		private IViewScroller _viewScroller;
@@ -110,9 +108,6 @@ namespace Mono.TextEditor
 
 			_selection = new TextSelection (this);
 
-			// Create caret
-			_caret = new TextCaret (this);
-
 			//			this.Loaded += OnLoaded;
 
 			// TODO: *Someone* needs to call this to execute UndoHistoryRegistry.RegisterHistory -- VS does this via the ShimCompletionControllerFactory.
@@ -135,7 +130,7 @@ namespace Mono.TextEditor
 
 		ITextCaret ITextView.Caret {
 			get {
-				return _caret;
+				return Caret;
 			}
 		}
 
