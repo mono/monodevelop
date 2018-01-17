@@ -226,6 +226,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toolbar.ShowAll ();
 
 			UpdatePadIcon ();
+
+			IdeApp.ProjectOperations.StartBuild += OnBuildStarted;
 		}
 
 		void searchPatternChanged (object sender, EventArgs e)
@@ -299,9 +301,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
+			IdeApp.ProjectOperations.StartBuild -= OnBuildStarted;
 
 			buildOutput?.Dispose ();
 			buildOutputViewContent?.Dispose ();
+			buildOutputDoc?.Close ();
 
 			// Set the model to null as it makes Gtk clean up faster
 			if (view != null) {
@@ -797,6 +801,21 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void OnCombineClosed(object sender, EventArgs e)
 		{
 			Clear();
+
+			buildOutput.Dispose ();
+			if (buildOutputViewContent != null) {
+				buildOutputViewContent.Dispose ();
+				buildOutputViewContent = null;
+			}
+
+			buildOutputDoc?.Close ();
+
+			buildOutput = new BuildOutput ();
+		}
+
+		void OnBuildStarted (object sender, EventArgs e)
+		{
+			buildOutput.Clear ();
 		}
 		
 		void OnRowActivated (object o, RowActivatedArgs args)
