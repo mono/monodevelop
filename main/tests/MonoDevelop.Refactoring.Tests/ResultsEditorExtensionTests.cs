@@ -145,16 +145,23 @@ class MyClass
 		[Test]
 		public async Task DiagnosticsAreReportedByExtension ()
 		{
-			int expectedUpdates = 4;
-			var diagnostics = await GatherDiagnostics<ImmutableArray<QuickTask>> (OneFromEach, (ext, tcs) => {
-				if (--expectedUpdates == 0)
-					tcs.SetResult (ext.QuickTasks);
-			});
+			var old = IdeApp.Preferences.EnableSourceAnalysis;
+			try {
+				IdeApp.Preferences.EnableSourceAnalysis.Value = true;
 
-			Assert.AreEqual (OneFromEachDiagnostics.Length, diagnostics.Length);
+				int expectedUpdates = 4;
+				var diagnostics = await GatherDiagnostics<ImmutableArray<QuickTask>> (OneFromEach, (ext, tcs) => {
+					if (--expectedUpdates == 0)
+						tcs.SetResult (ext.QuickTasks);
+				});
 
-			for (int i = 0; i < 3; ++i) {
-				AssertExpectedDiagnostic (OneFromEachDiagnostics [i], diagnostics [i]);
+				Assert.AreEqual (OneFromEachDiagnostics.Length, diagnostics.Length);
+
+				for (int i = 0; i < 3; ++i) {
+					AssertExpectedDiagnostic (OneFromEachDiagnostics [i], diagnostics [i]);
+				}
+			} finally {
+				IdeApp.Preferences.EnableSourceAnalysis.Value = old;
 			}
 		}
 
