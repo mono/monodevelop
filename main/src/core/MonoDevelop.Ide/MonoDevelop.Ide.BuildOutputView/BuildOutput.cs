@@ -141,6 +141,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			projects.Add (processor); 
 		}
 
+		internal void Clear ()
+		{
+			projects.Clear ();
+			RaiseOutputChanged ();
+		}
+
 		internal void RaiseOutputChanged ()
 		{
 			OutputChanged?.Invoke (this, EventArgs.Empty);
