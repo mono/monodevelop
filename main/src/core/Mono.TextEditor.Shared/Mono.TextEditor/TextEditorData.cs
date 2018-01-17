@@ -205,12 +205,13 @@ namespace Mono.TextEditor
 		{
 			LineHeight = 16;
 
-			caret = new CaretImpl (this);
-			caret.PositionChanged += CaretPositionChanged;
-
 			options = TextEditorOptions.DefaultOptions;
 			document = doc;
 			AttachDocument ();
+
+			caret = new CaretImpl (this);
+			caret.PositionChanged += CaretPositionChanged;
+
 			SearchEngine = new BasicSearchEngine ();
 
 			HeightTree = new HeightTree (this);
