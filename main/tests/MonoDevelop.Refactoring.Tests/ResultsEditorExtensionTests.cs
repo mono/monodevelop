@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.AnalysisCore;
@@ -78,6 +79,11 @@ namespace MonoDevelop.Refactoring.Tests
 			content.Contents.Add (compExt);
 
 			var tcs = new TaskCompletionSource<T> ();
+
+			var cts = new CancellationTokenSource ();
+			cts.CancelAfter (60 * 1000);
+			cts.Token.Register (() => tcs.TrySetCanceled ());
+
 			compExt.TasksUpdated += delegate {
 				callback (compExt, tcs);
 			};
@@ -134,6 +140,8 @@ class MyClass
 			Assert.AreEqual (expected.Description, actual.Description);
 		}
 
+		// These tests can hang if we don't get enough updates (i.e. code changes)
+		// So to not break CI, add a timeout to the test. These tests should take around 20s.
 		[Test]
 		public async Task DiagnosticsAreReportedByExtension ()
 		{
