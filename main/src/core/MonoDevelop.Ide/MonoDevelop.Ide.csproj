@@ -9723,6 +9723,7 @@
     <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.VBNetBinding" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.Refactoring.Tests" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Tests" />
   </ItemGroup>
