@@ -303,12 +303,18 @@ namespace MonoDevelop.UnitTesting
 						return;
 					}
 
-					await IdeApp.ProjectOperations.Build (project).Task;
-					await UnitTestService.RefreshTests (CancellationToken.None);
+					bool buildBeforeExecuting = IdeApp.Preferences.BuildBeforeRunningTests;
+
+					if (buildBeforeExecuting) {
+						await IdeApp.ProjectOperations.Build (project).Task;
+						await UnitTestService.RefreshTests (CancellationToken.None);
+					}
 
 					foundTest = UnitTestService.SearchTestById (testCase);
 					if (foundTest != null)
 						RunTest (foundTest);
+					else
+						UnitTestService.ReportExecutionError (GettextCatalog.GetString ($"Unit test '{testCase}' could not be loaded."));
 				}
 
 				internal void Select (object sender, EventArgs e)
