@@ -83,17 +83,20 @@ namespace MonoDevelop.MacIntegration
 				
 				List<FileViewer> currentViewers = null;
 				var labels = new List<MDAlignment> ();
+				var controls = new List<MDAlignment> ();
 				
 				if ((data.Action & FileChooserAction.FileFlags) != 0) {
 					var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
 
 					if (filterPopup != null) {
-						var filterLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Show files:")), true);
+						var filterLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Show Files:")) { Alignment = NSTextAlignment.Right }, true);
+						var filterPopupAlignment = new MDAlignment (filterPopup, true) { MinWidth = 200 };
 						var filterBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
 							{ filterLabel },
-							{ new MDAlignment (filterPopup, true) { MinWidth = 200 } }
+							{ filterPopupAlignment }
 						};
 						labels.Add (filterLabel);
+						controls.Add (filterPopupAlignment);
 						box.Add (filterBox);
 					}
 
@@ -101,12 +104,14 @@ namespace MonoDevelop.MacIntegration
 						encodingSelector = new SelectEncodingPopUpButton (data.Action != FileChooserAction.Save);
 						encodingSelector.SelectedEncodingId = data.Encoding != null ? data.Encoding.CodePage : 0;
 						
-						var encodingLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Encoding:")), true);
+						var encodingLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Encoding:")) { Alignment = NSTextAlignment.Right }, true);
+						var encodingSelectorAlignment = new MDAlignment (encodingSelector, true) { MinWidth = 200 };
 						var encodingBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
 							{ encodingLabel },
-							{ new MDAlignment (encodingSelector, true) { MinWidth = 200 }  }
+							{ encodingSelectorAlignment }
 						};
 						labels.Add (encodingLabel);
+						controls.Add (encodingSelectorAlignment);
 						box.Add (encodingBox);
 					}
 					
@@ -123,33 +128,45 @@ namespace MonoDevelop.MacIntegration
 								if (encodingSelector != null)
 									encodingSelector.Enabled = !workbenchViewerSelected;
 								if (closeSolutionButton != null) {
-									if (closeSolutionButton.Hidden == workbenchViewerSelected) {
-										closeSolutionButton.Hidden = !workbenchViewerSelected;
-										CenterAccessoryView (box);
+									if (closeSolutionButton.Enabled != workbenchViewerSelected) {
+										closeSolutionButton.Enabled = workbenchViewerSelected;
+										closeSolutionButton.State = workbenchViewerSelected ? NSCellStateValue.On : NSCellStateValue.Off;
 									}
 								}
 							};
 						}
-						
-						var viewSelLabel = new MDLabel (GettextCatalog.GetString ("Open with:"));
-						var viewSelBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
-							{ viewSelLabel, true },
-							{ new MDAlignment (viewerSelector, true) { MinWidth = 200 }  }
-						};
-						
+
 						if (IdeApp.Workspace.IsOpen) {
 							closeSolutionButton = new NSButton {
 								Title = GettextCatalog.GetString ("Close current workspace"),
-								Hidden = true,
-								State = NSCellStateValue.On,
+								Enabled = false,
+								State = NSCellStateValue.Off,
 							};
-							
+
 							closeSolutionButton.SetButtonType (NSButtonType.Switch);
 							closeSolutionButton.SizeToFit ();
-							
-							viewSelBox.Add (closeSolutionButton, true);
+
+							var closeSolutionLabelBox = new MDAlignment (new MDLabel (string.Empty), true);
+							var closeSolutionButtonAlignment = new MDAlignment (closeSolutionButton, true);
+							var closeSolutionBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
+								{ closeSolutionLabelBox },
+								{ closeSolutionButtonAlignment }
+							};
+
+							labels.Add (closeSolutionLabelBox);
+							controls.Add (closeSolutionButtonAlignment);
+							box.Add (closeSolutionBox);
 						}
-						
+
+						var viewSelLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Open With:")) { Alignment = NSTextAlignment.Right }, true);
+						var viewSelectorAlignemnt = new MDAlignment (viewerSelector, true) { MinWidth = 200 };
+						var viewSelBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
+							{ viewSelLabel },
+							{ viewSelectorAlignemnt }
+						};
+
+						labels.Add (viewSelLabel);
+						controls.Add (viewSelectorAlignemnt);
 						box.Add (viewSelBox);
 					}
 				}
@@ -159,6 +176,14 @@ namespace MonoDevelop.MacIntegration
 					foreach (var l in labels) {
 						l.MinWidth = w;
 						l.XAlign = LayoutAlign.Begin;
+					}
+				}
+
+				if (controls.Count > 0) {
+					float w = controls.Max (c => c.MinWidth);
+					foreach (var c in controls) {
+						c.MinWidth = w;
+						c.XAlign = LayoutAlign.Begin;
 					}
 				}
 				
@@ -172,9 +197,10 @@ namespace MonoDevelop.MacIntegration
 					bool slnViewerSelected = false;
 					if (viewerSelector != null) {
 						slnViewerSelected = FillViewers (currentViewers, viewerSelector, closeSolutionButton, selection);
-						if (closeSolutionButton != null)
-							closeSolutionButton.Hidden = !slnViewerSelected;
-						CenterAccessoryView (box);
+						if (closeSolutionButton != null) {
+							closeSolutionButton.Enabled = slnViewerSelected;
+							closeSolutionButton.State = slnViewerSelected ? NSCellStateValue.On : NSCellStateValue.Off;
+						}
 					} 
 					if (encodingSelector != null)
 						encodingSelector.Enabled = !slnViewerSelected;
@@ -261,24 +287,6 @@ namespace MonoDevelop.MacIntegration
 		static bool CanBeOpenedInAssemblyBrowser (FilePath filename)
 		{
 			return string.Equals (filename.Extension, ".exe", StringComparison.OrdinalIgnoreCase) || string.Equals (filename.Extension, ".dll", StringComparison.OrdinalIgnoreCase);
-		}
-
-		static void CenterAccessoryView (MDBox box)
-		{
-			box.Layout ();
-
-			//re-center the accessory view in its parent, Cocoa does this for us initially and after
-			//resizing the window, but we need to do it again after altering its layout
-			var superView = box.View.Superview;
-			if (superView == null)
-				return;
-			
-			var superFrame = superView.Frame;
-			var frame = box.View.Frame;
-			//not sure why it's ceiling, but this matches the Cocoa layout
-			frame.X = (float)Math.Ceiling ((superFrame.Width - frame.Width) / 2);
-			frame.Y = (float)Math.Ceiling ((superFrame.Height - frame.Height) / 2);
-			box.View.Frame = frame;
 		}
 	}
 }

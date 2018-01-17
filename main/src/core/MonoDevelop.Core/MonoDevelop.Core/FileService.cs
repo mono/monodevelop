@@ -953,9 +953,10 @@ namespace MonoDevelop.Core
 				if (Runtime.IsMainThread) {
 					del.Invoke (thisObj, args);
 				} else {
-					Runtime.MainSynchronizationContext.Post (delegate {
-						del.Invoke (thisObj, args);
-					}, null);
+					Runtime.MainSynchronizationContext.Post (state => {
+						var (del1, thisObj1, args1) = (ValueTuple<EventHandler<TArgs>, object, TArgs>)state;
+						del1.Invoke (thisObj1, args1);
+					}, (del, thisObj, args));
 				}
 			}
 		}

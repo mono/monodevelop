@@ -235,7 +235,7 @@ module CompilerArguments =
         let getAbsolutePath (ref:AssemblyReference) =
             let assemblyPath = ref.FilePath
             if assemblyPath.IsAbsolute then
-                assemblyPath |> string
+                assemblyPath.FullPath |> string
             else
                 let s = Path.Combine(project.FileName.ParentDirectory.ToString(), assemblyPath.ToString())
                 Path.GetFullPath s

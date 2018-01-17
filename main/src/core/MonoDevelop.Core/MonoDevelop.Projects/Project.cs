@@ -2314,6 +2314,8 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		ITimeTracker writeTimer;
+
 		void WriteProject (ProgressMonitor monitor)
 		{
 			if (saving) {
@@ -2323,10 +2325,15 @@ namespace MonoDevelop.Projects
 			
 			saving = true;
 
+			writeTimer = Counters.WriteMSBuildProject.BeginTiming ();
+
 			try {
 				sourceProject.FileName = FileName;
 
+				writeTimer.Trace ("Writing project header");
 				OnWriteProjectHeader (monitor, sourceProject);
+
+				writeTimer.Trace ("Writing project content");
 				ProjectExtension.OnWriteProject (monitor, sourceProject);
 
 				var globalGroup = sourceProject.GetGlobalPropertyGroup ();
@@ -2346,7 +2353,9 @@ namespace MonoDevelop.Projects
 				}
 
 				sourceProject.IsNewProject = false;
+				writeTimer.Trace ("Project written");
 			} finally {
+				writeTimer.End ();
 				saving = false;
 			}
 		}
@@ -2898,11 +2907,17 @@ namespace MonoDevelop.Projects
 		{
 			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
 
+			writeTimer.Trace ("Writing configurations");
 			WriteConfigurations (monitor, msproject, globalGroup);
+			writeTimer.Trace ("Done writing configurations");
 
+			writeTimer.Trace ("Writing run configurations");
 			WriteRunConfigurations (monitor, msproject, globalGroup);
+			writeTimer.Trace ("Done writing run configurations");
 
+			writeTimer.Trace ("Saving project items");
 			SaveProjectItems (monitor, msproject, usedMSBuildItems);
+			writeTimer.Trace ("Done saving project items");
 
 			if (msproject.IsNewProject) {
 				foreach (var im in DefaultImports)
@@ -2920,7 +2935,10 @@ namespace MonoDevelop.Projects
 			}
 			importsAdded.Clear ();
 			importsRemoved.Clear ();
+
+			writeTimer.Trace ("Writing external properties");
 			msproject.WriteExternalProjectProperties (this, GetType (), true);
+			writeTimer.Trace ("Done writing external properties");
 		}
 
 		void WriteConfigurations (ProgressMonitor monitor, MSBuildProject msproject, IMSBuildPropertySet globalGroup)
@@ -2969,7 +2987,7 @@ namespace MonoDevelop.Projects
 					ConfigData cdata = FindPropertyGroup (configData, conf);
 					var propGroup = (MSBuildPropertyGroup)cdata.Group;
 
-					// Get properties wit the MergeToProject flag, and check that the value they have matches the
+					// Get properties with the MergeToProject flag, and check that the value they have matches the
 					// value all the other groups have so far. If one of the groups have a different value for
 					// the same property, then the property is discarded as mergeable to parent.
 					CollectMergetoprojectProperties (propGroup, mergeToProjectProperties, mergeToProjectPropertyValues);
@@ -3005,8 +3023,27 @@ namespace MonoDevelop.Projects
 
 				foreach (ProjectConfiguration config in Configurations)
 					config.MainPropertyGroup.ResetIsNewFlags ();
+
+
+				// For properties that have changed in the main group, set the
+				// dirty flag for the corresponding properties in the evaluated
+				// project instances. The evaluated values of those properties
+				// can't be used anymore to decide wether or not a property
+				// needs to be saved. The ideal solution would be to re-evaluate
+				// the instance and get the new evaluated values, but that
+				// would have a high impact in performance.
+
+				foreach (var p in globalGroup.GetProperties ()) {
+					if (p.Modified) {
+						foreach (ProjectConfiguration config in Configurations)
+                            if (config.ProjectInstance != null)
+    							config.ProjectInstance.SetPropertyDirty (p.Name);
+					}
+				}
 			}
 		}
+
+		ProjectRunConfiguration defaultBlankRunConfiguration;
 
 		void WriteRunConfigurations (ProgressMonitor monitor, MSBuildProject msproject, IMSBuildPropertySet globalGroup)
 		{
@@ -3018,7 +3055,9 @@ namespace MonoDevelop.Projects
 
 				// Write configuration data, creating new property groups if necessary
 
-				var defaultConfig = CreateRunConfigurationInternal ("Default");
+				// Create the default configuration just once, and reuse it for comparing in subsequent writes
+				if (defaultBlankRunConfiguration == null)
+					defaultBlankRunConfiguration = CreateRunConfigurationInternal ("Default");
 
 				foreach (ProjectRunConfiguration runConfig in RunConfigurations) {
 
@@ -3026,7 +3065,7 @@ namespace MonoDevelop.Projects
 					ConfigData cdata = configData.FirstOrDefault (cd => cd.Group == pg);
 					var targetProject = runConfig.StoreInUserFile ? userProject : msproject;
 
-					if (runConfig.IsDefaultConfiguration && runConfig.Equals (defaultConfig)) {
+					if (runConfig.IsDefaultConfiguration && runConfig.Equals (defaultBlankRunConfiguration)) {
 						// If the default configuration has the default values, then there is no need to save it.
 						// If this configuration was added after loading the project, we are not adding it to the msproject and we are done.
 						// If this configuration was loaded from the project and later modified to the default values, we dont set cdata.Exists=true,
