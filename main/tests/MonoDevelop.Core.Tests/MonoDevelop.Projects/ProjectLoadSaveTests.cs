@@ -1206,6 +1206,24 @@ namespace MonoDevelop.Projects
 
 			sol.Dispose ();
 		}
+
+		[Test]
+		public async Task DontSaveEmptyProperties ()
+		{
+			string projectFile = Util.GetSampleProject ("property-save-test", "empty-property-save.csproj");
+			DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration conf = p.Configurations ["Debug"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			conf.CommandLineParameters = "";
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
+		}
 	}
 
 	class CustomItem : ProjectItem
