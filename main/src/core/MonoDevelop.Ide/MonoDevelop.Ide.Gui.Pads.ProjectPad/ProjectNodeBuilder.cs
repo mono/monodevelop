@@ -341,7 +341,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						: file.FilePath.ParentDirectory;
 					
 					if (!tb.MoveToObject (new ProjectFolder (parentPath, project))) {
-						if (project.UseFileWatcher) {
+						if (project.UseFileWatcher && parentPath.IsChildPathOf (project.BaseDirectory)) {
 							// Keep looking for folder higher up the tree so any empty folders
 							// can be removed.
 							while (parentPath != project.BaseDirectory) {

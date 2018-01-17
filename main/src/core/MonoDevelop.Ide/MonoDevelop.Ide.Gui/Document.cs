@@ -171,6 +171,7 @@ namespace MonoDevelop.Ide.Gui
 			window.ViewsChanged += HandleViewsChanged;
 			window.ViewContent.ContentNameChanged += ReloadAnalysisDocumentHandler;
 			MonoDevelopWorkspace.LoadingFinished += ReloadAnalysisDocumentHandler;
+			DocumentRegistry.Add (this);
 		}
 
 		void ReloadAnalysisDocumentHandler (object sender, EventArgs e)
@@ -380,7 +381,16 @@ namespace MonoDevelop.Ide.Gui
 			if (memento != null) {
 				mc.Memento = memento;
 			}
+			OnReload (EventArgs.Empty);
 		}
+
+		public event EventHandler Reloaded;
+
+		protected virtual void OnReload (EventArgs e)
+		{
+			Reloaded?.Invoke (this, e);
+		}
+
 
 		public Task Save ()
 		{
@@ -578,6 +588,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void DisposeDocument ()
 		{
+			DocumentRegistry.Remove (this);
 			UnsubscribeAnalysisDocument ();
 			UnsubscribeRoslynWorkspace ();
 			UnloadAdhocProject ();

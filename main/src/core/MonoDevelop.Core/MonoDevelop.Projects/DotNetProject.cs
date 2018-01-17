@@ -986,16 +986,21 @@ namespace MonoDevelop.Projects
 		}
 
 		AsyncCriticalSection referenceCacheLock = new AsyncCriticalSection ();
-		Dictionary<string, List<AssemblyReference>> referenceCache = new Dictionary<string, List<AssemblyReference>> ();
+		ImmutableDictionary<string, List<AssemblyReference>> referenceCache = ImmutableDictionary<string, List<AssemblyReference>>.Empty;
+		bool referenceCacheNeedsRefresh;
 
 		async Task<List<AssemblyReference>> RunResolveAssemblyReferencesTarget (ConfigurationSelector configuration)
 		{
 			List<AssemblyReference> refs = null;
 			var confId = (GetConfiguration (configuration) ?? DefaultConfiguration)?.Id ?? "";
 
+			// Check the cache before waiting for the lock, which may be very slow
+			if (!referenceCacheNeedsRefresh && referenceCache.TryGetValue (confId, out refs))
+				return refs;
+
 			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false)) {
-				// Check the cache before starting the task
-				if (referenceCache.TryGetValue (confId, out refs))
+				// Check again the cache before starting the task
+				if (!referenceCacheNeedsRefresh && referenceCache.TryGetValue (confId, out refs))
 					return refs;
 
 				var monitor = new ProgressMonitor ();
@@ -1010,7 +1015,8 @@ namespace MonoDevelop.Projects
 
 				refs = result.Items.Select (i => new AssemblyReference (i.Include, i.Metadata)).ToList ();
 
-				referenceCache [confId] = refs;
+				referenceCache = referenceCache.SetItem (confId, refs);
+				referenceCacheNeedsRefresh = false;
 			}
 			return refs;
 		}
@@ -1034,17 +1040,22 @@ namespace MonoDevelop.Projects
 				return new List<PackageDependency> ();
 		}
 
-		Dictionary<string, List<PackageDependency>> packageDependenciesCache = new Dictionary<string, List<PackageDependency>> ();
+		ImmutableDictionary<string, List<PackageDependency>> packageDependenciesCache = ImmutableDictionary<string, List<PackageDependency>>.Empty;
 		AsyncCriticalSection packageDependenciesCacheLock = new AsyncCriticalSection ();
+		bool packageDependenciesNeedRefresh;
 
 		async Task<List<PackageDependency>> RunResolvePackageDependenciesTarget (ConfigurationSelector configuration, CancellationToken cancellationToken)
 		{
 			List<PackageDependency> packageDependencies = null;
 			var confId = (GetConfiguration (configuration) ?? DefaultConfiguration)?.Id ?? "";
 
+			// Check the cache before entering the lock, which may be slow
+			if (!packageDependenciesNeedRefresh && packageDependenciesCache.TryGetValue (confId, out packageDependencies))
+				return packageDependencies;
+			
 			using (await packageDependenciesCacheLock.EnterAsync ().ConfigureAwait (false)) {
 				// Check the cache before starting the task
-				if (packageDependenciesCache.TryGetValue (confId, out packageDependencies))
+				if (!packageDependenciesNeedRefresh && packageDependenciesCache.TryGetValue (confId, out packageDependencies))
 					return packageDependencies;
 
 				var monitor = new ProgressMonitor ().WithCancellationToken (cancellationToken);
@@ -1062,7 +1073,8 @@ namespace MonoDevelop.Projects
 
 				packageDependencies = result.Items.Select (i => PackageDependency.Create (i)).Where (dependency => dependency != null).ToList ();
 
-				packageDependenciesCache [confId] = packageDependencies;
+				packageDependenciesCache = packageDependenciesCache .SetItem (confId, packageDependencies);
+				packageDependenciesNeedRefresh = false;
 			}
 
 			return packageDependencies;
@@ -1088,12 +1100,9 @@ namespace MonoDevelop.Projects
 		{
 			// Clean the reference and package cache
 
-			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false))
-				referenceCache.Clear ();
+			referenceCacheNeedsRefresh = true;
+			packageDependenciesNeedRefresh = true;
 
-			using (await packageDependenciesCacheLock.EnterAsync ().ConfigureAwait (false))
-				packageDependenciesCache.Clear ();
-			
 			await base.OnClearCachedData ();
 		}
 

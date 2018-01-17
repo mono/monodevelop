@@ -73,7 +73,6 @@ namespace MonoDevelop.SourceEditor
 	{
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
-		DateTime lastSaveTimeUtc;
 		internal object MemoryProbe = Counters.SourceViewsInMemory.CreateMemoryProbe ();
 		DebugMarkerPair currentDebugLineMarker;
 		DebugMarkerPair debugStackLineMarker;
@@ -95,16 +94,7 @@ namespace MonoDevelop.SourceEditor
 			get {
 				return widget?.TextEditor?.Document;
 			}
-		}
-
-		public DateTime LastSaveTimeUtc {
-			get {
-				return lastSaveTimeUtc;
-			}
-			internal set {
-				lastSaveTimeUtc = value;
-			}
-		}		
+		}	
 
 		internal ExtensibleTextEditor TextEditor {
 			get {
@@ -193,7 +183,6 @@ namespace MonoDevelop.SourceEditor
 			: this(new DocumentAndLoaded(fileName, mimeType))
 		{
 			this.textEditorType = textEditorType;
-			FileRegistry.Add(this);
 		}
 
 		public SourceEditorView(IReadonlyTextDocument document, TextEditorType textEditorType = TextEditorType.Default)
@@ -205,7 +194,6 @@ namespace MonoDevelop.SourceEditor
 				Document.MimeType = document.MimeType;
 				Document.FileName = document.FileName;
 			}
-			FileRegistry.Add(this);
 		}
 
 		private SourceEditorView(DocumentAndLoaded doc)
@@ -321,8 +309,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			Document.FileName = ContentName;
 			UpdateMimeType (Document.FileName);
-			if (!String.IsNullOrEmpty (ContentName) && File.Exists (ContentName))
-				lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);
 			base.OnContentNameChanged ();
 		}
 
@@ -805,7 +791,6 @@ namespace MonoDevelop.SourceEditor
 						return;
 					}
 				}
-				lastSaveTimeUtc = File.GetLastWriteTimeUtc (fileName);
 				try {
 					if (attributes != null) 
 						DesktopService.SetFileAttributes (fileName, attributes);
@@ -940,7 +925,6 @@ namespace MonoDevelop.SourceEditor
 
 			// TODO: Would be much easier if the view would be created after the containers.
 			ContentName = fileName;
-			lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);
 			widget.TextEditor.Caret.Offset = 0;
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
@@ -1040,7 +1024,6 @@ namespace MonoDevelop.SourceEditor
 
 			CancelMessageBubbleUpdate ();
 			ClearExtensions ();
-			FileRegistry.Remove (this);
 
 			StoreSettings ();
 			
@@ -2429,8 +2412,10 @@ namespace MonoDevelop.SourceEditor
 
 		protected override object OnGetContent (Type type)
 		{
-			if (type.Equals (typeof(TextEditorData)))
+			if (type.Equals (typeof (TextEditorData)))
 				return TextEditor.GetTextEditorData ();
+			if (type.Equals (typeof (IDocumentReloadPresenter)))
+				return widget;
 			return base.OnGetContent (type);
 		}
 
