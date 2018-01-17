@@ -157,6 +157,7 @@ class MyClass
 			Projects.Solution sol = null;
 			try {
 				int expectedUpdates = 5;
+				IdeApp.Preferences.EnableSourceAnalysis.Value = true;
 
 				var tuple = await GatherDiagnosticsNoDispose<bool> (OneFromEach, (ext, tcs) => {
 					--expectedUpdates;
