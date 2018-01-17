@@ -212,6 +212,30 @@ namespace MonoDevelop.UnitTesting
 				t.UpdateTests ();
 		}
 
+		public static void ReportExecutionError (string message)
+		{
+			Pad resultsPad = GetTestResultsPad ();
+			var monitor = (TestResultsPad)resultsPad.Content;
+			monitor.InitializeTestRun (null, null);
+			monitor.ReportExecutionError (message);
+			monitor.FinishTestRun ();
+		}
+
+		static Pad GetTestResultsPad ()
+		{
+			Pad resultsPad = IdeApp.Workbench.GetPad<TestResultsPad> ();
+			if (resultsPad == null) {
+				resultsPad = IdeApp.Workbench.ShowPad (new TestResultsPad (), "MonoDevelop.UnitTesting.TestResultsPad", GettextCatalog.GetString ("Test results"), "Bottom", "md-solution");
+			}
+
+			// Make the pad sticky while the tests are runnig, so the results pad is always visible (even if minimized)
+			// That's required since when running in debug mode, the layout is automatically switched to debug.
+
+			resultsPad.Sticky = true;
+			resultsPad.BringToFront ();
+			return resultsPad;
+		}
+
 		public static UnitTest SearchTest (string fullName)
 		{
 			foreach (UnitTest t in RootTests) {
