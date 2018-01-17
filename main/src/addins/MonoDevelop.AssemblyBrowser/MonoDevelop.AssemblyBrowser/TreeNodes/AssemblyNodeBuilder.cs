@@ -166,7 +166,7 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		
-		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
+		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			var assemblyLoader = (AssemblyLoader)navigator.DataItem;
 			var assembly = assemblyLoader.UnresolvedAssembly;
@@ -176,21 +176,6 @@ namespace MonoDevelop.AssemblyBrowser
 				return new List<ReferenceSegment> ();
 			}
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), null, b => {
-				if (b != null)
-					b.AddAssembly (compilationUnit, true);
-			});
-		}
-
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
-		{
-			var assemblyLoader = (AssemblyLoader)navigator.DataItem;
-			var assembly = assemblyLoader.UnresolvedAssembly;
-			var compilationUnit = assemblyLoader.CecilLoader.GetCecilObject (assembly);
-			if (compilationUnit == null) {
-				LoggingService.LogError ("Can't get cecil object for assembly:" + assembly);
-				return new List<ReferenceSegment> ();
-			}
-			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), null, b => {
 				if (b != null)
 					b.AddAssembly (compilationUnit, true);
 			});

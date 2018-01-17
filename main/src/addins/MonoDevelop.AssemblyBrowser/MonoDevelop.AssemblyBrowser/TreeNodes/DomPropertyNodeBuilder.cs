@@ -107,7 +107,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return result;
 		}
 
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
@@ -117,16 +117,6 @@ namespace MonoDevelop.AssemblyBrowser
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), property.DeclaringType, b => b.AddProperty (property));
 		}
 		
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
-		{
-			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
-				return null;
-			var property = GetCecilLoader (navigator).GetCecilObject ((IUnresolvedProperty)navigator.DataItem);
-			if (property == null)
-				return null;
-			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), property.DeclaringType, b => b.AddProperty (property));
-		}
-
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
 			var property = (IUnresolvedProperty)navigator.DataItem;

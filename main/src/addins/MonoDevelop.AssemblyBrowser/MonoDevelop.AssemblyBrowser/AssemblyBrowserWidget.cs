@@ -1101,7 +1101,7 @@ namespace MonoDevelop.AssemblyBrowser
 			case 0:
 				inspectEditor.Options = assemblyBrowserEditorOptions;
 				this.inspectEditor.MimeType = "text/x-csharp";
-				SetReferencedSegments (builder.GetSummary (inspectEditor, nav, PublicApiOnly));
+				SetReferencedSegments (builder.Decompile (inspectEditor, nav, new DecompileFlags { PublicOnly = PublicApiOnly, MethodBodies = false }));
 				break;
 			case 1:
 				inspectEditor.Options = assemblyBrowserEditorOptions;
@@ -1111,7 +1111,7 @@ namespace MonoDevelop.AssemblyBrowser
 			case 2:
 				inspectEditor.Options = assemblyBrowserEditorOptions;
 				this.inspectEditor.MimeType = "text/x-csharp";
-				SetReferencedSegments (builder.Decompile (inspectEditor, nav, PublicApiOnly));
+				SetReferencedSegments (builder.Decompile (inspectEditor, nav, new DecompileFlags { PublicOnly = PublicApiOnly, MethodBodies = true }));
 				break;
 			default:
 				inspectEditor.Options = assemblyBrowserEditorOptions;

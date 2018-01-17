@@ -156,7 +156,7 @@ namespace MonoDevelop.AssemblyBrowser
 			};
 		}
 
-		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
+		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
@@ -165,23 +165,8 @@ namespace MonoDevelop.AssemblyBrowser
 				return null;
 			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			var settings = CreateDecompilerSettings (publicOnly, codePolicy);
+			var settings = CreateDecompilerSettings (flags.PublicOnly, codePolicy);
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type, builder => {
-				builder.AddType (type);
-			}, settings);
-		}
-
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
-		{
-			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
-				return null;
-			var type = GetCecilLoader (navigator).GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
-			if (type == null)
-				return null;
-			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
-			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			var settings = CreateDecompilerSettings (publicOnly, codePolicy);
-			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), type, builder => {
 				builder.AddType (type);
 			}, settings);
 		}

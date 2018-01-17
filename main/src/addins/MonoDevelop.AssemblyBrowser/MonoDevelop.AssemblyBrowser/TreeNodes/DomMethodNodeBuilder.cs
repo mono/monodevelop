@@ -165,37 +165,6 @@ namespace MonoDevelop.AssemblyBrowser
 			return null;
 		}
 
-		public static List<ReferenceSegment> GetSummary (TextEditor data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
-		{
-			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
-			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			var settings = DomTypeNodeBuilder.CreateDecompilerSettings (false, codePolicy);
-			return GetSummary (data, module, currentType, setData, settings);
-		}
-
-		public static List<ReferenceSegment> GetSummary (TextEditor data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData, DecompilerSettings settings)
-		{
-			var context = new DecompilerContext (module);
-			var source = new CancellationTokenSource ();
-			context.CancellationToken = source.Token;
-			context.CurrentType = currentType;
-			context.Settings = settings;
-			try {
-				var astBuilder = new AstBuilder (context);
-				astBuilder.DecompileMethodBodies = false;
-				setData (astBuilder);
-				astBuilder.RunTransformations (o => false);
-				GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
-				var output = new ColoredCSharpFormatter (data);
-				astBuilder.GenerateCode (output);
-				output.SetDocumentData ();
-				return output.ReferencedSegments;
-			} catch (Exception e) {
-				data.Text = "/* decompilation failed: \n" + e +"*/";
-			}
-			return null;
-		}
-
 		internal static string GetAttributes (IEnumerable<IAttribute> attributes)
 		{
 			var result = new StringBuilder ();
@@ -211,7 +180,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
+		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			if (HandleSourceCodeEntity (navigator, data)) 
@@ -222,17 +191,6 @@ namespace MonoDevelop.AssemblyBrowser
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), cecilMethod.DeclaringType, b => b.AddMethod (cecilMethod));
 		}
 		
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
-		{
-			var method = (IUnresolvedMethod)navigator.DataItem;
-			if (HandleSourceCodeEntity (navigator, data)) 
-				return null;
-			var cecilMethod = GetCecilLoader (navigator).GetCecilObject (method);
-			if (cecilMethod == null)
-				return null;
-			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), cecilMethod.DeclaringType, b => b.AddMethod (cecilMethod));
-		}
-
 		static void AppendLink (StringBuilder sb, string link, string text)
 		{
 			sb.Append ("<span style=\"text.link\"><u><a ref=\"");
