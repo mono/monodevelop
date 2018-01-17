@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
     class PopupAgent : ISpaceReservationAgent
     {
-        internal readonly Mono.TextEditor.TextArea _textView;
+		internal readonly Mono.TextEditor.MonoTextEditor _textView;
         internal readonly ISpaceReservationManager _manager;
         internal ITrackingSpan _visualSpan;
         internal PopupStyles _style;
@@ -34,7 +34,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         private const int MaxPopupCacheSize = 10;
         private const double BelowTheLineBufferHint = 3.0;
 
-        public PopupAgent(Mono.TextEditor.TextArea textView, ISpaceReservationManager manager, ITrackingSpan visualSpan, PopupStyles style, Widget content)
+		public PopupAgent(Mono.TextEditor.MonoTextEditor textView, ISpaceReservationManager manager, ITrackingSpan visualSpan, PopupStyles style, Widget content)
         {
             if (textView == null)
                 throw new ArgumentNullException("textView");
@@ -658,14 +658,14 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         internal abstract class PopupOrWindowContainer
         {
             private Widget _content;
-            protected Mono.TextEditor.TextArea _placementTarget;
+			protected Mono.TextEditor.MonoTextEditor _placementTarget;
 
-            public static PopupOrWindowContainer Create(Widget content, Mono.TextEditor.TextArea placementTarget)
+			public static PopupOrWindowContainer Create(Widget content, Mono.TextEditor.MonoTextEditor placementTarget)
             {
                 return new PopUpContainer(content, placementTarget);
             }
 
-            public PopupOrWindowContainer(Widget content, Mono.TextEditor.TextArea placementTarget)
+			public PopupOrWindowContainer(Widget content, Mono.TextEditor.MonoTextEditor placementTarget)
             {
                 _content = content;
                 _placementTarget = placementTarget;
@@ -725,7 +725,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             // popup closing.
             FrameBox _popupContentContainer = new FrameBox();
 
-            public PopUpContainer(Widget content, Mono.TextEditor.TextArea placementTarget)
+			public PopUpContainer(Widget content, Mono.TextEditor.MonoTextEditor placementTarget)
                 : base(content, placementTarget)
             {
                 WindowTransparencyDecorator.Attach(_popup);//TODO: not sure we want this on all popus?

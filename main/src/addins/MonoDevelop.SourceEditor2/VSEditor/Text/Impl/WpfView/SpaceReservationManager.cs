@@ -21,11 +21,11 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     {
         public readonly string Name;
         public readonly int Rank;
-        private readonly Mono.TextEditor.TextArea _view;
+		private readonly Mono.TextEditor.MonoTextEditor _view;
         private bool _hasAggregateFocus;
         internal IList<ISpaceReservationAgent> _agents = new List<ISpaceReservationAgent>();
 
-        public SpaceReservationManager(string name, int rank, Mono.TextEditor.TextArea view)
+		public SpaceReservationManager(string name, int rank, Mono.TextEditor.MonoTextEditor view)
         {
             this.Name = name;
             this.Rank = rank;

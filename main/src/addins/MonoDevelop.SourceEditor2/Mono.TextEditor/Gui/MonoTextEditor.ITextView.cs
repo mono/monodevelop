@@ -17,11 +17,11 @@ using System.Threading;
 
 namespace Mono.TextEditor
 {
-	partial class TextArea : IMdTextView
+	partial class MonoTextEditor : IMdTextView
 	{
 		#region Private Members
 
-		public Mono.TextEditor.TextArea VisualElement { get => this; }
+		public MonoTextEditor VisualElement { get => this; }
 
 		ITextBuffer _textBuffer;
 
@@ -56,7 +56,7 @@ namespace Mono.TextEditor
 		//Only one view at a time will have aggregate focus, so keep track of it so that (when sending aggregate focus changed events)
 		//we give a view that had focus the chance to send its lost focus message before we claim aggregate focus.
 		[ThreadStatic]
-		static TextArea ViewWithAggregateFocus = null;
+		static MonoTextEditor ViewWithAggregateFocus = null;
 #if DEBUG
 		[ThreadStatic]
 		static bool SettingAggregateFocus = false;
@@ -444,7 +444,7 @@ namespace Mono.TextEditor
 #endif
 
 			if (!_isClosed) {
-				bool newHasAggregateFocus = ((IdeApp.Workbench.ActiveDocument?.Editor?.Implementation as MonoDevelop.SourceEditor.SourceEditorView)?.TextEditor?.TextArea == this);
+				bool newHasAggregateFocus = ((IdeApp.Workbench.ActiveDocument?.Editor?.Implementation as MonoDevelop.SourceEditor.SourceEditorView)?.TextEditor == this);
 				if (newHasAggregateFocus != _hasAggregateFocus) {
 					_hasAggregateFocus = newHasAggregateFocus;
 

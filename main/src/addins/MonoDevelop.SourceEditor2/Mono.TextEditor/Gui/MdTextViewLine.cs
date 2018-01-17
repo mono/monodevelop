@@ -8,18 +8,18 @@ namespace Mono.TextEditor
 {
 	sealed class MdTextViewLine : ITextViewLine
 	{
-		TextArea textArea;
+		MonoTextEditor textArea;
 		private readonly DocumentLine item;
 		SnapshotSpan lineSpan;
 		int lineBreakLength;
 
-		public MdTextViewLine (TextArea textArea, DocumentLine item)
+		public MdTextViewLine (MonoTextEditor textArea, DocumentLine item)
 		{
 			this.textArea = textArea;
 			this.item = item;
 			this.lineSpan = new SnapshotSpan (textArea.VisualSnapshot, item.Offset, item.LengthIncludingDelimiter);
 			this.lineBreakLength = item.DelimiterLength;
-		}
+		} 
 
 		public object IdentityTag => throw new System.NotImplementedException ();
 

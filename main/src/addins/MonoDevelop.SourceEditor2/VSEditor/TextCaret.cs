@@ -16,13 +16,13 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
     internal class TextCaret : ITextCaret
     {
-        private TextArea _textEditor;
+		private MonoTextEditor _textEditor;
         private ITextView _textView;
 
         private VirtualSnapshotPoint _insertionPoint;
         private PositionAffinity _caretAffinity;
 
-        public TextCaret(TextArea textEditor)
+		public TextCaret(MonoTextEditor textEditor)
         {
             _textEditor = textEditor;
             _textView = textEditor;

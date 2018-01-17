@@ -131,7 +131,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                              this.GuardedOperations,
                              this) ?? new VacuousTextViewModel(dataModel);
 
-            var view = ((MonoDevelop.SourceEditor.SourceEditorView)textEditor.Implementation).TextEditor.TextArea;
+            var view = ((MonoDevelop.SourceEditor.SourceEditorView)textEditor.Implementation).TextEditor;
             view.Initialize(viewModel, roles, parentOptions ?? this.EditorOptionsFactoryService.GlobalOptions, this);
             view.Properties.AddProperty(typeof(MonoDevelop.Ide.Editor.TextEditor), textEditor);
 

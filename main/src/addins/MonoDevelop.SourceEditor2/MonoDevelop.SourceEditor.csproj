@@ -183,8 +183,8 @@
     <Compile Include="Mono.TextEditor\Gui\MdTextViewLine.cs" />
     <Compile Include="Mono.TextEditor\Gui\MdTextViewLineCollection.cs" />
     <Compile Include="Mono.TextEditor\Gui\MdViewScroller.cs" />
-    <Compile Include="Mono.TextEditor\Gui\TextArea.ITextView.cs" />
-    <Compile Include="Mono.TextEditor\Gui\TextArea.ITextView.MouseHover.cs" />
+    <Compile Include="Mono.TextEditor\Gui\MonoTextEditor.ITextView.cs" />
+    <Compile Include="Mono.TextEditor\Gui\MonoTextEditor.ITextView.MouseHover.cs" />
     <Compile Include="MonoDevelop.SourceEditor\EditActions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ExtensibleTextEditor.cs" />
     <Compile Include="MonoDevelop.SourceEditor\LanguageItemWindow.cs" />

@@ -17,10 +17,10 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
     internal class TextSelection : ITextSelection
     {
-        private Mono.TextEditor.TextArea _textEditor;
+		private Mono.TextEditor.MonoTextEditor _textEditor;
         private ITextView _textView;
 
-        public TextSelection(Mono.TextEditor.TextArea textArea)
+		public TextSelection(Mono.TextEditor.MonoTextEditor textArea)
         {
             _textEditor = textArea;
             _textView = textArea;

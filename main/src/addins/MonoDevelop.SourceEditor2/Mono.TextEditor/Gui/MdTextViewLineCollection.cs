@@ -12,9 +12,9 @@ namespace Mono.TextEditor
 {
 	class MdTextViewLineCollection : List<ITextViewLine>, ITextViewLineCollection
 	{
-		private readonly TextArea textView;
+		private readonly MonoTextEditor textView;
 
-		public MdTextViewLineCollection (TextArea textView) : base (64)
+		public MdTextViewLineCollection (MonoTextEditor textView) : base (64)
 		{
 			this.textView = textView;
 			foreach (var item in textView.TextViewMargin.CachedLine.Where (l => l != null).OrderBy (l => l.LineNumber)) {

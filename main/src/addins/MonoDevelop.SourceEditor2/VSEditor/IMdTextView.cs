@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.Text.Editor
 		/// </remarks>
 		ISpaceReservationManager GetSpaceReservationManager (string name);
 
-		Mono.TextEditor.TextArea VisualElement
+		Mono.TextEditor.MonoTextEditor VisualElement
         {
             get;
         }

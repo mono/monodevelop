@@ -10,9 +10,9 @@ namespace Mono.TextEditor
 {
 	class MdViewScroller : IViewScroller
 	{
-		private TextArea _textEditor;
+		private MonoTextEditor _textEditor;
 
-		internal MdViewScroller(TextArea editor)
+		internal MdViewScroller(MonoTextEditor editor)
 		{
 			_textEditor = editor;
 		}

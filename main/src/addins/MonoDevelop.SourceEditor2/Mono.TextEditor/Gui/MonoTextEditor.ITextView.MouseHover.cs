@@ -11,7 +11,7 @@ using Xwt;
 
 namespace Mono.TextEditor
 {
-	partial class TextArea
+	partial class MonoTextEditor
 	{
 		internal IList<MouseHoverEventData> _mouseHoverEvents = new List<MouseHoverEventData> ();
 

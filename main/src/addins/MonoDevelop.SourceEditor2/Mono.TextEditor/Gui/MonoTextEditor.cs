@@ -46,7 +46,7 @@ namespace Mono.TextEditor
 {
 	[System.ComponentModel.Category("Mono.TextEditor")]
 	[System.ComponentModel.ToolboxItem(true)]
-	class MonoTextEditor : Container
+	partial class MonoTextEditor : Container
 	{
 		readonly TextArea textArea;
 
