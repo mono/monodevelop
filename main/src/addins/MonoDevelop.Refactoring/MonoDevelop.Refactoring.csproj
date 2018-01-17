@@ -345,6 +345,7 @@
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding" />
     <InternalsVisibleTo Include="MonoDevelop.PackageManagement" />
     <InternalsVisibleTo Include="MonoDevelop.MonoDroid" />
+    <InternalsVisibleTo Include="MonoDevelop.Refactoring.Tests" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

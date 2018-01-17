@@ -51,16 +51,14 @@ namespace MonoDevelop.AnalysisCore
 			public IEnumerable<CodeDiagnosticDescriptor> AllDiagnostics => diagnostics;
 			public IEnumerable<CodeRefactoringDescriptor> AllRefactorings => refactoringTable.Values;
 
-			public CodeDiagnosticDescriptor GetDiagnosticDescriptor (string id)
+			public bool TryGetDiagnosticDescriptor (string id, out CodeDiagnosticDescriptor desc)
 			{
-				diagnosticTable.TryGetValue (id, out CodeDiagnosticDescriptor desc);
-				return desc;
+				return diagnosticTable.TryGetValue (id, out desc);
 			}
 
-			public CodeRefactoringDescriptor GetRefactoringDescriptor (Type t)
+			public bool TryGetRefactoringDescriptor (Type t, out CodeRefactoringDescriptor desc)
 			{
-				refactoringTable.TryGetValue (t, out CodeRefactoringDescriptor desc);
-				return desc;
+				return refactoringTable.TryGetValue (t, out desc);
 			}
 
 			// Needed to support configuration of diagnostics and code fixes/refactorings.

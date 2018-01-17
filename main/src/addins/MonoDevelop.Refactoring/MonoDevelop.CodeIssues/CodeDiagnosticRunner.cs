@@ -74,9 +74,10 @@ namespace MonoDevelop.CodeIssues
 					if (DataHasTag (data, WellKnownDiagnosticTags.EditAndContinue))
 						continue;
 
-					var diagnostic = await data.ToDiagnosticAsync (analysisDocument, cancellationToken);
-					if (!options.GetDiagnosticDescriptor (data.Id).GetIsEnabled (diagnostic.Descriptor))
+					if (options.TryGetDiagnosticDescriptor (data.Id, out var desc) && !desc.GetIsEnabled (data.Id))
 						continue;
+
+					var diagnostic = await data.ToDiagnosticAsync (analysisDocument, cancellationToken, desc);
 					resultList.Add (new DiagnosticResult (diagnostic));
 				}
 				return resultList;
@@ -121,13 +122,14 @@ namespace MonoDevelop.CodeIssues
 			return !lexicalError.Contains (errorId);
 		}
 
-		static async Task<Diagnostic> ToDiagnosticAsync (this DiagnosticData data, AnalysisDocument analysisDocument, CancellationToken cancellationToken)
+		static async Task<Diagnostic> ToDiagnosticAsync (this DiagnosticData data, AnalysisDocument analysisDocument, CancellationToken cancellationToken, CodeDiagnosticDescriptor desc)
 		{
 			var project = analysisDocument.DocumentContext.AnalysisDocument.Project;
 			var location = await data.DataLocation.ConvertLocationAsync (project, cancellationToken).ConfigureAwait (false);
 			var additionalLocations = await data.AdditionalLocations.ConvertLocationsAsync (project, cancellationToken).ConfigureAwait (false);
 
-			var severity = options.GetDiagnosticDescriptor (data.Id).GetSeverity (data.Id, data.Severity);
+			DiagnosticSeverity severity = desc != null ? desc.GetSeverity (data.Id, data.Severity) : data.Severity;
+			
 			return Diagnostic.Create (
 				data.Id, data.Category, data.Message, severity, data.DefaultSeverity,
 				data.IsEnabledByDefault, GetWarningLevel (severity), data.IsSuppressed, data.Title, data.Description, data.HelpLink,

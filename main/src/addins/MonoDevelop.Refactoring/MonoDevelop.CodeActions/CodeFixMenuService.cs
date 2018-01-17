@@ -105,9 +105,7 @@ namespace MonoDevelop.CodeActions
 				foreach (var fix in cfa.Fixes) {
 					var diag = fix.PrimaryDiagnostic;
 
-					var descriptor = options.GetDiagnosticDescriptor (diag.Id);
-					var enabled = descriptor.GetIsEnabled (diag.Descriptor);
-					if (!enabled)
+					if (options.TryGetDiagnosticDescriptor (diag.Id, out var descriptor) && !descriptor.GetIsEnabled (diag.Descriptor))
 						continue;
 					
 					bool isSuppress = fix.Action is TopLevelSuppressionCodeAction;
@@ -151,8 +149,7 @@ namespace MonoDevelop.CodeActions
 
 			bool first = true;
 			foreach (var refactoring in fixes.CodeRefactoringActions) {
-				var descriptor = options.GetRefactoringDescriptor (refactoring.GetType ());
-				if (descriptor != null && !descriptor.IsEnabled)
+				if (options.TryGetRefactoringDescriptor (refactoring.GetType (), out var descriptor) && !descriptor.IsEnabled)
 					continue;
 
 				if (first) {
