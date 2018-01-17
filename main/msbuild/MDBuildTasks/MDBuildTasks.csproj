@@ -32,7 +32,9 @@
     <Reference Include="$(MSBuildBinPath)\Microsoft.Build.Utilities.Core.dll" />
     <Reference Include="$(MSBuildBinPath)\Microsoft.Build.Framework.dll" />
     <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression" >
+        <HintPath>..\..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
