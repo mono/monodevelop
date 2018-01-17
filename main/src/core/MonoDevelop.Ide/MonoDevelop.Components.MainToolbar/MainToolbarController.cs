@@ -437,6 +437,15 @@ namespace MonoDevelop.Components.MainToolbar
 				var confs = ToolbarView.ConfigurationModel.ToList ();
 				if (confs.Count > 0) {
 					string defaultConfig = ToolbarView.ActiveConfiguration != null ? ToolbarView.ActiveConfiguration.OriginalId : confs[0].OriginalId;
+
+					foreach (Solution sol in IdeApp.Workspace.GetAllSolutions()) {
+						var defaultSolConfig = sol.GetDefaultConfiguration();
+						if (defaultSolConfig != null) {
+							defaultConfig = defaultSolConfig;
+							break;
+						}
+					}
+
 					bool selected = false;
 
 					foreach (var item in confs) {

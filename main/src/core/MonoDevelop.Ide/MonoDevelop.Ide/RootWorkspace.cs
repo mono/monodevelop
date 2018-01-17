@@ -665,11 +665,16 @@ namespace MonoDevelop.Ide
 		
 		string GetBestDefaultConfiguration ()
 		{
+			// Pick the solution default if it is provided, otherwise
 			// 'Debug' is always the best candidate. If there is no debug, pick
 			// the configuration with the highest number of built projects.
 			int nbuilds = 0;
 			string bestConfig = null;
 			foreach (Solution sol in GetAllSolutions ()) {
+				var solutionDefault = sol.GetDefaultConfiguration();
+				if (solutionDefault != null) { 
+					return solutionDefault;
+				}
 				foreach (string conf in sol.GetConfigurations ()) {
 					if (conf == "Debug")
 						return conf;

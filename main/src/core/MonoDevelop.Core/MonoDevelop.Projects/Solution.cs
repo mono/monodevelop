@@ -113,6 +113,16 @@ namespace MonoDevelop.Projects
 				NotifyItemReady ();
 		}
 
+		public string GetDefaultConfiguration()
+		{
+			return OnGetDefaultConfiguration();
+		}
+
+		protected virtual string OnGetDefaultConfiguration()
+		{
+			return null;
+		}
+
 		SolutionExtension itemExtension;
 
 		SolutionExtension SolutionExtension {
