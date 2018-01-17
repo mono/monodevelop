@@ -33,6 +33,7 @@ using Microsoft.CodeAnalysis;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.AnalysisCore.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Gui;
@@ -46,25 +47,25 @@ namespace MonoDevelop.Refactoring.Tests
 	[TestFixture]
 	class ResultsEditorExtensionTests : Ide.IdeTestBase
 	{
-		static async Task<ImmutableArray<QuickTask>> GatherDiagnostics (string input, int expectedUpdates)
+		static async Task<Tuple<T, Projects.Solution>> GatherDiagnosticsNoDispose<T> (string input, Action<ResultsEditorExtension, TaskCompletionSource<T>> callback)
 		{
-			await MonoDevelop.Ide.Composition.CompositionManager.InitializeAsync();
+			await Ide.Composition.CompositionManager.InitializeAsync ();
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			TestViewContent content = new TestViewContent ();
 			tww.ViewContent = content;
 			content.ContentName = "/a.cs";
 			content.Data.MimeType = "text/x-csharp";
 
-			var doc = new MonoDevelop.Ide.Gui.Document(tww);
+			var doc = new Ide.Gui.Document (tww);
 
 			var text = input;
 			content.Text = text;
 
-			var project = Services.ProjectService.CreateProject ("C#");
+			var project = Projects.Services.ProjectService.CreateProject ("C#");
 			project.Name = "test";
 			project.FileName = "test.csproj";
 			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile));
-			var solution = new MonoDevelop.Projects.Solution ();
+			var solution = new Projects.Solution ();
 			solution.AddConfiguration ("", true);
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new ProgressMonitor ())
@@ -76,19 +77,21 @@ namespace MonoDevelop.Refactoring.Tests
 			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 
-			var tcs = new TaskCompletionSource<ImmutableArray<QuickTask>> ();
+			var tcs = new TaskCompletionSource<T> ();
 			compExt.TasksUpdated += delegate {
-				if (--expectedUpdates == 0)
-					tcs.SetResult (compExt.QuickTasks);
+				callback (compExt, tcs);
 			};
 
 			await doc.UpdateParseDocument ();
 
-			try {
-				return await Task.Run (() => tcs.Task);
-			} finally {
-				TypeSystemService.Unload (solution);
-			}
+			return Tuple.Create (await Task.Run (() => tcs.Task), solution);
+		}
+
+		static async Task<T> GatherDiagnostics<T> (string input, Action<ResultsEditorExtension, TaskCompletionSource<T>> callback)
+		{
+			var tuple = await GatherDiagnosticsNoDispose (input, callback);
+			TypeSystemService.Unload (tuple.Item2);
+			return tuple.Item1;
 		}
 
 		const string OneFromEach = @"
@@ -104,6 +107,12 @@ class MyClass
 		cls
 	}
 ";
+		static readonly ExpectedDiagnostic[] OneFromEachDiagnostics = {
+			new ExpectedDiagnostic (68, DiagnosticSeverity.Hidden, "Accessibility modifiers required"),
+			new ExpectedDiagnostic (248, DiagnosticSeverity.Error, "The name 'cls' does not exist in the current context"),
+			new ExpectedDiagnostic (144, DiagnosticSeverity.Info, "Empty constructor is redundant"),
+		};
+
 		struct ExpectedDiagnostic
 		{
 			public int Location;
@@ -128,17 +137,51 @@ class MyClass
 		[Test]
 		public async Task DiagnosticsAreReportedByExtension ()
 		{
-			var expected = new ExpectedDiagnostic [] {
-				new ExpectedDiagnostic (68, DiagnosticSeverity.Hidden, "Accessibility modifiers required"),
-				new ExpectedDiagnostic (248, DiagnosticSeverity.Error, "The name 'cls' does not exist in the current context"),
-				new ExpectedDiagnostic (144, DiagnosticSeverity.Info, "Empty constructor is redundant"),
-			};
+			int expectedUpdates = 4;
+			var diagnostics = await GatherDiagnostics<ImmutableArray<QuickTask>> (OneFromEach, (ext, tcs) => {
+				if (--expectedUpdates == 0)
+					tcs.SetResult (ext.QuickTasks);
+			});
 
-			var diagnostics = await GatherDiagnostics (OneFromEach, 4);
-			Assert.AreEqual (3, diagnostics.Length);
+			Assert.AreEqual (OneFromEachDiagnostics.Length, diagnostics.Length);
 
 			for (int i = 0; i < 3; ++i) {
-				AssertExpectedDiagnostic (expected [i], diagnostics [i]);
+				AssertExpectedDiagnostic (OneFromEachDiagnostics [i], diagnostics [i]);
+			}
+		}
+
+		[Test]
+		public async Task DiagnosticEnableSourceAnalysisChanged ()
+		{
+			var old = IdeApp.Preferences.EnableSourceAnalysis;
+			Projects.Solution sol = null;
+			try {
+				int expectedUpdates = 5;
+
+				var tuple = await GatherDiagnosticsNoDispose<bool> (OneFromEach, (ext, tcs) => {
+					--expectedUpdates;
+					if (expectedUpdates == 4) {
+						Assert.AreEqual (0, ext.QuickTasks.Length);
+					}
+
+					if (expectedUpdates == 1) {
+						IdeApp.Preferences.EnableSourceAnalysis.Value = false;
+
+						Assert.AreEqual (3, ext.QuickTasks.Length);
+						for (int i = 0; i < 3; ++i) {
+							AssertExpectedDiagnostic (OneFromEachDiagnostics [i], ext.QuickTasks [i]);
+						}
+					}
+					if (expectedUpdates == 0) {
+						Assert.AreEqual (0, ext.QuickTasks.Length);
+						tcs.SetResult (true);
+					}
+				});
+				sol = tuple.Item2;
+			} finally {
+				IdeApp.Preferences.EnableSourceAnalysis.Value = old;
+				if (sol != null)
+					TypeSystemService.Unload (sol);
 			}
 		}
 	}
