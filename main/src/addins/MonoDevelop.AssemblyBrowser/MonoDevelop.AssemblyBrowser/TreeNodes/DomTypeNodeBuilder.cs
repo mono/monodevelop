@@ -33,17 +33,15 @@ using Mono.Cecil;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
-using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler;
 using System.Threading;
 using System.Collections.Generic;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.Decompiler.TypeSystem;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Gui.Content;
-using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.Decompiler.CSharp.OutputVisitor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -132,7 +130,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var type = GetCecilLoader (navigator).GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
+			var type = GetCecilLoader (navigator).GetCecilObject<TypeDefinition> ((IUnresolvedTypeDefinition)navigator.DataItem);
 			if (type == null)
 				return null;
 			
@@ -151,8 +149,7 @@ namespace MonoDevelop.AssemblyBrowser
 				LockStatement = true,
 				AsyncAwait = true,
 				ShowXmlDocumentation = true,
-				CSharpFormattingOptions = FormattingOptionsFactory.CreateMono (),
-				HideNonPublicMembers = publicOnly
+				CSharpFormattingOptions = FormattingOptionsFactory.CreateMono ()
 			};
 		}
 
@@ -160,15 +157,11 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var type = GetCecilLoader (navigator).GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
+			var type = (IUnresolvedTypeDefinition)navigator.DataItem;
 			if (type == null)
 				return null;
-			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
-			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			var settings = CreateDecompilerSettings (flags.PublicOnly, codePolicy);
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type, builder => {
-				builder.AddType (type);
-			}, settings);
+			var settings = DomMethodNodeBuilder.GetDecompilerSettings (data, flags.PublicOnly);
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetAssemblyLoader (navigator), builder => builder.DecompileType(type.FullTypeName), flags: flags);
 		}
 
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

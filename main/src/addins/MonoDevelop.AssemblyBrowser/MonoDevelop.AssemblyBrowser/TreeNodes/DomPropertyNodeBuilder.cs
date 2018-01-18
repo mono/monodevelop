@@ -32,14 +32,12 @@ using System.Text;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Text;
-using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler;
 using System.Threading;
 using System.Collections.Generic;
 using Mono.Cecil;
-using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.Decompiler.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AssemblyBrowser
@@ -91,7 +89,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var property = GetCecilLoader (navigator).GetCecilObject ((IUnresolvedProperty)navigator.DataItem);
+			var property = GetCecilLoader (navigator).GetCecilObject<PropertyDefinition> ((IUnresolvedProperty)navigator.DataItem);
 			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleProperty (property));
 		}
 		
@@ -111,10 +109,10 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var property = GetCecilLoader (navigator).GetCecilObject ((IUnresolvedProperty)navigator.DataItem);
+			var property = GetCecilLoader (navigator).GetCecilObject<PropertyDefinition> ((IUnresolvedProperty)navigator.DataItem);
 			if (property == null)
 				return null;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), property.DeclaringType, b => b.AddProperty (property));
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (property), flags: flags);
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

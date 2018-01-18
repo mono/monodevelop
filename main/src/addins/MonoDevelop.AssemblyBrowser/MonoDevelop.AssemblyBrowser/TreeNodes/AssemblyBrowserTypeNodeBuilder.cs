@@ -25,14 +25,14 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Ide.Gui.Components;
-using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.Decompiler.TypeSystem;
 using System;
 using Mono.Cecil;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.Decompiler.TypeSystem.Implementation;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.Decompiler.CSharp.OutputVisitor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -50,9 +50,9 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		internal CecilLoader GetCecilLoader (ITreeNavigator navigator)
+		internal AssemblyLoader GetCecilLoader (ITreeNavigator navigator)
 		{
-			return navigator.GetParentDataItem<AssemblyLoader> (false).CecilLoader;
+			return navigator.GetParentDataItem<AssemblyLoader> (false);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

@@ -46,6 +46,9 @@
   <ItemGroup>
     <Reference Include="Mono.Posix" />
     <Reference Include="System" />
+    <Reference Include="ICSharpCode.Decompiler">
+      <HintPath>..\..\..\packages\ICSharpCode.Decompiler.3.0.0.3403-beta4\lib\net46\ICSharpCode.Decompiler.dll</HintPath>
+    </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -115,29 +118,9 @@
       <Name>CSharpBinding</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\contrib\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
-      <Project>{984CC812-9470-4A13-AFF9-CC44068D666C}</Project>
-      <Name>ICSharpCode.Decompiler</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
-      <Project>{2B8F4F83-C2B3-4E84-A27B-8DEE1BE0E006}</Project>
-      <Name>ICSharpCode.NRefactory.Cecil</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
@@ -197,10 +180,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="MonoDevelop.AssemblyBrowser\TreeNodes\" />
-    <Folder Include="XmlDocIdLib\" />
-  </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

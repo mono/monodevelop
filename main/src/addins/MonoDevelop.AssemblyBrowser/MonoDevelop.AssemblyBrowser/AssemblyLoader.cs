@@ -25,7 +25,8 @@
 // THE SOFTWARE.
 using System;
 using Mono.Cecil;
-using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.Decompiler.CSharp;
+using ICSharpCode.Decompiler.TypeSystem;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using System.IO;
@@ -45,6 +46,7 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		Task<Tuple<AssemblyDefinition, IUnresolvedAssembly>> assemblyLoaderTask;
+		TaskCompletionSource<AssemblyDefinition> assemblyDefinitionTaskSource;
 
 		public Task<Tuple<AssemblyDefinition, IUnresolvedAssembly>> LoadingTask {
 			get {
@@ -55,11 +57,8 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 
-		public AssemblyDefinition Assembly {
-			get {
-				return assemblyLoaderTask.Result?.Item1;
-			}
-		}
+		public AssemblyDefinition Assembly => AssemblyTask.Result;
+		public Task<AssemblyDefinition> AssemblyTask => assemblyDefinitionTaskSource.Task;
 
 		public IUnresolvedAssembly UnresolvedAssembly {
 			get {
@@ -67,13 +66,30 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 
-		CecilLoader loader;
-		internal CecilLoader CecilLoader {
+		CSharpDecompiler csharpDecompiler;
+		public CSharpDecompiler CSharpDecompiler
+		{
 			get {
-				return loader;
+				if (csharpDecompiler == null) {
+					csharpDecompiler = new CSharpDecompiler(DecompilerTypeSystem, new ICSharpCode.Decompiler.DecompilerSettings());
+				}
+
+				return csharpDecompiler;
 			}
 		}
 
+		public DecompilerTypeSystem DecompilerTypeSystem { get; private set; }
+
+		internal T GetCecilObject<T>(IUnresolvedEntity unresolvedEntity)
+			where T : IMemberDefinition
+		{
+			// this method has been made public in 3.0.0.3447 (see https://github.com/icsharpcode/ILSpy/issues/1028)
+			// TODO: get rid of reflection here once we migrate to that version
+			var getCecil = DecompilerTypeSystem.GetType().GetMethod("GetCecil", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+			var cecilObject = getCecil.Invoke(DecompilerTypeSystem, new object[] { unresolvedEntity }) as MemberReference;
+			var resolved = (T)cecilObject.Resolve();
+			return resolved;
+		}
 
 		public AssemblyLoader (AssemblyBrowserWidget widget, string fileName)
 		{
@@ -86,23 +102,23 @@ namespace MonoDevelop.AssemblyBrowser
 			if (!File.Exists (fileName))
 				throw new ArgumentException ("File doesn't exist.", nameof (fileName));
 
-			loader = new CecilLoader (true);
-			loader.InterningProvider = new FastNonInterningProvider ();
-			loader.IncludeInternalMembers = true;
-			loader.LazyLoad = true;
+			assemblyDefinitionTaskSource = new TaskCompletionSource<AssemblyDefinition>();
 
 			assemblyLoaderTask = Task.Run ( () => {
 				try {
-					var asm = AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters {
+					var assemblyDefinition = AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters {
 						AssemblyResolver = this
 					});
-					var loadedAssembley = loader.LoadAssembly (asm);
-					return Tuple.Create (asm, loadedAssembley);
-				} catch (Exception e) {
+					assemblyDefinitionTaskSource.SetResult(assemblyDefinition);
+					DecompilerTypeSystem = new DecompilerTypeSystem(assemblyDefinition.MainModule);
+					var loadedAssembly = DecompilerTypeSystem.MainAssembly.UnresolvedAssembly;
+					return Tuple.Create(assemblyDefinition, loadedAssembly);
+				}
+				catch (Exception e) {
 					LoggingService.LogError ("Error while reading assembly " + FileName, e);
 					return null;
 				}
-			}, src.Token);
+			});
 		}
 
 		class FastNonInterningProvider : InterningProvider

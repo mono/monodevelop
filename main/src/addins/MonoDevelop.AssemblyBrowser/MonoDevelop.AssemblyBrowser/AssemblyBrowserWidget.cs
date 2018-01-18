@@ -41,10 +41,9 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using System.Linq;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.Documentation;
-using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.Decompiler.TypeSystem;
 using MonoDevelop.Projects;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.Decompiler.TypeSystem.Implementation;
 using XmlDocIdLib;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
@@ -1198,7 +1197,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 		void OpenFromAssembly (string url, AssemblyLoader currentAssembly, bool expandNode = true)
 		{
-			var cecilObject = currentAssembly.CecilLoader.GetCecilObject (currentAssembly.UnresolvedAssembly);
+			var cecilObject = currentAssembly.Assembly;
 			if (cecilObject == null)
 				return;
 
@@ -1239,7 +1238,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			var tasks = new List<Task> ();
 			foreach (var definition in definitions.ToArray ()) {
-				var cecilObject = definition.CecilLoader.GetCecilObject (definition.UnresolvedAssembly);
+				var cecilObject = definition.Assembly;
 				if (cecilObject == null) {
 					LoggingService.LogWarning ("Assembly browser: Can't find assembly: " + definition.UnresolvedAssembly.FullAssemblyName + ".");
 					continue;
@@ -1284,7 +1283,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		internal void SelectAssembly (AssemblyLoader loader)
 		{
-			AssemblyDefinition cu = loader.CecilLoader.GetCecilObject (loader.UnresolvedAssembly);
+			AssemblyDefinition cu = loader.Assembly;
 			Application.Invoke ((o, args) => {
 				ITreeNavigator nav = TreeView.GetRootNode ();
 				if (nav == null)

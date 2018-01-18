@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.Decompiler.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
