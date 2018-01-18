@@ -1,5 +1,5 @@
 //
-// MdViewScroller.cs
+// MonoTextEditor.IViewScroller.cs
 //
 // Author:
 //       Mike Krüger <mikkrg@microsoft.com>
@@ -34,83 +34,76 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Mono.TextEditor
 {
-	class MdViewScroller : IViewScroller
+	partial class MonoTextEditor : IViewScroller
 	{
-		readonly MonoTextEditor textEditor;
-
-		internal MdViewScroller(MonoTextEditor editor)
+		void IViewScroller.EnsureSpanVisible(SnapshotSpan span)
 		{
-			textEditor = editor;
+			((IViewScroller)this).EnsureSpanVisible (new VirtualSnapshotSpan (span), EnsureSpanVisibleOptions.None);
 		}
 
-		public void EnsureSpanVisible (SnapshotSpan span)
+		void IViewScroller.EnsureSpanVisible(SnapshotSpan span, EnsureSpanVisibleOptions options)
 		{
-			this.EnsureSpanVisible (new VirtualSnapshotSpan (span), EnsureSpanVisibleOptions.None);
+			((IViewScroller)this).EnsureSpanVisible (new VirtualSnapshotSpan (span), options);
 		}
 
-		public void EnsureSpanVisible (SnapshotSpan span, EnsureSpanVisibleOptions options)
-		{
-			this.EnsureSpanVisible (new VirtualSnapshotSpan (span), options);
-		}
-
-		public void EnsureSpanVisible (VirtualSnapshotSpan span, EnsureSpanVisibleOptions options)
+		void IViewScroller.EnsureSpanVisible (VirtualSnapshotSpan span, EnsureSpanVisibleOptions options)
 		{
 			// If the textview is closed, this should be a no-op
-			if (!textEditor.IsClosed) {
+			if (!IsClosed) {
 				if ((options & ~(EnsureSpanVisibleOptions.ShowStart | EnsureSpanVisibleOptions.MinimumScroll | EnsureSpanVisibleOptions.AlwaysCenter)) != 0x00)
 					throw new ArgumentOutOfRangeException ("options");
 
 				//It is possible that this call is a result of an action that was defered until the view was loaded (& if so, it is possible that the
 				//snapshot changed inbetween).
-				span = span.TranslateTo (textEditor.TextSnapshot);
+				span = span.TranslateTo (TextSnapshot);
 
 				// TODO: handle the various options for scrolling
-				textEditor.ScrollTo (span.Start.Position);
+				ScrollTo (span.Start.Position);
 			}
 		}
 
-		public void ScrollViewportHorizontallyByPixels (double distanceToScroll)
+		void IViewScroller.ScrollViewportHorizontallyByPixels (double distanceToScroll)
 		{
-			textEditor.HAdjustment.Value += distanceToScroll;
+			HAdjustment.Value += distanceToScroll;
 		}
 
-		public void ScrollViewportVerticallyByLine (ScrollDirection direction)
+		void IViewScroller.ScrollViewportVerticallyByLine (ScrollDirection direction)
 		{
-			ScrollViewportVerticallyByLines (direction, 1);
+			((IViewScroller)this).ScrollViewportVerticallyByLines (direction, 1);
 		}
 
-		public void ScrollViewportVerticallyByLines (ScrollDirection direction, int count)
+		void IViewScroller.ScrollViewportVerticallyByLines (ScrollDirection direction, int count)
 		{
 			switch (direction) {
 			case ScrollDirection.Up:
-				textEditor.VAdjustment.Value -= textEditor.LineHeight * count;
+				VAdjustment.Value -= LineHeight * count;
 				break;
 			case ScrollDirection.Down:
-				textEditor.VAdjustment.Value += textEditor.LineHeight * count;
+				VAdjustment.Value += LineHeight * count;
 				break;
 			}
 		}
 
-		public bool ScrollViewportVerticallyByPage (ScrollDirection direction)
+		bool IViewScroller.ScrollViewportVerticallyByPage (ScrollDirection direction)
 		{
 			switch (direction) {
 			case ScrollDirection.Up:
-				if (textEditor.VAdjustment.Value == 0)
+				if (VAdjustment.Value == 0)
 					return false;
-				textEditor.VAdjustment.Value -= textEditor.VAdjustment.PageSize;
+				VAdjustment.Value -= VAdjustment.PageSize;
 				return true;
 			case ScrollDirection.Down:
-				if (textEditor.VAdjustment.Value + textEditor.VAdjustment.PageSize > textEditor.VAdjustment.Upper)
+				if (VAdjustment.Value + VAdjustment.PageSize > VAdjustment.Upper)
 					return false;
-				textEditor.VAdjustment.Value += textEditor.VAdjustment.PageSize;
+				VAdjustment.Value += VAdjustment.PageSize;
 				return true;
 			}
 			return false;
 		}
 
-		public void ScrollViewportVerticallyByPixels (double distanceToScroll)
+		void IViewScroller.ScrollViewportVerticallyByPixels(double distanceToScroll)
 		{
-			textEditor.VAdjustment.Value += distanceToScroll;
+			VAdjustment.Value += distanceToScroll;
 		}
 	}
 }

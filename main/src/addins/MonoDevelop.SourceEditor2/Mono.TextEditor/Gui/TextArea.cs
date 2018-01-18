@@ -235,7 +235,7 @@ namespace Mono.TextEditor
 				value = System.Math.Round (value);
 				this.textEditorData.VAdjustment.Value = value;
 			}
-			if (isMouseTrapped)
+			if (IsMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 			
 			double delta = value - this.oldVadjustment;
@@ -1494,17 +1494,17 @@ namespace Mono.TextEditor
 			customText = null;
 		}
 		#endregion
-		bool isMouseTrapped = false;
+		internal bool IsMouseTrapped { get; set; } = false;
 		
 		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
 		{
-			isMouseTrapped = true;
+			IsMouseTrapped = true;
 			return base.OnEnterNotifyEvent (evnt);
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{
-			isMouseTrapped = false;
+			IsMouseTrapped = false;
 			if (tipWindow != null && currentTooltipProvider != null) {
 				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
 					DelayedHideTooltip ();
@@ -1828,7 +1828,7 @@ namespace Mono.TextEditor
 					Options.ZoomOut ();
 
 				this.QueueDraw ();
-				if (isMouseTrapped)
+				if (IsMouseTrapped)
 					FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 				return true;
 			}

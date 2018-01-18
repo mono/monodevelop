@@ -73,8 +73,6 @@ namespace Mono.TextEditor
 
 		bool isClosed = false;
 
-		private IViewScroller viewScroller;
-
 		private PropertyCollection properties = new PropertyCollection ();
 
 		//Only one view at a time will have aggregate focus, so keep track of it so that (when sending aggregate focus changed events)
@@ -176,7 +174,7 @@ namespace Mono.TextEditor
 
 		public bool IsMouseOverViewOrAdornments {
 			get {
-				throw new NotImplementedException ();
+				return textArea.IsMouseTrapped;
 			}
 		}
 
@@ -294,7 +292,7 @@ namespace Mono.TextEditor
 
 		public IViewScroller ViewScroller {
 			get {
-				return viewScroller ?? (viewScroller = new MdViewScroller (this));
+				return this;
 			}
 		}
 
@@ -334,12 +332,12 @@ namespace Mono.TextEditor
 
 		public void DisplayTextLineContainingBufferPosition (SnapshotPoint bufferPosition, double verticalDistance, ViewRelativePosition relativeTo)
 		{
-			throw new NotImplementedException ();
+			this.textArea.ScrollTo (bufferPosition.Position);
 		}
 
 		public void DisplayTextLineContainingBufferPosition (SnapshotPoint bufferPosition, double verticalDistance, ViewRelativePosition relativeTo, double? viewportWidthOverride, double? viewportHeightOverride)
 		{
-			throw new NotImplementedException ();
+			this.textArea.ScrollTo (bufferPosition.Position);
 		}
 
 		public SnapshotSpan GetTextElementSpan (SnapshotPoint point)

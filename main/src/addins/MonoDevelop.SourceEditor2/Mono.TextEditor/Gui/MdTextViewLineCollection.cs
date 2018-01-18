@@ -56,7 +56,7 @@ namespace Mono.TextEditor
 				int logicalLineNumber = textEditor.GetTextEditorData ().VisualToLogicalLine (visualLineNumber);
 				var line = textEditor.GetLine (logicalLineNumber);
 
-				Add (new MdTextViewLine (textEditor, line, textEditor.TextViewMargin.GetLayout (line)));
+				Add (new MdTextViewLine (this, textEditor, line, textEditor.TextViewMargin.GetLayout (line)));
 
 				curY += textEditor.TextArea.GetLineHeight (line);
 				if (curY >= lastY)

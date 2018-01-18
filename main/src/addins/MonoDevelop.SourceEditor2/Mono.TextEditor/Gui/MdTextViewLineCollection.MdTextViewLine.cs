@@ -39,13 +39,14 @@ namespace Mono.TextEditor
 		{
 			readonly DocumentLine line;
 			readonly TextViewMargin.LayoutWrapper layoutWrapper;
-
+			readonly MdTextViewLineCollection collection; 
 			MonoTextEditor textEditor;
 			SnapshotSpan lineSpan;
 			int lineBreakLength;
 
-			public MdTextViewLine(MonoTextEditor textEditor, DocumentLine line, TextViewMargin.LayoutWrapper layoutWrapper)
+			public MdTextViewLine(MdTextViewLineCollection collection, MonoTextEditor textEditor, DocumentLine line, TextViewMargin.LayoutWrapper layoutWrapper)
 			{
+				this.collection = collection;
 				this.layoutWrapper = layoutWrapper;
 				this.textEditor = textEditor;
 				this.line = line;
@@ -58,9 +59,9 @@ namespace Mono.TextEditor
 
 			public ITextSnapshot Snapshot => lineSpan.Snapshot;
 
-			public bool IsFirstTextViewLineForSnapshotLine => throw new System.NotImplementedException();
+			public bool IsFirstTextViewLineForSnapshotLine => collection[0] == this;
 
-			public bool IsLastTextViewLineForSnapshotLine => throw new System.NotImplementedException();
+			public bool IsLastTextViewLineForSnapshotLine => collection[collection.Count - 1] == this;
 
 			public double Baseline => throw new System.NotImplementedException();
 
