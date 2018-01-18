@@ -1000,7 +1000,14 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public void Update ()
 		{
-			UpdateTabWidthBasedInContentSize ();
+			if (!tracker.Hovered) {
+				UpdateTabWidthBasedInContentSize ();
+			} else if (closingTabs.Count > 0) {
+				var tab = closingTabs[0];
+				if (!tab.IsPreview) {
+					UpdateTabWidth (tab.Allocation.Right - tabContainer.ContentStartX, true);
+				}
+			}
 			QueueDraw ();
 		}
 
