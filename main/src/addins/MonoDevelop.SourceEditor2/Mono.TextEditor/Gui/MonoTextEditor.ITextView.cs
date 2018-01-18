@@ -1,3 +1,29 @@
+//
+// MonoTextEditor.ITextView.cs
+//
+// Author:
+//       Mike Krüger <mikkrg@microsoft.com>
+//
+// Copyright (c) 2018 Microsoft Corporation. All rights reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,33 +49,33 @@ namespace Mono.TextEditor
 
 		public MonoTextEditor VisualElement { get => this; }
 
-		ITextBuffer _textBuffer;
+		ITextBuffer textBuffer;
 
-		IBufferGraph _bufferGraph;
-		ITextViewRoleSet _roles;
+		IBufferGraph bufferGraph;
+		ITextViewRoleSet roles;
 
-		ConnectionManager _connectionManager;
+		ConnectionManager connectionManager;
 
-		TextEditorFactoryService _factoryService;
-		int _queuedSpaceReservationStackRefresh = 0;    //int so that it can be set via Interlocked.CompareExchange()
+		TextEditorFactoryService factoryService;
+		int queuedSpaceReservationStackRefresh = 0;    //int so that it can be set via Interlocked.CompareExchange()
 
 		//		IEditorFormatMap _editorFormatMap;
 
-		private bool _hasInitializeBeenCalled = false;
+		bool hasInitializeBeenCalled = false;
 
-		private ITextSelection _selection;
+		ITextSelection selection;
 
-		private bool _hasAggregateFocus;
+		bool hasAggregateFocus;
 
-		private IEditorOptions _editorOptions;
+		IEditorOptions editorOptions;
 
-		private List<Lazy<ITextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>> _deferredTextViewListeners;
+		List<Lazy<ITextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>> deferredTextViewListeners;
 
-		bool _isClosed = false;
+		bool isClosed = false;
 
-		private IViewScroller _viewScroller;
+		private IViewScroller viewScroller;
 
-		private PropertyCollection _properties = new PropertyCollection ();
+		private PropertyCollection properties = new PropertyCollection ();
 
 		//Only one view at a time will have aggregate focus, so keep track of it so that (when sending aggregate focus changed events)
 		//we give a view that had focus the chance to send its lost focus message before we claim aggregate focus.
@@ -71,49 +97,49 @@ namespace Mono.TextEditor
 		/// <param name="factoryService">Our handy text editor factory service.</param>
 		internal void Initialize (ITextViewModel textViewModel, ITextViewRoleSet roles, IEditorOptions parentOptions, TextEditorFactoryService factoryService, bool initialize = true)
 		{
-			_roles = roles;
+			roles = roles;
 
-			_factoryService = factoryService;
-			GuardedOperations = _factoryService.GuardedOperations;
-			_spaceReservationStack = new SpaceReservationStack (_factoryService.OrderedSpaceReservationManagerDefinitions, this);
+			this.factoryService = factoryService;
+            GuardedOperations = this.factoryService.GuardedOperations;
+            _spaceReservationStack = new SpaceReservationStack(this.factoryService.OrderedSpaceReservationManagerDefinitions, this);
 
 			this.TextDataModel = textViewModel.DataModel;
 			this.TextViewModel = textViewModel;
 
-			_textBuffer = textViewModel.EditBuffer;
-			//			_visualBuffer = textViewModel.VisualBuffer;
+			textBuffer = textViewModel.EditBuffer;
+            //			_visualBuffer = textViewModel.VisualBuffer;
 
-			//			_textSnapshot = _textBuffer.CurrentSnapshot;
-			//			_visualSnapshot = _visualBuffer.CurrentSnapshot;
+            //			_textSnapshot = _textBuffer.CurrentSnapshot;
+            //			_visualSnapshot = _visualBuffer.CurrentSnapshot;
 
-			_editorOptions = _factoryService.EditorOptionsFactoryService.GetOptions (this);
-			_editorOptions.Parent = parentOptions;
+            editorOptions = this.factoryService.EditorOptionsFactoryService.GetOptions (this);
+			editorOptions.Parent = parentOptions;
 
 			if (initialize)
 				this.Initialize ();
 		}
 
-		internal bool IsTextViewInitialized { get { return _hasInitializeBeenCalled; } }
+		internal bool IsTextViewInitialized { get { return hasInitializeBeenCalled; } }
 
 		// This method should only be called once (it is normally called from the ctor unless we're using
 		// ITextEditorFactoryService2.CreateTextViewWithoutInitialization on the factory to delay initialization).
 		internal void Initialize ()
 		{
-			if (_hasInitializeBeenCalled)
+			if (hasInitializeBeenCalled)
 				throw new InvalidOperationException ("Attempted to Initialize a WpfTextView twice");
 
-			_bufferGraph = _factoryService.BufferGraphFactoryService.CreateBufferGraph (this.TextViewModel.VisualBuffer);
+			bufferGraph = factoryService.BufferGraphFactoryService.CreateBufferGraph (this.TextViewModel.VisualBuffer);
 
 			//_editorFormatMap = _factoryService.EditorFormatMapService.GetEditorFormatMap(this);
 
-			_selection = new TextSelection (this);
+			selection = new TextSelection (this);
 
 			//			this.Loaded += OnLoaded;
 
 			// TODO: *Someone* needs to call this to execute UndoHistoryRegistry.RegisterHistory -- VS does this via the ShimCompletionControllerFactory.
-			_factoryService.EditorOperationsProvider.GetEditorOperations (this);
+			factoryService.EditorOperationsProvider.GetEditorOperations (this);
 
-			_connectionManager = new ConnectionManager (this, _factoryService.TextViewConnectionListeners, _factoryService.GuardedOperations);
+			connectionManager = new ConnectionManager (this, factoryService.TextViewConnectionListeners, factoryService.GuardedOperations);
 
 			SubscribeToEvents ();
 
@@ -125,7 +151,7 @@ namespace Mono.TextEditor
 			//_visualBuffer.ChangedLowPriority += OnVisualBufferChanged;
 			//_visualBuffer.ContentTypeChanged += OnVisualBufferContentTypeChanged;
 
-			_hasInitializeBeenCalled = true;
+			hasInitializeBeenCalled = true;
 		}
 
 		ITextCaret ITextView.Caret {
@@ -136,7 +162,7 @@ namespace Mono.TextEditor
 
 		public bool HasAggregateFocus {
 			get {
-				return _hasAggregateFocus;
+				return hasAggregateFocus;
 			}
 		}
 
@@ -146,7 +172,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool IsClosed { get { return _isClosed; } }
+		public bool IsClosed { get { return isClosed; } }
 
 		public bool IsMouseOverViewOrAdornments {
 			get {
@@ -154,25 +180,19 @@ namespace Mono.TextEditor
 			}
 		}
 
-		double ITextView.LineHeight {
-			get {
-				throw new NotImplementedException ();
-			}
-		}
-
 		public double MaxTextRightCoordinate {
 			get {
-				throw new NotImplementedException ();
+				return Allocation.Width - TextViewMargin.XOffset;
 			}
 		}
 
 		IEditorOptions ITextView.Options {
-			get { return _editorOptions; }
+			get { return editorOptions; }
 		}
 
 		public PropertyCollection Properties {
 			get {
-				return _properties;
+				return properties;
 			}
 		}
 
@@ -188,13 +208,13 @@ namespace Mono.TextEditor
 
 		public ITextSelection Selection {
 			get {
-				return _selection;
+				return selection;
 			}
 		}
 
 		public ITextViewRoleSet Roles {
 			get {
-				return _roles;
+				return roles;
 			}
 		}
 
@@ -203,13 +223,13 @@ namespace Mono.TextEditor
 		/// </summary>
 		public ITextBuffer TextBuffer {
 			get {
-				return _textBuffer;
+				return textBuffer;
 			}
 		}
 
 		public IBufferGraph BufferGraph {
 			get {
-				return _bufferGraph;
+				return bufferGraph;
 			}
 		}
 
@@ -274,7 +294,7 @@ namespace Mono.TextEditor
 
 		public IViewScroller ViewScroller {
 			get {
-				return _viewScroller ?? (_viewScroller = new MdViewScroller (this));
+				return viewScroller ?? (viewScroller = new MdViewScroller (this));
 			}
 		}
 
@@ -290,26 +310,26 @@ namespace Mono.TextEditor
 
 		public void Close ()
 		{
-			if (_isClosed)
+			if (isClosed)
 				throw new InvalidOperationException ();//Strings.TextViewClosed);
 
-			if (_hasAggregateFocus) {
+			if (hasAggregateFocus) {
 				//Silently lose aggregate focus (to preserve Dev11 compatibility which did not raise a focus changed event when the view was closed).
 				Debug.Assert (ViewWithAggregateFocus == this);
 				ViewWithAggregateFocus = null;
-				_hasAggregateFocus = false;
+				hasAggregateFocus = false;
 			}
 
 			UnsubscribeFromEvents ();
 
-			_connectionManager.Close ();
+			connectionManager.Close ();
 
 			TextViewModel.Dispose ();
 			TextViewModel = null;
 
-			_isClosed = true;
+			isClosed = true;
 
-			_factoryService.GuardedOperations.RaiseEvent (this, this.Closed);
+			factoryService.GuardedOperations.RaiseEvent (this, this.Closed);
 		}
 
 		public void DisplayTextLineContainingBufferPosition (SnapshotPoint bufferPosition, double verticalDistance, ViewRelativePosition relativeTo)
@@ -334,15 +354,14 @@ namespace Mono.TextEditor
 
 		public void QueueSpaceReservationStackRefresh ()
 		{
-			if (Interlocked.CompareExchange (ref _queuedSpaceReservationStackRefresh, 1, 0) == 0) {
+			if (Interlocked.CompareExchange (ref queuedSpaceReservationStackRefresh, 1, 0) == 0) {
 				MonoDevelop.Core.Runtime.RunInMainThread (new Action (delegate {
-					Interlocked.Exchange (ref _queuedSpaceReservationStackRefresh, 0);
+					Interlocked.Exchange (ref queuedSpaceReservationStackRefresh, 0);
 
-					if (!_isClosed) {
+					if (!isClosed) {
 						_spaceReservationStack.Refresh ();
 					}
-				}
-													  ));
+				}));
 			}
 		}
 
@@ -370,25 +389,25 @@ namespace Mono.TextEditor
 		private void BindContentTypeSpecificAssets (IContentType beforeContentType, IContentType afterContentType)
 		{
 			// Notify the Text view creation listeners
-			var extensions = UIExtensionSelector.SelectMatchingExtensions (_factoryService.TextViewCreationListeners, afterContentType, beforeContentType, _roles);
+			var extensions = UIExtensionSelector.SelectMatchingExtensions (factoryService.TextViewCreationListeners, afterContentType, beforeContentType, roles);
 			foreach (var extension in extensions) {
 				string deferOptionName = extension.Metadata.OptionName;
 				if (!string.IsNullOrEmpty (deferOptionName) && ((ITextView)this).Options.IsOptionDefined (deferOptionName, false)) {
 					object value = ((ITextView)this).Options.GetOptionValue (deferOptionName);
 					if (value is bool) {
 						if (!(bool)value) {
-							if (_deferredTextViewListeners == null) {
-								_deferredTextViewListeners = new List<Lazy<ITextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>> ();
+							if (deferredTextViewListeners == null) {
+								deferredTextViewListeners = new List<Lazy<ITextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>> ();
 							}
-							_deferredTextViewListeners.Add (extension);
+							deferredTextViewListeners.Add (extension);
 							continue;
 						}
 					}
 				}
 
-				var instantiatedExtension = _factoryService.GuardedOperations.InstantiateExtension (extension, extension);
+				var instantiatedExtension = factoryService.GuardedOperations.InstantiateExtension (extension, extension);
 				if (instantiatedExtension != null) {
-					_factoryService.GuardedOperations.CallExtensionPoint (instantiatedExtension,
+					factoryService.GuardedOperations.CallExtensionPoint (instantiatedExtension,
 						() => instantiatedExtension.TextViewCreated (this));
 				}
 			}
@@ -399,7 +418,7 @@ namespace Mono.TextEditor
 		/// </summary>
 		void OnClassificationChanged (object sender, ClassificationChangedEventArgs e)
 		{
-			if (!_isClosed) {
+			if (!isClosed) {
 				// When classifications change, we just invalidate the lines. That invalidation will
 				// create new lines based on the new classifications.
 
@@ -438,12 +457,12 @@ namespace Mono.TextEditor
 			}
 #endif
 
-			if (!_isClosed) {
+			if (!isClosed) {
 				bool newHasAggregateFocus = ((IdeApp.Workbench.ActiveDocument?.Editor?.Implementation as MonoDevelop.SourceEditor.SourceEditorView)?.TextEditor == this);
-				if (newHasAggregateFocus != _hasAggregateFocus) {
-					_hasAggregateFocus = newHasAggregateFocus;
+				if (newHasAggregateFocus != hasAggregateFocus) {
+					hasAggregateFocus = newHasAggregateFocus;
 
-					if (_hasAggregateFocus) {
+					if (hasAggregateFocus) {
 						//Got focus so make sure that the view that had focus (which wasn't us since we didn't have focus before) raises its
 						//lost focus event before we raise our got focus event. This will potentially do bad things if someone changes focus 
 						//if the lost aggregate focus handler.
@@ -459,13 +478,13 @@ namespace Mono.TextEditor
 						ViewWithAggregateFocus = null;
 					}
 
-					EventHandler handler = _hasAggregateFocus ? this.GotAggregateFocus : this.LostAggregateFocus;
+					EventHandler handler = hasAggregateFocus ? this.GotAggregateFocus : this.LostAggregateFocus;
 
 #if DEBUG
 					try {
 						SettingAggregateFocus = true;
 #endif
-						_factoryService.GuardedOperations.RaiseEvent (this, handler);
+						factoryService.GuardedOperations.RaiseEvent (this, handler);
 #if DEBUG
 					} finally {
 						SettingAggregateFocus = false;
@@ -487,7 +506,7 @@ namespace Mono.TextEditor
 		}
 
 		internal TextEditorFactoryService ComponentContext {
-			get { return _factoryService; }
+			get { return factoryService; }
 		}
 
 	}

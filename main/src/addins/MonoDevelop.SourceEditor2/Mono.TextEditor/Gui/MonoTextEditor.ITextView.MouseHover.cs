@@ -34,7 +34,7 @@ namespace Mono.TextEditor
 
 		internal void OnHoverTimer ()
 		{
-			if (!_isClosed) {
+			if (!isClosed) {
 				_millisecondsSinceMouseMove += (int)_mouseHoverTimer.Interval;
 
 				if (Visible && _lastHoverPosition.HasValue)
@@ -80,7 +80,7 @@ namespace Mono.TextEditor
 
 		internal void OnMouseMove (object o, Gtk.MotionNotifyEventArgs args)
 		{
-			if (!_isClosed) {
+			if (!isClosed) {
 				MonoDevelop.Core.Runtime.AssertMainThread ();
 				var but1 = (args.Event.State & Gdk.ModifierType.Button1Mask) == Gdk.ModifierType.Button1Mask;
 				var but2 = (args.Event.State & Gdk.ModifierType.Button2Mask) == Gdk.ModifierType.Button2Mask;
@@ -93,7 +93,7 @@ namespace Mono.TextEditor
 
 		void OnMouseDown (object o, Gtk.ButtonPressEventArgs args)
 		{
-			if (!_isClosed) {
+			if (!isClosed) {
 				_mouseHoverTimer.Stop ();
 			}
 		}
@@ -149,14 +149,14 @@ namespace Mono.TextEditor
 
 			if (eventsToFire.Count > 0) {
 				MouseHoverEventArgs args = new MouseHoverEventArgs (this, _lastHoverPosition.Value,
-																   _bufferGraph.CreateMappingPoint (new SnapshotPoint (Document.TextBuffer.CurrentSnapshot, _lastHoverPosition.Value), PointTrackingMode.Positive));
+																   bufferGraph.CreateMappingPoint (new SnapshotPoint (Document.TextBuffer.CurrentSnapshot, _lastHoverPosition.Value), PointTrackingMode.Positive));
 				foreach (var eventData in eventsToFire) {
 					eventData.Fired = true;
 
 					try {
 						eventData.EventHandler (this, args);
 					} catch (Exception e) {
-						_factoryService.GuardedOperations.HandleException (eventData.EventHandler, e);
+						factoryService.GuardedOperations.HandleException (eventData.EventHandler, e);
 					}
 				}
 			}

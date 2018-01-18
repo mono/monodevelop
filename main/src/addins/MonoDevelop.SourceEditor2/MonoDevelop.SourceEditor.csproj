@@ -180,7 +180,7 @@
     </None>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="Mono.TextEditor\Gui\MdTextViewLine.cs" />
+    <Compile Include="Mono.TextEditor\Gui\MdTextViewLineCollection.MdTextViewLine.cs" />
     <Compile Include="Mono.TextEditor\Gui\MdTextViewLineCollection.cs" />
     <Compile Include="Mono.TextEditor\Gui\MdViewScroller.cs" />
     <Compile Include="Mono.TextEditor\Gui\MonoTextEditor.ITextView.cs" />
