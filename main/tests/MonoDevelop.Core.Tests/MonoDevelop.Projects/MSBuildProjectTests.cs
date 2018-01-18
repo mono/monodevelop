@@ -381,6 +381,14 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public void ConditionRelationalExpressions ()
+		{
+			var p = LoadAndEvaluate ("msbuild-tests", "condition-relational-expressions.targets");
+			Assert.AreEqual ("С2С3С4С7С10С12С14С17С18С20С23С24", p.EvaluatedProperties.GetValue("Answer"));
+			p.Dispose ();
+		}
+
+		[Test]
 		public void EvalItemsAfterProperties ()
 		{
 			var p = LoadAndEvaluate ("msbuild-tests", "property-eval-order.csproj");

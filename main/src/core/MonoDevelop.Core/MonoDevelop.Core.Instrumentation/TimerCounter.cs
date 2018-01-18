@@ -96,9 +96,12 @@ namespace MonoDevelop.Core.Instrumentation
 						StoreValue (message, null, null);
 					}
 				}
+			} else if (LogMessages) {
+				if (lastTimer != null)
+					lastTimer.Trace (message);
+				else if (message != null)
+					InstrumentationService.LogMessage (message);
 			}
-			if (LogMessages && message != null)
-				InstrumentationService.LogMessage (message);
 		}
 		
 		public ITimeTracker BeginTiming ()
@@ -119,27 +122,35 @@ namespace MonoDevelop.Core.Instrumentation
 		public ITimeTracker BeginTiming (string message, IDictionary<string, string> metadata)
 		{
 			ITimeTracker timer;
-			if (!Enabled) {
+			if (!Enabled && !LogMessages) {
 				timer = dummyTimer;
 			} else {
 				var c = new TimeCounter (this);
-				lock (values) {
+				if (Enabled) {
+					lock (values) {
+						timer = lastTimer = c;
+						count++;
+						totalCount++;
+						int i = StoreValue (message, lastTimer, metadata);
+						lastTimer.TraceList.ValueIndex = i;
+					}
+				} else {
+					if (message != null)
+						InstrumentationService.LogMessage (message);
+					else
+						InstrumentationService.LogMessage ("START: " + Name);
 					timer = lastTimer = c;
-					count++;
-					totalCount++;
-					int i = StoreValue (message, lastTimer, metadata);
-					lastTimer.TraceList.ValueIndex = i;
 				}
 			}
-			if (LogMessages && message != null)
-				InstrumentationService.LogMessage (message);
 			return timer;
 		}
 
 		public void EndTiming ()
 		{
-			if (Enabled && lastTimer != null)
+			if (lastTimer != null) {
 				lastTimer.End ();
+				lastTimer = null;
+			}
 		}
 		
 		static ITimeTracker dummyTimer = new DummyTimerCounter ();

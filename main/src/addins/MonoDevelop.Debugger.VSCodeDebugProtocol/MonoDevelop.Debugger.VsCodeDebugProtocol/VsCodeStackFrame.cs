@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
 using Mono.Debugging.Client;
 using VsFormat = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrameFormat;
@@ -40,13 +41,34 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		string fullStackframeText;
 
 		public VsCodeStackFrame (VsFormat format, int threadId, int frameIndex, Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrame frame)
-			: base (0, new SourceLocation (frame.Name, frame.Source?.Path, frame.Line, frame.Column, frame.EndLine ?? -1, frame.EndColumn ?? -1), GetLanguage (frame.Source?.Path))
+			: base (0, new SourceLocation (frame.Name, frame.Source?.Path, frame.Line, frame.Column, frame.EndLine ?? -1, frame.EndColumn ?? -1, GetHashBytes (frame.Source)), GetLanguage (frame.Source?.Path))
 		{
 			this.format = format;
 			this.threadId = threadId;
 			this.frameIndex = frameIndex;
 			this.fullStackframeText = frame.Name;
 			this.frameId = frame.Id;
+		}
+
+		static byte [] HexToByteArray (string hex)
+		{
+			if (hex.Length % 2 == 1)
+				throw new ArgumentException ();
+			byte [] bytes = new byte [hex.Length / 2];
+			for (int i = 0; i < bytes.Length; i++) {
+				bytes [i] = Convert.ToByte (hex.Substring (i * 2, 2), 16);
+			}
+			return bytes;
+		}
+
+		static byte [] GetHashBytes (Source source)
+		{
+			if (source == null)
+				return null;
+			var checkSum = source.Checksums.FirstOrDefault (c => c.Algorithm == ChecksumAlgorithm.SHA1);
+			if (checkSum == null)
+				return null;
+			return HexToByteArray (checkSum.ChecksumValue);
 		}
 
 		public override string FullStackframeText {

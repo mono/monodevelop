@@ -693,6 +693,8 @@ namespace MonoDevelop.Projects
 			base.OnEndLoad ();
 
 			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata (null));
+
+			InitializeFileWatcher ();
 		}
 
 		/// <summary>
@@ -1016,6 +1018,8 @@ namespace MonoDevelop.Projects
 
 		protected override void OnDispose ()
 		{
+			DisposeFileWatcher ();
+
 			foreach (ProjectConfiguration c in Configurations)
 				c.ProjectInstance?.Dispose ();
 			
@@ -1378,7 +1382,7 @@ namespace MonoDevelop.Projects
 			if (propertyValue != null)
 				return null;
 
-			propertyValue = propertyGroup.GetValue ("TargetFrameworks", null);
+			propertyValue = project.EvaluatedProperties.GetValue ("TargetFrameworks", null);
 			if (propertyValue != null)
 				return propertyValue.Split (new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -2372,6 +2376,8 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		ITimeTracker writeTimer;
+
 		void WriteProject (ProgressMonitor monitor)
 		{
 			if (saving) {
@@ -2381,10 +2387,15 @@ namespace MonoDevelop.Projects
 			
 			saving = true;
 
+			writeTimer = Counters.WriteMSBuildProject.BeginTiming ();
+
 			try {
 				sourceProject.FileName = FileName;
 
+				writeTimer.Trace ("Writing project header");
 				OnWriteProjectHeader (monitor, sourceProject);
+
+				writeTimer.Trace ("Writing project content");
 				ProjectExtension.OnWriteProject (monitor, sourceProject);
 
 				var globalGroup = sourceProject.GetGlobalPropertyGroup ();
@@ -2404,7 +2415,9 @@ namespace MonoDevelop.Projects
 				}
 
 				sourceProject.IsNewProject = false;
+				writeTimer.Trace ("Project written");
 			} finally {
+				writeTimer.End ();
 				saving = false;
 			}
 		}
@@ -2956,11 +2969,17 @@ namespace MonoDevelop.Projects
 		{
 			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
 
+			writeTimer.Trace ("Writing configurations");
 			WriteConfigurations (monitor, msproject, globalGroup);
+			writeTimer.Trace ("Done writing configurations");
 
+			writeTimer.Trace ("Writing run configurations");
 			WriteRunConfigurations (monitor, msproject, globalGroup);
+			writeTimer.Trace ("Done writing run configurations");
 
+			writeTimer.Trace ("Saving project items");
 			SaveProjectItems (monitor, msproject, usedMSBuildItems);
+			writeTimer.Trace ("Done saving project items");
 
 			if (msproject.IsNewProject) {
 				foreach (var im in DefaultImports)
@@ -2978,7 +2997,10 @@ namespace MonoDevelop.Projects
 			}
 			importsAdded.Clear ();
 			importsRemoved.Clear ();
+
+			writeTimer.Trace ("Writing external properties");
 			msproject.WriteExternalProjectProperties (this, GetType (), true);
+			writeTimer.Trace ("Done writing external properties");
 		}
 
 		void WriteConfigurations (ProgressMonitor monitor, MSBuildProject msproject, IMSBuildPropertySet globalGroup)
@@ -3027,7 +3049,7 @@ namespace MonoDevelop.Projects
 					ConfigData cdata = FindPropertyGroup (configData, conf);
 					var propGroup = (MSBuildPropertyGroup)cdata.Group;
 
-					// Get properties wit the MergeToProject flag, and check that the value they have matches the
+					// Get properties with the MergeToProject flag, and check that the value they have matches the
 					// value all the other groups have so far. If one of the groups have a different value for
 					// the same property, then the property is discarded as mergeable to parent.
 					CollectMergetoprojectProperties (propGroup, mergeToProjectProperties, mergeToProjectPropertyValues);
@@ -3063,8 +3085,27 @@ namespace MonoDevelop.Projects
 
 				foreach (ProjectConfiguration config in Configurations)
 					config.MainPropertyGroup.ResetIsNewFlags ();
+
+
+				// For properties that have changed in the main group, set the
+				// dirty flag for the corresponding properties in the evaluated
+				// project instances. The evaluated values of those properties
+				// can't be used anymore to decide wether or not a property
+				// needs to be saved. The ideal solution would be to re-evaluate
+				// the instance and get the new evaluated values, but that
+				// would have a high impact in performance.
+
+				foreach (var p in globalGroup.GetProperties ()) {
+					if (p.Modified) {
+						foreach (ProjectConfiguration config in Configurations)
+                            if (config.ProjectInstance != null)
+    							config.ProjectInstance.SetPropertyDirty (p.Name);
+					}
+				}
 			}
 		}
+
+		ProjectRunConfiguration defaultBlankRunConfiguration;
 
 		void WriteRunConfigurations (ProgressMonitor monitor, MSBuildProject msproject, IMSBuildPropertySet globalGroup)
 		{
@@ -3076,7 +3117,9 @@ namespace MonoDevelop.Projects
 
 				// Write configuration data, creating new property groups if necessary
 
-				var defaultConfig = CreateRunConfigurationInternal ("Default");
+				// Create the default configuration just once, and reuse it for comparing in subsequent writes
+				if (defaultBlankRunConfiguration == null)
+					defaultBlankRunConfiguration = CreateRunConfigurationInternal ("Default");
 
 				foreach (ProjectRunConfiguration runConfig in RunConfigurations) {
 
@@ -3084,7 +3127,7 @@ namespace MonoDevelop.Projects
 					ConfigData cdata = configData.FirstOrDefault (cd => cd.Group == pg);
 					var targetProject = runConfig.StoreInUserFile ? userProject : msproject;
 
-					if (runConfig.IsDefaultConfiguration && runConfig.Equals (defaultConfig)) {
+					if (runConfig.IsDefaultConfiguration && runConfig.Equals (defaultBlankRunConfiguration)) {
 						// If the default configuration has the default values, then there is no need to save it.
 						// If this configuration was added after loading the project, we are not adding it to the msproject and we are done.
 						// If this configuration was loaded from the project and later modified to the default values, we dont set cdata.Exists=true,
@@ -3871,6 +3914,149 @@ namespace MonoDevelop.Projects
 
 		internal IList<DotNetProjectImport> ImportsRemoved {
 			get { return importsRemoved; }
+		}
+
+		bool useFileWatcher;
+
+		/// <summary>
+		/// When set to true with UseAdvancedGlobSupport also true then changes made to files inside the project externally
+		/// will be monitored and used to update the project.
+		/// </summary>
+		public bool UseFileWatcher {
+			get { return useFileWatcher; }
+			set {
+				if (useFileWatcher != value) {
+					useFileWatcher = value;
+
+					// File watcher will be created in OnEndLoad.
+					if (Loading) {
+						if (!useFileWatcher) {
+							DisposeFileWatcher ();
+						}
+					} else {
+						OnUseFileWatcherChanged ();
+					}
+				}
+			}
+		}
+
+		void OnUseFileWatcherChanged ()
+		{
+			if (useFileWatcher && UseAdvancedGlobSupport) {
+				CreateFileWatcher ();
+			} else {
+				DisposeFileWatcher ();
+			}
+		}
+
+		void InitializeFileWatcher ()
+		{
+			if (useFileWatcher) {
+				OnUseFileWatcherChanged ();
+			}
+		}
+
+		FSW.FileSystemWatcher watcher;
+
+		void CreateFileWatcher ()
+		{
+			DisposeFileWatcher ();
+
+			if (!Directory.Exists (BaseDirectory))
+				return;
+
+			watcher = new FSW.FileSystemWatcher (BaseDirectory);
+			watcher.IncludeSubdirectories = true;
+			watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName;
+			watcher.Created += OnFileCreated;
+			watcher.Deleted += OnFileDeleted;
+			watcher.Renamed += OnFileRenamed;
+			watcher.Error += OnFileWatcherError;
+			watcher.EnableRaisingEvents = true;
+		}
+
+		void DisposeFileWatcher ()
+		{
+			if (watcher != null) {
+				watcher.Dispose ();
+				watcher = null;
+			}
+		}
+
+		void OnFileWatcherError (object sender, ErrorEventArgs e)
+		{
+			LoggingService.LogError ("FileWatcher error", e.GetException ());
+		}
+
+		void OnFileRenamed (object sender, RenamedEventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				if (Directory.Exists (e.FullPath)) {
+					OnDirectoryRenamedExternally (e.OldFullPath, e.FullPath);
+				} else {
+					OnFileCreatedExternally (e.FullPath);
+					OnFileDeletedExternally (e.OldFullPath);
+				}
+			});
+		}
+
+		void OnFileCreated (object sender, FileSystemEventArgs e)
+		{
+			if (Directory.Exists (e.FullPath))
+				return;
+
+			FilePath filePath = e.FullPath;
+			if (filePath.FileName == ".DS_Store")
+				return;
+
+			Runtime.RunInMainThread (() => {
+				OnFileCreatedExternally (e.FullPath);
+			});
+		}
+
+		void OnFileDeleted (object sender, FileSystemEventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				OnFileDeletedExternally (e.FullPath);
+			});
+		}
+
+		/// <summary>
+		/// Move all project files in the old directory to the new directory.
+		/// </summary>
+		void OnDirectoryRenamedExternally (string oldDirectory, string newDirectory)
+		{
+			FileService.NotifyDirectoryRenamed (oldDirectory, newDirectory);
+		}
+
+		void OnFileCreatedExternally (string fileName)
+		{
+			if (Files.Any (file => file.FilePath == fileName)) {
+				// File exists in project. This can happen if the file was added
+				// in the IDE and not externally.
+				return;
+			}
+
+			string include = MSBuildProjectService.ToMSBuildPath (ItemDirectory, fileName);
+			foreach (var it in sourceProject.FindGlobItemsIncludingFile (include).Where (it => it.Metadata.GetProperties ().Count () == 0)) {
+				var eit = CreateFakeEvaluatedItem (sourceProject, it, include, null);
+				var pi = CreateProjectItem (eit);
+				pi.Read (this, eit);
+				Items.Add (pi);
+			}
+		}
+
+		void OnFileDeletedExternally (string fileName)
+		{
+			if (File.Exists (fileName)) {
+				// File has not been deleted. The delete event could have been due to
+				// the file being saved. Saving with TextFileUtility will result in
+				// FileService.SystemRename being called to move a temporary file
+				// to the file being saved which deletes and then creates the file.
+				return;
+			}
+
+			Files.Remove (fileName);
 		}
 
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)

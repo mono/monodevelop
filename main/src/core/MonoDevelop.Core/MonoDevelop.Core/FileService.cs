@@ -339,6 +339,17 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		internal static void NotifyDirectoryRenamed (string oldPath, string newPath)
+		{
+			try {
+				OnFileRenamed (new FileCopyEventArgs (oldPath, newPath, true));
+				OnFileCreated (new FileEventArgs (newPath, true));
+				OnFileRemoved (new FileEventArgs (oldPath, true));
+			} catch (Exception ex) {
+				LoggingService.LogError ("Directory rename notification failed", ex);
+			}
+		}
+
 		internal static FileSystemExtension GetFileSystemForPath (string path, bool isDirectory)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (path));
@@ -942,9 +953,10 @@ namespace MonoDevelop.Core
 				if (Runtime.IsMainThread) {
 					del.Invoke (thisObj, args);
 				} else {
-					Runtime.MainSynchronizationContext.Post (delegate {
-						del.Invoke (thisObj, args);
-					}, null);
+					Runtime.MainSynchronizationContext.Post (state => {
+						var (del1, thisObj1, args1) = (ValueTuple<EventHandler<TArgs>, object, TArgs>)state;
+						del1.Invoke (thisObj1, args1);
+					}, (del, thisObj, args));
 				}
 			}
 		}

@@ -59,6 +59,8 @@ using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.VisualStudio.Platform;
 
+using Counters = MonoDevelop.Ide.Counters;
+
 namespace MonoDevelop.CSharp.Completion
 {
 	sealed class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IDebuggerExpressionResolver
@@ -237,7 +239,6 @@ namespace MonoDevelop.CSharp.Completion
 			int triggerWordLength = 0;
 			switch (triggerInfo.CompletionTriggerReason) {
 			case CompletionTriggerReason.CharTyped:
-				//	var timer = Counters.ResolveTime.BeginTiming ();
 				try {
 					var completionChar = triggerInfo.TriggerCharacter.Value;
 					if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
@@ -253,20 +254,10 @@ namespace MonoDevelop.CSharp.Completion
 						"Line text: " + Editor.GetLineText (completionContext.TriggerLine),
 						e);
 					return null;
-				} finally {
-					//			if (timer != null)
-					//				timer.Dispose ();
 				}
 			case CompletionTriggerReason.BackspaceOrDeleteCommand:
-				//char completionChar = Editor.GetCharAt (completionContext.TriggerOffset - 1);
-				//Console.WriteLine ("completion char: " + completionChar);
-				//	var timer = Counters.ResolveTime.BeginTiming ();
-				char ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
-				char ch2 = completionContext.TriggerOffset < Editor.Length ? Editor.GetCharAt (completionContext.TriggerOffset) : '\0';
-				if (!IsIdentifierPart (ch) && !IsIdentifierPart (ch2))
-					return null;
 				try {
-					return InternalHandleCodeCompletion (completionContext, new CompletionTriggerInfo (CompletionTriggerReason.BackspaceOrDeleteCommand, ch), triggerWordLength, token).ContinueWith (t => {
+					return InternalHandleCodeCompletion (completionContext, triggerInfo, triggerWordLength, token).ContinueWith (t => {
 						var result = (CompletionDataList)t.Result;
 						if (result == null)
 							return null;
@@ -286,7 +277,7 @@ namespace MonoDevelop.CSharp.Completion
 					//				timer.Dispose ();
 				}
 			default:
-				ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
+				var ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
 				return InternalHandleCodeCompletion (completionContext, new CompletionTriggerInfo (CompletionTriggerReason.CompletionCommand, ch), triggerWordLength, default (CancellationToken));
 			}
 		}
@@ -453,60 +444,52 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 
-			var metadata = new Dictionary<string, string> ();
-			metadata ["Result"] = "Success";
-			var timer = Counters.CodeCompletion.BeginTiming (metadata);
+			Counters.ProcessCodeCompletion.Trace ("C#: Getting completions");
+			var customOptions = DocumentContext.RoslynWorkspace.Options.WithChangedOption (CompletionOptions.TriggerOnDeletion, LanguageNames.CSharp, true);
 
-			try {
-				var completionList = await cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, cancellationToken: token);
-				if (completionList == null)
-					return EmptyCompletionDataList;
+			var completionList = await Task.Run (() => cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, options: customOptions, cancellationToken: token)).ConfigureAwait (false);
+			Counters.ProcessCodeCompletion.Trace ("C#: Got completions");
 
-				var result = new CompletionDataList ();
-				result.TriggerWordLength = triggerWordLength;
-				CSharpCompletionData defaultCompletionData = null;
-				foreach (var item in completionList.Items) {
-					if (string.IsNullOrEmpty (item.DisplayText))
-						continue;
-					var data = new CSharpCompletionData (analysisDocument, triggerSnapshot, cs, item);
-					result.Add (data);
-					if (item.Rules.MatchPriority > 0) {
-						if (defaultCompletionData == null || defaultCompletionData.Rules.MatchPriority < item.Rules.MatchPriority)
-							defaultCompletionData = data;
-					}
+			if (completionList == null)
+				return EmptyCompletionDataList;
+
+			var result = new CompletionDataList ();
+			result.TriggerWordLength = triggerWordLength;
+			CSharpCompletionData defaultCompletionData = null;
+			foreach (var item in completionList.Items) {
+				if (string.IsNullOrEmpty (item.DisplayText))
+					continue;
+				var data = new CSharpCompletionData (analysisDocument, triggerSnapshot, cs, item);
+				result.Add (data);
+				if (item.Rules.MatchPriority > 0) {
+					if (defaultCompletionData == null || defaultCompletionData.Rules.MatchPriority < item.Rules.MatchPriority)
+						defaultCompletionData = data;
 				}
-
-				result.AutoCompleteUniqueMatch = (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand);
-
-				var partialDoc = analysisDocument.WithFrozenPartialSemantics (token);
-				var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
-				var syntaxContext = CSharpSyntaxContext.CreateContext (DocumentContext.RoslynWorkspace, semanticModel, completionContext.TriggerOffset, token);
-
-				if (forceSymbolCompletion || IdeApp.Preferences.AddImportedItemsToCompletionList) {
-					AddImportCompletionData (syntaxContext, result, semanticModel, completionContext.TriggerOffset, token);
-				}
-
-				if (defaultCompletionData != null)
-					result.DefaultCompletionString = defaultCompletionData.DisplayText;
-
-				if (completionList.SuggestionModeItem != null) {
-					result.DefaultCompletionString = completionList.SuggestionModeItem.DisplayText;
-					result.AutoSelect = false;
-				}
-
-				if (triggerInfo.TriggerCharacter == '_' && triggerWordLength == 1)
-					result.AutoSelect = false;
-
-				return result;
-			} catch (Exception) {
-				metadata ["Result"] = "Failure";
-				throw;
-			} finally {
-				if (token.IsCancellationRequested) {
-					metadata ["Result"] = "UserCancel";
-				}
-				timer.Dispose ();
 			}
+			result.AutoCompleteUniqueMatch = (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand);
+
+			var partialDoc = analysisDocument.WithFrozenPartialSemantics (token);
+			var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
+			var syntaxContext = CSharpSyntaxContext.CreateContext (DocumentContext.RoslynWorkspace, semanticModel, completionContext.TriggerOffset, token);
+
+			if (forceSymbolCompletion || IdeApp.Preferences.AddImportedItemsToCompletionList) {
+				Counters.ProcessCodeCompletion.Trace ("C#: Adding import completion data");
+				AddImportCompletionData (syntaxContext, result, semanticModel, completionContext.TriggerOffset, token);
+				Counters.ProcessCodeCompletion.Trace ("C#: Added import completion data");
+			}
+
+			if (defaultCompletionData != null)
+				result.DefaultCompletionString = defaultCompletionData.DisplayText;
+
+			if (completionList.SuggestionModeItem != null) {
+				result.DefaultCompletionString = completionList.SuggestionModeItem.DisplayText;
+				result.AutoSelect = false;
+			}
+
+			if (triggerInfo.TriggerCharacter == '_' && triggerWordLength == 1)
+				result.AutoSelect = false;
+
+			return result;
 		}
 
 		static bool HasAllUsedParameters (MonoDevelop.Ide.CodeCompletion.ParameterHintingData provider, string [] list)

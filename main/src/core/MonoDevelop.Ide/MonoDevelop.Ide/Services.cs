@@ -59,6 +59,8 @@ namespace MonoDevelop.Ide
 		internal static TimerCounter CloseWorkspaceTimer = InstrumentationService.CreateTimerCounter ("Workspace closed", "IDE", id:"Ide.Shell.CloseWorkspace");
 		internal static Counter Startup = InstrumentationService.CreateTimerCounter ("IDE Startup", "IDE", id:"Ide.Startup");
 
+		internal static TimerCounter ProcessCodeCompletion = InstrumentationService.CreateTimerCounter ("Process Code Completion", "IDE", id: "Ide.ProcessCodeCompletion", logMessages:false);
+
 		internal static class ParserService {
 			public static TimerCounter FileParsed = InstrumentationService.CreateTimerCounter ("File parsed", "Parser Service");
 			public static TimerCounter ObjectSerialized = InstrumentationService.CreateTimerCounter ("Object serialized", "Parser Service");

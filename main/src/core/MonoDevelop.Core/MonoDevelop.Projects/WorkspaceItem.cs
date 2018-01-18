@@ -421,9 +421,14 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		public FilePath GetPreferencesDirectory ()
+		{
+			return BaseDirectory.Combine (".vs", Name, "xs");
+		}
+
 		internal string GetPreferencesFileName ()
 		{
-			return BaseDirectory.Combine (".vs", Name, "xs", "UserPrefs.xml");
+			return GetPreferencesDirectory ().Combine ("UserPrefs.xml");
 		}
 
 		public virtual StringTagModelDescription GetStringTagModelDescription ()

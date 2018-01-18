@@ -40,35 +40,13 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			this.expression = expression;
 		}
 		
-		public override  bool BoolEvaluate (IExpressionContext context)
+		public override bool TryEvaluateToBool (IExpressionContext context, out bool result)
 		{
-			return !(expression.BoolEvaluate (context));
-		}
-		
-		
-		public override float NumberEvaluate (IExpressionContext context)
-		{
-			throw new NotSupportedException ();
-		}
-		
-		public override string StringEvaluate (IExpressionContext context)
-		{
-			throw new NotSupportedException ();
-		}
-		
-		public override bool CanEvaluateToBool (IExpressionContext context)
-		{
-			return expression.CanEvaluateToBool (context);
-		}
-		
-		public override bool CanEvaluateToNumber (IExpressionContext context)
-		{
-			return false;
-		}
-		
-		public override bool CanEvaluateToString (IExpressionContext context)
-		{
-			return false;
+			var canEvaluate = expression.TryEvaluateToBool (context, out result);
+
+			result = !result;
+
+			return canEvaluate;
 		}
 
 		public override void CollectConditionProperties (ConditionedPropertyCollection properties)

@@ -1111,6 +1111,12 @@ namespace MonoDevelop.Components
 
 		public static void SetOverlayScrollbarPolicy (Gtk.ScrolledWindow sw, Gtk.PolicyType hpolicy, Gtk.PolicyType vpolicy)
 		{
+			// we know the .dll isn't there on Windows, so don't even try (avoids a first-chance DllNotFoundException)
+			if (Platform.IsWindows) {
+				canSetOverlayScrollbarPolicy = false;
+				return;
+			}
+
 			if (!canSetOverlayScrollbarPolicy) {
 				return;
 			}
