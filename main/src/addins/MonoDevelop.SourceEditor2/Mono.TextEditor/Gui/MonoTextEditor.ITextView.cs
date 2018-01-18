@@ -95,7 +95,7 @@ namespace Mono.TextEditor
 		/// <param name="factoryService">Our handy text editor factory service.</param>
 		internal void Initialize (ITextViewModel textViewModel, ITextViewRoleSet roles, IEditorOptions parentOptions, TextEditorFactoryService factoryService, bool initialize = true)
 		{
-			roles = roles;
+			this.roles = roles;
 
 			this.factoryService = factoryService;
             GuardedOperations = this.factoryService.GuardedOperations;
