@@ -803,8 +803,8 @@ namespace MonoDevelop.Debugger
 
 			void UpdateEvaluationStatsCounter ()
 			{
-				if (Session.EvaluationStats.TimingsCount == 0) {
-					// No timings recorded.
+				if (Session.EvaluationStats.TimingsCount == 0 && Session.EvaluationStats.FailureCount == 0) {
+					// No timings or failures recorded.
 					return;
 				}
 
