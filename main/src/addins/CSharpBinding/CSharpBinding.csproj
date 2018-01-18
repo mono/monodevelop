@@ -397,7 +397,6 @@
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\ProtocolMemberCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Tooltips\QuickInfoProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\LineSeparators\CSharpLineSeparatorService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
