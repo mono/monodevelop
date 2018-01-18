@@ -17,8 +17,8 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=642d01c4c336402e6ba9ef5aa08dc389832abcb2
-DEP_BRANCH_AND_REMOTE[0]="quality-telemetry origin/quality-telemetry"
+DEP_NEEDED_VERSION[0]=eb0cf5b0f7576457db5cff7cfd7e867c924ae1c1
+DEP_BRANCH_AND_REMOTE[0]="quality-telemetry-phase2 origin/quality-telemetry-phase2"
 
 # heap-shot
 DEP[1]=heap-shot
