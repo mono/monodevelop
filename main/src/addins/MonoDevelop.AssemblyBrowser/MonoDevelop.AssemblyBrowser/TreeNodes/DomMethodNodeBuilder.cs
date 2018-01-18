@@ -133,6 +133,10 @@ namespace MonoDevelop.AssemblyBrowser
 			try
 			{
 				var syntaxTree = decompile(csharpDecompiler);
+				if (!flags.MethodBodies) {
+					MethodBodyRemoveVisitor.RemoveMethodBodies (syntaxTree);
+				}
+
 				var output = new ColoredCSharpFormatter(data);
 				TokenWriter tokenWriter = new TextTokenWriter(output, settings, csharpDecompiler.TypeSystem) { FoldBraces = settings.FoldBraces };
 				var formattingPolicy = settings.CSharpFormattingOptions;

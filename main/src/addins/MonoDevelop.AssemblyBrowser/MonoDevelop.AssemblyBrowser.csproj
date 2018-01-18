@@ -150,6 +150,7 @@
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyBrowserTypeNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\BaseTypeFolderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\MethodBodyRemoveVisitor.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\NamespaceBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\ResourceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\ErrorNodeBuilder.cs" />
