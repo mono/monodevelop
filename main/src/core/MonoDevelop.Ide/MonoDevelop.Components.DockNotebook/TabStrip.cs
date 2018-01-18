@@ -1018,25 +1018,29 @@ namespace MonoDevelop.Components.DockNotebook
 
 		int GetRenderOffset ()
 		{
-			//if (notebook.CurrentTabIndex >= 0) {
-			//	int normalizedArea = (tabContainer.ContentWidth / TargetWidth) * TargetWidth;
-			//	int maxOffset = Math.Max (0, (tabContainer.Tabs.Count * TargetWidth) - normalizedArea);
-
-			//	int distanceToTabEdge = tabContainer.ContentWidth * notebook.CurrentTabIndex;
-			//	int window = normalizedArea - TargetWidth;
-			//	targetOffset = Math.Min (maxOffset, Clamp (renderOffset, distanceToTabEdge - window, distanceToTabEdge));
-
-			//	if (targetOffset != animationTarget) {
-			//		this.Animate ("ScrollTabs",
-			//			easing: Easing.CubicOut,
-			//			start: renderOffset,
-			//			end: targetOffset,
-			//			callback: f => renderOffset = (int)f);
-			//		animationTarget = targetOffset;
-			//	}
-			//}
-			//return tabContainer.ContentStartX - renderOffset;
 			return tabContainer.ContentStartX;
+
+			if (notebook.CurrentTab?.IsPreview ?? true) {
+				return tabContainer.ContentStartX;
+			}
+			if (notebook.CurrentTab.Index >= 0) {
+				int normalizedArea = (tabContainer.ContentWidth / TargetWidth) * TargetWidth;
+				int maxOffset = Math.Max (0, (tabContainer.Tabs.Count * TargetWidth) - normalizedArea);
+
+				int distanceToTabEdge = tabContainer.ContentWidth * notebook.CurrentTab.Index;
+				int window = normalizedArea - TargetWidth;
+				targetOffset = Math.Min (maxOffset, Clamp (renderOffset, distanceToTabEdge - window, distanceToTabEdge));
+
+				if (targetOffset != animationTarget) {
+					this.Animate ("ScrollTabs",
+						easing: Easing.CubicOut,
+						start: renderOffset,
+						end: targetOffset,
+						callback: f => renderOffset = (int)f);
+					animationTarget = targetOffset;
+				}
+			}
+			return tabContainer.ContentStartX - renderOffset;
 		}
 
 		Action<Context> DrawClosingTab (TabContainer container,  DockNotebookTab tab, Gdk.Rectangle region, int tabWidth, out int width)
