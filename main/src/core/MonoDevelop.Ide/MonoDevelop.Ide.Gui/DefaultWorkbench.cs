@@ -1273,7 +1273,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (number >= DockNotebook.ActiveNotebook.TabCount || number < 0)
 				return;
-			var window = DockNotebook.ActiveNotebook.Tabs [number].Content as IWorkbenchWindow;
+			var window = DockNotebook.ActiveNotebook.NormalTabs [number].Content as IWorkbenchWindow;
 			if (window != null)
 				window.SelectWindow ();
 		}

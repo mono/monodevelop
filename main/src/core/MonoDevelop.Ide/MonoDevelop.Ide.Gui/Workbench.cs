@@ -1113,7 +1113,7 @@ namespace MonoDevelop.Ide.Gui
 
 		static void AddNotebookDocuments (UserPreferencesEventArgs args, List<DocumentUserPrefs> files, DockNotebook notebook, int notebookId)
 		{
-			foreach (var tab in notebook.Tabs) {
+			foreach (var tab in notebook.AllTabs) {
 				var sdiwindow = (SdiWorkspaceWindow)tab.Content;
 				var document = sdiwindow.Document;
 				if (!String.IsNullOrEmpty (document.FileName)) {

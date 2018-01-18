@@ -137,10 +137,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		internal bool ContainsTab (DockNotebookTab tab)
 		{
-			if (Tabs.Any (t => tab == t)) {
-				return true;
-			}
-			if (PreviewTabs.Any (t => tab == t)) {
+			if (AllTabs.Any (t => tab == t)) {
 				return true;
 			}
 			return false;
@@ -179,7 +176,11 @@ namespace MonoDevelop.Components.DockNotebook
 			set { tabStrip.NavigationButtonsVisible = value; }
 		}
 
-		public ReadOnlyCollection<DockNotebookTab> Tabs {
+		public IEnumerable<DockNotebookTab> AllTabs {
+			get { return pagesCol.Union(previewPagesCol); }
+		}
+
+		public ReadOnlyCollection<DockNotebookTab> NormalTabs {
 			get { return pagesCol; }
 		}
 
@@ -217,7 +218,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		void SelectLastActiveTab (DockNotebookTab lastClosed)
 		{
-			var container = lastClosed.IsPreview ? previewPages : pages;
+			var container = GetCollectionForTab (lastClosed);
 			if (pages.Count == 0) {
 				CurrentTab = null;
 				return;
@@ -358,8 +359,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public void RemoveTab (DockNotebookTab tab, bool animate)
 		{
-			var list = tab.IsPreview ? previewPages : pages;
-			//var tab = list [page];
+			var list = GetCollectionForTab (tab);
+
 			if (animate)
 				tabStrip.StartCloseAnimation ((DockNotebookTab)tab);
 			pagesHistory.Remove (tab);
@@ -392,7 +393,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab)
 		{
-			var container = tab.IsPreview ? previewPages : pages;
+			var container = GetCollectionForTab (tab);
 			if (tab == targetTab)
 				return;
 			int targetPos = targetTab.Index;
@@ -445,6 +446,11 @@ namespace MonoDevelop.Components.DockNotebook
 				fleurCursor = null;
 			}
 			base.OnDestroyed ();
+		}
+
+		List<DockNotebookTab> GetCollectionForTab (DockNotebookTab tab)
+		{
+			return tab.IsPreview ? previewPages : pages;
 		}
 	}
 

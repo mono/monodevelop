@@ -47,7 +47,14 @@ namespace MonoDevelop.Components.DockNotebook
 		Xwt.Drawing.Image icon;
 		Widget content;
 
-		Gdk.Rectangle allocation;
+        public override bool Equals(object obj)
+        {
+			var tb = (DockNotebookTab)obj;
+			return (tb.Index == Index && tb.IsPreview == IsPreview);
+			//return base.Equals(obj);
+        }
+
+        Gdk.Rectangle allocation;
 		internal Gdk.Rectangle Allocation {
 			get {
 				return allocation;

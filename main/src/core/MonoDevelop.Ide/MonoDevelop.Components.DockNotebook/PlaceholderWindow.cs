@@ -162,7 +162,7 @@ namespace MonoDevelop.Components.DockNotebook
 				var targetTabCount = hoverNotebook.TabCount;
 				var overTabStrip = y <= oy + hoverNotebook.BarHeight;
 
-				if (hoverNotebook.Tabs.Contains (frame))
+				if (hoverNotebook.AllTabs.Contains (frame))
 					targetTabCount--; // Current is going to be removed, so it doesn't count
 
 				if (targetTabCount > 0 && x <= ox + alloc.Width / 3 && !overTabStrip) {
@@ -208,7 +208,7 @@ namespace MonoDevelop.Components.DockNotebook
 					alloc.Height, 
 					false
 				); 
-				if (!hoverNotebook.Tabs.Contains (frame))
+				if (!hoverNotebook.AllTabs.Contains (frame))
 					placementDelegate = PlaceInHoverNotebook;
 				else
 					placementDelegate = null;
