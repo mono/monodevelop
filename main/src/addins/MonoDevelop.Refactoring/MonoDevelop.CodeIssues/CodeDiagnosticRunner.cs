@@ -48,6 +48,7 @@ namespace MonoDevelop.CodeIssues
 {
 	static class CodeDiagnosticRunner
 	{
+		static List<DiagnosticAnalyzer> providers = new List<DiagnosticAnalyzer> ();
 		static IEnumerable<CodeDiagnosticDescriptor> diagnostics;
 		static Dictionary<string, CodeDiagnosticDescriptor> diagnosticTable;
 		static SemaphoreSlim diagnosticLock = new SemaphoreSlim (1, 1);
@@ -82,6 +83,8 @@ namespace MonoDevelop.CodeIssues
 						continue;
 					foreach (var diag in provider.SupportedDiagnostics)
 						table [diag.Id] = diagnostic;
+
+					providers.Add (provider);
 				}
 
 				diagnosticTable = table;
@@ -105,9 +108,6 @@ namespace MonoDevelop.CodeIssues
 					return Enumerable.Empty<Result> ();
 				var compilation = model.Compilation;
 				var language = CodeRefactoringService.MimeTypeToLanguage (analysisDocument.Editor.MimeType);
-
-				var providers = new List<DiagnosticAnalyzer> ();
-				var alreadyAdded = new HashSet<Type>();
 
 				await GetDescriptorTable (analysisDocument, cancellationToken);
 
@@ -155,7 +155,7 @@ namespace MonoDevelop.CodeIssues
 
 				return diagnosticList
 					.Where (d => !d.Id.StartsWith("CS", StringComparison.Ordinal))
-					.Where (d => diagnosticTable[d.Id].GetIsEnabled (d.Descriptor))
+					.Where (d => !diagnosticTable.TryGetValue (d.Id, out var desc) || desc.GetIsEnabled (d.Descriptor))
 					.Select (diagnostic => {
 						var res = new DiagnosticResult(diagnostic);
 						// var line = analysisDocument.Editor.GetLineByOffset (res.Region.Start);

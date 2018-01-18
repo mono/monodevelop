@@ -107,13 +107,6 @@ namespace MonoDevelop.SourceEditor
 				view.SourceEditorWidget.UpdateEolMarkerMessage (multiple);
 			}
 		}
-
-		static List<string> skipFiles = new List<string> ();
-		internal static void SkipNextChange (string fileName)
-		{
-			if (!skipFiles.Contains (fileName))
-				skipFiles.Add (fileName);
-		}
 		#endregion
 	}
 }
