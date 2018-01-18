@@ -42,6 +42,8 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using UnitTests;
+using MonoDevelop.AnalysisCore;
+using MonoDevelop.CodeIssues;
 
 namespace MonoDevelop.Refactoring.Tests
 {
@@ -161,23 +163,76 @@ namespace MonoDevelop.Refactoring.Tests
 				ext.Editor.CaretOffset = qt[0].Location;
 
 				var fixes = await ext.GetCurrentFixesAsync (CancellationToken.None);
+				AssertCodeFixes (fixes, expected);
 
-				var fixActions = fixes.CodeFixActions.SelectMany (x => x.Fixes).ToArray ();
-
-				Assert.AreEqual (expected.CodeFixData.Length, fixActions.Length);
-				for (int j = 0; j < expected.CodeFixData.Length; ++j) {
-					Assert.AreEqual (expected.CodeFixData [j].Message, fixActions [j].Action.Message);
-				}
-
-				var fixRefactorings = fixes.CodeRefactoringActions.SelectMany (x => x.Actions).ToArray ();
-
-				Assert.AreEqual (expected.CodeRefactoringData.Length, fixRefactorings.Length);
-				for (int j = 0; j < expected.CodeRefactoringData.Length; ++j) {
-					Assert.AreEqual (expected.CodeRefactoringData [j].Message, fixRefactorings [j].Message);
-				}
 			} finally {
 				IdeApp.Preferences.EnableSourceAnalysis.Value = old;
 				TypeSystemService.Unload (sol);
+			}
+		}
+
+		const string IDisposableImplement = "class MyClass : System.IDisposable {}";
+			
+		[Test]
+		public async Task FixesAreReportedForCompilerErrors ()
+		{
+			var expected = new ExpectedCodeFixes {
+				CodeFixData = new CodeActionData [] {
+					new CodeActionData { Message = "Implement interface" },
+					new CodeActionData { Message = "Implement interface with Dispose pattern" },
+					new CodeActionData { Message = "Implement interface explicitly" },
+					new CodeActionData { Message = "Implement interface explicitly with Dispose pattern" },
+				},
+				CodeRefactoringData = new CodeActionData[] {
+					new CodeActionData { Message = "To public" },
+				},
+			};
+
+			Projects.Solution sol = null;
+			var old = IdeApp.Preferences.EnableSourceAnalysis;
+			try {
+				IdeApp.Preferences.EnableSourceAnalysis.Value = true;
+
+				int expectedUpdates = 2;
+				ImmutableArray<Result> qt = ImmutableArray<Result>.Empty;
+				var tuple = await GatherFixesNoDispose<bool> (IDisposableImplement, (resultExt, tcs) => {
+					if (--expectedUpdates == 0) {
+						qt = resultExt.GetResults ().ToImmutableArray ();
+						tcs.SetResult (true);
+					}
+				});
+
+				var ext = tuple.Item1;
+				sol = tuple.Item2;
+
+				Assert.AreEqual (2, qt.Length);
+
+				var diag = qt.OfType<DiagnosticResult> ().Single (x => x.Diagnostic.Id == "CS0535");
+				ext.Editor.CaretOffset = diag.Region.Start;
+
+				var fixes = await ext.GetCurrentFixesAsync (CancellationToken.None);
+				AssertCodeFixes (fixes, expected);
+
+			} finally {
+				IdeApp.Preferences.EnableSourceAnalysis.Value = old;
+				TypeSystemService.Unload (sol);
+			}
+		}
+
+		static void AssertCodeFixes (CodeActionContainer fixes, ExpectedCodeFixes expected)
+		{
+			var fixActions = fixes.CodeFixActions.SelectMany (x => x.Fixes).ToArray ();
+
+			Assert.AreEqual (expected.CodeFixData.Length, fixActions.Length);
+			for (int j = 0; j < expected.CodeFixData.Length; ++j) {
+				Assert.AreEqual (expected.CodeFixData [j].Message, fixActions [j].Action.Message);
+			}
+
+			var fixRefactorings = fixes.CodeRefactoringActions.SelectMany (x => x.Actions).ToArray ();
+
+			Assert.AreEqual (expected.CodeRefactoringData.Length, fixRefactorings.Length);
+			for (int j = 0; j < expected.CodeRefactoringData.Length; ++j) {
+				Assert.AreEqual (expected.CodeRefactoringData [j].Message, fixRefactorings [j].Message);
 			}
 		}
 	}
