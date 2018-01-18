@@ -41,10 +41,13 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				if (variablesReference <= 0) {
 					objValChildren = new ObjectValue [0];
 				} else {
-					var children = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (
-						variablesReference
-					)).Variables;
-					objValChildren = children.Select (c => VSCodeDebuggerBacktrace.VsCodeVariableToObjectValue (vsCodeDebuggerSession, c.Name, c.EvaluateName, c.Type, c.Value, c.VariablesReference, variablesReference, frameId)).ToArray ();
+					using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
+						var children = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (
+							variablesReference
+						)).Variables;
+						objValChildren = children.Select (c => VSCodeDebuggerBacktrace.VsCodeVariableToObjectValue (vsCodeDebuggerSession, c.Name, c.EvaluateName, c.Type, c.Value, c.VariablesReference, variablesReference, frameId)).ToArray ();
+						timer.Success = true;
+					}
 				}
 			}
 			return objValChildren;
@@ -79,7 +82,11 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		public object GetRawValue (ObjectPath path, EvaluationOptions options)
 		{
-			var val = vsCodeDebuggerSession.protocolClient.SendRequestSync (new EvaluateRequest (evalName, frameId)).Result;
+			string val = null;
+			using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
+				val = vsCodeDebuggerSession.protocolClient.SendRequestSync (new EvaluateRequest (evalName, frameId)).Result;
+				timer.Success = true;
+			}
 			if (val.StartsWith ("\"", StringComparison.Ordinal))
 				if (options.ChunkRawStrings)
 					return new RawValueString (new RawString (val));

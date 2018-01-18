@@ -44,9 +44,12 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			List<ObjectValue> results = new List<ObjectValue> ();
 			var scopeBody = vsCodeDebuggerSession.protocolClient.SendRequestSync (new ScopesRequest (frames [frameIndex].Id));
 			foreach (var variablesGroup in scopeBody.Scopes) {
-				var varibles = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (variablesGroup.VariablesReference));
-				foreach (var variable in varibles.Variables) {
-					results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, variable.Name, variable.EvaluateName, variable.Type, variable.Value, variable.VariablesReference, variablesGroup.VariablesReference, frames [frameIndex].Id));
+				using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
+					var varibles = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (variablesGroup.VariablesReference));
+					foreach (var variable in varibles.Variables) {
+						results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, variable.Name, variable.EvaluateName, variable.Type, variable.Value, variable.VariablesReference, variablesGroup.VariablesReference, frames [frameIndex].Id));
+					}
+					timer.Success = true;
 				}
 			}
 			return results.ToArray ();
@@ -66,10 +69,13 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		{
 			var results = new List<ObjectValue> ();
 			foreach (var expr in expressions) {
-				var responseBody = vsCodeDebuggerSession.protocolClient.SendRequestSync (new EvaluateRequest (
-					expr,
-					frames [frameIndex].Id));
-				results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, expr, expr, responseBody.Type, responseBody.Result, responseBody.VariablesReference, 0, frames [frameIndex].Id));
+				using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
+					var responseBody = vsCodeDebuggerSession.protocolClient.SendRequestSync (new EvaluateRequest (
+						expr,
+						frames [frameIndex].Id));
+					results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, expr, expr, responseBody.Type, responseBody.Result, responseBody.VariablesReference, 0, frames [frameIndex].Id));
+					timer.Success = true;
+				}
 			}
 			return results.ToArray ();
 		}
@@ -84,9 +90,12 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			List<ObjectValue> results = new List<ObjectValue> ();
 			var scopeBody = vsCodeDebuggerSession.protocolClient.SendRequestSync (new ScopesRequest (frames [frameIndex].Id));
 			foreach (var variablesGroup in scopeBody.Scopes) {
-				var varibles = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (variablesGroup.VariablesReference));
-				foreach (var variable in varibles.Variables) {
-					results.Add (ObjectValue.CreatePrimitive (null, new ObjectPath (variable.Name), variable.Type ?? "<unknown>", new EvaluationResult (variable.Value), ObjectValueFlags.None));
+				using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
+					var varibles = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (variablesGroup.VariablesReference));
+					foreach (var variable in varibles.Variables) {
+						results.Add (ObjectValue.CreatePrimitive (null, new ObjectPath (variable.Name), variable.Type ?? "<unknown>", new EvaluationResult (variable.Value), ObjectValueFlags.None));
+					}
+					timer.Success = true;
 				}
 			}
 			return results.ToArray ();
