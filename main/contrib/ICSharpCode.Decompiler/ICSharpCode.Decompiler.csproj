@@ -42,10 +42,8 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
-    <OutputPath>..\..\build\bin</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\build\bin</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Ast\Annotations.cs" />

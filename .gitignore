@@ -24,6 +24,7 @@ obj/
 /main/build/MacOSx/monostub-test
 /main/contrib/bin/
 /main/contrib/*/*/bin/
+/main/contrib/ICSharpCode.Decompiler/bin
 /local-libs
 /main/build/tests
 /main/monodevelop_version
