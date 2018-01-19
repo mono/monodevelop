@@ -203,6 +203,8 @@
     <Compile Include="MonoDevelop.Refactoring.ExtractInterface\ExtractInterfaceDialog.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.AnalyzerAssemblyLoader.cs" />
+    <Compile Include="MonoDevelop.Refactoring.PickMembersService\PickMembersService.cs" />
+    <Compile Include="MonoDevelop.Refactoring.PickMembersService\PickMembersDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -215,6 +217,7 @@
     <Folder Include="MonoDevelop.Refactoring.GenerateType\" />
     <Folder Include="MonoDevelop.Refactoring.PackageInstaller\" />
     <Folder Include="MonoDevelop.Refactoring.ExtractInterface\" />
+    <Folder Include="MonoDevelop.Refactoring.PickMembersService\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">

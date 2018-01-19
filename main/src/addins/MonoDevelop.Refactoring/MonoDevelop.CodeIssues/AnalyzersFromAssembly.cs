@@ -95,8 +95,6 @@ namespace MonoDevelop.CodeIssues
 				foreach (var type in asm.GetTypes ()) {
 
 					//HACK: Workaround for missing UI
-					if (type == typeof (Microsoft.CodeAnalysis.GenerateOverrides.GenerateOverridesCodeRefactoringProvider))
-						continue;
 					if (type == typeof (Microsoft.CodeAnalysis.AddMissingReference.AbstractAddMissingReferenceCodeFixProvider))
 						continue;
 
