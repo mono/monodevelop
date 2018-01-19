@@ -364,6 +364,12 @@ namespace MonoDevelop.Debugger
 			fb.ParamTypes = parsedParamTypes;
 		}
 
+		void SaveCatchpoint (Catchpoint cp)
+		{
+			cp.ExceptionName = entryExceptionType.Text;
+			cp.IncludeSubclasses = checkIncludeSubclass.Active;
+		}
+
 		class ParsedLocation
 		{
 			int line;
@@ -461,14 +467,17 @@ namespace MonoDevelop.Debugger
 
 		void OnSave (object sender, EventArgs e)
 		{
+			bool catchpointSaved = false;
+
 			if (be == null) {
 				if (stopOnFunction.Active)
 					be = new FunctionBreakpoint ("", "C#");
 				else if (stopOnLocation.Active)
 					be = breakpointLocation.ToBreakpoint ();
-				else if (stopOnException.Active)
+				else if (stopOnException.Active) {
 					be = new Catchpoint (entryExceptionType.Text, checkIncludeSubclass.Active);
-				else
+					catchpointSaved = true;
+				} else
 					return;
 			}
 
@@ -479,6 +488,13 @@ namespace MonoDevelop.Debugger
 			var bp = be as Breakpoint;
 			if (bp != null)
 				SaveBreakpoint (bp);
+
+			if (!catchpointSaved) {
+				var cp = be as Catchpoint;
+				if (cp != null) {
+					SaveCatchpoint (cp);
+				}
+			}
 
 			if ((HitCountMode)ignoreHitType.SelectedItem == HitCountMode.GreaterThanOrEqualTo && (int)ignoreHitCount.Value == 0) {
 				be.HitCountMode = HitCountMode.None;
@@ -518,10 +534,11 @@ namespace MonoDevelop.Debugger
 			}
 
 			// Check which radio is selected.
-			hboxFunction.Sensitive = stopOnFunction.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints) && !editing;
-			hboxLocation.Sensitive = stopOnLocation.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints) && !editing;
-			hboxException.Sensitive = stopOnException.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints) && !editing;
-			checkIncludeSubclass.Sensitive = stopOnException.Active && !editing;
+			var connected = DebuggingService.DebuggerSession != null ? DebuggingService.DebuggerSession.IsConnected : false;
+			hboxFunction.Sensitive = stopOnFunction.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints) && !connected;
+			hboxLocation.Sensitive = stopOnLocation.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints) && !connected;
+			hboxException.Sensitive = stopOnException.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints) && !connected;
+			checkIncludeSubclass.Sensitive = stopOnException.Active;
 			hboxCondition.Sensitive = DebuggingService.IsFeatureSupported (DebuggerFeatures.ConditionalBreakpoints);
 
 			// Check printing an expression.
