@@ -332,6 +332,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Core.Tests", "t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.UnitTesting.Tests", "src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.Tests\MonoDevelop.UnitTesting.Tests.csproj", "{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Refactoring.Tests", "tests\MonoDevelop.Refactoring.Tests\MonoDevelop.Refactoring.Tests.csproj", "{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2153,6 +2155,26 @@ Global
 		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.Debug|x86.Build.0 = Debug|Any CPU
 		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.Release|x86.ActiveCfg = Release|Any CPU
 		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}.Release|x86.Build.0 = Release|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.Debug|x86.Build.0 = Debug|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.Release|x86.ActiveCfg = Release|Any CPU
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7525BB88-6142-4A26-93B9-A30C6983390A} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
@@ -2300,6 +2322,7 @@ Global
 		{B3E73DE7-8AFC-429A-9B68-5699B1E63A02} = {1DEFDD53-2677-439D-906E-141ED2AEC19B}
 		{FDA43CAA-1C2A-4593-8601-3E2EE06D9E03} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF} = {DE462010-393D-4655-A42C-2C78BB14D2FA}
+		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0

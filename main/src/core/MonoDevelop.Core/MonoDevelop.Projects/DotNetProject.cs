@@ -999,8 +999,15 @@ namespace MonoDevelop.Projects
 				return refs;
 
 			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false)) {
+
+				if (referenceCacheNeedsRefresh) {
+					// Refresh requested. Clear the whole cache.
+					referenceCache = ImmutableDictionary<string, List<AssemblyReference>>.Empty;
+					referenceCacheNeedsRefresh = false;
+				}
+
 				// Check again the cache before starting the task
-				if (!referenceCacheNeedsRefresh && referenceCache.TryGetValue (confId, out refs))
+				if (referenceCache.TryGetValue (confId, out refs))
 					return refs;
 
 				var monitor = new ProgressMonitor ();
@@ -1016,7 +1023,6 @@ namespace MonoDevelop.Projects
 				refs = result.Items.Select (i => new AssemblyReference (i.Include, i.Metadata)).ToList ();
 
 				referenceCache = referenceCache.SetItem (confId, refs);
-				referenceCacheNeedsRefresh = false;
 			}
 			return refs;
 		}
@@ -1054,8 +1060,15 @@ namespace MonoDevelop.Projects
 				return packageDependencies;
 			
 			using (await packageDependenciesCacheLock.EnterAsync ().ConfigureAwait (false)) {
+
+				if (packageDependenciesNeedRefresh) {
+					// Refresh requested. Clear the whole cache.
+					packageDependenciesCache = ImmutableDictionary<string, List<PackageDependency>>.Empty;
+					packageDependenciesNeedRefresh = false;
+				}
+
 				// Check the cache before starting the task
-				if (!packageDependenciesNeedRefresh && packageDependenciesCache.TryGetValue (confId, out packageDependencies))
+				if (packageDependenciesCache.TryGetValue (confId, out packageDependencies))
 					return packageDependencies;
 
 				var monitor = new ProgressMonitor ().WithCancellationToken (cancellationToken);
@@ -1074,7 +1087,6 @@ namespace MonoDevelop.Projects
 				packageDependencies = result.Items.Select (i => PackageDependency.Create (i)).Where (dependency => dependency != null).ToList ();
 
 				packageDependenciesCache = packageDependenciesCache .SetItem (confId, packageDependencies);
-				packageDependenciesNeedRefresh = false;
 			}
 
 			return packageDependencies;
@@ -1511,7 +1523,7 @@ namespace MonoDevelop.Projects
 			string root = null;
 			string dirNamespc = null;
 			string defaultNmspc = !string.IsNullOrEmpty (defaultNamespace)
-				? SanitisePotentialNamespace (defaultNamespace)
+				? SanitisePotentialNamespace (defaultNamespace) ?? "Application"
 				: SanitisePotentialNamespace (project.Name) ?? "Application";
 
 			if (string.IsNullOrEmpty (fileName)) {

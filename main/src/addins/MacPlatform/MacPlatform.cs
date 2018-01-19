@@ -131,6 +131,7 @@ namespace MonoDevelop.MacIntegration
 					ShowVoiceOverNotice ();
 				}
 			}
+			AccessibilityInUse = val.BoolValue;
 		}
 
 		public MacPlatformService ()

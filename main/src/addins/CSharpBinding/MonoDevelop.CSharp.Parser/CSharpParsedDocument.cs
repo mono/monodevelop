@@ -517,8 +517,8 @@ namespace MonoDevelop.CSharp.Parser
 		static readonly IReadOnlyList<Error> emptyErrors = Array.Empty<Error> ();
 		public override async Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (Ide.IdeApp.Preferences.EnableSourceAnalysis)
-				return emptyErrors;
+			//if (Ide.IdeApp.Preferences.EnableSourceAnalysis)
+			//	return emptyErrors;
 			
 			var model = GetAst<SemanticModel> ();
 			if (model == null)

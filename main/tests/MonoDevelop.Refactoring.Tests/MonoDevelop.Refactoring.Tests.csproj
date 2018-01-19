@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\MonoDevelop.props" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>MonoDevelop.Refactoring.Tests</RootNamespace>
+    <AssemblyName>MonoDevelop.Refactoring.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TestRunnerCommand>..\..\build\bin\mdtool.exe</TestRunnerCommand>
+    <TestRunnerArgs>run-md-tests</TestRunnerArgs>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\build\tests</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\build\tests</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+   <ItemGroup>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\build\bin\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.Runtime">
+      <HintPath>..\..\build\bin\System.Composition.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\build\bin\System.Reflection.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.AttributedModel">
+      <HintPath>..\..\build\bin\System.Composition.AttributedModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.TypedParts">
+      <HintPath>..\..\build\bin\System.Composition.TypedParts.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Features">
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cairo" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
+      <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
+      <Name>GuiUnit_NET_4_5</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
+      <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
+      <Name>MonoDevelop.Debugger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Ide.Tests\MonoDevelop.Ide.Tests.csproj">
+      <Project>{73D4CC8B-BAB9-4A29-841B-F25C6311F067}</Project>
+      <Name>MonoDevelop.Ide.Tests</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\UnitTests\UnitTests.csproj">
+      <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
+      <Name>UnitTests</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
+      <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
+      <Name>RefactoringEssentials</Name>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ResultsEditorExtensionTests.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>
