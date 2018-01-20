@@ -1,4 +1,4 @@
-﻿//
+//
 // BuildOutputView.cs
 //
 // Author:
@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
+using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -33,56 +35,86 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutputViewContent : ViewContent
 	{
-		FilePath filename;
-		BuildOutputWidget control;
+		string defaultName = "Build Output {0}.binlog";
+		bool isTemp;
+
+		public BuildOutputWidget Widget { get; }
 
 		public BuildOutputViewContent (FilePath filename)
 		{
-			this.filename = filename;
 			this.ContentName = filename;
-			control = new BuildOutputWidget (filename);
+			Widget = new BuildOutputWidget (filename);
 		}
 
 		public BuildOutputViewContent (BuildOutput buildOutput)
 		{
-			ContentName = GettextCatalog.GetString ("Build Output");
-			control = new BuildOutputWidget (buildOutput);
+			Widget = new BuildOutputWidget (buildOutput);
+			//TODO: is there a better way to identify if the buildOutpu.FilePath is tmp or not? 
+			isTemp = Path.GetDirectoryName (buildOutput.FilePath).TrimEnd ('/') == Path.GetTempPath ().TrimEnd ('/');
+			this.ContentName = isTemp ? string.Format (defaultName, DateTime.Now.ToString ("hh:mm:ss")) : buildOutput.FilePath;
+			IsDirty = isTemp;
 		}
 
-		public override Control Control {
-			get {
-				return control;
+		public override Task Save (FileSaveInformation fileSaveInformation)
+		{
+			var result = false;
+
+			if (File.Exists (fileSaveInformation.FileName))
+				File.Delete (fileSaveInformation.FileName); //TODO: backup before removing?
+
+			File.Copy (Widget.BuildOutput.FilePath, fileSaveInformation.FileName);
+
+			result = File.Exists (fileSaveInformation.FileName);
+			if (result) {
+				Widget.BuildOutput.UpdateFilePath (fileSaveInformation.FileName);
+				this.IsDirty = isTemp = false;
 			}
+
+			return Task.FromResult (result);
 		}
 
 		public override bool IsReadOnly {
 			get {
-				return true;
+				return false;
 			}
 		}
 
 		public override bool IsFile {
 			get {
-				return System.IO.File.Exists (filename.FullPath);
+				//if isTemp = true, the ContentName contains default naming
+				return  isTemp ? true : File.Exists (ContentName);
 			}
 		}
 
 		public override bool IsViewOnly {
 			get {
-				return true;
+				return false;
 			}
 		}
 
 		public override string TabPageLabel {
 			get {
-				return filename.FileName ?? GettextCatalog.GetString ("Build Output");
+				return ContentName ?? GettextCatalog.GetString ("Build Output");
+			}
+		}
+
+		public override Control Control {
+			get {
+				return Widget;
 			}
 		}
 
 		public override void Dispose ()
 		{
-			control.Dispose ();
+			Widget.Dispose ();
 			base.Dispose ();
+		}
+
+		internal async Task UpdateContent ()
+		{
+			if (ContentName != Widget.BuildOutput.FilePath) {
+				await Save (new FileSaveInformation (ContentName, null));
+			}
 		}
 	}
 }

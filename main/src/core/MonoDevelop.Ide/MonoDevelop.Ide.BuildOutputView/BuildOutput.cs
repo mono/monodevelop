@@ -1,4 +1,4 @@
-﻿//
+//
 // BuildOutput.cs
 //
 // Author:
@@ -41,6 +41,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 	{
 		BuildOutputProgressMonitor progressMonitor;
 		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
+		string filePath;
+
+		public string FilePath {
+			get{
+				return filePath;
+			}
+		}
 
 		public event EventHandler OutputChanged;
 
@@ -62,11 +69,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 			switch (Path.GetExtension (filePath)) {
 			case ".binlog":
 				AddProcessor (new MSBuildOutputProcessor (filePath, removeFileOnDispose));
+				this.filePath = filePath;
 				break;
 			default:
 				LoggingService.LogError ($"Unknown file type {filePath}");
 				break;
 			}
+		}
+
+		internal void UpdateFilePath (FilePath fileName)
+		{
+			filePath = fileName;
 		}
 
 		private class BuildOutputEventsSource : EventArgsDispatcher
