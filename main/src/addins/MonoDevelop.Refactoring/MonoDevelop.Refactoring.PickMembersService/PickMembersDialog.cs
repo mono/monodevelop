@@ -61,7 +61,7 @@ namespace MonoDevelop.Refactoring.PickMembersService
 
 		public ImmutableArray<PickMembersOption> Options { get; set; }
 
-		ListView listViewPublicMembers = new ListView ();
+		ListBox listBoxPublicMembers = new ListBox ();
 
 		public PickMembersDialog ()
 		{
@@ -80,13 +80,13 @@ namespace MonoDevelop.Refactoring.PickMembersService
 				UpdateOkButton ();
 			};
 
-			listViewPublicMembers.HeadersVisible = false;
-			listViewPublicMembers.DataSource = treeStore;
+			listBoxPublicMembers.DataSource = treeStore;
 			var checkBoxCellView = new CheckBoxCellView (symbolIncludedField);
 			checkBoxCellView.Editable = true;
 			checkBoxCellView.Toggled += delegate { UpdateOkButton (); };
-			listViewPublicMembers.Columns.Add ("", checkBoxCellView);
-			listViewPublicMembers.Columns.Add ("", new ImageCellView (symbolIconField), new TextCellView (symbolTextField));
+			listBoxPublicMembers.Views.Add (checkBoxCellView);
+			listBoxPublicMembers.Views.Add (new ImageCellView (symbolIconField));
+			listBoxPublicMembers.Views.Add (new TextCellView (symbolTextField));
 		}
 
 		void Build ()
@@ -107,8 +107,8 @@ namespace MonoDevelop.Refactoring.PickMembersService
 			var hbox = new HBox {
 			//	Spacing = 6
 			};
-			hbox.PackStart (listViewPublicMembers, true);
-			listViewPublicMembers.Accessible.Description = GettextCatalog.GetString ("Pick members");
+			hbox.PackStart (listBoxPublicMembers, true);
+			listBoxPublicMembers.Accessible.Description = GettextCatalog.GetString ("Pick members");
 
 			var vbox = new VBox {
 			//	Spacing = 6
@@ -137,8 +137,6 @@ namespace MonoDevelop.Refactoring.PickMembersService
 			this.Width = 400;
 			this.Height = 321;
 			this.Resizable = false;
-
-			Show ();
 		}
 
 		static SymbolDisplayFormat memberDisplayFormat = new SymbolDisplayFormat (
@@ -155,7 +153,7 @@ namespace MonoDevelop.Refactoring.PickMembersService
 		internal void Init (string title, ImmutableArray<ISymbol> members, ImmutableArray<PickMembersOption> options)
 		{
 			this.Title = title;
-			listViewPublicMembers.Accessible.Description = title;
+			listBoxPublicMembers.Accessible.Description = title;
 
 			this.Options = options;
 			treeStore.Clear ();
