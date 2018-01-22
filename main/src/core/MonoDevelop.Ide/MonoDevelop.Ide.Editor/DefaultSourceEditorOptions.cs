@@ -319,9 +319,9 @@ namespace MonoDevelop.Ide.Editor
 			if (context.CurrentConventions.UniversalConventions.TryGetAllowTrailingWhitespace (out bool allowTrailing))
 				removeTrailingWhitespacesFromContext = !allowTrailing;
 
-			tabSize = null;
+			tabSizeFromContext = null;
 			if (context.CurrentConventions.UniversalConventions.TryGetTabWidth (out int tSize))
-				tabSize = tSize;
+				tabSizeFromContext = tSize;
 
 			rulerColumnFromContext = null;
 			showRulerFromContext = null;
@@ -559,10 +559,10 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		int? tabSize;
+		int? tabSizeFromContext;
 		public int TabSize {
 			get {
-				return tabSize ?? IndentationSize;
+				return tabSizeFromContext ?? IndentationSize;
 			}
 			set {
 				IndentationSize = value;

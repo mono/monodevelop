@@ -48,11 +48,7 @@ namespace MonoDevelop.Ide.Editor
 			if (result == null)
 				return null;
 			lock (contextCacheLock) {
-				if (contextCache.TryGetValue (fileName, out result))
-					return result;
-				
-				contextCache = contextCache.Add (fileName, result);
-
+				contextCache = contextCache.SetItem (fileName, result);
 				return result;
 			}
 		}

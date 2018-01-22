@@ -83,7 +83,8 @@ namespace MonoDevelop.Ide.Editor
 			base.OnContentNameChanged ();
 			if (ContentName != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-			EditorConfigService.RemoveEditConfigContext (textEditorImpl.ContentName);
+			if (textEditorImpl.ContentName != null)
+				EditorConfigService.RemoveEditConfigContext (textEditorImpl.ContentName);
 			textEditorImpl.ContentName = this.ContentName;
 			if (this.WorkbenchWindow?.Document != null)
 				textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
@@ -148,7 +149,7 @@ namespace MonoDevelop.Ide.Editor
 				policyContainer.PolicyChanged -= HandlePolicyChanged;
 		}
 
-		async void UpdateStyleParent (MonoDevelop.Projects.Project styleParent, string mimeType)
+		async Task UpdateStyleParent (MonoDevelop.Projects.Project styleParent, string mimeType)
 		{
 			RemovePolicyChangeHandler ();
 
@@ -165,11 +166,12 @@ namespace MonoDevelop.Ide.Editor
 
 			policyContainer.PolicyChanged += HandlePolicyChanged;
 
-			var options = DefaultSourceEditorOptions.Instance.WithTextStyle (currentPolicy);
 			var context = await EditorConfigService.GetEditorConfigContext (textEditor.FileName, default (CancellationToken));
+			if (context == null)
+				return;
+			var options = DefaultSourceEditorOptions.Instance.WithTextStyle (currentPolicy);
 			options.SetContext (context);
 			textEditor.Options = options;
-
 		}
 
 		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)

@@ -159,19 +159,22 @@ namespace MonoDevelop.CSharp.Formatting
 				LoggingService.LogError ("Error while creating the c# indentation engine", ex);
 				indentEngine = new ICSharpCode.NRefactory6.CSharp.NullIStateMachineIndentEngine ();
 			}
-			stateTracker = new ICSharpCode.NRefactory6.CSharp.CacheIndentEngine (indentEngine);
-			if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
-				Editor.IndentationTracker = null;
-			} else {
-				Editor.IndentationTracker = new IndentVirtualSpaceManager (Editor, stateTracker);
-			}
 
-			indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
-			if (indentationDisabled) {
-				Editor.SetTextPasteHandler (null);
-			} else {
-				Editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, optionSet));
-			}
+			await Runtime.RunInMainThread(delegate {
+				stateTracker = new ICSharpCode.NRefactory6.CSharp.CacheIndentEngine (indentEngine);
+				if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
+					Editor.IndentationTracker = null;
+				} else {
+					Editor.IndentationTracker = new IndentVirtualSpaceManager (Editor, stateTracker);
+				}
+
+				indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
+				if (indentationDisabled) {
+					Editor.SetTextPasteHandler (null);
+				} else {
+					Editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, optionSet));
+				}
+			});
 		}
 
 		public override void Dispose ()
