@@ -205,6 +205,7 @@ type ``Template tests``() =
             wwwrootFiles |> Seq.length |> should equal 41
             wwwrootFiles |> Seq.iter(fun imported -> imported |> should equal true)
             let errors = getErrorsForProject solution |> AsyncSeq.toSeq |> List.ofSeq
+            solution.Dispose()
             match errors with
             | [] -> Assert.Pass()
             | errors -> Assert.Fail (sprintf "%A" errors)

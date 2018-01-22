@@ -406,7 +406,6 @@
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\ProtocolMemberCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Tooltips\QuickInfoProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\LineSeparators\CSharpLineSeparatorService.cs" />
     <Compile Include="MonoDevelop.CSharp.OptionProvider\OptionProviderFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.OptionProvider\CSharpDocumentOptionsProvider.cs" />
   </ItemGroup>

@@ -26,12 +26,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-
 using MonoDevelop.Core;
 using Services = MonoDevelop.Projects.Services;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -41,147 +41,16 @@ namespace MonoDevelop.SourceEditor
 	/// </summary>
 	static class FileRegistry
 	{
-		readonly static List<SourceEditorView> openFiles = new List<SourceEditorView> ();
-		readonly static FileSystemWatcher fileSystemWatcher;
-
-		static FileRegistry ()
-		{
-			fileSystemWatcher = new FileSystemWatcher ();
-			fileSystemWatcher.Created += (s, e) => Runtime.RunInMainThread (() => OnFileChanged (s, e));
-			fileSystemWatcher.Changed += (s, e) => Runtime.RunInMainThread (() => OnFileChanged (s, e));
-
-			FileService.FileCreated += HandleFileServiceChange;
-			FileService.FileChanged += HandleFileServiceChange;
-
-		}
-
-		public static void Add (SourceEditorView sourceEditorView)
-		{
-			if (sourceEditorView.TextEditorType == TextEditorType.Projection)
-				return;
-			openFiles.Add (sourceEditorView);
-		}
-
-		public static void Remove (SourceEditorView sourceEditorView)
-		{
-			if (sourceEditorView.TextEditorType == TextEditorType.Projection)
-				return;
-			openFiles.Remove (sourceEditorView);
-			UpdateEolMessages ();
-		}
-
-		static bool SkipView (SourceEditorView view)
-		{
-			return view.Document == null || !view.IsFile || view.IsUntitled || view.TextEditorType == TextEditorType.Projection;
-		}
-
-		static void HandleFileServiceChange (object sender, FileEventArgs e)
-		{
-			bool foundOneChange = false;
-			foreach (var file in e) {
-				if (skipFiles.Contains (file.FileName)) {
-					skipFiles.Remove (file.FileName);
-					continue;
-				}
-				foreach (var view in openFiles) {
-					if (SkipView (view) || !string.Equals (view.ContentName, file.FileName, FilePath.PathComparison))
-						continue;
-					if (!view.IsDirty/* && (IdeApp.Workbench.AutoReloadDocuments || file.AutoReload)*/)
-						view.SourceEditorWidget.Reload ();
-					else
-						foundOneChange = true;
-				}
-			}
-
-			if (foundOneChange)
-				CommitViewChange (GetAllChangedFiles ());
-		}
-
-		static List<SourceEditorView> GetAllChangedFiles ()
-		{
-			var changedViews = new List<SourceEditorView> ();
-			foreach (var view in openFiles) {
-				if (SkipView (view))
-					continue;
-				if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (view.ContentName))
-					continue;
-				if (!view.IsDirty/* && IdeApp.Workbench.AutoReloadDocuments*/)
-					view.SourceEditorWidget.Reload ();
-				else
-					changedViews.Add (view);
-			}
-			return changedViews;
-		}
-
-
-		static void OnFileChanged (object sender, FileSystemEventArgs e)
-		{
-			if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created)
-				CheckFileChange (e.FullPath);
-		}
-
-		static void CheckFileChange (string fileName)
-		{
-			if (skipFiles.Contains (fileName)) {
-				skipFiles.Remove (fileName);
-				return;
-			}
-
-			var changedViews = new List<SourceEditorView> ();
-			foreach (var view in openFiles) {
-				if (SkipView (view))
-					continue;
-				if (string.Equals (view.ContentName, fileName, FilePath.PathComparison)) {
-					if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (fileName))
-						continue;
-					if (!view.IsDirty/* && IdeApp.Workbench.AutoReloadDocuments*/)
-						view.SourceEditorWidget.Reload ();
-					else
-						changedViews.Add (view);
-				}
-			}
-			CommitViewChange (changedViews);
-		}
-
-		static void CommitViewChange (List<SourceEditorView> changedViews)
-		{
-			if (changedViews.Count == 0)
-				return;
-			if (changedViews.Count == 1) {
-				changedViews [0].SourceEditorWidget.ShowFileChangedWarning (false);
-			} else {
-				foreach (var view in changedViews) {
-					view.SourceEditorWidget.ShowFileChangedWarning (true);
-				}
-				if (!changedViews.Contains (IdeApp.Workbench.ActiveDocument.PrimaryView.GetContent<SourceEditorView> ()))
-					changedViews [0].WorkbenchWindow.SelectWindow ();
-			}
-		}
-
-		public static void IgnoreAllChangedFiles ()
-		{
-			foreach (var view in GetAllChangedFiles ()) {
-				view.LastSaveTimeUtc = File.GetLastWriteTime (view.ContentName);
-				view.SourceEditorWidget.RemoveMessageBar ();
-				view.WorkbenchWindow.ShowNotification = false;
-			}
-		}
-
-		public static void ReloadAllChangedFiles ()
-		{
-			foreach (var view in GetAllChangedFiles ()) {
-				view.SourceEditorWidget.RemoveMessageBar ();
-				view.SourceEditorWidget.Reload ();
-				view.WorkbenchWindow.ShowNotification = false;
-			}
-		}
 
 		#region EOL markers
 		public static bool HasMultipleIncorrectEolMarkers {
 			get {
 				int count = 0;
-				foreach (var view in openFiles) {
-					if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
+				foreach (var doc in DocumentRegistry.OpenFiles) {
+					if (DocumentRegistry.SkipView (doc))
+						continue;
+					var view = doc.GetContent<SourceEditorView> ();
+					if (!view.SourceEditorWidget.HasIncorrectEolMarker)
 						continue;
 					count++;
 					if (count > 1)
@@ -194,8 +63,11 @@ namespace MonoDevelop.SourceEditor
 		public static void ConvertLineEndingsInAllFiles ()
 		{
 			DefaultSourceEditorOptions.Instance.LineEndingConversion = LineEndingConversion.ConvertAlways;
-			foreach (var view in openFiles) {
-				if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
+			foreach (var doc in DocumentRegistry.OpenFiles) {
+				if (DocumentRegistry.SkipView (doc))
+					continue;
+				var view = doc.GetContent<SourceEditorView> ();
+				if (!view.SourceEditorWidget.HasIncorrectEolMarker)
 					continue;
 
 				view.SourceEditorWidget.ConvertLineEndings ();
@@ -209,8 +81,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			DefaultSourceEditorOptions.Instance.LineEndingConversion = LineEndingConversion.LeaveAsIs;
 
-			foreach (var view in openFiles) {
-				if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
+			foreach (var doc in DocumentRegistry.OpenFiles) {
+				if (DocumentRegistry.SkipView (doc))
+					continue;
+				var view = doc.GetContent<SourceEditorView> ();
+				if (!view.SourceEditorWidget.HasIncorrectEolMarker)
 					continue;
 
 				view.SourceEditorWidget.UseIncorrectMarkers = true;
@@ -223,18 +98,14 @@ namespace MonoDevelop.SourceEditor
 		public static void UpdateEolMessages ()
 		{
 			var multiple = HasMultipleIncorrectEolMarkers;
-			foreach (var view in openFiles) {
-				if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
+			foreach (var doc in DocumentRegistry.OpenFiles) {
+				if (DocumentRegistry.SkipView (doc))
+					continue;
+				var view = doc.GetContent<SourceEditorView> ();
+				if (!view.SourceEditorWidget.HasIncorrectEolMarker)
 					continue;
 				view.SourceEditorWidget.UpdateEolMarkerMessage (multiple);
 			}
-		}
-
-		static List<string> skipFiles = new List<string> ();
-		internal static void SkipNextChange (string fileName)
-		{
-			if (!skipFiles.Contains (fileName))
-				skipFiles.Add (fileName);
 		}
 		#endregion
 	}

@@ -13,10 +13,6 @@
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Data.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.Data.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.Internal">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Internal.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.Internal.dll</HintPath>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.Logic">
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Logic.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
@@ -34,7 +30,7 @@
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.Implementation">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Implementation.15.0.6-pre\lib\net46\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Implementation.15.0.7-pre\lib\net46\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
   </ItemGroup>

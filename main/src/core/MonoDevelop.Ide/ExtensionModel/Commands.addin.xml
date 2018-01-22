@@ -895,6 +895,13 @@
 			macShortcut = "Alt|Meta|Shift|F"
 			_description = "Search for and replace text in all files of a directory" />
 
+	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.RunCommand"
+			defaultHandler = "MonoDevelop.Components.MainToolbar.RunCommandHandler"
+			_label = "_Command..."
+			shortcut = "Control|Shift|P"
+			macShortcut = "Meta|Shift|P"
+			_description = "Find and run a specific command." />
+
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"
 			defaultHandler = "MonoDevelop.Components.MainToolbar.GotoTypeHandler"
 	         _label = "_Type..."
