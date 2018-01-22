@@ -147,6 +147,7 @@
     </Reference>
     <Reference Include="Microsoft.Build.Tasks.Core">
       <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.dll</HintPath>
