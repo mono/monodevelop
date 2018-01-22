@@ -96,8 +96,8 @@ namespace MonoDevelop.Refactoring.PickMembersService
 
 			treeStore = new ListStore (symbolIncludedField, symbolField, symbolTextField, symbolIconField);
 			var box = new VBox {
-				Margin = 6,
-				Spacing = 6
+			//	Margin = 6,
+			//	Spacing = 6
 			};
 
 /*			box.PackStart (new Label {
@@ -105,13 +105,13 @@ namespace MonoDevelop.Refactoring.PickMembersService
 			});*/
 
 			var hbox = new HBox {
-				Spacing = 6
+			//	Spacing = 6
 			};
 			hbox.PackStart (listViewPublicMembers, true);
 			listViewPublicMembers.Accessible.Description = GettextCatalog.GetString ("Pick members");
 
 			var vbox = new VBox {
-				Spacing = 6
+			//	Spacing = 6
 			};
 			buttonSelectAll = new Button (GettextCatalog.GetString ("Select All"));
 			buttonSelectAll.Clicked += delegate {
@@ -130,8 +130,9 @@ namespace MonoDevelop.Refactoring.PickMembersService
 			box.PackStart (hbox, true);
 
 			Content = box;
-			Buttons.Add (okButton = new DialogButton (Command.Ok));
 			Buttons.Add (new DialogButton (Command.Cancel));
+			Buttons.Add (okButton = new DialogButton (Command.Ok));
+			this.DefaultCommand = okButton.Command;
 
 			this.Width = 400;
 			this.Height = 321;
