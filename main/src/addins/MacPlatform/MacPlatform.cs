@@ -144,9 +144,6 @@ namespace MonoDevelop.MacIntegration
 
 			var dir = Path.GetDirectoryName (typeof(MacPlatformService).Assembly.Location);
 
-			if (ObjCRuntime.Dlfcn.dlopen (Path.Combine (dir, "libxammac.dylib"), 0) == IntPtr.Zero)
-				LoggingService.LogFatalError ("Unable to load libxammac");
-
 			mimemap = new Lazy<Dictionary<string, string>> (LoadMimeMapAsync);
 
 			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
