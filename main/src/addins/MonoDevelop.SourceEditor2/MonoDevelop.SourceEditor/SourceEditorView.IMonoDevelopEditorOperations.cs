@@ -142,7 +142,7 @@ namespace MonoDevelop.SourceEditor
 
 		bool IEditorOperations.Paste ()
 		{
-			return ClipboardActions.Paste (TextEditor.GetTextEditorData ());
+			return ClipboardActions.PasteWithResult (TextEditor.GetTextEditorData ());
 		}
 
 		bool IEditorOperations.InsertNewLine ()

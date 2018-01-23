@@ -435,8 +435,13 @@ namespace Mono.TextEditor
 			data.Document.CommitLineUpdate (data.GetLineByOffset (insertionOffset));
 			return result;
 		}
-		
-		public static bool Paste (TextEditorData data)
+
+		public static void Paste (TextEditorData data)
+		{
+			PasteWithResult (data);
+		}
+
+		public static bool PasteWithResult (TextEditorData data)
 		{
 			if (!data.CanEditSelection)
 				return false;
