@@ -38,20 +38,25 @@ namespace MonoDevelop.Refactoring.PickMembersService
 	{
 		PickMembersResult IPickMembersService.PickMembers(string title, ImmutableArray<ISymbol> members, ImmutableArray<PickMembersOption> options)
 		{
-			var dialog = new PickMembersDialog ();
-			try {
-				dialog.Init (title, members, options);
-				bool performChange = dialog.Run () == Xwt.Command.Ok;
-				if (!performChange)
-					return PickMembersResult.Canceled;
-
-				return new PickMembersResult (dialog.IncludedMembers.ToImmutableArray (), dialog.Options);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error while signature changing.", ex);
-				return PickMembersResult.Canceled;
-			} finally {
-				dialog.Dispose ();
-			}
+				PickMembersResult result = null;
+				Xwt.Toolkit.NativeEngine.Invoke (delegate {
+					var dialog = new PickMembersDialog ();
+					try {
+						dialog.Init (title, members, options);
+						bool performChange = dialog.Run () == Xwt.Command.Ok;
+						if (!performChange) {
+							result = PickMembersResult.Canceled;
+						} else {
+						result = new PickMembersResult (dialog.IncludedMembers.ToImmutableArray (), dialog.Options);
+						}
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error while signature changing.", ex);
+						result = PickMembersResult.Canceled;
+					} finally {
+						dialog.Dispose ();
+					}
+				});
+				return result;
 		}
 	}
 }
