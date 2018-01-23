@@ -436,11 +436,11 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		public static void Paste (TextEditorData data)
+		public static bool Paste (TextEditorData data)
 		{
 			if (!data.CanEditSelection)
-				return;
-			PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, false, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
+				return false;
+			return PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, false, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset) > 0;
 		}
 
 		public static string GetClipboardContent()

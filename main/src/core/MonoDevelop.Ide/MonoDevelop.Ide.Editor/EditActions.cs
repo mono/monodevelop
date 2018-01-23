@@ -37,129 +37,129 @@ namespace MonoDevelop.Ide.Editor
 	{
 		public static void MoveCaretDown (TextEditor editor)
 		{
-			editor.EditorActionHost.MoveCaretDown ();
+			editor.EditorOperations.MoveLineDown (false);
 		}
 
 		public static void MoveCaretUp (TextEditor editor)
 		{
-			editor.EditorActionHost.MoveCaretUp ();
+			editor.EditorOperations.MoveLineUp (false);
 		}
 
 		public static void MoveCaretRight (TextEditor editor)
 		{
-			editor.EditorActionHost.MoveCaretRight ();
+			editor.EditorOperations.MoveToPreviousCharacter (false);
 		}
 
 		public static void MoveCaretLeft (TextEditor editor)
 		{
-			editor.EditorActionHost.MoveCaretLeft ();
+			editor.EditorOperations.MoveToNextCharacter (false);
 		}
 
 		public static void MoveCaretToLineEnd (TextEditor editor)
 		{
-			editor.EditorActionHost.MoveCaretToLineEnd ();
+			editor.EditorOperations.MoveToEndOfLine (false);
 		}
 
 		public static void MoveCaretToLineStart (TextEditor editor)
 		{
-			editor.EditorActionHost.MoveCaretToLineStart ();
+			editor.EditorOperations.MoveToStartOfLine (false);
 		}
 
 		public static void MoveCaretToDocumentStart (TextEditor editor)
 		{
-			editor.EditorActionHost.MoveCaretToDocumentStart ();
+			editor.EditorOperations.MoveToStartOfDocument (false);
 		}
 
 		public static void MoveCaretToDocumentEnd (TextEditor editor)
 		{
-			editor.EditorActionHost.MoveCaretToDocumentEnd ();
+			editor.EditorOperations.MoveToEndOfDocument (false);
 		}
 
 		public static void Backspace (TextEditor editor)
 		{
-			editor.EditorActionHost.Backspace ();
+			editor.EditorOperations.Backspace ();
 		}
 
 		public static void Delete (TextEditor editor)
 		{
-			editor.EditorActionHost.Delete ();
+			editor.EditorOperations.Delete ();
 		}
 
 		public static void ClipboardCopy (TextEditor editor)
 		{
-			editor.EditorActionHost.ClipboardCopy ();
+			editor.EditorOperations.CopySelection ();
 		}
 
 		public static void ClipboardCut (TextEditor editor)
 		{
-			editor.EditorActionHost.ClipboardCut ();
+			editor.EditorOperations.CutSelection ();
 		}
 
 		public static void ClipboardPaste (TextEditor editor)
 		{
-			editor.EditorActionHost.ClipboardPaste ();
+			editor.EditorOperations.Paste ();
 		}
 
 
 
 		public static void SelectAll (TextEditor editor)
 		{
-			editor.EditorActionHost.SelectAll ();
+			editor.EditorOperations.SelectAll ();
 		}
 
 		public static void NewLine (TextEditor editor)
 		{
-			editor.EditorActionHost.NewLine ();
+			editor.EditorOperations.InsertNewLine ();
 		}
 
 		public static void PageUp (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.PageUp ();
+			textEditor.EditorOperations.PageUp (false);
 		}
 
 		public static void PageDown (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.PageDown ();
+			textEditor.EditorOperations.PageDown (false);
 		}
 
 		public static void Undo (TextEditor editor)
 		{
-			editor.EditorActionHost.Undo ();
+			((IMonoDevelopEditorOperations)editor.EditorOperations).Undo ();
 		}
 
 		public static void Redo (TextEditor editor)
 		{
-			editor.EditorActionHost.Redo ();
+			((IMonoDevelopEditorOperations)editor.EditorOperations).Redo ();
 		}
 
 		public static void DeleteCurrentLine (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.DeleteCurrentLine ();
+			textEditor.EditorOperations.DeleteFullLine ();
 		}
 
 		public static void DeleteCurrentLineToEnd (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.DeleteCurrentLineToEnd ();
+			textEditor.EditorOperations.DeleteToEndOfLine ();
 		}
 
 		public static void ScrollLineUp (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.ScrollLineUp ();
+			textEditor.EditorOperations.ScrollLineTop ();
 		}
 
 		public static void ScrollLineDown (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.ScrollLineDown ();
+			textEditor.EditorOperations.ScrollLineBottom ();
 		}
 
 		public static void ScrollPageUp (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.ScrollPageUp ();
+			textEditor.EditorOperations.ScrollPageUp ();
 		}
 
 		public static void ScrollPageDown (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.ScrollPageDown ();
+			textEditor.EditorOperations.ScrollPageDown ();
 		}
 
 		public static void GotoMatchingBrace (TextEditor textEditor)
@@ -171,27 +171,27 @@ namespace MonoDevelop.Ide.Editor
 
 		public static void MovePrevWord (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.MovePrevWord ();
+			textEditor.EditorOperations.MoveToPreviousWord (false);
 		}
 
 		public static void MoveNextWord (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.MoveNextWord ();
+			textEditor.EditorOperations.MoveToNextWord (false);
 		}
 
 		public static void MovePrevSubWord (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.MovePrevSubWord ();
+			((IMonoDevelopEditorOperations)textEditor.EditorOperations).MoveToPrevSubWord ();
 		}
 
 		public static void MoveNextSubWord (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.MoveNextSubWord ();
+			((IMonoDevelopEditorOperations)textEditor.EditorOperations).MoveToNextSubWord ();
 		}
 
 		public static void ShowQuickInfo (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.ShowQuickInfo ();
+			((IMonoDevelopEditorOperations)textEditor.EditorOperations).ShowQuickInfo ();
 		}      
 
 
@@ -268,37 +268,37 @@ namespace MonoDevelop.Ide.Editor
 
 		public static void JoinLines (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.JoinLines ();
+			((IMonoDevelopEditorOperations)textEditor.EditorOperations).JoinLines ();
 		}
 
 		public static void RecenterEditor (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.RecenterEditor ();
+			textEditor.EditorOperations.ScrollLineCenter ();
 		}
 
 		public static void StartCaretPulseAnimation (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.StartCaretPulseAnimation ();
+			((IMonoDevelopEditorOperations)textEditor.EditorOperations).StartCaretPulseAnimation ();
 		}
 
 		public static void DeleteNextSubword (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.DeleteNextSubword ();
+			((IMonoDevelopEditorOperations)textEditor.EditorOperations).DeleteNextSubword ();
 		}
 
 		public static void DeletePreviousSubword (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.DeletePreviousSubword ();
+			((IMonoDevelopEditorOperations)textEditor.EditorOperations).DeletePreviousSubword ();
 		}
 
 		public static void DeleteNextWord (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.DeleteNextWord ();
+			textEditor.EditorOperations.DeleteWordToRight ();
 		}
 
 		public static void DeletePreviousWord (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.DeletePreviousWord ();
+			textEditor.EditorOperations.DeleteWordToLeft ();
 		}
 
 		public static void InsertNewLinePreserveCaretPosition (TextEditor textEditor)
@@ -324,47 +324,47 @@ namespace MonoDevelop.Ide.Editor
 
 		public static void InsertNewLine (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.InsertNewLine ();
+			textEditor.EditorOperations.InsertNewLine ();
 		}
 
 		public static void RemoveTab (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.RemoveTab ();
+			textEditor.EditorOperations.Untabify ();
 		}
 
 		public static void InsertTab (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.InsertTab ();
+			textEditor.EditorOperations.Tabify ();
 		}
 
 		public static void SwitchCaretMode (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.SwitchCaretMode ();
+			((IMonoDevelopEditorOperations)textEditor.EditorOperations).SwitchCaretMode ();
 		}
 
 		public static void MoveBlockUp (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.MoveBlockUp ();
+			((IMonoDevelopEditorOperations)textEditor.EditorOperations).MoveBlockUp ();
 		}
 
 		public static void MoveBlockDown (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.MoveBlockDown ();
+			((IMonoDevelopEditorOperations)textEditor.EditorOperations).MoveBlockDown ();
 		}
 
 		public static void ToggleBlockSelectionMode (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.ToggleBlockSelectionMode ();
+			((IMonoDevelopEditorOperations)textEditor.EditorOperations).ToggleBlockSelectionMode ();
 		}
 
 		public static void IndentSelection (TextEditor editor)
 		{
-			editor.EditorActionHost.IndentSelection ();
+			editor.EditorOperations.Indent ();
 		}
 
 		public static void UnIndentSelection (TextEditor editor)
 		{
-			editor.EditorActionHost.UnIndentSelection ();
+			editor.EditorOperations.Unindent ();
 		}
 
 		#region SelectionActions

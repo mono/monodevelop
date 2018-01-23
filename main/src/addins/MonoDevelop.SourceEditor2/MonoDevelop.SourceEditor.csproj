@@ -350,6 +350,11 @@
     <Compile Include="VSEditor\Text\Impl\WpfView\SpaceReservationStack.cs" />
     <Compile Include="VSEditor\Text\Util\TextDataUtil\MappingHelper.cs" />
     <Compile Include="VSEditor\VisualStudio\Impl\ViewAdapter\TipManager.cs" />
+    <None Include="packages.config" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\LineSeparatorMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.IndicatorDrawingCache.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.IdleUpdater.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SourceEditorView.IMonoDevelopEditorOperations.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

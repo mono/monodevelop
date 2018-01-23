@@ -383,7 +383,7 @@ namespace MonoDevelop.Debugger
 
 		void IClipboardHandler.Copy ()
 		{
-			editor.EditorActionHost.ClipboardCopy ();
+			editor.EditorOperations.CopySelection ();
 		}
 
 		void IClipboardHandler.Paste ()
@@ -398,7 +398,7 @@ namespace MonoDevelop.Debugger
 
 		void IClipboardHandler.SelectAll ()
 		{
-			editor.EditorActionHost.SelectAll ();
+			editor.EditorOperations.SelectAll ();
 		}
 
 		bool IClipboardHandler.EnableCut {
