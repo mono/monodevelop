@@ -320,11 +320,6 @@ namespace MonoDevelop.UnitTesting
 			}, throttling.Token, TaskContinuationOptions.None, Runtime.MainTaskScheduler);
 		}
 
-		static void ProjectOperations_PackageReferencesModified (object sender, PackageManagementPackageReferenceEventArgs e)
-		{
-			ProjectOperations_PackageReferencesModified (sender, e);
-		}
-
 		static bool IsSolutionGroupPresent (Solution sol, IEnumerable<UnitTest> tests)
 		{
 			foreach (var t in tests) {
