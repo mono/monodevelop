@@ -188,6 +188,25 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		static void PixbufCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
+			var crp = (CellRendererImage)cell;
+			var node = (BuildOutputNode)model.GetValue (iter, 0);
+			switch (node.NodeType) {
+			case BuildOutputNodeType.Build:
+				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.StatusBuild, IconSize.Menu);
+				break;
+			case BuildOutputNodeType.Error:
+				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.Error, IconSize.Menu);
+				break;
+			case BuildOutputNodeType.Project:
+				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.Project, IconSize.Menu);
+				break;
+			case BuildOutputNodeType.Warning:
+				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.Warning, IconSize.Menu);
+				break;
+			default:
+				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.Empty);
+				break;
+			}
 		}
 
 		static void TextCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
