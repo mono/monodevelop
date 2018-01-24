@@ -109,6 +109,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\ReslynCompletionDataTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\MockCompletionView.cs" />
     <Compile Include="MonoDevelop.Ide\MonoDocDocumentationProviderTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\PclToProjectJsonConversionTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
