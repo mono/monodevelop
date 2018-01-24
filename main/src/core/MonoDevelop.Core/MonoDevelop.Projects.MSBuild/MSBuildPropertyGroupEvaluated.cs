@@ -153,9 +153,9 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			properties.Clear ();
 			foreach (var p in e.GetEvaluatedProperties (project)) {
-				string name, value, finalValue;
-				e.GetPropertyInfo (p, out name, out value, out finalValue);
-				properties [name] = new MSBuildPropertyEvaluated (ParentProject, name, value, finalValue);
+				string name, value, finalValue; bool definedMultipleTimes;
+				e.GetPropertyInfo (p, out name, out value, out finalValue, out definedMultipleTimes);
+				properties [name] = new MSBuildPropertyEvaluated (ParentProject, name, value, finalValue, definedMultipleTimes);
 			}
 		}
 
