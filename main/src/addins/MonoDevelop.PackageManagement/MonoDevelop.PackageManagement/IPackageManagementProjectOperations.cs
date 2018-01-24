@@ -114,6 +114,7 @@ namespace MonoDevelop.PackageManagement
 
 		event EventHandler<PackageManagementPackageReferenceEventArgs> PackageReferenceAdded;
 		event EventHandler<PackageManagementPackageReferenceEventArgs> PackageReferenceRemoved;
+		event EventHandler PackagesRestored;
 	}
 }
 

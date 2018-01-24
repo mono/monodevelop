@@ -64,6 +64,7 @@ namespace MonoDevelop.UnitTesting
 
 			PackageManagementServices.ProjectOperations.PackageReferenceAdded += ProjectOperations_PackageReferencesModified;
 			PackageManagementServices.ProjectOperations.PackageReferenceRemoved += ProjectOperations_PackageReferencesModified;
+			PackageManagementServices.ProjectOperations.PackagesRestored += ProjectOperations_PackageReferencesModified;
 
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/UnitTesting/TestProviders", OnExtensionChange);
 
@@ -323,7 +324,7 @@ namespace MonoDevelop.UnitTesting
 
 		static CancellationTokenSource throttling = new CancellationTokenSource ();
 
-		static void ProjectOperations_PackageReferencesModified (object sender, PackageManagementPackageReferenceEventArgs e)
+		static void ProjectOperations_PackageReferencesModified(object sender, EventArgs e)
 		{
 			throttling.Cancel ();
 			throttling = new CancellationTokenSource ();
@@ -332,6 +333,11 @@ namespace MonoDevelop.UnitTesting
 					return;
 				RebuildTests ();
 			}, throttling.Token, TaskContinuationOptions.None, Runtime.MainTaskScheduler);
+		}
+
+		static void ProjectOperations_PackageReferencesModified (object sender, PackageManagementPackageReferenceEventArgs e)
+		{
+			ProjectOperations_PackageReferencesModified (sender, e);
 		}
 
 		static bool IsSolutionGroupPresent (Solution sol, IEnumerable<UnitTest> tests)

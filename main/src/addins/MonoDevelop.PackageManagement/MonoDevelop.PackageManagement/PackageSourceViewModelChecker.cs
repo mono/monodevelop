@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NuGet.Credentials;
 
@@ -36,20 +38,13 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class PackageSourceViewModelChecker : IDisposable
 	{
-		PackageManagementTaskFactory taskFactory = new PackageManagementTaskFactory ();
-		List<ITask<PackageSourceViewModelCheckedEventArgs>> tasks = new List<ITask<PackageSourceViewModelCheckedEventArgs>>();
+		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
 
 		public event EventHandler<PackageSourceViewModelCheckedEventArgs> PackageSourceChecked;
 
 		public void Dispose ()
 		{
-			foreach (PackageManagementTask<PackageSourceViewModelCheckedEventArgs> task in tasks) {
-				if (task.IsCompleted || task.IsFaulted || task.IsCancelled) {
-					// Do nothing.
-				} else {
-					task.Cancel ();
-				}
-			}
+			cancellationTokenSource.Cancel ();
 		}
 
 		public void Check(IEnumerable<PackageSourceViewModel> packageSources)
@@ -61,32 +56,27 @@ namespace MonoDevelop.PackageManagement
 
 		public void Check(PackageSourceViewModel packageSource)
 		{
-			ITask<PackageSourceViewModelCheckedEventArgs> task = taskFactory.CreateTask (
-				() => CheckPackageSourceUrl (packageSource),
-				(t) => OnPackageSourceChecked (this, t));
-
-			tasks.Add (task);
-			task.Start ();
+			Task.Run (() => CheckPackageSourceUrl (packageSource), cancellationTokenSource.Token)
+				.ContinueWith (OnPackageSourceChecked, TaskScheduler.FromCurrentSynchronizationContext ());
 		}
 
-		PackageSourceViewModelCheckedEventArgs CheckPackageSourceUrl (PackageSourceViewModel packageSource)
+		Task<PackageSourceViewModelCheckedEventArgs> CheckPackageSourceUrl (PackageSourceViewModel packageSource)
 		{
 			if (IsHttpPackageSource (packageSource.Source)) {
 				return CheckHttpPackageSource (packageSource);
 			}
-			return CheckFileSystemPackageSource (packageSource);
+			return Task.FromResult (CheckFileSystemPackageSource (packageSource));
 		}
 
-		PackageSourceViewModelCheckedEventArgs CheckHttpPackageSource (PackageSourceViewModel packageSource)
+		async Task<PackageSourceViewModelCheckedEventArgs> CheckHttpPackageSource (PackageSourceViewModel packageSource)
 		{
 			try {
 				using (HttpClient httpClient = CreateHttpClient (packageSource)) {
-					var task = httpClient.GetAsync (packageSource.Source);
-					task.Wait ();
-					if (task.Result.StatusCode == HttpStatusCode.OK) {
+					var result = await httpClient.GetAsync (packageSource.Source);
+					if (result.StatusCode == HttpStatusCode.OK) {
 						return new PackageSourceViewModelCheckedEventArgs (packageSource);
 					} else {
-						return CreatePackageSourceViewModelCheckedEventArgs (packageSource, task.Result.StatusCode);
+						return CreatePackageSourceViewModelCheckedEventArgs (packageSource, result.StatusCode);
 					}
 				}
 			} catch (Exception ex) {
@@ -190,7 +180,7 @@ namespace MonoDevelop.PackageManagement
 			LoggingService.LogInfo (String.Format ("Package source '{0}' returned exception.", packageSource.Source), ex);
 		}
 
-		void OnPackageSourceChecked (object sender, ITask<PackageSourceViewModelCheckedEventArgs> task)
+		void OnPackageSourceChecked (Task<PackageSourceViewModelCheckedEventArgs> task)
 		{
 			PackageSourceViewModelCheckedEventArgs eventArgs = CreateEventArgs (task);
 			if (eventArgs != null && PackageSourceChecked != null) {
@@ -198,12 +188,12 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		PackageSourceViewModelCheckedEventArgs CreateEventArgs (ITask<PackageSourceViewModelCheckedEventArgs> task)
+		PackageSourceViewModelCheckedEventArgs CreateEventArgs (Task<PackageSourceViewModelCheckedEventArgs> task)
 		{
 			if (task.IsFaulted) {
 				LoggingService.LogError ("Package source check failed.", task.Exception);
 				return null;
-			} else if (task.IsCancelled) {
+			} else if (task.IsCanceled) {
 				// Do nothing.
 				return null;
 			}

@@ -2544,7 +2544,7 @@ namespace MonoDevelop.SourceEditor
 
 		IReadonlyTextDocument ITextEditorImpl.Document {
 			get {
-				return widget.TextEditor.Document;
+				return widget.TextEditor?.Document;
 			}
 		}
 
