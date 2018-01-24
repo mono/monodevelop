@@ -46,12 +46,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 		CheckButton showDiagnosticsButton;
 		Button saveButton;
 
+		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
 
-		public BuildOutputWidget (BuildOutput output)
+		public BuildOutputWidget (BuildOutput output, string viewContentName)
 		{
 			Initialize ();
-
+			ViewContentName = viewContentName;
 			SetupBuildOutput (output);
 		}
 
@@ -120,10 +121,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 			saveButton.Accessible.SetTitle (saveLbl.Text);
 			saveButton.Clicked += async (sender, e) => {
 				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
-					TransientFor = IdeApp.Workbench.RootWindow
+					TransientFor = IdeApp.Workbench.RootWindow,
+					InitialFileName = string.IsNullOrEmpty (ViewContentName) ? editor.FileName.FileName : ViewContentName
 				};
 				if (dlg.Run ()) {
-					await BuildOutput.Save (dlg.SelectedFile);
+					var outputFile = dlg.SelectedFile;
+					if (!outputFile.HasExtension ("binlog"))
+						outputFile = outputFile.ChangeExtension ("binlog");
+					
+					await BuildOutput.Save (outputFile);
 				}
 			};
 

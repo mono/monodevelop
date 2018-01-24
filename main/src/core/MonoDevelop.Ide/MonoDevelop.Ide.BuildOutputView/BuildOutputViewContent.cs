@@ -1,4 +1,4 @@
-﻿//
+//
 // BuildOutputView.cs
 //
 // Author:
@@ -45,8 +45,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public BuildOutputViewContent (BuildOutput buildOutput)
 		{
-			ContentName = GettextCatalog.GetString ("Build Output");
-			control = new BuildOutputWidget (buildOutput);
+			ContentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("hh:mm:ss")}.binlog";
+			control = new BuildOutputWidget (buildOutput, ContentName);
 		}
 
 		public override Control Control {
