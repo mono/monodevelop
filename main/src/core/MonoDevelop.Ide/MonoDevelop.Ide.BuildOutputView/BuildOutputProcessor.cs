@@ -30,6 +30,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
+using Gtk;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -176,6 +177,40 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				return (buildOutput.ToString (), (IList<IFoldSegment>)foldingSegments);
 			});
+		}
+
+		private void ProcessChildren (TreeStore store, TreeIter parentIter, BuildOutputNode node, bool includeDiagnostics)
+		{
+			foreach (var child in node.Children) {
+				ProcessNode (store, parentIter, child, includeDiagnostics);
+			}
+		}
+
+		private void ProcessNode (TreeStore store, TreeIter parentIter, BuildOutputNode node, bool includeDiagnostics)
+		{
+			// For non-diagnostics mode, only return nodes with data
+			if (!includeDiagnostics && (node.NodeType == BuildOutputNodeType.Diagnostics ||
+										(!node.HasData && !node.HasErrors && !node.HasWarnings))) {
+				return;
+			}
+
+			TreeIter it;
+			if (parentIter.Equals (TreeIter.Zero)) {
+				it = store.AppendValues (node);
+			} else {
+				it = store.AppendValues (parentIter, node);
+			}
+
+			if (node.Children.Count > 0) {
+				ProcessChildren (store, it, node, includeDiagnostics);
+			}
+		}
+
+		public void ToTreeStore (TreeStore store, bool includeDiagnostics)
+		{
+			foreach (var node in rootNodes) {
+				ProcessNode (store, TreeIter.Zero, node, includeDiagnostics);
+			}
 		}
 
 		bool disposed = false;
