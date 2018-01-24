@@ -101,6 +101,10 @@ namespace Mono.TextEditor
 		DocumentLocation oldCaretLocation;
 		void PositionChanged_ITextCaret (CaretLocationEventArgs args)
 		{
+			//Some unit tests don't initialize full UI representation of MonoTextEditor
+			//which means they don't depend on ITextCaret implementation, so we can return here
+			if (TextEditor == null)
+				return;
 			// MD doesn't fire textEditor.CaretPositionChanged until after the command has gone completely through the command chain. 
 			//   Too much VS stuff depends on it getting updated earlier, so we'll use this event which fires earlier.
 			int position = TextEditor.Caret.Offset;

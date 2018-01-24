@@ -124,12 +124,9 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var textDoc = CreateTextDocument ("12345");
 			TextChangeEventArgs changeArgs = null;
-			string text = null;
 			textDoc.TextChanging += delegate(object sender, TextChangeEventArgs e) {
 				changeArgs = e;
-				text = textDoc.Text;
-				Assert.AreEqual (textDoc.Text, "12Hello5");
-				Assert.AreEqual (text, "12345");
+				Assert.AreEqual (textDoc.Text, "12345");
 				var ca = changeArgs.TextChanges.First ();
 				Assert.AreEqual (ca.Offset, 2);
 				Assert.AreEqual (ca.RemovalLength, 2);
