@@ -228,6 +228,22 @@ namespace MonoDevelop.Ide.BuildOutputView
 #if TEXT_EDITOR
 		CancellationTokenSource cts;
 #endif
+
+		static void ExpandChildrenWithErrors (TreeView tree, TreeStore store, TreeIter parent)
+		{
+			TreeIter child = TreeIter.Zero;
+			var node = store.GetValue (parent, 0) as BuildOutputNode;
+			if (node?.HasErrors ?? false && store.IterChildren (out child, parent)) {
+				do {
+					var childNode = store.GetValue (child, 0) as BuildOutputNode;
+					if (childNode?.HasErrors ?? false) {
+						tree.ExpandRow (store.GetPath (child), false);
+						ExpandChildrenWithErrors (tree, store, child);
+					}
+				} while (store.IterNext (ref child));
+			}
+		}
+
 		void ProcessLogs (bool showDiagnostics)
 		{
 #if TEXT_EDITOR
@@ -246,6 +262,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 #else
 			var model = BuildOutput.ToTreeStore (showDiagnostics);
 			treeView.Model = model;
+
+			// Expand root nodes and nodes with errors
+			TreeIter it;
+			if (model.GetIterFirst (out it)) {
+				do {
+					treeView.ExpandRow (model.GetPath (it), false);
+					ExpandChildrenWithErrors (treeView, model, it);
+				} while (model.IterNext (ref it));
+			}
 #endif
 		}
 	}
