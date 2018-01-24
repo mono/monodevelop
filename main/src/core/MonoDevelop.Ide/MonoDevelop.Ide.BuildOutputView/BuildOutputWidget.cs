@@ -41,7 +41,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutputWidget : VBox
 	{
+#if TEXT_EDITOR
 		TextEditor editor;
+#else
+		TreeView treeView;
+#endif
 		CompactScrolledWindow scrolledWindow;
 		CheckButton showDiagnosticsButton;
 		Button saveButton;
@@ -62,7 +66,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			Initialize ();
 
+#if TEXT_EDITOR
 			editor.FileName = filePath;
+#endif
 
 			var output = new BuildOutput ();
 			output.Load (filePath.FullPath, false);
@@ -141,29 +147,75 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			toolbar.AddSpace ();
 			toolbar.Add (showDiagnosticsButton);
-			toolbar.Add (saveButton); 
+			toolbar.Add (saveButton);
 			PackStart (toolbar.Container, expand: false, fill: true, padding: 0);
 
+#if TEXT_EDITOR
 			editor = TextEditorFactory.CreateNewEditor ();
 			editor.IsReadOnly = true;
 			editor.Options = new CustomEditorOptions (editor.Options) {
 				ShowFoldMargin = true,
 				TabsToSpaces = false
 			};
+#else
+			treeView = new TreeView ();
+			treeView.HeadersVisible = false;
+			treeView.Accessible.Name = "BuildOutputWidget.TreeView";
+			treeView.Accessible.Description = GettextCatalog.GetString ("Structured build output");
+
+			TreeViewColumn col = new TreeViewColumn ();
+			var crp = new CellRendererImage ();
+			col.PackStart (crp, false);
+			col.SetCellDataFunc (crp, PixbufCellDataFunc);
+			var crt = new CellRendererText ();
+			col.PackStart (crt, true);
+			col.SetCellDataFunc (crt, TextCellDataFunc);
+			treeView.AppendColumn (col);
+
+			treeView.ExpanderColumn = col;
+#endif
 
 			scrolledWindow = new CompactScrolledWindow ();
+#if TEXT_EDITOR
 			scrolledWindow.AddWithViewport (editor);
+#else
+			scrolledWindow.AddWithViewport (treeView);
+#endif
 
 			PackStart (scrolledWindow, expand: true, fill: true, padding: 0);
 			ShowAll ();
 		}
 
+		static void PixbufCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+		}
+
+		static void TextCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			TreeIter parent;
+			bool toplevel = !model.IterParent (out parent, iter);
+
+			var crt = (CellRendererText)cell;
+			var node = (BuildOutputNode)model.GetValue (iter, 0);
+
+			if (toplevel) {
+				crt.Markup = "<b>" + GLib.Markup.EscapeText (node.Message) + "</b>";
+			} else {
+				crt.Text = node.Message;
+			}
+		}
+
 		protected override void OnDestroyed ()
 		{
+#if TEXT_EDITOR
 			editor.Dispose ();
+#else
+			treeView.Dispose ();
+#endif
 			base.OnDestroyed ();
 		}
 
+#if TEXT_EDITOR
 		void SetupTextEditor (string text, IList<IFoldSegment> segments)
 		{
 			editor.Text = text;
@@ -171,11 +223,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 				editor.SetFoldings (segments);
 			}
 		}
+#endif
 
+#if TEXT_EDITOR
 		CancellationTokenSource cts;
-
+#endif
 		void ProcessLogs (bool showDiagnostics)
 		{
+#if TEXT_EDITOR
 			cts?.Cancel ();
 			cts = new CancellationTokenSource ();
 
@@ -188,6 +243,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 					await Runtime.RunInMainThread (() => SetupTextEditor (text, segments));
 				}
 			}, cts.Token);
+#else
+			var model = BuildOutput.ToTreeStore (showDiagnostics);
+			treeView.Model = model;
+#endif
 		}
 	}
 }
