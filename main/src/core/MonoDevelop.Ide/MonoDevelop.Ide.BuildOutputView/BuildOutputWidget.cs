@@ -244,9 +244,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		}
 #endif
 
-#if TEXT_EDITOR
 		CancellationTokenSource cts;
-#endif
 
 		static void ExpandChildrenWithErrors (TreeView tree, TreeStore store, TreeIter parent)
 		{
@@ -265,32 +263,31 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		void ProcessLogs (bool showDiagnostics)
 		{
-#if TEXT_EDITOR
 			cts?.Cancel ();
 			cts = new CancellationTokenSource ();
 
 			Task.Run (async () => {
+#if TEXT_EDITOR
 				var (text, segments) = await BuildOutput.ToTextEditor (editor, showDiagnostics);
 
-				if (Runtime.IsMainThread) {
-					SetupTextEditor (text, segments);
-				} else {
-					await Runtime.RunInMainThread (() => SetupTextEditor (text, segments));
-				}
-			}, cts.Token);
+				await Runtime.RunInMainThread (() => SetupTextEditor (text, segments));
 #else
-			var model = BuildOutput.ToTreeStore (showDiagnostics);
-			treeView.Model = model;
+				var model = await BuildOutput.ToTreeStore (showDiagnostics);
 
-			// Expand root nodes and nodes with errors
-			TreeIter it;
-			if (model.GetIterFirst (out it)) {
-				do {
-					treeView.ExpandRow (model.GetPath (it), false);
-					ExpandChildrenWithErrors (treeView, model, it);
-				} while (model.IterNext (ref it));
-			}
+				// Expand root nodes and nodes with errors
+				await Runtime.RunInMainThread (() => {
+					treeView.Model = model;
+
+					TreeIter it;
+					if (model.GetIterFirst (out it)) {
+						do {
+							treeView.ExpandRow (model.GetPath (it), false);
+							ExpandChildrenWithErrors (treeView, model, it);
+						} while (model.IterNext (ref it));
+					}
+				});
 #endif
+			}, cts.Token);
 		}
 	}
 }

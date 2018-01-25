@@ -31,6 +31,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
 using Gtk;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -179,14 +180,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			});
 		}
 
-		private void ProcessChildren (TreeStore store, TreeIter parentIter, BuildOutputNode node, bool includeDiagnostics)
+		private async Task ProcessChildren (TreeStore store, TreeIter parentIter, BuildOutputNode node, bool includeDiagnostics)
 		{
 			foreach (var child in node.Children) {
-				ProcessNode (store, parentIter, child, includeDiagnostics);
+				await ProcessNode (store, parentIter, child, includeDiagnostics);
 			}
 		}
 
-		private void ProcessNode (TreeStore store, TreeIter parentIter, BuildOutputNode node, bool includeDiagnostics)
+		private async Task ProcessNode (TreeStore store, TreeIter parentIter, BuildOutputNode node, bool includeDiagnostics)
 		{
 			// For non-diagnostics mode, only return nodes with data
 			if (!includeDiagnostics && (node.NodeType == BuildOutputNodeType.Diagnostics ||
@@ -194,22 +195,24 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			TreeIter it;
-			if (parentIter.Equals (TreeIter.Zero)) {
-				it = store.AppendValues (node);
-			} else {
-				it = store.AppendValues (parentIter, node);
-			}
+			TreeIter it = TreeIter.Zero;
+			await Runtime.RunInMainThread (() => {
+				if (parentIter.Equals (TreeIter.Zero)) {
+					it = store.AppendValues (node);
+				} else {
+					it = store.AppendValues (parentIter, node);
+				}
+			});
 
 			if (node.Children.Count > 0) {
-				ProcessChildren (store, it, node, includeDiagnostics);
+				await ProcessChildren (store, it, node, includeDiagnostics);
 			}
 		}
 
-		public void ToTreeStore (TreeStore store, bool includeDiagnostics)
+		public async Task ToTreeStore (TreeStore store, bool includeDiagnostics)
 		{
 			foreach (var node in rootNodes) {
-				ProcessNode (store, TreeIter.Zero, node, includeDiagnostics);
+				await ProcessNode (store, TreeIter.Zero, node, includeDiagnostics);
 			}
 		}
 

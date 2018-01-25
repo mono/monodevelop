@@ -172,13 +172,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return (buildOutput.ToString (), foldingSegments);
 		}
 
-		public TreeStore ToTreeStore (bool includeDiagnostics)
+		public async Task<TreeStore> ToTreeStore (bool includeDiagnostics)
 		{
-			var store = new TreeStore (typeof (BuildOutputNode));
+			var store = await Runtime.RunInMainThread (() => new TreeStore (typeof (BuildOutputNode)));
+
 			foreach (var p in projects) {
 				p.Process ();
-				p.ToTreeStore (store, includeDiagnostics);
-
+				await p.ToTreeStore (store, includeDiagnostics);
 			}
 
 			return store;
