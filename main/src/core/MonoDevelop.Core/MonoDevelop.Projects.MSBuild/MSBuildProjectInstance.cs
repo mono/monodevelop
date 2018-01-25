@@ -236,6 +236,15 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			return engine?.FindUpdateGlobItemsIncludingFile (projectInstance, include, globItem);
 		}
+
+		/// <summary>
+		/// Notifies that a property has been modified in the project, so that the evaluated
+		/// value for that property in this instance may be out of date.
+		/// </summary>
+		internal void SetPropertyDirty (string name)
+		{
+			evaluatedProperties.SetPropertyDirty (name);
+		}
 	}
 
 	class MSBuildProjectInstanceInfo

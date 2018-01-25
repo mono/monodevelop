@@ -597,8 +597,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (c is Notebook)
 					((Notebook)c).Page = 0;
 			}
-			
-			tree.ExpandToPath (store.GetPath (page.Iter));
+
+			if (!DesktopService.AccessibilityInUse) {
+				// Don't automatically expand trees if using accessibility
+				// as it can be confusing with screen readers
+				tree.ExpandToPath (store.GetPath (page.Iter));
+			}
 			tree.Selection.SelectIter (page.Iter);
 		}
 		

@@ -148,7 +148,7 @@ namespace MonoDevelop.Core
 				EndTask ();
 
 			if (context != null)
-				context.Post ((o) => OnCompleted (), null);
+				context.Post ((o) => ((ProgressMonitor)o).OnCompleted (), this);
 			else
 				OnCompleted ();
 
@@ -221,7 +221,10 @@ namespace MonoDevelop.Core
 
 		//	if (name != null) {
 				if (context != null)
-					context.Post ((o) => OnBeginTask (name, totalWork, t.StepWork), null);
+					context.Post ((o) => {
+						var (mon, task) = (ValueTuple<ProgressMonitor, ProgressTask>)o;
+						mon.OnBeginTask (task.Name, task.TotalWork, task.StepWork);
+					}, (this, t));
 				else
 					OnBeginTask (name, totalWork, t.StepWork);
 		//	}
@@ -251,7 +254,10 @@ namespace MonoDevelop.Core
 				t.SetComplete ();
 		//		if (t.Name != null) {
 					if (context != null)
-						context.Post ((o) => OnEndTask (t.Name, t.TotalWork, t.StepWork), null);
+						context.Post ((o) => {
+							var (mon, task) = (ValueTuple<ProgressMonitor, ProgressTask>)o;
+							mon.OnEndTask (task.Name, task.TotalWork, task.StepWork);
+						}, (this, t));
 					else
 						OnEndTask (t.Name, t.TotalWork, t.StepWork);
 		//		}
@@ -292,17 +298,22 @@ namespace MonoDevelop.Core
 
 			if (context != null)
 				context.Post ((o) => {
-					OnStep (message, work);
-					ReportProgressChanged ();
-				}, null);
+					var (mon, msg, work1) = (ValueTuple<ProgressMonitor, string, int>)o;
+					MonitorStep (mon, msg, work1);
+				}, (this, message, work));
 			else {
-				OnStep (message, work);
-				ReportProgressChanged ();
+				MonitorStep (this, message, work);
 			}
 
 			if (followerMonitors != null) {
 				foreach (var m in followerMonitors)
 					m.Step (message, work);
+			}
+
+			void MonitorStep (ProgressMonitor mon, string msg, int work1)
+			{
+				mon.OnStep (msg, work1);
+				mon.ReportProgressChanged ();
 			}
 		}
 
@@ -326,17 +337,22 @@ namespace MonoDevelop.Core
 
 			if (context != null)
 				context.Post ((o) => {
-				OnBeginStep (message, work);
-				ReportProgressChanged ();
-			}, null);
+					var (mon, msg, work1) = (ValueTuple<ProgressMonitor, string, int>)o;
+					MonitorBeginStep (mon, msg, work1);
+				}, (this, message, work));
 			else {
-				OnBeginStep (message, work);
-				ReportProgressChanged ();
+				MonitorBeginStep (this, message, work);
 			}
 
 			if (followerMonitors != null) {
 				foreach (var m in followerMonitors)
 					m.BeginStep (message, work);
+			}
+
+			void MonitorBeginStep (ProgressMonitor mon, string msg, int work1)
+			{
+				mon.OnBeginStep (msg, work1);
+				mon.ReportProgressChanged ();
 			}
 		}
 
@@ -363,6 +379,12 @@ namespace MonoDevelop.Core
 			return BeginAsyncStep (null, work);
 		}
 
+		class BeginAsyncStepState
+		{
+			public ProgressMonitor FromMonitor;
+			public ProgressMonitor ResultMonitor;
+		}
+
 		public ProgressMonitor BeginAsyncStep (string message, int work)
 		{
 			if (currentTask == null)
@@ -375,21 +397,27 @@ namespace MonoDevelop.Core
 				currentTask.Step (message, 0);
 
 			ProgressMonitor m = null;
-			if (context != null)
-				context.Send ((o) => m = CreateAsyncStepMonitor (), null);
-			else
+			if (context != null) {
+				var state = new BeginAsyncStepState { FromMonitor = this, };
+
+				context.Send ((o) => {
+					var bass = (BeginAsyncStepState)o;
+					bass.ResultMonitor = bass.FromMonitor.CreateAsyncStepMonitor ();
+				}, state);
+
+				m = state.ResultMonitor;
+			} else
 				m = CreateAsyncStepMonitor ();
 
 			m.SetParentTask (this, currentTask, work);
 
 			if (context != null) {
 				context.Post ((o) => {
-					OnBeginAsyncStep (message, work, m);
-					ReportProgressChanged ();
-				}, null);
+					var (mon, msg, work1, stepMonitor) = (ValueTuple<ProgressMonitor, string, int, ProgressMonitor>)o;
+					MonitorBeginStepAsync (mon, msg, work1, stepMonitor);
+				}, (this, message, work, m));
 			} else {
-				OnBeginAsyncStep (message, work, m);
-				ReportProgressChanged ();
+				MonitorBeginStepAsync (this, message, work, m);
 			}
 
 			if (followerMonitors != null) {
@@ -397,6 +425,12 @@ namespace MonoDevelop.Core
 					m.AddFollowerMonitor (sm.BeginAsyncStep (message, work));
 			}
 			return m;
+
+			void MonitorBeginStepAsync (ProgressMonitor mon, string msg, int work1, ProgressMonitor stepMonitor)
+			{
+				mon.OnBeginAsyncStep (msg, work1, stepMonitor);
+				mon.ReportProgressChanged ();
+			}
 		}
 
 		/// <summary>
@@ -414,7 +448,10 @@ namespace MonoDevelop.Core
 				parentMonitor.ReportObject (statusObject);
 
 			if (context != null)
-				context.Post ((o) => OnObjectReported (statusObject), null);
+				context.Post ((o) => {
+					var (mon, statusObj) = (ValueTuple<ProgressMonitor, object>)o;
+					mon.OnObjectReported (statusObj);
+				}, (this, statusObject));
 			else
 				OnObjectReported (statusObject);
 
@@ -432,7 +469,10 @@ namespace MonoDevelop.Core
 				warnings.Add (message);
 
 			if (context != null)
-				context.Post ((o) => OnWarningReported (message), null);
+				context.Post ((o) => {
+					var (mon, msg) = (ValueTuple<ProgressMonitor, string>)o;
+					mon.OnWarningReported (msg);
+				}, (this, message));
 			else
 				OnWarningReported (message);
 
@@ -450,7 +490,10 @@ namespace MonoDevelop.Core
 				messages.Add (message);
 
 			if (context != null)
-				context.Post ((o) => OnSuccessReported (message), null);
+				context.Post ((o) => {
+					var (mon, msg) = (ValueTuple<ProgressMonitor, string>)o;
+					mon.OnSuccessReported (msg);
+				}, (this, message));
 			else
 				OnSuccessReported (message);
 
@@ -476,7 +519,10 @@ namespace MonoDevelop.Core
 				errors.Add (new ProgressError (message, exception));
 
 			if (context != null)
-				context.Post ((o) => OnErrorReported (message, exception), null);
+				context.Post ((o) => {
+					var (mon, msg, ex) = (ValueTuple<ProgressMonitor, string, Exception>)o;
+					mon.OnErrorReported (msg, ex);
+				}, (this, message, exception));
 			else
 				OnErrorReported (message, exception);
 
@@ -632,34 +678,29 @@ namespace MonoDevelop.Core
 		{
 			if (context != null)
 				context.Post (o => {
-					while (logChain != null) {
-						if (logChain is ObjectLogChunk objectLogChain) {
-							DoWriteLogObject (objectLogChain.Object);
-						} else {
-							var stringLogChunk = logChain as StringLogChunk;
-							if (stringLogChunk.IsError)
-								DoWriteErrorLog (stringLogChunk.Log.ToString ());
-							else
-								DoWriteLog (stringLogChunk.Log.ToString ());
-						}
-						logChain = logChain.Next;
-					}
-				}, null);
+					var (mon, chain) = (ValueTuple<ProgressMonitor, LogChunk>)o;
+					MonitorDumpLog (mon, chain);
+				}, (this, logChain));
 			else {
-				while (logChain != null) {
-					if (logChain is ObjectLogChunk objectLogChain) {
-						DoWriteLogObject (objectLogChain.Object);
-					} else {
-						var stringLogChunk = logChain as StringLogChunk;
-						if (stringLogChunk.IsError)
-							DoWriteErrorLog (stringLogChunk.Log.ToString ());
-						else
-							DoWriteLog (stringLogChunk.Log.ToString ());
-					}
-					logChain = logChain.Next;
-				}
+				MonitorDumpLog (this, logChain);
             }
-        }
+
+			void MonitorDumpLog (ProgressMonitor mon, LogChunk chain)
+			{
+				while (chain != null) {
+					if (chain is ObjectLogChunk objectLogChain) {
+						mon.DoWriteLogObject (objectLogChain.Object);
+					} else {
+						var stringLogChunk = chain as StringLogChunk;
+						if (stringLogChunk.IsError)
+							mon.DoWriteErrorLog (stringLogChunk.Log.ToString ());
+						else
+							mon.DoWriteLog (stringLogChunk.Log.ToString ());
+					}
+					chain = chain.Next;
+				}
+			}
+		}
 
 		void DoWriteLog (string message)
 		{
@@ -720,7 +761,7 @@ namespace MonoDevelop.Core
 		internal void ReportProgressChanged ()
 		{
 			if (context != null)
-				context.Post ((o) => OnProgressChanged (), null);
+				context.Post ((o) => ((ProgressMonitor)o).OnProgressChanged (), this);
 			else
 				OnProgressChanged ();
 

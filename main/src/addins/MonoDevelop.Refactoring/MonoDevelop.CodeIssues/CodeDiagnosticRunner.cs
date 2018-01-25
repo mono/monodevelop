@@ -48,6 +48,7 @@ namespace MonoDevelop.CodeIssues
 {
 	static class CodeDiagnosticRunner
 	{
+		static List<DiagnosticAnalyzer> providers = new List<DiagnosticAnalyzer> ();
 		static IEnumerable<CodeDiagnosticDescriptor> diagnostics;
 		static Dictionary<string, CodeDiagnosticDescriptor> diagnosticTable;
 		static SemaphoreSlim diagnosticLock = new SemaphoreSlim (1, 1);
@@ -82,6 +83,8 @@ namespace MonoDevelop.CodeIssues
 						continue;
 					foreach (var diag in provider.SupportedDiagnostics)
 						table [diag.Id] = diagnostic;
+
+					providers.Add (provider);
 				}
 
 				diagnosticTable = table;
@@ -105,9 +108,6 @@ namespace MonoDevelop.CodeIssues
 					return Enumerable.Empty<Result> ();
 				var compilation = model.Compilation;
 				var language = CodeRefactoringService.MimeTypeToLanguage (analysisDocument.Editor.MimeType);
-
-				var providers = new List<DiagnosticAnalyzer> ();
-				var alreadyAdded = new HashSet<Type>();
 
 				await GetDescriptorTable (analysisDocument, cancellationToken);
 
@@ -155,7 +155,7 @@ namespace MonoDevelop.CodeIssues
 
 				return diagnosticList
 					.Where (d => !d.Id.StartsWith("CS", StringComparison.Ordinal))
-					.Where (d => diagnosticTable[d.Id].GetIsEnabled (d.Descriptor))
+					.Where (d => !diagnosticTable.TryGetValue (d.Id, out var desc) || desc.GetIsEnabled (d.Descriptor))
 					.Select (diagnostic => {
 						var res = new DiagnosticResult(diagnostic);
 						// var line = analysisDocument.Editor.GetLineByOffset (res.Region.Start);
@@ -178,8 +178,6 @@ namespace MonoDevelop.CodeIssues
 			var input = analysisDocument.DocumentContext;
 			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
 				return Enumerable.Empty<Result> ();
-			if (SkipContext (input))
-				return Enumerable.Empty<Result> ();
 			try {
 #if DEBUG
 				Debug.Listeners.Add (consoleTraceListener);
@@ -189,13 +187,13 @@ namespace MonoDevelop.CodeIssues
 
 				var resultList = new List<Result> (results.Length);
 				foreach (var data in results) {
-					if (data.Id.StartsWith ("CS", StringComparison.Ordinal))
+					if (input.IsAdHocProject && SkipError (data.Id))
 						continue;
 
 					if (DataHasTag (data, WellKnownDiagnosticTags.EditAndContinue))
 						continue;
 
-					if (!diagnosticTable [data.Id].IsEnabled)
+					if (diagnosticTable.TryGetValue (data.Id, out var descriptor) && !descriptor.IsEnabled)
 						continue;
 					
 					var diagnostic = await data.ToDiagnosticAsync (analysisDocument, cancellationToken);
@@ -213,13 +211,48 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
+		static string [] lexicalError = {
+			"CS0594", // ERR_FloatOverflow
+			"CS0595", // ERR_InvalidReal
+			"CS1009", // ERR_IllegalEscape
+			"CS1010", // ERR_NewlineInConst
+			"CS1011", // ERR_EmptyCharConst
+			"CS1012", // ERR_TooManyCharsInConst
+			"CS1015", // ERR_TypeExpected
+			"CS1021", // ERR_IntOverflow
+			"CS1032", // ERR_PPDefFollowsTokenpp
+			"CS1035", // ERR_OpenEndedComment
+			"CS1039", // ERR_UnterminatedStringLit
+			"CS1040", // ERR_BadDirectivePlacementpp
+			"CS1056", // ERR_UnexpectedCharacter
+			"CS1056", // ERR_UnexpectedCharacter_EscapedBackslash
+			"CS1646", // ERR_ExpectedVerbatimLiteral
+			"CS0078", // WRN_LowercaseEllSuffix
+			"CS1002", // ; expected
+			"CS1519", // Invalid token ';' in class, struct, or interface member declaration
+			"CS1031", // Type expected
+			"CS0106", // The modifier 'readonly' is not valid for this item
+			"CS1576", // The line number specified for #line directive is missing or invalid
+			"CS1513" // } expected
+		};
+
+		static bool SkipError (string errorId)
+		{
+			return !lexicalError.Contains (errorId);
+		}
+
 		static async Task<Diagnostic> ToDiagnosticAsync (this DiagnosticData data, AnalysisDocument analysisDocument, CancellationToken cancellationToken)
 		{
 			var project = analysisDocument.DocumentContext.AnalysisDocument.Project;
 			var location = await data.DataLocation.ConvertLocationAsync (project, cancellationToken).ConfigureAwait (false);
 			var additionalLocations = await data.AdditionalLocations.ConvertLocationsAsync (project, cancellationToken).ConfigureAwait (false);
 
-			var severity = diagnosticTable [data.Id].GetSeverity (data.Id, data.Severity);
+			DiagnosticSeverity severity;
+			if (diagnosticTable.TryGetValue (data.Id, out var desc))
+				severity = diagnosticTable [data.Id].GetSeverity (data.Id, data.Severity);
+			else
+				severity = data.Severity;
+			
 			return Diagnostic.Create (
 				data.Id, data.Category, data.Message, severity, data.DefaultSeverity,
 				data.IsEnabledByDefault, GetWarningLevel (severity), data.IsSuppressed, data.Title, data.Description, data.HelpLink,
