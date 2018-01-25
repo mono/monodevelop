@@ -45,7 +45,7 @@ namespace MonoDevelop.FSW
 		static FileSystemWatcher ()
 		{
 			try {
-				if (HasOSXSupport ()) {
+				if (Core.Platform.IsMac && HasOSXSupport ()) {
 					_platform = Platform.OSX;
 					return;
 				}
