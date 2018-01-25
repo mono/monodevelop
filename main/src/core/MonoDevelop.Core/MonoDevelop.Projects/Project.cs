@@ -1522,6 +1522,12 @@ namespace MonoDevelop.Projects
 				}
 			}
 
+			ProjectFile newFile = CreateProjectFileForGlobItem (filename, buildAction);
+			if (newFile != null) {
+				Files.Add (newFile);
+				return newFile;
+			}
+
 			if (String.IsNullOrEmpty (buildAction)) {
 				buildAction = GetDefaultBuildAction (filename);
 			}
@@ -1535,6 +1541,12 @@ namespace MonoDevelop.Projects
 		{
 			List<ProjectFile> newFiles = new List<ProjectFile> ();
 			foreach (FilePath filename in files) {
+				ProjectFile newFile = CreateProjectFileForGlobItem (filename, buildAction);
+				if (newFile != null) {
+					newFiles.Add (newFile);
+					continue;
+				}
+
 				string ba = buildAction;
 				if (String.IsNullOrEmpty (ba))
 					ba = GetDefaultBuildAction (filename);
@@ -1544,6 +1556,31 @@ namespace MonoDevelop.Projects
 			}
 			Files.AddRange (newFiles);
 			return newFiles;
+		}
+
+		/// <summary>
+		/// Imported glob item may define a different build action and metadata for a file
+		/// so this is read and applied to the new ProjectFile.
+		/// </summary>
+		ProjectFile CreateProjectFileForGlobItem (FilePath file, string buildAction)
+		{
+			if (!UseAdvancedGlobSupport)
+				return null;
+
+			var include = MSBuildProjectService.ToMSBuildPath (ItemDirectory, file);
+			var globItems = sourceProject.FindGlobItemsIncludingFile (include).ToList ();
+			if ((globItems.Count == 1) && (buildAction == null || globItems [0].Name == buildAction)) {
+				var eit = CreateFakeEvaluatedItem (sourceProject, globItems [0], include, null);
+				var projectFile = CreateProjectItem (eit) as ProjectFile;
+				if (projectFile != null) {
+					projectFile.Read (this, eit);
+					// Force UnevaluatedInclude to be reset to prevent Remove items
+					// being left in project after file is re-added.
+					projectFile.BackingItem = null;
+					return projectFile;
+				}
+			}
+			return null;
 		}
 		
 		/// <summary>
