@@ -482,8 +482,6 @@ namespace MonoDevelop.CSharp.Parser
 			}
 		}
 
-		static readonly IReadOnlyList<Error> emptyErrors = new Error[0];
-
 		SemaphoreSlim errorLock = new SemaphoreSlim (1, 1);
 
 		static string [] lexicalError = {
@@ -516,8 +514,12 @@ namespace MonoDevelop.CSharp.Parser
 			return isAdhocProject && !lexicalError.Contains (errorId);
 		}
 
+		static readonly IReadOnlyList<Error> emptyErrors = Array.Empty<Error> ();
 		public override async Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
+			//if (Ide.IdeApp.Preferences.EnableSourceAnalysis)
+			//	return emptyErrors;
+			
 			var model = GetAst<SemanticModel> ();
 			if (model == null)
 				return emptyErrors;

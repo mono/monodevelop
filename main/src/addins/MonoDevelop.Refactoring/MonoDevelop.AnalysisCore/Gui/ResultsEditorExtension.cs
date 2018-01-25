@@ -325,6 +325,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 							editor.RemoveMarker (markerQueue.Value.Dequeue ());
 					}
 					ext.markers.Clear ();
+					ext.tasks.Clear ();
+					ext.OnTasksUpdated (EventArgs.Empty);
 					return false;
 				}
 

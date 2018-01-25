@@ -799,5 +799,24 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual ("abctest", defaultNamespace);
 		}
+
+		[TestCase ("ProjectName", null, "ProjectName")]
+		[TestCase ("ProjectName", "", "ProjectName")]
+		[TestCase ("ProjectName", "MyProject", "MyProject")]
+		[TestCase ("1", "", "Application")]
+		[TestCase ("ProjectName", "1", "Application")]
+		public void GetDefaultNamespace_NullFileName (
+			string projectName,
+			string projectDefaultNamespace,
+			string expectedDefaultNamespace)
+		{
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
+			project.Name = projectName;
+			project.DefaultNamespace = projectDefaultNamespace;
+
+			string result = project.GetDefaultNamespace (null);
+
+			Assert.AreEqual (expectedDefaultNamespace, result);
+		}
 	}
 }

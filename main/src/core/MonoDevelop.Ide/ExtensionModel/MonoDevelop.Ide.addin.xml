@@ -411,6 +411,7 @@
 		<Assembly file="MonoDevelop.Ide.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Text.Implementation.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.dll"/>
+		<Assembly file="Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll" />
 	</Extension>
 
 </ExtensionModel>
