@@ -82,9 +82,16 @@ namespace MonoDevelop.UnitTesting.VsTest
 						return cachePackages.Item2;
 
 				var result = string.Empty;
+				bool cache = true;
 				foreach (var folder in nugetsFolders) {
-					if (string.IsNullOrEmpty (folder) || !Directory.Exists (folder))
+					if (string.IsNullOrEmpty (folder))
 						continue;
+					if (!Directory.Exists (folder)) {
+						//NuGet gives us valid location of where package will be restored
+						//so we may not cache invalid result until package has been actually restored
+						cache = false;
+						continue;
+					}
 					foreach (var path in Directory.GetFiles (folder, "*.TestAdapter.dll", SearchOption.AllDirectories))
 						result += path + ";";
 					foreach (var path in Directory.GetFiles (folder, "*.testadapter.dll", SearchOption.AllDirectories))
@@ -94,7 +101,8 @@ namespace MonoDevelop.UnitTesting.VsTest
 				if (result.Length > 0)
 					result = result.Remove (result.Length - 1);
 				projectTestAdapterListCache.Remove (project);
-				projectTestAdapterListCache.Add (project, new Tuple<HashSet<string>, string> (new HashSet<string> (nugetsFolders), result));
+				if (cache)
+					projectTestAdapterListCache.Add (project, new Tuple<HashSet<string>, string> (new HashSet<string> (nugetsFolders), result));
 				return result;
 			}
 		}

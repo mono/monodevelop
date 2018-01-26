@@ -638,7 +638,8 @@ namespace MonoDevelop.Projects
 				"attribute-order.csproj",
 				"custom-namespace.csproj",
 				"multiple-prop-definition.csproj",
-				"env-vars-prop.csproj"
+				"env-vars-prop.csproj",
+				"default-value-existing-save.csproj"
 				//"ICSharpCode.NRefactory.Cecil.csproj"
 			)]
 			string project)
@@ -1205,6 +1206,182 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (variableProperty.HasAttribute ("xmlns"));
 
 			sol.Dispose ();
+		}
+
+		[Test]
+		public async Task DontSaveEmptyProperties ()
+		{
+			string projectFile = Util.GetSampleProject ("property-save-test", "empty-property-save.csproj");
+			DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration conf = p.Configurations ["Debug"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			conf.CommandLineParameters = "";
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
+		}
+
+		[Test]
+		public async Task DefaultValueSave ()
+		{
+			// Assign a non-default value to a property, save, then assign the default value.
+			// When saving again, the default value should not be serialized, the property should be removed.
+
+			string projectFile = Util.GetSampleProject ("property-save-test", "default-value-save.csproj");
+
+			var originalContent = Util.ToSystemEndings (File.ReadAllText (projectFile));
+			    
+			DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration conf = p.Configurations ["Debug"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			conf.PauseConsoleOutput = false;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			conf.PauseConsoleOutput = true;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (originalContent, File.ReadAllText (p.FileName));
+
+			p.Dispose ();
+		}
+
+		[Test]
+		public async Task DefaultValueSave2 ()
+		{
+			// Same as previous, but this time the project file originally has the default value.
+			// After assigning the non-default value and reassigning the default value, the
+			// property should go away
+
+			string projectFile = Util.GetSampleProject ("property-save-test", "default-value-save-2.csproj");
+
+			DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration conf = p.Configurations ["Debug"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			conf.PauseConsoleOutput = false;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			conf.PauseConsoleOutput = true;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved2")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
+		}
+
+		[Test]
+		public async Task DefaultValueSave3 ()
+		{
+			// Same as DefaultValueSave, but the project originally has a non-default value for the property.
+			// Setting the property to default should now remove it, and setting to non-default afterwards
+			// should re-add it.
+
+			string projectFile = Util.GetSampleProject ("property-save-test", "default-value-save-3.csproj");
+
+			var originalContent = Util.ToSystemEndings (File.ReadAllText (projectFile));
+
+			DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration conf = p.Configurations ["Debug"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			conf.PauseConsoleOutput = true;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			conf.PauseConsoleOutput = false;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (originalContent, File.ReadAllText (p.FileName));
+
+			p.Dispose ();
+		}
+
+		[Test]
+		public async Task DefaultValueWithImportSave ()
+		{
+			// Same as DefaultValueSave, but the default value of the property is set in an imported project.
+
+			string projectFile = Util.GetSampleProject ("property-save-test", "default-value-with-import-save.csproj");
+
+			var originalContent = Util.ToSystemEndings (File.ReadAllText (projectFile));
+
+			DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration conf = p.Configurations ["Debug"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.IsTrue (conf.PauseConsoleOutput);
+			conf.PauseConsoleOutput = false;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			conf.PauseConsoleOutput = true;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (originalContent, File.ReadAllText (p.FileName));
+
+			p.Dispose ();
+		}
+
+		[Test]
+		public async Task DefaultValueWithImportSave2 ()
+		{
+			// Same as DefaultValueWithImportSave, but the imported project defines a non-default value for the property
+
+			string projectFile = Util.GetSampleProject ("property-save-test", "default-value-with-import-save-2.csproj");
+
+			var originalContent = Util.ToSystemEndings (File.ReadAllText (projectFile));
+
+			DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration conf = p.Configurations ["Debug"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.IsFalse (conf.PauseConsoleOutput);
+			conf.PauseConsoleOutput = false; // Value is not changing
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (originalContent, File.ReadAllText (p.FileName));
+
+			conf.PauseConsoleOutput = true;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			// ConsolePause should be added
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			conf.PauseConsoleOutput = false;
+
+			// ConsolePause set to same value as imported, but since it is not a default value, the property will be written anyway.
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved2")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 	}
 
