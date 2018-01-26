@@ -28,19 +28,9 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
-	interface IEditorActionHost
+	interface IMonoDevelopEditorOperations : Microsoft.VisualStudio.Text.Operations.IEditorOperations
 	{
 		void SwitchCaretMode ();
-
-		void InsertTab ();
-
-		void RemoveTab ();
-
-		void InsertNewLine ();
-
-		void DeletePreviousWord ();
-
-		void DeleteNextWord ();
 
 		void DeletePreviousSubword ();
 
@@ -48,77 +38,21 @@ namespace MonoDevelop.Ide.Editor
 
 		void StartCaretPulseAnimation ();
 
-		void RecenterEditor ();
-
 		void JoinLines ();
 
-		void MoveNextSubWord ();
+		void MoveToNextSubWord ();
 
-		void MovePrevSubWord ();
-
-		void MoveNextWord ();
-
-		void MovePrevWord ();
-
-		void PageUp ();
-
-		void PageDown ();
-
-		void MoveCaretDown ();
-
-		void MoveCaretUp ();
-
-		void MoveCaretRight ();
-
-		void MoveCaretLeft ();
-
-		void MoveCaretToLineEnd ();
-
-		void MoveCaretToLineStart ();
-
-		void MoveCaretToDocumentStart ();
-
-		void MoveCaretToDocumentEnd ();
-
-		void Backspace ();
-
-		void Delete ();
-
-		void ClipboardCopy ();
-
-		void ClipboardCut ();
-
-		void ClipboardPaste ();
-
-		void SelectAll ();
-
-		void NewLine ();
+		void MoveToPrevSubWord ();
 
 		void Undo ();
 
 		void Redo ();
-
-		void DeleteCurrentLine ();
-
-		void DeleteCurrentLineToEnd ();
-
-		void ScrollLineUp ();
-
-		void ScrollLineDown ();
-
-		void ScrollPageUp ();
-
-		void ScrollPageDown ();
 
 		void MoveBlockUp ();
 
 		void MoveBlockDown ();
 
 		void ToggleBlockSelectionMode ();
-
-		void IndentSelection ();
-
-		void UnIndentSelection ();
 
 		void ShowQuickInfo ();
 	}

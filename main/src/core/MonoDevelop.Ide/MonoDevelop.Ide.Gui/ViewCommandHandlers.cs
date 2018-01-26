@@ -359,61 +359,61 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (TextEditorCommands.LineEnd)]
 		protected void OnLineEnd ()
 		{
-			doc.Editor.EditorActionHost.MoveCaretToLineEnd ();
+			doc.Editor.EditorOperations.MoveToEndOfLine (false);
 		}
 		
 		[CommandHandler (TextEditorCommands.LineStart)]
 		protected void OnLineStart ()
 		{
-			doc.Editor.EditorActionHost.MoveCaretToLineStart ();
+			doc.Editor.EditorOperations.MoveToStartOfLine (false);
 		}
 		
 		[CommandHandler (TextEditorCommands.DeleteLeftChar)]
 		protected void OnDeleteLeftChar ()
 		{
-			doc.Editor.EditorActionHost.Backspace ();
+			doc.Editor.EditorOperations.Backspace ();
 		}
 		
 		[CommandHandler (TextEditorCommands.DeleteRightChar)]
 		protected void OnDeleteRightChar ()
 		{
-			doc.Editor.EditorActionHost.Delete ();
+			doc.Editor.EditorOperations.Delete ();
 		}
 		
 		[CommandHandler (TextEditorCommands.CharLeft)]
 		protected void OnCharLeft ()
 		{
-			doc.Editor.EditorActionHost.MoveCaretLeft ();
+			doc.Editor.EditorOperations.MoveToPreviousCharacter (false);
 		}
 		
 		[CommandHandler (TextEditorCommands.CharRight)]
 		protected void OnCharRight ()
 		{
-			doc.Editor.EditorActionHost.MoveCaretRight ();
+			doc.Editor.EditorOperations.MoveToNextCharacter (false);
 		}
 		
 		[CommandHandler (TextEditorCommands.LineUp)]
 		protected void OnLineUp ()
 		{
-			doc.Editor.EditorActionHost.MoveCaretUp ();
+			doc.Editor.EditorOperations.MoveLineUp (false);
 		}
 		
 		[CommandHandler (TextEditorCommands.LineDown)]
 		protected void OnLineDown ()
 		{
-			doc.Editor.EditorActionHost.MoveCaretDown ();
+			doc.Editor.EditorOperations.MoveLineDown (false);
 		}
 		
 		[CommandHandler (TextEditorCommands.DocumentStart)]
 		protected void OnDocumentStart ()
 		{
-			doc.Editor.EditorActionHost.MoveCaretToDocumentStart ();
+			doc.Editor.EditorOperations.MoveToStartOfDocument (false);
 		}
 		
 		[CommandHandler (TextEditorCommands.DocumentEnd)]
 		protected void OnDocumentEnd ()
 		{
-			doc.Editor.EditorActionHost.MoveCaretToDocumentEnd ();
+			doc.Editor.EditorOperations.MoveToEndOfDocument (false);
 		}
 		
 		[CommandHandler (TextEditorCommands.DeleteLine)]

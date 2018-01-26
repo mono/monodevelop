@@ -117,6 +117,10 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="Microsoft.VisualStudio.Text.UI">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Text.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
