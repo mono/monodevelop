@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public static partial class TypeSystemService
 	{
-		static readonly MonoDevelopWorkspace emptyWorkspace;
+		static internal readonly MonoDevelopWorkspace emptyWorkspace;
 
 		static object workspaceLock = new object();
 		static ImmutableList<MonoDevelopWorkspace> workspaces = ImmutableList<MonoDevelopWorkspace>.Empty;
@@ -118,40 +118,40 @@ namespace MonoDevelop.Ide.TypeSystem
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
 				var wsList = new List<MonoDevelopWorkspace> ();
 				//If we want BeginTiming to work correctly we need to `await`
-				return await InternalLoad (wsList, item, progressMonitor, cancellationToken, showStatusIcon).ContinueWith (t => { t.Wait (); return wsList; });
+				await InternalLoad (wsList, item, progressMonitor, cancellationToken, showStatusIcon).ConfigureAwait (false);
+				return wsList;
 			}
 		}
 
-		static Task InternalLoad (List<MonoDevelopWorkspace> list, MonoDevelop.Projects.WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default(CancellationToken), bool showStatusIcon = true)
+		static async Task InternalLoad (List<MonoDevelopWorkspace> list, MonoDevelop.Projects.WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default (CancellationToken), bool showStatusIcon = true)
 		{
-			return Task.Run (async () => {
-				var ws = item as MonoDevelop.Projects.Workspace;
-				if (ws != null) {
-					foreach (var it in ws.Items) {
-						await InternalLoad (list, it, progressMonitor, cancellationToken).ConfigureAwait (false);
-					}
-					ws.ItemAdded += OnWorkspaceItemAdded;
-					ws.ItemRemoved += OnWorkspaceItemRemoved;
-				} else {
-					var solution = item as MonoDevelop.Projects.Solution;
-					if (solution != null) {
-						var workspace = new MonoDevelopWorkspace (solution);
-						lock (workspaceLock)
-							workspaces = workspaces.Add (workspace);
-						list.Add (workspace);
-						if (showStatusIcon)
-							workspace.ShowStatusIcon ();
-						await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
-						solution.SolutionItemAdded += OnSolutionItemAdded;
-						solution.SolutionItemRemoved += OnSolutionItemRemoved;
-						TaskCompletionSource<MonoDevelopWorkspace> request;
-						if (workspaceRequests.TryGetValue (solution, out request))
-							request.TrySetResult (workspace);
-						if (showStatusIcon)
-							workspace.HideStatusIcon ();
-					}
+			if (item is MonoDevelop.Projects.Workspace ws) {
+				var tasks = new List<Task> ();
+				//It's important to get all tasks into list and not await 1 by 1
+				//so workspaces list is filled before returning Task from this method.
+				foreach (var it in ws.Items) {
+					tasks.Add (InternalLoad (list, it, progressMonitor, cancellationToken));
 				}
-			});
+				ws.ItemAdded += OnWorkspaceItemAdded;
+				ws.ItemRemoved += OnWorkspaceItemRemoved;
+				await Task.WhenAll (tasks).ConfigureAwait (false);
+			} else if (item is MonoDevelop.Projects.Solution solution) {
+				var workspace = new MonoDevelopWorkspace (solution);
+				lock (workspaceLock)
+					workspaces = workspaces.Add (workspace);
+				list.Add (workspace);
+				if (showStatusIcon)
+					workspace.ShowStatusIcon ();
+
+				await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
+				solution.SolutionItemAdded += OnSolutionItemAdded;
+				solution.SolutionItemRemoved += OnSolutionItemRemoved;
+				TaskCompletionSource<MonoDevelopWorkspace> request;
+				if (workspaceRequests.TryGetValue (solution, out request))
+					request.TrySetResult (workspace);
+				if (showStatusIcon)
+					workspace.HideStatusIcon ();
+			}
 		}
 
 		internal static void Unload (MonoDevelop.Projects.WorkspaceItem item)
