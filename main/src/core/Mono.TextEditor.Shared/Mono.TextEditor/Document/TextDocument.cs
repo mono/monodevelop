@@ -35,6 +35,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Ide.Composition;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core;
@@ -42,6 +43,7 @@ using System.IO;
 using MonoDevelop.Ide.Editor.Highlighting;
 using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Mono.TextEditor
 {
@@ -69,7 +71,7 @@ namespace Mono.TextEditor
 				return PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType(snapshot.ContentType) ?? snapshot.ContentType.TypeName;
 			}
 			set {
-				var newContentType = value != null ? GetContentTypeFromMimeType(value) : PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
+				var newContentType = value != null ? GetContentTypeFromMimeType(null, value) : PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 				if (this.TextBuffer.CurrentSnapshot.ContentType != newContentType) {
 					this.TextBuffer.ChangeContentType(newContentType, null);
@@ -77,9 +79,20 @@ namespace Mono.TextEditor
 			}
 		}
 
-		private static Microsoft.VisualStudio.Utilities.IContentType GetContentTypeFromMimeType(string mimeType)
+		private static Microsoft.VisualStudio.Utilities.IContentType GetContentTypeFromMimeType(string filePath, string mimeType)
 		{
-			Microsoft.VisualStudio.Utilities.IContentType contentType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetContentType(mimeType);
+			if (filePath != null)
+			{
+				IFilePathRegistryService filePathRegistryService = CompositionManager.GetExportedValue<IFilePathRegistryService> ();
+
+				IContentType contentTypeFromPath = filePathRegistryService.GetContentTypeForPath (filePath);
+				if (contentTypeFromPath != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType)
+				{
+					return contentTypeFromPath;
+				}
+			}
+
+			IContentType contentType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetContentType (mimeType);
 			if (contentType == null)
 			{
 				// fallback 1: see if there is a content tyhpe with the same name
@@ -307,7 +320,7 @@ namespace Mono.TextEditor
 
 		public TextDocument (string fileName, string mimeType)
 		{
-			var contentType = (mimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType(mimeType);
+			var contentType = (mimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType(fileName, mimeType);
 			Encoding enc;
 			var text = TextFileUtility.GetText (fileName, out enc);
 			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text ?? string.Empty,
@@ -321,7 +334,7 @@ namespace Mono.TextEditor
 
 		public TextDocument (string text = null, string fileName = null, string mimeType = null)
 		{
-			var contentType = (mimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType(mimeType);
+			var contentType = (mimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType(fileName, mimeType);
 			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text ?? string.Empty,
 																							contentType);
 
