@@ -175,6 +175,8 @@ namespace MonoDevelop.Core
 
 			if (!setupService.IsMainRepositoryRegistered (UpdateLevel.Alpha))
 				setupService.RegisterMainRepository (UpdateLevel.Alpha, false);
+
+			setupService.RegisterOfficalVisualStudioMarketplace ();
 		}
 		
 		internal static string GetRepoUrl (string quality)

@@ -46,7 +46,7 @@ namespace MonoDevelop.Core.Setup
 		{
 			string url = GetMainRepositoryUrl (level);
 			if (!Repositories.ContainsRepository (url)) {
-				var rep = Repositories.RegisterRepository (null, url, false);
+				var rep = Repositories.RegisterRepository (null, url, false, AddinRepositoryType.MonoAddins);
 				rep.Name = BrandingService.BrandApplicationName ("MonoDevelop Extension Repository");
 				if (level != UpdateLevel.Stable)
 					rep.Name += " (" + level + " channel)";
@@ -66,6 +66,15 @@ namespace MonoDevelop.Core.Setup
 				platform = "Linux";
 			
 			return "http://addins.monodevelop.com/" + level + "/" + platform + "/" + AddinManager.CurrentAddin.Version + "/main.mrep";
+		}
+
+		public void RegisterOfficalVisualStudioMarketplace ()
+		{
+			var url = "https://marketplace.visualstudio.com/";
+			if (!Repositories.ContainsRepository (url)) {
+				var rep = Repositories.RegisterRepository (null, url, false, AddinRepositoryType.VisualStudioMarketplace);
+				rep.Name = GettextCatalog.GetString ("Visual Studio Marketplace");
+			}
 		}
 	}
 }
