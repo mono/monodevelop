@@ -359,7 +359,7 @@ namespace MonoDevelop.Projects
 		[LocalizedCategory ("Tracing")]
 		[LocalizedDisplayName ("Trace Expression")]
 		[LocalizedDescription ("Comma separated list of expressions to trace. " +
-		              "'all' all assemlies, " +
+		              "'all' all assemblies, " +
 		              "'none' no assemblies, " +
 		              "'program' entry point assembly, " +
 		              "'assembly' specifies an assembly, " +
