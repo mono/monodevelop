@@ -239,7 +239,7 @@ namespace MonoDevelop.Ide
 				// load previous combine
 				RecentFile openedProject = null;
 				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
-					openedProject = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
+					openedProject = DesktopService.RecentFiles.MostRecentlyUsedProject;
 					if (openedProject != null)
 						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList), TaskScheduler.FromCurrentSynchronizationContext ());
 				}
