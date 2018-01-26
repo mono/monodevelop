@@ -611,7 +611,8 @@ namespace MonoDevelop.Projects.MSBuild
 				if (int.TryParse (Path.GetFileName (spid), out pid)) {
 					try {
 						// If there is a process running with this id it means the builder is still being used
-						if (Process.GetProcessById (pid) != null)
+						var runningProcesses = Process.GetProcesses();
+						if (runningProcesses.Any(p => p.Id == pid))
 							continue;
 					} catch {
 						// Ignore
