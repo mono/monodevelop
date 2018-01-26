@@ -304,7 +304,12 @@ namespace MonoDevelop.Ide.Desktop
 			IContentType contentType = filePathRegistryService.GetContentTypeForPath (fileName);
 			if (contentType != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {
 				string mimeType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType(contentType);
-				return FindMimeType (mimeType);
+				if (mimeType != null) {
+					MimeTypeNode mt = FindMimeType(mimeType);
+					if (mt != null) {
+						return mt;
+					}
+				}
 			}
 
 			foreach (MimeTypeNode mt in mimeTypeNodes) {
