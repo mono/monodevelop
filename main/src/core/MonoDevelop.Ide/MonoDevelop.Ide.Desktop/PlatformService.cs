@@ -34,6 +34,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
+using Microsoft.VisualStudio.Platform;
+using Microsoft.VisualStudio.Utilities;
+
 using Mono.Addins;
 using MonoDevelop.Core;
 using Mono.Unix;
@@ -41,7 +44,7 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
-
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.Desktop
 {
@@ -296,6 +299,19 @@ namespace MonoDevelop.Ide.Desktop
 
 		MimeTypeNode FindMimeTypeForFile (string fileName)
 		{
+			IFilePathRegistryService filePathRegistryService = CompositionManager.GetExportedValue<IFilePathRegistryService> ();
+
+			IContentType contentType = filePathRegistryService.GetContentTypeForPath (fileName);
+			if (contentType != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {
+				string mimeType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType(contentType);
+				if (mimeType != null) {
+					MimeTypeNode mt = FindMimeType(mimeType);
+					if (mt != null) {
+						return mt;
+					}
+				}
+			}
+
 			foreach (MimeTypeNode mt in mimeTypeNodes) {
 				if (mt.SupportsFile (fileName))
 					return mt;
