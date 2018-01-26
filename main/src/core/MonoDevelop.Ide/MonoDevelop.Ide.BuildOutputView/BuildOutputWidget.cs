@@ -49,6 +49,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
 
+		public event EventHandler<string> FileSaved;
+
 		public BuildOutputWidget (BuildOutput output, string viewContentName)
 		{
 			Initialize ();
@@ -120,16 +122,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 			saveLbl.Text = GettextCatalog.GetString ("Save");
 			saveButton.Accessible.SetTitle (saveLbl.Text);
 			saveButton.Clicked += async (sender, e) => {
+				const string binLogExtension = "binlog";
 				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
 					TransientFor = IdeApp.Workbench.RootWindow,
 					InitialFileName = string.IsNullOrEmpty (ViewContentName) ? editor.FileName.FileName : ViewContentName
 				};
 				if (dlg.Run ()) {
 					var outputFile = dlg.SelectedFile;
-					if (!outputFile.HasExtension ("binlog"))
-						outputFile = outputFile.ChangeExtension ("binlog");
+					if (!outputFile.HasExtension (binLogExtension))
+						outputFile = outputFile.ChangeExtension (binLogExtension);
 					
 					await BuildOutput.Save (outputFile);
+					FileSaved?.Invoke (this, outputFile.FileName);
 				}
 			};
 
