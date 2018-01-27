@@ -27,7 +27,7 @@ This code is directly part of the `monodevelop` repository so the easiest ways o
 ```bash
 git clone git@github.com:mono/monodevelop --recursive
 cd monodevelop
-./configure --profile=mac
+./configure
 make
 ```
 
