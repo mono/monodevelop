@@ -53,16 +53,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				
 				ViewContent viewcontent = doc.Window.ViewContent;
 				 
-				if (groupByProject && viewcontent.Project != null) {
+				if (groupByProject && viewcontent.Owner != null) {
 					TreeIter projIter = TreeIter.Zero;
-					if (projectIters.ContainsKey (viewcontent.Project))
-						projIter = (TreeIter)projectIters [viewcontent.Project];
+					if (projectIters.ContainsKey (viewcontent.Owner))
+						projIter = (TreeIter)projectIters [viewcontent.Owner];
 					else {
 						if (topCombineIter.Equals (TreeIter.Zero))
-							projIter = tsFiles.AppendValues (GettextCatalog.GetString ("Project: {0}", viewcontent.Project.Name), true, null, false);
+							projIter = tsFiles.AppendValues (GettextCatalog.GetString ("Project: {0}", viewcontent.Owner.Name), true, null, false);
 						else
-							projIter = tsFiles.AppendValues (topCombineIter, GettextCatalog.GetString ("Project: {0}", viewcontent.Project.Name), true, null, false);
-						projectIters [viewcontent.Project] = projIter;
+							projIter = tsFiles.AppendValues (topCombineIter, GettextCatalog.GetString ("Project: {0}", viewcontent.Owner.Name), true, null, false);
+						projectIters [viewcontent.Owner] = projIter;
 					}
 					tsFiles.AppendValues (projIter, viewcontent.PathRelativeToProject, true, viewcontent.WorkbenchWindow);
 				} else {

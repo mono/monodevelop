@@ -18,7 +18,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		public ConnectedServicesViewContent (DotNetProject project)
 		{
-			this.Project = project;
+			this.Owner = project;
 			this.ContentName = string.Format ("{0} \u2013 {1}", ConnectedServices.SolutionTreeNodeName, project.Name);
 
 			widget = new ConnectedServicesWidget ();
@@ -50,7 +50,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void UpdateContent(string serviceId)
 		{
-			var binding = ((DotNetProject)this.Project).GetConnectedServicesBinding ();
+			var binding = ((DotNetProject)this.Owner).GetConnectedServicesBinding ();
 			if (!string.IsNullOrEmpty (serviceId)) {
 				var service = binding.SupportedServices.FirstOrDefault (x => x.Id == serviceId);
 				if (service != null) {
@@ -61,7 +61,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 
 			var services = binding.SupportedServices;
-			this.widget.ShowGallery (services, Project);
+			this.widget.ShowGallery (services, Owner);
 		}
 
 		object currentNodeObject;
@@ -72,7 +72,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		internal Task UpdateCurrentNode ()
 		{
 			return Runtime.RunInMainThread (() => {
-				var node = ((DotNetProject)this.Project).GetConnectedServicesBinding ()?.ServicesNode;
+				var node = ((DotNetProject)this.Owner).GetConnectedServicesBinding ()?.ServicesNode;
 				if (node != null && widget.ShowingService != null) {
 					var serviceNode = node.GetServiceNode (widget.ShowingService);
 					if (serviceNode != null) {

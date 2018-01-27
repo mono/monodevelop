@@ -126,7 +126,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			using (var monitor = new ProgressMonitor ())
 				await TypeSystemService.Load (solution, monitor);
 			content.Project = project;
-			doc.SetProject (project);
+			doc.SetOwner (project);
 			var parsedFile = await doc.UpdateParseDocument ();
 			var model = parsedFile.GetAst<SemanticModel> ();
 			var sym = model?.GetEnclosingSymbol (data.Text.IndexOf ('{'));

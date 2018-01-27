@@ -29,6 +29,7 @@ using System.Collections.Immutable;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Projects;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Editor.Projection
@@ -135,7 +136,13 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		public override MonoDevelop.Projects.Project Project {
 			get {
-				return originalContext.Project;
+				return Owner as Project;
+			}
+		}
+
+		public override MonoDevelop.Projects.WorkspaceObject Owner {
+			get {
+				return originalContext.Owner;
 			}
 		}
 

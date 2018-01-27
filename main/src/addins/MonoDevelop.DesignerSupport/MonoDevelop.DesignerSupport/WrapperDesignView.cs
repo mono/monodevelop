@@ -81,11 +81,11 @@ namespace MonoDevelop.DesignerSupport
 		protected ViewContent Content {
 			get { return content; }
 		}
-		
-		protected override void OnSetProject (MonoDevelop.Projects.Project project)
+
+		protected override void OnSetOwner (MonoDevelop.Projects.WorkspaceObject owner)
 		{
-			base.OnSetProject (project);
-			content.Project = project;
+			base.OnSetOwner (owner);
+			content.Owner = owner;
 		}
 
 		public override ProjectReloadCapability ProjectReloadCapability {

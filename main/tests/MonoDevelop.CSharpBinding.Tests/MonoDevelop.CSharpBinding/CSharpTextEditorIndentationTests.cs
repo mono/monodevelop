@@ -147,7 +147,7 @@ namespace MonoDevelop.CSharpBinding
 				project.FileName = "test.csproj";
 				project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile));
 				project.Policies.Set (Projects.Policies.PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (), CSharpFormatter.MimeType);
-				doc.SetProject (project);
+				doc.SetOwner (project);
 			}
 			return content;
 		}
