@@ -241,9 +241,9 @@ namespace MonoDevelop.Projects.MSBuild
 		/// Notifies that a property has been modified in the project, so that the evaluated
 		/// value for that property in this instance may be out of date.
 		/// </summary>
-		internal void SetPropertyDirty (string name)
+		internal void SetPropertyValueStale (string name)
 		{
-			evaluatedProperties.SetPropertyDirty (name);
+			evaluatedProperties.SetPropertyValueStale (name);
 		}
 	}
 
