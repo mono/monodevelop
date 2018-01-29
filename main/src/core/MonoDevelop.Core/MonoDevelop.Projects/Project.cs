@@ -2802,8 +2802,11 @@ namespace MonoDevelop.Projects
 					continue;
 				it.Flags = flags;
 				localItems.Add (it);
-				if (loadedItems != null)
-					loadedItems.Add (buildItem.SourceItem);
+				if (loadedItems != null) {
+					foreach (var item in buildItem.SourceItems) {
+						loadedItems.Add (item);
+					}
+				}
 			}
 			if (IsReevaluating)
 				Items.SetItems (localItems);
@@ -3470,6 +3473,13 @@ namespace MonoDevelop.Projects
 
 			loadedItems.Add (buildItem);
 			unusedItems.Remove (buildItem);
+
+			if (sourceItems != null) {
+				foreach (var sourceItem in sourceItems) {
+					loadedItems.Add (sourceItem);
+					unusedItems.Remove (sourceItem);
+				}
+			}
 
 			if (!buildItem.IsWildcardItem) {
 				if (buildItem.IsUpdate) {
