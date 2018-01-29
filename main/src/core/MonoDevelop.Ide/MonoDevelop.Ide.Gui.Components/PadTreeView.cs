@@ -36,6 +36,18 @@ namespace MonoDevelop.Ide.Gui.Components
 		CellRendererText textRenderer = new CellRendererText ();
 		readonly List<CellRendererText> renderers = new List<CellRendererText> ();
 
+		static void ResetSearchColumn (object sender, EventArgs args)
+		{
+			// The Gtk documentation is incorrect for SearchColumn.
+			// SearchColumn does not get reset to -1 when the model changes,
+			// it gets reset to the first string column which then reenables the ctrl+f search feature
+			//
+			// This is probably not the behaviour expected so we work around it here.
+
+			var tree = sender as TreeView;
+			tree.SearchColumn = -1;
+		}
+
 		public PadTreeView ()
 		{
 			Init ();
@@ -55,12 +67,17 @@ namespace MonoDevelop.Ide.Gui.Components
 						renderer.FontDesc = desc;
 				}, ColumnsAutosize);
 			MonoDevelop.Components.GtkUtil.EnableAutoTooltips (this);
+
+			EnableSearch = false;
+			SearchColumn = -1;
+
+			AddNotification ("model", ResetSearchColumn);
 		}
-		
+
 		public CellRendererText TextRenderer {
 			get { return textRenderer; }
 		}
-		
+
 		protected override void OnDestroyed ()
 		{
 			if (changer != null) {
@@ -70,7 +87,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			renderers.Clear ();
 			base.OnDestroyed ();
 		}
-		
+
 		// Workaround for Bug 1698 - Error list scroll position doesn't reset when list changes, hides items
 		// If the store of a pad treeview is modified while the pad is unrealized (autohidden), the treeview
 		// doesn't update its internal vertical offset. This can lead to items becoming offset outside the 

@@ -175,12 +175,12 @@ namespace MonoDevelop.Projects.MSBuild
 		/// Notifies that a property has been modified in the project, so that the evaluated
 		/// value for that property in this instance *may* be out of date.
 		/// </summary>
-		internal void SetPropertyDirty (string name)
+		internal void SetPropertyValueStale (string name)
 		{
 			var p = (MSBuildPropertyEvaluated)GetProperty (name);
 			if (p == null)
 				p = AddProperty (name);
-			p.EvaluatedValueModified = true;
+			p.EvaluatedValueIsStale = true;
 		}
 
 		public void RemoveRedundantProperties ()
@@ -259,14 +259,6 @@ namespace MonoDevelop.Projects.MSBuild
 				if (p == null)
 					p = AddProperty (prop.Name);
 				p.LinkToProperty (prop);
-
-				// This will be true if the property has been modified in the project,
-				// which means that the evaluated value of the property may be out of date.
-				// In that case, we set the EvaluatedValueModified on the linked property,
-				// which means that the property will be saved no matter what the
-				// evaluated value was.
-				if (p.EvaluatedValueModified)
-					prop.EvaluatedValueModified = true;
 			}
 		}
 

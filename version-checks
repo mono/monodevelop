@@ -17,8 +17,8 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=8b3cb56595e282da9382040991b6b53c01b4e252
-DEP_BRANCH_AND_REMOTE[0]="dynamic-channels-redux origin/dynamic-channels-redux"
+DEP_NEEDED_VERSION[0]=42a56bbc839c0a724f199886b7769d8d6a120a23
+DEP_BRANCH_AND_REMOTE[0]="master origin/master"
 
 # heap-shot
 DEP[1]=heap-shot
