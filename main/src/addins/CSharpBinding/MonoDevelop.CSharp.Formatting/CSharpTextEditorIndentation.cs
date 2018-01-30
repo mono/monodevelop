@@ -92,10 +92,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public static bool OnTheFlyFormatting {
 			get {
-				return PropertyService.Get ("OnTheFlyFormatting", true);
-			}
-			set {
-				PropertyService.Set ("OnTheFlyFormatting", value);
+				return DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
 			}
 		}
 
@@ -605,14 +602,6 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 
-				const string reindentChars = ";){}";
-				if (reIndent || descriptor.SpecialKey != SpecialKey.Return && descriptor.SpecialKey != SpecialKey.Tab && automaticReindent && reindentChars.Contains (descriptor.KeyChar)) {
-					using (var undo = Editor.OpenUndoGroup ()) {
-						DoReSmartIndent ();
-					}
-				}
-
-				HandleOnTheFlyFormatting (descriptor);
 				SafeUpdateIndentEngine (Editor.CaretOffset);
 				lastCharInserted = '\0';
 				CheckXmlCommentCloseTag (descriptor.KeyChar);
@@ -630,51 +619,9 @@ namespace MonoDevelop.CSharp.Formatting
 			//and calls HandleCodeCompletion etc to handles completion
 			var result = base.KeyPress (descriptor);
 
-			if (!indentationDisabled && (descriptor.SpecialKey == SpecialKey.Return)) {
-				DoReSmartIndent ();
-			}
-
 			CheckXmlCommentCloseTag (descriptor.KeyChar);
 
-			HandleOnTheFlyFormatting (descriptor);
-
 			return result;
-		}
-
-		void HandleOnTheFlyFormatting (KeyDescriptor descriptor)
-		{
-			if (descriptor.KeyChar == '{')
-				return;
-			SafeUpdateIndentEngine (Editor.CaretOffset);
-			bool skipFormatting = stateTracker.IsInsideOrdinaryCommentOrString;
-			if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
-				var document = DocumentContext.AnalysisDocument;
-				if (document == null)
-					return;
-				if (!skipFormatting && service.SupportsFormattingOnTypedCharacter (document, descriptor.KeyChar)) {
-					var caretPosition = Editor.CaretOffset;
-					var token = CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync (document, caretPosition, default(CancellationToken)).Result;
-					if (token.IsMissing || !service.ValidSingleOrMultiCharactersTokenKind (descriptor.KeyChar, token.Kind ()) || token.IsKind (SyntaxKind.EndOfFileToken) || token.IsKind (SyntaxKind.None))
-						return;
-					if (CSharpEditorFormattingService.TokenShouldNotFormatOnTypeChar (token))
-						return;
-					using (var undo = Editor.OpenUndoGroup ()) {
-						if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-							var oldVersion = Editor.Version;
-							OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
-							if (oldVersion.CompareAge (Editor.Version) != 0)
-								CompletionWindowManager.HideWindow ();
-						}
-					}
-				}
-			}
-			if (OnTheFlyFormatting && descriptor.SpecialKey == SpecialKey.Return) {
-				try {
-					FormatOnReturn ();
-				} catch (Exception e) {
-					LoggingService.LogError ("Exception while formatting", e);
-				}
-			}
 		}
 
 		async void CompletionWindowManager_WindowClosed (object sender, EventArgs e)
