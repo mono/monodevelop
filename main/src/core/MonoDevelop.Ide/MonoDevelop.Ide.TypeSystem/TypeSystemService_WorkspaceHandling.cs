@@ -41,7 +41,8 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public static partial class TypeSystemService
 	{
-		static readonly MonoDevelopWorkspace emptyWorkspace;
+		//Internal for unit test
+		internal static readonly MonoDevelopWorkspace emptyWorkspace;
 
 		static object workspaceLock = new object();
 		static ImmutableList<MonoDevelopWorkspace> workspaces = ImmutableList<MonoDevelopWorkspace>.Empty;
@@ -116,42 +117,47 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal static async Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default (CancellationToken), bool showStatusIcon = true)
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
-				var wsList = new List<MonoDevelopWorkspace> ();
+				var wsList = CreateWorkspaces (item).ToList();
 				//If we want BeginTiming to work correctly we need to `await`
-				return await InternalLoad (wsList, item, progressMonitor, cancellationToken, showStatusIcon).ContinueWith (t => { t.Wait (); return wsList; });
+				await InternalLoad (wsList, progressMonitor, cancellationToken, showStatusIcon).ConfigureAwait (false);
+				return wsList.ToList ();
 			}
 		}
 
-		static Task InternalLoad (List<MonoDevelopWorkspace> list, MonoDevelop.Projects.WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default(CancellationToken), bool showStatusIcon = true)
+		static IEnumerable<MonoDevelopWorkspace> CreateWorkspaces (WorkspaceItem item)
 		{
-			return Task.Run (async () => {
-				var ws = item as MonoDevelop.Projects.Workspace;
-				if (ws != null) {
-					foreach (var it in ws.Items) {
-						await InternalLoad (list, it, progressMonitor, cancellationToken).ConfigureAwait (false);
-					}
-					ws.ItemAdded += OnWorkspaceItemAdded;
-					ws.ItemRemoved += OnWorkspaceItemRemoved;
-				} else {
-					var solution = item as MonoDevelop.Projects.Solution;
-					if (solution != null) {
-						var workspace = new MonoDevelopWorkspace (solution);
-						lock (workspaceLock)
-							workspaces = workspaces.Add (workspace);
-						list.Add (workspace);
-						if (showStatusIcon)
-							workspace.ShowStatusIcon ();
-						await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
-						solution.SolutionItemAdded += OnSolutionItemAdded;
-						solution.SolutionItemRemoved += OnSolutionItemRemoved;
-						TaskCompletionSource<MonoDevelopWorkspace> request;
-						if (workspaceRequests.TryGetValue (solution, out request))
-							request.TrySetResult (workspace);
-						if (showStatusIcon)
-							workspace.HideStatusIcon ();
+			if (item is MonoDevelop.Projects.Workspace ws) {
+				foreach (var wsItem in ws.Items) {
+					foreach (var mdWorkspace in CreateWorkspaces (wsItem)) {
+						yield return mdWorkspace;
 					}
 				}
-			});
+				ws.ItemAdded += OnWorkspaceItemAdded;
+				ws.ItemRemoved += OnWorkspaceItemRemoved;
+			} else if (item is MonoDevelop.Projects.Solution solution) {
+				var workspace = new MonoDevelopWorkspace (solution);
+				lock (workspaceLock)
+					workspaces = workspaces.Add (workspace);
+				solution.SolutionItemAdded += OnSolutionItemAdded;
+				solution.SolutionItemRemoved += OnSolutionItemRemoved;
+				yield return workspace;
+			}
+		}
+
+		static async Task InternalLoad (List<MonoDevelopWorkspace> mdWorkspaces, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default (CancellationToken), bool showStatusIcon = true)
+		{
+			foreach (var workspace in mdWorkspaces) {
+				if (showStatusIcon)
+					workspace.ShowStatusIcon ();
+
+				await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
+				TaskCompletionSource<MonoDevelopWorkspace> request;
+				if (workspaceRequests.TryGetValue (workspace.MonoDevelopSolution, out request))
+					request.TrySetResult (workspace);
+				if (showStatusIcon)
+					workspace.HideStatusIcon ();
+
+			}
 		}
 
 		internal static void Unload (MonoDevelop.Projects.WorkspaceItem item)
@@ -299,7 +305,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static void OnWorkspaceItemAdded (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
-			Task.Run (() => TypeSystemService.Load (args.Item, null));
+			TypeSystemService.Load (args.Item, null).Ignore ();
 		}
 
 		static void OnWorkspaceItemRemoved (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
@@ -307,12 +313,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			Unload (args.Item);
 		}
 
-		static async void OnSolutionItemAdded (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
+		static void OnSolutionItemAdded (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
 		{
 			var project = args.SolutionItem as MonoDevelop.Projects.Project;
 			if (project != null) {
 				Unload (project.ParentSolution);
-				await Load (project.ParentSolution,  new ProgressMonitor()); 
+				Load (project.ParentSolution, null).Ignore ();
 			}
 		}
 

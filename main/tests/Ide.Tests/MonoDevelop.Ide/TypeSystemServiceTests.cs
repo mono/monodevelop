@@ -91,5 +91,23 @@ namespace MonoDevelop.Ide
 			Assert.IsTrue(TypeSystemService.IsOutputTrackedProject(fsharpLibrary));
 			sol.Dispose();
 		}
+
+		[Test]
+		public async Task TestWorkspaceImmediatelyAvailable ()
+		{
+			//Initialize IdeApp so IdeApp.Workspace is not null
+			if (!IdeApp.IsInitialized)
+				IdeApp.Initialize (new ProgressMonitor ());
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			var tcs = new TaskCompletionSource<bool> ();
+			IdeApp.Workspace.SolutionLoaded += (s, e) => {
+				var workspace = TypeSystemService.GetWorkspace (e.Solution);
+				Assert.IsNotNull (workspace);
+				Assert.AreNotSame (workspace, TypeSystemService.emptyWorkspace);
+				tcs.SetResult (true);
+			};
+			await IdeApp.Workspace.OpenWorkspaceItem (solFile);
+			await tcs.Task;
+		}
 	}
 }
