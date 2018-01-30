@@ -393,9 +393,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			var toggledActions = new Set<string> ();
 			Project proj = null;
+			ProjectFile finfo = null;
 
 			foreach (var node in CurrentNodes) {
-				var finfo = (ProjectFile) node.DataItem;
+				finfo = (ProjectFile) node.DataItem;
 				
 				//disallow multi-slect on more than one project, since available build actions may differ
 				if (proj == null && finfo.Project != null) {
@@ -410,7 +411,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (proj == null)
 				return;
 			
-			foreach (string action in proj.GetBuildActions ()) {
+			foreach (string action in proj.GetBuildActions (finfo.FilePath)) {
 				if (action == "--") {
 					info.AddSeparator ();
 				} else {
