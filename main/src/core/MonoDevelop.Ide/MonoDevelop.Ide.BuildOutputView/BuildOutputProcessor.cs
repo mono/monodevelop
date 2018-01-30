@@ -122,64 +122,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			currentNode = currentNode?.Parent;
 		}
 
-		private void ProcessChildren (TextEditor editor,
-		                              IList<BuildOutputNode> children,
-		                              int tabPosition,
-		                              StringBuilder buildOutput,
-		                              List<IFoldSegment> segments,
-		                              bool includeDiagnostics,
-		                              int startAtOffset)
-		{
-			foreach (var child in children) {
-				ProcessNode (editor, child, tabPosition + 1, buildOutput, segments, includeDiagnostics, startAtOffset); 
-			}
-		}
-
-		private void ProcessNode (TextEditor editor,
-		                          BuildOutputNode node,
-		                          int tabPosition,
-		                          StringBuilder buildOutput,
-		                          List<IFoldSegment> segments,
-		                          bool includeDiagnostics,
-		                          int startAtOffset)
-		{
-			// For non-diagnostics mode, only return nodes with data
-			if (!includeDiagnostics && (node.NodeType == BuildOutputNodeType.Diagnostics ||
-			                            (!node.HasData && !node.HasErrors && !node.HasWarnings))) {
-				return;
-			}
-
-			buildOutput.AppendLine ();
-
-			for (int i = 0; i < tabPosition; i++) buildOutput.Append ("\t");
-
-			int currentPosition = buildOutput.Length;
-			buildOutput.Append (node.Message);
-
-			if (node.Children.Count > 0) {
-				ProcessChildren (editor, node.Children, tabPosition, buildOutput, segments, includeDiagnostics, startAtOffset);
-
-				segments.Add (FoldSegmentFactory.CreateFoldSegment (editor, startAtOffset + currentPosition, buildOutput.Length - currentPosition,
-				                                                    node.Parent != null && !node.HasErrors,
-				                                                    node.Message,
-																	FoldingType.Region));
-			}
-		}
-
-		public Task<(string, IList<IFoldSegment>)> ToTextEditor (TextEditor editor, bool includeDiagnostics, int startAtOffset)
-		{
-			return Task.Run (() => {
-				var buildOutput = new StringBuilder ();
-				var foldingSegments = new List<IFoldSegment> ();
-
-				foreach (var node in rootNodes) {
-					ProcessNode (editor, node, 0, buildOutput, foldingSegments, includeDiagnostics, startAtOffset);
-				}
-
-				return (buildOutput.ToString (), (IList<IFoldSegment>)foldingSegments);
-			});
-		}
-
 		private async Task ProcessChildren (TreeStore store, TreeIter parentIter, BuildOutputNode node, bool includeDiagnostics)
 		{
 			foreach (var child in node.Children) {

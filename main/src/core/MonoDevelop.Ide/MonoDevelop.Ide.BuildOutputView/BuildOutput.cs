@@ -153,25 +153,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			OutputChanged?.Invoke (this, EventArgs.Empty);
 		}
 
-		public async Task<(string, IList<IFoldSegment>)> ToTextEditor (TextEditor editor, bool includeDiagnostics)
-		{
-			var buildOutput = new StringBuilder ();
-			var foldingSegments = new List<IFoldSegment> ();
-
-			foreach (var p in projects) {
-				p.Process ();
-				var (s, l) = await p.ToTextEditor (editor, includeDiagnostics, buildOutput.Length);
-				if (s.Length > 0) {
-					buildOutput.Append (s);
-					if (l.Count > 0) {
-						foldingSegments.AddRange (l);
-					}
-				}
-			}
-
-			return (buildOutput.ToString (), foldingSegments);
-		}
-
 		public async Task<TreeStore> ToTreeStore (bool includeDiagnostics)
 		{
 			var store = await Runtime.RunInMainThread (() => new TreeStore (typeof (BuildOutputNode)));

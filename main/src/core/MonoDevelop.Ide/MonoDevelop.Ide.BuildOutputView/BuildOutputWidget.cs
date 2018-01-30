@@ -41,11 +41,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutputWidget : VBox
 	{
-#if TEXT_EDITOR
-		TextEditor editor;
-#else
 		TreeView treeView;
-#endif
 		CompactScrolledWindow scrolledWindow;
 		CheckButton showDiagnosticsButton;
 		Button saveButton;
@@ -66,10 +62,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			Initialize ();
 
-#if TEXT_EDITOR
-			editor.FileName = filePath;
-#endif
-
+			ViewContentName = filePath;
 			var output = new BuildOutput ();
 			output.Load (filePath.FullPath, false);
 			SetupBuildOutput (output);
@@ -131,7 +124,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				const string binLogExtension = "binlog";
 				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
 					TransientFor = IdeApp.Workbench.RootWindow,
-					InitialFileName = string.IsNullOrEmpty (ViewContentName) ? editor.FileName.FileName : ViewContentName
+					InitialFileName = ViewContentName
 				};
 				if (dlg.Run ()) {
 					var outputFile = dlg.SelectedFile;
@@ -150,14 +143,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			toolbar.Add (saveButton);
 			PackStart (toolbar.Container, expand: false, fill: true, padding: 0);
 
-#if TEXT_EDITOR
-			editor = TextEditorFactory.CreateNewEditor ();
-			editor.IsReadOnly = true;
-			editor.Options = new CustomEditorOptions (editor.Options) {
-				ShowFoldMargin = true,
-				TabsToSpaces = false
-			};
-#else
 			treeView = new TreeView ();
 			treeView.HeadersVisible = false;
 			treeView.Accessible.Name = "BuildOutputWidget.TreeView";
@@ -173,14 +158,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeView.AppendColumn (col);
 
 			treeView.ExpanderColumn = col;
-#endif
 
 			scrolledWindow = new CompactScrolledWindow ();
-#if TEXT_EDITOR
-			scrolledWindow.AddWithViewport (editor);
-#else
 			scrolledWindow.AddWithViewport (treeView);
-#endif
 
 			PackStart (scrolledWindow, expand: true, fill: true, padding: 0);
 			ShowAll ();
@@ -226,23 +206,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		protected override void OnDestroyed ()
 		{
-#if TEXT_EDITOR
-			editor.Dispose ();
-#else
 			treeView.Dispose ();
-#endif
 			base.OnDestroyed ();
 		}
-
-#if TEXT_EDITOR
-		void SetupTextEditor (string text, IList<IFoldSegment> segments)
-		{
-			editor.Text = text;
-			if (segments != null) {
-				editor.SetFoldings (segments);
-			}
-		}
-#endif
 
 		CancellationTokenSource cts;
 
@@ -267,11 +233,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			cts = new CancellationTokenSource ();
 
 			Task.Run (async () => {
-#if TEXT_EDITOR
-				var (text, segments) = await BuildOutput.ToTextEditor (editor, showDiagnostics);
-
-				await Runtime.RunInMainThread (() => SetupTextEditor (text, segments));
-#else
 				var model = await BuildOutput.ToTreeStore (showDiagnostics);
 
 				// Expand root nodes and nodes with errors
@@ -286,7 +247,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 						} while (model.IterNext (ref it));
 					}
 				});
-#endif
 			}, cts.Token);
 		}
 	}
