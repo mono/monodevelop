@@ -39,7 +39,9 @@ using Roslyn.Utilities;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using System.Linq;
+using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis.Editor;
+using Microsoft.CodeAnalysis.Editor.Shared.Extensions;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 
 namespace MonoDevelop.CSharp.Formatting
@@ -57,33 +59,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override string FormatPlainText (int insertionOffset, string text, byte [] copyData)
 		{
-			var result = engine.FormatPlainText (indent.Editor, insertionOffset, text, copyData);
-
-			if (DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
-				var tree = indent.DocumentContext.AnalysisDocument.GetSyntaxTreeAsync ().WaitAndGetResult (default (CancellationToken));
-				tree = tree.WithChangedText (tree.GetText ().WithChanges (new TextChange (new TextSpan (insertionOffset, 0), text)));
-
-				var insertedChars = text.Length;
-				var startLine = indent.Editor.GetLineByOffset (insertionOffset);
-
-				var policy = indent.DocumentContext.GetFormattingPolicy ();
-				var optionSet = policy.CreateOptions (indent.Editor.Options);
-				var span = new TextSpan (insertionOffset, insertedChars);
-
-				var rules = new List<IFormattingRule> { new PasteFormattingRule () };
-				rules.AddRange (Formatter.GetDefaultFormattingRules (indent.DocumentContext.AnalysisDocument));
-
-				var root = tree.GetRoot ();
-				var changes = Formatter.GetFormattedTextChanges (root, SpecializedCollections.SingletonEnumerable (span), indent.DocumentContext.RoslynWorkspace, optionSet, rules, default (CancellationToken));
-				var doc = TextEditorFactory.CreateNewDocument ();
-				doc.Text = text;
-				doc.ApplyTextChanges (changes.Where (c => c.Span.Start - insertionOffset < text.Length && c.Span.Start - insertionOffset >= 0).Select (delegate (TextChange c) { 
-					return new TextChange (new TextSpan (c.Span.Start - insertionOffset, c.Span.Length), c.NewText); 
-				}));
-				return doc.Text;
-			}
-
-			return result;
+			return text;
 		}
 
 		public override byte [] GetCopyData (int offset, int length)
@@ -95,17 +71,30 @@ namespace MonoDevelop.CSharp.Formatting
 		 public override async Task PostFomatPastedText (int offset, int length)
 		{
 			if (indent.Editor.Options.IndentStyle == IndentStyle.None ||
+<<<<<<< b738bf3460320ce20b794df21006916ce9223009
 			  indent.Editor.Options.IndentStyle == IndentStyle.Auto)
 				return;
+=======
+				indent.Editor.Options.IndentStyle == IndentStyle.Auto)
+				return Task.CompletedTask;
+>>>>>>> [CSharpBinding] Implemented format on paste using the roslyn
 			var doc = indent.DocumentContext.AnalysisDocument;
 
 			var formattingService = doc.GetLanguageService<IEditorFormattingService> ();
 			if (formattingService == null || !formattingService.SupportsFormatOnPaste)
+<<<<<<< b738bf3460320ce20b794df21006916ce9223009
 				return;
 
 			var changes = await formattingService.GetFormattingChangesOnPasteAsync (doc, new TextSpan (offset, length), default (CancellationToken));
 			if (changes == null)
 				return;
+=======
+				return Task.CompletedTask;
+
+			var changes = await formattingService.GetFormattingChangesOnPasteAsync (doc, new TextSpan (insertionOffset, insertedChars), default (CancellationToken));
+			if (changes == null)
+				return Task.CompletedTask;
+>>>>>>> [CSharpBinding] Implemented format on paste using the roslyn
 			indent.Editor.ApplyTextChanges (changes);
 			indent.Editor.FixVirtualIndentation ();
 		}
@@ -129,4 +118,3 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 	}
 }
-
