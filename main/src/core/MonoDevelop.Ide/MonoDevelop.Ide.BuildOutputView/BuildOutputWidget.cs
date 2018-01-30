@@ -41,7 +41,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutputWidget : VBox
 	{
+#if TEXT_EDITOR
 		TextEditor editor;
+#else
+		TreeView treeView;
+#endif
 		CompactScrolledWindow scrolledWindow;
 		CheckButton showDiagnosticsButton;
 		Button saveButton;
@@ -62,7 +66,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			Initialize ();
 
+#if TEXT_EDITOR
 			editor.FileName = filePath;
+#endif
 
 			var output = new BuildOutput ();
 			output.Load (filePath.FullPath, false);
@@ -141,29 +147,94 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			toolbar.AddSpace ();
 			toolbar.Add (showDiagnosticsButton);
-			toolbar.Add (saveButton); 
+			toolbar.Add (saveButton);
 			PackStart (toolbar.Container, expand: false, fill: true, padding: 0);
 
+#if TEXT_EDITOR
 			editor = TextEditorFactory.CreateNewEditor ();
 			editor.IsReadOnly = true;
 			editor.Options = new CustomEditorOptions (editor.Options) {
 				ShowFoldMargin = true,
 				TabsToSpaces = false
 			};
+#else
+			treeView = new TreeView ();
+			treeView.HeadersVisible = false;
+			treeView.Accessible.Name = "BuildOutputWidget.TreeView";
+			treeView.Accessible.Description = GettextCatalog.GetString ("Structured build output");
+
+			TreeViewColumn col = new TreeViewColumn ();
+			var crp = new CellRendererImage ();
+			col.PackStart (crp, false);
+			col.SetCellDataFunc (crp, PixbufCellDataFunc);
+			var crt = new CellRendererText ();
+			col.PackStart (crt, true);
+			col.SetCellDataFunc (crt, TextCellDataFunc);
+			treeView.AppendColumn (col);
+
+			treeView.ExpanderColumn = col;
+#endif
 
 			scrolledWindow = new CompactScrolledWindow ();
+#if TEXT_EDITOR
 			scrolledWindow.AddWithViewport (editor);
+#else
+			scrolledWindow.AddWithViewport (treeView);
+#endif
 
 			PackStart (scrolledWindow, expand: true, fill: true, padding: 0);
 			ShowAll ();
 		}
 
+		static void PixbufCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			var crp = (CellRendererImage)cell;
+			var node = (BuildOutputNode)model.GetValue (iter, 0);
+			switch (node.NodeType) {
+			case BuildOutputNodeType.Build:
+				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.StatusBuild, IconSize.Menu);
+				break;
+			case BuildOutputNodeType.Error:
+				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.Error, IconSize.Menu);
+				break;
+			case BuildOutputNodeType.Project:
+				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.Project, IconSize.Menu);
+				break;
+			case BuildOutputNodeType.Warning:
+				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.Warning, IconSize.Menu);
+				break;
+			default:
+				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.Empty);
+				break;
+			}
+		}
+
+		static void TextCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			TreeIter parent;
+			bool toplevel = !model.IterParent (out parent, iter);
+
+			var crt = (CellRendererText)cell;
+			var node = (BuildOutputNode)model.GetValue (iter, 0);
+
+			if (toplevel) {
+				crt.Markup = "<b>" + GLib.Markup.EscapeText (node.Message) + "</b>";
+			} else {
+				crt.Text = node.Message;
+			}
+		}
+
 		protected override void OnDestroyed ()
 		{
+#if TEXT_EDITOR
 			editor.Dispose ();
+#else
+			treeView.Dispose ();
+#endif
 			base.OnDestroyed ();
 		}
 
+#if TEXT_EDITOR
 		void SetupTextEditor (string text, IList<IFoldSegment> segments)
 		{
 			editor.Text = text;
@@ -171,8 +242,24 @@ namespace MonoDevelop.Ide.BuildOutputView
 				editor.SetFoldings (segments);
 			}
 		}
+#endif
 
 		CancellationTokenSource cts;
+
+		static void ExpandChildrenWithErrors (TreeView tree, TreeStore store, TreeIter parent)
+		{
+			TreeIter child = TreeIter.Zero;
+			var node = store.GetValue (parent, 0) as BuildOutputNode;
+			if (node?.HasErrors ?? false && store.IterChildren (out child, parent)) {
+				do {
+					var childNode = store.GetValue (child, 0) as BuildOutputNode;
+					if (childNode?.HasErrors ?? false) {
+						tree.ExpandRow (store.GetPath (child), false);
+						ExpandChildrenWithErrors (tree, store, child);
+					}
+				} while (store.IterNext (ref child));
+			}
+		}
 
 		void ProcessLogs (bool showDiagnostics)
 		{
@@ -180,13 +267,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 			cts = new CancellationTokenSource ();
 
 			Task.Run (async () => {
+#if TEXT_EDITOR
 				var (text, segments) = await BuildOutput.ToTextEditor (editor, showDiagnostics);
 
-				if (Runtime.IsMainThread) {
-					SetupTextEditor (text, segments);
-				} else {
-					await Runtime.RunInMainThread (() => SetupTextEditor (text, segments));
-				}
+				await Runtime.RunInMainThread (() => SetupTextEditor (text, segments));
+#else
+				var model = await BuildOutput.ToTreeStore (showDiagnostics);
+
+				// Expand root nodes and nodes with errors
+				await Runtime.RunInMainThread (() => {
+					treeView.Model = model;
+
+					TreeIter it;
+					if (model.GetIterFirst (out it)) {
+						do {
+							treeView.ExpandRow (model.GetPath (it), false);
+							ExpandChildrenWithErrors (treeView, model, it);
+						} while (model.IterNext (ref it));
+					}
+				});
+#endif
 			}, cts.Token);
 		}
 	}

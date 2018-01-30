@@ -34,6 +34,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Editor;
 using Microsoft.Build.Logging;
 using Microsoft.Build.Framework;
+using Gtk;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -169,6 +170,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			return (buildOutput.ToString (), foldingSegments);
+		}
+
+		public async Task<TreeStore> ToTreeStore (bool includeDiagnostics)
+		{
+			var store = await Runtime.RunInMainThread (() => new TreeStore (typeof (BuildOutputNode)));
+
+			foreach (var p in projects) {
+				p.Process ();
+				await p.ToTreeStore (store, includeDiagnostics);
+			}
+
+			return store;
 		}
 
 		bool disposed = false;
