@@ -23,3 +23,60 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+using System.Threading;
+using Microsoft.CodeAnalysis.Editor;
+using MonoDevelop.Core;
+using Microsoft.CodeAnalysis.Editor.Shared.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using System.Threading.Tasks;
+
+namespace MonoDevelop.Ide.Editor.Extension
+{
+	partial class EditorFormattingServiceTextEditorExtension : TextEditorExtension
+	{
+        protected override void Initialize()
+        {
+			base.Initialize();
+        }
+
+        public override bool KeyPress(KeyDescriptor descriptor)
+		{
+			var result = base.KeyPress (descriptor);
+			if (!DefaultSourceEditorOptions.Instance.OnTheFlyFormatting)
+				return result;
+			
+			var doc = DocumentContext.AnalysisDocument;
+			if (doc == null)
+				return result;
+			
+			var formattingService = doc.GetLanguageService<IEditorFormattingService> ();
+			if (formattingService == null)
+				return result;
+
+			if (descriptor.SpecialKey == SpecialKey.Return) {
+				if (formattingService.SupportsFormatOnReturn)
+					TryFormat (formattingService, descriptor.KeyChar, Editor.CaretOffset, true, default (CancellationToken));
+			} else if (formattingService.SupportsFormattingOnTypedCharacter(doc, descriptor.KeyChar)) {
+				TryFormat (formattingService, descriptor.KeyChar, Editor.CaretOffset, false, default (CancellationToken));
+			}
+			return result;
+		}
+
+		bool TryFormat (IEditorFormattingService formattingService, char typedChar, int position, bool formatOnReturn, CancellationToken cancellationToken)
+		{
+			var document = DocumentContext.AnalysisDocument;
+			var changes = formatOnReturn
+				? formattingService.GetFormattingChangesOnReturnAsync (document, position, cancellationToken).WaitAndGetResult (cancellationToken)
+				: formattingService.GetFormattingChangesAsync (document, typedChar, position, cancellationToken).WaitAndGetResult (cancellationToken);
+			var options = document.GetOptionsAsync (cancellationToken).WaitAndGetResult (cancellationToken);
+
+			if (changes == null || changes.Count == 0) {
+				return false;
+			}
+
+			Editor.ApplyTextChanges (changes);
+			return true;
+		}
+	}
+}
