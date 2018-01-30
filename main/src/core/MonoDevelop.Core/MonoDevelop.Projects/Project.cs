@@ -956,6 +956,13 @@ namespace MonoDevelop.Projects
 			if (buildActions != null)
 				return buildActions;
 
+			Predicate<string> predicate = null;
+			buildActions = GetBuildActions (predicate);
+			return buildActions;
+		}
+
+		string[] GetBuildActions (Predicate<string> predicate)
+		{
 			// find all the actions in use and add them to the list of standard actions
 			HashSet<string> actions = new HashSet<string> ();
 			//ad the standard actions
@@ -972,6 +979,9 @@ namespace MonoDevelop.Projects
 				if (actions.Contains (action))
 					actions.Remove (action);
 
+			if (predicate != null)
+				commonActions = commonActions.Where (action => predicate (action)).ToList ();
+
 			//calculate dimensions for our new array and create it
 			int dashPos = commonActions.Count;
 			bool hasDash = commonActions.Count > 0 && actions.Count > 0;
@@ -979,7 +989,7 @@ namespace MonoDevelop.Projects
 			int uncommonStart = hasDash ? dashPos + 1 : dashPos;
 			if (hasDash)
 				arrayLen++;
-			buildActions = new string[arrayLen];
+			var buildActions = new string[arrayLen];
 
 			//populate it
 			if (commonActions.Count > 0)
@@ -999,6 +1009,18 @@ namespace MonoDevelop.Projects
 			}
 			return buildActions;
 		}
+
+		/// <summary>
+		/// Gets a list of build actions supported by this project for the file.
+		/// </summary>
+		/// <remarks>
+		/// Common actions are grouped at the top, separated by a "--" entry *IF* there are
+		/// "uncommon" actions and "common" actions
+		/// </remarks>
+		public string[] GetBuildActions (string fileName)
+		{
+			return GetBuildActions (buildAction => ProjectExtension.OnGetFileSupportsBuildAction (fileName, buildAction));
+		}
 		
 		/// <summary>
 		/// Gets a list of standard build actions.
@@ -1014,6 +1036,11 @@ namespace MonoDevelop.Projects
 		protected virtual IList<string> OnGetCommonBuildActions ()
 		{
 			return BuildAction.StandardActions;
+		}
+
+		protected virtual bool OnGetFileSupportsBuildAction (string fileName, string buildAction)
+		{
+			return true;
 		}
 
 		protected override void OnDispose ()
@@ -4218,6 +4245,11 @@ namespace MonoDevelop.Projects
 			internal protected override IList<string> OnGetCommonBuildActions ()
 			{
 				return Project.OnGetCommonBuildActions ();
+			}
+
+			internal protected override bool OnGetFileSupportsBuildAction (string fileName, string buildAction)
+			{
+				return Project.OnGetFileSupportsBuildAction (fileName, buildAction);
 			}
 
 			internal protected override ProjectItem OnCreateProjectItem (IMSBuildItemEvaluated item)

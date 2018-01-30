@@ -205,6 +205,11 @@ namespace MonoDevelop.Projects
 			return next.OnGetCommonBuildActions ();
 		}
 
+		internal protected virtual bool OnGetFileSupportsBuildAction (string fileName, string buildAction)
+		{
+			return next.OnGetFileSupportsBuildAction (fileName, buildAction);
+		}
+
 		internal protected virtual ProjectItem OnCreateProjectItem (IMSBuildItemEvaluated item)
 		{
 			return next.OnCreateProjectItem (item);
