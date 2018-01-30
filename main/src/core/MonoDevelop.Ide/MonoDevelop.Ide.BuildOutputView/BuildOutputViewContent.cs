@@ -1,4 +1,4 @@
-﻿//
+//
 // BuildOutputView.cs
 //
 // Author:
@@ -41,12 +41,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 			this.filename = filename;
 			this.ContentName = filename;
 			control = new BuildOutputWidget (filename);
+			control.FileSaved += FileNameChanged;
 		}
 
 		public BuildOutputViewContent (BuildOutput buildOutput)
 		{
-			ContentName = GettextCatalog.GetString ("Build Output");
-			control = new BuildOutputWidget (buildOutput);
+			ContentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("hh:mm:ss")}.binlog";
+			control = new BuildOutputWidget (buildOutput, ContentName);
+			control.FileSaved += FileNameChanged;
+		}
+
+		void FileNameChanged (object sender, string newName)
+		{
+			ContentName = newName;
 		}
 
 		public override Control Control {
