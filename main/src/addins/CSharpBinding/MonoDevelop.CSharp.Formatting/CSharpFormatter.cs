@@ -1,21 +1,21 @@
-// 
+//
 // CSharpFormatter.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
-// 
+//
 // Copyright (c) 2009 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,6 +31,11 @@ using Microsoft.CodeAnalysis.Editor.Shared.Preview;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core;
+using Microsoft.CodeAnalysis.Editor;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Ide;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
@@ -92,7 +97,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (!tracker.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && editor.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
 					// Possibly replace the indent
 					string newIndent = tracker.ThisLineIndent;
-					if (newIndent != curIndent) 
+					if (newIndent != curIndent)
 						editor.ReplaceText (lineSegment.Offset, nlwsp, newIndent);
 				}
 			} catch (Exception e) {
@@ -100,9 +105,19 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		protected override void OnTheFlyFormatImplementation (TextEditor editor, DocumentContext context, int startOffset, int length)
+		protected override async void OnTheFlyFormatImplementation (TextEditor editor, DocumentContext context, int startOffset, int length)
 		{
-			OnTheFlyFormatter.Format (editor, context, startOffset, startOffset + length);
+			var doc = context.AnalysisDocument;
+
+			var formattingService = doc.GetLanguageService<IEditorFormattingService> ();
+			if (formattingService == null || !formattingService.SupportsFormatSelection)
+				return;
+
+			var changes = await formattingService.GetFormattingChangesAsync (doc, new TextSpan (startOffset, length), default (System.Threading.CancellationToken));
+			if (changes == null)
+				return;
+			editor.ApplyTextChanges (changes);
+			editor.FixVirtualIndentation ();
 		}
 
 		public static string FormatText (Microsoft.CodeAnalysis.Options.OptionSet optionSet, string input, int startOffset, int endOffset)
@@ -115,7 +130,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return result.Substring (startOffset, endOffset + result.Length - input.Length - startOffset);
 		}
 
-		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length) 
+		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length)
 		{
 			var chain = DesktopService.GetMimeTypeInheritanceChain (mimeType);
 			var policy = policyParent.Get<CSharpFormattingPolicy> (chain);
