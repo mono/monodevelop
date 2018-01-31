@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -176,15 +177,26 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return wnd.PreProcessKeyEvent (descriptor);
 		}
 
+		static bool isInUpdate;
 		public static void UpdateCursorPosition ()
 		{
 			if (!IsVisible)
 				return;
-			if (wnd.IsInCompletion || isShowing)
+			if (wnd.IsInCompletion || isShowing || isInUpdate)
 				return;
-			var caretOffset = wnd.CompletionWidget.CaretOffset;
-			if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset + 1) {
-				HideWindow ();
+			isInUpdate = true;
+			try {
+				ITextEditorImpl impl = wnd.CompletionWidget as ITextEditorImpl;
+				if (impl != null)
+					impl.EnsureCaretIsNotVirtual ();
+				var caretOffset = wnd.CompletionWidget.CaretOffset;
+				if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset + 1) {
+					HideWindow ();
+				}
+				if (impl != null)
+					impl.FixVirtualIndentation ();
+			} finally {
+				isInUpdate = false;
 			}
 		}
 
@@ -213,8 +225,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public static void HideWindow ()
 		{
 			isShowing = false;
-			if (IsVisible)
+			if (IsVisible) {
 				wnd.HideWindow ();
+			}
 		}
 
 		static void HandleWndVisibleChanged (object sender, EventArgs args)
