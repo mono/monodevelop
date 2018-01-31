@@ -95,6 +95,7 @@
 		<SeparatorItem id = "Separator5" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode" />
 		<SeparatorItem id = "optionssep5" />
 		<Condition id="Platform" value="linux">
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
