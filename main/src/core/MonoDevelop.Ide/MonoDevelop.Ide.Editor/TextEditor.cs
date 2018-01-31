@@ -970,6 +970,8 @@ namespace MonoDevelop.Ide.Editor
 			if (isDisposed)
 				return;
 			Runtime.AssertMainThread ();
+			this.TextView.Close ();
+
 			// Break fileTypeCondition circular event handling reference.
 			fileTypeCondition = null;
 			isDisposed = true;
@@ -979,8 +981,6 @@ namespace MonoDevelop.Ide.Editor
 			foreach (var provider in textEditorImpl.TooltipProvider)
 				provider.Dispose ();
 			textEditorImpl.Dispose ();
-
-			this.TextView.Close();
 
 			base.Dispose (disposing);
 		}

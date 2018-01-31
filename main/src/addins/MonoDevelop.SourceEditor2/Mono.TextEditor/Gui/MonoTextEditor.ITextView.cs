@@ -310,6 +310,9 @@ namespace Mono.TextEditor
 		{
 			if (isClosed)
 				throw new InvalidOperationException ();//Strings.TextViewClosed);
+			isClosed = true;
+
+			factoryService.GuardedOperations.RaiseEvent (this, this.Closed);
 
 			if (hasAggregateFocus) {
 				//Silently lose aggregate focus (to preserve Dev11 compatibility which did not raise a focus changed event when the view was closed).
@@ -324,10 +327,6 @@ namespace Mono.TextEditor
 
 			TextViewModel.Dispose ();
 			TextViewModel = null;
-
-			isClosed = true;
-
-			factoryService.GuardedOperations.RaiseEvent (this, this.Closed);
 		}
 
 		public void DisplayTextLineContainingBufferPosition (SnapshotPoint bufferPosition, double verticalDistance, ViewRelativePosition relativeTo)
