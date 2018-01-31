@@ -112,5 +112,10 @@ namespace MonoDevelop.Ide.Commands
 		{
 			IdeApp.Preferences.ForceSuggestionMode.Value = !IdeApp.Preferences.ForceSuggestionMode;
 		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.Workbench.ActiveDocument?.Editor != null;
+		}
 	}
 }
