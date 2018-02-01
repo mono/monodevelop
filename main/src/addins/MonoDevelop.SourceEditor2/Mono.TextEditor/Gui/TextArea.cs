@@ -1081,9 +1081,12 @@ namespace Mono.TextEditor
 				return true;
 			}
 			bool filter = IMFilterKeyPress (evt, key, unicodeChar, mod);
-			if (filter)
+			if (filter) {
+				imContextNeedsReset = false;
+				ResetIMContext ();
 				return true;
-			
+			}
+
 			//FIXME: OnIMProcessedKeyPressEvent should return false when it didn't handle the event
 			if (editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
 				return true;
