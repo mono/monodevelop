@@ -3609,6 +3609,8 @@ namespace MonoDevelop.Projects
 						updateItems = FindUpdateItemsForItem (globItem, item.Include).ToList ();
 						updateItem = updateItems.LastOrDefault ();
 						if (updateItem == null) {
+							if (UpdateGlobHasMatchingPropertyValue (p, evalItem))
+								continue;
 							// There is no existing update item. A new one will be generated.
 							generateNewUpdateItem = true;
 							continue;
@@ -3712,6 +3714,25 @@ namespace MonoDevelop.Projects
 						yield return it;
 				}
 			}
+		}
+
+		bool UpdateGlobHasMatchingPropertyValue (MSBuildProperty p, IMSBuildItemEvaluated evalItem)
+		{
+			MSBuildEvaluationContext context = null;
+
+			foreach (var updateItem in evalItem.SourceItems.Where (it => it.IsUpdate)) {
+				var p2 = updateItem.Metadata.GetProperty (p.Name);
+				if (p2 != null) {
+					if (context == null) {
+						context = new MSBuildEvaluationContext ();
+						context.InitEvaluation (MSBuildProject);
+					}
+
+					string value = context.Evaluate (p.UnevaluatedValue);
+					return p.ValueType.Equals (p.Value, value);
+				}
+			}
+			return false;
 		}
 
 		bool ItemsAreEqual (IMSBuildItemEvaluated item1, IMSBuildItemEvaluated item2)

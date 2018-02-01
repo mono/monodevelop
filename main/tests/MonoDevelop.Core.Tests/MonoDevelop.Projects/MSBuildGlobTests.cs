@@ -1287,6 +1287,66 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[TestCase (true)] // Adds .xaml files before loading project the first time.
+		[TestCase (false)] // Loads the project first then adds the .xaml files.
+		public async Task RenameXamlAndXamlCSharpFileAtSameTime (bool addXamlFilesBeforeLoading)
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-metadata-prop2.csproj");
+				string expectedProjectXml = File.ReadAllText (projFile);
+
+				DotNetProject p = null;
+
+				if (!addXamlFilesBeforeLoading) {
+					p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+					p.UseAdvancedGlobSupport = true;
+				}
+
+				var xamlFileName = projFile.ParentDirectory.Combine ("MyView1.xaml");
+				File.WriteAllText (xamlFileName, "xaml1");
+				var xamlCSharpFileName = projFile.ParentDirectory.Combine ("MyView1.xaml.cs");
+				File.WriteAllText (xamlCSharpFileName, "csharpxaml");
+
+				if (addXamlFilesBeforeLoading) {
+					p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+					p.UseAdvancedGlobSupport = true;
+				} else {
+					p.AddFiles (new [] { xamlFileName, xamlCSharpFileName });
+					await p.SaveAsync (Util.GetMonitor ());
+					Assert.AreEqual (expectedProjectXml, File.ReadAllText (p.FileName));
+				}
+
+				var xamlFile = p.Files.Single (f => f.FilePath.FileName == "MyView1.xaml");
+				var xamlCSharpFile = p.Files.Single (f => f.FilePath.FileName == "MyView1.xaml.cs");
+
+				// Simulate a rename of the xaml file and its dependent xaml.cs file in the Solution pad.
+				var renamedXamlFileName = xamlFileName.ParentDirectory.Combine ("MyViewRename.xaml");
+				FileService.RenameFile (xamlFileName, renamedXamlFileName.FileName);
+				xamlFile.Name = renamedXamlFileName;
+
+				var renamedXamlCSharpFileName = xamlCSharpFileName.ParentDirectory.Combine ("MyViewRename.xaml.cs");
+				FileService.RenameFile (xamlCSharpFileName, renamedXamlCSharpFileName.FileName);
+				xamlCSharpFile.Name = renamedXamlCSharpFileName;
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				xamlFile = p.Files.Single (f => f.FilePath.FileName == "MyViewRename.xaml");
+				xamlCSharpFile = p.Files.Single (f => f.FilePath.FileName == "MyViewRename.xaml.cs");
+
+				// Project xml should be unchanged.
+				var projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+
 		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
 		{
 			internal protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
