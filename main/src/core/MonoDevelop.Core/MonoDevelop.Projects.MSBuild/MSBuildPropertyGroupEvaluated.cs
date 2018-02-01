@@ -171,6 +171,18 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		/// <summary>
+		/// Notifies that a property has been modified in the project, so that the evaluated
+		/// value for that property in this instance *may* be out of date.
+		/// </summary>
+		internal void SetPropertyValueStale (string name)
+		{
+			var p = (MSBuildPropertyEvaluated)GetProperty (name);
+			if (p == null)
+				p = AddProperty (name);
+			p.EvaluatedValueIsStale = true;
+		}
+
 		public void RemoveRedundantProperties ()
 		{
 			// Remove properties whose value is the same as the one set in the global group

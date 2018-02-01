@@ -2987,7 +2987,7 @@ namespace MonoDevelop.Projects
 					ConfigData cdata = FindPropertyGroup (configData, conf);
 					var propGroup = (MSBuildPropertyGroup)cdata.Group;
 
-					// Get properties wit the MergeToProject flag, and check that the value they have matches the
+					// Get properties with the MergeToProject flag, and check that the value they have matches the
 					// value all the other groups have so far. If one of the groups have a different value for
 					// the same property, then the property is discarded as mergeable to parent.
 					CollectMergetoprojectProperties (propGroup, mergeToProjectProperties, mergeToProjectPropertyValues);
@@ -3023,6 +3023,23 @@ namespace MonoDevelop.Projects
 
 				foreach (ProjectConfiguration config in Configurations)
 					config.MainPropertyGroup.ResetIsNewFlags ();
+
+
+				// For properties that have changed in the main group, set the
+				// dirty flag for the corresponding properties in the evaluated
+				// project instances. The evaluated values of those properties
+				// can't be used anymore to decide wether or not a property
+				// needs to be saved. The ideal solution would be to re-evaluate
+				// the instance and get the new evaluated values, but that
+				// would have a high impact in performance.
+
+				foreach (var p in globalGroup.GetProperties ()) {
+					if (p.Modified) {
+						foreach (ProjectConfiguration config in Configurations)
+							if (config.ProjectInstance != null)
+								config.ProjectInstance.SetPropertyValueStale (p.Name);
+					}
+				}
 			}
 		}
 
