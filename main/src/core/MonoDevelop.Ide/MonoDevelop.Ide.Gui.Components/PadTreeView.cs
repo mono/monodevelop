@@ -148,11 +148,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				this.column = column;
 
 				Checked = column.Visible;
-				Clicked += OnItemClicked;
 			}
 
-			void OnItemClicked (object sender, EventArgs args)
+			protected override void DoClick ()
 			{
+				base.DoClick ();
 				column.Visible = Checked;
 				ColumnVisibilityChanged?.Invoke (this, EventArgs.Empty);
 			}
