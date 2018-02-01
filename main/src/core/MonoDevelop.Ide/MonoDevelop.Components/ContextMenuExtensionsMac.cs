@@ -164,8 +164,8 @@ namespace MonoDevelop.Components
 			{
 				var obj = (NSContextMenuItem)sender;
 
-				obj.contextMenu.TryGetTarget (out var contextMenuItem);
-				contextMenuItem.Click ();
+				if (obj.contextMenu.TryGetTarget (out var contextMenuItem))
+					contextMenuItem.Click ();
 			}
 		}
 
