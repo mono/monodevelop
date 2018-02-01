@@ -662,7 +662,7 @@ namespace MonoDevelop.Ide
 			var metadata = new Dictionary<string, string> ();
 
 			metadata ["CorrectedStartupTime"] = startupTimer.ElapsedMilliseconds.ToString ();
-			metadata ["StartupTypeId"] = "0";
+			metadata ["StartupType"] = "0";
 
 			var assetType = StartupAssetType.FromStartupInfo (startupInfo);
 
