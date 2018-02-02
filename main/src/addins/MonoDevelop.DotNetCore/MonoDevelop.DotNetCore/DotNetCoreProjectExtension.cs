@@ -71,10 +71,9 @@ namespace MonoDevelop.DotNetCore
 
 		protected override bool OnGetSupportsFramework (TargetFramework framework)
 		{
-			if (framework.IsNetCoreApp () ||
-				framework.IsNetStandard ())
-				return true;
-			return base.OnGetSupportsFramework (framework);
+			// Allow all SDK style projects to be loaded even if the framework is unknown.
+			// A PackageReference may define the target framework with an imported MSBuild file.
+			return true;
 		}
 
 		/// <summary>
@@ -131,6 +130,7 @@ namespace MonoDevelop.DotNetCore
 				Project.CompileTarget = dotNetCoreMSBuildProject.DefaultCompileTarget;
 
 			Project.UseAdvancedGlobSupport = true;
+			Project.UseFileWatcher = true;
 		}
 
 		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
@@ -516,6 +516,9 @@ namespace MonoDevelop.DotNetCore
 			base.OnBoundToSolution ();
 
 			if (Project.Loading)
+				return;
+
+			if (IdeApp.ProjectOperations == null)
 				return;
 
 			if (IdeApp.ProjectOperations.CurrentSelectedSolution != Project.ParentSolution)

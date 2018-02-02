@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesVSEditor)" />
@@ -8643,6 +8643,8 @@
     <Compile Include="MonoDevelop.Ide.Gui\Workbench.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StartupInfo.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ProgressMonitors.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopPersistentStorageLocationService.cs" />
+    <Compile Include="MonoDevelop.Ide\RoslynLogger.cs" />
     <Compile Include="MonoDevelop.Ide\Services.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\TasksOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\FileViewer.cs" />
@@ -8942,7 +8944,6 @@
     <Compile Include="MonoDevelop.Ide.WebBrowser\IWebBrowserLoader.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionListWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionWidget.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeCompletion\ListWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterInformationWindowManager.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterInformationWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionData.cs" />
@@ -9468,9 +9469,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\BraceMatchingResult.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Operations\ChildrenOperation.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Results\NSObjectResult.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopTemporaryStorageServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\WorkspaceId.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\SolutionSizeTracker.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkNotebookResult.cs" />
     <Compile Include="MonoDevelop.Ide\TaskUtil.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\CodeAnalysisPanel.cs" />
@@ -9625,8 +9624,15 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\LineSeparatorTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectCapabilityFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\OrFileTemplateCondition.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionController.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionView.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionViewEventSink.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionListWindowGtk.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\KeyActions.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\D152AccessibilityPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StartupAssetType.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\DocumentRegistry.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9719,6 +9725,7 @@
     <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.VBNetBinding" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.Refactoring.Tests" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Tests" />
   </ItemGroup>

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.TypeSystem;
@@ -85,14 +86,26 @@ namespace MonoDevelop.Ide.Editor
 
 		public static IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextEditor editor, TextSegmentMarkerEffect effect, int offset, int length)
 		{
-			return editor.TextMarkerFactory.CreateGenericTextSegmentMarker (editor, effect, offset, length);
+			return editor.TextMarkerFactory.CreateGenericTextSegmentMarker (editor, effect, null, offset, length);
 		}
 
 		public static IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextEditor editor, TextSegmentMarkerEffect effect, ISegment segment)
 		{
 			if (segment == null)
 				throw new ArgumentNullException ("segment");
-			return editor.TextMarkerFactory.CreateGenericTextSegmentMarker (editor, effect, segment.Offset, segment.Length);
+			return editor.TextMarkerFactory.CreateGenericTextSegmentMarker (editor, effect, null, segment.Offset, segment.Length);
+		}
+
+		public static IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextEditor editor, TextSegmentMarkerEffect effect, HslColor color, int offset, int length)
+		{
+			return editor.TextMarkerFactory.CreateGenericTextSegmentMarker (editor, effect, color, offset, length);
+		}
+
+		public static IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextEditor editor, TextSegmentMarkerEffect effect, HslColor color, ISegment segment)
+		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			return editor.TextMarkerFactory.CreateGenericTextSegmentMarker (editor, effect, color, segment.Offset, segment.Length);
 		}
 
 		public static ISmartTagMarker CreateSmartTagMarker (TextEditor editor, int offset, DocumentLocation realLocation)

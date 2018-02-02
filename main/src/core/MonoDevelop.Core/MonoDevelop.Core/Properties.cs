@@ -206,14 +206,16 @@ namespace MonoDevelop.Core
 				writer.WriteStartElement (PropertyNode);
 				writer.WriteAttributeString (KeyAttribute, property.Key);
 				
-				if (property.Value is LazyXmlDeserializer) {
-					writer.WriteRaw (((LazyXmlDeserializer)property.Value).Xml);
-				} else if (property.Value is ICustomXmlSerializer) {
-					((ICustomXmlSerializer)property.Value).WriteTo (writer);
+				if (property.Value is LazyXmlDeserializer deserializer) {
+					writer.WriteRaw (deserializer.Xml);
+				} else if (property.Value is ICustomXmlSerializer customXmlSerializer) {
+					customXmlSerializer.WriteTo (writer);
 				} else {
 					if (!(property.Value is string) && property.Value.GetType ().IsClass) {
-						XmlSerializer serializer = new XmlSerializer (property.Value.GetType ());
-						serializer.Serialize (writer, property.Value);
+						if (!(property.Value is ICollection<string> collection && collection.Count == 0)) {
+							XmlSerializer serializer = new XmlSerializer (property.Value.GetType ());
+							serializer.Serialize (writer, property.Value);
+						}
 					} else {
 						writer.WriteAttributeString (ValueAttribute, ConvertToString (property.Value));
 					}

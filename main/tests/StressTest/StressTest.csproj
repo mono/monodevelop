@@ -75,9 +75,22 @@
     <Compile Include="MonoDevelop.StressTest\ITestScenario.cs" />
     <Compile Include="MonoDevelop.StressTest\TestScenarioProvider.cs" />
     <Compile Include="MonoDevelop.StressTest\StressTestOptions.cs" />
+    <Compile Include="MonoDevelop.StressTest\ProfilerProcessor.cs" />
+    <Compile Include="Mono.Profiling.Log\LogEnums.cs" />
+    <Compile Include="Mono.Profiling.Log\LogStreamHeader.cs" />
+    <Compile Include="Mono.Profiling.Log\LogStream.cs" />
+    <Compile Include="Mono.Profiling.Log\LogReader.cs" />
+    <Compile Include="Mono.Profiling.Log\LogProfiler.cs" />
+    <Compile Include="Mono.Profiling.Log\LogProcessor.cs" />
+    <Compile Include="Mono.Profiling.Log\LogException.cs" />
+    <Compile Include="Mono.Profiling.Log\LogEvents.cs" />
+    <Compile Include="Mono.Profiling.Log\LogEventVisitor.cs" />
+    <Compile Include="Mono.Profiling.Log\LogEvent.cs" />
+    <Compile Include="Mono.Profiling.Log\LogBufferHeader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="UserInterfaceTests\" />
+    <Folder Include="Mono.Profiling.Log\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
