@@ -38,6 +38,7 @@ using Xwt.Drawing;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Editor.Highlighting;
 using Cairo;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -95,6 +96,12 @@ namespace MonoDevelop.SourceEditor
 				else if (args.Editor.TooltipText == Tooltip)
 					args.Editor.TooltipText = null;
 			}
+		}
+
+		public override void UpdateAccessibilityDetails (out string label, out string help)
+		{
+			label = GettextCatalog.GetString ("Breakpoint. Line {0}", LineSegment.LineNumber);
+			help = "";
 		}
 	}
 
@@ -219,11 +226,11 @@ namespace MonoDevelop.SourceEditor
 		public DebugTextMarker TextMarker { get; protected set; }
 		protected TextDocument document;
 
-		internal void AddTo (TextDocument document, DocumentLine line)
+		internal void AddTo (TextDocument doc, DocumentLine line)
 		{
-			this.document = document;
-			document.AddMarker (line, IconMarker);
-			document.AddMarker (TextMarker);
+			this.document = doc;
+			doc.AddMarker (line, IconMarker);
+			doc.AddMarker (TextMarker);
 		}
 
 		internal void Remove ()
