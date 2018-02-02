@@ -22,7 +22,7 @@
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Language">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.dll</HintPath>
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.15.6.289-preview-g5a23388e08\lib\net46\Microsoft.VisualStudio.Language.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense">
@@ -34,7 +34,7 @@
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.Implementation">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Implementation.15.0.9-pre\lib\net46\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Implementation.15.0.10-pre\lib\net46\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
   </ItemGroup>
