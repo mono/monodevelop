@@ -792,10 +792,17 @@ namespace Mono.TextEditor
 				this.changes = args.Changes;
 			}
 
+			// The VS Editor uses this internal type as an edit tag to mark undo primitives coming from the Undo system itself,
+			// to differentiate it from edits coming from external extensions.
+			// We need to pretend we're the core editor for Undo and Redo.
+			static readonly Type editTag = typeof(IObjectTracker)
+				.Assembly
+				.GetType("Microsoft.VisualStudio.Text.BufferUndoManager.Implementation.TextBufferChangeUndoPrimitive");
+
 			public virtual void Undo (TextDocument doc, bool fireEvent = true)
 			{
 				if (this.Changes.Count > 0) {
-					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.beforeVersionNumber, typeof(Microsoft.VisualStudio.Text.BufferUndoManager.Implementation.TextBufferChangeUndoPrimitive))) {
+					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.beforeVersionNumber, editTag)) {
 						foreach (var change in this.changes)
 							edit.Replace(change.NewPosition, change.NewLength, change.OldText);
 
@@ -810,7 +817,7 @@ namespace Mono.TextEditor
 			public virtual void Redo (TextDocument doc, bool fireEvent = true)
 			{
 				if (this.Changes.Count > 0) {
-					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.afterVersionNumber, typeof(Microsoft.VisualStudio.Text.BufferUndoManager.Implementation.TextBufferChangeUndoPrimitive))) {
+					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.afterVersionNumber, editTag)) {
 						foreach (var change in this.changes)
 							edit.Replace(change.OldPosition, change.OldLength, change.NewText);
 
