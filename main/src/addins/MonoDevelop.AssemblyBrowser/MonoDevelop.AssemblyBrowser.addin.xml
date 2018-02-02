@@ -1,4 +1,8 @@
 <ExtensionModel>
+
+	<Runtime>
+		<Import assembly="ICSharpCode.Decompiler.dll" />
+	</Runtime>
 	
 	<!-- Extension points -->
 	<ExtensionPoint path = "/MonoDevelop/AssemblyBrowser/TypeNode/ContextMenu">
