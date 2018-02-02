@@ -412,5 +412,8 @@
 		<Assembly file="Microsoft.VisualStudio.Text.Implementation.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.dll"/>
 	</Extension>
-
+	
+	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/OptionProviders">
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
 </ExtensionModel>
