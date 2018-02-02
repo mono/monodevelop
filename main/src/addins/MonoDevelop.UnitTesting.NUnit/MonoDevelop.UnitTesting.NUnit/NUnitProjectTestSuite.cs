@@ -135,7 +135,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 		{
 			if (p.Include.IndexOf ("GuiUnit", StringComparison.OrdinalIgnoreCase) != -1)
 				return NUnitVersion.NUnit2;
-			if (p.Include.IndexOf ("nunit.framework", StringComparison.OrdinalIgnoreCase) != -1)
+			if (p.Include.IndexOf ("nunit", StringComparison.OrdinalIgnoreCase) != -1)
 				return p.IsAtLeastVersion (new Version (3, 0)) ? NUnitVersion.NUnit3 : NUnitVersion.NUnit2;
 			return null;
 		}

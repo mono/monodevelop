@@ -204,18 +204,95 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		public async Task TestConfigurationMergingChangeMergeToParent3()
+		public async Task TestConfigurationMergingChangeMergeToParent4 ()
 		{
-			string projectFile = Util.GetSampleProject("test-configuration-merging", "TestConfigurationMerging8.csproj");
-			DotNetProject p = await Services.ProjectService.ReadSolutionItem(Util.GetMonitor(), projectFile) as DotNetProject;
-			Assert.IsNotNull(p);
+			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging9.csproj");
+			DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
 
-			var refXml = File.ReadAllText(p.FileName);
-			await p.SaveAsync(Util.GetMonitor());
+			DotNetProjectConfiguration conf = p.Configurations ["Debug|x86"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.IsFalse (conf.SignAssembly);
+			conf.SignAssembly = true;
 
-			Assert.AreEqual(refXml, File.ReadAllText(p.FileName));
+			// Release config already has SignAssembly=true, so the property should be merged to main group
 
-			p.Dispose();
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			conf.SignAssembly = false;
+
+			// Release config still has SignAssembly=true, so the property should be removed from the main group and
+			// assigned to true in Release configuration.
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved2")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
+		}
+
+		[Test]
+		public async Task TestConfigurationMergingChangeMergeToParent5 ()
+		{
+			// Test for VSTS bug 518933 - Serialization issue with ItemProperty and MergeToProject
+
+			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging11.csproj");
+			DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration debugConf = p.Configurations ["Debug|x86"] as DotNetProjectConfiguration;
+			DotNetProjectConfiguration releaseConf = p.Configurations ["Release|x86"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (debugConf);
+
+			debugConf.Properties.SetValue ("AndroidUseSharedRuntime", false, defaultValue:true, mergeToMainGroup: true);
+			releaseConf.Properties.SetValue ("AndroidUseSharedRuntime", false, defaultValue:true, mergeToMainGroup: true);
+
+			// Release config already has SignAssembly=true, so the property should be merged to main group
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			debugConf.Properties.SetValue ("AndroidUseSharedRuntime", true, defaultValue:true, mergeToMainGroup: true);
+			releaseConf.Properties.SetValue ("AndroidUseSharedRuntime", false, defaultValue:true, mergeToMainGroup: true);
+
+			// Release config still has SignAssembly=true, so the property should be removed from the main group and
+			// assigned to true in Release configuration.
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved2")), File.ReadAllText (p.FileName));
+
+			debugConf.Properties.SetValue ("AndroidUseSharedRuntime", false, defaultValue: true, mergeToMainGroup: true);
+			releaseConf.Properties.SetValue ("AndroidUseSharedRuntime", false, defaultValue: true, mergeToMainGroup: true);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
+		}
+
+		[Test]
+		public async Task ProjectSerializationRoundtrip (
+			[Values (
+				"TestConfigurationMerging8.csproj",
+				"TestConfigurationMerging10.csproj"
+			)]
+			string project)
+		{
+			string solFile = Util.GetSampleProject ("test-configuration-merging", project);
+			var p = (SolutionItem)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
+
+			var refXml = File.ReadAllText (p.FileName);
+			await p.SaveAsync (Util.GetMonitor ());
+			var savedXml = File.ReadAllText (p.FileName);
+
+			Assert.AreEqual (refXml, savedXml);
+
+			p.Dispose ();
 		}
 	}
 }

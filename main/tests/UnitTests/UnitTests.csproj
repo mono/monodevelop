@@ -82,11 +82,6 @@
       <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\contrib\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
-      <Project>{984CC812-9470-4A13-AFF9-CC44068D666C}</Project>
-      <Name>ICSharpCode.Decompiler</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
       <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
       <Name>GuiUnit_NET_4_5</Name>

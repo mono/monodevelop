@@ -153,9 +153,9 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			properties.Clear ();
 			foreach (var p in e.GetEvaluatedProperties (project)) {
-				string name, value, finalValue;
-				e.GetPropertyInfo (p, out name, out value, out finalValue);
-				properties [name] = new MSBuildPropertyEvaluated (ParentProject, name, value, finalValue);
+				string name, value, finalValue; bool definedMultipleTimes;
+				e.GetPropertyInfo (p, out name, out value, out finalValue, out definedMultipleTimes);
+				properties [name] = new MSBuildPropertyEvaluated (ParentProject, name, value, finalValue, definedMultipleTimes);
 			}
 		}
 
@@ -169,6 +169,18 @@ namespace MonoDevelop.Projects.MSBuild
 					ep = AddProperty (p.Name);
 				ep.LinkToProperty (p);
 			}
+		}
+
+		/// <summary>
+		/// Notifies that a property has been modified in the project, so that the evaluated
+		/// value for that property in this instance *may* be out of date.
+		/// </summary>
+		internal void SetPropertyValueStale (string name)
+		{
+			var p = (MSBuildPropertyEvaluated)GetProperty (name);
+			if (p == null)
+				p = AddProperty (name);
+			p.EvaluatedValueIsStale = true;
 		}
 
 		public void RemoveRedundantProperties ()
