@@ -117,17 +117,63 @@ namespace MonoDevelop.Projects
 				if (!File.Exists (file))
 					throw new IOException (GettextCatalog.GetString ("File not found: {0}", file));
 				file = Path.GetFullPath (file);
-				using (Counters.ReadSolutionItem.BeginTiming ("Read project " + file)) {
+				var metadata = GetReadSolutionItemMetadata (file, typeGuid, itemGuid);
+				using (Counters.ReadSolutionItem.BeginTiming ("Read project " + file, metadata)) {
 					file = GetTargetFile (file);
 					var r = GetObjectReaderForFile (file, typeof(SolutionItem));
 					if (r == null)
 						throw new UnknownSolutionItemTypeException ();
 					SolutionItem loadedItem = await r.LoadSolutionItem (monitor, ctx, file, format, typeGuid, itemGuid);
-					if (loadedItem != null)
+					if (loadedItem != null) {
 						loadedItem.NeedsReload = false;
+						UpdateReadSolutionItemMetadata (metadata, loadedItem);
+					}
 					return loadedItem;
 				}
 			});
+		}
+
+		static IDictionary<string, string> GetReadSolutionItemMetadata (string file, string typeGuid, string itemGuid)
+		{
+			var metadata = new Dictionary<string, string> ();
+
+			string extension = Path.GetExtension (file);
+			if (!string.IsNullOrEmpty (extension) && extension [0] == '.') {
+				extension = extension.Substring (1);
+			}
+
+			metadata ["FileNameExtension"] = extension;
+
+			// Will be set to true later after a successful load
+			metadata ["LoadSucceed"] = bool.FalseString;
+
+			if (typeGuid != null)
+				metadata ["ProjectType"] = typeGuid;
+
+			if (itemGuid != null)
+				metadata ["ProjectID"] = itemGuid;
+
+			return metadata;
+		}
+
+		static void UpdateReadSolutionItemMetadata (IDictionary<string, string> metadata, SolutionItem item)
+		{
+			metadata ["ProjectType"] = item.TypeGuid;
+			metadata ["ProjectID"] = item.ItemId;
+			metadata ["LoadSucceed"] = bool.TrueString;
+
+			var project = item as Project;
+			if (project == null)
+				return;
+
+			// Use TypeGuid by default for ProjectFlavor.
+			metadata ["ProjectFlavor"] = project.FlavorGuids.FirstOrDefault () ?? item.TypeGuid;
+			metadata ["Flavors"] =  string.Join (";", project.GetItemTypeGuids ());
+
+			var capabilities = project.GetProjectCapabilities ();
+			if (capabilities.Any ()) {
+				metadata ["Capabilities"] = string.Join (" ", capabilities);
+			}
 		}
 
 		public Task<SolutionFolderItem> ReadSolutionItem (ProgressMonitor monitor, SolutionItemReference reference, params WorkspaceItem[] workspaces)

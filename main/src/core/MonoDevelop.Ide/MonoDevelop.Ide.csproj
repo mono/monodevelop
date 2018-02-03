@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesVSEditor)" />
@@ -9631,6 +9631,7 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\KeyActions.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\D152AccessibilityPanel.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\StartupAssetType.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentRegistry.cs" />
   </ItemGroup>
   <ItemGroup>

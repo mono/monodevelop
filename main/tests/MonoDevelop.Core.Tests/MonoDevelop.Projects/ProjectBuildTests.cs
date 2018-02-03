@@ -760,6 +760,44 @@ namespace MonoDevelop.Projects
 			var res = await sol.Build (Util.GetMonitor (), "Debug|x86");
 			Assert.IsFalse (res.HasErrors);
 		}
+
+		[Test]
+		public async Task FirstBuildFlagRemovedAfterBuild ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+			var project = sol.GetAllProjects ().First ();
+			project.IsFirstBuild = true;
+			Assert.IsTrue (project.UserProperties.GetValue<bool> ("FirstBuild"));
+
+			await sol.SaveAsync (Util.GetMonitor ());
+
+			var result = await sol.Build (Util.GetMonitor (), "Debug");
+
+			Assert.IsFalse (project.UserProperties.HasValue ("FirstBuild"));
+			Assert.IsFalse (project.IsFirstBuild);
+			Assert.IsFalse (result.HasErrors);
+
+			sol.Dispose ();
+		}
+
+		[Test]
+		public async Task FirstBuildFlagNotRemovedAfterClean ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+			var project = sol.GetAllProjects ().First ();
+			project.IsFirstBuild = true;
+			Assert.IsTrue (project.UserProperties.GetValue<bool> ("FirstBuild"));
+
+			await sol.SaveAsync (Util.GetMonitor ());
+
+			var result = await sol.Clean (Util.GetMonitor (), "Debug");
+
+			Assert.IsTrue (project.UserProperties.HasValue ("FirstBuild"));
+			Assert.IsTrue (project.IsFirstBuild);
+			Assert.IsFalse (result.HasErrors);
+
+			sol.Dispose ();
+		}
 	}
 
 	[TestFixture]
