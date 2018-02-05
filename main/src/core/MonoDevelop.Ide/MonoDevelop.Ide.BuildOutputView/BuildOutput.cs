@@ -36,6 +36,7 @@ using Microsoft.Build.Logging;
 using Microsoft.Build.Framework;
 using Gtk;
 using Xwt;
+using System.Linq;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -178,7 +179,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			// FIXME: always includes all nodes, needs to be filtered if
 			// includeDiagnostics == false
-			return new BuildOutputDataSource (this);
+			return new BuildOutputDataSource (this, includeDiagnostics);
 		}
 
 		bool disposed = false;
@@ -259,13 +260,27 @@ namespace MonoDevelop.Ide.BuildOutputView
 		readonly Xwt.Drawing.Image taskIcon;
 		readonly Xwt.Drawing.Image warningIcon;
 		BuildOutput buildOutput;
+		bool includeDiagnostics;
+		List<BuildOutputNode> rootNodes;
 
 		public DataField<Xwt.Drawing.Image> ImageField = new DataField<Xwt.Drawing.Image> (0);
 		public DataField<string> LabelField = new DataField<string> (1);
 
-		public BuildOutputDataSource (BuildOutput output)
+		public BuildOutputDataSource (BuildOutput output, bool includeDiagnostics)
 		{
 			buildOutput = output;
+			this.includeDiagnostics = includeDiagnostics;
+			if (includeDiagnostics) {
+				rootNodes = buildOutput.RootNodes.ToList ();
+			} else {
+				// If not including diagnostics, we need to filter the nodes,
+				// but instead of doing so now for all, we do it on the fly,
+				// as nodes are requested
+				rootNodes = new List<BuildOutputNode> ();
+				foreach (var root in buildOutput.RootNodes) {
+					rootNodes.Add (new FilteredBuildOutputNode (root, null, includeDiagnostics));
+				}
+			}
 
 			// Load icons to avoid calling the ImageService every time
 			buildIcon = ImageService.GetIcon (Ide.Gui.Stock.StatusBuild, Gtk.IconSize.Menu);
@@ -292,7 +307,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 					return node.Children [index];
 				}
 			} else {
-				var rootNodes = buildOutput.RootNodes;
 				if (rootNodes.Count > index) {
 					return rootNodes [index];
 				}
@@ -307,7 +321,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (node != null) {
 				return node.Children?.Count ?? 0;
 			} else {
-				return buildOutput.RootNodes?.Count ?? 0;
+				return rootNodes?.Count ?? 0;
 			}
 		}
 

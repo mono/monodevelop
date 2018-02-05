@@ -31,32 +31,10 @@ using System.Text;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using Xwt;
+using System.Linq;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
-	enum BuildOutputNodeType
-	{
-		Build,
-		Project,
-		Target,
-		Task,
-		Error,
-		Warning,
-		Message,
-		Diagnostics
-	}
-
-	class BuildOutputNode : TreePosition
-	{
-		public BuildOutputNodeType NodeType { get; set; }
-		public string Message { get; set; }
-		public BuildOutputNode Parent { get; set; }
-		public IList<BuildOutputNode> Children { get; } = new List<BuildOutputNode> ();
-		public bool HasErrors { get; set; }
-		public bool HasWarnings { get; set; }
-		public bool HasData { get; set; }
-	}
-
 	class BuildOutputProcessor : IDisposable
 	{
 		List<BuildOutputNode> rootNodes = new List<BuildOutputNode> ();
