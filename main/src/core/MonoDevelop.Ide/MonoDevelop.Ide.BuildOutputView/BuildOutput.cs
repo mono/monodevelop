@@ -177,8 +177,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 				p.Process ();
 			}
 
-			// FIXME: always includes all nodes, needs to be filtered if
-			// includeDiagnostics == false
 			return new BuildOutputDataSource (this, includeDiagnostics);
 		}
 
