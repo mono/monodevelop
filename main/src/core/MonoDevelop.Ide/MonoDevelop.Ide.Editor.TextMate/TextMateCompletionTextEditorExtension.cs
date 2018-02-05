@@ -58,6 +58,11 @@ namespace MonoDevelop.Ide.Editor.TextMate
 					if (completionTextEditorExtension.IsValidInContext (DocumentContext))
 						inactive = true;
 				}
+
+				if (ext is VsCompletionTextEditorExtension vsc && vsc.IsValidInContext (DocumentContext)) {
+					inactive = true;
+					break;
+				}
 				ext = ext.Next;
 			}
 			DocumentContext.DocumentParsed += DocumentContext_DocumentParsed;

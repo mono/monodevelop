@@ -642,7 +642,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             if ((width > 0.0) && (height > 0.0))
             {
                 Geometry insetLocation = new RectangleGeometry(new Rect(left, top, width, height));
-                return reserved.Bounds.IntersectsWith(insetLocation.Bounds);//TODO: This was simpliefied
+                return !reserved.Bounds.IntersectsWith(insetLocation.Bounds);//TODO: This was simpliefied
             }
             else
                 return true;
@@ -682,7 +682,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             public abstract Size Size { get; }
         }
 
-        private class PopUpContainer : PopupOrWindowContainer
+		internal class PopUpContainer : PopupOrWindowContainer
         {
 #if WINDOWS
             private class NoTopmostPopup : XwtThemedPopup
@@ -709,9 +709,9 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                 }
             }
         }
-        XwtThemedPopup _popup = new NoTopmostPopup ();
+			internal XwtThemedPopup _popup = new NoTopmostPopup ();
 #else
-            XwtThemedPopup _popup = new XwtThemedPopup();
+			internal XwtThemedPopup _popup = new XwtThemedPopup();
 #endif
 
             // WPF popup doesn't detach its child from the visual tree when the popup is not open, 

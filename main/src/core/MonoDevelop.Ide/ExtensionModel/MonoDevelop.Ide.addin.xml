@@ -311,6 +311,7 @@
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class id="InitialStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
 		<Class id="MidStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
+		<Class class = "MonoDevelop.Ide.Editor.Extension.VsCompletionTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.BraceMatcherTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.DefaultCommandTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.FoldingTextEditorExtension" />

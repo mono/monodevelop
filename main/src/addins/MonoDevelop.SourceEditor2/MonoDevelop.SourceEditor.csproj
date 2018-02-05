@@ -76,8 +76,8 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <StartAction>Program</StartAction>
-    <StartProgram>mono</StartProgram>
-    <StartArguments>--debug ../../../build/bin/MonoDevelop.exe</StartArguments>
+    <StartProgram>..\..\..\build\bin\MonoDevelop.exe</StartProgram>
+    <StartArguments>--no-redirect</StartArguments>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
@@ -356,6 +356,9 @@
     <Compile Include="VSEditor\Text\Util\TextDataUtil\MappingHelper.cs" />
     <Compile Include="VSEditor\VisualStudio\Impl\ViewAdapter\TipManager.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorView.IMonoDevelopEditorOperations.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.VsCompletion\CompletionUI.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.VsCompletion\CompletionUIProvider.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.VsCompletion\DefaultCompletionService.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -610,4 +613,7 @@
   <Import Project="..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="MonoDevelop.SourceEditor.VsCompletion\" />
+  </ItemGroup>
 </Project>
