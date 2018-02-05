@@ -44,22 +44,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 	{
 		BuildOutputProgressMonitor progressMonitor;
 		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
-		List<BuildOutputNode> rootNodes;
 
 		public event EventHandler OutputChanged;
-
-		public IReadOnlyList<BuildOutputNode> RootNodes {
-			get {
-				if (rootNodes == null) {
-					rootNodes = new List<BuildOutputNode> ();
-					foreach (var proj in projects) {
-						rootNodes.AddRange (proj.RootNodes);
-					}
-				}
-
-				return rootNodes;
-			}
-		}
 
 		public ProgressMonitor GetProgressMonitor ()
 		{
@@ -156,14 +142,23 @@ namespace MonoDevelop.Ide.BuildOutputView
 		internal void AddProcessor (BuildOutputProcessor processor)
 		{
 			projects.Add (processor);
-			rootNodes?.Clear ();
 		}
 
 		internal void Clear ()
 		{
 			projects.Clear ();
-			rootNodes?.Clear ();
 			RaiseOutputChanged ();
+		}
+
+		public IEnumerable<BuildOutputNode> GetRootNodes ()
+		{
+			foreach (var proj in projects) {
+				if (proj.RootNodes?.Count > 0) {
+					foreach (var node in proj.RootNodes) {
+						yield return node;
+					}
+				}
+			}
 		}
 
 		internal void RaiseOutputChanged ()
@@ -269,13 +264,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			buildOutput = output;
 			this.includeDiagnostics = includeDiagnostics;
 			if (includeDiagnostics) {
-				rootNodes = buildOutput.RootNodes.ToList ();
+				rootNodes = buildOutput.GetRootNodes ().ToList ();
 			} else {
 				// If not including diagnostics, we need to filter the nodes,
 				// but instead of doing so now for all, we do it on the fly,
 				// as nodes are requested
 				rootNodes = new List<BuildOutputNode> ();
-				foreach (var root in buildOutput.RootNodes) {
+				foreach (var root in buildOutput.GetRootNodes ()) {
 					rootNodes.Add (new FilteredBuildOutputNode (root, null, includeDiagnostics));
 				}
 			}
