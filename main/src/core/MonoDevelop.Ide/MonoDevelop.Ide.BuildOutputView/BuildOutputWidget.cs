@@ -134,21 +134,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 		}
 
 		CancellationTokenSource cts;
-		/*
-		static void ExpandChildrenWithErrors (TreeView tree, TreeStore store, TreeIter parent)
+
+		static void ExpandChildrenWithErrors (TreeView tree, BuildOutputDataSource dataSource, BuildOutputNode parent)
 		{
-			TreeIter child = TreeIter.Zero;
-			var node = store.GetValue (parent, 0) as BuildOutputNode;
-			if (node?.HasErrors ?? false && store.IterChildren (out child, parent)) {
-				do {
-					var childNode = store.GetValue (child, 0) as BuildOutputNode;
-					if (childNode?.HasErrors ?? false) {
-						tree.ExpandRow (store.GetPath (child), false);
-						ExpandChildrenWithErrors (tree, store, child);
-					}
-				} while (store.IterNext (ref child));
+			int totalChildren = dataSource.GetChildrenCount (parent);
+			for (int i = 0; i < totalChildren; i++) {
+				var child = dataSource.GetChild (parent, i) as BuildOutputNode;
+				if ((child?.HasErrors ?? false) || (child?.HasWarnings ?? false)) {
+					tree.ExpandToRow (child);
+					ExpandChildrenWithErrors (tree, dataSource, child);
+				}
 			}
-		}*/
+		}
 
 		void ProcessLogs (bool showDiagnostics)
 		{
@@ -158,18 +155,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 			Task.Run (async () => {
 				// Expand root nodes and nodes with errors
 				await Runtime.RunInMainThread (() => {
-					var dataSource = BuildOutput.ToTreeDataSource (showDiagnosticsButton.Active);
+					var dataSource = BuildOutput.ToTreeDataSource (showDiagnostics);
 					treeView.DataSource = dataSource;
 					(treeView.Columns [0].Views [0] as ImageCellView).ImageField = dataSource.ImageField;
 					(treeView.Columns [0].Views [1] as TextCellView).MarkupField = dataSource.LabelField;
 
-					/*TreeIter it;
-					if (model.GetIterFirst (out it)) {
-						do {
-							treeView.ExpandRow (model.GetPath (it), false);
-							ExpandChildrenWithErrors (treeView, model, it);
-						} while (model.IterNext (ref it));
-					}*/
+					int rootsCount = dataSource.GetChildrenCount (null);
+					for (int i = 0; i < rootsCount; i++) {
+						var root = dataSource.GetChild (null, i) as BuildOutputNode;
+						treeView.ExpandRow (root, false);
+						ExpandChildrenWithErrors (treeView, dataSource, root);
+					}
 				});
 			}, cts.Token);
 		}
