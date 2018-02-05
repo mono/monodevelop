@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			int totalChildren = dataSource.GetChildrenCount (parent);
 			for (int i = 0; i < totalChildren; i++) {
 				var child = dataSource.GetChild (parent, i) as BuildOutputNode;
-				if ((child?.HasErrors ?? false) || (child?.HasWarnings ?? false)) {
+				if ((child?.HasErrors ?? false)) {
 					tree.ExpandToRow (child);
 					ExpandChildrenWithErrors (tree, dataSource, child);
 				}
@@ -153,13 +153,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			cts = new CancellationTokenSource ();
 
 			Task.Run (async () => {
-				// Expand root nodes and nodes with errors
 				await Runtime.RunInMainThread (() => {
 					var dataSource = BuildOutput.ToTreeDataSource (showDiagnostics);
 					treeView.DataSource = dataSource;
 					(treeView.Columns [0].Views [0] as ImageCellView).ImageField = dataSource.ImageField;
 					(treeView.Columns [0].Views [1] as TextCellView).MarkupField = dataSource.LabelField;
 
+					// Expand root nodes and nodes with errors
 					int rootsCount = dataSource.GetChildrenCount (null);
 					for (int i = 0; i < rootsCount; i++) {
 						var root = dataSource.GetChild (null, i) as BuildOutputNode;
