@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Editor;
 using Microsoft.Build.Logging;
 using Microsoft.Build.Framework;
 using Gtk;
+using Xwt;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -42,8 +43,22 @@ namespace MonoDevelop.Ide.BuildOutputView
 	{
 		BuildOutputProgressMonitor progressMonitor;
 		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
+		List<BuildOutputNode> rootNodes;
 
 		public event EventHandler OutputChanged;
+
+		public IReadOnlyList<BuildOutputNode> RootNodes {
+			get {
+				if (rootNodes == null) {
+					rootNodes = new List<BuildOutputNode> ();
+					foreach (var proj in projects) {
+						rootNodes.AddRange (proj.RootNodes);
+					}
+				}
+
+				return rootNodes;
+			}
+		}
 
 		public ProgressMonitor GetProgressMonitor ()
 		{
@@ -139,12 +154,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		internal void AddProcessor (BuildOutputProcessor processor)
 		{
-			projects.Add (processor); 
+			projects.Add (processor);
+			rootNodes?.Clear ();
 		}
 
 		internal void Clear ()
 		{
 			projects.Clear ();
+			rootNodes?.Clear ();
 			RaiseOutputChanged ();
 		}
 
@@ -153,16 +170,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 			OutputChanged?.Invoke (this, EventArgs.Empty);
 		}
 
-		public async Task<TreeStore> ToTreeStore (bool includeDiagnostics)
+		public BuildOutputDataSource ToTreeDataSource (bool includeDiagnostics)
 		{
-			var store = await Runtime.RunInMainThread (() => new TreeStore (typeof (BuildOutputNode)));
-
 			foreach (var p in projects) {
 				p.Process ();
-				await p.ToTreeStore (store, includeDiagnostics);
 			}
 
-			return store;
+			// FIXME: always includes all nodes, needs to be filtered if
+			// includeDiagnostics == false
+			return new BuildOutputDataSource (this);
 		}
 
 		bool disposed = false;
@@ -230,6 +246,100 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (currentCustomProject != null) {
 				currentCustomProject.AddNode (BuildOutputNodeType.Message, message, false);
 			}
+		}
+	}
+
+	class BuildOutputDataSource : ITreeDataSource
+	{
+		BuildOutput buildOutput;
+
+		public DataField<Xwt.Drawing.Image> ImageField = new DataField<Xwt.Drawing.Image> (0);
+		public DataField<string> LabelField = new DataField<string> (1);
+
+		public BuildOutputDataSource (BuildOutput output)
+		{
+			buildOutput = output;
+		}
+
+		public Type [] ColumnTypes => new Type [] { typeof (Xwt.Drawing.Image), typeof (string) };
+
+		public event EventHandler<TreeNodeEventArgs> NodeInserted;
+		public event EventHandler<TreeNodeChildEventArgs> NodeDeleted;
+		public event EventHandler<TreeNodeEventArgs> NodeChanged;
+		public event EventHandler<TreeNodeOrderEventArgs> NodesReordered;
+
+		public TreePosition GetChild (TreePosition pos, int index)
+		{
+			var node = pos as BuildOutputNode;
+			if (node != null) {
+				if (node.Children != null && node.Children.Count > index) {
+					Console.WriteLine ($"Returning child {node.Message} at position {index} at {Environment.StackTrace}");
+					return node.Children [index];
+				}
+			} else {
+				var rootNodes = buildOutput.RootNodes;
+				if (rootNodes.Count > index) {
+					Console.WriteLine ($"Returning root {rootNodes[index].Message} at position {index} at {Environment.StackTrace}");
+					return rootNodes [index];
+				}
+			}
+
+			return null;
+		}
+
+		public int GetChildrenCount (TreePosition pos)
+		{
+			var node = pos as BuildOutputNode;
+			if (node != null) {
+				Console.WriteLine ($"Returning child count {node.Children?.Count ?? 0} for {node.Message} at {Environment.StackTrace}");
+				return node.Children?.Count ?? 0;
+			} else {
+				Console.WriteLine ($"Returning child count {buildOutput.RootNodes?.Count ?? 0}  at {Environment.StackTrace}");
+				return buildOutput.RootNodes?.Count ?? 0;
+			}
+		}
+
+		public TreePosition GetParent (TreePosition pos)
+		{
+			var node = pos as BuildOutputNode;
+			return node?.Parent;
+		}
+
+		public object GetValue (TreePosition pos, int column)
+		{
+			var node = pos as BuildOutputNode;
+			if (node != null) {
+				switch (column) {
+				case 0: // Image
+					switch (node.NodeType) {
+					case BuildOutputNodeType.Build:
+						return ImageService.GetIcon (Ide.Gui.Stock.StatusBuild, Gtk.IconSize.Menu);
+					case BuildOutputNodeType.Error:
+						return ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
+					case BuildOutputNodeType.Project:
+						return ImageService.GetIcon (Ide.Gui.Stock.Project, Gtk.IconSize.Menu);
+					case BuildOutputNodeType.Warning:
+						return ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
+					}
+
+					return ImageService.GetIcon (Ide.Gui.Stock.Empty);
+				case 1: // Text
+					bool toplevel = node.Parent == null;
+
+					if (toplevel) {
+						return "<b>" + GLib.Markup.EscapeText (node.Message) + "</b>";
+					} else {
+						return node.Message;
+					}
+				}
+			}
+
+			return null;
+		}
+
+		public void SetValue (TreePosition pos, int column, object value)
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }

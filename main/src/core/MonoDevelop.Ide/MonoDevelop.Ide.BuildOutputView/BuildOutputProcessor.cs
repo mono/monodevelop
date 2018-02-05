@@ -29,9 +29,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using MonoDevelop.Ide.Editor;
-using Gtk;
 using MonoDevelop.Core;
+using Xwt;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -47,7 +46,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Diagnostics
 	}
 
-	class BuildOutputNode
+	class BuildOutputNode : TreePosition
 	{
 		public BuildOutputNodeType NodeType { get; set; }
 		public string Message { get; set; }
@@ -68,6 +67,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			FileName = fileName;
 			RemoveFileOnDispose = removeFileOnDispose;
 		}
+
+		public IReadOnlyList<BuildOutputNode> RootNodes => rootNodes;
 
 		public string FileName { get; }
 
@@ -120,42 +121,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public void EndCurrentNode (string message)
 		{
 			currentNode = currentNode?.Parent;
-		}
-
-		private async Task ProcessChildren (TreeStore store, TreeIter parentIter, BuildOutputNode node, bool includeDiagnostics)
-		{
-			foreach (var child in node.Children) {
-				await ProcessNode (store, parentIter, child, includeDiagnostics);
-			}
-		}
-
-		private async Task ProcessNode (TreeStore store, TreeIter parentIter, BuildOutputNode node, bool includeDiagnostics)
-		{
-			// For non-diagnostics mode, only return nodes with data
-			if (!includeDiagnostics && (node.NodeType == BuildOutputNodeType.Diagnostics ||
-										(!node.HasData && !node.HasErrors && !node.HasWarnings))) {
-				return;
-			}
-
-			TreeIter it = TreeIter.Zero;
-			await Runtime.RunInMainThread (() => {
-				if (parentIter.Equals (TreeIter.Zero)) {
-					it = store.AppendValues (node);
-				} else {
-					it = store.AppendValues (parentIter, node);
-				}
-			});
-
-			if (node.Children.Count > 0) {
-				await ProcessChildren (store, it, node, includeDiagnostics);
-			}
-		}
-
-		public async Task ToTreeStore (TreeStore store, bool includeDiagnostics)
-		{
-			foreach (var node in rootNodes) {
-				await ProcessNode (store, TreeIter.Zero, node, includeDiagnostics);
-			}
 		}
 
 		bool disposed = false;
