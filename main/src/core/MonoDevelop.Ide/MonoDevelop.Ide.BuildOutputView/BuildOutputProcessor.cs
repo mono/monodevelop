@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (currentNode == null) {
 				rootNodes.Add (node);
 			} else {
-				currentNode.Children.Add (node);
+				currentNode.AddChild (node);
 				node.Parent = currentNode;
 			}
 

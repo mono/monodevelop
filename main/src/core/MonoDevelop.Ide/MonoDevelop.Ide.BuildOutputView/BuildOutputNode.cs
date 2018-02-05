@@ -47,10 +47,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public virtual BuildOutputNodeType NodeType { get; set; }
 		public virtual string Message { get; set; }
 		public BuildOutputNode Parent { get; set; }
-		public virtual IList<BuildOutputNode> Children { get; } = new List<BuildOutputNode> ();
 		public virtual bool HasErrors { get; set; }
 		public virtual bool HasWarnings { get; set; }
 		public virtual bool HasData { get; set; }
+
+		List<BuildOutputNode> children;
+		public virtual IReadOnlyList<BuildOutputNode> Children => children;
+
+		public void AddChild (BuildOutputNode child)
+		{
+			if (children == null) {
+				children = new List<BuildOutputNode> ();
+			}
+
+			children.Add (child);
+		}
 	}
 
 	class FilteredBuildOutputNode : BuildOutputNode
@@ -71,25 +82,23 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public override bool HasErrors { get => masterNode.HasErrors; set => masterNode.HasErrors = value; }
 		public override bool HasWarnings { get => masterNode.HasWarnings; set => masterNode.HasWarnings = value; }
 
-		List<BuildOutputNode> children;
-		public override IList<BuildOutputNode> Children {
+		public override IReadOnlyList<BuildOutputNode> Children {
 			get {
 				if (!hasBeenFiltered) {
 					if ((masterNode.Children?.Count ?? 0) > 0) {
-						children = new List<BuildOutputNode> ();
 						foreach (var child in masterNode.Children) {
 							if (!includeDiagnostics && (child.NodeType == BuildOutputNodeType.Diagnostics ||
 														(!child.HasData && !child.HasErrors && !child.HasWarnings))) {
 								continue;
 							}
-							children.Add (new FilteredBuildOutputNode (child, this, includeDiagnostics));
+							AddChild (new FilteredBuildOutputNode (child, this, includeDiagnostics));
 						}
 					}
 
 					hasBeenFiltered = true;
 				}
 
-				return children;
+				return base.Children;
 			}
 		}
 	}
