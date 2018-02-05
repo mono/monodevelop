@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using Gtk;
+using Xwt;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -42,8 +42,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 	class BuildOutputWidget : VBox
 	{
 		TreeView treeView;
-		CompactScrolledWindow scrolledWindow;
-		CheckButton showDiagnosticsButton;
+		ScrollView scrolledWindow;
+		CheckBox showDiagnosticsButton;
 		Button saveButton;
 
 		public string ViewContentName { get; private set; }
@@ -76,53 +76,22 @@ namespace MonoDevelop.Ide.BuildOutputView
 			BuildOutput.OutputChanged += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 		}
 
-		Button MakeButton (string image, string name, out Label label)
-		{
-			var btnBox = MakeHBox (image, out label);
-
-			var btn = new Button { Name = name };
-			btn.Child = btnBox;
-
-			return btn;
-		}
-
-		HBox MakeHBox (string image, out Label label)
-		{
-			var btnBox = new HBox (false, 2);
-			btnBox.Accessible.SetShouldIgnore (true);
-			var imageView = new ImageView (image, Gtk.IconSize.Menu);
-			imageView.Accessible.SetShouldIgnore (true);
-			btnBox.PackStart (imageView);
-
-			label = new Label ();
-			label.Accessible.SetShouldIgnore (true);
-			btnBox.PackStart (label);
-
-			return btnBox;
-		}
-
 		void Initialize ()
 		{
-			showDiagnosticsButton = new CheckButton (GettextCatalog.GetString ("Show Diagnostics")) {
-				BorderWidth = 0
-			};
-			showDiagnosticsButton.Accessible.Name = "BuildOutputWidget.ShowDiagnosticsButton";
+			showDiagnosticsButton = new CheckBox (GettextCatalog.GetString ("Show Diagnostics"));
+			showDiagnosticsButton.Accessible.Identifier = "BuildOutputWidget.ShowDiagnosticsButton";
 			showDiagnosticsButton.TooltipText = GettextCatalog.GetString ("Show full (diagnostics enabled) or reduced log");
 			showDiagnosticsButton.Accessible.Description = GettextCatalog.GetString ("Show Diagnostics");
 			showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 
-			Label saveLbl;
-
-			saveButton = MakeButton (Gui.Stock.SaveIcon, GettextCatalog.GetString ("Save"), out saveLbl);
-			saveButton.Accessible.Name = "BuildOutputWidget.SaveButton";
+			saveButton = new Button (GettextCatalog.GetString ("Save"));
+			saveButton.Accessible.Identifier = "BuildOutputWidget.SaveButton";
 			saveButton.TooltipText = GettextCatalog.GetString ("Save build output");
 			saveButton.Accessible.Description = GettextCatalog.GetString ("Save build output");
 
-			saveLbl.Text = GettextCatalog.GetString ("Save");
-			saveButton.Accessible.SetTitle (saveLbl.Text);
 			saveButton.Clicked += async (sender, e) => {
 				const string binLogExtension = "binlog";
-				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
+				var dlg = new Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
 					TransientFor = IdeApp.Workbench.RootWindow,
 					InitialFileName = ViewContentName
 				};
@@ -139,79 +108,33 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var toolbar = new DocumentToolbar ();
 
 			toolbar.AddSpace ();
-			toolbar.Add (showDiagnosticsButton);
-			toolbar.Add (saveButton);
-			PackStart (toolbar.Container, expand: false, fill: true, padding: 0);
+			toolbar.Add (showDiagnosticsButton.ToGtkWidget ());
+			toolbar.Add (saveButton.ToGtkWidget ());
+			PackStart (toolbar.Container, expand: false, fill: true);
 
 			treeView = new TreeView ();
 			treeView.HeadersVisible = false;
-			treeView.Accessible.Name = "BuildOutputWidget.TreeView";
+			treeView.Accessible.Identifier = "BuildOutputWidget.TreeView";
 			treeView.Accessible.Description = GettextCatalog.GetString ("Structured build output");
 
-			TreeViewColumn col = new TreeViewColumn ();
-			var crp = new CellRendererImage ();
-			col.PackStart (crp, false);
-			col.SetCellDataFunc (crp, PixbufCellDataFunc);
-			var crt = new CellRendererText ();
-			col.PackStart (crt, true);
-			col.SetCellDataFunc (crt, TextCellDataFunc);
-			treeView.AppendColumn (col);
+			var treeColumn = new ListViewColumn {
+				CanResize = false,
+				Expands = true
+			};
+			var imageCell = new ImageCellView ();
+			var textCell = new TextCellView ();
+			treeColumn.Views.Add (imageCell);
+			treeColumn.Views.Add (textCell);
+			treeView.Columns.Add (treeColumn);
 
-			treeView.ExpanderColumn = col;
+			scrolledWindow = new ScrollView ();
+			scrolledWindow.Content = treeView;
 
-			scrolledWindow = new CompactScrolledWindow ();
-			scrolledWindow.AddWithViewport (treeView);
-
-			PackStart (scrolledWindow, expand: true, fill: true, padding: 0);
-			ShowAll ();
-		}
-
-		static void PixbufCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
-		{
-			var crp = (CellRendererImage)cell;
-			var node = (BuildOutputNode)model.GetValue (iter, 0);
-			switch (node.NodeType) {
-			case BuildOutputNodeType.Build:
-				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.StatusBuild, IconSize.Menu);
-				break;
-			case BuildOutputNodeType.Error:
-				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.Error, IconSize.Menu);
-				break;
-			case BuildOutputNodeType.Project:
-				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.Project, IconSize.Menu);
-				break;
-			case BuildOutputNodeType.Warning:
-				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.Warning, IconSize.Menu);
-				break;
-			default:
-				crp.Image = ImageService.GetIcon (Ide.Gui.Stock.Empty);
-				break;
-			}
-		}
-
-		static void TextCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
-		{
-			TreeIter parent;
-			bool toplevel = !model.IterParent (out parent, iter);
-
-			var crt = (CellRendererText)cell;
-			var node = (BuildOutputNode)model.GetValue (iter, 0);
-
-			if (toplevel) {
-				crt.Markup = "<b>" + GLib.Markup.EscapeText (node.Message) + "</b>";
-			} else {
-				crt.Text = node.Message;
-			}
-		}
-
-		protected override void OnDestroyed ()
-		{
-			treeView.Dispose ();
-			base.OnDestroyed ();
+			PackStart (scrolledWindow, expand: true, fill: true);
 		}
 
 		CancellationTokenSource cts;
-
+		/*
 		static void ExpandChildrenWithErrors (TreeView tree, TreeStore store, TreeIter parent)
 		{
 			TreeIter child = TreeIter.Zero;
@@ -225,7 +148,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					}
 				} while (store.IterNext (ref child));
 			}
-		}
+		}*/
 
 		void ProcessLogs (bool showDiagnostics)
 		{
@@ -233,19 +156,20 @@ namespace MonoDevelop.Ide.BuildOutputView
 			cts = new CancellationTokenSource ();
 
 			Task.Run (async () => {
-				var model = await BuildOutput.ToTreeStore (showDiagnostics);
-
 				// Expand root nodes and nodes with errors
 				await Runtime.RunInMainThread (() => {
-					treeView.Model = model;
+					var dataSource = BuildOutput.ToTreeDataSource (showDiagnosticsButton.Active);
+					treeView.DataSource = dataSource;
+					(treeView.Columns [0].Views [0] as ImageCellView).ImageField = dataSource.ImageField;
+					(treeView.Columns [0].Views [1] as TextCellView).MarkupField = dataSource.LabelField;
 
-					TreeIter it;
+					/*TreeIter it;
 					if (model.GetIterFirst (out it)) {
 						do {
 							treeView.ExpandRow (model.GetPath (it), false);
 							ExpandChildrenWithErrors (treeView, model, it);
 						} while (model.IterNext (ref it));
-					}
+					}*/
 				});
 			}, cts.Token);
 		}
