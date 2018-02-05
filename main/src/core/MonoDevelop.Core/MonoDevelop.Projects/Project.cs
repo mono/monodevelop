@@ -3280,6 +3280,14 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public bool UseAdvancedGlobSupport { get; set; }
 
+		/// <summary>
+		/// When set to true if new file is added to a project that does not have
+		/// the metadata properties defined by a update glob item then the item will
+		/// not be excluded but will be treated as though it had these metadata properties
+		/// with the same values.
+		/// </summary>
+		public bool UseDefaultMetadataForExcludedExpandedItems { get; set; }
+
 		HashSet<MSBuildItem> usedMSBuildItems = new HashSet<MSBuildItem> ();
 		HashSet<ProjectItem> loadedProjectItems = new HashSet<ProjectItem> ();
 
@@ -3675,7 +3683,7 @@ namespace MonoDevelop.Projects
 							it.ParentProject.RemoveItem (it);
 					}
 					// If this metadata is defined in the glob item, the only option is to exclude the item from the glob.
-					if (globItem.Metadata.HasProperty (p.Name)) {
+					if (globItem.Metadata.HasProperty (p.Name) && !UseDefaultMetadataForExcludedExpandedItems) {
 						// Get rid of all update items, not needed anymore since a full new item will be added
 						foreach (var it in updateItems) {
 							if (it.ParentNode != null)

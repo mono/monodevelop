@@ -1013,8 +1013,9 @@ namespace MonoDevelop.Projects
 			p.Dispose ();
 		}
 
-		[Test]
-		public async Task AddFile_WildCardHasMetadataProperties ()
+		[TestCase (true)] // Add metadata to xaml file before adding to project.
+		[TestCase (false)] // Do not add any metadata to xaml file before adding to project.
+		public async Task AddFile_WildCardHasMetadataProperties (bool addXamlFileMetadataBeforeAddingToProject)
 		{
 			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
 			WorkspaceObject.RegisterCustomExtension (fn);
@@ -1025,6 +1026,7 @@ namespace MonoDevelop.Projects
 
 				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 				p.UseAdvancedGlobSupport = true;
+				p.UseDefaultMetadataForExcludedExpandedItems = true;
 
 				var xamlFileName1 = projFile.ParentDirectory.Combine ("MyView1.xaml");
 				File.WriteAllText (xamlFileName1, "xaml1");
@@ -1033,8 +1035,10 @@ namespace MonoDevelop.Projects
 
 				// Xaml file with Generator and Subtype set to match that defined in the glob.
 				var xamlFile1 = new ProjectFile (xamlFileName1, BuildAction.EmbeddedResource);
-				xamlFile1.Generator = "MSBuild:UpdateDesignTimeXaml";
-				xamlFile1.ContentType = "Designer";
+				if (addXamlFileMetadataBeforeAddingToProject) {
+					xamlFile1.Generator = "MSBuild:UpdateDesignTimeXaml";
+					xamlFile1.ContentType = "Designer";
+				}
 				p.Files.Add (xamlFile1);
 
 				var xamlCSharpFile = p.AddFile (xamlCSharpFileName);
