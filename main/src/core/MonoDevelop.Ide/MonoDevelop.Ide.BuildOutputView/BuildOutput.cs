@@ -251,6 +251,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputDataSource : ITreeDataSource
 	{
+		readonly Xwt.Drawing.Image buildIcon;
+		readonly Xwt.Drawing.Image messageIcon;
+		readonly Xwt.Drawing.Image errorIcon;
+		readonly Xwt.Drawing.Image projectIcon;
+		readonly Xwt.Drawing.Image targetIcon;
+		readonly Xwt.Drawing.Image taskIcon;
+		readonly Xwt.Drawing.Image warningIcon;
 		BuildOutput buildOutput;
 
 		public DataField<Xwt.Drawing.Image> ImageField = new DataField<Xwt.Drawing.Image> (0);
@@ -259,6 +266,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public BuildOutputDataSource (BuildOutput output)
 		{
 			buildOutput = output;
+
+			// Load icons to avoid calling the ImageService every time
+			buildIcon = ImageService.GetIcon (Ide.Gui.Stock.StatusBuild, Gtk.IconSize.Menu);
+			messageIcon = ImageService.GetIcon (Ide.Gui.Stock.MessageLog, Gtk.IconSize.Menu);
+			errorIcon = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
+			projectIcon = ImageService.GetIcon (Ide.Gui.Stock.Project, Gtk.IconSize.Menu);
+			targetIcon = ImageService.GetIcon (Ide.Gui.Stock.Event, Gtk.IconSize.Menu);
+			taskIcon = ImageService.GetIcon (Ide.Gui.Stock.Execute, Gtk.IconSize.Menu);
+			warningIcon = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 		}
 
 		public Type [] ColumnTypes => new Type [] { typeof (Xwt.Drawing.Image), typeof (string) };
@@ -309,20 +325,20 @@ namespace MonoDevelop.Ide.BuildOutputView
 				case 0: // Image
 					switch (node.NodeType) {
 					case BuildOutputNodeType.Build:
-						return ImageService.GetIcon (Ide.Gui.Stock.StatusBuild, Gtk.IconSize.Menu);
+						return buildIcon;
 					case BuildOutputNodeType.Diagnostics:
 					case BuildOutputNodeType.Message:
-						return ImageService.GetIcon (Ide.Gui.Stock.MessageLog, Gtk.IconSize.Menu);
+						return messageIcon;
 					case BuildOutputNodeType.Error:
-						return ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
+						return errorIcon;
 					case BuildOutputNodeType.Project:
-						return ImageService.GetIcon (Ide.Gui.Stock.Project, Gtk.IconSize.Menu);
+						return projectIcon;
 					case BuildOutputNodeType.Target:
-						return ImageService.GetIcon (Ide.Gui.Stock.Event, Gtk.IconSize.Menu);
+						return targetIcon;
 					case BuildOutputNodeType.Task:
-						return ImageService.GetIcon (Ide.Gui.Stock.Execute, Gtk.IconSize.Menu);
+						return taskIcon;
 					case BuildOutputNodeType.Warning:
-						return ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
+						return warningIcon;
 					}
 
 					return ImageService.GetIcon (Ide.Gui.Stock.Empty);
