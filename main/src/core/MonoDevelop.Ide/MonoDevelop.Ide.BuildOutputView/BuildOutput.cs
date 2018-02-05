@@ -314,10 +314,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 					switch (node.NodeType) {
 					case BuildOutputNodeType.Build:
 						return ImageService.GetIcon (Ide.Gui.Stock.StatusBuild, Gtk.IconSize.Menu);
+					case BuildOutputNodeType.Diagnostics:
+					case BuildOutputNodeType.Message:
+						return ImageService.GetIcon (Ide.Gui.Stock.MessageLog, Gtk.IconSize.Menu);
 					case BuildOutputNodeType.Error:
 						return ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
 					case BuildOutputNodeType.Project:
 						return ImageService.GetIcon (Ide.Gui.Stock.Project, Gtk.IconSize.Menu);
+					case BuildOutputNodeType.Target:
+						return ImageService.GetIcon (Ide.Gui.Stock.Event, Gtk.IconSize.Menu);
+					case BuildOutputNodeType.Task:
+						return ImageService.GetIcon (Ide.Gui.Stock.Execute, Gtk.IconSize.Menu);
 					case BuildOutputNodeType.Warning:
 						return ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 					}
