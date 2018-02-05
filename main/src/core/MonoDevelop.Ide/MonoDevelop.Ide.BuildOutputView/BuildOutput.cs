@@ -273,13 +273,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var node = pos as BuildOutputNode;
 			if (node != null) {
 				if (node.Children != null && node.Children.Count > index) {
-					Console.WriteLine ($"Returning child {node.Message} at position {index} at {Environment.StackTrace}");
 					return node.Children [index];
 				}
 			} else {
 				var rootNodes = buildOutput.RootNodes;
 				if (rootNodes.Count > index) {
-					Console.WriteLine ($"Returning root {rootNodes[index].Message} at position {index} at {Environment.StackTrace}");
 					return rootNodes [index];
 				}
 			}
@@ -291,10 +289,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			var node = pos as BuildOutputNode;
 			if (node != null) {
-				Console.WriteLine ($"Returning child count {node.Children?.Count ?? 0} for {node.Message} at {Environment.StackTrace}");
 				return node.Children?.Count ?? 0;
 			} else {
-				Console.WriteLine ($"Returning child count {buildOutput.RootNodes?.Count ?? 0}  at {Environment.StackTrace}");
 				return buildOutput.RootNodes?.Count ?? 0;
 			}
 		}
