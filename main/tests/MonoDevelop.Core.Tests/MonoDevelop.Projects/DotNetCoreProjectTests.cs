@@ -389,5 +389,51 @@ namespace MonoDevelop.Projects
 
 			sol.Dispose ();
 		}
+
+		/// <summary>
+		/// Adds a .xaml and .xaml.cs file, then excludes them from the project, then
+		/// removes the remove items from the project file by overwriting it, then
+		/// reload the project. The DependsOn information was being lost after the
+		/// items were first excluded from the project.
+		/// </summary>
+		[Test]
+		public async Task ReloadModifiedFile_XamarinFormsVersion24PackageReference ()
+		{
+			FilePath solFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms.sln");
+
+			var process = Process.Start ("msbuild", $"/t:Restore {solFile}");
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+			Assert.AreEqual (0, process.ExitCode);
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (Project)sol.Items [0];
+			string originalProjectXml = File.ReadAllText (p.FileName);
+
+			var xamlCSharpFile = p.Files.Single (fi => fi.FilePath.FileName == "MyPage.xaml.cs");
+			var xamlFile = p.Files.Single (fi => fi.FilePath.FileName == "MyPage.xaml");
+
+			Assert.AreEqual (xamlFile, xamlCSharpFile.DependsOnFile);
+
+			p.Files.Remove (xamlCSharpFile);
+			p.Files.Remove (xamlFile);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			// Remove items added.
+			string projectXml = File.ReadAllText (p.FileName);
+			string expectedProjectXml = File.ReadAllText (p.FileName.ChangeName ("NetStandardXamarinForms-saved"));
+			Assert.AreEqual (expectedProjectXml, projectXml);
+
+			File.WriteAllText (p.FileName, originalProjectXml);
+			var reloadedProject = (DotNetProject)await sol.RootFolder.ReloadItem (Util.GetMonitor (), p);
+
+			xamlCSharpFile = reloadedProject.Files.Single (fi => fi.FilePath.FileName == "MyPage.xaml.cs");
+			xamlFile = reloadedProject.Files.Single (fi => fi.FilePath.FileName == "MyPage.xaml");
+
+			Assert.AreEqual (xamlFile.FilePath.ToString (), xamlCSharpFile.DependsOn);
+			Assert.AreEqual (xamlCSharpFile.DependsOnFile, xamlFile);
+
+			sol.Dispose ();
+		}
 	}
 }
