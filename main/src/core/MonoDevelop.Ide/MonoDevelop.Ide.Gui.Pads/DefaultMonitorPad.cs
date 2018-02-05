@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		}
 
 		internal bool ClearOnBeginProgress { get; set; } = true;
-		
+
 		public OutputProgressMonitor BeginProgress (string title)
 		{
 			progressStarted = true;
