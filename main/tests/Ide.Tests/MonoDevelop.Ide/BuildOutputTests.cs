@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide
 		}
 
 		[Test]
-		public async Task CustomProject_ToTextEditor ()
+		public void CustomProject_ToDataSource ()
 		{
 			var bo = new BuildOutput ();
 			var monitor = bo.GetProgressMonitor ();
@@ -52,12 +52,12 @@ namespace MonoDevelop.Ide
 			monitor.Log.Write ("Custom project built");
 			monitor.LogObject (new ProjectFinishedProgressEvent ());
 
-			var editor = TextEditorFactory.CreateNewEditor ();
-			var result = await bo.ToTextEditor (editor, true);
+			var dataSource = bo.ToTreeDataSource (true);
+			var child = dataSource.GetChild (dataSource.GetChild (null, 0), 0);
 
-			Assert.That (result.Item1, Is.Not.Empty);
-			Assert.That (result.Item1, Contains.Substring ("Custom project built"));
-			Assert.NotNull (result.Item2);
+			Assert.That (dataSource.GetChildrenCount (null), Is.EqualTo (1));
+			Assert.That (child, Is.TypeOf (typeof (BuildOutputNode)));
+			Assert.That ((child as BuildOutputNode).Message, Is.EqualTo ("Custom project built"));
 		}
 	}
 }
