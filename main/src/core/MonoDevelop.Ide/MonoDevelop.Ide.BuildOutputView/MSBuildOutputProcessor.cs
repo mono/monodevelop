@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using Microsoft.Build.Logging;
 using Microsoft.Build.Framework;
 using MonoDevelop.Core;
@@ -103,7 +104,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Project, e.Message, true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Project, Path.GetFileName (e.ProjectFile), true, e.Timestamp);
 		}
 
 		private void BinLog_ProjectFinished (object sender, ProjectFinishedEventArgs e)
@@ -113,7 +114,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_TargetStarted (object sender, TargetStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Target, e.Message, true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Target, e.TargetName, true, e.Timestamp);
 		}
 
 		private void BinLog_TargetFinished (object sender, TargetFinishedEventArgs e)
@@ -128,7 +129,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			AddNode (BuildOutputNodeType.Task, e.Message, true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Task, e.TaskName, true, e.Timestamp);
 		}
 
 		private void BinLog_TaskFinished (object sender, TaskFinishedEventArgs e)
