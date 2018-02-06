@@ -11,7 +11,7 @@
     <UsePartialTypes>False</UsePartialTypes>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFSharpCoreVersion>4.4.1.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.3.0</TargetFSharpCoreVersion>
     <SignAssembly>true</SignAssembly>
     <OtherFlags>--publicsign</OtherFlags>
     <AssemblyOriginatorKeyFile>..\..\..\msbuild\MonoDevelop-Public.snk</AssemblyOriginatorKeyFile>
@@ -58,7 +58,7 @@
     <ItemGroup>
       <NuGetPackage Include="FSharp.Core">
         <Name>fsharp.core</Name>
-        <Version>4.1.0.2</Version>
+        <Version>4.3.0</Version>
       </NuGetPackage>
       <NuGetPackage Include="System.ValueTuple">
         <Name>system.valuetuple</Name>
