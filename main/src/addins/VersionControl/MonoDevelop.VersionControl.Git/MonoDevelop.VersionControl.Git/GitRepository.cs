@@ -602,7 +602,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void OnUpdate (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			// TODO: Make it work differently for submodules.
-			monitor.BeginTask (GettextCatalog.GetString (GettextCatalog.GetString ("Updating")), 5);
+			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
 
 			if (RootRepository.Head.IsTracking) {
 				Fetch (monitor, RootRepository.Head.Remote.Name);
