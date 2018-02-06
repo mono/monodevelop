@@ -46,6 +46,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 	{
 		public virtual BuildOutputNodeType NodeType { get; set; }
 		public virtual string Message { get; set; }
+		public DateTime StartTime { get; set; }
+		public DateTime EndTime { get; set; }
 		public BuildOutputNode Parent { get; set; }
 		public virtual bool HasErrors { get; set; }
 		public virtual bool HasWarnings { get; set; }

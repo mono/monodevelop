@@ -221,13 +221,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 					BuildOutput.Load (pspe.LogFile, true); 
 				} else {
 					currentCustomProject = new BuildOutputProcessor (pspe.LogFile, false);
-					currentCustomProject.AddNode (BuildOutputNodeType.Project, "Custom project", true);
+					currentCustomProject.AddNode (BuildOutputNodeType.Project, "Custom project", true, pspe.TimeStamp);
 					BuildOutput.AddProcessor (currentCustomProject);
 				}
 				break;
 			case ProjectFinishedProgressEvent psfe:
 				if (currentCustomProject != null) {
-					currentCustomProject.EndCurrentNode (null);
+					currentCustomProject.EndCurrentNode (null, psfe.TimeStamp);
 				}
 				currentCustomProject = null;
 				BuildOutput.RaiseOutputChanged ();
@@ -238,7 +238,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		protected override void OnWriteLog (string message)
 		{
 			if (currentCustomProject != null) {
-				currentCustomProject.AddNode (BuildOutputNodeType.Message, message, false);
+				currentCustomProject.AddNode (BuildOutputNodeType.Message, message, false, DateTime.Now);
 			}
 		}
 	}

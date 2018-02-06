@@ -68,22 +68,22 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_BuildStarted (object sender, BuildStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Build, e.Message, true);
+			AddNode (BuildOutputNodeType.Build, e.Message, true, e.Timestamp);
 		}
 
 		private void BinLog_BuildFinished (object sender, BuildFinishedEventArgs e)
 		{
-			EndCurrentNode (e.Message);
+			EndCurrentNode (e.Message, e.Timestamp);
 		}
 
 		private void BinLog_ErrorRaised (object sender, BuildErrorEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Error, e.Message, false);
+			AddNode (BuildOutputNodeType.Error, e.Message, false, e.Timestamp);
 		}
 
 		private void BinLog_WarningRaised (object sender, BuildWarningEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Warning, e.Message, false);
+			AddNode (BuildOutputNodeType.Warning, e.Message, false, e.Timestamp);
 		}
 
 		void BinlogReader_MessageRaised (object sender, BuildMessageEventArgs e)
@@ -97,28 +97,28 @@ namespace MonoDevelop.Ide.BuildOutputView
 				// TODO: we should probably parse them and associate those stats
 				// with the correct build step, so that we get stats for those
 			} else {
-				AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message, e.Message, false);
+				AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message, e.Message, false, e.Timestamp);
 			}
 		}
 
 		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Project, e.Message, true);
+			AddNode (BuildOutputNodeType.Project, e.Message, true, e.Timestamp);
 		}
 
 		private void BinLog_ProjectFinished (object sender, ProjectFinishedEventArgs e)
 		{
-			EndCurrentNode (e.Message);
+			EndCurrentNode (e.Message, e.Timestamp);
 		}
 
 		private void BinLog_TargetStarted (object sender, TargetStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Target, e.Message, true);
+			AddNode (BuildOutputNodeType.Target, e.Message, true, e.Timestamp);
 		}
 
 		private void BinLog_TargetFinished (object sender, TargetFinishedEventArgs e)
 		{
-			EndCurrentNode (e.Message);
+			EndCurrentNode (e.Message, e.Timestamp);
 		}
 
 		private void BinLog_TaskStarted (object sender, TaskStartedEventArgs e)
@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			AddNode (BuildOutputNodeType.Task, e.Message, true);
+			AddNode (BuildOutputNodeType.Task, e.Message, true, e.Timestamp);
 		}
 
 		private void BinLog_TaskFinished (object sender, TaskFinishedEventArgs e)
@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			EndCurrentNode (e.Message);
+			EndCurrentNode (e.Message, e.Timestamp);
 		}
 	}
 }

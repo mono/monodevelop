@@ -66,9 +66,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			NeedsProcessing = false;
 		}
 
-		public void AddNode (BuildOutputNodeType nodeType, string message, bool isStart)
+		public void AddNode (BuildOutputNodeType nodeType, string message, bool isStart, DateTime startTime)
 		{
-			var node = new BuildOutputNode { NodeType = nodeType, Message = message };
+			var node = new BuildOutputNode { NodeType = nodeType, Message = message, StartTime = startTime };
 			if (currentNode == null) {
 				rootNodes.Add (node);
 			} else {
@@ -96,8 +96,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public void EndCurrentNode (string message)
+		public void EndCurrentNode (string message, DateTime endTime)
 		{
+			currentNode.EndTime = endTime;
+			if (currentNode.Parent != null) {
+				currentNode.Parent.EndTime = endTime;
+			}
 			currentNode = currentNode?.Parent;
 		}
 
