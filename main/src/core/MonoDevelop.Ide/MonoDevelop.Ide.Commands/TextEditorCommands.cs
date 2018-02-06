@@ -27,6 +27,7 @@
 
 using System;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -116,6 +117,10 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = IdeApp.Workbench.ActiveDocument?.Editor != null;
+			if (IdeApp.Preferences.ForceSuggestionMode)
+				info.Text = GettextCatalog.GetString ("Switch to Completion Mode");
+			else
+				info.Text = GettextCatalog.GetString ("Switch to Suggestion Mode");
 		}
 	}
 }
