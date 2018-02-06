@@ -135,14 +135,6 @@ namespace MonoDevelop.Components.DockNotebook
 
 		Cursor fleurCursor = new Cursor (CursorType.Fleur);
 
-		internal bool ContainsTab (DockNotebookTab tab)
-		{
-			if (AllTabs.Any (t => tab == t)) {
-				return true;
-			}
-			return false;
-		}
-
 		public event TabsReorderedHandler TabsReordered;
 		public event EventHandler<TabEventArgs> TabClosed;
 		public event EventHandler<TabEventArgs> TabActivated;
@@ -448,10 +440,11 @@ namespace MonoDevelop.Components.DockNotebook
 			base.OnDestroyed ();
 		}
 
-		List<DockNotebookTab> GetCollectionForTab (DockNotebookTab tab)
-		{
-			return tab.IsPreview ? previewPages : pages;
-		}
+		internal bool ContainsTab (DockNotebookTab tab) => GetReadOnlyCollectionForTab (tab).Contains (tab);
+
+		List<DockNotebookTab> GetCollectionForTab (DockNotebookTab tab) => tab.IsPreview ? previewPages : pages;
+
+		public ReadOnlyCollection<DockNotebookTab> GetReadOnlyCollectionForTab (DockNotebookTab tab) => tab.IsPreview ? PreviewTabs : NormalTabs;
 	}
 
 	class DockNotebookChangedArgs : EventArgs

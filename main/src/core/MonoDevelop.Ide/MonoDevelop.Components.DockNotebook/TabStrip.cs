@@ -722,7 +722,7 @@ namespace MonoDevelop.Components.DockNotebook
 				//var index = tab.Idex
 				notebook.OnCloseTab (tab);
 
-				var tabCollection = tab.IsPreview ? notebook.PreviewTabs : notebook.NormalTabs;
+				var tabCollection = notebook.GetReadOnlyCollectionForTab (tab);
 
 				currentFocusTab = tab.Index > 0 ? tabCollection[tab.Index-1] : (DockNotebookTab)null;
 
@@ -782,7 +782,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		FocusWidget GetNextWidgetToFocus (FocusWidget widget, DirectionType direction)
 		{
-			var currentFocusTabCollection = currentFocusTab == null || !currentFocusTab.IsPreview ? notebook.NormalTabs : notebook.PreviewTabs;
+			var currentFocusTabCollection = currentFocusTab == null ? notebook.NormalTabs : notebook.GetReadOnlyCollectionForTab (currentFocusTab);
 
 			switch (widget) {
 			case FocusWidget.BackButton:
@@ -1002,11 +1002,12 @@ namespace MonoDevelop.Components.DockNotebook
 		public void Update ()
 		{
 			if (!tracker.Hovered) {
-				UpdateTabWidthBasedInContentSize ();
-			} else if (closingTabs.Count > 0) {
-				var tab = closingTabs[0];
-				if (!tab.IsPreview) {
-					UpdateTabWidth (tab.Allocation.Right - tabContainer.ContentStartX, true);
+				UpdateTabWidth (tabContainer.ContentEndX - tabContainer.ContentStartX);
+			} else {
+				var tabClosed = closingTabs.FirstOrDefault (s => !notebook.GetReadOnlyCollectionForTab (s).Contains (s));
+				if (tabClosed != null) {
+					var container = tabClosed.IsPreview ? previewTabContainer : tabContainer;
+					UpdateTabWidth (tabClosed.Allocation.Right - container.ContentStartX, true);
 				}
 			}
 			QueueDraw ();
@@ -1311,30 +1312,20 @@ namespace MonoDevelop.Components.DockNotebook
 			return la;
 		}
 
-		public void UpdateTabWidthBasedInContentSize ()
-		{
-			UpdateTabWidth (Allocation.Width - LeftBarPadding - RightBarPadding - 11);
-		}
 
 		public void UpdateTabWidth (int width, bool adjustLast = false)
 		{
-			if (width <= 0) {
-				return;
-			}
-
-			var totalTabCount = notebook.AllTabs.Count ();
-
-			if (totalTabCount > 0) {
-				TargetWidth = Clamp (width / totalTabCount, 50, 200);
-			}
-
+			if (notebook.NormalTabs.Any ())
+				TargetWidth = Clamp (width / notebook.NormalTabs.Count, 50, 200);
+			
 			if (adjustLast) {
 				// adjust to align close buttons properly
-				LastTabWidthAdjustment = width - (TargetWidth * totalTabCount) + 1;
+				LastTabWidthAdjustment = width - (TargetWidth * notebook.NormalTabs.Count) + 1;
 				LastTabWidthAdjustment = Math.Abs (LastTabWidthAdjustment) < 50 ? LastTabWidthAdjustment : 0;
 			} else {
 				LastTabWidthAdjustment = 0;
 			}
+
 			if (!IsRealized)
 				TabWidth = TargetWidth;
 		}
