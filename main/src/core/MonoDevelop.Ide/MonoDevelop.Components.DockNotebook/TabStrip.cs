@@ -235,6 +235,7 @@ namespace MonoDevelop.Components.DockNotebook
 			tracker.HoveredChanged += (sender, e) => {
 				if (!tracker.Hovered) {
 					SetHighlightedTab (null);
+					UpdateTabWidth (tabContainer.ContentEndX - tabContainer.ContentStartX);
 					QueueDraw ();
 				}
 			};
