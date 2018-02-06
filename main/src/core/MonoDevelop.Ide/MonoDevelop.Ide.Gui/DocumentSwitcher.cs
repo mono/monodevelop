@@ -513,11 +513,10 @@ namespace MonoDevelop.Ide
 			layout.Dispose ();
 			int totalWidth = 0;
 			int totalHeight = 0;
-			
+
 			var firstNonEmptyCat = categories.FirstOrDefault (c => c.Items.Count > 0);
 			if (firstNonEmptyCat == null)
 				return;
-			
 			var icon = firstNonEmptyCat.Items[0].Icon;
 			var iconHeight = Math.Max (h, (int)icon.Height + 2) + itemPadding * 2;
 			var iconWidth = (int) icon.Width + 2 + w  + itemPadding * 2;
@@ -615,11 +614,11 @@ namespace MonoDevelop.Ide
 		Label labelTitle    = new Label ();
 		DocumentList documentList = new DocumentList ();
 
-		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : this (parent, null, startWithNext)
+		public DocumentSwitcher (Gtk.Window parent, bool startWithNext, out bool created) : this (parent, null, startWithNext, out created)
 		{
 		}
 
-		public DocumentSwitcher (Gtk.Window parent, string category, bool startWithNext) : base(Gtk.WindowType.Toplevel)
+		public DocumentSwitcher (Gtk.Window parent, string category, bool startWithNext, out bool dialogHasContent) : base(Gtk.WindowType.Toplevel)
 		{
 			if (string.IsNullOrEmpty (category))
 				category = GettextCatalog.GetString ("Documents");
@@ -723,7 +722,9 @@ namespace MonoDevelop.Ide
 				} else if (padCategory.Items.Count > 0) {
 					activeItem = padCategory.Items [0];
 				} else {
-					DestroyWindow ();
+					// We can't destroy the window in the constructor
+					// so we need to let the caller know that there are no items
+					dialogHasContent = false;
 					return;
 				}
 			}
@@ -753,6 +754,8 @@ namespace MonoDevelop.Ide
 			this.ShowAll ();
 			documentList.GrabFocus ();
 			this.GrabDefault ();
+
+			dialogHasContent = true;
 		}
 		
 		Xwt.Drawing.Image GetIconForDocument (MonoDevelop.Ide.Gui.Document document, Gtk.IconSize iconSize)
