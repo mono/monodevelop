@@ -13,7 +13,7 @@
     <UsePartialTypes>False</UsePartialTypes>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFSharpCoreVersion>4.4.3.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.4.3.3</TargetFSharpCoreVersion>
     <TestRunnerCommand>..\..\..\..\main\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
     <SignAssembly>true</SignAssembly>

@@ -32,7 +32,7 @@
         <Reference type="Package" refto="System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
       </References>
       <Packages requireLicenseAcceptance="false">
-        <Package Id="FSharp.Core" Version="4.3.0" local="true" />
+        <Package Id="FSharp.Core" Version="4.3.3" local="true" />
       </Packages>
       <Files>
         <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
