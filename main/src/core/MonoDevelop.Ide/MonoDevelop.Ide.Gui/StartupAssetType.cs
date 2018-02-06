@@ -1,10 +1,10 @@
-//
-// CompletionAppearancePanel.cs
+﻿//
+// StartupAssetType.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,51 +23,36 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using MonoDevelop.Components;
-using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.Editor.Extension;
-using MonoDevelop.Ide;
+using System.Web.UI;
 
-namespace MonoDevelop.SourceEditor.OptionPanels
+namespace MonoDevelop.Ide.Gui
 {
-	[System.ComponentModel.ToolboxItem(false)]
-	partial class CompletionAppearancePanel : Gtk.Bin, IOptionsPanel
+	/// <summary>
+	/// Indicates whether a document or solution was opened on starting the IDE.
+	/// </summary>
+	class StartupAssetType
 	{
-		public CompletionAppearancePanel ()
+		public static StartupAssetType None = new StartupAssetType (0, nameof (None));
+		public static StartupAssetType Document = new StartupAssetType (1, nameof (Document));
+		public static StartupAssetType Solution = new StartupAssetType (2, nameof (Solution));
+
+		StartupAssetType (int id, string name)
 		{
-			this.Build ();
+			Id = id;
+			Name = name;
 		}
 
-		#region IOptionsPanel implementation
+		public int Id { get; private set; }
+		public string Name { get; private set; }
 
-		void IOptionsPanel.Initialize (OptionsDialog dialog, object dataObject)
+		public static StartupAssetType FromStartupInfo (StartupInfo startupInfo)
 		{
+			if (startupInfo.OpenedRecentProject || startupInfo.HasSolutionFile) {
+				return Solution;
+			} else if (startupInfo.OpenedFiles) {
+				return Document;
+			}
+			return None;
 		}
-
-		Control IOptionsPanel.CreatePanelWidget ()
-		{
-			filterByBrowsableCheckbutton.Active = !IdeApp.Preferences.CompletionOptionsHideAdvancedMembers;
-			return this;
-		}
-
-		bool IOptionsPanel.IsVisible ()
-		{
-			return true;
-		}
-
-		bool IOptionsPanel.ValidateChanges ()
-		{
-			return true;
-		}
-
-		void IOptionsPanel.ApplyChanges ()
-		{
-			IdeApp.Preferences.CompletionOptionsHideAdvancedMembers.Value = !filterByBrowsableCheckbutton.Active;
-		}
-
-		#endregion
 	}
 }
-

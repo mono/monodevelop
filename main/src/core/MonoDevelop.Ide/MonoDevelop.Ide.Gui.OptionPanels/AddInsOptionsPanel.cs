@@ -98,17 +98,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				UpdateService.UpdateSpanUnit = UpdateSpanUnit.Day;
 			else if (radioMonth.Active)
 				UpdateService.UpdateSpanUnit = UpdateSpanUnit.Month;
-			
-			if (checkUnstable.Active) {
-				if (radioBeta.Active)
-					UpdateService.UpdateLevel = UpdateLevel.Beta;
-				else if (radioAlpha.Active)
-					UpdateService.UpdateLevel = UpdateLevel.Alpha;
-				else if (radioTest.Active)
-					UpdateService.UpdateLevel = UpdateLevel.Test;
-			} else
-				UpdateService.UpdateLevel = UpdateLevel.Stable;
 
+			if (checkUnstable.Active) {		
+ 				if (radioBeta.Active)		
+					UpdateService.UpdateChannel = UpdateChannel.FromUpdateLevel (UpdateLevel.Beta);		
+ 				else if (radioAlpha.Active)		
+					UpdateService.UpdateChannel = UpdateChannel.FromUpdateLevel (UpdateLevel.Alpha);		
+ 				else if (radioTest.Active)		
+					UpdateService.UpdateChannel = UpdateChannel.FromUpdateLevel (UpdateLevel.Test);		
+ 			} else		
+				UpdateService.UpdateChannel = UpdateChannel.FromUpdateLevel (UpdateLevel.Stable);
 		}
 		
 		protected void OnCheckUnstableToggled (object sender, System.EventArgs e)

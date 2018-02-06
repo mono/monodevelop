@@ -157,6 +157,8 @@ namespace MonoDevelop.Ide.WelcomePage
 					string file = uri.Substring ("project://".Length);
 					Gdk.ModifierType mtype = GtkWorkarounds.GetCurrentKeyModifiers ();
 					bool inWorkspace = (mtype & Gdk.ModifierType.ControlMask) != 0;
+					if (Platform.IsMac && !inWorkspace)
+						inWorkspace = (mtype & Gdk.ModifierType.Mod2Mask) != 0;
 
 					// Notify the RecentFiles that this item does not exist anymore.
 					// Possible other solution would be to check the recent projects list on focus in

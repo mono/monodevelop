@@ -170,5 +170,11 @@ namespace Mono.TextEditor
 		public virtual void InformMouseHover (MonoTextEditor editor, Margin margin, MarginMouseEventArgs args)
 		{
 		}
+
+		public virtual void UpdateAccessibilityDetails (out string label, out string help)
+		{
+			label = "";
+			help = "";
+		}
 	}
 }

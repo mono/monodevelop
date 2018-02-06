@@ -443,7 +443,9 @@ namespace MonoDevelop.CSharp.Completion
 			}
 
 			Counters.ProcessCodeCompletion.Trace ("C#: Getting completions");
-			var customOptions = DocumentContext.RoslynWorkspace.Options.WithChangedOption (CompletionOptions.TriggerOnDeletion, LanguageNames.CSharp, true);
+			var customOptions = DocumentContext.RoslynWorkspace.Options
+				.WithChangedOption (CompletionOptions.TriggerOnDeletion, LanguageNames.CSharp, true)
+				.WithChangedOption (CompletionOptions.HideAdvancedMembers, LanguageNames.CSharp, IdeApp.Preferences.CompletionOptionsHideAdvancedMembers);
 
 			var completionList = await Task.Run (() => cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, options: customOptions, cancellationToken: token)).ConfigureAwait (false);
 			Counters.ProcessCodeCompletion.Trace ("C#: Got completions");
