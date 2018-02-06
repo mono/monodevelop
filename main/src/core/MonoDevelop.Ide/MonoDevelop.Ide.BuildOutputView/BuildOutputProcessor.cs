@@ -29,33 +29,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core;
+using Xwt;
+using System.Linq;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
-	enum BuildOutputNodeType
-	{
-		Build,
-		Project,
-		Target,
-		Task,
-		Error,
-		Warning,
-		Message,
-		Diagnostics
-	}
-
-	class BuildOutputNode
-	{
-		public BuildOutputNodeType NodeType { get; set; }
-		public string Message { get; set; }
-		public BuildOutputNode Parent { get; set; }
-		public IList<BuildOutputNode> Children { get; } = new List<BuildOutputNode> ();
-		public bool HasErrors { get; set; }
-		public bool HasWarnings { get; set; }
-		public bool HasData { get; set; }
-	}
-
 	class BuildOutputProcessor : IDisposable
 	{
 		List<BuildOutputNode> rootNodes = new List<BuildOutputNode> ();
@@ -66,6 +45,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			FileName = fileName;
 			RemoveFileOnDispose = removeFileOnDispose;
 		}
+
+		public IReadOnlyList<BuildOutputNode> RootNodes => rootNodes;
 
 		public string FileName { get; }
 
@@ -91,7 +72,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (currentNode == null) {
 				rootNodes.Add (node);
 			} else {
-				currentNode.Children.Add (node);
+				currentNode.AddChild (node);
 				node.Parent = currentNode;
 			}
 
@@ -118,64 +99,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public void EndCurrentNode (string message)
 		{
 			currentNode = currentNode?.Parent;
-		}
-
-		private void ProcessChildren (TextEditor editor,
-		                              IList<BuildOutputNode> children,
-		                              int tabPosition,
-		                              StringBuilder buildOutput,
-		                              List<IFoldSegment> segments,
-		                              bool includeDiagnostics,
-		                              int startAtOffset)
-		{
-			foreach (var child in children) {
-				ProcessNode (editor, child, tabPosition + 1, buildOutput, segments, includeDiagnostics, startAtOffset); 
-			}
-		}
-
-		private void ProcessNode (TextEditor editor,
-		                          BuildOutputNode node,
-		                          int tabPosition,
-		                          StringBuilder buildOutput,
-		                          List<IFoldSegment> segments,
-		                          bool includeDiagnostics,
-		                          int startAtOffset)
-		{
-			// For non-diagnostics mode, only return nodes with data
-			if (!includeDiagnostics && (node.NodeType == BuildOutputNodeType.Diagnostics ||
-			                            (!node.HasData && !node.HasErrors && !node.HasWarnings))) {
-				return;
-			}
-
-			buildOutput.AppendLine ();
-
-			for (int i = 0; i < tabPosition; i++) buildOutput.Append ("\t");
-
-			int currentPosition = buildOutput.Length;
-			buildOutput.Append (node.Message);
-
-			if (node.Children.Count > 0) {
-				ProcessChildren (editor, node.Children, tabPosition, buildOutput, segments, includeDiagnostics, startAtOffset);
-
-				segments.Add (FoldSegmentFactory.CreateFoldSegment (editor, startAtOffset + currentPosition, buildOutput.Length - currentPosition,
-				                                                    node.Parent != null && !node.HasErrors,
-				                                                    node.Message,
-																	FoldingType.Region));
-			}
-		}
-
-		public Task<(string, IList<IFoldSegment>)> ToTextEditor (TextEditor editor, bool includeDiagnostics, int startAtOffset)
-		{
-			return Task.Run (() => {
-				var buildOutput = new StringBuilder ();
-				var foldingSegments = new List<IFoldSegment> ();
-
-				foreach (var node in rootNodes) {
-					ProcessNode (editor, node, 0, buildOutput, foldingSegments, includeDiagnostics, startAtOffset);
-				}
-
-				return (buildOutput.ToString (), (IList<IFoldSegment>)foldingSegments);
-			});
 		}
 
 		bool disposed = false;

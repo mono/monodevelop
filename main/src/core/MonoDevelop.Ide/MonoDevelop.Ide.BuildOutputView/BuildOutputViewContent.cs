@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public override Control Control {
 			get {
-				return control;
+				return control.ToGtkWidget ();
 			}
 		}
 
