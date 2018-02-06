@@ -245,13 +245,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputDataSource : ITreeDataSource
 	{
-		readonly Xwt.Drawing.Image buildIcon;
-		readonly Xwt.Drawing.Image messageIcon;
-		readonly Xwt.Drawing.Image errorIcon;
-		readonly Xwt.Drawing.Image projectIcon;
-		readonly Xwt.Drawing.Image targetIcon;
-		readonly Xwt.Drawing.Image taskIcon;
-		readonly Xwt.Drawing.Image warningIcon;
+		static readonly Xwt.Drawing.Image buildIcon = ImageService.GetIcon(Ide.Gui.Stock.StatusBuild, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image messageIcon = ImageService.GetIcon (Ide.Gui.Stock.MessageLog, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image errorIcon = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image projectIcon = ImageService.GetIcon (Ide.Gui.Stock.Project, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image targetIcon = ImageService.GetIcon(Ide.Gui.Stock.Event, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image taskIcon = ImageService.GetIcon (Ide.Gui.Stock.Execute, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image warningIcon = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
+
 		BuildOutput buildOutput;
 		bool includeDiagnostics;
 		List<BuildOutputNode> rootNodes;
@@ -274,15 +275,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 					rootNodes.Add (new FilteredBuildOutputNode (root, null, includeDiagnostics));
 				}
 			}
-
-			// Load icons to avoid calling the ImageService every time
-			buildIcon = ImageService.GetIcon (Ide.Gui.Stock.StatusBuild, Gtk.IconSize.Menu);
-			messageIcon = ImageService.GetIcon (Ide.Gui.Stock.MessageLog, Gtk.IconSize.Menu);
-			errorIcon = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
-			projectIcon = ImageService.GetIcon (Ide.Gui.Stock.Project, Gtk.IconSize.Menu);
-			targetIcon = ImageService.GetIcon (Ide.Gui.Stock.Event, Gtk.IconSize.Menu);
-			taskIcon = ImageService.GetIcon (Ide.Gui.Stock.Execute, Gtk.IconSize.Menu);
-			warningIcon = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 		}
 
 		public Type [] ColumnTypes => new Type [] { typeof (Xwt.Drawing.Image), typeof (string) };
