@@ -343,12 +343,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 					return ImageService.GetIcon (Ide.Gui.Stock.Empty);
 				case 1: // Text
 					bool toplevel = node.Parent == null;
+					StringBuilder markup = new StringBuilder ();
 
 					if (toplevel) {
-						return "<b>" + GLib.Markup.EscapeText (node.Message) + "</b>";
+						markup.AppendFormat ("<b>{0}</b>", GLib.Markup.EscapeText (node.Message));
 					} else {
-						return node.Message;
+						markup.Append (node.Message);
 					}
+
+					// Timing information
+					if (node.HasChildren) {
+						markup.AppendFormat (" <i>{0}</i>",
+						                     GLib.Markup.EscapeText (node.EndTime.Subtract (node.StartTime).ToString (@"hh\:mm\:ss\.fff")));
+					}
+
+					return markup.ToString ();
 				}
 			}
 

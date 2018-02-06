@@ -46,8 +46,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 	{
 		public virtual BuildOutputNodeType NodeType { get; set; }
 		public virtual string Message { get; set; }
-		public DateTime StartTime { get; set; }
-		public DateTime EndTime { get; set; }
+		public virtual DateTime StartTime { get; set; }
+		public virtual DateTime EndTime { get; set; }
 		public BuildOutputNode Parent { get; set; }
 		public virtual bool HasErrors { get; set; }
 		public virtual bool HasWarnings { get; set; }
@@ -64,6 +64,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			children.Add (child);
 		}
+
+		public bool HasChildren => Children != null && Children.Count > 0;
 	}
 
 	class FilteredBuildOutputNode : BuildOutputNode
@@ -81,6 +83,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public override BuildOutputNodeType NodeType { get => masterNode.NodeType; set => masterNode.NodeType = value; }
 		public override string Message { get => masterNode.Message; set => masterNode.Message = value; }
+		public override DateTime StartTime { get => masterNode.StartTime; set => masterNode.StartTime = value; }
+		public override DateTime EndTime { get => masterNode.EndTime; set => masterNode.EndTime = value; }
 		public override bool HasErrors { get => masterNode.HasErrors; set => masterNode.HasErrors = value; }
 		public override bool HasWarnings { get => masterNode.HasWarnings; set => masterNode.HasWarnings = value; }
 
