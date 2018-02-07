@@ -119,7 +119,6 @@ namespace MonoDevelop.Ide.Commands
 
 				//Add AccelKey
 				if (IdeApp.Workbench.Documents.Count + i < 10) {
-					System.Console.WriteLine ("Setting accel key...");
 					commandInfo.AccelKey = ((Platform.IsMac) ? "Meta" : "Alt") + "|" + ((i + 1) % 10).ToString ();
 				}
 
