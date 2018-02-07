@@ -1112,7 +1112,7 @@ namespace MonoDevelop.Components.DockNotebook
 			//				ctx.Fill ();
 			//			}
 
-			ctx.Rectangle (tabContainer.ContentStartX - LeanWidth / 2, allocation.Y, tabArea + LeanWidth, allocation.Height);
+			ctx.Rectangle (tabContainer.ContentStartX - HalfLeanWidth, allocation.Y, tabArea + LeanWidth * 2, allocation.Height);
 			ctx.Clip ();
 
 			foreach (var cmd in drawTabContext.DrawCommands)
