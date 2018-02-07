@@ -365,7 +365,7 @@ namespace MonoDevelop.Components.DockNotebook
 			pagesHistory.Remove (tab);
 			if (list.Count == 1)
 				CurrentTab = null;
-			else if (tab.Index == CurrentTab.Index)
+			else if (tab.Equals (CurrentTab))
 				SelectLastActiveTab (tab);
 			list.Remove (tab);
 			UpdateIndexes (list, tab.Index);

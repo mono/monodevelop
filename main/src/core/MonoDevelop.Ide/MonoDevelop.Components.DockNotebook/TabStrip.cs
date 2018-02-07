@@ -372,19 +372,19 @@ namespace MonoDevelop.Components.DockNotebook
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
-			previewTabContainer.ContentStartX = allocation.Width - RightBarPadding - previewTabContainer.Width;
-			previewTabContainer.ContentEndX = previewTabContainer.ContentStartX + previewTabContainer.Width;
+			previewTabContainer.ContentWidth = notebook.PreviewTabs.Count * TabWidth;
+			previewTabContainer.ContentStartX = previewTabContainer.ContentWidth == 0 ? allocation.Width : allocation.Width - RightBarPadding - previewTabContainer.ContentWidth;
 
 			if (NavigationButtonsVisible) {
 				tabContainer.ContentStartX = /*allocation.X +*/ LeftBarPadding + HalfLeanWidth;
 			} else {
 				tabContainer.ContentStartX = HalfLeanWidth;
 			}
-			tabContainer.ContentEndX = previewTabContainer.ContentStartX - 12;
+			tabContainer.ContentWidth = previewTabContainer.ContentStartX - (previewTabContainer.ContentWidth == 0 ? RightBarPadding : LeanWidth) - tabContainer.ContentStartX;
 
 			base.OnSizeAllocated (allocation);
 			Update ();
-		}
+		} 
 
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
@@ -1060,17 +1060,31 @@ namespace MonoDevelop.Components.DockNotebook
 			return tabContainer.ContentStartX - renderOffset;
 		}
 
-		Action<Context> DrawClosingTab (TabContainer container,  DockNotebookTab tab, Gdk.Rectangle region, int tabWidth, out int width)
+		Action<Context> DrawClosingTab (TabContainer container,  DockNotebookTab tab, Gdk.Rectangle region, out int width)
 		{
-			width = (int)(tab.WidthModifier * tabWidth);
-			int tmp = width;
-			return c => DrawTab (c, tab, container, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, false, false, CreateTabLayout (tab), false);
+			width = 0;
+			var closingTab = closingTabs.FirstOrDefault (s => s == tab);
+			if (closingTab != null) {
+				width = (int)(closingTab.WidthModifier * TabWidth);
+				int tmp = width;
+				return c => DrawTab (c, closingTab, container, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, false, false, CreateTabLayout (closingTab), false);
+			}
+			return c => {
+			};
+		}
+
+		class DrawContext
+		{
+			readonly public List<Action<Context>> DrawCommands = new List<Action<Context>> ();
+			public Action<Context> DrawActive;
+			public Gdk.Rectangle FocusRect;
 		}
 
 		void Draw (Context ctx)
 		{
 			var allocation = Allocation;
-			int tabArea = tabContainer.ContentWidth;
+			var tabArea = tabContainer.ContentWidth + previewTabContainer.ContentWidth;
+
 			var contentStartX = tabContainer.ContentStartX;
 			var contentEndX = tabContainer.ContentEndX;
 
@@ -1079,16 +1093,19 @@ namespace MonoDevelop.Components.DockNotebook
 
 			//Draw container background
 			//ctx.SetSourceColor (new Cairo.Color (0, 0.2, 0.3));
-			//ctx.Rectangle (tabContainer.ContentStartX, allocation.Y, tabContainer.Width , allocation.Height);
+			//ctx.Rectangle (tabContainer.ContentStartX, allocation.Y, tabContainer.ContentWidth , allocation.Height);
 			//ctx.Fill ();
 
 			//Draw  previewTabContainer background
 			//ctx.SetSourceColor (new Cairo.Color (0.7, 0.6, 0.6));
-			//ctx.Rectangle(previewTabContainer.ContentStartX, allocation.Y, previewTabContainer.Width, allocation.Height);
+			//ctx.Rectangle(previewTabContainer.ContentStartX, allocation.Y, previewTabContainer.ContentWidth, allocation.Height);
 			//ctx.Fill ();
 
-			var tabsData = CalculateTabs (tabContainer, GetRenderOffset ());
-			var tabsPreviewData = CalculateTabs (previewTabContainer, previewTabContainer.ContentStartX);
+			var tabsContext = new DrawContext ();
+			CalculateTabs (tabContainer, tabsContext, allocation, GetRenderOffset ());
+			CalculateTabs (previewTabContainer, tabsContext, allocation, previewTabContainer.ContentStartX);
+
+			tabsContext.DrawCommands.Reverse ();
 
 			// Draw breadcrumb bar header
 			//			if (notebook.Tabs.Count > 0) {
@@ -1104,43 +1121,28 @@ namespace MonoDevelop.Components.DockNotebook
 			//ctx.Rectangle(tabContainer.ContentStartX - LeanWidth, allocation.Y, tabContainer.Width + TabWidth + LeanWidth * 3, allocation.Height);
 			//ctx.Clip ();
 
-			foreach (var cmd in tabsData.DrawCommands)
-				cmd (ctx);
+			ctx.Rectangle (tabContainer.ContentStartX - LeanWidth / 2, allocation.Y, tabArea + LeanWidth, allocation.Height);
+			ctx.Clip ();
 
-			//ctx.Rectangle (previewTabContainer.ContentStartX - LeanWidth, allocation.Y, previewTabContainer.Width + LeanWidth * 3, allocation.Height);
-			//ctx.Clip ();
-		
-			foreach (var cmd in tabsPreviewData.DrawCommands)
+			foreach (var cmd in tabsContext.DrawCommands)
 				cmd (ctx);
-
-			foreach (var cmd in tabsData.DrawClosingCommands)
-				cmd (ctx);
-
-			foreach (var cmd in tabsPreviewData.DrawClosingCommands)
-				cmd (ctx);
-
-			//ctx.ResetClip ();
+			
+			ctx.ResetClip ();
 
 			// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
-			tabsData.DrawActive?.Invoke (ctx);
-			tabsPreviewData.DrawActive?.Invoke (ctx);
+			tabsContext.DrawActive?.Invoke (ctx);
 
 			if (HasFocus) {
-				DrawFocusRectangle (tabsData.FocusRect != Gdk.Rectangle.Zero ? tabsData.FocusRect : tabsPreviewData.FocusRect);
+				Gtk.Style.PaintFocus (Style, GdkWindow, State, tabsContext.FocusRect, this, "tab", tabsContext.FocusRect.X, tabsContext.FocusRect.Y, tabsContext.FocusRect.Width, tabsContext.FocusRect.Height);
 			}
 		}
 
-		(List<Action<Context>> DrawCommands, List<Action<Context>> DrawClosingCommands, Action<Context> DrawActive, Gdk.Rectangle FocusRect) CalculateTabs (TabContainer container, int offsetX)
+		void CalculateTabs (TabContainer container, DrawContext context, Gdk.Rectangle allocation, int offsetX)
 		{
-			Action<Context> drawActive = null;
-			var drawCommands = new List<Action<Context>> ();
-			var drawClosingCommands = new List<Action<Context>> ();
-
-			Gdk.Rectangle focusRect = Gdk.Rectangle.Zero;
 			const int y = 0;
 
 			int n = 0;
-
+			DockNotebookTab lastTab = null;
 			for (; n < container.Tabs.Count; n++) {
 
 				if (offsetX + TabWidth < container.ContentStartX) {
@@ -1151,12 +1153,12 @@ namespace MonoDevelop.Components.DockNotebook
 				if (offsetX > container.ContentEndX)
 					break;
 
-				var tab = container.Tabs [n];
+				var tab = lastTab = container.Tabs [n];
 
 				int closingWidth;
 
 				if (closingTabs.Contains (tab)) {
-					drawClosingCommands.Add (DrawClosingTab (container, tab, new Gdk.Rectangle (offsetX, y, 0, Allocation.Height), TabWidth, out closingWidth));
+					context.DrawCommands.Add (DrawClosingTab (container, tab, new Gdk.Rectangle (offsetX, y, 0, allocation.Height), out closingWidth));
 					offsetX += closingWidth;
 				}
 
@@ -1170,8 +1172,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 				if (active) {
 					int tmp = offsetX;
-					drawActive = c => DrawTab (c, tab, container, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, draggingTab, CreateTabLayout (tab, true), focused);
-					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
+					context.DrawActive = c => DrawTab (c, tab, container, new Gdk.Rectangle (tmp, y, width, allocation.Height), true, true, draggingTab, CreateTabLayout (tab, true), focused);
+					tab.Allocation = new Gdk.Rectangle (tmp, allocation.Y, width, allocation.Height);
 				} else {
 					int tmp = offsetX;
 					bool highlighted = tab == highlightedTab;
@@ -1180,29 +1182,23 @@ namespace MonoDevelop.Components.DockNotebook
 						tmp = (int)(tab.SavedAllocation.X + (tmp - tab.SavedAllocation.X) * (1.0f - tab.SaveStrength));
 					}
 
-					drawCommands.Add (c => DrawTab (c, tab, container, new Gdk.Rectangle (tmp, y, width, Allocation.Height), highlighted, false, false, CreateTabLayout (tab), focused));
-					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
+					context.DrawCommands.Add (c => DrawTab (c, tab, container, new Gdk.Rectangle (tmp, y, width, allocation.Height), highlighted, false, false, CreateTabLayout (tab), focused));
+					tab.Allocation = new Gdk.Rectangle (tmp, allocation.Y, width, allocation.Height);
 				}
 
 				if (focused) {
 					if (currentFocusCloseButton) {
-						focusRect = new Gdk.Rectangle ((int)tab.CloseButtonActiveArea.X, (int)tab.CloseButtonActiveArea.Y, (int)tab.CloseButtonActiveArea.Width, (int)tab.CloseButtonActiveArea.Height);
+						context.FocusRect = new Gdk.Rectangle ((int)tab.CloseButtonActiveArea.X, (int)tab.CloseButtonActiveArea.Y, (int)tab.CloseButtonActiveArea.Width, (int)tab.CloseButtonActiveArea.Height);
 					} else {
-						focusRect = new Gdk.Rectangle (tab.Allocation.X + 5, tab.Allocation.Y + 10, tab.Allocation.Width - 30, tab.Allocation.Height - 15);
+						context.FocusRect = new Gdk.Rectangle (tab.Allocation.X + 5, tab.Allocation.Y + 10, tab.Allocation.Width - 30, tab.Allocation.Height - 15);
 					}
 				}
 				offsetX += width;
 			}
 
-			//int expectedTabWidth;
-			//drawCommands.Add (DrawClosingTab (container, n, new Gdk.Rectangle (offsetX, y, 0, Allocation.Height), TabWidth, out expectedTabWidth));
-			drawCommands.Reverse ();
-			return (drawCommands, drawClosingCommands, drawActive, focusRect);
-		}
-
-		void DrawFocusRectangle (Gdk.Rectangle rect)
-		{
-			Gtk.Style.PaintFocus (Style, GdkWindow, State, rect, this, "tab", rect.X, rect.Y, rect.Width, rect.Height);
+			if (closingTabs.Count > 0 && closingTabs[0].IsPreview == container.IsPreview) {
+				context.DrawCommands.Add (DrawClosingTab (container, closingTabs [0], new Gdk.Rectangle (offsetX, y, 0, allocation.Height), out int tabWidth));
+			}
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
@@ -1332,14 +1328,15 @@ namespace MonoDevelop.Components.DockNotebook
 			readonly public System.Collections.ObjectModel.ReadOnlyCollection<DockNotebookTab> Tabs;
 			readonly TabStrip tabStrip;
 
-			public int Width => tabStrip.TabWidth * Tabs.Count;
+			public Gdk.Rectangle Allocation => new Gdk.Rectangle (tabStrip.Allocation.Width - ContentWidth + TabStrip.TabSeparationBorder, tabStrip.Allocation.Y, ContentWidth - TabStrip.TabSeparationBorder, tabStrip.Allocation.Height);
 
-			public Gdk.Rectangle Allocation => new Gdk.Rectangle (tabStrip.Allocation.Width - Width + TabStrip.TabSeparationBorder, tabStrip.Allocation.Y, Width - TabStrip.TabSeparationBorder, tabStrip.Allocation.Height);
+			readonly public bool IsPreview;
 
 			public TabContainer (TabStrip tabStrip, bool previewContainer)
 			{
+				IsPreview = previewContainer;
 				this.tabStrip = tabStrip;
-				this.Tabs = previewContainer ? tabStrip.notebook.PreviewTabs : tabStrip.notebook.NormalTabs;
+				this.Tabs = IsPreview ? tabStrip.notebook.PreviewTabs : tabStrip.notebook.NormalTabs;
 			}
 
 			public DockNotebookTab FindTab (int x, int y)
@@ -1361,8 +1358,8 @@ namespace MonoDevelop.Components.DockNotebook
 				return null;
 			}
 
-			internal int ContentStartX, ContentEndX;
-			internal int ContentWidth => ContentEndX - ContentStartX;
+			internal int ContentStartX, ContentWidth;
+			internal int ContentEndX => ContentWidth + ContentStartX;
 
 			public bool IsOverArea (int x)
 			{
