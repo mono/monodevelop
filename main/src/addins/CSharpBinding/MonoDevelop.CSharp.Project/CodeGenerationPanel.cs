@@ -59,6 +59,7 @@ namespace MonoDevelop.CSharp.Project
 		void SetupAccessibility ()
 		{
 			label81.Accessible.Role = Atk.Role.Filler;
+			label73.Accessible.Role = Atk.Role.Filler;
 			generateOverflowChecksCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.OverflowChecks", "", 
 			                                                                    GettextCatalog.GetString ("Check this to enable overflow checking"));
 			enableOptimizationCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.Optimizations", "",
