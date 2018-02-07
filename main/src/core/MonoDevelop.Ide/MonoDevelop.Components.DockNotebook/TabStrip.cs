@@ -71,8 +71,8 @@ namespace MonoDevelop.Components.DockNotebook
 		int dragX;
 		int dragOffset;
 		double dragXProgress;
-
-		int renderOffset, prevRenderOffset;
+	
+		int renderOffset;
 		int targetOffset;
 		int animationTarget;
 
@@ -175,8 +175,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 			this.notebook = notebook;
 
-			previewTabContainer = new TabContainer (this, true);
-			tabContainer = new TabContainer (this, false);
+			previewTabContainer = new TabContainer (this, notebook.PreviewTabs, true);
+			tabContainer = new TabContainer (this, notebook.NormalTabs, false);
 
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			Events |= EventMask.PointerMotionMask | EventMask.LeaveNotifyMask | EventMask.ButtonPressMask;
@@ -1101,11 +1101,11 @@ namespace MonoDevelop.Components.DockNotebook
 			//ctx.Rectangle(previewTabContainer.ContentStartX, allocation.Y, previewTabContainer.ContentWidth, allocation.Height);
 			//ctx.Fill ();
 
-			var tabsContext = new DrawContext ();
-			CalculateTabs (tabContainer, tabsContext, allocation, GetRenderOffset ());
-			CalculateTabs (previewTabContainer, tabsContext, allocation, previewTabContainer.ContentStartX);
+			var drawTabContext = new DrawContext ();
+			CalculateTabs (tabContainer, drawTabContext, allocation, GetRenderOffset ());
+			CalculateTabs (previewTabContainer, drawTabContext, allocation, previewTabContainer.ContentStartX);
 
-			tabsContext.DrawCommands.Reverse ();
+			drawTabContext.DrawCommands.Reverse ();
 
 			// Draw breadcrumb bar header
 			//			if (notebook.Tabs.Count > 0) {
@@ -1114,26 +1114,19 @@ namespace MonoDevelop.Components.DockNotebook
 			//				ctx.Fill ();
 			//			}
 
-			//Clipping rectangles
-			//ctx.Rectangle(tabContainer.ContentStartX, allocation.Y, tabContainer.Width + previewTabContainer.Width + LeanWidth * 3, allocation.Height);
-			//ctx.Clip ();
-
-			//ctx.Rectangle(tabContainer.ContentStartX - LeanWidth, allocation.Y, tabContainer.Width + TabWidth + LeanWidth * 3, allocation.Height);
-			//ctx.Clip ();
-
 			ctx.Rectangle (tabContainer.ContentStartX - LeanWidth / 2, allocation.Y, tabArea + LeanWidth, allocation.Height);
 			ctx.Clip ();
 
-			foreach (var cmd in tabsContext.DrawCommands)
+			foreach (var cmd in drawTabContext.DrawCommands)
 				cmd (ctx);
 			
 			ctx.ResetClip ();
 
 			// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
-			tabsContext.DrawActive?.Invoke (ctx);
+			drawTabContext.DrawActive?.Invoke (ctx);
 
 			if (HasFocus) {
-				Gtk.Style.PaintFocus (Style, GdkWindow, State, tabsContext.FocusRect, this, "tab", tabsContext.FocusRect.X, tabsContext.FocusRect.Y, tabsContext.FocusRect.Width, tabsContext.FocusRect.Height);
+				Gtk.Style.PaintFocus (Style, GdkWindow, State, drawTabContext.FocusRect, this, "tab", drawTabContext.FocusRect.X, drawTabContext.FocusRect.Y, drawTabContext.FocusRect.Width, drawTabContext.FocusRect.Height);
 			}
 		}
 
@@ -1327,16 +1320,15 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			readonly public System.Collections.ObjectModel.ReadOnlyCollection<DockNotebookTab> Tabs;
 			readonly TabStrip tabStrip;
+			readonly public bool IsPreview;
 
 			public Gdk.Rectangle Allocation => new Gdk.Rectangle (tabStrip.Allocation.Width - ContentWidth + TabStrip.TabSeparationBorder, tabStrip.Allocation.Y, ContentWidth - TabStrip.TabSeparationBorder, tabStrip.Allocation.Height);
 
-			readonly public bool IsPreview;
-
-			public TabContainer (TabStrip tabStrip, bool previewContainer)
+			public TabContainer (TabStrip tabStrip, System.Collections.ObjectModel.ReadOnlyCollection<DockNotebookTab> tabs, bool isPreview)
 			{
-				IsPreview = previewContainer;
+				IsPreview = isPreview;
 				this.tabStrip = tabStrip;
-				this.Tabs = IsPreview ? tabStrip.notebook.PreviewTabs : tabStrip.notebook.NormalTabs;
+				this.Tabs = tabs;
 			}
 
 			public DockNotebookTab FindTab (int x, int y)
