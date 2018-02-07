@@ -970,7 +970,8 @@
 			shortcut = "Control|space" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode"
 			defaultHandler = "MonoDevelop.Ide.Commands.ToggleCompletionSuggestionModeHandler"
-			_label = "Toggle Completion Suggestion Mode" />
+			_label = "Switch Completion/Suggestion Mode"
+			_displayName = "Switch Completion/Suggestion Mode" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow"
 			_description="Inserts a snippet"
 			_label = "_Snippet..."
