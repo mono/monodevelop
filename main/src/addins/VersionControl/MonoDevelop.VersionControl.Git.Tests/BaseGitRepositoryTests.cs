@@ -532,5 +532,27 @@ namespace MonoDevelop.VersionControl.Git.Tests
 				Assert.AreEqual (string.Format ("Commit #{0}\n", i), history [i].Message);
 			}
 		}
+
+		// If this starts passing, either the git backend was fixed or the repository has changed
+		// a submodule whose loose object cannot be found.
+		[Test]
+		public void TestGitRecursiveCloneFailsAndDoesntCrash ()
+		{
+			var toCheckout = new GitRepository {
+				Url = "git://github.com/xamarin/xamarin-android.git",
+			};
+
+			var directory = FileService.CreateTempDirectory ();
+			try {
+				toCheckout.Checkout (directory, true, new ProgressMonitor ());
+			} catch (VersionControlException e) {
+				Assert.That (e.InnerException, Is.InstanceOf<LibGit2Sharp.NotFoundException> ());
+				return;
+			} finally {
+				Directory.Delete (directory, true);
+			}
+
+			Assert.Fail ("Repository is not reporting loose object cannot be found. Consider removing test.");
+		}
 	}
 }
