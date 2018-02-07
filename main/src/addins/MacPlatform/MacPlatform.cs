@@ -397,8 +397,6 @@ namespace MonoDevelop.MacIntegration
 
 			initedApp = true;
 
-			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
-
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
 				IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
 					var win = GtkQuartz.GetWindow ((Gtk.Window) sender);
@@ -645,13 +643,6 @@ namespace MonoDevelop.MacIntegration
 					return path;
 			} while ((path = path.ParentDirectory).IsNotNull);
 			return null;
-		}
-
-		[GLib.ConnectBefore]
-		static void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
-		{
-			args.RetVal = true;
-			NSApplication.SharedApplication.Hide (NSApplication.SharedApplication);
 		}
 
 		public static Gdk.Pixbuf GetPixbufFromNSImageRep (NSImageRep rep, int width, int height)
