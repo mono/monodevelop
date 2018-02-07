@@ -667,7 +667,7 @@ namespace MonoDevelop.VersionControl.Git
 						else
 							message = e.Message;
 
-						throw new VersionControlException (message);
+						throw new VersionControlException (message, e);
 					}
 				} while (retry);
 			}
