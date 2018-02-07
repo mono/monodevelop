@@ -741,6 +741,7 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenWindowListHandler"
 			type="radio|array"
 			_label = "Window List" />
+
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocument1"
 			 defaultHandler = "MonoDevelop.Ide.Commands.OpenDocument1"
 			 shortcut = "Alt|1"
@@ -795,6 +796,11 @@
 			 macShortcut = "Meta|9"
 			 _label = "Activate 9"
 			 _description = "Activate document 9" />
+
+	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocumentList"
+			 defaultHandler = "MonoDevelop.Ide.Commands.OpenDocumentListHandler"
+			 type="radio|array"
+			 _label = "Document List" />
 
 			<!--
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowVertically"

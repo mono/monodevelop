@@ -272,6 +272,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocument7" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocument8" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocument9" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocumentList" />
 		<SeparatorItem id = "welcomePageSep" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" />
 	</ItemSet> 

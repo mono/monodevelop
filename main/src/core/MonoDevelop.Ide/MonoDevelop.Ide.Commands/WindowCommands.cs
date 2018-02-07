@@ -92,6 +92,51 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 
+	internal class OpenDocumentListHandler : CommandHandler
+	{
+		protected override void Update (CommandArrayInfo info)
+		{
+			if (IdeApp.Workbench.Documents.Count < 10)
+				return;
+
+			int i = 0;
+			foreach (Document document in IdeApp.Workbench.Documents) {
+				if (i < 9) {
+					i++;
+					continue;
+				}
+
+				//Create CommandInfo object
+				CommandInfo commandInfo = new CommandInfo ();
+				commandInfo.Text = document.Window.Title.Replace ("_", "__");
+				if (document == IdeApp.Workbench.ActiveDocument)
+					commandInfo.Checked = true;
+				commandInfo.Description = GettextCatalog.GetString ("Activate document '{0}'", commandInfo.Text);
+				if (document.Window.ShowNotification) {
+					commandInfo.UseMarkup = true;
+					commandInfo.Text = "<span foreground=" + '"' + "blue" + '"' + ">" + commandInfo.Text + "</span>";
+				}
+
+				//Add AccelKey
+				if (IdeApp.Workbench.Documents.Count + i < 10) {
+					System.Console.WriteLine ("Setting accel key...");
+					commandInfo.AccelKey = ((Platform.IsMac) ? "Meta" : "Alt") + "|" + ((i + 1) % 10).ToString ();
+				}
+
+				//Add menu item
+				info.Add (commandInfo, document);
+
+				i++;
+			}
+		}
+
+		protected override void Run (object dataItem)
+		{
+			Document document = (Document)dataItem;
+			document.Select ();
+		}
+	}
+
 	internal class OpenDocumentHandlerBase : CommandHandler
 	{
 		int index;
@@ -107,8 +152,6 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.Workbench.Documents.Count >= index) {
 				var document = IdeApp.Workbench.Documents [index - 1];
 
-				info.Visible = true;
-				info.Enabled = true;
 				info.Text = document.Window.Title.Replace ("_", "__");
 				info.Checked = document == IdeApp.Workbench.ActiveDocument;
 				info.Description = GettextCatalog.GetString ("Activate document '{0}'", info.Text);
@@ -117,6 +160,8 @@ namespace MonoDevelop.Ide.Commands
 					info.UseMarkup = true;
 					info.Text = "<span foreground=" + '"' + "blue" + '"' + ">" + info.Text + "</span>";
 				}
+				info.Visible = true;
+				info.Enabled = true;
 			} else {
 				info.Visible = false;
 				info.Enabled = false;
