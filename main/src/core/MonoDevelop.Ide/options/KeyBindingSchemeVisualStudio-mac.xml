@@ -125,6 +125,7 @@
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" shortcut="Meta+K|S Meta+K|Meta+S" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" shortcut="Meta+K|X Meta+K|Meta+X" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" shortcut="Meta+Space Meta+J" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode" shortcut="Control+Alt+Space" />
     <binding command="MonoDevelop.Ide.Commands.ViewCommands.CenterAndFocusCurrentDocument" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument" shortcut="F7" />
     <binding command="MonoDevelop.Ide.Commands.ViewCommands.FullScreen" shortcut="Alt+Shift+Return" />
