@@ -28,7 +28,7 @@
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Cut" shortcut="Meta+X" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" shortcut="" />
-    <binding command="MonoDevelop.Ide.Commands.EditCommands.IndentSelection" shortcut="Meta+] Tab" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.IndentSelection" shortcut="Meta+]" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" shortcut="Meta+," />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Paste" shortcut="Meta+V" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Redo" shortcut="Shift+Meta+Z" />
@@ -41,7 +41,7 @@
     <binding command="MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" shortcut="Meta+/" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" shortcut="Shift+Meta+[ Shift+Meta+]" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Undo" shortcut="Meta+Z" />
-    <binding command="MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" shortcut="Meta+[ Shift+Tab" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" shortcut="Meta+[" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" shortcut="Shift+Meta+W" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseFile" shortcut="Meta+W Meta+K|W" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseWorkspace" shortcut="Meta+K|F" />
