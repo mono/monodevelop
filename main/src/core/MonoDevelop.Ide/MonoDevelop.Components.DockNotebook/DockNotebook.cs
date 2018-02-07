@@ -169,7 +169,14 @@ namespace MonoDevelop.Components.DockNotebook
 		}
 
 		public IEnumerable<DockNotebookTab> AllTabs {
-			get { return pagesCol.Union(previewPagesCol); }
+			get { 
+				foreach (var item in pagesCol) {
+					yield return item;
+				}
+				foreach (var item in previewPagesCol) {
+					yield return item;
+				}
+			}
 		}
 
 		public ReadOnlyCollection<DockNotebookTab> NormalTabs {
