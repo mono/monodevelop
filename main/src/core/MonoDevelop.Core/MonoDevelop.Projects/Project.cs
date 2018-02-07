@@ -598,7 +598,9 @@ namespace MonoDevelop.Projects
 					// evaluate the Compile targets
 					var ctx = new TargetEvaluationContext ();
 					ctx.ItemsToEvaluate.Add ("Compile");
+					ctx.LoadReferencedProjects = false;
 					ctx.BuilderQueue = BuilderQueue.ShortOperations;
+					ctx.LogVerbosity = MSBuildVerbosity.Quiet;
 
 					var evalResult = await this.RunTarget (monitor, dependsList, config.Selector, ctx);
 					if (evalResult != null && evalResult.Items != null) {
