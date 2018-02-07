@@ -217,9 +217,14 @@ namespace MonoDevelop.Components.DockNotebook
 
 		void SelectLastActiveTab (DockNotebookTab lastClosed)
 		{
-			var container = GetCollectionForTab (lastClosed);
-			if (pages.Count == 0) {
-				CurrentTab = null;
+			var container = GetCollection (lastClosed.IsPreview);
+			if (container.Count == 0) {
+				var otherTabs = GetCollection (!lastClosed.IsPreview);
+				if (otherTabs.Count == 0){
+					CurrentTab = null;
+				} else {
+					CurrentTab = otherTabs.Last ();
+				}
 				return;
 			}
 
@@ -358,15 +363,24 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public void RemoveTab (DockNotebookTab tab, bool animate)
 		{
-			var list = GetCollectionForTab (tab);
+			var list = GetCollection (tab.IsPreview);
 
 			if (animate)
 				tabStrip.StartCloseAnimation ((DockNotebookTab)tab);
 			pagesHistory.Remove (tab);
-			if (list.Count == 1)
-				CurrentTab = null;
-			else if (tab.Equals (CurrentTab))
+
+			if (list.Count == 1) {
+				var otherTabs = GetCollection (!tab.IsPreview);
+				if (otherTabs.Count == 0) {
+					CurrentTab = null;
+				} else {
+					CurrentTab = otherTabs.Last ();
+				}
+
+			} else if (tab.Equals (CurrentTab)) {
 				SelectLastActiveTab (tab);
+			}
+
 			list.Remove (tab);
 			UpdateIndexes (list, tab.Index);
 
@@ -392,7 +406,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab)
 		{
-			var container = GetCollectionForTab (tab);
+			var container = GetCollection (tab.IsPreview);
 			if (tab == targetTab)
 				return;
 			int targetPos = targetTab.Index;
@@ -449,7 +463,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		internal bool ContainsTab (DockNotebookTab tab) => GetReadOnlyCollectionForTab (tab).Contains (tab);
 
-		List<DockNotebookTab> GetCollectionForTab (DockNotebookTab tab) => tab.IsPreview ? previewPages : pages;
+		List<DockNotebookTab> GetCollection (bool isPreview) => isPreview ? previewPages : pages;
 
 		public ReadOnlyCollection<DockNotebookTab> GetReadOnlyCollectionForTab (DockNotebookTab tab) => tab.IsPreview ? PreviewTabs : NormalTabs;
 	}
