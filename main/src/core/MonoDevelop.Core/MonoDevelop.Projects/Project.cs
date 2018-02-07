@@ -556,9 +556,17 @@ namespace MonoDevelop.Projects
 			return results.ToArray ();
 		}
 
-		object evaluatedCompileItemsLock = new object ();
-		string evaluatedCompileItemsConfiguration;
-		TaskCompletionSource<ProjectFile[]> evaluatedCompileItemsTask;
+		bool evaluatedCompileItemsNeedsRefresh;
+		ImmutableDictionary<string, ProjectFile[]> evaluatedCompileItemsCache = ImmutableDictionary<string, ProjectFile[]>.Empty;
+		AsyncCriticalSection evaluatedCompileItemsLock = new AsyncCriticalSection ();
+
+		protected override async Task OnClearCachedData()
+		{
+			using (await evaluatedCompileItemsLock.EnterAsync ().ConfigureAwait (false)) {
+				evaluatedCompileItemsCache = evaluatedCompileItemsCache.Clear ();
+			}
+			await base.OnClearCachedData();
+		}
 
 		/// <summary>
 		/// Gets the list of files that are included as Compile items from the evaluation of the CoreCompile dependecy targets
@@ -567,32 +575,29 @@ namespace MonoDevelop.Projects
 		{
 			var config = configuration != null ? GetConfiguration (configuration) : DefaultConfiguration;
 			if (config == null)
-				return new ProjectFile [0];
+				return Array.Empty<ProjectFile> ();
 
-			// Check if there is already a task for getting the items for the provided configuration
+			// Check the cache before entering the lock, which may be slow
+			if (!evaluatedCompileItemsNeedsRefresh && evaluatedCompileItemsCache.TryGetValue (config.Id, out var sourceFiles))
+				return sourceFiles;
 
-			TaskCompletionSource<ProjectFile []> currentTask = null;
-			bool startTask = false;
-
-			lock (evaluatedCompileItemsLock) {
-				if (evaluatedCompileItemsConfiguration != config.Id) {
-					// The configuration changed or query not yet done
-					evaluatedCompileItemsConfiguration = config.Id;
-					evaluatedCompileItemsTask = new TaskCompletionSource<ProjectFile []> ();
-					startTask = true;
+			using (await evaluatedCompileItemsLock.EnterAsync ().ConfigureAwait (false)) {
+				if (evaluatedCompileItemsNeedsRefresh) {
+					// Refresh requested. Clear the whole cache.
+					evaluatedCompileItemsCache = ImmutableDictionary<string, ProjectFile[]>.Empty;
+					evaluatedCompileItemsNeedsRefresh = false;
 				}
-				currentTask = evaluatedCompileItemsTask;
-			}
 
-			if (startTask) {
+				// Check the cache before starting the task
+				if (evaluatedCompileItemsCache.TryGetValue (config.Id, out sourceFiles))
+					return sourceFiles;
+
 				var coreCompileDependsOn = sourceProject.EvaluatedProperties.GetValue<string> ("CoreCompileDependsOn");
 
 				if (string.IsNullOrEmpty (coreCompileDependsOn)) {
-					currentTask.SetResult (new ProjectFile [0]);
-					return currentTask.Task.Result;
+					return Array.Empty<ProjectFile> ();
 				}
 
-				ProjectFile [] result = null;
 				var dependsList = string.Join (";", coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0));
 				try {
 					// evaluate the Compile targets
@@ -604,7 +609,7 @@ namespace MonoDevelop.Projects
 
 					var evalResult = await this.RunTarget (monitor, dependsList, config.Selector, ctx);
 					if (evalResult != null && evalResult.Items != null) {
-						result = evalResult
+						sourceFiles = evalResult
 							.Items
 							.Select (CreateProjectFile)
 							.ToArray ();
@@ -612,17 +617,11 @@ namespace MonoDevelop.Projects
 				} catch (Exception ex) {
 					LoggingService.LogInternalError (string.Format ("Error running target {0}", dependsList), ex);
 				}
-				currentTask.SetResult (result ?? new ProjectFile [0]);
+
+				evaluatedCompileItemsCache = evaluatedCompileItemsCache.SetItem (config.Id, sourceFiles);
 			}
 
-			return await currentTask.Task;
-		}
-
-		void ResetCachedCompileItems ()
-		{
-			lock (evaluatedCompileItemsLock) {
-				evaluatedCompileItemsConfiguration = null;
-			}
+			return sourceFiles;
 		}
 
 		ProjectFile CreateProjectFile (IMSBuildItemEvaluated item)
@@ -3835,8 +3834,6 @@ namespace MonoDevelop.Projects
 					} finally {
 						IsReevaluating = false;
 					}
-
-					ResetCachedCompileItems ();
 
 					if (!oldCapabilities.SetEquals (projectCapabilities))
 						NotifyProjectCapabilitiesChanged ();
