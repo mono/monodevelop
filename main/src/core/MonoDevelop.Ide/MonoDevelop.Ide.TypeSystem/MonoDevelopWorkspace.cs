@@ -1123,8 +1123,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		HashSet<MonoDevelop.Projects.Project> tryApplyState_changedProjects = new HashSet<MonoDevelop.Projects.Project> ();
 		List<Task> tryApplyState_documentTextChangedTasks = new List<Task> ();
 		Dictionary<string, SourceText> tryApplyState_documentTextChangedContents =  new Dictionary<string, SourceText> ();
-        
-        internal override bool TryApplyChanges (Solution newSolution, IProgressTracker progressTracker)
+
+		internal override bool TryApplyChanges (Solution newSolution, IProgressTracker progressTracker)
 		{
 			// this is supported on the main thread only
 			// see https://github.com/dotnet/roslyn/pull/18043
@@ -1291,8 +1291,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			return path;
 		}
 
-		protected override void ApplyMetadataReferenceAdded(ProjectId projectId, MetadataReference metadataReference)
-        {
+		protected override void ApplyMetadataReferenceAdded (ProjectId projectId, MetadataReference metadataReference)
+		{
 			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
 			var path = GetMetadataPath (metadataReference);
 			if (mdProject == null || path == null)
@@ -1300,10 +1300,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			mdProject.AddReference (path);
 			tryApplyState_changedProjects.Add (mdProject);
 			this.OnMetadataReferenceAdded (projectId, metadataReference);
-        }
+		}
 
-        protected override void ApplyMetadataReferenceRemoved(ProjectId projectId, MetadataReference metadataReference)
-        {
+		protected override void ApplyMetadataReferenceRemoved (ProjectId projectId, MetadataReference metadataReference)
+		{
 			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
 			var path = GetMetadataPath (metadataReference);
 			if (mdProject == null || path == null)
@@ -1314,7 +1314,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			mdProject.References.Remove (item);
 			tryApplyState_changedProjects.Add (mdProject);
 			this.OnMetadataReferenceRemoved (projectId, metadataReference);
-        }
+		}
 
 		string GetMetadataPath (MetadataReference metadataReference)
 		{
@@ -1324,8 +1324,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
-        protected override void ApplyProjectReferenceAdded(ProjectId projectId, ProjectReference projectReference)
-        {
+		protected override void ApplyProjectReferenceAdded (ProjectId projectId, ProjectReference projectReference)
+		{
 			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
 			var projectToReference = GetMonoProject (projectReference.ProjectId);
 			if (mdProject == null || projectToReference == null)
@@ -1352,9 +1352,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-        #endregion
+		#endregion
 
-        internal Document GetDocument (DocumentId documentId, CancellationToken cancellationToken = default (CancellationToken))
+		internal Document GetDocument (DocumentId documentId, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var project = CurrentSolution.GetProject (documentId.ProjectId);
 			if (project == null)
