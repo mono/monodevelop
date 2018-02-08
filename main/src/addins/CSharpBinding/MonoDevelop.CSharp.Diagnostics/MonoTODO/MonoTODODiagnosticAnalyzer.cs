@@ -32,17 +32,23 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Threading;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis.Operations;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	sealed class MonoTODODiagnosticAnalyzer : DiagnosticAnalyzer
 	{
-		static readonly ImmutableArray<SyntaxKind> syntaxKindsOfInterest = ImmutableArray.Create(
-			SyntaxKind.IdentifierName,                // foo
-			SyntaxKind.SimpleMemberAccessExpression,  // foo.bar
-			SyntaxKind.PointerMemberAccessExpression, // foo->bar
-			SyntaxKind.ConditionalAccessExpression    // foo?.bar
+		static readonly ImmutableArray<OperationKind> operationKindsOfInterest = ImmutableArray.Create (
+			OperationKind.FieldReference,
+			OperationKind.EventReference,
+			OperationKind.MethodReference,
+			OperationKind.PropertyReference,
+			OperationKind.ObjectCreation,
+			OperationKind.VariableDeclarator,
+			OperationKind.SimpleAssignment,
+			OperationKind.SizeOf
 		);
 
 		static readonly DiagnosticDescriptor descriptor = new DiagnosticDescriptor(
@@ -80,13 +86,11 @@ namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 				if (!monoTodoAttributeExists)
 					return;
 
-				compilationContext.RegisterSyntaxNodeAction(
+				compilationContext.RegisterOperationAction(
 					(nodeContext) => {
-						Diagnostic diagnostic;
-						if (TryFindMonoTODO(nodeContext.SemanticModel, nodeContext.Node, out diagnostic, nodeContext.CancellationToken))
-							nodeContext.ReportDiagnostic (diagnostic);
+						TryFindMonoTODO (nodeContext, nodeContext.CancellationToken);
 					},
-					syntaxKindsOfInterest);
+					operationKindsOfInterest);
 			});
 		}
 
@@ -96,14 +100,53 @@ namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 			{ "MonoLimitationAttribute", "Mono LIMITATION" }
 		};
 
-		bool TryFindMonoTODO (SemanticModel semanticModel, SyntaxNode node, out Diagnostic diagnostic, CancellationToken cancellationToken)
+		void TryFindMonoTODO (OperationAnalysisContext nodeContext, CancellationToken cancellationToken)
 		{
-			var info = semanticModel.GetSymbolInfo (node, cancellationToken);
-			diagnostic = default(Diagnostic);
-			if (info.Symbol == null)
-				return false;
+			(ISymbol, IOperation) symbol, owningSymbol;
+			switch (nodeContext.Operation) {
+			case IMemberReferenceOperation member:
+				symbol = (member.Member, member);
+				owningSymbol = (member.Type, member);
+				break;
+			case IObjectCreationOperation creation:
+				symbol = (creation.Constructor, creation);
+				owningSymbol = (creation.Type, creation);
+				break;
+			case IAssignmentOperation assignment:
+				symbol = (assignment.Type, assignment.Value);
+				owningSymbol = (null, null);
+				break;
+			case IVariableDeclaratorOperation decl:
+				symbol = (null, null);
+				owningSymbol = (decl.Symbol.Type, decl);
+				break;
+			case ISizeOfOperation size:
+				symbol = (null, null);
+				owningSymbol = (size.TypeOperand, size);
+				break;
+			default:
+				LoggingService.LogError ("Unexpected IOperation type {0} for kind {1}", nodeContext.Operation.GetType ().ToString (), nodeContext.Operation.Kind);
+				return;
+			}
 
-			foreach (var attr in info.Symbol.GetAttributes ()) {
+			if (cancellationToken.IsCancellationRequested)
+				return;
+
+			if (ReportDiagnosticForSymbol (nodeContext, symbol))
+				return;
+
+			if (cancellationToken.IsCancellationRequested)
+				return;
+			
+			ReportDiagnosticForSymbol (nodeContext, owningSymbol);
+		}
+
+		bool ReportDiagnosticForSymbol (OperationAnalysisContext nodeContext, (ISymbol symbol, IOperation op) group)
+		{
+			if (group.symbol == null)
+				return false;
+			
+			foreach (var attr in group.symbol.GetAttributes ()) {
 				if (attr.AttributeClass.ContainingNamespace.GetFullName () != "System")
 					continue;
 				string val;
@@ -113,11 +156,12 @@ namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 						var arg = attr.ConstructorArguments [0];
 						msg = arg.Value != null ? arg.Value.ToString () : null;
 					}
-					var tree = semanticModel.SyntaxTree;
-					diagnostic = Diagnostic.Create(descriptor, tree.GetLocation(node.Span), string.IsNullOrEmpty (msg) ? val : val + ": " + msg);
+					var diagnostic = Diagnostic.Create (descriptor, group.op.Syntax.GetLocation (), string.IsNullOrEmpty (msg) ? val : val + ": " + msg);
+					nodeContext.ReportDiagnostic (diagnostic);
 					return true;
 				}
 			}
+
 			return false;
 		}
 	}
