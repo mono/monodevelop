@@ -297,12 +297,12 @@ namespace MonoDevelop.Ide.Gui
 
 		public bool CanMoveToNextNotebook ()
 		{
-			return TabControl.GetNextNotebook () != null || (TabControl.Container.AllowRightInsert && TabControl.TabCount > 1);
+			return TabControl.GetNextNotebook () != null || (TabControl.Container.AllowRightInsert && TabControl.AllTabCount > 1);
 		}
 
 		public bool CanMoveToPreviousNotebook ()
 		{
-			return TabControl.GetPreviousNotebook () != null || (TabControl.Container.AllowLeftInsert && TabControl.TabCount > 1);
+			return TabControl.GetPreviousNotebook () != null || (TabControl.Container.AllowLeftInsert && TabControl.AllTabCount > 1);
 		}
 
 		public void MoveToNextNotebook ()

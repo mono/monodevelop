@@ -241,8 +241,16 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 		}
 
-		public int TabCount {
+		public int NormalTabCount {
 			get { return pages.Count; }
+		}
+
+		public int AllTabCount {
+			get { return NormalTabCount + PreviewTabCount; }
+		}
+
+		public int PreviewTabCount {
+			get { return previewPages.Count; }
 		}
 
 		public int BarHeight {

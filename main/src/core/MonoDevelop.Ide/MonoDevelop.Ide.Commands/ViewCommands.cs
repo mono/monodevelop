@@ -330,7 +330,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Checked = DockNotebook.ActiveNotebook?.Container?.SplitCount > 0;
-			info.Enabled = (DockNotebook.ActiveNotebook?.TabCount > 1 &&
+			info.Enabled = (DockNotebook.ActiveNotebook?.AllTabCount > 1 &&
 			                DockNotebook.ActiveNotebook?.Container?.AllowRightInsert == true) || DockNotebook.ActiveNotebook?.Container?.SplitCount > 0;
 		}
 
@@ -357,7 +357,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Checked = DockNotebook.ActiveNotebook?.Container?.SplitCount < 1;
-			info.Enabled = (DockNotebook.ActiveNotebook?.TabCount > 1 &&
+			info.Enabled = (DockNotebook.ActiveNotebook?.AllTabCount > 1 &&
 			                DockNotebook.ActiveNotebook?.Container?.AllowRightInsert == true) || DockNotebook.ActiveNotebook?.Container?.SplitCount > 0;
 		}
 

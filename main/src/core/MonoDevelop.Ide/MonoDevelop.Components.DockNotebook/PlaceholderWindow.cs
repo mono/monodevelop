@@ -159,7 +159,7 @@ namespace MonoDevelop.Components.DockNotebook
 			if (CanPlaceInHoverNotebook ()) {
 				var container = hoverNotebook.Container;
 				var alloc = hoverNotebook.Allocation;
-				var targetTabCount = hoverNotebook.TabCount;
+				var targetTabCount = hoverNotebook.AllTabCount;
 				var overTabStrip = y <= oy + hoverNotebook.BarHeight;
 
 				if (hoverNotebook.AllTabs.Contains (frame))

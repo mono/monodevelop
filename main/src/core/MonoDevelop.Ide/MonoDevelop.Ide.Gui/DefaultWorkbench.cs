@@ -1271,7 +1271,7 @@ namespace MonoDevelop.Ide.Gui
 			if (DockNotebook.ActiveNotebook == null)
 				return;
 			
-			if (number >= DockNotebook.ActiveNotebook.TabCount || number < 0)
+			if (number >= DockNotebook.ActiveNotebook.NormalTabCount || number < 0)
 				return;
 			var window = DockNotebook.ActiveNotebook.NormalTabs [number].Content as IWorkbenchWindow;
 			if (window != null)
