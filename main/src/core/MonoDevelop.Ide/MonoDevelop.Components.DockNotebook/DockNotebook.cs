@@ -385,7 +385,7 @@ namespace MonoDevelop.Components.DockNotebook
 					CurrentTab = otherTabs.Last ();
 				}
 
-			} else if (tab.Equals (CurrentTab)) {
+			} else if (tab == CurrentTab) {
 				SelectLastActiveTab (tab);
 			}
 
