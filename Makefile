@@ -87,6 +87,7 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 	@echo Decompressing monodevelop-$(PACKAGE_VERSION).tar.bz2
 	@cd tarballs && tar xvjf monodevelop-$(PACKAGE_VERSION).tar.bz2
 	@cp version.config tarballs/monodevelop-$(PACKAGE_VERSION)
+	@cp NuGet.config tarballs/monodevelop-$(PACKAGE_VERSION)
 	@rm -f main/build/bin/buildinfo
 	@cd main && make buildinfo
 	@cp main/build/bin/buildinfo tarballs/monodevelop-$(PACKAGE_VERSION)/
