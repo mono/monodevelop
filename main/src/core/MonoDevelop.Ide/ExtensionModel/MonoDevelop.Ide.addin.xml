@@ -403,6 +403,7 @@
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="Microsoft.CodeAnalysis.Features.dll" />
 		<Assembly file="Microsoft.CodeAnalysis.Workspaces.dll" />
+		<Assembly file="Microsoft.CodeAnalysis.Workspaces.Desktop.dll" />
 		<Assembly file="Microsoft.CodeAnalysis.CSharp.Features.dll" />
 		<Assembly file="Microsoft.CodeAnalysis.CSharp.Workspaces.dll" />
 		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Features.dll" />
@@ -410,6 +411,7 @@
 		<Assembly file="MonoDevelop.Ide.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Text.Implementation.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.dll"/>
+		<Assembly file="Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll" />
 	</Extension>
 
 </ExtensionModel>

@@ -350,8 +350,7 @@ type FSharpProject() as self =
         x.ReevaluateProject monitor |> Async.startAsPlainTask
 
     override x.OnDispose () =
-        //if not self.Loading then invalidateProjectFile()
-
+        languageService.HideStatusIcon (string self.FileName.FullPath)
         // FIXME: is it correct to do it every time a project is disposed?
         //Should only be done on solution close
         //langServ.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()

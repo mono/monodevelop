@@ -131,7 +131,7 @@ namespace MonoDevelop.CodeActions
 		{
 			treeStore.Clear ();
 			var sortedAndFiltered = providerStates.Keys
-				.Where (node => string.IsNullOrEmpty (filter) || node.Name.IndexOf (filter, StringComparison.OrdinalIgnoreCase) > 0)
+				.Where (node => !string.IsNullOrEmpty(node.Name) && (string.IsNullOrEmpty (filter) || node.Name.IndexOf (filter, StringComparison.OrdinalIgnoreCase) > 0))
 				.OrderBy (n => n.Name, StringComparer.Ordinal);
 			foreach (var node in sortedAndFiltered) {
 				var title = node.Name;

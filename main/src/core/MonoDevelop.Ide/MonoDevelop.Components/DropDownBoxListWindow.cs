@@ -262,6 +262,10 @@ namespace MonoDevelop.Components
 			TextElement[] textElements;
 			void CalcAccessibility ()
 			{
+				if (!AtkCocoaHelper.AccessibilityElementProxy.Enabled) {
+					return;
+				}
+
 				var columnElement = new AtkCocoaHelper.AccessibilityElementProxy ();
 				columnElement.GtkParent = this;
 				columnElement.SetRole (AtkCocoa.Roles.AXColumn);

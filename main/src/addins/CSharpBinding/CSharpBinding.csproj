@@ -169,7 +169,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -397,7 +397,6 @@
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\ProtocolMemberCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Tooltips\QuickInfoProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\LineSeparators\CSharpLineSeparatorService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

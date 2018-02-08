@@ -269,12 +269,12 @@ namespace MonoDevelop.Gettext
 			catalog.Save (Path.Combine (this.BaseDirectory, "messages.po"));
 		}
 		
-		public void UpdateTranslations (ProgressMonitor monitor)
+		public void UpdateTranslations (ProgressMonitor monitor, bool sort)
 		{
-			UpdateTranslations (monitor, translations.ToArray ());
+			UpdateTranslations (monitor, sort, translations.ToArray ());
 		}
 		
-		public void UpdateTranslations (ProgressMonitor monitor, params Translation[] translations)
+		public void UpdateTranslations (ProgressMonitor monitor, bool sort, params Translation[] translations)
 		{
 			monitor.BeginTask (null, Translations.Count + 1);
 			
@@ -307,9 +307,11 @@ namespace MonoDevelop.Gettext
 				monitor.BeginTask (GettextCatalog.GetString ("Updating {0}", translation.PoFile), 1);
 				try {
 					var pb = new ProcessArgumentBuilder ();
-					pb.Add ("-U");
+					pb.Add ("--update");
 					pb.AddQuoted (poFileName);
-					pb.Add ("-v");
+					pb.Add ("--verbose");
+					if (sort)
+						pb.Add ("--sort-output");
 					pb.AddQuoted (this.BaseDirectory.Combine ("messages.po"));
 					
 					var process = Runtime.ProcessService.StartProcess (Translation.GetTool ("msgmerge"),

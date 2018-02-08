@@ -57,6 +57,9 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			List<PackageAssemblyInfo> pinfos = new List<PackageAssemblyInfo> (assemblyFiles.Length);
 			foreach (string afile in assemblyFiles) {
+				if (!SystemAssemblyService.IsManagedAssembly (afile))
+					continue;
+
 				try {
 					PackageAssemblyInfo pi = new PackageAssemblyInfo ();
 					pi.File = afile;

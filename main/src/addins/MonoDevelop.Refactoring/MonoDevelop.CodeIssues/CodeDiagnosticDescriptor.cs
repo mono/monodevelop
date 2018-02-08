@@ -109,6 +109,11 @@ namespace MonoDevelop.CodeIssues
 			return PropertyService.Get ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".severity", diagnostic.DefaultSeverity);
 		}
 
+		internal DiagnosticSeverity GetSeverity (string diagnosticId, DiagnosticSeverity defaultSeverity)
+		{
+			return PropertyService.Get ("CodeIssues." + Languages + "." + IdString + "." + diagnosticId + ".severity", defaultSeverity);
+		}
+
 		internal void SetSeverity (DiagnosticDescriptor diagnostic, DiagnosticSeverity severity)
 		{
 			PropertyService.Set ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".severity", severity);

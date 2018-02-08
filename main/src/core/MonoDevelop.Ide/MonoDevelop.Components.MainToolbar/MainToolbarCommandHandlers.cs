@@ -51,4 +51,12 @@ namespace MonoDevelop.Components.MainToolbar
 			Ide.IdeApp.Workbench.Toolbar.SetSearchCategory ("file");
 		}
 	}
+
+	class RunCommandHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			Ide.IdeApp.Workbench.Toolbar.SetSearchCategory ("command");
+		}
+	}
 }

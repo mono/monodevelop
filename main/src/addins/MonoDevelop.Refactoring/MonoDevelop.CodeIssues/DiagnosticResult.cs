@@ -53,7 +53,7 @@ namespace MonoDevelop.CodeIssues
 			SetSeverity (diagnostic.Severity, GetIssueMarker ()); 
 		}
 
-		static bool DescriptorHasTag (DiagnosticDescriptor desc, string tag)
+		internal static bool DescriptorHasTag (DiagnosticDescriptor desc, string tag)
 		{
 			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
 		}

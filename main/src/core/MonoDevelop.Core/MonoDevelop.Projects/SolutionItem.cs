@@ -633,7 +633,12 @@ namespace MonoDevelop.Projects
 				var referenced = new List<SolutionItem> ();
 				var visited = new Set<SolutionItem> ();
 				GetBuildableReferencedItems (visited, referenced, this, solutionConfiguration);
-
+				if (Runtime.Preferences.SkipBuildingUnmodifiedProjects)
+					referenced.RemoveAll (si => {
+						if (si is Project p)
+							return !p.FastCheckNeedsBuild (solutionConfiguration);
+						return false;//Don't filter things that don't have FastCheckNeedsBuild
+					});
 				var sortedReferenced = TopologicalSort (referenced, solutionConfiguration);
 
 				SolutionItemConfiguration iconf = GetConfiguration (solutionConfiguration);

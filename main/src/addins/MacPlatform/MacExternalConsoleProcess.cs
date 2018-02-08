@@ -129,6 +129,7 @@ bash pause on exit trick
 					sb.AppendFormat ("export {0}=\"{1}\"; ", env, val);
 				}
 			}
+
 			if (command != null) {
 				sb.AppendFormat ("\"{0}\" {1}", Escape (command), arguments);
 				var tempFileName = Path.GetTempFileName ();
@@ -150,9 +151,15 @@ bash pause on exit trick
 			}
 
 			//run the command in Terminal.app and extract tab and window IDs
-			// run the command inside Bash because we do echo $? and that is a bash extension and breaks when people
-			// use other shells such as zsh or fish. https://bugzilla.xamarin.com/show_bug.cgi?id=56053
-			var ret = AppleScript.Run ("tell app \"{0}\" to do script \"bash -c '{1}'; exit\"", TERMINAL_APP, Escape (sb.ToString ()));
+			string appleScript;
+			if (string.IsNullOrEmpty (command)) {
+				appleScript = string.Format ("tell app \"{0}\" to do script \"{1}\"", TERMINAL_APP, Escape (sb.ToString ()));
+			} else {
+				// run the command inside Bash because we do echo $? and that is a bash extension and breaks when people
+				// use other shells such as zsh or fish. https://bugzilla.xamarin.com/show_bug.cgi?id=56053
+				appleScript = string.Format ("tell app \"{0}\" to do script \"bash -c '{1}'; exit\"", TERMINAL_APP, Escape (sb.ToString ()));
+			}
+			var ret = AppleScript.Run (appleScript);
 			int i = ret.IndexOf ("of", StringComparison.Ordinal);
 			tabId = ret.Substring (0, i -1);
 			windowId = ret.Substring (i + 3);

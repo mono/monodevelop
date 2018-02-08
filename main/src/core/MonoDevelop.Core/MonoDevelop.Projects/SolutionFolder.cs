@@ -640,7 +640,13 @@ namespace MonoDevelop.Projects
 			BuildResult result = null;
 
 			try {
-				
+
+				if (Runtime.Preferences.SkipBuildingUnmodifiedProjects)
+					allProjects = allProjects.Where (si => {
+						if (si is Project p)
+							return p.FastCheckNeedsBuild (configuration);
+						return true;//Don't filter things that don't have FastCheckNeedsBuild
+					}).ToList ().AsReadOnly ();
 				monitor.BeginTask (GettextCatalog.GetString ("Building Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
 
 				operationStarted = ParentSolution != null && await ParentSolution.BeginBuildOperation (monitor, configuration, operationContext);

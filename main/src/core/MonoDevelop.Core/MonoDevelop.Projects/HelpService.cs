@@ -65,7 +65,15 @@ namespace MonoDevelop.Projects
 			lock (helpTreeLock) {
 				if (helpTreeInitialized)
 					return;
-				
+
+				// Only attempt on Windows if we can find monodoc.xml (currently not the case).
+				// This avoids a first-chance FileNotFoundException in LoadTree.
+				if (Platform.IsWindows && !File.Exists ("monodoc.xml")) {
+					LoggingService.LogError ("Monodoc documentation tree could not be loaded because monodoc.xml was not found.");
+					helpTreeInitialized = true;
+					return;
+				}
+
 				Counters.HelpServiceInitialization.BeginTiming ();
 				
 				try {

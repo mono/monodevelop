@@ -36,6 +36,7 @@ using NUnit.Engine;
 using System.Xml;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.UnitTesting.NUnit;
+using System.Text.RegularExpressions;
 
 namespace NUnit3Runner
 {
@@ -136,10 +137,37 @@ namespace NUnit3Runner
 			var tr = engine.GetRunner (package);
 			var r = tr.Explore (TestFilter.Empty);
 			var root = r.SelectSingleNode ("test-suite") as XmlElement;
-			if (root != null)
+
+			if (root != null) {
+				if(CheckXmlForError (root, out string errorString))
+					throw new Exception (errorString);
 				return BuildTestInfo (root);
+			}
 			else
 				return null;
+		}
+
+		bool CheckXmlForError(XmlElement root, out string result)
+		{
+			if (root.GetAttribute ("type") != "Assembly" || root.GetAttribute ("runstate") != "NotRunnable") {
+				// Only interested in _SKIPREASON if the test-suite is an assembly and the
+				// state is NotRunnable. This will indicate a load failure. This check
+				// prevents Ignore attributes incorrectly indicating an error since these
+				// also have a _SKIPREASON.
+				result = null;
+				return false;
+			}
+
+			var elements = root.GetElementsByTagName ("properties");
+			var skipReasonString = string.Empty;
+			foreach (XmlElement element in elements)
+				if (element?.FirstChild is XmlElement nestedElement)
+					if ("_SKIPREASON" == nestedElement.GetAttribute ("name")) {
+						skipReasonString = nestedElement.GetAttribute ("value");
+						break;
+					}
+			result = skipReasonString;
+			return !string.IsNullOrEmpty (skipReasonString);
 		}
 		
 		internal NunitTestInfo BuildTestInfo (XmlElement test)
@@ -186,8 +214,14 @@ namespace NUnit3Runner
 		void InitSupportAssemblies (string[] supportAssemblies)
 		{
 			// Preload support assemblies (they may not be in the test assembly directory nor in the gac)
-			foreach (string asm in supportAssemblies)
-				Assembly.LoadFrom (asm);
+			foreach (string asm in supportAssemblies) {
+				try {
+					Assembly.LoadFrom (asm);
+				} catch (Exception e) {
+					Console.WriteLine ("Couldn't load assembly {0}", asm);
+					Console.WriteLine (e);
+				}
+			}
 		}
 		
 		private TestFilter CreateTestFilter (string[] nameFilter)

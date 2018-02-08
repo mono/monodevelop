@@ -41,6 +41,7 @@ namespace MonoDevelop.Gettext
 		bool help;
 		string file;
 		string project;
+		bool sort;
 		
 		public async Task<int> Run (string[] arguments)
 		{
@@ -54,6 +55,7 @@ namespace MonoDevelop.Gettext
 				Console.WriteLine ("gettext-update [options] [project-file]");
 				Console.WriteLine ("--f --file:FILE   Project or solution file to build.");
 				Console.WriteLine ("--p --project:PROJECT  Name of the project to build.");
+				Console.WriteLine ("--sort  Sorts the output po file");
 				Console.WriteLine ();
 				return 0;
 			}
@@ -99,11 +101,11 @@ namespace MonoDevelop.Gettext
 					Console.WriteLine ("The project '" + item.FileName + "' is not a translation project");
 					return 1;
 				}
-				tp.UpdateTranslations (monitor);
+				tp.UpdateTranslations (monitor, sort);
 			}
 			else {
 				foreach (TranslationProject p in solution.GetAllItems <TranslationProject>())
-					p.UpdateTranslations (monitor);
+					p.UpdateTranslations (monitor, sort);
 			}
 			
 			return 0;
@@ -150,6 +152,10 @@ namespace MonoDevelop.Gettext
 				case "project":
 				    project = value;
 				    break;
+
+				case "sort":
+					sort = true;
+					break;
 
 				default:
 				    throw new Exception("Unknown option '" + option + "'");

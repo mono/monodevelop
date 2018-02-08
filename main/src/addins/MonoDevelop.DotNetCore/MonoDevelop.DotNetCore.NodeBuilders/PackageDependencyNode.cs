@@ -66,6 +66,18 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			version = packageReference.Metadata.GetValue ("Version", string.Empty);
 		}
 
+		public PackageDependencyNode (
+			DependenciesNode dependenciesNode,
+			string name,
+			bool topLevel,
+			bool readOnly)
+		{
+			this.dependenciesNode = dependenciesNode;
+			this.name = name;
+			IsTopLevel = topLevel;
+			IsReadOnly = readOnly;
+		}
+
 		public static PackageDependencyNode Create (
 			DependenciesNode dependenciesNode,
 			string dependencyName,
@@ -111,6 +123,9 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public string GetSecondaryLabel ()
 		{
+			if (string.IsNullOrEmpty (version))
+				return string.Empty;
+
 			return string.Format ("({0})", version);
 		}
 

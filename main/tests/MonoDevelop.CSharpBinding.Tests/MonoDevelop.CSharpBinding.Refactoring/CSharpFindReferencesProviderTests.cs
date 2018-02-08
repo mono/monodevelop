@@ -1,4 +1,4 @@
-﻿//
+//
 // CSharpFindReferencesProviderTests.cs
 //
 // Author:
@@ -31,6 +31,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ICSharpCode.NRefactory6;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Formatting;
@@ -47,7 +48,7 @@ using NUnit.Framework;
 namespace MonoDevelop.CSharp.Refactoring
 {
 	[TestFixture]
-	class CSharpFindReferencesProviderTests : global::UnitTests.TestBase
+	class CSharpFindReferencesProviderTests : TestBase
 	{
 
 		static async Task<List<SearchResult>> GatherReferences (string input, Func<MonoDevelop.Projects.Project, Task<IEnumerable<SearchResult>>> findRefsCallback)

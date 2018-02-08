@@ -260,10 +260,16 @@ namespace MonoDevelop.Ide.Commands
 			
 			var toplevel = Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus)
 				?? IdeApp.Workbench.RootWindow;
-			var sw = new DocumentSwitcher (toplevel, next);
-			sw.Present ();
+
+			bool hasContent;
+			var sw = new DocumentSwitcher (toplevel, next, out hasContent);
+			if (hasContent) {
+				sw.Present ();
+			} else {
+				sw.Destroy ();
+			}
 		}
-		
+
 		protected override void Run ()
 		{
 			Switch (true);
@@ -287,8 +293,14 @@ namespace MonoDevelop.Ide.Commands
 
 			var toplevel = Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus)
 				?? IdeApp.Workbench.RootWindow;
-			var sw = new DocumentSwitcher (toplevel, GettextCatalog.GetString ("Pads"), next);
-			sw.Present ();
+
+			bool hasContent;
+			var sw = new DocumentSwitcher (toplevel, GettextCatalog.GetString ("Pads"), next, out hasContent);
+			if (hasContent) {
+				sw.Present ();
+			} else {
+				sw.Destroy ();
+			}
 		}
 
 		protected override void Run ()

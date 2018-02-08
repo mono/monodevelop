@@ -44,6 +44,8 @@ namespace MonoDevelop.Ide
 	[TestFixture]
 	public class ProjectTemplateTests : IdeTestBase
 	{
+		Solution solution;
+
 		public ProjectTemplateTests ()
 		{
 			Simulate ();
@@ -53,6 +55,15 @@ namespace MonoDevelop.Ide
 			get {
 				return ProjectTemplate.ProjectTemplates.Select (t => t.Id);
 			}
+		}
+
+		[TearDown]
+		public override void TearDown ()
+		{
+			solution?.Dispose ();
+			solution = null;
+
+			base.TearDown ();
 		}
 
 		[Test]
@@ -76,14 +87,14 @@ namespace MonoDevelop.Ide
 			cinfo.Parameters ["CreateiOSUITest"] = "False";
 			cinfo.Parameters ["CreateAndroidUITest"] = "False";
 
-			template.CreateWorkspaceItem (cinfo);
+			solution = template.CreateWorkspaceItem (cinfo) as Solution;
 		}
 
 		[Test]
 		public async Task NewSharedProjectAddedToExistingSolutionUsesCorrectBuildAction ()
 		{
-			Solution sol = TestProjectsChecks.CreateConsoleSolution ("shared-project");
-			await sol.SaveAsync (Util.GetMonitor ());
+			solution = TestProjectsChecks.CreateConsoleSolution ("shared-project");
+			await solution.SaveAsync (Util.GetMonitor ());
 
 			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Id == "MonoDevelop.CSharp.SharedProject");
 			var dir = Util.CreateTmpDir (template.Id);
@@ -94,7 +105,7 @@ namespace MonoDevelop.Ide
 				SolutionPath = dir
 			};
 
-			var sharedAssetsProject = template.CreateProjects (sol.RootFolder, cinfo)
+			var sharedAssetsProject = template.CreateProjects (solution.RootFolder, cinfo)
 				.OfType<SharedAssetsProject> ().Single ();
 			var myclassFile = sharedAssetsProject.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 			Assert.AreEqual ("Compile", myclassFile.BuildAction);
@@ -138,7 +149,7 @@ namespace MonoDevelop.Ide
 				CreateProjectDirectoryInsideSolutionDirectory = false
 			}, null);
 
-			var solution = result.WorkspaceItems.OfType<Solution> ().Single ();
+			solution = result.WorkspaceItems.OfType<Solution> ().Single ();
 
 			await solution.SaveAsync (Util.GetMonitor ());
 			var project = solution.GetAllProjects ().Single ();
@@ -159,14 +170,16 @@ namespace MonoDevelop.Ide
 				ProjectName = "Bug57840StandardTestProject",
 				CreateProjectDirectoryInsideSolutionDirectory = false
 			}, solution.RootFolder);
+			var standardProject = result2.WorkspaceItems.OfType<DotNetProject> ().Single ();
+			solution.RootFolder.AddItem (standardProject);
 			await solution.SaveAsync (Util.GetMonitor ());
 			var fileContentAfterSecondProject = await TextFileUtility.ReadAllTextAsync (file);
 			Assert.AreEqual (fileContentAfterSecondProject.Text, fileContentAfterFormat.Text);//Make sure our weird formatting is preserved
-			var standardProject = result2.WorkspaceItems.OfType<DotNetProject> ().Single ();
 			var class1File = standardProject.Files.Single (f => f.FilePath.FileName == "Class1.cs").FilePath;
 			var fileContentAfterCreation = await TextFileUtility.ReadAllTextAsync (class1File);
 			standardProject.Policies.Set<TextStylePolicy> (new TextStylePolicy (3, 3, 3, true, true, true, EolMarker.Mac), "text/x-csharp");
 			await FormatFile (standardProject, class1File);
+			standardProject.Dispose();
 			var fileContentAfterForceFormatting = await TextFileUtility.ReadAllTextAsync (class1File);
 			Assert.AreEqual (fileContentAfterForceFormatting.Text, fileContentAfterCreation.Text,
 			                "We expect them to be same because we placed same formatting policy on solution before creataion as after creation on project when we manually formatted.");
@@ -195,7 +208,7 @@ namespace MonoDevelop.Ide
 				CreateProjectDirectoryInsideSolutionDirectory = false,
 			}, null);
 
-			var solution = result.WorkspaceItems.OfType<Solution> ().Single ();
+			solution = result.WorkspaceItems.OfType<Solution> ().Single ();
 
 			await solution.SaveAsync (Util.GetMonitor ());
 			Assert.AreEqual (2, solution.GetAllProjects ().Count ());
@@ -239,7 +252,7 @@ namespace MonoDevelop.Ide
 				CreateProjectDirectoryInsideSolutionDirectory = false,
 			}, null);
 
-			var solution = result.WorkspaceItems.OfType<Solution> ().Single ();
+			solution = result.WorkspaceItems.OfType<Solution> ().Single ();
 
 			await solution.SaveAsync (Util.GetMonitor ());
 

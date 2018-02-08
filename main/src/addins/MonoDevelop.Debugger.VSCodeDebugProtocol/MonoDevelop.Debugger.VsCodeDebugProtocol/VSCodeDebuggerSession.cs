@@ -282,6 +282,8 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						var stackFrame = (VsCodeStackFrame)this.GetThreadBacktrace (body.ThreadId ?? -1).GetFrame (0);
 						args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint);
 						var bp = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().FirstOrDefault (b => b.FileName == stackFrame.SourceLocation.FileName && b.Line == stackFrame.SourceLocation.Line);
+						if (bp == null)
+							bp = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().FirstOrDefault (b => Path.GetFileName (b.FileName) == Path.GetFileName (stackFrame.SourceLocation.FileName) && b.Line == stackFrame.SourceLocation.Line);
 						if (bp == null) {
 							//None of breakpoints is matching, this is probably Debugger.Break();
 							args = new TargetEventArgs (TargetEventType.TargetStopped);

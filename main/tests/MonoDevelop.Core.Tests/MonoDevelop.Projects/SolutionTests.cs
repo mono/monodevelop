@@ -728,6 +728,36 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		[TestCase (true, 1)]
+		[TestCase (false, 3)]
+		public async Task SkipBuildingUnmodifiedProjects (bool enabled, int expectedBuildCount)
+		{
+			var settingBefore = Runtime.Preferences.SkipBuildingUnmodifiedProjects.Value;
+			try {
+				Runtime.Preferences.SkipBuildingUnmodifiedProjects.Value = enabled;
+				string solFile = Util.GetSampleProject ("solution-build-order", "ConsoleApplication3.sln");
+
+				Solution sol = await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+				var p = sol.FindProjectByName ("ConsoleApplication3");
+				var lib1 = sol.FindProjectByName ("ClassLibrary1");
+				var lib2 = sol.FindProjectByName ("ClassLibrary2");
+				var buildResult = await lib2.Build (Util.GetMonitor (), sol.Configurations [0].Selector, true);
+				Assert.AreEqual (2, buildResult.BuildCount);
+				buildResult = await sol.Build (Util.GetMonitor (), sol.Configurations [0].Selector);
+				Assert.AreEqual (expectedBuildCount, buildResult.BuildCount);
+
+				FileService.NotifyFileChanged (p.Files.Single (f => Path.GetFileName (f.Name) == "Program.cs").FilePath);
+
+				buildResult = await p.Build (Util.GetMonitor (), sol.Configurations [0].Selector, true);
+				Assert.AreEqual (expectedBuildCount, buildResult.BuildCount);
+
+				sol.Dispose ();
+			} finally {
+				Runtime.Preferences.SkipBuildingUnmodifiedProjects.Value = settingBefore;
+			}
+		}
+
+		[Test]
 		public async Task WriteCustomData ()
 		{
 			var en = new CustomSolutionItemNode<TestSolutionExtension> ();

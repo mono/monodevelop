@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Core;
 using Xwt.Drawing;
 using MonoDevelop.Ide.Gui;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -55,6 +56,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get { return items; }
 			set { items = value; }
 		}
+
+		internal IListDataProvider DataProvider { get; set; }
 	}
 
 	public class CompletionListFilterInput
@@ -92,16 +95,28 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 	class ListWidget : Gtk.DrawingArea
 	{
-		int listWidth = minSize;
 		const int minSize = 400;
 		const int maxListWidth = 800;
 		const int rows = 13;
+		const int marginIconSpacing = 4;
+		const int iconTextSpacing = 6;
+		const int itemSeparatorHeight = 2;
+
+		int listWidth = minSize;
+		int rowHeight;
+
 		Pango.Layout layout, categoryLayout, noMatchLayout;
-		ListWindow win;
+		CompletionListWindowGtk win;
+		FontDescription itemFont, noMatchFont, categoryFont;
+		Adjustment vadj;
+
 		int selection = 0;
 
-		internal int rowHeight;
 		bool buttonPressed;
+
+		List<CategorizedCompletionItems> categories = new List<CategorizedCompletionItems> ();
+		List<int> filteredItems = new List<int> ();
+
 		public event EventHandler SelectionChanged;
 		protected virtual void OnSelectionChanged (EventArgs e)
 		{
@@ -110,65 +125,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 				handler (this, e);
 		}
 
-		string completionString;
-		
-
-		
-		List<CategorizedCompletionItems> categories = new List<CategorizedCompletionItems> ();
-
-		public string CompletionString {
-			get { return completionString; }
-			set {
-				if (completionString != value) {
-					completionString = value;
-					FilterWords ();
-					QueueDraw (); 
-				}
-			}
-		}
-		
-		public string DefaultCompletionString {
-			get;
-			set;
-		}
-		
-		public bool CloseOnSquareBrackets {
+		public IListDataProvider DataProvider {
 			get;
 			set;
 		}
 
+		bool inCategoryMode;
 		public bool InCategoryMode {
-			get { return IdeApp.Preferences.EnableCompletionCategoryMode && categories.Count > 1; }
-		}
-
-		internal void UpdateCategoryMode ()
-		{
-			CalcVisibleRows ();
-			if (InCategoryMode)
-				SelectFirstItemInCategory ();
-		}
-
-		public int CategoryCount {
-			get { return this.categories.Count; }
-		}
-
-		ICompletionWidget completionWidget;
-		internal ICompletionWidget CompletionWidget {
-			get {
-				return completionWidget;
-			}
+			get { return inCategoryMode; }
 			set {
-				completionWidget = value;
-				SetFont ();
+				inCategoryMode = value;
+				CalcVisibleRows ();
 			}
 		}
 
-		FontDescription itemFont, noMatchFont, categoryFont;
-
-		const int marginIconSpacing = 4;
-		const int iconTextSpacing = 6;
-
-		const int itemSeparatorHeight = 2;
+		public Adjustment VAdjustment => vadj;
 
 		void SetFont ()
 		{
@@ -207,11 +178,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		public ListWidget (ListWindow win)
+		public ListWidget (CompletionListWindowGtk win)
 		{
 			this.win = win;
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask;
-			DefaultCompletionString = "";
 			categoryLayout = new Pango.Layout (this.PangoContext);
 			noMatchLayout = new Pango.Layout (this.PangoContext);
 			layout = new Pango.Layout (this.PangoContext);
@@ -236,7 +206,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				itemFont = null;
 			}
 		}
-		internal Adjustment vadj;
 
 		protected override void OnSetScrollAdjustments (Adjustment hadj, Adjustment vadj)
 		{
@@ -269,27 +238,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			categories.Clear ();
 			filteredItems.Clear ();
-			oldCompletionString = completionString = null;
 			selection = 0;
-			AutoSelect = false;
 			listWidth = minSize;
-		}
-		
-		public int SelectionFilterIndex {
-			get {
-				var idx = SelectedItemIndex;
-				if (idx < 0)
-					return -1;
-				return filteredItems.IndexOf (idx);
-			}
-			set {
-				if (value < 0) {
-					SelectedItemIndex = -1;
-					return;
-				}
-				if (value < filteredItems.Count)
-					SelectedItemIndex = filteredItems [value];
-			}
 		}
 		
 		public int SelectedItemIndex {
@@ -350,26 +300,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return result;
 		}
 		
-		public void MoveToCategory (int relative)
-		{
-			int current = CurrentCategory ();
-			int next = Math.Min (categories.Count - 1, Math.Max (0, current + relative));
-			if (next < 0 || next >= categories.Count)
-				return;
-			CategorizedCompletionItems newCategory = categories[next];
-			SelectionFilterIndex = newCategory.Items[0];
-			ScrollToSelectedItem ();
-		}
-		
-		int CurrentCategory ()
-		{
-			for (int i = 0; i < categories.Count; i++) {
-				if (categories[i].Items.Contains (SelectionFilterIndex)) 
-					return i;
-			}
-			return -1;
-		}
-		
 		public void MoveCursor (int relative)
 		{
 			int newIndex = GetIndex (false, SelectedItemIndex) + relative;
@@ -385,10 +315,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 				SelectedItemIndex = newSelection;
 			}
 		}
-		
+
 		public void ScrollToSelectedItem ()
 		{
-			var area = GetRowArea (SelectedItemIndex);
+			ScrollToItem (SelectedItemIndex);
+		}
+
+		public void ScrollToItem (int item)
+		{
+			var area = GetRowArea (item);
 			double newValue;
 			if (vadj.PageSize == 1.0) {
 				newValue = Math.Min (vadj.Upper - vadj.PageSize, area.Y);
@@ -406,39 +341,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		bool autoSelect;
-		public bool AutoSelect {
-			get { return autoSelect; }
+		bool selectionEnabled;
+		public bool SelectionEnabled {
+			get {
+				return selectionEnabled;
+			}
 			set {
-				autoSelect = value;
+				selectionEnabled = value;
 				QueueDraw ();
 			}
 		}
-		
-		public bool AutoCompleteEmptyMatch {
-			get;
-			set;
-		}
-		
-		public bool AutoCompleteEmptyMatchOnCurlyBrace {
-			get;
-			set;
-		}
 
-		public bool SelectionEnabled {
-			get {
-				return AutoSelect && (AutoCompleteEmptyMatch || !IsEmptyMatch (CompletionString));
-			}
-		}
-
-		static bool IsEmptyMatch (string completionString)
-		{
-			if (string.IsNullOrEmpty (completionString))
-				return true;
-			var ch = completionString [0];
-			return char.IsDigit (ch);
-		}
-		
 		protected override bool OnButtonPressEvent (EventButton e)
 		{
 			SelectedItemIndex = GetRowByPosition ((int)e.Y);
@@ -497,7 +410,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					context.Rectangle (0, yPos, width, height - yPos);
 					context.SetSourceColor (backgroundColor);
 					context.Stroke ();
-					noMatchLayout.SetText (win.DataProvider.ItemCount == 0 ? NoSuggestionsMsg : NoMatchesMsg);
+					noMatchLayout.SetText (DataProvider.ItemCount == 0 ? NoSuggestionsMsg : NoMatchesMsg);
 					int lWidth, lHeight;
 					noMatchLayout.GetPixelSize (out lWidth, out lHeight);
 					context.SetSourceColor (textColor);
@@ -545,8 +458,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					xpos = iconTextSpacing;
 				}
 				bool drawIconAsSelected = SelectionEnabled && item == SelectedItemIndex;
-				string markup = win.DataProvider.HasMarkup (item) ? (win.DataProvider.GetMarkup (item) ?? "&lt;null&gt;") : GLib.Markup.EscapeText (win.DataProvider.GetText (item) ?? "<null>");
-				string description = win.DataProvider.GetDescription (item, drawIconAsSelected);
+				string markup = DataProvider.HasMarkup (item) ? (DataProvider.GetMarkup (item) ?? "&lt;null&gt;") : GLib.Markup.EscapeText (DataProvider.GetText (item) ?? "<null>");
+				string description = DataProvider.GetDescription (item, drawIconAsSelected);
 
 				if (string.IsNullOrEmpty (description)) {
 					layout.SetMarkup (markup);
@@ -554,10 +467,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 					layout.SetMarkup (markup + " " + description);
 				}
 
-				string text = win.DataProvider.GetText (item);
+				string text = DataProvider.GetText (item);
 
 				if (!string.IsNullOrEmpty (text)) {
-					int [] matchIndices = win.CompletionDataList.GetHighlightedIndices(win.CompletionDataList[item], CompletionString);
+					int [] matchIndices = DataProvider.GetHighlightedTextIndices(item);
 					if (matchIndices != null) {
 						Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
 						for (int newSelection = 0; newSelection < matchIndices.Length; newSelection++) {
@@ -580,7 +493,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 
-				Xwt.Drawing.Image icon = win.DataProvider.GetIcon (item);
+				Xwt.Drawing.Image icon = DataProvider.GetIcon (item);
 				int iconHeight, iconWidth;
 				if (icon != null) {
 					if (drawIconAsSelected)
@@ -635,7 +548,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					layout.Attributes = null;
 				}
 
-				string rightText = win.DataProvider.GetRightSideDescription (item, drawIconAsSelected);
+				string rightText = DataProvider.GetRightSideDescription (item, drawIconAsSelected);
 					if (!string.IsNullOrEmpty (rightText)) {
 						layout.SetMarkup (rightText);
 
@@ -689,178 +602,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		internal List<int> filteredItems = new List<int> ();
-		
-		static CategorizedCompletionItems GetCategory (List<CategorizedCompletionItems> categories, CompletionCategory completionCategory)
+		public void ShowFilteredItems (CompletionListFilterResult filterResult)
 		{
-			foreach (var cat in categories) {
-				if (cat.CompletionCategory == completionCategory)
-					return cat;
-			}
-			var result = new CategorizedCompletionItems ();
-			result.CompletionCategory = completionCategory;
-			if (completionCategory == null) {
-				categories.Add (result);
-			} else {
-				categories.Insert (0, result);
-			}
-
-			return result;
-		}
-
-		string oldCompletionString = null;
-
-
-		static CompletionListFilterResult DefaultFilterWords (ICompletionDataList dataList, List<int> filteredItems, string oldCompletionString, string CompletionString)
-		{
-			var newCategories = new List<CategorizedCompletionItems> ();
-			var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
-			if (oldCompletionString == null || !CompletionString.StartsWith (oldCompletionString, StringComparison.Ordinal)) {
-				filteredItems.Clear ();
-				for (int newSelection = 0; newSelection < dataList.Count; newSelection++) {
-					if (string.IsNullOrEmpty (CompletionString) || matcher.IsMatch (dataList [newSelection].DisplayText)) {
-						var completionCategory = dataList [newSelection].CompletionCategory;
-						GetCategory (newCategories, completionCategory).Items.Add (newSelection);
-						filteredItems.Add (newSelection);
-					}
-				}
-			} else {
-				var oldItems = filteredItems;
-				filteredItems = new List<int> ();
-				foreach (int newSelection in oldItems) {
-					if (string.IsNullOrEmpty (CompletionString) || matcher.IsMatch (dataList [newSelection].DisplayText)) {
-						var completionCategory = dataList [newSelection].CompletionCategory;
-						GetCategory (newCategories, completionCategory).Items.Add (newSelection);
-						filteredItems.Add (newSelection);
-					}
-				}
-			}
-			try {
-				filteredItems.Sort (delegate (int left, int right) {
-					var data1 = dataList [left];
-					var data2 = dataList [right];
-					if (data1 != null && data2 == null)
-						return -1;
-					if (data1 == null && data2 != null)
-						return 1;
-					if (data1 == null && data2 == null)
-						return left.CompareTo (right);
-
-					if (data1.PriorityGroup != data2.PriorityGroup)
-						return data2.PriorityGroup.CompareTo (data1.PriorityGroup);
-
-					if (string.IsNullOrEmpty (CompletionString))
-						return CompareTo (dataList, left, right);
-
-					int rank1, rank2;
-					bool hasRank1 = matcher.CalcMatchRank (data1.CompletionText, out rank1);
-					bool hasRank2 = matcher.CalcMatchRank (data2.CompletionText, out rank2);
-					if (!hasRank1 && hasRank2)
-						return 1;
-					if (hasRank1 && !hasRank2)
-						return -1;
-
-					if (rank1 != rank2)
-						return rank2.CompareTo (rank1);
-
-					return left.CompareTo (right);
-				});
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while filtering completion items.", e);
-			}
-
-			// put the item from a lower priority group with the highest match rank always to position #2
-			if (filteredItems.Count > 0) {
-				int idx = 0;
-				int rank;
-				var data = dataList[filteredItems [0]];
-				int firstGrp = data.PriorityGroup;
-				matcher.CalcMatchRank (data.CompletionText, out rank);
-				for (int i = 1; i < filteredItems.Count; i++) {
-					var curData = dataList[filteredItems [i]];
-					if (curData.PriorityGroup == firstGrp)
-						continue;
-					int curRank;
-					matcher.CalcMatchRank (curData.CompletionText, out curRank);
-					if (curRank > rank) {
-						idx = i;
-						rank = curRank;
-					}
-				}
-
-				if (idx != 0) {
-					var tmp = filteredItems [idx];
-					for (int i = idx; i > 1; i--) {
-						filteredItems [i] = filteredItems [i - 1];
-					}
-					filteredItems [1] = tmp;
-				}
-			}
-
-			newCategories.Sort (delegate (CategorizedCompletionItems left, CategorizedCompletionItems right) {
-				if (left.CompletionCategory == null)
-					return 1;
-				if (right.CompletionCategory == null)
-					return -1;
-
-				return left.CompletionCategory.CompareTo (right.CompletionCategory);
-			});
-
-			return new CompletionListFilterResult (filteredItems, newCategories);
-		}
-
-		internal static readonly IComparer<CompletionData> overloadComparer = CompletionData.Comparer;
-		internal static IComparer<CompletionData> defaultComparer;
-
-		internal static int CompareTo (ICompletionDataList completionDataList, int n, int m)
-		{
-			var item1 = completionDataList [n];
-			var item2 = completionDataList [m];
-			return (defaultComparer ?? (defaultComparer = GetComparerForCompletionList (completionDataList))).Compare (item1, item2);
-		}
-
-		internal void SelectEntry (CompletionSelectionStatus match)
-		{
-			if (match.IsSelected.HasValue)
-				AutoSelect = match.IsSelected.Value;
-			if (match.Index >= 0)
-				SelectionFilterIndex = match.Index;
-		}
-
-		internal static IComparer<CompletionData> GetComparerForCompletionList (ICompletionDataList dataList)
-		{
-			var concrete = dataList as CompletionDataList;
-			return concrete != null && concrete.Comparer != null ? concrete.Comparer : CompletionData.Comparer;
-		}
-
-		public void FilterWords ()
-		{
-			if (win.CompletionDataList == null)
-				return;
-			var filterResult = win.CompletionDataList.FilterCompletionList (new CompletionListFilterInput (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString));
-			if (filterResult == null) {
-				filterResult = DefaultFilterWords (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString);
-			}
-
 			filteredItems = filterResult.FilteredItems;
 			if (filterResult.CategorizedItems == null) {
 				categories.Clear ();
-			} else { 
+			} else {
 				categories = filterResult.CategorizedItems;
 			}
 
-			//SelectFirstItemInCategory ();
 			CalcVisibleRows ();
 			SetAdjustments ();
-
-			OnWordsFiltered (EventArgs.Empty);
-			oldCompletionString = CompletionString;
-		}
-		
-		void SelectFirstItemInCategory ()
-		{
-			if (string.IsNullOrEmpty (CompletionString) && IdeApp.Preferences.EnableCompletionCategoryMode)
-				selection = categories.First ().Items.First ();
+			QueueDraw ();
 		}
 
 		void SetAdjustments (bool scrollToSelectedItem = true)
@@ -880,16 +633,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (scrollToSelectedItem)
 				ScrollToSelectedItem ();
 		}
-		
-		protected virtual void OnWordsFiltered (EventArgs e)
-		{
-			SetAdjustments ();
-			EventHandler handler = this.WordsFiltered;
-			if (handler != null)
-				handler (this, e);
-		}
-		
-		public event EventHandler WordsFiltered;
 		
 		int GetRowByPosition (int ypos)
 		{

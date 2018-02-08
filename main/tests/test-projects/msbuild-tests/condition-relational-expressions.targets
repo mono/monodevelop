@@ -1,0 +1,87 @@
+<Project>
+	<PropertyGroup>
+		<P1>11.2.3</P1>
+		<P2>3.1</P2>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(P1) == 1.2.3">
+		<C1>С1</C1>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) != 1.2.3">
+		<C2>С2</C2>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) > 1.2.3">
+		<C3>С3</C3>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) >= 1.2.3">
+		<C4>С4</C4>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) &lt; 1.2.3">
+		<C5>С5</C5>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) &lt;= 1.2.3">
+		<C6>С6</C6>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(P2) == 3.1">
+		<C7>С7</C7>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P2) != 3.1">
+		<C8>С8</C8>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P2) > 3.1">
+		<C9>С9</C9>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P2) >= 3.1">
+		<C10>С10</C10>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P2) &lt; 3.1">
+		<C11>С11</C11>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P2) &lt;= 3.1">
+		<C12>С12</C12>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(P1) == 12.3.4">
+		<C13>С13</C13>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) != 12.3.4">
+		<C14>С14</C14>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) > 12.3.4">
+		<C15>С15</C15>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) >= 12.3.4">
+		<C16>С16</C16>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) &lt; 12.3.4">
+		<C17>С17</C17>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) &lt;= 12.3.4">
+		<C18>С18</C18>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(P1) == 12">
+		<C19>С19</C19>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) != 12">
+		<C20>С20</C20>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) > 12">
+		<C21>С21</C21>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) >= 12">
+		<C22>С22</C22>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) &lt; 12">
+		<C23>С23</C23>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(P1) &lt;= 12">
+		<C24>С24</C24>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Answer>$(C1)$(C2)$(C3)$(C4)$(C5)$(C6)$(C7)$(C8)$(C9)$(C10)$(C11)$(C12)$(C13)$(C14)$(C15)$(C16)$(C17)$(C18)$(C19)$(C20)$(C21)$(C22)$(C23)$(C24)</Answer>
+	</PropertyGroup>
+
+</Project>

@@ -185,6 +185,12 @@ namespace MonoDevelop.Ide.Desktop
 			return OnGetFiles ();
 		}
 
+		public RecentFile MostRecentlyUsedProject {
+			get {
+				return OnGetProjects ().FirstOrDefault ();
+			}
+		}
+
 		public abstract event EventHandler Changed;
 		public abstract void ClearProjects ();
 		public abstract void ClearFiles ();

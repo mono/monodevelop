@@ -37,7 +37,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		event EventHandler Changing;
 		event EventHandler Changed;
 	}
-	
+
+	[Obsolete ("This is no longer functional")]
 	public class ProjectDomCompletionDataList : CompletionDataList, IMutableCompletionDataList
 	{
 		public ProjectDomCompletionDataList ()

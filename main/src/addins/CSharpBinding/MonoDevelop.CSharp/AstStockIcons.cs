@@ -32,6 +32,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.FindSymbols;
+using Microsoft.CodeAnalysis.NavigateTo;
 using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.CSharp
@@ -210,41 +211,80 @@ namespace MonoDevelop.CSharp
 			return MonoDevelop.Ide.TypeSystem.Stock.GetAccess (acc);
 		}
 
-		internal static IconId GetStockIconForSymbolInfo (this DeclaredSymbolInfoWrapper symbol)
+		internal static IconId GetStockIconForNavigableItem (this INavigateToSearchResult item)
 		{
-			switch (symbol.SymbolInfo.Kind) {
-			case DeclaredSymbolInfoKind.Class:
-				return AstStockIcons.Class;
-			case DeclaredSymbolInfoKind.Constant:
-				return AstStockIcons.Field;
-			case DeclaredSymbolInfoKind.Constructor:
-				return AstStockIcons.Method;
-			case DeclaredSymbolInfoKind.Delegate:
-				return AstStockIcons.Delegate;
-			case DeclaredSymbolInfoKind.Enum:
-				return AstStockIcons.Enum;
-			case DeclaredSymbolInfoKind.EnumMember:
-				return AstStockIcons.Field;
-			case DeclaredSymbolInfoKind.Event:
-				return AstStockIcons.Event;
-			case DeclaredSymbolInfoKind.ExtensionMethod:
-				return AstStockIcons.Method;
-			case DeclaredSymbolInfoKind.Field:
-				return AstStockIcons.Field;
-			case DeclaredSymbolInfoKind.Indexer:
-				return AstStockIcons.Method;
-			case DeclaredSymbolInfoKind.Interface:
-				return AstStockIcons.Interface;
-			case DeclaredSymbolInfoKind.Method:
-				return AstStockIcons.Method;
-			case DeclaredSymbolInfoKind.Module:
-				return AstStockIcons.Method;
-			case DeclaredSymbolInfoKind.Property:
-				return AstStockIcons.Property;
-			case DeclaredSymbolInfoKind.Struct:
-				return AstStockIcons.Struct;
+			switch (item.Kind) {
+			case NavigateToItemKind.Class:
+				return Class;
+
+			case NavigateToItemKind.Delegate:
+				return Delegate;
+
+			case NavigateToItemKind.Event:
+				return Event;
+
+			case NavigateToItemKind.Enum:
+				return Enum;
+
+			case NavigateToItemKind.Constant:
+			case NavigateToItemKind.Field:
+			case NavigateToItemKind.EnumItem:
+				return Field;
+
+			case NavigateToItemKind.Interface:
+				return Interface;
+
+			case NavigateToItemKind.Method:
+			case NavigateToItemKind.Module:
+				return Method;
+
+			case NavigateToItemKind.Property:
+				return Property;
+
+			case NavigateToItemKind.Structure:
+				return Struct;
 			default:
 				throw new ArgumentOutOfRangeException ();
+			}
+		}
+
+		internal static string GetDisplayStringForNavigableItem (this INavigateToSearchResult item, string loc)
+		{
+			switch (item.Kind) {
+			case NavigateToItemKind.Class:
+				return GettextCatalog.GetString ("class ({0})", loc);
+
+			case NavigateToItemKind.Delegate:
+				return GettextCatalog.GetString ("delegate ({0})", loc);
+
+			case NavigateToItemKind.Enum:
+				return GettextCatalog.GetString ("enumeration ({0})", loc);
+
+			case NavigateToItemKind.Event:
+				return GettextCatalog.GetString ("event ({0})", loc);
+
+
+			case NavigateToItemKind.Constant:
+			case NavigateToItemKind.Field:
+				return GettextCatalog.GetString ("field ({0})", loc);
+
+			case NavigateToItemKind.EnumItem:
+				return GettextCatalog.GetString ("enum member ({0})", loc);
+
+			case NavigateToItemKind.Interface:
+				return GettextCatalog.GetString ("interface ({0})", loc);
+
+			case NavigateToItemKind.Method:
+			case NavigateToItemKind.Module:
+				return GettextCatalog.GetString ("method ({0})", loc);
+
+			case NavigateToItemKind.Property:
+				return GettextCatalog.GetString ("property ({0})", loc);
+
+			case NavigateToItemKind.Structure:
+				return GettextCatalog.GetString ("struct ({0})", loc);
+			default:
+				return GettextCatalog.GetString ("symbol ({0})", loc);
 			}
 		}
 	}

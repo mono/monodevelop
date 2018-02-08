@@ -62,8 +62,10 @@ namespace MonoDevelop.Components.DockNotebook
 				cocoaFrame.Width = value.Width;
 				cocoaFrame.Height = value.Height;
 
-				Accessible.FrameInParent = cocoaFrame;
-				Accessible.FrameInGtkParent = value;
+				if (Accessible != null) {
+					Accessible.FrameInParent = cocoaFrame;
+					Accessible.FrameInGtkParent = value;
+				}
 				allocation = value;
 			}
 		}
@@ -84,10 +86,13 @@ namespace MonoDevelop.Components.DockNotebook
 				cocoaFrame.Width = (int) value.Width;
 				cocoaFrame.Height = (int) value.Height;
 
-				CloseButtonAccessible.FrameInParent = cocoaFrame;
-
 				Gdk.Rectangle realFrame = new Gdk.Rectangle ((int) value.X, (int) value.Y, (int) value.Width, (int) value.Height);
-				CloseButtonAccessible.FrameInGtkParent = realFrame;
+
+				if (CloseButtonAccessible != null) {
+					CloseButtonAccessible.FrameInParent = cocoaFrame;
+					CloseButtonAccessible.FrameInGtkParent = realFrame;
+				}
+
 				closeButtonActiveArea = value;
 			}
 		}
@@ -129,7 +134,10 @@ namespace MonoDevelop.Components.DockNotebook
 				} else {
 					accTitle = Text ?? Markup;
 				}
-				Accessible.Title = accTitle;
+
+				if (Accessible != null) {
+					Accessible.Title = accTitle;
+				}
 			}
 		}
 
@@ -141,16 +149,21 @@ namespace MonoDevelop.Components.DockNotebook
 				text = value;
 				markup = null;
 
-				string accTitle;
+				if (Accessible != null) {
+					string accTitle;
 
-				if (dirty) {
-					accTitle = string.Format (Core.GettextCatalog.GetString ("{0}. (dirty)"), value);
-				} else {
-					accTitle = value;
+					if (dirty) {
+						accTitle = string.Format (Core.GettextCatalog.GetString ("{0}. (dirty)"), value);
+					} else {
+						accTitle = value;
+					}
+
+					Accessible.Title = accTitle;
 				}
 
-				Accessible.Title = accTitle;
-				CloseButtonAccessible.Title = string.Format (Core.GettextCatalog.GetString ("Close {0}"), value);
+				if (CloseButtonAccessible != null) {
+					CloseButtonAccessible.Title = string.Format (Core.GettextCatalog.GetString ("Close {0}"), value);
+				}
 
 				strip.Update ();
 			}
@@ -164,16 +177,21 @@ namespace MonoDevelop.Components.DockNotebook
 				markup = value;
 				text = null;
 
-				// FIXME: Strip markup
-				string accTitle;
-				if (dirty) {
-					accTitle = string.Format (Core.GettextCatalog.GetString ("{0}. (dirty)"), value);
-				} else {
-					accTitle = value;
+				if (Accessible != null) {
+					// FIXME: Strip markup
+					string accTitle;
+					if (dirty) {
+						accTitle = string.Format (Core.GettextCatalog.GetString ("{0}. (dirty)"), value);
+					} else {
+						accTitle = value;
+					}
+
+					Accessible.Title = accTitle;
 				}
 
-				Accessible.Title = accTitle;
-				CloseButtonAccessible.Title = string.Format (Core.GettextCatalog.GetString ("Close {0}"), value);
+				if (CloseButtonAccessible != null) {
+					CloseButtonAccessible.Title = string.Format (Core.GettextCatalog.GetString ("Close {0}"), value);
+				}
 
 				strip.Update ();
 			}
@@ -205,28 +223,32 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 			set {
 				tooltip = value;
-				Accessible.Help = string.Format (Core.GettextCatalog.GetString ("Switch to {0}"), value);
+				if (Accessible != null) {
+					Accessible.Help = string.Format (Core.GettextCatalog.GetString ("Switch to {0}"), value);
+				}
 			}
 		}
 
 		internal DockNotebookTab (DockNotebook notebook, TabStrip strip)
 		{
-			Accessible = AccessibilityElementProxy.ButtonElementProxy ();
-			Accessible.PerformPress += OnPressTab;
-			// FIXME Should Role descriptions be translated?
-			Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, "tab");
-			Accessible.GtkParent = strip;
-			Accessible.PerformShowMenu += OnShowMenu;
-			Accessible.Identifier = "DockNotebook.Tab";
+			if (AccessibilityElementProxy.Enabled) {
+				Accessible = AccessibilityElementProxy.ButtonElementProxy ();
+				Accessible.PerformPress += OnPressTab;
+				// FIXME Should Role descriptions be translated?
+				Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, "tab");
+				Accessible.GtkParent = strip;
+				Accessible.PerformShowMenu += OnShowMenu;
+				Accessible.Identifier = "DockNotebook.Tab";
 
-			CloseButtonAccessible = AccessibilityElementProxy.ButtonElementProxy ();
-			CloseButtonAccessible.PerformPress += OnPressCloseButton;
-			CloseButtonAccessible.SetRole (AtkCocoa.Roles.AXButton);
-			CloseButtonAccessible.GtkParent = strip;
-			CloseButtonAccessible.PerformShowMenu += OnCloseButtonShowMenu;
-			CloseButtonAccessible.Title = Core.GettextCatalog.GetString ("Close document");
-			CloseButtonAccessible.Identifier = "DockNotebook.Tab.CloseButton";
-			Accessible.AddAccessibleChild (CloseButtonAccessible);
+				CloseButtonAccessible = AccessibilityElementProxy.ButtonElementProxy ();
+				CloseButtonAccessible.PerformPress += OnPressCloseButton;
+				CloseButtonAccessible.SetRole (AtkCocoa.Roles.AXButton);
+				CloseButtonAccessible.GtkParent = strip;
+				CloseButtonAccessible.PerformShowMenu += OnCloseButtonShowMenu;
+				CloseButtonAccessible.Title = Core.GettextCatalog.GetString ("Close document");
+				CloseButtonAccessible.Identifier = "DockNotebook.Tab.CloseButton";
+				Accessible.AddAccessibleChild (CloseButtonAccessible);
+			}
 
 			this.notebook = notebook;
 			this.strip = strip;
@@ -271,10 +293,15 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public void Dispose ()
 		{
-			Accessible.PerformPress -= OnPressTab;
-			Accessible.PerformShowMenu -= OnShowMenu;
-			CloseButtonAccessible.PerformShowMenu -= OnCloseButtonShowMenu;
-			CloseButtonAccessible.PerformPress -= OnPressCloseButton;
+			if (Accessible != null) {
+				Accessible.PerformPress -= OnPressTab;
+				Accessible.PerformShowMenu -= OnShowMenu;
+			}
+
+			if (CloseButtonAccessible != null) {
+				CloseButtonAccessible.PerformShowMenu -= OnCloseButtonShowMenu;
+				CloseButtonAccessible.PerformPress -= OnPressCloseButton;
+			}
 		}
 	}
 }

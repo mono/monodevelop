@@ -268,13 +268,19 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var window = tabControl.Toplevel as Gtk.Window;
 			if (window != null) {
-				if (window is DockWindow)
+				if (window is DockWindow) {
 					DesktopService.GrabDesktopFocus (window);
+				}
+
+				// Focusing the main window so hide all the autohide pads
+				workbench.DockFrame.MinimizeAllAutohidden ();
 
 				#if MAC
 				AppKit.NSWindow nswindow = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (window);
-				if (nswindow != null)
+				if (nswindow != null) {
 					nswindow.MakeFirstResponder (nswindow.ContentView);
+					nswindow.MakeKeyAndOrderFront (nswindow);
+				}
 				#endif
 			}	
 
@@ -340,9 +346,11 @@ namespace MonoDevelop.Ide.Gui
 		static void DeepGrabFocus (Gtk.Widget widget)
 		{
 			Widget first = null;
+
 			foreach (var f in GetFocussableWidgets (widget)) {
 				if (f.HasFocus)
 					return;
+				
 				if (first == null)
 					first = f;
 			}
@@ -648,7 +656,9 @@ namespace MonoDevelop.Ide.Gui
 			var tab = new Tab (subViewToolbar, label) {
 				Tag = viewContent
 			};
-			tab.Accessible.Help = viewContent.TabAccessibilityDescription;
+			if (tab.Accessible != null) {
+				tab.Accessible.Help = viewContent.TabAccessibilityDescription;
+			}
 			
 			// If this is the current displayed document we need to add the control immediately as the tab is already active.
 			if (addedContent) {

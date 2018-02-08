@@ -38,7 +38,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -95,6 +95,7 @@
     <Compile Include="MonoDevelop.Projects\BuilderManagerTests.cs" />
     <Compile Include="MonoDevelop.Core.Execution\BinaryMessageTests.cs" />
     <Compile Include="MonoDevelop.Core\ProgressMonitorTests.cs" />
+    <Compile Include="MonoDevelop.Projects\DotNetCoreFileWatcherTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Core\" />

@@ -121,6 +121,22 @@ namespace MonoDevelop.Core
 			Assert.IsTrue (matcher.CalcMatchRank("MonoDevelop.MonoDroid.addin.xml", out rank));
 		}
 
+		[Test]
+		public void TestWordStart ()
+		{
+			var matcher = StringMatcher.GetMatcher ("A", true);
+			var match = matcher.GetMatch ("aaa0");
+			CompareMatch (match,          "*---");
+		}
+
+		[Test]
+		public void TestWordStart2 ()
+		{
+			var matcher = StringMatcher.GetMatcher ("Abc", true);
+			var match = matcher.GetMatch ("AbAbc");
+			CompareMatch (match,          "--***");
+		}
+
 		static string GenerateString(int[] match, string str)
 		{
 			var result = new char[str.Length];
@@ -131,6 +147,9 @@ namespace MonoDevelop.Core
 		}
 		static void CompareMatch (int[] match, string str)
 		{
+			if (match == null)
+				throw new Exception ("No match found");
+			
 			for (int i = 0; i < str.Length;i++){
 				if (str[i] == '*' && !match.Any(m => m == i)){
 					Console.WriteLine (str);

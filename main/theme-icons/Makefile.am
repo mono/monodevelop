@@ -6,7 +6,11 @@ theme_icons = \
 	apps,GNOME/monodevelop-22.png \
 	apps,GNOME/monodevelop-24.png \
 	apps,GNOME/monodevelop-32.png \
-	apps,GNOME/monodevelop-48.png
+	apps,GNOME/monodevelop-48.png \
+	apps,GNOME/monodevelop-64.png \
+	apps,GNOME/monodevelop-128.png \
+	apps,GNOME/monodevelop-256.png \
+	apps,GNOME/monodevelop-512.png
 
 install_icon_exec = $(top_srcdir)/theme-icons/icon-theme-installer \
 	-t "$(theme)" \

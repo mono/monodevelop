@@ -37,6 +37,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide.Fonts;
+using System;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -113,7 +114,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			markup.AppendTaggedText (theme, Item.SuffixDisplayParts);
 
-			var documentation = Item.DocumentationFactory (cancelToken).ToList ();
+			List<TaggedText> documentation;
+			try {
+				documentation = Item.DocumentationFactory (cancelToken).ToList ();
+			} catch (Exception e) {
+				documentation = EmptyTaggedTextList;
+				LoggingService.LogError ("Error while getting parameter documentation", e);
+			}
+
 			if (documentation.Count > 0) {
 				markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
 				markup.AppendLine ();
@@ -124,21 +132,30 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			if (currentParameter >= 0 && currentParameter < Item.Parameters.Length) {
 				var p = Item.Parameters [currentParameter];
-				documentation = p.DocumentationFactory (cancelToken).ToList ();
-				if (documentation.Count > 0) {
-					markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
-					markup.AppendLine ();
-					markup.AppendLine ();
-					markup.Append ("<b>");
-					markup.Append (p.Name);
-					markup.Append (": </b>");
-					markup.AppendTaggedText (theme, documentation, p.Name.Length + 2, MaxParamColumnCount);
-					markup.Append ("</span>");
+				if (p.DocumentationFactory != null) {
+					try {
+						documentation = p.DocumentationFactory (cancelToken).ToList ();
+					} catch (Exception e) {
+						documentation = EmptyTaggedTextList;
+						LoggingService.LogError ("Error while getting parameter documentation", e);
+					}
+					if (documentation.Count > 0) {
+						markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+						markup.AppendLine ();
+						markup.AppendLine ();
+						markup.Append ("<b>");
+						markup.Append (p.Name);
+						markup.Append (": </b>");
+						markup.AppendTaggedText (theme, documentation, p.Name.Length + 2, MaxParamColumnCount);
+						markup.Append ("</span>");
+					}
 				}
 			}
 
 			tt.SignatureMarkup = markup.ToString ();
 			return Task.FromResult (tt);
 		}
+
+		static readonly List<TaggedText> EmptyTaggedTextList = new List<TaggedText> ();
 	}
 }

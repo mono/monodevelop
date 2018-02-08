@@ -225,7 +225,13 @@ namespace MonoDevelop.Components.DockNotebook
 			};
 			
 			foreach (var tab in notebook.Tabs) {
-				Accessible.AddAccessibleElement (tab.Accessible);
+				if (tab.Accessible != null) {
+					Accessible.AddAccessibleElement (tab.Accessible);
+
+					tab.AccessibilityPressTab += OnAccessibilityPressTab;
+					tab.AccessibilityPressCloseButton += OnAccessibilityPressCloseButton;
+					tab.AccessibilityShowMenu += OnAccessibilityShowMenu;
+				}
 			}
 			UpdateAccessibilityTabs ();
 			notebook.PageAdded += PageAddedHandler;
@@ -247,11 +253,13 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			var tab = args.Tab;
 
-			Accessible.AddAccessibleElement (tab.Accessible);
+			if (tab.Accessible != null) {
+				Accessible.AddAccessibleElement (tab.Accessible);
 
-			tab.AccessibilityPressTab += OnAccessibilityPressTab;
-			tab.AccessibilityPressCloseButton += OnAccessibilityPressCloseButton;
-			tab.AccessibilityShowMenu += OnAccessibilityShowMenu;
+				tab.AccessibilityPressTab += OnAccessibilityPressTab;
+				tab.AccessibilityPressCloseButton += OnAccessibilityPressCloseButton;
+				tab.AccessibilityShowMenu += OnAccessibilityShowMenu;
+			}
 
 			QueueResize ();
 
@@ -262,11 +270,13 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			var tab = args.Tab;
 
-			tab.AccessibilityPressTab -= OnAccessibilityPressTab;
-			tab.AccessibilityPressCloseButton -= OnAccessibilityPressCloseButton;
-			tab.AccessibilityShowMenu -= OnAccessibilityShowMenu;
+			if (tab.Accessible != null) {
+				tab.AccessibilityPressTab -= OnAccessibilityPressTab;
+				tab.AccessibilityPressCloseButton -= OnAccessibilityPressCloseButton;
+				tab.AccessibilityShowMenu -= OnAccessibilityShowMenu;
 
-			Accessible.RemoveAccessibleElement (tab.Accessible);
+				Accessible.RemoveAccessibleElement (tab.Accessible);
+			}
 
 			tab.Dispose ();
 
@@ -284,7 +294,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		void UpdateAccessibilityTabs ()
 		{
-			var tabs = notebook.Tabs.OrderBy (x => x.Index).Select (x => x.Accessible).ToArray ();
+			var tabs = notebook.Tabs.Where (x => x.Accessible != null).OrderBy (x => x.Index).Select (x => x.Accessible).ToArray ();
 			Accessible.SetTabs (tabs);
 		}
 
