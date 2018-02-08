@@ -1013,9 +1013,12 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public void UpdateTabWidth (int width, bool adjustLast = false)
 		{
-			if (notebook.NormalTabs.Any ())
+			if (notebook.NormalTabs.Count > 0) {
 				TargetWidth = Clamp (width / notebook.NormalTabs.Count, 50, 200);
-
+			} else if (notebook.PreviewTabs.Count > 0) {
+				TargetWidth = Clamp (width / notebook.PreviewTabs.Count, 50, 200);
+			} 
+				
 			if (adjustLast) {
 				// adjust to align close buttons properly
 				LastTabWidthAdjustment = width - (TargetWidth * notebook.NormalTabs.Count) + 1;
