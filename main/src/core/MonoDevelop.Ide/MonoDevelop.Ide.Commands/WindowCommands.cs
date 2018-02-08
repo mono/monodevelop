@@ -154,6 +154,7 @@ namespace MonoDevelop.Ide.Commands
 				info.Text = document.Window.Title.Replace ("_", "__");
 				info.Checked = document == IdeApp.Workbench.ActiveDocument;
 				info.Description = GettextCatalog.GetString ("Activate document '{0}'", info.Text);
+				info.DataItem = document;
 
 				if (document.Window.ShowNotification) {
 					info.UseMarkup = true;
