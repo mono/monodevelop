@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			showDiagnosticsButton = new CheckBox (GettextCatalog.GetString ("Diagnostic log verbosity"));
 			showDiagnosticsButton.Accessible.Identifier = "BuildOutputWidget.ShowDiagnosticsButton";
 			showDiagnosticsButton.TooltipText = GettextCatalog.GetString ("Show full (diagnostics enabled) or reduced log");
-			showDiagnosticsButton.Accessible.Description = GettextCatalog.GetString ("Show Diagnostics");
+			showDiagnosticsButton.Accessible.Description = GettextCatalog.GetString ("Diagnostic log verbosity");
 			showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 
 			saveButton = new Button (GettextCatalog.GetString ("Save"));
