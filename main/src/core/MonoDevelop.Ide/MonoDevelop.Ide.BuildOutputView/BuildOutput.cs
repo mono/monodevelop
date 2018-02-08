@@ -221,7 +221,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					BuildOutput.Load (pspe.LogFile, true); 
 				} else {
 					currentCustomProject = new BuildOutputProcessor (pspe.LogFile, false);
-					currentCustomProject.AddNode (BuildOutputNodeType.Project, "Custom project", true, pspe.TimeStamp);
+					currentCustomProject.AddNode (BuildOutputNodeType.Project, "Custom project", "Custom project started building", true, pspe.TimeStamp);
 					BuildOutput.AddProcessor (currentCustomProject);
 				}
 				break;
@@ -238,7 +238,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		protected override void OnWriteLog (string message)
 		{
 			if (currentCustomProject != null) {
-				currentCustomProject.AddNode (BuildOutputNodeType.Message, message, false, DateTime.Now);
+				currentCustomProject.AddNode (BuildOutputNodeType.Message, message, message, false, DateTime.Now);
 			}
 		}
 	}
