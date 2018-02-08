@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
-				if (DockNotebook.ActiveNotebook == null || DockNotebook.ActiveNotebook.CurrentTab == null || DockNotebook.ActiveNotebook.ContainsTab (DockNotebook.ActiveNotebook.CurrentTab))  {
+				if (DockNotebook.ActiveNotebook == null || DockNotebook.ActiveNotebook.CurrentTab == null || !DockNotebook.ActiveNotebook.ContainsTab (DockNotebook.ActiveNotebook.CurrentTab))  {
 					return null;
 				}
 				return (IWorkbenchWindow) DockNotebook.ActiveNotebook.CurrentTab.Content;
