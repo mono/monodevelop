@@ -106,7 +106,6 @@
     <Compile Include="MonoDevelop.Ide.Editor\SkipCharSessionTests.cs" />
     <Compile Include="MonoDevelop.Components\PangoUtilTests.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\DotNetCoreProjectTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\ReslynCompletionDataTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\MockCompletionView.cs" />
     <Compile Include="MonoDevelop.Ide\MonoDocDocumentationProviderTests.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\PclToProjectJsonConversionTests.cs" />
