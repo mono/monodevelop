@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_BuildStarted (object sender, BuildStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Build, stringPool.Add (e.Message), true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Build, stringPool.Add (e.Message), stringPool.Add (e.Message), true, e.Timestamp);
 		}
 
 		private void BinLog_BuildFinished (object sender, BuildFinishedEventArgs e)
@@ -80,12 +80,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_ErrorRaised (object sender, BuildErrorEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Error, stringPool.Add (e.Message), false, e.Timestamp);
+			AddNode (BuildOutputNodeType.Error, stringPool.Add (e.Message), stringPool.Add (e.Message), false, e.Timestamp);
 		}
 
 		private void BinLog_WarningRaised (object sender, BuildWarningEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Warning, stringPool.Add (e.Message), false, e.Timestamp);
+			AddNode (BuildOutputNodeType.Warning, stringPool.Add (e.Message), stringPool.Add (e.Message), false, e.Timestamp);
 		}
 
 		void BinlogReader_MessageRaised (object sender, BuildMessageEventArgs e)
@@ -100,13 +100,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				// with the correct build step, so that we get stats for those
 			} else if (!String.IsNullOrEmpty (e.Message)) {
 				AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message,
-				         stringPool.Add (e.Message), false, e.Timestamp);
+				         stringPool.Add (e.Message), stringPool.Add (e.Message), false, e.Timestamp);
 			}
 		}
 
 		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Project, Path.GetFileName (e.ProjectFile), true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Project, Path.GetFileName (e.ProjectFile), e.Message, true, e.Timestamp);
 		}
 
 		private void BinLog_ProjectFinished (object sender, ProjectFinishedEventArgs e)
@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_TargetStarted (object sender, TargetStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Target, stringPool.Add (e.TargetName), true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Target, stringPool.Add (e.TargetName), stringPool.Add (e.TargetName), true, e.Timestamp);
 		}
 
 		private void BinLog_TargetFinished (object sender, TargetFinishedEventArgs e)
@@ -131,7 +131,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			AddNode (BuildOutputNodeType.Task, stringPool.Add (e.TaskName), true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Task, stringPool.Add (e.TaskName), stringPool.Add (e.TaskName), true, e.Timestamp);
 		}
 
 		private void BinLog_TaskFinished (object sender, TaskFinishedEventArgs e)
