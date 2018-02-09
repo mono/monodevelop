@@ -381,7 +381,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		static void SearchInNodeAndChildren (BuildOutputNode node, List<BuildOutputNode> matches, string pattern)
 		{
-			if (node.Message.Contains (pattern)) {
+			if (node.Message?.ToLower ().Contains (pattern.ToLower ()) ?? false) {
 				matches.Add (node);
 			}
 
@@ -412,6 +412,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (currentSearchMatches.Count > 0) {
 				currentMatchIndex = 0;
 				return currentSearchMatches [0];
+			}
+
+			return null;
+		}
+
+		public BuildOutputNode PreviousMatch ()
+		{
+			if (currentSearchMatches == null || currentSearchMatches.Count == 0 ||
+				String.IsNullOrEmpty (currentSearchPattern) || currentMatchIndex == -1) {
+				return null;
+			}
+
+			currentMatchIndex--;
+			if (currentMatchIndex >= 0 && currentMatchIndex < currentSearchMatches.Count) {
+				return currentSearchMatches [currentMatchIndex];
 			}
 
 			return null;
