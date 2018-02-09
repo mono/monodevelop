@@ -221,7 +221,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 					BuildOutput.Load (pspe.LogFile, true); 
 				} else {
 					currentCustomProject = new BuildOutputProcessor (pspe.LogFile, false);
-					currentCustomProject.AddNode (BuildOutputNodeType.Project, "Custom project", "Custom project started building", true, pspe.TimeStamp);
+					currentCustomProject.AddNode (BuildOutputNodeType.Project,
+					                              GettextCatalog.GetString ("Custom project"),
+					                              GettextCatalog.GetString ("Custom project started building"),
+					                              true, pspe.TimeStamp);
 					BuildOutput.AddProcessor (currentCustomProject);
 				}
 				break;
@@ -252,6 +255,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		static readonly Xwt.Drawing.Image targetIcon = ImageService.GetIcon (Ide.Gui.Stock.Event, Gtk.IconSize.Menu);
 		static readonly Xwt.Drawing.Image taskIcon = ImageService.GetIcon (Ide.Gui.Stock.Execute, Gtk.IconSize.Menu);
 		static readonly Xwt.Drawing.Image warningIcon = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image folderIcon = ImageService.GetIcon (Ide.Gui.Stock.OpenFolder, Gtk.IconSize.Menu);
 
 		BuildOutput buildOutput;
 		bool includeDiagnostics;
@@ -334,6 +338,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 						return messageIcon;
 					case BuildOutputNodeType.Error:
 						return errorIcon;
+					case BuildOutputNodeType.Parameters:
+						return folderIcon;
 					case BuildOutputNodeType.Project:
 						return projectIcon;
 					case BuildOutputNodeType.Target:
