@@ -40,6 +40,8 @@ namespace MonoDevelop.Ide.Projects
 		SolutionTemplate template;
 		bool valid;
 		bool projectNameIsReadOnly;
+		bool? createProjectDirectoryInsideSolutionDirectory;
+		bool createProjectDirectoryInsideSolutionDirectoryEnabled = true;
 
 		public FinalProjectConfigurationPage (NewProjectConfiguration config)
 		{
@@ -148,7 +150,12 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public bool CreateProjectDirectoryInsideSolutionDirectory {
-			get { return config.CreateProjectDirectoryInsideSolutionDirectory; }
+			get {
+				if (createProjectDirectoryInsideSolutionDirectory.HasValue) {
+					return createProjectDirectoryInsideSolutionDirectory.Value;
+				}
+				return config.CreateProjectDirectoryInsideSolutionDirectory;
+			}
 			set { config.CreateProjectDirectoryInsideSolutionDirectory = value; }
 		}
 
@@ -161,7 +168,7 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public bool IsCreateProjectDirectoryInsideSolutionDirectoryEnabled {
-			get { return HasProjects && IsNewSolution; }
+			get { return HasProjects && IsNewSolution && createProjectDirectoryInsideSolutionDirectoryEnabled; }
 		}
 
 		public bool IsGitIgnoreEnabled {
@@ -230,6 +237,12 @@ namespace MonoDevelop.Ide.Projects
 		{
 			ProjectName = Parameters ["ProjectName"];
 			projectNameIsReadOnly = Parameters.GetBoolValue ("IsProjectNameReadOnly", false);
+
+			string value = Parameters ["CreateProjectDirectoryInsideSolutionDirectory"];
+			if (!string.IsNullOrEmpty (value)) {
+				createProjectDirectoryInsideSolutionDirectory = Parameters.GetBoolValue ("CreateProjectDirectoryInsideSolutionDirectory", config.CreateProjectDirectoryInsideSolutionDirectory);
+			}
+			createProjectDirectoryInsideSolutionDirectoryEnabled = Parameters. GetBoolValue ("IsCreateProjectDirectoryInsideSolutionDirectoryEnabled", true);
 		}
 	}
 }

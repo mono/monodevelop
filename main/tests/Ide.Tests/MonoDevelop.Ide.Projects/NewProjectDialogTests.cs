@@ -162,5 +162,61 @@ namespace MonoDevelop.Ide.Projects
 			Assert.IsTrue (controller.FinalConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
 			Assert.IsFalse (controller.FinalConfiguration.IsCreateProjectDirectoryInsideSolutionDirectoryEnabled);
 		}
+
+		[Test]
+		public void FinalPage_ProjectNameTests ()
+		{
+			CreateDialog ();
+			CSharpLibraryTemplateSelectedByDefault ();
+			PropertyService.Set (NewProjectDialogController.CreateProjectSubDirectoryPropertyName, true);
+
+			controller.Backend.OnShowDialogCalled = () => {
+				controller.MoveToNextPage ();
+			};
+
+			controller.Show ();
+			controller.FinalConfiguration.UpdateFromParameters ();
+			controller.FinalConfiguration.ProjectName = "Test";
+
+			Assert.IsTrue (controller.FinalConfiguration.IsProjectNameEnabled);
+			Assert.AreEqual ("Test", controller.FinalConfiguration.ProjectName);
+
+			controller.FinalConfiguration.Parameters ["ProjectName"] = "ChangedName";
+			controller.FinalConfiguration.Parameters ["IsProjectNameReadOnly"] = bool.TrueString;
+
+			controller.FinalConfiguration.UpdateFromParameters ();
+
+			Assert.IsFalse (controller.FinalConfiguration.IsProjectNameEnabled);
+			Assert.AreEqual ("ChangedName", controller.FinalConfiguration.ProjectName);
+		}
+
+		[TestCase (true)]
+		[TestCase (false)]
+		public void CreateProjectDirectorySetting_WizardOverridesProperty (bool createProjectSubDirectory)
+		{
+			CreateDialog ();
+			CSharpLibraryTemplateSelectedByDefault ();
+			PropertyService.Set (NewProjectDialogController.CreateProjectSubDirectoryPropertyName, createProjectSubDirectory);
+
+			controller.Backend.OnShowDialogCalled = () => {
+				controller.MoveToNextPage ();
+			};
+
+			controller.Show ();
+
+			controller.FinalConfiguration.Parameters ["CreateProjectDirectoryInsideSolutionDirectory"] = bool.TrueString;
+			controller.FinalConfiguration.Parameters ["IsCreateProjectDirectoryInsideSolutionDirectoryEnabled"] = bool.TrueString;
+			controller.FinalConfiguration.UpdateFromParameters ();
+
+			Assert.IsTrue (controller.FinalConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
+			Assert.IsTrue (controller.FinalConfiguration.IsCreateProjectDirectoryInsideSolutionDirectoryEnabled);
+
+			controller.FinalConfiguration.Parameters ["CreateProjectDirectoryInsideSolutionDirectory"] = bool.FalseString;
+			controller.FinalConfiguration.Parameters ["IsCreateProjectDirectoryInsideSolutionDirectoryEnabled"] = bool.FalseString;
+			controller.FinalConfiguration.UpdateFromParameters ();
+
+			Assert.IsFalse (controller.FinalConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
+			Assert.IsFalse (controller.FinalConfiguration.IsCreateProjectDirectoryInsideSolutionDirectoryEnabled);
+		}
 	}
 }
