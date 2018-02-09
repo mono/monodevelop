@@ -54,6 +54,7 @@ using System.Linq;
 using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
 using MonoDevelop.Ide.BuildOutputView;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -940,12 +941,19 @@ namespace MonoDevelop.Ide.Gui.Pads
 		}
 
 		Document buildOutputDoc;
-		void HandleLogBtnClicked (object sender, EventArgs e)
+		async void HandleLogBtnClicked (object sender, EventArgs e)
+		{
+			await OpenBuildOutputViewDocument ().ConfigureAwait (false);
+		}
+
+		async Task OpenBuildOutputViewDocument () 
 		{
 			if (buildOutputViewContent == null) {
 				buildOutputViewContent = new BuildOutputViewContent (buildOutput);
 				buildOutputDoc = IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
 				buildOutputDoc.Closed += BuildOutputDocClosed;
+
+				await buildOutputViewContent.ProcessLogs (false);
 			} else if (buildOutputDoc != null) {
 				buildOutputDoc.Select ();
 			}

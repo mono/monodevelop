@@ -83,7 +83,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		void SetupBuildOutput (BuildOutput output)
 		{
 			BuildOutput = output;
-			ProcessLogs (false);
 
 			BuildOutput.OutputChanged += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 
@@ -336,12 +335,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		void ProcessLogs (bool showDiagnostics)
+		public Task ProcessLogs (bool showDiagnostics)
 		{
 			cts?.Cancel ();
 			cts = new CancellationTokenSource ();
 
-			Task.Run (async () => {
+			return Task.Run (async () => {
 				await Runtime.RunInMainThread (() => {
 					var dataSource = BuildOutput.ToTreeDataSource (showDiagnostics);
 					treeView.DataSource = dataSource;
