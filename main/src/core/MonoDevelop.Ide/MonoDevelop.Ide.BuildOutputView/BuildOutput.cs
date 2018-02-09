@@ -211,6 +211,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public event EventHandler<int> IndexChanged;
 		public event EventHandler<BuildOutputNode> SiblingSelected;
+
 		int currentIndex = -1;
 		public Control CreatePathWidget (int index)
 		{
@@ -224,7 +225,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return null;
 			
 			var tag = path [index].Tag as BuildOutputNode;
-			var window = new DropDownBoxListWindow (new DataProvider (this, tag));
+			var window = new DropDownBoxListWindow (new DropDownWindowDataProvider (this, tag));
 			window.FixedRowHeight = 22;
 			window.MaxVisibleRows = 14;
 			if (path [index].Tag != null)
@@ -232,13 +233,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return window;
 		}
 
-		class DataProvider : DropDownBoxListWindow.IListDataProvider
+		class DropDownWindowDataProvider : DropDownBoxListWindow.IListDataProvider
 		{
 			BuildOutputNode [] list;
 			BuildOutputDataSource dataSource;
 			BuildOutput buildOutput;
 
-			public DataProvider (BuildOutput buildOutput, BuildOutputNode node)
+			public DropDownWindowDataProvider (BuildOutput buildOutput, BuildOutputNode node)
 			{
 				if (buildOutput == null)
 					throw new ArgumentNullException ("buildOutput");
@@ -247,21 +248,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 				Reset ();
 
 				var parent = dataSource.GetParent (node) as BuildOutputNode;
-				var rootsCount = 0;
-
-				if (parent == null) {
-					rootsCount = dataSource.GetChildrenCount (null);
-					list = new BuildOutputNode [rootsCount];
-					for (int i = 0; i < rootsCount; i++) {
-						list [i] = dataSource.GetChild (null, i) as BuildOutputNode;
-					}
-				} else {
-					rootsCount = parent.Children.Count;
-					list = new BuildOutputNode [rootsCount];
-					var count = 0;
-					foreach (var child in parent.Children) {
-						list [count++] = child;
-					}
+				var rootsCount = dataSource.GetChildrenCount (parent);
+				list = new BuildOutputNode [rootsCount];
+				for (int i = 0; i < rootsCount; i++) {
+					list [i] = dataSource.GetChild (parent, i) as BuildOutputNode;
 				}
 			}
 
