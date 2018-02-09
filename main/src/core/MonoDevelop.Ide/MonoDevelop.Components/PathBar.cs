@@ -219,6 +219,7 @@ namespace MonoDevelop.Components
 		
 		public new PathEntry[] Path { get; private set; }
 		public int ActiveIndex { get { return activeIndex; } }
+		public bool DrawBottomBorder { get; set; } = true;
 
 		void UpdatePathAccessibility ()
 		{
@@ -475,12 +476,13 @@ namespace MonoDevelop.Components
 					ctx.Restore ();
 				}
 
-				ctx.MoveTo (0, Allocation.Height - 0.5);
-				ctx.RelLineTo (Allocation.Width, 0);
-				ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor.ToCairoColor ());
-				ctx.LineWidth = 1;
-				ctx.Stroke ();
-
+				if (DrawBottomBorder) {
+					ctx.MoveTo (0, Allocation.Height - 0.5);
+					ctx.RelLineTo (Allocation.Width, 0);
+					ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor.ToCairoColor ());
+					ctx.LineWidth = 1;
+					ctx.Stroke ();
+				}
 				if (HasFocus) {
 					int focusY = topPadding - buttonPadding;
 					int focusHeight = Allocation.Height - topPadding - bottomPadding + buttonPadding * 2;
