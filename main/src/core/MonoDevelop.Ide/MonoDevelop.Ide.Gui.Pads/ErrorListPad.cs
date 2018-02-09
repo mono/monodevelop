@@ -58,35 +58,6 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	public static class TaskListEntryExtensions 
-	{
-		public static string GetPath (this TaskListEntry task)
-		{
-			if (task.WorkspaceObject != null)
-				return FileService.AbsoluteToRelativePath (task.WorkspaceObject.BaseDirectory, task.FileName);
-
-			return task.FileName;
-		}
-
-		public static string GetProject (this TaskListEntry task)
-		{
-			return (task != null && task.WorkspaceObject is SolutionFolderItem)? task.WorkspaceObject.Name: string.Empty;
-		}
-
-		public static string GetFile (this TaskListEntry task)
-		{
-			string tmpPath = "";
-			string fileName = "";
-			try {
-				tmpPath = GetPath (task);
-				fileName = Path.GetFileName (tmpPath);
-			} catch (Exception) {
-				fileName = tmpPath;
-			}
-			return fileName;
-		}
-	}
-
 	class ErrorListPad : PadContent
 	{
 		HPaned control;
@@ -415,6 +386,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			copy.Clicked += OnTaskCopied;
 			menu.Add (copy);
 
+			var goBuild = new ContextMenuItem (GettextCatalog.GetString ("Go to Log"));
+			goBuild.Clicked += async (s, e) => await OnGoToLog (s, e);
+			menu.Add (goBuild);
+
 			var jump = new ContextMenuItem (GettextCatalog.GetString ("_Go to Task"));
 			jump.Clicked += OnTaskJumpto;
 			menu.Add (jump);
@@ -443,6 +418,32 @@ namespace MonoDevelop.Ide.Gui.Pads
 			help.Sensitive &= GetSelectedErrorReference (out dummyString);
 
 			menu.Show (view, evt);
+		}
+
+		async Task OnGoToLog (object o, EventArgs args)
+		{
+			var rows = view.Selection.GetSelectedRows ();
+			if (!rows.Any ())
+				return;
+
+			TreeIter iter, sortedIter;
+			if (view.Model.GetIter (out sortedIter, rows [0])) {
+				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (sortedIter));
+
+				store.SetValue (iter, DataColumns.Read, true);
+
+				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
+				if (task != null) {
+					await OpenBuildOutputViewDocument ().ConfigureAwait (false);
+					if (task.Severity == TaskSeverity.Error) {
+						buildOutputViewContent.GoToError (task.GetErrorDescription (), task.GetFile (), task.GetProjectWithExtension (), task.GetPath ());
+					} else if (task.Severity == TaskSeverity.Warning) {
+						buildOutputViewContent.GoToWarning (task.GetErrorDescription (), task.GetFile (), task.GetProjectWithExtension (), task.GetPath ());
+					} else if (task.Severity == TaskSeverity.Information) {
+						buildOutputViewContent.GoToMessage (task.GetErrorDescription (), task.GetFile (), task.GetProjectWithExtension (), task.GetPath ());
+					}
+				}
+			}
 		}
 
 		TaskListEntry SelectedTask {
@@ -994,6 +995,49 @@ namespace MonoDevelop.Ide.Gui.Pads
 				}
 				width = Math.Min (oneLineWidth, PreferedMaxWidth);
 			}
+		}
+	}
+
+	public static class TaskListEntryExtensions
+	{
+		public static string GetPath (this TaskListEntry task)
+		{
+			if (task.WorkspaceObject != null)
+				return FileService.AbsoluteToRelativePath (task.WorkspaceObject.BaseDirectory, task.FileName);
+
+			return task.FileName;
+		}
+
+		public static string GetProject (this TaskListEntry task)
+		{
+			return (task != null && task.WorkspaceObject is SolutionFolderItem) ? task.WorkspaceObject.Name : string.Empty;
+		}
+
+		public static string GetProjectWithExtension (this TaskListEntry task)
+		{
+			return (task != null && task.WorkspaceObject is SolutionItem) ? Path.GetFileName (((SolutionItem)task.WorkspaceObject).FileName) : string.Empty;
+		}
+
+		public static string GetErrorDescription (this TaskListEntry task)
+		{
+			var toRemove = $" ({task.Code})";
+			if (task.Description.EndsWith (toRemove, StringComparison.Ordinal)) {
+				return task.Description.Substring (0, task.Description.Length - toRemove.Length);
+			}
+			return task.Description;
+		}
+
+		public static string GetFile (this TaskListEntry task)
+		{
+			string tmpPath = "";
+			string fileName = "";
+			try {
+				tmpPath = GetPath (task);
+				fileName = Path.GetFileName (tmpPath);
+			} catch (Exception) {
+				fileName = tmpPath;
+			}
+			return fileName;
 		}
 	}
 }

@@ -39,6 +39,7 @@ using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -59,6 +60,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
 		public PathEntry [] CurrentPath { get; set; }
+
+		List<BuildOutputNode> treeBuildOutputNodes;
 
 		public event EventHandler<string> FileSaved;
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
@@ -186,6 +189,36 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			PackStart (scrolledWindow, expand: true, fill: true);
 		}
+
+		internal void GoToError (string description, string file, string project, string path)
+		{
+			ExpandNode (project, BuildOutputNodeType.Error, description);
+		}
+
+		internal void GoToWarning (string description, string file, string project, string path)
+		{
+			ExpandNode (project, BuildOutputNodeType.Warning, description);
+		}
+
+		internal void GoToMessage (string description, string file, string project, string path)
+		{
+			ExpandNode (project, BuildOutputNodeType.Message, description);
+		}
+
+		void ExpandNode (string project, BuildOutputNodeType nodeType, string message) 
+		{
+			var projectNode = treeBuildOutputNodes.SearchFirstNode (BuildOutputNodeType.Project, project);
+			var node = projectNode.SearchFirstNode (nodeType, message);
+			Xwt.Application.InvokeAsync (() => MoveToMatch (node));
+		}
+
+		void MoveToMatch (BuildOutputNode match)
+		{
+			treeView.ExpandToRow (match);
+			treeView.FocusedRow = match;
+		}
+
+		CancellationTokenSource cts;
 
 		void IndexChanged (int newIndex)
 		{
@@ -342,17 +375,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			return Task.Run (async () => {
 				await Runtime.RunInMainThread (() => {
-					var dataSource = BuildOutput.ToTreeDataSource (showDiagnostics);
-					treeView.DataSource = dataSource;
-					(treeView.Columns [0].Views [0] as ImageCellView).ImageField = dataSource.ImageField;
-					(treeView.Columns [0].Views [1] as TextCellView).MarkupField = dataSource.LabelField;
+
+					BuildOutput.ProcessProjects ();
+					treeBuildOutputNodes = BuildOutput.GetTreeRootNodes (showDiagnostics);
+					var buildOutputDataSource = new BuildOutputDataSource (treeBuildOutputNodes);
+					treeView.DataSource = buildOutputDataSource;
+
+					(treeView.Columns [0].Views [0] as ImageCellView).ImageField = buildOutputDataSource.ImageField;
+					(treeView.Columns [0].Views [1] as TextCellView).MarkupField = buildOutputDataSource.LabelField;
 
 					// Expand root nodes and nodes with errors
-					int rootsCount = dataSource.GetChildrenCount (null);
+					int rootsCount = buildOutputDataSource.GetChildrenCount (null);
 					for (int i = 0; i < rootsCount; i++) {
-						var root = dataSource.GetChild (null, i) as BuildOutputNode;
+						var root = buildOutputDataSource.GetChild (null, i) as BuildOutputNode;
 						treeView.ExpandRow (root, false);
-						ExpandChildrenWithErrors (treeView, dataSource, root);
+						ExpandChildrenWithErrors (treeView, buildOutputDataSource, root);
 					}
 				});
 			}, cts.Token);

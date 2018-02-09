@@ -40,12 +40,50 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
+	static class BuildOutputNodeExtensions
+	{
+		public static BuildOutputNode SearchFirstNode (this IEnumerable<BuildOutputNode> sender, BuildOutputNodeType type, string search)
+		{
+			BuildOutputNode tmp;
+			foreach (var item in sender) {
+				tmp = item.SearchFirstNode (type, search);
+				if (tmp != null) {
+					return tmp;
+				}
+			}
+			return null;
+		}
+
+		public static BuildOutputNode SearchFirstNode (this BuildOutputNode buildOutputNode, BuildOutputNodeType type, string search)
+		{
+			if (type == buildOutputNode.NodeType) {
+				if (search == buildOutputNode.Message) {
+					return buildOutputNode;
+				} else {
+					//We don't want deep recursive into children, change to next item
+					return null;
+				}
+			}
+
+			//iterating into children
+			if (buildOutputNode.Children != null) {
+				BuildOutputNode tmp;
+				foreach (var node in buildOutputNode.Children) {
+					tmp = SearchFirstNode (node, type, search);
+					if (tmp != null) {
+						return tmp;
+					}
+				}
+			}
+
+			return null;
+		}
+	}
+
 	class BuildOutput : IDisposable
 	{
 		BuildOutputProgressMonitor progressMonitor;
 		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
-		List<BuildOutputNode> treeRootNodes;
-
 		public event EventHandler OutputChanged;
 
 		public ProgressMonitor GetProgressMonitor ()
@@ -154,10 +192,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public IEnumerable<BuildOutputNode> GetRootNodes ()
 		{
 			foreach (var proj in projects) {
-				if (proj.RootNodes?.Count > 0) {
-					foreach (var node in proj.RootNodes) {
-						yield return node;
-					}
+				foreach (var node in proj.RootNodes) {
+					yield return node;
 				}
 			}
 		}
@@ -168,7 +204,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		}
 
 
-		public List<BuildOutputNode> GetTreeRootNodes (bool includeDiagnostics) 
+		public List<BuildOutputNode> GetTreeRootNodes (bool includeDiagnostics)
 		{
 			if (includeDiagnostics) {
 				return GetRootNodes ().ToList ();
@@ -184,13 +220,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public BuildOutputDataSource ToTreeDataSource (bool includeDiagnostics)
+		public void ProcessProjects () 
 		{
 			foreach (var p in projects) {
 				p.Process ();
 			}
-			treeRootNodes = GetTreeRootNodes (includeDiagnostics);
-			return new BuildOutputDataSource (treeRootNodes);
 		}
 
 		bool disposed = false;
@@ -279,6 +313,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		bool includeDiagnostics;
 		public IReadOnlyList<BuildOutputNode> RootNodes => this.rootNodes;
 		readonly List<BuildOutputNode> rootNodes;
+
 		public DataField<Xwt.Drawing.Image> ImageField = new DataField<Xwt.Drawing.Image> (0);
 		public DataField<string> LabelField = new DataField<string> (1);
 
@@ -309,7 +344,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 					return rootNodes [index];
 				}
 			}
-
 			return null;
 		}
 

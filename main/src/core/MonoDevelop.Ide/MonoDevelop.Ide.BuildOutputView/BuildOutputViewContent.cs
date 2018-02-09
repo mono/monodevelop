@@ -31,6 +31,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -99,6 +100,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			control.Dispose ();
 			base.Dispose ();
+		}
+
+		internal void GoToError (string description, string file, string project, string path)
+		{
+			control.GoToError (description, file, project, path);
+		}
+
+		internal void GoToWarning (string description, string file, string project, string path)
+		{
+			control.GoToWarning (description, file, project, path);
+		}
+
+		internal void GoToMessage (string description, string file, string project, string path)
+		{
+			control.GoToMessage (description, file, project, path);
 		}
 
 		[CommandHandler (SearchCommands.Find)]
