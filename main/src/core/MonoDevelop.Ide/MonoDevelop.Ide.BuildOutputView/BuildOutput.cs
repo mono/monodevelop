@@ -245,11 +245,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputDataSource : ITreeDataSource
 	{
-		static readonly Xwt.Drawing.Image buildIcon = ImageService.GetIcon(Ide.Gui.Stock.StatusBuild, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image buildIcon = ImageService.GetIcon (Ide.Gui.Stock.StatusBuild, Gtk.IconSize.Menu);
 		static readonly Xwt.Drawing.Image messageIcon = ImageService.GetIcon (Ide.Gui.Stock.MessageLog, Gtk.IconSize.Menu);
 		static readonly Xwt.Drawing.Image errorIcon = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
 		static readonly Xwt.Drawing.Image projectIcon = ImageService.GetIcon (Ide.Gui.Stock.Project, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image targetIcon = ImageService.GetIcon(Ide.Gui.Stock.Event, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image targetIcon = ImageService.GetIcon (Ide.Gui.Stock.Event, Gtk.IconSize.Menu);
 		static readonly Xwt.Drawing.Image taskIcon = ImageService.GetIcon (Ide.Gui.Stock.Execute, Gtk.IconSize.Menu);
 		static readonly Xwt.Drawing.Image warningIcon = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 
@@ -276,6 +276,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 				}
 			}
 		}
+
+		#region ITreeDataSource implementation
 
 		public Type [] ColumnTypes => new Type [] { typeof (Xwt.Drawing.Image), typeof (string) };
 
@@ -354,7 +356,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					// Timing information
 					if (node.HasChildren) {
 						markup.AppendFormat (" <i>{0}</i>",
-						                     GLib.Markup.EscapeText (node.EndTime.Subtract (node.StartTime).ToString (@"hh\:mm\:ss\.fff")));
+											 GLib.Markup.EscapeText (node.EndTime.Subtract (node.StartTime).ToString (@"hh\:mm\:ss\.fff")));
 					}
 
 					return markup.ToString ();
@@ -368,5 +370,68 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			throw new NotImplementedException ();
 		}
+
+		#endregion
+
+		#region Search functionality
+
+		List<BuildOutputNode> currentSearchMatches;
+		string currentSearchPattern;
+		int currentMatchIndex = -1;
+
+		static void SearchInNodeAndChildren (BuildOutputNode node, List<BuildOutputNode> matches, string pattern)
+		{
+			if (node.Message.Contains (pattern)) {
+				matches.Add (node);
+			}
+
+			if (node.HasChildren) {
+				foreach (var child in node.Children) {
+					SearchInNodeAndChildren (child, matches, pattern);
+				}
+			}
+		}
+
+		public BuildOutputNode FirstMatch (string pattern)
+		{
+			// Initialize search data
+			if (currentSearchMatches == null) {
+				currentSearchMatches = new List<BuildOutputNode> ();
+			} else {
+				currentSearchMatches.Clear ();
+			}
+
+			currentSearchPattern = pattern;
+			currentMatchIndex = -1;
+
+			// Perform search
+			foreach (var root in rootNodes) {
+				SearchInNodeAndChildren (root, currentSearchMatches, currentSearchPattern);
+			}
+
+			if (currentSearchMatches.Count > 0) {
+				currentMatchIndex = 0;
+				return currentSearchMatches [0];
+			}
+
+			return null;
+		}
+
+		public BuildOutputNode NextMatch ()
+		{
+			if (currentSearchMatches == null || currentSearchMatches.Count == 0 ||
+			    String.IsNullOrEmpty (currentSearchPattern) || currentMatchIndex == -1) {
+				return null;
+			}
+
+			currentMatchIndex++;
+			if (currentMatchIndex >= 0 && currentMatchIndex < currentSearchMatches.Count) {
+				return currentSearchMatches [currentMatchIndex];
+			}
+
+			return null;
+		}
+
+		#endregion
 	}
 }
