@@ -58,6 +58,35 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
+	public static class TaskListEntryExtensions 
+	{
+		public static string GetPath (this TaskListEntry task)
+		{
+			if (task.WorkspaceObject != null)
+				return FileService.AbsoluteToRelativePath (task.WorkspaceObject.BaseDirectory, task.FileName);
+
+			return task.FileName;
+		}
+
+		public static string GetProject (this TaskListEntry task)
+		{
+			return (task != null && task.WorkspaceObject is SolutionFolderItem)? task.WorkspaceObject.Name: string.Empty;
+		}
+
+		public static string GetFile (this TaskListEntry task)
+		{
+			string tmpPath = "";
+			string fileName = "";
+			try {
+				tmpPath = GetPath (task);
+				fileName = Path.GetFileName (tmpPath);
+			} catch (Exception) {
+				fileName = tmpPath;
+			}
+			return fileName;
+		}
+	}
+
 	class ErrorListPad : PadContent
 	{
 		HPaned control;
@@ -626,25 +655,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 				textRenderer.Text = "";
 				return;
 			}
-			
-			string tmpPath = "";
-			string fileName = "";
-			try {
-				tmpPath = GetPath (task);
-				fileName = Path.GetFileName (tmpPath);
-			} catch (Exception) { 
-				fileName =  tmpPath;
-			}
-			
-			SetText (textRenderer, model, iter, task, fileName);
-		}
-		
-		static string GetPath (TaskListEntry task)
-		{
-			if (task.WorkspaceObject != null)
-				return FileService.AbsoluteToRelativePath (task.WorkspaceObject.BaseDirectory, task.FileName);
-			
-			return task.FileName;
+
+			SetText (textRenderer, model, iter, task, task.GetFile ());
 		}
 		
 		static void ProjectDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -655,12 +667,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				textRenderer.Text = "";
 				return;
 			}
-			SetText (textRenderer, model, iter, task, GetProject(task));
-		}
-		
-		static string GetProject (TaskListEntry task)
-		{
-			return (task != null && task.WorkspaceObject is SolutionFolderItem)? task.WorkspaceObject.Name: string.Empty;
+			SetText (textRenderer, model, iter, task, task.GetProject ());
 		}
 		
 		static void PathDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -671,7 +678,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				textRenderer.Text = "";
 				return;
 			}
-			SetText (textRenderer, model, iter, task, GetPath (task));
+			SetText (textRenderer, model, iter, task, task.GetPath ());
 		}
 
 		static void CategoryDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -911,7 +918,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			     zTask = model.GetValue (z, DataColumns.Task) as TaskListEntry;
 			     
 			return (aTask != null && zTask != null) ?
-			       string.Compare (GetProject (aTask), GetProject (zTask), StringComparison.Ordinal) :
+			       string.Compare (aTask.GetProject (), zTask.GetProject (), StringComparison.Ordinal) :
 			       0;
 		}
 		
