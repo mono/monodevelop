@@ -318,7 +318,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return null;
 
 			var tag = path [index].Tag as BuildOutputNode;
-			var window = new DropDownBoxListWindow (new DropDownWindowDataProvider (this, showDiagnosticsButton.Active, tag));
+			var window = new DropDownBoxListWindow (new DropDownWindowDataProvider (this,  tag));
 			window.FixedRowHeight = 22;
 			window.MaxVisibleRows = 14;
 			if (path [index].Tag != null)
@@ -328,26 +328,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		class DropDownWindowDataProvider : DropDownBoxListWindow.IListDataProvider
 		{
-			BuildOutputNode [] list;
+			IReadOnlyList<BuildOutputNode> list;
 			BuildOutputWidget widget;
 			BuildOutputDataSource DataSource => widget.treeView.DataSource as BuildOutputDataSource;
 
-			public DropDownWindowDataProvider (BuildOutputWidget widget, bool showDiagnostics, BuildOutputNode node)
+			public DropDownWindowDataProvider (BuildOutputWidget widget, BuildOutputNode node)
 			{
 				if (widget == null)
 					throw new ArgumentNullException ("widget");
 				this.widget = widget;
 				Reset ();
 
-				var parent = DataSource.GetParent (node) as BuildOutputNode;
-				var rootsCount = DataSource.GetChildrenCount (parent);
-				list = new BuildOutputNode [rootsCount];
-				for (int i = 0; i < rootsCount; i++) {
-					list [i] = DataSource.GetChild (parent, i) as BuildOutputNode;
-				}
+				list = (node == null || node.Parent == null) ? DataSource.RootNodes : node.Parent.Children;
 			}
 
-			public int IconCount => list.Length;
+			public int IconCount => list.Count;
 
 			public void ActivateItem (int n) => widget.SelectRow (list [n]);
 
@@ -357,7 +352,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			public object GetTag (int n) => list [n];
 
-			public void Reset () => list = new BuildOutputNode [0];
+			public void Reset () => list = Array.Empty<BuildOutputNode> ();
 		}
 	}
 }

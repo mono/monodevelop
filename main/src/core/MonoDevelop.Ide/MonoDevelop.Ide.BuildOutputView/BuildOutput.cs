@@ -37,9 +37,6 @@ using Microsoft.Build.Framework;
 using Gtk;
 using Xwt;
 using System.Linq;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Components;
-using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -260,6 +257,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		BuildOutput buildOutput;
 		bool includeDiagnostics;
 		List<BuildOutputNode> rootNodes;
+		public IReadOnlyList<BuildOutputNode> RootNodes => this.rootNodes;
 
 		public DataField<Xwt.Drawing.Image> ImageField = new DataField<Xwt.Drawing.Image> (0);
 		public DataField<string> LabelField = new DataField<string> (1);
