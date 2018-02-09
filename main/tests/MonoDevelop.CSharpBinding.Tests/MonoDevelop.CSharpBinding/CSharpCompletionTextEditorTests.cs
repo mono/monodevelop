@@ -110,8 +110,13 @@ namespace console61
 
 	}
 }
-", list => Assert.IsTrue (list.Any (d => d.CompletionText == "Console")));
+", list => {
+				Assert.IsTrue (list.Any (d => d.CompletionText == "Console"));
 
+				// The display text should not include the namespace
+				var item = list.FirstOrDefault (d => d.CompletionText == "DateTime");
+				Assert.AreEqual ("DateTime", item.DisplayText);
+			});
 		}
 
 		[Test]

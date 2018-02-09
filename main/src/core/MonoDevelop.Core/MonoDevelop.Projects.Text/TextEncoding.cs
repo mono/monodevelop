@@ -47,14 +47,7 @@ namespace MonoDevelop.Projects.Text
 		{
 			this.id = id;
 			this.name = name;
-			codePage = -1;
-			try {
-				Encoding e = Encoding.GetEncoding (id);
-				if (e != null)
-					codePage = e.CodePage;
-			} catch {
-				// Ignore
-			}
+			codePage = -2;
 		}
 		
 		public string Name {
@@ -66,7 +59,19 @@ namespace MonoDevelop.Projects.Text
 		}
 		
 		public int CodePage {
-			get { return codePage; }
+			get {
+				if (codePage == -2) {
+					codePage = -1;
+					try {
+						Encoding e = Encoding.GetEncoding(id);
+						if (e != null)
+							codePage = e.CodePage;
+					} catch {
+						// Ignore
+					}
+				}
+				return codePage;
+			}
 		}
 		
 		// Returns a list of encodings supported by MD

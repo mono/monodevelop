@@ -409,7 +409,8 @@ namespace MonoDevelop.Ide.Editor
 
 		public int Length {
 			get {
-				return ReadOnlyTextDocument.Length;
+				var rotd = ReadOnlyTextDocument;
+				return rotd != null ? rotd.Length : 0;
 			}
 		}
 

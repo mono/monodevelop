@@ -95,6 +95,7 @@
     <Compile Include="MonoDevelop.Projects\BuilderManagerTests.cs" />
     <Compile Include="MonoDevelop.Core.Execution\BinaryMessageTests.cs" />
     <Compile Include="MonoDevelop.Core\ProgressMonitorTests.cs" />
+    <Compile Include="MonoDevelop.Projects\DotNetCoreFileWatcherTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Core\" />

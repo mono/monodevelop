@@ -149,6 +149,15 @@ namespace NUnit3Runner
 
 		bool CheckXmlForError(XmlElement root, out string result)
 		{
+			if (root.GetAttribute ("type") != "Assembly" || root.GetAttribute ("runstate") != "NotRunnable") {
+				// Only interested in _SKIPREASON if the test-suite is an assembly and the
+				// state is NotRunnable. This will indicate a load failure. This check
+				// prevents Ignore attributes incorrectly indicating an error since these
+				// also have a _SKIPREASON.
+				result = null;
+				return false;
+			}
+
 			var elements = root.GetElementsByTagName ("properties");
 			var skipReasonString = string.Empty;
 			foreach (XmlElement element in elements)
@@ -205,8 +214,14 @@ namespace NUnit3Runner
 		void InitSupportAssemblies (string[] supportAssemblies)
 		{
 			// Preload support assemblies (they may not be in the test assembly directory nor in the gac)
-			foreach (string asm in supportAssemblies)
-				Assembly.LoadFrom (asm);
+			foreach (string asm in supportAssemblies) {
+				try {
+					Assembly.LoadFrom (asm);
+				} catch (Exception e) {
+					Console.WriteLine ("Couldn't load assembly {0}", asm);
+					Console.WriteLine (e);
+				}
+			}
 		}
 		
 		private TestFilter CreateTestFilter (string[] nameFilter)

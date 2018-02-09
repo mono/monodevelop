@@ -72,6 +72,7 @@ namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 		const string MonoTODOAttributeName = "System.MonoTODOAttribute";
 		public override void Initialize(AnalysisContext context)
 		{
+			context.EnableConcurrentExecution ();
 			context.RegisterCompilationStartAction (compilationContext => {
 				var compilation = compilationContext.Compilation;
 				var monoTodoAttributeExists = GetSearchAssemblies (compilation)

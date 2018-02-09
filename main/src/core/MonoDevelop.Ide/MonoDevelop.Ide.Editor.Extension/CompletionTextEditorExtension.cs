@@ -137,8 +137,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 					autoHideCompletionWindow = true;
 					// in named parameter case leave the parameter window open.
 					autoHideParameterWindow = descriptor.KeyChar != ':';
-					if (!autoHideParameterWindow && ParameterInformationWindowManager.IsWindowVisible)
+					if (!autoHideParameterWindow && ParameterInformationWindowManager.IsWindowVisible) {
 						ParameterInformationWindowManager.PostProcessKeyEvent (this, CompletionWidget, descriptor);
+					}
 
 					return false;
 				}
@@ -146,8 +147,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			}
 
 			if (ParameterInformationWindowManager.IsWindowVisible) {
-				if (ParameterInformationWindowManager.ProcessKeyEvent (this, CompletionWidget, descriptor))
+				if (ParameterInformationWindowManager.ProcessKeyEvent (this, CompletionWidget, descriptor)) {
 					return false;
+				}
 				autoHideCompletionWindow = autoHideParameterWindow = false;
 			}
 
@@ -190,7 +192,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 				var caretOffset = Editor.CaretOffset;
 				var token = completionTokenSrc.Token;
 				try {
-					var task = HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, descriptor.KeyChar), token);
+					Counters.ProcessCodeCompletion.BeginTiming ();
+					var task = DoHandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, descriptor.KeyChar), token);
 					if (task != null) {
 						// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
 						// it doesn't show it. It is used only to process the keys while the completion data is being retrieved.
@@ -200,32 +203,42 @@ namespace MonoDevelop.Ide.Editor.Extension
 						};
 						CompletionWindowManager.WindowClosed += windowClosed;
 						task.ContinueWith (t => {
-							CompletionWindowManager.WindowClosed -= windowClosed;
-							if (token.IsCancellationRequested)
-								return;
-							var result = t.Result;
-							if (result != null) {
-								int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
-								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
-															  || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
-									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
-									if (result.TriggerWordStart >= 0)
-										CurrentCompletionContext.TriggerOffset = result.TriggerWordStart;
-									CurrentCompletionContext.TriggerWordLength = triggerWordLength;
-								}
-								// Now show the window for real.
-								if (!CompletionWindowManager.ShowWindow (result, CurrentCompletionContext))
+							try {
+								CompletionWindowManager.WindowClosed -= windowClosed;
+								if (token.IsCancellationRequested)
+									return;
+								var result = t.Result;
+								if (result != null) {
+									int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
+									if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
+																  || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
+										CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
+										if (result.TriggerWordStart >= 0)
+											CurrentCompletionContext.TriggerOffset = result.TriggerWordStart;
+										CurrentCompletionContext.TriggerWordLength = triggerWordLength;
+									}
+									// Now show the window for real.
+									if (!CompletionWindowManager.ShowWindow (result, CurrentCompletionContext))
+										CurrentCompletionContext = null;
+								} else {
+									CompletionWindowManager.HideWindow ();
 									CurrentCompletionContext = null;
-							} else {
-								CompletionWindowManager.HideWindow ();
-								CurrentCompletionContext = null;
+								}
+							} finally {
+								Counters.ProcessCodeCompletion.EndTiming ();
 							}
 						}, Runtime.MainTaskScheduler);
 					} else {
 						CurrentCompletionContext = null;
+						Counters.ProcessCodeCompletion.EndTiming ();
 					}
 				} catch (TaskCanceledException) {
+					Counters.ProcessCodeCompletion.EndTiming ();
 				} catch (AggregateException) {
+					Counters.ProcessCodeCompletion.EndTiming ();
+				} catch {
+					Counters.ProcessCodeCompletion.EndTiming ();
+					throw;
 				}
 			}
 
@@ -248,7 +261,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 				var caretOffset = Editor.CaretOffset;
 				var token = completionTokenSrc.Token;
 				try {
-					var task = HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.BackspaceOrDeleteCommand, deleteOrBackspaceTriggerChar), token);
+					Counters.ProcessCodeCompletion.BeginTiming ();
+					var task = DoHandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.BackspaceOrDeleteCommand, deleteOrBackspaceTriggerChar), token);
 					if (task != null) {
 						// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
 						// it doesn't show it. It is used only to process the keys while the completion data is being retrieved.
@@ -259,29 +273,33 @@ namespace MonoDevelop.Ide.Editor.Extension
 						CompletionWindowManager.WindowClosed += windowClosed;
 
 						task.ContinueWith (t => {
-							CompletionWindowManager.WindowClosed -= windowClosed;
-							if (token.IsCancellationRequested)
-								return;
-							var result = t.Result;
-							if (result != null) {
-								int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
+							try {
+								CompletionWindowManager.WindowClosed -= windowClosed;
+								if (token.IsCancellationRequested)
+									return;
+								var result = t.Result;
+								if (result != null) {
+									int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
 
-								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
-								                              || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
-									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
-									if (result.TriggerWordStart >= 0)
-										CurrentCompletionContext.TriggerOffset = result.TriggerWordStart;
-									CurrentCompletionContext.TriggerWordLength = triggerWordLength;
-								}
-								// Now show the window for real.
-								if (!CompletionWindowManager.ShowWindow (result, CurrentCompletionContext)) {
-									CurrentCompletionContext = null;
+									if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
+																  || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
+										CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
+										if (result.TriggerWordStart >= 0)
+											CurrentCompletionContext.TriggerOffset = result.TriggerWordStart;
+										CurrentCompletionContext.TriggerWordLength = triggerWordLength;
+									}
+									// Now show the window for real.
+									if (!CompletionWindowManager.ShowWindow (result, CurrentCompletionContext)) {
+										CurrentCompletionContext = null;
+									} else {
+										CompletionWindowManager.Wnd.StartOffset = CurrentCompletionContext.TriggerOffset;
+									}
 								} else {
-									CompletionWindowManager.Wnd.StartOffset = CurrentCompletionContext.TriggerOffset;
+									CompletionWindowManager.HideWindow ();
+									CurrentCompletionContext = null;
 								}
-							} else {
-								CompletionWindowManager.HideWindow ();
-								CurrentCompletionContext = null;
+							} finally {
+								Counters.ProcessCodeCompletion.EndTiming ();
 							}
 						}, Runtime.MainTaskScheduler);
 					} else {
@@ -289,8 +307,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 					}
 				} catch (TaskCanceledException) {
 					CurrentCompletionContext = null;
+					Counters.ProcessCodeCompletion.EndTiming ();
 				} catch (AggregateException) {
 					CurrentCompletionContext = null;
+					Counters.ProcessCodeCompletion.EndTiming ();
+				} catch {
+					Counters.ProcessCodeCompletion.EndTiming ();
+					throw;
 				}
 			}
 
@@ -389,7 +412,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return;
 
 			if (CompletionWindowManager.IsVisible) {
-				CompletionWindowManager.Wnd.ToggleCategoryMode ();
+				CompletionWindowManager.ToggleCategoryMode ();
 				return;
 			}
 			Editor.EnsureCaretIsNotVirtual ();
@@ -401,13 +424,18 @@ namespace MonoDevelop.Ide.Editor.Extension
 			}
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
-			completionList = await HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (reason));
-			if (completionList != null && completionList.TriggerWordStart >= 0) {
-				CurrentCompletionContext.TriggerOffset = completionList.TriggerWordStart;
-				CurrentCompletionContext.TriggerWordLength = completionList.TriggerWordLength;
-			}
-			if (completionList == null || !CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext)) {
-				CurrentCompletionContext = null;
+			try {
+				Counters.ProcessCodeCompletion.BeginTiming ();
+				completionList = await DoHandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (reason));
+				if (completionList != null && completionList.TriggerWordStart >= 0) {
+					CurrentCompletionContext.TriggerOffset = completionList.TriggerWordStart;
+					CurrentCompletionContext.TriggerWordLength = completionList.TriggerWordLength;
+				}
+				if (completionList == null || !CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext)) {
+					CurrentCompletionContext = null;
+				}
+			} finally {
+				Counters.ProcessCodeCompletion.EndTiming ();
 			}
 		}
 
@@ -507,6 +535,17 @@ namespace MonoDevelop.Ide.Editor.Extension
 		}
 
 		static readonly ICompletionDataList emptyList = new CompletionDataList ();
+
+		Task<ICompletionDataList> DoHandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, CancellationToken token = default (CancellationToken))
+		{
+			Counters.ProcessCodeCompletion.Trace ("Getting completion data");
+			var task = HandleCodeCompletionAsync (completionContext, triggerInfo, token);
+			if (task != null)
+				task.ContinueWith (t => Counters.ProcessCodeCompletion.Trace ("Got completion data"));
+			else
+				Counters.ProcessCodeCompletion.Trace ("Got completion data");
+			return task;
+		}
 
 		public virtual Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, CancellationToken token = default (CancellationToken))
 		{

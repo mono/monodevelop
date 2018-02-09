@@ -105,10 +105,9 @@ type MDLanguageService() =
                 try
                     let doc = IdeApp.Workbench.ActiveDocument
                     if doc <> null && doc.FileName.FullPath.ToString() = changedfile then
-                        LoggingService.LogDebug("FSharp Language Service: Compiler notifying document '{0}' is dirty and needs reparsing.  Reparsing as its the active document.", (Path.GetFileName changedfile))
-                        doc.ReparseDocument()
+                        LoggingService.logDebug "FSharp Language Service: Compiler notifying document '%s' is dirty and needs reparsing.  Reparsing as its the active document." (Path.GetFileName changedfile)
                 with exn  ->
-                   LoggingService.LogDebug("FSharp Language Service: Error while attempting to notify document '{0}' needs reparsing", (Path.GetFileName changedfile), exn) ), extraProjectInfo)
+                   LoggingService.logDebug "FSharp Language Service: Error while attempting to notify document '%s' needs reparsing\n%s" (Path.GetFileName changedfile) (exn.ToString()) ), extraProjectInfo)
 
   static member Instance with get () = instance.Force ()
                          and  set v  = instance <- lazy v

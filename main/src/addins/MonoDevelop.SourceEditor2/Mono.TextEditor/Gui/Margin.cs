@@ -48,7 +48,9 @@ namespace Mono.TextEditor
 			set {
 				isVisible = value;
 
-				Accessible.Hidden = !value;
+				if (Accessible != null) {
+					Accessible.Hidden = !value;
+				}
 			}
 		}
 		
@@ -81,7 +83,7 @@ namespace Mono.TextEditor
 		AccessibilityElementProxy accessible;
 		public virtual AccessibilityElementProxy Accessible {
 			get {
-				if (accessible == null) {
+				if (accessible == null && AccessibilityElementProxy.Enabled) {
 					accessible = new AccessibilityElementProxy ();
 				}
 				return accessible;
@@ -110,7 +112,10 @@ namespace Mono.TextEditor
 
 		protected Margin ()
 		{
-			Accessible.SetRole (AtkCocoa.Roles.AXRuler);
+			var a = Accessible;
+			if (a != null) {
+				a.SetRole (AtkCocoa.Roles.AXRuler);
+			}
 			IsVisible = true;
 		}
 		

@@ -558,5 +558,8 @@ namespace MonoDevelop.Ide.Desktop
 			proc.StartInfo = psi;
 			proc.Start ();
 		}
+
+		public static bool AccessibilityInUse { get; protected set; }
 	}
+
 }

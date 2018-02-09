@@ -79,10 +79,12 @@ module highlightUnusedCode =
         | None -> true
 
     let removeMarkers (editor:TextEditor) (ranges:Range.range list) =
-        ranges |> List.iter(fun range ->
-            let startOffset = getOffset editor range.Start
-            let markers = editor.GetTextSegmentMarkersAt startOffset
-            markers |> Seq.iter (fun m -> editor.RemoveMarker m |> ignore))
+        Runtime.RunInMainThread(fun () ->
+            ranges 
+            |> List.iter(fun range ->
+                            let startOffset = getOffset editor range.Start
+                            let markers = editor.GetTextSegmentMarkersAt startOffset
+                            markers |> Seq.iter (fun m -> editor.RemoveMarker m |> ignore))) |> ignore
 
     let getUnusedCode (context:DocumentContext) (editor:TextEditor) =
         async {
@@ -95,18 +97,17 @@ module highlightUnusedCode =
 
     let highlightUnused (editor:TextEditor) (unusedOpenRanges: Range.range list) (previousUnused: Range.range list)=
         previousUnused |> removeMarkers editor
+        Runtime.RunInMainThread(fun () ->
+            unusedOpenRanges |> List.iter(fun range ->
+                let startOffset = getOffset editor range.Start
+                let markers = editor.GetTextSegmentMarkersAt startOffset |> Seq.toList
+                if markers.Length = 0 then
+                    let endOffset = getOffset editor range.End
 
-        unusedOpenRanges |> List.iter(fun range ->
-            let startOffset = getOffset editor range.Start
-            let markers = editor.GetTextSegmentMarkersAt startOffset |> Seq.toList
-            if markers.Length = 0 then
-                let endOffset = getOffset editor range.End
-
-                let segment = new Text.TextSegment(startOffset, endOffset - startOffset)
-                let marker = TextMarkerFactory.CreateGenericTextSegmentMarker(editor, TextSegmentMarkerEffect.GrayOut, segment)
-                marker.IsVisible <- true
-
-                editor.AddMarker(marker))
+                    let segment = new Text.TextSegment(startOffset, endOffset - startOffset)
+                    let marker = TextMarkerFactory.CreateGenericTextSegmentMarker(editor, TextSegmentMarkerEffect.GrayOut, segment)
+                    marker.IsVisible <- true
+                    editor.AddMarker(marker))) |> ignore
 
 type HighlightUnusedCode() =
     inherit TextEditorExtension()
@@ -119,4 +120,4 @@ type HighlightUnusedCode() =
                             unused |> Option.iter(fun unused' ->
                                 highlightUnusedCode.highlightUnused x.Editor unused' previousUnused
                                 previousUnused <- unused')
-                        } |> Async.StartImmediate)
+                        } |> Async.Start)

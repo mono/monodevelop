@@ -68,7 +68,15 @@ namespace MonoDevelop.Core
 			string cultureLang;
 			if (!localeToCulture.TryGetValue (locale, out cultureLang))
 				cultureLang = locale.Replace ("_", "-");
-			CultureInfo ci = CultureInfo.GetCultureInfo (cultureLang);
+
+			CultureInfo ci;
+			try {
+				ci = CultureInfo.GetCultureInfo (cultureLang);
+			} catch (Exception e) {
+				LoggingService.LogError ($"Failed to grab culture {cultureLang}, using default", e);
+				return;
+			}
+
 			if (ci.IsNeutralCulture) {
 				// We need a non-neutral culture
 				foreach (CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures & ~CultureTypes.NeutralCultures))

@@ -142,6 +142,10 @@ type SyntaxHighlighting() =
     [<TestCase("module My.Namespace.$Module$", "entity.name.class")>]
     [<TestCase("module rec My.Namespace.$Module$", "entity.name.class")>]
     [<TestCase("module rec $My.Namespace$.Module", "source.fs")>]
+    [<TestCase("$// Some comment$", "comment.line.source.fs")>]
+    [<TestCase("$/// Some comment$", "comment.line.documentation.source.fs")>]
+    [<TestCase("$(* Some comment*)$", "comment.block.source.fs")>]
+    [<TestCase("$let$ ((x,y", "keyword.source.fs")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 

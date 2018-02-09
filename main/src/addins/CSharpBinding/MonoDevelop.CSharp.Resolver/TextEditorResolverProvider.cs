@@ -63,10 +63,14 @@ namespace MonoDevelop.CSharp.Resolver
 			if (model == null)
 				return null;
 
-			int index = identifier.IndexOf ("`", System.StringComparison.Ordinal);
+			int index = identifier.LastIndexOf ("`", System.StringComparison.Ordinal);
 			int arity = 0;
 			if (index != -1) {
-				arity = int.Parse (identifier.Substring (index + 1));
+				try {
+					arity = int.Parse (identifier.Substring (index + 1));
+				} catch {
+					return null;
+				}
 				identifier = identifier.Remove (index);
 			}
 

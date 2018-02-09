@@ -1,6 +1,6 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <Template originator = "Dave Thomas">
-	
+
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>NUnit Library Project</_Name>
@@ -12,21 +12,21 @@
 		<DefaultFilename>NUnitProject</DefaultFilename>
 		<GroupId>md-nunit-library</GroupId>
 	</TemplateConfiguration>
-	
+
 	<!-- Actions -->
 	<Actions>
 		<Open filename = "Test.fs"/>
 	</Actions>
-	
+
 	<!-- Template Content -->
 	<Combine name = "${ProjectName}" directory = ".">
 		<Options>
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
-		
+
 		<Project name = "${ProjectName}" directory = ".">
 			<Options Target = "Library" TargetFrameworkVersion="4.5.1" />
-			
+
 			<References>
 				<Reference type="Package" refto="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
 				<Reference type="Package" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -34,7 +34,7 @@
 			</References>
 
 			<Packages requireLicenseAcceptance="false">
-				<Package Id="FSharp.Core" Version="4.1.0.2" local="true" /> 
+				<Package Id="FSharp.Core" Version="4.3.3" local="true" />
 				<Package id="NUnit" version="2.6.4" />
 			</Packages>
 
@@ -45,7 +45,7 @@ open System
 open NUnit.Framework
 
 [<TestFixture>]
-type Test() = 
+type Test() =
 
     [<Test>]
     member x.TestCase() =

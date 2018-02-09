@@ -317,7 +317,7 @@ namespace MonoDevelop.CodeIssues
 			var renderer = (CustomCellRenderer)sender;
 			var comboBoxStore = renderer.Model;
 			TreeIter iter;
-			if (!comboBoxStore.GetIterFromString (out iter, args.Path))
+			if (!treeStore.GetIterFromString (out iter, args.Path))
 				return;
 
 			TreeIter storeIter;

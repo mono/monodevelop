@@ -35,7 +35,8 @@ TEST_ASSEMBLIES_COMMON = \
 	$(TEST_DIR)/MonoDevelop.AspNet.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.CSharpBinding.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.DotNetCore.Tests.dll \
-    $(TEST_DIR)/MonoDevelop.UnitTesting.Tests.dll
+	$(TEST_DIR)/MonoDevelop.UnitTesting.Tests.dll \
+	$(TEST_DIR)/MonoDevelop.Refactoring.Tests.dll
 
 if RELEASE_BUILDS
 TEST_ASSEMBLIES_COMMON += $(EXTERNAL)/nrefactory/bin/Release/ICSharpCode.NRefactory.Tests.dll

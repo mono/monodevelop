@@ -129,7 +129,7 @@ namespace PerformanceDiagnosticsAddIn
 
 		[DllImport ("__Internal")]
 		extern static string mono_pmip (long offset);
-		Dictionary<long, string> methodsCache = new Dictionary<long, string> ();
+		static Dictionary<long, string> methodsCache = new Dictionary<long, string> ();
 
 		void PumpErrorStream ()
 		{
@@ -157,7 +157,7 @@ namespace PerformanceDiagnosticsAddIn
 			process = null;
 		}
 
-		void ConvertJITAddressesToMethodNames (string fileName, string profilingType)
+		internal static void ConvertJITAddressesToMethodNames (string fileName, string profilingType)
 		{
 			var rx = new Regex (@"\?\?\?  \(in <unknown binary>\)  \[0x([0-9a-f]+)\]", RegexOptions.Compiled);
 			if (File.Exists (fileName) && new FileInfo (fileName).Length > 0) {

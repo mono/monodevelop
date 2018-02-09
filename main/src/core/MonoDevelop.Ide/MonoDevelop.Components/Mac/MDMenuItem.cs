@@ -66,6 +66,12 @@ namespace MonoDevelop.Components.Mac
 
 		protected override void Dispose (bool disposing)
 		{
+			if (lastInfo != null) {
+				lastInfo.CancelAsyncUpdate ();
+				lastInfo.Changed -= OnLastInfoChanged;
+				lastInfo = null;
+			}
+			initialCommandTarget = null;
 			base.Dispose (disposing);
 		}
 
@@ -95,7 +101,7 @@ namespace MonoDevelop.Components.Mac
 			}
 		}
 
-		int FindMeInParent (MDMenu parent)
+		int FindMeInParent (NSMenu parent)
 		{
 			for (int n = 0; n < parent.Count; n++)
 				if (parent.ItemAt (n) == this)
@@ -107,23 +113,29 @@ namespace MonoDevelop.Components.Mac
 		{
 			var info = manager.GetCommandInfo (ce.CommandId, new CommandTargetRoute (initialCommandTarget));
 			if (lastInfo != info) {
-				if (lastInfo != null)
+				if (lastInfo != null) {
 					lastInfo.CancelAsyncUpdate ();
+					lastInfo.Changed -= OnLastInfoChanged;
+				}
 				lastInfo = info;
 				if (lastInfo.IsUpdatingAsynchronously) {
-					lastInfo.Changed += delegate {
-						var ind = FindMeInParent (parent);
-						if (info == lastInfo) {
-							Update (parent, ref ind, info);
-							parent.UpdateSeparators ();
-						}
-					};
+					lastInfo.Changed += OnLastInfoChanged;
 				}
 			}
 			Update (parent, ref index, info);
 		}
 
-		void Update (MDMenu parent, ref int index, CommandInfo info)
+		void OnLastInfoChanged (object sender, EventArgs args)
+		{
+			if (lastInfo != sender)
+				return;
+			var parent = Menu;
+			var ind = FindMeInParent (parent);
+			Update (parent, ref ind, lastInfo);
+			(parent as MDMenu)?.UpdateSeparators ();
+		}
+
+		void Update (NSMenu parent, ref int index, CommandInfo info)
 		{
 			if (!isArrayItem) {
 				SetItemValues (this, info, ce.DisabledVisible, ce.OverrideLabel);

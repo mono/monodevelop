@@ -495,7 +495,7 @@ namespace MonoDevelop.Components.MainToolbar
 					if ((e.Event.State & Gdk.ModifierType.Mod2Mask) != 0)
 						m |= Xwt.ModifierKeys.Command;
 
-					Clicked (o, new StatusBarIconClickedEventArgs {
+					Clicked?.Invoke (o, new StatusBarIconClickedEventArgs {
 						Button = (Xwt.PointerButton)e.Event.Button,
 						Modifiers = m,
 					});

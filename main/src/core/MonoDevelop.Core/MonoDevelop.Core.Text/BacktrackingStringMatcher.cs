@@ -38,6 +38,15 @@ namespace MonoDevelop.Core.Text
 		readonly string filterText;
 		int[] cachedResult;
 
+		public override StringMatcher Clone ()
+		{
+			var clone = (BacktrackingStringMatcher)base.Clone ();
+
+			// Don't reuse the results buffer for the clone
+			clone.cachedResult = null;
+			return clone;
+		}
+
 		public BacktrackingStringMatcher (string filterText)
 		{
 			this.filterText = filterText ?? "";
@@ -47,7 +56,7 @@ namespace MonoDevelop.Core.Text
 					filterIsNonLetter |= !char.IsLetterOrDigit (filterText [i]) ? 1ul << i : 0;
 					filterIsDigit |= char.IsDigit (filterText [i]) ? 1ul << i : 0;
 				}
-				
+
 				filterTextUpperCase = filterText.ToUpper ();
 			} else {
 				filterTextUpperCase = "";
@@ -142,7 +151,8 @@ namespace MonoDevelop.Core.Text
 				if (filterChar == (textCharIsUpper ? ch : char.ToUpper (ch)) && char.IsLetter (ch)) {
 					// cases don't match. Filter is upper char & letter is low, now prefer the match that does the word skip.
 					if (!(textCharIsUpper || (filterTextLowerCaseTable & flag) != 0) && j + 1 < text.Length) {
-						int possibleBetterResult = GetMatchChar (text, i, j + 1, onlyWordStart);
+						// Since we are looking for a char match that does the word skip, use onlyWordStart=true
+						int possibleBetterResult = GetMatchChar (text, i, j + 1, onlyWordStart:true);
 						if (possibleBetterResult >= 0)
 							return possibleBetterResult;
 					}
@@ -200,7 +210,7 @@ namespace MonoDevelop.Core.Text
 		public override int[] GetMatch (string text)
 		{
 			if (string.IsNullOrEmpty (filterTextUpperCase))
-				return new int[0];
+				return Array.Empty<int> ();
 			if (string.IsNullOrEmpty (text) || filterText.Length  > text.Length)
 				return null;
 			int[] result;

@@ -42,6 +42,19 @@ namespace MonoDevelop.Core.Text
 		public abstract bool CalcMatchRank (string name, out int matchRank);
 		public abstract bool IsMatch (string name);
 		public abstract int[] GetMatch (string text);
+
+		/// <summary>
+		/// Makes a copy of this instance.
+		/// </summary>
+		/// <returns>The clone.</returns>
+		/// <remarks>
+		/// StringMatcher is not guaranteed to be thread safe. In multi-threading scenarios, the Clone
+		/// method can be used to create copies of a string matcher to be used by different threads.
+		/// </remarks>
+		public virtual StringMatcher Clone ()
+		{
+			return (StringMatcher)MemberwiseClone ();
+		}
 	}
 }
 

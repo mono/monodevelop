@@ -341,11 +341,14 @@ namespace MonoDevelop.UnitTesting
 		public void InitializeTestRun (UnitTest test, CancellationTokenSource cs)
 		{
 			rootTest = test;
+
 			cancellationSource = cs;
-			cs.Token.Register (OnCancel);
+			if (cs != null)
+				cs.Token.Register (OnCancel);
+			
 			results.Clear ();
 
-			testsToRun = test.CountTestCases ();
+			testsToRun = test != null ? test.CountTestCases () : 0;
 			error = null;
 			errorMessage = null;
 			
@@ -416,7 +419,13 @@ namespace MonoDevelop.UnitTesting
 			TreeIter row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), null, null, 0);
 			AddStackTrace (row, error.StackTrace, null);
 		}
-		
+
+		public void ReportExecutionError (string message)
+		{
+			var stock = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
+			TreeIter testRow = failuresStore.AppendValues (stock, message, null, null, 0);
+		}
+
 		readonly static Regex stackTraceLineRegex = new Regex (@".*\s(?<file>.*)\:\D*\s?(?<line>\d+)", RegexOptions.Compiled);
 		
 		public static bool TryParseLocationFromStackTrace (string stackTraceLine, out string fileName, out int lineNumber)
