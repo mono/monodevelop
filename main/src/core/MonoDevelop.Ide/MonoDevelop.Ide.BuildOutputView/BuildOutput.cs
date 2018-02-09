@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 	{
 		BuildOutputProgressMonitor progressMonitor;
 		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
+		List<BuildOutputNode> treeRootNodes;
 
 		public event EventHandler OutputChanged;
 
@@ -166,13 +167,30 @@ namespace MonoDevelop.Ide.BuildOutputView
 			OutputChanged?.Invoke (this, EventArgs.Empty);
 		}
 
+
+		public List<BuildOutputNode> GetTreeRootNodes (bool includeDiagnostics) 
+		{
+			if (includeDiagnostics) {
+				return GetRootNodes ().ToList ();
+			} else {
+				// If not including diagnostics, we need to filter the nodes,
+				// but instead of doing so now for all, we do it on the fly,
+				// as nodes are requested
+				var nodes = new List<BuildOutputNode> ();
+				foreach (var root in GetRootNodes ()) {
+					nodes.Add (new FilteredBuildOutputNode (root, null, includeDiagnostics));
+				}
+				return nodes;
+			}
+		}
+
 		public BuildOutputDataSource ToTreeDataSource (bool includeDiagnostics)
 		{
 			foreach (var p in projects) {
 				p.Process ();
 			}
-
-			return new BuildOutputDataSource (this, includeDiagnostics);
+			treeRootNodes = GetTreeRootNodes (includeDiagnostics);
+			return new BuildOutputDataSource (treeRootNodes);
 		}
 
 		bool disposed = false;
@@ -259,27 +277,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		BuildOutput buildOutput;
 		bool includeDiagnostics;
-		List<BuildOutputNode> rootNodes;
 		public IReadOnlyList<BuildOutputNode> RootNodes => this.rootNodes;
-
+		readonly List<BuildOutputNode> rootNodes;
 		public DataField<Xwt.Drawing.Image> ImageField = new DataField<Xwt.Drawing.Image> (0);
 		public DataField<string> LabelField = new DataField<string> (1);
 
-		public BuildOutputDataSource (BuildOutput output, bool includeDiagnostics)
+		public BuildOutputDataSource (List<BuildOutputNode> rootNodes)
 		{
-			buildOutput = output;
-			this.includeDiagnostics = includeDiagnostics;
-			if (includeDiagnostics) {
-				rootNodes = buildOutput.GetRootNodes ().ToList ();
-			} else {
-				// If not including diagnostics, we need to filter the nodes,
-				// but instead of doing so now for all, we do it on the fly,
-				// as nodes are requested
-				rootNodes = new List<BuildOutputNode> ();
-				foreach (var root in buildOutput.GetRootNodes ()) {
-					rootNodes.Add (new FilteredBuildOutputNode (root, null, includeDiagnostics));
-				}
-			}
+			this.rootNodes = rootNodes;
 		}
 
 		#region ITreeDataSource implementation
