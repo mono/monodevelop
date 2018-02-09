@@ -43,13 +43,12 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
-	class BuildOutput : IDisposable, IPathedDocument
+	class BuildOutput : IDisposable
 	{
 		BuildOutputProgressMonitor progressMonitor;
 		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
 
 		public event EventHandler OutputChanged;
-		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 
 		public ProgressMonitor GetProgressMonitor ()
 		{
@@ -170,20 +169,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 			OutputChanged?.Invoke (this, EventArgs.Empty);
 		}
 
-		BuildOutputDataSource currentDataSource;
 		public BuildOutputDataSource ToTreeDataSource (bool includeDiagnostics)
 		{
 			foreach (var p in projects) {
 				p.Process ();
 			}
 
-			currentDataSource = new BuildOutputDataSource (this, includeDiagnostics);
+			var currentDataSource = new BuildOutputDataSource (this, includeDiagnostics);
 			return currentDataSource;
 		}
 
 		bool disposed = false;
-
-		public PathEntry [] CurrentPath { get; set; }
 
 		~BuildOutput ()
 		{
@@ -207,65 +203,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public void Dispose ()
 		{
 			Dispose (true);
-		}
-
-		public event EventHandler<int> IndexChanged;
-		public event EventHandler<BuildOutputNode> SiblingSelected;
-
-		int currentIndex = -1;
-		public Control CreatePathWidget (int index)
-		{
-			if (currentIndex != index) {
-				IndexChanged?.Invoke (this, index);	
-				currentIndex = index;
-			}
-			
-			PathEntry [] path = CurrentPath;
-			if (path == null || index < 0 || index >= path.Length)
-				return null;
-			
-			var tag = path [index].Tag as BuildOutputNode;
-			var window = new DropDownBoxListWindow (new DropDownWindowDataProvider (this, tag));
-			window.FixedRowHeight = 22;
-			window.MaxVisibleRows = 14;
-			if (path [index].Tag != null)
-				window.SelectItem (path [index].Tag);
-			return window;
-		}
-
-		class DropDownWindowDataProvider : DropDownBoxListWindow.IListDataProvider
-		{
-			BuildOutputNode [] list;
-			BuildOutputDataSource dataSource;
-			BuildOutput buildOutput;
-
-			public DropDownWindowDataProvider (BuildOutput buildOutput, BuildOutputNode node)
-			{
-				if (buildOutput == null)
-					throw new ArgumentNullException ("buildOutput");
-				this.dataSource = buildOutput.currentDataSource;
-				this.buildOutput = buildOutput;
-				Reset ();
-
-				var parent = dataSource.GetParent (node) as BuildOutputNode;
-				var rootsCount = dataSource.GetChildrenCount (parent);
-				list = new BuildOutputNode [rootsCount];
-				for (int i = 0; i < rootsCount; i++) {
-					list [i] = dataSource.GetChild (parent, i) as BuildOutputNode;
-				}
-			}
-
-			public int IconCount => list.Length;
-
-			public void ActivateItem (int n) => buildOutput.SiblingSelected?.Invoke (this, list[n]);
-
-			public Xwt.Drawing.Image GetIcon (int n) => dataSource.GetValue (list [n], 0) as Xwt.Drawing.Image;
-
-			public string GetMarkup (int n) => list [n].Message;
-
-			public object GetTag (int n) => list [n];
-
-			public void Reset() => list = new BuildOutputNode [0];
 		}
 	}
 

@@ -36,10 +36,11 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
-	class BuildOutputWidget : VBox
+	class BuildOutputWidget : VBox, IPathedDocument
 	{
 		TreeView treeView;
 		ScrollView scrolledWindow;
@@ -52,8 +53,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
+		public PathEntry [] CurrentPath { get; set; }
 
 		public event EventHandler<string> FileSaved;
+		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 
 		public BuildOutputWidget (BuildOutput output, string viewContentName)
 		{
@@ -78,10 +81,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			ProcessLogs (false);
 
 			BuildOutput.OutputChanged += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
-			BuildOutput.SiblingSelected += (sender, e)  => SelectRow (e);
-			BuildOutput.IndexChanged += IndexChanged;
 
-			pathBar = new PathBar (this.BuildOutput.CreatePathWidget) {
+			pathBar = new PathBar (this.CreatePathWidget) {
 				DrawBottomBorder = false
 			};
 			var entries = new PathEntry [] {
@@ -176,13 +177,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			PackStart (scrolledWindow, expand: true, fill: true);
 		}
 
-		void IndexChanged (object sender, int newIndex)
+		void IndexChanged (int newIndex)
 		{
-			if (newIndex >= BuildOutput.CurrentPath.Length)
+			if (newIndex >= CurrentPath.Length)
 				return;
 
-			if (BuildOutput.CurrentPath [newIndex].Tag != null) {
-				SelectRow (BuildOutput.CurrentPath [newIndex].Tag as BuildOutputNode);
+			if (CurrentPath [newIndex].Tag != null) {
+				SelectRow (CurrentPath [newIndex].Tag as BuildOutputNode);
 			}
 		}
 
@@ -213,6 +214,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var index = 0;
 			while (stack.Count > 0) {
 				var node = stack.Pop ();
+				var dataSource = treeView.DataSource as BuildOutputDataSource;
 				var pathEntry = new PathEntry (dataSource.GetValue (node, 0) as Xwt.Drawing.Image, node.Message);
 				pathEntry.Tag = node;
 				entries [index] = pathEntry;
@@ -225,7 +227,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		void UpdatePathBarEntries (PathEntry[] entries)
 		{
 			pathBar.SetPath (entries);
-			this.BuildOutput.CurrentPath = pathBar.Path;
+			this.CurrentPath = pathBar.Path;
 		}
 
 		CancellationTokenSource cts;
@@ -258,7 +260,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			Task.Run (async () => {
 				await Runtime.RunInMainThread (() => {
-					dataSource = BuildOutput.ToTreeDataSource (showDiagnostics);
+					var dataSource = BuildOutput.ToTreeDataSource (showDiagnostics);
 					treeView.DataSource = dataSource;
 					(treeView.Columns [0].Views [0] as ImageCellView).ImageField = dataSource.ImageField;
 					(treeView.Columns [0].Views [1] as TextCellView).MarkupField = dataSource.LabelField;
@@ -301,6 +303,61 @@ namespace MonoDevelop.Ide.BuildOutputView
 					MoveToMatch (match);
 				}
 			}
+		}
+
+		int currentIndex = -1;
+		public Control CreatePathWidget (int index)
+		{
+			if (currentIndex != index) {
+				IndexChanged (index);
+				currentIndex = index;
+			}
+
+			PathEntry [] path = CurrentPath;
+			if (path == null || index < 0 || index >= path.Length)
+				return null;
+
+			var tag = path [index].Tag as BuildOutputNode;
+			var window = new DropDownBoxListWindow (new DropDownWindowDataProvider (this, showDiagnosticsButton.Active, tag));
+			window.FixedRowHeight = 22;
+			window.MaxVisibleRows = 14;
+			if (path [index].Tag != null)
+				window.SelectItem (path [index].Tag);
+			return window;
+		}
+
+		class DropDownWindowDataProvider : DropDownBoxListWindow.IListDataProvider
+		{
+			BuildOutputNode [] list;
+			BuildOutputWidget widget;
+			BuildOutputDataSource DataSource => widget.treeView.DataSource as BuildOutputDataSource;
+
+			public DropDownWindowDataProvider (BuildOutputWidget widget, bool showDiagnostics, BuildOutputNode node)
+			{
+				if (widget == null)
+					throw new ArgumentNullException ("widget");
+				this.widget = widget;
+				Reset ();
+
+				var parent = DataSource.GetParent (node) as BuildOutputNode;
+				var rootsCount = DataSource.GetChildrenCount (parent);
+				list = new BuildOutputNode [rootsCount];
+				for (int i = 0; i < rootsCount; i++) {
+					list [i] = DataSource.GetChild (parent, i) as BuildOutputNode;
+				}
+			}
+
+			public int IconCount => list.Length;
+
+			public void ActivateItem (int n) => widget.SelectRow (list [n]);
+
+			public Xwt.Drawing.Image GetIcon (int n) => DataSource.GetValue (list [n], 0) as Xwt.Drawing.Image;
+
+			public string GetMarkup (int n) => list [n].Message;
+
+			public object GetTag (int n) => list [n];
+
+			public void Reset () => list = new BuildOutputNode [0];
 		}
 	}
 }
