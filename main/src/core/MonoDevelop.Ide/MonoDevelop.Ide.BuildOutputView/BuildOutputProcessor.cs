@@ -48,6 +48,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public IReadOnlyList<BuildOutputNode> RootNodes => rootNodes;
 
+		public BuildOutputNode CurrentNode => currentNode;
+
 		public string FileName { get; }
 
 		protected bool NeedsProcessing { get; set; } = true;

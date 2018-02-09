@@ -98,9 +98,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 				// These are the "Detailed summary" lines
 				// TODO: we should probably parse them and associate those stats
 				// with the correct build step, so that we get stats for those
-			} else if (!String.IsNullOrEmpty (e.Message)) {
-				AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message,
-				         stringPool.Add (e.Message), stringPool.Add (e.Message), false, e.Timestamp);
+			} else {
+				this.ProcessMessageEvent (e, stringPool);
 			}
 		}
 
@@ -142,6 +141,40 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			EndCurrentNode (stringPool.Add (e.Message), e.Timestamp);
+		}
+	}
+
+	static class BinaryLogHelpers
+	{
+		const string TaskParameterMessagePrefix = @"Task Parameter:";
+
+		public static void ProcessMessageEvent (this MSBuildOutputProcessor processor, BuildMessageEventArgs e, StringInternPool stringPool)
+		{
+			if (String.IsNullOrEmpty (e.Message)) {
+				return;
+			}
+
+			switch (e.Message[0]) {
+			case 'T':
+				if (e.Message.StartsWith (TaskParameterMessagePrefix)) {
+					string content = e.Message.Substring (TaskParameterMessagePrefix.Length)
+					                  .Replace ("\n\r", " ")
+					                  .Replace ('\n', ' ');
+					int equalSign = content.IndexOf ('=');
+					if (equalSign < 0) {
+						break;
+					}
+
+					content = $"{content.Substring (0, equalSign).Trim ()} = {content.Substring (equalSign + 1, content.Length - equalSign - 1).Trim ()}";
+					processor.CurrentNode.AddParameter (stringPool.Add (content), stringPool.Add (e.Message));
+					return;
+				}
+				break;
+			}
+
+			string shortMessage = stringPool.Add (e.Message.Replace ("\n\r", " ").Replace ('\n', ' '));
+			processor.AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message,
+			                   shortMessage, stringPool.Add (e.Message), false, e.Timestamp);
 		}
 	}
 }
