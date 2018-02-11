@@ -375,7 +375,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		#region Search functionality
 
-		List<BuildOutputNode> currentSearchMatches;
+		readonly List<BuildOutputNode> currentSearchMatches = new List<BuildOutputNode> ();
 		string currentSearchPattern;
 		int currentMatchIndex = -1;
 
@@ -395,11 +395,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public BuildOutputNode FirstMatch (string pattern)
 		{
 			// Initialize search data
-			if (currentSearchMatches == null) {
-				currentSearchMatches = new List<BuildOutputNode> ();
-			} else {
-				currentSearchMatches.Clear ();
-			}
+			currentSearchMatches.Clear ();
 
 			currentSearchPattern = pattern;
 			currentMatchIndex = -1;
@@ -419,7 +415,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public BuildOutputNode PreviousMatch ()
 		{
-			if (currentSearchMatches == null || currentSearchMatches.Count == 0 ||
+			if (currentSearchMatches.Count == 0 ||
 				String.IsNullOrEmpty (currentSearchPattern) || currentMatchIndex == -1) {
 				return null;
 			}
@@ -435,7 +431,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public BuildOutputNode NextMatch ()
 		{
-			if (currentSearchMatches == null || currentSearchMatches.Count == 0 ||
+			if (currentSearchMatches.Count == 0 ||
 			    String.IsNullOrEmpty (currentSearchPattern) || currentMatchIndex == -1) {
 				return null;
 			}
