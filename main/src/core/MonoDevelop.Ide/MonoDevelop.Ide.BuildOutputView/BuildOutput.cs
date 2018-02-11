@@ -424,12 +424,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return null;
 			}
 
-			currentMatchIndex--;
-			if (currentMatchIndex >= 0 && currentMatchIndex < currentSearchMatches.Count) {
-				return currentSearchMatches [currentMatchIndex];
+			if (currentMatchIndex > 0) {
+				currentMatchIndex--;
+			} else {
+				currentMatchIndex = currentSearchMatches.Count - 1;
 			}
 
-			return null;
+			return currentSearchMatches [currentMatchIndex];
 		}
 
 		public BuildOutputNode NextMatch ()
@@ -439,12 +440,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return null;
 			}
 
-			currentMatchIndex++;
-			if (currentMatchIndex >= 0 && currentMatchIndex < currentSearchMatches.Count) {
-				return currentSearchMatches [currentMatchIndex];
+			if (currentMatchIndex < currentSearchMatches.Count - 1) {
+				currentMatchIndex++;
+			} else {
+				currentMatchIndex = 0;
 			}
 
-			return null;
+			return currentSearchMatches [currentMatchIndex];
 		}
 
 		#endregion
