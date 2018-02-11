@@ -381,7 +381,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		static void SearchInNodeAndChildren (BuildOutputNode node, List<BuildOutputNode> matches, string pattern)
 		{
-			if (node.Message?.ToLower ().Contains (pattern.ToLower ()) ?? false) {
+			if ((node.Message?.ToLower ().IndexOf (pattern, StringComparison.OrdinalIgnoreCase) ?? -1) >= 0) {
 				matches.Add (node);
 			}
 
