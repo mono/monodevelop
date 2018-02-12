@@ -10,13 +10,13 @@ else
 BIN_DIR="$(APP)/Contents/Resources/lib/monodevelop"
 endif
 
-AOT_DIRECTORIES:=$(subst $(SPACE),:,$(shell find  $(BIN_DIR)/* -not -path "*azure-functions-cli*" -not -path "*.dSYM*" -not -path $(BIN_DIR)/tests* -type d))
+AOT_DIRECTORIES:=$(subst $(SPACE),:,$(shell find $(BIN_DIR)/* -not -path "*azure-functions-cli*" -not -path "*.dSYM*" -not -path "*/ServiceHub/*" -not -path $(BIN_DIR)/tests* -type d))
 
 MONO_DIR=/Library/Frameworks/Mono.framework/Libraries/mono
 MSBUILD_PATH=$(MONO_DIR)/msbuild/15.0/bin
 
 # --assembly-loader=strict will not work for valuetuples here, even with binding redirects
-AOT_COMMAND=mono64 --aot=hybrid --debug
+AOT_COMMAND=mono64 --aot=hybrid --debug --assembly-loader=strict
 MONO_AOT:=MONO_PATH="$(AOT_DIRECTORIES):$(MSBUILD_PATH):$(MONO_PATH)" $(AOT_COMMAND) --apply-bindings=$(BIN_DIR)/bin/MonoDevelop.exe.config
 
 MSBUILD_LIBRARIES=Microsoft.Build.dll Microsoft.Build.Framework.dll Microsoft.Build.Utilities.Core.dll
