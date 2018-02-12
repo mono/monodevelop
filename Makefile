@@ -3,8 +3,16 @@ include main/monodevelop_version
 EXTRA_DIST = configure code_of_conduct.md
 SPACE := 
 SPACE +=  
-AOT_DIRECTORIES:=$(subst $(SPACE),:,$(shell find main/build/* -not -path "*.dSYM*" -not -path "main/build/tests*" -type d))
-MONO_AOT:=MONO_PATH=$(AOT_DIRECTORIES):/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/msbuild/15.0/bin:$(MONO_PATH) mono64 --assembly-loader=strict --aot --debug --apply-bindings=main/build/bin/MonoDevelop.exe.config
+
+ifeq ($(origin APP), undefined)
+BIN_DIR=main/build
+else
+BIN_DIR="$(APP)/Contents/Resources/lib/monodevelop"
+endif
+
+AOT_DIRECTORIES:=$(subst $(SPACE),:,$(shell find $(BIN_DIR)/* -not -path "*.dSYM*" -not -path $(BIN_DIR)/tests* -type d))
+
+MONO_AOT:=MONO_PATH="$(AOT_DIRECTORIES):/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/msbuild/15.0/bin:$(MONO_PATH)" mono64 --assembly-loader=strict --aot --debug --apply-bindings=$(BIN_DIR)/bin/MonoDevelop.exe.config
 
 all: update_submodules all-recursive
 
@@ -100,10 +108,10 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 	@cd tarballs && rm -rf monodevelop-$(PACKAGE_VERSION)
 
 aot:
-	@for i in main/build/bin/*.dll; do ($(MONO_AOT) $$i &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
-	@for i in main/build/AddIns/*.dll; do ($(MONO_AOT) $$i &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
-	@for i in main/build/AddIns/*/*.dll; do ($(MONO_AOT) $$i &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
-	@for i in main/build/AddIns/*/*/*.dll; do ($(MONO_AOT) $$i &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in $(BIN_DIR)/bin/*.dll; do ($(MONO_AOT) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in $(BIN_DIR)/AddIns/*.dll; do ($(MONO_AOT) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in $(BIN_DIR)/AddIns/*/*.dll; do ($(MONO_AOT) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in $(BIN_DIR)/AddIns/*/*/*.dll; do ($(MONO_AOT) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
 
 run:
 	cd main && $(MAKE) run
