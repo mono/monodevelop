@@ -96,14 +96,21 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
+			if (IdeApp.Workbench.Documents.Count < 10)
+				return;
+
 			int i = 0;
 			foreach (Document document in IdeApp.Workbench.Documents) {
+				if (i < 9) {
+					i++;
+					continue;
+				}
 
 				//Create CommandInfo object
 				CommandInfo commandInfo = new CommandInfo ();
 				commandInfo.Text = document.Window.Title.Replace ("_", "__");
-				if (document == IdeApp.Workbench.ActiveDocument) 
-					commandInfo.Checked = true; 
+				if (document == IdeApp.Workbench.ActiveDocument)
+					commandInfo.Checked = true;
 				commandInfo.Description = GettextCatalog.GetString ("Activate document '{0}'", commandInfo.Text);
 				if (document.Window.ShowNotification) {
 					commandInfo.UseMarkup = true;
@@ -111,10 +118,9 @@ namespace MonoDevelop.Ide.Commands
 				}
 
 				//Add AccelKey
-				if (i < 10) {
+				if (IdeApp.Workbench.Documents.Count + i < 10) {
 					commandInfo.AccelKey = ((Platform.IsMac) ? "Meta" : "Alt") + "|" + ((i + 1) % 10).ToString ();
 				}
-
 
 				//Add menu item
 				info.Add (commandInfo, document);
@@ -127,6 +133,117 @@ namespace MonoDevelop.Ide.Commands
 		{
 			Document document = (Document)dataItem;
 			document.Select ();
+		}
+	}
+
+	internal class OpenDocumentHandlerBase : CommandHandler
+	{
+		int index;
+
+		// 1-based index
+		protected OpenDocumentHandlerBase (int index)
+		{
+			this.index = index;
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.Documents.Count >= index) {
+				var document = IdeApp.Workbench.Documents [index - 1];
+
+				info.Text = document.Window.Title.Replace ("_", "__");
+				info.Checked = document == IdeApp.Workbench.ActiveDocument;
+				info.Description = GettextCatalog.GetString ("Activate document '{0}'", info.Text);
+				info.DataItem = document;
+
+				if (document.Window.ShowNotification) {
+					info.UseMarkup = true;
+					info.Text = "<span foreground=" + '"' + "blue" + '"' + ">" + info.Text + "</span>";
+				}
+				info.Visible = true;
+				info.Enabled = true;
+			} else {
+				info.Visible = false;
+				info.Enabled = false;
+			}
+		}
+
+		protected override void Run ()
+		{
+			var document = IdeApp.Workbench.Documents [index - 1];
+			document.Select ();
+		}
+	}
+
+	internal class OpenDocument1 : OpenDocumentHandlerBase
+	{
+		public OpenDocument1 ()
+			: base (1)
+		{
+		}
+	}
+
+	internal class OpenDocument2 : OpenDocumentHandlerBase
+	{
+		public OpenDocument2 ()
+			: base (2)
+		{
+		}
+	}
+
+	internal class OpenDocument3 : OpenDocumentHandlerBase
+	{
+		public OpenDocument3 ()
+			: base (3)
+		{
+		}
+	}
+
+	internal class OpenDocument4 : OpenDocumentHandlerBase
+	{
+		public OpenDocument4 ()
+			: base (4)
+		{
+		}
+	}
+
+	internal class OpenDocument5 : OpenDocumentHandlerBase
+	{
+		public OpenDocument5 ()
+			: base (5)
+		{
+		}
+	}
+
+	internal class OpenDocument6 : OpenDocumentHandlerBase
+	{
+		public OpenDocument6 ()
+			: base (6)
+		{
+		}
+	}
+
+	internal class OpenDocument7 : OpenDocumentHandlerBase
+	{
+		public OpenDocument7 ()
+			: base (7)
+		{
+		}
+	}
+
+	internal class OpenDocument8 : OpenDocumentHandlerBase
+	{
+		public OpenDocument8 ()
+			: base (8)
+		{
+		}
+	}
+
+	internal class OpenDocument9 : OpenDocumentHandlerBase
+	{
+		public OpenDocument9 ()
+			: base (9)
+		{
 		}
 	}
 
