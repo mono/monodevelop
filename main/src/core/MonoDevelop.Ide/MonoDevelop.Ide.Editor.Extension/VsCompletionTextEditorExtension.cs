@@ -32,6 +32,7 @@ using System.Linq;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Ide.Composition;
@@ -76,13 +77,56 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public override bool IsValidInContext (DocumentContext context)
 		{
-			var filePathRegistryService = CompositionManager.GetExportedValue<IFilePathRegistryService> ();
-			var contentType = filePathRegistryService.GetContentTypeForPath (context.Name);
-			return AnyCompletionItemSources (contentType);
+			ITextEditorImpl textEditorImpl = context.GetContent<ITextEditorImpl> ();
+			ITextView textView = textEditorImpl?.TextView;
+			bool isValidInContext;
+
+			if (textView == null) {
+				isValidInContext = false;
+			} else if (textView.TextBuffer is IProjectionBuffer) {
+				isValidInContext = true;
+			} else {
+				isValidInContext = AnyCompletionItemSources (textView.TextDataModel.DocumentBuffer.ContentType);
+			}
+
+			return isValidInContext;
+		}
+
+		private IEnumerable<SnapshotPoint> GetSnapshotPointsAtCaret()
+		{
+			// TODO: Cache the caret and content type information?
+			SnapshotPoint caretPosition = view.Caret.Position.BufferPosition;
+
+			List<SnapshotPoint> snapshotPoints = new List<SnapshotPoint> ();
+			snapshotPoints.Add (caretPosition);
+
+			for (int curSnapshotPointIndex = 0; curSnapshotPointIndex < snapshotPoints.Count; curSnapshotPointIndex++) {
+				SnapshotPoint curSnapshotPoint = snapshotPoints[curSnapshotPointIndex];
+				if (curSnapshotPoint.Snapshot is IProjectionSnapshot curProjectionSnapshot) {
+					snapshotPoints.AddRange (curProjectionSnapshot.MapToSourceSnapshots (curSnapshotPoint));
+				}
+			}
+
+			return snapshotPoints;
+		}
+
+		private IEnumerable<IContentType> GetContentTypesAtCaret()
+		{
+			IEnumerable<SnapshotPoint> snapshotPoints = GetSnapshotPointsAtCaret ();
+			IEnumerable<IContentType> contentTypes = snapshotPoints.Select (sp => sp.Snapshot.ContentType);
+
+			return contentTypes.Distinct();
 		}
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
+			IEnumerable<IContentType> contentTypes = GetContentTypesAtCaret ();
+
+			if (contentTypes.All (ct => !AnyCompletionItemSources (ct))) {
+				// No content type at the caret provides a completion item source
+				return true;
+			}
+
 			bool ExecThisAndIfFailedExecNext (Func<bool> func)
 			{
 				var funcResult = func ();
