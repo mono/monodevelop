@@ -11,7 +11,7 @@
     <UsePartialTypes>False</UsePartialTypes>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFSharpCoreVersion>4.4.3.3</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.4.3.0</TargetFSharpCoreVersion>
     <SignAssembly>true</SignAssembly>
     <OtherFlags>--publicsign</OtherFlags>
     <AssemblyOriginatorKeyFile>..\..\..\msbuild\MonoDevelop-Public.snk</AssemblyOriginatorKeyFile>
