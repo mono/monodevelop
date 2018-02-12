@@ -15,8 +15,8 @@ AOT_DIRECTORIES:=$(subst $(SPACE),:,$(shell find $(BIN_DIR)/* -not -path "*.dSYM
 MONO_DIR=/Library/Frameworks/Mono.framework/Libraries/mono
 MSBUILD_PATH=$(MONO_DIR)/msbuild/15.0/bin
 
-MONO_AOT:=MONO_PATH="$(AOT_DIRECTORIES):$(MSBUILD_PATH):$(MONO_PATH)" $(AOT_COMMAND) --apply-bindings=$(BIN_DIR)/bin/MonoDevelop.exe.config
 AOT_COMMAND=mono64 --aot=hybrid --assembly-loader=strict --debug
+MONO_AOT:=MONO_PATH="$(AOT_DIRECTORIES):$(MSBUILD_PATH):$(MONO_PATH)" $(AOT_COMMAND) --apply-bindings=$(BIN_DIR)/bin/MonoDevelop.exe.config
 
 MSBUILD_LIBRARIES=Microsoft.Build.dll Microsoft.Build.Framework.dll Microsoft.Build.Utilities.Core.dll
 MSBUILD_DLLS=$(patsubst %, $(MSBUILD_PATH)/%, $(MSBUILD_LIBRARIES))
