@@ -130,6 +130,9 @@ namespace MonoDevelop.CodeActions
 			foreach (var diag in fixes.DiagnosticsAtCaret) {
 				var notConfigurable = DescriptorHasTag (diag.Descriptor, WellKnownDiagnosticTags.NotConfigurable);
 
+				if (string.IsNullOrEmpty (diag.Descriptor.Title.ToString ()))
+					continue;
+				
 				var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", diag.Descriptor.Title);
 				var subMenu = new CodeFixMenu (label);
 
