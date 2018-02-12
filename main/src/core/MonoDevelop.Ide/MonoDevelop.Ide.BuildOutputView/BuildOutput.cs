@@ -283,6 +283,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public event EventHandler<TreeNodeChildEventArgs> NodeDeleted;
 		public event EventHandler<TreeNodeEventArgs> NodeChanged;
 		public event EventHandler<TreeNodeOrderEventArgs> NodesReordered;
+		public event EventHandler Cleared;
 
 		public TreePosition GetChild (TreePosition pos, int index)
 		{
