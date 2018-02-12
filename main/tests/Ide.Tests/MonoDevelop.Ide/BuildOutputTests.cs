@@ -30,6 +30,7 @@ using MonoDevelop.Ide.BuildOutputView;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide
 {
@@ -75,7 +76,13 @@ namespace MonoDevelop.Ide
 
 			var dataSource = bo.ToTreeDataSource (true);
 			int matches = 0;
+			var visited = new HashSet<BuildOutputNode> ();
 			for (var match = dataSource.FirstMatch ("Message "); match != null; match = dataSource.NextMatch ()) {
+				if (visited.Contains (match)) {
+					break;
+				}
+
+				visited.Add (match);
 				matches++;
 			}
 
