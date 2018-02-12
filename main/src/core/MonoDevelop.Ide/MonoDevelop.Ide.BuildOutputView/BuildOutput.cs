@@ -172,8 +172,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				p.Process ();
 			}
 
-			var currentDataSource = new BuildOutputDataSource (this, includeDiagnostics);
-			return currentDataSource;
+			return new BuildOutputDataSource (this, includeDiagnostics);
 		}
 
 		bool disposed = false;
