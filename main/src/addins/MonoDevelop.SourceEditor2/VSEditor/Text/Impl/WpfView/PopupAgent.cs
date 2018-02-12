@@ -148,7 +148,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                 }
             }
 
-            if (spanRectangle.HasValue && !spanRectangle.Value.IsEmpty)
+            if (spanRectangle.HasValue)
             {
                 //Get the portion of the span geometry that is inside the view.
                 Rect viewRect = new Rect(_textView.ViewportLeft, _textView.ViewportTop, _textView.ViewportWidth, _textView.ViewportHeight);
@@ -156,7 +156,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                 Rect spanRect = spanRectangle.Value;
                 spanRect = spanRect.Intersect(viewRect);
 
-                if (!spanRect.IsEmpty)
+				if (spanRect != default(Rect))
                 {
                     // Determine two different rectangles for the span.  One is the span in its raw form.  The other is a "guess" at
                     // what the already-reserved space around the span will be.  We have a very-prevalent space reservation agent (the
@@ -210,7 +210,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                     //  the edges of the screen.
 
                     Tuple<PopupStyles, Rect>[] positionChoices;
-                    if (!reservedRect.IsEmpty)
+					if (reservedRect != default(Rect))
                     {
                         if ((_style & PopupStyles.PositionClosest) == 0)
                         {

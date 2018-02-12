@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
                 dataContext = value;
                 if (dataContext != null)
                     dataContext.PropertyChanged += DataContext_PropertyChanged;
-                ShowTooltipInfo();
+                DataContext_PropertyChanged (this, new System.ComponentModel.PropertyChangedEventArgs (""));
             }
         }
 
