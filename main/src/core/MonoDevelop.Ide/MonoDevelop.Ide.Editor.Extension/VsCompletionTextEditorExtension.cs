@@ -92,18 +92,15 @@ namespace MonoDevelop.Ide.Editor.Extension
 			return isValidInContext;
 		}
 
-		private IEnumerable<SnapshotPoint> GetSnapshotPointsAtCaret()
+		private IEnumerable<SnapshotPoint> GetSnapshotPointsAtPosition(SnapshotPoint position)
 		{
-			// TODO: Cache the caret and content type information?
-			SnapshotPoint caretPosition = view.Caret.Position.BufferPosition;
-
 			List<SnapshotPoint> snapshotPoints = new List<SnapshotPoint> ();
-			snapshotPoints.Add (caretPosition);
+			snapshotPoints.Add (position);
 
-			for (int curSnapshotPointIndex = 0; curSnapshotPointIndex < snapshotPoints.Count; curSnapshotPointIndex++) {
-				SnapshotPoint curSnapshotPoint = snapshotPoints[curSnapshotPointIndex];
-				if (curSnapshotPoint.Snapshot is IProjectionSnapshot curProjectionSnapshot) {
-					snapshotPoints.AddRange (curProjectionSnapshot.MapToSourceSnapshots (curSnapshotPoint));
+			for (int currentSnapshotPointIndex = 0; currentSnapshotPointIndex < snapshotPoints.Count; currentSnapshotPointIndex++) {
+				SnapshotPoint currentSnapshotPoint = snapshotPoints[currentSnapshotPointIndex];
+				if (currentSnapshotPoint.Snapshot is IProjectionSnapshot currentProjectionSnapshot) {
+					snapshotPoints.AddRange (currentProjectionSnapshot.MapToSourceSnapshots (currentSnapshotPoint));
 				}
 			}
 
@@ -112,7 +109,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		private IEnumerable<IContentType> GetContentTypesAtCaret()
 		{
-			IEnumerable<SnapshotPoint> snapshotPoints = GetSnapshotPointsAtCaret ();
+			// TODO: Cache the caret and content type information?
+			SnapshotPoint caretPosition = view.Caret.Position.BufferPosition;
+
+			IEnumerable<SnapshotPoint> snapshotPoints = GetSnapshotPointsAtPosition (caretPosition);
 			IEnumerable<IContentType> contentTypes = snapshotPoints.Select (sp => sp.Snapshot.ContentType);
 
 			return contentTypes.Distinct();
