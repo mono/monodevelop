@@ -30,6 +30,7 @@ using MonoDevelop.Ide.BuildOutputView;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide
 {
@@ -58,6 +59,34 @@ namespace MonoDevelop.Ide
 			Assert.That (dataSource.GetChildrenCount (null), Is.EqualTo (1));
 			Assert.That (child, Is.TypeOf (typeof (BuildOutputNode)));
 			Assert.That ((child as BuildOutputNode).Message, Is.EqualTo ("Custom project built"));
+		}
+
+		[Test]
+		public void CustomProject_SearchDataSource ()
+		{
+			var bo = new BuildOutput ();
+			var monitor = bo.GetProgressMonitor ();
+
+			monitor.LogObject (new ProjectStartedProgressEvent ());
+			for (int i = 0; i < 100; i++) {
+				monitor.Log.WriteLine ($"Message {i + 1}");
+			}
+			monitor.Log.WriteLine ("Custom project built");
+			monitor.LogObject (new ProjectFinishedProgressEvent ());
+
+			var dataSource = bo.ToTreeDataSource (true);
+			int matches = 0;
+			var visited = new HashSet<BuildOutputNode> ();
+			for (var match = dataSource.FirstMatch ("Message "); match != null; match = dataSource.NextMatch ()) {
+				if (visited.Contains (match)) {
+					break;
+				}
+
+				visited.Add (match);
+				matches++;
+			}
+
+			Assert.That (matches, Is.EqualTo (100));
 		}
 	}
 }

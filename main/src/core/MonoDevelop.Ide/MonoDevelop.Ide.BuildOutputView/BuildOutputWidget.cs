@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		ScrollView scrolledWindow;
 		CheckBox showDiagnosticsButton;
 		Button saveButton;
+		SearchEntry searchEntry;
 
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
@@ -105,11 +106,31 @@ namespace MonoDevelop.Ide.BuildOutputView
 				}
 			};
 
+			searchEntry = new SearchEntry ();
+			searchEntry.Accessible.SetLabel (GettextCatalog.GetString ("Search"));
+			searchEntry.Accessible.Name = "BuildOutputWidget.Search";
+			searchEntry.Accessible.Description = GettextCatalog.GetString ("Search the build log");
+			searchEntry.WidthRequest = 200;
+			searchEntry.Visible = true;
+
+			searchEntry.Entry.Changed += (sender, e) => {
+				var dataSource = treeView.DataSource as BuildOutputDataSource;
+				if (dataSource != null) {
+					var firstMatch = dataSource.FirstMatch (searchEntry.Entry.Text);
+					if (firstMatch != null) {
+						MoveToMatch (firstMatch);
+					}
+
+					IsSearchInProgress = firstMatch != null;
+				}
+			};
+
 			var toolbar = new DocumentToolbar ();
 
 			toolbar.AddSpace ();
 			toolbar.Add (showDiagnosticsButton.ToGtkWidget ());
 			toolbar.Add (saveButton.ToGtkWidget ());
+			toolbar.Add (searchEntry);
 			PackStart (toolbar.Container, expand: false, fill: true);
 
 			treeView = new TreeView ();
@@ -147,6 +168,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
+		void MoveToMatch (BuildOutputNode match)
+		{
+			if (match != null) {
+				treeView.ExpandToRow (match);
+				treeView.ScrollToRow (match);
+				treeView.SelectRow (match);
+			}
+		}
+
 		void ProcessLogs (bool showDiagnostics)
 		{
 			cts?.Cancel ();
@@ -168,6 +198,35 @@ namespace MonoDevelop.Ide.BuildOutputView
 					}
 				});
 			}, cts.Token);
+		}
+
+		public bool IsSearchInProgress { get; private set; } = false;
+
+		public void Find ()
+		{
+			searchEntry.Entry.GrabFocus ();
+		}
+
+		public void FindPrevious ()
+		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource != null) {
+				var match = dataSource.PreviousMatch ();
+				if (match != null) {
+					MoveToMatch (match);
+				}
+			}
+		}
+
+		public void FindNext ()
+		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource != null) {
+				var match = dataSource.NextMatch ();
+				if (match != null) {
+					MoveToMatch (match);
+				}
+			}
 		}
 	}
 }

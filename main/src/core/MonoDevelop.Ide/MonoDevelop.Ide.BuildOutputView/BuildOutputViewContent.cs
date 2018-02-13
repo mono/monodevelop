@@ -26,7 +26,9 @@
 
 using System;
 using MonoDevelop.Components;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.BuildOutputView
@@ -90,6 +92,36 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			control.Dispose ();
 			base.Dispose ();
+		}
+
+		[CommandHandler (SearchCommands.Find)]
+		public void Find ()
+		{
+			control.Find ();
+		}
+
+		[CommandHandler (SearchCommands.FindNext)]
+		public void FindNext ()
+		{
+			control.FindNext ();
+		}
+
+		[CommandHandler (SearchCommands.FindPrevious)]
+		public void FindPrevious ()
+		{
+			control.FindPrevious ();
+		}
+
+		[CommandUpdateHandler (SearchCommands.FindNext)]
+		public void UpdateFindNextHandler (CommandInfo cinfo)
+		{
+			cinfo.Enabled = control.IsSearchInProgress;
+		}
+
+		[CommandUpdateHandler (SearchCommands.FindPrevious)]
+		public void UpdateFindPreviousHandler (CommandInfo cinfo)
+		{
+			cinfo.Enabled = control.IsSearchInProgress;
 		}
 	}
 }
