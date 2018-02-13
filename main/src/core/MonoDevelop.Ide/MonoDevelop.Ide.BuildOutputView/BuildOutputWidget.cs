@@ -36,6 +36,8 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -46,6 +48,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		CheckBox showDiagnosticsButton;
 		Button saveButton;
 		SearchEntry searchEntry;
+		Button buttonSearchBackward;
+		Button buttonSearchForward;
+		Gtk.Label resultInformLabel;
 
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
@@ -113,22 +118,33 @@ namespace MonoDevelop.Ide.BuildOutputView
 			searchEntry.WidthRequest = 200;
 			searchEntry.Visible = true;
 
-			searchEntry.Entry.Changed += (sender, e) => {
-				var dataSource = treeView.DataSource as BuildOutputDataSource;
-				if (dataSource != null) {
-					var firstMatch = dataSource.FirstMatch (searchEntry.Entry.Text);
-					if (firstMatch != null) {
-						MoveToMatch (firstMatch);
-					}
-				}
-			};
+			resultInformLabel = new Gtk.Label ();
+			searchEntry.AddLabelWidget (resultInformLabel);
+
+			searchEntry.Entry.Changed += FindFirst;
+
+			var searchBox = new Gtk.HBox ();
+			searchBox.Add (searchEntry);
+			buttonSearchBackward = new Button ();
+			buttonSearchForward = new Button ();
+			buttonSearchBackward.Clicked += FindPrevious;
+			buttonSearchForward.Clicked += FindNext;
+			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext));
+			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious));
+			buttonSearchBackward.Image = ImageService.GetIcon (Ide.Gui.Stock.FindPrevIcon, Gtk.IconSize.Menu);
+			buttonSearchForward.Image = ImageService.GetIcon (Ide.Gui.Stock.FindNextIcon, Gtk.IconSize.Menu);
+			searchBox.Add (buttonSearchBackward.ToGtkWidget());
+			searchBox.Add (buttonSearchForward.ToGtkWidget ());
+			searchBox.Show ();
 
 			var toolbar = new DocumentToolbar ();
 
 			toolbar.AddSpace ();
 			toolbar.Add (showDiagnosticsButton.ToGtkWidget ());
 			toolbar.Add (saveButton.ToGtkWidget ());
-			toolbar.Add (searchEntry);
+			toolbar.AddSpace ();
+			toolbar.Add (searchBox, false);
+
 			PackStart (toolbar.Container, expand: false, fill: true);
 
 			treeView = new TreeView ();
@@ -150,6 +166,78 @@ namespace MonoDevelop.Ide.BuildOutputView
 			scrolledWindow.Content = treeView;
 
 			PackStart (scrolledWindow, expand: true, fill: true);
+		}
+
+		void FindFirst (object sender, EventArgs args)
+		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource == null)
+				return;
+
+			Find (dataSource.FirstMatch (searchEntry.Entry.Text));
+		}
+
+		void FindNext (object sender, EventArgs args)
+		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource == null)
+				return;
+
+			Find (dataSource.NextMatch ());
+
+			if (dataSource.SearchWrapped) {
+				IdeApp.Workbench.StatusBar.ShowMessage (
+					Gtk.Stock.Find, GettextCatalog.GetString ("Reached top, continued from bottom"));
+			} else {
+				IdeApp.Workbench.StatusBar.ShowReady ();
+			}
+		}
+
+		void FindPrevious (object sender, EventArgs args)
+		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource == null)
+				return;
+
+			Find (dataSource.PreviousMatch ());
+
+			if (dataSource.SearchWrapped) {
+				IdeApp.Workbench.StatusBar.ShowMessage (
+					Gtk.Stock.Find, GettextCatalog.GetString ("Reached bottom, continued from top"));
+			} else {
+				IdeApp.Workbench.StatusBar.ShowReady ();
+			}
+		}
+
+		void Find (BuildOutputNode node)
+		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource == null)
+				return;
+
+			if (node != null) {
+				MoveToMatch (node);
+
+				resultInformLabel.Text = String.Format (GettextCatalog.GetString ("{0} of {1}"), dataSource.CurrentAbsoluteMatchIndex, dataSource.MatchesCount);
+				resultInformLabel.Xpad = 2;
+				resultInformLabel.ModifyFg (Gtk.StateType.Normal, searchEntry.Style.Foreground (Gtk.StateType.Insensitive));
+			} else if (!string.IsNullOrEmpty (searchEntry.Entry.Text)) {
+				resultInformLabel.Text = string.Empty;
+				IdeApp.Workbench.StatusBar.ShowReady ();
+			} else {
+				resultInformLabel.Text = GettextCatalog.GetString ("Not found");
+				resultInformLabel.ModifyFg (Gtk.StateType.Normal, Ide.Gui.Styles.Editor.SearchErrorForegroundColor.ToGdkColor ());
+			}
+			resultInformLabel.Show ();
+		}
+
+		static string GetShortcut (object commandId)
+		{
+			var key = IdeApp.CommandService.GetCommand (commandId).AccelKey;
+			if (string.IsNullOrEmpty (key))
+				return "";
+			var nextShortcut = KeyBindingManager.BindingToDisplayLabel (key, false);
+			return "(" + nextShortcut + ")";
 		}
 
 		CancellationTokenSource cts;
