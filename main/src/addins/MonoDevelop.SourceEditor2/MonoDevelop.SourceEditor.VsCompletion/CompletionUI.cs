@@ -273,9 +273,12 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 		{
 			SelectedItemIndex = GetRowByPosition ((int)e.Y);
 			buttonPressed = true;
-			if (e.Button == 1 && e.Type == Gdk.EventType.TwoButtonPress)
+			if (e.Button == 1 && e.Type == Gdk.EventType.TwoButtonPress) {
 				CompletionItemCommitted?.Invoke (this, new CompletionItemCommittedEventArgs (SelectedItem));
-			return base.OnButtonPressEvent (e);
+				return true;
+			} else {
+				return base.OnButtonPressEvent (e);
+			}
 		}
 
 		protected override bool OnButtonReleaseEvent (EventButton e)
