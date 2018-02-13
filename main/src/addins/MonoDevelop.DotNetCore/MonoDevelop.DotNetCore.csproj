@@ -377,6 +377,7 @@
     <InternalsVisibleTo Include="DotNetCore.Debugger" />
     <InternalsVisibleTo Include="MonoDevelop.UnitTesting" />
     <InternalsVisibleTo Include="MonoDevelop.DotNetCore.Tests" />
+    <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
