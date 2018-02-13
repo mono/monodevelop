@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				// These are the "Detailed summary" lines
 				// TODO: we should probably parse them and associate those stats
 				// with the correct build step, so that we get stats for those
-			} else {
+			} else if (!String.IsNullOrEmpty (e.Message)) {
 				AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message,
 				         stringPool.Add (e.Message), false, e.Timestamp);
 			}
