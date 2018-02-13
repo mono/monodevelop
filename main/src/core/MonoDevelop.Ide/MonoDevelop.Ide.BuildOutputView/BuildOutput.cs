@@ -193,12 +193,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 				if (disposing) {
 					GC.SuppressFinalize (this);
 				}
-			} 
+			}
 		}
 
 		public void Dispose ()
 		{
-			Dispose (true); 
+			Dispose (true);
 		}
 	}
 
@@ -256,6 +256,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		BuildOutput buildOutput;
 		bool includeDiagnostics;
 		List<BuildOutputNode> rootNodes;
+		public IReadOnlyList<BuildOutputNode> RootNodes => this.rootNodes;
 
 		public DataField<Xwt.Drawing.Image> ImageField = new DataField<Xwt.Drawing.Image> (0);
 		public DataField<string> LabelField = new DataField<string> (1);
