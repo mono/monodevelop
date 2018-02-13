@@ -158,6 +158,7 @@ namespace MonoDevelop.Ide.Tasks
 									
 		public string Description {
 			get => description;
+			set => description = value;
 		}
 
 		public string Message {
