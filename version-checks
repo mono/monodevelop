@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=757b78a9f0520e55ff213c28e1a838ff8cd3ded2
+DEP_NEEDED_VERSION[0]=4a113b6d16e243031926db070809eccb479a04d2
 DEP_BRANCH_AND_REMOTE[0]="azure-functions-bump origin/azure-functions-bump"
 
 # heap-shot
