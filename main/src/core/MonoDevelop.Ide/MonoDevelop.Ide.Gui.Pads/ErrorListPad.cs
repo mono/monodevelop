@@ -436,11 +436,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 				if (task != null) {
 					await OpenBuildOutputViewDocument ().ConfigureAwait (false);
 					if (task.Severity == TaskSeverity.Error) {
-						buildOutputViewContent.GoToError (task.GetErrorDescription (), task.GetFile (), task.GetProjectWithExtension (), task.GetPath ());
+						buildOutputViewContent.GoToError (task.GetErrorDescription (), task.GetProjectWithExtension ());
 					} else if (task.Severity == TaskSeverity.Warning) {
-						buildOutputViewContent.GoToWarning (task.GetErrorDescription (), task.GetFile (), task.GetProjectWithExtension (), task.GetPath ());
+						buildOutputViewContent.GoToWarning (task.GetErrorDescription (), task.GetProjectWithExtension ());
 					} else if (task.Severity == TaskSeverity.Information) {
-						buildOutputViewContent.GoToMessage (task.GetErrorDescription (), task.GetFile (), task.GetProjectWithExtension (), task.GetPath ());
+						buildOutputViewContent.GoToMessage (task.GetErrorDescription (), task.GetProjectWithExtension ());
 					}
 				}
 			}

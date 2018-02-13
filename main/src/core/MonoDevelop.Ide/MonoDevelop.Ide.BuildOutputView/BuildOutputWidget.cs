@@ -190,17 +190,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 			PackStart (scrolledWindow, expand: true, fill: true);
 		}
 
-		internal void GoToError (string description, string file, string project, string path)
+		internal void GoToError (string description, string project)
 		{
 			ExpandNode (project, BuildOutputNodeType.Error, description);
 		}
 
-		internal void GoToWarning (string description, string file, string project, string path)
+		internal void GoToWarning (string description, string project)
 		{
 			ExpandNode (project, BuildOutputNodeType.Warning, description);
 		}
 
-		internal void GoToMessage (string description, string file, string project, string path)
+		internal void GoToMessage (string description, string project)
 		{
 			ExpandNode (project, BuildOutputNodeType.Message, description);
 		}

@@ -102,19 +102,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 			base.Dispose ();
 		}
 
-		internal void GoToError (string description, string file, string project, string path)
+		internal void GoToError (string description, string project)
 		{
-			control.GoToError (description, file, project, path);
+			control.GoToError (description, project);
 		}
 
-		internal void GoToWarning (string description, string file, string project, string path)
+		internal void GoToWarning (string description, string project)
 		{
-			control.GoToWarning (description, file, project, path);
+			control.GoToWarning (description, project);
 		}
 
-		internal void GoToMessage (string description, string file, string project, string path)
+		internal void GoToMessage (string description, string project)
 		{
-			control.GoToMessage (description, file, project, path);
+			control.GoToMessage (description, project);
 		}
 
 		[CommandHandler (SearchCommands.Find)]
