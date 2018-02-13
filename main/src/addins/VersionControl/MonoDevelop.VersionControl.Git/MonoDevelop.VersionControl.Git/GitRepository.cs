@@ -927,41 +927,43 @@ namespace MonoDevelop.VersionControl.Git
 			int transferProgress = 0;
 			int checkoutProgress = 0;
 
-			monitor.BeginTask ("Cloning...", 2);
+			try {
+				monitor.BeginTask ("Cloning...", 2);
 
-			RetryUntilSuccess (monitor, credType => {
-				RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, new CloneOptions {
-					CredentialsProvider = (url, userFromUrl, types) => {
-						transferProgress = checkoutProgress = 0;
-						return GitCredentials.TryGet (url, userFromUrl, types, credType);
-					},
-					RepositoryOperationStarting = ctx => {
-						Runtime.RunInMainThread (() => {
-							monitor.Log.WriteLine ("Checking out repository at '{0}'", ctx.RepositoryPath);
-						});
-						return true;
-					},
-					OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
-					OnCheckoutProgress = (path, completedSteps, totalSteps) => {
-						OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress);
-						Runtime.RunInMainThread (() => {
-							monitor.Log.WriteLine ("Checking out file '{0}'", path);
-						});
-					},
+				RetryUntilSuccess (monitor, credType => {
+					RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, new CloneOptions {
+						CredentialsProvider = (url, userFromUrl, types) => {
+							transferProgress = checkoutProgress = 0;
+							return GitCredentials.TryGet (url, userFromUrl, types, credType);
+						},
+						RepositoryOperationStarting = ctx => {
+							Runtime.RunInMainThread (() => {
+								monitor.Log.WriteLine ("Checking out repository at '{0}'", ctx.RepositoryPath);
+							});
+							return true;
+						},
+						OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
+						OnCheckoutProgress = (path, completedSteps, totalSteps) => {
+							OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress);
+							Runtime.RunInMainThread (() => {
+								monitor.Log.WriteLine ("Checking out file '{0}'", path);
+							});
+						},
+					});
 				});
-			});
 
-			if (monitor.CancellationToken.IsCancellationRequested || RootPath.IsNull)
-				return;
+				if (monitor.CancellationToken.IsCancellationRequested || RootPath.IsNull)
+					return;
 
-			monitor.Step (1);
-			
-			RootPath = RootPath.ParentDirectory;
-			RootRepository = new LibGit2Sharp.Repository (RootPath);
+				monitor.Step (1);
 
-			RecursivelyCloneSubmodules (RootPath, monitor);
+				RootPath = RootPath.ParentDirectory;
+				RootRepository = new LibGit2Sharp.Repository (RootPath);
 
-			monitor.EndTask ();
+				RecursivelyCloneSubmodules (RootPath, monitor);
+			} finally {
+				monitor.EndTask ();
+			}
 		}
 
 		static void RecursivelyCloneSubmodules (string path, ProgressMonitor monitor)
