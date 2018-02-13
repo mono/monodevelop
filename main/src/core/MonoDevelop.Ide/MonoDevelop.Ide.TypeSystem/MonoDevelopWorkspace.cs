@@ -1430,6 +1430,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			return false;
 		}
 
+		static void RegisterSolutionCrawler (Workspace workspace)
+		{
+			var solutionCrawlerRegistrationService = workspace.Services.GetService<ISolutionCrawlerRegistrationService> ();
+			solutionCrawlerRegistrationService.Register (workspace);
+
+			var backgroundCompiler = new BackgroundCompiler (workspace);
+			var backgroundParser = new BackgroundParser (workspace);
+			backgroundParser.Start ();
+		}
+
+		static void UnregisterSolutionCrawler (Workspace workspace)
+		{
+			var solutionCrawlerRegistrationService = workspace.Services.GetService<ISolutionCrawlerRegistrationService> ();
+			solutionCrawlerRegistrationService.Unregister (workspace);
+		}
 	}
 
 	//	static class MonoDevelopWorkspaceFeatures
