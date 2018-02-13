@@ -200,24 +200,12 @@ namespace MonoDevelop.CodeActions
 
 			var analyzers = new [] { diagnosticAnalyzer }.ToImmutableArray ();
 
-			var codeFixService = CompositionManager.GetExportedValue<ICodeFixService> () as CodeFixService;
-			var fixAllDiagnosticProvider = codeFixService.CreateFixAllState (
-				provider,
-				editor.DocumentContext.AnalysisDocument,
-				FixAllProviderInfo.Create (null),
-				null,
-				null,
-				async (doc, diagnostics, token) => await GetDiagnosticsForDocument (analyzers, doc, diagnostics, token).ConfigureAwait (false),
-				(Project arg1, bool arg2, ImmutableHashSet<string> arg3, CancellationToken arg4) => {
-					return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic[] { });
-				}).DiagnosticProvider;
+			var dict = ImmutableDictionary<Document, ImmutableArray<Diagnostic>>.Empty;
+			var doc = editor.DocumentContext.AnalysisDocument;
+			var diagnostics = await GetDiagnosticsForDocument (analyzers, doc, diagnosticIds, CancellationToken.None);
 
-			//var fixAllDiagnosticProvider = new FixAllState.FixAllDiagnosticProvider (
-			//	diagnosticIds,
-			//	async (doc, diagnostics, token) => await GetDiagnosticsForDocument (analyzers, doc, diagnostics, token).ConfigureAwait (false),
-			//	(Project arg1, bool arg2, ImmutableHashSet<string> arg3, CancellationToken arg4) => {
-			//		return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic [] { });
-			//	});
+			dict = dict.Add (doc, diagnostics);
+			var fixAllDiagnosticProvider = new FixAllState.FixMultipleDiagnosticProvider (dict);
 
 			var ctx = new FixAllContext (
 				editor.DocumentContext.AnalysisDocument,
