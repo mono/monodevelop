@@ -31,7 +31,7 @@
       </References>
 
       <Packages requireLicenseAcceptance="false">
-        <Package Id="FSharp.Core" Version="4.3.0" local="true" />
+        <Package Id="FSharp.Core" Version="4.3.3" local="true" />
         <Package Id="System.ValueTuple" Version="4.3.0" local="true" />
       </Packages>
 
