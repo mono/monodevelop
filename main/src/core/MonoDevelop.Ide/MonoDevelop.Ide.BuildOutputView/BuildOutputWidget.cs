@@ -251,7 +251,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		BuildOutputDataSource dataSource;
 		void ProcessLogs (bool showDiagnostics)
 		{
 			cts?.Cancel ();
