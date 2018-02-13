@@ -1430,7 +1430,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return false;
 		}
 
-		static void RegisterSolutionCrawler (Workspace workspace)
+		internal static void RegisterSolutionCrawler (Workspace workspace)
 		{
 			var solutionCrawlerRegistrationService = workspace.Services.GetService<ISolutionCrawlerRegistrationService> ();
 			solutionCrawlerRegistrationService.Register (workspace);
@@ -1440,7 +1440,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			backgroundParser.Start ();
 		}
 
-		static void UnregisterSolutionCrawler (Workspace workspace)
+		internal static void UnregisterSolutionCrawler (Workspace workspace)
 		{
 			var solutionCrawlerRegistrationService = workspace.Services.GetService<ISolutionCrawlerRegistrationService> ();
 			solutionCrawlerRegistrationService.Unregister (workspace);
