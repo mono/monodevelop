@@ -146,6 +146,7 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/TypeService/MefHostServices">
+		<Assembly file="RefactoringEssentials.dll"/>
 		<Assembly file="MonoDevelop.Refactoring.dll"/>
 	</Extension>
 
