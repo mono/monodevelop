@@ -44,6 +44,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text.Editor;
 using MonoDevelop.Ide;
+using System.Threading;
 
 namespace MonoDevelop.SourceEditor.VsCompletion
 {
@@ -71,13 +72,6 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 		bool buttonPressed;
 		CompletionPresentation presentationData;
 		List<CompletionItemWithHighlight> filteredItems = new List<CompletionItemWithHighlight> (0);
-		public event EventHandler SelectionChanged;
-		protected virtual void OnSelectionChanged (EventArgs e)
-		{
-			var handler = SelectionChanged;
-			if (handler != null)
-				handler (this, e);
-		}
 
 		void SetFont ()
 		{
@@ -126,7 +120,6 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 			layout.Wrap = Pango.WrapMode.Char;
 
 			SetFont ();
-			this.Show ();
 		}
 
 		protected override void OnDestroyed ()
@@ -195,8 +188,8 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 				if (value != selection) {
 					selection = value;
 					ScrollToSelectedItem ();
-					OnSelectionChanged (EventArgs.Empty);
 					QueueDraw ();
+					UpdateDescription (SelectedItem).Ignore ();
 				}
 			}
 		}
@@ -512,7 +505,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 			return ((int)vadj.Value + ypos) / rowHeight;
 		}
 
-		public Gdk.Rectangle GetRowArea (int row)
+		Gdk.Rectangle GetRowArea (int row)
 		{
 			int outpos = 0;
 			int yPos = 0;
@@ -585,7 +578,6 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 
 		public void Open (CompletionPresentation presentation)
 		{
-			Update (presentation);
 			box.ShowAll ();
 			var manager = textView.GetSpaceReservationManager ("completion");
 			agent = manager.CreatePopupAgent (presentation.ApplicableSpan, Microsoft.VisualStudio.Text.Adornments.PopupStyles.None, Xwt.Toolkit.CurrentEngine.WrapWidget (box, Xwt.NativeWidgetSizing.DefaultPreferredSize));
@@ -597,6 +589,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 			Ide.Gui.Styles.Changed += HandleThemeChanged;
 			IdeApp.Preferences.ColorScheme.Changed += HandleThemeChanged;
 
+			Update (presentation);
 			manager.AddAgent (agent);
 			textView.QueueSpaceReservationStackRefresh ();
 		}
@@ -605,10 +598,49 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 		{
 			presentationData = presentation;
 			filteredItems = presentationData.Items.ToList ();
-			selection = presentationData.SelectedItemIndex;
 			CalcVisibleRows ();
 			SetAdjustments ();
+			SelectedItemIndex = presentationData.SelectedItemIndex;
 			QueueDraw ();
+		}
+
+		CancellationTokenSource descriptionCts = new CancellationTokenSource ();
+		XwtThemedPopup descriptionWindow;
+		private async Task UpdateDescription (CompletionItem completionItem)
+		{
+			if (descriptionWindow != null) {
+				descriptionWindow.Destroy ();
+				descriptionWindow = null;
+			}
+			descriptionCts.Cancel ();
+			descriptionCts = new CancellationTokenSource ();
+			var token = descriptionCts.Token;
+			var description = await completionItem.Source.GetDescriptionAsync (completionItem);
+			if (token.IsCancellationRequested)
+				return;
+			if (description is string str) {
+				descriptionWindow = new XwtThemedPopup ();
+				descriptionWindow.Content = new Xwt.Label (str);
+				descriptionWindow.ShowArrow = true;
+			} else {
+				//TODO: Support other formats
+			}
+			ShowDescription ();
+		}
+
+		void ShowDescription ()
+		{
+			if (descriptionWindow == null)
+				return;
+			var rect = GetRowArea (SelectedItemIndex);
+			int y = rect.Y + Theme.Padding - (int)vadj.Value;
+			descriptionWindow.ShowPopup (this, new Gdk.Rectangle (0, Math.Min (Allocation.Height, Math.Max (0, y)), Allocation.Width, rect.Height), PopupPosition.Left);
+			descriptionWindow.Show ();
+		}
+
+		void HideDescription ()
+		{
+			descriptionWindow.Hide ();
 		}
 
 		public void SetSelection (int selectedIndex)
@@ -618,11 +650,19 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 
 		public new void Hide ()
 		{
+			if (descriptionWindow != null) {
+				descriptionWindow.Destroy ();
+				descriptionWindow = null;
+			}
 			agent.Hide ();
 		}
 
 		public override void Dispose ()
 		{
+			if (descriptionWindow != null) {
+				descriptionWindow.Destroy ();
+				descriptionWindow = null;
+			}
 			var manager = textView.GetSpaceReservationManager ("completion");
 			manager.RemoveAgent (agent);
 			base.Dispose ();
