@@ -115,7 +115,7 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 	@cd tarballs && tar -cjf monodevelop-$(PACKAGE_VERSION).tar.bz2 monodevelop-$(PACKAGE_VERSION)
 	@cd tarballs && rm -rf monodevelop-$(PACKAGE_VERSION)
 
-aot-all: aot aot-gac aot-copy
+aot-all: aot aot-gac aot-msbuild-with-copy
 
 aot-msbuild-with-copy: aot-msbuild
 	@for i in $(MSBUILD_DLLS); do cp -r "$$i" "$$i.dylib" "$$i.dylib.dSYM" $(BIN_DIR)/bin; done
