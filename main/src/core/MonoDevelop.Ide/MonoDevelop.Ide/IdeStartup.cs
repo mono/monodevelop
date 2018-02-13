@@ -240,7 +240,7 @@ namespace MonoDevelop.Ide
 				// load previous combine
 				RecentFile openedProject = null;
 				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
-					openedProject = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
+					openedProject = DesktopService.RecentFiles.MostRecentlyUsedProject;
 					if (openedProject != null) {
 						var metadata = GetOpenWorkspaceOnStartupMetadata ();
 						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName, true, true, metadata).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList, metadata), TaskScheduler.FromCurrentSynchronizationContext ());
@@ -662,7 +662,7 @@ namespace MonoDevelop.Ide
 			var metadata = new Dictionary<string, string> ();
 
 			metadata ["CorrectedStartupTime"] = startupTimer.ElapsedMilliseconds.ToString ();
-			metadata ["StartupTypeId"] = "0";
+			metadata ["StartupType"] = "0";
 
 			var assetType = StartupAssetType.FromStartupInfo (startupInfo);
 

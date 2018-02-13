@@ -3098,8 +3098,8 @@ namespace MonoDevelop.Projects
 				foreach (var p in globalGroup.GetProperties ()) {
 					if (p.Modified) {
 						foreach (ProjectConfiguration config in Configurations)
-                            if (config.ProjectInstance != null)
-    							config.ProjectInstance.SetPropertyDirty (p.Name);
+							if (config.ProjectInstance != null)
+								config.ProjectInstance.SetPropertyValueStale (p.Name);
 					}
 				}
 			}

@@ -228,7 +228,7 @@ type FSharpInteractivePad(editor:TextEditor) as this =
             ses.StartReceiving()
             editor.GrabFocus()
             // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
-            getCorrectDirectory() |> Option.iter (fun path -> ses.SendInput("#silentCd @\"" + path + "\";;"))
+            getCorrectDirectory() |> Option.iter (fun dir -> ses.SetSourceDirectory dir)
             Some(ses)
         with _exn -> None
 
@@ -299,6 +299,10 @@ type FSharpInteractivePad(editor:TextEditor) as this =
         session 
         |> Option.iter(fun ses -> ses.SendInput (command + ";;"))
 
+    member x.SetSourceDirectory directory =
+        session
+        |> Option.iter(fun ses -> ses.SetSourceDirectory directory)
+
     member x.RequestCompletions lineStr column =
         session 
         |> Option.iter(fun ses ->
@@ -367,7 +371,7 @@ type FSharpInteractivePad(editor:TextEditor) as this =
         if x.IsSelectionNonEmpty then
             let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
             getCorrectDirectory()
-            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\"") )
+            |> Option.iter x.SetSourceDirectory
 
             x.SendCommand sel
         else
@@ -378,7 +382,7 @@ type FSharpInteractivePad(editor:TextEditor) as this =
         if isNull IdeApp.Workbench.ActiveDocument then ()
         else
             getCorrectDirectory()
-            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\"") )
+            |> Option.iter x.SetSourceDirectory
 
             let line = IdeApp.Workbench.ActiveDocument.Editor.CaretLine
             let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
@@ -390,7 +394,7 @@ type FSharpInteractivePad(editor:TextEditor) as this =
     member x.SendFile() =
         let text = IdeApp.Workbench.ActiveDocument.Editor.Text
         getCorrectDirectory()
-            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\"") )
+        |> Option.iter x.SetSourceDirectory
 
         x.SendCommand text
 
@@ -406,7 +410,7 @@ type FSharpInteractivePad(editor:TextEditor) as this =
         let orderedreferences = project.GetOrderedReferences()
 
         getCorrectDirectory()
-            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\"") )
+        |> Option.iter x.SetSourceDirectory
 
         orderedreferences
         |> List.iter (fun a -> x.SendCommand (sprintf  @"#r ""%s""" a.Path))

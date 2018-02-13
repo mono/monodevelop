@@ -352,14 +352,14 @@ namespace MonoDevelop.Projects
 		[LocalizedDisplayName ("Verify All")]
 		[LocalizedDescription ("Verifies mscorlib and assemblies in the global assembly cache " +
 		              "for valid IL, and all user code for IL verifiability.")]
-		[MonoArg ("--verifyAll")]
+		[MonoArg ("--verify-all")]
 		[ItemProperty (DefaultValue=false)]
 		public bool MonoVerifyAll { get; set; }
 		
 		[LocalizedCategory ("Tracing")]
 		[LocalizedDisplayName ("Trace Expression")]
 		[LocalizedDescription ("Comma separated list of expressions to trace. " +
-		              "'all' all assemlies, " +
+		              "'all' all assemblies, " +
 		              "'none' no assemblies, " +
 		              "'program' entry point assembly, " +
 		              "'assembly' specifies an assembly, " +

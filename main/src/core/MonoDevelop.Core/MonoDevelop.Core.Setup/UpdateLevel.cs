@@ -1,5 +1,5 @@
 // 
-// UpdateLevel.cs
+// UpdateChannel.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>

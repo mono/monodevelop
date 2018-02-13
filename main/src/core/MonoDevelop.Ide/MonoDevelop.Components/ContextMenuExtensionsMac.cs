@@ -44,7 +44,7 @@ namespace MonoDevelop.Components
 			if (menu == null)
 				throw new ArgumentNullException ("menu");
 
-			var nsMenu = FromMenu (menu, closeHandler);
+			var nsMenu = FromMenu (menu, closeHandler, null);
 			ShowContextMenu (parent, evt, nsMenu);
 		}
 
@@ -55,7 +55,7 @@ namespace MonoDevelop.Components
 
 		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, ContextMenu menu, Action closeHandler, bool selectFirstItem = false)
 		{
-			var nsMenu = FromMenu (menu, closeHandler);
+			var nsMenu = FromMenu (menu, closeHandler, null);
 			ShowContextMenu (parent, x, y, nsMenu, selectFirstItem);
 		}
 
@@ -128,7 +128,7 @@ namespace MonoDevelop.Components
 				return;
 			}
 
-			var menuItem = new NSMenuItem (item.Label.Replace ("_",""), (s, e) => item.Click ());
+			var menuItem = new NSContextMenuItem (item.Label.Replace ("_",""), item);
 
 			menuItem.Hidden = !item.Visible;
 			menuItem.Enabled = item.Sensitive;
@@ -143,17 +143,35 @@ namespace MonoDevelop.Components
 			} 
 
 			if (item.SubMenu != null && item.SubMenu.Items.Count > 0) {
-				var subMenu = FromMenu (item.SubMenu, null);
-				subMenu.Parent = menu;
+				var subMenu = FromMenu (item.SubMenu, null, menu);
 				menuItem.Submenu = subMenu;
 			}
 
 			menu.AddItem (menuItem);
 		}
 
-		static NSLocationAwareMenu FromMenu (ContextMenu menu, Action closeHandler)
+		class NSContextMenuItem : NSMenuItem
 		{
-			var result = new NSLocationAwareMenu (menu, closeHandler) { AutoEnablesItems = false };
+			readonly WeakReference<ContextMenuItem> contextMenu;
+
+			public NSContextMenuItem (string label, ContextMenuItem item) : base (label)
+			{
+				contextMenu = new WeakReference<ContextMenuItem> (item);
+				this.Activated += OnActivated;
+			}
+
+			static void OnActivated (object sender, EventArgs args)
+			{
+				var obj = (NSContextMenuItem)sender;
+
+				if (obj.contextMenu.TryGetTarget (out var contextMenuItem))
+					contextMenuItem.Click ();
+			}
+		}
+
+		static NSLocationAwareMenu FromMenu (ContextMenu menu, Action closeHandler, NSLocationAwareMenu parent)
+		{
+			var result = new NSLocationAwareMenu (menu, closeHandler, parent) { AutoEnablesItems = false };
 
 			foreach (var menuItem in menu.Items) {
 				AddMenuItem (result, menuItem);
@@ -172,11 +190,12 @@ namespace MonoDevelop.Components
 		class NSLocationAwareMenu : NSMenu
 		{
 			public CGPoint Location { get; private set; }
-			public NSLocationAwareMenu Parent { get; set; }
+			readonly WeakReference<NSLocationAwareMenu> Parent;
 
-			public NSLocationAwareMenu (ContextMenu menu, Action closeHandler)
+			public NSLocationAwareMenu (ContextMenu menu, Action closeHandler, NSLocationAwareMenu parent)
 			{
 				WeakDelegate = new ContextMenuDelegate (menu) { CloseHandler = closeHandler };
+				Parent = parent != null ? new WeakReference<NSLocationAwareMenu> (parent) : null;
 			}
 
 			public override bool PopUpMenu (NSMenuItem item, CGPoint location, NSView view)
@@ -229,8 +248,8 @@ namespace MonoDevelop.Components
 					nfloat x = 0, y = 0;
 					var locationAwareMenu = menu as NSLocationAwareMenu;
 					if (locationAwareMenu != null) {
-						while (locationAwareMenu.Parent != null)
-							locationAwareMenu = locationAwareMenu.Parent;
+						while (locationAwareMenu.Parent != null && locationAwareMenu.Parent.TryGetTarget (out var other))
+							locationAwareMenu = other;
 						x = locationAwareMenu.Location.X;
 						y = locationAwareMenu.Location.Y;
 						menu = locationAwareMenu;

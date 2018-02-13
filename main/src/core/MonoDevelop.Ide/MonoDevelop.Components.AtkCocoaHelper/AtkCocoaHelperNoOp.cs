@@ -245,6 +245,10 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
+		public void RemoveAccessibleChild (IAccessibilityElementProxy child)
+		{
+		}
+
 		public void SetRole (string role, string description = null)
 		{
 		}

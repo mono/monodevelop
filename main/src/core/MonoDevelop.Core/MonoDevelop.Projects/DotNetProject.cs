@@ -1523,7 +1523,7 @@ namespace MonoDevelop.Projects
 			string root = null;
 			string dirNamespc = null;
 			string defaultNmspc = !string.IsNullOrEmpty (defaultNamespace)
-				? SanitisePotentialNamespace (defaultNamespace)
+				? SanitisePotentialNamespace (defaultNamespace) ?? "Application"
 				: SanitisePotentialNamespace (project.Name) ?? "Application";
 
 			if (string.IsNullOrEmpty (fileName)) {

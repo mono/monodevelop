@@ -52,6 +52,8 @@ namespace MonoDevelop.Debugger
 		ScrolledWindow sw;
 		CommandEntrySet menuSet;
 		TreeViewState treeState;
+
+		ActionCommand gotoCmd;
 		
 		enum Columns
 		{
@@ -76,9 +78,13 @@ namespace MonoDevelop.Debugger
 			Id = "MonoDevelop.Debugger.BreakpointPad";
 			// Toolbar and menu definitions
 			
-			ActionCommand gotoCmd = new ActionCommand (LocalCommands.GoToFile, GettextCatalog.GetString ("Go to File"));
+			gotoCmd = new ActionCommand (LocalCommands.GoToFile, GettextCatalog.GetString ("Go to Breakpoint"));
 			ActionCommand propertiesCmd = new ActionCommand (LocalCommands.Properties, GettextCatalog.GetString ("Edit Breakpoint…"), Stock.Properties);
-			
+
+			// The toolbar registers the Properties command with the CommandManager for us,
+			// but gotoCmd isn't used in the toolbar so we need to register it ourselves for the menu to work
+			IdeApp.CommandService.RegisterCommand (gotoCmd);
+
 			menuSet = new CommandEntrySet ();
 			menuSet.Add (propertiesCmd);
 			menuSet.Add (gotoCmd);
@@ -189,6 +195,8 @@ namespace MonoDevelop.Debugger
 			DebuggingService.PausedEvent -= OnDebuggerStatusCheck;
 			DebuggingService.ResumedEvent -= OnDebuggerStatusCheck;
 			DebuggingService.StoppedEvent -= OnDebuggerStatusCheck;
+
+			IdeApp.CommandService.UnregisterCommand (gotoCmd);
 			base.Dispose ();
 		}
 

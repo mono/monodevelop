@@ -40,7 +40,7 @@ namespace Mono.TextEditor.Tests
 		public void TestDocumentCreation ()
 		{
 			var document = new Mono.TextEditor.TextDocument ();
-			
+
 			string text = 
 			"1234567890\n" +
 			"12345678\n" +
@@ -194,6 +194,22 @@ namespace Mono.TextEditor.Tests
 			} finally {
 				File.Delete (path);
 			}
+		}
+
+		/// <summary>
+		/// VSTS 524616 can't refresh the website successfully after delete the content in '.cshtml' file
+		/// </summary>
+		[Test]
+		public void TestVSTS524616 ()
+		{
+			var document = new Mono.TextEditor.TextDocument ();
+			document.Text = "test";
+			string txt;
+			document.TextChanging += delegate {
+				txt = document.Text;
+			};
+			document.InsertText (0, "test");
+			Assert.AreEqual ("testtest", document.Text);
 		}
 	}
 }

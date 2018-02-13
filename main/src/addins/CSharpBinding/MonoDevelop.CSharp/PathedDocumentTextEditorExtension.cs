@@ -746,6 +746,10 @@ namespace MonoDevelop.CSharp
 				try {
 					root = await unit.GetRootAsync(cancellationToken).ConfigureAwait(false);
 					if (root.FullSpan.Length <= caretOffset) {
+						var prevPath = CurrentPath;
+						CurrentPath = new PathEntry [] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
+						isPathSet = false;
+						OnPathChanged (new DocumentPathChangedEventArgs (prevPath));
 						return;
 					}
 					node = root.FindNode(TextSpan.FromBounds(caretOffset, caretOffset));
