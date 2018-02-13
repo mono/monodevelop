@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
 			buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
 
-			var toolbar = new DocumentToolbar ();
+			toolbar = new DocumentToolbar ();
 
 			box = new Gtk.VBox ();
 			toolbar.Add (box, true);
@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			toolbar.Add (showDiagnosticsButton.ToGtkWidget ());
 			toolbar.Add (saveButton.ToGtkWidget ());
 			toolbar.AddSpace ();
-			toolbar.Add (searchEntry, true);
+			toolbar.Add (searchEntry, false);
 			toolbar.Add (buttonSearchBackward.ToGtkWidget ());
 			toolbar.Add (buttonSearchForward.ToGtkWidget());
 
