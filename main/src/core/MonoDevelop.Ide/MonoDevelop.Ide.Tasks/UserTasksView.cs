@@ -299,7 +299,7 @@ namespace MonoDevelop.Ide.Tasks
 			if (sortModel.GetIterFromString (out sortedIter, args.Path)) {
 				iter = sortModel.ConvertIterToChildIter (sortedIter);
 				TaskListEntry task = (TaskListEntry) sortModel.GetValue (sortedIter, (int)Columns.UserTask);
-				task.Description = args.NewText;
+				task.Message = args.NewText;
 				store.SetValue (iter, (int)Columns.Description, args.NewText);
 				TaskService.SaveUserTasks (task.WorkspaceObject);
 			}

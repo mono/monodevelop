@@ -436,11 +436,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 				if (task != null) {
 					await OpenBuildOutputViewDocument ().ConfigureAwait (false);
 					if (task.Severity == TaskSeverity.Error) {
-						buildOutputViewContent.GoToError (task.GetErrorDescription (), task.GetProjectWithExtension ());
+						buildOutputViewContent.GoToError (task.Message, task.GetProjectWithExtension ());
 					} else if (task.Severity == TaskSeverity.Warning) {
-						buildOutputViewContent.GoToWarning (task.GetErrorDescription (), task.GetProjectWithExtension ());
+						buildOutputViewContent.GoToWarning (task.Message, task.GetProjectWithExtension ());
 					} else if (task.Severity == TaskSeverity.Information) {
-						buildOutputViewContent.GoToMessage (task.GetErrorDescription (), task.GetProjectWithExtension ());
+						buildOutputViewContent.GoToMessage (task.Message, task.GetProjectWithExtension ());
 					}
 				}
 			}
@@ -1016,15 +1016,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public static string GetProjectWithExtension (this TaskListEntry task)
 		{
 			return (task != null && task.WorkspaceObject is SolutionItem) ? Path.GetFileName (((SolutionItem)task.WorkspaceObject).FileName) : string.Empty;
-		}
-
-		public static string GetErrorDescription (this TaskListEntry task)
-		{
-			var toRemove = $" ({task.Code})";
-			if (task.Description.EndsWith (toRemove, StringComparison.Ordinal)) {
-				return task.Description.Substring (0, task.Description.Length - toRemove.Length);
-			}
-			return task.Description;
 		}
 
 		public static string GetFile (this TaskListEntry task)

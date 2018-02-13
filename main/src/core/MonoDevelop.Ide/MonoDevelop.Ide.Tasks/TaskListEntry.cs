@@ -70,6 +70,8 @@ namespace MonoDevelop.Ide.Tasks
 		[ItemProperty (DefaultValue = "")]
 		string category = string.Empty;
 
+		string message = String.Empty;
+
 		object owner;
 		WorkspaceObject parentObject;
 		internal int SavedLine;
@@ -122,17 +124,19 @@ namespace MonoDevelop.Ide.Tasks
 			parentObject = error.SourceTarget as WorkspaceObject;
 			file = error.FileName;
 			this.owner = owner;
-			description = error.ErrorText;
+
 			column = error.Column;
 			line = error.Line;
-			if (!string.IsNullOrEmpty (error.ErrorNumber))
-				description += " (" + error.ErrorNumber + ")";
+			code = error.ErrorNumber;
+
+			SetMessage (error.ErrorText, code);
+
 			if (error.IsWarning)
 				severity = error.ErrorNumber == "COMMENT" ? TaskSeverity.Information : TaskSeverity.Warning;
 			else
 				severity = TaskSeverity.Error;
 			priority = TaskPriority.Normal;
-			code = error.ErrorNumber;
+
 			category = error.Subcategory;
 			helpKeyword = error.HelpKeyword;
 		}
@@ -153,12 +157,12 @@ namespace MonoDevelop.Ide.Tasks
 		}
 									
 		public string Description {
-			get {
-				return description;
-			}
-			set {
-				description = value;
-			}
+			get => description;
+		}
+
+		public string Message {
+			get => message;
+			set => SetMessage (value, code);
 		}
 		
 		public string Code {
@@ -237,6 +241,14 @@ namespace MonoDevelop.Ide.Tasks
 
 		public string DocumentationLink {
 			get; set;
+		}
+
+		void SetMessage (string value, string taskCode)
+		{
+			message = value;
+			description = message;
+			if (!string.IsNullOrEmpty (taskCode))
+				description += " (" + taskCode + ")";
 		}
 
 		public bool HasDocumentationLink ()
