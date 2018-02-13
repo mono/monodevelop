@@ -111,5 +111,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			control.FindPrevious ();
 		}
+
+		[CommandUpdateHandler (SearchCommands.FindNext)]
+		public void UpdateFindNextHandler (CommandInfo cinfo)
+		{
+			cinfo.Enabled = control.IsSearchInProgress;
+		}
+
+		[CommandUpdateHandler (SearchCommands.FindPrevious)]
+		public void UpdateFindPreviousHandler (CommandInfo cinfo)
+		{
+			cinfo.Enabled = control.IsSearchInProgress;
+		}
 	}
 }

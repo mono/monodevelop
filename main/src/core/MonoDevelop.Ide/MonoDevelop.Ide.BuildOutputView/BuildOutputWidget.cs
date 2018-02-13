@@ -120,6 +120,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 					if (firstMatch != null) {
 						MoveToMatch (firstMatch);
 					}
+
+					IsSearchInProgress = firstMatch != null;
 				}
 			};
 
@@ -197,6 +199,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 				});
 			}, cts.Token);
 		}
+
+		public bool IsSearchInProgress { get; private set; } = false;
 
 		public void Find ()
 		{
