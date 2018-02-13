@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		PathBar pathBar;
 		Button buttonSearchBackward;
 		Button buttonSearchForward;
-		Gtk.Label resultInformLabel;
+		Label resultInformLabel;
 
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
@@ -137,24 +137,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 			searchEntry.WidthRequest = 200;
 			searchEntry.Visible = true;
 
-			resultInformLabel = new Gtk.Label ();
-			searchEntry.AddLabelWidget (resultInformLabel);
+			resultInformLabel = new Label ();
+			searchEntry.AddLabelWidget ((Gtk.Label) resultInformLabel.ToGtkWidget());
 
 			searchEntry.Entry.Changed += FindFirst;
 
-			var searchBox = new Gtk.HBox ();
-			searchBox.Add (searchEntry);
 			buttonSearchBackward = new Button ();
 			buttonSearchForward = new Button ();
 			buttonSearchBackward.Clicked += FindPrevious;
 			buttonSearchForward.Clicked += FindNext;
 			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext));
 			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious));
-			buttonSearchBackward.Image = ImageService.GetIcon (Ide.Gui.Stock.FindPrevIcon, Gtk.IconSize.Menu);
-			buttonSearchForward.Image = ImageService.GetIcon (Ide.Gui.Stock.FindNextIcon, Gtk.IconSize.Menu);
-			searchBox.Add (buttonSearchBackward.ToGtkWidget());
-			searchBox.Add (buttonSearchForward.ToGtkWidget ());
-			searchBox.Show ();
+			buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
+			buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
 
 			var toolbar = new DocumentToolbar ();
 
@@ -165,7 +160,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			toolbar.Add (showDiagnosticsButton.ToGtkWidget ());
 			toolbar.Add (saveButton.ToGtkWidget ());
 			toolbar.AddSpace ();
-			toolbar.Add (searchBox, false);
+			toolbar.Add (searchEntry, true);
+			toolbar.Add (buttonSearchBackward.ToGtkWidget ());
+			toolbar.Add (buttonSearchForward.ToGtkWidget());
 
 			PackStart (toolbar.Container, expand: false, fill: true);
 
@@ -294,14 +291,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				MoveToMatch (node);
 
 				resultInformLabel.Text = String.Format (GettextCatalog.GetString ("{0} of {1}"), dataSource.CurrentAbsoluteMatchIndex, dataSource.MatchesCount);
-				resultInformLabel.Xpad = 2;
-				resultInformLabel.ModifyFg (Gtk.StateType.Normal, searchEntry.Style.Foreground (Gtk.StateType.Insensitive));
-			} else if (!string.IsNullOrEmpty (searchEntry.Entry.Text)) {
+				resultInformLabel.TextColor = searchEntry.Style.Foreground (Gtk.StateType.Insensitive).ToXwtColor();
+			} else if (string.IsNullOrEmpty (searchEntry.Entry.Text)) {
 				resultInformLabel.Text = string.Empty;
 				IdeApp.Workbench.StatusBar.ShowReady ();
 			} else {
 				resultInformLabel.Text = GettextCatalog.GetString ("Not found");
-				resultInformLabel.ModifyFg (Gtk.StateType.Normal, Ide.Gui.Styles.Editor.SearchErrorForegroundColor.ToGdkColor ());
+				resultInformLabel.TextColor = Ide.Gui.Styles.Editor.SearchErrorForegroundColor;
 			}
 			resultInformLabel.Show ();
 		}
