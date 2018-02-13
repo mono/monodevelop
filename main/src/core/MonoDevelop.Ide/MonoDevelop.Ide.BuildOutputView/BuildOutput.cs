@@ -357,8 +357,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 					// Timing information
 					if (node.HasChildren) {
-						markup.AppendFormat (" <i>{0}</i>",
-											 GLib.Markup.EscapeText (node.EndTime.Subtract (node.StartTime).ToString (@"hh\:mm\:ss\.fff")));
+						markup.AppendFormat (" <i>{0}</i>", GLib.Markup.EscapeText (node.GetDurationAsString ()));
 					}
 
 					return markup.ToString ();
