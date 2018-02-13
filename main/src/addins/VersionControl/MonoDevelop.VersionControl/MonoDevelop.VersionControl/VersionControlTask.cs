@@ -56,7 +56,7 @@ namespace MonoDevelop.VersionControl
 				LoggingService.LogError ("Version Control command failed: ", e);
 			} catch (Exception e) {
 				string msg = GettextCatalog.GetString ("Version control operation failed: ");
-				tracker.ReportError (msg, e);
+				tracker.ReportError (msg + e.Message, e);
 				LoggingService.LogError ("Version Control command failed: ", e);
 			} finally {
 				Wakeup ();
