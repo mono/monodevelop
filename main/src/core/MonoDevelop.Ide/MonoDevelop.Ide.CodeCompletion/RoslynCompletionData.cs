@@ -273,7 +273,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{
-			var description = await completionService.GetDescriptionAsync (doc, CompletionItem);
+			var description = await Task.Run (() => completionService.GetDescriptionAsync (doc, CompletionItem)).ConfigureAwait (false);
 			var markup = new StringBuilder ();
 			var theme = DefaultSourceEditorOptions.Instance.GetEditorTheme ();
 			var taggedParts = description.TaggedParts;
