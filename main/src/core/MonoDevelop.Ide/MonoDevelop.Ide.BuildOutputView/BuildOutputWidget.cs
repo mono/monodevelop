@@ -286,6 +286,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var dataSource = treeView.DataSource as BuildOutputDataSource;
 			if (dataSource == null)
 				return;
+			
+			IsSearchInProgress = node != null;
 
 			if (node != null) {
 				MoveToMatch (node);
