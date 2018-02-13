@@ -32,6 +32,7 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+using Microsoft.VisualStudio.Core.Imaging;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.Extensions
@@ -57,6 +58,9 @@ namespace MonoDevelop.Ide.Extensions
 		[NodeAttribute ("animation", "An animation specification.")]
 		string animation;
 
+		[NodeAttribute ("imageid", "Visual Studio ImageId, in format {guid};#.")]
+		string imageid;
+
 		public string StockId {
 			get { return stockid; }
 		}
@@ -79,6 +83,15 @@ namespace MonoDevelop.Ide.Extensions
 		
 		public string Animation {
 			get { return animation; }
+		}
+
+		public ImageId ImageId {
+			get {
+				if (imageid == null)
+					return default (ImageId);
+				var semicolonIndex = imageid.IndexOf (';');
+				return new ImageId (Guid.Parse (imageid.Remove (semicolonIndex)), int.Parse (imageid.Substring (semicolonIndex + 1)));
+			}
 		}
 	}
 }

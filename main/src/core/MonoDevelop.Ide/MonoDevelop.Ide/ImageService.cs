@@ -40,6 +40,7 @@ using System.Net;
 using Xwt.Backends;
 using Gtk;
 using Gdk;
+using Microsoft.VisualStudio.Core.Imaging;
 
 namespace MonoDevelop.Ide
 {
@@ -64,6 +65,7 @@ namespace MonoDevelop.Ide
 
 		// Dictionary of extension nodes by stock icon id. It holds nodes that have not yet been loaded
 		static Dictionary<string, List<StockIconCodon>> iconStock = new Dictionary<string, List<StockIconCodon>> ();
+		static Dictionary<ImageId, string> imageIdToStockId = new Dictionary<ImageId, string> ();
 
 		static Gtk.Requisition[] iconSizes = new Gtk.Requisition[7];
 
@@ -75,8 +77,11 @@ namespace MonoDevelop.Ide
 				StockIconCodon iconCodon = (StockIconCodon)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					if (!iconStock.ContainsKey (iconCodon.StockId))
-						iconStock[iconCodon.StockId] = new List<StockIconCodon> ();
+					if (!iconStock.ContainsKey (iconCodon.StockId)) {
+						iconStock [iconCodon.StockId] = new List<StockIconCodon> ();
+						if (iconCodon.ImageId.Guid != Guid.Empty)
+							imageIdToStockId [iconCodon.ImageId] = iconCodon.StockId;
+					}
 					iconStock[iconCodon.StockId].Add (iconCodon);
 					break;
 				}
@@ -169,6 +174,24 @@ namespace MonoDevelop.Ide
 			return GetIcon (name).WithSize (size);
 		}
 
+		public static Xwt.Drawing.Image GetImage (ImageId imageId, Gtk.IconSize size = IconSize.Menu)
+		{
+			if (!imageIdToStockId.TryGetValue (imageId, out var name))
+				name = "gtk-missing-image";
+			return GetIcon (name, size);
+		}
+
+		public static void AddImage (ImageId imageId, Xwt.Drawing.Image icon)
+		{
+			if (Guid.Empty == imageId.Guid)
+				throw new ArgumentException (nameof (imageId));
+			if (icon == null)
+				throw new ArgumentNullException (nameof (icon));
+			var iconId = $"{imageId.Guid};{imageId.Id}";
+			imageIdToStockId.Add (imageId, iconId);
+			AddIcon (iconId, icon);
+		}
+
 		public static void AddIcon (string iconId, Xwt.Drawing.Image icon)
 		{
 			if (iconId == null)
@@ -181,6 +204,11 @@ namespace MonoDevelop.Ide
 		public static bool HasIcon (string iconId)
 		{
 			return icons.ContainsKey (iconId);
+		}
+
+		public static bool HasImage (ImageId imageId)
+		{
+			return imageIdToStockId.TryGetValue (imageId, out var iconId) && HasIcon (iconId);
 		}
 
 

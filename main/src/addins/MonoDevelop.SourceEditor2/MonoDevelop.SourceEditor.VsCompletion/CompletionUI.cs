@@ -383,7 +383,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 					}
 
 
-					Xwt.Drawing.Image icon = null; //TODO: David DataProvider.GetIcon (index);
+					Xwt.Drawing.Image icon = ImageService.GetImage (item.CompletionItem.Icon);
 					int iconHeight, iconWidth;
 					if (icon != null) {
 						if (drawIconAsSelected)

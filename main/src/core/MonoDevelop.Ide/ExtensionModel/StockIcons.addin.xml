@@ -86,7 +86,7 @@
 	<StockIcon stockid="md-catchpoint" resource="catchpoint-16.png" size="Menu" />
 	<StockIcon stockid="md-catchpoint-new" resource="catchpoint-new-16.png" size="Menu" />
 	<StockIcon stockid="md-catchpoint-disabled" resource="catchpoint-disabled-16.png" size="Menu" />
-	<StockIcon stockid="md-class" resource="element-class-16.png" size="Menu" />
+	<StockIcon stockid="md-class" resource="element-class-16.png" size="Menu" imageid="{ae27a6b0-e345-4288-96df-5eaf394ee369};473" />
 	<StockIcon stockid="md-classes-pad" resource="pad-classes-16.png" size="Menu" />
 	<StockIcon stockid="md-class-file" resource="file-class-16.png" size="Menu" />
 	<StockIcon stockid="md-class-file" resource="file-class-32.png" size="Dnd" />
@@ -253,7 +253,7 @@
 	<StockIcon stockid="md-struct-file" resource="file-struct-16.png" size="Menu" />
 	<StockIcon stockid="md-struct-file" resource="file-struct-32.png" size="Dnd" />
 	<StockIcon stockid="md-task-list" resource="pad-task-list-16.png" size="Menu" />
-	<StockIcon stockid="md-template" resource="element-template-16.png" size="Menu" />
+	<StockIcon stockid="md-template" resource="element-template-16.png" size="Menu" imageid="{ae27a6b0-e345-4288-96df-5eaf394ee369};2852" />
 	<StockIcon stockid="md-template-surroundwith" resource="element-template-surroundwith-16.png" size="Menu" />
 	<StockIcon stockid="md-text-file-icon" resource="file-text-16.png" size="Menu" />
 	<StockIcon stockid="md-text-file-icon" resource="file-text-32.png" size="Dnd" />
