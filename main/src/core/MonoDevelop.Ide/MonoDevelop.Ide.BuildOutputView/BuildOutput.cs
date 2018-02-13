@@ -381,6 +381,24 @@ namespace MonoDevelop.Ide.BuildOutputView
 		string currentSearchPattern;
 		int currentMatchIndex = -1;
 
+		/// <summary>
+		/// This is the relative index position from 1 to MatchesCount
+		/// </summary>
+		/// <value>The current position.</value>
+		public int CurrentAbsoluteMatchIndex => currentMatchIndex + 1;
+
+		/// <summary>
+		/// Gets the matches count. 
+		/// </summary>
+		/// <value>The matches count.</value>
+		public int MatchesCount => currentSearchMatches.Count;
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:MonoDevelop.Ide.BuildOutputView.BuildOutputDataSource"/> search is wrapped.
+		/// </summary>
+		/// <value><c>true</c> if search wrapped; otherwise, <c>false</c>.</value>
+		public bool SearchWrapped { get; private set; }
+
 		static void SearchInNodeAndChildren (BuildOutputNode node, List<BuildOutputNode> matches, string pattern)
 		{
 			if ((node.Message?.IndexOf (pattern, StringComparison.OrdinalIgnoreCase) ?? -1) >= 0) {
@@ -424,8 +442,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			if (currentMatchIndex > 0) {
 				currentMatchIndex--;
+				SearchWrapped = false;
 			} else {
 				currentMatchIndex = currentSearchMatches.Count - 1;
+				SearchWrapped = true;
 			}
 
 			return currentSearchMatches [currentMatchIndex];
@@ -440,8 +460,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			if (currentMatchIndex < currentSearchMatches.Count - 1) {
 				currentMatchIndex++;
+				SearchWrapped = false;
 			} else {
 				currentMatchIndex = 0;
+				SearchWrapped = true;
 			}
 
 			return currentSearchMatches [currentMatchIndex];
