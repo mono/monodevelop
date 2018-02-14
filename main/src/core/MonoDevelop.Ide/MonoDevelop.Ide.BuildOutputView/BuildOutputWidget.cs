@@ -145,8 +145,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			buttonSearchBackward = new Button ();
 			buttonSearchForward = new Button ();
-			buttonSearchBackward.Clicked += (sender, args) => FindPrevious ();
-			buttonSearchForward.Clicked += (sender, args) => FindNext ();
+			buttonSearchBackward.Clicked += FindPrevious;
+			buttonSearchForward.Clicked += FindNext;
 			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext));
 			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious));
 			buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		void SearchEntryKeyReleased (object o, Gtk.KeyReleaseEventArgs args)
 		{
 			if (args.Event.Key == Gdk.Key.Return)
-				FindNext ();
+				FindNext (this, EventArgs.Empty);
 		}
 
 		void IndexChanged (int newIndex)
@@ -256,7 +256,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			Find (dataSource.FirstMatch (searchEntry.Entry.Text));
 		}
 
-		public void FindNext ()
+		public void FindNext (object sender, EventArgs args)
 		{
 			var dataSource = treeView.DataSource as BuildOutputDataSource;
 			if (dataSource == null)
@@ -272,7 +272,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public void FindPrevious ()
+		public void FindPrevious (object sender, EventArgs e)
 		{
 			var dataSource = treeView.DataSource as BuildOutputDataSource;
 			if (dataSource == null)
@@ -299,7 +299,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (node != null) {
 				MoveToMatch (node);
 
-				resultInformLabel.Text = String.Format (GettextCatalog.GetString ("{0} of {1}"), dataSource.CurrentAbsoluteMatchIndex, dataSource.MatchesCount);
+				resultInformLabel.Text = GettextCatalog.GetString ("{0} of {1}", dataSource.CurrentAbsoluteMatchIndex, dataSource.MatchesCount);
 				resultInformLabel.TextColor = searchEntry.Style.Foreground (Gtk.StateType.Insensitive).ToXwtColor();
 			} else if (string.IsNullOrEmpty (searchEntry.Entry.Text)) {
 				resultInformLabel.Text = string.Empty;
@@ -391,6 +391,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (path [index].Tag != null)
 				window.SelectItem (path [index].Tag);
 			return window;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			buttonSearchBackward.Clicked -= FindPrevious;
+			buttonSearchForward.Clicked -= FindNext;
+			searchEntry.Entry.Changed -= FindFirst;
+			searchEntry.Entry.KeyReleaseEvent -= SearchEntryKeyReleased;
+
+			base.Dispose(disposing);
 		}
 
 		class DropDownWindowDataProvider : DropDownBoxListWindow.IListDataProvider
