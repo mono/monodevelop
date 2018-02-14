@@ -96,7 +96,7 @@ type FSharpIndentationTracker(editor:TextEditor) =
          editor.SetTextPasteHandler (FSharpTextPasteHandler(editor))
 
     // Lines ending in  these strings will be indented
-    let indenters = ["=";" do"; "("; "{";"[";"[|";"->";" try"; " then"; " else"; "<-"]
+    let indenters = ["=";" do"; "("; "{";"[";"[|";"->";" try"; " then"; " else"; "<-"; " lazy"; " begin"; " finally"]
 
     let (|AddIndent|_|) (x:string) =
         if indenters |> List.exists(x.EndsWith) then Some ()
