@@ -117,13 +117,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var duration = node.EndTime.Subtract (node.StartTime);
 			if (duration.TotalHours >= 1) {
 				return GettextCatalog.GetString ("{0}:{1:d2} hours", duration.Hours, duration.Minutes);
-			} else if (duration.TotalMinutes >= 1) {
-				return GettextCatalog.GetString ("{0}:{1:d2} minutes", duration.Minutes, duration.Seconds);
 			} else if (duration.TotalSeconds >= 1) {
-				return GettextCatalog.GetString ("{0}.{1:d3} seconds", duration.Seconds, duration.Milliseconds);
+				return GettextCatalog.GetString ("{0}:{1:d2} min", duration.Minutes, duration.Seconds);
 			}
 
-			return GettextCatalog.GetString ("{0} ms", duration.Milliseconds);
+			return String.Empty;
 		}
 	}
 }

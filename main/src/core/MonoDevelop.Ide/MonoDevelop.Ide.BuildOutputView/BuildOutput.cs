@@ -357,7 +357,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 					// Timing information
 					if (node.HasChildren) {
-						markup.AppendFormat (" <span color=\"#d3d3d3\"><i>{0}</i></span>", GLib.Markup.EscapeText (node.GetDurationAsString ()));
+						markup.AppendFormat ("    <span color=\"#999999\">{0}</span>", GLib.Markup.EscapeText (node.GetDurationAsString ()));
 					}
 
 					return markup.ToString ();
