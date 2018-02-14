@@ -1434,10 +1434,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var solutionCrawlerRegistrationService = workspace.Services.GetService<ISolutionCrawlerRegistrationService> ();
 			solutionCrawlerRegistrationService.Register (workspace);
-
-			var backgroundCompiler = new BackgroundCompiler (workspace);
-			var backgroundParser = new BackgroundParser (workspace);
-			backgroundParser.Start ();
 		}
 
 		internal static void UnregisterSolutionCrawler (Workspace workspace)
