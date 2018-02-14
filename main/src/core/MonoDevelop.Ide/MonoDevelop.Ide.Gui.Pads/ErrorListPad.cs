@@ -434,7 +434,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				if (task != null) {
-					await OpenBuildOutputViewDocument ().ConfigureAwait (false);
+					await OpenBuildOutputViewDocument ();
 					if (task.Severity == TaskSeverity.Error) {
 						buildOutputViewContent.GoToError (task.Message, task.GetProjectWithExtension ());
 					} else if (task.Severity == TaskSeverity.Warning) {

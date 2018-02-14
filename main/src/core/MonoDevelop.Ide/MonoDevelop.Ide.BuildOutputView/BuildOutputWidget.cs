@@ -209,7 +209,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			var projectNode = treeBuildOutputNodes.SearchFirstNode (BuildOutputNodeType.Project, project);
 			var node = projectNode.SearchFirstNode (nodeType, message);
-			Xwt.Application.InvokeAsync (() => MoveToMatch (node));
+			MoveToMatch (node);
 		}
 
 		void MoveToMatch (BuildOutputNode match)
