@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=51f3ce32480c8811149093fc04f77f46d526564a
+DEP_NEEDED_VERSION[0]=b9af2c7e9fbd4657bea6955902a0f6d4d1abab5d
 DEP_BRANCH_AND_REMOTE[0]="support-xamarin-forms-default-msbuild-items origin/support-xamarin-forms-default-msbuild-items"
 
 # heap-shot
