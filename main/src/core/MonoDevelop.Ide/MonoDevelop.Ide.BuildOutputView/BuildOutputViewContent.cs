@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		[CommandHandler (SearchCommands.Find)]
 		public void Find ()
 		{
-			control.Find ();
+			control.FocusOnSearchEntry ();
 		}
 
 		[CommandHandler (SearchCommands.FindNext)]

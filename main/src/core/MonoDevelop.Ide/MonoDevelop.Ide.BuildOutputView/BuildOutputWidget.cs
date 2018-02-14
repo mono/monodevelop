@@ -141,11 +141,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			searchEntry.AddLabelWidget ((Gtk.Label) resultInformLabel.ToGtkWidget());
 
 			searchEntry.Entry.Changed += FindFirst;
+			searchEntry.Entry.KeyReleaseEvent += SearchEntryKeyReleased;
 
 			buttonSearchBackward = new Button ();
 			buttonSearchForward = new Button ();
-			buttonSearchBackward.Clicked += FindPrevious;
-			buttonSearchForward.Clicked += FindNext;
+			buttonSearchBackward.Clicked += (sender, args) => FindPrevious ();
+			buttonSearchForward.Clicked += (sender, args) => FindNext ();
 			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext));
 			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious));
 			buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
@@ -185,6 +186,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			scrolledWindow.Content = treeView;
 
 			PackStart (scrolledWindow, expand: true, fill: true);
+		}
+
+		void SearchEntryKeyReleased (object o, Gtk.KeyReleaseEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Return)
+				FindNext ();
 		}
 
 		void IndexChanged (int newIndex)
@@ -249,7 +256,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			Find (dataSource.FirstMatch (searchEntry.Entry.Text));
 		}
 
-		void FindNext (object sender, EventArgs args)
+		public void FindNext ()
 		{
 			var dataSource = treeView.DataSource as BuildOutputDataSource;
 			if (dataSource == null)
@@ -265,7 +272,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		void FindPrevious (object sender, EventArgs args)
+		public void FindPrevious ()
 		{
 			var dataSource = treeView.DataSource as BuildOutputDataSource;
 			if (dataSource == null)
@@ -360,31 +367,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public bool IsSearchInProgress { get; private set; } = false;
 
-		public void Find ()
+		public void FocusOnSearchEntry ()
 		{
 			searchEntry.Entry.GrabFocus ();
-		}
-
-		public void FindPrevious ()
-		{
-			var dataSource = treeView.DataSource as BuildOutputDataSource;
-			if (dataSource != null) {
-				var match = dataSource.PreviousMatch ();
-				if (match != null) {
-					MoveToMatch (match);
-				}
-			}
-		}
-
-		public void FindNext ()
-		{
-			var dataSource = treeView.DataSource as BuildOutputDataSource;
-			if (dataSource != null) {
-				var match = dataSource.NextMatch ();
-				if (match != null) {
-					MoveToMatch (match);
-				}
-			}
 		}
 
 		int currentIndex = -1;
