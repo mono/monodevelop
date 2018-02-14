@@ -54,6 +54,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return null;
 		}
 
+		public static void Search (this BuildOutputNode node, string pattern, List<BuildOutputNode> matches)
+		{
+			if ((node.Message ?? "").Equals (pattern, StringComparison.OrdinalIgnoreCase)) {
+				matches.Add (node);
+			}
+
+			for (int i = 0; i < node.Children.Count; ++i) {
+				var child = node.Children [i];
+				Search (child, pattern, matches);
+			}
+		}
+
 		public static BuildOutputNode SearchFirstNode (this BuildOutputNode buildOutputNode, BuildOutputNodeType type, string search)
 		{
 			if (type == buildOutputNode.NodeType) {
@@ -68,14 +80,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			//iterating into children
 			if (buildOutputNode.Children != null) {
 				BuildOutputNode tmp;
-				foreach (var node in buildOutputNode.Children) {
-					tmp = SearchFirstNode (node, type, search);
+				for (int i = 0; i < buildOutputNode.Children.Count; ++i) {
+					tmp = SearchFirstNode (buildOutputNode.Children[i], type, search);
 					if (tmp != null) {
 						return tmp;
 					}
 				}
 			}
-
 			return null;
 		}
 	}
@@ -475,7 +486,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			// Perform search
 			foreach (var root in rootNodes) {
-				SearchInNodeAndChildren (root, currentSearchMatches, currentSearchPattern);
+				root.Search (currentSearchPattern, currentSearchMatches);
 			}
 
 			if (currentSearchMatches.Count > 0) {
