@@ -49,16 +49,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			control.FileSaved += FileNameChanged;
 		}
 
-		public BuildOutputViewContent (BuildOutput buildOutput)
+		public BuildOutputViewContent (BuildOutputWidget widget)
 		{
-			ContentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("hh:mm:ss")}.binlog";
-			control = new BuildOutputWidget (buildOutput, ContentName);
+			ContentName = widget.ViewContentName;
+			control = widget;
 			control.FileSaved += FileNameChanged;
-		}
-
-		public Task ProcessLogs (bool showDiagnostics)
-		{
-			return control.ProcessLogs (showDiagnostics);
 		}
 
 		void FileNameChanged (object sender, string newName)

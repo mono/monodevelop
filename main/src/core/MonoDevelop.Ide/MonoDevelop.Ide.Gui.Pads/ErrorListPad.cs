@@ -957,11 +957,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		async Task OpenBuildOutputViewDocument () 
 		{
 			if (buildOutputViewContent == null) {
-				buildOutputViewContent = new BuildOutputViewContent (buildOutput);
+
+				var contentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("hh:mm:ss")}.binlog";
+				var widget = new BuildOutputWidget (buildOutput, contentName);
+				buildOutputViewContent = new BuildOutputViewContent (widget);
 				buildOutputDoc = IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
 				buildOutputDoc.Closed += BuildOutputDocClosed;
-
-				await buildOutputViewContent.ProcessLogs (false);
+				await widget.ProcessLogsAsync (false);
 			} else if (buildOutputDoc != null) {
 				buildOutputDoc.Select ();
 			}
