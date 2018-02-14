@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			searchEntry.AddLabelWidget ((Gtk.Label) resultInformLabel.ToGtkWidget());
 
 			searchEntry.Entry.Changed += FindFirst;
-			searchEntry.Entry.KeyReleaseEvent += SearchEntryKeyReleased;
+			searchEntry.Entry.Activated += FindNext;
 
 			buttonSearchBackward = new Button ();
 			buttonSearchForward = new Button ();
@@ -186,12 +186,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			scrolledWindow.Content = treeView;
 
 			PackStart (scrolledWindow, expand: true, fill: true);
-		}
-
-		void SearchEntryKeyReleased (object o, Gtk.KeyReleaseEventArgs args)
-		{
-			if (args.Event.Key == Gdk.Key.Return)
-				FindNext (this, EventArgs.Empty);
 		}
 
 		void IndexChanged (int newIndex)
@@ -398,7 +392,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			buttonSearchBackward.Clicked -= FindPrevious;
 			buttonSearchForward.Clicked -= FindNext;
 			searchEntry.Entry.Changed -= FindFirst;
-			searchEntry.Entry.KeyReleaseEvent -= SearchEntryKeyReleased;
+			searchEntry.Entry.Activated -= FindNext;
 
 			base.Dispose(disposing);
 		}
