@@ -137,8 +137,8 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			
 			if (showDetails)
 				return;
-			
-			this.ShowResultDialog ();
+
+			this.ShowResultDialog (hideWhenDone ? MessageService.RootWindow : dialog);
 		}
 	}
 }
