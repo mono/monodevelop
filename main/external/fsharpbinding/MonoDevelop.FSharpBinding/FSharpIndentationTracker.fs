@@ -1,7 +1,6 @@
 ﻿namespace MonoDevelop.FSharp
 
 open System
-open System.Collections.Generic
 open System.Threading.Tasks
 open MonoDevelop.Core
 open MonoDevelop.Ide.Editor
@@ -87,7 +86,7 @@ module indentationTracker =
                     let previousLine = editor.GetLine(lineNumber - 1)
                     editor.RemoveText(previousLine.Offset, text.Length)
 
-    let textChanged (editor:TextEditor) (changes:IReadOnlyList<Text.TextChange>) =
+    let textChanged editor changes =
         changes |> Seq.iter (processTextChange editor)
 
 type FSharpIndentationTracker(editor:TextEditor) =
