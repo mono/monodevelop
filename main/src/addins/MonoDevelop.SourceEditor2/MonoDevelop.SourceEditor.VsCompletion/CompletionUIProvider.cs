@@ -31,14 +31,14 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace MonoDevelop.SourceEditor.VsCompletion
 {
-	[Export (typeof (ICompletionUIProvider))]
+	[Export (typeof (ICompletionPresenterProvider))]
 	[ContentType ("any")]
 	[Name (nameof (CompletionUIProvider))]
-	public class CompletionUIProvider : ICompletionUIProvider
+	public class CompletionUIProvider : ICompletionPresenterProvider
 	{
 		public int ResultsPerPage => CompletionUI.rows;
 
-		public ICompletionUI GetUI (ITextView textView)
+		public ICompletionPresenter GetOrCreate (ITextView textView)
 		{
 			return new CompletionUI ((IMdTextView)textView);
 		}

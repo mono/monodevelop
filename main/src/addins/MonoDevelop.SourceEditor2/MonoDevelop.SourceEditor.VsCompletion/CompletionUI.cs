@@ -48,7 +48,7 @@ using System.Threading;
 
 namespace MonoDevelop.SourceEditor.VsCompletion
 {
-	class CompletionUI : Gtk.DrawingArea, ICompletionUI
+	class CompletionUI : Gtk.DrawingArea, ICompletionPresenter
 	{
 		const int minSize = 400;
 		const int maxListWidth = 800;
@@ -70,7 +70,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 		ISpaceReservationAgent agent;
 
 		bool buttonPressed;
-		CompletionPresentation presentationData;
+		CompletionPresentationViewModel presentationData;
 		List<CompletionItemWithHighlight> filteredItems = new List<CompletionItemWithHighlight> (0);
 
 		void SetFont ()
@@ -166,7 +166,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 
 		public void ResetState ()
 		{
-			presentationData = default (CompletionPresentation);
+			presentationData = default (CompletionPresentationViewModel);
 			filteredItems.Clear ();
 			selection = 0;
 			listWidth = minSize;
@@ -267,7 +267,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 			SelectedItemIndex = GetRowByPosition ((int)e.Y);
 			buttonPressed = true;
 			if (e.Button == 1 && e.Type == Gdk.EventType.TwoButtonPress) {
-				CompletionItemCommitted?.Invoke (this, new CompletionItemCommittedEventArgs (SelectedItem));
+				CommitRequested?.Invoke (this, new CompletionItemEventArgs (SelectedItem));
 				return true;
 			} else {
 				return base.OnButtonPressEvent (e);
@@ -376,7 +376,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 					}
 
 
-					Xwt.Drawing.Image icon = ImageService.GetImage (item.CompletionItem.Icon);
+					Xwt.Drawing.Image icon = ImageService.GetImage (new Microsoft.VisualStudio.Core.Imaging.ImageId (item.CompletionItem.Image.Guid, item.CompletionItem.Image.Id));
 					int iconHeight, iconWidth;
 					if (icon != null) {
 						if (drawIconAsSelected)
@@ -573,10 +573,11 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 
 
 		public event EventHandler<CompletionFilterChangedEventArgs> FiltersChanged;
-		public event EventHandler<CompletionItemCommittedEventArgs> CompletionItemCommitted;
+		public event EventHandler<CompletionItemSelectedEventArgs> CompletionItemSelected;
+		public event EventHandler<CompletionItemEventArgs> CommitRequested;
 		public event EventHandler<CompletionClosedEventArgs> CompletionClosed;
 
-		public void Open (CompletionPresentation presentation)
+		public void Open (CompletionPresentationViewModel presentation)
 		{
 			box.ShowAll ();
 			var manager = textView.GetSpaceReservationManager ("completion");
@@ -594,7 +595,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 			textView.QueueSpaceReservationStackRefresh ();
 		}
 
-		public void Update (CompletionPresentation presentation)
+		public void Update (CompletionPresentationViewModel presentation)
 		{
 			presentationData = presentation;
 			filteredItems = presentationData.Items.ToList ();
@@ -602,6 +603,10 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 			SetAdjustments ();
 			SelectedItemIndex = presentationData.SelectedItemIndex;
 			QueueDraw ();
+		}
+
+		public void Close()
+		{
 		}
 
 		CancellationTokenSource descriptionCts = new CancellationTokenSource ();
@@ -615,7 +620,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 			descriptionCts.Cancel ();
 			descriptionCts = new CancellationTokenSource ();
 			var token = descriptionCts.Token;
-			var description = await completionItem.Source.GetDescriptionAsync (completionItem);
+			var description = await completionItem.Source.GetDescriptionAsync (completionItem, CancellationToken.None);
 			if (token.IsCancellationRequested)
 				return;
 			if (description is string str) {

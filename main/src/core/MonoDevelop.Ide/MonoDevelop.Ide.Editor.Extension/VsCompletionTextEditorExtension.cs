@@ -29,6 +29,7 @@ using System.Collections.Immutable;
 using System.Composition;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -205,7 +206,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (!host.IsCompletionActive (view))
 				return true;
 
-			host.SelectPageUp (view);
+//			host.SelectPageUp (view);
 			return false;
 		}
 
@@ -214,51 +215,58 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (!host.IsCompletionActive (view))
 				return true;
 
-			host.SelectPageDown (view);
+//			host.SelectPageDown (view);
 			return false;
 		}
 
 		private bool ExecuteDown ()
 		{
-			if (!host.IsCompletionActive (view))
+//			if (!host.IsCompletionActive (view))
 				return true;
 
-			host.SelectDown (view);
-			return false;
+//			host.SelectDown (view);
+//			return false;
 		}
 
 		private bool ExecuteUp ()
 		{
-			if (!host.IsCompletionActive (view))
+			//if (!host.IsCompletionActive (view))
 				return true;
 
-			host.SelectUp (view);
-			return false;
+			//host.SelectUp (view);
+			//return false;
 		}
 
 		private bool ReactToEdit (ITrackingSpan trackedEdit)
 		{
 			var currentSnapshot = view.Caret.Position.BufferPosition.Snapshot;
 			var edit = trackedEdit.GetText (currentSnapshot); // TODO: just get the difference between current snapshot and previous snapshot
-			var needToCommit = host.ShouldCommitCompletion (view, edit, view.Caret.Position.BufferPosition);
+
+			if (edit.Length != 1)
+				return false;
+
+			var ch = edit[0];
+
+			var session = host.GetSession (view);
+			var needToCommit = session.ShouldCommit (view, ch, view.Caret.Position.BufferPosition);
 			if (needToCommit) {
-				host.Commit (view, edit);
+				session.Commit (CancellationToken.None, ch);
 				return false;
 			} else {
 				if (view.Caret.Position.VirtualBufferPosition.IsInVirtualSpace) {
 					// TODO: Convert any virtual whitespace to real whitespace by doing an empty edit at the caret position.
 				}
 
-				var trigger = new CompletionTrigger (CompletionTriggerReason.Insertion, edit);
+				var trigger = new CompletionTrigger (CompletionTriggerReason.Insertion, ch);
 				var location = view.Caret.Position.BufferPosition;
 				if (host.IsCompletionActive (view)) {
-					host.OpenOrUpdate (view, trackedEdit, trigger, location);
+					session.OpenOrUpdate (view, trigger, location);
 					return false;
 				} else {
-					var triggered = host.ShouldTriggerCompletion (view, edit, location);
+					var triggered = host.ShouldTriggerCompletion (view, ch, location);
 					if (triggered) {
 						host.TriggerCompletion (view, location);
-						host.OpenOrUpdate (view, trackedEdit, trigger, location);
+						session.OpenOrUpdate (view, trigger, location);
 						return false;
 					} else {
 						return true;
@@ -269,12 +277,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		private bool OpenCompletionFromCommand ()
 		{
-			var trigger = new CompletionTrigger (CompletionTriggerReason.Command);
+			var trigger = new CompletionTrigger (CompletionTriggerReason.Invoke);
 			var location = view.Caret.Position.BufferPosition;
-			var trackingAnchor = view.TextSnapshot.CreateTrackingSpan (new Span (view.Caret.Position.BufferPosition.Position, 0), SpanTrackingMode.EdgeInclusive);
 
 			host.TriggerCompletion (view, location);
-			host.OpenOrUpdate (view, trackingAnchor, trigger, location);
+			host.GetSession (view).OpenOrUpdate (view, trigger, location);
 			return false;
 		}
 		private bool OpenCompletionFromDeletion ()
@@ -286,10 +293,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 			var trigger = new CompletionTrigger (CompletionTriggerReason.Deletion);
 			var location = view.Caret.Position.BufferPosition;
-			var trackingAnchor = view.TextSnapshot.CreateTrackingSpan (new Span (view.Caret.Position.BufferPosition.Position, 0), SpanTrackingMode.EdgeInclusive);
 
 			host.TriggerCompletion (view, location);
-			host.OpenOrUpdate (view, trackingAnchor, trigger, location);
+			host.GetSession (view).OpenOrUpdate (view, trigger, location);
 			return false;
 		}
 
@@ -298,7 +304,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (!host.IsCompletionActive (view))
 				return true;
 
-			host.Commit (view);
+			host.GetSession (view).Commit (CancellationToken.None);
 			return false;
 		}
 
@@ -307,7 +313,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (!host.IsCompletionActive (view))
 				return true;
 
-			host.Dismiss (view);
+			host.GetSession (view).Dismiss ();
 			return false;
 		}
 	}
