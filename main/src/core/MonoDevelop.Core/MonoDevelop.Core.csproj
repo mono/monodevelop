@@ -735,6 +735,7 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngine.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngineManager.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\FileUtilities.cs" />
+    <Compile Include="MonoDevelop.Core.Setup\UpdateChannel.cs" />
     <Compile Include="MonoDevelop.FSW\OSX\FileSystemWatcher.cs" />
     <Compile Include="MonoDevelop.FSW\OSX\FileSystemWatcher.OSX.cs" />
     <Compile Include="MonoDevelop.FSW\OSX\Interop.CoreFoundation.cs" />

@@ -248,7 +248,6 @@ namespace Mono.TextEditor
 		{
 			if (args.Changes == null)
 				return;
-			cachedText = null;
 			var changes = new List<TextChange> ();
 			foreach (var change in args.Changes) {
 				changes.Add (new TextChange (change.OldPosition, change.NewPosition, change.OldText, change.NewText));
@@ -363,17 +362,9 @@ namespace Mono.TextEditor
 
 		public bool SuppressHighlightUpdate { get; set; }
 		internal DocumentLine longestLineAtTextSet;
-		WeakReference cachedText;
 
 		public string Text {
-			get {
-				string completeText = cachedText != null ? (cachedText.Target as string) : null;
-				if (completeText == null) {
-					completeText = this.currentSnapshot.GetText ();
-					cachedText = new WeakReference(completeText);
-				}
-				return completeText;
-			}
+			get => currentSnapshot.GetText ();
 			set {
 				var tmp = IsReadOnly;
 				IsReadOnly = false;
