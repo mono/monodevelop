@@ -1429,7 +1429,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			originalOffset = offset;
 			return false;
 		}
-
 	}
 
 	//	static class MonoDevelopWorkspaceFeatures
