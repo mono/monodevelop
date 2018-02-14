@@ -9279,6 +9279,7 @@
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterHintingData.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\WorkspaceExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IDocumentLine.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorOptions.cs" />

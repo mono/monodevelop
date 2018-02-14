@@ -1429,18 +1429,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			originalOffset = offset;
 			return false;
 		}
-
-		internal static void RegisterSolutionCrawler (Workspace workspace)
-		{
-			var solutionCrawlerRegistrationService = workspace.Services.GetService<ISolutionCrawlerRegistrationService> ();
-			solutionCrawlerRegistrationService.Register (workspace);
-		}
-
-		internal static void UnregisterSolutionCrawler (Workspace workspace)
-		{
-			var solutionCrawlerRegistrationService = workspace.Services.GetService<ISolutionCrawlerRegistrationService> ();
-			solutionCrawlerRegistrationService.Unregister (workspace);
-		}
 	}
 
 	//	static class MonoDevelopWorkspaceFeatures
