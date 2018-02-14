@@ -189,34 +189,33 @@ namespace MonoDevelop.Ide.BuildOutputView
 			RaiseOutputChanged ();
 		}
 
-		public IEnumerable<BuildOutputNode> GetRootNodes ()
-		{
-			foreach (var proj in projects) {
-				foreach (var node in proj.RootNodes) {
-					yield return node;
-				}
-			}
-		}
-
 		internal void RaiseOutputChanged ()
 		{
 			OutputChanged?.Invoke (this, EventArgs.Empty);
 		}
 
-
-		public List<BuildOutputNode> GetTreeRootNodes (bool includeDiagnostics)
+		public List<BuildOutputNode> GetRootNodes (bool includeDiagnostics)
 		{
 			if (includeDiagnostics) {
-				return GetRootNodes ().ToList ();
+				return GetProjectRootNodes ().ToList ();
 			} else {
 				// If not including diagnostics, we need to filter the nodes,
 				// but instead of doing so now for all, we do it on the fly,
 				// as nodes are requested
 				var nodes = new List<BuildOutputNode> ();
-				foreach (var root in GetRootNodes ()) {
+				foreach (var root in GetProjectRootNodes ()) {
 					nodes.Add (new FilteredBuildOutputNode (root, null, includeDiagnostics));
 				}
 				return nodes;
+			}
+		}
+
+		IEnumerable<BuildOutputNode> GetProjectRootNodes ()
+		{
+			foreach (var proj in projects) {
+				foreach (var node in proj.RootNodes) {
+					yield return node;
+				}
 			}
 		}
 

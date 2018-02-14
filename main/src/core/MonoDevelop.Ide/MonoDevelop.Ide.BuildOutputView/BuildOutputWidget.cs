@@ -377,7 +377,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				await Runtime.RunInMainThread (() => {
 
 					BuildOutput.ProcessProjects ();
-					treeBuildOutputNodes = BuildOutput.GetTreeRootNodes (showDiagnostics);
+					treeBuildOutputNodes = BuildOutput.GetRootNodes (showDiagnostics);
 					var buildOutputDataSource = new BuildOutputDataSource (treeBuildOutputNodes);
 					treeView.DataSource = buildOutputDataSource;
 
