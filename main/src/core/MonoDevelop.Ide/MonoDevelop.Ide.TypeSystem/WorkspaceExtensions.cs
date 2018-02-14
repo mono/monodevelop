@@ -29,8 +29,8 @@ using Microsoft.CodeAnalysis.SolutionCrawler;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-    static class WorkspaceExtensions
-    {
+	static class WorkspaceExtensions
+	{
 		internal static void RegisterSolutionCrawler (Workspace workspace)
 		{
 			var solutionCrawlerRegistrationService = workspace.Services.GetService<ISolutionCrawlerRegistrationService> ();
@@ -42,5 +42,5 @@ namespace MonoDevelop.Ide.TypeSystem
 			var solutionCrawlerRegistrationService = workspace.Services.GetService<ISolutionCrawlerRegistrationService> ();
 			solutionCrawlerRegistrationService.Unregister (workspace);
 		}
-    }
+	}
 }
