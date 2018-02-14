@@ -36,6 +36,7 @@ using System.Linq;
 using Microsoft.Build.Logging;
 using Microsoft.Build.Execution;
 using System.Xml;
+using System.Threading;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -53,6 +54,8 @@ namespace MonoDevelop.Projects.MSBuild
 			Refresh ();
 		}
 
+		static List<BuildSubmission> buildSubmissions = new List<BuildSubmission> ();
+
 		public MSBuildResult Run (
 			ProjectConfigurationInfo[] configurations, IEngineLogWriter logWriter, MSBuildVerbosity verbosity,
 			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, Dictionary<string,string> globalProperties, int taskId)
@@ -61,12 +64,12 @@ namespace MonoDevelop.Projects.MSBuild
 				throw new ArgumentException ("runTargets is empty");
 
 			MSBuildResult result = null;
+			ManualResetEvent ev = new ManualResetEvent (false);
 
 			BuildEngine.RunSTA (taskId, delegate {
 				Project project = null;
 				Dictionary<string, string> originalGlobalProperties = null;
-
-				MSBuildLoggerAdapter loggerAdapter;
+				MSBuildLoggerAdapter loggerAdapter = null;
 
 				if (buildEngine.BuildOperationStarted) {
 					loggerAdapter = buildEngine.StartProjectSessionBuild (logWriter);
@@ -85,37 +88,51 @@ namespace MonoDevelop.Projects.MSBuild
 							foreach (var p in globalProperties)
 								project.SetGlobalProperty (p.Key, p.Value);
 						}
-						project.ReevaluateIfNecessary ();
 					}
 
 					// Building the project will create items and alter properties, so we use a new instance
 					var pi = project.CreateProjectInstance ();
 
-					Build (pi, runTargets, loggerAdapter.Loggers);
+					var submission = Build (pi, runTargets, loggerAdapter.Loggers);
 
-					result = new MSBuildResult (loggerAdapter.BuildResult.ToArray ());
+					submission.ExecuteAsync (sm => {
+						result = new MSBuildResult (loggerAdapter.BuildResult.ToArray ());
 
-					if (evaluateProperties != null) {
-						foreach (var name in evaluateProperties) {
-							var prop = pi.GetProperty (name);
-							result.Properties [name] = prop != null? prop.EvaluatedValue : null;
-						}
-					}
-
-					if (evaluateItems != null) {
-						foreach (var name in evaluateItems) {
-							var grp = pi.GetItems (name);
-							var list = new List<MSBuildEvaluatedItem> ();
-							foreach (var item in grp) {
-								var evItem = new MSBuildEvaluatedItem (name, UnescapeString (item.EvaluatedInclude));
-								foreach (var metadataName in item.MetadataNames) {
-									evItem.Metadata [metadataName] = UnescapeString (item.GetMetadataValue (metadataName));
-								}
-								list.Add (evItem);
+						if (evaluateProperties != null) {
+							foreach (var name in evaluateProperties) {
+								var prop = pi.GetProperty (name);
+								result.Properties [name] = prop != null ? prop.EvaluatedValue : null;
 							}
-							result.Items[name] = list.ToArray ();
 						}
-					}
+
+						if (evaluateItems != null) {
+							foreach (var name in evaluateItems) {
+								var grp = pi.GetItems (name);
+								var list = new List<MSBuildEvaluatedItem> ();
+								foreach (var item in grp) {
+									var evItem = new MSBuildEvaluatedItem (name, UnescapeString (item.EvaluatedInclude));
+									foreach (var metadataName in item.MetadataNames) {
+										evItem.Metadata [metadataName] = UnescapeString (item.GetMetadataValue (metadataName));
+									}
+									list.Add (evItem);
+								}
+								result.Items [name] = list.ToArray ();
+							}
+						}
+						ev.Set ();
+
+						lock (buildSubmissions) {
+							buildSubmissions.Remove (submission);
+
+							if (buildSubmissions.Count == 0 && !buildEngine.BuildOperationStarted)
+								BuildManager.DefaultBuildManager.EndBuild ();
+						}
+
+						if (buildEngine.BuildOperationStarted)
+							buildEngine.EndProjectSessionBuild ();
+						else
+							loggerAdapter.Dispose ();
+					}, null);
 				} catch (Microsoft.Build.Exceptions.InvalidProjectFileException ex) {
 					var r = new MSBuildTargetResult (
 						file, false, ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
@@ -124,20 +141,17 @@ namespace MonoDevelop.Projects.MSBuild
 					loggerAdapter.LogWriteLine (r.ToString ());
 					result = new MSBuildResult (new [] { r });
 				} finally {
-					if (buildEngine.BuildOperationStarted)
-						buildEngine.EndProjectSessionBuild ();
-					else
-						loggerAdapter.Dispose ();
-					
 					if (project != null && globalProperties != null) {
 						foreach (var p in globalProperties)
 							project.RemoveGlobalProperty (p.Key);
 						foreach (var p in originalGlobalProperties)
 							project.SetGlobalProperty (p.Key, p.Value);
-						project.ReevaluateIfNecessary ();
 					}
 				}
 			});
+
+			ev.WaitOne ();
+
 			return result;
 		}
 		
@@ -193,15 +207,12 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 
-			bool reevaluate = false;
-
 			if (p.GetPropertyValue ("Configuration") != configuration || (p.GetPropertyValue ("Platform") ?? "") != (platform ?? "")) {
 				p.SetGlobalProperty ("Configuration", configuration);
 				if (!string.IsNullOrEmpty (platform))
 					p.SetGlobalProperty ("Platform", platform);
 				else
 					p.RemoveGlobalProperty ("Platform");
-				reevaluate = true;
 			}
 
 			// The CurrentSolutionConfigurationContents property only needs to be set once
@@ -210,11 +221,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (!buildEngine.BuildOperationStarted && this.file == file && p.GetPropertyValue ("CurrentSolutionConfigurationContents") != slnConfigContents) {
 				p.SetGlobalProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
-				reevaluate = true;
 			}
-
-			if (reevaluate)
-				p.ReevaluateIfNecessary ();
 
 			return p;
 		}
@@ -223,20 +230,27 @@ namespace MonoDevelop.Projects.MSBuild
 		/// <summary>
 		/// Builds a list of targets with the specified loggers.
 		/// </summary>
-		internal void Build (ProjectInstance pi, string [] targets, IEnumerable<ILogger> loggers)
+		internal BuildSubmission Build (ProjectInstance pi, string [] targets, IEnumerable<ILogger> loggers)
 		{
-			BuildResult results;
+			BuildRequestData data;
+			lock (buildSubmissions) {
+				if (buildSubmissions.Count == 0 && !buildEngine.BuildOperationStarted) {
+					BuildParameters parameters = new BuildParameters (engine);
+					parameters.ResetCaches = false;
+					parameters.EnableNodeReuse = true;
 
-			if (!buildEngine.BuildOperationStarted) {
-				BuildParameters parameters = new BuildParameters (engine);
-				parameters.ResetCaches = false;
-				parameters.EnableNodeReuse = true;
-				BuildRequestData data = new BuildRequestData (pi, targets, parameters.HostServices);
-				parameters.Loggers = loggers;
-				results = BuildManager.DefaultBuildManager.Build (parameters, data);
-			} else {
-				BuildRequestData data = new BuildRequestData (pi, targets);
-				results = BuildManager.DefaultBuildManager.BuildRequest (data);
+					// Uncomment this when MSBuild supports parallel builds on Mono.
+					//parameters.MaxNodeCount = 8;
+
+					BuildManager.DefaultBuildManager.BeginBuild (parameters);
+					data = new BuildRequestData (pi, targets, parameters.HostServices);
+					parameters.Loggers = loggers;
+				} else 
+					data = new BuildRequestData (pi, targets);
+				
+				var submission = BuildManager.DefaultBuildManager.PendBuildRequest (data);;
+				buildSubmissions.Add (submission);
+				return submission;
 			}
 		}
 	}
