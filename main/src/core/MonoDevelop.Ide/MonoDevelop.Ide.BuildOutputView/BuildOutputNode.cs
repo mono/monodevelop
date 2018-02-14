@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using Xwt;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -106,6 +107,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				return base.Children;
 			}
+		}
+	}
+
+	static class BuildOutputNodeExtensions
+	{
+		public static string GetDurationAsString (this BuildOutputNode node)
+		{
+			var duration = node.EndTime.Subtract (node.StartTime);
+			if (duration.TotalHours >= 1) {
+				return GettextCatalog.GetString ("{0}:{1:d2} hours", duration.Hours, duration.Minutes);
+			} else if (duration.TotalSeconds >= 1) {
+				return GettextCatalog.GetString ("{0}:{1:d2} min", duration.Minutes, duration.Seconds);
+			}
+
+			return String.Empty;
 		}
 	}
 }
