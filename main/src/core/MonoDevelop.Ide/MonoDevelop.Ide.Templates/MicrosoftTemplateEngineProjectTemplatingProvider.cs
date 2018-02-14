@@ -142,9 +142,13 @@ namespace MonoDevelop.Ide.Templates
 
 			// Format all source files generated during the project creation
 			foreach (var p in workspaceItems.OfType<Project> ()) {
-				foreach (var file in p.Files)
-					if (!filesBeforeCreation.Contains ((string)file.FilePath, FilePath.PathComparer)) //Format only newly created files
-						await MicrosoftTemplateEngine.FormatFile (parentFolder?.Policies ?? p.Policies, file.FilePath);
+				foreach (var file in p.Files) {
+					if (!filesBeforeCreation.Contains ((string)file.FilePath, FilePath.PathComparer)) { //Format only newly created files
+						if (solutionTemplate.ShouldFormatFile (file.FilePath)) {
+							await MicrosoftTemplateEngine.FormatFile (parentFolder?.Policies ?? p.Policies, file.FilePath);
+						}
+					}
+				}
 			}
 			processResult.SetFilesToOpen (filesToOpen);
 			return processResult;
