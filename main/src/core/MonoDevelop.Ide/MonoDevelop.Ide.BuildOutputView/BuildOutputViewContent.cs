@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			this.filename = filename;
 			this.ContentName = filename;
 			control = new BuildOutputWidget (filename);
-			control.ProcessLogs (false);
+			control.ProcessLogsAsync (false);
 			control.FileSaved += FileNameChanged;
 		}
 

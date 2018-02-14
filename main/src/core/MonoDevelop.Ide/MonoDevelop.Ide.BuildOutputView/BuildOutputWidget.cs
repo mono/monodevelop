@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			BuildOutput = output;
 
-			BuildOutput.OutputChanged += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
+			BuildOutput.OutputChanged += (sender, e) => ProcessLogsAsync (showDiagnosticsButton.Active);
 
 			pathBar = new PathBar (this.CreatePathWidget) {
 				DrawBottomBorder = false
@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			showDiagnosticsButton.Accessible.Identifier = "BuildOutputWidget.ShowDiagnosticsButton";
 			showDiagnosticsButton.TooltipText = GettextCatalog.GetString ("Show full (diagnostics enabled) or reduced log");
 			showDiagnosticsButton.Accessible.Description = GettextCatalog.GetString ("Diagnostic log verbosity");
-			showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
+			showDiagnosticsButton.Clicked += (sender, e) => ProcessLogsAsync (showDiagnosticsButton.Active);
 
 			saveButton = new Button (GettextCatalog.GetString ("Save"));
 			saveButton.Accessible.Identifier = "BuildOutputWidget.SaveButton";
@@ -368,7 +368,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public Task ProcessLogs (bool showDiagnostics)
+		public Task ProcessLogsAsync (bool showDiagnostics)
 		{
 			cts?.Cancel ();
 			cts = new CancellationTokenSource ();
