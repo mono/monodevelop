@@ -1,4 +1,4 @@
-//
+﻿//
 // BuildOuputWidget.cs
 //
 // Author:
@@ -62,9 +62,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public PathEntry [] CurrentPath { get; set; }
 
 		List<BuildOutputNode> treeBuildOutputNodes;
+		BuildOutputDataSearch search;
 
 		public event EventHandler<string> FileSaved;
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
+
+		CancellationTokenSource cts;
 
 		public BuildOutputWidget (BuildOutput output, string viewContentName)
 		{
@@ -209,16 +212,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			var projectNode = treeBuildOutputNodes.SearchFirstNode (BuildOutputNodeType.Project, project);
 			var node = projectNode.SearchFirstNode (nodeType, message);
-			MoveToMatch (node);
+			FocusRow (node);
 		}
 
-		void MoveToMatch (BuildOutputNode match)
+		void FocusRow (BuildOutputNode match)
 		{
 			treeView.ExpandToRow (match);
 			treeView.FocusedRow = match;
 		}
-
-		CancellationTokenSource cts;
 
 		void IndexChanged (int newIndex)
 		{
@@ -226,16 +227,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 
 			if (CurrentPath [newIndex].Tag != null) {
-				SelectRow (CurrentPath [newIndex].Tag as BuildOutputNode);
+				FocusRow (CurrentPath [newIndex].Tag as BuildOutputNode);
 			}
 		}
 
-		async void SelectRow (BuildOutputNode node)
-		{
-			await Runtime.RunInMainThread (() => {
-				treeView.SelectRow (node);
-			});
-		}
 
 		void TreeView_SelectionChanged (object sender, EventArgs e)
 		{
@@ -279,7 +274,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (dataSource == null)
 				return;
 
-			Find (dataSource.FirstMatch (searchEntry.Entry.Text));
+			Find (search.FirstMatch (searchEntry.Entry.Text));
 		}
 
 		public void FindNext (object sender, EventArgs args)
@@ -288,9 +283,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (dataSource == null)
 				return;
 
-			Find (dataSource.NextMatch ());
+			Find (search.NextMatch ());
 
-			if (dataSource.SearchWrapped) {
+			if (search.SearchWrapped) {
 				IdeApp.Workbench.StatusBar.ShowMessage (
 					Gtk.Stock.Find, GettextCatalog.GetString ("Reached top, continued from bottom"));
 			} else {
@@ -304,9 +299,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (dataSource == null)
 				return;
 
-			Find (dataSource.PreviousMatch ());
+			Find (search.PreviousMatch ());
 
-			if (dataSource.SearchWrapped) {
+			if (search.SearchWrapped) {
 				IdeApp.Workbench.StatusBar.ShowMessage (
 					Gtk.Stock.Find, GettextCatalog.GetString ("Reached bottom, continued from top"));
 			} else {
@@ -323,9 +318,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			IsSearchInProgress = node != null;
 
 			if (node != null) {
-				MoveToMatch (node);
+				FocusRow (node);
 
-				resultInformLabel.Text = GettextCatalog.GetString ("{0} of {1}", dataSource.CurrentAbsoluteMatchIndex, dataSource.MatchesCount);
+				resultInformLabel.Text = GettextCatalog.GetString ("{0} of {1}", search.CurrentAbsoluteMatchIndex, search.MatchesCount);
 				resultInformLabel.TextColor = searchEntry.Style.Foreground (Gtk.StateType.Insensitive).ToXwtColor();
 			} else if (string.IsNullOrEmpty (searchEntry.Entry.Text)) {
 				resultInformLabel.Text = string.Empty;
@@ -346,7 +341,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return "(" + nextShortcut + ")";
 		}
 
-		CancellationTokenSource cts;
 		static void ExpandChildrenWithErrors (TreeView tree, BuildOutputDataSource dataSource, BuildOutputNode parent)
 		{
 			int totalChildren = dataSource.GetChildrenCount (parent);
@@ -356,15 +350,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 					tree.ExpandToRow (child);
 					ExpandChildrenWithErrors (tree, dataSource, child);
 				}
-			}
-		}
-
-		void MoveToMatch (BuildOutputNode match)
-		{
-			if (match != null) {
-				treeView.ExpandToRow (match);
-				treeView.ScrollToRow (match);
-				treeView.SelectRow (match);
 			}
 		}
 
@@ -378,6 +363,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 					BuildOutput.ProcessProjects ();
 					treeBuildOutputNodes = BuildOutput.GetRootNodes (showDiagnostics);
+					search = new BuildOutputDataSearch (treeBuildOutputNodes);
+
 					var buildOutputDataSource = new BuildOutputDataSource (treeBuildOutputNodes);
 					treeView.DataSource = buildOutputDataSource;
 
@@ -400,6 +387,28 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public void FocusOnSearchEntry ()
 		{
 			searchEntry.Entry.GrabFocus ();
+		}
+
+		public void FindPrevious ()
+		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource != null) {
+				var match = search.PreviousMatch ();
+				if (match != null) {
+					FocusRow (match);
+				}
+			}
+		}
+
+		public void FindNext ()
+		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource != null) {
+				var match = search.NextMatch ();
+				if (match != null) {
+					FocusRow (match);
+				}
+			}
 		}
 
 		int currentIndex = -1;
@@ -451,7 +460,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			public int IconCount => list.Count;
 
-			public void ActivateItem (int n) => widget.SelectRow (list [n]);
+			public void ActivateItem (int n) => widget.FocusRow (list [n]);
 
 			public Xwt.Drawing.Image GetIcon (int n) => DataSource.GetValue (list [n], 0) as Xwt.Drawing.Image;
 

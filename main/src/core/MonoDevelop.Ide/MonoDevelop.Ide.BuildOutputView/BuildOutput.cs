@@ -417,6 +417,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 		}
 
 		#endregion
+	}
+
+	class BuildOutputDataSearch
+	{
+		readonly List<BuildOutputNode> rootNodes;
+
+		public BuildOutputDataSearch (List<BuildOutputNode> rootNodes)
+		{
+			this.rootNodes = rootNodes;
+		}
 
 		#region Search functionality
 
