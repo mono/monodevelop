@@ -1,4 +1,4 @@
-﻿//
+//
 // BuildOuputWidget.cs
 //
 // Author:
@@ -36,6 +36,8 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.BuildOutputView
@@ -50,6 +52,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Gtk.VBox box;
 		DocumentToolbar toolbar;
 		PathBar pathBar;
+		Button buttonSearchBackward;
+		Button buttonSearchForward;
+		Label resultInformLabel;
 
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
@@ -132,17 +137,20 @@ namespace MonoDevelop.Ide.BuildOutputView
 			searchEntry.WidthRequest = 200;
 			searchEntry.Visible = true;
 
-			searchEntry.Entry.Changed += (sender, e) => {
-				var dataSource = treeView.DataSource as BuildOutputDataSource;
-				if (dataSource != null) {
-					var firstMatch = dataSource.FirstMatch (searchEntry.Entry.Text);
-					if (firstMatch != null) {
-						MoveToMatch (firstMatch);
-					}
+			resultInformLabel = new Label ();
+			searchEntry.AddLabelWidget ((Gtk.Label) resultInformLabel.ToGtkWidget());
 
-					IsSearchInProgress = firstMatch != null;
-				}
-			};
+			searchEntry.Entry.Changed += FindFirst;
+			searchEntry.Entry.Activated += FindNext;
+
+			buttonSearchBackward = new Button ();
+			buttonSearchForward = new Button ();
+			buttonSearchBackward.Clicked += FindPrevious;
+			buttonSearchForward.Clicked += FindNext;
+			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext));
+			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious));
+			buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
+			buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
 
 			toolbar = new DocumentToolbar ();
 
@@ -152,7 +160,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			toolbar.AddSpace ();
 			toolbar.Add (showDiagnosticsButton.ToGtkWidget ());
 			toolbar.Add (saveButton.ToGtkWidget ());
-			toolbar.Add (searchEntry);
+			toolbar.AddSpace ();
+			toolbar.Add (searchEntry, false);
+			toolbar.Add (buttonSearchBackward.ToGtkWidget ());
+			toolbar.Add (buttonSearchForward.ToGtkWidget());
+
 			PackStart (toolbar.Container, expand: false, fill: true);
 
 			treeView = new TreeView ();
@@ -229,6 +241,79 @@ namespace MonoDevelop.Ide.BuildOutputView
 			this.CurrentPath = pathBar.Path;
 		}
 
+		void FindFirst (object sender, EventArgs args)
+		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource == null)
+				return;
+
+			Find (dataSource.FirstMatch (searchEntry.Entry.Text));
+		}
+
+		public void FindNext (object sender, EventArgs args)
+		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource == null)
+				return;
+
+			Find (dataSource.NextMatch ());
+
+			if (dataSource.SearchWrapped) {
+				IdeApp.Workbench.StatusBar.ShowMessage (
+					Gtk.Stock.Find, GettextCatalog.GetString ("Reached top, continued from bottom"));
+			} else {
+				IdeApp.Workbench.StatusBar.ShowReady ();
+			}
+		}
+
+		public void FindPrevious (object sender, EventArgs e)
+		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource == null)
+				return;
+
+			Find (dataSource.PreviousMatch ());
+
+			if (dataSource.SearchWrapped) {
+				IdeApp.Workbench.StatusBar.ShowMessage (
+					Gtk.Stock.Find, GettextCatalog.GetString ("Reached bottom, continued from top"));
+			} else {
+				IdeApp.Workbench.StatusBar.ShowReady ();
+			}
+		}
+
+		void Find (BuildOutputNode node)
+		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource == null)
+				return;
+			
+			IsSearchInProgress = node != null;
+
+			if (node != null) {
+				MoveToMatch (node);
+
+				resultInformLabel.Text = GettextCatalog.GetString ("{0} of {1}", dataSource.CurrentAbsoluteMatchIndex, dataSource.MatchesCount);
+				resultInformLabel.TextColor = searchEntry.Style.Foreground (Gtk.StateType.Insensitive).ToXwtColor();
+			} else if (string.IsNullOrEmpty (searchEntry.Entry.Text)) {
+				resultInformLabel.Text = string.Empty;
+				IdeApp.Workbench.StatusBar.ShowReady ();
+			} else {
+				resultInformLabel.Text = GettextCatalog.GetString ("Not found");
+				resultInformLabel.TextColor = Ide.Gui.Styles.Editor.SearchErrorForegroundColor;
+			}
+			resultInformLabel.Show ();
+		}
+
+		static string GetShortcut (object commandId)
+		{
+			var key = IdeApp.CommandService.GetCommand (commandId).AccelKey;
+			if (string.IsNullOrEmpty (key))
+				return "";
+			var nextShortcut = KeyBindingManager.BindingToDisplayLabel (key, false);
+			return "(" + nextShortcut + ")";
+		}
+
 		CancellationTokenSource cts;
 		static void ExpandChildrenWithErrors (TreeView tree, BuildOutputDataSource dataSource, BuildOutputNode parent)
 		{
@@ -276,31 +361,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public bool IsSearchInProgress { get; private set; } = false;
 
-		public void Find ()
+		public void FocusOnSearchEntry ()
 		{
 			searchEntry.Entry.GrabFocus ();
-		}
-
-		public void FindPrevious ()
-		{
-			var dataSource = treeView.DataSource as BuildOutputDataSource;
-			if (dataSource != null) {
-				var match = dataSource.PreviousMatch ();
-				if (match != null) {
-					MoveToMatch (match);
-				}
-			}
-		}
-
-		public void FindNext ()
-		{
-			var dataSource = treeView.DataSource as BuildOutputDataSource;
-			if (dataSource != null) {
-				var match = dataSource.NextMatch ();
-				if (match != null) {
-					MoveToMatch (match);
-				}
-			}
 		}
 
 		int currentIndex = -1;
@@ -322,6 +385,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (path [index].Tag != null)
 				window.SelectItem (path [index].Tag);
 			return window;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			buttonSearchBackward.Clicked -= FindPrevious;
+			buttonSearchForward.Clicked -= FindNext;
+			searchEntry.Entry.Changed -= FindFirst;
+			searchEntry.Entry.Activated -= FindNext;
+
+			base.Dispose(disposing);
 		}
 
 		class DropDownWindowDataProvider : DropDownBoxListWindow.IListDataProvider
