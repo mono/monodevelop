@@ -231,8 +231,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (newIndex >= CurrentPath.Length)
 				return;
 
-			if (CurrentPath [newIndex].Tag != null) {
-				MoveToMatch (CurrentPath [newIndex].Tag as BuildOutputNode);
+			var node = CurrentPath [newIndex].Tag as BuildOutputNode;
+			if (node != null && node.HasChildren) {
+				MoveToMatch (node);
 			}
 		}
 
@@ -244,7 +245,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			var stack = new Stack<BuildOutputNode> ();
 
-			stack.Push (selectedNode);
+			if (selectedNode.HasChildren)
+				stack.Push (selectedNode);	
 			var parent = selectedNode.Parent;
 
 			while (parent != null) {
@@ -254,9 +256,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			var entries = new PathEntry [stack.Count];
 			var index = 0;
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
 			while (stack.Count > 0) {
 				var node = stack.Pop ();
-				var dataSource = treeView.DataSource as BuildOutputDataSource;
 				var pathEntry = new PathEntry (dataSource.GetValue (node, 0) as Xwt.Drawing.Image, node.Message);
 				pathEntry.Tag = node;
 				entries [index] = pathEntry;
@@ -449,12 +451,27 @@ namespace MonoDevelop.Ide.BuildOutputView
 				this.widget = widget;
 				Reset ();
 
-				list = (node == null || node.Parent == null) ? DataSource.RootNodes : node.Parent.Children;
+				list = (node == null || node.Parent == null) ? DataSource.RootNodes : NodesWithChildren (node.Parent.Children);
+			}
+
+			IReadOnlyList<BuildOutputNode> NodesWithChildren(IEnumerable<BuildOutputNode> nodes)
+			{
+				var aux = new List<BuildOutputNode> ();
+				foreach (var node in nodes) {
+					if (node.HasChildren)
+						aux.Add (node);
+				}
+
+				return aux;
 			}
 
 			public int IconCount => list.Count;
 
-			public void ActivateItem (int n) => widget.MoveToMatch (list [n]);
+			public void ActivateItem (int n)
+			{
+				if (list [n].HasChildren)
+					widget.MoveToMatch (list [n]);
+			}
 
 			public Xwt.Drawing.Image GetIcon (int n) => DataSource.GetValue (list [n], 0) as Xwt.Drawing.Image;
 
