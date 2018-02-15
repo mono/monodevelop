@@ -39,6 +39,7 @@ using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -60,6 +61,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public BuildOutput BuildOutput { get; private set; }
 		public PathEntry [] CurrentPath { get; set; }
 
+		bool isDirty;
+		public bool IsDirty {
+			get => isDirty;
+			set {
+				if (isDirty == value)
+					return;
+				isDirty = value;
+				saveButton.Sensitive = value;
+			}
+		}
+
 		public event EventHandler<string> FileSaved;
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 
@@ -68,6 +80,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			Initialize ();
 			ViewContentName = viewContentName;
 			SetupBuildOutput (output);
+			filePathLocation = FilePath.Empty;
 		}
 
 		public BuildOutputWidget (FilePath filePath)
@@ -76,6 +89,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			ViewContentName = filePath;
 			var output = new BuildOutput ();
+			filePathLocation = filePath;
 			output.Load (filePath.FullPath, false);
 			SetupBuildOutput (output);
 		}
@@ -114,21 +128,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			saveButton.TooltipText = GettextCatalog.GetString ("Save build output");
 			saveButton.Accessible.Description = GettextCatalog.GetString ("Save build output");
 
-			saveButton.Clicked += async (sender, e) => {
-				const string binLogExtension = "binlog";
-				var dlg = new Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
-					TransientFor = IdeApp.Workbench.RootWindow,
-					InitialFileName = ViewContentName
-				};
-				if (dlg.Run ()) {
-					var outputFile = dlg.SelectedFile;
-					if (!outputFile.HasExtension (binLogExtension))
-						outputFile = outputFile.ChangeExtension (binLogExtension);
-					
-					await BuildOutput.Save (outputFile);
-					FileSaved?.Invoke (this, outputFile.FileName);
-				}
-			};
+			saveButton.Clicked += SaveButtonClickedAsync;
 
 			searchEntry = new SearchEntry ();
 			searchEntry.Accessible.SetLabel (GettextCatalog.GetString ("Search"));
@@ -188,21 +188,50 @@ namespace MonoDevelop.Ide.BuildOutputView
 			PackStart (scrolledWindow, expand: true, fill: true);
 		}
 
+		async void SaveButtonClickedAsync (object sender, EventArgs e) => await Save ();
+
+		public async Task Save ()
+		{
+			if (filePathLocation == FilePath.Empty) {
+				await SaveAs ();
+			} else {
+				await Save (filePathLocation);
+			}
+		}
+
+		async Task Save (FilePath outputFile)
+		{
+			const string binLogExtension = "binlog";
+			if (!outputFile.HasExtension (binLogExtension))
+				outputFile = outputFile.ChangeExtension (binLogExtension);
+
+			await BuildOutput.Save (outputFile);
+			FileSaved?.Invoke (this, outputFile.FileName);
+			filePathLocation = outputFile;
+			IsDirty = false;
+		}
+
+		FilePath filePathLocation;
+		async Task SaveAs ()
+		{
+			var dlg = new Gui.Dialogs.OpenFileDialog (GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
+				TransientFor = IdeApp.Workbench.RootWindow,
+				InitialFileName = ViewContentName
+			};
+			dlg.AddFilter (null, "*.binlog");
+			if (dlg.Run ()) {
+				await Save (dlg.SelectedFile);
+			}
+		}
+
 		void IndexChanged (int newIndex)
 		{
 			if (newIndex >= CurrentPath.Length)
 				return;
 
 			if (CurrentPath [newIndex].Tag != null) {
-				SelectRow (CurrentPath [newIndex].Tag as BuildOutputNode);
+				MoveToMatch (CurrentPath [newIndex].Tag as BuildOutputNode);
 			}
-		}
-
-		async void SelectRow (BuildOutputNode node)
-		{
-			await Runtime.RunInMainThread (() => {
-				treeView.SelectRow (node);
-			});
 		}
 
 		void TreeView_SelectionChanged (object sender, EventArgs e)
@@ -237,8 +266,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		void UpdatePathBarEntries (PathEntry[] entries)
 		{
+			var previousPathEntry = CurrentPath;
 			pathBar.SetPath (entries);
-			this.CurrentPath = pathBar.Path;
+			CurrentPath = pathBar.Path;
+			PathChanged?.Invoke (this, new DocumentPathChangedEventArgs (CurrentPath));
 		}
 
 		void FindFirst (object sender, EventArgs args)
@@ -299,10 +330,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				resultInformLabel.Text = string.Empty;
 				IdeApp.Workbench.StatusBar.ShowReady ();
 			} else {
-				resultInformLabel.Text = GettextCatalog.GetString ("Not found");
+				resultInformLabel.Text = GettextCatalog.GetString ("0 of 0");
 				resultInformLabel.TextColor = Ide.Gui.Styles.Editor.SearchErrorForegroundColor;
 			}
 			resultInformLabel.Show ();
+
+			buttonSearchForward.Sensitive = dataSource.MatchesCount > 0;
+			buttonSearchBackward.Sensitive = dataSource.MatchesCount > 0; 
 		}
 
 		static string GetShortcut (object commandId)
@@ -355,6 +389,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 						treeView.ExpandRow (root, false);
 						ExpandChildrenWithErrors (treeView, dataSource, root);
 					}
+
+					IsDirty = true;
 				});
 			}, cts.Token);
 		}
@@ -393,6 +429,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			buttonSearchForward.Clicked -= FindNext;
 			searchEntry.Entry.Changed -= FindFirst;
 			searchEntry.Entry.Activated -= FindNext;
+			saveButton.Clicked -= SaveButtonClickedAsync;
 
 			base.Dispose(disposing);
 		}
@@ -415,7 +452,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			public int IconCount => list.Count;
 
-			public void ActivateItem (int n) => widget.SelectRow (list [n]);
+			public void ActivateItem (int n) => widget.MoveToMatch (list [n]);
 
 			public Xwt.Drawing.Image GetIcon (int n) => DataSource.GetValue (list [n], 0) as Xwt.Drawing.Image;
 
