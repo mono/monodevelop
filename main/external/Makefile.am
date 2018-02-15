@@ -5,7 +5,7 @@ all:
 clean:
 
 if ENABLE_MACPLATFORM
-all: Xamarin.Mac.dll Xamarin.Mac.registrar.full.a libxammac.dylib
+all: Xamarin.Mac.dll Xamarin.Mac.registrar.full.a libxammac-system.a libxammac.dylib
 	$(MAKE) -C monomac/src
 
 Xamarin.Mac.dll: $(XAMMAC_PATH)/@MAC_ARCHITECTURE@/full/Xamarin.Mac.dll
@@ -13,6 +13,9 @@ Xamarin.Mac.dll: $(XAMMAC_PATH)/@MAC_ARCHITECTURE@/full/Xamarin.Mac.dll
 	cp -p $<.mdb $@.mdb
 
 Xamarin.Mac.registrar.full.a: $(XAMMAC_PATH)/mmp/Xamarin.Mac.registrar.full.a
+	cp -p $< $@
+
+libxammac-system.a: $(XAMMAC_PATH)/libxammac-system.a
 	cp -p $< $@
 
 libxammac.dylib: $(XAMMAC_PATH)/libxammac.dylib
