@@ -94,6 +94,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			filePathLocation = filePath;
 			output.Load (filePath.FullPath, false);
 			SetupBuildOutput (output);
+			IsDirty = false;
 		}
 
 		void SetupBuildOutput (BuildOutput output)
@@ -375,6 +376,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			cts?.Cancel ();
 			cts = new CancellationTokenSource ();
 
+			IsDirty = true;
+
 			Task.Run (async () => {
 				await Runtime.RunInMainThread (() => {
 					var dataSource = BuildOutput.ToTreeDataSource (showDiagnostics);
@@ -389,8 +392,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 						treeView.ExpandRow (root, false);
 						ExpandChildrenWithErrors (treeView, dataSource, root);
 					}
-
-					IsDirty = true;
 				});
 			}, cts.Token);
 		}
