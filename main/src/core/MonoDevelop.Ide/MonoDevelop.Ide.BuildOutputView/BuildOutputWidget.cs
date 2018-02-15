@@ -183,6 +183,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeView.Accessible.Description = GettextCatalog.GetString ("Structured build output");
 			treeView.HorizontalScrollPolicy = ScrollPolicy.Never;
 			treeView.SelectionChanged += TreeView_SelectionChanged;
+			treeView.ButtonPressed += TreeView_ButtonPressed;
 			var treeColumn = new ListViewColumn {
 				CanResize = false,
 				Expands = true
@@ -278,6 +279,27 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			UpdatePathBarEntries (entries);
+		}
+
+		void CopyElementMenu_Clicked (object sender, EventArgs e)
+		{
+			var clickedRow = treeView.SelectedRow as BuildOutputNode;
+			if (clickedRow != null) {
+				Clipboard.SetText (clickedRow.ToString (true));
+			}
+		}
+
+		void TreeView_ButtonPressed (object sender, ButtonEventArgs e)
+		{
+			if (e.Button == PointerButton.Right) {
+				var menu = new Menu ();
+
+				var copyElementMenu = new MenuItem (GettextCatalog.GetString ("Copy Element Output"));
+				copyElementMenu.Clicked += CopyElementMenu_Clicked;
+
+				menu.Items.Add (copyElementMenu);
+				menu.Popup (treeView, e.X, e.Y);
+			}
 		}
 
 		void UpdatePathBarEntries (PathEntry[] entries)
