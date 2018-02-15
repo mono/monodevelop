@@ -97,6 +97,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			filePathLocation = filePath;
 			output.Load (filePath.FullPath, false);
 			SetupBuildOutput (output);
+			IsDirty = false;
 		}
 
 		void SetupBuildOutput (BuildOutput output)
@@ -403,6 +404,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			cts?.Cancel ();
 			cts = new CancellationTokenSource ();
 			processingCompletion = new TaskCompletionSource<object> ();
+
+			IsDirty = true;
 
 			Task.Run (async () => {
 				try {
