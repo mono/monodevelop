@@ -363,9 +363,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			Task.Run (async () => {
 				try {
-					await Runtime.RunInMainThread (() => {
+					BuildOutput.ProcessProjects ();
 
-						BuildOutput.ProcessProjects ();
+					await Runtime.RunInMainThread (() => {
+					
 						treeBuildOutputNodes = BuildOutput.GetRootNodes (showDiagnostics);
 						search = new BuildOutputDataSearch (treeBuildOutputNodes);
 
