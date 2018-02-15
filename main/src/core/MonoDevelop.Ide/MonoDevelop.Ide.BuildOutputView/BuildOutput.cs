@@ -1,4 +1,4 @@
-﻿//
+//
 // BuildOutput.cs
 //
 // Author:
@@ -423,9 +423,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 				root.Search (currentSearchMatches, currentSearchPattern);
 			}
 
-			if (currentSearchMatches.Count > 0) {
-				currentMatchIndex = 0;
-				return currentSearchMatches [0];
+				if (currentSearchMatches.Count > 0) {
+					currentMatchIndex = 0;
+					return currentSearchMatches [0];
+				}
 			}
 
 			return null;
