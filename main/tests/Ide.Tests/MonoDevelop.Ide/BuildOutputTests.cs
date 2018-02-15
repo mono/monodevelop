@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide
 		}
 
 		[Test]
-		public void CustomProject_SearchDataSource ()
+		public void CustomProject_DataSearch ()
 		{
 			var bo = new BuildOutput ();
 			var monitor = bo.GetProgressMonitor ();
@@ -77,9 +77,10 @@ namespace MonoDevelop.Ide
 
 			var nodes = bo.GetRootNodes (true);
 			var dataSource = new BuildOutputDataSource (nodes);
+			var search = new BuildOutputDataSearch (nodes);
 			int matches = 0;
 			var visited = new HashSet<BuildOutputNode> ();
-			for (var match = dataSource.FirstMatch ("Message "); match != null; match = dataSource.NextMatch ()) {
+			for (var match = search.FirstMatch ("Message "); match != null; match = search.NextMatch ()) {
 				if (visited.Contains (match)) {
 					break;
 				}
