@@ -103,6 +103,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		void Initialize ()
 		{
+			Spacing = 0;
+
 			showDiagnosticsButton = new CheckBox (GettextCatalog.GetString ("Diagnostic log verbosity"));
 			showDiagnosticsButton.Accessible.Identifier = "BuildOutputWidget.ShowDiagnosticsButton";
 			showDiagnosticsButton.TooltipText = GettextCatalog.GetString ("Show full (diagnostics enabled) or reduced log");
@@ -155,6 +157,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			toolbar = new DocumentToolbar ();
 
 			box = new Gtk.VBox ();
+			box.Spacing = 0;
 			toolbar.Add (box, true);
 
 			toolbar.AddSpace ();
