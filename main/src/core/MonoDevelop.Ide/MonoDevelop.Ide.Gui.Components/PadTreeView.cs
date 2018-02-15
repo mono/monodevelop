@@ -26,7 +26,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Gtk;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -119,6 +122,76 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			renderer.FontDesc = IdeApp.Preferences.CustomPadFont;
 			renderers.Add (renderer);
+		}
+
+		// Util helper to check for column visibility
+		public bool IsAColumnVisible ()
+		{
+			foreach (var c in Columns) {
+				if (c.Visible) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
+	// A ContextMenu to hide and show columns.
+	public class ColumnSelectorMenu : ContextMenu
+	{
+		class ColumnSelectorMenuItem : CheckBoxContextMenuItem
+		{
+			TreeViewColumn column;
+
+			public ColumnSelectorMenuItem (TreeViewColumn column, string label) : base (label)
+			{
+				this.column = column;
+
+				Checked = column.Visible;
+			}
+
+			protected override void DoClick ()
+			{
+				base.DoClick ();
+				column.Visible = Checked;
+				ColumnVisibilityChanged?.Invoke (this, EventArgs.Empty);
+			}
+
+			public event EventHandler ColumnVisibilityChanged;
+		}
+
+		string id;
+
+		public ColumnSelectorMenu (TreeView treeview, string restoreID, params string[] columnNames)
+		{
+			id = restoreID;
+
+			int i = 0;
+			foreach (var column in treeview.Columns) {
+				var name = i < columnNames.Length ? columnNames[i] : null;
+
+				var item = new ColumnSelectorMenuItem (column, string.IsNullOrEmpty(name) ? column.Title : name);
+				item.ColumnVisibilityChanged += OnColumnVisibilityChanged;
+
+				Add (item);
+
+				i++;
+			}
+		}
+
+		void OnColumnVisibilityChanged (object sender, EventArgs args)
+		{
+			StringBuilder builder = new StringBuilder ();
+			foreach (var c in Items) {
+				var item = c as CheckBoxContextMenuItem;
+				if (item == null) {
+					continue;
+				}
+				builder.AppendFormat ("{0};", item.Checked);
+			}
+			builder.Remove (builder.Length - 1, 1);
+
+			PropertyService.Set (id, builder.ToString ());
 		}
 	}
 }

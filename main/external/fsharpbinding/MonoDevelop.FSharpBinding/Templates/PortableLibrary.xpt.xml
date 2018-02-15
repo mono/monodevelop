@@ -1,8 +1,8 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <Template originator   = "Dave Thomas"
           created      = "30/04/2015"
           lastModified = "30/04/2015">
-	
+
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Portable Library</_Name>
@@ -14,18 +14,18 @@
 		<DefaultFilename>PortableLibrary</DefaultFilename>
 		<GroupId>md-project-portable-library</GroupId>
 	</TemplateConfiguration>
-	
+
 	<!-- Actions -->
 	<Actions>
 		<Open filename = "Component1.fs"/>
 	</Actions>
-	
+
 	<!-- Template Content -->
 	<Combine name = "${ProjectName}" directory = ".">
 		<Options>
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
-		
+
 		<Project name = "${ProjectName}" directory = ".">
 			<Options Target = "Library"
 					 TargetFrameworkVersion = ".NETPortable,Version=v4.5,Profile=Profile78"
@@ -35,14 +35,14 @@
 			<References>
 			</References>
       <Packages requireLicenseAcceptance="false">
-        <Package Id="FSharp.Core" Version="4.1.0.2" />
+        <Package Id="FSharp.Core" Version="4.3.0" />
       </Packages>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 		        <File name = "Component1.fs" AddStandardHeader="True">
         <![CDATA[namespace ${Namespace}
 
-type Class1() = 
+type Class1() =
     member this.X = "F#"
 ]]></File>
 				<File name = "Script.fsx" AddStandardHeader="True">

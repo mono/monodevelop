@@ -63,6 +63,7 @@ namespace MonoDevelop.Ide
 		ArrayList errorsList = new ArrayList ();
 		bool initialized;
 		static readonly int ipcBasePort = 40000;
+		static Stopwatch startupTimer = new Stopwatch ();
 		
 		Task<int> IApplication.Run (string[] args)
 		{
@@ -240,11 +241,16 @@ namespace MonoDevelop.Ide
 				RecentFile openedProject = null;
 				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
 					openedProject = DesktopService.RecentFiles.MostRecentlyUsedProject;
-					if (openedProject != null)
-						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList), TaskScheduler.FromCurrentSynchronizationContext ());
+					if (openedProject != null) {
+						var metadata = GetOpenWorkspaceOnStartupMetadata ();
+						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName, true, true, metadata).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList, metadata), TaskScheduler.FromCurrentSynchronizationContext ());
+						startupInfo.OpenedRecentProject = true;
+					}
 				}
-				if (openedProject == null)
-					IdeApp.OpenFiles (startupInfo.RequestedFileList);
+				if (openedProject == null) {
+					IdeApp.OpenFiles (startupInfo.RequestedFileList, GetOpenWorkspaceOnStartupMetadata ());
+					startupInfo.OpenedFiles = startupInfo.HasFiles;
+				}
 				
 				monitor.Step (1);
 			
@@ -287,6 +293,10 @@ namespace MonoDevelop.Ide
 				
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
 			StartLockupTracker ();
+
+			startupTimer.Stop ();
+			Counters.Startup.Inc (GetStartupMetadata (startupInfo));
+
 			IdeApp.Run ();
 
 			IdeApp.Customizer.OnIdeShutdown ();
@@ -577,6 +587,12 @@ namespace MonoDevelop.Ide
 		
 		public static int Main (string[] args, IdeCustomizer customizer = null)
 		{
+			// Using a Stopwatch instead of a TimerCounter since calling
+			// TimerCounter.BeginTiming here would occur before any timer
+			// handlers can be registered. So instead the startup duration is
+			// set as a metadata property on the Counters.Startup counter.
+			startupTimer.Start ();
+
 			var options = MonoDevelopOptions.Parse (args);
 			if (options.ShowHelp || options.Error != null)
 				return options.Error != null? -1 : 0;
@@ -639,6 +655,28 @@ namespace MonoDevelop.Ide
 				}
 			}
 			return null;
+		}
+
+		static Dictionary<string, string> GetStartupMetadata (StartupInfo startupInfo)
+		{
+			var metadata = new Dictionary<string, string> ();
+
+			metadata ["CorrectedStartupTime"] = startupTimer.ElapsedMilliseconds.ToString ();
+			metadata ["StartupType"] = "0";
+
+			var assetType = StartupAssetType.FromStartupInfo (startupInfo);
+
+			metadata ["AssetTypeId"] = assetType.Id.ToString ();
+			metadata ["AssetTypeName"] = assetType.Name;
+
+			return metadata;
+		}
+
+		internal static IDictionary<string, string> GetOpenWorkspaceOnStartupMetadata ()
+		{
+			var metadata = new Dictionary<string, string> ();
+			metadata ["OnStartup"] = bool.TrueString;
+			return metadata;
 		}
 	}
 	

@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide
 		[Obsolete ("Unused use CompletionOptionsHideAdvancedMembers")]
 		public readonly ConfigurationProperty<bool> IncludeEditorBrowsableAdvancedMembers = ConfigurationProperty.Create ("IncludeEditorBrowsableAdvancedMembers", true);
 
-		public readonly ConfigurationProperty<bool> CompletionOptionsHideAdvancedMembers = ConfigurationProperty.Create ("CompletionOptionsHideAdvancedMembers", false);
+		public readonly ConfigurationProperty<bool> CompletionOptionsHideAdvancedMembers = ConfigurationProperty.Create ("CompletionOptionsHideAdvancedMembers", true);
 
 		public Theme UserInterfaceTheme {
 			get { return MonoDevelop.Components.IdeTheme.UserInterfaceTheme; }

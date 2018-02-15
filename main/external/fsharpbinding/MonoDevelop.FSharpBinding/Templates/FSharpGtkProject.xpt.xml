@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Template originator="Ihor Sihuta" created="2012/08/05">
 
@@ -11,11 +11,11 @@
 		<LanguageName>F#</LanguageName>
 		<GroupId>md-gtk-project</GroupId>
 	</TemplateConfiguration>
-	
+
 	<Actions>
 		<Open filename="Main.fs" />
 	</Actions>
-	
+
 	<Combine name="${ProjectName}" directory=".">
 		<Options>
 			<StartupProject>${ProjectName}</StartupProject>
@@ -37,7 +37,7 @@
 			</References>
 
       <Packages requireLicenseAcceptance="false">
-        <Package Id="FSharp.Core" Version="4.1.0.2" local="true" /> 
+        <Package Id="FSharp.Core" Version="4.3.3" local="true" />
       </Packages>
 			<Files>
 
@@ -48,31 +48,31 @@
 <![CDATA[namespace ${Namespace}
 
     module MainWindow =
-    
+
         open System
         open Gtk;
 
         type MyWindow() as this =
             inherit Window("MainWindow")
-            
+
             do this.SetDefaultSize(400,300)
             do this.DeleteEvent.AddHandler(fun o e -> this.OnDeleteEvent(o,e))
             do this.ShowAll()
-            
-            member this.OnDeleteEvent(o,e:DeleteEventArgs) = 
+
+            member this.OnDeleteEvent(o,e:DeleteEventArgs) =
                 Application.Quit ()
                 e.RetVal <- true]]>
 				</File>
-             
+
              <File name="Main.fs">
                 <![CDATA[namespace ${ProjectName}
     module Main =
-        
+
         open System
         open Gtk
-    
+
         [<EntryPoint>]
-        let Main(args) = 
+        let Main(args) =
             Application.Init()
             let win = new MainWindow.MyWindow()
             win.Show()
@@ -84,4 +84,3 @@
 		</Project>
 	</Combine>
 </Template>
-
