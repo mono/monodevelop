@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public override bool IsFile {
 			get {
-				return System.IO.File.Exists (filename.FullPath);
+				return true;
 			}
 		}
 
@@ -140,5 +140,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			cinfo.Enabled = control.IsSearchInProgress;
 		}
+
+		[CommandHandler (FileCommands.Save)]
+		public override Task Save ()
+		{
+			return control.Save ();
+		}
+
+		[CommandUpdateHandler (FileCommands.Save)]
+		public void UpdateSaveHandler (CommandInfo cinfo)
+		{
+			cinfo.Enabled = control.IsDirty;
+		}
+
 	}
 }
