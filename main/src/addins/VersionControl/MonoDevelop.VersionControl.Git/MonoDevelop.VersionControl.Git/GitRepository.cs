@@ -171,7 +171,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (progress == 0 && tp.ReceivedObjects == 0) {
 				progress = 1;
-				monitor.BeginTask (GettextCatalog.GetString ("Receiving and indexing objects"), 2 * tp.TotalObjects);
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Receiving and indexing objects"), 2 * tp.TotalObjects);
 				throttleWatch.Restart ();
 			}
 
@@ -184,7 +184,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 
 			if (tp.IndexedObjects >= tp.TotalObjects) {
-				monitor.EndTask ();
 				throttleWatch.Stop ();
 			}
 
@@ -195,7 +194,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (progress == 0 && completedSteps == 0) {
 				progress = 1;
-				monitor.BeginTask (GettextCatalog.GetString ("Checking out files"), 2 * totalSteps);
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Checking out files"), 2 * totalSteps);
 				throttleWatch.Restart ();
 			}
 
@@ -207,7 +206,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 
 			if (completedSteps >= totalSteps) {
-				monitor.EndTask ();
 				throttleWatch.Stop ();
 			}
 		}
@@ -667,7 +665,7 @@ namespace MonoDevelop.VersionControl.Git
 						else
 							message = e.Message;
 
-						throw new VersionControlException (message);
+						throw new VersionControlException (message, e);
 					}
 				} while (retry);
 			}
@@ -931,41 +929,43 @@ namespace MonoDevelop.VersionControl.Git
 			int transferProgress = 0;
 			int checkoutProgress = 0;
 
-			monitor.BeginTask ("Cloning...", 2);
+			try {
+				monitor.BeginTask ("Cloning...", 2);
 
-			RetryUntilSuccess (monitor, credType => {
-				RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, new CloneOptions {
-					CredentialsProvider = (url, userFromUrl, types) => {
-						transferProgress = checkoutProgress = 0;
-						return GitCredentials.TryGet (url, userFromUrl, types, credType);
-					},
-					RepositoryOperationStarting = ctx => {
-						Runtime.RunInMainThread (() => {
-							monitor.Log.WriteLine ("Checking out repository at '{0}'", ctx.RepositoryPath);
-						});
-						return true;
-					},
-					OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
-					OnCheckoutProgress = (path, completedSteps, totalSteps) => {
-						OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress);
-						Runtime.RunInMainThread (() => {
-							monitor.Log.WriteLine ("Checking out file '{0}'", path);
-						});
-					},
+				RetryUntilSuccess (monitor, credType => {
+					RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, new CloneOptions {
+						CredentialsProvider = (url, userFromUrl, types) => {
+							transferProgress = checkoutProgress = 0;
+							return GitCredentials.TryGet (url, userFromUrl, types, credType);
+						},
+						RepositoryOperationStarting = ctx => {
+							Runtime.RunInMainThread (() => {
+								monitor.Log.WriteLine ("Checking out repository at '{0}'", ctx.RepositoryPath);
+							});
+							return true;
+						},
+						OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
+						OnCheckoutProgress = (path, completedSteps, totalSteps) => {
+							OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress);
+							Runtime.RunInMainThread (() => {
+								monitor.Log.WriteLine ("Checking out file '{0}'", path);
+							});
+						},
+					});
 				});
-			});
 
-			if (monitor.CancellationToken.IsCancellationRequested || RootPath.IsNull)
-				return;
+				if (monitor.CancellationToken.IsCancellationRequested || RootPath.IsNull)
+					return;
 
-			monitor.Step (1);
-			
-			RootPath = RootPath.ParentDirectory;
-			RootRepository = new LibGit2Sharp.Repository (RootPath);
+				monitor.Step (1);
 
-			RecursivelyCloneSubmodules (RootPath, monitor);
+				RootPath = RootPath.ParentDirectory;
+				RootRepository = new LibGit2Sharp.Repository (RootPath);
 
-			monitor.EndTask ();
+				RecursivelyCloneSubmodules (RootPath, monitor);
+			} finally {
+				monitor.EndTask ();
+			}
 		}
 
 		static void RecursivelyCloneSubmodules (string path, ProgressMonitor monitor)
@@ -1006,6 +1006,7 @@ namespace MonoDevelop.VersionControl.Git
 
 						submodules.Add (Path.Combine (repo.Info.WorkingDirectory, sm.Path));
 					}
+					monitor.EndTask ();
 				});
 			}
 
