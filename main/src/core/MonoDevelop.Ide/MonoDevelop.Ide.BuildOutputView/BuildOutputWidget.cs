@@ -46,6 +46,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutputWidget : VBox, IPathedDocument
 	{
+		const string binLogExtension = "binlog";
+
 		TreeView treeView;
 		ScrollView scrolledWindow;
 		CheckBox showDiagnosticsButton;
@@ -67,7 +69,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		bool isDirty;
 		public bool IsDirty {
 			get => isDirty;
-			set {
+			private set {
 				if (isDirty == value)
 					return;
 				isDirty = value;
@@ -236,7 +238,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		async Task Save (FilePath outputFile)
 		{
-			const string binLogExtension = "binlog";
 			if (!outputFile.HasExtension (binLogExtension))
 				outputFile = outputFile.ChangeExtension (binLogExtension);
 
@@ -253,7 +254,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 				TransientFor = IdeApp.Workbench.RootWindow,
 				InitialFileName = ViewContentName
 			};
-			dlg.AddFilter (null, "*.binlog");
 			if (dlg.Run ()) {
 				await Save (dlg.SelectedFile);
 			}
