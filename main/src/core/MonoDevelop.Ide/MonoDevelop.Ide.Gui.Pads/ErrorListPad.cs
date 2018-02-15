@@ -996,7 +996,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		}
 	}
 
-	public static class TaskListEntryExtensions
+	internal static class TaskListEntryExtensions
 	{
 		public static string GetPath (this TaskListEntry task)
 		{
