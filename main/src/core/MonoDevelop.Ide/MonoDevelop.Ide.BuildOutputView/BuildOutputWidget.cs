@@ -182,7 +182,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeColumn.Views.Add (textCell);
 			treeView.Columns.Add (treeColumn);
 
-			scrolledWindow = new ScrollView ();
+			scrolledWindow = new ScrollView { BorderVisible = false };
 			scrolledWindow.Content = treeView;
 
 			PackStart (scrolledWindow, expand: true, fill: true);
