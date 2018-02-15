@@ -175,6 +175,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeView.HeadersVisible = false;
 			treeView.Accessible.Identifier = "BuildOutputWidget.TreeView";
 			treeView.Accessible.Description = GettextCatalog.GetString ("Structured build output");
+			treeView.HorizontalScrollPolicy = ScrollPolicy.Never;
 			treeView.SelectionChanged += TreeView_SelectionChanged;
 			var treeColumn = new ListViewColumn {
 				CanResize = false,
