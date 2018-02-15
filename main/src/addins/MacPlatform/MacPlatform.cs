@@ -142,7 +142,11 @@ namespace MonoDevelop.MacIntegration
 
 			timer.BeginTiming ();
 
+			// Backwards compat for debugging to work. Load libxammac.dylib from external dir.
 			var dir = Path.GetDirectoryName (typeof(MacPlatformService).Assembly.Location);
+			dir = Path.Combine (dir, "..", "..", "external");
+
+			ObjCRuntime.Dlfcn.dlopen (Path.Combine (dir, "libxammac.dylib"), 0);
 
 			mimemap = new Lazy<Dictionary<string, string>> (LoadMimeMapAsync);
 
