@@ -54,15 +54,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return null;
 		}
 
-		public static void Search (this BuildOutputNode node, string pattern, List<BuildOutputNode> matches)
+		public static void Search (this BuildOutputNode node, List<BuildOutputNode> matches, string pattern)
 		{
-			if ((node.Message ?? "").Equals (pattern, StringComparison.OrdinalIgnoreCase)) {
+			if ((node.Message?.IndexOf (pattern, StringComparison.OrdinalIgnoreCase) ?? -1) >= 0) {
 				matches.Add (node);
 			}
 
-			for (int i = 0; i < node.Children.Count; ++i) {
-				var child = node.Children [i];
-				Search (child, pattern, matches);
+			if (node.HasChildren) {
+				foreach (var child in node.Children) {
+					Search (child, matches, pattern);
+				}
 			}
 		}
 
@@ -463,19 +464,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		/// <value><c>true</c> if search wrapped; otherwise, <c>false</c>.</value>
 		public bool SearchWrapped { get; private set; }
 
-		static void SearchInNodeAndChildren (BuildOutputNode node, List<BuildOutputNode> matches, string pattern)
-		{
-			if ((node.Message?.IndexOf (pattern, StringComparison.OrdinalIgnoreCase) ?? -1) >= 0) {
-				matches.Add (node);
-			}
-
-			if (node.HasChildren) {
-				foreach (var child in node.Children) {
-					SearchInNodeAndChildren (child, matches, pattern);
-				}
-			}
-		}
-
 		public BuildOutputNode FirstMatch (string pattern)
 		{
 			// Initialize search data
@@ -486,7 +474,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			// Perform search
 			foreach (var root in rootNodes) {
-				root.Search (currentSearchPattern, currentSearchMatches);
+				root.Search (currentSearchMatches, currentSearchPattern);
 			}
 
 			if (currentSearchMatches.Count > 0) {
