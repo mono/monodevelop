@@ -320,8 +320,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		static readonly Xwt.Drawing.Image warningIcon = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 		static readonly Xwt.Drawing.Image folderIcon = ImageService.GetIcon (Ide.Gui.Stock.OpenFolder, Gtk.IconSize.Menu);
 
-		BuildOutput buildOutput;
-		bool includeDiagnostics;
 		public IReadOnlyList<BuildOutputNode> RootNodes => this.rootNodes;
 		readonly List<BuildOutputNode> rootNodes;
 
