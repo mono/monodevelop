@@ -139,7 +139,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			searchEntry.Accessible.Description = GettextCatalog.GetString ("Search the build log");
 			searchEntry.WidthRequest = 200;
 			searchEntry.Visible = true;
-
+			searchEntry.EmptyMessage = GettextCatalog.GetString ("Search Build Output");
+			           
 			resultInformLabel = new Label ();
 			searchEntry.AddLabelWidget ((Gtk.Label) resultInformLabel.ToGtkWidget());
 
