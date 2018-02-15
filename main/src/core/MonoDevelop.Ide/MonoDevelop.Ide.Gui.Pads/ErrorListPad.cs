@@ -434,13 +434,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				if (task != null) {
-					await OpenBuildOutputViewDocument ();
+					OpenBuildOutputViewDocument ();
 					if (task.Severity == TaskSeverity.Error) {
-						buildOutputViewContent.GoToError (task.Message, task.GetProjectWithExtension ());
+						await buildOutputViewContent.GoToError (task.Message, task.GetProjectWithExtension ());
 					} else if (task.Severity == TaskSeverity.Warning) {
-						buildOutputViewContent.GoToWarning (task.Message, task.GetProjectWithExtension ());
+						await buildOutputViewContent.GoToWarning (task.Message, task.GetProjectWithExtension ());
 					} else if (task.Severity == TaskSeverity.Information) {
-						buildOutputViewContent.GoToMessage (task.Message, task.GetProjectWithExtension ());
+						await buildOutputViewContent.GoToMessage (task.Message, task.GetProjectWithExtension ());
 					}
 				}
 			}
@@ -949,21 +949,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 		}
 
 		Document buildOutputDoc;
-		async void HandleLogBtnClicked (object sender, EventArgs e)
+		void HandleLogBtnClicked (object sender, EventArgs e)
 		{
-			await OpenBuildOutputViewDocument ().ConfigureAwait (false);
+			OpenBuildOutputViewDocument ();
 		}
 
-		async Task OpenBuildOutputViewDocument () 
+		void OpenBuildOutputViewDocument () 
 		{
 			if (buildOutputViewContent == null) {
-
-				var contentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("hh:mm:ss")}.binlog";
-				var widget = new BuildOutputWidget (buildOutput, contentName);
-				buildOutputViewContent = new BuildOutputViewContent (widget);
+				buildOutputViewContent = new BuildOutputViewContent (buildOutput);
 				buildOutputDoc = IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
 				buildOutputDoc.Closed += BuildOutputDocClosed;
-				await widget.ProcessLogsAsync (false);
 			} else if (buildOutputDoc != null) {
 				buildOutputDoc.Select ();
 			}

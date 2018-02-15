@@ -1,4 +1,4 @@
-﻿//
+//
 // BuildOuputWidget.cs
 //
 // Author:
@@ -56,18 +56,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Button buttonSearchBackward;
 		Button buttonSearchForward;
 		Label resultInformLabel;
+		List<BuildOutputNode> treeBuildOutputNodes;
+		BuildOutputDataSearch search;
 
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
 		public PathEntry [] CurrentPath { get; set; }
 
-		List<BuildOutputNode> treeBuildOutputNodes;
-		BuildOutputDataSearch search;
-
 		public event EventHandler<string> FileSaved;
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
-
-		CancellationTokenSource cts;
 
 		public BuildOutputWidget (BuildOutput output, string viewContentName)
 		{
@@ -90,7 +87,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			BuildOutput = output;
 
-			BuildOutput.OutputChanged += (sender, e) => ProcessLogsAsync (showDiagnosticsButton.Active);
+			BuildOutput.OutputChanged += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
+			ProcessLogs (false);
 
 			pathBar = new PathBar (this.CreatePathWidget) {
 				DrawBottomBorder = false
@@ -112,7 +110,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			showDiagnosticsButton.Accessible.Identifier = "BuildOutputWidget.ShowDiagnosticsButton";
 			showDiagnosticsButton.TooltipText = GettextCatalog.GetString ("Show full (diagnostics enabled) or reduced log");
 			showDiagnosticsButton.Accessible.Description = GettextCatalog.GetString ("Diagnostic log verbosity");
-			showDiagnosticsButton.Clicked += (sender, e) => ProcessLogsAsync (showDiagnosticsButton.Active);
+			showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 
 			saveButton = new Button (GettextCatalog.GetString ("Save"));
 			saveButton.Accessible.Identifier = "BuildOutputWidget.SaveButton";
@@ -193,23 +191,24 @@ namespace MonoDevelop.Ide.BuildOutputView
 			PackStart (scrolledWindow, expand: true, fill: true);
 		}
 
-		internal void GoToError (string description, string project)
+		internal Task GoToError (string description, string project)
 		{
-			ExpandNode (project, BuildOutputNodeType.Error, description);
+			return ExpandNode (project, BuildOutputNodeType.Error, description);
 		}
 
-		internal void GoToWarning (string description, string project)
+		internal Task GoToWarning (string description, string project)
 		{
-			ExpandNode (project, BuildOutputNodeType.Warning, description);
+			return ExpandNode (project, BuildOutputNodeType.Warning, description);
 		}
 
-		internal void GoToMessage (string description, string project)
+		internal Task GoToMessage (string description, string project)
 		{
-			ExpandNode (project, BuildOutputNodeType.Message, description);
+			return ExpandNode (project, BuildOutputNodeType.Message, description);
 		}
 
-		void ExpandNode (string project, BuildOutputNodeType nodeType, string message) 
+		async Task ExpandNode (string project, BuildOutputNodeType nodeType, string message) 
 		{
+			await processingCompletion.Task;
 			var projectNode = treeBuildOutputNodes.SearchFirstNode (BuildOutputNodeType.Project, project);
 			var node = projectNode.SearchFirstNode (nodeType, message);
 			FocusRow (node);
@@ -353,32 +352,41 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public Task ProcessLogsAsync (bool showDiagnostics)
+		CancellationTokenSource cts;
+		TaskCompletionSource<object> processingCompletion = new TaskCompletionSource<object> ();
+
+		void ProcessLogs (bool showDiagnostics)
 		{
 			cts?.Cancel ();
 			cts = new CancellationTokenSource ();
+			processingCompletion = new TaskCompletionSource<object> ();
 
-			return Task.Run (async () => {
-				await Runtime.RunInMainThread (() => {
+			Task.Run (async () => {
+				try {
+					await Runtime.RunInMainThread (() => {
 
-					BuildOutput.ProcessProjects ();
-					treeBuildOutputNodes = BuildOutput.GetRootNodes (showDiagnostics);
-					search = new BuildOutputDataSearch (treeBuildOutputNodes);
+						BuildOutput.ProcessProjects ();
+						treeBuildOutputNodes = BuildOutput.GetRootNodes (showDiagnostics);
+						search = new BuildOutputDataSearch (treeBuildOutputNodes);
 
-					var buildOutputDataSource = new BuildOutputDataSource (treeBuildOutputNodes);
-					treeView.DataSource = buildOutputDataSource;
+						var buildOutputDataSource = new BuildOutputDataSource (treeBuildOutputNodes);
+						treeView.DataSource = buildOutputDataSource;
 
-					(treeView.Columns [0].Views [0] as ImageCellView).ImageField = buildOutputDataSource.ImageField;
-					(treeView.Columns [0].Views [1] as TextCellView).MarkupField = buildOutputDataSource.LabelField;
+						(treeView.Columns [0].Views [0] as ImageCellView).ImageField = buildOutputDataSource.ImageField;
+						(treeView.Columns [0].Views [1] as TextCellView).MarkupField = buildOutputDataSource.LabelField;
 
-					// Expand root nodes and nodes with errors
-					int rootsCount = buildOutputDataSource.GetChildrenCount (null);
-					for (int i = 0; i < rootsCount; i++) {
-						var root = buildOutputDataSource.GetChild (null, i) as BuildOutputNode;
-						treeView.ExpandRow (root, false);
-						ExpandChildrenWithErrors (treeView, buildOutputDataSource, root);
-					}
-				});
+						// Expand root nodes and nodes with errors
+						int rootsCount = buildOutputDataSource.GetChildrenCount (null);
+						for (int i = 0; i < rootsCount; i++) {
+							var root = buildOutputDataSource.GetChild (null, i) as BuildOutputNode;
+							treeView.ExpandRow (root, false);
+							ExpandChildrenWithErrors (treeView, buildOutputDataSource, root);
+						}
+						processingCompletion.TrySetResult (null);
+					});
+				} catch (Exception ex) {
+					processingCompletion.TrySetException (ex);
+				}
 			}, cts.Token);
 		}
 
