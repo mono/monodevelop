@@ -236,10 +236,4 @@
   <ItemGroup>
     <InternalsVisibleTo Include="MacPlatform.Tests" />
   </ItemGroup>
-  <ItemGroup>
-    <LibXammac Include="..\..\..\external\libxammac.dylib" />
-  </ItemGroup>
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="@(LibXammac)" DestinationFiles="$(OutputPath)\libxammac.dylib" SkipUnchangedFiles="true" />
-  </Target>
 </Project>
