@@ -553,10 +553,10 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		protected void UnsafeBeginTask (LogViewProgressMonitor monitor, string name, int totalWork)
 		{
-			var indent = monitor.Indent;
-			if (!string.IsNullOrEmpty (name)) {
-				var tag = indent.Indent ();
-				buffer.TagTable.Add (tag);
+			if (!string.IsNullOrEmpty (name) && monitor != null) {
+				var indent = monitor.Indent;
+				var t = indent.Indent ();
+				buffer.TagTable.Add (t);
 				indents.Push (name);
 			} else
 				indents.Push (null);
@@ -567,14 +567,17 @@ namespace MonoDevelop.Ide.Gui.Components
 				UnsafeAddText (null, Environment.NewLine, null);
 			}
 
-			monitor.Marker = buffer.CreateMark (name, buffer.EndIter, false);
+			var marker = buffer.CreateMark (name, buffer.EndIter, false);
+			if (monitor != null) {
+				monitor.Marker = marker;
+			}
 			UnsafeAddText (null, Environment.NewLine, null);
 
 			// Move the mark to the line before EndIter, so other text inserted at EndIter
 			// doesn't move this mark.
-			buffer.MoveMark (monitor.Marker, buffer.GetIterAtOffset (buffer.CharCount - 1));
+			buffer.MoveMark (marker, buffer.GetIterAtOffset (buffer.CharCount - 1));
 		}
-		
+
 		public void BeginTask (string name, int totalWork)
 		{
 			BeginTask (null, name, totalWork);
@@ -585,7 +588,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			var bt = new QueuedBeginTask (monitor, name, totalWork);
 			addQueuedUpdate (bt);
 		}
-		
+
 		public void EndTask ()
 		{
 			EndTask (null);
@@ -600,8 +603,10 @@ namespace MonoDevelop.Ide.Gui.Components
 		protected void UnsafeEndTask (LogViewProgressMonitor monitor)
 		{
 			if (indents.Count > 0 && indents.Pop () != null) {
-				buffer.TagTable.Remove (monitor.Indent.IndentTag);
-				monitor.Indent.Unindent ();
+				if (monitor != null) {
+					buffer.TagTable.Remove (monitor.Indent.IndentTag);
+					monitor.Indent.Unindent ();
+				}
 			}
 		}
 
@@ -736,7 +741,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public override void Execute (LogView pad)
 			{
-				pad.UnsafeAddText (Monitor.Marker, Text.ToString (), Tag);
+				pad.UnsafeAddText (Monitor?.Marker, Text.ToString (), Tag);
 			}
 			
 			public QueuedTextWrite (LogViewProgressMonitor monitor, string text, TextTag tag)
@@ -840,7 +845,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			if (clearConsole)
 				outputPad.Clear ();
-			internalLogger.TextWritten += outputPad.WriteConsoleLogText;
+			internalLogger.TextWritten += WriteConsoleLogText;
 			console = new LogViewProgressConsole (this);
 		}
 
@@ -877,6 +882,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (outputPad == null) throw GetDisposedException ();
 			outputPad.EndTask (this);
 			base.OnEndTask (name, totalWork, stepWork);
+		}
+
+		void WriteConsoleLogText (string text)
+		{
+			outputPad.WriteConsoleLogText (this, text);
 		}
 
 		Exception GetDisposedException ()
