@@ -39,6 +39,8 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using Microsoft.CodeAnalysis;
+using Mono.Addins;
+using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -51,11 +53,20 @@ namespace MonoDevelop.CodeIssues
 
 		public readonly static AnalyzersFromAssembly Empty = new AnalyzersFromAssembly ();
 
+		const string extensionPath = "/MonoDevelop/Refactoring/AnalyzerAssemblies";
+		string [] RuntimeEnabledAssemblies;
 		public AnalyzersFromAssembly ()
 		{
 			Analyzers = new List<CodeDiagnosticDescriptor> ();
 			Fixes = new List<CodeDiagnosticFixDescriptor> ();
 			Refactorings = new List<CodeRefactoringDescriptor> ();
+
+			LoadAnalyzerAssemblies ();
+		}
+
+		void LoadAnalyzerAssemblies ()
+		{
+			RuntimeEnabledAssemblies = AddinManager.GetExtensionNodes<AssemblyExtensionNode> (extensionPath).Select (b => b.FileName).ToArray ();
 		}
 
 		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
@@ -67,27 +78,22 @@ namespace MonoDevelop.CodeIssues
 			//we should be using proper MEF composition APIs as part of the addin scan
 			if (!force) {
 				var assemblyName = asm.GetName ().Name;
-				switch (assemblyName) {
-				//whitelist
-				case "RefactoringEssentials":
-				case "Refactoring Essentials":
-				case "Microsoft.CodeAnalysis.Features":
-				case "Microsoft.CodeAnalysis.VisualBasic.Features":
-				case "Microsoft.CodeAnalysis.CSharp.Features":
-					break;
-				case "ClrHeapAllocationAnalyzer":
-					if (!ClrHeapEnabled)
-						return;
-					break;
-				//blacklist
-				case "FSharpBinding":
-					return;
-				//addin assemblies that reference roslyn
-				default:
-					var refAsm = asm.GetReferencedAssemblies ();
-					if (refAsm.Any (a => a.Name == diagnosticAnalyzerAssembly) && refAsm.Any (a => a.Name == "MonoDevelop.Ide"))
+				if (Array.IndexOf (RuntimeEnabledAssemblies, assemblyName) == -1) {
+					switch (assemblyName) {
+					case "ClrHeapAllocationAnalyzer":
+						if (!ClrHeapEnabled)
+							return;
 						break;
-					return;
+					//blacklist
+					case "FSharpBinding":
+						return;
+					//addin assemblies that reference roslyn
+					default:
+						var refAsm = asm.GetReferencedAssemblies ();
+						if (refAsm.Any (a => a.Name == diagnosticAnalyzerAssembly) && refAsm.Any (a => a.Name == "MonoDevelop.Ide"))
+							break;
+						return;
+					}
 				}
 			}
 
