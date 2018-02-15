@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Xwt;
 using MonoDevelop.Core;
 
@@ -216,6 +217,27 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			return String.Empty;
+		}
+
+		static void ToString (this BuildOutputNode node, bool includeChildren, StringBuilder result, int tabPosition)
+		{
+			result.AppendFormat ("{0}{1}{2}", new String ('\t', tabPosition), node.FullMessage, Environment.NewLine);
+			if (includeChildren && node.HasChildren) {
+				tabPosition++;
+				foreach (var child in node.Children) {
+					child.ToString (includeChildren, result, tabPosition);
+				}
+			}
+		}
+
+		public static string ToString (this BuildOutputNode node, bool includeChildren)
+		{
+			var result = new StringBuilder ();
+			int tabPosition = 0;
+
+			node.ToString (includeChildren, result, tabPosition);
+
+			return result.ToString ();
 		}
 	}
 }
