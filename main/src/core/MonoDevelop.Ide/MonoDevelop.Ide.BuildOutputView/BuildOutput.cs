@@ -40,58 +40,6 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
-	static class BuildOutputNodeExtensions
-	{
-		public static BuildOutputNode SearchFirstNode (this IEnumerable<BuildOutputNode> sender, BuildOutputNodeType type, string search)
-		{
-			BuildOutputNode tmp;
-			foreach (var item in sender) {
-				tmp = item.SearchFirstNode (type, search);
-				if (tmp != null) {
-					return tmp;
-				}
-			}
-			return null;
-		}
-
-		public static void Search (this BuildOutputNode node, List<BuildOutputNode> matches, string pattern)
-		{
-			if ((node.Message?.IndexOf (pattern, StringComparison.OrdinalIgnoreCase) ?? -1) >= 0) {
-				matches.Add (node);
-			}
-
-			if (node.HasChildren) {
-				foreach (var child in node.Children) {
-					Search (child, matches, pattern);
-				}
-			}
-		}
-
-		public static BuildOutputNode SearchFirstNode (this BuildOutputNode buildOutputNode, BuildOutputNodeType type, string search)
-		{
-			if (type == buildOutputNode.NodeType) {
-				if (search == buildOutputNode.Message) {
-					return buildOutputNode;
-				} else {
-					//We don't want deep recursive into children, change to next item
-					return null;
-				}
-			}
-
-			//iterating into children
-			if (buildOutputNode.Children != null) {
-				BuildOutputNode tmp;
-				for (int i = 0; i < buildOutputNode.Children.Count; ++i) {
-					tmp = SearchFirstNode (buildOutputNode.Children[i], type, search);
-					if (tmp != null) {
-						return tmp;
-					}
-				}
-			}
-			return null;
-		}
-	}
-
 	class BuildOutput : IDisposable
 	{
 		BuildOutputProgressMonitor progressMonitor;
