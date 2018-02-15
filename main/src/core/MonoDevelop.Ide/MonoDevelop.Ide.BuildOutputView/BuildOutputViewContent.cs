@@ -96,19 +96,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 			base.Dispose ();
 		}
 
-		internal async Task GoToError (string description, string project)
+		internal Task GoToError (string description, string project)
 		{
-			await control.GoToError (description, project);
+			return control.GoToError (description, project);
 		}
 
-		internal async Task GoToWarning (string description, string project)
+		internal Task GoToWarning (string description, string project)
 		{
-			await control.GoToWarning (description, project);
+			return control.GoToWarning (description, project);
 		}
 
-		internal async Task GoToMessage (string description, string project)
+		internal Task GoToMessage (string description, string project)
 		{
-			await control.GoToMessage (description, project);
+			return control.GoToMessage (description, project);
 		}
 
 		[CommandHandler (SearchCommands.Find)]
