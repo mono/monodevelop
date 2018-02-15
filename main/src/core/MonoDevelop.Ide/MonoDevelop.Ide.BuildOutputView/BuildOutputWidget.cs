@@ -398,28 +398,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			searchEntry.Entry.GrabFocus ();
 		}
 
-		public void FindPrevious ()
-		{
-			var dataSource = treeView.DataSource as BuildOutputDataSource;
-			if (dataSource != null) {
-				var match = search.PreviousMatch ();
-				if (match != null) {
-					FocusRow (match);
-				}
-			}
-		}
-
-		public void FindNext ()
-		{
-			var dataSource = treeView.DataSource as BuildOutputDataSource;
-			if (dataSource != null) {
-				var match = search.NextMatch ();
-				if (match != null) {
-					FocusRow (match);
-				}
-			}
-		}
-
 		int currentIndex = -1;
 		public Control CreatePathWidget (int index)
 		{
