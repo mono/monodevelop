@@ -842,6 +842,10 @@ namespace Mono.TextEditor
 
 		protected override void OnFocusGrabbed()
 		{
+			if (currentFocus != FocusMargin.TextView && currentFocus != FocusMargin.None) {
+				var m = GetMargin (currentFocus);
+				m.FocusOut ();
+			}
 			currentFocus = FocusMargin.TextView;
 			base.OnFocusGrabbed();
 		}
