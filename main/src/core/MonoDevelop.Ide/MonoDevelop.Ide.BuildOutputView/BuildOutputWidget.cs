@@ -58,8 +58,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Button buttonSearchBackward;
 		Button buttonSearchForward;
 		Label resultInformLabel;
-		List<BuildOutputNode> treeBuildOutputNodes;
-		BuildOutputDataSearch search;
+		BuildOutputDataSearch currentSearch;
 
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
@@ -213,8 +212,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		async Task ExpandNode (string project, BuildOutputNodeType nodeType, string message) 
 		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource == null) {
+				return;
+			}
+
 			await processingCompletion.Task;
-			var projectNode = treeBuildOutputNodes.SearchFirstNode (BuildOutputNodeType.Project, project);
+			var projectNode = dataSource.RootNodes.SearchFirstNode (BuildOutputNodeType.Project, project);
 			var node = projectNode.SearchFirstNode (nodeType, message);
 			FocusRow (node);
 		}
@@ -291,18 +295,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (dataSource == null)
 				return;
 
-			Find (search.FirstMatch (searchEntry.Entry.Text));
+			currentSearch = new BuildOutputDataSearch (dataSource.RootNodes);
+			Find (currentSearch.FirstMatch (searchEntry.Entry.Text));
 		}
 
 		public void FindNext (object sender, EventArgs args)
 		{
-			var dataSource = treeView.DataSource as BuildOutputDataSource;
-			if (dataSource == null)
+			if (currentSearch == null) {
 				return;
+			}
 
-			Find (search.NextMatch ());
+			Find (currentSearch.NextMatch ());
 
-			if (search.SearchWrapped) {
+			if (currentSearch.SearchWrapped) {
 				IdeApp.Workbench.StatusBar.ShowMessage (
 					Gtk.Stock.Find, GettextCatalog.GetString ("Reached top, continued from bottom"));
 			} else {
@@ -312,13 +317,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public void FindPrevious (object sender, EventArgs e)
 		{
-			var dataSource = treeView.DataSource as BuildOutputDataSource;
-			if (dataSource == null)
+			if (currentSearch == null) {
 				return;
+			}
 
-			Find (search.PreviousMatch ());
+			Find (currentSearch.PreviousMatch ());
 
-			if (search.SearchWrapped) {
+			if (currentSearch.SearchWrapped) {
 				IdeApp.Workbench.StatusBar.ShowMessage (
 					Gtk.Stock.Find, GettextCatalog.GetString ("Reached bottom, continued from top"));
 			} else {
@@ -331,13 +336,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var dataSource = treeView.DataSource as BuildOutputDataSource;
 			if (dataSource == null)
 				return;
-			
-			IsSearchInProgress = node != null;
 
 			if (node != null) {
 				FocusRow (node);
 
-				resultInformLabel.Text = GettextCatalog.GetString ("{0} of {1}", search.CurrentAbsoluteMatchIndex, search.MatchesCount);
+				resultInformLabel.Text = GettextCatalog.GetString ("{0} of {1}", currentSearch.CurrentAbsoluteMatchIndex, currentSearch.MatchesCount);
 				resultInformLabel.TextColor = searchEntry.Style.Foreground (Gtk.StateType.Insensitive).ToXwtColor();
 			} else if (string.IsNullOrEmpty (searchEntry.Entry.Text)) {
 				resultInformLabel.Text = string.Empty;
@@ -348,8 +351,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 			resultInformLabel.Show ();
 
-			buttonSearchForward.Sensitive = search.MatchesCount > 0;
-			buttonSearchBackward.Sensitive = search.MatchesCount > 0; 
+			buttonSearchForward.Sensitive = currentSearch.MatchesCount > 0;
+			buttonSearchBackward.Sensitive = currentSearch.MatchesCount > 0; 
 		}
 
 		static string GetShortcut (object commandId)
@@ -389,11 +392,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 					BuildOutput.ProcessProjects ();
 
 					await Runtime.RunInMainThread (() => {
-					
-						treeBuildOutputNodes = BuildOutput.GetRootNodes (showDiagnostics);
-						search = new BuildOutputDataSearch (treeBuildOutputNodes);
+						currentSearch = null;
 
-						var buildOutputDataSource = new BuildOutputDataSource (treeBuildOutputNodes);
+						var buildOutputDataSource = new BuildOutputDataSource (BuildOutput.GetRootNodes (showDiagnostics));
 						treeView.DataSource = buildOutputDataSource;
 
 						(treeView.Columns [0].Views [0] as ImageCellView).ImageField = buildOutputDataSource.ImageField;
@@ -414,7 +415,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}, cts.Token);
 		}
 
-		public bool IsSearchInProgress { get; private set; } = false;
+		public bool IsSearchInProgress => currentSearch != null;
 
 		public void FocusOnSearchEntry ()
 		{

@@ -379,9 +379,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputDataSearch
 	{
-		readonly List<BuildOutputNode> rootNodes;
+		readonly IReadOnlyList<BuildOutputNode> rootNodes;
 
-		public BuildOutputDataSearch (List<BuildOutputNode> rootNodes)
+		public BuildOutputDataSearch (IReadOnlyList<BuildOutputNode> rootNodes)
 		{
 			this.rootNodes = rootNodes;
 		}
