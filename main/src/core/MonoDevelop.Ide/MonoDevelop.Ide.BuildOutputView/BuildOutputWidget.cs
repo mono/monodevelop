@@ -49,7 +49,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		const string binLogExtension = "binlog";
 
 		TreeView treeView;
-		ScrollView scrolledWindow;
 		CheckBox showDiagnosticsButton;
 		Button saveButton;
 		SearchEntry searchEntry;
@@ -179,6 +178,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			treeView = new TreeView ();
 			treeView.HeadersVisible = false;
+			treeView.BorderVisible = false;
 			treeView.Accessible.Identifier = "BuildOutputWidget.TreeView";
 			treeView.Accessible.Description = GettextCatalog.GetString ("Structured build output");
 			treeView.HorizontalScrollPolicy = ScrollPolicy.Never;
@@ -193,10 +193,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeColumn.Views.Add (textCell);
 			treeView.Columns.Add (treeColumn);
 
-			scrolledWindow = new ScrollView { BorderVisible = false };
-			scrolledWindow.Content = treeView;
-
-			PackStart (scrolledWindow, expand: true, fill: true);
+			PackStart (treeView, expand: true, fill: true);
 		}
 
 		internal Task GoToError (string description, string project)
