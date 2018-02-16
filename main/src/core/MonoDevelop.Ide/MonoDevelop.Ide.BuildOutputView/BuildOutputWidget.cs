@@ -39,11 +39,14 @@ using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutputWidget : VBox, IPathedDocument
 	{
+		const string binLogExtension = "binlog";
+
 		TreeView treeView;
 		ScrollView scrolledWindow;
 		CheckBox showDiagnosticsButton;
@@ -60,6 +63,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public BuildOutput BuildOutput { get; private set; }
 		public PathEntry [] CurrentPath { get; set; }
 
+		bool isDirty;
+		public bool IsDirty {
+			get => isDirty;
+			private set {
+				if (isDirty == value)
+					return;
+				isDirty = value;
+				saveButton.Sensitive = value;
+			}
+		}
+
 		public event EventHandler<string> FileSaved;
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 
@@ -68,6 +82,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			Initialize ();
 			ViewContentName = viewContentName;
 			SetupBuildOutput (output);
+			filePathLocation = FilePath.Empty;
 		}
 
 		public BuildOutputWidget (FilePath filePath)
@@ -76,8 +91,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			ViewContentName = filePath;
 			var output = new BuildOutput ();
+			filePathLocation = filePath;
 			output.Load (filePath.FullPath, false);
 			SetupBuildOutput (output);
+			IsDirty = false;
 		}
 
 		void SetupBuildOutput (BuildOutput output)
@@ -116,21 +133,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			saveButton.TooltipText = GettextCatalog.GetString ("Save build output");
 			saveButton.Accessible.Description = GettextCatalog.GetString ("Save build output");
 
-			saveButton.Clicked += async (sender, e) => {
-				const string binLogExtension = "binlog";
-				var dlg = new Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
-					TransientFor = IdeApp.Workbench.RootWindow,
-					InitialFileName = ViewContentName
-				};
-				if (dlg.Run ()) {
-					var outputFile = dlg.SelectedFile;
-					if (!outputFile.HasExtension (binLogExtension))
-						outputFile = outputFile.ChangeExtension (binLogExtension);
-					
-					await BuildOutput.Save (outputFile);
-					FileSaved?.Invoke (this, outputFile.FileName);
-				}
-			};
+			saveButton.Clicked += SaveButtonClickedAsync;
 
 			searchEntry = new SearchEntry ();
 			searchEntry.Accessible.SetLabel (GettextCatalog.GetString ("Search"));
@@ -138,7 +141,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			searchEntry.Accessible.Description = GettextCatalog.GetString ("Search the build log");
 			searchEntry.WidthRequest = 200;
 			searchEntry.Visible = true;
-
+			searchEntry.EmptyMessage = GettextCatalog.GetString ("Search Build Output");
+			           
 			resultInformLabel = new Label ();
 			searchEntry.AddLabelWidget ((Gtk.Label) resultInformLabel.ToGtkWidget());
 
@@ -166,7 +170,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			toolbar.AddSpace ();
 			toolbar.Add (searchEntry, false);
 			toolbar.Add (buttonSearchBackward.ToGtkWidget ());
-			toolbar.Add (buttonSearchForward.ToGtkWidget());
+			toolbar.Add (buttonSearchForward.ToGtkWidget ());
 
 			PackStart (toolbar.Container, expand: false, fill: true);
 
@@ -174,6 +178,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeView.HeadersVisible = false;
 			treeView.Accessible.Identifier = "BuildOutputWidget.TreeView";
 			treeView.Accessible.Description = GettextCatalog.GetString ("Structured build output");
+			treeView.HorizontalScrollPolicy = ScrollPolicy.Never;
 			treeView.SelectionChanged += TreeView_SelectionChanged;
 			var treeColumn = new ListViewColumn {
 				CanResize = false,
@@ -191,21 +196,36 @@ namespace MonoDevelop.Ide.BuildOutputView
 			PackStart (scrolledWindow, expand: true, fill: true);
 		}
 
+		async void SaveButtonClickedAsync (object sender, EventArgs e) => await SaveAs ();
+
+		FilePath filePathLocation;
+		public async Task SaveAs ()
+		{
+			var dlg = new Gui.Dialogs.OpenFileDialog (GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
+				TransientFor = IdeApp.Workbench.RootWindow,
+				InitialFileName = ViewContentName
+			};
+			if (dlg.Run ()) {
+				var outputFile = dlg.SelectedFile;
+				if (!outputFile.HasExtension (binLogExtension))
+					outputFile = outputFile.ChangeExtension (binLogExtension);
+
+				await BuildOutput.Save (outputFile);
+				FileSaved?.Invoke (this, outputFile.FileName);
+				filePathLocation = outputFile;
+				IsDirty = false;
+			}
+		}
+
 		void IndexChanged (int newIndex)
 		{
 			if (newIndex >= CurrentPath.Length)
 				return;
 
-			if (CurrentPath [newIndex].Tag != null) {
-				SelectRow (CurrentPath [newIndex].Tag as BuildOutputNode);
+			var node = CurrentPath [newIndex].Tag as BuildOutputNode;
+			if (node != null && node.HasChildren) {
+				MoveToMatch (node);
 			}
-		}
-
-		async void SelectRow (BuildOutputNode node)
-		{
-			await Runtime.RunInMainThread (() => {
-				treeView.SelectRow (node);
-			});
 		}
 
 		void TreeView_SelectionChanged (object sender, EventArgs e)
@@ -216,7 +236,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			var stack = new Stack<BuildOutputNode> ();
 
-			stack.Push (selectedNode);
+			if (selectedNode.HasChildren)
+				stack.Push (selectedNode);	
 			var parent = selectedNode.Parent;
 
 			while (parent != null) {
@@ -226,9 +247,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			var entries = new PathEntry [stack.Count];
 			var index = 0;
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
 			while (stack.Count > 0) {
 				var node = stack.Pop ();
-				var dataSource = treeView.DataSource as BuildOutputDataSource;
 				var pathEntry = new PathEntry (dataSource.GetValue (node, 0) as Xwt.Drawing.Image, node.Message);
 				pathEntry.Tag = node;
 				entries [index] = pathEntry;
@@ -240,8 +261,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		void UpdatePathBarEntries (PathEntry[] entries)
 		{
+			var previousPathEntry = CurrentPath;
 			pathBar.SetPath (entries);
-			this.CurrentPath = pathBar.Path;
+			CurrentPath = pathBar.Path;
+			PathChanged?.Invoke (this, new DocumentPathChangedEventArgs (CurrentPath));
 		}
 
 		void FindFirst (object sender, EventArgs args)
@@ -302,10 +325,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				resultInformLabel.Text = string.Empty;
 				IdeApp.Workbench.StatusBar.ShowReady ();
 			} else {
-				resultInformLabel.Text = GettextCatalog.GetString ("Not found");
+				resultInformLabel.Text = GettextCatalog.GetString ("0 of 0");
 				resultInformLabel.TextColor = Ide.Gui.Styles.Editor.SearchErrorForegroundColor;
 			}
 			resultInformLabel.Show ();
+
+			buttonSearchForward.Sensitive = dataSource.MatchesCount > 0;
+			buttonSearchBackward.Sensitive = dataSource.MatchesCount > 0; 
 		}
 
 		static string GetShortcut (object commandId)
@@ -343,6 +369,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			cts?.Cancel ();
 			cts = new CancellationTokenSource ();
+
+			IsDirty = true;
 
 			Task.Run (async () => {
 				await Runtime.RunInMainThread (() => {
@@ -396,6 +424,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			buttonSearchForward.Clicked -= FindNext;
 			searchEntry.Entry.Changed -= FindFirst;
 			searchEntry.Entry.Activated -= FindNext;
+			saveButton.Clicked -= SaveButtonClickedAsync;
 
 			base.Dispose(disposing);
 		}
@@ -413,12 +442,27 @@ namespace MonoDevelop.Ide.BuildOutputView
 				this.widget = widget;
 				Reset ();
 
-				list = (node == null || node.Parent == null) ? DataSource.RootNodes : node.Parent.Children;
+				list = (node == null || node.Parent == null) ? DataSource.RootNodes : NodesWithChildren (node.Parent.Children);
+			}
+
+			IReadOnlyList<BuildOutputNode> NodesWithChildren(IEnumerable<BuildOutputNode> nodes)
+			{
+				var aux = new List<BuildOutputNode> ();
+				foreach (var node in nodes) {
+					if (node.HasChildren)
+						aux.Add (node);
+				}
+
+				return aux;
 			}
 
 			public int IconCount => list.Count;
 
-			public void ActivateItem (int n) => widget.SelectRow (list [n]);
+			public void ActivateItem (int n)
+			{
+				if (list [n].HasChildren)
+					widget.MoveToMatch (list [n]);
+			}
 
 			public Xwt.Drawing.Image GetIcon (int n) => DataSource.GetValue (list [n], 0) as Xwt.Drawing.Image;
 
