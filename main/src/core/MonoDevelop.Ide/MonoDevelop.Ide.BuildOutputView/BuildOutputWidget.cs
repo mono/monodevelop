@@ -249,17 +249,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		void IndexChanged (int newIndex)
-		{
-			if (newIndex >= CurrentPath.Length)
-				return;
-
-			var node = CurrentPath [newIndex].Tag as BuildOutputNode;
-			if (node != null && node.HasChildren) {
-				FocusRow (node);
-			}
-		}
-
 		void TreeView_SelectionChanged (object sender, EventArgs e)
 		{
 			var selectedNode = treeView.SelectedRow as BuildOutputNode;
@@ -439,7 +428,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public Control CreatePathWidget (int index)
 		{
 			if (currentIndex != index) {
-				IndexChanged (index);
 				currentIndex = index;
 			}
 
@@ -456,7 +444,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return window;
 		}
 
-		protected override void Dispose(bool disposing)
+		protected override void Dispose (bool disposing)
 		{
 			buttonSearchBackward.Clicked -= FindPrevious;
 			buttonSearchForward.Clicked -= FindNext;
