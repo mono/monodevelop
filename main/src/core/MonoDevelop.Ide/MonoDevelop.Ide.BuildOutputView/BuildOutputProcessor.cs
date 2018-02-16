@@ -79,7 +79,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 				rootNodes.Add (node);
 			} else {
 				currentNode.AddChild (node);
-				node.Parent = currentNode;
 			}
 
 			if (isStart) {

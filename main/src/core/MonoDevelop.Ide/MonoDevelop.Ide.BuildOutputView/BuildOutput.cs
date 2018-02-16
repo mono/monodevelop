@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				// as nodes are requested
 				var nodes = new List<BuildOutputNode> ();
 				foreach (var root in GetProjectRootNodes ()) {
-					nodes.Add (new FilteredBuildOutputNode (root, null, includeDiagnostics));
+					nodes.Add (new FilteredBuildOutputNode (root, includeDiagnostics));
 				}
 				return nodes;
 			}

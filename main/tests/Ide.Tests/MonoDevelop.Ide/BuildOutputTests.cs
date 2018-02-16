@@ -63,6 +63,20 @@ namespace MonoDevelop.Ide
 		}
 
 		[Test]
+		public void BuildOutputNode_Children ()
+		{
+			var node = new BuildOutputNode ();
+			Assert.IsFalse (node.HasChildren);
+			Assert.IsTrue (node.Children == null);
+			var childNode = new BuildOutputNode ();
+			node.AddChild (childNode);
+			Assert.IsTrue (node.HasChildren);
+			Assert.IsTrue (node.Children != null);
+			Assert.AreSame (childNode.Parent, node);
+			Assert.AreEqual (1, node.Children.Count);
+		}
+
+		[Test]
 		public void CustomProject_DataSearch ()
 		{
 			var bo = new BuildOutput ();
