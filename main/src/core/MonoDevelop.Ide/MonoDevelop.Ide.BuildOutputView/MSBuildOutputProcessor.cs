@@ -70,7 +70,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_BuildStarted (object sender, BuildStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Build, stringPool.Add (e.Message), stringPool.Add (e.Message), true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Build, 
+			         stringPool.Add (e.Message), 
+			         stringPool.Add (e.Message), 
+			         true,
+			         e.Timestamp);
 		}
 
 		private void BinLog_BuildFinished (object sender, BuildFinishedEventArgs e)
@@ -80,12 +84,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_ErrorRaised (object sender, BuildErrorEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Error, stringPool.Add (e.Message), stringPool.Add (e.Message), false, e.Timestamp);
+			AddNode (BuildOutputNodeType.Error, 
+			         stringPool.Add (e.Message), 
+			         stringPool.Add (e.Message), 
+			         false,
+			         e.Timestamp,
+			         e.File,
+			         e.ProjectFile,
+			         e.LineNumber);
 		}
 
 		private void BinLog_WarningRaised (object sender, BuildWarningEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Warning, stringPool.Add (e.Message), stringPool.Add (e.Message), false, e.Timestamp);
+			AddNode (BuildOutputNodeType.Warning, 
+			         stringPool.Add (e.Message), 
+			         stringPool.Add (e.Message), 
+			         false,
+			         e.Timestamp,
+			         e.File,
+			         e.ProjectFile,
+			         e.LineNumber);
 		}
 
 		void BinlogReader_MessageRaised (object sender, BuildMessageEventArgs e)
@@ -174,7 +192,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			string shortMessage = stringPool.Add (e.Message.Replace ("\n\r", " ").Replace ('\n', ' '));
 			processor.AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message,
-			                   shortMessage, stringPool.Add (e.Message), false, e.Timestamp);
+			                   shortMessage, stringPool.Add (e.Message),
+			                   false, 
+			                   e.Timestamp,
+			                   e.File,
+			                   e.ProjectFile,
+			                   e.LineNumber);
 		}
 	}
 }

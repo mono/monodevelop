@@ -68,12 +68,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 			NeedsProcessing = false;
 		}
 
-		public void AddNode (BuildOutputNodeType nodeType, string message, string fullMessage, bool isStart, DateTime startTime)
+		public void AddNode (BuildOutputNodeType nodeType, string message, string fullMessage, bool isStart, DateTime startTime, string file = null, string project = null, int lineNumber = default(int))
 		{
 			var node = new BuildOutputNode {
 				NodeType = nodeType,
 				Message = message,
 				FullMessage = fullMessage,
+				File = file,
+				Project = project,
+				LineNumber = lineNumber,
 				StartTime = startTime };
 			if (currentNode == null) {
 				rootNodes.Add (node);
