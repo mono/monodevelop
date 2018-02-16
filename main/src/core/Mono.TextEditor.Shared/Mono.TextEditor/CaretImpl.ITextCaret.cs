@@ -103,7 +103,9 @@ namespace Mono.TextEditor
 		{
 			//Some unit tests don't initialize full UI representation of MonoTextEditor
 			//which means they don't depend on ITextCaret implementation, so we can return here
-			if (TextEditor == null)
+			//If something is using MonoTextEditor directly(e.g. DiffView) and is not initializing ITextView
+			//TextBuffer is null, in that case don't depend on ITextCaret implementation, so we can return here
+			if (TextEditor?.TextBuffer == null)
 				return;
 			// MD doesn't fire textEditor.CaretPositionChanged until after the command has gone completely through the command chain. 
 			//   Too much VS stuff depends on it getting updated earlier, so we'll use this event which fires earlier.
