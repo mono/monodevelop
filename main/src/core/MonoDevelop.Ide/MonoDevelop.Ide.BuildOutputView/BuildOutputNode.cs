@@ -69,6 +69,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			children.Add (child);
 
+			child.Parent = this;
 			return child;
 		}
 
@@ -106,8 +107,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			parametersNode.AddChild (new BuildOutputNode {
 				NodeType = BuildOutputNodeType.Diagnostics,
 				Message = message,
-				FullMessage = fullMessage,
-				Parent = parametersNode
+				FullMessage = fullMessage
 			});
 		}
 
@@ -120,11 +120,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 		bool includeDiagnostics;
 		bool hasBeenFiltered = false;
 
-		public FilteredBuildOutputNode (BuildOutputNode master, FilteredBuildOutputNode parent, bool includeDiagnostics)
+		public FilteredBuildOutputNode (BuildOutputNode master, bool includeDiagnostics)
 		{
 			masterNode = master;
 			this.includeDiagnostics = includeDiagnostics;
-			Parent = parent;
 		}
 
 		public override BuildOutputNodeType NodeType { get => masterNode.NodeType; set => masterNode.NodeType = value; }
@@ -144,7 +143,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 														(!child.HasData && !child.HasErrors && !child.HasWarnings))) {
 								continue;
 							}
-							AddChild (new FilteredBuildOutputNode (child, this, includeDiagnostics));
+							AddChild (new FilteredBuildOutputNode (child, includeDiagnostics));
 						}
 					}
 
