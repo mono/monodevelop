@@ -228,7 +228,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeView.FocusedRow = match;
 		}
 
-		async void SaveButtonClickedAsync (object sender, EventArgs e) => await Save ();
 		async void SaveButtonClickedAsync (object sender, EventArgs e) => await SaveAs ();
 
 		FilePath filePathLocation;
@@ -257,7 +256,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			var node = CurrentPath [newIndex].Tag as BuildOutputNode;
 			if (node != null && node.HasChildren) {
-				MoveToMatch (node);
+				FocusRow (node);
 			}
 		}
 
@@ -363,8 +362,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 			resultInformLabel.Show ();
 
-			buttonSearchForward.Sensitive = dataSource.MatchesCount > 0;
-			buttonSearchBackward.Sensitive = dataSource.MatchesCount > 0; 
+			buttonSearchForward.Sensitive = search.MatchesCount > 0;
+			buttonSearchBackward.Sensitive = search.MatchesCount > 0; 
 		}
 
 		static string GetShortcut (object commandId)
@@ -500,7 +499,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			public void ActivateItem (int n)
 			{
 				if (list [n].HasChildren)
-					widget.MoveToMatch (list [n]);
+					widget.FocusRow (list [n]);
 			}
 
 			public Xwt.Drawing.Image GetIcon (int n) => DataSource.GetValue (list [n], 0) as Xwt.Drawing.Image;
