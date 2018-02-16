@@ -264,7 +264,12 @@ namespace Mono.TextEditor
 			UpdateMarkers ();
 			focusedIndex = 0;
 
-			editor.RedrawMargin (this);
+			if (focusMarkers.Count == 0) {
+				return;
+			}
+
+			var marker = focusMarkers[0];
+			editor.CenterTo (marker.LineSegment.LineNumber, 1);
 		}
 
 		protected internal override void FocusOut()
@@ -298,22 +303,29 @@ namespace Mono.TextEditor
 				if (focusedIndex >= focusMarkers.Count) {
 					focusedIndex = focusMarkers.Count - 1;
 				}
+
+				editor.RedrawMargin (this);
 				break;
 
 			case ItemCommand.FocusNextItem:
 				focusedIndex++;
 
 				SanitizeFocusedIndex ();
+
+				marker = focusMarkers[focusedIndex] as MarginMarker;
+				editor.CenterTo (marker.LineSegment.LineNumber, 1);
 				break;
 
 			case ItemCommand.FocusPreviousItem:
 				focusedIndex--;
 
 				SanitizeFocusedIndex ();
+
+				marker = focusMarkers[focusedIndex] as MarginMarker;
+				editor.CenterTo (marker.LineSegment.LineNumber, 1);
 				break;
 			}
 
-			editor.RedrawMargin (this);
 			return true;
 		}
 

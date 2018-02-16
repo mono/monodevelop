@@ -545,8 +545,6 @@ namespace Mono.TextEditor
 			if (focusSegments.Length > 0) {
 				HighlightFold (focusSegments[0]);
 			}
-
-			editor.RedrawMargin (this);
 		}
 
 		protected internal override void FocusOut()
@@ -581,8 +579,7 @@ namespace Mono.TextEditor
 
 			editor.TextViewMargin.DisposeLayoutDict ();
 			editor.TextViewMargin.BackgroundRenderer = new FoldingScreenbackgroundRenderer (editor, list);
-			editor.QueueDraw ();
-
+			editor.ScrollTo (line.LineNumber, 0);
 		}
 	}
 
