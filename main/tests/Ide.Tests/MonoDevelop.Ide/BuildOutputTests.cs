@@ -36,6 +36,10 @@ namespace MonoDevelop.Ide
 {
 	public class BuildOutputTests : IdeTestBase
 	{
+		const string BuildMessage = "Build started";
+		const string ErrorMessage = "Error in my test";
+		const string ProjectMessage = "ProjectError.csproj";
+
 		[Test]
 		public void ProgressMonitor_Instantiation ()
 		{
@@ -104,6 +108,44 @@ namespace MonoDevelop.Ide
 			}
 
 			Assert.That (matches, Is.EqualTo (100));
+		}
+
+		[Test]
+		public void BuildOutputNode_Search ()
+		{
+			var result = GetTestNodes ();
+			var results = new List<BuildOutputNode> ();
+			result [0].Search (results, "Error");
+			Assert.AreEqual (2, results.Count, "#1");
+		}
+
+		[Test]
+		public void BuildOutputNode_SearchFirstNode ()
+		{
+			var result = GetTestNodes ();
+			var node = result [0].SearchFirstNode (BuildOutputNodeType.Error);
+			Assert.IsNotNull (node);
+			node = result [0].SearchFirstNode (BuildOutputNodeType.Error, ErrorMessage);
+			Assert.IsNotNull (node);
+			node = result [0].SearchFirstNode (BuildOutputNodeType.Error, ErrorMessage + " ");
+			Assert.IsNull (node);
+		}
+
+		List<BuildOutputNode> GetTestNodes ()
+		{
+			var result = new List<BuildOutputNode> ();
+			var buildNode = new BuildOutputNode () { NodeType = BuildOutputNodeType.Build, Message = BuildMessage };
+			result.Add (buildNode);
+			var projectNode = new BuildOutputNode () { NodeType = BuildOutputNodeType.Project, Message = ProjectMessage };
+			result.Add (projectNode);
+			buildNode.AddChild (projectNode);
+			var targetNode = new BuildOutputNode () { NodeType = BuildOutputNodeType.Target, Message = "Csc" };
+			result.Add (targetNode);
+			projectNode.AddChild (targetNode);
+			var alertNode = new BuildOutputNode () { NodeType = BuildOutputNodeType.Error, Message = ErrorMessage };
+			result.Add (alertNode);
+			targetNode.AddChild (alertNode);
+			return result;
 		}
 	}
 }
