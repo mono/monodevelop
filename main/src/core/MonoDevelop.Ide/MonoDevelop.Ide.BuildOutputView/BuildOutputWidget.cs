@@ -289,13 +289,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 		void TreeView_ButtonPressed (object sender, ButtonEventArgs e)
 		{
 			if (e.Button == PointerButton.Right) {
-				var menu = new Menu ();
+				var menu = new ContextMenu ();
 
-				var copyElementMenu = new MenuItem (GettextCatalog.GetString ("Copy Element Output"));
+				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy Element Output"));
 				copyElementMenu.Clicked += CopyElementMenu_Clicked;
-
 				menu.Items.Add (copyElementMenu);
-				menu.Popup (treeView, e.X, e.Y);
+
+				menu.Show (treeView.ToGtkWidget (), (int) e.X, (int) e.Y, () => {
+					copyElementMenu.Clicked -= CopyElementMenu_Clicked;
+				});
 			}
 		}
 
