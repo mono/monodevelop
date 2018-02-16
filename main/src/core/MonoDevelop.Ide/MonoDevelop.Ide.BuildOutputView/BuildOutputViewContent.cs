@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		[CommandHandler (FileCommands.Save)]
 		public override Task Save ()
 		{
-			return control.Save ();
+			return control.SaveAs ();
 		}
 
 		[CommandUpdateHandler (FileCommands.Save)]
@@ -152,6 +152,5 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			cinfo.Enabled = control.IsDirty;
 		}
-
 	}
 }
