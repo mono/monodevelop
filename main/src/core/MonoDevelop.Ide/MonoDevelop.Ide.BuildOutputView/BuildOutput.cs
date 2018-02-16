@@ -418,10 +418,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			currentSearchPattern = pattern;
 			currentMatchIndex = -1;
 
-			// Perform search
-			foreach (var root in rootNodes) {
-				root.Search (currentSearchMatches, currentSearchPattern);
-			}
+			if (!string.IsNullOrEmpty (pattern)) {
+				// Perform search
+				foreach (var root in rootNodes) {
+					root.Search (currentSearchMatches, currentSearchPattern);
+				}
 
 				if (currentSearchMatches.Count > 0) {
 					currentMatchIndex = 0;
