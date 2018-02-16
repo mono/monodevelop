@@ -129,12 +129,11 @@ namespace MonoDevelop.Components.DockNotebook
 			var single = notebooks [0];
 			for (int n = 1; n < notebooks.Length; n++) {
 				var nb = notebooks [n];
-				var tabCount = nb.TabCount;
 
-				for (var i = 0; i < tabCount; i++) {
-					var tab = nb.GetTab (0);
+				var tabs = nb.AllTabs.ToArray ();
+				foreach (var tab in tabs) {
 					var window = (SdiWorkspaceWindow)tab.Content;
-					nb.RemoveTab (0, false);
+					nb.RemoveTab (tab, false);
 
 					var newTab = single.AddTab (window);
 					window.SetDockNotebook (single, newTab);
@@ -168,7 +167,7 @@ namespace MonoDevelop.Components.DockNotebook
 		static void HandlePageRemoved (object sender, EventArgs e)
 		{
 			var control = (DockNotebook)sender;
-			if (control.TabCount != 0)
+			if (control.AllTabCount != 0)
 				return;
 			var controlContainer = control.Parent as DockNotebookContainer;
 			if (controlContainer == null || controlContainer.Parent == null || controlContainer.isMasterTab)

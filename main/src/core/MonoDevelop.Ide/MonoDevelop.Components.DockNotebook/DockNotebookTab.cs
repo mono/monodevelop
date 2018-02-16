@@ -47,7 +47,7 @@ namespace MonoDevelop.Components.DockNotebook
 		Xwt.Drawing.Image icon;
 		Widget content;
 
-		Gdk.Rectangle allocation;
+        Gdk.Rectangle allocation;
 		internal Gdk.Rectangle Allocation {
 			get {
 				return allocation;
@@ -69,6 +69,9 @@ namespace MonoDevelop.Components.DockNotebook
 				allocation = value;
 			}
 		}
+
+		bool isPreview;
+		internal bool IsPreview => isPreview;
 
 		Cairo.Rectangle closeButtonActiveArea;
 		internal Cairo.Rectangle CloseButtonActiveArea {
@@ -214,6 +217,8 @@ namespace MonoDevelop.Components.DockNotebook
 			set {
 				content = value;
 				notebook.ShowContent (this);
+				isPreview = (Content as Ide.Gui.SdiWorkspaceWindow)?.ViewContent.IsPreview ?? false;
+				ContentChanged?.Invoke (this, EventArgs.Empty);
 			}
 		}
 
@@ -267,6 +272,7 @@ namespace MonoDevelop.Components.DockNotebook
 			strip.QueueDraw ();
 		}
 
+		internal event EventHandler ContentChanged;
 		internal event EventHandler AccessibilityPressTab;
 		internal event EventHandler AccessibilityPressCloseButton;
 		internal event EventHandler AccessibilityShowMenu;

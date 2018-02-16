@@ -159,10 +159,10 @@ namespace MonoDevelop.Components.DockNotebook
 			if (CanPlaceInHoverNotebook ()) {
 				var container = hoverNotebook.Container;
 				var alloc = hoverNotebook.Allocation;
-				var targetTabCount = hoverNotebook.TabCount;
+				var targetTabCount = hoverNotebook.AllTabCount;
 				var overTabStrip = y <= oy + hoverNotebook.BarHeight;
 
-				if (hoverNotebook.Tabs.Contains (frame))
+				if (hoverNotebook.AllTabs.Contains (frame))
 					targetTabCount--; // Current is going to be removed, so it doesn't count
 
 				if (targetTabCount > 0 && x <= ox + alloc.Width / 3 && !overTabStrip) {
@@ -208,7 +208,7 @@ namespace MonoDevelop.Components.DockNotebook
 					alloc.Height, 
 					false
 				); 
-				if (!hoverNotebook.Tabs.Contains (frame))
+				if (!hoverNotebook.AllTabs.Contains (frame))
 					placementDelegate = PlaceInHoverNotebook;
 				else
 					placementDelegate = null;
@@ -349,7 +349,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 				if (placementDelegate != null) {
 					var tab = notebook.CurrentTab;
-					notebook.RemoveTab (tab.Index, true); 
+					notebook.RemoveTab (tab, true); 
 					placementDelegate (notebook, tab, allocation, curX, curY);
 				} else {
 					((SdiWorkspaceWindow)frame.Content).SelectWindow ();

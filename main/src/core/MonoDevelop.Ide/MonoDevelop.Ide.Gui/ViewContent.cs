@@ -89,6 +89,8 @@ namespace MonoDevelop.Ide.Gui
 			get { return true; }
 		}
 
+		public virtual bool IsPreview => false;
+
 		public virtual object GetDocumentObject ()
 		{
 			string path = IsUntitled ? UntitledName : ContentName;

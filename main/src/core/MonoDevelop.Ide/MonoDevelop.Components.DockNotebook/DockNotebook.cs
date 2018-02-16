@@ -33,6 +33,7 @@ using System.Collections.ObjectModel;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -41,10 +42,12 @@ namespace MonoDevelop.Components.DockNotebook
 	class DockNotebook : Gtk.VBox
 	{
 		List<DockNotebookTab> pages = new List<DockNotebookTab> ();
-		List<DockNotebookTab> pagesHistory = new List<DockNotebookTab> ();
+		List<DockNotebookTab> previewPages = new List<DockNotebookTab> ();
+		List <DockNotebookTab> pagesHistory = new List<DockNotebookTab> ();
 		TabStrip tabStrip;
 		Gtk.EventBox contentBox;
 		ReadOnlyCollection<DockNotebookTab> pagesCol;
+		ReadOnlyCollection<DockNotebookTab> previewPagesCol;
 		const int MAX_LASTACTIVEWINDOWS = 10;
 
 		DockNotebookTab currentTab;
@@ -66,6 +69,7 @@ namespace MonoDevelop.Components.DockNotebook
 		public DockNotebook ()
 		{
 			pagesCol = new ReadOnlyCollection<DockNotebookTab> (pages);
+			previewPagesCol = new ReadOnlyCollection<DockNotebookTab> (previewPages);
 			AddEvents ((Int32)(EventMask.AllEventsMask));
 
 			tabStrip = new TabStrip (this);
@@ -164,8 +168,23 @@ namespace MonoDevelop.Components.DockNotebook
 			set { tabStrip.NavigationButtonsVisible = value; }
 		}
 
-		public ReadOnlyCollection<DockNotebookTab> Tabs {
+		public IEnumerable<DockNotebookTab> AllTabs {
+			get { 
+				foreach (var item in pagesCol) {
+					yield return item;
+				}
+				foreach (var item in previewPagesCol) {
+					yield return item;
+				}
+			}
+		}
+
+		public ReadOnlyCollection<DockNotebookTab> NormalTabs {
 			get { return pagesCol; }
+		}
+
+		public ReadOnlyCollection<DockNotebookTab> PreviewTabs {
+			get { return previewPagesCol; }
 		}
 
 		public DockNotebookTab CurrentTab {
@@ -196,20 +215,16 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 		}
 
-		public int CurrentTabIndex {
-			get { return currentTab != null ? currentTab.Index : -1; }
-			set { 
-				if (value > pages.Count - 1)
-					CurrentTab = null;
-				else
-					CurrentTab = pages [value]; 
-			}
-		}
-
-		void SelectLastActiveTab (int lastClosed)
+		void SelectLastActiveTab (DockNotebookTab lastClosed)
 		{
-			if (pages.Count == 0) {
-				CurrentTab = null;
+			var container = GetCollection (lastClosed.IsPreview);
+			if (container.Count == 0) {
+				var otherTabs = GetCollection (!lastClosed.IsPreview);
+				if (otherTabs.Count == 0){
+					CurrentTab = null;
+				} else {
+					CurrentTab = otherTabs.Last ();
+				}
 				return;
 			}
 
@@ -219,15 +234,23 @@ namespace MonoDevelop.Components.DockNotebook
 			if (pagesHistory.Count > 0)
 				CurrentTab = pagesHistory [0];
 			else {
-				if (lastClosed + 1 < pages.Count)
-					CurrentTab = pages [lastClosed + 1];
+				if (lastClosed.Index + 1 < container.Count)
+					CurrentTab = container [lastClosed.Index + 1];
 				else
-					CurrentTab = pages [lastClosed - 1];
+					CurrentTab = container [lastClosed.Index - 1];
 			}
 		}
 
-		public int TabCount {
+		public int NormalTabCount {
 			get { return pages.Count; }
+		}
+
+		public int AllTabCount {
+			get { return NormalTabCount + PreviewTabCount; }
+		}
+
+		public int PreviewTabCount {
+			get { return previewPages.Count; }
 		}
 
 		public int BarHeight {
@@ -284,7 +307,7 @@ namespace MonoDevelop.Components.DockNotebook
 			return Container.GetPreviousNotebook (this);
 		}
 
-		public Action<DockNotebook, int,Gdk.EventButton> DoPopupMenu { get; set; }
+		public Action<DockNotebook, DockNotebookTab, Gdk.EventButton> DoPopupMenu { get; set; }
 
 		public DockNotebookTab AddTab (Gtk.Widget content = null)
 		{
@@ -303,7 +326,7 @@ namespace MonoDevelop.Components.DockNotebook
 			} else {
 				pages.Insert (index, tab);
 				tab.Index = index;
-				UpdateIndexes (index + 1);
+				UpdateIndexes (pages, index + 1);
 			}
 
 			pagesHistory.Add (tab);
@@ -322,55 +345,90 @@ namespace MonoDevelop.Components.DockNotebook
 			return tab;
 		}
 
-		void UpdateIndexes (int startIndex)
+		void UpdateIndexes (List<DockNotebookTab> tabs, int startIndex)
 		{
-			for (int n=startIndex; n < pages.Count; n++)
-				((DockNotebookTab)pages [n]).Index = n;
+			for (int n = startIndex; n < tabs.Count; n++)
+				((DockNotebookTab)tabs [n]).Index = n;
 		}
 
 		public DockNotebookTab GetTab (int n)
 		{
-			if (n < 0 || n >= pages.Count)
-				return null;
-			else
-				return pages [n];
+			return GetBaseTab (pages, n);
 		}
 
-		public void RemoveTab (int page, bool animate)
+		public DockNotebookTab GetPreviewTab (int n)
 		{
-			var tab = pages [page];
+			return GetBaseTab (previewPages, n);
+		}
+
+		DockNotebookTab GetBaseTab (List<DockNotebookTab> col, int n)
+		{
+			if (n < 0 || n >= col.Count)
+				return null;
+			else
+				return col [n];
+		}
+
+		public void RemoveTab (DockNotebookTab tab, bool animate)
+		{
+			var list = GetCollection (tab.IsPreview);
+
 			if (animate)
 				tabStrip.StartCloseAnimation ((DockNotebookTab)tab);
 			pagesHistory.Remove (tab);
-			if (pages.Count == 1)
-				CurrentTab = null;
-			else if (page == CurrentTabIndex)
-				SelectLastActiveTab (page);
-			pages.RemoveAt (page);
-			UpdateIndexes (page);
+
+			if (list.Count == 1) {
+				var otherTabs = GetCollection (!tab.IsPreview);
+				if (otherTabs.Count == 0) {
+					CurrentTab = null;
+				} else {
+					CurrentTab = otherTabs.Last ();
+				}
+
+			} else if (tab == CurrentTab) {
+				SelectLastActiveTab (tab);
+			}
+
+			list.Remove (tab);
+			UpdateIndexes (list, tab.Index);
+
 			tabStrip.Update ();
-			tabStrip.DropDownButton.Sensitive = pages.Count > 0;
+			tabStrip.DropDownButton.Sensitive = list.Count > 0;
 
 			PageRemoved?.Invoke (this, new TabEventArgs { Tab = tab });
 
 			NotebookChanged?.Invoke (this, EventArgs.Empty);
 		}
 
+		internal void ChangeTabToPreview (DockNotebookTab tab)
+		{
+			if (pages.Exists (s => s == tab)){
+				pages.Remove (tab);
+			}
+
+			previewPages.Add (tab);
+
+			UpdateIndexes (pages, tab.Index);
+			UpdateIndexes (previewPages, 0);
+		}
+
 		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab)
 		{
+			var container = GetCollection (tab.IsPreview);
 			if (tab == targetTab)
 				return;
 			int targetPos = targetTab.Index;
 			if (tab.Index > targetTab.Index) {
-				pages.RemoveAt (tab.Index);
-				pages.Insert (targetPos, tab);
+				container.RemoveAt (tab.Index);
+				container.Insert (targetPos, tab);
 			} else {
-				pages.Insert (targetPos + 1, tab);
-				pages.RemoveAt (tab.Index);
+				container.Insert (targetPos + 1, tab);
+				container.RemoveAt (tab.Index);
 			}
-			if (TabsReordered != null)
+			if (TabsReordered != null) {
 				TabsReordered (tab, tab.Index, targetPos);
-			UpdateIndexes (Math.Min (tab.Index, targetPos));
+			}
+			UpdateIndexes (container, Math.Min (tab.Index, targetPos));
 			tabStrip.Update ();
 		}
 
@@ -410,6 +468,12 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 			base.OnDestroyed ();
 		}
+
+		internal bool ContainsTab (DockNotebookTab tab) => GetReadOnlyCollectionForTab (tab).Contains (tab);
+
+		List<DockNotebookTab> GetCollection (bool isPreview) => isPreview ? previewPages : pages;
+
+		public ReadOnlyCollection<DockNotebookTab> GetReadOnlyCollectionForTab (DockNotebookTab tab) => tab.IsPreview ? PreviewTabs : NormalTabs;
 	}
 
 	class DockNotebookChangedArgs : EventArgs

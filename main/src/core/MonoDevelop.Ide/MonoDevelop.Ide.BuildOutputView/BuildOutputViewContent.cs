@@ -38,6 +38,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		FilePath filename;
 		BuildOutputWidget control;
 
+		bool isPreview = false;
+		public override bool IsPreview => isPreview;
+
 		public BuildOutputViewContent (FilePath filename)
 		{
 			this.filename = filename;
@@ -51,6 +54,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			ContentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("hh:mm:ss")}.binlog";
 			control = new BuildOutputWidget (buildOutput, ContentName);
 			control.FileSaved += FileNameChanged;
+			isPreview = true;
 		}
 
 		void FileNameChanged (object sender, string newName)

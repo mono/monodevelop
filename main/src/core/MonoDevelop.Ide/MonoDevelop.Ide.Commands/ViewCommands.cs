@@ -330,7 +330,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Checked = DockNotebook.ActiveNotebook?.Container?.SplitCount > 0;
-			info.Enabled = (DockNotebook.ActiveNotebook?.TabCount > 1 &&
+			info.Enabled = (DockNotebook.ActiveNotebook?.AllTabCount > 1 &&
 			                DockNotebook.ActiveNotebook?.Container?.AllowRightInsert == true) || DockNotebook.ActiveNotebook?.Container?.SplitCount > 0;
 		}
 
@@ -344,7 +344,8 @@ namespace MonoDevelop.Ide.Commands
 			var container = DockNotebook.ActiveNotebook.Container;
 			var tab = DockNotebook.ActiveNotebook.CurrentTab;
 			var window = (SdiWorkspaceWindow)tab.Content;
-			DockNotebook.ActiveNotebook.RemoveTab (tab.Index, false);
+
+			DockNotebook.ActiveNotebook.RemoveTab (tab, false);
 			container.InsertRight (window);
 			window.SelectWindow ();
 			IdeApp.Workbench.UnlockActiveWindowChangeEvent ();
@@ -356,7 +357,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Checked = DockNotebook.ActiveNotebook?.Container?.SplitCount < 1;
-			info.Enabled = (DockNotebook.ActiveNotebook?.TabCount > 1 &&
+			info.Enabled = (DockNotebook.ActiveNotebook?.AllTabCount > 1 &&
 			                DockNotebook.ActiveNotebook?.Container?.AllowRightInsert == true) || DockNotebook.ActiveNotebook?.Container?.SplitCount > 0;
 		}
 
