@@ -44,24 +44,31 @@ namespace MonoDevelop.UnitTesting
 	{
 		const string TestMarkersPath = "/MonoDevelop/UnitTesting/UnitTestMarkers";
 		static IUnitTestMarkers [] unitTestMarkers;
+		bool initialized;
 
-		static AbstractUnitTestTextEditorExtension ()
+		AbstractUnitTestTextEditorExtension ()
 		{
 			AddinManager.AddExtensionNodeHandler (TestMarkersPath, HandleExtensionNodeEventHandler);
 		}
 
-		static void HandleExtensionNodeEventHandler (object sender, ExtensionNodeEventArgs args)
+		void HandleExtensionNodeEventHandler (object sender, ExtensionNodeEventArgs args)
 		{
 			unitTestMarkers = AddinManager.GetExtensionNodes (TestMarkersPath).OfType<IUnitTestMarkers> ().ToArray ();
+			if (!initialized) {
+				Initialize ();
+			}
 		}
 
 		protected override void Initialize ()
 		{
-			base.Initialize ();
-			DocumentContext.DocumentParsed += HandleDocumentParsed; 
-			if (IdeApp.Workbench == null)
-				return;
-			UnitTestService.TestSessionCompleted += HandleTestSessionCompleted;
+			if (!initialized && unitTestMarkers != null) {
+				initialized = true;
+				base.Initialize ();
+				DocumentContext.DocumentParsed += HandleDocumentParsed;
+				if (IdeApp.Workbench == null)
+					return;
+				UnitTestService.TestSessionCompleted += HandleTestSessionCompleted;
+			}
 		}
 
 		void HandleTestSessionCompleted (object sender, EventArgs e)
