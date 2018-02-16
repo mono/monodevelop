@@ -473,8 +473,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 			searchEntry.Entry.Changed -= FindFirst;
 			searchEntry.Entry.Activated -= FindNext;
 			saveButton.Clicked -= SaveButtonClickedAsync;
+			treeView.SelectionChanged -= TreeView_SelectionChanged;
+			treeView.ButtonPressed -= TreeView_ButtonPressed;
 
-			base.Dispose(disposing);
+			base.Dispose (disposing);
 		}
 
 		class DropDownWindowDataProvider : DropDownBoxListWindow.IListDataProvider

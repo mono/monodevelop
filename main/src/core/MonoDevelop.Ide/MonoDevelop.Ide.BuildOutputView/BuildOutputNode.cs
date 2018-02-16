@@ -219,13 +219,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return String.Empty;
 		}
 
-		static void ToString (this BuildOutputNode node, bool includeChildren, StringBuilder result, int tabPosition)
+		static void ToString (this BuildOutputNode node, bool includeChildren, StringBuilder result, string margin)
 		{
-			result.AppendFormat ("{0}{1}{2}", new String ('\t', tabPosition), node.FullMessage, Environment.NewLine);
+			result.AppendFormat ("{0}{1}{2}", margin, node.FullMessage, Environment.NewLine);
 			if (includeChildren && node.HasChildren) {
-				tabPosition++;
+				var newMargin = $"{margin}\t";
 				foreach (var child in node.Children) {
-					child.ToString (includeChildren, result, tabPosition);
+					child.ToString (includeChildren, result, newMargin);
 				}
 			}
 		}
@@ -233,9 +233,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public static string ToString (this BuildOutputNode node, bool includeChildren)
 		{
 			var result = new StringBuilder ();
-			int tabPosition = 0;
 
-			node.ToString (includeChildren, result, tabPosition);
+			node.ToString (includeChildren, result, "");
 
 			return result.ToString ();
 		}
