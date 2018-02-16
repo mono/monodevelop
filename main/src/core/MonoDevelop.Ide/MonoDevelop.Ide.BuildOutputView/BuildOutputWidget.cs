@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			toolbar.AddSpace ();
 			toolbar.Add (searchEntry, false);
 			toolbar.Add (buttonSearchBackward.ToGtkWidget ());
-			toolbar.Add (buttonSearchForward.ToGtkWidget());
+			toolbar.Add (buttonSearchForward.ToGtkWidget ());
 
 			PackStart (toolbar.Container, expand: false, fill: true);
 
@@ -193,37 +193,24 @@ namespace MonoDevelop.Ide.BuildOutputView
 			PackStart (scrolledWindow, expand: true, fill: true);
 		}
 
-		async void SaveButtonClickedAsync (object sender, EventArgs e) => await Save ();
-
-		public async Task Save ()
-		{
-			if (filePathLocation == FilePath.Empty) {
-				await SaveAs ();
-			} else {
-				await Save (filePathLocation);
-			}
-		}
-
-		async Task Save (FilePath outputFile)
-		{
-			if (!outputFile.HasExtension (binLogExtension))
-				outputFile = outputFile.ChangeExtension (binLogExtension);
-
-			await BuildOutput.Save (outputFile);
-			FileSaved?.Invoke (this, outputFile.FileName);
-			filePathLocation = outputFile;
-			IsDirty = false;
-		}
+		async void SaveButtonClickedAsync (object sender, EventArgs e) => await SaveAs ();
 
 		FilePath filePathLocation;
-		async Task SaveAs ()
+		public async Task SaveAs ()
 		{
 			var dlg = new Gui.Dialogs.OpenFileDialog (GettextCatalog.GetString ("Save as..."), MonoDevelop.Components.FileChooserAction.Save) {
 				TransientFor = IdeApp.Workbench.RootWindow,
 				InitialFileName = ViewContentName
 			};
 			if (dlg.Run ()) {
-				await Save (dlg.SelectedFile);
+				var outputFile = dlg.SelectedFile;
+				if (!outputFile.HasExtension (binLogExtension))
+					outputFile = outputFile.ChangeExtension (binLogExtension);
+
+				await BuildOutput.Save (outputFile);
+				FileSaved?.Invoke (this, outputFile.FileName);
+				filePathLocation = outputFile;
+				IsDirty = false;
 			}
 		}
 
