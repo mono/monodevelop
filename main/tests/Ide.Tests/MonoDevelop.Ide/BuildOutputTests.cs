@@ -53,7 +53,8 @@ namespace MonoDevelop.Ide
 			monitor.Log.Write ("Custom project built");
 			monitor.LogObject (new ProjectFinishedProgressEvent ());
 
-			var dataSource = bo.ToTreeDataSource (true);
+			var nodes = bo.GetRootNodes (true);
+			var dataSource = new BuildOutputDataSource (nodes);
 			var child = dataSource.GetChild (dataSource.GetChild (null, 0), 0);
 
 			Assert.That (dataSource.GetChildrenCount (null), Is.EqualTo (1));
@@ -62,7 +63,7 @@ namespace MonoDevelop.Ide
 		}
 
 		[Test]
-		public void CustomProject_SearchDataSource ()
+		public void CustomProject_DataSearch ()
 		{
 			var bo = new BuildOutput ();
 			var monitor = bo.GetProgressMonitor ();
@@ -74,10 +75,12 @@ namespace MonoDevelop.Ide
 			monitor.Log.WriteLine ("Custom project built");
 			monitor.LogObject (new ProjectFinishedProgressEvent ());
 
-			var dataSource = bo.ToTreeDataSource (true);
+			var nodes = bo.GetRootNodes (true);
+			var dataSource = new BuildOutputDataSource (nodes);
+			var search = new BuildOutputDataSearch (nodes);
 			int matches = 0;
 			var visited = new HashSet<BuildOutputNode> ();
-			for (var match = dataSource.FirstMatch ("Message "); match != null; match = dataSource.NextMatch ()) {
+			for (var match = search.FirstMatch ("Message "); match != null; match = search.NextMatch ()) {
 				if (visited.Contains (match)) {
 					break;
 				}

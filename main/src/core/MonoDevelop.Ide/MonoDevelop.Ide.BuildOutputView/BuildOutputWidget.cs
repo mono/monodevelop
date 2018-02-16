@@ -39,6 +39,7 @@ using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -55,6 +56,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Button buttonSearchBackward;
 		Button buttonSearchForward;
 		Label resultInformLabel;
+		List<BuildOutputNode> treeBuildOutputNodes;
+		BuildOutputDataSearch search;
 
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
@@ -83,9 +86,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		void SetupBuildOutput (BuildOutput output)
 		{
 			BuildOutput = output;
-			ProcessLogs (false);
 
 			BuildOutput.OutputChanged += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
+			ProcessLogs (false);
 
 			pathBar = new PathBar (this.CreatePathWidget) {
 				DrawBottomBorder = false
@@ -191,22 +194,45 @@ namespace MonoDevelop.Ide.BuildOutputView
 			PackStart (scrolledWindow, expand: true, fill: true);
 		}
 
+		internal Task GoToError (string description, string project)
+		{
+			return ExpandNode (project, BuildOutputNodeType.Error, description);
+		}
+
+		internal Task GoToWarning (string description, string project)
+		{
+			return ExpandNode (project, BuildOutputNodeType.Warning, description);
+		}
+
+		internal Task GoToMessage (string description, string project)
+		{
+			return ExpandNode (project, BuildOutputNodeType.Message, description);
+		}
+
+		async Task ExpandNode (string project, BuildOutputNodeType nodeType, string message) 
+		{
+			await processingCompletion.Task;
+			var projectNode = treeBuildOutputNodes.SearchFirstNode (BuildOutputNodeType.Project, project);
+			var node = projectNode.SearchFirstNode (nodeType, message);
+			FocusRow (node);
+		}
+
+		void FocusRow (BuildOutputNode match)
+		{
+			treeView.ExpandToRow (match);
+			treeView.FocusedRow = match;
+		}
+
 		void IndexChanged (int newIndex)
 		{
 			if (newIndex >= CurrentPath.Length)
 				return;
 
 			if (CurrentPath [newIndex].Tag != null) {
-				SelectRow (CurrentPath [newIndex].Tag as BuildOutputNode);
+				FocusRow (CurrentPath [newIndex].Tag as BuildOutputNode);
 			}
 		}
 
-		async void SelectRow (BuildOutputNode node)
-		{
-			await Runtime.RunInMainThread (() => {
-				treeView.SelectRow (node);
-			});
-		}
 
 		void TreeView_SelectionChanged (object sender, EventArgs e)
 		{
@@ -250,7 +276,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (dataSource == null)
 				return;
 
-			Find (dataSource.FirstMatch (searchEntry.Entry.Text));
+			Find (search.FirstMatch (searchEntry.Entry.Text));
 		}
 
 		public void FindNext (object sender, EventArgs args)
@@ -259,9 +285,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (dataSource == null)
 				return;
 
-			Find (dataSource.NextMatch ());
+			Find (search.NextMatch ());
 
-			if (dataSource.SearchWrapped) {
+			if (search.SearchWrapped) {
 				IdeApp.Workbench.StatusBar.ShowMessage (
 					Gtk.Stock.Find, GettextCatalog.GetString ("Reached top, continued from bottom"));
 			} else {
@@ -275,9 +301,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (dataSource == null)
 				return;
 
-			Find (dataSource.PreviousMatch ());
+			Find (search.PreviousMatch ());
 
-			if (dataSource.SearchWrapped) {
+			if (search.SearchWrapped) {
 				IdeApp.Workbench.StatusBar.ShowMessage (
 					Gtk.Stock.Find, GettextCatalog.GetString ("Reached bottom, continued from top"));
 			} else {
@@ -294,9 +320,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			IsSearchInProgress = node != null;
 
 			if (node != null) {
-				MoveToMatch (node);
+				FocusRow (node);
 
-				resultInformLabel.Text = GettextCatalog.GetString ("{0} of {1}", dataSource.CurrentAbsoluteMatchIndex, dataSource.MatchesCount);
+				resultInformLabel.Text = GettextCatalog.GetString ("{0} of {1}", search.CurrentAbsoluteMatchIndex, search.MatchesCount);
 				resultInformLabel.TextColor = searchEntry.Style.Foreground (Gtk.StateType.Insensitive).ToXwtColor();
 			} else if (string.IsNullOrEmpty (searchEntry.Entry.Text)) {
 				resultInformLabel.Text = string.Empty;
@@ -317,7 +343,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return "(" + nextShortcut + ")";
 		}
 
-		CancellationTokenSource cts;
 		static void ExpandChildrenWithErrors (TreeView tree, BuildOutputDataSource dataSource, BuildOutputNode parent)
 		{
 			int totalChildren = dataSource.GetChildrenCount (parent);
@@ -330,35 +355,42 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		void MoveToMatch (BuildOutputNode match)
-		{
-			if (match != null) {
-				treeView.ExpandToRow (match);
-				treeView.ScrollToRow (match);
-				treeView.SelectRow (match);
-			}
-		}
+		CancellationTokenSource cts;
+		TaskCompletionSource<object> processingCompletion = new TaskCompletionSource<object> ();
 
 		void ProcessLogs (bool showDiagnostics)
 		{
 			cts?.Cancel ();
 			cts = new CancellationTokenSource ();
+			processingCompletion = new TaskCompletionSource<object> ();
 
 			Task.Run (async () => {
-				await Runtime.RunInMainThread (() => {
-					var dataSource = BuildOutput.ToTreeDataSource (showDiagnostics);
-					treeView.DataSource = dataSource;
-					(treeView.Columns [0].Views [0] as ImageCellView).ImageField = dataSource.ImageField;
-					(treeView.Columns [0].Views [1] as TextCellView).MarkupField = dataSource.LabelField;
+				try {
+					BuildOutput.ProcessProjects ();
 
-					// Expand root nodes and nodes with errors
-					int rootsCount = dataSource.GetChildrenCount (null);
-					for (int i = 0; i < rootsCount; i++) {
-						var root = dataSource.GetChild (null, i) as BuildOutputNode;
-						treeView.ExpandRow (root, false);
-						ExpandChildrenWithErrors (treeView, dataSource, root);
-					}
-				});
+					await Runtime.RunInMainThread (() => {
+					
+						treeBuildOutputNodes = BuildOutput.GetRootNodes (showDiagnostics);
+						search = new BuildOutputDataSearch (treeBuildOutputNodes);
+
+						var buildOutputDataSource = new BuildOutputDataSource (treeBuildOutputNodes);
+						treeView.DataSource = buildOutputDataSource;
+
+						(treeView.Columns [0].Views [0] as ImageCellView).ImageField = buildOutputDataSource.ImageField;
+						(treeView.Columns [0].Views [1] as TextCellView).MarkupField = buildOutputDataSource.LabelField;
+
+						// Expand root nodes and nodes with errors
+						int rootsCount = buildOutputDataSource.GetChildrenCount (null);
+						for (int i = 0; i < rootsCount; i++) {
+							var root = buildOutputDataSource.GetChild (null, i) as BuildOutputNode;
+							treeView.ExpandRow (root, false);
+							ExpandChildrenWithErrors (treeView, buildOutputDataSource, root);
+						}
+						processingCompletion.TrySetResult (null);
+					});
+				} catch (Exception ex) {
+					processingCompletion.TrySetException (ex);
+				}
 			}, cts.Token);
 		}
 
@@ -418,7 +450,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			public int IconCount => list.Count;
 
-			public void ActivateItem (int n) => widget.SelectRow (list [n]);
+			public void ActivateItem (int n) => widget.FocusRow (list [n]);
 
 			public Xwt.Drawing.Image GetIcon (int n) => DataSource.GetValue (list [n], 0) as Xwt.Drawing.Image;
 

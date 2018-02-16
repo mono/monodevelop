@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutputProcessor : IDisposable
 	{
-		List<BuildOutputNode> rootNodes = new List<BuildOutputNode> ();
+		readonly List<BuildOutputNode> rootNodes = new List<BuildOutputNode> ();
 		BuildOutputNode currentNode;
 
 		public BuildOutputProcessor (string fileName, bool removeFileOnDispose)
@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		protected void Clear ()
 		{
 			currentNode = null;
-			rootNodes = new List<BuildOutputNode> ();
+			rootNodes.Clear ();
 			NeedsProcessing = true;
 		}
 

@@ -44,7 +44,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 	{
 		BuildOutputProgressMonitor progressMonitor;
 		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
-
 		public event EventHandler OutputChanged;
 
 		public ProgressMonitor GetProgressMonitor ()
@@ -150,29 +149,41 @@ namespace MonoDevelop.Ide.BuildOutputView
 			RaiseOutputChanged ();
 		}
 
-		public IEnumerable<BuildOutputNode> GetRootNodes ()
-		{
-			foreach (var proj in projects) {
-				if (proj.RootNodes?.Count > 0) {
-					foreach (var node in proj.RootNodes) {
-						yield return node;
-					}
-				}
-			}
-		}
-
 		internal void RaiseOutputChanged ()
 		{
 			OutputChanged?.Invoke (this, EventArgs.Empty);
 		}
 
-		public BuildOutputDataSource ToTreeDataSource (bool includeDiagnostics)
+		public List<BuildOutputNode> GetRootNodes (bool includeDiagnostics)
+		{
+			if (includeDiagnostics) {
+				return GetProjectRootNodes ().ToList ();
+			} else {
+				// If not including diagnostics, we need to filter the nodes,
+				// but instead of doing so now for all, we do it on the fly,
+				// as nodes are requested
+				var nodes = new List<BuildOutputNode> ();
+				foreach (var root in GetProjectRootNodes ()) {
+					nodes.Add (new FilteredBuildOutputNode (root, null, includeDiagnostics));
+				}
+				return nodes;
+			}
+		}
+
+		IEnumerable<BuildOutputNode> GetProjectRootNodes ()
+		{
+			foreach (var proj in projects) {
+				foreach (var node in proj.RootNodes) {
+					yield return node;
+				}
+			}
+		}
+
+		public void ProcessProjects () 
 		{
 			foreach (var p in projects) {
 				p.Process ();
 			}
-
-			return new BuildOutputDataSource (this, includeDiagnostics);
 		}
 
 		bool disposed = false;
@@ -257,29 +268,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 		static readonly Xwt.Drawing.Image warningIcon = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 		static readonly Xwt.Drawing.Image folderIcon = ImageService.GetIcon (Ide.Gui.Stock.OpenFolder, Gtk.IconSize.Menu);
 
-		BuildOutput buildOutput;
-		bool includeDiagnostics;
-		List<BuildOutputNode> rootNodes;
 		public IReadOnlyList<BuildOutputNode> RootNodes => this.rootNodes;
+		readonly List<BuildOutputNode> rootNodes;
 
 		public DataField<Xwt.Drawing.Image> ImageField = new DataField<Xwt.Drawing.Image> (0);
 		public DataField<string> LabelField = new DataField<string> (1);
 
-		public BuildOutputDataSource (BuildOutput output, bool includeDiagnostics)
+		public BuildOutputDataSource (List<BuildOutputNode> rootNodes)
 		{
-			buildOutput = output;
-			this.includeDiagnostics = includeDiagnostics;
-			if (includeDiagnostics) {
-				rootNodes = buildOutput.GetRootNodes ().ToList ();
-			} else {
-				// If not including diagnostics, we need to filter the nodes,
-				// but instead of doing so now for all, we do it on the fly,
-				// as nodes are requested
-				rootNodes = new List<BuildOutputNode> ();
-				foreach (var root in buildOutput.GetRootNodes ()) {
-					rootNodes.Add (new FilteredBuildOutputNode (root, null, includeDiagnostics));
-				}
-			}
+			this.rootNodes = rootNodes;
 		}
 
 		#region ITreeDataSource implementation
@@ -304,7 +301,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 					return rootNodes [index];
 				}
 			}
-
 			return null;
 		}
 
@@ -379,6 +375,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 		}
 
 		#endregion
+	}
+
+	class BuildOutputDataSearch
+	{
+		readonly List<BuildOutputNode> rootNodes;
+
+		public BuildOutputDataSearch (List<BuildOutputNode> rootNodes)
+		{
+			this.rootNodes = rootNodes;
+		}
 
 		#region Search functionality
 
@@ -404,19 +410,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		/// <value><c>true</c> if search wrapped; otherwise, <c>false</c>.</value>
 		public bool SearchWrapped { get; private set; }
 
-		static void SearchInNodeAndChildren (BuildOutputNode node, List<BuildOutputNode> matches, string pattern)
-		{
-			if ((node.Message?.IndexOf (pattern, StringComparison.OrdinalIgnoreCase) ?? -1) >= 0) {
-				matches.Add (node);
-			}
-
-			if (node.HasChildren) {
-				foreach (var child in node.Children) {
-					SearchInNodeAndChildren (child, matches, pattern);
-				}
-			}
-		}
-
 		public BuildOutputNode FirstMatch (string pattern)
 		{
 			// Initialize search data
@@ -427,7 +420,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			// Perform search
 			foreach (var root in rootNodes) {
-				SearchInNodeAndChildren (root, currentSearchMatches, currentSearchPattern);
+				root.Search (currentSearchMatches, currentSearchPattern);
 			}
 
 			if (currentSearchMatches.Count > 0) {

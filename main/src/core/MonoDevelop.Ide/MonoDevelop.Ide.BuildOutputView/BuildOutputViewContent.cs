@@ -25,11 +25,13 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -92,6 +94,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			control.Dispose ();
 			base.Dispose ();
+		}
+
+		internal Task GoToError (string description, string project)
+		{
+			return control.GoToError (description, project);
+		}
+
+		internal Task GoToWarning (string description, string project)
+		{
+			return control.GoToWarning (description, project);
+		}
+
+		internal Task GoToMessage (string description, string project)
+		{
+			return control.GoToMessage (description, project);
 		}
 
 		[CommandHandler (SearchCommands.Find)]

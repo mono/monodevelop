@@ -54,6 +54,7 @@ using System.Linq;
 using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
 using MonoDevelop.Ide.BuildOutputView;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -385,6 +386,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			copy.Clicked += OnTaskCopied;
 			menu.Add (copy);
 
+			var goBuild = new ContextMenuItem (GettextCatalog.GetString ("Go to Log"));
+			goBuild.Clicked += async (s, e) => await OnGoToLog (s, e);
+			menu.Add (goBuild);
+
 			var jump = new ContextMenuItem (GettextCatalog.GetString ("_Go to Task"));
 			jump.Clicked += OnTaskJumpto;
 			menu.Add (jump);
@@ -413,6 +418,32 @@ namespace MonoDevelop.Ide.Gui.Pads
 			help.Sensitive &= GetSelectedErrorReference (out dummyString);
 
 			menu.Show (view, evt);
+		}
+
+		async Task OnGoToLog (object o, EventArgs args)
+		{
+			var rows = view.Selection.GetSelectedRows ();
+			if (!rows.Any ())
+				return;
+
+			TreeIter iter, sortedIter;
+			if (view.Model.GetIter (out sortedIter, rows [0])) {
+				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (sortedIter));
+
+				store.SetValue (iter, DataColumns.Read, true);
+
+				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
+				if (task != null) {
+					OpenBuildOutputViewDocument ();
+					if (task.Severity == TaskSeverity.Error) {
+						await buildOutputViewContent.GoToError (task.Message, task.GetProjectWithExtension ());
+					} else if (task.Severity == TaskSeverity.Warning) {
+						await buildOutputViewContent.GoToWarning (task.Message, task.GetProjectWithExtension ());
+					} else if (task.Severity == TaskSeverity.Information) {
+						await buildOutputViewContent.GoToMessage (task.Message, task.GetProjectWithExtension ());
+					}
+				}
+			}
 		}
 
 		TaskListEntry SelectedTask {
@@ -625,25 +656,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 				textRenderer.Text = "";
 				return;
 			}
-			
-			string tmpPath = "";
-			string fileName = "";
-			try {
-				tmpPath = GetPath (task);
-				fileName = Path.GetFileName (tmpPath);
-			} catch (Exception) { 
-				fileName =  tmpPath;
-			}
-			
-			SetText (textRenderer, model, iter, task, fileName);
-		}
-		
-		static string GetPath (TaskListEntry task)
-		{
-			if (task.WorkspaceObject != null)
-				return FileService.AbsoluteToRelativePath (task.WorkspaceObject.BaseDirectory, task.FileName);
-			
-			return task.FileName;
+
+			SetText (textRenderer, model, iter, task, task.GetFile ());
 		}
 		
 		static void ProjectDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -654,12 +668,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				textRenderer.Text = "";
 				return;
 			}
-			SetText (textRenderer, model, iter, task, GetProject(task));
-		}
-		
-		static string GetProject (TaskListEntry task)
-		{
-			return (task != null && task.WorkspaceObject is SolutionFolderItem)? task.WorkspaceObject.Name: string.Empty;
+			SetText (textRenderer, model, iter, task, task.GetProject ());
 		}
 		
 		static void PathDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -670,7 +679,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				textRenderer.Text = "";
 				return;
 			}
-			SetText (textRenderer, model, iter, task, GetPath (task));
+			SetText (textRenderer, model, iter, task, task.GetPath ());
 		}
 
 		static void CategoryDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -910,7 +919,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			     zTask = model.GetValue (z, DataColumns.Task) as TaskListEntry;
 			     
 			return (aTask != null && zTask != null) ?
-			       string.Compare (GetProject (aTask), GetProject (zTask), StringComparison.Ordinal) :
+			       string.Compare (aTask.GetProject (), zTask.GetProject (), StringComparison.Ordinal) :
 			       0;
 		}
 		
@@ -941,6 +950,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		Document buildOutputDoc;
 		void HandleLogBtnClicked (object sender, EventArgs e)
+		{
+			OpenBuildOutputViewDocument ();
+		}
+
+		void OpenBuildOutputViewDocument () 
 		{
 			if (buildOutputViewContent == null) {
 				buildOutputViewContent = new BuildOutputViewContent (buildOutput);
@@ -979,6 +993,40 @@ namespace MonoDevelop.Ide.Gui.Pads
 				}
 				width = Math.Min (oneLineWidth, PreferedMaxWidth);
 			}
+		}
+	}
+
+	internal static class TaskListEntryExtensions
+	{
+		public static string GetPath (this TaskListEntry task)
+		{
+			if (task.WorkspaceObject != null)
+				return FileService.AbsoluteToRelativePath (task.WorkspaceObject.BaseDirectory, task.FileName);
+
+			return task.FileName;
+		}
+
+		public static string GetProject (this TaskListEntry task)
+		{
+			return (task != null && task.WorkspaceObject is SolutionFolderItem) ? task.WorkspaceObject.Name : string.Empty;
+		}
+
+		public static string GetProjectWithExtension (this TaskListEntry task)
+		{
+			return (task != null && task.WorkspaceObject is SolutionItem) ? Path.GetFileName (((SolutionItem)task.WorkspaceObject).FileName) : string.Empty;
+		}
+
+		public static string GetFile (this TaskListEntry task)
+		{
+			string tmpPath = "";
+			string fileName = "";
+			try {
+				tmpPath = GetPath (task);
+				fileName = Path.GetFileName (tmpPath);
+			} catch (Exception) {
+				fileName = tmpPath;
+			}
+			return fileName;
 		}
 	}
 }
