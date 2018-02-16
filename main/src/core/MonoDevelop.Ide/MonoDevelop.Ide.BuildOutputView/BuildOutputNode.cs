@@ -182,10 +182,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public static BuildOutputNode SearchFirstNode (this BuildOutputNode buildOutputNode, BuildOutputNodeType type, string search)
+		public static BuildOutputNode SearchFirstNode (this BuildOutputNode buildOutputNode, BuildOutputNodeType type, string search = null)
 		{
 			if (type == buildOutputNode.NodeType) {
-				if (search == buildOutputNode.Message) {
+				if (search == buildOutputNode.Message || search == null) {
 					return buildOutputNode;
 				} else {
 					//We don't want deep recursive into children, change to next item
