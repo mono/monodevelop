@@ -49,6 +49,8 @@ namespace MonoDevelop.FSW
 					_platform = Platform.OSX;
 					return;
 				}
+			} catch (DllNotFoundException) {
+			}
 			} catch (EntryPointNotFoundException) {
 			}
 
