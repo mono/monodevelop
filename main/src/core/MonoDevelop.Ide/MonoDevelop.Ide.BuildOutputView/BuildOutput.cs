@@ -320,6 +320,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return node?.Parent;
 		}
 
+		const string LightTextMarkup = "<span color =\"#999999\">{0}</span>";
+
 		public object GetValue (TreePosition pos, int column)
 		{
 			var node = pos as BuildOutputNode;
@@ -339,6 +341,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					case BuildOutputNodeType.Project:
 						return projectIcon;
 					case BuildOutputNodeType.Target:
+					case BuildOutputNodeType.TargetSkipped:
 						return targetIcon;
 					case BuildOutputNodeType.Task:
 						return taskIcon;
@@ -351,15 +354,23 @@ namespace MonoDevelop.Ide.BuildOutputView
 					bool toplevel = node.Parent == null;
 					StringBuilder markup = new StringBuilder ();
 
-					if (toplevel) {
-						markup.AppendFormat ("<b>{0}</b>", GLib.Markup.EscapeText (node.Message));
-					} else {
-						markup.Append (node.Message);
+					switch (node.NodeType) {
+					case BuildOutputNodeType.TargetSkipped:
+						markup.AppendFormat (LightTextMarkup, GLib.Markup.EscapeText (node.Message));
+						break;
+					default:
+						if (toplevel) {
+							markup.AppendFormat ("<b>{0}</b>", GLib.Markup.EscapeText (node.Message));
+						} else {
+							markup.Append (node.Message);
+						}
+						break;
 					}
 
 					// Timing information
 					if (node.HasChildren) {
-						markup.AppendFormat ("    <span color=\"#999999\">{0}</span>", GLib.Markup.EscapeText (node.GetDurationAsString ()));
+						markup.Append ("    ");
+						markup.AppendFormat (LightTextMarkup, GLib.Markup.EscapeText (node.GetDurationAsString ()));
 					}
 
 					return markup.ToString ();

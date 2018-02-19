@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Build,
 		Project,
 		Target,
+		TargetSkipped,
 		Task,
 		Error,
 		Warning,

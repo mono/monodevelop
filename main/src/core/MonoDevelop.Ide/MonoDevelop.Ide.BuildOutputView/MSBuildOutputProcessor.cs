@@ -63,7 +63,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			try {
 				binlogReader.Replay (FileName);
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				LoggingService.LogError ($"Can't process {FileName}: {ex.ToString ()}");
 			}
 		}
@@ -91,8 +92,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			         message, 
 			         false,
 			         e.Timestamp,
-			         stringPool.Add (e.File),
-			         stringPool.Add (e.ProjectFile),
+			         !String.IsNullOrEmpty (e.File) ? stringPool.Add (e.File) : null,
+			         !String.IsNullOrEmpty (e.ProjectFile) ? stringPool.Add (e.ProjectFile) : null,
 			         e.LineNumber);
 		}
 
@@ -104,23 +105,23 @@ namespace MonoDevelop.Ide.BuildOutputView
 			         message, 
 			         false,
 			         e.Timestamp,
-			         stringPool.Add (e.File),
-			         stringPool.Add (e.ProjectFile),
+			         !String.IsNullOrEmpty (e.File) ? stringPool.Add (e.File) : null,
+					 !String.IsNullOrEmpty (e.ProjectFile) ? stringPool.Add (e.ProjectFile) : null,
 			         e.LineNumber);
 		}
 
 		void BinlogReader_MessageRaised (object sender, BuildMessageEventArgs e)
 		{
 			if (e.BuildEventContext != null && (e.BuildEventContext.NodeId == 0 &&
-			                                    e.BuildEventContext.ProjectContextId == 0 &&
-			                                    e.BuildEventContext.ProjectInstanceId == 0 &&
-			                                    e.BuildEventContext.TargetId == 0 &&
-			                                    e.BuildEventContext.TaskId == 0)) {
+												e.BuildEventContext.ProjectContextId == 0 &&
+												e.BuildEventContext.ProjectInstanceId == 0 &&
+												e.BuildEventContext.TargetId == 0 &&
+												e.BuildEventContext.TaskId == 0)) {
 				// These are the "Detailed summary" lines
 				// TODO: we should probably parse them and associate those stats
 				// with the correct build step, so that we get stats for those
 			} else {
-				this.ProcessMessageEvent (e, stringPool);
+				ProcessMessageEvent (this, e, stringPool);
 			}
 		}
 
@@ -174,24 +175,36 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			EndCurrentNode (stringPool.Add (e.Message), e.Timestamp);
 		}
-	}
 
-	static class BinaryLogHelpers
-	{
+		#region Static helpers
+
 		const string TaskParameterMessagePrefix = @"Task Parameter:";
+		const string TargetMessagePrefix = "Target \"";
+		const string SkippingTargetMessagePrefix = "Skipping target";
 
-		public static void ProcessMessageEvent (this MSBuildOutputProcessor processor, BuildMessageEventArgs e, StringInternPool stringPool)
+		public static void ProcessMessageEvent (MSBuildOutputProcessor processor, BuildMessageEventArgs e, StringInternPool stringPool)
 		{
 			if (String.IsNullOrEmpty (e.Message)) {
 				return;
 			}
 
 			switch (e.Message[0]) {
+			case 'S':
+				if (e.Message.StartsWith (SkippingTargetMessagePrefix, StringComparison.Ordinal)) {
+					// "Skipping target ..." messages
+					var parts = e.Message.Split ('"');
+					if (parts.Length >= 2 && processor.CurrentNode.NodeType == BuildOutputNodeType.Target && processor.CurrentNode.Message == parts[1]) {
+						processor.CurrentNode.NodeType = BuildOutputNodeType.TargetSkipped;
+						return;
+					}
+				}
+				break;
 			case 'T':
-				if (e.Message.StartsWith (TaskParameterMessagePrefix)) {
+				if (e.Message.StartsWith (TaskParameterMessagePrefix, StringComparison.Ordinal)) {
+					// Task parameters are added to a special folder
 					string content = e.Message.Substring (TaskParameterMessagePrefix.Length)
-					                  .Replace ("\n\r", " ")
-					                  .Replace ('\n', ' ');
+									  .Replace ("\r\n", " ")
+									  .Replace ('\n', ' ');
 					int equalSign = content.IndexOf ('=');
 					if (equalSign < 0) {
 						break;
@@ -200,18 +213,27 @@ namespace MonoDevelop.Ide.BuildOutputView
 					content = $"{content.Substring (0, equalSign).Trim ()} = {content.Substring (equalSign + 1, content.Length - equalSign - 1).Trim ()}";
 					processor.CurrentNode.AddParameter (stringPool.Add (content), stringPool.Add (e.Message));
 					return;
+				} else if (e.Message.StartsWith (TargetMessagePrefix, StringComparison.Ordinal)) {
+					// "Target ... skipped" messages
+					var parts = e.Message.Split ('"');
+					if (parts.Length >= 3 && parts[2].StartsWith (" skipped", StringComparison.Ordinal)) {
+						processor.AddNode (BuildOutputNodeType.TargetSkipped, stringPool.Add (parts[1]), stringPool.Add (e.Message), false, e.Timestamp);
+						return;
+					}
 				}
 				break;
 			}
 
-			string shortMessage = stringPool.Add (e.Message.Replace ("\n\r", " ").Replace ('\n', ' '));
+			string shortMessage = stringPool.Add (e.Message.Replace ("\r\n", " ").Replace ('\n', ' '));
 			processor.AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message,
 			                   shortMessage, stringPool.Add (e.Message),
 			                   false, 
 			                   e.Timestamp,
-			                   stringPool.Add (e.File),
-			                   stringPool.Add (e.ProjectFile),
+			                   !String.IsNullOrEmpty (e.File) ? stringPool.Add (e.File) : null,
+			                   !String.IsNullOrEmpty (e.ProjectFile) ? stringPool.Add (e.ProjectFile) : null,
 			                   e.LineNumber);
 		}
+
+		#endregion
 	}
 }

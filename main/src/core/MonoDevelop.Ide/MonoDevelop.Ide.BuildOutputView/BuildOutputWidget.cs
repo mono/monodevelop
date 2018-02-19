@@ -184,6 +184,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeView.HorizontalScrollPolicy = ScrollPolicy.Never;
 			treeView.SelectionChanged += TreeView_SelectionChanged;
 			treeView.ButtonPressed += TreeView_ButtonPressed;
+			treeView.MouseMoved += TreeView_MouseMoved;
 			var treeColumn = new ListViewColumn {
 				CanResize = false,
 				Expands = true
@@ -298,6 +299,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 				menu.Show (treeView.ToGtkWidget (), (int) e.X, (int) e.Y, () => {
 					copyElementMenu.Clicked -= CopyElementMenu_Clicked;
 				});
+			}
+		}
+
+		private void TreeView_MouseMoved (object sender, MouseMovedEventArgs e)
+		{
+			var highlightedNode = treeView.GetRowAtPosition (e.Position) as BuildOutputNode;
+			if (highlightedNode != null) {
+				treeView.TooltipText = highlightedNode.FullMessage;
 			}
 		}
 
@@ -474,6 +483,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			saveButton.Clicked -= SaveButtonClickedAsync;
 			treeView.SelectionChanged -= TreeView_SelectionChanged;
 			treeView.ButtonPressed -= TreeView_ButtonPressed;
+			treeView.MouseMoved -= TreeView_MouseMoved;
 
 			base.Dispose (disposing);
 		}
