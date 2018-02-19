@@ -55,9 +55,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			control.FileSaved += FileNameChanged;
 		}
 
-		void FileNameChanged (object sender, string newName)
+		void FileNameChanged (object sender, FilePath file)
 		{
-			ContentName = newName;
+			ContentName = file;
 		}
 
 		public override Control Control {
