@@ -36,8 +36,7 @@ type FSharpParsedDocument(fileName, location: DocumentLocation option) =
 
             comment.TrimStart('/', ' ')
 
-        let computation =
-            async {
+        async {
                 match x.Tokens with
                 | Some tokens ->
                     let tokensByLine =
@@ -50,8 +49,8 @@ type FSharpParsedDocument(fileName, location: DocumentLocation option) =
 
                     return ResizeArray(tokensByLine) :> IReadOnlyList<_>
                 | None -> return ResizeArray() :> IReadOnlyList<_>
-            }
-        Async.StartAsTask(computation, cancellationToken = cancellationToken)
+        }
+        |> StartAsyncAsTask cancellationToken
 
 [<AutoOpen>]
 module DocumentContextExt =

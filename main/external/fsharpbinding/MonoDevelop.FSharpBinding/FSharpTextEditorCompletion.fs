@@ -44,8 +44,11 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
         |> ResizeArray.ofList :> _
 
     override x.CreateTooltipInformation (_smartWrap, cancel) =
-        Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
+        SymbolTooltips.getTooltipInformation symbol
+        |> StartAsyncAsTask cancel
     
+    override x.IsCommitCharacter (_keyChar, _partialWord) = false
+
     type SimpleCategory(text) =
         inherit CompletionCategory(text, null)
         override x.CompareTo other =
@@ -100,8 +103,7 @@ type FsiMemberCompletionData(displayText, completionText, icon) =
                 // get completions from remote fsi process
                 pad.RequestTooltip displayText
 
-                let computation =
-                    async {
+                async {
                         let! tooltip = Async.AwaitEvent (session.TooltipReceived)
                         match tooltip with
                         | MonoDevelop.FSharp.Shared.ToolTips.ToolTip (signature, xmldoc, footer) ->
@@ -110,7 +112,7 @@ type FsiMemberCompletionData(displayText, completionText, icon) =
                         | MonoDevelop.FSharp.Shared.ToolTips.EmptyTip ->
                             return emptyTooltip
                     }
-                Async.StartAsTask(computation, cancellationToken = cancel)
+                |> StartAsyncAsTask cancel
             | _ -> Task.FromResult emptyTooltip
         | _ -> Task.FromResult emptyTooltip
 
@@ -425,25 +427,23 @@ module Completion =
                     editor = editor
                     } = context
 
-                let typedParseResults =
-                    lock parseLock (fun() ->
-                        maybe {
-                            let! document = documentContext.TryGetFSharpParsedDocument()
-                            let! location = document.ParsedLocation
-                            let trimmedLine = lineToCaret.TrimEnd()
-                            let reparse = trimmedLine.EndsWith("->") || trimmedLine.Contains(").") || trimmedLine.EndsWith("].")
-                            if location.Line = context.line && not reparse then
-                                LoggingService.logDebug "Completion: got parse results from cache"
-                                return! document.TryGetAst()
-                            else
-                                LoggingService.logDebug "Completion: syncing parse results"
-                                // force sync
-                                let projectFile = documentContext.Project |> function null -> document.FileName| proj -> proj.FileName.ToString()
-                                let ast = languageService.ParseAndCheckFileInProject(projectFile, document.FileName, 0, editor.Text, true)
-                                          |> Async.RunSynchronously
-                                document.Ast <- ast
-                                return ast
-                        })
+                let! typedParseResults =
+                    asyncMaybe {
+                        let! document = documentContext.TryGetFSharpParsedDocument() |> async.Return
+                        let! location = document.ParsedLocation |> async.Return
+                        let trimmedLine = lineToCaret.TrimEnd()
+                        let reparse = trimmedLine.EndsWith("->") || trimmedLine.Contains(").") || trimmedLine.EndsWith("].")
+                        if location.Line = context.line && not reparse then
+                            LoggingService.logDebug "Completion: got parse results from cache"
+                            return! document.TryGetAst() |> async.Return
+                        else
+                            LoggingService.logDebug "Completion: syncing parse results"
+                            // force sync
+                            let projectFile = documentContext.Project |> function null -> document.FileName| proj -> proj.FileName.ToString()
+                            let! ast = languageService.ParseAndCheckFileInProject(projectFile, document.FileName, 0, editor.Text, true) |> Async.map Some
+                            document.Ast <- ast
+                            return ast
+                    }
 
                 let result = CompletionDataList()
 
@@ -613,7 +613,9 @@ type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
 
     /// Returns the markup to use to represent the method overload in the parameter information window.
     override x.CreateTooltipInformation (_editor, _context, paramIndex: int, _smartWrap:bool, cancel) =
-        Async.StartAsTask(getTooltipInformation symbol (Math.Max(paramIndex, 0)), cancellationToken = cancel)
+        getTooltipInformation symbol (Math.Max(paramIndex, 0))
+        |> StartAsyncAsTask cancel
+
 
 type FsiParameterHintingData (tooltip: MonoDevelop.FSharp.Shared.ParameterTooltip) =
     inherit ParameterHintingData ()
@@ -635,8 +637,7 @@ type FsiParameterHintingData (tooltip: MonoDevelop.FSharp.Shared.ParameterToolti
 
     /// Returns the markup to use to represent the method overload in the parameter information window.
     override x.CreateTooltipInformation (_editor, _context, paramIndex: int, _smartWrap:bool, cancel) =
-        let computation =
-            async {
+        async {
                 match tooltip with
                 | MonoDevelop.FSharp.Shared.ParameterTooltip.ToolTip (signature, doc, parameters) -> 
                     let signature, parameterName = 
@@ -660,7 +661,7 @@ type FsiParameterHintingData (tooltip: MonoDevelop.FSharp.Shared.ParameterToolti
                     return SymbolTooltips.getTooltipInformationFromSignature doc signature parameterName
                 | _ -> return TooltipInformation()
             }
-        Async.StartAsTask(computation, cancellationToken = cancel)
+        |> StartAsyncAsTask cancel
 
 module ParameterHinting =
 
@@ -782,6 +783,7 @@ type FSharpTextEditorCompletion() =
     let validCompletionChar c =
         c = '(' || c = ',' || c = '<'
 
+
     override x.CompletionLanguage = "F#"
     override x.Initialize() =
         do x.Editor.IndentationTracker <- FSharpIndentationTracker(x.Editor)
@@ -794,27 +796,26 @@ type FSharpTextEditorCompletion() =
         then suppressParameterCompletion <- false
              System.Threading.Tasks.Task.FromResult(ParameterHintingResult.Empty)
         else
-            let computation = ParameterHinting.getHints(x.Editor, x.DocumentContext, context)
-            Async.StartAsTask (cancellationToken = token, computation = computation)
+            ParameterHinting.getHints(x.Editor, x.DocumentContext, context)
+            |> StartAsyncAsTask token
 
     override x.KeyPress (descriptor:KeyDescriptor) =
         suppressParameterCompletion <- not (isValidParamCompletionDecriptor descriptor)
         base.KeyPress (descriptor)
   
     // Run completion automatically when the user hits '.'
-    override x.HandleCodeCompletionAsync(context, _triggerInfo, token) =
-        if IdeApp.Preferences.EnableAutoCodeCompletion.Value then
-            let computation =
-                Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, false) 
-                        
-            Async.StartAsTask (computation = computation, cancellationToken = token)
+    override x.HandleCodeCompletionAsync(context, triggerInfo, token) =
+        if IdeApp.Preferences.EnableAutoCodeCompletion.Value
+           || triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CompletionCommand then
+            Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, false) 
+            |> StartAsyncAsTask token
         else
             Task.FromResult null
 
 
     override x.GetCurrentParameterIndex (startOffset: int, token) =
-        let computation =
-            async {
+        async {
                 return ParameterHinting.getParameterIndex(x.Editor, startOffset)
-            }
-        Async.StartAsTask (computation = computation, cancellationToken = token)
+        }
+        |> StartAsyncAsTask token
+        
