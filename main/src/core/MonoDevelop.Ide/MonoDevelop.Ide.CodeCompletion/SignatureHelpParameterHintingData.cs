@@ -75,7 +75,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			var tt = new TooltipInformation ();
 			var markup = new StringBuilder ();
-			var theme = DefaultSourceEditorOptions.Instance.GetEditorTheme ();
+			var theme = SyntaxHighlightingService.GetIdeFittingTheme (DefaultSourceEditorOptions.Instance.GetEditorTheme ());
+
 			markup.AppendTaggedText (theme, Item.PrefixDisplayParts);
 			var prefixLength = Item.PrefixDisplayParts.GetFullText ().Length;
 			var prefixSpacer = new string (' ', prefixLength);
