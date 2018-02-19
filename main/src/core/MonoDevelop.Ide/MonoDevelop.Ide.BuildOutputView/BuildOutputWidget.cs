@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public event EventHandler<string> FileSaved;
+		public event EventHandler<FilePath> FileSaved;
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 
 		public BuildOutputWidget (BuildOutput output, string viewContentName)
@@ -241,7 +241,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					outputFile = outputFile.ChangeExtension (binLogExtension);
 
 				await BuildOutput.Save (outputFile);
-				FileSaved?.Invoke (this, outputFile.FileName);
+				FileSaved?.Invoke (this, outputFile);
 				filePathLocation = outputFile;
 				IsDirty = false;
 			}
