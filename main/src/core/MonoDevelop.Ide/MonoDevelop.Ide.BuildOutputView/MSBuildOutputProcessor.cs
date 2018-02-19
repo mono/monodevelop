@@ -92,8 +92,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			         message, 
 			         false,
 			         e.Timestamp,
-			         stringPool.Add (e.File),
-			         stringPool.Add (e.ProjectFile),
+			         !String.IsNullOrEmpty (e.File) ? stringPool.Add (e.File) : null,
+			         !String.IsNullOrEmpty (e.ProjectFile) ? stringPool.Add (e.ProjectFile) : null,
 			         e.LineNumber);
 		}
 
@@ -105,8 +105,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			         message, 
 			         false,
 			         e.Timestamp,
-			         stringPool.Add (e.File),
-			         stringPool.Add (e.ProjectFile),
+			         !String.IsNullOrEmpty (e.File) ? stringPool.Add (e.File) : null,
+					 !String.IsNullOrEmpty (e.ProjectFile) ? stringPool.Add (e.ProjectFile) : null,
 			         e.LineNumber);
 		}
 
@@ -229,8 +229,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			                   shortMessage, stringPool.Add (e.Message),
 			                   false, 
 			                   e.Timestamp,
-			                   stringPool.Add (e.File),
-			                   stringPool.Add (e.ProjectFile),
+			                   !String.IsNullOrEmpty (e.File) ? stringPool.Add (e.File) : null,
+			                   !String.IsNullOrEmpty (e.ProjectFile) ? stringPool.Add (e.ProjectFile) : null,
 			                   e.LineNumber);
 		}
 
