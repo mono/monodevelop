@@ -70,7 +70,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_BuildStarted (object sender, BuildStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Build, stringPool.Add (e.Message), stringPool.Add (e.Message), true, e.Timestamp);
+			var message = stringPool.Add (e.Message);
+			AddNode (BuildOutputNodeType.Build, 
+			         message, 
+			         message, 
+			         true,
+			         e.Timestamp);
 		}
 
 		private void BinLog_BuildFinished (object sender, BuildFinishedEventArgs e)
@@ -80,12 +85,28 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_ErrorRaised (object sender, BuildErrorEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Error, stringPool.Add (e.Message), stringPool.Add (e.Message), false, e.Timestamp);
+			var message = stringPool.Add (e.Message);
+			AddNode (BuildOutputNodeType.Error, 
+			         message, 
+			         message, 
+			         false,
+			         e.Timestamp,
+			         stringPool.Add (e.File),
+			         stringPool.Add (e.ProjectFile),
+			         e.LineNumber);
 		}
 
 		private void BinLog_WarningRaised (object sender, BuildWarningEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Warning, stringPool.Add (e.Message), stringPool.Add (e.Message), false, e.Timestamp);
+			var message = stringPool.Add (e.Message);
+			AddNode (BuildOutputNodeType.Warning, 
+			         message, 
+			         message, 
+			         false,
+			         e.Timestamp,
+			         stringPool.Add (e.File),
+			         stringPool.Add (e.ProjectFile),
+			         e.LineNumber);
 		}
 
 		void BinlogReader_MessageRaised (object sender, BuildMessageEventArgs e)
@@ -105,7 +126,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Project, Path.GetFileName (e.ProjectFile), e.Message, true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Project,
+			         stringPool.Add (Path.GetFileName (e.ProjectFile)), 
+			         stringPool.Add (e.Message), 
+			         true,
+			         e.Timestamp);
 		}
 
 		private void BinLog_ProjectFinished (object sender, ProjectFinishedEventArgs e)
@@ -115,7 +140,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_TargetStarted (object sender, TargetStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Target, stringPool.Add (e.TargetName), stringPool.Add (e.TargetName), true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Target, 
+			         stringPool.Add (e.TargetName), 
+			         stringPool.Add (e.Message), 
+			         true, 
+			         e.Timestamp);
 		}
 
 		private void BinLog_TargetFinished (object sender, TargetFinishedEventArgs e)
@@ -129,8 +158,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 				// <Task Message></Task> are removed, we just display the messages
 				return;
 			}
-
-			AddNode (BuildOutputNodeType.Task, stringPool.Add (e.TaskName), stringPool.Add (e.TaskName), true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Task,
+			         stringPool.Add (e.TaskName), 
+			         stringPool.Add (e.Message), 
+			         true,
+			         e.Timestamp);
 		}
 
 		private void BinLog_TaskFinished (object sender, TaskFinishedEventArgs e)
@@ -174,7 +206,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			string shortMessage = stringPool.Add (e.Message.Replace ("\n\r", " ").Replace ('\n', ' '));
 			processor.AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message,
-			                   shortMessage, stringPool.Add (e.Message), false, e.Timestamp);
+			                   shortMessage, stringPool.Add (e.Message),
+			                   false, 
+			                   e.Timestamp,
+			                   stringPool.Add (e.File),
+			                   stringPool.Add (e.ProjectFile),
+			                   e.LineNumber);
 		}
 	}
 }

@@ -59,6 +59,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public virtual bool HasWarnings { get; set; } = false;
 		public virtual bool HasData { get; set; } = false;
 
+		public string File { get; set; }
+		public string Project { get; set; }
+		public int LineNumber { get; set; }
+
 		List<BuildOutputNode> children;
 		public virtual IReadOnlyList<BuildOutputNode> Children => children;
 
