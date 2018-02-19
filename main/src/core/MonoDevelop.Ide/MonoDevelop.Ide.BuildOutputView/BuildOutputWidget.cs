@@ -415,7 +415,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}, cts.Token);
 		}
 
-		public bool IsSearchInProgress => currentSearch != null;
+		public bool IsSearchInProgress => currentSearch != null && currentSearch.MatchesCount > 0;
 
 		public void FocusOnSearchEntry ()
 		{
