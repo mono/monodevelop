@@ -393,6 +393,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 					await Runtime.RunInMainThread (() => {
 						currentSearch = null;
+						searchEntry.Entry.Text = String.Empty;
+						Find (null);
 
 						var buildOutputDataSource = new BuildOutputDataSource (BuildOutput.GetRootNodes (showDiagnostics));
 						treeView.DataSource = buildOutputDataSource;
