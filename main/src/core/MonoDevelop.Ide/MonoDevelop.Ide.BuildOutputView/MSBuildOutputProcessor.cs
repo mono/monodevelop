@@ -91,8 +91,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			         message, 
 			         false,
 			         e.Timestamp,
-			         e.File,
-			         e.ProjectFile,
+			         stringPool.Add (e.File),
+			         stringPool.Add (e.ProjectFile),
 			         e.LineNumber);
 		}
 
@@ -104,8 +104,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			         message, 
 			         false,
 			         e.Timestamp,
-			         e.File,
-			         e.ProjectFile,
+			         stringPool.Add (e.File),
+			         stringPool.Add (e.ProjectFile),
 			         e.LineNumber);
 		}
 
@@ -126,7 +126,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
 		{
-			AddNode (BuildOutputNodeType.Project, Path.GetFileName (e.ProjectFile), stringPool.Add (e.Message), true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Project,
+			         stringPool.Add (Path.GetFileName (e.ProjectFile)), 
+			         stringPool.Add (e.Message), 
+			         true,
+			         e.Timestamp);
 		}
 
 		private void BinLog_ProjectFinished (object sender, ProjectFinishedEventArgs e)
@@ -199,8 +203,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			                   shortMessage, stringPool.Add (e.Message),
 			                   false, 
 			                   e.Timestamp,
-			                   e.File,
-			                   e.ProjectFile,
+			                   stringPool.Add (e.File),
+			                   stringPool.Add (e.ProjectFile),
 			                   e.LineNumber);
 		}
 	}
