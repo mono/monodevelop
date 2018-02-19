@@ -410,7 +410,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		/// <value><c>true</c> if search wrapped; otherwise, <c>false</c>.</value>
 		public bool SearchWrapped { get; private set; }
 
-		public BuildOutputNode FirstMatch (string pattern)
+		public Task<BuildOutputNode> FirstMatch (string pattern)
 		{
 			// Initialize search data
 			currentSearchMatches.Clear ();
@@ -418,19 +418,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 			currentSearchPattern = pattern;
 			currentMatchIndex = -1;
 
-			if (!string.IsNullOrEmpty (pattern)) {
-				// Perform search
-				foreach (var root in rootNodes) {
-					root.Search (currentSearchMatches, currentSearchPattern);
+			return Task.Run (() => {
+				if (!string.IsNullOrEmpty (pattern)) {
+					// Perform search
+					foreach (var root in rootNodes) {
+						root.Search (currentSearchMatches, currentSearchPattern);
+					}
+
+					if (currentSearchMatches.Count > 0) {
+						currentMatchIndex = 0;
+						return currentSearchMatches [0];
+					}
 				}
 
-				if (currentSearchMatches.Count > 0) {
-					currentMatchIndex = 0;
-					return currentSearchMatches [0];
-				}
-			}
-
-			return null;
+				return null;
+			});
 		}
 
 		public BuildOutputNode PreviousMatch ()

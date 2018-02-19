@@ -289,14 +289,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			PathChanged?.Invoke (this, new DocumentPathChangedEventArgs (CurrentPath));
 		}
 
-		void FindFirst (object sender, EventArgs args)
+		async void FindFirst (object sender, EventArgs args)
 		{
 			var dataSource = treeView.DataSource as BuildOutputDataSource;
 			if (dataSource == null)
 				return;
 
 			currentSearch = new BuildOutputDataSearch (dataSource.RootNodes);
-			Find (currentSearch.FirstMatch (searchEntry.Entry.Text));
+			Find (await currentSearch.FirstMatch (searchEntry.Entry.Text));
 		}
 
 		public void FindNext (object sender, EventArgs args)
