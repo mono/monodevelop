@@ -46,6 +46,8 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
     override x.CreateTooltipInformation (_smartWrap, cancel) =
         Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
     
+    override x.IsCommitCharacter (_keyChar, _partialWord) = false
+
     type SimpleCategory(text) =
         inherit CompletionCategory(text, null)
         override x.CompareTo other =
@@ -782,6 +784,7 @@ type FSharpTextEditorCompletion() =
     let validCompletionChar c =
         c = '(' || c = ',' || c = '<'
 
+
     override x.CompletionLanguage = "F#"
     override x.Initialize() =
         do x.Editor.IndentationTracker <- FSharpIndentationTracker(x.Editor)
@@ -805,9 +808,6 @@ type FSharpTextEditorCompletion() =
     override x.HandleCodeCompletionAsync(context, triggerInfo, token) =
         let ctrlSpace = triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CompletionCommand
         if IdeApp.Preferences.EnableAutoCodeCompletion.Value || ctrlSpace then
-            let computation =
-                Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, ctrlSpace) 
-                        
             Async.StartAsTask (computation = computation, cancellationToken = token)
         else
             Task.FromResult null
