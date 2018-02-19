@@ -211,6 +211,20 @@ namespace MonoDevelop.Platform
 				title,
 				GenerateAppId (applicationId));
 		}
+		
+		private static string MateTerminalRunner (string command, string args, string dir, string title, bool pause, Guid applicationId)
+		{
+			string extra_commands = pause 
+				? BashPause.Replace ("'", "\\\"")
+				: String.Empty;
+			
+			return String.Format (@"--name ""{4}"" -e ""bash -c 'cd {3} ; {0} {1} ; {2}'""",
+				command,
+				EscapeArgs (args),
+				extra_commands,
+				EscapeDir (dir),
+				title);
+		}
 
 		private static string GenerateAppId (Guid applicationId)
  		{
@@ -298,7 +312,7 @@ namespace MonoDevelop.Platform
 			}
 			else if (!String.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MATE_DESKTOP_SESSION_ID"))) {
 				preferred_terminal = "mate-terminal";
-				preferred_runner = GnomeTerminalRunner;
+				preferred_runner = MateTerminalRunner;
 				preferedOpenFolderRunner = GnomeTerminalOpenFolderRunner;
 			} 
 			else if (!String.IsNullOrEmpty (Environment.GetEnvironmentVariable ("KDE_SESSION_VERSION"))) { 

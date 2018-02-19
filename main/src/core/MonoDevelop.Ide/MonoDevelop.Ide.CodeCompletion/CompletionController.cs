@@ -1,4 +1,4 @@
-﻿//
+//
 // CodeCompletionSession.cs
 //
 // Author:
@@ -259,7 +259,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			usingPreviewEntry = false;
 			previewCompletionEntryText = "";
-			StartOffset = 0;
 			SelectedItemCompletionText = null;
 			ResetViewState();
 		}
@@ -406,8 +405,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (!object.ReferenceEquals (sender, mutableList))
 				return;
-			
-			ResetSizes ();
 
 			// Only hide the footer if it's finished changing
 			if (!mutableList.IsChanging)

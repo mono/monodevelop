@@ -201,5 +201,16 @@ namespace console61
 				project.Dispose ();
 			}
 		}
+
+		/// <summary>
+		/// Bug 568065: Multiple identical entries for Tuple in completion list
+		/// </summary>
+		[Test]
+		public async Task TestVSTSBug568065 ()
+		{
+			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = true;
+			await TestCompletion (@"$", list => Assert.AreEqual (1, list.Where (d => d.CompletionText == "Tuple").Count()));
+
+		}
 	}
 }
