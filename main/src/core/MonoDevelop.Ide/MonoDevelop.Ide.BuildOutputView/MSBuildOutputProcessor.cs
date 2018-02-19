@@ -180,7 +180,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		const string TaskParameterMessagePrefix = @"Task Parameter:";
 		const string TargetMessagePrefix = "Target \"";
-		const string SkippingTargetMessagePrefix = "Skipping target";
+		const string SkippedSuffix = " skipped";
+		const string SkippingTargetMessagePrefix = "Skipping target ";
 
 		public static void ProcessMessageEvent (MSBuildOutputProcessor processor, BuildMessageEventArgs e, StringInternPool stringPool)
 		{
@@ -192,10 +193,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 			case 'S':
 				if (e.Message.StartsWith (SkippingTargetMessagePrefix, StringComparison.Ordinal)) {
 					// "Skipping target ..." messages
-					var parts = e.Message.Split ('"');
-					if (parts.Length >= 2 && processor.CurrentNode.NodeType == BuildOutputNodeType.Target && processor.CurrentNode.Message == parts[1]) {
-						processor.CurrentNode.NodeType = BuildOutputNodeType.TargetSkipped;
-						return;
+					if (e.Message [SkippingTargetMessagePrefix.Length] == '"') {
+						int nextQuoteIndex = e.Message.IndexOf ('"', SkippingTargetMessagePrefix.Length + 1);
+						if (nextQuoteIndex >= 0) {
+							if (processor.CurrentNode.NodeType == BuildOutputNodeType.Target &&
+							    e.Message.IndexOf (processor.CurrentNode.Message,
+							                       SkippingTargetMessagePrefix.Length + 1,
+							                       nextQuoteIndex - 1 - SkippingTargetMessagePrefix.Length,
+							                       StringComparison.Ordinal) == SkippingTargetMessagePrefix.Length + 1) {
+								processor.CurrentNode.NodeType = BuildOutputNodeType.TargetSkipped;
+								return;
+							}
+						}
 					}
 				}
 				break;
@@ -215,10 +224,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 					return;
 				} else if (e.Message.StartsWith (TargetMessagePrefix, StringComparison.Ordinal)) {
 					// "Target ... skipped" messages
-					var parts = e.Message.Split ('"');
-					if (parts.Length >= 3 && parts[2].StartsWith (" skipped", StringComparison.Ordinal)) {
-						processor.AddNode (BuildOutputNodeType.TargetSkipped, stringPool.Add (parts[1]), stringPool.Add (e.Message), false, e.Timestamp);
-						return;
+					int nextQuoteIndex = e.Message.IndexOf ('"', TargetMessagePrefix.Length + 1);
+					if (nextQuoteIndex >= 0) {
+						if (e.Message.IndexOf (SkippedSuffix, nextQuoteIndex + 1, SkippedSuffix.Length, StringComparison.Ordinal) == nextQuoteIndex + 1) {
+							processor.AddNode (BuildOutputNodeType.TargetSkipped,
+							                   stringPool.Add (e.Message.Substring (TargetMessagePrefix.Length,
+							                                                        nextQuoteIndex - TargetMessagePrefix.Length)),
+							                   stringPool.Add (e.Message),
+							                   false,
+							                   e.Timestamp);
+						}
 					}
 				}
 				break;
