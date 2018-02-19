@@ -48,6 +48,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputNode : TreePosition
 	{
+		static readonly Xwt.Drawing.Image buildIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildSolution, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image messageIcon = ImageService.GetIcon (Ide.Gui.Stock.MessageLog, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image errorIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildError, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image projectIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildProject, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image targetIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildTarget, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image taskIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildTask, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image warningIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildWarning, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image folderIcon = ImageService.GetIcon (Ide.Gui.Stock.OpenFolder, Gtk.IconSize.Menu);
+
 		const string ParametersNodeName = "Parameters";
 
 		public virtual BuildOutputNodeType NodeType { get; set; }
@@ -78,6 +87,33 @@ namespace MonoDevelop.Ide.BuildOutputView
 			child.Parent = this;
 			return child;
 		}
+
+
+		public Xwt.Drawing.Image GetImage ()
+		{
+			switch (NodeType) {
+			case BuildOutputNodeType.Build:
+				return buildIcon;
+			case BuildOutputNodeType.Diagnostics:
+			case BuildOutputNodeType.Message:
+				return messageIcon;
+			case BuildOutputNodeType.Error:
+				return errorIcon;
+			case BuildOutputNodeType.Parameters:
+				return folderIcon;
+			case BuildOutputNodeType.Project:
+				return projectIcon;
+			case BuildOutputNodeType.Target:
+			case BuildOutputNodeType.TargetSkipped:
+				return targetIcon;
+			case BuildOutputNodeType.Task:
+				return taskIcon;
+			case BuildOutputNodeType.Warning:
+				return warningIcon;
+			}
+			return ImageService.GetIcon (Ide.Gui.Stock.Empty);
+		}
+
 
 		public BuildOutputNode FindChild (string message)
 		{

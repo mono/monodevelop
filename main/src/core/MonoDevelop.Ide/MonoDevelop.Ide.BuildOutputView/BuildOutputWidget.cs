@@ -188,10 +188,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 				CanResize = false,
 				Expands = true
 			};
-			var imageCell = new ImageCellView ();
-			var textCell = new TextCellView ();
-			treeColumn.Views.Add (imageCell);
-			treeColumn.Views.Add (textCell);
+			var pack = new BuildOutputTreeCellView ();
+			treeColumn.Views.Add (pack);
 			treeView.Columns.Add (treeColumn);
 
 			PackStart (treeView, expand: true, fill: true);
@@ -540,7 +538,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					widget.FocusRow (list [n]);
 			}
 
-			public Xwt.Drawing.Image GetIcon (int n) => DataSource.GetValue (list [n], 0) as Xwt.Drawing.Image;
+			public Xwt.Drawing.Image GetIcon (int n) => list [n].GetImage ();
 
 			public string GetMarkup (int n) => list [n].Message;
 
