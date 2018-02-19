@@ -140,8 +140,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_TargetStarted (object sender, TargetStartedEventArgs e)
 		{
-			var targetName = stringPool.Add (e.TargetName);
-			AddNode (BuildOutputNodeType.Target, targetName, targetName, true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Target, 
+			         stringPool.Add (e.TargetName), 
+			         stringPool.Add (e.Message), 
+			         true, 
+			         e.Timestamp);
 		}
 
 		private void BinLog_TargetFinished (object sender, TargetFinishedEventArgs e)
@@ -155,8 +158,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 				// <Task Message></Task> are removed, we just display the messages
 				return;
 			}
-			var taskName = stringPool.Add (e.TaskName);
-			AddNode (BuildOutputNodeType.Task, taskName, taskName, true, e.Timestamp);
+			AddNode (BuildOutputNodeType.Task,
+			         stringPool.Add (e.TaskName), 
+			         stringPool.Add (e.Message), 
+			         true,
+			         e.Timestamp);
 		}
 
 		private void BinLog_TaskFinished (object sender, TaskFinishedEventArgs e)
