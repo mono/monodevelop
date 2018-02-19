@@ -152,5 +152,6 @@ type FSharpParser() =
                         with exn ->
                             LoggingService.LogError ("FSharpParser: Error ParsedDocument on {0}", shortFilename, exn)
                             return FSharpParsedDocument(fileName, None) :> _
-                    | None -> return FSharpParsedDocument(fileName, None) :> _ }
-         |> StartAsyncAsTask cancellationToken
+                    | None -> return FSharpParsedDocument(fileName, None) :> _ 
+        }
+        |> StartAsyncAsTask cancellationToken
