@@ -60,7 +60,7 @@ namespace MonoDevelop.SourceEditor
 				return null;
 
 			int caretOffset = editor.CaretOffset;
-			EditorTheme theme = editor.Options.GetEditorTheme ();
+			EditorTheme theme = SyntaxHighlightingService.GetIdeFittingTheme (editor.Options.GetEditorTheme ());
 			return await Task.Run (async () => {
 				var root = unit.SyntaxTree.GetRoot (token);
 				SyntaxToken syntaxToken;
