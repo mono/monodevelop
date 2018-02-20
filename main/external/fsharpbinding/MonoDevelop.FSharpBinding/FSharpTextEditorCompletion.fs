@@ -46,6 +46,17 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
     override x.CreateTooltipInformation (_smartWrap, cancel) =
         Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
     
+    (*
+        https://github.com/mono/monodevelop/issues/3798
+
+        Determined that it is too difficult to detect all the occurrences of
+        identifiers in F# code for the time being, so it is hard to determine that the
+        popup should not be displayed. Given this, we should be far less aggressive
+        about auto-committing (even when "Complete with Space or Punctuation" is
+        switched on. This is a good default for C#, but a bad default for F#.)
+
+        This behaviour roughly matches both VS on Windows and VS Code
+    *)
     override x.IsCommitCharacter (_keyChar, _partialWord) = false
 
     type SimpleCategory(text) =
@@ -803,11 +814,12 @@ type FSharpTextEditorCompletion() =
     override x.KeyPress (descriptor:KeyDescriptor) =
         suppressParameterCompletion <- not (isValidParamCompletionDecriptor descriptor)
         base.KeyPress (descriptor)
-  
-    // Run completion automatically when the user hits '.'
+
     override x.HandleCodeCompletionAsync(context, triggerInfo, token) =
         let ctrlSpace = triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CompletionCommand
         if IdeApp.Preferences.EnableAutoCodeCompletion.Value || ctrlSpace then
+            let computation =
+                Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, ctrlSpace)
             Async.StartAsTask (computation = computation, cancellationToken = token)
         else
             Task.FromResult null
