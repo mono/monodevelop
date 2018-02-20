@@ -183,7 +183,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		const string SkippedSuffix = " skipped";
 		const string SkippingTargetMessagePrefix = "Skipping target ";
 
-		public static void ProcessMessageEvent (MSBuildOutputProcessor processor, BuildMessageEventArgs e, StringInternPool stringPool)
+		static void ProcessMessageEvent (MSBuildOutputProcessor processor, BuildMessageEventArgs e, StringInternPool stringPool)
 		{
 			if (String.IsNullOrEmpty (e.Message)) {
 				return;
@@ -211,17 +211,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			case 'T':
 				if (e.Message.StartsWith (TaskParameterMessagePrefix, StringComparison.Ordinal)) {
 					// Task parameters are added to a special folder
-					string content = e.Message.Substring (TaskParameterMessagePrefix.Length)
-									  .Replace ("\r\n", " ")
-									  .Replace ('\n', ' ');
-					int equalSign = content.IndexOf ('=');
-					if (equalSign < 0) {
-						break;
+					if (ProcessTaskParameter (processor, e, stringPool)) {
+						return;
 					}
-
-					content = $"{content.Substring (0, equalSign).Trim ()} = {content.Substring (equalSign + 1, content.Length - equalSign - 1).Trim ()}";
-					processor.CurrentNode.AddParameter (stringPool.Add (content), stringPool.Add (e.Message));
-					return;
 				} else if (e.Message.StartsWith (TargetMessagePrefix, StringComparison.Ordinal)) {
 					// "Target ... skipped" messages
 					int nextQuoteIndex = e.Message.IndexOf ('"', TargetMessagePrefix.Length + 1);
@@ -247,6 +239,27 @@ namespace MonoDevelop.Ide.BuildOutputView
 			                   !String.IsNullOrEmpty (e.File) ? stringPool.Add (e.File) : null,
 			                   !String.IsNullOrEmpty (e.ProjectFile) ? stringPool.Add (e.ProjectFile) : null,
 			                   e.LineNumber);
+		}
+
+		static bool ProcessTaskParameter (MSBuildOutputProcessor processor, BuildMessageEventArgs e, StringInternPool stringPool)
+		{
+			if (e.Message.IndexOf ('\n') == - 1) {
+				var message = stringPool.Add (e.Message.Substring (TaskParameterMessagePrefix.Length));
+				processor.CurrentNode.AddParameter (message, message);
+			} else {
+				string content = e.Message.Substring (TaskParameterMessagePrefix.Length)
+									  .Replace ("\r\n", " ")
+									  .Replace ('\n', ' ');
+				int equalSign = content.IndexOf ('=');
+				if (equalSign < 0) {
+					return false;
+				}
+
+				content = $"{content.Substring (0, equalSign).Trim ()}={content.Substring (equalSign + 1, content.Length - equalSign - 1).Trim ()}";
+				processor.CurrentNode.AddParameter (stringPool.Add (content), stringPool.Add (e.Message));
+			}
+
+			return true;
 		}
 
 		#endregion
