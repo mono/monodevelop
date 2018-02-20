@@ -198,7 +198,6 @@ namespace MonoDevelop.Refactoring.Rename
 				};
 			}
 		}
-		static AlertButton YesToAllButton = new AlertButton (GettextCatalog.GetString ("Yes to All"));
 
 		async void OnOKClicked (object sender, EventArgs e)
 		{
@@ -206,18 +205,25 @@ namespace MonoDevelop.Refactoring.Rename
 			((Widget)this).Destroy ();
 			var changes = await this.rename (properties);
 			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Title, null);
+
+
 			if (ChangedDocuments != null) {
 				AlertButton result = null;
+				var msg = new QuestionMessage ();
+				msg.Buttons.Add (AlertButton.Yes);
+				msg.Buttons.Add (AlertButton.Cancel);
+				msg.AllowApplyToAll = true;
+
 				foreach (var path in ChangedDocuments) {
 					try {
 						var attr = File.GetAttributes (path);
 						if (attr.HasFlag (FileAttributes.ReadOnly)) {
-							if (result != YesToAllButton)
-								result = MessageService.AskQuestion (GettextCatalog.GetString ("File \"{0}\" is read only. Should it be made writeable?", path), AlertButton.Yes, YesToAllButton, AlertButton.Cancel);
+							msg.Text = GettextCatalog.GetString ("File \"{0}\" is read only. Should it be made writeable?", path);
+							result = MessageService.AskQuestion (msg);
 
 							if (result == AlertButton.Cancel) {
 								return;
-							} else if (result == AlertButton.Yes || result == YesToAllButton) {
+							} else if (result == AlertButton.Yes) {
 								try {
 									File.SetAttributes (path, attr & ~FileAttributes.ReadOnly);
 								} catch (Exception ex) {
