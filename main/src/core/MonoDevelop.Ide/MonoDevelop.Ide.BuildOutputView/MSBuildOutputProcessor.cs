@@ -220,8 +220,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					if (nextQuoteIndex >= 0) {
 						if (e.Message.IndexOf (SkippedSuffix, nextQuoteIndex + 1, SkippedSuffix.Length, StringComparison.Ordinal) == nextQuoteIndex + 1) {
 							processor.AddNode (BuildOutputNodeType.TargetSkipped,
-							                   stringPool.Add (e.Message.Substring (TargetMessagePrefix.Length,
-							                                                        nextQuoteIndex - TargetMessagePrefix.Length)),
+							                   stringPool.Add (e.Message, TargetMessagePrefix.Length, nextQuoteIndex - TargetMessagePrefix.Length),
 							                   stringPool.Add (e.Message),
 							                   false,
 							                   e.Timestamp);
@@ -244,7 +243,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		static bool ProcessTaskParameter (MSBuildOutputProcessor processor, BuildMessageEventArgs e, StringInternPool stringPool)
 		{
 			if (e.Message.IndexOf ('\n') == - 1) {
-				var message = stringPool.Add (e.Message.Substring (TaskParameterMessagePrefix.Length));
+				var message = stringPool.Add (e.Message, TaskParameterMessagePrefix.Length, e.Message.Length - TaskParameterMessagePrefix.Length);
 				processor.CurrentNode.AddParameter (message, message);
 			} else {
 				string content = e.Message.Substring (TaskParameterMessagePrefix.Length)
