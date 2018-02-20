@@ -649,7 +649,8 @@ namespace MonoDevelop.MacIntegration
 		[GLib.ConnectBefore]
 		static void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
 		{
-			args.RetVal = true;
+			// Return false so future event handlers aren't blocked
+			args.RetVal = false;
 			NSApplication.SharedApplication.Hide (NSApplication.SharedApplication);
 		}
 
