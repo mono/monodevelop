@@ -92,6 +92,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public override void Dispose ()
 		{
+			control.FileSaved -= FileNameChanged;
 			control.Dispose ();
 			base.Dispose ();
 		}
