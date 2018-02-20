@@ -81,9 +81,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 					var ctx = DocumentContext;
 					if (ctx == null)
 						return;
-					await UpdateErrorUndelines (ctx, parsedDocument, token).ConfigureAwait (false);
+
+					var docErrors = await parsedDocument.GetErrorsAsync (token).ConfigureAwait (false);
 					token.ThrowIfCancellationRequested ();
-					await UpdateQuickTasks (ctx, parsedDocument, token).ConfigureAwait (false);
+
+					UpdateErrorUnderlines (ctx, parsedDocument, docErrors, token);
+					token.ThrowIfCancellationRequested ();
+					await UpdateQuickTasks (ctx, parsedDocument, docErrors, token).ConfigureAwait (false);
 				} catch (OperationCanceledException) {
 					// ignore
 				}
@@ -116,12 +120,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 		}
 
 
-		async Task UpdateErrorUndelines (DocumentContext ctx, ParsedDocument parsedDocument, CancellationToken token)
+		void UpdateErrorUnderlines (DocumentContext ctx, ParsedDocument parsedDocument, IReadOnlyList<Error> docErrors, CancellationToken token)
 		{
 			if (parsedDocument == null || isDisposed)
 				return;
 			try {
-				var errors = await parsedDocument.GetErrorsAsync(token).ConfigureAwait (false);
 				Application.Invoke ((o, args) => {
 					if (token.IsCancellationRequested || isDisposed)
 						return;
@@ -134,8 +137,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 						}
 						RemoveErrorUnderlines ();
 						// Else we underline the error
-						if (errors != null) {
-							foreach (var error in errors) {
+						if (docErrors != null) {
+							foreach (var error in docErrors) {
 								UnderLineError (error);
 							}
 						}
@@ -165,13 +168,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 			}
 		}
 
-		async Task UpdateQuickTasks (DocumentContext ctx, ParsedDocument doc, CancellationToken token)
+		async Task UpdateQuickTasks (DocumentContext ctx, ParsedDocument parsedDocument, IReadOnlyList<Error> docErrors, CancellationToken token)
 		{
 			if (isDisposed)
 				return;
 			var newTasks = ImmutableArray<QuickTask>.Empty.ToBuilder ();
-			if (doc != null) {
-				foreach (var cmt in await doc.GetTagCommentsAsync(token).ConfigureAwait (false)) {
+			if (parsedDocument != null) {
+				foreach (var cmt in await parsedDocument.GetTagCommentsAsync(token).ConfigureAwait (false)) {
 					if (token.IsCancellationRequested)
 						return;
 					int offset;
@@ -184,7 +187,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 					newTasks.Add (newTask);
 				}
 
-				foreach (var error in await doc.GetErrorsAsync(token).ConfigureAwait (false)) {
+				foreach (var error in docErrors) {
 					if (token.IsCancellationRequested)
 						return;
 					int offset;

@@ -184,3 +184,20 @@ module Interactive =
         let line2 = doc.GetLine editor.CaretLine
         editor.CaretLine |> should equal 3
         doc.GetMarkers line2 |> Seq.length |> should equal 1
+
+    [<Test;AsyncStateMachine(typeof<Task>)>]
+    let ``Interactive gets source directory``() =
+        async {
+            let mutable results = String.empty
+            let! session = createSession()
+            session.SetSourceDirectory "/"
+            let finished = new AutoResetEvent(false)
+            session.TextReceived.Add(fun output -> finished.Set() |> ignore)
+            let succeeded = finished.WaitOne(5000)
+            session.SendInput "printfn __SOURCE_DIRECTORY__;;"
+            let finished = new AutoResetEvent(false)
+            session.TextReceived.Add(fun output -> results <- output 
+                                                   finished.Set() |> ignore)
+            let succeeded = finished.WaitOne(5000)
+            if succeeded then results |> should equal "/\n"
+            else Assert.Fail "Timeout" } |> toTask

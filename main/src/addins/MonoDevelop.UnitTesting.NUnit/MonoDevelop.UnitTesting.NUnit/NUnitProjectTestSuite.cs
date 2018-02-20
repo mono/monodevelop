@@ -79,6 +79,9 @@ namespace MonoDevelop.UnitTesting.NUnit
 
 		public static NUnitProjectTestSuite CreateTest (DotNetProject project)
 		{
+			if (project.TargetFramework.Id.Identifier == ".NETCoreApp")
+				return null;
+
 			if (!project.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration).BuildEnabledForItem (project))
 				return null;
 
@@ -135,7 +138,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 		{
 			if (p.Include.IndexOf ("GuiUnit", StringComparison.OrdinalIgnoreCase) != -1)
 				return NUnitVersion.NUnit2;
-			if (p.Include.IndexOf ("nunit.framework", StringComparison.OrdinalIgnoreCase) != -1)
+			if (p.Include.IndexOf ("nunit", StringComparison.OrdinalIgnoreCase) != -1)
 				return p.IsAtLeastVersion (new Version (3, 0)) ? NUnitVersion.NUnit3 : NUnitVersion.NUnit2;
 			return null;
 		}

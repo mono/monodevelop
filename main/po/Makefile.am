@@ -54,6 +54,6 @@ uninstall-local:
 	done
 
 CLEANFILES = $(GMO_FILES)
-EXTRA_DIST = Makefile $(FILES)
+EXTRA_DIST = Makefile po.mdproj $(FILES)
 
 include $(top_srcdir)/Makefile.include

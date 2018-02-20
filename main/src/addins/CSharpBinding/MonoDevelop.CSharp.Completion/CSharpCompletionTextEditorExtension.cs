@@ -347,6 +347,7 @@ namespace MonoDevelop.CSharp.Completion
 				foreach (var member in semanticModel.Compilation.GlobalNamespace.GetNamespaceMembers ())
 					stack.Push (member);
 				var extMethodDict = extensionMethodImport ? new Dictionary<INamespaceSymbol, List<ImportSymbolCompletionData>> () : null;
+				var typeDict = new Dictionary<INamespaceSymbol, HashSet<string>> ();
 				while (stack.Count > 0) {
 					if (cancellationToken.IsCancellationRequested)
 						break;
@@ -395,7 +396,14 @@ namespace MonoDevelop.CSharp.Completion
 								}
 							}
 						} else {
-							result.Add (new ImportSymbolCompletionData (this, type, false));
+							HashSet<string> existingTypeHashSet;
+							if (!typeDict.TryGetValue (type.ContainingNamespace, out existingTypeHashSet)) {
+								typeDict.Add (type.ContainingNamespace, existingTypeHashSet = new HashSet<string> ());
+							}
+							if (!existingTypeHashSet.Contains (type.Name)) {
+								result.Add (new ImportSymbolCompletionData (this, type, false));
+								existingTypeHashSet.Add (type.Name);
+							}
 						}
 					}
 				}
@@ -443,7 +451,9 @@ namespace MonoDevelop.CSharp.Completion
 			}
 
 			Counters.ProcessCodeCompletion.Trace ("C#: Getting completions");
-			var customOptions = DocumentContext.RoslynWorkspace.Options.WithChangedOption (CompletionOptions.TriggerOnDeletion, LanguageNames.CSharp, true);
+			var customOptions = DocumentContext.RoslynWorkspace.Options
+				.WithChangedOption (CompletionOptions.TriggerOnDeletion, LanguageNames.CSharp, true)
+				.WithChangedOption (CompletionOptions.HideAdvancedMembers, LanguageNames.CSharp, IdeApp.Preferences.CompletionOptionsHideAdvancedMembers);
 
 			var completionList = await Task.Run (() => cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, options: customOptions, cancellationToken: token)).ConfigureAwait (false);
 			Counters.ProcessCodeCompletion.Trace ("C#: Got completions");

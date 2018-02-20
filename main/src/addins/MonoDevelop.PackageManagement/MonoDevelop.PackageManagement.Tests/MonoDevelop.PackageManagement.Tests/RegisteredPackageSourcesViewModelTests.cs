@@ -43,7 +43,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			packageSourceProvider = new FakePackageSourceProvider ();
 			packageSources = packageSourceProvider.PackageSources;
-			viewModel = new RegisteredPackageSourcesViewModel (packageSourceProvider, new FolderBrowser ());
+			viewModel = new RegisteredPackageSourcesViewModel (packageSourceProvider, new FolderBrowser (), null);
 		}
 
 		void CreateViewModelWithOnePackageSource ()

@@ -52,10 +52,12 @@ namespace MonoDevelop.PackageManagement
 
 			packageManagementEvents.PackageInstalled += PackageInstalled;
 			packageManagementEvents.PackageUninstalled += PackageUninstalled;
+			packageManagementEvents.PackagesRestored += OnPackagesRestored;
 		}
 
 		public event EventHandler<PackageManagementPackageReferenceEventArgs> PackageReferenceAdded;
 		public event EventHandler<PackageManagementPackageReferenceEventArgs> PackageReferenceRemoved;
+		public event EventHandler PackagesRestored;
 
 		public void InstallPackages (
 			string packageSourceUrl,
@@ -302,6 +304,11 @@ namespace MonoDevelop.PackageManagement
 		void PackageInstalled (object sender, PackageManagementEventArgs e)
 		{
 			OnPackageReferenceAdded (e);
+		}
+
+		void OnPackagesRestored (object sender, EventArgs e)
+		{
+			PackagesRestored?.Invoke (sender, e);
 		}
 
 		void OnPackageReferencedRemoved (PackageManagementEventArgs e)

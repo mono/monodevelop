@@ -149,6 +149,15 @@ namespace NUnit3Runner
 
 		bool CheckXmlForError(XmlElement root, out string result)
 		{
+			if (root.GetAttribute ("type") != "Assembly" || root.GetAttribute ("runstate") != "NotRunnable") {
+				// Only interested in _SKIPREASON if the test-suite is an assembly and the
+				// state is NotRunnable. This will indicate a load failure. This check
+				// prevents Ignore attributes incorrectly indicating an error since these
+				// also have a _SKIPREASON.
+				result = null;
+				return false;
+			}
+
 			var elements = root.GetElementsByTagName ("properties");
 			var skipReasonString = string.Empty;
 			foreach (XmlElement element in elements)

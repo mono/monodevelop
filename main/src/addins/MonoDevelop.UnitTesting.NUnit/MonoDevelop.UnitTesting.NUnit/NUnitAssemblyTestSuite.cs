@@ -209,6 +209,8 @@ namespace MonoDevelop.UnitTesting.NUnit
 				Runtime.RunInMainThread (delegate {
 					if (ld.Error != null)
 						this.ErrorMessage = ld.Error.Message;
+					else
+						ErrorMessage = string.Empty;
 					AsyncCreateTests (ld);
 				});
 			};
