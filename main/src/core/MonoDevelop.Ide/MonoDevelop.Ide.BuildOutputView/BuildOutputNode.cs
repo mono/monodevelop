@@ -60,9 +60,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public virtual bool HasWarnings { get; set; } = false;
 		public virtual bool HasData { get; set; } = false;
 
-		public string File { get; set; }
-		public string Project { get; set; }
-		public int LineNumber { get; set; }
+		public virtual string File { get; set; }
+		public virtual string Project { get; set; }
+		public virtual int LineNumber { get; set; }
 
 		List<BuildOutputNode> children;
 		public virtual IReadOnlyList<BuildOutputNode> Children => children;
@@ -139,6 +139,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public override DateTime EndTime { get => masterNode.EndTime; set => masterNode.EndTime = value; }
 		public override bool HasErrors { get => masterNode.HasErrors; set => masterNode.HasErrors = value; }
 		public override bool HasWarnings { get => masterNode.HasWarnings; set => masterNode.HasWarnings = value; }
+		public override bool HasData { get => masterNode.HasData; set => masterNode.HasData = value; }
+
+		public override string File { get => masterNode.File; set => masterNode.File = value; }
+		public override string Project { get => masterNode.Project; set => masterNode.Project = value; }
+		public override int LineNumber { get => masterNode.LineNumber; set => masterNode.LineNumber = value; }
 
 		public override IReadOnlyList<BuildOutputNode> Children {
 			get {
