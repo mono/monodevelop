@@ -252,6 +252,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
+		bool IsSelectableTask (BuildOutputNode node)
+		{
+			return filePathLocation == FilePath.Empty && (node.NodeType == BuildOutputNodeType.Error || node.NodeType == BuildOutputNodeType.Warning);
+		}
+
 		void TreeView_SelectionChanged (object sender, EventArgs e)
 		{
 			var selectedNode = treeView.SelectedRow as BuildOutputNode;
@@ -293,8 +298,25 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		void TreeView_ButtonPressed (object sender, ButtonEventArgs e)
 		{
-			if (e.Button == PointerButton.Right) {
+			var selectedNode = treeView.SelectedRow as BuildOutputNode;
+
+			if (e.Button == PointerButton.Right && selectedNode != null) {
 				var menu = new ContextMenu ();
+
+				ContextMenuItem jump = null;
+				if (IsSelectableTask (selectedNode)) {
+					jump = new ContextMenuItem (GettextCatalog.GetString ("_Jump to {0}", selectedNode.NodeType.ToString ()));
+					jump.Clicked += (s,evnt) => {
+						var path = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (selectedNode.Project), selectedNode.File);
+						IdeApp.Workbench.OpenDocument (new FilePath (path), 
+						                               null, 
+						                               Math.Max (1, selectedNode.LineNumber),
+						                               Math.Max (1, 0)
+						                              );
+					};
+					menu.Add (jump);
+					menu.Add (new SeparatorContextMenuItem ());
+				}
 
 				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy Element Output"));
 				copyElementMenu.Clicked += CopyElementMenu_Clicked;
