@@ -308,11 +308,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 					jump = new ContextMenuItem (GettextCatalog.GetString ("_Jump to {0}", selectedNode.NodeType.ToString ()));
 					jump.Clicked += (s,evnt) => {
 						var path = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (selectedNode.Project), selectedNode.File);
-						IdeApp.Workbench.OpenDocument (new FilePath (path),
-																	   null,
-																	   Math.Max (1, selectedNode.LineNumber),
-																	   Math.Max (1, 0)
-																	  );
+						IdeApp.Workbench.OpenDocument (new FilePath (path), 
+						                               null, 
+						                               Math.Max (1, selectedNode.LineNumber),
+						                               Math.Max (1, 0)
+						                              );
 					};
 					menu.Add (jump);
 					menu.Add (new SeparatorContextMenuItem ());
