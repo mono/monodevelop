@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 		
-		Pad CreateMonitorPad (string id, string title, string icon, bool bringToFront, bool allowMonitorReuse, bool show)
+		internal Pad CreateMonitorPad (string id, string title, string icon, bool bringToFront, bool allowMonitorReuse, bool show)
 		{
 			Pad pad = null;
 			if (icon == null)

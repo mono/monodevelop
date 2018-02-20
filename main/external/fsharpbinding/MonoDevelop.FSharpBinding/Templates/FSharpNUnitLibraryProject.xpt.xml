@@ -34,7 +34,7 @@
 			</References>
 
 			<Packages requireLicenseAcceptance="false">
-				<Package Id="FSharp.Core" Version="4.3.0" local="true" />
+				<Package Id="FSharp.Core" Version="4.3.3" local="true" />
 				<Package id="NUnit" version="2.6.4" />
 			</Packages>
 

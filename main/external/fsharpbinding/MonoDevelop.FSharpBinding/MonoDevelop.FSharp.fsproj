@@ -58,7 +58,7 @@
     <ItemGroup>
       <NuGetPackage Include="FSharp.Core">
         <Name>fsharp.core</Name>
-        <Version>4.3.0</Version>
+        <Version>4.3.3</Version>
       </NuGetPackage>
       <NuGetPackage Include="System.ValueTuple">
         <Name>system.valuetuple</Name>

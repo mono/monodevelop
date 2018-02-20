@@ -362,7 +362,7 @@ namespace MonoDevelop.VersionControl.Git
 			repo.PushTag (tagName);
 		}
 
-		protected void OnButtonFetchClicked (object sender, EventArgs e)
+		protected async void OnButtonFetchClicked (object sender, EventArgs e)
 		{
 			TreeIter it;
 			if (!treeRemotes.Selection.GetSelected (out it))
@@ -372,7 +372,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (remoteName == null)
 				return;
 
-			repo.Fetch (VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Fetching remote...")), remoteName);
+			await System.Threading.Tasks.Task.Run (() => repo.Fetch (VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Fetching remote...")), remoteName));
 			FillRemotes ();
 		}
 	}

@@ -500,6 +500,10 @@ namespace MonoDevelop.Xml.Editor
 				if (!listWindow.AutoSelect && char.IsLetterOrDigit (descriptor.KeyChar)) {
 					listWindow.AutoSelect = true;
 				}
+				if (XmlEditorOptions.AutoInsertFragments && (descriptor.KeyChar == '=' || descriptor.KeyChar == '"')) {
+					keyAction = KeyActions.CloseWindow | KeyActions.Complete | KeyActions.Ignore;
+					return true;
+				}
 				keyAction = KeyActions.None;
 				return false;
 			}

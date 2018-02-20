@@ -1,5 +1,8 @@
 include $(top_srcdir)/xbuild.include
 
+SUBDIRS = \
+	MonoDevelop.Ide.Editor.Highlighting
+
 EXTRA_DIST += \
 	gtkrc \
 	gtkrc.mac \

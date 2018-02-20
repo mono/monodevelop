@@ -98,6 +98,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				return GetEditorTheme (EditorTheme.DefaultDarkThemeName);
 			}
 		}
+
 		public static EditorTheme GetDefaultColorStyle (this Theme theme)
 		{
 			return GetEditorTheme (GetDefaultColorStyleName (theme));
@@ -133,6 +134,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (theme == Theme.Dark)
 				return (bgColor.L <= 0.5);
 			return (bgColor.L > 0.5);
+		}
+
+		public static EditorTheme GetIdeFittingTheme (EditorTheme userTheme = null)
+		{
+			try {
+				if (userTheme == null || !userTheme.FitsIdeTheme (Ide.IdeApp.Preferences.UserInterfaceTheme))
+					return GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceTheme);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting the color style : " + Ide.IdeApp.Preferences.ColorScheme + " in ide theme : " + Ide.IdeApp.Preferences.UserInterfaceTheme, e);
+			}
+			return userTheme;
 		}
 
 		internal static IEnumerable<TmSetting> GetSettings (ScopeStack scope)
