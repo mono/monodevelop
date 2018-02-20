@@ -44,18 +44,6 @@ using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
-	class TaskSelectedArgs : EventArgs
-	{
-		public string Text { get; private set; }
-		public string Project { get; private set; }
-
-		public TaskSelectedArgs (string text, string project)
-		{
-			Text = text;
-			Project = project;
-		}
-	}
-
 	class BuildOutputWidget : VBox, IPathedDocument
 	{
 		const string binLogExtension = "binlog";
