@@ -802,10 +802,11 @@ type FSharpTextEditorCompletion() =
         base.KeyPress (descriptor)
   
     // Run completion automatically when the user hits '.'
-    override x.HandleCodeCompletionAsync(context, _triggerInfo, token) =
-        if IdeApp.Preferences.EnableAutoCodeCompletion.Value then
+    override x.HandleCodeCompletionAsync(context, triggerInfo, token) =
+        let ctrlSpace = triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CompletionCommand
+        if IdeApp.Preferences.EnableAutoCodeCompletion.Value || ctrlSpace then
             let computation =
-                Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, false) 
+                Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, ctrlSpace) 
                         
             Async.StartAsTask (computation = computation, cancellationToken = token)
         else
