@@ -384,8 +384,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 			resultInformLabel.Show ();
 
-			buttonSearchForward.Sensitive = currentSearch.MatchesCount > 0;
-			buttonSearchBackward.Sensitive = currentSearch.MatchesCount > 0; 
+			buttonSearchForward.Sensitive = currentSearch?.MatchesCount > 0;
+			buttonSearchBackward.Sensitive = currentSearch?.MatchesCount > 0; 
 		}
 
 		static string GetShortcut (object commandId)
