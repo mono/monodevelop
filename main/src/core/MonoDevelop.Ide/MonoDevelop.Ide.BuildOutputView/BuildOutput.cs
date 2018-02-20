@@ -259,13 +259,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputDataSource : ITreeDataSource
 	{
-		static readonly Xwt.Drawing.Image buildIcon = ImageService.GetIcon (Ide.Gui.Stock.StatusBuild, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image buildIcon = ImageService.GetIcon ("build-solution", Gtk.IconSize.Menu);
 		static readonly Xwt.Drawing.Image messageIcon = ImageService.GetIcon (Ide.Gui.Stock.MessageLog, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image errorIcon = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image projectIcon = ImageService.GetIcon (Ide.Gui.Stock.Project, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image targetIcon = ImageService.GetIcon (Ide.Gui.Stock.Event, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image taskIcon = ImageService.GetIcon (Ide.Gui.Stock.Execute, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image warningIcon = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image errorIcon = ImageService.GetIcon ("build-error", Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image projectIcon = ImageService.GetIcon ("build-project", Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image targetIcon = ImageService.GetIcon ("build-target", Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image taskIcon = ImageService.GetIcon ("build-task", Gtk.IconSize.Menu);
+		static readonly Xwt.Drawing.Image warningIcon = ImageService.GetIcon ("build-warning", Gtk.IconSize.Menu);
 		static readonly Xwt.Drawing.Image folderIcon = ImageService.GetIcon (Ide.Gui.Stock.OpenFolder, Gtk.IconSize.Menu);
 
 		public IReadOnlyList<BuildOutputNode> RootNodes => this.rootNodes;
