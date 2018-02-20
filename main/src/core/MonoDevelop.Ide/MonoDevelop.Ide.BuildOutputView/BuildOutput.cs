@@ -156,18 +156,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public List<BuildOutputNode> GetRootNodes (bool includeDiagnostics)
 		{
-			if (includeDiagnostics) {
-				return GetProjectRootNodes ().ToList ();
-			} else {
-				// If not including diagnostics, we need to filter the nodes,
-				// but instead of doing so now for all, we do it on the fly,
-				// as nodes are requested
-				var nodes = new List<BuildOutputNode> ();
-				foreach (var root in GetProjectRootNodes ()) {
+			var comparer = new BuildOutPutNodeComparer ();
+			var nodes = new List<BuildOutputNode> ();
+
+			foreach (var root in GetProjectRootNodes ()) {
+				//let's check if root exists according to solution level comparer
+				if (nodes.Contains (root, comparer)) {
+					var solutionNode = nodes.Find (node => comparer.Equals (node, root));
+					//now we add its children to existent one since are in the same solution
+					foreach (var child in root.Children)
+						solutionNode.AddChild (child);
+				} else {
 					nodes.Add (new FilteredBuildOutputNode (root, includeDiagnostics));
 				}
-				return nodes;
 			}
+			return nodes;
 		}
 
 		IEnumerable<BuildOutputNode> GetProjectRootNodes ()
@@ -210,6 +213,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public void Dispose ()
 		{
 			Dispose (true);
+		}
+
+		/// <summary>
+		/// BuildOutPutNode comparer for grouping Solutions
+		/// </summary>
+		class BuildOutPutNodeComparer : IEqualityComparer<BuildOutputNode>
+		{
+			public bool Equals (BuildOutputNode x, BuildOutputNode y)
+			{
+				return x.Message == y.Message && x.FullMessage == y.FullMessage;
+			}
+
+			public int GetHashCode (BuildOutputNode obj) => obj.GetHashCode ();
 		}
 	}
 
