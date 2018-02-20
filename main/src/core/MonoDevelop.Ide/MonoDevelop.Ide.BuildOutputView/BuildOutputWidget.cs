@@ -288,14 +288,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			UpdatePathBarEntries (entries);
 		}
 
-		void CopyElementMenu_Clicked (object sender, EventArgs e)
-		{
-			var clickedRow = treeView.SelectedRow as BuildOutputNode;
-			if (clickedRow != null) {
-				Clipboard.SetText (clickedRow.ToString (true));
-			}
-		}
-
 		void TreeView_ButtonPressed (object sender, ButtonEventArgs e)
 		{
 			var selectedNode = treeView.SelectedRow as BuildOutputNode;
@@ -319,12 +311,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 				}
 
 				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy Element Output"));
-				copyElementMenu.Clicked += CopyElementMenu_Clicked;
+				copyElementMenu.Clicked += (s,evnt) => {
+					Clipboard.SetText (selectedNode.ToString (true));
+				};
 				menu.Items.Add (copyElementMenu);
 
-				menu.Show (treeView.ToGtkWidget (), (int) e.X, (int) e.Y, () => {
-					copyElementMenu.Clicked -= CopyElementMenu_Clicked;
-				});
+				menu.Show (treeView.ToGtkWidget (), (int) e.X, (int) e.Y);
 			}
 		}
 
