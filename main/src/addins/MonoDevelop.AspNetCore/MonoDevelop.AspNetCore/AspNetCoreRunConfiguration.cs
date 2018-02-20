@@ -119,5 +119,24 @@ namespace MonoDevelop.AspNetCore
 			else
 				PipeTransport = new PipeTransportSettings (other.PipeTransport);
 		}
+
+		internal bool UsingHttps ()
+		{
+			if (ApplicationURL != null) {
+				if (ApplicationURL.StartsWith ("https://", StringComparison.OrdinalIgnoreCase)) {
+					return true;
+				}
+			}
+
+			var environmentVariables = (IDictionary<string, string>)EnvironmentVariables;
+
+			if (environmentVariables.TryGetValue ("ASPNETCORE_URLS", out string applicationUrls)) {
+				if (applicationUrls != null) {
+					return applicationUrls.IndexOf ("https://", StringComparison.OrdinalIgnoreCase) >= 0;
+				}
+			}
+
+			return false;
+		}
 	}
 }
