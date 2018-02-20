@@ -36,6 +36,21 @@ namespace MonoDevelop.AspNetCore
 {
 	static class AspNetCoreCertificateManager
 	{
+		public static bool IsDevelopmentCertificateTrusted { get; private set; }
+
+		/// <summary>
+		/// Only supported projects should be checked. If the development certificate
+		/// was found to be trusted then do not check again for the current IDE session.
+		/// </summary>
+		public static bool CheckDevelopmentCertificateIsTrusted (DotNetProject project, SolutionItemRunConfiguration runConfiguration)
+		{
+			if (IsDevelopmentCertificateTrusted) {
+				return false;
+			}
+
+			return IsProjectSupported (project, runConfiguration);
+		}
+
 		/// <summary>
 		/// Only .NET Core 2.1 projects are supported.
 		/// Also need .NET Core SDK 2.1 to be installed.
@@ -86,6 +101,7 @@ namespace MonoDevelop.AspNetCore
 
 				CertificateCheckResult result = await DotNetCoreDevCertsTool.CheckCertificate (monitor.CancellationToken);
 				if (result == CertificateCheckResult.OK) {
+					IsDevelopmentCertificateTrusted = true;
 					return;
 				}
 

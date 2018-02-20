@@ -91,7 +91,7 @@ namespace MonoDevelop.AspNetCore
 
 		async Task CheckCertificateThenExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
-			if (AspNetCoreCertificateManager.IsProjectSupported (Project, runConfiguration)) {
+			if (AspNetCoreCertificateManager.CheckDevelopmentCertificateIsTrusted (Project, runConfiguration)) {
 				await AspNetCoreCertificateManager.TrustDevelopmentCertificate (monitor);
 			}
 			await base.OnExecute (monitor, context, configuration, runConfiguration);
