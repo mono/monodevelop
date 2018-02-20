@@ -73,26 +73,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private class BuildOutputEventsSource : EventArgsDispatcher
 		{
-			public BuildFinishedEventArgs ProcessFile (string filePath, bool buildHasStarted)
+			public void ProcessFile (string filePath)
 			{
-				BuildFinishedEventArgs buildFinishedEvent = null;
-
 				var eventsSource = new BinaryLogReplayEventSource ();
-				eventsSource.AnyEventRaised += (sender, e) => {
-					if (e is BuildStatusEventArgs && buildHasStarted) {
-						// We only want a single BuildStarted event
-						return;
-					} else if (e is BuildFinishedEventArgs) {
-						buildFinishedEvent = (BuildFinishedEventArgs)e;
-						return;
-					}
-
-					Dispatch (e);
-				};
-
+				eventsSource.AnyEventRaised += (sender, e) => Dispatch (e);
 				eventsSource.Replay (filePath);
-
-				return buildFinishedEvent;
 			}
 		}
 
@@ -107,14 +92,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 				};
 
 				try {
-					bool buildHasStarted = false;
-					BuildFinishedEventArgs buildFinishedEvent = null;
 					logger.Initialize (eventsSource);
 
 					foreach (var proj in projects) {
 						switch (proj) {
 						case MSBuildOutputProcessor msbop:
-							buildFinishedEvent = eventsSource.ProcessFile (proj.FileName, buildHasStarted);
+							eventsSource.ProcessFile (proj.FileName);
 							break;
 						case BuildOutputProcessor bop:
 							// FIXME
@@ -122,13 +105,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 						default:
 							continue;
 						}
-
-						buildHasStarted = true;
-					}
-
-					// Emit BuildFinished event
-					if (buildHasStarted && buildFinishedEvent != null) {
-						eventsSource.Dispatch (buildFinishedEvent);
 					}
 				} catch (Exception ex) {
 					LoggingService.LogError ($"Can't write to {filePath}: {ex.Message})");
