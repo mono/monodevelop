@@ -129,28 +129,29 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
 		{
-			var solFileName = string.Empty;
-			var config = string.Empty;
-			var platform = string.Empty;
-			foreach (DictionaryEntry x in e.Properties) {
-				var key = (string)x.Key;
-				if (key == "SolutionFilename") {
-					solFileName = (string)x.Value;
-					continue;
-				} else if (key == "Configuration") {
-					config = (string)x.Value;
-					continue;
-				} else if (key == "Platform") {
-					platform = (string)x.Value;
-					continue;
+			if (CurrentNode.NodeType == BuildOutputNodeType.Build) {
+				var solFileName = string.Empty;
+				var config = string.Empty;
+				var platform = string.Empty;
+				foreach (DictionaryEntry x in e.Properties) {
+					var key = (string)x.Key;
+					if (key == "SolutionFilename") {
+						solFileName = (string)x.Value;
+						continue;
+					} else if (key == "Configuration") {
+						config = (string)x.Value;
+						continue;
+					} else if (key == "Platform") {
+						platform = (string)x.Value;
+						continue;
+					}
+
+					if (!string.IsNullOrEmpty (solFileName) && !string.IsNullOrEmpty (config) && !string.IsNullOrEmpty (platform))
+						break;
 				}
 
-				if (!string.IsNullOrEmpty (solFileName) && !string.IsNullOrEmpty (config) && !string.IsNullOrEmpty (platform))
-					break;
-			}
-
-			if (CurrentNode.NodeType == BuildOutputNodeType.Build)
 				this.CurrentNode.Message = solFileName;
+			}
 			
 			AddNode (BuildOutputNodeType.Project,
 			         stringPool.Add (Path.GetFileName (e.ProjectFile)), 
