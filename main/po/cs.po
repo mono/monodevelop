@@ -10087,7 +10087,7 @@ msgid ""
 msgstr ""
 "Název větve nesmí:\n"
 "Začínat znakem „.“ nebo končit znaky „/“ a „.lock“.\n"
-"Obsahovat znaky „ „, „..“, „~“, „^“, „:“, „\\“, „?“, „[“."
+"Obsahovat znaky „ „, „..“, „~“, „^“, „:“, „\“, „?“, „[“."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:32
 msgid "Branch Properties"
@@ -17579,7 +17579,7 @@ msgstr "Nástroj pro správu tiskáren"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:49
 msgid "A package manager application"
-msgstr "Aplikace pro správu balíčků"
+msgstr "Aplikace správce balíčků"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:50
 msgid "A dial-up program"
@@ -23240,7 +23240,7 @@ msgstr "Na nameof({0})"
 #: ../external/RefactoringEssentials/RefactoringEssentials/Samples/CSharp/SampleAnalyzer.cs:35
 #: ../external/RefactoringEssentials/RefactoringEssentials/Samples/CSharp/SampleAnalyzer.cs:36
 msgid "Sample analyzer: Class name should not have a 'C' prefix."
-msgstr "Analýza vzorku: Název třídy by měl mít předponu C."
+msgstr "Analyzátor vzorku: Název třídy by měl mít předponu C."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/Samples/CSharp/SampleCodeRefactoringProvider.cs:77
 msgid "Sample: Prepend with 'I'"
@@ -25552,7 +25552,7 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.UnitTesting/DotNetCoreProjectTestSuite.cs:233
 msgid "Unable to run tests. Test discovery failed."
-msgstr "Testy nelze spustit. Zjištění testů selhalo."
+msgstr "Testy nelze spustit. Zjišťování testů selhalo."
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.UnitTesting/DotNetCoreProjectTestSuite.cs:241
 msgid "Unable to run tests. Assembly not found '{0}'"
@@ -25673,7 +25673,7 @@ msgstr "Vytvoří nový projekt konzoly .NET Core."
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:162
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:174
 msgid ".NET Standard Library"
-msgstr "Standardní knihovna .NET"
+msgstr "Knihovna .NET Standard"
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:84
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:95
@@ -25684,7 +25684,7 @@ msgstr "Standardní knihovna .NET"
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:163
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:175
 msgid "Creates a new .NET Standard class library project."
-msgstr "Vytvoří nový projekt standardní knihovny tříd .NET."
+msgstr "Vytvoří nový projekt knihovny tříd .NET Standard."
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:242
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:252
@@ -26444,7 +26444,7 @@ msgid ""
 "server at {0}?"
 msgstr ""
 "Chcete tomuto certifikátu dočasně důvěřovat, abyste se mohli připojit k "
-"serveru v {0}?"
+"serveru na {0}?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs:58
 msgid "Message Header"
@@ -27685,7 +27685,7 @@ msgstr "Chcete zastavit odinstalaci balíčků NuGet?"
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:14
 msgid "Dump live widgets"
-msgstr "Aktivní widgety pro výpis paměti"
+msgstr "Vypsat aktivní widgety"
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:41
 msgid "Leak Tracker"

@@ -15051,7 +15051,7 @@ msgstr "Genera il costruttore delegante '{0}({1})'"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:37
 msgid "Generate enum member '{0}' in '{1}'"
-msgstr "Genera il membro enum '{0}' in '{1}'"
+msgstr "Genera il membro di enumerazione '{0}' in '{1}'"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:38
 msgid "Generate constructor in '{0}'"
@@ -25321,7 +25321,7 @@ msgstr "Chiudi il documento"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:545
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Templating/DotNetCoreProjectTemplateWizardPage.cs:58
 msgid "Configure your new {0}"
-msgstr "Configura il nuovo {0}"
+msgstr "Configura la nuova {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:315
 msgid "Recently used"
@@ -26742,7 +26742,7 @@ msgstr "Consente di inserire un tag personalizzato nella voce del comando"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:114
 msgid "Select a project operation"
-msgstr ""
+msgstr "Consente di selezionare un'operazione del progetto"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:115
 msgid "Select the type of project operation to add a custom command for"
@@ -26874,6 +26874,8 @@ msgid ""
 "Do you want to temporarily trust this certificate in order to connect to the "
 "server at {0}?"
 msgstr ""
+"Considerare temporaneamente attendibile questo certificato per consentire la "
+"connessione al server all'indirizzo {0}?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs:58
 msgid "Message Header"
@@ -27360,6 +27362,8 @@ msgstr "App Web ASP.NET Core"
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:159
 msgid "Creates a new ASP.NET Web API Core web project using Razor Pages."
 msgstr ""
+"Consente di creare un nuovo progetto Web API Web ASP.NET Core usando Razor "
+"Pages."
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:122
 msgid "Enable _tail calls"
@@ -27506,7 +27510,7 @@ msgstr "Selezionare questa opzione per compilare la soluzione con MSBuild"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:83
 msgid "Check to enable parallel building"
-msgstr "Selezionare questa opzione per abilitare compilazione in parallelo"
+msgstr "Selezionare questa opzione per abilitare la compilazione in parallelo"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:86
 msgid "Check to save changes before building"
@@ -28228,7 +28232,7 @@ msgstr "Arrestare la disinstallazione dei pacchetti NuGet?"
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:14
 msgid "Dump live widgets"
-msgstr "Esegue il dump dei widget attivi"
+msgstr "Esegui dump dei widget attivi"
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:41
 msgid "Leak Tracker"

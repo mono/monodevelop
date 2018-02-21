@@ -24967,7 +24967,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:144
 msgid ".NET Standard Platform:"
-msgstr "Plataforma do .NET Padrão:"
+msgstr "Plataforma do .NET Standard:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:148
 msgid ""
@@ -24975,7 +24975,7 @@ msgid ""
 "selected <a href='{0}'>.NET Standard</a> version."
 msgstr ""
 "Sua biblioteca será compatível com todas as estruturas que dão suporte a "
-"versão selecionada do <a href='{0}'>.NET Padrão</a>."
+"versão selecionada do <a href='{0}'>.NET Standard</a>."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:154
 msgid ".NET Portable:"
@@ -25721,7 +25721,7 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.UnitTesting/DotNetCoreProjectTestSuite.cs:233
 msgid "Unable to run tests. Test discovery failed."
-msgstr "Não é possível executar testes. Falha na descoberta de teste."
+msgstr "Não é possível executar testes. Falha na detecção de testes."
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.UnitTesting/DotNetCoreProjectTestSuite.cs:241
 msgid "Unable to run tests. Assembly not found '{0}'"
@@ -25791,7 +25791,7 @@ msgstr "URL do Aplicativo:"
 
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:100
 msgid "Where your app should listen for connections"
-msgstr "Onde seu aplicativo deve escutar conexões"
+msgstr "Onde seu aplicativo deve escutar as conexões"
 
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:103
 msgid "Open URL in web browser when app starts:"
@@ -26300,7 +26300,7 @@ msgstr "Testes"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:432
 msgid "The application was terminated by an unknown signal: {0}"
-msgstr "O aplicativo foi terminado com um sinal desconhecido: {0}"
+msgstr "O aplicativo foi encerrado com um sinal desconhecido: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:607
 msgid "Architecture"
@@ -26730,7 +26730,7 @@ msgstr "Digite o nome de arquivo para a documentação XML gerada"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CodeGenerationPanel.cs:73
 msgid "Select the level of debugging information to be generated"
-msgstr "Selecione o nível de informações de depuração a ser gerado"
+msgstr "Selecione o nível das informações de depuração a serem geradas"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CodeGenerationPanel.cs:76
 msgid "Enter the symbols the compiler should define"
@@ -27276,7 +27276,7 @@ msgstr "Remover o token selecionado no momento"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs:95
 msgid "Select the foreground color for low priority tasks"
-msgstr "Selecionar a cor de primeiro plano para tarefas de baixa prioridade"
+msgstr "Selecionar a cor de primeiro plano para as tarefas de baixa prioridade"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs:98
 msgid "Select the foreground color for the high priority tasks"

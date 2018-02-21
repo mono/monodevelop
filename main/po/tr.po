@@ -2123,7 +2123,7 @@ msgstr "Parantezler için şablon"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:907
 msgid "Template for type cast"
-msgstr "Tür atama şablonu"
+msgstr "Tür dönüştürme şablonu"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:924
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:552
@@ -6084,7 +6084,7 @@ msgid ""
 msgstr ""
 "Hata ayıklayıcısı içinde çalışırken normalde devre dışı olan bazı JIT "
 "iyileştirmelerini devre dışı bırakın. Çalışan işleme hata ayıklayıcısı ile "
-"ekleme planlıyorsanız bu işlem yararlıdır."
+"iliştirme planlıyorsanız bu işlem yararlıdır."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:313
 msgid ""
@@ -20290,11 +20290,11 @@ msgstr "Aır"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.AttachToProcessDialog.cs:24
 msgid "Attach to Process"
-msgstr "İşlemek için Ekleyin"
+msgstr "İşlemek için İliştirin"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.AttachToProcessDialog.cs:44
 msgid "Attach to:"
-msgstr "Ekleme hedefi:"
+msgstr "İliştirme hedefi:"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.AttachToProcessDialog.cs:83
 msgid "Debugger:"
@@ -20302,7 +20302,7 @@ msgstr "Hata Ayıklayıcı:"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.AttachToProcessDialog.cs:129
 msgid "Attach"
-msgstr "Ekle"
+msgstr "İliştir"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs:20
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:168
@@ -20639,7 +20639,7 @@ msgstr "Uygulama Hatalarını Ayıkla..."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:80
 msgid "Attach to Process..."
-msgstr "İşleme Ekle..."
+msgstr "İşleme İliştir..."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:88
 msgid "Pause Execution"
@@ -21684,11 +21684,11 @@ msgstr "Parametre için null denetimi ekle"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ReplaceSafeCastWithDirectCastCodeRefactoringProvider.cs:38
 msgid "Convert 'as' to cast"
-msgstr "'as' deyimini tür atamasına dönüştür"
+msgstr "'as' deyimini tür dönüştürmeye dönüştür"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ReplaceDirectCastWithSafeCastCodeRefactoringProvider.cs:43
 msgid "Convert cast to 'as'"
-msgstr "Yayını 'as' değerine dönüştür."
+msgstr "Tür değiştirmeyi 'as' değerine dönüştür."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertForeachToForCodeRefactoringProvider.cs:190
 msgid "Convert 'foreach' loop to optimized 'for'"
@@ -22132,7 +22132,7 @@ msgstr "Döndürülen ifadeyi kaldır"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/InvalidConversionCodeFixProvider.cs:72
 msgid "Cast to '{0}'"
-msgstr "'{0}' öğesine yayınla"
+msgstr "'{0}' türüne dönüştür"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/InvalidConversionCodeFixProvider.cs:103
 msgid "Change field type"
@@ -23316,7 +23316,7 @@ msgstr "'If {0}.TryGetValue({1}, val)' denetle"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ReplaceDirectCastWithSafeCastCodeRefactoringProvider.cs:42
 msgid "Convert cast to 'TryCast'"
-msgstr "Yayını 'TryCast' öğesine dönüştür"
+msgstr "Tür değiştirmeyi 'TryCast' öğesine dönüştür"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ReplaceSafeCastWithDirectCastCodeRefactoringProvider.cs:41
 msgid "Convert 'TryCast' to 'DirectCast'"
@@ -24846,14 +24846,14 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:144
 msgid ".NET Standard Platform:"
-msgstr ".NET Standart Platformu:"
+msgstr ".NET Standard Platformu:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:148
 msgid ""
 "Your library will be compatible with all frameworks that support the "
 "selected <a href='{0}'>.NET Standard</a> version."
 msgstr ""
-"Kitaplığınız, seçilen <a href='{0}'>.NET Standart</a> sürümünü destekleyen "
+"Kitaplığınız, seçilen <a href='{0}'>.NET Standard</a> sürümünü destekleyen "
 "tüm çerçevelerle uyumlu olacak."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:154
@@ -25713,7 +25713,7 @@ msgstr "Yeni bir .NET Core konsol projesi oluşturur."
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:162
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:174
 msgid ".NET Standard Library"
-msgstr ".NET Standart Kitaplığı"
+msgstr ".NET Standard Kitaplığı"
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:84
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:95
@@ -25724,7 +25724,7 @@ msgstr ".NET Standart Kitaplığı"
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:163
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:175
 msgid "Creates a new .NET Standard class library project."
-msgstr "Yeni bir .NET Standart sınıf kitaplığı projesi oluşturur."
+msgstr "Yeni bir .NET Standard sınıf kitaplığı projesi oluşturur."
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:242
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:252
@@ -25973,7 +25973,7 @@ msgstr "NuGet _Paketi Oluştur"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:102
 msgid "Adds platform specific implementation for a cross platform project"
-msgstr "Platformlar arası bir proje için platforma özel uygulama ekler"
+msgstr "Bir çoklu platform projesi için platforma özel uygulama ekler"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:103
 msgid "Add _Platform Implementation..."
@@ -26588,7 +26588,7 @@ msgstr "Oluşturulan XML belgeleri için dosya adını girin"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CodeGenerationPanel.cs:73
 msgid "Select the level of debugging information to be generated"
-msgstr "Oluşturulacak hata ayıklama bilgileri düzeyini seçin"
+msgstr "Oluşturulacak hata ayıklama bilgilerinin düzeyini seçin"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CodeGenerationPanel.cs:76
 msgid "Enter the symbols the compiler should define"

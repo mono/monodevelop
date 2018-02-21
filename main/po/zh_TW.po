@@ -749,22 +749,22 @@ msgstr "另存為 Unicode"
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:434
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:392
 msgid "_Case sensitive"
-msgstr "區分大小寫"
+msgstr "區分大小寫(_C)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:208
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:442
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:401
 msgid "_Whole words only"
-msgstr "全字拼寫須相符"
+msgstr "全字拼寫須相符(_W)"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:426
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:411
 msgid "_Regex search"
-msgstr "Regex 搜尋"
+msgstr "Regex 搜尋(_R)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:420
 msgid "_Search In Selection"
-msgstr "在選取範圍內搜尋"
+msgstr "在選取範圍內搜尋(_S)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:432
 msgid "Recent Searches"
@@ -2220,7 +2220,7 @@ msgstr "gtk Builder 檔案內視窗的最上層子元件"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:30
 msgid "Open _With"
-msgstr "開啟檔案"
+msgstr "開啟檔案(_W)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:45
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:227
@@ -2231,12 +2231,12 @@ msgstr "執行方法"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:57
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:110
 msgid "_Add"
-msgstr "新增"
+msgstr "新增(_A)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:88
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:234
 msgid "_Tools"
-msgstr "工具"
+msgstr "工具(_T)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:134
 msgid "Build Action"
@@ -2244,7 +2244,7 @@ msgstr "建置動作"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:137
 msgid "_Quick Properties"
-msgstr "快速屬性"
+msgstr "快速屬性(_Q)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:25
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:262
@@ -2259,7 +2259,7 @@ msgstr "隱藏"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:61
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:442
 msgid "_Delete"
-msgstr "刪除"
+msgstr "刪除(_D)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:37
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:11
@@ -2270,7 +2270,7 @@ msgstr "編輯"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:398
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:432
 msgid "_Copy"
-msgstr "複製"
+msgstr "複製(_C)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:42
 msgid "Copy the selection"
@@ -2278,7 +2278,7 @@ msgstr "複製選取範圍"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:47
 msgid "Cu_t"
-msgstr "剪下"
+msgstr "剪下(_T)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:49
 msgid "Cut the selection"
@@ -2286,7 +2286,7 @@ msgstr "剪下選取範圍"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:54
 msgid "_Paste"
-msgstr "貼上"
+msgstr "貼上(_P)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:56
 msgid "Paste the clipboard"
@@ -2302,7 +2302,7 @@ msgstr "重新命名選取項目"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:72
 msgid "_Undo"
-msgstr "復原"
+msgstr "復原(_U)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:74
 msgid "Undo last action"
@@ -2310,7 +2310,7 @@ msgstr "復原上一個動作"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:78
 msgid "_Redo"
-msgstr "重做"
+msgstr "重做(_R)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:80
 msgid "Redo last undone action"
@@ -2318,7 +2318,7 @@ msgstr "重做上一個未完成的動作"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:85
 msgid "Select _All"
-msgstr "全選"
+msgstr "全選(_A)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:86
 msgid "Select all text"
@@ -2330,7 +2330,7 @@ msgstr "為所選程式碼行加上註解/取消註解"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:95
 msgid "_Toggle Line Comment(s)"
-msgstr "切換行註解"
+msgstr "切換行註解(_T)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:98
 msgid "Comment selected lines of code"
@@ -2338,7 +2338,7 @@ msgstr "為所選程式碼行加上註解"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:99
 msgid "_Add Line Comment(s)"
-msgstr "新增行註解"
+msgstr "新增行註解(_A)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:102
 msgid "Uncomment selected lines of code"
@@ -2346,7 +2346,7 @@ msgstr "取消註解選取的程式碼行"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:103
 msgid "_Remove Line Comment(s)"
-msgstr "移除行註解"
+msgstr "移除行註解(_R)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:107
 msgid "Indent selected lines of code"
@@ -2366,7 +2366,7 @@ msgstr "將所選文字轉換為小寫"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:129
 msgid "_Remove Trailing Whitespace"
-msgstr "移除尾端空白"
+msgstr "移除尾端空白(_R)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:132
 msgid "Join the current line with the next line"
@@ -2374,7 +2374,7 @@ msgstr "聯結目前的行與下一行"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:133
 msgid "_Join Lines"
-msgstr "連接線"
+msgstr "連接線(_J)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:135
 msgid "Sort the selected lines"
@@ -2382,7 +2382,7 @@ msgstr "排序選取的行"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:136
 msgid "_Sort Lines"
-msgstr "排序行"
+msgstr "排序行(_S)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:144
 msgid "_Options..."
@@ -2410,7 +2410,7 @@ msgstr "將使用者定義的標頭新增至檔案頂端"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:171
 msgid "_Toggle Fold"
-msgstr "切換摺疊"
+msgstr "切換摺疊(_T)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:174
 msgid "Toggles the folding at caret position."
@@ -2418,7 +2418,7 @@ msgstr "切換插入號位置的摺疊。"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:176
 msgid "Toggle _All Folds"
-msgstr "切換所有摺疊"
+msgstr "切換所有摺疊(_A)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:179
 msgid "Toggles all the foldings in the document."
@@ -2426,7 +2426,7 @@ msgstr "切換文件中所有的摺疊。"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:181
 msgid "Toggle _Definitions"
-msgstr "切換定義"
+msgstr "切換定義(_D)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:183
 msgid "Toggles foldings of all method and property bodies."
@@ -2434,7 +2434,7 @@ msgstr "切換所有方法與屬性主體的摺疊。"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:187
 msgid "_Format Document"
-msgstr "格式化文件"
+msgstr "格式化文件(_F)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:192
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:27
@@ -2475,7 +2475,7 @@ msgstr "將新的子解決方案新增至選取的工作區"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:207
 msgid "Add Solution _Folder"
-msgstr "新增解決方案資料夾"
+msgstr "新增解決方案資料夾(_F)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:208
 msgid "Add a new solution folder to the selected solution"
@@ -2499,7 +2499,7 @@ msgstr "新增現有項目(_I)..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:217
 msgid "_Remove From Project"
-msgstr "從專案中移除"
+msgstr "從專案中移除(_R)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:218
 msgid "Remove an item from the project"
@@ -2507,7 +2507,7 @@ msgstr "從專案中移除項目"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:222
 msgid "_Options"
-msgstr "選項"
+msgstr "選項(_O)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:223
 msgid "Show options window"
@@ -2515,7 +2515,7 @@ msgstr "顯示選項視窗"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:227
 msgid "_Solution Options"
-msgstr "解決方案選項"
+msgstr "解決方案選項(_S)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:228
 msgid "Show solution options window"
@@ -2524,7 +2524,7 @@ msgstr "顯示解決方案選項視窗"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:232
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:112
 msgid "Project _Options"
-msgstr "專案選項"
+msgstr "專案選項(_O)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:233
 msgid "Show project options window"
@@ -2574,7 +2574,7 @@ msgstr "新增現有資料夾(_A)..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:255
 msgid "New _Folder"
-msgstr "新增資料夾"
+msgstr "新增資料夾(_F)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:256
 msgid "Create a new folder"
@@ -2586,11 +2586,11 @@ msgstr "將現有檔案新增至專案"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:260
 msgid "_Include in Project"
-msgstr "加入至專案"
+msgstr "加入至專案(_I)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:263
 msgid "_Build All"
-msgstr "全部建置"
+msgstr "全部建置(_B)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:266
 msgid "Build all projects of all solutions"
@@ -2598,7 +2598,7 @@ msgstr "建置所有解決方案的所有專案"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:270
 msgid "Buil_d"
-msgstr "建置"
+msgstr "建置(_D)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:273
 msgid "Build the current project"
@@ -2610,7 +2610,7 @@ msgstr "重建所有解決方案中的所有專案"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:280
 msgid "_Rebuild All"
-msgstr "全部重新建置"
+msgstr "全部重新建置(_R)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:285
 msgid "Rebuild the current project"
@@ -2618,11 +2618,11 @@ msgstr "重建目前專案"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:286
 msgid "R_ebuild"
-msgstr "重建"
+msgstr "重建(_E)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:288
 msgid "_Set As Startup Project"
-msgstr "設為起始專案"
+msgstr "設為起始專案(_S)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:294
 msgid "Start program without debugging"
@@ -2646,7 +2646,7 @@ msgstr "執行目前的專案"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:305
 msgid "_Run Item"
-msgstr "執行項目"
+msgstr "執行項目(_R)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:313
 msgid "Clean the selected project or solution"
@@ -2654,7 +2654,7 @@ msgstr "清除所選專案或解決方案"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:315
 msgid "C_lean"
-msgstr "清除"
+msgstr "清除(_L)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:318
 msgid "Clean all projects of all solutions"
@@ -2662,7 +2662,7 @@ msgstr "清除所有解決方案的所有專案"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:319
 msgid "_Clean All"
-msgstr "全部清除"
+msgstr "全部清除(_C)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:322
 msgid "Copy the assembly to the output directory when building the project"
@@ -2670,7 +2670,7 @@ msgstr "建置專案時，將組件複製到輸出目錄。"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:323
 msgid "_Local Copy"
-msgstr "本機複本"
+msgstr "本機複本(_L)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:329
 msgid "Stop current build or application execution"
@@ -2678,7 +2678,7 @@ msgstr "停止目前的建置或應用程式執行"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:330
 msgid "_Stop"
-msgstr "停止"
+msgstr "停止(_S)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:334
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:355
@@ -2771,7 +2771,7 @@ msgstr "儲存使用中的文件"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:397
 msgid "_Save"
-msgstr "儲存"
+msgstr "儲存(_S)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:403
 msgid "Save all open files"
@@ -2779,7 +2779,7 @@ msgstr "儲存所有開啟中的檔案"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:404
 msgid "Save A_ll"
-msgstr "全部儲存"
+msgstr "全部儲存(_L)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:409
 msgid "Create a new solution"
@@ -2791,7 +2791,7 @@ msgstr "建立新工作區"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:419
 msgid "_Close File"
-msgstr "關閉檔案"
+msgstr "關閉檔案(_C)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:420
 msgid "Close active file"
@@ -2799,7 +2799,7 @@ msgstr "關閉作用中的檔案"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:426
 msgid "Close _All"
-msgstr "全部關閉"
+msgstr "全部關閉(_A)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:427
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:524
@@ -2809,7 +2809,7 @@ msgstr "關閉所有檔案"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:433
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:195
 msgid "C_lose Workspace"
-msgstr "關閉工作區"
+msgstr "關閉工作區(_L)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:434
 msgid "Close all solutions open in the current workspace"
@@ -2817,7 +2817,7 @@ msgstr "關閉目前工作區中所有開啟的解決方案"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:441
 msgid "C_lose"
-msgstr "關閉"
+msgstr "關閉(_L)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:443
 msgid "Close the active solution or workspace item"
@@ -2826,7 +2826,7 @@ msgstr "關閉作用中的解決方案或工作區項目"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:446
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:125
 msgid "_Revert"
-msgstr "還原"
+msgstr "還原(_R)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:447
 msgid "Revert to a saved version of the file"
@@ -2850,7 +2850,7 @@ msgstr "列印目前文件"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:461
 msgid "Print Previe_w"
-msgstr "預覽列印"
+msgstr "預覽列印(_W)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:462
 msgid "Show print preview"
@@ -2858,7 +2858,7 @@ msgstr "顯示預覽列印"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:466
 msgid "Page Set_up"
-msgstr "版面設定"
+msgstr "版面設定(_U)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:467
 msgid "Show page setup"
@@ -2867,12 +2867,12 @@ msgstr "顯示頁面設定"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:471
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:26
 msgid "Recent _Files"
-msgstr "最近使用的檔案"
+msgstr "最近使用的檔案(_F)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:474
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:484
 msgid "_Clear"
-msgstr "清除"
+msgstr "清除(_C)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:309
 msgid "Clear recent files"
@@ -2880,11 +2880,11 @@ msgstr "清除最近使用的檔案"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:481
 msgid "Recent Pro_jects"
-msgstr "最近使用的專案"
+msgstr "最近使用的專案(_J)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:490
 msgid "_Quit"
-msgstr "結束"
+msgstr "結束(_Q)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:491
 msgid "Quit MonoDevelop"
@@ -2892,7 +2892,7 @@ msgstr "離開 MonoDevelop"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:495
 msgid "_Open in Terminal"
-msgstr "在終端機中開啟"
+msgstr "在終端機中開啟(_O)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:496
 msgid "Opens a terminal in this folder"
@@ -2900,7 +2900,7 @@ msgstr "在此資料夾中開啟終端機"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:498
 msgid "_Open Folder"
-msgstr "開啟資料夾"
+msgstr "開啟資料夾(_O)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:499
 msgid "Opens the folder in a file manager."
@@ -2908,7 +2908,7 @@ msgstr "在檔案管理員中開啟資料夾。"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:502
 msgid "O_pen Containing Folder"
-msgstr "開啟內含資料夾"
+msgstr "開啟內含資料夾(_P)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:503
 msgid "Opens the folder that contains this file."
@@ -2925,11 +2925,11 @@ msgstr "建置動作"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:515
 msgid "_Properties"
-msgstr "屬性"
+msgstr "屬性(_P)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:518
 msgid "_Copy to Output Directory"
-msgstr "複製到輸出目錄"
+msgstr "複製到輸出目錄(_C)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:521
 msgid "Require Specific Version"
@@ -2941,7 +2941,7 @@ msgstr "關閉索引標籤中所有開啟的檔案"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:528
 msgid "C_lose Others"
-msgstr "關閉其他"
+msgstr "關閉其他(_L)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:529
 msgid "Closes all opened files except for the active file"
@@ -2953,11 +2953,11 @@ msgstr "將檔案路徑複製到剪貼簿"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:533
 msgid "C_opy File Path"
-msgstr "複製檔案路徑"
+msgstr "複製檔案路徑(_O)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:575
 msgid "S_witch Maximized/Normal View"
-msgstr "切換最大化/標準模式"
+msgstr "切換最大化/標準模式(_W)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:536
 msgid "Reopen Closed Tab"
@@ -2982,7 +2982,7 @@ msgstr "建立新配置"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:558
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:200
 msgid "_Delete Current Layout"
-msgstr "刪除目前配置"
+msgstr "刪除目前配置(_D)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:560
 msgid "Delete current layout"
@@ -2998,7 +2998,7 @@ msgstr "切換使用中的配置"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:569
 msgid "_Full Screen"
-msgstr "全螢幕"
+msgstr "全螢幕(_F)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:571
 msgid "Set full screen mode"
@@ -3012,7 +3012,7 @@ msgstr "開啟選取的文件"
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:39
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:40
 msgid "_Open"
-msgstr "開啟"
+msgstr "開啟(_O)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:581
 msgid "Display Options List"
@@ -3052,7 +3052,7 @@ msgstr "將資料指標移到上個錯誤或符合搜尋處"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:606
 msgid "Navigate _Back"
-msgstr "向後巡覽"
+msgstr "向後巡覽(_B)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:611
 msgid "Move to previous point in code navigation history"
@@ -3060,7 +3060,7 @@ msgstr "移到程式碼導覽記錄的上一點"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:613
 msgid "Navigate _Forward"
-msgstr "向前巡覽"
+msgstr "向前巡覽(_F)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:618
 msgid "Move to next point in code navigation history"
@@ -3068,7 +3068,7 @@ msgstr "移到程式碼導覽記錄的下一點"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:621
 msgid "Navigate _History"
-msgstr "巡覽記錄"
+msgstr "巡覽記錄(_H)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:623
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:177
@@ -3077,7 +3077,7 @@ msgstr "從導覽記錄中選取一點"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:625
 msgid "_Clear Navigation History"
-msgstr "清除導覽記錄"
+msgstr "清除導覽記錄(_C)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:627
 msgid "Clear the navigation history"
@@ -3085,7 +3085,7 @@ msgstr "清除導覽歷程記錄"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:631
 msgid "_Zoom In"
-msgstr "放大"
+msgstr "放大(_Z)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:635
 msgid "Zooms view in"
@@ -3093,7 +3093,7 @@ msgstr "拉近檢視"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:638
 msgid "Zoom _Out"
-msgstr "縮小"
+msgstr "縮小(_O)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:642
 msgid "Zooms view out"
@@ -3101,7 +3101,7 @@ msgstr "拉遠檢視"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:645
 msgid "_Normal Size"
-msgstr "正常大小"
+msgstr "正常大小(_N)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:649
 msgid "Resets zoom to default"
@@ -3117,7 +3117,7 @@ msgstr "前往上個筆記本"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:676
 msgid "_Focus Document"
-msgstr "聚焦文件"
+msgstr "聚焦文件(_F)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:679
 msgid "Focus current document"
@@ -3156,7 +3156,7 @@ msgstr "重新執行工作階段..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:728
 msgid "_Next Document"
-msgstr "下一份文件"
+msgstr "下一份文件(_F)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:730
 msgid "Show next document"
@@ -3164,7 +3164,7 @@ msgstr "顯示下一份文件"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:735
 msgid "_Previous Document"
-msgstr "上一份文件"
+msgstr "上一份文件(_P)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:737
 msgid "Show previous document"
@@ -3208,7 +3208,7 @@ msgstr "顯示說明"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:801
 msgid "_Tip of the Day"
-msgstr "每日秘訣"
+msgstr "每日秘訣(_T)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:802
 msgid "Show tip of the day"
@@ -3224,7 +3224,7 @@ msgstr "開啟在其中儲存診斷記錄檔的目錄"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:810
 msgid "_About"
-msgstr "關於"
+msgstr "關於(_A)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:811
 msgid "Show about dialog"
@@ -3278,7 +3278,7 @@ msgstr "搜尋並取代文字"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:853
 msgid "Find _Next"
-msgstr "尋找下一個"
+msgstr "尋找下一個(_N)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:855
 msgid "Search forwards for the same text"
@@ -3286,7 +3286,7 @@ msgstr "向前搜尋同一文字"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:859
 msgid "Find _Previous"
-msgstr "尋找上一個"
+msgstr "尋找上一個(_P)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:861
 msgid "Search backwards for the same text"
@@ -3294,7 +3294,7 @@ msgstr "向後搜尋同一文字"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:866
 msgid "Find _Next (Emacs behavior)"
-msgstr "尋找下一個 (Emacs 行為)"
+msgstr "尋找下一個 (Emacs 行為)(_N)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:868
 msgid "Search forwards for the same text with emacs behavior"
@@ -3302,7 +3302,7 @@ msgstr "運用 Emacs 行為向前搜尋同一文字"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:870
 msgid "Find _Previous (Emacs behavior)"
-msgstr "尋找上一個 (Emacs 行為)"
+msgstr "尋找上一個 (Emacs 行為)(_P)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:872
 msgid "Search backwards for the same text with emacs behavior"
@@ -3362,7 +3362,7 @@ msgstr "切換書籤"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:923
 msgid "_Toggle Bookmark"
-msgstr "切換書籤"
+msgstr "切換書籤(_T)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:927
 msgid "Go to previous bookmark"
@@ -3829,53 +3829,53 @@ msgstr "程式碼分析"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:19
 msgid "_File"
-msgstr "檔案"
+msgstr "檔案(_E)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:31
 msgid "Recent Solu_tions"
-msgstr "最近使用的解決方案"
+msgstr "最近使用的解決方案(_T)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:49
 msgid "_Close"
-msgstr "關閉"
+msgstr "關閉(_C)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:55
 msgid "_Edit"
-msgstr "編輯"
+msgstr "編輯(_E)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:72
 msgid "_Format"
-msgstr "格式"
+msgstr "格式(_F)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:124
 msgid "F_olding"
-msgstr "摺疊"
+msgstr "摺疊(_O)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:105
 msgid "_View"
-msgstr "檢視"
+msgstr "檢視(_V)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:142
 msgid "_Search"
-msgstr "搜尋"
+msgstr "搜尋(_S)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:176
 msgid "Navigation _History"
-msgstr "導覽記錄"
+msgstr "導覽記錄(_H)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:188
 msgid "_Project"
-msgstr "專案"
+msgstr "專案(_P)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:213
 msgid "_Build"
-msgstr "組建"
+msgstr "組建(_B)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:225
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:209
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:232
 msgid "_Run"
-msgstr "執行"
+msgstr "執行(_R)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:239
 msgid "Session Recorder"
@@ -3883,11 +3883,11 @@ msgstr "工作階段錄製器"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:253
 msgid "_Window"
-msgstr "視窗"
+msgstr "視窗(_W)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:271
 msgid "_Help"
-msgstr "說明"
+msgstr "說明(_H)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:277
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:559
@@ -4145,15 +4145,15 @@ msgstr "要開啟的檔案"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:193
 msgid "C_lose Solution"
-msgstr "關閉解決方案"
+msgstr "關閉解決方案(_L)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:197
 msgid "C_lose Project"
-msgstr "關閉專案"
+msgstr "關閉專案(_L)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:199
 msgid "C_lose All Solutions"
-msgstr "關閉所有解決方案"
+msgstr "關閉所有解決方案(_L)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:233
 msgid "Error while generating the print preview"
@@ -4181,11 +4181,11 @@ msgstr "確定要清除最近的專案清單嗎?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:112
 msgid "{0} _Options"
-msgstr "{0} 選項"
+msgstr "{0} 選項(_O)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:178
 msgid "B_uild {0}"
-msgstr "建置 {0}"
+msgstr "建置 {0}(_U)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:180
 msgid "Build solution {0}"
@@ -4201,7 +4201,7 @@ msgstr "建置 {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:219
 msgid "R_ebuild {0}"
-msgstr "重建 {0}"
+msgstr "重建 {0}(_E)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:220
 msgid "Rebuild {0}"
@@ -4217,7 +4217,7 @@ msgstr "已經有應用程式正在執行。要使其停止嗎?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:339
 msgid "C_lean {0}"
-msgstr "清除 {0}"
+msgstr "清除 {0}(_L)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:340
 msgid "Clean {0}"
@@ -4407,11 +4407,11 @@ msgstr "專案: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:102
 msgid "_Save and Quit"
-msgstr "儲存並結束"
+msgstr "儲存並結束(_S)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:102
 msgid "_Save and Close"
-msgstr "儲存並關閉"
+msgstr "儲存並關閉(_S)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs:42
 msgid "Enter a name for the new layout"
@@ -4629,7 +4629,7 @@ msgstr "重新命名檔案時發生錯誤。"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:247
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:194
 msgid "_Remove from Project"
-msgstr "從專案中移除"
+msgstr "從專案中移除(_R)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:253
 msgid ""
@@ -4924,7 +4924,7 @@ msgstr "複製工作"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:403
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:437
 msgid "_Go to"
-msgstr "前往"
+msgstr "前往(_G)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:404
 msgid "Go to task"
@@ -5087,7 +5087,7 @@ msgstr "自訂"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:156
 msgid "_View Conflicts"
-msgstr "檢視衝突"
+msgstr "檢視衝突(_V)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:616
 msgid "This key combination is already bound to command '{0}'"
@@ -5158,7 +5158,7 @@ msgstr "將變更儲存到開啟的文件(_S) "
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:193
 msgid "_Prompt to save changes to open documents"
-msgstr "提示將變更儲存到開啟的文件"
+msgstr "提示將變更儲存到開啟的文件(_P)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:204
 msgid "_Don't save changes to open documents "
@@ -5166,7 +5166,7 @@ msgstr "不將變更儲存到開啟的文件(_D) "
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:45
 msgid "Default _Solution location"
-msgstr "預設解決方案位置"
+msgstr "預設解決方案位置(_S)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:74
 msgid "<b>Load</b>"
@@ -5178,7 +5178,7 @@ msgstr "載入文件的使用者專屬設定"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:118
 msgid "_Load previous solution on startup"
-msgstr "在啟動時載入上次的解決方案"
+msgstr "在啟動時載入上次的解決方案(_L)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:150
 msgid "<b>Save</b>"
@@ -5198,7 +5198,7 @@ msgstr "配置名稱:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs:106
 msgid "Create _Layout"
-msgstr "建立配置"
+msgstr "建立配置(_L)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs:76
 #: ../src/addins/MacPlatform/Dialogs/SelectEncodingPanel.cs:88
@@ -5242,11 +5242,11 @@ msgstr "您知道嗎...?"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:105
 msgid "_Show at startup"
-msgstr "在啟動時顯示"
+msgstr "在啟動時顯示(_S)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:121
 msgid "_Next Tip"
-msgstr "下一個提示"
+msgstr "下一個提示(_N)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:39
 msgid "Automatically check for updates:"
@@ -5318,15 +5318,15 @@ msgstr "工作目錄(_W):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:372
 msgid "_Prompt for arguments"
-msgstr "提示輸入引數"
+msgstr "提示輸入引數(_P)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:382
 msgid "_Save current file"
-msgstr "儲存目前檔案"
+msgstr "儲存目前檔案(_S)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:393
 msgid "Use _output window"
-msgstr "使用輸出視窗"
+msgstr "使用輸出視窗(_O)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:113
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:88
@@ -5370,7 +5370,7 @@ msgstr "顯示選項"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:162
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:46
 msgid "Standard _Header"
-msgstr "標準標頭"
+msgstr "標準標頭(_H)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:96
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:117
@@ -5380,7 +5380,7 @@ msgstr "範本"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs:36
 msgid "_Use custom author information for this solution"
-msgstr "對此解決方案使用自訂作者資訊"
+msgstr "對此解決方案使用自訂作者資訊(_U)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs:106
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanelWidget.cs:83
@@ -5404,7 +5404,7 @@ msgstr "商標(_T):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs:66
 msgid "_Include standard header in new files"
-msgstr "在新檔案中包含標準標頭"
+msgstr "在新檔案中包含標準標頭(_I)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs:71
 msgid "Native"
@@ -5449,15 +5449,15 @@ msgstr "縮排寬度(_I):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:194
 msgid "_Convert tabs to spaces"
-msgstr "將 Tab 轉換為空白"
+msgstr "將 Tab 轉換為空白(_C)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:206
 msgid "_Allow tabs after non-tabs"
-msgstr "允許非 Tab 字元後有 Tab 字元"
+msgstr "允許非 Tab 字元後有 Tab 字元(_A)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:218
 msgid "_Remove trailing whitespace"
-msgstr "移除後置空白字元"
+msgstr "移除後置空白字元(_R)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:58
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:79
@@ -5484,7 +5484,7 @@ msgstr "預覽:"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:232
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:376
 msgid "S_how whitespaces"
-msgstr "顯示空格"
+msgstr "顯示空格(_H)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs:55
 msgid "New template"
@@ -5508,11 +5508,11 @@ msgstr "群組(_G):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:151
 msgid "Is _expandable template"
-msgstr "為可展開的範本"
+msgstr "為可展開的範本(_E)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:162
 msgid "Is _surround with template"
-msgstr "為範圍陳述式範本"
+msgstr "為範圍陳述式範本(_S)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:179
 msgid "_Shortcut:"
@@ -5667,7 +5667,7 @@ msgstr "取代(_R):"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:375
 msgid "R_eplace"
-msgstr "取代"
+msgstr "取代(_E)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:419
 msgid "_Path:"
@@ -5675,7 +5675,7 @@ msgstr "路徑(_P):"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:447
 msgid "Re_cursively"
-msgstr "遞迴"
+msgstr "遞迴(_C)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:489
 msgid "_File Mask:"
@@ -5742,11 +5742,11 @@ msgstr "查詢(_L):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:186
 msgid "C_ase sensitive"
-msgstr "區分大小寫"
+msgstr "區分大小寫(_A)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:196
 msgid "Rege_x search"
-msgstr "Regex 搜尋"
+msgstr "Regex 搜尋(_X)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:77
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:259
@@ -5832,7 +5832,7 @@ msgstr "已取消搜尋作業"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:61
 msgid "_Format Selection"
-msgstr "格式化選取項目"
+msgstr "格式化選取項目(_F)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:81
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:100
@@ -5918,7 +5918,7 @@ msgstr "停用 AIO"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:432
 msgid "Disable Managed Collation"
-msgstr "停用 Managed 定序"
+msgstr "停用受控定序"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:442
 msgid "External Encodings"
@@ -5938,7 +5938,7 @@ msgstr "不區分大小寫的路徑"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:474
 msgid "Managed Watcher"
-msgstr "Managed 監看員"
+msgstr "受控監看員"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:482
 msgid "No SMP"
@@ -6097,8 +6097,8 @@ msgid ""
 "functionality invoked via the members of System.Globalization.CompareInfo "
 "class."
 msgstr ""
-"若設定，執行階段會使用 Unmanaged 定序 (實際上是指不區分文化特性的定序)。其會在內部停用透過 "
-"System.Globalization.CompareInfo 類別成員叫用的 Managed 定序功能。"
+"若設定，執行階段會使用非受控定序 (實際上是指不區分文化特性的定序)。其會在內部停用透過 "
+"System.Globalization.CompareInfo 類別成員叫用的受控定序功能。"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:443
 msgid ""
@@ -6133,7 +6133,7 @@ msgstr "啟用時，Mono 會在路徑的每個目錄中進行不區分大小寫�
 msgid ""
 "When set, System.IO.FileSystemWatcher will use the default managed "
 "implementation  (slow)."
-msgstr "設定時，System.IO.FileSystemWatcher 將使用預設受管理實作 (慢速)。"
+msgstr "設定時，System.IO.FileSystemWatcher 將使用預設受控實作 (慢速)。"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:483
 msgid ""
@@ -6200,7 +6200,7 @@ msgid ""
 "to see managed frame names on gdb backtraces."
 msgstr ""
 "設定 MONO_XDEBUG 環境變數時，JITted 程式碼的偵錯資訊會發出到共用程式庫 (可載入到 gdb)。例如，這會啟用以查看 gdb "
-"backtrace 上的受管理框架名稱。"
+"backtrace 上的受控框架名稱。"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:559
 msgid "Selects  the  Garbage Collector engine for Mono to use."
@@ -6732,35 +6732,35 @@ msgstr "未知"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:79
 msgid "_Reload"
-msgstr "重新載入"
+msgstr "重新載入(_R)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:82
 msgid "_Move"
-msgstr "移動"
+msgstr "移動(_M)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:85
 msgid "Close _without Saving"
-msgstr "關閉但不儲存"
+msgstr "關閉但不儲存(_W)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:86
 msgid "Build _without Saving"
-msgstr "建置但不儲存"
+msgstr "建置但不儲存(_W)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:87
 msgid "D_iscard"
-msgstr "捨棄"
+msgstr "捨棄(_I)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:89
 msgid "_Proceed"
-msgstr "繼續"
+msgstr "繼續(_P)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:90
 msgid "_Replace"
-msgstr "取代"
+msgstr "取代(_R)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:92
 msgid "_Overwrite file"
-msgstr "覆寫檔案"
+msgstr "覆寫檔案(_O)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:93
 msgid "Add existing file"
@@ -7254,19 +7254,19 @@ msgstr "(不允許循環相依性)"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:203
 #: ../src/addins/MonoDevelop.Refactoring/gtk-gui/MonoDevelop.Refactoring.EncapsulateFieldDialog.cs:155
 msgid "_All"
-msgstr "全部"
+msgstr "全部(_A)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:210
 msgid "_Packages"
-msgstr "套件"
+msgstr "套件(_P)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:217
 msgid "Pro_jects"
-msgstr "專案"
+msgstr "專案(_J)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:224
 msgid ".Net A_ssembly"
-msgstr ".NET 組件"
+msgstr ".NET 組件(_S)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:515
 msgid "Search ({0})"
@@ -7298,7 +7298,7 @@ msgstr "版本(_V):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CommonAssemblySigningPreferences.cs:28
 msgid "_Sign this assembly"
-msgstr "簽署此組件"
+msgstr "簽署此組件(_S)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CommonAssemblySigningPreferences.cs:43
 msgid "S_trong Name File:"
@@ -7306,7 +7306,7 @@ msgstr "強式名稱檔案(_T): "
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CommonAssemblySigningPreferences.cs:65
 msgid "_Delay sign assembly"
-msgstr "延遲簽署組件"
+msgstr "延遲簽署組件(_D)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandPanelWidget.cs:28
 msgid ""
@@ -7347,12 +7347,12 @@ msgstr "名稱:"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandWidget.cs:220
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanelWidget.cs:64
 msgid "Run on e_xternal console"
-msgstr "在外部主控台中執行"
+msgstr "在外部主控台中執行(_X)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandWidget.cs:232
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanelWidget.cs:75
 msgid "Pause _console output"
-msgstr "暫停主控台輸出"
+msgstr "暫停主控台輸出(_C)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptionsWidget.cs:65
 msgid "<b>Project Information</b>"
@@ -7368,11 +7368,11 @@ msgstr "從上層解決方案取得版本"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs:37
 msgid "_Associate namespaces with directory names"
-msgstr "建立命名空間與目錄名稱的關聯"
+msgstr "建立命名空間與目錄名稱的關聯(_A)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs:57
 msgid "Use _default namespace as root"
-msgstr "使用預設命名空間作為根"
+msgstr "使用預設命名空間作為根(_D)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs:74
 msgid "Directory structure:"
@@ -7380,11 +7380,11 @@ msgstr "目錄結構:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs:85
 msgid "_Flat"
-msgstr "平坦"
+msgstr "平坦(_F)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs:97
 msgid "_Hierarchical"
-msgstr "階層式"
+msgstr "階層式(_H)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs:145
 msgid ""
@@ -7478,7 +7478,7 @@ msgstr[0] "選取檔案"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:68
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:66
 msgid "_Policy"
-msgstr "原則"
+msgstr "原則(_P)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:84
 msgid "The resource naming policy has changed"
@@ -7577,11 +7577,11 @@ msgstr "選擇要內含在此專案中的檔案"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.IncludeNewFilesDialog.cs:64
 msgid "_Exclude All"
-msgstr "全部排除"
+msgstr "全部排除(_E)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.IncludeNewFilesDialog.cs:76
 msgid "_Include All"
-msgstr "包含全部"
+msgstr "包含全部(_I)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewConfigurationDialog.cs:22
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:250
@@ -7760,7 +7760,7 @@ msgstr "[刪除] 選項會從硬碟中永久移除檔案。如果您只要從目
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderFileNodeBuilder.cs:81
 msgid "_Remove from Solution"
-msgstr "從解決方案中移除"
+msgstr "從解決方案中移除(_R)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderFileNodeBuilder.cs:90
 msgid ""
@@ -7838,7 +7838,7 @@ msgstr "解決方案名稱(_S):"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectOptionsWidget.cs:104
 msgid "_Create directory for solution"
-msgstr "為解決方案建立目錄"
+msgstr "為解決方案建立目錄(_C)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectOptionsWidget.cs:251
 msgid "Project will be saved at {0}"
@@ -7931,7 +7931,7 @@ msgstr "要設定或取代的原則:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ApplyPolicyDialog.cs:187
 msgid "_Apply policies"
-msgstr "套用原則"
+msgstr "套用原則(_A)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ProjectSelectorDialog.cs:32
 msgid "Select a project or solution:"
@@ -8116,15 +8116,15 @@ msgstr "報告錯誤和使用資訊，協助 {0} 改善我的體驗。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LogReportingStartup.cs:46
 msgid "Do _Not Send"
-msgstr "不要傳送"
+msgstr "不要傳送(_N)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LogReportingStartup.cs:47
 msgid "_Send This Time"
-msgstr "這次傳送"
+msgstr "這次傳送(_S)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LogReportingStartup.cs:48
 msgid "_Always Send"
-msgstr "一律傳送"
+msgstr "一律傳送(_A)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LogReportingStartup.cs:52
 msgid "A fatal error has occurred"
@@ -8611,33 +8611,33 @@ msgstr "顯示版本控制覆疊圖示"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:115
 msgid "_Remove"
-msgstr "移除"
+msgstr "移除(_R)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:120
 msgid "_Diff"
-msgstr "Diff"
+msgstr "Diff(_D)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:130
 msgid "_Log"
-msgstr "記錄"
+msgstr "記錄(_L)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:135
 msgid "_Review and Commit"
-msgstr "檢閱並認可"
+msgstr "檢閱並認可(_R)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:139
 msgid "_Review Solution and Commit"
-msgstr "檢閱解決方案與認可"
+msgstr "檢閱解決方案與認可(_R)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:144
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:37
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:42
 msgid "_Update"
-msgstr "更新"
+msgstr "更新(_U)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:148
 msgid "_Update Solution"
-msgstr "更新解決方案"
+msgstr "更新解決方案(_U)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:153
 msgid "_Publish in Version Control..."
@@ -8662,7 +8662,7 @@ msgstr "Blame"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:174
 msgid "Create _Patch"
-msgstr "建立修補檔案"
+msgstr "建立修補檔案(_P)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Commands.cs:228
 msgid "Add to ignore list"
@@ -8680,11 +8680,11 @@ msgstr "解決衝突"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:232
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:241
 msgid "_Version Control"
-msgstr "版本控制"
+msgstr "版本控制(_V)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:210
 msgid "Versio_n Control"
-msgstr "版本控制"
+msgstr "版本控制(_O)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:300
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:306
@@ -8783,7 +8783,7 @@ msgstr "您可能忘了取消選取項目。"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:936
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:306
 msgid "_Open All"
-msgstr "全部開啟"
+msgstr "全部開啟(_O)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:937
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:307
@@ -8825,7 +8825,7 @@ msgstr "存放庫"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:71
 msgid "_Checkout"
-msgstr "簽出"
+msgstr "簽出(_C)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:323
 msgid "Select target directory"
@@ -8912,7 +8912,7 @@ msgstr "模組 {0} 的初始簽入"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:40
 msgid "_Publish"
-msgstr "發行"
+msgstr "發行(_P)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:41
 msgid "Are you sure you want to publish the project?"
@@ -9085,7 +9085,7 @@ msgstr "1/1"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:146
 msgid "C_ommit"
-msgstr "認可"
+msgstr "認可(_O)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:54
 msgid ""
@@ -9187,7 +9187,7 @@ msgstr "換行"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/VersionControlPolicyPanel.cs:53
 msgid "Version Control _Policy"
-msgstr "版本控制政策"
+msgstr "版本控制政策(_P)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:81
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:87
@@ -9283,7 +9283,7 @@ msgstr "統一差異"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:125
 msgid "_Compare"
-msgstr "比較"
+msgstr "比較(_C)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:151
 msgid "(working copy)"
@@ -9851,7 +9851,7 @@ msgstr "分支"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs:187
 msgid "_Push"
-msgstr "推送"
+msgstr "推送(_P)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs:219
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:126
@@ -10449,7 +10449,7 @@ msgstr "正在為專案 '{0}' 產生 GUI 程式碼..."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:565
 msgid "_Use as Source"
-msgstr "當作來源使用"
+msgstr "當作來源使用(_U)"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:566
 msgid ""
@@ -10922,7 +10922,7 @@ msgstr "繫結到欄位"
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/ContextMenu.cs:25
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/ContextMenu.cs:47
 msgid "_Select"
-msgstr "選取"
+msgstr "選取(_S)"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/ContextMenu.cs:153
 msgid "Placeholder"
@@ -11216,7 +11216,7 @@ msgstr ""
 
 #: ../src/addins/ChangeLogAddIn/ProjectOptionPanel.cs:46
 msgid "ChangeLog _Policy"
-msgstr "ChangeLog 原則"
+msgstr "ChangeLog 原則(_P)"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:55
 msgid ""
@@ -11269,11 +11269,11 @@ msgstr ""
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:137
 msgid "Integrate with _version control"
-msgstr "與版本控制整合"
+msgstr "與版本控制整合(_V)"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:155
 msgid "_Require ChangeLog entries for all files when committing"
-msgstr "認可時要求所有檔案的 ChangeLog 項目"
+msgstr "認可時要求所有檔案的 ChangeLog 項目(_R)"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:169
 msgid "ChangeLog Generation"
@@ -11597,7 +11597,7 @@ msgstr "在相關檔案 (例如 CodeBehind、標頭等) 之間切換"
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:63
 msgid "_Generate Makefiles"
-msgstr "產生 Makefile"
+msgstr "產生 Makefile(_G)"
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:64
 msgid ""
@@ -12305,7 +12305,7 @@ msgstr "要切換此 2.0 版專案的執行階段環境嗎?"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:35
 msgid "_Switch to .NET 2.0"
-msgstr "切換至 .NET 2.0"
+msgstr "切換至 .NET 2.0(_S)"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:52
 msgid "The web reference could not be added"
@@ -12389,11 +12389,11 @@ msgstr "參考:"
 
 #: ../src/addins/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:271
 msgid "_Back"
-msgstr "上一步"
+msgstr "上一步(_B)"
 
 #: ../src/addins/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:297
 msgid "_Config"
-msgstr "組態"
+msgstr "組態(_C)"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Dialogs/UserPasswordDialog.cs:35
 msgid "The server {0} requires a user name and a password."
@@ -12510,21 +12510,21 @@ msgstr "重構作業"
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:64
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:91
 msgid "_Sort Usings"
-msgstr "排序 Using"
+msgstr "排序 Using(_S)"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:68
 msgid "_Remove Unused Usings"
-msgstr "移除未使用的 Using"
+msgstr "移除未使用的 Using(_R)"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:72
 msgid "R_emove and Sort"
-msgstr "移除和排序"
+msgstr "移除和排序(_E)"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:79
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:100
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:476
 msgid "_Go to Declaration"
-msgstr "前往宣告"
+msgstr "前往宣告(_G)"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:119
 msgid "C# Files"
@@ -12552,16 +12552,16 @@ msgstr "C# 格式"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:263
 msgid "_Move to prev usage"
-msgstr "移到上一個使用方式"
+msgstr "移到上一個使用方式(_M)"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:268
 msgid "_Move to next usage"
-msgstr "移到下一個使用方式"
+msgstr "移到下一個使用方式(_M)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1076
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1078
 msgid "_Expand selection"
-msgstr "展開選取項目"
+msgstr "展開選取項目(_E)"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:297
 msgid "Navigate"
@@ -12591,12 +12591,12 @@ msgstr "<b>一般選項</b>"
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:118
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:201
 msgid "Enable _optimizations"
-msgstr "啟用最佳化"
+msgstr "啟用最佳化(_O)"
 
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:132
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:149
 msgid "_Generate overflow checks"
-msgstr "產生溢位檢查"
+msgstr "產生溢位檢查(_G)"
 
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:147
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:220
@@ -12656,7 +12656,7 @@ msgstr "略過警告(_I):"
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:372
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:402
 msgid "Treat warnings as _errors"
-msgstr "將警告視為錯誤"
+msgstr "將警告視為錯誤(_E)"
 
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:200
 msgid "Do not reference mscorlib.dll"
@@ -13022,7 +13022,7 @@ msgstr "GenerateCodeWindow"
 
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CodeGeneration.GenerateCodeWindow.cs:35
 msgid "_Generate"
-msgstr "產生"
+msgstr "產生(_G)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/ReadonlyPropertyGenerator.cs:48
 msgid "Read-only properties"
@@ -14154,7 +14154,7 @@ msgstr "(來自 '{0}')"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeFixMenuService.cs:145
 msgid "_Configure Rule"
-msgstr "設定規則"
+msgstr "設定規則(_C)"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeFixMenuService.cs:167
 msgid "Fix all"
@@ -14162,7 +14162,7 @@ msgstr "全部修正"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeFixMenuService.cs:176
 msgid "In _Document"
-msgstr "在文件中"
+msgstr "在文件中(_D)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:76
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:452
@@ -14226,43 +14226,43 @@ msgstr "正在解析符號..."
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:43
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:497
 msgid "Go to _Base Type"
-msgstr "前往基底類型"
+msgstr "前往基底類型(_B)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:46
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:505
 msgid "Go to _Base Property"
-msgstr "前往基底屬性"
+msgstr "前往基底屬性(_B)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:46
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:501
 msgid "Go to _Interface Property"
-msgstr "前往介面屬性"
+msgstr "前往介面屬性(_I)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:49
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:506
 msgid "Go to _Base Event"
-msgstr "前往基底事件"
+msgstr "前往基底事件(_B)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:49
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:502
 msgid "Go to _Interface Event"
-msgstr "前往介面事件"
+msgstr "前往介面事件(_I)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:52
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:507
 msgid "Go to _Base Method"
-msgstr "前往基底方法"
+msgstr "前往基底方法(_B)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:52
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:503
 msgid "Go to _Interface Method"
-msgstr "前往介面方法"
+msgstr "前往介面方法(_I)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:54
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:509
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:514
 msgid "Go to _Base Symbol"
-msgstr "前往基底符號"
+msgstr "前往基底符號(_B)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/FindProjectReferenceUsagesHandler.cs:82
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/AnalyzeCurrentProjectHandler.cs:78
@@ -14475,15 +14475,15 @@ msgstr "為所有出現 '{0}' 之處引進查詢變數"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:89
 msgid "_Organize Usings"
-msgstr "組合管理 Using"
+msgstr "組合管理 Using(_O)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:90
 msgid "Remove _and Sort Usings"
-msgstr "移除並排序 Using"
+msgstr "移除並排序 Using(_A)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:92
 msgid "_Remove Unnecessary Usings"
-msgstr "移除不必要的 Using"
+msgstr "移除不必要的 Using(_R)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:93
 msgid "Encapsulate fields (and use property)"
@@ -14591,11 +14591,11 @@ msgstr "語言(_L):"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:118
 msgid "U_se Country Code"
-msgstr "使用國碼 (地區碼)"
+msgstr "使用國碼 (地區碼)(_S)"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:145
 msgid "_Known Language"
-msgstr "已知的語言"
+msgstr "已知的語言(_K)"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:170
 msgid "L_ocale:"
@@ -14603,7 +14603,7 @@ msgstr "地區設定(_O):"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:188
 msgid "_User Defined Locale"
-msgstr "使用者定義的地區設定"
+msgstr "使用者定義的地區設定(_U)"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:104
 msgid "Last modification:"
@@ -14786,19 +14786,19 @@ msgstr "顯示有效的翻譯"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:374
 msgid "_Search in"
-msgstr "搜尋"
+msgstr "搜尋(_S)"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:379
 msgid "_Original"
-msgstr "原始"
+msgstr "原始(_O)"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:384
 msgid "_Translated"
-msgstr "已翻譯"
+msgstr "已翻譯(_T)"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:389
 msgid "_Both"
-msgstr "兩者"
+msgstr "兩者(_B)"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:552
 msgid ""
@@ -14926,7 +14926,7 @@ msgstr "為解決方案或專案新增另一種翻譯 (語言)"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:31
 msgid "U_pdate Translations"
-msgstr "更新翻譯"
+msgstr "更新翻譯(_P)"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:32
 msgid "Updates all translation files."
@@ -14934,7 +14934,7 @@ msgstr "更新所有轉譯檔案。"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:34
 msgid "_Update Translation"
-msgstr "更新翻譯"
+msgstr "更新翻譯(_U)"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:35
 msgid "Updates this translation."
@@ -14942,7 +14942,7 @@ msgstr "更新此翻譯。"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:38
 msgid "_Scan for Translations"
-msgstr "掃描是否有翻譯"
+msgstr "掃描是否有翻譯(_S)"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:39
 msgid "Include this file in the translations scan."
@@ -15893,7 +15893,7 @@ msgstr "<b>錯誤</b>: {0}"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:550
 msgid "_Input Methods"
-msgstr "輸入法"
+msgstr "輸入法(_I)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:715
 msgid ""
@@ -15923,19 +15923,19 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:715
 msgid "_Reload from disk"
-msgstr "從磁碟中重新載入"
+msgstr "從磁碟中重新載入(_R)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:723
 msgid "_Keep changes"
-msgstr "保存變更"
+msgstr "保存變更(_K)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:733
 msgid "_Reload all"
-msgstr "全部重新載入"
+msgstr "全部重新載入(_R)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:740
 msgid "_Ignore all"
-msgstr "全部略過"
+msgstr "全部略過(_I)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:963
 msgid ""
@@ -15953,11 +15953,11 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:969
 msgid "_Use original file"
-msgstr "使用原始檔案"
+msgstr "使用原始檔案(_U)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:985
 msgid "_Load from autosave"
-msgstr "從自動儲存中載入"
+msgstr "從自動儲存中載入(_L)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:42
 msgid "Automatic"
@@ -16036,7 +16036,7 @@ msgstr "<b>程式碼摺疊功能</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:150
 msgid "Enable code _folding"
-msgstr "啟用程式碼摺疊功能"
+msgstr "啟用程式碼摺疊功能(_F)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:162
 msgid "Fold #_regions by default"
@@ -16044,7 +16044,7 @@ msgstr "預設摺疊 #_regions"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:174
 msgid "Fold _comments by default"
-msgstr "預設摺疊註解"
+msgstr "預設摺疊註解(_C)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:192
 msgid "<b>Appearance</b>"
@@ -16052,11 +16052,11 @@ msgstr "<b>外觀</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:211
 msgid "_Word wrap"
-msgstr "自動換行"
+msgstr "自動換行(_W)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:223
 msgid "_Use anti aliasing"
-msgstr "使用消除鋸齒"
+msgstr "使用消除鋸齒(_U)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:57
 msgid "<b>General</b>"
@@ -16064,35 +16064,35 @@ msgstr "<b>一般</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:76
 msgid "_Show line numbers"
-msgstr "顯示行號"
+msgstr "顯示行號(_S)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:88
 msgid "_Highlight matching braces"
-msgstr "反白對稱的括號"
+msgstr "反白對稱的括號(_H)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:100
 msgid "Highlight _current line"
-msgstr "反白目前的行"
+msgstr "反白目前的行(_C)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:112
 msgid "Show _column ruler"
-msgstr "顯示資料行尺規"
+msgstr "顯示資料行尺規(_C)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:124
 msgid "_Enable animations"
-msgstr "啟用動畫"
+msgstr "啟用動畫(_E)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:136
 msgid "Highlight _identifier references"
-msgstr "反白識別碼參考"
+msgstr "反白識別碼參考(_I)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:148
 msgid "_Show indentation guides"
-msgstr "顯示縮排輔助線"
+msgstr "顯示縮排輔助線(_S)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:160
 msgid "_Visualize changed lines"
-msgstr "視覺化已變更的行"
+msgstr "視覺化已變更的行(_V)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:177
 msgid "Include Line Endings"
@@ -16100,7 +16100,7 @@ msgstr "包含行結尾"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:192
 msgid "Include _Spaces"
-msgstr "包含空格"
+msgstr "包含空格(_S)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:207
 msgid "Include Tabs"
@@ -16116,31 +16116,31 @@ msgstr "<b>自動行為</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:94
 msgid "_Insert matching brace"
-msgstr "插入對稱的括號"
+msgstr "插入對稱的括號(_I)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:119
 msgid "_Smart semicolon placement"
-msgstr "智慧分號放置"
+msgstr "智慧分號放置(_S)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:135
 msgid "_Enable on the fly code formatting"
-msgstr "啟用動態程式碼格式設定"
+msgstr "啟用動態程式碼格式設定(_E)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:147
 msgid "_Format document on save"
-msgstr "儲存時格式化文件"
+msgstr "儲存時格式化文件(_F)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:159
 msgid "_Automatically set search pattern case sensitivity"
-msgstr "自動設定搜尋模式區分大小寫"
+msgstr "自動設定搜尋模式區分大小寫(_A)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:171
 msgid "_Generate additional undo steps for formatting"
-msgstr "為格式化產生其他復原步驟"
+msgstr "為格式化產生其他復原步驟(_G)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:183
 msgid "Enable _selection surrounding keys"
-msgstr "啟用選取範圍圍繞索引鍵"
+msgstr "啟用選取範圍圍繞索引鍵(_S)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:201
 msgid "<b>Indentation</b>"
@@ -16152,7 +16152,7 @@ msgstr "縮排模式(_I):"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:247
 msgid "Interpret tab _keystroke as reindent command"
-msgstr "將 tab 按鍵輸入解譯為重新縮排命令"
+msgstr "將 tab 按鍵輸入解譯為重新縮排命令(_K)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:277
 msgid "<b>Navigation</b>"
@@ -16196,19 +16196,19 @@ msgstr "按一下以巡覽至下一則訊息"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:72
 msgid "_Show completion list after a character is typed"
-msgstr "輸入一個字元後顯示完成清單"
+msgstr "輸入一個字元後顯示完成清單(_S)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:126
 msgid "Include _keywords in completion list"
-msgstr "在完成清單中包含關鍵字"
+msgstr "在完成清單中包含關鍵字(_K)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:154
 msgid "Include _code snippets in completion list"
-msgstr "在完成清單中包含程式碼片段"
+msgstr "在完成清單中包含程式碼片段(_C)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:169
 msgid "_Show import items"
-msgstr "顯示匯入項目"
+msgstr "顯示匯入項目(_S)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:181
 msgid "A_utomatically insert parentheses after completion:"
@@ -16216,19 +16216,19 @@ msgstr "自動在完成後插入括弧(_U):"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:203
 msgid "_Opening only"
-msgstr "僅開啟"
+msgstr "僅開啟(_O)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:231
 msgid "_Both opening and closing"
-msgstr "左邊和右邊"
+msgstr "左邊和右邊(_B)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs:57
 msgid "_Filter members by [EditorBrowsable] attribute"
-msgstr "依 [EditorBrowsable] 屬性篩選成員"
+msgstr "依 [EditorBrowsable] 屬性篩選成員(_F)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs:80
 msgid "_Show Normal members only"
-msgstr "只顯示一般成員"
+msgstr "只顯示一般成員(_S)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs:102
 msgid "<i>EditorBrowsableState.Always</i>"
@@ -16236,7 +16236,7 @@ msgstr "<i>EditorBrowsableState.Always</i>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs:124
 msgid "Show Normal and _Advanced members"
-msgstr "顯示標準與進階成員"
+msgstr "顯示標準與進階成員(_A)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs:146
 msgid "<i>EditorBrowsableState.Always and EditorBrowsableState.Advanced</i>"
@@ -16286,27 +16286,27 @@ msgstr "上個錯誤"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:77
 msgid "_Top"
-msgstr "靠上"
+msgstr "靠上(_T)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:79
 msgid "_Bottom"
-msgstr "下"
+msgstr "下(_B)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:81
 msgid "_Page Up"
-msgstr "上一頁"
+msgstr "上一頁(_P)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:83
 msgid "P_age Down"
-msgstr "Page Down"
+msgstr "Page Down(_A)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:88
 msgid "Show _Tasks"
-msgstr "顯示工作"
+msgstr "顯示工作(_T)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:91
 msgid "Show _Minimap"
-msgstr "顯示迷你地圖"
+msgstr "顯示迷你地圖(_M)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:150
 msgid "Markers and Rulers"
@@ -16430,7 +16430,7 @@ msgstr "無法載入:"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser.addin.xml:18
 msgid "_Assembly Browser"
-msgstr "組件瀏覽器"
+msgstr "組件瀏覽器(_A)"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/UnknownPackageBuilder.cs:47
 msgid "Unknown package type"
@@ -16783,11 +16783,11 @@ msgstr "如果最近修改過現有目標檔案，則來源檔案將會取代現
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:398
 msgid "Apply this decision to _all files in this operation"
-msgstr "將此決策套用到此作業中的所有檔案"
+msgstr "將此決策套用到此作業中的所有檔案(_A)"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:431
 msgid "_Cancel deployment"
-msgstr "取消部署"
+msgstr "取消部署(_C)"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BaseFuseFileCopyHandler.cs:53
 msgid "Could not create temporary directory."
@@ -17054,7 +17054,7 @@ msgstr "管理印表機的工具"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:49
 msgid "A package manager application"
-msgstr "封裝管理員應用程式"
+msgstr "套件管理員應用程式"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:50
 msgid "A dial-up program"
@@ -17583,11 +17583,11 @@ msgstr "Xml 編輯器"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:51
 msgid "Create _Schema"
-msgstr "建立結構描述"
+msgstr "建立結構描述(_S)"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:54
 msgid "_Validate"
-msgstr "驗證"
+msgstr "驗證(_V)"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:57
 msgid "_Assign XSLT..."
@@ -17595,19 +17595,19 @@ msgstr "指派 XSLT(_A)..."
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:60
 msgid "_Open XSLT"
-msgstr "開啟 XSLT"
+msgstr "開啟 XSLT(_O)"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:63
 msgid "Run XSL_T"
-msgstr "執行 XSLT"
+msgstr "執行 XSLT(_T)"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:67
 msgid "_Go to Schema Definition"
-msgstr "前往結構描述定義"
+msgstr "前往結構描述定義(_G)"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:74
 msgid "_XML"
-msgstr "XML"
+msgstr "XML(_X)"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:91
 msgid "XML Schemas"
@@ -18096,23 +18096,23 @@ msgstr "測試結果"
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:196
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:221
 msgid "_Run All"
-msgstr "全部執行"
+msgstr "全部執行(_R)"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:200
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:225
 msgid "_Debug All"
-msgstr "全部偵錯"
+msgstr "全部偵錯(_D)"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:204
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:217
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:252
 msgid "_Select in Test Pad"
-msgstr "在測試面板中選取"
+msgstr "在測試面板中選取(_S)"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:213
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:236
 msgid "_Debug"
-msgstr "偵錯"
+msgstr "偵錯(_D)"
 
 #: ../src/addins/MonoDevelop.UnitTesting.NUnit/templates/NUnitTestClass.xft.xml:7
 msgid "NUnit"
@@ -18231,11 +18231,11 @@ msgstr "需要認證"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:19
 msgid "_Minimize"
-msgstr "最小化"
+msgstr "最小化(_M)"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:28
 msgid "_Hide Application"
-msgstr "隱藏應用程式"
+msgstr "隱藏應用程式(_H)"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:29
 msgid "Hide Application"
@@ -18243,7 +18243,7 @@ msgstr "隱藏應用程式"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:33
 msgid "_Hide Others"
-msgstr "隱藏其他"
+msgstr "隱藏其他(_H)"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:34
 msgid "Hide other applications' windows"
@@ -18361,7 +18361,7 @@ msgstr "包含多載"
 
 #: ../src/addins/MonoDevelop.Refactoring/gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs:157
 msgid "_Preview"
-msgstr "預覽"
+msgstr "預覽(_P)"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoringPreviewDialog.cs:115
 msgid "(Line:{0}, Column:{1})"
@@ -18393,15 +18393,15 @@ msgstr "資訊"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:52
 msgid "_Find References"
-msgstr "尋找參考"
+msgstr "尋找參考(_F)"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:56
 msgid "_Find References of All Overloads"
-msgstr "尋找所有多載的參考"
+msgstr "尋找所有多載的參考(_F)"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:97
 msgid "Find _Derived Symbols"
-msgstr "尋找衍生的符號"
+msgstr "尋找衍生的符號(_D)"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:59
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpFormattingPolicy.fs:15
@@ -18460,7 +18460,7 @@ msgstr "更新參考(_U):"
 
 #: ../src/addins/MonoDevelop.Refactoring/gtk-gui/MonoDevelop.Refactoring.EncapsulateFieldDialog.cs:142
 msgid "_External"
-msgstr "外部"
+msgstr "外部(_E)"
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:187
 msgid "ASP.NET Files"
@@ -18923,7 +18923,7 @@ msgstr "範本(_T):"
 
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:118
 msgid "_Name"
-msgstr "名稱"
+msgstr "名稱(_N)"
 
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:126
 msgid "_View Engine:"
@@ -18931,15 +18931,15 @@ msgstr "檢視引擎(_V):"
 
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:154
 msgid "_Partial view"
-msgstr "部份檢視"
+msgstr "部份檢視(_P)"
 
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:155
 msgid "_Strongly typed"
-msgstr "強型別"
+msgstr "強型別(_S)"
 
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:156
 msgid "Has _master page or layout"
-msgstr "有主版頁面或配置"
+msgstr "有主版頁面或配置(_M)"
 
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:165
 msgid "_Data class:"
@@ -19658,7 +19658,7 @@ msgstr "等待偵錯工具"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:102
 msgid "_Continue Debugging"
-msgstr "繼續偵錯"
+msgstr "繼續偵錯(_C)"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:103
 msgid "Continue the execution of the application"
@@ -19799,7 +19799,7 @@ msgstr "攔截到例外狀況"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:380
 msgid "_Only show my code."
-msgstr "只顯示我的程式碼"
+msgstr "只顯示我的程式碼(_O)"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:240
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:572
@@ -20017,7 +20017,7 @@ msgstr "開始偵錯"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:63
 msgid "Start _Debugging"
-msgstr "開始偵錯"
+msgstr "開始偵錯(_D)"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:67
 msgid "Debug current project"
@@ -20025,7 +20025,7 @@ msgstr "偵錯目前的專案"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:68
 msgid "Start D_ebugging Item"
-msgstr "開始偵錯項目"
+msgstr "開始偵錯項目(_E)"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:77
 msgid "Debug Application..."
@@ -20232,7 +20232,7 @@ msgstr "<b>封裝還原</b>"
 
 #: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.PackageManagementOptionsWidget.cs:66
 msgid "_Automatically restore packages when opening a solution."
-msgstr "在開啟解決方案時自動還原封裝"
+msgstr "在開啟解決方案時自動還原封裝(_A)"
 
 #: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.PackageManagementOptionsWidget.cs:82
 msgid "<b>Package Updates</b>"
@@ -20240,7 +20240,7 @@ msgstr "<b>封裝更新</b>"
 
 #: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.PackageManagementOptionsWidget.cs:104
 msgid "Check for package _updates when opening a solution."
-msgstr "開啟解決方案時，查看是否有封裝更新"
+msgstr "開啟解決方案時，查看是否有封裝更新(_U)"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:57
 msgid "Configure Sources..."
@@ -20620,7 +20620,7 @@ msgstr "新增封裝(_P)..."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:20
 msgid "_Restore NuGet Packages"
-msgstr "還原 NuGet 套件"
+msgstr "還原 NuGet 套件(_R)"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:25
 msgid "Restore missing packages"
@@ -20628,7 +20628,7 @@ msgstr "還原缺少的封裝"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:26
 msgid "_Restore"
-msgstr "還原"
+msgstr "還原(_R)"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:60
 msgid "Current package version"
@@ -20637,7 +20637,7 @@ msgstr "目前的封裝版本"
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:32
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:54
 msgid "Re_target"
-msgstr "重定目標"
+msgstr "重定目標(_T)"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:41
 msgid "Update all packages"
@@ -20645,7 +20645,7 @@ msgstr "更新所有封裝"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:48
 msgid "_Update NuGet Packages"
-msgstr "更新 NuGet 套件"
+msgstr "更新 NuGet 套件(_U)"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:53
 msgid "Retargets all packages"
@@ -22670,7 +22670,7 @@ msgstr "警告泛型型別中有靜態欄位"
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:42
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:43
 msgid "C_onnect"
-msgstr "連線"
+msgstr "連線(_O)"
 
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:45
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:46
@@ -22802,7 +22802,7 @@ msgstr "重新命名(_N)..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:108
 msgid "_Indent"
-msgstr "縮排"
+msgstr "縮排(_I)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:109
 msgid "Indent Selection"
@@ -22810,7 +22810,7 @@ msgstr "縮排選取範圍"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:116
 msgid "_Unindent"
-msgstr "取消縮排"
+msgstr "取消縮排(_U)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:117
 msgid "Unindent Selection"
@@ -22818,7 +22818,7 @@ msgstr "將選取範圍取消縮排"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:121
 msgid "Upper_case"
-msgstr "大寫"
+msgstr "大寫(_C)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:122
 msgid "Uppercase Selection"
@@ -22826,7 +22826,7 @@ msgstr "大寫選取範圍"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:125
 msgid "_Lowercase"
-msgstr "小寫"
+msgstr "小寫(_L)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:126
 msgid "Lowercase Selection"
@@ -22838,7 +22838,7 @@ msgstr "移除尾端空白"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:138
 msgid "_GUID (Globally Unique Identifier)"
-msgstr "GUID (全域唯一識別碼)"
+msgstr "GUID (全域唯一識別碼)(_G)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:139
 msgid "Insert GUID (Globally Unique Identifier)"
@@ -22859,7 +22859,7 @@ msgstr "插入標準標頭"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:168
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:524
 msgid "Enable _Folding"
-msgstr "啟用摺疊"
+msgstr "啟用摺疊(_F)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:169
 msgid "Enable/Disable Code Folding"
@@ -22923,7 +22923,7 @@ msgstr "置中並對焦文件"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:683
 msgid "_Cursor Position"
-msgstr "資料指標位置"
+msgstr "資料指標位置(_C)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:707
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:102
@@ -22944,7 +22944,7 @@ msgstr "類型(_T)..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:928
 msgid "Pre_vious"
-msgstr "上一步"
+msgstr "上一步(_V)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:929
 msgid "Go to Previous Bookmark"
@@ -22952,7 +22952,7 @@ msgstr "前往上一個書籤"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:934
 msgid "Ne_xt"
-msgstr "下一步"
+msgstr "下一步(_X)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:935
 msgid "Go to Next Bookmark"
@@ -22992,7 +22992,7 @@ msgstr "捲動至底端"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1035
 msgid "Matching _Brace"
-msgstr "成對的大括弧"
+msgstr "成對的大括弧(_B)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1036
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1038
@@ -23021,7 +23021,7 @@ msgstr "切換目前內嵌訊息的可見性"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1142
 msgid "_None"
-msgstr "無"
+msgstr "無(_N)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1143
 msgid "Show/Hide Inline Messages"
@@ -23033,11 +23033,11 @@ msgstr "切換內嵌訊息的可見性"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:89
 msgid "_Insert"
-msgstr "插入"
+msgstr "插入(_I)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:118
 msgid "Inline _Messages"
-msgstr "內嵌訊息"
+msgstr "內嵌訊息(_M)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:282
 msgid "Report Problem..."
@@ -23065,7 +23065,7 @@ msgstr "新增自訂工具..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:198
 msgid "_Delete “{0}” Layout"
-msgstr "刪除 “{0}” 配置"
+msgstr "刪除 “{0}” 配置(_D)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:207
 msgid "Are you sure you want to delete the “{0}” layout?"
@@ -23073,7 +23073,7 @@ msgstr "確定要刪除 “{0}” 配置嗎?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:524
 msgid "Disable _Folding"
-msgstr "停用摺疊"
+msgstr "停用摺疊(_F)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:484
 msgid "View (Pads)"
@@ -23131,19 +23131,19 @@ msgstr "正在重建... (組建)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/MessageBubbles/MessageBubbleCommands.cs:65
 msgid "E_rrors"
-msgstr "錯誤"
+msgstr "錯誤(_R)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/MessageBubbles/MessageBubbleCommands.cs:71
 msgid "_Errors and Warnings"
-msgstr "錯誤和警告"
+msgstr "錯誤和警告(_E)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor.Extension/DefaultCommandTextEditorExtension.cs:266
 msgid "_Hide Current Message"
-msgstr "隱藏目前的訊息"
+msgstr "隱藏目前的訊息(_H)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor.Extension/DefaultCommandTextEditorExtension.cs:266
 msgid "_Show Hidden Message"
-msgstr "顯示隱藏的郵件"
+msgstr "顯示隱藏的郵件(_S)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:178
 msgid "Add to Ignore List"
@@ -23155,19 +23155,19 @@ msgstr "從忽略清單移除"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:190
 msgid "_Copy Revision"
-msgstr "複製修訂內容"
+msgstr "複製修訂內容(_C)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:192
 msgid "_Show Diff"
-msgstr "顯示差異"
+msgstr "顯示差異(_S)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:194
 msgid "S_how Log"
-msgstr "顯示記錄"
+msgstr "顯示記錄(_H)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:196
 msgid "Show _Blame Before"
-msgstr "在下列項目之前顯示 Blame"
+msgstr "在下列項目之前顯示 Blame(_B)"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml:60
 msgid "Designer (Gtk#)"
@@ -23183,11 +23183,11 @@ msgstr "新增工具箱項目..."
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:14
 msgid "Show Code _Generation"
-msgstr "顯示程式碼產生"
+msgstr "顯示程式碼產生(_G)"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:23
 msgid "_Find Reference Usages"
-msgstr "尋找參考使用"
+msgstr "尋找參考使用(_F)"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:28
 msgid "Find Extension Methods"
@@ -23211,7 +23211,7 @@ msgstr "移除未使用項目並排序 (Using)"
 
 #: ../src/addins/MonoDevelop.DocFood/DocFood.addin.xml:13
 msgid "Documentation _Comments"
-msgstr "文件註解"
+msgstr "文件註解(_C)"
 
 #: ../src/addins/MonoDevelop.DocFood/DocFood.addin.xml:14
 msgid "Insert Documentation Comments"
@@ -23219,7 +23219,7 @@ msgstr "插入文件註解"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit.addin.xml:8
 msgid "_Regular Expressions Toolkit"
-msgstr "規則運算式工具組"
+msgstr "規則運算式工具組(_R)"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:306
 msgid "Policies..."
@@ -23231,7 +23231,7 @@ msgstr "將視窗最小化"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:24
 msgid "_Zoom"
-msgstr "縮放"
+msgstr "縮放(_Z)"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:25
 msgid "Zoom the Window"
@@ -23260,19 +23260,19 @@ msgstr "專案 '{0}'"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:83
 msgid "_Whole Solution"
-msgstr "整個解決方案"
+msgstr "整個解決方案(_W)"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:87
 msgid "_Current Project"
-msgstr "目前專案"
+msgstr "目前專案(_C)"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:91
 msgid "_Analyze Source"
-msgstr "分析來源"
+msgstr "分析來源(_A)"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:136
 msgid "_Analyze"
-msgstr "分析"
+msgstr "分析(_A)"
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:251
 msgid "Add Controller..."
@@ -23695,7 +23695,7 @@ msgstr "取消作業"
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeFixMenuService.cs:113
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeFixMenuService.cs:132
 msgid "_Options for ‘{0}’"
-msgstr "‘{0}’ 的選項"
+msgstr "‘{0}’ 的選項(_O)"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/PackageManagementMSBuildExtension.cs:81
 msgid "{0}. Please see the Package Console for more details."
@@ -23799,7 +23799,7 @@ msgstr "傾印協助工具樹狀目錄 (10 秒)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:939
 msgid "_Remove All Bookmarks"
-msgstr "移除所有書籤"
+msgstr "移除所有書籤(_R)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:961
 msgid "Complete Word"
@@ -24118,7 +24118,7 @@ msgstr "清理: "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:327
 msgid "(System Default)"
-msgstr "(系統預設值)"
+msgstr "(系統預設)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs:83
 msgid "New extension updates are available:"
@@ -24147,13 +24147,13 @@ msgstr "您可以將錯誤詳細資料連同匿名使用方式資訊傳送給 Mi
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:144
 msgid ".NET Standard Platform:"
-msgstr ".NET 標準平台:"
+msgstr ".NET Standard 平台:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:148
 msgid ""
 "Your library will be compatible with all frameworks that support the "
 "selected <a href='{0}'>.NET Standard</a> version."
-msgstr "您的程式庫將可與支援所選 <a href='{0}'>.NET 標準</a>版本的所有架構相容。"
+msgstr "您的程式庫將可與支援所選 <a href='{0}'>.NET Standard</a>版本的所有架構相容。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:154
 msgid ".NET Portable:"
@@ -24260,7 +24260,7 @@ msgstr "切換至 {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.DockNotebook/DockNotebookTab.cs:227
 msgid "Close document"
-msgstr "關閉文件"
+msgstr "Close document"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:545
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Templating/DotNetCoreProjectTemplateWizardPage.cs:58
@@ -24926,7 +24926,7 @@ msgstr "App URL:"
 
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:100
 msgid "Where your app should listen for connections"
-msgstr "App 接聽連線的位置"
+msgstr "應用程式接聽連線的位置"
 
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:103
 msgid "Open URL in web browser when app starts:"
@@ -25224,7 +25224,7 @@ msgstr "建立 NuGet 套件"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:98
 msgid "Create NuGet _Package"
-msgstr "建立 NuGet 套件"
+msgstr "建立 NuGet 套件(_P)"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:102
 msgid "Adds platform specific implementation for a cross platform project"
@@ -25410,7 +25410,7 @@ msgstr "測試"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:432
 msgid "The application was terminated by an unknown signal: {0}"
-msgstr "應用程式被未知信號 {0} 終止"
+msgstr "未知訊號: {0} 已終止此應用程式"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:607
 msgid "Architecture"
@@ -25828,7 +25828,7 @@ msgstr "為產生的 XML 文件輸入檔案名稱"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CodeGenerationPanel.cs:73
 msgid "Select the level of debugging information to be generated"
-msgstr "選取要產生之偵錯資訊的層級"
+msgstr "選取要產生的偵錯資訊層級"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CodeGenerationPanel.cs:76
 msgid "Enter the symbols the compiler should define"
@@ -26280,7 +26280,7 @@ msgstr "建立新的 Azure Functions 專案。"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:28
 msgid "Connected Services"
-msgstr "已連線的服務"
+msgstr "連線服務"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:833
 msgid "Mark Log"
@@ -26549,7 +26549,7 @@ msgstr "選取顯示訊息泡泡的時機"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/FolderListSelector.cs:61
 msgid "Add the folder to the list"
-msgstr "新增資料夾至清單"
+msgstr "將資料夾新增至清單"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/FolderListSelector.cs:63
 msgid "Remove the selected folder from the list"
@@ -26974,5 +26974,5 @@ msgstr "ASP.NET Core Web 應用程式 (Razor 頁面)"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:17
 msgid "_Diagnostics"
-msgstr "診斷"
+msgstr "診斷(_D)"
 

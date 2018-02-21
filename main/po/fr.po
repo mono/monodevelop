@@ -1735,7 +1735,7 @@ msgstr "Énumération vide"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyEnum.xft.xml:9
 msgid "Creates an empty enum."
-msgstr "Crée une énumération vide."
+msgstr "Crée un enum vide."
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml:5
 msgid "Empty HTML File"
@@ -14924,7 +14924,7 @@ msgstr "Convertir les champs en énumération"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:54
 msgid "Name of enum"
-msgstr "Nom de l’énumération"
+msgstr "Nom de l’enum"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:60
 msgid "Variables to include"
@@ -14940,7 +14940,7 @@ msgstr "Nom du champ"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:74
 msgid "Enum name"
-msgstr "Nom de l’énumération"
+msgstr "Nom de l’enum"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:89
 msgid "Warning: This may take a while..."
@@ -15285,7 +15285,7 @@ msgstr "Rechercher les symboles dérivés"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumCodeRefactoringProvider.cs:98
 msgid "Create enum '{0}'"
-msgstr "Créer l’énumération « {0} »"
+msgstr "Créer l’enum '{0}'"
 
 #: ../src/addins/MonoDevelop.DocFood/gtk-gui/MonoDevelop.DocFood.Options.AcronymsPanelWidget.cs:56
 #: ../src/addins/MonoDevelop.DocFood/gtk-gui/MonoDevelop.DocFood.Options.NoTheReorderingWidget.cs:56
@@ -17894,7 +17894,7 @@ msgstr "Outil de gestion d’imprimantes"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:49
 msgid "A package manager application"
-msgstr "Application de gestion de paquets"
+msgstr "Application de gestionnaire de package"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:50
 msgid "A dial-up program"
@@ -19157,7 +19157,7 @@ msgstr "Renommer le délégué"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:79
 msgid "Rename Enum"
-msgstr "Renommer l’énumération"
+msgstr "Renommer l’enum"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:81
 msgid "Rename Struct"
@@ -22115,7 +22115,7 @@ msgstr "Appel à un membre de base avec des paramètres par défaut implicites"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/BitwiseOperatorOnEnumWithoutFlagsAnalyzer.cs:15
 msgid "Bitwise operation on enum which has no [Flags] attribute"
-msgstr "Opération au niveau du bit sur enum qui n’a pas d’attribut [Flags]"
+msgstr "Opération au niveau du bit sur l'enum qui n’a pas d’attribut [Flags]"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ConditionalTernaryEqualBranchAnalyzer.cs:14
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ConditionalTernaryEqualBranchAnalyzer.cs:15
@@ -22994,7 +22994,8 @@ msgstr "Valider les documents XML"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/BitwiseOperatorOnEnumWithoutFlagsAnalyzer.cs:16
 msgid "Bitwise operation on enum not marked with [Flags] attribute"
-msgstr "Opération au niveau du bit sur enum non marquée avec l’attribut [Flags]"
+msgstr ""
+"Opération au niveau du bit sur l'enum non marquée avec l’attribut [Flags]"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/CompareOfFloatsByEqualityOperatorAnalyzer.cs:14
 msgid "Comparison of floating point numbers with equality operator"
@@ -25299,7 +25300,7 @@ msgstr "Fermer le document"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:545
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Templating/DotNetCoreProjectTemplateWizardPage.cs:58
 msgid "Configure your new {0}"
-msgstr "Configurer votre nouveau {0}"
+msgstr "Configurer votre {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:315
 msgid "Recently used"
@@ -25931,7 +25932,7 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.UnitTesting/DotNetCoreProjectTestSuite.cs:233
 msgid "Unable to run tests. Test discovery failed."
-msgstr "Impossible d'exécuter les tests. Échec de la découverte des tests."
+msgstr "Impossible d'exécuter les tests. Échec de la découverte de tests."
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.UnitTesting/DotNetCoreProjectTestSuite.cs:241
 msgid "Unable to run tests. Assembly not found '{0}'"
@@ -26839,8 +26840,8 @@ msgid ""
 "Do you want to temporarily trust this certificate in order to connect to the "
 "server at {0}?"
 msgstr ""
-"Souhaitez-vous faire temporairement confiance à ce certificat pour vous "
-"connecter au serveur à {0} ?"
+"Voulez-vous faire confiance à ce certificat pour vous connecter au serveur "
+"sur {0} ?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs:58
 msgid "Message Header"
@@ -28122,7 +28123,7 @@ msgstr "Arrêter la désinstallation des paquets NuGet ?"
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:14
 msgid "Dump live widgets"
-msgstr "Widgets dynamiques en image mémoire"
+msgstr "Vider les widgets dynamiques"
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:41
 msgid "Leak Tracker"

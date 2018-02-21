@@ -17840,7 +17840,7 @@ msgstr "Una herramienta para administrar impresoras"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:49
 msgid "A package manager application"
-msgstr "Una aplicación de administración de paquetes"
+msgstr "Una aplicación de administrador de paquetes"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:50
 msgid "A dial-up program"
@@ -23104,7 +23104,7 @@ msgstr "El campo de inicialización con un valor predeterminado es redundante"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassAnalyzer.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassAnalyzer.cs:16
 msgid "'sealed' modifier is redundant in sealed classes"
-msgstr "El modificador 'sealed' es redundante en clases sealed"
+msgstr "El modificador 'sealed' es redundante en clases selladas"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/UnusedParameterAnalyzer.cs:18
 msgid "Parameter is never used"
@@ -25076,7 +25076,7 @@ msgstr "Limpiar: "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:327
 msgid "(System Default)"
-msgstr "(Predeterminado del sistema)"
+msgstr "(Predeterminada del sistema)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs:83
 msgid "New extension updates are available:"
@@ -25119,7 +25119,7 @@ msgid ""
 "selected <a href='{0}'>.NET Standard</a> version."
 msgstr ""
 "La biblioteca será compatible con todos los marcos de trabajo que admiten la "
-"versión del <a href='{0}'>estándar .NET</a> seleccionada."
+"versión de <a href='{0}'>.NET Standard</a> seleccionada."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:154
 msgid ".NET Portable:"
@@ -25234,7 +25234,7 @@ msgstr "Cerrar documento"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:545
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Templating/DotNetCoreProjectTemplateWizardPage.cs:58
 msgid "Configure your new {0}"
-msgstr "Configure su {0} nuevo"
+msgstr "Configure su {0} nueva"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:315
 msgid "Recently used"
@@ -25936,7 +25936,7 @@ msgstr "URL de la aplicación:"
 
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:100
 msgid "Where your app should listen for connections"
-msgstr "Donde la aplicación debe escuchar las conexiones"
+msgstr "Ubicación donde la aplicación debe escuchar las conexiones"
 
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:103
 msgid "Open URL in web browser when app starts:"
@@ -26639,7 +26639,7 @@ msgstr "Insertar una etiqueta personalizada en la entrada de comando"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:114
 msgid "Select a project operation"
-msgstr "Seleccione una operación de proyecto"
+msgstr "Seleccionar una operación de proyecto"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:115
 msgid "Select the type of project operation to add a custom command for"
@@ -26770,7 +26770,7 @@ msgid ""
 "Do you want to temporarily trust this certificate in order to connect to the "
 "server at {0}?"
 msgstr ""
-"¿Desea confiar temporalmente en este certificado para conectar con el "
+"¿Quiere confiar temporalmente en este certificado para conectarse al "
 "servidor en {0}?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs:58
@@ -26891,7 +26891,7 @@ msgstr "Escriba el nombre de archivo para la documentación XML generada"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CodeGenerationPanel.cs:73
 msgid "Select the level of debugging information to be generated"
-msgstr "Seleccione el nivel de información de depuración que se generará"
+msgstr "Seleccionar el nivel de información de depuración que se va a generar"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CodeGenerationPanel.cs:76
 msgid "Enter the symbols the compiler should define"
@@ -26948,7 +26948,7 @@ msgstr "Seleccione la versión de C# que se usará"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:145
 msgid "Check to allow 'unsafe' code"
-msgstr "Marque esta opción para permitir código \"poco seguro\""
+msgstr "Marque esta opción para permitir código \"\poco seguro\"\"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:150
 msgid "Dark"

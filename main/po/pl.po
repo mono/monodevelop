@@ -4076,19 +4076,19 @@ msgstr "Pokaż strukturę projektu"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:74
 msgid "Group members by access"
-msgstr "Grupuj elementy członkowskie według dostępu"
+msgstr "Grupuj składowe według dostępu"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:75
 msgid "Group members by member type"
-msgstr "Grupuj elementy członkowskie według typu"
+msgstr "Grupuj składowe według typu"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:76
 msgid "Show public members only"
-msgstr "Pokaż tylko publiczne elementy członkowskie"
+msgstr "Pokaż tylko publiczne składowe"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:77
 msgid "Show public and protected members only"
-msgstr "Pokaż tylko publiczne i chronione elementy członkowskie"
+msgstr "Pokaż tylko publiczne i chronione składowe"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:92
 msgid "Other Pads"
@@ -6222,8 +6222,7 @@ msgstr ""
 "Jeśli ta opcja zostanie ustawiona, środowisko uruchomieniowe będzie używać "
 "sortowania niezarządzanego (co w rzeczywistości oznacza sortowanie bez "
 "rozróżniania kultury). Wyłącza wewnętrznie funkcję sortowania zarządzanego "
-"wywoływaną przez elementy członkowskie klasy "
-"System.Globalization.CompareInfo."
+"wywoływaną przez składowe klasy System.Globalization.CompareInfo."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:443
 msgid ""
@@ -8775,7 +8774,7 @@ msgstr "Wyszukaj typy"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:119
 msgid "Search Members"
-msgstr "Wyszukaj elementy członkowskie"
+msgstr "Wyszukaj składowe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:621
 msgid "Press ‘{0}’ to search"
@@ -10164,7 +10163,7 @@ msgstr ""
 "Nazwa gałęzi nie może:\n"
 "zaczynać się do znaku „.” lub kończyć znakiem „/” bądź ciągiem "
 "„.lock”\n"
-"zawierać znaków „ ”, „..”, „~”, „^”, „:”, „\\”, „?” ani znaku „[”"
+"zawierać znaków „ ”, „..”, „~”, „^”, „:”, „\”, „?” ani znaku „[”"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:32
 msgid "Branch Properties"
@@ -11939,7 +11938,7 @@ msgstr "Przełączaj między powiązanymi plikami "
 msgid "Switch between related files, such as CodeBehind, headers, etc."
 msgstr ""
 "Przełączaj między powiązanymi plikami, takimi jak pliki CodeBehind, pliki "
-"nagłówka itd."
+"nagłówkowe itd."
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:63
 msgid "_Generate Makefiles"
@@ -12922,11 +12921,11 @@ msgstr "Symbole pochodne"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:39
 msgid "Member Overloads"
-msgstr "Przeciążenia elementów członkowskich"
+msgstr "Przeciążenia składowych"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:43
 msgid "Implementing Members"
-msgstr "Implementowanie elementów członkowskich"
+msgstr "Implementowanie składowych"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:55
 msgid "Extract Method"
@@ -13275,11 +13274,11 @@ msgstr "Opcje nowego wiersza dla wyrażeń"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:372
 msgid "Place members in object initializers on new line"
-msgstr "Umieść elementy członkowskie w inicjatorach obiektu w nowym wierszu"
+msgstr "Umieść składowe w inicjatorach obiektu w nowym wierszu"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:378
 msgid "Place members in anonymous types on new line"
-msgstr "Umieść elementy członkowskie typów anonimowych w nowym wierszu"
+msgstr "Umieść składowe typów anonimowych w nowym wierszu"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:385
 msgid "Place query expression clauses on new line"
@@ -13403,8 +13402,7 @@ msgstr "Pozostaw blok w pojedynczym wierszu"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:648
 msgid "Leave statements and member declarations on the same line"
-msgstr ""
-"Pozostaw instrukcje i deklaracje elementów członkowskich w tym samym wierszu"
+msgstr "Pozostaw instrukcje i deklaracje składowych w tym samym wierszu"
 
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs:95
 msgid "_Category:"
@@ -13432,21 +13430,20 @@ msgstr "Konstruktor"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/CreateConstructorGenerator.cs:61
 msgid "Select members to be initialized by the constructor."
-msgstr ""
-"Wybierz elementy członkowskie, które mają być inicjowane przez konstruktora."
+msgstr "Wybierz składowe, które mają być inicjowane przez konstruktora."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/OverrideMembersGenerator.cs:47
 msgid "Override members"
-msgstr "Przesłoń elementy członkowskie"
+msgstr "Przesłoń składowe"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/OverrideMembersGenerator.cs:53
 msgid "Select members to be overridden."
-msgstr "Wybierz elementy członkowskie, które mają zostać przesłonięte."
+msgstr "Wybierz składowe, które mają zostać przesłonięte."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/PropertyGenerator.cs:56
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/ReadonlyPropertyGenerator.cs:54
 msgid "Select members which should be exposed."
-msgstr "Wybierz elementy członkowskie, które powinny zostać ujawnione."
+msgstr "Wybierz składowe, które powinny zostać ujawnione."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/ToStringGenerator.cs:52
 msgid "ToString() implementation"
@@ -13455,7 +13452,7 @@ msgstr "Implementacja metody ToString()"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/ToStringGenerator.cs:60
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/WriteLineGenerator.cs:54
 msgid "Select members to be outputted."
-msgstr "Wybierz elementy członkowskie, które mają zostać zwrócone."
+msgstr "Wybierz składowe, które mają zostać zwrócone."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/WriteLineGenerator.cs:48
 msgid "WriteLine call"
@@ -13633,8 +13630,8 @@ msgid ""
 "The {0} keyword is used to access members of the base class from within a "
 "derived class."
 msgstr ""
-"Słowo kluczowe {0} jest używane do uzyskiwania dostępu do elementów "
-"członkowskich klasy podstawowej z poziomu klasy pochodnej."
+"Słowo kluczowe {0} jest używane do uzyskiwania dostępu do składowych klasy "
+"bazowej z poziomu klasy pochodnej."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1044
 msgid ""
@@ -13699,8 +13696,8 @@ msgstr ""
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1067
 msgid "[attributes] [modifiers] {0} identifier [:base-list] {{ class-body }}[;]"
 msgstr ""
-"[atrybuty] [modyfikatory] {0} identyfikator [:lista_podstawowa] {{ "
-"treść_klasy }}[;]"
+"[atrybuty] [modyfikatory] {0} identyfikator [:lista_bazowa] {{ treść_klasy "
+"}}[;]"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1068
 msgid "Classes are declared using the keyword {0}."
@@ -13856,7 +13853,7 @@ msgid ""
 "[attributes] [modifiers] {0} type member-name {{ accessor-declarations }};"
 msgstr ""
 "[atrybuty] [modyfikatory] {0} typ deklarator;\n"
-"[atrybuty] [modyfikatory] {0} typ nazwa_elementu_członkowskiego {{ "
+"[atrybuty] [modyfikatory] {0} typ nazwa_składowej {{ "
 "deklaracje_metody_dostępu }};"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1140
@@ -14087,9 +14084,9 @@ msgid ""
 "The {0} keyword is an access modifier for types and type members. Internal "
 "members are accessible only within files in the same assembly."
 msgstr ""
-"Słowo kluczowe {0} jest modyfikatorem dostępu dla typów i elementów "
-"członkowskich typu. Dostęp do wewnętrznych elementów członkowskich można "
-"uzyskać wyłącznie z poziomu plików w tym samym zestawie."
+"Słowo kluczowe {0} jest modyfikatorem dostępu dla typów i składowych typu. "
+"Dostęp do wewnętrznych składowych można uzyskać wyłącznie z poziomu plików w "
+"tym samym zestawie."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1250
 msgid ""
@@ -14173,8 +14170,8 @@ msgid ""
 msgstr ""
 "Słowo kluczowe {0} może być użyte jako operator lub modyfikator. Operator "
 "jest używany do tworzenia obiektów w stercie i wywoływania konstruktorów. "
-"Modyfikator jest używany do ukrywania odziedziczonego elementu "
-"członkowskiego członka przed elementem członkowskim klasy podstawowej."
+"Modyfikator jest używany do ukrywania odziedziczonej składowej przed "
+"składową klasy bazowej."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1283
 msgid ""
@@ -14315,10 +14312,10 @@ msgid ""
 "permissive access level. Private members are accessible only within the body "
 "of the class or the struct in which they are declared."
 msgstr ""
-"Słowo kluczowe {0} jest modyfikatorem dostępu elementu członkowskiego. "
-"Dostęp prywatny jest poziomem dostępu o najniższych uprawnieniach. Dostęp do "
-"prywatnych elementów członkowskich jest możliwy wyłącznie z treści klasy lub "
-"struktury, w której je zadeklarowano."
+"Słowo kluczowe {0} jest modyfikatorem dostępu składowej. Dostęp prywatny "
+"jest poziomem dostępu o najniższych uprawnieniach. Dostęp do prywatnych "
+"składowych jest możliwy wyłącznie z treści klasy lub struktury, w której je "
+"zadeklarowano."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1348
 msgid ""
@@ -14326,9 +14323,9 @@ msgid ""
 "accessible from within the class in which it is declared, and from within "
 "any class derived from the class that declared this member."
 msgstr ""
-"Słowo kluczowe {0} jest modyfikatorem dostępu elementu członkowskiego. "
-"Dostęp do chronionych elementów członkowskich jest możliwy z klasy, w której "
-"je zadeklarowano, oraz z dowolnej klasy pochodnej tej klasy."
+"Słowo kluczowe {0} jest modyfikatorem dostępu składowej. Dostęp do "
+"chronionych składowych jest możliwy z klasy, w której je zadeklarowano, oraz "
+"z dowolnej klasy pochodnej tej klasy."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1353
 msgid ""
@@ -14336,10 +14333,9 @@ msgid ""
 "access is the most permissive access level. There are no restrictions on "
 "accessing public members."
 msgstr ""
-"Słowo kluczowe {0} jest modyfikatorem dostępu dla typów i elementów "
-"członkowskich typu. Dostęp publiczny jest poziomem dostępu o najwyższych "
-"uprawnieniach. Nie istnieją ograniczenia związane z dostępem do publicznych "
-"elementów członkowskich."
+"Słowo kluczowe {0} jest modyfikatorem dostępu dla typów i składowych typu. "
+"Dostęp publiczny jest poziomem dostępu o najwyższych uprawnieniach. Nie "
+"istnieją ograniczenia związane z dostępem do publicznych składowych."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1357
 msgid ""
@@ -14418,8 +14414,8 @@ msgid ""
 "Use the {0} modifier to declare a static member, which belongs to the type "
 "itself rather than to a specific object."
 msgstr ""
-"Użyj modyfikatora {0}, aby zadeklarować statyczny element członkowski, który "
-"należy do samego typu, a nie do określonego obiektu."
+"Użyj modyfikatora {0}, aby zadeklarować statyczną składową, która należy do "
+"samego typu, a nie do określonego obiektu."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1404
 msgid ""
@@ -14656,7 +14652,7 @@ msgid ""
 "member."
 msgstr ""
 "Używany do uzyskiwania prostej (niekwalifikowanej) nazwy ciągu zmiennej, "
-"typu lub elementu członkowskiego."
+"typu lub składowej."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1513
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1516
@@ -14965,7 +14961,7 @@ msgstr "Generuj konstruktor delegowania „{0}({1})”"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:37
 msgid "Generate enum member '{0}' in '{1}'"
-msgstr "Generuj element członkowski wyliczenia „{0}” w elemencie „{1}”"
+msgstr "Generuj składową wyliczenia „{0}” w elemencie „{1}”"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:38
 msgid "Generate constructor in '{0}'"
@@ -16901,11 +16897,11 @@ msgstr "_Otwierający i zamykający"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs:57
 msgid "_Filter members by [EditorBrowsable] attribute"
-msgstr "_Filtruj elementy członkowskie według atrybutu [EditorBrowsable]"
+msgstr "_Filtruj składowe według atrybutu [EditorBrowsable]"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs:80
 msgid "_Show Normal members only"
-msgstr "_Pokaż tylko normalne elementy członkowskie"
+msgstr "_Pokaż tylko normalne składowe"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs:102
 msgid "<i>EditorBrowsableState.Always</i>"
@@ -16913,7 +16909,7 @@ msgstr "<i>EditorBrowsableState.Always</i>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs:124
 msgid "Show Normal and _Advanced members"
-msgstr "Pokaż _normalne i zaawansowane elementy członkowskie"
+msgstr "Pokaż _normalne i zaawansowane składowe"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs:146
 msgid "<i>EditorBrowsableState.Always and EditorBrowsableState.Advanced</i>"
@@ -17010,11 +17006,11 @@ msgstr "Przeglądarka zestawów"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:170
 msgid "Only public members"
-msgstr "Tylko publiczne elementy członkowskie"
+msgstr "Tylko publiczne składowe"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:171
 msgid "All members"
-msgstr "Wszystkie elementy członkowskie"
+msgstr "Wszystkie składowe"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:187
 msgid "Types and Members"
@@ -17022,7 +17018,7 @@ msgstr "Typy i elementy członkowskie"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:213
 msgid "Members"
-msgstr "Elementy członkowskie"
+msgstr "Składowe"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:229
 msgid "IL"
@@ -17030,7 +17026,7 @@ msgstr "IL"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:298
 msgid "Search for types and members"
-msgstr "Wyszukaj typy i elementy członkowskie"
+msgstr "Wyszukaj typy i składowe"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:301
 msgid "Search for types"
@@ -17038,7 +17034,7 @@ msgstr "Wyszukaj typy"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:304
 msgid "Search for members"
-msgstr "Wyszukaj elementy członkowskie"
+msgstr "Wyszukaj składowe"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:314
 msgid "Visibility"
@@ -17046,7 +17042,7 @@ msgstr "Widoczność"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:668
 msgid "Member"
-msgstr "Element członkowski"
+msgstr "Składowa"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:680
 msgid "Declaring Type"
@@ -17062,7 +17058,7 @@ msgstr "Nadrzędny"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:784
 msgid "Searching member..."
-msgstr "Trwa wyszukiwanie elementu członkowskiego..."
+msgstr "Trwa wyszukiwanie składowej..."
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:787
 msgid "Searching type..."
@@ -17070,7 +17066,7 @@ msgstr "Trwa wyszukiwanie typu..."
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:790
 msgid "Searching types and members..."
-msgstr "Trwa wyszukiwanie typów i elementów członkowskich..."
+msgstr "Trwa wyszukiwanie typów i składowych..."
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:1220
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DocumentationPanel.cs:68
@@ -17750,7 +17746,7 @@ msgstr "Narzędzie do zarządzania drukarkami"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:49
 msgid "A package manager application"
-msgstr "Aplikacja do zarządzania pakietami"
+msgstr "Aplikacja menedżera pakietów"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:50
 msgid "A dial-up program"
@@ -19298,7 +19294,7 @@ msgstr "Definiuje pomocnika"
 
 #: ../src/addins/AspNet/Razor/RazorCompletion.cs:47
 msgid "Defines a region of class members"
-msgstr "Definiuje region elementów członkowskich klasy"
+msgstr "Definiuje region składowych klasy"
 
 #: ../src/addins/AspNet/Razor/RazorCompletion.cs:48
 msgid "Imports a namespace"
@@ -19306,7 +19302,7 @@ msgstr "Importuje przestrzeń nazw"
 
 #: ../src/addins/AspNet/Razor/RazorCompletion.cs:53
 msgid "Defines a base class of the view"
-msgstr "Definiuje klasę podstawową widoku"
+msgstr "Definiuje klasę bazową widoku"
 
 #: ../src/addins/AspNet/Razor/RazorCompletion.cs:54
 msgid "References a strongly-typed model"
@@ -19900,7 +19896,7 @@ msgstr "Razor"
 
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:15
 msgid "Base class"
-msgstr "Klasa podstawowa"
+msgstr "Klasa bazowa"
 
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:34
 msgid "Strongly typed model"
@@ -20516,16 +20512,15 @@ msgstr "Wywołaj funkcję konwersji ciągów na obiektach w oknach zmiennych"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:80
 msgid "Show inherited class members in a base class group"
-msgstr ""
-"Pokaż odziedziczone elementy członkowskie klasy w grupie klasy podstawowej"
+msgstr "Pokaż odziedziczone składowe klasy w grupie klasy bazowej"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:82
 msgid "Group non-public members"
-msgstr "Grupuj niepubliczne elementy członkowskie"
+msgstr "Grupuj niepubliczne składowe"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:84
 msgid "Group static members"
-msgstr "Grupuj statyczne elementy członkowskie"
+msgstr "Grupuj statyczne składowe"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:87
 msgid "Evaluation Timeout:"
@@ -21833,7 +21828,7 @@ msgstr "Konwertuj element „as” na rzutowanie"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ReplaceDirectCastWithSafeCastCodeRefactoringProvider.cs:43
 msgid "Convert cast to 'as'"
-msgstr "Konwertuj emisję na element „as”"
+msgstr "Konwertuj rzutowanie na „as”"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertForeachToForCodeRefactoringProvider.cs:190
 msgid "Convert 'foreach' loop to optimized 'for'"
@@ -21960,8 +21955,7 @@ msgstr "Nie można odnaleźć odwołania „{0}”"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/BaseMethodCallWithDefaultParameterAnalyzer.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/BaseMethodCallWithDefaultParameterAnalyzer.cs:16
 msgid "Call to base member with implicit default parameters"
-msgstr ""
-"Wywołaj podstawowy element członkowski z niejawnymi parametrami domyślnymi"
+msgstr "Wywołaj podstawową składową z niejawnymi parametrami domyślnymi"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/BitwiseOperatorOnEnumWithoutFlagsAnalyzer.cs:15
 msgid "Bitwise operation on enum which has no [Flags] attribute"
@@ -21974,7 +21968,7 @@ msgstr "Wyrażenie „?:” ma identyczne gałęzie true i false"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/DoNotCallOverridableMethodsInConstructorAnalyzer.cs:17
 msgid "Virtual member call in constructor"
-msgstr "Wywołanie wirtualnego elementu członkowskiego w konstruktorze"
+msgstr "Wywołanie wirtualnej składowej w konstruktorze"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/EmptyGeneralCatchClauseAnalyzer.cs:18
 msgid "Empty general catch clause suppresses any error"
@@ -22013,7 +22007,7 @@ msgstr "Parametr „{0}” ukrywa zdarzenie „{1}”"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ParameterHidesMemberAnalyzer.cs:70
 msgid "Parameter '{0}' hides member '{1}'"
-msgstr "Parametr „{0}” ukrywa element członkowski „{1}”"
+msgstr "Parametr „{0}” ukrywa składową „{1}”"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/StaticFieldOrAutoPropertyInGenericTypeAnalyzer.cs:18
 msgid "Static field in generic type"
@@ -22127,7 +22121,7 @@ msgstr "Konwertuj wywołanie metody statycznej na wywołanie metody rozszerzenia
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/AccessToStaticMemberViaDerivedTypeAnalyzer.cs:15
 msgid "Call to static member via a derived class"
-msgstr "Wywołaj statyczny element członkowski za pośrednictwem klasy pochodnej"
+msgstr "Wywołaj statyczną składową za pośrednictwem klasy pochodnej"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/BaseMemberHasParamsAnalyzer.cs:15
 msgid "Base parameter has 'params' modifier, but missing in overrider"
@@ -22278,7 +22272,7 @@ msgstr "Usuń zwrócone wyrażenie"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/InvalidConversionCodeFixProvider.cs:72
 msgid "Cast to '{0}'"
-msgstr "Emituj element „{0}”"
+msgstr "Rzutuj na „{0}”"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/InvalidConversionCodeFixProvider.cs:103
 msgid "Change field type"
@@ -22420,8 +22414,7 @@ msgstr "Usuń nieużywaną etykietę"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/MemberHidesStaticFromOuterClassAnalyzer.cs:16
 msgid "Member hides static member from outer class"
-msgstr ""
-"Element członkowski ukrywa statyczny element członkowski z zewnętrznej klasy"
+msgstr "Składowa ukrywa statyczną składową z zewnętrznej klasy"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LocalVariableHidesMemberAnalyzer.cs:58
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/MemberHidesStaticFromOuterClassAnalyzer.cs:103
@@ -22446,7 +22439,7 @@ msgstr "metoda"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LocalVariableHidesMemberAnalyzer.cs:67
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/MemberHidesStaticFromOuterClassAnalyzer.cs:115
 msgid "member"
-msgstr "element członkowski"
+msgstr "składowa"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/MemberHidesStaticFromOuterClassAnalyzer.cs:17
 msgid "{0} '{1}' hides {2} from outer class"
@@ -22845,8 +22838,7 @@ msgstr "Porównanie liczb zmiennoprzecinkowych za pomocą operatora równości"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/DoNotCallOverridableMethodsInConstructorAnalyzer.cs:16
 msgid ""
 "Warns about calls to virtual member functions occuring in the constructor"
-msgstr ""
-"Ostrzega o wywołaniach wirtualnych funkcji członkowskich w konstruktorze"
+msgstr "Ostrzega o wywołaniach wirtualnych funkcji składowych w konstruktorze"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/EmptyGeneralCatchClauseAnalyzer.cs:17
 msgid "A catch clause that catches System.Exception and has an empty body"
@@ -22874,7 +22866,7 @@ msgstr "Funkcja {0} nigdy nie osiąga końca ani instrukcji „return”"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LocalVariableHidesMemberAnalyzer.cs:15
 msgid "Local variable has the same name as a member and hides it"
-msgstr "Zmienna lokalna ma tę samą nazwę co element członkowski i ukrywa go"
+msgstr "Zmienna lokalna ma tę samą nazwę co składowa i ukrywa go"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LocalVariableHidesMemberAnalyzer.cs:16
 msgid "Local variable '{0}' hides {1} '{2}'"
@@ -22912,7 +22904,7 @@ msgstr "Język C# nie obsługuje opcjonalnych parametrów „ref” i „out”"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ParameterHidesMemberAnalyzer.cs:15
 msgid "Parameter has the same name as a member and hides it"
-msgstr "Parametr ma tę samą nazwę co element członkowski i ukrywa go"
+msgstr "Parametr ma tę samą nazwę co składowa i ukrywa go"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PartialMethodParameterNameMismatchAnalyzer.cs:15
 msgid "Parameter name differs in partial method definition"
@@ -22966,8 +22958,8 @@ msgid ""
 "If all fields, properties and methods members are static, the class can be "
 "made static."
 msgstr ""
-"Jeśli wszystkie pola, właściwości i metody członkowskie są statyczne, to "
-"klasę można zdefiniować jako statyczną."
+"Jeśli wszystkie pola, właściwości i metody składowe są statyczne, to klasę "
+"można zdefiniować jako statyczną."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/InvokeAsExtensionMethodAnalyzer.cs:14
 msgid ""
@@ -23485,7 +23477,7 @@ msgstr "Sprawdź wyrażenie „If {0}.TryGetValue({1}, val)”"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ReplaceDirectCastWithSafeCastCodeRefactoringProvider.cs:42
 msgid "Convert cast to 'TryCast'"
-msgstr "Konwertuj emisję na element „TryCast”"
+msgstr "Konwertuj rzutowanie na „TryCast”"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ReplaceSafeCastWithDirectCastCodeRefactoringProvider.cs:41
 msgid "Convert 'TryCast' to 'DirectCast'"
@@ -24045,11 +24037,11 @@ msgstr "Znajdź symbole podstawowe"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:40
 msgid "Find Member Overloads"
-msgstr "Znajdź przeciążenia elementów członkowskich"
+msgstr "Znajdź przeciążenia składowych"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:44
 msgid "Find Implementing Members"
-msgstr "Znajdź implementujące elementy członkowskie"
+msgstr "Znajdź implementujące składowe"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:73
 msgid "Remove Unused and Sort (Usings)"
@@ -24983,7 +24975,7 @@ msgstr "Wyczyść: "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:327
 msgid "(System Default)"
-msgstr "(Ustawienie domyślne systemu)"
+msgstr "(Ustawienia domyślne systemu)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs:83
 msgid "New extension updates are available:"
@@ -25018,7 +25010,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:144
 msgid ".NET Standard Platform:"
-msgstr "Platforma standardu .NET:"
+msgstr "Platforma .NET Standard:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:148
 msgid ""
@@ -25026,7 +25018,7 @@ msgid ""
 "selected <a href='{0}'>.NET Standard</a> version."
 msgstr ""
 "Twoja biblioteka będzie zgodna ze wszystkimi strukturami, które obsługują "
-"wybraną wersję <a href='{0}'>standardu .NET</a>."
+"wybraną wersję <a href='{0}'>.NET Standard</a>."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:154
 msgid ".NET Portable:"
@@ -25770,7 +25762,7 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.UnitTesting/DotNetCoreProjectTestSuite.cs:233
 msgid "Unable to run tests. Test discovery failed."
-msgstr "Nie można uruchomić testów. Błąd odnajdowania testu."
+msgstr "Nie można uruchomić testów. Błąd odnajdywania testów."
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.UnitTesting/DotNetCoreProjectTestSuite.cs:241
 msgid "Unable to run tests. Assembly not found '{0}'"
@@ -25891,7 +25883,7 @@ msgstr "Tworzy nowy projekt konsoli .NET Core."
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:162
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:174
 msgid ".NET Standard Library"
-msgstr "Biblioteka standardu .NET"
+msgstr "Biblioteka .NET Standard"
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:84
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:95
@@ -25902,7 +25894,7 @@ msgstr "Biblioteka standardu .NET"
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:163
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:175
 msgid "Creates a new .NET Standard class library project."
-msgstr "Tworzy nowy projekt standardowej biblioteki klas .NET."
+msgstr "Tworzy nowy projekt biblioteki klas .NET Standard."
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:242
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:252
@@ -26892,11 +26884,11 @@ msgstr "Edytuj bieżący plik"
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestPad.cs:102
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:233
 msgid "Start a test run and run all the tests"
-msgstr "Rozpocznij uruchomienie testu i uruchom wszystkie testy"
+msgstr "Rozpocznij przebieg testu i uruchom wszystkie testy"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestPad.cs:114
 msgid "Stops the current test run"
-msgstr "Zatrzymuje bieżące uruchomienie testu"
+msgstr "Zatrzymuje bieżący przebieg testu"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:176
 msgid "Show the results for the successful tests"
@@ -26920,7 +26912,7 @@ msgstr "Pokaż dane wyjściowe testu"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:242
 msgid "Stop the current test run"
-msgstr "Zatrzymaj bieżące uruchomienie testu"
+msgstr "Zatrzymaj bieżący przebieg testu"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/AnalyzeWholeSolutionHandler.cs:169
 msgid "Analysis successful."
@@ -27708,18 +27700,15 @@ msgstr ""
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:120
 msgid "Check to show inherited class members in a base class group"
 msgstr ""
-"Zaznacz, aby wyświetlać odziedziczone elementy członkowskie klasy w grupie "
-"klasy podstawowej"
+"Zaznacz, aby wyświetlać odziedziczone składowe klasy w grupie klasy bazowej"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:122
 msgid "Check to group non-public members in the Variables windows"
-msgstr ""
-"Zaznacz, aby grupować niepubliczne elementy członkowskie w oknach zmiennych"
+msgstr "Zaznacz, aby grupować niepubliczne składowe w oknach zmiennych"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:124
 msgid "Check to group static members in the Variables windows"
-msgstr ""
-"Zaznacz, aby grupować statyczne elementy członkowskie w oknach zmiennych"
+msgstr "Zaznacz, aby grupować statyczne składowe w oknach zmiennych"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:126
 msgid "Set the length of time the evaluation will wait before giving up"

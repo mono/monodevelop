@@ -10128,7 +10128,7 @@ msgstr "Отслеживать в локальной ветви"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs:307
 msgid "Fetch"
-msgstr "Извлечь"
+msgstr "Получить"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs:327
 msgid "Remote Sources"
@@ -10285,8 +10285,7 @@ msgstr "Преобразовать в ветвь"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitCommitDialogExtensionWidget.cs:41
 msgid "Pushing is only available for repositories with configured remotes."
 msgstr ""
-"Принудительная отправка доступна только для репозиториев с настроенными "
-"удаленными ветвями."
+"Отправка доступна только для репозиториев с настроенными удаленными ветвями."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitCommitDialogExtensionWidget.cs:31
 msgid "Push changes to remote repository after commit"
@@ -24943,7 +24942,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:144
 msgid ".NET Standard Platform:"
-msgstr "Стандартная платформа .NET:"
+msgstr "Платформа .NET Standard:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:148
 msgid ""
@@ -25211,7 +25210,7 @@ msgstr "Повторить проверку подлинности?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:49
 msgid "There are no changes to push."
-msgstr "Нет изменений для передачи."
+msgstr "Нет изменений для отправки."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:50
 msgid "Create an initial commit first."
@@ -25810,7 +25809,7 @@ msgstr "Создает новый проект консоли .NET Core."
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:162
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:174
 msgid ".NET Standard Library"
-msgstr "Стандартная библиотека .NET"
+msgstr "Библиотека .NET Standard"
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:84
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:95
@@ -25821,7 +25820,7 @@ msgstr "Стандартная библиотека .NET"
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:163
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:175
 msgid "Creates a new .NET Standard class library project."
-msgstr "Создает новый проект стандартной библиотеки классов .NET."
+msgstr "Создает новый проект библиотеки классов .NET Standard."
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:242
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:252

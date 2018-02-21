@@ -984,8 +984,8 @@ msgstr[1] "{0} Fehler"
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:239
 msgid "{0} warning"
 msgid_plural "{0} warnings"
-msgstr[0] "{0} Warnungen"
-msgstr[1] "{0} Warnungen"
+msgstr[0] "{0} Warnung(en)"
+msgstr[1] "{0} Warnung(en)"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:248
 msgid "Invalid file path"
@@ -1320,9 +1320,9 @@ msgid ""
 "version of Visual Studio does not support the framework that the project is "
 "targetting ({2})"
 msgstr ""
-"Das Projekt '{0}' wird unter Verwendung des Dateiformats '{1}' gespeichert. "
-"Das Framework für dieses Projekt wird von dieser Visual Studio-Version "
-"jedoch nicht unterstützt ({2})."
+"Das Projekt \"{0}\" wird unter Verwendung des Dateiformats \"{1}\" "
+"gespeichert. Das Framework für dieses Projekt wird von dieser Visual "
+"Studio-Version jedoch nicht unterstützt ({2})."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:79
 msgid "Saving solution: {0}"
@@ -3081,7 +3081,7 @@ msgstr "Struktur aktualisieren"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:588
 msgid "Collapse All Nodes"
-msgstr "Alle Knoten reduzieren"
+msgstr "Alle Knoten zuklappen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:591
 msgid "List of programs to open with"
@@ -5087,14 +5087,14 @@ msgstr[1] "{0} Fehler"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:959
 msgid "{0} Warning"
 msgid_plural "{0} Warnings"
-msgstr[0] "{0} Warnungen"
-msgstr[1] "{0} Warnungen"
+msgstr[0] "{0} Warnung(en)"
+msgstr[1] "{0} Warnung(en)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:965
 msgid "{0} Message"
 msgid_plural "{0} Messages"
-msgstr[0] "{0} Meldungen"
-msgstr[1] "{0} Meldungen"
+msgstr[0] "{0} Meldung(en)"
+msgstr[1] "{0} Meldung(en)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:433
 msgid "Copy comment task"
@@ -6390,7 +6390,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:559
 msgid "Selects  the  Garbage Collector engine for Mono to use."
-msgstr "Wählt das für Mono zu verwendende Garbage Collector-Modul aus."
+msgstr "Wählt die für Mono zu verwendende Garbage Collector-Engine aus."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:566
 msgid ""
@@ -6401,7 +6401,7 @@ msgid ""
 msgstr ""
 "Wenn die Mono-Laufzeit mit LLVM-Unterstützung kompiliert wurde (nicht in "
 "allen Konfigurationen verfügbar), ermöglicht diese Option die Verwendung der "
-"LLVM-Optimierung und des Codegenerierungsmoduls für JIT- oder "
+"LLVM-Optimierung und der Codegenerierungs-Engine für JIT- oder "
 "AOT-Kompilierungen. Weitere Informationen finden Sie unter: "
 "http://www.mono-project.com/Mono_LLVM"
 
@@ -6411,7 +6411,7 @@ msgid ""
 "to fallback to its JIT engine and not use the LLVM backend"
 msgstr ""
 "Wenn Mono mit LLVM-Unterstützung kompiliert wurde, wird erzwungen, dass Mono "
-"auf das zugehörige JIT-Modul zurückgreift, anstatt das LLVM-Back-End zu "
+"auf die zugehörige JIT-Engine zurückgreift, anstatt das LLVM-Back-End zu "
 "verwenden."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:584
@@ -8656,11 +8656,12 @@ msgstr "In Projektmappe suchen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CombineMSBuildOptions.cs:55
 msgid "Use MSBuild build engine (recommended for this project type)"
-msgstr "MSBuild-Buildmodul verwenden (für diesen Projekttyp empfohlen)"
+msgstr "MSBuild-Build-Engine verwenden (für diesen Projekttyp empfohlen)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CombineMSBuildOptions.cs:56
 msgid "Use MSBuild build engine (unsupported for this project type)"
-msgstr "MSBuild-Buildmodul verwenden (für diesen Projekttyp nicht unterstützt)"
+msgstr ""
+"MSBuild-Build-Engine verwenden (für diesen Projekttyp nicht unterstützt)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:998
 msgid "Insert Field"
@@ -9041,7 +9042,7 @@ msgstr "Alle erweitern"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:343
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.TimeLineViewWindow.cs:54
 msgid "Collapse All"
-msgstr "Alle reduzieren"
+msgstr "Alle zuklappen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:353
 msgid "Select None"
@@ -17867,7 +17868,7 @@ msgstr "Ein Tool zur Druckerverwaltung"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:49
 msgid "A package manager application"
-msgstr "Eine Paketverwaltungsanwendung"
+msgstr "Eine Paket-Manager-Anwendung"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:50
 msgid "A dial-up program"
@@ -19764,7 +19765,7 @@ msgstr "_Name"
 
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:126
 msgid "_View Engine:"
-msgstr "_Ansichtsmodul:"
+msgstr "_Ansichts-Engine:"
 
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:154
 msgid "_Partial view"
@@ -23553,7 +23554,7 @@ msgstr "In 'nameof({0})'"
 #: ../external/RefactoringEssentials/RefactoringEssentials/Samples/CSharp/SampleAnalyzer.cs:35
 #: ../external/RefactoringEssentials/RefactoringEssentials/Samples/CSharp/SampleAnalyzer.cs:36
 msgid "Sample analyzer: Class name should not have a 'C' prefix."
-msgstr "Beispielanalyse: Der Klassenname darf kein Präfix 'C' aufweisen."
+msgstr "Beispielanalysetool: Der Klassenname darf kein Präfix 'C' aufweisen."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/Samples/CSharp/SampleCodeRefactoringProvider.cs:77
 msgid "Sample: Prepend with 'I'"
@@ -25904,7 +25905,7 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.UnitTesting/DotNetCoreProjectTestSuite.cs:233
 msgid "Unable to run tests. Test discovery failed."
-msgstr "Tests konnten nicht ausgeführt werden. Fehler bei der Testerkennung."
+msgstr "Tests konnten nicht ausgeführt werden. Fehler bei der Testermittlung."
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.UnitTesting/DotNetCoreProjectTestSuite.cs:241
 msgid "Unable to run tests. Assembly not found '{0}'"
@@ -25975,7 +25976,7 @@ msgstr "App-URL:"
 
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:100
 msgid "Where your app should listen for connections"
-msgstr "Wo Ihre App auf Verbindungen lauschen soll"
+msgstr "Gibt an, wo Ihre App auf Verbindungen lauschen soll."
 
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:103
 msgid "Open URL in web browser when app starts:"
@@ -26026,7 +26027,7 @@ msgstr "Erstellt ein neues .NET Core-Konsolenprojekt."
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:162
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:174
 msgid ".NET Standard Library"
-msgstr ".NET-Standardbibliothek"
+msgstr ".NET Standard-Bibliothek"
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:84
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:95
@@ -26037,7 +26038,7 @@ msgstr ".NET-Standardbibliothek"
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:163
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:175
 msgid "Creates a new .NET Standard class library project."
-msgstr "Erstellt ein neues .NET-Standard-Klassenbibliotheksprojekt."
+msgstr "Erstellt ein neues .NET Standard-Klassenbibliotheksprojekt."
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:242
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:252
@@ -26926,7 +26927,7 @@ msgstr "Dateinamen für die erstellte XML-Dokumentation eingeben"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CodeGenerationPanel.cs:73
 msgid "Select the level of debugging information to be generated"
-msgstr "Ebene der zu erstellenden Debuginformationen auswählen"
+msgstr "Ebene der zu generierenden Debuginformationen auswählen"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CodeGenerationPanel.cs:76
 msgid "Enter the symbols the compiler should define"
@@ -26975,7 +26976,7 @@ msgstr "Compiler-Codepage auswählen"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:139
 msgid "Whether or not to include a reference to mscorlib.dll"
-msgstr "Ob ein Verweis auf \"mscorlib.dll\" einbezogen werden soll"
+msgstr "Gibt an, ob ein Verweis auf \"mscorlib.dll\" einbezogen werden soll"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:142
 msgid "Select the version of C# to use"
@@ -27782,7 +27783,7 @@ msgstr "Auswählen, wie Zeilenendekonvertierungen behandelt werden"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:55
 msgid "Check to enable line folding"
-msgstr "Diese Option aktivieren, um die Zeilenfaltung zu aktivieren"
+msgstr "Diese Option aktivieren, um den Zeilenumbruch zu aktivieren"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:57
 msgid "Check to fold regions by default"
