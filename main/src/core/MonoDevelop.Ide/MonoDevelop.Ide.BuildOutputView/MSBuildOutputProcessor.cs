@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				foreach (DictionaryEntry x in e.Properties) {
 					var key = (string)x.Key;
 					if (key == "SolutionFilename") {
-						solFileName = (string)x.Value;
+						this.CurrentNode.Message = (string)x.Value;
 						continue;
 					} else if (key == "Configuration") {
 						config = (string)x.Value;
@@ -145,12 +145,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 						platform = (string)x.Value;
 						continue;
 					}
-
-					if (!string.IsNullOrEmpty (solFileName) && !string.IsNullOrEmpty (config) && !string.IsNullOrEmpty (platform))
-						break;
 				}
-
-				this.CurrentNode.Message = solFileName;
 			}
 			
 			AddNode (BuildOutputNodeType.Project,

@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xwt;
 using MonoDevelop.Core;
@@ -34,6 +35,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	enum BuildOutputNodeType
 	{
+		Unknown,
 		Build,
 		Project,
 		Target,
@@ -120,6 +122,70 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public bool HasChildren => Children != null && Children.Count > 0;
 	}
 
+	class AggregatedBuildOutputNode : BuildOutputNode
+	{
+		List<BuildOutputNode> nodes = new List<BuildOutputNode> ();
+
+		public AggregatedBuildOutputNode (BuildOutputNode node)
+		{
+			AddNode (node);
+		}
+
+		public void AddNode (BuildOutputNode node)
+		{
+			if (nodes.Count > 0 && (node.NodeType != NodeType || node.Message != Message)) {
+				return;
+			}
+
+			nodes.Add (node);
+			if (node.HasChildren) {
+				foreach (var child in node.Children) {
+					AddChild (child);
+				}
+			}
+		}
+
+		public override BuildOutputNodeType NodeType {
+			get => nodes.First ()?.NodeType ?? BuildOutputNodeType.Unknown;
+			set => throw new NotImplementedException ();
+		}
+
+		public override string Message {
+			get => nodes.First ()?.Message;
+			set => throw new NotImplementedException ();
+		}
+
+		public override string FullMessage {
+			get => nodes.First ()?.FullMessage;
+			set => throw new NotImplementedException ();
+		}
+
+		public override DateTime StartTime {
+			get => nodes.MinValue (x => x.StartTime)?.StartTime ?? DateTime.Now;
+			set => throw new NotImplementedException ();
+		}
+
+		public override DateTime EndTime {
+			get => nodes.MaxValue (x => x.EndTime)?.EndTime ?? DateTime.Now;
+			set => throw new NotImplementedException ();
+		}
+
+		public override bool HasErrors {
+			get => nodes.Any (x => x.HasErrors);
+			set => throw new NotImplementedException ();
+		}
+
+		public override bool HasWarnings {
+			get => nodes.Any (x => x.HasWarnings);
+			set => throw new NotImplementedException ();
+		}
+
+		public override bool HasData {
+			get => nodes.Any (x => x.HasData);
+			set => throw new NotImplementedException ();
+		}
+	}
+	
 	class FilteredBuildOutputNode : BuildOutputNode
 	{
 		BuildOutputNode masterNode;
