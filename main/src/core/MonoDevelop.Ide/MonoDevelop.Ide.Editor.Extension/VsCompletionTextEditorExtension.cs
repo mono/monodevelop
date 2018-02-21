@@ -1,4 +1,4 @@
-﻿//
+//
 // VsCompletionTextEditorExtension.cs
 //
 // Author:
@@ -54,25 +54,25 @@ namespace MonoDevelop.Ide.Editor.Extension
 			view = Editor.TextView;
 		}
 
-		private IEnumerable<Lazy<IAsyncCompletionItemSource, IOrderableContentTypeMetadata>> completionItemSources;
+		private IEnumerable<Lazy<IAsyncCompletionItemSourceProvider, IOrderableContentTypeMetadata>> completionItemSourceProviders;
 
-		private ImmutableDictionary<IContentType, bool> _cachedCompletionItemSources = ImmutableDictionary<IContentType, bool>.Empty;
+		private ImmutableDictionary<IContentType, bool> _cachedCompletionItemSourceProviders = ImmutableDictionary<IContentType, bool>.Empty;
 
-		private bool AnyCompletionItemSources (IContentType contentType)
+		private bool AnyCompletionItemSourceProviders (IContentType contentType)
 		{
-			if (_cachedCompletionItemSources.TryGetValue (contentType, out var cachedSources)) {
+			if (_cachedCompletionItemSourceProviders.TryGetValue (contentType, out var cachedSources)) {
 				return cachedSources;
 			}
-			if (completionItemSources == null)
-				completionItemSources = CompositionManager.Instance.ExportProvider.GetExports<IAsyncCompletionItemSource, IOrderableContentTypeMetadata> ();
+			if (completionItemSourceProviders == null)
+				completionItemSourceProviders = CompositionManager.Instance.ExportProvider.GetExports<IAsyncCompletionItemSourceProvider, IOrderableContentTypeMetadata> ();
 			bool result = false;
-			foreach (var item in completionItemSources) {
+			foreach (var item in completionItemSourceProviders) {
 				if (item.Metadata.ContentTypes.Any (n => contentType.IsOfType (n))) {
 					result = true;
 					break;
 				}
 			}
-			_cachedCompletionItemSources = _cachedCompletionItemSources.Add (contentType, result);
+			_cachedCompletionItemSourceProviders = _cachedCompletionItemSourceProviders.Add (contentType, result);
 			return result;
 		}
 
@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			} else if (textView.TextBuffer is IProjectionBuffer) {
 				isValidInContext = true;
 			} else {
-				isValidInContext = AnyCompletionItemSources (textView.TextDataModel.DocumentBuffer.ContentType);
+				isValidInContext = AnyCompletionItemSourceProviders (textView.TextDataModel.DocumentBuffer.ContentType);
 			}
 
 			return isValidInContext;
@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			IEnumerable<IContentType> contentTypes = GetContentTypesAtCaret ();
 
-			if (contentTypes.All (ct => !AnyCompletionItemSources (ct))) {
+			if (contentTypes.All (ct => !AnyCompletionItemSourceProviders (ct))) {
 				// No content type at the caret provides a completion item source
 				return true;
 			}
@@ -248,8 +248,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var ch = edit[0];
 
 			var session = host.GetSession (view);
-			var needToCommit = session.ShouldCommit (view, ch, view.Caret.Position.BufferPosition);
-			if (needToCommit) {
+
+			if (session != null && session.ShouldCommit (view, ch, view.Caret.Position.BufferPosition)) {
 				session.Commit (CancellationToken.None, ch);
 				return false;
 			} else {
@@ -259,7 +259,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 				var trigger = new CompletionTrigger (CompletionTriggerReason.Insertion, ch);
 				var location = view.Caret.Position.BufferPosition;
-				if (host.IsCompletionActive (view)) {
+				if (session != null) {
 					session.OpenOrUpdate (view, trigger, location);
 					return false;
 				} else {
@@ -268,7 +268,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 						host.TriggerCompletion (view, location);
 						session.OpenOrUpdate (view, trigger, location);
 						return false;
-					} else {
+					}
+					else {
 						return true;
 					}
 				}
