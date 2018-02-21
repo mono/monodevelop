@@ -1,10 +1,10 @@
-//
-// ErrorText.cs
+﻿//
+// CSharpLanguageVersionTests.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2018 
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,40 +23,26 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Linq;
-using Mono.TextEditor;
-using MonoDevelop.Debugger;
-using MonoDevelop.Ide.Tasks;
-using System.Collections.Generic;
-using MonoDevelop.Ide;
-using System.Text.RegularExpressions;
-using Mono.TextEditor.Highlighting;
-using MonoDevelop.Ide.Fonts;
-using MonoDevelop.Components;
+using Microsoft.CodeAnalysis.CSharp;
+using NUnit.Framework;
 
-namespace MonoDevelop.SourceEditor
+namespace MonoDevelop.CSharp.Project
 {
-	class ErrorText
+	[TestFixture]
+	public class CSharpLanguageVersionHelperTests
 	{
-		public TaskListEntry Task { get; set; }
-		public bool IsError { get; set; }
-		public string ErrorMessage { get; set; }
-		public string FullErrorMessage { get; set; }
-
-		public ErrorText (TaskListEntry task, bool isError, string errorMessage, string fullErrorMessage)
+		[Test]
+		public void AssertWeHaveAllLanguagesInUI ()
 		{
-			this.Task = task;
-			this.IsError = isError;
-			this.ErrorMessage = errorMessage;
-			this.FullErrorMessage = fullErrorMessage;
-		}
+			var known = CSharpLanguageVersionHelper.GetKnownLanguageVersions().ToDictionary(x => x.version, x => x.localized);
+			var roslyn = Enum.GetValues (typeof (LanguageVersion)).Cast<LanguageVersion> ().ToArray ();
 
-		public override string ToString ()
-		{
-			return string.Format ("[ErrorText: IsError={0}, ErrorMessage={1}]", IsError, ErrorMessage);
+			var toAdd = roslyn.Where (x => !known.ContainsKey (x)).ToArray ();
+
+			Assert.AreEqual (0, toAdd.Length, "Roslyn added new C# language versions: '{0}', add to CSharpLanguageVersionHelper.GetKnownLanguageVersions",
+							 string.Join (", ", toAdd));
 		}
 	}
-	
 }
