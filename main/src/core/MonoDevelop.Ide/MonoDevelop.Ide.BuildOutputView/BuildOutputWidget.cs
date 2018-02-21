@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		CheckBox showDiagnosticsButton;
 		Button saveButton;
 		SearchEntry searchEntry;
-		Gtk.VBox box;
+		Gtk.HBox box;
 		DocumentToolbar toolbar;
 		PathBar pathBar;
 		Button buttonSearchBackward;
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			UpdatePathBarEntries (entries);
 			pathBar.Show ();
 
-			box.PackStart (pathBar, true, true, 10);
+			box.PackStart (pathBar, true, true, 0);
 			box.ReorderChild (pathBar, 0);
 			box.Show ();
 		}
@@ -159,9 +159,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
 			buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
 
-			toolbar = new DocumentToolbar ();
+			toolbar = new DocumentToolbar (0, 1, 0, 10);
 
-			box = new Gtk.VBox ();
+			box = new Gtk.HBox ();
 			box.Spacing = 0;
 			toolbar.Add (box, true);
 
@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			toolbar.Add (showDiagnosticsButton.ToGtkWidget ());
 			toolbar.Add (saveButton.ToGtkWidget ());
 			toolbar.AddSpace ();
-			toolbar.Add (searchEntry, false);
+			toolbar.Add (searchEntry);
 			toolbar.Add (buttonSearchBackward.ToGtkWidget ());
 			toolbar.Add (buttonSearchForward.ToGtkWidget ());
 
@@ -484,7 +484,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			var tag = path [index].Tag as BuildOutputNode;
 			var window = new DropDownBoxListWindow (new DropDownWindowDataProvider (this,  tag));
-			window.FixedRowHeight = 22;
 			window.MaxVisibleRows = 14;
 			if (path [index].Tag != null)
 				window.SelectItem (path [index].Tag);

@@ -37,15 +37,16 @@ namespace MonoDevelop.Ide.Gui
 		Box box;
 		bool empty = true;
 
-		internal DocumentToolbar ()
+		internal DocumentToolbar (uint topPadding = 4, uint bottomPadding = 4, uint leftPadding = 5, uint rightPadding = 0)
 		{
 			box = new HBox ();
 			box.Spacing = 3;
 			box.Show ();
 			var al = new ToolbarBox (0, 0, 1, 1);
-			al.LeftPadding = 5;
-			al.TopPadding = 4;
-			al.BottomPadding = 4;
+			al.LeftPadding = leftPadding;
+			al.TopPadding = topPadding;
+			al.BottomPadding = bottomPadding;
+			al.RightPadding = rightPadding;
 			al.Add (box);
 			frame = al;
 		}
