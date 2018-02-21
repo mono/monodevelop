@@ -98,23 +98,20 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Size fontRequiredSize;
 
 		int imageSide;
-		const int imagePadding = 2;
-		int imageX => imageSide + imagePadding + 5;
+		const int imageLeftPadding = 2;
+		int imageX => imageSide + imageLeftPadding + 5;
 
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
 		{
 			FillCellBackground (ctx);
 			UpdateTextColor (ctx);
 
-			imageSide = (int)cellArea.Height - (2 * imagePadding);
-
-			//if (Selected)
-			//image = image.WithStyles ("sel");
+			imageSide = (int) cellArea.Height;
 
 			ctx.DrawImage (
-				buildOutputNode.GetImage (),
-				cellArea.Left + imagePadding,
-				cellArea.Top + imagePadding,
+				buildOutputNode.GetImage ().WithSize (imageSide),
+				cellArea.Left + imageLeftPadding,
+				cellArea.Top,
 				imageSide,
 				imageSide);
 
