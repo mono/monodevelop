@@ -161,11 +161,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			foreach (var root in GetProjectRootNodes ()) {
 				//let's check if root exists according to solution level comparer
-				if (nodes.Contains (root, comparer)) {
-					var solutionNode = nodes.Find (node => comparer.Equals (node, root));
+				var solutionNode = nodes.Find (node => comparer.Equals (node, root));
+				if (solutionNode != null) {
 					//now we add its children to existent one since are in the same solution
 					foreach (var child in root.Children)
-						solutionNode.AddChild (child);
+						solutionNode.AddChild (new FilteredBuildOutputNode (child, includeDiagnostics));
 				} else {
 					nodes.Add (new FilteredBuildOutputNode (root, includeDiagnostics));
 				}
