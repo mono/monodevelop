@@ -8,7 +8,7 @@ EXTRAS=$(top_srcdir)/../extras
 ARTIFACTS=$(top_srcdir)/../../artifacts
 MD_CONFIGURE=$(top_srcdir)/../scripts/configure.sh
 EXTERNAL=../../external
-MONOSTUB_DEFINES=-DXM_REGISTRAR -DXM_SYSTEM -DDYNAMIC_MONO_RUNTIME
+MONOSTUB_DEFINES=-DXM_REGISTRAR -DXM_SYSTEM -DDYNAMIC_MONO_RUNTIME -DLOCAL_LAUNCHER
 MONOSTUB_STATIC_LINK=$(EXTERNAL)/Xamarin.Mac.registrar.full.a $(EXTERNAL)/libxammac-system.a
 EXTERN_C_XM_REGISTRAR_DEFINE=$(shell ./check-xm-extern.sh)
 
@@ -42,8 +42,6 @@ monostub:  monostub.o System_Native.o $(MONOSTUB_STATIC_LINK)
 #	gcc -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.m -framework AppKit -isysroot $(SDK_PATH)
 	cp monostub ../bin/MonoDevelop
 	cp monostub ../bin/mdtool
-	mkdir -p ../bin/Contents
-	ln -sfh .. "../bin/Contents/MonoBundle"
 
 monostub-test: monostub-test.m $(MONOSTUB_EXTRA_SOURCES)
 	gcc -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub-test.m -framework AppKit

@@ -1,5 +1,6 @@
 //gcc -m32 monostub.m -o monostub -framework AppKit
 
+#include <mach-o/dyld.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -11,6 +12,8 @@
 #include <errno.h>
 #include <ctype.h>
 #include <time.h>
+#include <limits.h>
+#include <libgen.h>
 
 #if XM_SYSTEM
 #include <main.h>
@@ -314,6 +317,28 @@ void xamarin_app_initialize(xamarin_initialize_data *data)
 
     if (data->requires_relaunch)
         return;
+
+	char exe[PATH_MAX + 1];
+	const char *relative_bin_dir;
+	char *bin_dir;
+	uint bufsize = sizeof(exe);
+
+	_NSGetExecutablePath(exe, &bufsize);
+	bin_dir = dirname(exe);
+
+#ifdef LOCAL_LAUNCHER
+	relative_bin_dir = ".";
+#else
+	relative_bin_dir = "../Resources/lib/monodevelop/bin";
+#endif
+	strcat(bin_dir, "/");
+	strcat(bin_dir, relative_bin_dir);
+
+	bin_dir = realpath(bin_dir, NULL);
+
+    xamarin_set_bundle_path (bin_dir);
+
+	free(bin_dir);
 
     correct_locale();
 }
