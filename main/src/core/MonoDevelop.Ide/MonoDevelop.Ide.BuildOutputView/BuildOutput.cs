@@ -148,11 +148,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		IEnumerable<BuildOutputNode> GetProjectRootNodes ()
 		{
+			Dictionary<string, AggregatedBuildOutputNode> result = new Dictionary<string, AggregatedBuildOutputNode> ();
 			foreach (var proj in projects) {
 				foreach (var node in proj.RootNodes) {
-					yield return node;
+					AggregatedBuildOutputNode aggregated = null;
+					if (result.TryGetValue (node.Message, out aggregated)) {
+						aggregated.AddNode (node);
+					} else {
+						result [node.Message] = new AggregatedBuildOutputNode (node);
+					}
 				}
 			}
+
+			return result.Values;
 		}
 
 		public void ProcessProjects () 
