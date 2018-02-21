@@ -94,16 +94,9 @@ namespace MonoDevelop.CSharp.Project
 			noStdLibCheckButton.Active = compilerParameters.NoStdLib;
 
 			var langVerStore = new ListStore (typeof (string), typeof(LanguageVersion));
-			langVerStore.AppendValues (GettextCatalog.GetString ("Default"), LanguageVersion.Default);
-			langVerStore.AppendValues ("ISO-1", LanguageVersion.CSharp1);
-			langVerStore.AppendValues ("ISO-2", LanguageVersion.CSharp2);
-			langVerStore.AppendValues (GettextCatalog.GetString ("Version 3"), LanguageVersion.CSharp3);
-			langVerStore.AppendValues (GettextCatalog.GetString ("Version 4"), LanguageVersion.CSharp4);
-			langVerStore.AppendValues (GettextCatalog.GetString ("Version 5"), LanguageVersion.CSharp5);
-			langVerStore.AppendValues (GettextCatalog.GetString ("Version 6"), LanguageVersion.CSharp6);
-			langVerStore.AppendValues (GettextCatalog.GetString ("Version 7"), LanguageVersion.CSharp7);
-			langVerStore.AppendValues (GettextCatalog.GetString ("Version 7.1"), LanguageVersion.CSharp7_1);
-			langVerStore.AppendValues (GettextCatalog.GetString ("Latest"), LanguageVersion.Latest);
+			foreach (var (text, version) in CSharpLanguageVersionHelper.GetKnownLanguageVersions ()) {
+				langVerStore.AppendValues (text, version);
+			}
 			langVerCombo.Model = langVerStore;
 
 			TreeIter iter;

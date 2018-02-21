@@ -79,6 +79,9 @@ namespace MonoDevelop.UnitTesting.NUnit
 
 		public static NUnitProjectTestSuite CreateTest (DotNetProject project)
 		{
+			if (project.TargetFramework.Id.Identifier == ".NETCoreApp")
+				return null;
+
 			if (!project.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration).BuildEnabledForItem (project))
 				return null;
 

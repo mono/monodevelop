@@ -1177,6 +1177,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			//however, our MetadataReferenceCache currently depends on (incorrectly) using TryApplyChanges
 			case ApplyChangesKind.AddMetadataReference:
 			case ApplyChangesKind.RemoveMetadataReference:
+			case ApplyChangesKind.AddProjectReference:
+			case ApplyChangesKind.RemoveProjectReference:
 				return true;
 			default:
 				return false;
@@ -1288,6 +1290,68 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return path;
 		}
+
+		protected override void ApplyMetadataReferenceAdded (ProjectId projectId, MetadataReference metadataReference)
+		{
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var path = GetMetadataPath (metadataReference);
+			if (mdProject == null || path == null)
+				return;
+			mdProject.AddReference (path);
+			tryApplyState_changedProjects.Add (mdProject);
+			this.OnMetadataReferenceAdded (projectId, metadataReference);
+		}
+
+		protected override void ApplyMetadataReferenceRemoved (ProjectId projectId, MetadataReference metadataReference)
+		{
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var path = GetMetadataPath (metadataReference);
+			if (mdProject == null || path == null)
+				return;
+			var item = mdProject.References.FirstOrDefault (r => r.ReferenceType == MonoDevelop.Projects.ReferenceType.Assembly && r.Reference == path);
+			if (item == null)
+				return;
+			mdProject.References.Remove (item);
+			tryApplyState_changedProjects.Add (mdProject);
+			this.OnMetadataReferenceRemoved (projectId, metadataReference);
+		}
+
+		string GetMetadataPath (MetadataReference metadataReference)
+		{
+			if (metadataReference is PortableExecutableReference fileMetadata) {
+				return fileMetadata.FilePath;
+			}
+			return null;
+		}
+
+		protected override void ApplyProjectReferenceAdded (ProjectId projectId, ProjectReference projectReference)
+		{
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var projectToReference = GetMonoProject (projectReference.ProjectId);
+			if (mdProject == null || projectToReference == null)
+				return;
+			var mdRef = MonoDevelop.Projects.ProjectReference.CreateProjectReference (projectToReference);
+			mdProject.References.Add (mdRef);
+			tryApplyState_changedProjects.Add (mdProject);
+			this.OnProjectReferenceAdded (projectId, projectReference);
+		}
+
+		protected override void ApplyProjectReferenceRemoved (ProjectId projectId, ProjectReference projectReference)
+		{
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var projectToReference = GetMonoProject (projectReference.ProjectId);
+			if (mdProject == null || projectToReference == null)
+				return;
+			foreach (var pr in mdProject.References.OfType<MonoDevelop.Projects.ProjectReference>()) {
+				if (pr.ProjectGuid == projectToReference.ItemId) {
+					mdProject.References.Remove (pr);
+					tryApplyState_changedProjects.Add (mdProject);
+					this.OnProjectReferenceRemoved (projectId, projectReference);
+					break;
+				}
+			}
+		}
+
 		#endregion
 
 		internal Document GetDocument (DocumentId documentId, CancellationToken cancellationToken = default (CancellationToken))

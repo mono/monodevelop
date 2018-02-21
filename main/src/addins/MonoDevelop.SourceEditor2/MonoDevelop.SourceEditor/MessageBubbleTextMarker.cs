@@ -182,9 +182,10 @@ namespace MonoDevelop.SourceEditor
 				this.task = task;
 			}
 			var match = mcsErrorFormat.Match (errorMessage);
+			string trimmedMessage = errorMessage;
 			if (match.Success)
-				errorMessage = match.Groups [1].Value;
-			errors.Add (new ErrorText (task, isError, errorMessage));
+				trimmedMessage = match.Groups [1].Value;
+			errors.Add (new ErrorText (task, isError, trimmedMessage, errorMessage));
 			DisposeLayout ();
 		}
 

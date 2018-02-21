@@ -275,7 +275,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			var description = await Task.Run (() => completionService.GetDescriptionAsync (doc, CompletionItem)).ConfigureAwait (false);
 			var markup = new StringBuilder ();
-			var theme = DefaultSourceEditorOptions.Instance.GetEditorTheme ();
+			var theme = SyntaxHighlightingService.GetIdeFittingTheme (DefaultSourceEditorOptions.Instance.GetEditorTheme ());
 			var taggedParts = description.TaggedParts;
 			int i = 0;
 			while (i < taggedParts.Length) {

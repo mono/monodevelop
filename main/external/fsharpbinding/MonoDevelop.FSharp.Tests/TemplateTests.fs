@@ -101,7 +101,7 @@ type ``Template tests``() =
             cinfo.Parameters.["UseIPhone"] <- "False"
             cinfo.Parameters.["CreateiOSUITest"] <- "False"
             cinfo.Parameters.["CreateAndroidUITest"] <- "False"
-            cinfo.Parameters.["MinimumOSVersion"] <- "10.2"
+            cinfo.Parameters.["MinimumOSVersion"] <- "10.7"
             cinfo.Parameters.["AppIdentifier"] <- tt
             cinfo.Parameters.["AndroidMinSdkVersionAttribute"] <- "android:minSdkVersion=\"10\""
             cinfo.Parameters.["AndroidThemeAttribute"] <- ""

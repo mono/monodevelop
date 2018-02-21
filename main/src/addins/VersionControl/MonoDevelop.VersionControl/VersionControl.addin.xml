@@ -20,8 +20,8 @@
 		<ExtensionNode name="SeparatorItem" type="MonoDevelop.Components.Commands.ExtensionNodes.SeparatorItemCodon" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/VersionControl/BlameView/ContextMenu" name = "Blame view context menu">
-		<Description>Context menu for the blame view.</Description>
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/BlameView/ContextMenu" name = "Author view context menu">
+		<Description>Context menu for the Authors view.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
 	</ExtensionPoint>
 
@@ -34,8 +34,8 @@
 		<Handler class = "MonoDevelop.VersionControl.DefaultDiffViewHandler" />
 	</Extension>
 
-	<ExtensionPoint path = "/MonoDevelop/VersionControl/BlameViewHandler" name = "Blame view handler">
-		<Description>Handler used to create the a blame view which can display the current file.</Description>
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/BlameViewHandler" name = "Author view handler">
+		<Description>Handler used to create an authors view which can display the current file.</Description>
 		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IVersionControlViewHandler" />
 	</ExtensionPoint>
 
@@ -167,7 +167,7 @@
 			defaultHandler = "MonoDevelop.VersionControl.UnlockCommandHandler"
 			description = "Unlock files in the repository, so that other user can change them."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Annotate"
-			_label = "Blame"
+			_label = "Authors"
 			defaultHandler = "MonoDevelop.VersionControl.CurrentFileBlameHandler"
 			description = "Show the origin of each line in a file."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.CreatePatch"
@@ -193,7 +193,7 @@
 		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.ShowLog"
 			_label = "S_how Log"/>
 		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.ShowBlameBefore"
-			_label = "Show _Blame Before"/>
+			_label = "Show _Authors Before"/>
 		</Category>
 	</Extension>
 
