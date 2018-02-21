@@ -103,6 +103,10 @@ namespace MonoDevelop.AspNetCore
 				if (result == CertificateCheckResult.OK) {
 					IsDevelopmentCertificateTrusted = true;
 					return;
+				} else if (result == CertificateCheckResult.Error) {
+					// Check failed - Do not try to trust certificate since this
+					// will likely also fail.
+					return;
 				}
 
 				if (ConfirmTrustCertificate (result)) {

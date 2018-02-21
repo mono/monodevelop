@@ -140,7 +140,9 @@ namespace MonoDevelop.AspNetCore
 				cancellationToken
 			);
 
-			if (Enum.TryParse (exitCode.ToString (), out CertificateCheckResult result)) {
+			// Check exit code is known.
+			var result = (CertificateCheckResult)exitCode;
+			if (Enum.IsDefined (typeof (CertificateCheckResult), result)) {
 				return result;
 			}
 
