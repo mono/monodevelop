@@ -422,11 +422,16 @@ namespace MonoDevelop.Ide.Editor.Extension
 				cpos = Editor.CaretOffset;
 				wlen = 0;
 			}
+
+			completionTokenSrc.Cancel ();
+			completionTokenSrc = new CancellationTokenSource ();
+			var token = completionTokenSrc.Token;
+
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
 			try {
 				Counters.ProcessCodeCompletion.BeginTiming ();
-				completionList = await DoHandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (reason));
+				completionList = await DoHandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (reason), token);
 				if (completionList != null && completionList.TriggerWordStart >= 0) {
 					CurrentCompletionContext.TriggerOffset = completionList.TriggerWordStart;
 					CurrentCompletionContext.TriggerWordLength = completionList.TriggerWordLength;
