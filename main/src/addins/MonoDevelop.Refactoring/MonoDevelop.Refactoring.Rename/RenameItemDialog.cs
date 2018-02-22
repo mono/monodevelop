@@ -210,7 +210,7 @@ namespace MonoDevelop.Refactoring.Rename
 			if (ChangedDocuments != null) {
 				AlertButton result = null;
 				var msg = new QuestionMessage ();
-				msg.Buttons.Add (AlertButton.Yes);
+				msg.Buttons.Add (AlertButton.MakeWriteable);
 				msg.Buttons.Add (AlertButton.Cancel);
 				msg.AllowApplyToAll = true;
 
@@ -218,12 +218,13 @@ namespace MonoDevelop.Refactoring.Rename
 					try {
 						var attr = File.GetAttributes (path);
 						if (attr.HasFlag (FileAttributes.ReadOnly)) {
-							msg.Text = GettextCatalog.GetString ("File \"{0}\" is read only. Should it be made writeable?", path);
+							msg.Text = GettextCatalog.GetString ("File {0} is read-only", path);
+							msg.SecondaryText = GettextCatalog.GetString ("Would you like to make the file writable?");
 							result = MessageService.AskQuestion (msg);
 
 							if (result == AlertButton.Cancel) {
 								return;
-							} else if (result == AlertButton.Yes) {
+							} else if (result == AlertButton.MakeWriteable) {
 								try {
 									File.SetAttributes (path, attr & ~FileAttributes.ReadOnly);
 								} catch (Exception ex) {
