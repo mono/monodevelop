@@ -148,7 +148,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			layout.Text = "W";
 			layout.Font = layout.Font.WithSize (fontSize);
 			fontRequiredSize = layout.GetSize ();
-			return new Size (CellWidth, fontRequiredSize.Height * linesDisplayedCount + descriptionPaddingHeight + 3);
+			return new Size (CellWidth, fontRequiredSize.Height * linesDisplayedCount + descriptionPaddingHeight + 
+			                 (buildOutputNode.NodeType == BuildOutputNodeType.Build ? 12 : 3));
 		}
 
 		protected override void OnDataChanged()
