@@ -479,10 +479,10 @@
 	<!-- Build output -->
 	<StockIcon stockid="build-solution" resource="build-solution-16.png" size="Menu" />
 	<StockIcon stockid="build-project" resource="build-project-16.png" size="Menu" />
-	<StockIcon stockid="build-error" resource="build-error-small-16.png" size="Menu" />
+	<StockIcon stockid="build-error" resource="build-error-16.png" size="Menu" />
 	<StockIcon stockid="build-target" resource="build-target-16.png" size="Menu" />
 	<StockIcon stockid="build-task" resource="build-task-16.png" size="Menu" />
-	<StockIcon stockid="build-warning" resource="build-warning-small-16.png" size="Menu" />
+	<StockIcon stockid="build-warning" resource="build-warning-16.png" size="Menu" />
 </Extension>
 
 </ExtensionModel>
