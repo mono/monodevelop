@@ -130,19 +130,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 		private void BinLog_ProjectStarted (object sender, ProjectStartedEventArgs e)
 		{
 			if (CurrentNode.NodeType == BuildOutputNodeType.Build) {
-				var solFileName = string.Empty;
-				var config = string.Empty;
-				var platform = string.Empty;
 				foreach (DictionaryEntry x in e.Properties) {
 					var key = (string)x.Key;
 					if (key == "SolutionFilename") {
 						this.CurrentNode.Message = (string)x.Value;
 						continue;
 					} else if (key == "Configuration") {
-						config = (string)x.Value;
+						this.CurrentNode.Configuration = (string)x.Value;
 						continue;
 					} else if (key == "Platform") {
-						platform = (string)x.Value;
+						this.CurrentNode.Platform = (string)x.Value;
 						continue;
 					}
 				}
