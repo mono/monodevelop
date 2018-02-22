@@ -235,20 +235,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputDataSource : ITreeDataSource
 	{
-		static readonly Xwt.Drawing.Image buildIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildSolution, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image messageIcon = ImageService.GetIcon (Ide.Gui.Stock.MessageLog, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image errorIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildError, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image projectIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildProject, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image targetIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildTarget, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image taskIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildTask, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image warningIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildWarning, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image folderIcon = ImageService.GetIcon (Ide.Gui.Stock.OpenFolder, Gtk.IconSize.Menu);
 
 		public IReadOnlyList<BuildOutputNode> RootNodes => this.rootNodes;
 		readonly List<BuildOutputNode> rootNodes;
-
-		public DataField<Xwt.Drawing.Image> ImageField = new DataField<Xwt.Drawing.Image> (0);
-		public DataField<string> LabelField = new DataField<string> (1);
+		public DataField<BuildOutputNode> BuildOutputNodeField = new DataField<BuildOutputNode> (0);
 
 		public BuildOutputDataSource (List<BuildOutputNode> rootNodes)
 		{
@@ -301,58 +291,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public object GetValue (TreePosition pos, int column)
 		{
 			var node = pos as BuildOutputNode;
-			if (node != null) {
-				switch (column) {
-				case 0: // Image
-					switch (node.NodeType) {
-					case BuildOutputNodeType.Build:
-						return buildIcon;
-					case BuildOutputNodeType.Diagnostics:
-					case BuildOutputNodeType.Message:
-						return messageIcon;
-					case BuildOutputNodeType.Error:
-						return errorIcon;
-					case BuildOutputNodeType.Parameters:
-						return folderIcon;
-					case BuildOutputNodeType.Project:
-						return projectIcon;
-					case BuildOutputNodeType.Target:
-					case BuildOutputNodeType.TargetSkipped:
-						return targetIcon;
-					case BuildOutputNodeType.Task:
-						return taskIcon;
-					case BuildOutputNodeType.Warning:
-						return warningIcon;
-					}
-
-					return ImageService.GetIcon (Ide.Gui.Stock.Empty);
-				case 1: // Text
-					bool toplevel = node.Parent == null;
-					StringBuilder markup = new StringBuilder ();
-
-					switch (node.NodeType) {
-					case BuildOutputNodeType.TargetSkipped:
-						markup.AppendFormat (LightTextMarkup, GLib.Markup.EscapeText (node.Message));
-						break;
-					default:
-						if (toplevel) {
-							markup.AppendFormat ("<b>{0}</b>", GLib.Markup.EscapeText (node.Message));
-						} else {
-							markup.Append (node.Message);
-						}
-						break;
-					}
-
-					// Timing information
-					if (node.HasChildren) {
-						markup.Append ("    ");
-						markup.AppendFormat (LightTextMarkup, GLib.Markup.EscapeText (node.GetDurationAsString ()));
-					}
-
-					return markup.ToString ();
-				}
+			if (column == 0 && node != null) {
+				return node;
 			}
-
 			return null;
 		}
 

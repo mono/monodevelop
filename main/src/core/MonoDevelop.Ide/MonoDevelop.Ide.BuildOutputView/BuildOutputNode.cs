@@ -48,6 +48,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputNode : TreePosition
 	{
+
 		const string ParametersNodeName = "Parameters";
 
 		public virtual BuildOutputNodeType NodeType { get; set; }
@@ -77,6 +78,33 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			child.Parent = this;
 			return child;
+		}
+
+
+		public Xwt.Drawing.Image GetImage ()
+		{
+			switch (NodeType) {
+			case BuildOutputNodeType.Build:
+				return Resources.BuildIcon;
+			case BuildOutputNodeType.Diagnostics:
+			case BuildOutputNodeType.Message:
+				return Resources.MessageIcon;
+			case BuildOutputNodeType.Error:
+				return Resources.ErrorIcon;
+			case BuildOutputNodeType.Parameters:
+				return Resources.FolderIcon;
+			case BuildOutputNodeType.Project:
+				return Resources.ProjectIcon;
+			case BuildOutputNodeType.Target:
+			case BuildOutputNodeType.TargetSkipped:
+				return Resources.TargetIcon;
+			case BuildOutputNodeType.Task:
+				return Resources.TaskIcon;
+			case BuildOutputNodeType.Warning:
+				return Resources.WarningIcon;
+			}
+			LoggingService.LogDebug ("Icon not found for node: {0}", NodeType.ToString ());
+			return ImageService.GetIcon (Ide.Gui.Stock.Empty);
 		}
 
 		public BuildOutputNode FindChild (string message)

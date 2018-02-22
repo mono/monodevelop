@@ -188,10 +188,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 				CanResize = false,
 				Expands = true
 			};
-			var imageCell = new ImageCellView ();
-			var textCell = new TextCellView ();
-			treeColumn.Views.Add (imageCell);
-			treeColumn.Views.Add (textCell);
+			var pack = new BuildOutputTreeCellView ();
+			treeColumn.Views.Add (pack);
 			treeView.Columns.Add (treeColumn);
 
 			PackStart (treeView, expand: true, fill: true);
@@ -279,7 +277,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var dataSource = treeView.DataSource as BuildOutputDataSource;
 			while (stack.Count > 0) {
 				var node = stack.Pop ();
-				var pathEntry = new PathEntry (dataSource.GetValue (node, 0) as Xwt.Drawing.Image, node.Message);
+				var pathEntry = new PathEntry (node.GetImage (), node.Message);
 				pathEntry.Tag = node;
 				entries [index] = pathEntry;
 				index++;
@@ -446,8 +444,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 						var buildOutputDataSource = new BuildOutputDataSource (BuildOutput.GetRootNodes (showDiagnostics));
 						treeView.DataSource = buildOutputDataSource;
 
-						(treeView.Columns [0].Views [0] as ImageCellView).ImageField = buildOutputDataSource.ImageField;
-						(treeView.Columns [0].Views [1] as TextCellView).MarkupField = buildOutputDataSource.LabelField;
+						(treeView.Columns [0].Views [0] as BuildOutputTreeCellView).BuildOutputNodeField = buildOutputDataSource.BuildOutputNodeField;
 
 						// Expand root nodes and nodes with errors
 						int rootsCount = buildOutputDataSource.GetChildrenCount (null);
@@ -540,7 +537,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					widget.FocusRow (list [n]);
 			}
 
-			public Xwt.Drawing.Image GetIcon (int n) => DataSource.GetValue (list [n], 0) as Xwt.Drawing.Image;
+			public Xwt.Drawing.Image GetIcon (int n) => list [n].GetImage ();
 
 			public string GetMarkup (int n) => list [n].Message;
 
