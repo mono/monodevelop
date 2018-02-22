@@ -1304,7 +1304,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			progressData.LogTimer.Elapsed += delegate {
 				progressData.Seconds += 1;
 				Runtime.RunInMainThread (() => {
-					updatemonitor.Log.WriteLine (GettextCatalog.GetString ("Transferred {0} in {1} seconds.", BytesToSize (progressData.KBytes), progressData.Seconds));
+					updatemonitor?.Log.WriteLine (GettextCatalog.GetString ("Transferred {0} in {1} seconds.", BytesToSize (progressData.KBytes), progressData.Seconds));
 				});
 			};
 			progressData.LogTimer.Start ();
@@ -1480,9 +1480,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (updatemonitor != null && !string.IsNullOrEmpty (actiondesc)) {
 				Runtime.RunInMainThread (() => {
 					if (skipEol) {
-						updatemonitor.Log.Write (actiondesc);
+						updatemonitor?.Log.Write (actiondesc);
 					} else {
-						updatemonitor.Log.WriteLine (actiondesc);
+						updatemonitor?.Log.WriteLine (actiondesc);
 					}
 				});
 			}
