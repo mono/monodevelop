@@ -118,9 +118,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			DrawImageRow (ctx, cellArea);
 			DrawNodeText (ctx, cellArea);
 
-			if (IsFirstNode ()) {
-				DrawBuildInformation (ctx, cellArea);
-			} else {
+			if (!IsFirstNode ()) {
 				DrawNodeInformation (ctx, cellArea);
 			}
 		}
@@ -152,14 +150,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			ctx.DrawTextLayout (
 				descriptionTextLayout, x, cellArea.Top + ((cellArea.Height - fontRequiredSize.Height) * .5));
-		}
-
-		void DrawBuildInformation (Context ctx, Xwt.Rectangle cellArea) 
-		{
-			DrawText (ctx,
-					  cellArea,
-					  BackgroundBounds.Width - InformationRightDistance,
-					  "Debug | iPhoneSimulator   Started at 5:04 pm on April 12, 2018");
 		}
 
 		void DrawNodeText (Context ctx, Xwt.Rectangle cellArea)
