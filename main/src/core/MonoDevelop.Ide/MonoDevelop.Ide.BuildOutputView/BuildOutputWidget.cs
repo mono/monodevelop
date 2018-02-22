@@ -277,8 +277,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var dataSource = treeView.DataSource as BuildOutputDataSource;
 			while (stack.Count > 0) {
 				var node = stack.Pop ();
-				var buildOutput = (BuildOutputNode) dataSource.GetValue (node, 0);
-				var pathEntry = new PathEntry (buildOutput.GetImage (), node.Message);
+				var pathEntry = new PathEntry (node.GetImage (), node.Message);
 				pathEntry.Tag = node;
 				entries [index] = pathEntry;
 				index++;
