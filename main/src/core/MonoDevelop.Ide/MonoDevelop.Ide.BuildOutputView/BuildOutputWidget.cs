@@ -112,10 +112,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				new PathEntry (GettextCatalog.GetString ("No selection"))
 			};
 			UpdatePathBarEntries (entries);
-			pathBar.Show ();
 
-			box.PackStart (pathBar, true, true, 0);
-			box.ReorderChild (pathBar, 0);
+			var align = new Gtk.Alignment (0, .5f, 1, 0);
+			align.Add (pathBar);
+			align.ShowAll ();
+
+			box.PackStart (align, true, true, 0);
+			box.ReorderChild (align, 0);
 			box.Show ();
 		}
 
