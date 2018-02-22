@@ -15,20 +15,12 @@
 #include <limits.h>
 #include <libgen.h>
 
-#if XM_SYSTEM
-#include <main.h>
-#include <launch.h>
-#include <runtime.h>
-#else
 typedef int (* mono_main) (int argc, char **argv);
 typedef void (* mono_free) (void *ptr);
 typedef char * (* mono_get_runtime_build_info) (void);
-#endif
 typedef void (* gobject_tracker_init) (void *libmono);
 
 #include "monostub-utils.h"
-
-#import <Foundation/Foundation.h>
 
 #if XM_REGISTRAR
 extern
@@ -47,6 +39,12 @@ void xamarin_create_classes ();
 #endif
 
 void *libmono;
+#if defined(XM_REGISTRAR) || defined(STATIC_REGISTRAR)
+void *libxammac;
+#if STATIC_REGISTRAR
+void *libvsmregistrar;
+#endif
+#endif
 
 static void
 exit_with_message (const char *reason, char *argv0)
@@ -305,51 +303,6 @@ init_registrar()
 #endif
 }
 
-#ifdef XM_SYSTEM
-extern "C"
-void xamarin_app_initialize(xamarin_initialize_data *data)
-{
-	setenv ("MONO_GC_PARAMS", "major=marksweep-conc,nursery-size=8m", 0);
-
-    run_md_bundle_if_needed(data->app_dir, data->argc, data->argv);
-
-    data->requires_relaunch = update_environment ([[data->app_dir stringByAppendingPathComponent:@"Contents"] UTF8String], true);
-
-    if (data->requires_relaunch)
-        return;
-
-	char exe[PATH_MAX + 1];
-	const char *relative_bin_dir;
-	char *bin_dir;
-	uint bufsize = sizeof(exe);
-
-	_NSGetExecutablePath(exe, &bufsize);
-	bin_dir = dirname(exe);
-
-#ifdef LOCAL_LAUNCHER
-	relative_bin_dir = ".";
-#else
-	relative_bin_dir = "../Resources/lib/monodevelop/bin";
-#endif
-	strcat(bin_dir, "/");
-	strcat(bin_dir, relative_bin_dir);
-
-	bin_dir = realpath(bin_dir, NULL);
-
-    xamarin_set_bundle_path (bin_dir);
-
-	free(bin_dir);
-
-    correct_locale();
-}
-
-extern "C" int
-xammac_setup ()
-{
-    init_registrar();
-	return 0;
-}
-#else
 int main (int argc, char **argv)
 {
 	//clock_t start = clock();
@@ -438,7 +391,31 @@ int main (int argc, char **argv)
 		exit_with_message ((char *)[msg UTF8String], argv[0]);
 	}
 
+#if defined(XM_REGISTRAR) || defined(STATIC_REGISTRAR)
+	libxammac = dlopen ("@loader_path/libxammac.dylib", RTLD_LAZY);
+	if (!libxammac) {
+		libxammac = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libxammac.dylib", RTLD_LAZY);
+		if (!libxammac) {
+			fprintf (stderr, "Failed to load libxammac.dylib: %s\n", dlerror ());
+			NSString *msg = @"This application requires Xamarin.Mac native library side-by-side.";
+			exit_with_message ((char *)[msg UTF8String], argv[0]);
+		}
+	}
+
+#if STATIC_REGISTRAR
+	libvsmregistrar = dlopen ("@loader_path/vsmregistrar.dylib", RTLD_LAZY);
+	if (!libvsmregistrar) {
+		libvsmregistrar = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libvsmregistrar.dylib", RTLD_LAZY);
+		if (!libvsmregistrar) {
+			fprintf (stderr, "Failed to load libvsmregistrar.dylib: %s\n", dlerror ());
+			NSString *msg = @"This application requires Xamarin.Mac static registrar side-by-side.";
+			exit_with_message ((char *)[msg UTF8String], argv[0]);
+		}
+	}
+#endif
+
 	init_registrar();
+#endif
 
 	try_load_gobject_tracker (libmono, argv [0]);
 
@@ -493,4 +470,4 @@ int main (int argc, char **argv)
 
 	return _mono_main (argc + extra_argc + injected, new_argv);
 }
-#endif
+
