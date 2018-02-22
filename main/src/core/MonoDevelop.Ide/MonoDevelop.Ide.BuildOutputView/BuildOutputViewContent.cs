@@ -32,10 +32,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
+using Xwt;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
-	class BuildOutputViewContent : ViewContent
+	class BuildOutputViewContent : AbstractXwtViewContent
 	{
 		FilePath filename;
 		BuildOutputWidget control;
@@ -60,11 +61,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			ContentName = file;
 		}
 
-		public override Control Control {
-			get {
-				return control.ToGtkWidget ();
-			}
-		}
+		public override Widget Widget => control;
 
 		public override bool IsReadOnly {
 			get {
