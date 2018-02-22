@@ -1,4 +1,4 @@
-namespace MonoDevelop.FSharp
+﻿namespace MonoDevelop.FSharp
 
 open System
 open System.Collections.Generic
@@ -120,15 +120,15 @@ type FSharpUnitTestTextEditorExtension() =
             not (unitTestGatherer.hasNUnitReference x.DocumentContext.Project) then
                 Threading.Tasks.Task.FromResult emptyResult
         else
-        Async.StartAsTask (
-            cancellationToken = cancellationToken,
-            computation = async {
+            async {
                 match x.DocumentContext.TryGetAst() with
                 | Some ast ->
                     let! symbols = ast.GetAllUsesOfAllSymbolsInFile()
                     return unitTestGatherer.gatherUnitTests (unitTestMarkers, x.Editor, symbols) :> IList<_>
-                | None -> return emptyResult })
-
+                | None -> return emptyResult 
+            }
+            |> StartAsyncAsTask cancellationToken
+                
 module nunitSourceCodeLocationFinder =
     let tryFindTest fixtureNamespace fixtureTypeName testName (topmostEntity:FSharpEntity) = 
         let matchesType (ent:FSharpEntity) =
@@ -156,8 +156,7 @@ type FSharpNUnitSourceCodeLocationFinder() =
 
     override x.GetSourceCodeLocationAsync(_project, fixtureNamespace, fixtureTypeName, testName, token) =
         let tryFindTest' = tryFindTest fixtureNamespace fixtureTypeName testName 
-        let computation =
-            async {
+        async {
                 let symbol = 
                     Search.getAllFSharpProjects()
                     |> Seq.filter unitTestGatherer.hasNUnitReference
@@ -176,4 +175,5 @@ type FSharpNUnitSourceCodeLocationFinder() =
                     | _ -> return null
                 | _ -> return null //?
             } 
-        Async.StartAsTask(computation = computation, cancellationToken = token)
+        |> StartAsyncAsTask token
+       
