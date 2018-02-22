@@ -170,10 +170,12 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId PadDeviceDeployment = "md-pad-device-deployment";
 		public static readonly IconId PadExecute = "md-pad-execute";
 		public static readonly IconId BuildError = "build-error";
+		public static readonly IconId BuildErrorSmall = "build-error-small";
 		public static readonly IconId BuildProject = "build-project";
 		public static readonly IconId BuildSolution = "build-solution";
 		public static readonly IconId BuildTarget = "build-target";
 		public static readonly IconId BuildTask = "build-task";
 		public static readonly IconId BuildWarning = "build-warning";
+		public static readonly IconId BuildWarningSmall = "build-warning-small";
 	}
 }
