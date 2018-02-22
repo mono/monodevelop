@@ -154,8 +154,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			buttonSearchForward = new Button ();
 			buttonSearchBackward.Clicked += FindPrevious;
 			buttonSearchForward.Clicked += FindNext;
-			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext));
-			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious));
+			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext, true));
+			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious, true));
 			buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
 			buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
 
@@ -319,7 +319,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					menu.Add (new SeparatorContextMenuItem ());
 				}
 
-				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy Element Output     {0}", GetShortcut (EditCommands.Copy)));
+				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy Element Output     {0}", GetShortcut (EditCommands.Copy, false)));
 				copyElementMenu.Clicked += (s, args) => ClipboardCopy (selectedNode);
 				menu.Items.Add (copyElementMenu);
 
@@ -442,13 +442,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			buttonSearchBackward.Sensitive = currentSearch?.MatchesCount > 0; 
 		}
 
-		static string GetShortcut (object commandId)
+		static string GetShortcut (object commandId, bool includeParen)
 		{
 			var key = IdeApp.CommandService.GetCommand (commandId).AccelKey;
 			if (string.IsNullOrEmpty (key))
 				return "";
 			var nextShortcut = KeyBindingManager.BindingToDisplayLabel (key, false);
-			return "(" + nextShortcut + ")";
+			return includeParen ? "(" + nextShortcut + ")" : nextShortcut;
 		}
 
 		static void ExpandChildrenWithErrors (TreeView tree, BuildOutputDataSource dataSource, BuildOutputNode parent)
