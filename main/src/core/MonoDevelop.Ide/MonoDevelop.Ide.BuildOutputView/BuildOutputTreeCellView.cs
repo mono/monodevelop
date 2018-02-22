@@ -38,7 +38,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			// Shared
-
 			BackgroundColor = Ide.Gui.Styles.PrimaryBackgroundColor;
 
 			CellTextColor = Ide.Gui.Styles.BaseForegroundColor;
@@ -83,12 +82,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 			UseStrongSelectionColor = true;
 		}
 
-		int fontSize = 11;
+		const int FontSize = 11;
+		const int DescriptionPaddingHeight = 0;
+		const int LinesDisplayedCount = 1;
 
-		const int descriptionPaddingHeight = 0;
-		const int linesDisplayedCount = 1;
-
-		//Size maxBuildOutputImageSize = new Size (48, 48);
 		WidgetSpacing packageDescriptionPadding = new WidgetSpacing (5, 5, 5, 10);
 		WidgetSpacing packageImagePadding = new WidgetSpacing (0, 0, 0, 5);
 		WidgetSpacing checkBoxPadding = new WidgetSpacing (10, 0, 0, 10);
@@ -96,24 +93,71 @@ namespace MonoDevelop.Ide.BuildOutputView
 		FilteredBuildOutputNode buildOutputNode;
 
 		Size fontRequiredSize;
+		const int InformationRightDistance = 400;
+		const int ImageSide = 20;
+		const int ImageLeftPadding = 2;
+		int imageX => ImageSide + ImageLeftPadding + 5;
 
-		const int imageSide = 20;
-		const int imageLeftPadding = 2;
-		int imageX => imageSide + imageLeftPadding + 5;
+		bool IsFirstNode () => buildOutputNode.Parent == null;
 
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
 		{
 			FillCellBackground (ctx);
-			UpdateTextColor (ctx);
 
-			var image = buildOutputNode.GetImage ()
-			                           .WithSize (imageSide);
-			ctx.DrawImage (
-				Selected ? image.WithStyles ("sel") : image,
-				cellArea.Left + imageLeftPadding,
-				cellArea.Top - (imageSide - cellArea.Height)*.5,
-				imageSide,
-				imageSide);
+			DrawImage (ctx, cellArea);
+			DrawNodeText (ctx, cellArea);
+
+			if (IsFirstNode ()) {
+				DrawBuildInformation (ctx, cellArea);
+			} else {
+				DrawNodeInformation (ctx, cellArea);
+			}
+		}
+
+		void DrawNodeInformation (Context ctx, Xwt.Rectangle cellArea)
+		{
+			if (!buildOutputNode.HasChildren)
+				return;
+
+			UpdateInformationTextColor (ctx);
+
+			var descriptionTextLayout = new TextLayout ();
+			descriptionTextLayout.Width = InformationRightDistance;
+			descriptionTextLayout.Height = cellArea.Height;
+			descriptionTextLayout.Font = descriptionTextLayout.Font
+					.WithSize (FontSize)
+					.WithWeight (FontWeight.Light);
+
+			descriptionTextLayout.Text = buildOutputNode.GetDurationAsString ();
+
+			ctx.DrawTextLayout (
+				descriptionTextLayout,
+				BackgroundBounds.Width - descriptionTextLayout.Width,
+				cellArea.Top + ((cellArea.Height - fontRequiredSize.Height) * .5));
+		}
+
+		void DrawBuildInformation (Context ctx, Xwt.Rectangle cellArea) 
+		{
+			UpdateInformationTextColor (ctx);
+
+			var descriptionTextLayout = new TextLayout ();
+			descriptionTextLayout.Width = InformationRightDistance;
+			descriptionTextLayout.Height = cellArea.Height;
+			//TODO: this needs to be changed to a read data
+			descriptionTextLayout.Text = "Debug | iPhoneSimulator   Started at 5:04 pm on April 12, 2018";
+			descriptionTextLayout.Font = descriptionTextLayout.Font
+					.WithSize (FontSize)
+					.WithWeight (FontWeight.Light);
+
+			ctx.DrawTextLayout (
+				descriptionTextLayout,
+				BackgroundBounds.Width - descriptionTextLayout.Width,
+				cellArea.Top + ((cellArea.Height - fontRequiredSize.Height) * .5));
+		}
+
+		void DrawNodeText (Context ctx, Xwt.Rectangle cellArea)
+		{
+			UpdateTextColor (ctx);
 
 			// NodeText
 			var descriptionTextLayout = new TextLayout ();
@@ -122,30 +166,51 @@ namespace MonoDevelop.Ide.BuildOutputView
 			descriptionTextLayout.Text = buildOutputNode.Message;
 			descriptionTextLayout.Trimming = TextTrimming.Word;
 
-			if (buildOutputNode.NodeType == BuildOutputNodeType.Build) {
+			if (IsFirstNode ()) {
 				descriptionTextLayout.Font = descriptionTextLayout.Font
-					.WithSize (fontSize)
+					.WithSize (FontSize)
 					.WithWeight (FontWeight.Bold);
 			} else {
 				descriptionTextLayout.Font = descriptionTextLayout.Font
-					.WithSize (fontSize)
+					.WithSize (FontSize)
 					.WithWeight (FontWeight.Light);
 			}
-
 
 			ctx.DrawTextLayout (
 				descriptionTextLayout,
 				cellArea.Left + imageX,
-				cellArea.Top + ((cellArea.Height - fontRequiredSize.Height)*.5));
+				cellArea.Top + ((cellArea.Height - fontRequiredSize.Height) * .5));
+		}
+
+		void DrawImage (Context ctx, Xwt.Rectangle cellArea)
+		{
+			var image = buildOutputNode.GetImage ()
+									   .WithSize (ImageSide);
+			ctx.DrawImage (
+				Selected ? image.WithStyles ("sel") : image,
+				cellArea.Left + ImageLeftPadding,
+				cellArea.Top - (ImageSide - cellArea.Height) * .5,
+				ImageSide,
+				ImageSide);
+		}
+
+		void UpdateInformationTextColor (Context ctx)
+		{
+			if (Selected) {
+				ctx.SetColor (Styles.CellTextSelectionColor);
+			} else {
+				//TODO: this is not the correct colour we need a light grey colour
+				ctx.SetColor (Ide.Gui.Styles.TabBarInactiveTextColor);
+			}
 		}
 
 		protected override Size OnGetRequiredSize ()
 		{
 			var layout = new TextLayout ();
 			layout.Text = "W";
-			layout.Font = layout.Font.WithSize (fontSize);
+			layout.Font = layout.Font.WithSize (FontSize);
 			fontRequiredSize = layout.GetSize ();
-			return new Size (CellWidth, fontRequiredSize.Height * linesDisplayedCount + descriptionPaddingHeight + 
+			return new Size (CellWidth, fontRequiredSize.Height * LinesDisplayedCount + DescriptionPaddingHeight + 
 			                 (buildOutputNode.NodeType == BuildOutputNodeType.Build ? 12 : 3));
 		}
 
