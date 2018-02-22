@@ -48,14 +48,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputNode : TreePosition
 	{
-		static readonly Xwt.Drawing.Image buildIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildSolution, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image messageIcon = ImageService.GetIcon (Ide.Gui.Stock.MessageLog, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image errorIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildError, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image projectIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildProject, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image targetIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildTarget, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image taskIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildTask, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image warningIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildWarning, Gtk.IconSize.Menu);
-		static readonly Xwt.Drawing.Image folderIcon = ImageService.GetIcon (Ide.Gui.Stock.OpenFolder, Gtk.IconSize.Menu);
 
 		const string ParametersNodeName = "Parameters";
 
@@ -93,23 +85,23 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			switch (NodeType) {
 			case BuildOutputNodeType.Build:
-				return buildIcon;
+				return Resources.BuildIcon;
 			case BuildOutputNodeType.Diagnostics:
 			case BuildOutputNodeType.Message:
-				return messageIcon;
+				return Resources.MessageIcon;
 			case BuildOutputNodeType.Error:
-				return errorIcon;
+				return Resources.ErrorIcon;
 			case BuildOutputNodeType.Parameters:
-				return folderIcon;
+				return Resources.FolderIcon;
 			case BuildOutputNodeType.Project:
-				return projectIcon;
+				return Resources.ProjectIcon;
 			case BuildOutputNodeType.Target:
 			case BuildOutputNodeType.TargetSkipped:
-				return targetIcon;
+				return Resources.TargetIcon;
 			case BuildOutputNodeType.Task:
-				return taskIcon;
+				return Resources.TaskIcon;
 			case BuildOutputNodeType.Warning:
-				return warningIcon;
+				return Resources.WarningIcon;
 			}
 			return ImageService.GetIcon (Ide.Gui.Stock.Empty);
 		}

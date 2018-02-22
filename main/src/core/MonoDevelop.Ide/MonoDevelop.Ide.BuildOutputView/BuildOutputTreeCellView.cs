@@ -6,7 +6,7 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
-	internal static class Styles
+	static class Styles
 	{
 		public static Xwt.Drawing.Color LineBorderColor { get; internal set; }
 		public static Xwt.Drawing.Color BackgroundColor { get; internal set; }
@@ -60,6 +60,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 		}
 	}
 
+	static class Resources
+	{
+		public static readonly Xwt.Drawing.Image BuildIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildSolution, Gtk.IconSize.Menu);
+		public static readonly Xwt.Drawing.Image MessageIcon = ImageService.GetIcon (Ide.Gui.Stock.MessageLog, Gtk.IconSize.Menu);
+		public static readonly Xwt.Drawing.Image ErrorIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildError, Gtk.IconSize.Menu);
+		public static readonly Xwt.Drawing.Image ProjectIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildProject, Gtk.IconSize.Menu);
+		public static readonly Xwt.Drawing.Image TargetIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildTarget, Gtk.IconSize.Menu);
+		public static readonly Xwt.Drawing.Image TaskIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildTask, Gtk.IconSize.Menu);
+		public static readonly Xwt.Drawing.Image WarningIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildWarning, Gtk.IconSize.Menu);
+		public static readonly Xwt.Drawing.Image FolderIcon = ImageService.GetIcon (Ide.Gui.Stock.OpenFolder, Gtk.IconSize.Menu);
+	}
 
 	class BuildOutputTreeCellView : CanvasCellView
 	{
@@ -104,7 +115,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			FillCellBackground (ctx);
 
-			DrawImage (ctx, cellArea);
+			DrawImageRow (ctx, cellArea);
 			DrawNodeText (ctx, cellArea);
 
 			if (IsFirstNode ()) {
@@ -119,40 +130,36 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (!buildOutputNode.HasChildren)
 				return;
 
-			UpdateInformationTextColor (ctx);
-
-			var descriptionTextLayout = new TextLayout ();
-			descriptionTextLayout.Width = InformationRightDistance;
-			descriptionTextLayout.Height = cellArea.Height;
-			descriptionTextLayout.Font = descriptionTextLayout.Font
-					.WithSize (FontSize)
-					.WithWeight (FontWeight.Light);
-
-			descriptionTextLayout.Text = buildOutputNode.GetDurationAsString ();
-
-			ctx.DrawTextLayout (
-				descriptionTextLayout,
-				BackgroundBounds.Width - descriptionTextLayout.Width,
-				cellArea.Top + ((cellArea.Height - fontRequiredSize.Height) * .5));
+			var duration = buildOutputNode.GetDurationAsString ();
+			if (duration != "") {
+				var textStartX = BackgroundBounds.Width - InformationRightDistance;
+				DrawText (ctx, cellArea, textStartX, duration);
+			}
 		}
 
-		void DrawBuildInformation (Context ctx, Xwt.Rectangle cellArea) 
+		void DrawText (Context ctx, Xwt.Rectangle cellArea, double x, string text) 
 		{
 			UpdateInformationTextColor (ctx);
 
 			var descriptionTextLayout = new TextLayout ();
-			descriptionTextLayout.Width = InformationRightDistance;
+			descriptionTextLayout.Width = BackgroundBounds.Width - x; 
 			descriptionTextLayout.Height = cellArea.Height;
-			//TODO: this needs to be changed to a read data
-			descriptionTextLayout.Text = "Debug | iPhoneSimulator   Started at 5:04 pm on April 12, 2018";
 			descriptionTextLayout.Font = descriptionTextLayout.Font
 					.WithSize (FontSize)
 					.WithWeight (FontWeight.Light);
 
+			descriptionTextLayout.Text = text;
+
 			ctx.DrawTextLayout (
-				descriptionTextLayout,
-				BackgroundBounds.Width - descriptionTextLayout.Width,
-				cellArea.Top + ((cellArea.Height - fontRequiredSize.Height) * .5));
+				descriptionTextLayout, x, cellArea.Top + ((cellArea.Height - fontRequiredSize.Height) * .5));
+		}
+
+		void DrawBuildInformation (Context ctx, Xwt.Rectangle cellArea) 
+		{
+			DrawText (ctx,
+					  cellArea,
+					  BackgroundBounds.Width - InformationRightDistance,
+					  "Debug | iPhoneSimulator   Started at 5:04 pm on April 12, 2018");
 		}
 
 		void DrawNodeText (Context ctx, Xwt.Rectangle cellArea)
@@ -182,13 +189,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 				cellArea.Top + ((cellArea.Height - fontRequiredSize.Height) * .5));
 		}
 
-		void DrawImage (Context ctx, Xwt.Rectangle cellArea)
+		void DrawImageRow (Context ctx, Xwt.Rectangle cellArea)
 		{
 			var image = buildOutputNode.GetImage ()
 									   .WithSize (ImageSide);
+			DrawImage (ctx, cellArea, image, cellArea.Left + ImageLeftPadding);
+		}
+
+		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x)
+		{
 			ctx.DrawImage (
 				Selected ? image.WithStyles ("sel") : image,
-				cellArea.Left + ImageLeftPadding,
+				x,
 				cellArea.Top - (ImageSide - cellArea.Height) * .5,
 				ImageSide,
 				ImageSide);
