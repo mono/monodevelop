@@ -320,10 +320,27 @@ namespace MonoDevelop.Ide.BuildOutputView
 				}
 
 				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy Element Output     {0}", GetShortcut (EditCommands.Copy)));
-				copyElementMenu.Clicked += (s,evnt) => {
-					ClipboardCopy (selectedNode);
-				};
+				copyElementMenu.Clicked += (s, args) => ClipboardCopy (selectedNode);
 				menu.Items.Add (copyElementMenu);
+
+				var expandElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Expand Element"));
+				expandElementMenu.Clicked += (s, args) => treeView.ExpandRow (selectedNode, false);
+				menu.Items.Add (expandElementMenu);
+
+				var collapseAllMenu = new ContextMenuItem (GettextCatalog.GetString ("Collapse All"));
+				collapseAllMenu.Clicked += (s, args) => {
+					var dataSource = treeView.DataSource as BuildOutputDataSource;
+					if (dataSource != null) {
+						foreach (var root in dataSource.RootNodes) {
+							treeView.CollapseRow (root);
+						}
+					}
+				};
+				menu.Items.Add (collapseAllMenu);
+
+				var expandAllMenu = new ContextMenuItem (GettextCatalog.GetString ("Expand All"));
+				expandAllMenu.Clicked += (s, args) => treeView.ExpandAll ();
+				menu.Items.Add (expandAllMenu);
 
 				menu.Show (treeView.ToGtkWidget (), (int) e.X, (int) e.Y);
 			}
