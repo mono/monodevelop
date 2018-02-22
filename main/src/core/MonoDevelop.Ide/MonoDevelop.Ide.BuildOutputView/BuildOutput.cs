@@ -286,8 +286,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return node?.Parent;
 		}
 
-		const string LightTextMarkup = "<span color =\"#999999\">{0}</span>";
-
 		public object GetValue (TreePosition pos, int column)
 		{
 			var node = pos as BuildOutputNode;
