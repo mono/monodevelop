@@ -444,8 +444,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 						var buildOutputDataSource = new BuildOutputDataSource (BuildOutput.GetRootNodes (showDiagnostics));
 						treeView.DataSource = buildOutputDataSource;
 
-						(treeView.Columns [0].Views [0] as ImageCellView).ImageField = buildOutputDataSource.ImageField;
-						(treeView.Columns [0].Views [1] as TextCellView).MarkupField = buildOutputDataSource.LabelField;
+						(treeView.Columns [0].Views [0] as BuildOutputTreeCellView).BuildOutputNodeField = buildOutputDataSource.BuildOutputNodeField;
 
 						// Expand root nodes and nodes with errors
 						int rootsCount = buildOutputDataSource.GetChildrenCount (null);

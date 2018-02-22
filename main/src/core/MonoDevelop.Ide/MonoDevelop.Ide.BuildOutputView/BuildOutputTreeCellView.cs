@@ -74,7 +74,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputTreeCellView : CanvasCellView
 	{
-		
 		public double CellWidth { get; set; }
 
 		public Color BackgroundColor { get; set; }
@@ -100,6 +99,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		WidgetSpacing packageDescriptionPadding = new WidgetSpacing (5, 5, 5, 10);
 		WidgetSpacing packageImagePadding = new WidgetSpacing (0, 0, 0, 5);
 		WidgetSpacing checkBoxPadding = new WidgetSpacing (10, 0, 0, 10);
+
+		public IDataField<BuildOutputNode> BuildOutputNodeField { get; set; }
 
 		BuildOutputNode buildOutputNode;
 
@@ -219,8 +220,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		protected override void OnDataChanged()
 		{
 			base.OnDataChanged();
-			var backEnd = (Xwt.GtkBackend.CellViewBackend) this.BackendHost.Backend;
-			buildOutputNode = (BuildOutputNode) backEnd.TreeModel.GetValue (backEnd.CurrentIter, 0);
+			buildOutputNode = GetValue (BuildOutputNodeField);
 		}
 
 		Color GetSelectedColor ()

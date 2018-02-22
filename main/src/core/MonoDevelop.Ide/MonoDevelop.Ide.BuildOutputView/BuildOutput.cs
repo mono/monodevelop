@@ -238,9 +238,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public IReadOnlyList<BuildOutputNode> RootNodes => this.rootNodes;
 		readonly List<BuildOutputNode> rootNodes;
-
-		public DataField<Xwt.Drawing.Image> ImageField = new DataField<Xwt.Drawing.Image> (0);
-		public DataField<string> LabelField = new DataField<string> (1);
+		public DataField<BuildOutputNode> BuildOutputNodeField = new DataField<BuildOutputNode> (0);
 
 		public BuildOutputDataSource (List<BuildOutputNode> rootNodes)
 		{
@@ -293,10 +291,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public object GetValue (TreePosition pos, int column)
 		{
 			var node = pos as BuildOutputNode;
-			if (node != null) {
+			if (column == 0 && node != null) {
 				return node;
 			}
-
 			return null;
 		}
 
