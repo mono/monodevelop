@@ -83,9 +83,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			UseStrongSelectionColor = true;
 		}
 
-		int fontSize = 13;
+		int fontSize = 11;
 
-		const int descriptionPaddingHeight = 5;
+		const int descriptionPaddingHeight = 0;
 		const int linesDisplayedCount = 1;
 
 		//Size maxBuildOutputImageSize = new Size (48, 48);
@@ -118,20 +118,23 @@ namespace MonoDevelop.Ide.BuildOutputView
 				imageSide,
 				imageSide);
 
-			// Package description.
+			// NodeText
 			var descriptionTextLayout = new TextLayout ();
+			descriptionTextLayout.Width = cellArea.Width - imageX;
+			descriptionTextLayout.Height = cellArea.Height;
+			descriptionTextLayout.Text = buildOutputNode.Message;
+			descriptionTextLayout.Trimming = TextTrimming.Word;
 
 			if (buildOutputNode.NodeType == BuildOutputNodeType.Build) {
 				descriptionTextLayout.Font = descriptionTextLayout.Font
 					.WithSize (fontSize)
-					.WithWeight(FontWeight.Bold);
+					.WithWeight (FontWeight.Bold);
 			} else {
-				descriptionTextLayout.Font = descriptionTextLayout.Font.WithSize (fontSize);
+				descriptionTextLayout.Font = descriptionTextLayout.Font
+					.WithSize (fontSize)
+					.WithWeight (FontWeight.Light);
 			}
 
-			descriptionTextLayout.Width = cellArea.Width - imageX;
-			descriptionTextLayout.Height = cellArea.Height;
-			descriptionTextLayout.Text = buildOutputNode.Message;
 
 			ctx.DrawTextLayout (
 				descriptionTextLayout,
@@ -145,7 +148,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			layout.Text = "W";
 			layout.Font = layout.Font.WithSize (fontSize);
 			fontRequiredSize = layout.GetSize ();
-			return new Size (CellWidth, fontRequiredSize.Height * linesDisplayedCount + descriptionPaddingHeight);
+			return new Size (CellWidth, fontRequiredSize.Height * linesDisplayedCount + descriptionPaddingHeight + 3);
 		}
 
 		protected override void OnDataChanged()
