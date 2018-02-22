@@ -198,12 +198,12 @@ namespace MonoDevelop.AspNetCore
 					var monoRuntime = Runtime.SystemAssemblyService.DefaultRuntime as MonoTargetRuntime;
 					string monoPath = monoRuntime.GetMonoExecutableForAssembly (installerPath);
 
-					string arguments = $"\"{installerPath}\" \"{DotNetCoreRuntime.FileName}\" \"{monoPath}\"";
-					var command = new NativeExecutionCommand (monoPath, arguments);
-
-					var executionHandler = Runtime.ProcessService.GetDefaultExecutionHandler (command);
-
-					var process = executionHandler.Execute (command, progressMonitor.Console);
+					var process = Runtime.ProcessService.StartConsoleProcess (
+						monoPath,
+						$"\"{installerPath}\" \"{DotNetCoreRuntime.FileName}\" \"{monoPath}\"",
+						null,
+						progressMonitor.Console
+					);
 
 					using (var customCancelToken = cancellationToken.Register (process.Cancel)) {
 						await process.Task;

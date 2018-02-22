@@ -336,8 +336,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Refactoring.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.AspNetCore.DevCertInstaller", "src\addins\MonoDevelop.AspNetCore\MonoDevelop.AspNetCore.DevCertInstaller\MonoDevelop.AspNetCore.DevCertInstaller.csproj", "{A9D93F6C-EB26-44FF-8F2A-B3DB411FA410}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.AspNetCore.DevCertWrapper", "src\addins\MonoDevelop.AspNetCore\MonoDevelop.AspNetCore.DevCertWrapper\MonoDevelop.AspNetCore.DevCertWrapper.csproj", "{4DB8621C-B80A-468D-839A-1647D631C693}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2189,16 +2187,6 @@ Global
 		{A9D93F6C-EB26-44FF-8F2A-B3DB411FA410}.ReleaseMac|Any CPU.Build.0 = Release|x64
 		{A9D93F6C-EB26-44FF-8F2A-B3DB411FA410}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{A9D93F6C-EB26-44FF-8F2A-B3DB411FA410}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
-		{4DB8621C-B80A-468D-839A-1647D631C693}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4DB8621C-B80A-468D-839A-1647D631C693}.DebugMac|Any CPU.ActiveCfg = Debug|x64
-		{4DB8621C-B80A-468D-839A-1647D631C693}.DebugMac|Any CPU.Build.0 = Debug|x64
-		{4DB8621C-B80A-468D-839A-1647D631C693}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
-		{4DB8621C-B80A-468D-839A-1647D631C693}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4DB8621C-B80A-468D-839A-1647D631C693}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
-		{4DB8621C-B80A-468D-839A-1647D631C693}.ReleaseMac|Any CPU.ActiveCfg = Release|x64
-		{4DB8621C-B80A-468D-839A-1647D631C693}.ReleaseMac|Any CPU.Build.0 = Release|x64
-		{4DB8621C-B80A-468D-839A-1647D631C693}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
-		{4DB8621C-B80A-468D-839A-1647D631C693}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7525BB88-6142-4A26-93B9-A30C6983390A} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
@@ -2348,7 +2336,6 @@ Global
 		{CD31F051-9012-487B-B7E8-4CDDEA68B3AF} = {DE462010-393D-4655-A42C-2C78BB14D2FA}
 		{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 		{A9D93F6C-EB26-44FF-8F2A-B3DB411FA410} = {1DEFDD53-2677-439D-906E-141ED2AEC19B}
-		{4DB8621C-B80A-468D-839A-1647D631C693} = {1DEFDD53-2677-439D-906E-141ED2AEC19B}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0

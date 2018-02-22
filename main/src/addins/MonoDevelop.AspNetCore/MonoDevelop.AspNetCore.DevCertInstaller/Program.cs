@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using Mono.Unix.Native;
 using Security;
@@ -36,17 +37,17 @@ namespace MonoDevelop.AspNetCore.DevCertInstaller
 		public static int Main (string[] args)
 		{
 			try {
-				string dotNetCorePath = null;
-				string monoPath = null;
-				if (args.Length > 1) {
-					dotNetCorePath = args [0];
-					monoPath = args [1];
-				} else {
+				if (args.Length < 2) {
 					Console.WriteLine ("Arguments missing.");
 					return -4;
 				}
 
-				return Run (monoPath, dotNetCorePath);
+				if (args [0] == "--setuid") {
+					return RunDotNetDevCerts (args [1]);
+				} else {
+					return Run (args [0], args [1]);
+				}
+
 			} catch (Exception ex) {
 				Console.WriteLine (ex.Message);
 				return -2;
@@ -61,11 +62,10 @@ namespace MonoDevelop.AspNetCore.DevCertInstaller
 		/// console application is run which calls setuid to change the user id to 0
 		/// and then runs the dotnet dev-certs.
 		/// </summary>
-		static int Run (string monoPath, string dotNetCorePath)
+		static int Run (string dotNetCorePath, string monoPath)
 		{
-			var directory = Path.GetDirectoryName (typeof (MainClass).Assembly.Location);
-			var fileName = Path.Combine (directory, "MonoDevelop.AspNetCore.DevCertWrapper.exe");
-			var args = new [] { fileName, dotNetCorePath };
+			var fileName = typeof (MainClass).Assembly.Location;
+			var args = new [] { fileName, "--setuid", dotNetCorePath };
 
 			var flags = AuthorizationFlags.ExtendRights |
 				AuthorizationFlags.InteractionAllowed |
@@ -103,6 +103,20 @@ namespace MonoDevelop.AspNetCore.DevCertInstaller
 					Console.WriteLine ($"Exit code from dotnet dev-certs: {exitCode}");
 				}
 				return exitCode;
+			}
+		}
+
+		static int RunDotNetDevCerts (string dotNetCorePath)
+		{
+			int result = Syscall.setuid (0);
+			if (result != 0) {
+				Console.WriteLine ("Unable to set user id to root.");
+				return -3;
+			}
+
+			using (var process = Process.Start (dotNetCorePath, "dev-certs https --trust")) {
+				process.WaitForExit ();
+				return process.ExitCode;
 			}
 		}
 	}
