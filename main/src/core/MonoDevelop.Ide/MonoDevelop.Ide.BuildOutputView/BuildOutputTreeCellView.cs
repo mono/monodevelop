@@ -52,6 +52,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputTreeCellView : CanvasCellView
 	{
+		const int FontSize = 11;
+		const int DescriptionPaddingHeight = 0;
+		const int LinesDisplayedCount = 1;
+		const int DefaultIformationContainerWidth = 400;
+		const int ImageSide = 20;
+		const int ImageLeftPadding = 2;
+
 		public double CellWidth { get; set; }
 
 		public Color BackgroundColor { get; set; }
@@ -62,18 +69,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public IDataField<bool> HasBackgroundColorField { get; set; }
 
-		public BuildOutputTreeCellView () 
-		{
-			BackgroundColor = Styles.CellBackgroundColor;
-			StrongSelectionColor = Styles.CellStrongSelectionColor;
-			SelectionColor = Styles.CellSelectionColor;
-			UseStrongSelectionColor = true;
-		}
-
-		const int FontSize = 11;
-		const int DescriptionPaddingHeight = 0;
-		const int LinesDisplayedCount = 1;
-
 		WidgetSpacing packageDescriptionPadding = new WidgetSpacing (5, 5, 5, 10);
 		WidgetSpacing packageImagePadding = new WidgetSpacing (0, 0, 0, 5);
 		WidgetSpacing checkBoxPadding = new WidgetSpacing (10, 0, 0, 10);
@@ -81,14 +76,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public IDataField<BuildOutputNode> BuildOutputNodeField { get; set; }
 
 		BuildOutputNode buildOutputNode;
-
+		Font defaultFontLayout;
 		Size fontRequiredSize;
-		const int InformationRightDistance = 400;
-		const int ImageSide = 20;
-		const int ImageLeftPadding = 2;
+		int informationContainerWidth;
 		int imageX => ImageSide + ImageLeftPadding + 5;
-
+	
 		bool IsFirstNode () => buildOutputNode.Parent == null;
+
+		public BuildOutputTreeCellView ()
+		{
+			BackgroundColor = Styles.CellBackgroundColor;
+			StrongSelectionColor = Styles.CellStrongSelectionColor;
+			SelectionColor = Styles.CellSelectionColor;
+			UseStrongSelectionColor = true;
+			informationContainerWidth = DefaultIformationContainerWidth;
+		}
 
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
 		{
@@ -109,21 +111,30 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			var duration = buildOutputNode.GetDurationAsString ();
 			if (duration != "") {
-				var textStartX = BackgroundBounds.Width - InformationRightDistance;
-				DrawText (ctx, cellArea, textStartX, duration);
+				
+				UpdateInformationTextColor (ctx);
+
+				var textStartX = BackgroundBounds.Width - informationContainerWidth;
+				DrawText (ctx, cellArea, textStartX, informationContainerWidth, duration);
 			}
 		}
 
-		void DrawText (Context ctx, Xwt.Rectangle cellArea, double x, string text) 
+		void DrawText (Context ctx, Xwt.Rectangle cellArea, double x, double width, string text, Font font = null) 
 		{
-			UpdateInformationTextColor (ctx);
+			if (Math.Max (width, 0) == 0) {
+				return;
+			}
 
 			var descriptionTextLayout = new TextLayout ();
-			descriptionTextLayout.Width = BackgroundBounds.Width - x; 
+			descriptionTextLayout.Width = width;
 			descriptionTextLayout.Height = cellArea.Height;
-			descriptionTextLayout.Font = descriptionTextLayout.Font
-					.WithSize (FontSize)
-					.WithWeight (FontWeight.Light);
+			descriptionTextLayout.Trimming = TextTrimming.WordElipsis;
+
+			if (font == null) {
+				descriptionTextLayout.Font = defaultFontLayout.WithWeight (FontWeight.Light);
+			} else {
+				descriptionTextLayout.Font = font;
+			}
 
 			descriptionTextLayout.Text = text;
 
@@ -134,27 +145,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			UpdateTextColor (ctx);
 
-			// NodeText
-			var descriptionTextLayout = new TextLayout ();
-			descriptionTextLayout.Width = cellArea.Width - imageX;
-			descriptionTextLayout.Height = cellArea.Height;
-			descriptionTextLayout.Text = buildOutputNode.Message;
-			descriptionTextLayout.Trimming = TextTrimming.Word;
-
+			Font font;
 			if (IsFirstNode ()) {
-				descriptionTextLayout.Font = descriptionTextLayout.Font
-					.WithSize (FontSize)
-					.WithWeight (FontWeight.Bold);
+				font = defaultFontLayout.WithWeight (FontWeight.Bold);
 			} else {
-				descriptionTextLayout.Font = descriptionTextLayout.Font
-					.WithSize (FontSize)
-					.WithWeight (FontWeight.Light);
+				font = defaultFontLayout.WithWeight (FontWeight.Light);
 			}
 
-			ctx.DrawTextLayout (
-				descriptionTextLayout,
-				cellArea.Left + imageX,
-				cellArea.Top + ((cellArea.Height - fontRequiredSize.Height) * .5));
+			var startX = cellArea.Left + imageX;
+			var width = BackgroundBounds.Width - informationContainerWidth - startX;
+
+			DrawText (ctx, cellArea, startX, width, buildOutputNode.Message, font);
 		}
 
 		void DrawImageRow (Context ctx, Xwt.Rectangle cellArea)
@@ -188,6 +189,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var layout = new TextLayout ();
 			layout.Text = "W";
 			layout.Font = layout.Font.WithSize (FontSize);
+			defaultFontLayout = layout.Font;
 			fontRequiredSize = layout.GetSize ();
 			return new Size (CellWidth, fontRequiredSize.Height * LinesDisplayedCount + DescriptionPaddingHeight + 
 			                 (buildOutputNode.NodeType == BuildOutputNodeType.Build ? 12 : 3));
