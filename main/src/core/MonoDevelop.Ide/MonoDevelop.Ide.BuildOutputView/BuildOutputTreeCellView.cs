@@ -108,8 +108,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			imageSide = (int) cellArea.Height;
 
+			var image = buildOutputNode.GetImage ()
+			                           .WithSize (imageSide);
 			ctx.DrawImage (
-				buildOutputNode.GetImage ().WithSize (imageSide),
+				Selected ? image.WithStyles ("sel") : image,
 				cellArea.Left + imageLeftPadding,
 				cellArea.Top,
 				imageSide,
