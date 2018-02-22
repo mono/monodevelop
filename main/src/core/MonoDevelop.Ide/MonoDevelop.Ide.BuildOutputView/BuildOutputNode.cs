@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			case BuildOutputNodeType.Message:
 				return Resources.MessageIcon;
 			case BuildOutputNodeType.Error:
-				return Resources.ErrorIcon;
+				return Resources.ErrorIconSmall;
 			case BuildOutputNodeType.Parameters:
 				return Resources.FolderIcon;
 			case BuildOutputNodeType.Project:
@@ -99,9 +99,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			case BuildOutputNodeType.TargetSkipped:
 				return Resources.TargetIcon;
 			case BuildOutputNodeType.Task:
-				return Resources.TaskIcon;
+				if (HasErrors) {
+					return Resources.ErrorIcon;
+				}
+				return HasWarnings ? Resources.WarningIcon : Resources.TaskIcon;
 			case BuildOutputNodeType.Warning:
-				return Resources.WarningIcon;
+				return Resources.WarningIconSmall;
 			}
 			LoggingService.LogDebug ("Icon not found for node: {0}", NodeType.ToString ());
 			return ImageService.GetIcon (Ide.Gui.Stock.Empty);
