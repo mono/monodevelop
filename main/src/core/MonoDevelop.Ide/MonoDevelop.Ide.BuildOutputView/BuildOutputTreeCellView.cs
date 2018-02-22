@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		WidgetSpacing packageImagePadding = new WidgetSpacing (0, 0, 0, 5);
 		WidgetSpacing checkBoxPadding = new WidgetSpacing (10, 0, 0, 10);
 
-		FilteredBuildOutputNode buildOutputNode;
+		BuildOutputNode buildOutputNode;
 
 		Size fontRequiredSize;
 		const int InformationRightDistance = 400;
@@ -220,7 +220,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			base.OnDataChanged();
 			var backEnd = (Xwt.GtkBackend.CellViewBackend) this.BackendHost.Backend;
-			buildOutputNode = (FilteredBuildOutputNode) backEnd.TreeModel.GetValue (backEnd.CurrentIter, 0);
+			buildOutputNode = (BuildOutputNode) backEnd.TreeModel.GetValue (backEnd.CurrentIter, 0);
 		}
 
 		Color GetSelectedColor ()
