@@ -59,6 +59,8 @@ using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.VisualStudio.Platform;
 
+using Counters = MonoDevelop.Ide.Counters;
+
 namespace MonoDevelop.CSharp.Completion
 {
 	sealed class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IDebuggerExpressionResolver
