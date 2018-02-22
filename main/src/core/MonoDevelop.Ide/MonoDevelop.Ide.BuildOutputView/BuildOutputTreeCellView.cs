@@ -120,7 +120,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			// Package description.
 			var descriptionTextLayout = new TextLayout ();
-			descriptionTextLayout.Font = descriptionTextLayout.Font.WithSize (fontSize);
+
+			if (buildOutputNode.NodeType == BuildOutputNodeType.Build) {
+				descriptionTextLayout.Font = descriptionTextLayout.Font
+					.WithSize (fontSize)
+					.WithWeight(FontWeight.Bold);
+			} else {
+				descriptionTextLayout.Font = descriptionTextLayout.Font.WithSize (fontSize);
+			}
+
 			descriptionTextLayout.Width = cellArea.Width - imageX;
 			descriptionTextLayout.Height = cellArea.Height;
 			descriptionTextLayout.Text = buildOutputNode.Message;
