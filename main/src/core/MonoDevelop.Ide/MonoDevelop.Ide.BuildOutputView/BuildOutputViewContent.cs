@@ -112,6 +112,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return control.GoToMessage (description, project);
 		}
 
+		[CommandHandler (EditCommands.Copy)]
+		public void Copy ()
+		{
+			control.ClipboardCopy ();
+		}
+
 		[CommandHandler (SearchCommands.Find)]
 		public void Find ()
 		{
@@ -128,6 +134,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public void FindPrevious ()
 		{
 			control.FindPrevious (this, EventArgs.Empty);
+		}
+
+		[CommandUpdateHandler (EditCommands.Copy)]
+		public void UpdateCopyHandler (CommandInfo cinfo)
+		{
+			cinfo.Enabled = control.CanClipboardCopy ();
 		}
 
 		[CommandUpdateHandler (SearchCommands.FindNext)]

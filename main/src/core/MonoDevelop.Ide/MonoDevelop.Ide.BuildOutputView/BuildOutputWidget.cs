@@ -308,9 +308,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 					menu.Add (new SeparatorContextMenuItem ());
 				}
 
-				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy Element Output"));
+				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy Element Output     {0}", GetShortcut (EditCommands.Copy)));
 				copyElementMenu.Clicked += (s,evnt) => {
-					Clipboard.SetText (selectedNode.ToString (true));
+					ClipboardCopy (selectedNode);
 				};
 				menu.Items.Add (copyElementMenu);
 
@@ -332,6 +332,20 @@ namespace MonoDevelop.Ide.BuildOutputView
 			pathBar.SetPath (entries);
 			CurrentPath = pathBar.Path;
 			PathChanged?.Invoke (this, new DocumentPathChangedEventArgs (CurrentPath));
+		}
+
+		public bool CanClipboardCopy () => treeView.SelectedRow != null;
+
+		public void ClipboardCopy ()
+		{
+			ClipboardCopy (treeView.SelectedRow as BuildOutputNode);
+		}
+
+		private void ClipboardCopy (BuildOutputNode selectedNode)
+		{
+			if (selectedNode != null) {
+				Clipboard.SetText (selectedNode.ToString (true));
+			}
 		}
 
 		async void FindFirst (object sender, EventArgs args)
