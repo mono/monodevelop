@@ -8,20 +8,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	static class Styles
 	{
-		public static Xwt.Drawing.Color LineBorderColor { get; internal set; }
-		public static Xwt.Drawing.Color BackgroundColor { get; internal set; }
-		public static Xwt.Drawing.Color PackageInfoBackgroundColor { get; internal set; }
 		public static Xwt.Drawing.Color CellBackgroundColor { get; internal set; }
 		public static Xwt.Drawing.Color CellSelectionColor { get; internal set; }
 		public static Xwt.Drawing.Color CellStrongSelectionColor { get; internal set; }
 		public static Xwt.Drawing.Color CellTextColor { get; internal set; }
 		public static Xwt.Drawing.Color CellTextSelectionColor { get; internal set; }
-		public static Xwt.Drawing.Color PackageSourceUrlTextColor { get; internal set; }
-		public static Xwt.Drawing.Color PackageSourceUrlSelectedTextColor { get; internal set; }
-		public static Xwt.Drawing.Color PackageSourceErrorTextColor { get; internal set; }
-		public static Xwt.Drawing.Color PackageSourceErrorSelectedTextColor { get; internal set; }
-		public static Xwt.Drawing.Color ErrorBackgroundColor { get; internal set; }
-		public static Xwt.Drawing.Color ErrorForegroundColor { get; internal set; }
 
 		static Styles ()
 		{
@@ -38,25 +29,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			// Shared
-			BackgroundColor = Ide.Gui.Styles.PrimaryBackgroundColor;
-
 			CellTextColor = Ide.Gui.Styles.BaseForegroundColor;
 			CellStrongSelectionColor = Ide.Gui.Styles.BaseSelectionBackgroundColor;
 			CellSelectionColor = Ide.Gui.Styles.BaseSelectionBackgroundColor;
 			CellTextSelectionColor = Ide.Gui.Styles.BaseSelectionTextColor;
-
-			PackageInfoBackgroundColor = Ide.Gui.Styles.SecondaryBackgroundLighterColor;
-			PackageSourceErrorTextColor = Ide.Gui.Styles.ErrorForegroundColor;
-			PackageSourceUrlTextColor = Ide.Gui.Styles.SecondaryTextColor;
-
-			PackageSourceErrorSelectedTextColor = PackageSourceErrorTextColor;
-
-			PackageSourceUrlSelectedTextColor = Xwt.Drawing.Color.FromName ("#ffffff");
-
-			LineBorderColor = Ide.Gui.Styles.SeparatorColor;
-
-			ErrorBackgroundColor = Ide.Gui.Styles.StatusWarningBackgroundColor;
-			ErrorForegroundColor = Ide.Gui.Styles.StatusWarningTextColor;
 		}
 	}
 
@@ -149,8 +125,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			descriptionTextLayout.Text = text;
 
-			ctx.DrawTextLayout (
-				descriptionTextLayout, x, cellArea.Top + ((cellArea.Height - fontRequiredSize.Height) * .5));
+			ctx.DrawTextLayout (descriptionTextLayout, x, cellArea.Top + ((cellArea.Height - fontRequiredSize.Height) * .5));
 		}
 
 		void DrawNodeText (Context ctx, Xwt.Rectangle cellArea)
@@ -182,8 +157,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		void DrawImageRow (Context ctx, Xwt.Rectangle cellArea)
 		{
-			var image = buildOutputNode.GetImage ()
-									   .WithSize (ImageSide);
+			var image = buildOutputNode.GetImage ().WithSize (ImageSide);
 			DrawImage (ctx, cellArea, image, cellArea.Left + ImageLeftPadding);
 		}
 

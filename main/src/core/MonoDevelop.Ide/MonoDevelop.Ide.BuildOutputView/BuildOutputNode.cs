@@ -103,9 +103,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			case BuildOutputNodeType.Warning:
 				return Resources.WarningIcon;
 			}
+			LoggingService.LogDebug ("Icon not found for node: {0}", NodeType.ToString ());
 			return ImageService.GetIcon (Ide.Gui.Stock.Empty);
 		}
-
 
 		public BuildOutputNode FindChild (string message)
 		{
