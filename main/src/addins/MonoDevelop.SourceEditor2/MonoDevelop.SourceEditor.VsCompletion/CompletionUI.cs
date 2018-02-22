@@ -210,22 +210,6 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 			return result;
 		}
 
-		public void MoveCursor (int relative)
-		{
-			int newIndex = GetIndex (false, SelectedItemIndex) + relative;
-			newIndex = Math.Min (filteredItems.Count - 1, Math.Max (0, newIndex));
-
-			int newSelection = newIndex;
-			if (newSelection < 0)
-				return;
-
-			if (SelectedItemIndex == newSelection && relative < 0) {
-				SelectedItemIndex = 0;
-			} else {
-				SelectedItemIndex = newSelection;
-			}
-		}
-
 		public void ScrollToSelectedItem ()
 		{
 			ScrollToItem (SelectedItemIndex);
@@ -265,6 +249,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 		protected override bool OnButtonPressEvent (EventButton e)
 		{
 			SelectedItemIndex = GetRowByPosition ((int)e.Y);
+			CompletionItemSelected?.Invoke (this, new CompletionItemSelectedEventArgs (SelectedItem, !SelectionEnabled));
 			buttonPressed = true;
 			if (e.Button == 1 && e.Type == Gdk.EventType.TwoButtonPress) {
 				CommitRequested?.Invoke (this, new CompletionItemEventArgs (SelectedItem));
@@ -524,6 +509,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 		{
 			base.OnSizeAllocated (allocation);
 			SetAdjustments (false);
+			UpdateDescription (SelectedItem).Ignore ();
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -599,14 +585,21 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 		{
 			presentationData = presentation;
 			filteredItems = presentationData.Items.ToList ();
+			SelectionEnabled = !presentationData.UseSuggestionMode;
 			CalcVisibleRows ();
 			SetAdjustments ();
 			SelectedItemIndex = presentationData.SelectedItemIndex;
 			QueueDraw ();
 		}
 
-		public void Close()
+		public void Close ()
 		{
+			if (descriptionWindow != null) {
+				descriptionWindow.Destroy ();
+				descriptionWindow = null;
+			}
+			var manager = textView.GetSpaceReservationManager ("completion");
+			manager.RemoveAgent (agent);
 		}
 
 		CancellationTokenSource descriptionCts = new CancellationTokenSource ();
@@ -620,9 +613,16 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 			descriptionCts.Cancel ();
 			descriptionCts = new CancellationTokenSource ();
 			var token = descriptionCts.Token;
-			var description = await completionItem.Source.GetDescriptionAsync (completionItem, CancellationToken.None);
+			object description = null;
+			try {
+				description = await completionItem.Source.GetDescriptionAsync(completionItem, token);
+			} catch (OperationCanceledException) { }
 			if (token.IsCancellationRequested)
 				return;
+			if (descriptionWindow != null) {
+				descriptionWindow.Destroy ();
+				descriptionWindow = null;
+			}
 			if (description is string str) {
 				descriptionWindow = new XwtThemedPopup ();
 				descriptionWindow.Content = new Xwt.Label (str);
@@ -648,11 +648,6 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 			descriptionWindow.Hide ();
 		}
 
-		public void SetSelection (int selectedIndex)
-		{
-			throw new NotImplementedException ();//This will be removed in future and selection will be updated via Update method
-		}
-
 		public new void Hide ()
 		{
 			if (descriptionWindow != null) {
@@ -664,12 +659,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 
 		public override void Dispose ()
 		{
-			if (descriptionWindow != null) {
-				descriptionWindow.Destroy ();
-				descriptionWindow = null;
-			}
-			var manager = textView.GetSpaceReservationManager ("completion");
-			manager.RemoveAgent (agent);
+			this.Close ();
 			base.Dispose ();
 		}
 

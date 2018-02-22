@@ -30,50 +30,42 @@ using System.Composition;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Microsoft.VisualStudio.Commanding;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.Commanding;
+using Microsoft.VisualStudio.Text.Editor.Commanding.Commands;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Export (typeof (IExperimentationServiceInternal))]
+	class ExperimentationServiceInternal : IExperimentationServiceInternal
+	{
+		public bool IsCachedFlightEnabled (string flightName)
+		{
+			return "CompletionAPI" == flightName;
+		}
+	}
+
 	public class VsCompletionTextEditorExtension : TextEditorExtension
 	{
 		private ITextView view;
-		IAsyncCompletionBroker host;
+		IEditorCommandHandlerService editorCommandHandlerService;
 
-		protected override void Initialize()
+		protected override void Initialize ()
 		{
-			base.Initialize();
-			host = CompositionManager.GetExportedValue<IAsyncCompletionBroker> ();
+			base.Initialize ();
 			view = Editor.TextView;
-		}
-
-		private IEnumerable<Lazy<IAsyncCompletionItemSourceProvider, IOrderableContentTypeMetadata>> completionItemSourceProviders;
-
-		private ImmutableDictionary<IContentType, bool> _cachedCompletionItemSourceProviders = ImmutableDictionary<IContentType, bool>.Empty;
-
-		private bool AnyCompletionItemSourceProviders (IContentType contentType)
-		{
-			if (_cachedCompletionItemSourceProviders.TryGetValue (contentType, out var cachedSources)) {
-				return cachedSources;
-			}
-			if (completionItemSourceProviders == null)
-				completionItemSourceProviders = CompositionManager.Instance.ExportProvider.GetExports<IAsyncCompletionItemSourceProvider, IOrderableContentTypeMetadata> ();
-			bool result = false;
-			foreach (var item in completionItemSourceProviders) {
-				if (item.Metadata.ContentTypes.Any (n => contentType.IsOfType (n))) {
-					result = true;
-					break;
-				}
-			}
-			_cachedCompletionItemSourceProviders = _cachedCompletionItemSourceProviders.Add (contentType, result);
-			return result;
+			editorCommandHandlerService = CompositionManager.GetExportedValue<IEditorCommandHandlerServiceFactory> ().GetService (view, view.TextBuffer);
 		}
 
 		public override bool IsValidInContext (DocumentContext context)
@@ -87,235 +79,73 @@ namespace MonoDevelop.Ide.Editor.Extension
 			} else if (textView.TextBuffer is IProjectionBuffer) {
 				isValidInContext = true;
 			} else {
-				isValidInContext = AnyCompletionItemSourceProviders (textView.TextDataModel.DocumentBuffer.ContentType);
+				isValidInContext = CompositionManager.GetExportedValue<IAsyncCompletionBroker> ().IsCompletionSupported (textView);
 			}
 
 			return isValidInContext;
 		}
 
-		private IEnumerable<SnapshotPoint> GetSnapshotPointsAtPosition(SnapshotPoint position)
+		[CommandUpdateHandler (TextEditorCommands.ShowCompletionWindow)]
+		void UpdateCompletionCommand (CommandInfo info)
 		{
-			List<SnapshotPoint> snapshotPoints = new List<SnapshotPoint> ();
-			snapshotPoints.Add (position);
-
-			for (int currentSnapshotPointIndex = 0; currentSnapshotPointIndex < snapshotPoints.Count; currentSnapshotPointIndex++) {
-				SnapshotPoint currentSnapshotPoint = snapshotPoints[currentSnapshotPointIndex];
-				if (currentSnapshotPoint.Snapshot is IProjectionSnapshot currentProjectionSnapshot) {
-					snapshotPoints.AddRange (currentProjectionSnapshot.MapToSourceSnapshots (currentSnapshotPoint));
-				}
-			}
-
-			return snapshotPoints;
+			info.Enabled = editorCommandHandlerService.GetCommandState ((textView, textBuffer) => new InvokeCompletionListCommandArgs (textView, textBuffer), null).IsAvailable;
 		}
 
-		private IEnumerable<IContentType> GetContentTypesAtCaret()
+		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
+		void RunCompletionCommand ()
 		{
-			// TODO: Cache the caret and content type information?
-			SnapshotPoint caretPosition = view.Caret.Position.BufferPosition;
-
-			IEnumerable<SnapshotPoint> snapshotPoints = GetSnapshotPointsAtPosition (caretPosition);
-			IEnumerable<IContentType> contentTypes = snapshotPoints.Select (sp => sp.Snapshot.ContentType);
-
-			return contentTypes.Distinct();
+			editorCommandHandlerService.Execute ((textView, textBuffer) => new InvokeCompletionListCommandArgs (textView, textBuffer), null);
 		}
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			IEnumerable<IContentType> contentTypes = GetContentTypesAtCaret ();
-
-			if (contentTypes.All (ct => !AnyCompletionItemSourceProviders (ct))) {
-				// No content type at the caret provides a completion item source
-				return true;
-			}
-
-			bool ExecThisAndIfFailedExecNext (Func<bool> func)
+			bool? nextCommandResult = null;
+			void NextCommand ()
 			{
-				var funcResult = func ();
-				if (funcResult) {
-					funcResult = base.KeyPress (descriptor);
-				}
-				return funcResult;
+				nextCommandResult = base.KeyPress (descriptor);
 			}
-			bool result = true;
 			try {
 				switch (descriptor.SpecialKey) {
 				case SpecialKey.BackSpace:
-					// TODO: get deleted character
-					result = base.KeyPress (descriptor);
-					result &= OpenCompletionFromDeletion ();
+					editorCommandHandlerService.Execute ((textView, textBuffer) => new BackspaceKeyCommandArgs (textView, textBuffer), NextCommand);
 					break;
 				case SpecialKey.Escape:
-					result = ExecThisAndIfFailedExecNext (Dismiss);
+					editorCommandHandlerService.Execute ((textView, textBuffer) => new EscapeKeyCommandArgs (textView, textBuffer), NextCommand);
 					break;
-				//case (uint)VSConstants.VSStd2KCmdID.COMPLETEWORD:
-				//result = OpenCompletionFromCommand ();
-				//break;
 				case SpecialKey.Delete:
-					result = ExecThisAndIfFailedExecNext (Dismiss);
+					editorCommandHandlerService.Execute ((textView, textBuffer) => new DeleteKeyCommandArgs (textView, textBuffer), NextCommand);
 					break;
-				//case (uint)VSConstants.VSStd2KCmdID.DELETEWORDLEFT:
-				//	result = ExecThisAndIfFailedExecNext (Dismiss);
-				//	break;
-				//case (uint)VSConstants.VSStd2KCmdID.DELETEWORDRIGHT:
-				//result = ExecThisAndIfFailedExecNext (Dismiss);
-				//break;
 				case SpecialKey.Return:
-					result = ExecThisAndIfFailedExecNext (Commit);
+					editorCommandHandlerService.Execute ((textView, textBuffer) => new ReturnKeyCommandArgs (textView, textBuffer), NextCommand);
 					break;
-				//case (uint)VSConstants.VSStd2KCmdID.SHOWMEMBERLIST:
-				//result = OpenCompletionFromCommand ();
-				//break;
 				case SpecialKey.Tab:
-					result = ExecThisAndIfFailedExecNext (Commit);
+					editorCommandHandlerService.Execute ((textView, textBuffer) => new TabKeyCommandArgs (textView, textBuffer), NextCommand);
 					break;
 				case SpecialKey.Down:
-					result = ExecThisAndIfFailedExecNext (ExecuteDown);
+					editorCommandHandlerService.Execute ((textView, textBuffer) => new DownKeyCommandArgs (textView, textBuffer), NextCommand);
 					break;
 				case SpecialKey.PageDown:
-					result = ExecThisAndIfFailedExecNext (ExecutePageDown);
+					editorCommandHandlerService.Execute ((textView, textBuffer) => new PageDownKeyCommandArgs (textView, textBuffer), NextCommand);
 					break;
 				case SpecialKey.Up:
-					result = ExecThisAndIfFailedExecNext (ExecuteUp);
+					editorCommandHandlerService.Execute ((textView, textBuffer) => new UpKeyCommandArgs (textView, textBuffer), NextCommand);
 					break;
 				case SpecialKey.PageUp:
-					result = ExecThisAndIfFailedExecNext (ExecutePageUp);
+					editorCommandHandlerService.Execute ((textView, textBuffer) => new PageUpKeyCommandArgs (textView, textBuffer), NextCommand);
 					break;
 				default:
-					if (descriptor.KeyChar != '\0') {
-						// Before we insert and edit, see if we should commit now.
-						// Some language services wish to process this type char themselves
-						// for their undo requirements
-
-						var trackedEdit = view.Caret.Position.BufferPosition.Snapshot.CreateTrackingSpan (new Span (view.Caret.Position.BufferPosition.Position, 0), SpanTrackingMode.EdgeInclusive);
-						result = base.KeyPress (descriptor);
-						result &= ReactToEdit (trackedEdit);
-						break;
-					} else {
-						return base.KeyPress (descriptor);
-					}
+					if (descriptor.KeyChar != '\0')
+						editorCommandHandlerService.Execute ((textView, textBuffer) => new TypeCharCommandArgs (textView, textBuffer, descriptor.KeyChar), NextCommand);
+					break;
 				}
 			} catch (Exception ex) {
 				Debug.WriteLine (ex);
 				Debugger.Break ();
 			}
-			return result;
-		}
-
-		private bool ExecutePageUp ()
-		{
-			if (!host.IsCompletionActive (view))
-				return true;
-
-//			host.SelectPageUp (view);
-			return false;
-		}
-
-		private bool ExecutePageDown ()
-		{
-			if (!host.IsCompletionActive (view))
-				return true;
-
-//			host.SelectPageDown (view);
-			return false;
-		}
-
-		private bool ExecuteDown ()
-		{
-//			if (!host.IsCompletionActive (view))
-				return true;
-
-//			host.SelectDown (view);
-//			return false;
-		}
-
-		private bool ExecuteUp ()
-		{
-			//if (!host.IsCompletionActive (view))
-				return true;
-
-			//host.SelectUp (view);
-			//return false;
-		}
-
-		private bool ReactToEdit (ITrackingSpan trackedEdit)
-		{
-			var currentSnapshot = view.Caret.Position.BufferPosition.Snapshot;
-			var edit = trackedEdit.GetText (currentSnapshot); // TODO: just get the difference between current snapshot and previous snapshot
-
-			if (edit.Length != 1)
+			if (nextCommandResult.HasValue)
+				return nextCommandResult.Value;
+			else
 				return false;
-
-			var ch = edit[0];
-
-			var session = host.GetSession (view);
-
-			if (session != null && session.ShouldCommit (view, ch, view.Caret.Position.BufferPosition)) {
-				session.Commit (CancellationToken.None, ch);
-				return false;
-			} else {
-				if (view.Caret.Position.VirtualBufferPosition.IsInVirtualSpace) {
-					// TODO: Convert any virtual whitespace to real whitespace by doing an empty edit at the caret position.
-				}
-
-				var trigger = new CompletionTrigger (CompletionTriggerReason.Insertion, ch);
-				var location = view.Caret.Position.BufferPosition;
-				if (session != null) {
-					session.OpenOrUpdate (view, trigger, location);
-					return false;
-				} else {
-					var triggered = host.ShouldTriggerCompletion (view, ch, location);
-					if (triggered) {
-						host.TriggerCompletion (view, location);
-						session.OpenOrUpdate (view, trigger, location);
-						return false;
-					}
-					else {
-						return true;
-					}
-				}
-			}
-		}
-
-		private bool OpenCompletionFromCommand ()
-		{
-			var trigger = new CompletionTrigger (CompletionTriggerReason.Invoke);
-			var location = view.Caret.Position.BufferPosition;
-
-			host.TriggerCompletion (view, location);
-			host.GetSession (view).OpenOrUpdate (view, trigger, location);
-			return false;
-		}
-		private bool OpenCompletionFromDeletion ()
-		{
-			if (!host.IsCompletionActive (view)) {
-				// don't start new completion from deleting characters
-				return false;
-			}
-
-			var trigger = new CompletionTrigger (CompletionTriggerReason.Deletion);
-			var location = view.Caret.Position.BufferPosition;
-
-			host.TriggerCompletion (view, location);
-			host.GetSession (view).OpenOrUpdate (view, trigger, location);
-			return false;
-		}
-
-		private bool Commit ()
-		{
-			if (!host.IsCompletionActive (view))
-				return true;
-
-			host.GetSession (view).Commit (CancellationToken.None);
-			return false;
-		}
-
-		private bool Dismiss ()
-		{
-			if (!host.IsCompletionActive (view))
-				return true;
-
-			host.GetSession (view).Dismiss ();
-			return false;
 		}
 	}
 }
