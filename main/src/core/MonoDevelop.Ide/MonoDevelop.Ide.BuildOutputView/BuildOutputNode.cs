@@ -63,6 +63,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public virtual bool HasWarnings { get; set; } = false;
 		public virtual bool HasData { get; set; } = false;
 
+		public virtual string Configuration { get; set; }
+		public virtual string Platform { get; set; }
+
 		public virtual string File { get; set; }
 		public virtual string Project { get; set; }
 		public virtual int LineNumber { get; set; }
@@ -186,6 +189,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 			set => throw new NotImplementedException ();
 		}
 
+		public override string Platform {
+			get => nodes.First ()?.Platform;
+			set => throw new NotImplementedException ();
+		}
+
+		public override string Configuration {
+			get => nodes.First ()?.Configuration;
+			set => throw new NotImplementedException ();
+		}
+
 		public override string FullMessage {
 			get => nodes.First ()?.FullMessage;
 			set => throw new NotImplementedException ();
@@ -237,6 +250,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public override bool HasErrors { get => masterNode.HasErrors; set => masterNode.HasErrors = value; }
 		public override bool HasWarnings { get => masterNode.HasWarnings; set => masterNode.HasWarnings = value; }
 		public override bool HasData { get => masterNode.HasData; set => masterNode.HasData = value; }
+
+		public override string Configuration { get => masterNode.Configuration; set => masterNode.Configuration = value; }
+		public override string Platform { get => masterNode.Platform; set => masterNode.Platform = value; }
+
 
 		public override string File { get => masterNode.File; set => masterNode.File = value; }
 		public override string Project { get => masterNode.Project; set => masterNode.Project = value; }

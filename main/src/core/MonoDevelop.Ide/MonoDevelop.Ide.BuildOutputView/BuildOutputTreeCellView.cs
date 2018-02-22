@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		const int FontSize = 11;
 		const int DescriptionPaddingHeight = 0;
 		const int LinesDisplayedCount = 1;
-		const int DefaultIformationContainerWidth = 400;
+		const int DefaultIformationContainerWidth = 370;
 		const int ImageSide = 20;
 		const int ImageLeftPadding = 2;
 
@@ -101,7 +101,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			if (!IsFirstNode ()) {
 				DrawNodeInformation (ctx, cellArea);
+			} else {
+				DrawFirstNodeInformation (ctx, cellArea);
 			}
+		}
+
+		void DrawFirstNodeInformation (Context ctx, Xwt.Rectangle cellArea)
+		{
+			UpdateInformationTextColor (ctx);
+			var textStartX = BackgroundBounds.Width - informationContainerWidth;
+			DrawText (ctx, cellArea, textStartX, BackgroundBounds.Width - textStartX, GetInformationMessage ());
+		}
+
+		string GetInformationMessage ()
+		{
+			return $"{buildOutputNode.Configuration} | {buildOutputNode.Platform}    Started at {buildOutputNode.StartTime.ToString ("h:m tt on MMMM d, yyyy")}";
 		}
 
 		void DrawNodeInformation (Context ctx, Xwt.Rectangle cellArea)
