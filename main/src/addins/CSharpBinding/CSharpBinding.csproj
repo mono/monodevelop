@@ -408,6 +408,7 @@
     <Compile Include="MonoDevelop.CSharp.Tooltips\QuickInfoProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.OptionProvider\OptionProviderFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.OptionProvider\CSharpDocumentOptionsProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Project\CSharpLanguageVersionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
