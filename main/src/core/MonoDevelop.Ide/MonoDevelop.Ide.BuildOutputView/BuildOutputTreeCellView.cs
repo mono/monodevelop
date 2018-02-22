@@ -97,8 +97,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		Size fontRequiredSize;
 
-		int imageSide;
-		const int imageOffset = 4;
+		const int imageSide = 20;
 		const int imageLeftPadding = 2;
 		int imageX => imageSide + imageLeftPadding + 5;
 
@@ -106,8 +105,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			FillCellBackground (ctx);
 			UpdateTextColor (ctx);
-
-			imageSide = (int) cellArea.Height + imageOffset;
 
 			var image = buildOutputNode.GetImage ()
 			                           .WithSize (imageSide);
