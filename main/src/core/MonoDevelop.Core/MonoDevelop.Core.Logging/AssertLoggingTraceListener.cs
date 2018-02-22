@@ -45,7 +45,7 @@ namespace MonoDevelop.Core.Logging
 			if (callerFrame == frames.Length - 1)
 				callerFrame = 0;
 
-			var sb = new StringBuilder ();
+			var sb = StringBuilderCache.New();
 			if (IsRealMessage (message)) {
 				if (!string.IsNullOrEmpty (detailMessage)) {
 					sb.AppendFormat ("Failed assertion: {0} - {1}", message, detailMessage);

@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (String.IsNullOrEmpty (str))
 				return string.Empty;
 			
-			StringBuilder sb = new StringBuilder (str.Length);
+			var sb = StringBuilderCache.New ();
 			MarkupUtilities.AppendEscapedString (sb, str, 0, str.Length);
 			return sb.ToString (); 
 		}
