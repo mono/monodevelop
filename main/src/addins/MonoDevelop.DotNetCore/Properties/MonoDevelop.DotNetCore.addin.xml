@@ -48,7 +48,7 @@
 			condition="UseNetCore1x=true"
 			category="netcore/app/general"/>
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0">
 		<Template
 			id="Microsoft.Common.Console.CSharp"
 			templateId="Microsoft.Common.Console.CSharp.2.0"
@@ -70,6 +70,30 @@
 			imageId="md-netcore-console-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore20=true"
+			category="netcore/app/general"/>
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.1">
+		<Template
+			id="Microsoft.Common.Console.CSharp"
+			templateId="Microsoft.Common.Console.CSharp.2.1"
+			_overrideName="Console Application"
+			_overrideDescription="Creates a new .NET Core console project."
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg"
+			icon="md-netcore-console-project"
+			imageId="md-netcore-console-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore21=true"
+			category="netcore/app/general"/>
+		<Template
+			id="Microsoft.Common.Console.FSharp"
+			templateId="Microsoft.Common.Console.FSharp.2.1"
+			_overrideName="Console Application"
+			_overrideDescription="Creates a new .NET Core console project."
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg"
+			icon="md-netcore-console-project"
+			imageId="md-netcore-console-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore21=true"
 			category="netcore/app/general"/>
 		</Condition>
 		<!--
@@ -102,7 +126,7 @@
 			condition="UseNetStandard1x=true"
 			category="multiplat/library/general" />
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false" sdkVersion="2.*">
+		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false" sdkVersion="2.0">
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
@@ -121,6 +145,32 @@
 			id="Microsoft.Common.Library.FSharp"
 			templateId="Microsoft.Common.Library.FSharp.2.0"
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
+			icon="md-crossplatform-library-project"
+			imageId="md-crossplatform-library-project"
+			supportedParameters="NetStandard;FSharpNetStandard"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetStandard20=true"
+			category="multiplat/library/general" />
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false" sdkVersion="2.1">
+		<Template
+			_overrideName=".NET Standard Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.CSharp"
+			templateId="Microsoft.Common.Library.CSharp.2.1"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg"
+			icon="md-crossplatform-library-project"
+			imageId="md-crossplatform-library-project"
+			supportedParameters="NetStandard"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetStandard20=true"
+			category="multiplat/library/general" />
+		<Template
+			_overrideName=".NET Standard Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.FSharp"
+			templateId="Microsoft.Common.Library.FSharp.2.1"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg"
 			icon="md-crossplatform-library-project"
 			imageId="md-crossplatform-library-project"
 			supportedParameters="NetStandard;FSharpNetStandard"
@@ -157,7 +207,7 @@
 			condition="UseNetStandard1x=true"
 			category="netcore/library/general" />
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0">
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
@@ -176,6 +226,32 @@
 			id="Microsoft.Common.Library.FSharp"
 			templateId="Microsoft.Common.Library.FSharp.2.0"
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			supportedParameters="NetStandard;FSharpNetStandard"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetStandard20=true"
+			category="netcore/library/general" />
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.1">
+		<Template
+			_overrideName=".NET Standard Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.CSharp"
+			templateId="Microsoft.Common.Library.CSharp.2.1"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			supportedParameters="NetStandard"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetStandard20=true"
+			category="netcore/library/general" />
+		<Template
+			_overrideName=".NET Standard Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.FSharp"
+			templateId="Microsoft.Common.Library.FSharp.2.1"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			supportedParameters="NetStandard;FSharpNetStandard"
@@ -207,7 +283,7 @@
 			condition="UseNetCore1x=true"
 			category="netcore/library/general" />
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0">
 		<Template
 			_overrideName="Class Library"
 			_overrideDescription="Creates a new .NET Core class library project."
@@ -233,6 +309,34 @@
 			supportedParameters="FSharpNetCoreLibrary;NetCoreLibrary"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore20=true"
+			category="netcore/library/general" />
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.1">
+		<Template
+			_overrideName="Class Library"
+			_overrideDescription="Creates a new .NET Core class library project."
+			id="Microsoft.Common.Library.CSharp-netcoreapp"
+			templateId="Microsoft.Common.Library.CSharp.2.1"
+			groupId="Microsoft.Common.Library-netcoreapp"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			supportedParameters="NetCoreLibrary"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore21=true"
+			category="netcore/library/general" />
+		<Template
+			_overrideName="Class Library"
+			_overrideDescription="Creates a new .NET Core class library project."
+			id="Microsoft.Common.Library.FSharp-netcoreapp"
+			templateId="Microsoft.Common.Library.FSharp.2.1"
+			groupId="Microsoft.Common.Library-netcoreapp"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			supportedParameters="FSharpNetCoreLibrary;NetCoreLibrary"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore21=true"
 			category="netcore/library/general" />
 		</Condition>
 		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.*">
@@ -277,7 +381,7 @@
 			condition="UseNetCore1x=true"
 			category="netcore/test/general" />
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0">
 		<Template
 			id="Microsoft.Test.xUnit.CSharp"
 			templateId="Microsoft.Test.xUnit.CSharp.2.0"
@@ -321,6 +425,52 @@
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore20=true"
+			category="netcore/test/general" />
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.1">
+		<Template
+			id="Microsoft.Test.xUnit.CSharp"
+			templateId="Microsoft.Test.xUnit.CSharp.2.1"
+			_overrideName="xUnit Test Project"
+			_overrideDescription="Creates a new xUnit test project."
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore21=true"
+			category="netcore/test/general" />
+		<Template
+			id="Microsoft.Test.xUnit.FSharp"
+			templateId="Microsoft.Test.xUnit.FSharp.2.1"
+			_overrideName="xUnit Test Project"
+			_overrideDescription="Creates a new xUnit test project."
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore21=true"
+			category="netcore/test/general" />
+		<Template
+			id="Microsoft.Test.MSTest.CSharp"
+			templateId="Microsoft.Test.MSTest.CSharp.2.1"
+			_overrideName="MSTest Project"
+			_overrideDescription="Creates a new MSTest project."
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore21=true"
+			category="netcore/test/general" />
+		<Template
+			id="Microsoft.Test.MSTest.FSharp"
+			templateId="Microsoft.Test.MSTest.FSharp.2.1"
+			_overrideName="MSTest Project"
+			_overrideDescription="Creates a new MSTest project."
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.1.1.0.1-beta3-20180215-1392068.nupkg"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore21=true"
 			category="netcore/test/general" />
 		</Condition>
 	</Extension>
