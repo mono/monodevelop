@@ -27,7 +27,7 @@ type IndentationTrackerTests() =
     let insertEnterAtSection (text:string) =
         let doc = docWithCaretAt text
         EditActions.InsertNewLine doc.Editor
-        doc.Editor.Text
+        doc.Editor.Text.Insert(doc.Editor.CaretOffset, "§")
 
     [<Test>]
     member x.``Basic indents``() =
@@ -70,7 +70,7 @@ let b = (fun a ->
         |> insertEnterAtSection
         |> should equal @"  let a = 123
 
-  let c = 321"
+  §let c = 321"
 
     [<Test>]
     member x.``Enter after equals indents``() =
@@ -78,7 +78,7 @@ let b = (fun a ->
         input
         |> insertEnterAtSection
         |> shouldEqualIgnoringLineEndings """  let a = 
-  123"""
+  §123"""
 
     [<Test>]
     member x.``Enter at line start``() =
@@ -97,7 +97,7 @@ let b = (fun a ->
             type Item =
                  { Text: string; Description: string }
 
-            type Model =
+            §type Model =
                  { Count : int
                    Items : Item[] }
             """
@@ -119,7 +119,7 @@ let b = (fun a ->
             type Item =
                  { Text: string; Description: string }
 
-            type Model =
+     §       type Model =
                  { Count : int
                    Items : Item[] }
             """

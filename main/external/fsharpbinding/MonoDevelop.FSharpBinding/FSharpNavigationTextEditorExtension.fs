@@ -14,7 +14,7 @@ type FSharpNavigationTextEditorExtension() =
         let editor = base.Editor
         let documentContext = base.DocumentContext
 
-        let computation = async {
+        async {
             if documentContext :? FsiDocumentContext then return Seq.empty
             else
             match documentContext.ParsedDocument |> Option.tryCast<FSharpParsedDocument> with
@@ -53,5 +53,5 @@ type FSharpNavigationTextEditorExtension() =
 
             | None -> return Seq.empty
         }
+        |> StartAsyncAsTask token
 
-        Async.StartAsTask(computation, cancellationToken = token)
