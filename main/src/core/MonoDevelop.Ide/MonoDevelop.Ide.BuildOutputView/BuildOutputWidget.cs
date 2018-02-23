@@ -469,7 +469,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				try {
 					BuildOutput.ProcessProjects ();
 
-					await Runtime.RunInMainThread (() => {
+					await InvokeAsync (() => {
 						currentSearch = null;
 						searchEntry.Entry.Text = String.Empty;
 						Find (null);
