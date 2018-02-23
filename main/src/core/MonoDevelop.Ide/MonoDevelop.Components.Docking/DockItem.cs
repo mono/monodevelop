@@ -87,7 +87,8 @@ namespace MonoDevelop.Components.Docking
 			get { return stickyVisible; }
 			set { stickyVisible = value; }
 		}
-		
+
+		internal event EventHandler LabelChanged;
 		public string Label {
 			get { return label ?? string.Empty; }
 			set {
@@ -97,6 +98,13 @@ namespace MonoDevelop.Components.Docking
 				frame.UpdateTitle (this);
 				if (floatingWindow != null)
 					floatingWindow.Title = GetWindowTitle ();
+
+				toolbarTop?.UpdateAccessibilityLabel ();
+				toolbarLeft?.UpdateAccessibilityLabel ();
+				toolbarRight?.UpdateAccessibilityLabel ();
+				toolbarBottom?.UpdateAccessibilityLabel ();
+
+				LabelChanged?.Invoke (this, EventArgs.Empty);
 			}
 		}
 
