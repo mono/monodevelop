@@ -144,7 +144,8 @@ namespace MonoDevelop.MacIntegration
 
 			var dir = Path.GetDirectoryName (typeof(MacPlatformService).Assembly.Location);
 
-			ObjCRuntime.Dlfcn.dlopen (Path.Combine (dir, "libxammac.dylib"), 0);
+			if (ObjCRuntime.Dlfcn.dlopen (Path.Combine (dir, "libxammac.dylib"), 0) == IntPtr.Zero)
+				LoggingService.LogFatalError ("Unable to load libxammac");
 
 			mimemap = new Lazy<Dictionary<string, string>> (LoadMimeMapAsync);
 
