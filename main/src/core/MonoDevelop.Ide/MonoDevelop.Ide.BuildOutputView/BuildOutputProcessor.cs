@@ -101,6 +101,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 					p = p.Parent;
 				}
+
+				if (node.Parent != null) {
+					if (nodeType == BuildOutputNodeType.Error) {
+						node.Parent.ErrorCount++;
+					} else if (nodeType == BuildOutputNodeType.Warning) {
+						node.Parent.WarningCount++;
+					}
+				}
 			}
 		}
 
