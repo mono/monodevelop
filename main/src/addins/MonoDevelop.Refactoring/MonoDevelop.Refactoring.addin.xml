@@ -159,6 +159,8 @@
 		<Assembly file="Refactoring Essentials" />
 		<Assembly file="Microsoft.CodeAnalysis.CSharp" />
 		<Assembly file="Microsoft.CodeAnalysis.CSharp.Features" />
+		<Assembly file="Microsoft.CodeAnalysis.EditorFeatures" />
+		<Assembly file="Microsoft.CodeAnalysis.EditorFeatures.CSharp" />
 		<Assembly file="Microsoft.CodeAnalysis.Features" />
 		<Assembly file="Microsoft.CodeAnalysis.VisualBasic" />
 		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Features" />

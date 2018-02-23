@@ -39,10 +39,12 @@ namespace MonoDevelop.AnalysisCore
 	[Export(typeof(IWorkspaceDiagnosticAnalyzerProviderService))]
 	partial class MonoDevelopWorkspaceDiagnosticAnalyzerProviderService : IWorkspaceDiagnosticAnalyzerProviderService
 	{
+		static readonly AnalyzerAssemblyLoader analyzerAssemblyLoader = new AnalyzerAssemblyLoader ();
 		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
+
 		const bool ClrHeapEnabled = false;
 
-		static readonly AnalyzerAssemblyLoader analyzerAssemblyLoader = new AnalyzerAssemblyLoader ();
+		internal OptionsTable Options = new OptionsTable ();
 		readonly ImmutableArray<HostDiagnosticAnalyzerPackage> hostDiagnosticAnalyzerInfo;
 
 		const string extensionPath = "/MonoDevelop/Refactoring/AnalyzerAssemblies";
@@ -50,6 +52,7 @@ namespace MonoDevelop.AnalysisCore
 		public MonoDevelopWorkspaceDiagnosticAnalyzerProviderService ()
 		{
 			LoadAnalyzerAssemblies ();
+			RefactoringEssentials.NRefactory6Host.GetLocalizedString = GettextCatalog.GetString;
 			hostDiagnosticAnalyzerInfo = CreateHostDiagnosticAnalyzerPackages ();
 		}
 
@@ -96,6 +99,7 @@ namespace MonoDevelop.AnalysisCore
 
 					// Figure out a way to disable E&C analyzers.
 					assemblies.Add (asm.Location);
+					Options.ProcessAssembly (asm);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while loading diagnostics in " + asm.FullName, e);
 				}
