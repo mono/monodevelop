@@ -32,6 +32,8 @@ using System;
 using System.Xml;
 using Mono.Unix;
 
+using MonoDevelop.Components.AtkCocoaHelper;
+
 namespace MonoDevelop.Components.Docking
 {
 	public class DockItem
@@ -131,6 +133,10 @@ namespace MonoDevelop.Components.Docking
 					titleTab.VisualStyle = currentVisualStyle;
 					titleTab.SetLabel (Widget, icon, label);
 					titleTab.ShowAll ();
+
+					if (widget != null) {
+						titleTab.Accessible.AddLinkedUIElement (widget.Accessible);
+					}
 				}
 				return titleTab;
 			}
@@ -152,6 +158,10 @@ namespace MonoDevelop.Components.Docking
 					widget.VisualStyle = currentVisualStyle;
 					widget.Visible = false; // Required to ensure that the Shown event is fired
 					widget.Shown += SetupContent;
+
+					if (titleTab != null) {
+						titleTab.Accessible.AddLinkedUIElement (titleTab.Accessible);
+					}
 				}
 				return widget;
 			}
