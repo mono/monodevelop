@@ -49,7 +49,10 @@ namespace MonoDevelop.Components
 	{
 		protected override object CreateNativeWidget<T> ()
 		{
-			return Widget.Surface.NativeWidget;
+			// Use the widgets toolkit to get the native widget prepared for embedding.
+			// Using Widget.Surface.NativeWidget directly may cause sizing issues when embedded
+			// into a different toolkit.
+			return Widget.Surface.ToolkitEngine.GetNativeWidget (Widget);
 		}
 
 		public abstract Xwt.Widget Widget {
