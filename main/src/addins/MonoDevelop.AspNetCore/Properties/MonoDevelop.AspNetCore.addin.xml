@@ -129,7 +129,7 @@
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
 		</Condition>
-		<Condition id="AspNetCoreSdkInstalled" sdkVersion="2.*">
+		<Condition id="AspNetCoreSdkInstalled" sdkVersion="2.0">
 			<Template
 				id="Microsoft.Web.Empty.CSharp"
 				templateId="Microsoft.Web.Empty.CSharp.2.0"
@@ -181,7 +181,8 @@
 				formatExclude="*.min.css|*.min.js|*.map"
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
-				id="Microsoft.Web.RazorPages.CSharp.2.0"
+				id="Microsoft.Web.RazorPages.CSharp"
+				templateId="Microsoft.Web.RazorPages.CSharp.2.0"
 				_overrideName="ASP.NET Core Web App"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Razor Pages content."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
@@ -216,6 +217,97 @@
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 				supportedParameters="FSharpWebApi"
 				condition="UseNetCore20=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+		</Condition>
+		<Condition id="AspNetCoreSdkInstalled" sdkVersion="2.1">
+			<Template
+				id="Microsoft.Web.Empty.CSharp"
+				templateId="Microsoft.Web.Empty.CSharp.2.1"
+				_overrideName="ASP.NET Core Empty"
+				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.1.2.1.0-preview1-final.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore21=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Empty.FSharp"
+				templateId="Microsoft.Web.Empty.FSharp.2.1"
+				_overrideName="ASP.NET Core Empty"
+				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.1.2.1.0-preview1-final.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore21=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Mvc.CSharp"
+				templateId="Microsoft.Web.Mvc.CSharp.2.1"
+				_overrideName="ASP.NET Core Web App (MVC)"
+				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.1.2.1.0-preview1-final.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore21=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Mvc.FSharp"
+				templateId="Microsoft.Web.Mvc.FSharp.2.1"
+				_overrideName="ASP.NET Core Web App (MVC)"
+				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.1.2.1.0-preview1-final.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore21=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.RazorPages.CSharp"
+				templateId="Microsoft.Web.RazorPages.CSharp.2.1"
+				_overrideName="ASP.NET Core Web App"
+				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Razor Pages content."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.1.2.1.0-preview1-final.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				supportedParameters="RazorPages"
+				condition="UseNetCore21=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.WebApi.CSharp"
+				templateId="Microsoft.Web.WebApi.CSharp.2.1"
+				_overrideName="ASP.NET Core Web API"
+				_overrideDescription="A project template for creating an ASP.NET Core application with an example Controller for a RESTful HTTP service. This template can also be used for ASP.NET Core MVC Views and Controllers."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.1.2.1.0-preview1-final.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore21=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.WebApi.FSharp"
+				templateId="Microsoft.Web.WebApi.FSharp.2.1"
+				_overrideName="ASP.NET Core Web API"
+				_overrideDescription="A project template for creating an ASP.NET Core application with an example Controller for a RESTful HTTP service. This template can also be used for ASP.NET Core MVC Views and Controllers."
+				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.1.2.1.0-preview1-final.nupkg"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				supportedParameters="FSharpWebApi"
+				condition="UseNetCore21=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
 		</Condition>
