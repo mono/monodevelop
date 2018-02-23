@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Provides IntelliSense completion for F# in MonoDevelop
 // (this file implements MonoDevelop interfaces and calls 'LanguageService')
 // --------------------------------------------------------------------------------------
@@ -27,13 +27,21 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
                            DisplayFlags = DisplayFlags.DescriptionHasMarkup,
                            Icon = icon)
 
+    let returnType (symbol:FSharpSymbolUse) =
+        match symbol with
+        | MemberFunctionOrValue m ->
+            try
+                Some m.ReturnParameter.Type
+            with _ -> None
+        | _ -> None
+
     /// Check if the datatip has multiple overloads
     override x.HasOverloads = not (List.isEmpty overloads)
     override x.GetRightSideDescription _selected =
         let formatType (t:FSharpType) =
             try "<small>" + syntaxHighlight (t.Format symbol.DisplayContext) + "</small>"
             with ex -> ""
-        SymbolTooltips.returnType symbol
+        returnType symbol
         |> Option.map formatType
         |> Option.fill ""
 
@@ -44,30 +52,28 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
         |> ResizeArray.ofList :> _
 
     override x.CreateTooltipInformation (_smartWrap, cancel) =
-        SymbolTooltips.getTooltipInformation symbol
+        MonoDevelop.FSharp.SymbolTooltips.getTooltipInformation symbol
         |> StartAsyncAsTask cancel
-    
-    (*
-        https://github.com/mono/monodevelop/issues/3798
 
-        Determined that it is too difficult to detect all the occurrences of
-        identifiers in F# code for the time being, so it is hard to determine that the
-        popup should not be displayed. Given this, we should be far less aggressive
-        about auto-committing (even when "Complete with Space or Punctuation" is
-        switched on. This is a good default for C#, but a bad default for F#.)
-
-        This behaviour roughly matches both VS on Windows and VS Code
-    *)
+    /// https://github.com/mono/monodevelop/issues/3798
+    ///
+    /// Determined that it is too difficult to detect all the occurrences of
+    /// identifiers in F# code for the time being, so it is hard to determine that the
+    /// popup should not be displayed. Given this, we should be far less aggressive
+    /// about auto-committing (even when "Complete with Space or Punctuation" is
+    /// switched on. This is a good default for C#, but a bad default for F#.)
+    ///
+    /// This behaviour roughly matches both VS on Windows and VS Code
     override x.IsCommitCharacter (_keyChar, _partialWord) = false
 
     type SimpleCategory(text) =
         inherit CompletionCategory(text, null)
         override x.CompareTo other =
             if other = null then -1 else x.DisplayText.CompareTo other.DisplayText
-           
+
     type Category(text, s:FSharpSymbol) =
         inherit CompletionCategory(text, null)
-    
+
         let ancestry (e: FSharpEntity) =
             e.UnAnnotate()
             |> Seq.unfold (fun x -> x.BaseType
@@ -75,7 +81,7 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
                                                             entity, entity))
             |> Seq.append (e.AllInterfaces
                            |> Seq.map (fun a -> a.TypeDefinition.UnAnnotate()))
-    
+
         member x.Symbol = s
         override x.CompareTo other =
             match other with
@@ -110,7 +116,7 @@ type FsiMemberCompletionData(displayText, completionText, icon) =
         match FSharpInteractivePad.Fsi with
         | Some pad ->
             match pad.Session with
-            | Some session ->              
+            | Some session ->
                 // get completions from remote fsi process
                 pad.RequestTooltip displayText
 
@@ -127,8 +133,8 @@ type FsiMemberCompletionData(displayText, completionText, icon) =
             | _ -> Task.FromResult emptyTooltip
         | _ -> Task.FromResult emptyTooltip
 
-module Completion = 
-    type Context = { 
+module Completion =
+    type Context = {
         completionChar: char
         lineToCaret: string
         editor: TextEditor
@@ -186,7 +192,7 @@ module Completion =
             Some DoubleDot
         else
             None
-    
+
     let (|Attribute|_|) context =
         if Regex.IsMatch(context.lineToCaret, "\[<\w+$", RegexOptions.Compiled) then
             Some Attribute
@@ -232,7 +238,7 @@ module Completion =
         | SymbolUse.ValueType _ -> Stock.Struct
         | SymbolUse.Entity _ -> IconId("md-type")
         | _ -> Stock.Event
-        
+
     let symbolStringToIcon icon =
         match icon with
         | "ActivePatternCase" -> Stock.Enum
@@ -257,7 +263,7 @@ module Completion =
         | "ValueType" -> Stock.Struct
         | "Entity" -> IconId("md-type")
         | _ -> Stock.Event
-        
+
     let tryGetCategory (symbolUse : FSharpSymbolUse) =
         let category =
             try
@@ -318,7 +324,7 @@ module Completion =
                 | _ -> None
             with exn -> None
         category
-        
+
     let getCompletionData (symbols:FSharpSymbolUse list list) isInsideAttribute =
         let categories = Dictionary<string, Category>()
         let getOrAddCategory symbol id =
@@ -347,14 +353,14 @@ module Completion =
                         Some (FSharpMemberCompletionData(head.Symbol.DisplayName, symbolToIcon head, head, tail) :> CompletionData)
 
                 match tryGetCategory head, completion with
-                | Some (id, ent), Some comp -> 
+                | Some (id, ent), Some comp ->
                     let category = getOrAddCategory ent id
                     comp.CompletionCategory <- category
                 | _, _ -> ()
 
                 completion
             | _ -> None
-        
+
         symbols |> List.choose symbolToCompletionData
 
     let compilerIdentifiers =
@@ -386,7 +392,7 @@ module Completion =
     let filterResults (data: seq<CompletionData>) residue =
         data |> Seq.filter(fun c -> residue = "" || (Char.ToLowerInvariant c.DisplayText.[0]) = (Char.ToLowerInvariant residue.[0]))
 
-    let getFsiCompletions context = 
+    let getFsiCompletions context =
 
         async {
             let { column = column
@@ -398,10 +404,10 @@ module Completion =
             match FSharpInteractivePad.Fsi with
             | Some pad ->
                 match pad.Session with
-                | Some session ->              
+                | Some session ->
                     // get completions from remote fsi process
                     pad.RequestCompletions lineToCaret column
-                    let completions = 
+                    let completions =
                         Async.AwaitEvent (session.CompletionsReceived)
                         |> Async.RunSynchronously
                         |> Array.map (fun c -> FsiMemberCompletionData(c.displayText, c.completionText, symbolStringToIcon c.icon))
@@ -429,7 +435,7 @@ module Completion =
     let getCompletions context =
         async {
             try
-                let { 
+                let {
                     line = line
                     column = column
                     documentContext = documentContext
@@ -470,8 +476,8 @@ module Completion =
 
                             // Add ident completions from the current line
                             // as the semantic parse might not be up to date
-                            let lineCompletions = 
-                                tokens 
+                            let lineCompletions =
+                                tokens
                                 |> List.filter (fun token -> token.TokenName = "IDENT")
                                 |> List.map tokenToCompletion
 
@@ -481,14 +487,14 @@ module Completion =
                         result.TriggerWordLength <- residue.Length
 
                 match typedParseResults with
-                | None -> 
+                | None ->
                     addIdentCompletions()
                 | Some tyRes ->
                     // Get declarations and generate list for MonoDevelop
                     let! symbols = tyRes.GetDeclarationSymbols(line, column, lineToCaret)
                     match symbols with
                     | Some (symbols, residue) ->
-                        let isInAttribute = 
+                        let isInAttribute =
                             match context with
                             | Attribute -> true
                             | _ -> false
@@ -501,19 +507,19 @@ module Completion =
                             result.DefaultCompletionString <- residue
                             result.TriggerWordLength <- residue.Length
 
-                            
+
                         //TODO Use previous token and pattern match to detect whitespace
                         if Regex.IsMatch(lineToCaret, "(^|\s+|\()\w+$", RegexOptions.Compiled) then
                             // Add the code templates and compiler generated identifiers if the completion char is not '.'
                             CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
                             result.AddRange (filterResults compilerIdentifiers residue)
-                                    
+
                             result.AddRange (filterResults keywordCompletionData residue)
                     | None -> addIdentCompletions()
-                
+
                 return result
             with
-            | :? Threading.Tasks.TaskCanceledException -> 
+            | :? Threading.Tasks.TaskCanceledException ->
                 return CompletionDataList()
             | e ->
                 LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
@@ -524,14 +530,14 @@ module Completion =
         let result = CompletionDataList()
         result.DefaultCompletionString <- completions.residue
         result.TriggerWordLength <- completions.residue.Length
-        let completions = 
+        let completions =
             completions.paths
             |> Seq.map (fun path -> CompletionData(path))
         result.AddRange completions
         result
 
     let getModifiers context =
-        let { 
+        let {
             column = column
             lineToCaret = lineToCaret
             ctrlSpace = ctrlSpace
@@ -540,13 +546,13 @@ module Completion =
         let (_, residue) = Parsing.findLongIdentsAndResidue(column, lineToCaret)
         let result = CompletionDataList()
         result.DefaultCompletionString <- residue
-        result.TriggerWordLength <- residue.Length 
+        result.TriggerWordLength <- residue.Length
         // To prevent the "No completions found" when typing an identifier
         // here -> `let myident|`
         // but allow completions
         // here -> `let mutab|`
         // but not here -> `let m|`
-        let filteredModifiers = modifierCompletionData 
+        let filteredModifiers = modifierCompletionData
                                 |> Seq.filter (fun c -> c.DisplayText.StartsWith(residue))
         if residue.Length > 1 || ctrlSpace then
             result.AddRange filteredModifiers
@@ -581,7 +587,7 @@ module Completion =
                 | InvalidCompletionChar
                 | DoubleDot
                 | LiteralNumber
-                | FunctionIdentifier -> 
+                | FunctionIdentifier ->
                     return CompletionDataList()
                 | ModuleOrTypeIdentifier
                 | OtherIdentifier ->
@@ -597,7 +603,7 @@ module Completion =
             results.AutoCompleteEmptyMatch <- false
             results.AutoCompleteUniqueMatch <- ctrlSpace
 
-            return results :> ICompletionDataList 
+            return results :> ICompletionDataList
         }
 
 type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
@@ -650,15 +656,15 @@ type FsiParameterHintingData (tooltip: MonoDevelop.FSharp.Shared.ParameterToolti
     override x.CreateTooltipInformation (_editor, _context, paramIndex: int, _smartWrap:bool, cancel) =
         async {
                 match tooltip with
-                | MonoDevelop.FSharp.Shared.ParameterTooltip.ToolTip (signature, doc, parameters) -> 
-                    let signature, parameterName = 
+                | MonoDevelop.FSharp.Shared.ParameterTooltip.ToolTip (signature, doc, parameters) ->
+                    let signature, parameterName =
                         if paramIndex = -1 || paramIndex < parameters.Length - 1 then
                             Highlight.syntaxHighlight signature, null
                         else
                             let paramName = parameters.[paramIndex]
                             let lines =
                                 String.getLines signature
-                                |> Array.mapi (fun i line -> 
+                                |> Array.mapi (fun i line ->
                                                 if i = paramIndex + 1 then
                                                     let regex = new System.Text.RegularExpressions.Regex(paramName)
                                                     regex.Replace(line, sprintf "_STARTUNDERLINE_%s_ENDUNDERLINE_" paramName, 1)
@@ -666,9 +672,9 @@ type FsiParameterHintingData (tooltip: MonoDevelop.FSharp.Shared.ParameterToolti
                                                     line)
                             let signature = Highlight.syntaxHighlight (String.concat "\n" lines)
                             let signature = signature.Replace("_STARTUNDERLINE_", "<u>").Replace("_ENDUNDERLINE_", "</u>")
-                                             
+
                             signature, parameters.[paramIndex]
-                    
+
                     return SymbolTooltips.getTooltipInformationFromSignature doc signature parameterName
                 | _ -> return TooltipInformation()
             }
@@ -704,14 +710,14 @@ module ParameterHinting =
             LoggingService.LogDebug("FSharpTextEditorCompletion - HandleParameterCompletionAsync: Getting Parameter Info, startOffset = {0}", startOffset)
 
             if documentContext :? FsiDocumentContext then
-            
+
                 match FSharpInteractivePad.Fsi with
                 | Some pad ->
                     match pad.Session with
                     | Some session ->
                         let _line, col, lineStr = editor.GetLineInfoFromOffset (startOffset)
                         pad.RequestParameterHint lineStr col
-                        let tooltips = 
+                        let tooltips =
                             Async.AwaitEvent (session.ParameterHintReceived)
                             |> Async.RunSynchronously
 
@@ -762,7 +768,7 @@ module ParameterHinting =
     // -1 means the cursor is outside the method parameter list
     // 0 means no parameter entered
     // > 0 is the index of the parameter (1-based)
-    let getParameterIndex (editor:TextEditor, startOffset) = 
+    let getParameterIndex (editor:TextEditor, startOffset) =
         let cursor = editor.CaretOffset
         let i = startOffset // the original context
         if (i < 0 || i >= editor.Length || editor.GetCharAt (i) = ')') then -1
@@ -817,7 +823,7 @@ type FSharpTextEditorCompletion() =
     override x.HandleCodeCompletionAsync(context, triggerInfo, token) =
         let ctrlSpace = triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CompletionCommand
         if IdeApp.Preferences.EnableAutoCodeCompletion.Value || ctrlSpace then
-            Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, ctrlSpace) 
+            Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, ctrlSpace)
             |> StartAsyncAsTask token
         else
             Task.FromResult null
@@ -828,4 +834,3 @@ type FSharpTextEditorCompletion() =
                 return ParameterHinting.getParameterIndex(x.Editor, startOffset)
         }
         |> StartAsyncAsTask token
-        
