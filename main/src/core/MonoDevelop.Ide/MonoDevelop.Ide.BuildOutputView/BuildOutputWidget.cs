@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				Expands = true
 			};
 			var pack = new BuildOutputTreeCellView (this);
-			treeColumn.Views.Add (pack);
+			treeColumn.Views.Add (pack, true);
 			treeView.Columns.Add (treeColumn);
 
 			PackStart (treeView, expand: true, fill: true);
