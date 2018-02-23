@@ -57,7 +57,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		const int LinesDisplayedCount = 1;
 		const int DefaultIformationContainerWidth = 370;
 		const int ImageSide = 20;
-		const int ImageLeftPadding = 2;
 
 		public double CellWidth { get; set; }
 
@@ -79,8 +78,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Font defaultFontLayout;
 		Size fontRequiredSize;
 		int informationContainerWidth;
-		int imageX => ImageSide + ImageLeftPadding + 5;
-	
+
 		bool IsFirstNode () => buildOutputNode.Parent == null;
 
 		public BuildOutputTreeCellView ()
@@ -166,7 +164,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				font = defaultFontLayout.WithWeight (FontWeight.Light);
 			}
 
-			var startX = cellArea.Left + imageX;
+			var startX = cellArea.Left + ImageSide - 3;
 			var width = BackgroundBounds.Width - informationContainerWidth - startX;
 
 			DrawText (ctx, cellArea, startX, width, buildOutputNode.Message, font);
@@ -175,7 +173,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		void DrawImageRow (Context ctx, Xwt.Rectangle cellArea)
 		{
 			var image = buildOutputNode.GetImage ().WithSize (ImageSide);
-			DrawImage (ctx, cellArea, image, cellArea.Left + ImageLeftPadding);
+			DrawImage (ctx, cellArea, image, cellArea.Left - 3);
 		}
 
 		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x)
