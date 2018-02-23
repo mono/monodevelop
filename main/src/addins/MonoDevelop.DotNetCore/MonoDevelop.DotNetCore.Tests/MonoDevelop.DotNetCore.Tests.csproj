@@ -46,6 +46,10 @@
       <Link>MonoDevelop.DotNetCore.Tests\TemplateParameter.cs</Link>
     </Compile>
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreTestBase.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreSdkInstalledConditionTests.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreVersionsRestorerTestBase.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectSupportedTargetFrameworksTests.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTemplateWizardTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
@@ -80,6 +84,11 @@
     <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj">
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
