@@ -289,8 +289,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 		void TreeView_ButtonPressed (object sender, ButtonEventArgs e)
 		{
 			var selectedNode = treeView.SelectedRow as BuildOutputNode;
+			if (selectedNode == null) {
+				return;
+			}
+			if (e.MultiplePress == 2 && e.Button == PointerButton.Left) {
+				if (treeView.IsRowExpanded (selectedNode)) {
+					treeView.CollapseRow (selectedNode);
+				} else {
+					treeView.ExpandRow (selectedNode, false);
+				}
+				return;
+			} 
 
-			if (e.Button == PointerButton.Right && selectedNode != null) {
+			if (e.Button == PointerButton.Right) {
 				var menu = new ContextMenu ();
 
 				ContextMenuItem jump = null;
