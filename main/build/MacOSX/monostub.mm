@@ -403,7 +403,7 @@ int main (int argc, char **argv)
 	}
 
 #if STATIC_REGISTRAR
-	libvsmregistrar = dlopen ("@loader_path/vsmregistrar.dylib", RTLD_LAZY);
+	libvsmregistrar = dlopen ("@loader_path/libvsmregistrar.dylib", RTLD_LAZY);
 	if (!libvsmregistrar) {
 		libvsmregistrar = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libvsmregistrar.dylib", RTLD_LAZY);
 		if (!libvsmregistrar) {
