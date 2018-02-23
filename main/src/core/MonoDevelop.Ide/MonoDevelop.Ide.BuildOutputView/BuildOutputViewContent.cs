@@ -64,11 +64,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 				if (control != null)
 					return control;
 				var toolbar = WorkbenchWindow.GetToolbar (this);
-				if (buildOutput != null)
-					control = new BuildOutputWidget (buildOutput, ContentName, toolbar);
-				else
-					control = new BuildOutputWidget (filename, toolbar);
-				control.FileSaved += FileNameChanged;
+				// native mode on Mac only, until we support Wpf embedding
+				var engine = Xwt.Toolkit.NativeEngine.Type == ToolkitType.XamMac ? Xwt.Toolkit.NativeEngine : Xwt.Toolkit.CurrentEngine;
+				engine.Invoke (() => {
+					if (buildOutput != null)
+						control = new BuildOutputWidget (buildOutput, ContentName, toolbar);
+					else
+						control = new BuildOutputWidget (filename, toolbar);
+					control.FileSaved += FileNameChanged;
+				});
 				return control;
 			}
 		}

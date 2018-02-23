@@ -123,41 +123,45 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			Spacing = 0;
 
-			showDiagnosticsButton = new CheckBox (GettextCatalog.GetString ("Diagnostic log verbosity"));
-			showDiagnosticsButton.Accessible.Identifier = "BuildOutputWidget.ShowDiagnosticsButton";
-			showDiagnosticsButton.TooltipText = GettextCatalog.GetString ("Show full (diagnostics enabled) or reduced log");
-			showDiagnosticsButton.Accessible.Description = GettextCatalog.GetString ("Diagnostic log verbosity");
-			showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
+			// FIXME: DocumentToolbar does not support native widgets
+			// Toolbar items must use Gtk, for now
+			Xwt.Toolkit.Load (ToolkitType.Gtk).Invoke (() => {
+				showDiagnosticsButton = new CheckBox (GettextCatalog.GetString ("Diagnostic log verbosity"));
+				showDiagnosticsButton.Accessible.Identifier = "BuildOutputWidget.ShowDiagnosticsButton";
+				showDiagnosticsButton.TooltipText = GettextCatalog.GetString ("Show full (diagnostics enabled) or reduced log");
+				showDiagnosticsButton.Accessible.Description = GettextCatalog.GetString ("Diagnostic log verbosity");
+				showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 
-			saveButton = new Button (GettextCatalog.GetString ("Save"));
-			saveButton.Accessible.Identifier = "BuildOutputWidget.SaveButton";
-			saveButton.TooltipText = GettextCatalog.GetString ("Save build output");
-			saveButton.Accessible.Description = GettextCatalog.GetString ("Save build output");
+				saveButton = new Button (GettextCatalog.GetString ("Save"));
+				saveButton.Accessible.Identifier = "BuildOutputWidget.SaveButton";
+				saveButton.TooltipText = GettextCatalog.GetString ("Save build output");
+				saveButton.Accessible.Description = GettextCatalog.GetString ("Save build output");
 
-			saveButton.Clicked += SaveButtonClickedAsync;
+				saveButton.Clicked += SaveButtonClickedAsync;
 
-			searchEntry = new SearchEntry ();
-			searchEntry.Accessible.SetLabel (GettextCatalog.GetString ("Search"));
-			searchEntry.Accessible.Name = "BuildOutputWidget.Search";
-			searchEntry.Accessible.Description = GettextCatalog.GetString ("Search the build log");
-			searchEntry.WidthRequest = 200;
-			searchEntry.Visible = true;
-			searchEntry.EmptyMessage = GettextCatalog.GetString ("Search Build Output");
-			           
-			resultInformLabel = new Label ();
-			searchEntry.AddLabelWidget ((Gtk.Label) resultInformLabel.ToGtkWidget());
+				searchEntry = new SearchEntry ();
+				searchEntry.Accessible.SetLabel (GettextCatalog.GetString ("Search"));
+				searchEntry.Accessible.Name = "BuildOutputWidget.Search";
+				searchEntry.Accessible.Description = GettextCatalog.GetString ("Search the build log");
+				searchEntry.WidthRequest = 200;
+				searchEntry.Visible = true;
+				searchEntry.EmptyMessage = GettextCatalog.GetString ("Search Build Output");
 
-			searchEntry.Entry.Changed += FindFirst;
-			searchEntry.Entry.Activated += FindNext;
+				resultInformLabel = new Label ();
+				searchEntry.AddLabelWidget ((Gtk.Label)resultInformLabel.ToGtkWidget ());
 
-			buttonSearchBackward = new Button ();
-			buttonSearchForward = new Button ();
-			buttonSearchBackward.Clicked += FindPrevious;
-			buttonSearchForward.Clicked += FindNext;
-			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext, true));
-			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious, true));
-			buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
-			buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
+				searchEntry.Entry.Changed += FindFirst;
+				searchEntry.Entry.Activated += FindNext;
+
+				buttonSearchBackward = new Button ();
+				buttonSearchForward = new Button ();
+				buttonSearchBackward.Clicked += FindPrevious;
+				buttonSearchForward.Clicked += FindNext;
+				buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext, true));
+				buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious, true));
+				buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
+				buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
+			});
 
 			box = new Gtk.VBox ();
 			box.Spacing = 0;
