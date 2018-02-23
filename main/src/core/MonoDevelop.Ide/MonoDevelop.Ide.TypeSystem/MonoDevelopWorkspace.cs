@@ -1301,6 +1301,22 @@ namespace MonoDevelop.Ide.TypeSystem
 			var path = GetMetadataPath (metadataReference);
 			if (mdProject == null || path == null)
 				return;
+			foreach (var r in mdProject.References) {
+				if (r.ReferenceType == MonoDevelop.Projects.ReferenceType.Assembly && r.Reference == path) {
+					LoggingService.LogWarning ("Warning duplicate reference is added " + path);
+					return;
+				}
+
+				if (r.ReferenceType == MonoDevelop.Projects.ReferenceType.Project) {
+					foreach (var fn in r.GetReferencedFileNames (MonoDevelop.Projects.ConfigurationSelector.Default)) {
+						if (fn == path) {
+							LoggingService.LogWarning ("Warning duplicate reference is added " + path + " for project " + r.Reference);
+							return;
+						}
+					}
+				}
+			}
+
 			mdProject.AddReference (path);
 			tryApplyState_changedProjects.Add (mdProject);
 			this.OnMetadataReferenceAdded (projectId, metadataReference);

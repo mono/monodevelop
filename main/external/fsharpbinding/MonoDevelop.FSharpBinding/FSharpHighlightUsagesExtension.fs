@@ -1,4 +1,4 @@
-namespace MonoDevelop.FSharp
+﻿namespace MonoDevelop.FSharp
 
 open System
 open System.Threading.Tasks
@@ -25,9 +25,7 @@ type HighlightUsagesExtension() =
         | doc when doc.FileName = FilePath.Null || doc.FileName <> x.Editor.FileName || x.DocumentContext.ParsedDocument = null -> Task.FromResult(None)
         | _doc ->
             LoggingService.LogDebug("HighlightUsagesExtension: ResolveAsync starting on {0}", x.DocumentContext.Name |> IO.Path.GetFileName )
-            Async.StartAsTask (
-                cancellationToken = token,
-                computation = async {
+            async {
                 try
                     let line, col, lineStr = x.Editor.GetLineInfoByCaretOffset ()
                     let currentFile = x.DocumentContext.Name
@@ -38,7 +36,9 @@ type HighlightUsagesExtension() =
                 with
                 | :? TaskCanceledException -> return None
                 | exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
-                         return None })
+                         return None 
+            }
+            |> StartAsyncAsTask token
 
     override x.GetReferencesAsync(resolveResult, token) =
         let references =

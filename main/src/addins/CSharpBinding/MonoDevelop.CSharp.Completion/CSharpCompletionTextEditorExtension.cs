@@ -59,6 +59,8 @@ using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.VisualStudio.Platform;
 
+using Counters = MonoDevelop.Ide.Counters;
+
 namespace MonoDevelop.CSharp.Completion
 {
 	sealed class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IDebuggerExpressionResolver
@@ -307,7 +309,7 @@ namespace MonoDevelop.CSharp.Completion
 				syntaxTree.GetContainingTypeOrEnumDeclaration (position, cancellationToken) is EnumDeclarationSyntax ||
 				syntaxTree.IsPreProcessorDirectiveContext (position, cancellationToken))
 				return;
-
+			
 			var extensionMethodImport = syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken);
 			ITypeSymbol extensionType = null;
 
@@ -334,7 +336,6 @@ namespace MonoDevelop.CSharp.Completion
 				syntaxTree.IsStatementContext (position, tokenLeftOfPosition, cancellationToken) ||
 				syntaxTree.IsTypeContext (position, cancellationToken) ||
 				syntaxTree.IsTypeDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
-				syntaxTree.IsNamespaceContext (position, cancellationToken) ||
 				syntaxTree.IsMemberDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
 				syntaxTree.IsLabelContext (position, cancellationToken)) {
 				var usedNamespaces = new HashSet<string> ();
