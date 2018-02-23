@@ -78,17 +78,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public event EventHandler<FilePath> FileSaved;
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 
-		public BuildOutputWidget (BuildOutput output, string viewContentName)
+		public BuildOutputWidget (BuildOutput output, string viewContentName, DocumentToolbar toolbar)
 		{
-			Initialize ();
+			Initialize (toolbar);
 			ViewContentName = viewContentName;
 			SetupBuildOutput (output);
 			filePathLocation = FilePath.Empty;
 		}
 
-		public BuildOutputWidget (FilePath filePath)
+		public BuildOutputWidget (FilePath filePath, DocumentToolbar toolbar)
 		{
-			Initialize ();
+			Initialize (toolbar);
 
 			ViewContentName = filePath;
 			var output = new BuildOutput ();
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			box.Show ();
 		}
 
-		void Initialize ()
+		void Initialize (DocumentToolbar toolbar)
 		{
 			Spacing = 0;
 
@@ -159,8 +159,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
 			buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
 
-			toolbar = new DocumentToolbar ();
-
 			box = new Gtk.VBox ();
 			box.Spacing = 0;
 			toolbar.Add (box, true);
@@ -173,7 +171,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			toolbar.Add (buttonSearchBackward.ToGtkWidget ());
 			toolbar.Add (buttonSearchForward.ToGtkWidget ());
 
-			PackStart (toolbar.Container, expand: false, fill: true);
 
 			treeView = new TreeView ();
 			treeView.HeadersVisible = false;
