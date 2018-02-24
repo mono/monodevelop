@@ -329,7 +329,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				var collapseAllMenu = new ContextMenuItem (GettextCatalog.GetString ("Collapse All"));
 				collapseAllMenu.Clicked += (s, args) => {
-					var dataSource = treeView.DataSource as BuildOutputDataSource;
+					var dataSource = (BuildOutputDataSource) treeView.DataSource;
 					if (dataSource != null) {
 						foreach (var root in dataSource.RootNodes) {
 							treeView.CollapseRow (root);
