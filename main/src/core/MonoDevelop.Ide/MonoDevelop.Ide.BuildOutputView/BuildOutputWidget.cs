@@ -154,8 +154,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			buttonSearchForward = new Button ();
 			buttonSearchBackward.Clicked += FindPrevious;
 			buttonSearchForward.Clicked += FindNext;
-			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext));
-			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious));
+			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext, true));
+			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious, true));
 			buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
 			buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
 
@@ -288,7 +288,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		void TreeView_ButtonPressed (object sender, ButtonEventArgs e)
 		{
-			var selectedNode = treeView.SelectedRow as BuildOutputNode;
+			var selectedNode = treeView.GetRowAtPosition (e.Position) as BuildOutputNode;
 			if (selectedNode == null) {
 				return;
 			}
@@ -299,7 +299,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					treeView.ExpandRow (selectedNode, false);
 				}
 				return;
-			} 
+			}
 
 			if (e.Button == PointerButton.Right) {
 				var menu = new ContextMenu ();
@@ -319,11 +319,28 @@ namespace MonoDevelop.Ide.BuildOutputView
 					menu.Add (new SeparatorContextMenuItem ());
 				}
 
-				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy Element Output     {0}", GetShortcut (EditCommands.Copy)));
-				copyElementMenu.Clicked += (s,evnt) => {
-					ClipboardCopy (selectedNode);
-				};
+				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy Element Output     {0}", GetShortcut (EditCommands.Copy, false)));
+				copyElementMenu.Clicked += (s, args) => ClipboardCopy (selectedNode);
 				menu.Items.Add (copyElementMenu);
+
+				var expandElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Expand Element"));
+				expandElementMenu.Clicked += (s, args) => treeView.ExpandRow (selectedNode, false);
+				menu.Items.Add (expandElementMenu);
+
+				var collapseAllMenu = new ContextMenuItem (GettextCatalog.GetString ("Collapse All"));
+				collapseAllMenu.Clicked += (s, args) => {
+					var dataSource = (BuildOutputDataSource) treeView.DataSource;
+					if (dataSource != null) {
+						foreach (var root in dataSource.RootNodes) {
+							treeView.CollapseRow (root);
+						}
+					}
+				};
+				menu.Items.Add (collapseAllMenu);
+
+				var expandAllMenu = new ContextMenuItem (GettextCatalog.GetString ("Expand All"));
+				expandAllMenu.Clicked += (s, args) => treeView.ExpandAll ();
+				menu.Items.Add (expandAllMenu);
 
 				menu.Show (treeView.ToGtkWidget (), (int) e.X, (int) e.Y);
 			}
@@ -425,13 +442,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			buttonSearchBackward.Sensitive = currentSearch?.MatchesCount > 0; 
 		}
 
-		static string GetShortcut (object commandId)
+		static string GetShortcut (object commandId, bool includeParen)
 		{
 			var key = IdeApp.CommandService.GetCommand (commandId).AccelKey;
 			if (string.IsNullOrEmpty (key))
 				return "";
 			var nextShortcut = KeyBindingManager.BindingToDisplayLabel (key, false);
-			return "(" + nextShortcut + ")";
+			return includeParen ? "(" + nextShortcut + ")" : nextShortcut;
 		}
 
 		static void ExpandChildrenWithErrors (TreeView tree, BuildOutputDataSource dataSource, BuildOutputNode parent)
