@@ -93,21 +93,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 				while (p != null) {
 					if (nodeType == BuildOutputNodeType.Error) {
 						p.HasErrors = true;
+						p.ErrorCount++;
 					} else if (nodeType == BuildOutputNodeType.Warning) {
 						p.HasWarnings = true;
+						p.WarningCount++;
 					} else if (nodeType == BuildOutputNodeType.Message) {
 						p.HasData = true;
 					}
 
 					p = p.Parent;
-				}
-
-				if (node.Parent != null) {
-					if (nodeType == BuildOutputNodeType.Error) {
-						node.Parent.ErrorCount++;
-					} else if (nodeType == BuildOutputNodeType.Warning) {
-						node.Parent.WarningCount++;
-					}
 				}
 			}
 		}

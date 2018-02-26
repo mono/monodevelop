@@ -131,7 +131,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 				DrawText (ctx, cellArea, textStartX, informationContainerWidth, duration);
 			}
 		
-			if (!IsRowExpanded () && (buildOutputNode.ErrorCount > 0 || buildOutputNode.WarningCount > 0)) {
+			if (!IsRowExpanded () &&
+			    (buildOutputNode.NodeType == BuildOutputNodeType.Task || buildOutputNode.NodeType == BuildOutputNodeType.Target) &&
+			    (buildOutputNode.ErrorCount > 0 || buildOutputNode.WarningCount > 0)) {
 				textStartX += 55;
 
 				DrawImage (ctx, cellArea, Resources.ErrorIcon, textStartX);
