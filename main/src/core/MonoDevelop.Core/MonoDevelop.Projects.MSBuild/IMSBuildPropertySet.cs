@@ -228,7 +228,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			int i = val.IndexOfAny (new char[] {'\n','\r','\t'});
 			if (i != -1 || val [0] == '@') {
-				StringBuilder sb = new StringBuilder ();
+				StringBuilder sb = StringBuilderCache.Allocate ();
 				if (i != -1) {
 					int fi = val.IndexOf ('\\');
 					if (fi != -1 && fi < i) i = fi;
@@ -248,7 +248,7 @@ namespace MonoDevelop.Projects.MSBuild
 					else
 						sb.Append (c);
 				}
-				val = "@" + sb.ToString ();
+				val = "@" + StringBuilderCache.ReturnAndFree (sb);
 			}
 			char fc = val [0];
 			char lc = val [val.Length - 1];
@@ -283,7 +283,7 @@ namespace MonoDevelop.Projects.MSBuild
 				end--;
 			}
 			if (val [start] == '@') {
-				StringBuilder sb = new StringBuilder (val.Length);
+				StringBuilder sb = StringBuilderCache.Allocate ();
 				for (int n = start + 1; n < end; n++) {
 					char c = val [n];
 					if (c == '\\') {
@@ -294,7 +294,7 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 					sb.Append (c);
 				}
-				return sb.ToString ();
+				return StringBuilderCache.ReturnAndFree (sb);
 			}
 			else
 				return val.Substring (start, end - start);

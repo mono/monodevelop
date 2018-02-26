@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using MonoDevelop.Core;
 
 namespace Mono.TextEditor.Utils
 {
@@ -510,9 +511,9 @@ namespace Mono.TextEditor.Utils
 		{
 			if (Root == null)
 				return "<null>";
-			var result = new StringBuilder ();
+			var result = StringBuilderCache.Allocate ();
 			AppendNode (result, Root, 0);
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 	}
 }

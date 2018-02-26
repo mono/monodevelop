@@ -314,7 +314,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
 
-			var name = new StringBuilder ();
+			var name = StringBuilderCache.Allocate ();
 			foreach (var ch in framework.Name) {
 				if (char.IsLetterOrDigit (ch)) {
 					name.Append (ch);
@@ -323,7 +323,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			string result = derivedDataPath.Combine (name.ToString ());
+			string result = derivedDataPath.Combine (StringBuilderCache.ReturnAndFree (name));
 			try {
 				if (!Directory.Exists (result))
 					Directory.CreateDirectory (result);

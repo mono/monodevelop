@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.Projects
 			
 			var sorted = content.ToList ();
 			sorted.Sort ((x, y) => x.Key.CompareTo(y.Key));
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			
 			foreach (var pol in sorted) {
 				if (sb.Length > 0)
@@ -168,7 +168,7 @@ namespace MonoDevelop.Ide.Projects
 					sb.Append (")");
 				}
 			}
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 
 		protected void OnCombPoliciesChanged (object sender, System.EventArgs e)
@@ -256,7 +256,7 @@ namespace MonoDevelop.Ide.Projects
 			
 			store.Clear ();
 			
-			var sb = new StringBuilder ();
+			var sb = StringBuilderCache.Allocate ();
 			foreach (var pol in sorted) {
 				sb.Append (pol.Key);
 				if (pol.Value.Count != 1 || pol.Value[0].Length != 0) {
@@ -277,7 +277,7 @@ namespace MonoDevelop.Ide.Projects
 				store.AppendValues (sb.ToString ());
 				sb.Length = 0;
 			}
-			
+			StringBuilderCache.Free (sb);
 			HasPolicies = sorted.Count > 0;
 		}
 	}

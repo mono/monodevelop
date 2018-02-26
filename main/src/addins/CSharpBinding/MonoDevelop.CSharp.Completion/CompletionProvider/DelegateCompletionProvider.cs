@@ -144,7 +144,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 		static string ToPascalCase (string str)
 		{
-			var result = new StringBuilder ();
+			var result = StringBuilderCache.Allocate ();
 			result.Append (char.ToUpper (str [0]));
 			bool nextUpper = false;
 			for (int i = 1; i < str.Length; i++) {
@@ -158,7 +158,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					nextUpper = true;
 			}
 
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		//public static CompletionCategory category = new DelegateCreationCategory ();
@@ -218,8 +218,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					context.AddItem (item);
 			}
 
-			var sb = new StringBuilder ("(");
-			var sbWithoutTypes = new StringBuilder ("(");
+			var sb = StringBuilderCache.Allocate ("(");
+			var sbWithoutTypes = StringBuilderCache.Allocate ("(");
 			for (int k = 0; k < delegateMethod.Parameters.Length; k++) {
 				if (k > 0) {
 					sb.Append (", ");
@@ -231,7 +231,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 			sb.Append (")");
 			sbWithoutTypes.Append (")");
-			var signature = sb.ToString ()
+			var signature = StringBuilderCache.ReturnAndFree (sb)
 				.Replace (", params ", ", ")
 				.Replace ("(params ", "(");
 
@@ -290,6 +290,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					//}
 				}
 			}
+
+			StringBuilderCache.Free (sbWithoutTypes);
 			item = CreateNewMethodCreationItem (parent, semanticModel, delegateType, position, optDelegateName, delegateMethod, cancellationToken);
 			// item.CompletionCategory = category;
 			if (!context.Items.Any (i => i.DisplayText == item.DisplayText)) {
@@ -300,7 +302,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 		CompletionItem CreateNewMethodCreationItem (SyntaxNode parent, SemanticModel semanticModel, ITypeSymbol delegateType, int position, string optDelegateName, IMethodSymbol delegateMethod, CancellationToken cancellationToken)
 		{
-			var sb = new StringBuilder ();
+			var sb = StringBuilderCache.Allocate ();
 			string varName = optDelegateName ?? "Handle" + delegateType.Name;
 
 			var curType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (position, cancellationToken);
@@ -308,7 +310,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			var pDict = ImmutableDictionary<string, string>.Empty;
 			pDict = pDict.Add ("RightSideMarkup", "<span size='small'>" + GettextCatalog.GetString ("Creates new method") + "</span>");
 			var indent = "\t";
-			sb = new StringBuilder ();
+
 			var enclosingSymbol = semanticModel.GetEnclosingSymbol (position, default (CancellationToken));
 			if (enclosingSymbol != null && enclosingSymbol.IsStatic)
 				sb.Append ("static ");
@@ -337,7 +339,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			sb.Append ("}");
 			sb.Append (eolMarker);
 			pDict = pDict.Add ("Position", position.ToString ());
-			pDict = pDict.Add ("NewMethod", sb.ToString ());
+			pDict = pDict.Add ("NewMethod", StringBuilderCache.ReturnAndFree (sb));
 			pDict = pDict.Add ("MethodName", varName);
 
 			return CompletionItem.Create (uniqueName, properties: pDict, tags: newMethodTags, rules: NewMethodRules);

@@ -103,89 +103,92 @@ namespace MonoDevelop.CSharp.Project
 		 * Won't handle #if false etc kinda blocks*/
 		static string GetNextToken (StreamReader sr)
 		{
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = StringBuilderCache.Allocate ();
+			try {
+				while (true) {
+					int c = sr.Peek ();
+					if (c == -1)
+						return null;
 
-			while (true) {
-				int c = sr.Peek ();
-				if (c == -1)
-					return null;
+					if (c == '\r' || c == '\n') {
+						sr.ReadLine ();
+						if (sb.Length > 0)
+							break;
 
-				if (c == '\r' || c == '\n') {
-					sr.ReadLine ();
-					if (sb.Length > 0)
-						break;
+						continue;
+					}
 
-					continue;
-				}
-
-				if (c == '/') {
-					sr.Read ();
-
-					if (sr.Peek () == '*') {
-						/* multi-line comment */
+					if (c == '/') {
 						sr.Read ();
 
-						while (true) {
-							int n = sr.Read ();
-							if (n == -1)
-								break;
-							if (n != '*')
-								continue;
+						if (sr.Peek () == '*') {
+							/* multi-line comment */
+							sr.Read ();
 
-							if (sr.Peek () == '/') {
-								/* End of multi-line comment */
+							while (true) {
+								int n = sr.Read ();
+								if (n == -1)
+									break;
+								if (n != '*')
+									continue;
+
+								if (sr.Peek () == '/') {
+									/* End of multi-line comment */
+									if (sb.Length > 0) {
+										sr.Read ();
+										return sb.ToString ();
+									}
+									break;
+								}
+							}
+						} else if (sr.Peek () == '/') {
+							//Single line comment, skip the rest of the line
+							sr.ReadLine ();
+							continue;
+						}
+					} else if (c == '"') {
+						/* String "foo" */
+						sr.Read ();
+						while (true) {
+							int n = sr.Peek ();
+							if (n == -1)
+								throw new Exception ("String literal not closed");
+
+							if (n == '"') {
+								/* end of string */
 								if (sb.Length > 0) {
 									sr.Read ();
 									return sb.ToString ();
 								}
+
 								break;
 							}
-						}
-					} else if (sr.Peek () == '/') {
-						//Single line comment, skip the rest of the line
-						sr.ReadLine ();
-						continue;
-					}
-				} else if (c == '"') {
-					/* String "foo" */
-					sr.Read ();
-					while (true) {
-						int n = sr.Peek ();
-						if (n == -1)
-							throw new Exception ("String literal not closed");
-
-						if (n == '"') {
-							/* end of string */
-							if (sb.Length > 0) {
-								sr.Read ();
-								return sb.ToString ();
-							}
-
-							break;
-						}
-						sr.Read ();
-					}
-				} else if (c == '#') {
-					//skip rest of the line
-					sr.ReadLine ();
-				} else {
-					if (Char.IsLetterOrDigit ((char) c) || c == '_' || c == '.') {
-						sb.Append ((char) c);
-					} else {
-						if (sb.Length > 0)
-							break;
-
-						if (c != ' ' && c != '\t') {
 							sr.Read ();
-							return ((char) c).ToString ();
+						}
+					} else if (c == '#') {
+						//skip rest of the line
+						sr.ReadLine ();
+					} else {
+						if (Char.IsLetterOrDigit ((char)c) || c == '_' || c == '.') {
+							sb.Append ((char)c);
+						} else {
+							if (sb.Length > 0)
+								break;
+
+							if (c != ' ' && c != '\t') {
+								sr.Read ();
+								return ((char)c).ToString ();
+							}
 						}
 					}
+
+					sr.Read ();
 				}
 
-				sr.Read ();
+				return sb.ToString ();
+			} finally {
+				StringBuilderCache.Free (sb);
 			}
-
-			return sb.ToString ();
 		}
 
 	}

@@ -33,6 +33,7 @@ using System.Xml.XPath;
 using System.Reflection;
 using System.Text;
 using System.Xml;
+using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Text;
 using System.Collections.Immutable;
@@ -77,7 +78,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			};
 			if (style.FontStyle != Xwt.Drawing.FontStyle.Normal || 
 			    style.FontWeight != Xwt.Drawing.FontWeight.Normal) {
-				var fontStyle = new StringBuilder ();
+				var fontStyle = StringBuilderCache.Allocate ();
 				if (style.FontStyle != Xwt.Drawing.FontStyle.Normal) {
 					fontStyle.Append (style.FontStyle.ToString ().ToLower ());
 					fontStyle.Append (" ");
@@ -85,7 +86,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (style.FontWeight != Xwt.Drawing.FontWeight.Normal) {
 					fontStyle.Append (style.FontWeight.ToString ().ToLower ());
 				}
-				result ["fontStyle"] = fontStyle.ToString ();
+				result ["fontStyle"] = StringBuilderCache.ReturnAndFree (fontStyle);
 			}
 			return result;
 		}

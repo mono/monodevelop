@@ -244,7 +244,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			var expansion = CodeTemplateService.GetExpansionObject (this);
 			var result = new TemplateResult ();
-			var sb = new StringBuilder ();
+			var sb = StringBuilderCache.Allocate ();
 			int lastOffset = 0;
 			string code = context.Editor.FormatString (context.InsertPosition, context.TemplateCode);
 			result.TextLinks = new List<TextLink> ();
@@ -339,7 +339,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			// format & indent template code
 			var data = TextEditorFactory.CreateNewDocument ();
-			data.Text = sb.ToString ();
+			data.Text = StringBuilderCache.ReturnAndFree (sb);
 			data.TextChanged += delegate(object sender, MonoDevelop.Core.Text.TextChangeEventArgs e) {
 				for (int i = 0; i < e.TextChanges.Count; ++i) {
 					var change = e.TextChanges[i];
@@ -369,7 +369,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string IndentCode (string code, string eol, string indent)
 		{
-			var result = new StringBuilder ();
+			var result = StringBuilderCache.Allocate ();
 			for (int i = 0; i < code.Length; i++) {
 				switch (code[i]) {
 				case '\r':
@@ -385,7 +385,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					break;
 				}
 			}
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		static void IndentCode (ITextDocument data, string lineIndent)
@@ -404,38 +404,38 @@ namespace MonoDevelop.Ide.CodeTemplates
 			while (i >= 0 && !Char.IsWhiteSpace (str[i])) {
 				i--;
 			}
-			var indent = new StringBuilder ();
+			var indent = StringBuilderCache.Allocate ();
 			while (i >= 0 && (str[i] == ' ' || str[i] == '\t')) {
 				indent.Append (str[i]);
 				i--;
 			}
-			return indent.ToString ();
+			return StringBuilderCache.ReturnAndFree (indent);
 		}
 		
 		string RemoveIndent (string text, string indent)
 		{
 			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = text;
-			var result = new StringBuilder ();
+			var result = StringBuilderCache.Allocate ();
 			foreach (var line in doc.GetLines ()) {
 				string curLineIndent = line.GetIndentation (doc);
 				int offset = Math.Min (curLineIndent.Length, indent.Length);
 				result.Append (doc.GetTextBetween (line.Offset + offset, line.EndOffsetIncludingDelimiter));
 			}
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 		
 		string Reindent (string text, string indent)
 		{
 			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = text;
-			var result = new StringBuilder ();
+			var result = StringBuilderCache.Allocate ();
 			foreach (var line in doc.GetLines ()) {
 				if (result.Length > 0)
 					result.Append (indent);
 				result.Append (doc.GetTextAt (line.SegmentIncludingDelimiter));
 			}
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		public void Insert (MonoDevelop.Ide.Gui.Document document)
