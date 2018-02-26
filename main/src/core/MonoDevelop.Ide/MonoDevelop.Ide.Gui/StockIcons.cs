@@ -170,5 +170,15 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId AssetsFolder = "md-assets-folder"; // TODO: Unused
 		public static readonly IconId CodeFolder = "md-code-folder";
 		public static readonly IconId ServicesFolder = "md-services-folder";
+
+		// Deprecated folder icons
+		public static readonly IconId ClosedFolder = "md-folder";
+		public static readonly IconId OpenFolder = "md-folder";
+		public static readonly IconId ClosedReferenceFolder = "md-reference-folder";
+		public static readonly IconId OpenReferenceFolder = "md-reference-folder";
+		public static readonly IconId ClosedResourceFolder = "md-resource-folder";
+		public static readonly IconId OpenResourceFolder = "md-resource-folder";
+		public static readonly IconId SolutionFolderClosed = "md-solution-folder";
+		public static readonly IconId SolutionFolderOpen = "md-solution-folder";
 	}
 }
