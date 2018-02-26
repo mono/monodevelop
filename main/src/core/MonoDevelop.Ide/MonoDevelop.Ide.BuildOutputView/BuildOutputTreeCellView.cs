@@ -52,6 +52,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputTreeCellView : CanvasCellView
 	{
+		const double CharSizeMultiplier = 0.75;
+
 		const int FontSize = 11;
 		const int DescriptionPaddingHeight = 0;
 		const int LinesDisplayedCount = 1;
@@ -76,6 +78,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		BuildOutputNode buildOutputNode;
 		Font defaultFontLayout;
+
+		double fontCharWidth;
+
+		//This give us height and width of a character with this font
 		Size fontRequiredSize;
 		int informationContainerWidth;
 		IBuildOutputContextProvider contextProvider;
@@ -140,9 +146,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				DrawImage (ctx, cellArea, Resources.ErrorIcon, textStartX);
 				textStartX += ImageSide + 2;
-				DrawText (ctx, cellArea, textStartX, 10, buildOutputNode.ErrorCount.ToString (), trimming: TextTrimming.Word);
+				var errors = buildOutputNode.ErrorCount.ToString ();
+				DrawText (ctx, cellArea, textStartX, 10, errors, trimming: TextTrimming.Word);
 
-				textStartX += 10;
+				textStartX += fontCharWidth * errors.Length;
+
 				DrawImage (ctx, cellArea, Resources.WarningIcon, textStartX);
 				textStartX += ImageSide + 2;
 				DrawText (ctx, cellArea, textStartX, 10, buildOutputNode.WarningCount.ToString (), trimming: TextTrimming.Word);
@@ -232,6 +240,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			layout.Font = layout.Font.WithSize (FontSize);
 			defaultFontLayout = layout.Font;
 			fontRequiredSize = layout.GetSize ();
+			fontCharWidth = fontRequiredSize.Width * CharSizeMultiplier;
 			return new Size (CellWidth, fontRequiredSize.Height * LinesDisplayedCount + DescriptionPaddingHeight + 
 			                 (buildOutputNode.NodeType == BuildOutputNodeType.Build ? 12 : 3));
 		}
