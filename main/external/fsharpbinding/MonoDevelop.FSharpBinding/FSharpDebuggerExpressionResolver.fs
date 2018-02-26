@@ -10,7 +10,7 @@ type FSharpDebuggerExpressionResolver() =
 
     interface IDebuggerExpressionResolver with
         member x.ResolveExpressionAsync (doc, context, offset, cancellationToken) =
-            let computation = async {
+            async {
                 let ast = context.TryGetAst()
                 let location =
                     match ast with
@@ -71,5 +71,5 @@ type FSharpDebuggerExpressionResolver() =
                     let ts = Symbols.getTextSpan range doc
                     return DebugDataTipInfo(ts, name)}
 
-            Async.StartAsTask (computation, cancellationToken = cancellationToken)
+            |> StartAsyncAsTask cancellationToken
 

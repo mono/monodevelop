@@ -63,8 +63,7 @@ namespace MonoDevelop.Ide.Projects
 			
 			string error = GettextCatalog.GetString ("File {0} is read-only", file.FileName);
 
-			var btn = new AlertButton (GettextCatalog.GetString ("Make Writable"));
-			var res = MessageService.AskQuestion (error, GettextCatalog.GetString ("Would you like {0} to attempt to make the file writable and try again?", BrandingService.ApplicationName), btn, AlertButton.Cancel);
+			var res = MessageService.AskQuestion (error, GettextCatalog.GetString ("Would you like {0} to attempt to make the file writable and try again?", BrandingService.ApplicationName), AlertButton.MakeWriteable, AlertButton.Cancel);
 			if (res == AlertButton.Cancel)
 				throw new UserException (error) { AlreadyReportedToUser = true };
 
