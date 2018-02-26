@@ -343,16 +343,24 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return null;
 		}
 
-		public static string GetDurationAsString (this BuildOutputNode node)
+		public static string GetDurationAsString (this BuildOutputNode node, bool includeDiagnostics)
 		{
 			var duration = node.EndTime.Subtract (node.StartTime);
-			if (duration.TotalHours >= 1) {
-				return GettextCatalog.GetString ("{0}:{1:d2} hours", duration.Hours, duration.Minutes);
-			} else if (duration.TotalSeconds >= 1) {
-				return GettextCatalog.GetString ("{0}:{1:d2} min", duration.Minutes, duration.Seconds);
+			if (includeDiagnostics) {
+				if (duration.TotalHours >= 1) {
+					return String.Format ("{0,12}", duration.ToString (@"hh\:mm\:ss\.fff"));
+				} else {
+					return String.Format ("{0,12}", duration.ToString (@"mm\:ss\.fff"));
+				}
+			} else {
+				if (duration.TotalHours >= 1) {
+					return String.Format ("{0,7}", GettextCatalog.GetString ("{0}h {1}m", duration.Hours, duration.Minutes));
+				} else if (duration.TotalMinutes >= 1) {
+					return String.Format ("{0,7}", GettextCatalog.GetString ("{0}m {1}s", duration.Minutes, duration.Seconds));
+				} else {
+					return String.Format ("{0,7}", GettextCatalog.GetString ("{0}s", duration.Seconds));
+				}
 			}
-
-			return String.Empty;
 		}
 
 		static void ToString (this BuildOutputNode node, bool includeChildren, StringBuilder result, string margin)

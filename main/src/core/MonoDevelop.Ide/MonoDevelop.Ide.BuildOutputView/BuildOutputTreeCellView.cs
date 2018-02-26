@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			var textStartX = BackgroundBounds.Width - informationContainerWidth;
 
-			var duration = buildOutputNode.GetDurationAsString ();
+			var duration = buildOutputNode.GetDurationAsString (buildOutputNode as FilteredBuildOutputNode == null);
 			if (duration != "") {
 				DrawText (ctx, cellArea, textStartX, informationContainerWidth, duration);
 			}
