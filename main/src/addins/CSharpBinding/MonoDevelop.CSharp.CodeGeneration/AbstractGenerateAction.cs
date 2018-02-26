@@ -121,12 +121,12 @@ namespace MonoDevelop.CodeGeneration
 		static string AddIndent (string text, string indent)
 		{
 			var doc = TextEditorFactory.CreateNewReadonlyDocument (new StringTextSource (text), "");
-			var result = StringBuilderCache.New ();
+			var result = StringBuilderCache.Allocate ();
 			foreach (var line in doc.GetLines ()) {
 				result.Append (indent);
 				result.Append (doc.GetTextAt (line.SegmentIncludingDelimiter));
 			}
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		public void GenerateCode (Gtk.TreeView treeView)
@@ -145,7 +145,7 @@ namespace MonoDevelop.CodeGeneration
 					includedMembers.Add (store.GetValue (iter, 3));
 				}
 			}
-			var output = StringBuilderCache.New ();
+			var output = StringBuilderCache.Allocate ();
 			string indent = options.Editor.GetVirtualIndentationString (options.Editor.CaretLine);
 			foreach (string nodeText in GenerateCode (includedMembers)) {
 				if (output.Length > 0) {
@@ -159,7 +159,7 @@ namespace MonoDevelop.CodeGeneration
 				var data = options.Editor;
 				data.EnsureCaretIsNotVirtual ();
 				int offset = data.CaretOffset;
-				var text = output.ToString ().TrimStart ();
+				var text = StringBuilderCache.ReturnAndFree (output).TrimStart ();
 				using (var undo = data.OpenUndoGroup ()) {
 					data.InsertAtCaret (text);
 					OnTheFlyFormatter.Format (data, options.DocumentContext, offset, offset + text.Length);

@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static string EscapedApostrophe = "&apos;";
 		static string EscapedQuote = "&quot;";
 
-		public static void AppendEscapedString (CachedStringBuilder builder, string toEscape, int start, int count)
+		public static void AppendEscapedString (StringBuilder builder, string toEscape, int start, int count)
 		{
 			if (toEscape == null)
 				return;

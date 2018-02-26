@@ -106,9 +106,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (String.IsNullOrEmpty (str))
 				return string.Empty;
 			
-			var sb = StringBuilderCache.New ();
+			var sb = StringBuilderCache.Allocate ();
 			MarkupUtilities.AppendEscapedString (sb, str, 0, str.Length);
-			return sb.ToString (); 
+			return StringBuilderCache.ReturnAndFree(sb); 
 		}
 
 		#region Documentation

@@ -106,7 +106,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			var lane = StringMatcher.GetMatcher (toMatch, true).GetMatch (text);
 			var matchHexColor = selected ? selectedResultMatchTextColor : resultMatchTextColor;
-			var result = StringBuilderCache.New ();
+			var result = StringBuilderCache.Allocate ();
 			if (lane != null) {
 				int lastPos = 0;
 				for (int n=0; n < lane.Length; n++) {
@@ -125,7 +125,7 @@ namespace MonoDevelop.Components.MainToolbar
 			} else {
 				MarkupUtilities.AppendEscapedString (result, text, 0, text.Length);
 			}
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree  (result);
 		}
 
 		public virtual bool CanActivate {

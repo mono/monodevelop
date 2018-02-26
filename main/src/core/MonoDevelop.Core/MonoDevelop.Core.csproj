@@ -757,6 +757,8 @@
     <Compile Include="MonoDevelop.FSW\FileSystemWatcher.cs" />
     <Compile Include="MonoDevelop.FSW\Mono\FileSystemWatcher.cs" />
     <Compile Include="MonoDevelop.Core\StringBuilderCache.cs" />
+    <Compile Include="MonoDevelop.Core\ObjectPool.cs" />
+    <Compile Include="MonoDevelop.Core\SharedPools.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

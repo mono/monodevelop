@@ -24,31 +24,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Text;
 
 namespace MonoDevelop.Core
 {
-	/// <summary>
-	/// This is a pool for storing StringBuilder objects.
-	/// </summary>
-	public static class StringBuilderCache
+	static class SharedPools
 	{
-		public static StringBuilder Allocate ()
+		/// <summary>
+		/// pool that uses default constructor with 100 elements pooled
+		/// </summary>
+		public static ObjectPool<T> BigDefault<T> () where T : class, new()
 		{
-			return SharedPools.Default<StringBuilder> ().Allocate ();
+			return DefaultBigPool<T>.Instance;
 		}
 
-		public static void Free (StringBuilder sb)
+		/// <summary>
+		/// pool that uses default constructor with 20 elements pooled
+		/// </summary>
+		public static ObjectPool<T> Default<T> () where T : class, new()
 		{
-			sb.Clear ();
-			SharedPools.Default<StringBuilder> ().Free (sb);
+			return DefaultNormalPool<T>.Instance;
 		}
 
-		public static string ReturnAndFree (StringBuilder sb)
+		static class DefaultBigPool<T> where T : class, new()
 		{
-			var result = sb.ToString ();
-			Free (sb);
-			return result;
+			public static readonly ObjectPool<T> Instance = new ObjectPool<T> (() => new T (), 100);
+		}
+
+		static class DefaultNormalPool<T> where T : class, new()
+		{
+			public static readonly ObjectPool<T> Instance = new ObjectPool<T> (() => new T (), 20);
 		}
 	}
 }
