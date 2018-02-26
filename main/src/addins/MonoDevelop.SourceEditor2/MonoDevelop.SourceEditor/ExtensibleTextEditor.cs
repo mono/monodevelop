@@ -423,7 +423,7 @@ namespace MonoDevelop.SourceEditor
 				if (sb != null)
 					sb.AppendLine();
 				else
-					sb = new StringBuilder();
+					sb = StringBuilderCache.Allocate();
 
 				if (error.Error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Warning)
 					sb.Append(GettextCatalog.GetString("<b>Warning</b>: {0}",
@@ -433,7 +433,7 @@ namespace MonoDevelop.SourceEditor
 						GLib.Markup.EscapeText(error.Error.Message)));
 			}
 
-			return sb?.ToString();
+			return sb != null ? StringBuilderCache.ReturnAndFree (sb) : null;
 		}
 
 		public MonoDevelop.Projects.Project Project {
