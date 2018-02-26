@@ -26,6 +26,7 @@
 
 using System;
 using System.Text;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Text
 {
@@ -343,10 +344,10 @@ namespace MonoDevelop.Projects.Text
 		
 		void CreateIndentString ()
 		{
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			indentColumnWidth = AddIndentString (sb, indentString);
-			
-			paragFormattedIndentString = sb.ToString () + new string (' ', paragraphStartMargin);
+			sb.Append (new string (' ', paragraphStartMargin));
+			paragFormattedIndentString = StringBuilderCache.ReturnAndFree (sb);
 			paragIndentColumnWidth = indentColumnWidth + paragraphStartMargin;
 			
 			if (LeftMargin > 0) {

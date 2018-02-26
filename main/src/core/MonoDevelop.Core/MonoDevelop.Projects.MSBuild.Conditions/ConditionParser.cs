@@ -257,7 +257,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			if (tokenizer.IsEOF ())
 				throw new ExpressionParseException ("Missing closing parenthesis in condition " + conditionStr);
 
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = Core.StringBuilderCache.Allocate ();
 			sb.AppendFormat ("{0}({1}", prefix, tokenizer.Token.Value);
 
 			tokenizer.GetNextToken ();
@@ -280,7 +280,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			sb.Append (")");
 
 			//FIXME: HACKY!
-			return new ConditionFactorExpression (new Token (sb.ToString (), TokenType.String, token_pos));
+			return new ConditionFactorExpression (new Token (Core.StringBuilderCache.ReturnAndFree (sb), TokenType.String, token_pos));
 		}
 
 		void ThrowParseException(TokenType type, string error_fmt, params object[] args)

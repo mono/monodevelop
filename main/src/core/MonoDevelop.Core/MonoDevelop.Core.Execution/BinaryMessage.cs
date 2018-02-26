@@ -609,14 +609,14 @@ namespace MonoDevelop.Core.Execution
 		
 		public override string ToString ()
 		{
-			var sb = new StringBuilder ();
+			var sb = StringBuilderCache.Allocate ();
 			foreach (var ar in args) {
 				if (sb.Length > 0)
 					sb.Append (", ");
 				sb.Append (ar.Name).Append (":");
 				AppendArg (sb, ar.Value);
 			}
-			return string.Format ("({3}) [{0} Target={1}, Args=[{2}]]", Name, Target, sb, Id);
+			return string.Format ("({3}) [{0} Target={1}, Args=[{2}]]", Name, Target, StringBuilderCache.ReturnAndFree (sb), Id);
 		}
 
 		void AppendArg (StringBuilder sb, object arg)

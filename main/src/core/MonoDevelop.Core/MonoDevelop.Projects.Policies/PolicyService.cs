@@ -530,7 +530,7 @@ namespace MonoDevelop.Projects.Policies
 				}
 			}
 			
-			StringBuilder removed = new StringBuilder ();
+			StringBuilder removed = StringBuilderCache.Allocate ();
 			for (int n=0; n<baseline.ItemData.Count; n++) {
 				DataNode node = baseline.ItemData [n];
 				if (!extracted.Contains (node)) {
@@ -545,6 +545,7 @@ namespace MonoDevelop.Projects.Policies
 			
 			if (removed.Length > 0)
 				newItem.ItemData.Add (new DataValue ("__removed", removed.ToString ()) {StoreAsAttribute = true});
+			StringBuilderCache.Free (removed);
 			return newItem;
 		}
 		
