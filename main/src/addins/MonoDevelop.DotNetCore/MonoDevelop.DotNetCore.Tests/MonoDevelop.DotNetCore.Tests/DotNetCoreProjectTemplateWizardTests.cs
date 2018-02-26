@@ -82,6 +82,13 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual (".NETStandard,Version=v1.2", wizard.TargetFrameworks [5].Id.ToString ());
 			Assert.AreEqual (".NETStandard,Version=v1.1", wizard.TargetFrameworks [6].Id.ToString ());
 			Assert.AreEqual (".NETStandard,Version=v1.0", wizard.TargetFrameworks [7].Id.ToString ());
+
+			var page = wizard.GetPage (1);
+			Assert.AreEqual ("netstandard2.0", wizard.Parameters ["Framework"]);
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetStandard20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
 		}
 
 		/// <summary>
@@ -129,6 +136,13 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual (".NETStandard,Version=v1.2", wizard.TargetFrameworks [4].Id.ToString ());
 			Assert.AreEqual (".NETStandard,Version=v1.1", wizard.TargetFrameworks [5].Id.ToString ());
 			Assert.AreEqual (".NETStandard,Version=v1.0", wizard.TargetFrameworks [6].Id.ToString ());
+
+			var page = wizard.GetPage (1);
+			Assert.AreEqual ("netstandard1.6", wizard.Parameters ["Framework"]);
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard20"));
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
 		}
 
 		/// <summary>
@@ -187,6 +201,13 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsFalse (WizardHasParameter ("framework"));
 			Assert.AreEqual (".NETCoreApp,Version=v1.1", wizard.TargetFrameworks [0].Id.ToString ());
 			Assert.AreEqual (1, wizard.TargetFrameworks.Count);
+
+			var page = wizard.GetPage (1);
+			Assert.AreEqual ("netcoreapp1.1", wizard.Parameters ["Framework"]);
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore20"));
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
 		}
 
 		[Test]
@@ -207,6 +228,35 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual (".NETCoreApp,Version=v1.1", wizard.TargetFrameworks [1].Id.ToString ());
 			Assert.AreEqual (".NETCoreApp,Version=v1.0", wizard.TargetFrameworks [2].Id.ToString ());
 			Assert.AreEqual (3, wizard.TargetFrameworks.Count);
+
+			var page = wizard.GetPage (1) as DotNetCoreProjectTemplateWizardPage;
+			Assert.AreEqual ("netcoreapp2.0", wizard.Parameters ["Framework"]);
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore21"));
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
+
+			// Select .NET Core 1.1
+			page.SelectedTargetFrameworkIndex = 1;
+			Assert.AreEqual ("netcoreapp1.1", wizard.Parameters ["Framework"]);
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore21"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore20"));
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
+
+			// Select .NET Core 2.0
+			page.SelectedTargetFrameworkIndex = 0;
+			Assert.AreEqual ("netcoreapp2.0", wizard.Parameters ["Framework"]);
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore21"));
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
+
+			// Select .NET Core 1.0
+			page.SelectedTargetFrameworkIndex = 2;
+			Assert.AreEqual ("netcoreapp1.0", wizard.Parameters ["Framework"]);
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore21"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore20"));
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
 		}
 
 		/// <summary>
@@ -252,6 +302,13 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsFalse (WizardHasParameter ("framework"));
 			Assert.AreEqual (".NETCoreApp,Version=v2.0", wizard.TargetFrameworks [0].Id.ToString ());
 			Assert.AreEqual (1, wizard.TargetFrameworks.Count);
+
+			var page = wizard.GetPage (1);
+			Assert.AreEqual ("netcoreapp2.0", wizard.Parameters ["Framework"]);
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
 		}
 
 		[Test]
@@ -308,6 +365,14 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsFalse (WizardHasParameter ("framework"));
 			Assert.AreEqual (".NETCoreApp,Version=v2.1", wizard.TargetFrameworks [0].Id.ToString ());
 			Assert.AreEqual (1, wizard.TargetFrameworks.Count);
+
+			var page = wizard.GetPage (1);
+			Assert.AreEqual ("netcoreapp2.1", wizard.Parameters ["Framework"]);
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore21"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
 		}
 
 		[Test]
@@ -328,6 +393,14 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual ("netcoreapp2.1", wizard.Parameters ["framework"]);
 			Assert.AreEqual (".NETCoreApp,Version=v2.1", wizard.TargetFrameworks [0].Id.ToString ());
 			Assert.AreEqual (1, wizard.TargetFrameworks.Count);
+
+			var page = wizard.GetPage (1);
+			Assert.AreEqual ("netcoreapp2.1", wizard.Parameters ["Framework"]);
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore21"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
 		}
 
 		[TestCase ("FSharpNetCoreLibrary")]
@@ -350,6 +423,45 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsFalse (WizardHasParameter ("framework"));
 			Assert.AreEqual (".NETCoreApp,Version=v2.1", wizard.TargetFrameworks [0].Id.ToString ());
 			Assert.AreEqual (1, wizard.TargetFrameworks.Count);
+		}
+
+		[Test]
+		public void NetCoreApp_NetCore21AndNetCore20Installed ()
+		{
+			CreateWizard ();
+			DotNetCoreRuntimesInstalled ("2.1.300", "2.0.1");
+
+			int pages = wizard.TotalPages;
+
+			Assert.AreEqual (1, pages);
+			Assert.IsFalse (WizardHasParameter ("UseNetStandard20"));
+			Assert.IsFalse (WizardHasParameter ("UseNetStandard1x"));
+			Assert.IsFalse (WizardHasParameter ("UseNetCore21"));
+			Assert.IsFalse (WizardHasParameter ("UseNetCore20"));
+			Assert.IsFalse (WizardHasParameter ("UseNetCore1x"));
+			Assert.IsFalse (WizardHasParameter ("framework"));
+			Assert.AreEqual (".NETCoreApp,Version=v2.1", wizard.TargetFrameworks [0].Id.ToString ());
+			Assert.AreEqual (2, wizard.TargetFrameworks.Count);
+
+			var page = wizard.GetPage (1) as DotNetCoreProjectTemplateWizardPage;
+			Assert.AreEqual ("netcoreapp2.1", wizard.Parameters ["Framework"]);
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore21"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
+
+			// Select .NET Core App 2.0
+			page.SelectedTargetFrameworkIndex = 1;
+			Assert.AreEqual ("netcoreapp2.0", wizard.Parameters ["Framework"]);
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore21"));
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore20"));
+
+			// Select .NET Core App 2.1 again
+			page.SelectedTargetFrameworkIndex = 0;
+			Assert.AreEqual ("netcoreapp2.1", wizard.Parameters ["Framework"]);
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore21"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore20"));
 		}
 	}
 }
