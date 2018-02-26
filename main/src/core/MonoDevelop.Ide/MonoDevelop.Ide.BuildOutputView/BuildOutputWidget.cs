@@ -44,7 +44,7 @@ using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
-	class BuildOutputWidget : VBox, IPathedDocument
+	class BuildOutputWidget : VBox, IPathedDocument, IBuildOutputContextProvider
 	{
 		const string binLogExtension = "binlog";
 
@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				CanResize = false,
 				Expands = true
 			};
-			var pack = new BuildOutputTreeCellView ();
+			var pack = new BuildOutputTreeCellView (this);
 			treeColumn.Views.Add (pack);
 			treeView.Columns.Add (treeColumn);
 
@@ -505,6 +505,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 		}
 
 		public bool IsSearchInProgress => currentSearch != null && currentSearch.MatchesCount > 0;
+
+		#region IBuildOutputContextProvider
+
+		public bool IsShowingDiagnostics => showDiagnosticsButton.Active;
+
+		public string SearchString => searchEntry.Entry.Text;
+
+		#endregion
 
 		public void FocusOnSearchEntry ()
 		{
