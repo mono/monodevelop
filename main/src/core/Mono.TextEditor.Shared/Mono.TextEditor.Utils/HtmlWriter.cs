@@ -49,7 +49,7 @@ namespace Mono.TextEditor.Utils
 
 		public static string GenerateHtml (List<List<ClipboardColoredText>> chunks, EditorTheme style, ITextEditorOptions options, bool includeBoilerplate = true)
 		{
-			var htmlText = new StringBuilder ();
+			var htmlText = StringBuilderCache.Allocate ();
 			if (includeBoilerplate) {
 				htmlText.AppendLine (@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">");
 				htmlText.AppendLine ("<HTML>");
@@ -100,7 +100,7 @@ namespace Mono.TextEditor.Utils
 			if (Platform.IsWindows)
                 return GenerateCFHtml (htmlText.ToString ());
 
-			return htmlText.ToString ();
+			return StringBuilderCache.ReturnAndFree (htmlText);
 		}
 
         static readonly string emptyCFHtmlHeader = GenerateCFHtmlHeader (0, 0, 0, 0);
