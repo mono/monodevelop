@@ -2,6 +2,9 @@
 // Prevents trailing spaces removal and other formatting issues which VSCode usually does.
 {
     "editor.insertSpaces": false,
-	"files.trimTrailingWhitespace": false,
-	"files.insertFinalNewline": false
+    "files.trimTrailingWhitespace": false,
+    "files.insertFinalNewline": false,
+    "editor.renderWhitespace": "all",
+    "editor.trimAutoWhitespace": false,
+    "files.trimFinalNewlines": false
 }
