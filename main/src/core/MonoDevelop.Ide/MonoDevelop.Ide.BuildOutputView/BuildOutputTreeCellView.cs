@@ -76,6 +76,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		BuildOutputNode buildOutputNode;
 		Font defaultFontLayout;
+
+		//This give us height and width of a character with this font
 		Size fontRequiredSize;
 		int informationContainerWidth;
 
@@ -138,9 +140,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				DrawImage (ctx, cellArea, Resources.ErrorIcon, textStartX);
 				textStartX += ImageSide + 2;
-				DrawText (ctx, cellArea, textStartX, 10, buildOutputNode.ErrorCount.ToString (), trimming: TextTrimming.Word);
+				var errors = buildOutputNode.ErrorCount.ToString ();
+				DrawText (ctx, cellArea, textStartX, 10, errors, trimming: TextTrimming.Word);
 
-				textStartX += 10;
+				textStartX += 2;
+				if (errors.Length > 1) {
+					textStartX += fontRequiredSize.Width * (errors.Length - 1);
+				}
 				DrawImage (ctx, cellArea, Resources.WarningIcon, textStartX);
 				textStartX += ImageSide + 2;
 				DrawText (ctx, cellArea, textStartX, 10, buildOutputNode.WarningCount.ToString (), trimming: TextTrimming.Word);
