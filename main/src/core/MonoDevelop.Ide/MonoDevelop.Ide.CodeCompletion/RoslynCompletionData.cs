@@ -92,12 +92,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var type = GetItemType ();
 				var hash = modifier | type << 16;
 				if (!IconIdCache.ContainsKey (hash))
-					IconIdCache [hash] = "md-" + modifierType[modifier] + completionType[type];
+					IconIdCache [hash] = "md-" + modifierType [modifier] + completionType [type];
 				return IconIdCache [hash];
 			}
 		}
 
-		static Dictionary<int, string> IconIdCache = new Dictionary<int, string>();
+		static Dictionary<int, string> IconIdCache = new Dictionary<int, string> ();
 
 		public RoslynCompletionData (Microsoft.CodeAnalysis.Document document, ITextSnapshot triggerSnapshot, CompletionService completionService, CompletionItem completionItem)
 		{
@@ -198,7 +198,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return 1;
 		}
 
-		string[] modifierType = {
+		string [] modifierType = {
 			"",
 			"private-",
 			"ProtectedOrInternal-",
@@ -257,7 +257,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					editor.ReplaceText (mappedSpan.Start + 1, mappedSpan.Length - 1, completionChange.TextChange.NewText);
 				} else
 					editor.ReplaceText (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
-			
+
 
 				if (completionChange.NewPosition.HasValue)
 					editor.CaretOffset = completionChange.NewPosition.Value;
@@ -273,8 +273,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{
-			var description = await Task.Run (() => completionService.GetDescriptionAsync (doc, CompletionItem)).ConfigureAwait (false);
-			var markup = new StringBuilder ();
+			CompletionDescription description;
+			if (CommonCompletionItem.HasDescription (CompletionItem)) {
+				description = CommonCompletionItem.GetDescription (CompletionItem);
+			} else {
+				description = await Task.Run (() => completionService.GetDescriptionAsync (doc, CompletionItem)).ConfigureAwait (false);
+			}
+			var markup = StringBuilderCache.Allocate ();
 			var theme = SyntaxHighlightingService.GetIdeFittingTheme (DefaultSourceEditorOptions.Instance.GetEditorTheme ());
 			var taggedParts = description.TaggedParts;
 			int i = 0;
@@ -294,9 +299,27 @@ namespace MonoDevelop.Ide.CodeCompletion
 				markup.Append ("</span>");
 			}
 			return new TooltipInformation {
-				SignatureMarkup = markup.ToString ()
+				SignatureMarkup = StringBuilderCache.ReturnAndFree (markup)
 			};
 		}
-	}
 
+		public override bool IsCommitCharacter (char keyChar, string partialWord)
+		{
+			foreach (var rule in CompletionItem.Rules.CommitCharacterRules) {
+				switch (rule.Kind) {
+				case CharacterSetModificationKind.Add:
+					if (rule.Characters.Contains (keyChar))
+						return true;
+					continue;
+				case CharacterSetModificationKind.Remove:
+					if (rule.Characters.Contains (keyChar))
+						return false;
+					continue;
+				case CharacterSetModificationKind.Replace:
+					return rule.Characters.Contains (keyChar);
+				}
+			}
+			return base.IsCommitCharacter (keyChar, partialWord);
+		}
+	}
 }

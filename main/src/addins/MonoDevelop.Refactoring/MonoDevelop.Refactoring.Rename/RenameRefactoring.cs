@@ -87,7 +87,7 @@ namespace MonoDevelop.Refactoring.Rename
 			var cts = new CancellationTokenSource ();
 			var newSolution = await MessageService.ExecuteTaskAndShowWaitDialog (Task.Run (() => Renamer.RenameSymbolAsync (currentSolution, symbol, "_" + symbol.Name + "_", ws.Options, cts.Token)), GettextCatalog.GetString ("Looking for all references"), cts);
 			var projectChanges = currentSolution.GetChanges (newSolution).GetProjectChanges ().ToList ();
-			var changedDocuments = new HashSet<string> ();
+			var changedDocuments = new List<string> ();
 			foreach (var change in projectChanges) {
 				foreach (var changedDoc in change.GetChangedDocuments ()) {
 					changedDocuments.Add (ws.CurrentSolution.GetDocument (changedDoc).FilePath);
@@ -95,8 +95,10 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 
 			if (changedDocuments.Count > 1) {
-				using (var dlg = new RenameItemDialog (symbol, this))
+				using (var dlg = new RenameItemDialog (symbol, this)) {
+					dlg.ChangedDocuments = changedDocuments;
 					MessageService.ShowCustomDialog (dlg);
+				}
 				return;
 			}
 

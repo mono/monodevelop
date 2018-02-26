@@ -56,6 +56,6 @@ type FSharpBraceMatcher() =
         match editor.GetCharAt(caretOffset), isFsi with
         | '(', false
         | ')', false ->
-            let computation = braceMatcher.getMatchingBraces editor context caretOffset
-            Async.StartAsTask (computation = computation, cancellationToken = cancellationToken)
+            braceMatcher.getMatchingBraces editor context caretOffset
+            |> StartAsyncAsTask cancellationToken
         | _ -> defaultMatcher.GetMatchingBracesAsync (editor, context, caretOffset, cancellationToken)

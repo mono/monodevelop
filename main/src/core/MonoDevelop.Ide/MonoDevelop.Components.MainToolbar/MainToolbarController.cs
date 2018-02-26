@@ -1092,7 +1092,7 @@ namespace MonoDevelop.Components.MainToolbar
 				int i = s.IndexOf ('_');
 				if (i == -1)
 					return s;
-				var sb = new StringBuilder (i);
+				var sb = StringBuilderCache.Allocate ();
 				sb.Append (s, 0, i);
 				for (; i < s.Length; i++) {
 					if (s [i] == '_') {
@@ -1102,7 +1102,7 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 					sb.Append (s [i]);
 				}
-				return sb.ToString ();
+				return StringBuilderCache.ReturnAndFree (sb);
 			}
 		}
 

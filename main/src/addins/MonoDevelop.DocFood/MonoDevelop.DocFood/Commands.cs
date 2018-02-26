@@ -31,6 +31,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DocFood
 {
@@ -130,7 +131,7 @@ namespace MonoDevelop.DocFood
 		
 		internal static string GenerateDocumentation (IReadonlyTextDocument data, ISymbol member, string indent, string prefix)
 		{
-			StringBuilder result = new StringBuilder ();
+			StringBuilder result = StringBuilderCache.Allocate ();
 			
 			var generator = new DocGenerator (data);
 			generator.GenerateDoc (member);
@@ -168,7 +169,7 @@ namespace MonoDevelop.DocFood
 				}
 				bool inTag = false;
 				int column = indent.Length + prefix.Length;
-				StringBuilder curWord = new StringBuilder ();
+				StringBuilder curWord = StringBuilderCache.Allocate ();
 				foreach (char ch in section.Documentation) {
 					if (ch == '<')
 						inTag = true;
@@ -213,14 +214,15 @@ namespace MonoDevelop.DocFood
 				result.Append ("</");
 				result.Append (section.Name);
 				result.Append (">");
+				StringBuilderCache.ReturnAndFree (curWord);
 			}
 			result.AppendLine ();
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 		
 		internal static string GenerateEmptyDocumentation (IReadonlyTextDocument data, ISymbol member, string indent)
 		{
-			StringBuilder result = new StringBuilder ();
+			StringBuilder result = StringBuilderCache.Allocate ();
 			
 			DocGenerator generator = new DocGenerator (data);
 			generator.GenerateDoc (member);
@@ -266,7 +268,7 @@ namespace MonoDevelop.DocFood
 				result.Append (">");
 			}
 			result.AppendLine ();
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 	}
 	

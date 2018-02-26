@@ -28,6 +28,7 @@
 
 using System;
 using System.Text;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.TypeSystem
 {

@@ -5,7 +5,7 @@ open System.IO
 open System.Threading.Tasks
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Core
-open ExtCore
+//open ExtCore
 open System.Reactive.Linq
 
 module Seq =
@@ -245,12 +245,14 @@ module LoggingService =
     let logWarning format = log LoggingService.LogWarning format
 
 module Async =
-    let inline startAsPlainTask (work : Async<unit>) =
-        System.Threading.Tasks.Task.Factory.StartNew(fun () -> work |> Async.RunSynchronously)
 
     let inline awaitPlainTask (task: Task) = 
         task.ContinueWith (fun task -> if task.IsFaulted then raise task.Exception)
         |> Async.AwaitTask
+
+[<AutoOpen>]
+module AsyncHelpers = 
+    let StartAsyncAsTask ct p = Async.StartAsTask(p, cancellationToken=ct)
 
 [<AutoOpen>]
 module AsyncTaskBind =

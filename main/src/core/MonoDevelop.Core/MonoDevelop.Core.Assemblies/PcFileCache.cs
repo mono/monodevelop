@@ -29,6 +29,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 // IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT
 // This code is shared with xbuild, which has to build with .NET 2.0,
@@ -535,7 +536,7 @@ namespace Mono.PkgConfig
 			if (i == -1)
 				return value;
 
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			int last = 0;
 			while (i != -1 && i < value.Length) {
 				sb.Append (value, last, i - last);
@@ -546,6 +547,7 @@ namespace Mono.PkgConfig
 					if (n == -1 || n == i) {
 						// Closing bracket not found or empty name
 						HasErrors = true;
+						StringBuilderCache.Free (sb);
 						return value;
 					}
 					string rname = value.Substring (i, n - i);
@@ -554,6 +556,7 @@ namespace Mono.PkgConfig
 						sb.Append (rval);
 					else {
 						HasErrors = true;
+						StringBuilderCache.Free (sb);
 						return value;
 					}
 					i = n + 1;
@@ -565,7 +568,7 @@ namespace Mono.PkgConfig
 					i = value.IndexOf ("${", i);
 			}
 			sb.Append (value, last, value.Length - last);
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 	}
 	

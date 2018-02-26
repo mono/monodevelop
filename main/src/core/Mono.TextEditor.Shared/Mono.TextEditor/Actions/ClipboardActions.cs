@@ -86,7 +86,7 @@ namespace Mono.TextEditor
 
 			string GetCopiedPlainText (string eol = "\n")
 			{
-				var plainText = new StringBuilder ();
+				var plainText = StringBuilderCache.Allocate ();
 				bool first = true;
 				foreach (var line in copiedColoredChunks) {
 					if (!first) {
@@ -99,7 +99,7 @@ namespace Mono.TextEditor
 						plainText.Append (chunk.Text);
 					}
 				}
-				return plainText.ToString ();
+				return StringBuilderCache.ReturnAndFree (plainText);
 			}
 
 			public void SetData (SelectionData selection_data, uint info)

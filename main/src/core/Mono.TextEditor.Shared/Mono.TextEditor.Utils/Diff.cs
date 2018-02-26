@@ -96,6 +96,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using MonoDevelop.Core;
 
 namespace Mono.TextEditor.Utils
 {
@@ -486,7 +487,7 @@ namespace Mono.TextEditor.Utils
 			if (diff == null)
 				return "";
 
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			IEnumerator<Hunk> he = diff.GetEnumerator ();
 			he.MoveNext ();
 
@@ -533,7 +534,7 @@ namespace Mono.TextEditor.Utils
 				sb.Append ("@@ -").Append (remStart).Append (",").Append (remEnd - remStart).Append (" +").Append (insStart).Append (",").Append (insEnd - insStart).AppendLine (" @@");
 				WriteHunks (qh, baseDocument, changedDocument, sb);
 			}
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 	}
 	

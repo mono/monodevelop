@@ -822,10 +822,10 @@ namespace MonoDevelop.Ide
 		{
 			var md5 = System.Security.Cryptography.MD5.Create ();
 			byte[] hash = md5.ComputeHash (Encoding.UTF8.GetBytes (email.Trim ().ToLower ()));
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			foreach (byte b in hash)
 				sb.Append (b.ToString ("x2"));
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 
 		public static void LoadUserIcon (this Gtk.Image image, string email, int size)
