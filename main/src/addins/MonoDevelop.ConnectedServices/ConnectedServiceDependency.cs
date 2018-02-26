@@ -4,6 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
+
 using Xwt.Drawing;
 
 namespace MonoDevelop.ConnectedServices
@@ -22,13 +24,13 @@ namespace MonoDevelop.ConnectedServices
 		/// The category string for packages, this will be localised to the user
 		/// </summary>
 		public readonly static ConnectedServiceDependencyCategory PackageDependencyCategory =
-			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Packages"), "md-folder-services");
+			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Packages"), Stock.ServicesFolder);
 
 		/// <summary>
 		/// The category string for code, this will be localised to the user
 		/// </summary>
 		public readonly static ConnectedServiceDependencyCategory CodeDependencyCategory =
-			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Code"), "md-folder-code");
+			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Code"), Stock.CodeFolder);
 
 		Status status = (Status)(-1);
 

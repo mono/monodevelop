@@ -33,7 +33,6 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class Stock
 	{
-		public static readonly IconId AssetsFolder = "md-folder-assets";
 		public static readonly IconId AddNamespace = "md-add-namespace";
 		public static readonly IconId BreakPoint = "md-break-point";
 		public static readonly IconId BuildCombine = "md-build-combine";
@@ -42,9 +41,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId CloseAllDocuments = "md-close-all-documents";
 		public static readonly IconId CloseCombine = "md-close-combine-icon";
 		public static readonly IconId CloseIcon = Gtk.Stock.Close;
-		public static readonly IconId ClosedFolder = "md-closed-folder";
-		public static readonly IconId ClosedReferenceFolder = "md-closed-reference-folder";
-		public static readonly IconId ClosedResourceFolder = "md-closed-resource-folder";
 		public static readonly IconId Solution = "md-solution";
 		public static readonly IconId Workspace = "md-workspace";
 		public static readonly IconId CopyIcon = Gtk.Stock.Copy;
@@ -82,9 +78,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId NewDocumentIcon = Gtk.Stock.New;
 		public static readonly IconId NextWindowIcon = Gtk.Stock.GoForward;
 		public static readonly IconId OpenFileIcon = Gtk.Stock.Open;
-		public static readonly IconId OpenFolder = "md-open-folder";
-		public static readonly IconId OpenReferenceFolder = "md-open-reference-folder";
-		public static readonly IconId OpenResourceFolder = "md-open-resource-folder";
 		public static readonly IconId Options = "md-preferences";
 		public static readonly IconId OutputIcon = "md-output-icon";
 		public static readonly IconId PasteIcon = Gtk.Stock.Paste;
@@ -135,8 +128,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId UndoIcon = Gtk.Stock.Undo;
 		public static readonly IconId Warning = "md-warning";
 		public static readonly IconId XmlFileIcon = "md-xml-file-icon";
-		public static readonly IconId SolutionFolderOpen = "md-solution-folder-open";
-		public static readonly IconId SolutionFolderClosed = "md-solution-folder-closed";
 		public static readonly IconId Package = "md-package";
 		public static readonly IconId StatusSolutionOperation = "md-status-waiting";
 		public static readonly IconId StatusDownload = "md-status-download";
@@ -169,5 +160,20 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId PadUpload = "md-pad-upload";
 		public static readonly IconId PadDeviceDeployment = "md-pad-device-deployment";
 		public static readonly IconId PadExecute = "md-pad-execute";
+
+		// Folder icons
+		public static readonly IconId OpenFolder = "md-open-folder";
+		public static readonly IconId ClosedFolder = "md-closed-folder";
+		public static readonly IconId OpenReferenceFolder = "md-open-reference-folder";
+		public static readonly IconId ClosedReferenceFolder = "md-closed-reference-folder";
+		public static readonly IconId OpenResourceFolder = "md-open-resource-folder";
+		public static readonly IconId ClosedResourceFolder = "md-closed-resource-folder";
+		public static readonly IconId SolutionFolderOpen = "md-solution-folder-open";
+		public static readonly IconId SolutionFolderClosed = "md-solution-folder-closed";
+		public static readonly IconId ComponentFolderOpen = "md-component-folder-open"; // TODO: Unused
+		public static readonly IconId ComponentFolderClosed = "md-component-folder-closed"; // TODO: Unused
+		public static readonly IconId AssetsFolder = "md-folder-assets"; // TODO: Unused
+		public static readonly IconId CodeFolder = "md-folder-code";
+		public static readonly IconId ServicesFolder = "md-folder-services";
 	}
 }
