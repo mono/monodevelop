@@ -787,7 +787,10 @@ namespace Mono.TextEditor
 
 			if (margin != null) {
 				margin.FocusIn ();
+			} else if (currentFocus == FocusMargin.TextView) {
+				textViewMargin.FocusIn ();
 			}
+
 			return currentFocus != FocusMargin.None;
 		}
 
@@ -804,6 +807,7 @@ namespace Mono.TextEditor
 			var result = base.OnFocusInEvent (evnt);
 
 			currentFocus = FocusMargin.TextView;
+			textViewMargin.FocusIn ();
 			FocusIn ();
 
 			return result;
@@ -825,6 +829,7 @@ namespace Mono.TextEditor
 
 				TextViewMargin.StopCaretThread ();
 				Document.CommitLineUpdate (Caret.Line);
+				textViewMargin.FocusOut ();
 			} else if (currentFocus != FocusMargin.None){
 				var cm = GetMargin (currentFocus);
 				cm.FocusOut ();
@@ -847,6 +852,8 @@ namespace Mono.TextEditor
 				m.FocusOut ();
 			}
 			currentFocus = FocusMargin.TextView;
+			textViewMargin.FocusIn ();
+
 			base.OnFocusGrabbed();
 		}
 
@@ -1317,6 +1324,8 @@ namespace Mono.TextEditor
 				Margin margin = GetMarginAtX (e.X, out startPos);
 				if (margin == textViewMargin) {
 					currentFocus = FocusMargin.TextView;
+					textViewMargin.FocusIn ();
+
 					//main context menu
 					if (DoPopupMenu != null && e.TriggersContextMenu ()) {
 						DoClickedPopupMenu (e);

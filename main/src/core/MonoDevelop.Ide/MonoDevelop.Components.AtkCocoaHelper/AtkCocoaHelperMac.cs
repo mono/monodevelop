@@ -81,6 +81,14 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
+		public static void SetCurrentFocus (AccessibilityElementProxy focusElement)
+		{
+			var element = focusElement != null ? focusElement.Proxy as NSObject : null;
+			NSApplication.SharedApplication.AccessibilityApplicationFocusedUIElement = element;
+			NSAccessibility.PostNotification (NSApplication.SharedApplication, NSAccessibilityNotifications.UIElementFocusedChangedNotification, 
+			                                  new NSDictionary (NSAccessibilityNotificationUserInfoKeys.UIElementsKey, NSArray.FromObject (element)));
+		}
+
 		public static void SetLabel (this Atk.Object o, string label)
 		{
 			var nsa = GetNSAccessibilityElement (o);

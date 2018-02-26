@@ -179,11 +179,15 @@ namespace Mono.TextEditor
 		internal protected virtual void FocusIn ()
 		{
 			HasFocus = true;
+
+			// Set the margin as the current focused accessibility element
+			AtkCocoaExtensions.SetCurrentFocus (Accessible);
 		}
 
 		internal protected virtual void FocusOut ()
 		{
 			HasFocus = false;
+			AtkCocoaExtensions.SetCurrentFocus (null);
 		}
 
 		public virtual void Dispose ()
