@@ -311,7 +311,8 @@ namespace Mono.TextEditor.Utils
 				return GetNode (ref index).value;
 			}
 			set {
-				RemoveAt (index);
+				if (index < Count)
+					RemoveAt (index);
 				Insert (index, value);
 			}
 		}
