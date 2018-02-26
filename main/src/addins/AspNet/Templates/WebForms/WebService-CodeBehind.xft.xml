@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Web Service with CodeBehind</_Name>
 		<_Category>ASP.NET Web Forms</_Category>
-		<Icon>md-html-file-icon</Icon>
+		<Icon>md-html-file</Icon>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>AspNetApp</ProjectType>
 		<_Description>Creates an ASP.NET web service with a CodeBehind class.</_Description>

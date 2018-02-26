@@ -111,14 +111,14 @@
     </Condition>
   </Extension>
   <Extension path="/MonoDevelop/Core/MimeTypes">
-    <MimeType id="text/x-fsharp" _description="F# Source File" icon="md-file-source" isText="true">
+    <MimeType id="text/x-fsharp" _description="F# Source File" icon="md-source-file" isText="true">
       <File pattern="*.fs" />
     </MimeType>
-    <MimeType id="text/x-fsharp" _description="F# Script File" icon="md-file-source" isText="true">
+    <MimeType id="text/x-fsharp" _description="F# Script File" icon="md-source-file" isText="true">
       <File pattern="*.fsx" />
       <File pattern="*.fsscript" />
         </MimeType>
-    <MimeType id="text/x-fsharp" _description="F# Signature File" icon="md-file-header" isText="true">
+    <MimeType id="text/x-fsharp" _description="F# Signature File" icon="md-header-file" isText="true">
       <File pattern="*.fsi" />
         </MimeType>
     <MimeType id="application/fsproject+xml" _description="F# project file" baseType="application/xml">

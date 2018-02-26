@@ -245,7 +245,7 @@ namespace MonoDevelop.Ide.Desktop
 			if (bf == null)
 				bf = DefaultFileIcon;
 			if (bf == null)
-				bf = ImageService.GetIcon ("md-regular-file", true);
+				bf = ImageService.GetIcon ("md-generic-file", true);
 			iconHash [id] = bf;
 			return bf;
 		}
@@ -262,7 +262,7 @@ namespace MonoDevelop.Ide.Desktop
 		string GetIconIdForType (string type)
 		{
 			if (type == "text/plain")
-				return "md-text-file-icon";
+				return "md-text-file";
 			MimeTypeNode mt = FindMimeType (type);
 			if (mt != null)
 				return mt.Icon;

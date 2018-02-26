@@ -854,7 +854,7 @@ namespace MonoDevelop.Ide.Projects
 				if (!string.IsNullOrEmpty (templateItem.Language))
 					name += "\n<span foreground='darkgrey'><small>" + templateItem.Language + "</small></span>";
 				string icon = templateItem.Template.Icon;
-				templateStore.AppendValues (string.IsNullOrEmpty (icon) ? "md-file-source" : icon, name, templateItem);
+				templateStore.AppendValues (string.IsNullOrEmpty (icon) ? "md-source-file" : icon, name, templateItem);
 			}
 			
 			public void Clear ()

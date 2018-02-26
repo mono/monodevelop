@@ -48,12 +48,10 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Delegate = "md-delegate";
 		public static readonly IconId DeleteIcon = Gtk.Stock.Delete;
 		public static readonly IconId Empty = "md-empty";
-		public static readonly IconId EmptyFileIcon = "md-empty-file-icon";
 		public static readonly IconId Enum = "md-enum";
 		public static readonly IconId Error = "md-error";
 		public static readonly IconId Event = "md-event";
 		public static readonly IconId Field = "md-field";
-		public static readonly IconId FileXmlIcon = "md-file-xml-icon";
 		public static readonly IconId FindIcon = "md-magnify";
 		public static readonly IconId FindNextIcon = "md-find-next";
 		public static readonly IconId FindPrevIcon = "md-find-prev";
@@ -73,7 +71,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId InternalStruct = "md-internal-struct";
 		public static readonly IconId Literal = "md-literal";
 		public static readonly IconId Method = "md-method";
-		public static readonly IconId GenericFile = "md-regular-file";
 		public static readonly IconId NameSpace = "md-name-space";
 		public static readonly IconId NewDocumentIcon = Gtk.Stock.New;
 		public static readonly IconId NextWindowIcon = Gtk.Stock.GoForward;
@@ -113,7 +110,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId ReferenceWarning = "md-reference-warning";
 		public static readonly IconId Region = "md-region";
 		public static readonly IconId ReplaceIcon = Gtk.Stock.FindAndReplace;
-		public static readonly IconId ResourceFileIcon = "md-resource-file-icon";
 		public static readonly IconId Console = "md-console";
 		public static readonly IconId RunProgramIcon = Gtk.Stock.Execute;
 		public static readonly IconId SaveAllIcon = "md-save-all";
@@ -123,11 +119,9 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Project = "md-project";
 		public static readonly IconId Struct = "md-struct";
 		public static readonly IconId TaskListIcon = "md-task-list";
-		public static readonly IconId TextFileIcon = "md-text-file-icon";
 		public static readonly IconId ToggleBookmark = "md-bookmark-toggle";
 		public static readonly IconId UndoIcon = Gtk.Stock.Undo;
 		public static readonly IconId Warning = "md-warning";
-		public static readonly IconId XmlFileIcon = "md-xml-file-icon";
 		public static readonly IconId Package = "md-package";
 		public static readonly IconId StatusSolutionOperation = "md-status-waiting";
 		public static readonly IconId StatusDownload = "md-status-download";
@@ -166,8 +160,8 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId ReferenceFolder = "md-reference-folder";
 		public static readonly IconId ResourceFolder = "md-resource-folder";
 		public static readonly IconId SolutionFolder = "md-solution-folder";
-		public static readonly IconId ComponentFolder = "md-component-folder"; // TODO: Unused
-		public static readonly IconId AssetsFolder = "md-assets-folder"; // TODO: Unused
+		public static readonly IconId ComponentFolder = "md-component-folder"; // Unused in monodevelop
+		public static readonly IconId AssetsFolder = "md-assets-folder"; // Unused in monodevelop
 		public static readonly IconId CodeFolder = "md-code-folder";
 		public static readonly IconId ServicesFolder = "md-services-folder";
 
@@ -180,5 +174,15 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId OpenResourceFolder = "md-resource-folder";
 		public static readonly IconId SolutionFolderClosed = "md-solution-folder";
 		public static readonly IconId SolutionFolderOpen = "md-solution-folder";
+
+		// File icons
+		public static readonly IconId GenericFile = "md-generic-file";
+		public static readonly IconId EmptyFile = "md-empty-file";
+		public static readonly IconId ResourceFile = "md-resource-file";
+
+		// Deprecated file icons
+		public static readonly IconId FileXmlIcon = "md-xml-file"; // Unused in monodevelop
+		public static readonly IconId TextFileIcon = "md-text-file"; // Unused in monodevelop
+		public static readonly IconId XmlFileIcon = "md-xml-file"; // Unused in monodevelop
 	}
 }

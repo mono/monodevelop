@@ -160,12 +160,12 @@ namespace MonoDevelop.Ide.Projects
 			locationNode = folderTreeStore.AppendValues (MDStock.Folder, string.Empty);
 
 			solutionFolderNode = folderTreeStore.AppendValues (locationNode, MDStock.Folder, projectConfiguration.DefaultPreviewSolutionName);
-			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, MDStock.EmptyFileIcon, projectConfiguration.DefaultPreviewSolutionFileName);
+			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, MDStock.EmptyFile, projectConfiguration.DefaultPreviewSolutionFileName);
 
 			projectFolderNode = folderTreeStore.AppendValues (solutionFolderNode, MDStock.Folder, projectConfiguration.DefaultPreviewProjectName);
 			gitFolderNode = AddGitFolderToTree ();
 			gitIgnoreNode = AddGitIgnoreToTree ();
-			projectNode = folderTreeStore.AppendValues (projectFolderNode, MDStock.EmptyFileIcon, projectConfiguration.DefaultPreviewProjectFileName);
+			projectNode = folderTreeStore.AppendValues (projectFolderNode, MDStock.EmptyFile, projectConfiguration.DefaultPreviewProjectFileName);
 		}
 
 		void UpdateTreeValues ()
@@ -182,12 +182,12 @@ namespace MonoDevelop.Ide.Projects
 			locationNode = folderTreeStore.AppendValues (MDStock.Folder, string.Empty);
 
 			projectFolderNode = folderTreeStore.AppendValues (locationNode, MDStock.Folder, projectConfiguration.DefaultPreviewProjectName);
-			projectNode = folderTreeStore.AppendValues (projectFolderNode, MDStock.EmptyFileIcon, projectConfiguration.DefaultPreviewProjectFileName);
+			projectNode = folderTreeStore.AppendValues (projectFolderNode, MDStock.EmptyFile, projectConfiguration.DefaultPreviewProjectFileName);
 
 			solutionFolderNode = TreeIter.Zero;
 			solutionNode = TreeIter.Zero;
 			if (projectConfiguration.IsNewSolution) {
-				solutionNode = folderTreeStore.AppendValues (projectFolderNode, MDStock.EmptyFileIcon, projectConfiguration.DefaultPreviewSolutionFileName);
+				solutionNode = folderTreeStore.AppendValues (projectFolderNode, MDStock.EmptyFile, projectConfiguration.DefaultPreviewSolutionFileName);
 			}
 
 			gitFolderNode = AddGitFolderToTree ();
@@ -199,7 +199,7 @@ namespace MonoDevelop.Ide.Projects
 			locationNode = folderTreeStore.AppendValues (MDStock.Folder, string.Empty);
 
 			projectFolderNode = TreeIter.Zero;
-			projectNode = folderTreeStore.AppendValues (locationNode, MDStock.EmptyFileIcon, projectConfiguration.DefaultPreviewProjectFileName);
+			projectNode = folderTreeStore.AppendValues (locationNode, MDStock.EmptyFile, projectConfiguration.DefaultPreviewProjectFileName);
 
 			solutionFolderNode = TreeIter.Zero;
 			solutionNode = TreeIter.Zero;
@@ -210,7 +210,7 @@ namespace MonoDevelop.Ide.Projects
 			locationNode = folderTreeStore.AppendValues (MDStock.Folder, string.Empty);
 
 			solutionFolderNode = folderTreeStore.AppendValues (locationNode, MDStock.Folder, projectConfiguration.DefaultPreviewSolutionName);
-			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, MDStock.EmptyFileIcon, projectConfiguration.DefaultPreviewSolutionFileName);
+			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, MDStock.EmptyFile, projectConfiguration.DefaultPreviewSolutionFileName);
 
 			projectFolderNode = TreeIter.Zero;
 			gitFolderNode = TreeIter.Zero;
@@ -238,7 +238,7 @@ namespace MonoDevelop.Ide.Projects
 			if (parent.Equals (TreeIter.Zero)) {
 				parent = projectFolderNode;
 			}
-			return folderTreeStore.InsertWithValues (parent, 1, null, GetLightTextMarkup (".gitignore"), GetTransparentIcon (MDStock.EmptyFileIcon));
+			return folderTreeStore.InsertWithValues (parent, 1, null, GetLightTextMarkup (".gitignore"), GetTransparentIcon (MDStock.EmptyFile));
 		}
 
 		static string GetLightTextMarkup (string text)

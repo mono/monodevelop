@@ -6,23 +6,23 @@
 </ExtensionPoint>
 
 <Extension path = "/MonoDevelop/Core/MimeTypes">
-	<MimeType id="application/x-resource" _description=".NET binary resource" icon="md-resource-file-icon">
+	<MimeType id="application/x-resource" _description=".NET binary resource" icon="md-resource-file">
 		<File pattern="*.resources" />
 	</MimeType>
-	<MimeType id="text/microsoft-resx" _description=".NET XML resource" icon="md-resource-file-icon" baseType="application/xml">
+	<MimeType id="text/microsoft-resx" _description=".NET XML resource" icon="md-resource-file" baseType="application/xml">
 		<File pattern="*.resx" />
 	</MimeType>
 	<MimeType id="application/x-addin+xml" _description="Add-in manifest" baseType="application/xml">
 		<File pattern="*.addin.xml" />
 		<File pattern="*.addin" />
 	</MimeType>
-	<MimeType id="application/xml" _description="XML document" icon="md-xml-file-icon" isText="true">
+	<MimeType id="application/xml" _description="XML document" icon="md-xml-file" isText="true">
 		<File pattern="*.xml" />
 	</MimeType>
-	<MimeType id="application/png" _description="PNG resource" icon="md-file-image">
+	<MimeType id="application/png" _description="PNG resource" icon="md-image-file">
 		<File pattern="*.png" />
 	</MimeType>
-	<MimeType id="text/css" _description="CSS document" icon="md-file-css" isText="true">
+	<MimeType id="text/css" _description="CSS document" icon="md-css-file" isText="true">
 		<File pattern="*.css" />
 	</MimeType>
 	<MimeType id="application/config+xml" _description="Configuration File" baseType="application/xml">
@@ -38,7 +38,7 @@
 		<File pattern="ChangeLog|Changelog|CHANGELOG|Changelog"/>
 		<File pattern="*.ChangeLog" />
 	</MimeType>
-	<MimeType id="application/x-executable" _description=".NET program" icon="md-empty-file-icon">
+	<MimeType id="application/x-executable" _description=".NET program" icon="md-empty-file">
 		<File pattern="*.exe" />
 		<File pattern="*.dll" />
 	</MimeType>
@@ -88,7 +88,7 @@
 	<MimeType id="application/x-sh" _description="Shell script" isText="true">
 		<File pattern="*.sh" />
 	</MimeType>
-	<MimeType id="text/x-fsharp" _description="F# files" isText="true" icon="md-file-source">
+	<MimeType id="text/x-fsharp" _description="F# files" isText="true" icon="md-source-file">
 		<File pattern="*.fs" />
 		<File pattern="*.fsx" />
 		<File pattern="*.fsi" />

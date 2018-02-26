@@ -388,7 +388,7 @@
 			shortcut = "Control|N"
 			macShortcut = "Meta|N"
 			_description = "Create a new file"
-			icon = "md-regular-file" />
+			icon = "md-generic-file" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.Save"
 			icon = "gtk-save"
 			shortcut = "Control|S"
