@@ -80,6 +80,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		int informationContainerWidth;
 
 		bool IsFirstNode () => buildOutputNode.Parent == null;
+		bool IsRowExpanded () => ((Xwt.TreeView)ParentWidget).IsRowExpanded (buildOutputNode);
 
 		public BuildOutputTreeCellView ()
 		{
@@ -172,8 +173,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		void DrawImageRow (Context ctx, Xwt.Rectangle cellArea)
 		{
-			var image = buildOutputNode.GetImage ().WithSize (ImageSide);
-			DrawImage (ctx, cellArea, image, cellArea.Left - 3);
+			DrawImage (ctx, cellArea, GetRowIcon (buildOutputNode), (cellArea.Left - 3));
+		}
+
+		Image GetRowIcon (BuildOutputNode node) 
+		{
+			if ((node.NodeType == BuildOutputNodeType.Task || node.NodeType == BuildOutputNodeType.Target) && !IsRowExpanded ()) {
+				if (node.HasErrors) {
+					return Resources.ErrorIcon;
+				}  else if (node.HasWarnings) {
+					return Resources.WarningIcon;
+				}
+			}
+			return node.GetImage ();
 		}
 
 		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x)
