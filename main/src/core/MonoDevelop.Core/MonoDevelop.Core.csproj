@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="..\..\..\packages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props" Condition="Exists('..\..\..\packages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props')" />
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <ReferencesVSEditorCopyToOutput>true</ReferencesVSEditorCopyToOutput>
@@ -241,47 +240,6 @@
     </Reference>
     <Reference Include="System.Xml.XPath.XDocument">
       <HintPath>..\..\..\packages\System.Xml.XPath.XDocument.4.3.0\lib\net46\System.Xml.XPath.XDocument.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.CoreUtility">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.CoreUtility.15.6.241-preview\lib\net46\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="Microsoft.VisualStudio.Text.Data">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.Data.15.6.241-preview\lib\net46\Microsoft.VisualStudio.Text.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Win32.Primitives">
-      <HintPath>..\..\..\packages\Microsoft.Win32.Primitives.4.0.1\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.Logic">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.Logic.15.6.241-preview\lib\net46\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Language.StandardClassification">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Language.StandardClassification.15.6.241-preview\lib\net46\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.UI">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.UI.15.6.241-preview\lib\net46\Microsoft.VisualStudio.Text.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.Convention">
-      <HintPath>..\..\..\packages\System.Composition.Convention.1.0.31\lib\portable-net45+win8+wp8+wpa81\System.Composition.Convention.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Diagnostics.DiagnosticSource">
-      <HintPath>..\..\..\packages\System.Diagnostics.DiagnosticSource.4.0.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Globalization.Calendars">
-      <HintPath>..\..\..\packages\System.Globalization.Calendars.4.0.1\lib\net46\System.Globalization.Calendars.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression.ZipFile">
-      <HintPath>..\..\..\packages\System.IO.Compression.ZipFile.4.0.1\lib\net46\System.IO.Compression.ZipFile.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Net.Sockets">
-      <HintPath>..\..\..\packages\System.Net.Sockets.4.1.0\lib\net46\System.Net.Sockets.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http">
-      <HintPath>..\..\..\packages\System.Net.Http.4.1.0\lib\net46\System.Net.Http.dll</HintPath>
-    </Reference>
-    <Reference Include="Minimatch">
-      <HintPath>..\..\..\packages\Minimatch.2.0.0\lib\netstandard1.0\Minimatch.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.CodingConventions">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.CodingConventions.1.1.20180104.4\lib\netstandard1.3\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
