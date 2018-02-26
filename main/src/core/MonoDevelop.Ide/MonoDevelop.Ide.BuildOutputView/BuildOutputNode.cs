@@ -229,12 +229,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 		}
 
 		public override int WarningCount {
-			get => nodes.FirstOrDefault ()?.WarningCount ?? 0;
+			get => nodes.Sum (x => x.WarningCount);
 			set => throw new NotImplementedException ();
 		}
 
 		public override int ErrorCount {
-			get => nodes.FirstOrDefault ()?.ErrorCount ?? 0;
+			get => nodes.Sum (x => x.ErrorCount);
 			set => throw new NotImplementedException ();
 		}
 	}
