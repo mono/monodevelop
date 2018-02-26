@@ -326,6 +326,12 @@ namespace Mono.TextEditor
 				break;
 			}
 
+			if (marker != null) {
+				var accessible = markerToAccessible[marker];
+				if (accessible != null) {
+					AtkCocoaExtensions.SetCurrentFocus (accessible.Accessible);
+				}
+			}
 			return true;
 		}
 

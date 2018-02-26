@@ -580,6 +580,8 @@ namespace Mono.TextEditor
 			editor.TextViewMargin.DisposeLayoutDict ();
 			editor.TextViewMargin.BackgroundRenderer = new FoldingScreenbackgroundRenderer (editor, list);
 			editor.ScrollTo (line.LineNumber, 0);
+
+			AtkCocoaExtensions.SetCurrentFocus (accessibles[segment].Accessible);
 		}
 	}
 
