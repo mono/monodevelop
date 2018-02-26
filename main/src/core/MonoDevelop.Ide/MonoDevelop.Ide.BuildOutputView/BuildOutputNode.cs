@@ -104,10 +104,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			case BuildOutputNodeType.TargetSkipped:
 				return Resources.TargetIcon;
 			case BuildOutputNodeType.Task:
-				if (HasErrors) {
-					return Resources.ErrorIcon;
-				}
-				return HasWarnings ? Resources.WarningIcon : Resources.TaskIcon;
+				return Resources.TaskIcon;
 			case BuildOutputNodeType.Warning:
 				return Resources.WarningIconSmall;
 			}
