@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=5b4053f9f9f964dc0117c63d2cd52fe87e842ead
+DEP_NEEDED_VERSION[0]=370e26248a575493442e183214fda797a4c7eb3b
 DEP_BRANCH_AND_REMOTE[0]="xamarin-forms-use-dotnet-templating-project-templates origin/xamarin-forms-use-dotnet-templating-project-templates"
 
 # heap-shot
