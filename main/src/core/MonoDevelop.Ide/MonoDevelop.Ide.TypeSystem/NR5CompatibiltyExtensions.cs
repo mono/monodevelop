@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name="symbol">Symbol.</param>
 		public static string GetFullMetadataName (this INamedTypeSymbol symbol)
 		{
-			var fullName = new StringBuilder (symbol.MetadataName);
+			var fullName = StringBuilderCache.Allocate (symbol.MetadataName);
 			var parentType = symbol.ContainingType;
 			while (parentType != null) {
 				fullName.Insert (0, '+');
@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				fullName.Insert (0, ns.MetadataName);
 				ns = ns.ContainingNamespace;
 			}
-			return fullName.ToString ();
+			return StringBuilderCache.ReturnAndFree (fullName);
 		}
 
 		/// <summary>

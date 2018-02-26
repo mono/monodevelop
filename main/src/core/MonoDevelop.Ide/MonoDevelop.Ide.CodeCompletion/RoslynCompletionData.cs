@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{
 			var description = await Task.Run (() => completionService.GetDescriptionAsync (doc, CompletionItem)).ConfigureAwait (false);
-			var markup = new StringBuilder ();
+			var markup = StringBuilderCache.Allocate ();
 			var theme = SyntaxHighlightingService.GetIdeFittingTheme (DefaultSourceEditorOptions.Instance.GetEditorTheme ());
 			var taggedParts = description.TaggedParts;
 			int i = 0;
@@ -294,7 +294,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				markup.Append ("</span>");
 			}
 			return new TooltipInformation {
-				SignatureMarkup = markup.ToString ()
+				SignatureMarkup = StringBuilderCache.ReturnAndFree (markup)
 			};
 		}
 

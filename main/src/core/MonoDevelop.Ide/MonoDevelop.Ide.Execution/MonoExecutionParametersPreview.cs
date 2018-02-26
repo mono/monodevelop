@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Execution
 			Dictionary<string,string> vars = new Dictionary<string, string> ();
 			options.GenerateOptions (vars, out cmd);
 			
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			
 			if (cmd.Length == 0 && vars.Count == 0) {
 				sb.AppendLine (GLib.Markup.EscapeText (GettextCatalog.GetString ("No options have been specified.")));
@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Execution
 					sb.AppendLine (svar);
 			}
 			
-			labelOps.Markup = sb.ToString ();
+			labelOps.Markup = StringBuilderCache.ReturnAndFree (sb);
 		}
 	}
 }
