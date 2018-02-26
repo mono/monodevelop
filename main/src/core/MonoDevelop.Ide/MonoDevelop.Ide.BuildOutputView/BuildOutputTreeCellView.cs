@@ -78,17 +78,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Font defaultFontLayout;
 		Size fontRequiredSize;
 		int informationContainerWidth;
+		IBuildOutputContextProvider contextProvider;
 
 		bool IsFirstNode () => buildOutputNode.Parent == null;
 		bool IsRowExpanded () => ((Xwt.TreeView)ParentWidget).IsRowExpanded (buildOutputNode);
 
-		public BuildOutputTreeCellView ()
+		public BuildOutputTreeCellView (IBuildOutputContextProvider context)
 		{
 			BackgroundColor = Styles.CellBackgroundColor;
 			StrongSelectionColor = Styles.CellStrongSelectionColor;
 			SelectionColor = Styles.CellSelectionColor;
 			UseStrongSelectionColor = true;
 			informationContainerWidth = DefaultIformationContainerWidth;
+			contextProvider = context;
 		}
 
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
@@ -126,7 +128,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			var textStartX = BackgroundBounds.Width - informationContainerWidth;
 
-			var duration = buildOutputNode.GetDurationAsString (buildOutputNode as FilteredBuildOutputNode == null);
+			var duration = buildOutputNode.GetDurationAsString (contextProvider.IsShowingDiagnostics);
 			if (duration != "") {
 				DrawText (ctx, cellArea, textStartX, informationContainerWidth, duration);
 			}
