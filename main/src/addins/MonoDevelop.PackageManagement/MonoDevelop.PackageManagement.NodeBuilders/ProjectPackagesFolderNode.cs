@@ -105,11 +105,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		}
 
 		public IconId Icon {
-			get { return Stock.OpenReferenceFolder; }
+			get { return Stock.ReferenceFolder; }
 		}
 
 		public IconId ClosedIcon {
-			get { return Stock.ClosedReferenceFolder; }
+			get { return Stock.ReferenceFolder; }
 		}
 
 		public string GetLabel ()

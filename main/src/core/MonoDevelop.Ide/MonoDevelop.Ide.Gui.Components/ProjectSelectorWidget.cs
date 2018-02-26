@@ -170,7 +170,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (item is Solution)
 				icon = MonoDevelop.Ide.Gui.Stock.Solution;
 			else if (item is SolutionFolder)
-				icon = MonoDevelop.Ide.Gui.Stock.SolutionFolderClosed;
+				icon = MonoDevelop.Ide.Gui.Stock.SolutionFolder;
 			else if (item is WorkspaceItem)
 				icon = MonoDevelop.Ide.Gui.Stock.Workspace;
 			else if (item is Project)

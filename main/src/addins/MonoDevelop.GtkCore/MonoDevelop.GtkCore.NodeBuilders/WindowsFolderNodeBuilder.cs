@@ -65,8 +65,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			} else {
 				nodeInfo.Label = GettextCatalog.GetString ("User Interface");
 			}
-			nodeInfo.Icon = Context.GetIcon (Stock.OpenResourceFolder);
-			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedResourceFolder);
+			nodeInfo.Icon = Context.GetIcon (Stock.ResourceFolder);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

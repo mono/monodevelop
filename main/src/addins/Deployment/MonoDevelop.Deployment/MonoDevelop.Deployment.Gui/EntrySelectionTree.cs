@@ -79,7 +79,7 @@ namespace MonoDevelop.Deployment.Gui
 			if (entry.ParentFolder == null)
 				icon = MonoDevelop.Ide.Gui.Stock.Solution;
 			else if (entry is SolutionFolder)
-				icon = MonoDevelop.Ide.Gui.Stock.SolutionFolderClosed;
+				icon = MonoDevelop.Ide.Gui.Stock.SolutionFolder;
 			else if (entry is Project)
 				icon = ((Project)entry).StockIcon;
 			else

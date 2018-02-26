@@ -860,7 +860,7 @@
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory"
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenLogDirectoryHandler"
 			_label = "Open Log Directory"
-			icon = "md-open-folder"
+			icon = "md-folder"
 			_description = "Opens the directory where the diagnostic logs are stored" />
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.About"
 			defaultHandler = "MonoDevelop.Ide.Commands.AboutHandler"

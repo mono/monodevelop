@@ -589,7 +589,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			Xwt.Drawing.Image fileIcon;
 			if (n.IsDirectory)
-				fileIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.ClosedFolder, Gtk.IconSize.Menu);
+				fileIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Folder, Gtk.IconSize.Menu);
 			else
 				fileIcon = DesktopService.GetIconForFile (n.LocalPath, Gtk.IconSize.Menu);
 

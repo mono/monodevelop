@@ -72,8 +72,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			nodeInfo.Label = GLib.Markup.EscapeText (GettextCatalog.GetString ("References"));
-			nodeInfo.Icon = Context.GetIcon (Stock.OpenReferenceFolder);
-			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedReferenceFolder);
+			nodeInfo.Icon = Context.GetIcon (Stock.ReferenceFolder);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
