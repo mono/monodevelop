@@ -50,7 +50,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputNode : TreePosition
 	{
-
 		const string ParametersNodeName = "Parameters";
 
 		public virtual BuildOutputNodeType NodeType { get; set; }
@@ -69,6 +68,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public virtual string File { get; set; }
 		public virtual string Project { get; set; }
 		public virtual int LineNumber { get; set; }
+
+		public virtual int ErrorCount { get; set; }
+		public virtual int WarningCount { get; set; }
 
 		List<BuildOutputNode> children;
 		public virtual IReadOnlyList<BuildOutputNode> Children => children;
@@ -177,27 +179,27 @@ namespace MonoDevelop.Ide.BuildOutputView
 		}
 
 		public override BuildOutputNodeType NodeType {
-			get => nodes.First ()?.NodeType ?? BuildOutputNodeType.Unknown;
+			get => nodes.FirstOrDefault ()?.NodeType ?? BuildOutputNodeType.Unknown;
 			set => throw new NotImplementedException ();
 		}
 
 		public override string Message {
-			get => nodes.First ()?.Message;
+			get => nodes.FirstOrDefault ()?.Message;
 			set => throw new NotImplementedException ();
 		}
 
 		public override string Platform {
-			get => nodes.First ()?.Platform;
+			get => nodes.FirstOrDefault ()?.Platform;
 			set => throw new NotImplementedException ();
 		}
 
 		public override string Configuration {
-			get => nodes.First ()?.Configuration;
+			get => nodes.FirstOrDefault ()?.Configuration;
 			set => throw new NotImplementedException ();
 		}
 
 		public override string FullMessage {
-			get => nodes.First ()?.FullMessage;
+			get => nodes.FirstOrDefault ()?.FullMessage;
 			set => throw new NotImplementedException ();
 		}
 
@@ -223,6 +225,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public override bool HasData {
 			get => nodes.Any (x => x.HasData);
+			set => throw new NotImplementedException ();
+		}
+
+		public override int WarningCount {
+			get => nodes.Sum (x => x.WarningCount);
+			set => throw new NotImplementedException ();
+		}
+
+		public override int ErrorCount {
+			get => nodes.Sum (x => x.ErrorCount);
 			set => throw new NotImplementedException ();
 		}
 	}
@@ -255,6 +267,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public override string File { get => masterNode.File; set => masterNode.File = value; }
 		public override string Project { get => masterNode.Project; set => masterNode.Project = value; }
 		public override int LineNumber { get => masterNode.LineNumber; set => masterNode.LineNumber = value; }
+
+		public override int WarningCount { get => masterNode.WarningCount; set => masterNode.WarningCount = value; }
+		public override int ErrorCount { get => masterNode.ErrorCount; set => masterNode.ErrorCount = value; }
 
 		public override IReadOnlyList<BuildOutputNode> Children {
 			get {
