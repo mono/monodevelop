@@ -148,6 +148,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		IEnumerable<BuildOutputNode> GetProjectRootNodes ()
 		{
+			int errorCount = 0, warningCount = 0;
 			Dictionary<string, AggregatedBuildOutputNode> result = new Dictionary<string, AggregatedBuildOutputNode> ();
 			foreach (var proj in projects) {
 				foreach (var node in proj.RootNodes) {
@@ -157,10 +158,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 					} else {
 						result [node.Message] = new AggregatedBuildOutputNode (node);
 					}
+
+					errorCount += node.ErrorCount;
+					warningCount += node.WarningCount;
 				}
 			}
 
-			return result.Values;
+			// Add summary node
+			var message = errorCount > 0 ? GettextCatalog.GetString ("Build failed") : GettextCatalog.GetString ("Build succeeded");
+			var summaryNode = new BuildOutputNode {
+				NodeType = BuildOutputNodeType.BuildSummary,
+				Message = message,
+				FullMessage = message,
+				HasErrors = errorCount > 0,
+				HasWarnings = warningCount > 0,
+				HasData = false,
+				ErrorCount = errorCount,
+				WarningCount = warningCount
+			};
+
+			return result.Values.Concat (summaryNode);
 		}
 
 		public void ProcessProjects () 

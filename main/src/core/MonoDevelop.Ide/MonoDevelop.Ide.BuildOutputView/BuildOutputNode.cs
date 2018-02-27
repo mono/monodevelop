@@ -45,7 +45,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Warning,
 		Message,
 		Diagnostics,
-		Parameters
+		Parameters,
+		BuildSummary
 	}
 
 	class BuildOutputNode : TreePosition
@@ -93,6 +94,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			switch (NodeType) {
 			case BuildOutputNodeType.Build:
 				return Resources.BuildIcon;
+			case BuildOutputNodeType.BuildSummary:
+				return HasErrors ? Resources.ErrorIcon : Resources.TaskIcon;
 			case BuildOutputNodeType.Diagnostics:
 			case BuildOutputNodeType.Message:
 				return Resources.MessageIcon;
