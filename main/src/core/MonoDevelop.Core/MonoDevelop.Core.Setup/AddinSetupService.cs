@@ -34,6 +34,7 @@ namespace MonoDevelop.Core.Setup
 	{
 		internal AddinSetupService (AddinRegistry r): base (r)
 		{
+			AddAddinRepositoryProvider ("VisualStudioMarketplace", new VisualStudioMarketplaceRepositoryProvider ());
 		}
 		
 		public bool IsMainRepositoryRegistered (UpdateLevel level)
@@ -46,7 +47,7 @@ namespace MonoDevelop.Core.Setup
 		{
 			string url = GetMainRepositoryUrl (level);
 			if (!Repositories.ContainsRepository (url)) {
-				var rep = Repositories.RegisterRepository (null, url, false, AddinRepositoryType.MonoAddins);
+				var rep = Repositories.RegisterRepository (null, url, false, "MonoAddins");
 				rep.Name = BrandingService.BrandApplicationName ("MonoDevelop Extension Repository");
 				if (level != UpdateLevel.Stable)
 					rep.Name += " (" + level + " channel)";
@@ -72,7 +73,7 @@ namespace MonoDevelop.Core.Setup
 		{
 			var url = "https://marketplace.visualstudio.com/";
 			if (!Repositories.ContainsRepository (url)) {
-				var rep = Repositories.RegisterRepository (null, url, false, AddinRepositoryType.VisualStudioMarketplace);
+				var rep = Repositories.RegisterRepository (null, url, false, "VisualStudioMarketplace");
 				rep.Name = GettextCatalog.GetString ("Visual Studio Marketplace");
 			}
 		}

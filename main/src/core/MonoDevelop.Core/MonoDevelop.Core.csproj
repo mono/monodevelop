@@ -763,6 +763,7 @@
     <Compile Include="MonoDevelop.Core\ObjectPool.cs" />
     <Compile Include="MonoDevelop.Core\SharedPools.cs" />
     <Compile Include="MonoDevelop.Core.Collections\LookupTable.cs" />
+    <Compile Include="MonoDevelop.Core.Setup\VisualStudioMarketplaceRepositoryProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
