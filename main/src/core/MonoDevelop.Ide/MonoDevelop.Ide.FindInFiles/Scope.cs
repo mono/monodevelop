@@ -39,6 +39,12 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	public abstract class Scope
 	{
+		[Obsolete ("Unused - will be removed")]
+		public bool IncludeBinaryFiles {
+			get;
+			set;
+		}
+
 		public virtual PathMode PathMode {
 			get {
 				var workspace = IdeApp.Workspace;
@@ -275,6 +281,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			get { return PathMode.Absolute; }
 		}
 
+		[Obsolete ("Unused - will be removed")]
+		public bool IncludeHiddenFiles {
+			get;
+			set;
+		}
 
 		FileProvider[] fileNames;
 		public override int GetTotalWork (FilterOptions filterOptions)
