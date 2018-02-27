@@ -299,7 +299,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public override Control Control {
 			get {
-				return textEditor;
+				return textEditorImpl.ViewContent.Control;
 			}
 		}
 

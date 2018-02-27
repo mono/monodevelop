@@ -65,7 +65,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.SourceEditor
 {	
-	partial class SourceEditorView : ViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
+	partial class SourceEditorView : InfoBarViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, IPrintable,
@@ -107,13 +107,9 @@ namespace MonoDevelop.SourceEditor
 				return widget;
 			}
 		}
-		
-		public override Control Control {
-			get {
-				return widget != null ? widget.Vbox : null;
-			}
-		}
-		
+
+		public override Widget ContentControl => widget?.Vbox;
+
 		public int LineCount {
 			get {
 				return Document.LineCount;
@@ -696,7 +692,7 @@ namespace MonoDevelop.SourceEditor
 
 		public async Task Save (string fileName, Encoding encoding)
 		{
-			if (widget.HasMessageBar)
+			if (IsInfoBarVisible)
 				return;
 			if (encoding != null) {
 				this.Document.VsTextDocument.Encoding = encoding;
@@ -707,7 +703,7 @@ namespace MonoDevelop.SourceEditor
 				writeAccessChecked = true;
 			}
 
-			if (warnOverwrite) {
+			if (WarnOverwrite) {
 				if (string.Equals (fileName, ContentName, FilePath.PathComparison)) {
 					string question = GettextCatalog.GetString (
 						"This file {0} has been changed outside of {1}. Are you sure you want to overwrite the file?",
@@ -716,8 +712,7 @@ namespace MonoDevelop.SourceEditor
 					if (MessageService.AskQuestion (question, AlertButton.Cancel, AlertButton.OverwriteFile) != AlertButton.OverwriteFile)
 						return;
 				}
-				warnOverwrite = false;
-				widget.RemoveMessageBar ();
+				WarnOverwrite = false;
 				WorkbenchWindow.ShowNotification = false;
 			}
 			
@@ -836,6 +831,12 @@ namespace MonoDevelop.SourceEditor
 		
 		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
+			if (fileOpenInformation.IsReloadOperation)
+				StoreSettings ();
+			if (fileOpenInformation.ContentText != null) {
+				ReplaceContent (fileOpenInformation.FileName, fileOpenInformation.ContentText, fileOpenInformation.Encoding);
+				return TaskUtil.Default<object> ();
+			}
 			return Load (fileOpenInformation.FileName, fileOpenInformation.Encoding, fileOpenInformation.IsReloadOperation);
 		}
 
@@ -876,12 +877,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			var document = Document;
 			if (document == null)
-				return TaskUtil.Default<object>();
+				return TaskUtil.Default<object> ();
 			document.TextChanged -= OnTextReplaced;
 			
-			if (warnOverwrite) {
-				warnOverwrite = false;
-				widget.RemoveMessageBar ();
+			if (WarnOverwrite) {
+				WarnOverwrite = false;
 				WorkbenchWindow.ShowNotification = false;
 			}
 			// Look for a mime type for which there is a syntax mode
@@ -892,7 +892,7 @@ namespace MonoDevelop.SourceEditor
 				didLoadCleanly = true;
 			} else {
 				if (!reload && AutoSave.AutoSaveExists(fileName)) {
-					widget.ShowAutoSaveWarning(fileName);
+					ShowAutoSaveWarning(fileName);
 					this.Document.VsTextDocument.Encoding = loadEncoding ?? Encoding.UTF8;
 					didLoadCleanly = false;
 				} else {
@@ -982,13 +982,11 @@ namespace MonoDevelop.SourceEditor
 			});
 		}
 
-		bool warnOverwrite = false;
 
 		internal void ReplaceContent (string fileName, string content, Encoding enc)
 		{
-			if (warnOverwrite) {
-				warnOverwrite = false;
-				widget.RemoveMessageBar ();
+			if (WarnOverwrite) {
+				WarnOverwrite = false;
 				WorkbenchWindow.ShowNotification = false;
 			}
 			UpdateMimeType (fileName);
@@ -1647,12 +1645,8 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		public bool WarnOverwrite {
-			get {
-				return warnOverwrite;
-			}
-			set {
-				warnOverwrite = value;
-			}
+			get;
+			set;
 		}
 
 		public string GetText (int startPosition, int endPosition)
@@ -2412,8 +2406,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (type.Equals (typeof (TextEditorData)))
 				return TextEditor.GetTextEditorData ();
-			if (type.Equals (typeof (IDocumentReloadPresenter)))
-				return widget;
 			return base.OnGetContent (type);
 		}
 
@@ -3630,5 +3622,11 @@ namespace MonoDevelop.SourceEditor
 				return this.TextEditor.HasFocus;
 			}
 		}
-	}
+
+        public override void RemoveInfoBar()
+        {
+			base.RemoveInfoBar();
+			widget.RemoveEolWarning ();
+        }
+    }
 } 

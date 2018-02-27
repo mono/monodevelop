@@ -1493,6 +1493,12 @@ namespace MonoDevelop.Ide.Gui
 		public Project Project { get; set; }
 
 		/// <summary>
+		/// If != null : 
+		/// 	do not load from file - instead use that text as content.
+		/// </summary>
+		public string ContentText { get; set; }
+
+		/// <summary>
 		/// Is true when the file is already open and reload is requested.
 		/// </summary>
 		public bool IsReloadOperation { get; set; }

@@ -210,7 +210,7 @@ namespace MonoDevelop.SourceEditor
 			sb.Replace ("%N", (page + 1).ToString ());
 			sb.Replace ("%Q", totalPages.ToString ());
 			//FIXME: use font width for ellipsizing better 
-			sb.Replace ("%F", SourceEditorWidget.EllipsizeMiddle (filename, 60));
+			sb.Replace ("%F", Ide.Gui.InfoBarViewContent.EllipsizeMiddle (filename, 60));
 			return StringBuilderCache.ReturnAndFree (sb);
 		}
 		

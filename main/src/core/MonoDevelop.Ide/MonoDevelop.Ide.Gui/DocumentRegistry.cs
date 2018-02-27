@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Gui
 	interface IDocumentReloadPresenter
 	{
 		void ShowFileChangedWarning (bool multiple);
-		void RemoveMessageBar ();
+		void RemoveInfoBar ();
 	}
 
 
@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			foreach (var view in GetAllChangedFiles ()) {
 				view.LastSaveTimeUtc = File.GetLastWriteTime (view.Document.FileName);
-				view.Document.GetContent<IDocumentReloadPresenter> ()?.RemoveMessageBar ();
+				view.Document.GetContent<IDocumentReloadPresenter> ()?.RemoveInfoBar ();
 				view.Document.Window.ShowNotification = false;
 			}
 		}
@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Gui
 		public static void ReloadAllChangedFiles ()
 		{
 			foreach (var view in GetAllChangedFiles ()) {
-				view.Document.GetContent<IDocumentReloadPresenter> ()?.RemoveMessageBar ();
+				view.Document.GetContent<IDocumentReloadPresenter> ()?.RemoveInfoBar ();
 				view.Document.Reload ();
 				view.Document.Window.ShowNotification = false;
 			}

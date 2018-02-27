@@ -54,7 +54,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.SourceEditor
 {
-	class SourceEditorWidget : IServiceProvider, IDocumentReloadPresenter
+	class SourceEditorWidget : IServiceProvider
 	{
 		SourceEditorView view;
 		DecoratedScrolledWindow mainsw;
@@ -154,10 +154,7 @@ namespace MonoDevelop.SourceEditor
 				secondsw.RemoveUsageProvider (provider);
 		}
 		
-		public bool HasMessageBar {
-			get { return messageBar != null; }
-		}
-		
+
 		Gtk.VBox vbox = new Gtk.VBox ();
 		public Gtk.VBox Vbox {
 			get { return this.vbox; }
@@ -414,7 +411,7 @@ namespace MonoDevelop.SourceEditor
 			mainsw.SetTextEditor (textEditor);
 			
 			vbox.PackStart (mainsw, true, true, 0);
-			
+
 			textEditorData = textEditor.GetTextEditorData ();
 			textEditorData.EditModeChanged += TextEditorData_EditModeChanged;
 			
@@ -503,8 +500,6 @@ namespace MonoDevelop.SourceEditor
 		
 		void HandleParseInformationUpdaterWorkerThreadDoWork (bool firstTime, ParsedDocument parsedDocument, CancellationToken token = default(CancellationToken))
 		{
-
-
 			if (reloadSettings) {
 				reloadSettings = false;
 				Application.Invoke ((o, args) => {
@@ -514,7 +509,6 @@ namespace MonoDevelop.SourceEditor
 					mainsw.QueueDraw ();
 				});
 			}
-
 		}
 
 		internal void UpdateParsedDocument (ParsedDocument document)
@@ -687,76 +681,9 @@ namespace MonoDevelop.SourceEditor
 //			this.splitContainer.SizeRequested += SplitContainerSizeRequested;
 //		}
 //		
-		MonoDevelop.Components.InfoBar messageBar = null;
-		
-		internal static string EllipsizeMiddle (string str, int truncLen)
-		{
-			if (str == null) 
-				return "";
-			if (str.Length <= truncLen) 
-				return str;
-			
-			string delimiter = "...";
-			int leftOffset = (truncLen - delimiter.Length) / 2;
-			int rightOffset = str.Length - truncLen + leftOffset + delimiter.Length;
-			return str.Substring (0, leftOffset) + delimiter + str.Substring (rightOffset);
-		}
-		
-		public void ShowFileChangedWarning (bool multiple)
-		{
-			RemoveMessageBar ();
-			
-			if (messageBar == null) {
-				messageBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
-				messageBar.SetMessageLabel (GettextCatalog.GetString (
-					"<b>The file \"{0}\" has been changed outside of {1}.</b>\n" +
-					"Do you want to keep your changes, or reload the file from disk?",
-					EllipsizeMiddle (Document.FileName, 50), BrandingService.ApplicationName));
-				
-				var b1 = new Button (GettextCatalog.GetString ("_Reload from disk"));
-				b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
-				b1.Clicked += delegate {
-					Reload ();
-					view.TextEditor.GrabFocus ();
-				};
-				messageBar.ActionArea.Add (b1);
-				
-				var b2 = new Button (GettextCatalog.GetString ("_Keep changes"));
-				b2.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
-				b2.Clicked += delegate {
-					RemoveMessageBar ();
-					view.WorkbenchWindow.ShowNotification = false;
-				};
-				messageBar.ActionArea.Add (b2);
 
-				if (multiple) {
-					var b3 = new Button (GettextCatalog.GetString ("_Reload all"));
-					b3.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
-					b3.Clicked += delegate {
-						DocumentRegistry.ReloadAllChangedFiles ();
-					};
-					messageBar.ActionArea.Add (b3);
-	
-					var b4 = new Button (GettextCatalog.GetString ("_Ignore all"));
-					b4.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
-					b4.Clicked += delegate {
-						DocumentRegistry.IgnoreAllChangedFiles ();
-					};
-					messageBar.ActionArea.Add (b4);
-				}
-			}
-			
-			view.IsDirty = true;
-			view.WarnOverwrite = true;
-			vbox.PackStart (messageBar, false, false, CHILD_PADDING);
-			vbox.ReorderChild (messageBar, 0);
-			messageBar.ShowAll ();
-
-			messageBar.QueueDraw ();
-			
-			view.WorkbenchWindow.ShowNotification = true;
-		}
 		
+
 		#region Eol marker check
 		internal bool UseIncorrectMarkers { get; set; }
 		internal bool HasIncorrectEolMarker {
@@ -875,7 +802,7 @@ namespace MonoDevelop.SourceEditor
 
 		void ShowIncorrectEolMarkers (string fileName, bool multiple)
 		{
-			RemoveMessageBar ();
+			view.RemoveInfoBar ();
 			var hbox = new HBox ();
 			hbox.Spacing = 8;
 
@@ -930,7 +857,7 @@ namespace MonoDevelop.SourceEditor
 			image.Clicked += delegate {
 				UseIncorrectMarkers = true;
 				view.WorkbenchWindow.ShowNotification = false;
-				RemoveMessageBar ();
+				view.RemoveInfoBar ();
 			};
 			okButton.Clicked += async delegate {
 				switch (combo.Active) {
@@ -950,102 +877,20 @@ namespace MonoDevelop.SourceEditor
 					FileRegistry.IgnoreLineEndingsInAllFiles ();
 					break;
 				}
-				RemoveMessageBar ();
+				view.RemoveInfoBar ();
 			};
 		}
-		#endregion
-		public void ShowAutoSaveWarning (string fileName)
-		{
-			RemoveMessageBar ();
-			TextEditor.Visible = false;
-			if (messageBar == null) {
-				messageBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
-				messageBar.SetMessageLabel (BrandingService.BrandApplicationName (GettextCatalog.GetString (
-						"<b>An autosave file has been found for this file.</b>\n" +
-						"This could mean that another instance of MonoDevelop is editing this " +
-						"file, or that MonoDevelop crashed with unsaved changes.\n\n" +
-					    "Do you want to use the original file, or load from the autosave file?")));
-				
-				Button b1 = new Button (GettextCatalog.GetString("_Use original file"));
-				b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
-				b1.Clicked += delegate {
-					try {
-						AutoSave.RemoveAutoSaveFile (fileName);
-						TextEditor.GrabFocus ();
-						view.Load (fileName);
-						view.WorkbenchWindow.Document.ReparseDocument ();
-					} catch (Exception ex) {
-						LoggingService.LogError ("Could not remove the autosave file.", ex);
-					} finally {
-						RemoveMessageBar ();
-					}
-				};
-				messageBar.ActionArea.Add (b1);
-				
-				Button b2 = new Button (GettextCatalog.GetString("_Load from autosave"));
-				b2.Image = new ImageView (Gtk.Stock.RevertToSaved, IconSize.Button);
-				b2.Clicked += delegate {
-					try {
-						var content = AutoSave.LoadAndRemoveAutoSave (fileName);
-						TextEditor.GrabFocus ();
-						view.Load (fileName);
-						view.ReplaceContent (fileName, content.Text, view.SourceEncoding);
-						view.WorkbenchWindow.Document.ReparseDocument ();
-						view.IsDirty = true;
-					} catch (Exception ex) {
-						LoggingService.LogError ("Could not remove the autosave file.", ex);
-					} finally {
-						RemoveMessageBar ();
-					}
-					
-				};
-				messageBar.ActionArea.Add (b2);
-			}
-			
-			view.IsDirty = true;
-			view.WarnOverwrite = true;
-			vbox.PackStart (messageBar, false, false, CHILD_PADDING);
-			vbox.ReorderChild (messageBar, 0);
-			messageBar.ShowAll ();
 
-			messageBar.QueueDraw ();
-			
-//			view.WorkbenchWindow.ShowNotification = true;
-		}
-		
-		
-		public void RemoveMessageBar ()
+
+		internal void RemoveEolWarning ()
 		{
-			if (messageBar != null) {
-				if (messageBar.Parent == vbox)
-					vbox.Remove (messageBar);
-				messageBar.Destroy ();
-				messageBar = null;
-			}
-			if (!TextEditor.Visible)
-				TextEditor.Visible = true;
 			if (incorrectEolMessage != null) {
 				RemoveOverlay (incorrectEolMessage);
 				incorrectEolMessage = null;
 			}
 		}
 
-		public async void Reload ()
-		{
-			try {
-				if (!System.IO.File.Exists (view.ContentName) || this.isDisposed)
-					return;
-
-				view.StoreSettings ();
-				reloadSettings = true;
-				await view.Load (view.ContentName, view.SourceEncoding, true);
-				view.WorkbenchWindow.ShowNotification = false;
-			} catch (Exception ex) {
-				MessageService.ShowError ("Could not reload the file.", ex);
-			} finally {
-				RemoveMessageBar ();
-			}
-		}
+		#endregion
 
 		#region Status Bar Handling
 		MonoDevelop.SourceEditor.MessageBubbleTextMarker oldExpandedMarker;
@@ -1360,7 +1205,7 @@ namespace MonoDevelop.SourceEditor
 				TextEditor.QueueDraw ();
 			}
 		}
-	
+
 		#endregion
 
 		internal void NextIssue ()
