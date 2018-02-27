@@ -50,6 +50,7 @@
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreVersionsRestorerTestBase.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectSupportedTargetFrameworksTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTemplateWizardTests.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTemplateStringTagProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">

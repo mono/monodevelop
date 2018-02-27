@@ -39,12 +39,14 @@ namespace MonoDevelop.DotNetCore.Tests
 		bool sdkInstalled;
 		DotNetCoreVersion[] runtimeVersions;
 		bool runtimeInstalled;
+		string sdkRootPath;
 
 		[TestFixtureSetUp]
 		public void SetupTestFixture ()
 		{
 			sdkInstalled = DotNetCoreSdk.IsInstalled;
 			sdkVersions = DotNetCoreSdk.Versions;
+			sdkRootPath = DotNetCoreSdk.SdkRootPath;
 
 			runtimeInstalled = DotNetCoreRuntime.IsInstalled;
 			runtimeVersions = DotNetCoreRuntime.Versions;
@@ -55,6 +57,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			DotNetCoreSdk.SetInstalled (sdkInstalled);
 			DotNetCoreSdk.SetVersions (sdkVersions);
+			DotNetCoreSdk.SetSdkRootPath (sdkRootPath);
 
 			DotNetCoreRuntime.SetInstalled (runtimeInstalled);
 			DotNetCoreRuntime.SetVersions (runtimeVersions);
@@ -74,6 +77,13 @@ namespace MonoDevelop.DotNetCore.Tests
 				.OrderByDescending (version => version);
 
 			DotNetCoreSdk.SetVersions (dotNetCoreVersions);
+		}
+
+		protected void DotNetCoreSdksNotInstalled ()
+		{
+			DotNetCoreSdksInstalled (new string[0]);
+			DotNetCoreSdk.SetInstalled (false);
+			DotNetCoreSdk.SetSdkRootPath (null);
 		}
 	}
 }
