@@ -52,8 +52,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputTreeCellView : CanvasCellView
 	{
-		const double CharSizeMultiplier = 0.75;
-
 		const int FontSize = 11;
 		const int DescriptionPaddingHeight = 0;
 		const int LinesDisplayedCount = 1;
@@ -249,7 +247,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			layout.Font = layout.Font.WithSize (FontSize);
 			defaultFontLayout = layout.Font;
 			fontRequiredSize = layout.GetSize ();
-			fontCharWidth = fontRequiredSize.Width * CharSizeMultiplier;
 			return new Size (CellWidth, fontRequiredSize.Height * LinesDisplayedCount + DescriptionPaddingHeight + 
 			                 (buildOutputNode.NodeType == BuildOutputNodeType.Build ? 12 : 3));
 		}
