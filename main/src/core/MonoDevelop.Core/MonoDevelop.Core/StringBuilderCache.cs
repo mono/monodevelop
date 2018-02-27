@@ -33,7 +33,7 @@ namespace MonoDevelop.Core
 	/// </summary>
 	public static class StringBuilderCache
 	{
-		public static StringBuilder Allocate ()
+		public static StringBuilder Allocate () 
 		{
 			var result = SharedPools.Default<StringBuilder> ().Allocate ();
 			result.Clear ();
@@ -42,7 +42,7 @@ namespace MonoDevelop.Core
 
 		public static StringBuilder Allocate (string text)
 		{
-			return SharedPools.Default<StringBuilder> ().Allocate ().Append (text);
+			return Allocate ().Append (text);
 		}
 
 		public static void Free (StringBuilder sb)
