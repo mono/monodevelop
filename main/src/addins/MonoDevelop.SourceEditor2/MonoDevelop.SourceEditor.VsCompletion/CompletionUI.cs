@@ -189,7 +189,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 					selection = value;
 					ScrollToSelectedItem ();
 					QueueDraw ();
-					UpdateDescription (SelectedItem).Ignore ();
+					UpdateDescription ().Ignore ();
 				}
 			}
 		}
@@ -509,7 +509,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 		{
 			base.OnSizeAllocated (allocation);
 			SetAdjustments (false);
-			UpdateDescription (SelectedItem).Ignore ();
+			UpdateDescription ().Ignore ();
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -604,13 +604,16 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 
 		CancellationTokenSource descriptionCts = new CancellationTokenSource ();
 		XwtThemedPopup descriptionWindow;
-		private async Task UpdateDescription (CompletionItem completionItem)
+		private async Task UpdateDescription ()
 		{
 			if (descriptionWindow != null) {
 				descriptionWindow.Destroy ();
 				descriptionWindow = null;
 			}
 			descriptionCts.Cancel ();
+			if (SelectedItemIndex == -1)
+				return;
+			var completionItem = SelectedItem;
 			descriptionCts = new CancellationTokenSource ();
 			var token = descriptionCts.Token;
 			object description = null;

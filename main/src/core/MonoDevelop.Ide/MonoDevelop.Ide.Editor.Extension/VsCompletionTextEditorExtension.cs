@@ -88,13 +88,25 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandUpdateHandler (TextEditorCommands.ShowCompletionWindow)]
 		void UpdateCompletionCommand (CommandInfo info)
 		{
-			info.Enabled = editorCommandHandlerService.GetCommandState ((textView, textBuffer) => new InvokeCompletionListCommandArgs (textView, textBuffer), null).IsAvailable;
+			info.Enabled = editorCommandHandlerService.GetCommandState ((textView, textBuffer) => new CommitUniqueCompletionListItemCommandArgs (textView, textBuffer), null).IsAvailable;
 		}
 
 		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
 		void RunCompletionCommand ()
 		{
-			editorCommandHandlerService.Execute ((textView, textBuffer) => new InvokeCompletionListCommandArgs (textView, textBuffer), null);
+			editorCommandHandlerService.Execute ((textView, textBuffer) => new CommitUniqueCompletionListItemCommandArgs (textView, textBuffer), null);
+		}
+
+		[CommandUpdateHandler (TextEditorCommands.ToggleCompletionSuggestionMode)]
+		void UpdateToggleSuggestionMode (CommandInfo info)
+		{
+			info.Enabled = editorCommandHandlerService.GetCommandState ((textView, textBuffer) => new ToggleCompletionModeCommandArgs (textView, textBuffer), null).IsAvailable;
+		}
+
+		[CommandHandler (TextEditorCommands.ToggleCompletionSuggestionMode)]
+		void RunToggleSuggestionMode ()
+		{
+			editorCommandHandlerService.Execute ((textView, textBuffer) => new ToggleCompletionModeCommandArgs (textView, textBuffer), null);
 		}
 
 		public override bool KeyPress (KeyDescriptor descriptor)
