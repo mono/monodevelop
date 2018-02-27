@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using Mono.Addins;
 using Mono.Addins.Setup;
 using MonoDevelop.Core;
@@ -75,6 +76,11 @@ namespace MonoDevelop.Core.Setup
 			if (!Repositories.ContainsRepository (url)) {
 				var rep = Repositories.RegisterRepository (null, url, false, "VisualStudioMarketplace");
 				rep.Name = GettextCatalog.GetString ("Visual Studio Marketplace");
+			}
+			var envVarUrl = Environment.GetEnvironmentVariable ("MARKETPLACE_URL");
+			if (!string.IsNullOrWhiteSpace (envVarUrl) && !Repositories.ContainsRepository (envVarUrl)) {
+				var rep = Repositories.RegisterRepository (null, envVarUrl, false, "VisualStudioMarketplace");
+				rep.Name = $"Visual Studio Marketplace({envVarUrl})";
 			}
 		}
 	}

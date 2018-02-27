@@ -32,6 +32,7 @@ using Mono.Addins.Setup;
 using Mono.Addins.Gui;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using MonoDevelop.Core.Setup;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -40,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public Task<int> Run (string[] arguments)
 		{
 			Gtk.Application.Init ();
-			AddinManagerWindow.Run (null);
+			AddinManagerWindow.Run (null, Runtime.AddinSetupService);
 			return Task.FromResult (0);
 		}
 	}
