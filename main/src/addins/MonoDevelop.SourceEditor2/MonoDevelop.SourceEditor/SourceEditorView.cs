@@ -943,6 +943,56 @@ namespace MonoDevelop.SourceEditor
 			return TaskUtil.Default<object>();
 		}
 
+
+		void ShowAutoSaveWarning (string fileName)
+		{
+			RemoveInfoBar ();
+			var infoBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
+			infoBar.SetMessageLabel (BrandingService.BrandApplicationName (GettextCatalog.GetString (
+					"<b>An autosave file has been found for this file.</b>\n" +
+					"This could mean that another instance of MonoDevelop is editing this " +
+					"file, or that MonoDevelop crashed with unsaved changes.\n\n" +
+					"Do you want to use the original file, or load from the autosave file?")));
+
+			Button b1 = new Button (GettextCatalog.GetString ("_Use original file"));
+			b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
+			b1.Clicked += delegate {
+				try {
+					AutoSave.RemoveAutoSaveFile (fileName);
+					WorkbenchWindow.SelectWindow ();
+					Load (fileName);
+					WorkbenchWindow.Document.ReparseDocument ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not remove the autosave file.", ex);
+				} finally {
+					RemoveInfoBar ();
+				}
+			};
+			infoBar.ActionArea.Add (b1);
+
+			Button b2 = new Button (GettextCatalog.GetString ("_Load from autosave"));
+			b2.Image = new ImageView (Gtk.Stock.RevertToSaved, IconSize.Button);
+			b2.Clicked += delegate {
+				try {
+					var content = AutoSave.LoadAndRemoveAutoSave (fileName);
+					WorkbenchWindow.SelectWindow ();
+					Load (new FileOpenInformation (fileName) {
+						ContentText = content.Text,
+						Encoding = content.Encoding
+					});
+					IsDirty = true;
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not remove the autosave file.", ex);
+				} finally {
+					RemoveInfoBar ();
+				}
+
+			};
+			infoBar.ActionArea.Add (b2);
+			ShowInfoBar (infoBar);
+			ContentControl.Visible = false;
+		}
+
 		void HandleTextEditorVAdjustmentChanged (object sender, EventArgs e)
 		{
 			widget.TextEditor.TextArea.SizeAllocated -= HandleTextEditorVAdjustmentChanged;

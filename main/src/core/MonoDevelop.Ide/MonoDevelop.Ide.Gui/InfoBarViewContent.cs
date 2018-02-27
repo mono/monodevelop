@@ -80,109 +80,56 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public void ShowFileChangedWarning (bool multiple)
+		void IDocumentReloadPresenter.ShowFileChangedWarning (bool multiple)
 		{
 			RemoveInfoBar();
 
-			if (infoBar == null) {
-				infoBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
-				infoBar.SetMessageLabel (GettextCatalog.GetString(
-					"<b>The file \"{0}\" has been changed outside of {1}.</b>\n" +
-					"Do you want to keep your changes, or reload the file from disk?",
-					EllipsizeMiddle(ContentName, 50), BrandingService.ApplicationName));
+			var infoBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
+			infoBar.SetMessageLabel (GettextCatalog.GetString(
+				"<b>The file \"{0}\" has been changed outside of {1}.</b>\n" +
+				"Do you want to keep your changes, or reload the file from disk?",
+				EllipsizeMiddle(ContentName, 50), BrandingService.ApplicationName));
 
-				var b1 = new Button (GettextCatalog.GetString ("_Reload from disk"));
-				b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
-				b1.Clicked += async delegate {
-					await Reload();
-					WorkbenchWindow.SelectWindow ();
+			var b1 = new Button (GettextCatalog.GetString ("_Reload from disk"));
+			b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
+			b1.Clicked += async delegate {
+				await Reload();
+				WorkbenchWindow.SelectWindow ();
+				RemoveInfoBar ();
+			};
+			infoBar.ActionArea.Add (b1);
+
+			var b2 = new Button (GettextCatalog.GetString ("_Keep changes"));
+			b2.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
+			b2.Clicked += delegate {
+				RemoveInfoBar ();
+				WorkbenchWindow.ShowNotification = false;
+			};
+			infoBar.ActionArea.Add (b2);
+
+			if (multiple) {
+				var b3 = new Button (GettextCatalog.GetString ("_Reload all"));
+				b3.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
+				b3.Clicked += delegate {
+					DocumentRegistry.ReloadAllChangedFiles ();
 					RemoveInfoBar ();
 				};
-				infoBar.ActionArea.Add (b1);
+				infoBar.ActionArea.Add (b3);
 
-				var b2 = new Button (GettextCatalog.GetString ("_Keep changes"));
-				b2.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
-				b2.Clicked += delegate {
+				var b4 = new Button (GettextCatalog.GetString ("_Ignore all"));
+				b4.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
+				b4.Clicked += delegate {
+					DocumentRegistry.IgnoreAllChangedFiles ();
 					RemoveInfoBar ();
-					WorkbenchWindow.ShowNotification = false;
 				};
-				infoBar.ActionArea.Add (b2);
-
-				if (multiple) {
-					var b3 = new Button (GettextCatalog.GetString ("_Reload all"));
-					b3.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
-					b3.Clicked += delegate {
-						DocumentRegistry.ReloadAllChangedFiles ();
-						RemoveInfoBar ();
-					};
-					infoBar.ActionArea.Add (b3);
-
-					var b4 = new Button (GettextCatalog.GetString ("_Ignore all"));
-					b4.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
-					b4.Clicked += delegate {
-						DocumentRegistry.IgnoreAllChangedFiles ();
-						RemoveInfoBar ();
-					};
-					infoBar.ActionArea.Add (b4);
-				}
+				infoBar.ActionArea.Add (b4);
 			}
-			ShowInfoBar ();
+			ShowInfoBar (infoBar);
 		}
 
-		public void ShowAutoSaveWarning (string fileName)
+		public void ShowInfoBar (InfoBar infoBar)
 		{
-			RemoveInfoBar ();
-			if (infoBar == null) {
-				infoBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
-				infoBar.SetMessageLabel (BrandingService.BrandApplicationName (GettextCatalog.GetString (
-						"<b>An autosave file has been found for this file.</b>\n" +
-						"This could mean that another instance of MonoDevelop is editing this " +
-						"file, or that MonoDevelop crashed with unsaved changes.\n\n" +
-						"Do you want to use the original file, or load from the autosave file?")));
-
-				Button b1 = new Button (GettextCatalog.GetString ("_Use original file"));
-				b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
-				b1.Clicked += delegate {
-					try {
-						AutoSave.RemoveAutoSaveFile (fileName);
-						WorkbenchWindow.SelectWindow ();
-						Load (fileName);
-						WorkbenchWindow.Document.ReparseDocument ();
-					} catch (Exception ex) {
-						LoggingService.LogError ("Could not remove the autosave file.", ex);
-					} finally {
-						RemoveInfoBar ();
-					}
-				};
-				infoBar.ActionArea.Add (b1);
-
-				Button b2 = new Button (GettextCatalog.GetString ("_Load from autosave"));
-				b2.Image = new ImageView (Gtk.Stock.RevertToSaved, IconSize.Button);
-				b2.Clicked += delegate {
-					try {
-						var content = AutoSave.LoadAndRemoveAutoSave (fileName);
-						WorkbenchWindow.SelectWindow ();
-						Load (new FileOpenInformation (fileName) {
-							ContentText = content.Text,
-							Encoding = content.Encoding
-						});
-						IsDirty = true;
-					} catch (Exception ex) {
-						LoggingService.LogError ("Could not remove the autosave file.", ex);
-					} finally {
-						RemoveInfoBar ();
-					}
-
-				};
-				infoBar.ActionArea.Add (b2);
-			}
-
-			ShowInfoBar ();
-			ContentControl.Visible = false;
-		}
-
-		void ShowInfoBar ()
-		{
+			this.infoBar = infoBar;
 			IsDirty = true;
 			// WarnOverwrite = true;
 			EnsureVBoxIsCreated ();
