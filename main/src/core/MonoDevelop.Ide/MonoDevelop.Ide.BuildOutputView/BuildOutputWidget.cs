@@ -320,13 +320,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 					menu.Add (new SeparatorContextMenuItem ());
 				}
 
-				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy Element Output     {0}", GetShortcut (EditCommands.Copy, false)));
-				copyElementMenu.Clicked += (s, args) => ClipboardCopy (selectedNode);
-				menu.Items.Add (copyElementMenu);
-
-				var expandElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Expand Element"));
-				expandElementMenu.Clicked += (s, args) => treeView.ExpandRow (selectedNode, false);
-				menu.Items.Add (expandElementMenu);
+				var expandAllMenu = new ContextMenuItem (GettextCatalog.GetString ("Expand All"));
+				expandAllMenu.Clicked += (s, args) => treeView.ExpandAll ();
+				menu.Items.Add (expandAllMenu);
 
 				var collapseAllMenu = new ContextMenuItem (GettextCatalog.GetString ("Collapse All"));
 				collapseAllMenu.Clicked += (s, args) => {
@@ -339,9 +335,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 				};
 				menu.Items.Add (collapseAllMenu);
 
-				var expandAllMenu = new ContextMenuItem (GettextCatalog.GetString ("Expand All"));
-				expandAllMenu.Clicked += (s, args) => treeView.ExpandAll ();
-				menu.Items.Add (expandAllMenu);
+				menu.Add (new SeparatorContextMenuItem ());
+				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy\t\t\t{0}", GetShortcut (EditCommands.Copy, false)));
+				copyElementMenu.Clicked += (s, args) => ClipboardCopy (selectedNode);
+				menu.Items.Add (copyElementMenu);
 
 				menu.Show (treeView.ToGtkWidget (), (int) e.X, (int) e.Y);
 			}
