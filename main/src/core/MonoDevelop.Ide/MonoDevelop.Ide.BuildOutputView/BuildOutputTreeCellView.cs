@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		const int FontSize = 11;
 		const int DescriptionPaddingHeight = 0;
 		const int LinesDisplayedCount = 1;
-		const int DefaultIformationContainerWidth = 370;
+		const int DefaultInformationContainerWidth = 370;
 		const int ImageSide = 20;
 
 		public double CellWidth { get; set; }
@@ -77,12 +77,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		BuildOutputNode buildOutputNode;
 		Font defaultFontLayout;
 
-		double fontCharWidth;
-
 		//This give us height and width of a character with this font
-		Size fontRequiredSize;
-
-		int informationContainerWidth => DefaultIformationContainerWidth;
+		double fontHeight;
+		int informationContainerWidth => DefaultInformationContainerWidth;
 		double informationContainerStartX => BackgroundBounds.Width - informationContainerWidth;
 
 		IBuildOutputContextProvider contextProvider;
@@ -182,7 +179,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			descriptionTextLayout.Text = text;
 
-			ctx.DrawTextLayout (descriptionTextLayout, x, cellArea.Top + ((cellArea.Height - fontRequiredSize.Height) * .5));
+			ctx.DrawTextLayout (descriptionTextLayout, x, cellArea.Top + ((cellArea.Height - fontHeight) * .5));
 			return descriptionTextLayout;
 		}
 
@@ -246,8 +243,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			layout.Text = "W";
 			layout.Font = layout.Font.WithSize (FontSize);
 			defaultFontLayout = layout.Font;
-			fontRequiredSize = layout.GetSize ();
-			return new Size (CellWidth, fontRequiredSize.Height * LinesDisplayedCount + DescriptionPaddingHeight + 
+			fontHeight = layout.GetSize ().Height;
+			return new Size (CellWidth, fontHeight * LinesDisplayedCount + DescriptionPaddingHeight + 
 			                 (buildOutputNode.NodeType == BuildOutputNodeType.Build ? 12 : 3));
 		}
 
