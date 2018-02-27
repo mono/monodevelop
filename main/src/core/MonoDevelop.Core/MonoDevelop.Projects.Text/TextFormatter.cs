@@ -347,14 +347,14 @@ namespace MonoDevelop.Projects.Text
 			StringBuilder sb = StringBuilderCache.Allocate ();
 			indentColumnWidth = AddIndentString (sb, indentString);
 			sb.Append (new string (' ', paragraphStartMargin));
-			paragFormattedIndentString = StringBuilderCache.ReturnAndFree (sb);
+			paragFormattedIndentString = sb.ToString ();
 			paragIndentColumnWidth = indentColumnWidth + paragraphStartMargin;
 			
 			if (LeftMargin > 0) {
 				sb.Append (' ', LeftMargin);
 				indentColumnWidth += LeftMargin;
 			}
-			formattedIndentString = sb.ToString ();
+			formattedIndentString = StringBuilderCache.ReturnAndFree (sb);
 
 			if (paragraphStart)
 				curCol = paragIndentColumnWidth;

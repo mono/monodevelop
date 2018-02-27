@@ -35,7 +35,9 @@ namespace MonoDevelop.Core
 	{
 		public static StringBuilder Allocate ()
 		{
-			return SharedPools.Default<StringBuilder> ().Allocate ();
+			var result = SharedPools.Default<StringBuilder> ().Allocate ();
+			result.Clear ();
+			return result;
 		}
 
 		public static StringBuilder Allocate (string text)
@@ -45,7 +47,6 @@ namespace MonoDevelop.Core
 
 		public static void Free (StringBuilder sb)
 		{
-			sb.Clear ();
 			SharedPools.Default<StringBuilder> ().Free (sb);
 		}
 
