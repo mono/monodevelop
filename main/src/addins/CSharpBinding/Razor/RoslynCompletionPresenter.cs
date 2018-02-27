@@ -67,6 +67,9 @@ namespace MonoDevelop.Ide.CodeCompletion
             else if (contentType.IsOfType ("CSharp")) {
                 languageName = LanguageNames.CSharp;
             }
+            else if (contentType.IsOfType ("TypeScript")) {
+                languageName = "TypeScript";
+            }
             else {
                 languageName = null;
             }
