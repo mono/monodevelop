@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		IBuildOutputContextProvider contextProvider;
 
-		bool IsFirstNode () => buildOutputNode.Parent == null;
+		bool IsRootNode () => buildOutputNode.Parent == null;
 		bool IsRowExpanded () => ((Xwt.TreeView)ParentWidget).IsRowExpanded (buildOutputNode);
 
 		public BuildOutputTreeCellView (IBuildOutputContextProvider context)
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			DrawImageRow (ctx, cellArea);
 			DrawNodeText (ctx, cellArea);
 
-			if (!IsFirstNode ()) {
+			if (!IsRootNode ()) {
 				DrawNodeInformation (ctx, cellArea);
 			} else {
 				DrawFirstNodeInformation (ctx, cellArea);
@@ -188,7 +188,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			UpdateTextColor (ctx);
 
 			Font font;
-			if (IsFirstNode ()) {
+			if (IsRootNode ()) {
 				font = defaultFontLayout.WithWeight (FontWeight.Bold);
 			} else {
 				font = defaultFontLayout.WithWeight (FontWeight.Light);
