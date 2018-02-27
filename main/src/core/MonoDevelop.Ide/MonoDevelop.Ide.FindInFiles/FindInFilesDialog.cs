@@ -500,20 +500,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				Visible = true,
 				Ready = true,
 			};
-			
-			var checkMenuItem = searchentryFileMask.AddFilterOption (0, GettextCatalog.GetString ("Include binary files"));
-			checkMenuItem.DrawAsRadio = false;
-			checkMenuItem.Active = properties.Get ("IncludeBinaryFiles", false);
-			checkMenuItem.Toggled += delegate {
-				properties.Set ("IncludeBinaryFiles", checkMenuItem.Active);
-			};
-			
-			var checkMenuItem1 = searchentryFileMask.AddFilterOption (1, GettextCatalog.GetString ("Include hidden files and directories"));
-			checkMenuItem1.DrawAsRadio = false;
-			checkMenuItem1.Active = properties.Get ("IncludeHiddenFiles", false);
-			checkMenuItem1.Toggled += delegate {
-				properties.Set ("IncludeHiddenFiles", checkMenuItem1.Active);
-			};
+
 			
 			searchentryFileMask.Query = properties.Get ("MonoDevelop.FindReplaceDialogs.FileMask", "");
 			
@@ -793,15 +780,12 @@ namespace MonoDevelop.Ide.FindInFiles
 					return null;
 				}
 				
-				scope = new DirectoryScope (comboboxentryPath.Entry.Text, checkbuttonRecursively.Active) {
-					IncludeHiddenFiles = properties.Get ("IncludeHiddenFiles", false)
-				};
+				scope = new DirectoryScope (comboboxentryPath.Entry.Text, checkbuttonRecursively.Active);
 				break;
 			default:
 				throw new ApplicationException ("Unknown scope:" + comboboxScope.Active);
 			}
 			
-			scope.IncludeBinaryFiles = properties.Get ("IncludeBinaryFiles", false);
 			return scope;
 		}
 
