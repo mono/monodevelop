@@ -83,7 +83,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		//This give us height and width of a character with this font
 		Size fontRequiredSize;
-		int informationContainerWidth;
+
+		int informationContainerWidth => DefaultIformationContainerWidth;
+		double informationContainerStartX => BackgroundBounds.Width - informationContainerWidth;
+
 		IBuildOutputContextProvider contextProvider;
 
 		bool IsFirstNode () => buildOutputNode.Parent == null;
@@ -95,7 +98,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			StrongSelectionColor = Styles.CellStrongSelectionColor;
 			SelectionColor = Styles.CellSelectionColor;
 			UseStrongSelectionColor = true;
-			informationContainerWidth = DefaultIformationContainerWidth;
 			contextProvider = context;
 		}
 
@@ -116,8 +118,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		void DrawFirstNodeInformation (Context ctx, Xwt.Rectangle cellArea)
 		{
 			UpdateInformationTextColor (ctx);
-			var textStartX = BackgroundBounds.Width - informationContainerWidth;
-			DrawText (ctx, cellArea, textStartX, BackgroundBounds.Width - textStartX, GetInformationMessage ());
+			var textStartX = informationContainerStartX;
+			DrawText (ctx, cellArea, textStartX, GetInformationMessage (), BackgroundBounds.Width - textStartX);
 		}
 
 		string GetInformationMessage ()
@@ -132,39 +134,45 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			UpdateInformationTextColor (ctx);
 
-			var textStartX = BackgroundBounds.Width - informationContainerWidth;
+			var textStartX = informationContainerStartX;
 
+			//Duration text
 			var duration = buildOutputNode.GetDurationAsString (contextProvider.IsShowingDiagnostics);
 			if (duration != "") {
-				DrawText (ctx, cellArea, textStartX, informationContainerWidth, duration);
+				DrawText (ctx, cellArea, textStartX, duration, informationContainerWidth);
 			}
 		
+			//Error and Warnings count
 			if (!IsRowExpanded () &&
 			    (buildOutputNode.NodeType == BuildOutputNodeType.Task || buildOutputNode.NodeType == BuildOutputNodeType.Target) &&
 			    (buildOutputNode.ErrorCount > 0 || buildOutputNode.WarningCount > 0)) {
+				
 				textStartX += 55;
 
-				DrawImage (ctx, cellArea, Resources.ErrorIcon, textStartX);
+				DrawImage (ctx, cellArea, Resources.ErrorIcon, textStartX, ImageSide);
 				textStartX += ImageSide + 2;
 				var errors = buildOutputNode.ErrorCount.ToString ();
-				DrawText (ctx, cellArea, textStartX, 10, errors, trimming: TextTrimming.Word);
 
-				textStartX += fontCharWidth * errors.Length;
+				var layout = DrawText (ctx, cellArea, textStartX, errors, trimming: TextTrimming.Word);
+				textStartX += layout.GetSize ().Width;
 
-				DrawImage (ctx, cellArea, Resources.WarningIcon, textStartX);
+				DrawImage (ctx, cellArea, Resources.WarningIcon, textStartX, ImageSide);
 				textStartX += ImageSide + 2;
-				DrawText (ctx, cellArea, textStartX, 10, buildOutputNode.WarningCount.ToString (), trimming: TextTrimming.Word);
+				DrawText (ctx, cellArea, textStartX, buildOutputNode.WarningCount.ToString (), 10, trimming: TextTrimming.Word);
 			}
 		}
 
-		void DrawText (Context ctx, Xwt.Rectangle cellArea, double x, double width, string text, Font font = null, TextTrimming trimming = TextTrimming.WordElipsis) 
+		TextLayout DrawText (Context ctx, Xwt.Rectangle cellArea, double x, string text, double width = 0, Font font = null, TextTrimming trimming = TextTrimming.WordElipsis) 
 		{
-			if (Math.Max (width, 0) == 0) {
-				return;
+			if (width < 0) {
+				throw new Exception ("width cannot be negative");
 			}
 
 			var descriptionTextLayout = new TextLayout ();
-			descriptionTextLayout.Width = width;
+			if (width != 0) {
+				descriptionTextLayout.Width = width;
+			}
+
 			descriptionTextLayout.Height = cellArea.Height;
 			descriptionTextLayout.Trimming = trimming;
 
@@ -177,6 +185,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			descriptionTextLayout.Text = text;
 
 			ctx.DrawTextLayout (descriptionTextLayout, x, cellArea.Top + ((cellArea.Height - fontRequiredSize.Height) * .5));
+			return descriptionTextLayout;
 		}
 
 		void DrawNodeText (Context ctx, Xwt.Rectangle cellArea)
@@ -191,14 +200,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			var startX = cellArea.Left + ImageSide - 3;
-			var width = BackgroundBounds.Width - informationContainerWidth - startX;
+			var width = informationContainerStartX - startX;
 
-			DrawText (ctx, cellArea, startX, width, buildOutputNode.Message, font);
+			DrawText (ctx, cellArea, startX, buildOutputNode.Message, width, font);
 		}
 
 		void DrawImageRow (Context ctx, Xwt.Rectangle cellArea)
 		{
-			DrawImage (ctx, cellArea, GetRowIcon (buildOutputNode), (cellArea.Left - 3));
+			DrawImage (ctx, cellArea, GetRowIcon (buildOutputNode), (cellArea.Left - 3), ImageSide);
 		}
 
 		Image GetRowIcon (BuildOutputNode node) 
@@ -213,14 +222,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return node.GetImage ();
 		}
 
-		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x)
+		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x, int imageSide)
 		{
 			ctx.DrawImage (
 				Selected ? image.WithStyles ("sel") : image,
 				x,
-				cellArea.Top - (ImageSide - cellArea.Height) * .5,
-				ImageSide,
-				ImageSide);
+				cellArea.Top - (imageSide - cellArea.Height) * .5,
+				imageSide,
+				imageSide);
 		}
 
 		void UpdateInformationTextColor (Context ctx)
