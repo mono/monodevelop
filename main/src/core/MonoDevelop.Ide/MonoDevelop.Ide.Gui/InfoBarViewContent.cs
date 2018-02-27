@@ -62,7 +62,6 @@ namespace MonoDevelop.Ide.Gui
 			vbox = new VBox ();
 			vbox.SetSizeRequest (32, 32);
 			vbox.Accessible.SetShouldIgnore (true);
-			Console.WriteLine ("control:" + ContentControl);
 			vbox.PackStart (ContentControl, true, true, 0);
 			vbox.ShowAll ();
 		}
