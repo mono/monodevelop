@@ -43,22 +43,6 @@ module ServiceSettings =
 /// Provides default empty/negative results if information is missing.
 type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults : FSharpParseFileResults option) =
 
-    /// Get declarations at the current location in the specified document and the long ident residue
-    /// e.g. The incomplete ident One.Two.Th will return Th
-    member x.GetDeclarations(line, col, lineStr) =
-        match infoOpt, parseResults with
-        | Some (checkResults), parseResults ->
-            let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
-            LoggingService.logDebug "GetDeclarations: '%A', '%s'" longName residue
-            // Get items & generate output
-            try
-                let partialName = QuickParse.GetPartialLongNameEx(lineStr, col-1)
-                let results =
-                    Async.RunSynchronously(checkResults.GetDeclarationListInfo(parseResults, line, lineStr, partialName, fun () -> []), timeout = ServiceSettings.blockingTimeout )
-                Some (results, residue)
-            with :? TimeoutException -> None
-        | None, _ -> None
-
     /// Get the symbols for declarations at the current location in the specified document and the long ident residue
     /// e.g. The incomplete ident One.Two.Th will return Th
     member x.GetDeclarationSymbols(line, col, lineStr) =

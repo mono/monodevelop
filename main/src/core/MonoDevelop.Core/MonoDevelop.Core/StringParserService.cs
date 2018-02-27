@@ -196,7 +196,7 @@ namespace MonoDevelop.Core
 		
 		public static string Parse (string input, IStringTagModel customTags)
 		{
-			StringBuilder result = new StringBuilder (input.Length);
+			StringBuilder result = StringBuilderCache.Allocate ();
 			int brace;
 			int i = 0;
 			
@@ -225,7 +225,7 @@ namespace MonoDevelop.Core
 				}
 				i++;
 			}
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 		
 		public static IEnumerable<IStringTagProvider> GetProviders ()

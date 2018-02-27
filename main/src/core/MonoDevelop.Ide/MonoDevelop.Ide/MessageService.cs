@@ -91,7 +91,8 @@ namespace MonoDevelop.Ide
 
 		public static AlertButton OverwriteFile = new AlertButton (GettextCatalog.GetString ("_Overwrite file"));
 		public static AlertButton AddExistingFile = new AlertButton (GettextCatalog.GetString ("Add existing file"));
-		
+		public static AlertButton MakeWriteable = new AlertButton (GettextCatalog.GetString ("Make Writeable"));
+
 		
 		public string Label { get; set; }
 		public string Icon { get; set; }

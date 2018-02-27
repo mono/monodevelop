@@ -71,7 +71,7 @@ namespace MonoDevelop.SourceEditor
 
 			ImmutableArray<TaggedText> parts;
 
-			var sb = new StringBuilder ();
+			var sb = StringBuilderCache.Allocate ();
 
 			if (sections.TryGetValue (SymbolDescriptionGroups.MainDescription, out parts)) {
 				TaggedTextUtil.AppendTaggedText (sb, theme, parts);
@@ -115,7 +115,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			sb.Append ("</span>");
 
-			tooltipInfo.SignatureMarkup = sb.ToString ();
+			tooltipInfo.SignatureMarkup = StringBuilderCache.ReturnAndFree (sb);
 			return tooltipInfo;
 		}
 	}

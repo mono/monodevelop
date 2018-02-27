@@ -47,7 +47,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public BlameView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Blame"), GettextCatalog.GetString ("Shows the blame for the current file"))
+		public BlameView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Authors"), GettextCatalog.GetString ("Shows the authors of the current file"))
 		{
 			this.info = info;
 		}

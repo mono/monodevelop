@@ -454,13 +454,13 @@ namespace MonoDevelop.CSharp
 				if (tag is SyntaxTree) {
 					var type = node;
 					if (type != null) {
-						var sb = new StringBuilder ();
+						var sb = StringBuilderCache.Allocate ();
 						sb.Append (ext.GetEntityMarkup (type));
 						while (type.Parent is BaseTypeDeclarationSyntax) {
 							sb.Insert (0, ext.GetEntityMarkup (type.Parent) + ".");
 							type = type.Parent;
 						}
-						return sb.ToString ();
+						return StringBuilderCache.ReturnAndFree (sb);
 					}
 				}
 				var accessor = node as AccessorDeclarationSyntax;
@@ -506,13 +506,13 @@ namespace MonoDevelop.CSharp
 				if (tag is SyntaxTree) {
 					var type = node;
 					if (type != null) {
-						var sb = new StringBuilder ();
+						var sb = StringBuilderCache.Allocate ();
 						sb.Append (ext.GetEntityMarkup (type));
 						while (type.Parent is BaseTypeDeclarationSyntax) {
 							sb.Insert (0, ext.GetEntityMarkup (type.Parent) + ".");
 							type = type.Parent;
 						}
-						return sb.ToString ();
+						return StringBuilderCache.ReturnAndFree (sb);
 					}
 				}
 				return ext.GetEntityMarkup (node);

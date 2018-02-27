@@ -125,7 +125,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		public override string WrapInRegions (string regionName, string text)
 		{
-			StringBuilder result = new StringBuilder ();
+			StringBuilder result = Core.StringBuilderCache.Allocate ();
 			AppendIndent (result);
 			result.Append ("#region ");
 			result.Append (regionName);
@@ -134,7 +134,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			AppendLine (result);
 			AppendIndent (result);
 			result.Append ("#endregion");
-			return result.ToString ();
+			return Core.StringBuilderCache.ReturnAndFree (result);
 		}
 
 		static void AppendObsoleteAttribute(StringBuilder result, CodeGenerationOptions options, ISymbol entity)
@@ -378,7 +378,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		//		
 		static CodeGeneratorMemberResult GenerateCode (IFieldSymbol field, CodeGenerationOptions options)
 		{
-			StringBuilder result = new StringBuilder ();
+			StringBuilder result = Core.StringBuilderCache.Allocate ();
 			AppendIndent (result);
 			AppendModifiers (result, options, field);
 			result.Append (" ");
@@ -386,7 +386,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append (" ");
 			result.Append (CSharpAmbience.FilterName (field.Name));
 			result.Append (";");
-			return new CodeGeneratorMemberResult (result.ToString (), -1, -1);
+			return new CodeGeneratorMemberResult (Core.StringBuilderCache.ReturnAndFree (result), -1, -1);
 		}
 
 		static void AppendIndent (StringBuilder result)
@@ -396,7 +396,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		static CodeGeneratorMemberResult GenerateCode (IEventSymbol evt, CodeGenerationOptions options)
 		{
-			StringBuilder result = new StringBuilder ();
+			StringBuilder result = Core.StringBuilderCache.Allocate ();
 			AppendObsoleteAttribute (result, options, evt);
 			AppendModifiers (result, options, evt);
 
@@ -427,7 +427,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else {
 				result.Append (";");
 			}
-			return new CodeGeneratorMemberResult (result.ToString ());
+			return new CodeGeneratorMemberResult (Core.StringBuilderCache.ReturnAndFree (result));
 		}
 
 		static void AppendNotImplementedException (StringBuilder result, CodeGenerationOptions options, out int bodyStartOffset, out int bodyEndOffset)
@@ -465,7 +465,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		static CodeGeneratorMemberResult GenerateCode(IMethodSymbol method, CodeGenerationOptions options)
 		{
 			int bodyStartOffset = -1, bodyEndOffset = -1;
-			var result = new StringBuilder();
+			var result = Core.StringBuilderCache.Allocate ();
 			AppendObsoleteAttribute (result, options, method);
 			AppendModifiers (result, options, method);
 			//			if (method.IsPartial)
@@ -647,14 +647,14 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 				result.Append ("}");
 			}
-			return new CodeGeneratorMemberResult(result.ToString (), bodyStartOffset, bodyEndOffset);
+			return new CodeGeneratorMemberResult(Core.StringBuilderCache.ReturnAndFree (result), bodyStartOffset, bodyEndOffset);
 		}
 
 
 		static CodeGeneratorMemberResult GeneratePartialCode(IMethodSymbol method, CodeGenerationOptions options)
 		{
 			int bodyStartOffset = -1, bodyEndOffset = -1;
-			var result = new StringBuilder();
+			var result = Core.StringBuilderCache.Allocate ();
 			AppendObsoleteAttribute (result, options, method);
 			result.Append("partial ");
 			AppendReturnType (result, options, method.ReturnType);
@@ -685,7 +685,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			AppendLine (result);
 			bodyEndOffset = result.Length;
 			result.AppendLine("}");
-			return new CodeGeneratorMemberResult(result.ToString(), bodyStartOffset, bodyEndOffset);
+			return new CodeGeneratorMemberResult(Core.StringBuilderCache.ReturnAndFree (result), bodyStartOffset, bodyEndOffset);
 		}
 
 		//		class ThrowsExceptionVisitor : DepthFirstAstVisitor
@@ -755,7 +755,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		static string GetModifiers (ITypeSymbol implementingType, Location implementingPart, ISymbol member)
 		{
-			StringBuilder result = new StringBuilder ();
+			var result = Core.StringBuilderCache.Allocate ();
 
 			if (member.DeclaredAccessibility == Accessibility.Public || (member.ContainingType != null && member.ContainingType.TypeKind == TypeKind.Interface)) {
 				result.Append ("public ");
@@ -774,7 +774,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (member.IsStatic)
 				result.Append ("static ");
 
-			return result.ToString ();
+			return Core.StringBuilderCache.ReturnAndFree (result);
 		}
 
 		static void AppendModifiers (StringBuilder result, CodeGenerationOptions options, ISymbol member)
@@ -812,7 +812,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		static CodeGeneratorMemberResult GenerateCode (IPropertySymbol property, CodeGenerationOptions options)
 		{
 			var regions = new List<CodeGeneratorBodyRegion> ();
-			var result = new StringBuilder ();
+			var result = Core.StringBuilderCache.Allocate ();
 			AppendObsoleteAttribute (result, options, property);
 			AppendModifiers (result, options, property);
 			AppendReturnType (result, options, property.Type);
@@ -897,7 +897,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 			}
 			result.Append ("}");
-			return new CodeGeneratorMemberResult (result.ToString (), regions);
+			return new CodeGeneratorMemberResult (Core.StringBuilderCache.ReturnAndFree (result), regions);
 		}
 
 		internal static bool IsMonoTouchModelMember (ISymbol member)
@@ -1016,7 +1016,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		static CodeGeneratorMemberResult GenerateProtocolCode(IMethodSymbol method, CodeGenerationOptions options)
 		{
 			int bodyStartOffset = -1, bodyEndOffset = -1;
-			var result = new StringBuilder();
+			var result = Core.StringBuilderCache.Allocate ();
 			var exportAttribute = method.GetAttributes ().FirstOrDefault (attr => attr.AttributeClass.Name == "ExportAttribute");
 			if (exportAttribute != null) {
 				result.Append ("[Export(\"");
@@ -1057,7 +1057,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			bodyEndOffset = result.Length;
 			AppendLine (result);
 			result.Append ("}");
-			return new CodeGeneratorMemberResult(result.ToString (), bodyStartOffset, bodyEndOffset);
+			return new CodeGeneratorMemberResult(Core.StringBuilderCache.ReturnAndFree (result), bodyStartOffset, bodyEndOffset);
 		}
 
 		public override void AddGlobalNamespaceImport (TextEditor editor, DocumentContext context, string nsName)

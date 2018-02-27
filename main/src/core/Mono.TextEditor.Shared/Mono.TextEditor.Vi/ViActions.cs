@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 
@@ -121,7 +122,7 @@ namespace Mono.TextEditor.Vi
 			
 			DocumentLine seg = data.Document.GetLine (startLine);
 			startOffset = seg.Offset;
-			StringBuilder sb = new StringBuilder (data.Document.GetTextAt (seg).TrimEnd ());
+			StringBuilder sb = StringBuilderCache.Allocate (data.Document.GetTextAt (seg).TrimEnd ());
 			//lastSpaceOffset = startOffset + sb.Length;
 			
 			for (int i = startLine + 1; i <= endLine; i++) {
@@ -132,7 +133,7 @@ namespace Mono.TextEditor.Vi
 			}
 			length = (seg.Offset - startOffset) + seg.Length;
 			// TODO: handle conversion issues ? 
-			data.Replace (startOffset, length, sb.ToString ());
+			data.Replace (startOffset, length, StringBuilderCache.ReturnAndFree (sb));
 		}
 		
 		public static void ToggleCase (TextEditorData data)
@@ -141,7 +142,7 @@ namespace Mono.TextEditor.Vi
 				if (!data.CanEditSelection)
 					return;
 				
-				StringBuilder sb = new StringBuilder (data.SelectedText);
+				StringBuilder sb = StringBuilderCache.Allocate (data.SelectedText);
 				for (int i = 0; i < sb.Length; i++) {
 					char ch = sb [i];
 					if (Char.IsLower (ch))
@@ -149,7 +150,7 @@ namespace Mono.TextEditor.Vi
 					else if (Char.IsUpper (ch))
 						sb [i] = Char.ToLower (ch);
 				}
-				data.Replace (data.SelectionRange.Offset, data.SelectionRange.Length, sb.ToString ());
+				data.Replace (data.SelectionRange.Offset, data.SelectionRange.Length, StringBuilderCache.ReturnAndFree (sb));
 			} else if (data.CanEdit (data.Caret.Line)) {
 				char ch = data.Document.GetCharAt (data.Caret.Offset);
 				if (Char.IsLower (ch))

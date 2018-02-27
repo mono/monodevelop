@@ -85,7 +85,7 @@ type ScriptBuildTarget(scriptPath, consoleKind, source) =
                       yield sprintf "--out:%s" (wrapFile exeName) ]
 
                 return CompilerService.compile runtime framework monitor tempPath args
-            } |> Async.StartAsTask
+            } |> StartAsyncAsTask monitor.CancellationToken
 
         member x.CanBuild _configSelector = true
         member x.NeedsBuilding _configSelector = true
@@ -105,10 +105,9 @@ type ScriptBuildTarget(scriptPath, consoleKind, source) =
                     | External -> context.ExternalConsoleFactory.CreateConsole token
                 let oper = context.ExecutionHandler.Execute(command, console)
 
-                let stopper = monitor.CancellationToken.Register (Action(fun() -> oper.Cancel()))
-                oper.Task |> Async.AwaitTask |> Async.RunSynchronously
-                stopper.Dispose ();
-            } |> Async.startAsPlainTask
+                use stopper = monitor.CancellationToken.Register (Action(fun() -> oper.Cancel()))
+                do! oper.Task |> Async.AwaitTask 
+            } |> StartAsyncAsTask monitor.CancellationToken :> Task
 
         member x.PrepareExecution(_monitor, _context, _configSelector) = emptyTask
 

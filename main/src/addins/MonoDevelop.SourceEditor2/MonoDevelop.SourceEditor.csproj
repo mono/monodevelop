@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesVSEditor)" />
@@ -301,6 +301,11 @@
     <Compile Include="VSEditor\TextSelection.cs" />
     <Compile Include="VSEditor\TextViewRoleSet.cs" />
     <Compile Include="VSEditor\VacuousTextDataModel.cs" />
+    <None Include="packages.config" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\LineSeparatorMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.IndicatorDrawingCache.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.IdleUpdater.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextEditorKeyPressTimings.cs" />
     <Compile Include="VSEditor\FakeWpf\Geometry.cs" />
     <Compile Include="VSEditor\FakeWpf\Mouse.cs" />
     <Compile Include="VSEditor\FakeWpf\SimulatingExtensions.cs" />
