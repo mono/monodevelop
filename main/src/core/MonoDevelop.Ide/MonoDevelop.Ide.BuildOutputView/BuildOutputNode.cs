@@ -354,11 +354,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 				}
 			} else {
 				if (duration.TotalHours >= 1) {
-					return String.Format ("{0,7}", GettextCatalog.GetString ("{0}h {1}m", duration.Hours, duration.Minutes));
+					return String.Format ("{0,7}", GettextCatalog.GetString ("{0}h {1}m", duration.Hours.ToString(), duration.Minutes.ToString()));
 				} else if (duration.TotalMinutes >= 1) {
-					return String.Format ("{0,7}", GettextCatalog.GetString ("{0}m {1}s", duration.Minutes, duration.Seconds));
+					return String.Format ("{0,7}", GettextCatalog.GetString ("{0}m {1}s", duration.Minutes.ToString(), duration.Seconds.ToString()));
 				} else {
-					return String.Format ("{0,7}", GettextCatalog.GetString ("{0}s", duration.Seconds));
+					return String.Format ("{0,7}", GettextCatalog.GetString ("{0}s", duration.Seconds.ToString()));
 				}
 			}
 		}
