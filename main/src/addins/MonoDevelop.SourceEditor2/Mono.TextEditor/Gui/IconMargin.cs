@@ -326,7 +326,7 @@ namespace Mono.TextEditor
 				break;
 			}
 
-			if (marker != null) {
+			if (marker != null && markerToAccessible != null) {
 				var accessible = markerToAccessible[marker];
 				if (accessible != null) {
 					AtkCocoaExtensions.SetCurrentFocus (accessible.Accessible);
@@ -354,6 +354,7 @@ namespace Mono.TextEditor
 
 			set {
 				metrics = value;
+
 				Accessible.FrameInGtkParent = new Rectangle ((int)metrics.X, (int)metrics.Y, (int)metrics.Width, (int)metrics.Height);
 
 				var halfParentHeight = margin.RectInParent.Height / 2.0f;
