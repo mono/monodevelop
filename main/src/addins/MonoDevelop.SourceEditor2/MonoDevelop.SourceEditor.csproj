@@ -291,6 +291,7 @@
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\LineSeparatorMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.IndicatorDrawingCache.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.IdleUpdater.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SourceEditorView.IMonoDevelopEditorOperations.cs" />
     <Compile Include="VSEditor\ConnectionManager.cs" />
     <Compile Include="VSEditor\IMdTextView.cs" />
     <Compile Include="VSEditor\ITagBasedSyntaxHighlightingFactory.cs" />
@@ -301,10 +302,6 @@
     <Compile Include="VSEditor\TextSelection.cs" />
     <Compile Include="VSEditor\TextViewRoleSet.cs" />
     <Compile Include="VSEditor\VacuousTextDataModel.cs" />
-    <None Include="packages.config" />
-    <Compile Include="MonoDevelop.SourceEditor\TextMarker\LineSeparatorMarker.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.IndicatorDrawingCache.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.IdleUpdater.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextEditorKeyPressTimings.cs" />
     <Compile Include="VSEditor\FakeWpf\Geometry.cs" />
     <Compile Include="VSEditor\FakeWpf\Mouse.cs" />
@@ -360,7 +357,6 @@
     <Compile Include="VSEditor\Text\Impl\WpfView\SpaceReservationStack.cs" />
     <Compile Include="VSEditor\Text\Util\TextDataUtil\MappingHelper.cs" />
     <Compile Include="VSEditor\VisualStudio\Impl\ViewAdapter\TipManager.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SourceEditorView.IMonoDevelopEditorOperations.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
