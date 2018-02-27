@@ -14,6 +14,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public static Xwt.Drawing.Color CellStrongSelectionColor { get; internal set; }
 		public static Xwt.Drawing.Color CellTextColor { get; internal set; }
 		public static Xwt.Drawing.Color CellTextSelectionColor { get; internal set; }
+		public static Xwt.Drawing.Color CellTextSkippedColor { get; internal set; }
+		public static Xwt.Drawing.Color CellTextSkippedSelectionColor { get; internal set; }
 
 		static Styles ()
 		{
@@ -34,6 +36,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			CellStrongSelectionColor = Ide.Gui.Styles.BaseSelectionBackgroundColor;
 			CellSelectionColor = Ide.Gui.Styles.BaseSelectionBackgroundColor;
 			CellTextSelectionColor = Ide.Gui.Styles.BaseSelectionTextColor;
+			CellTextSkippedColor = Ide.Gui.Styles.SecondaryTextColor;
+			CellTextSkippedSelectionColor = Ide.Gui.Styles.SecondarySelectionTextColor;
 		}
 	}
 
@@ -284,9 +288,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 		void UpdateTextColor (Context ctx)
 		{
 			if (UseStrongSelectionColor && Selected) {
-				ctx.SetColor (Styles.CellTextSelectionColor);
+				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
+					ctx.SetColor (Styles.CellTextSkippedSelectionColor);
+				} else {
+					ctx.SetColor (Styles.CellTextSelectionColor);
+				}
 			} else {
-				ctx.SetColor (Styles.CellTextColor);
+				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
+					ctx.SetColor (Styles.CellTextSkippedColor);
+				} else {
+					ctx.SetColor (Styles.CellTextColor);
+				}
 			}
 		}
 
