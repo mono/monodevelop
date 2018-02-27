@@ -34,16 +34,11 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor;
 using System.Linq;
+using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
-	interface IDocumentReloadPresenter
-	{
-		void ShowFileChangedWarning (bool multiple);
-		void RemoveInfoBar ();
-	}
-
-
 	static class DocumentRegistry
 	{
 		readonly static List<DocumentInfo> openFiles = new List<DocumentInfo> ();
@@ -128,9 +123,9 @@ namespace MonoDevelop.Ide.Gui
 			if (changedDocuments.Count == 0)
 				return;
 			if (changedDocuments.Count == 1) {
-				var presenter = changedDocuments [0].Document.GetContent<IDocumentReloadPresenter> ();
+				var presenter = changedDocuments [0].Document.PrimaryView.BaseContent as ViewContent;
 				if (presenter != null) {
-					presenter.ShowFileChangedWarning (false);
+					ShowFileChangedWarning (presenter, false);
 				} else {
 					changedDocuments [0].Document.Reload ();
 				}
@@ -138,9 +133,9 @@ namespace MonoDevelop.Ide.Gui
 					changedDocuments [0].Document.Select ();
 			} else {
 				foreach (var view in changedDocuments) {
-					var presenter = view.Document.GetContent<IDocumentReloadPresenter> ();
+					var presenter = view.Document.PrimaryView.BaseContent as ViewContent;
 					if (presenter != null) {
-						presenter.ShowFileChangedWarning (true);
+						ShowFileChangedWarning (presenter, true);
 					} else {
 						view.Document.Reload ();
 					}
@@ -172,7 +167,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			foreach (var view in GetAllChangedFiles ()) {
 				view.LastSaveTimeUtc = File.GetLastWriteTime (view.Document.FileName);
-				view.Document.GetContent<IDocumentReloadPresenter> ()?.RemoveInfoBar ();
+				var presenter = view.Document.PrimaryView.BaseContent as ViewContent;
+				presenter?.RemoveInfoBar ();
 				view.Document.Window.ShowNotification = false;
 			}
 		}
@@ -180,8 +176,8 @@ namespace MonoDevelop.Ide.Gui
 		public static void ReloadAllChangedFiles ()
 		{
 			foreach (var view in GetAllChangedFiles ()) {
-				view.Document.GetContent<IDocumentReloadPresenter> ()?.RemoveInfoBar ();
-				view.Document.Reload ();
+				var presenter = view.Document.PrimaryView.BaseContent as ViewContent;
+				presenter?.Reload ();
 				view.Document.Window.ShowNotification = false;
 			}
 		}
@@ -240,5 +236,54 @@ namespace MonoDevelop.Ide.Gui
 			if (!skipFiles.Contains (fileName))
 				skipFiles.Add (fileName);
 		}
+
+
+		static void ShowFileChangedWarning (ViewContent viewContent, bool multiple)
+		{
+			viewContent.RemoveInfoBar ();
+
+			var infoBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
+			infoBar.SetMessageLabel (GettextCatalog.GetString (
+				"<b>The file \"{0}\" has been changed outside of {1}.</b>\n" +
+				"Do you want to keep your changes, or reload the file from disk?",
+				ViewContent.EllipsizeMiddle (viewContent.ContentName, 50), BrandingService.ApplicationName));
+
+			var b1 = new Button (GettextCatalog.GetString ("_Reload from disk"));
+			b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
+			b1.Clicked += async delegate {
+				await viewContent.Reload ();
+				viewContent.WorkbenchWindow.SelectWindow ();
+				viewContent.RemoveInfoBar ();
+			};
+			infoBar.ActionArea.Add (b1);
+
+			var b2 = new Button (GettextCatalog.GetString ("_Keep changes"));
+			b2.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
+			b2.Clicked += delegate {
+				viewContent.RemoveInfoBar ();
+				viewContent.WorkbenchWindow.ShowNotification = false;
+			};
+			infoBar.ActionArea.Add (b2);
+
+			if (multiple) {
+				var b3 = new Button (GettextCatalog.GetString ("_Reload all"));
+				b3.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
+				b3.Clicked += delegate {
+					DocumentRegistry.ReloadAllChangedFiles ();
+					viewContent.RemoveInfoBar ();
+				};
+				infoBar.ActionArea.Add (b3);
+
+				var b4 = new Button (GettextCatalog.GetString ("_Ignore all"));
+				b4.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
+				b4.Clicked += delegate {
+					DocumentRegistry.IgnoreAllChangedFiles ();
+					viewContent.RemoveInfoBar ();
+				};
+				infoBar.ActionArea.Add (b4);
+			}
+			viewContent.ShowInfoBar (infoBar);
+		}
+
 	}
 }

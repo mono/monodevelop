@@ -38,7 +38,7 @@ using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public abstract class ViewContent : BaseViewContent, IDocumentReloadPresenter
+	public abstract class ViewContent : BaseViewContent
 	{
 		const uint CHILD_PADDING = 0;
 
@@ -201,53 +201,6 @@ namespace MonoDevelop.Ide.Gui
 			} finally {
 				RemoveInfoBar ();
 			}
-		}
-
-		void IDocumentReloadPresenter.ShowFileChangedWarning (bool multiple)
-		{
-			RemoveInfoBar ();
-
-			var infoBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
-			infoBar.SetMessageLabel (GettextCatalog.GetString (
-				"<b>The file \"{0}\" has been changed outside of {1}.</b>\n" +
-				"Do you want to keep your changes, or reload the file from disk?",
-				EllipsizeMiddle (ContentName, 50), BrandingService.ApplicationName));
-
-			var b1 = new Button (GettextCatalog.GetString ("_Reload from disk"));
-			b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
-			b1.Clicked += async delegate {
-				await Reload ();
-				WorkbenchWindow.SelectWindow ();
-				RemoveInfoBar ();
-			};
-			infoBar.ActionArea.Add (b1);
-
-			var b2 = new Button (GettextCatalog.GetString ("_Keep changes"));
-			b2.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
-			b2.Clicked += delegate {
-				RemoveInfoBar ();
-				WorkbenchWindow.ShowNotification = false;
-			};
-			infoBar.ActionArea.Add (b2);
-
-			if (multiple) {
-				var b3 = new Button (GettextCatalog.GetString ("_Reload all"));
-				b3.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
-				b3.Clicked += delegate {
-					DocumentRegistry.ReloadAllChangedFiles ();
-					RemoveInfoBar ();
-				};
-				infoBar.ActionArea.Add (b3);
-
-				var b4 = new Button (GettextCatalog.GetString ("_Ignore all"));
-				b4.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
-				b4.Clicked += delegate {
-					DocumentRegistry.IgnoreAllChangedFiles ();
-					RemoveInfoBar ();
-				};
-				infoBar.ActionArea.Add (b4);
-			}
-			ShowInfoBar (infoBar);
 		}
 
 		public virtual void ShowInfoBar (InfoBar infoBar)
