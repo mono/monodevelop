@@ -77,6 +77,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				.OrderByDescending (version => version);
 
 			DotNetCoreSdk.SetVersions (dotNetCoreVersions);
+			DotNetCoreSdk.SetInstalled (dotNetCoreVersions.Any ());
 		}
 
 		protected void DotNetCoreSdksNotInstalled ()
