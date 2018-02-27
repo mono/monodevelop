@@ -1,0 +1,35 @@
+# MonoDevelop Code Owners File
+#
+# GitHub uses this file to determine who to assign for reviews
+# on pull requests. Please keep this file alphabetically sorted.
+#
+# References:
+#
+# https://github.com/blog/2392-introducing-code-owners
+# https://help.github.com/articles/about-codeowners
+
+/main/src/core/MonoDevelop.Core @slluis @mrward
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Components.AtkCocoaHelper @iainx
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands @slluis
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking @slluis @sevoku
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Components.Theming @sevoku
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Components @slluis @sevoku
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion @slluis @mkrueger
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeFormatting @slluis @mkrueger
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates @mkrueger
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Desktop @slluis
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor.Extension @mkrueger
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor.Highlighting @mkrueger
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor.TextMate @mkrueger
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor @mkrueger
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution @slluis
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles @mkrueger @sevoku
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution @slluis
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components @slluis @sevoku
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Content @slluis
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui @slluis
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.ProgressMonitoring @slluis
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem @mkrueger @DavidKarlas
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater @slluis
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide @slluis
+/main/src/core/MonoDevelop.Ide/branding @slluis
