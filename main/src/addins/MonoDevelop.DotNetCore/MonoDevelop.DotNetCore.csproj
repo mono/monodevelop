@@ -13,7 +13,6 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TemplatesVersion1x>1.0.0-beta2-20170430-208</TemplatesVersion1x>
     <TemplatesVersion20>1.0.0-beta2-20170727-301</TemplatesVersion20>
-    <TemplatesVersion21>1.0.1-beta3-20180215-1392068</TemplatesVersion21>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -125,6 +124,7 @@
     <Compile Include="gtk-gui\MonoDevelop.DotNetCore.Gui.GtkDotNetCoreProjectTemplateWizardPageWidget.cs" />
     <Compile Include="MonoDevelop.DotNetCore\MSBuildSdksPathGlobalPropertyProvider.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreShortTargetFramework.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Templating\DotNetCoreProjectTemplateStringTagProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
@@ -390,17 +390,11 @@
        <NuGetPackage Include="Microsoft.DotNet.Common.ProjectTemplates.2.0">
          <Version>$(TemplatesVersion20)</Version>
        </NuGetPackage>
-       <NuGetPackage Include="Microsoft.DotNet.Common.ProjectTemplates.2.1">
-         <Version>$(TemplatesVersion21)</Version>
-       </NuGetPackage>
        <NuGetPackage Include="Microsoft.DotNet.Test.ProjectTemplates.1.x">
          <Version>$(TemplatesVersion1x)</Version>
        </NuGetPackage>
        <NuGetPackage Include="Microsoft.DotNet.Test.ProjectTemplates.2.0">
          <Version>$(TemplatesVersion20)</Version>
-       </NuGetPackage>
-       <NuGetPackage Include="Microsoft.DotNet.Test.ProjectTemplates.2.1">
-         <Version>$(TemplatesVersion21)</Version>
        </NuGetPackage>
      </ItemGroup>
      <Copy SourceFiles="..\..\..\packages\%(NuGetPackage.Identity).%(NuGetPackage.Version)\%(NuGetPackage.Identity).%(NuGetPackage.Version).nupkg" DestinationFolder="$(OutputPath)\Templates" SkipUnchangedFiles="true" />

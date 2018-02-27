@@ -39,6 +39,7 @@ namespace MonoDevelop.DotNetCore
 			var sdkPaths = new DotNetCoreSdkPaths ();
 			sdkPaths.FindMSBuildSDKsPath ();
 
+			SdkRootPath = sdkPaths.SdkRootPath;
 			MSBuildSDKsPath = sdkPaths.MSBuildSDKsPath;
 			IsInstalled = !string.IsNullOrEmpty (MSBuildSDKsPath);
 			Versions = sdkPaths.SdkVersions ?? new DotNetCoreVersion [0];
@@ -52,6 +53,7 @@ namespace MonoDevelop.DotNetCore
 
 		public static bool IsInstalled { get; private set; }
 		public static string MSBuildSDKsPath { get; private set; }
+		internal static string SdkRootPath { get; private set; }
 
 		internal static DotNetCoreVersion[] Versions { get; private set; }
 
@@ -154,6 +156,14 @@ namespace MonoDevelop.DotNetCore
 		internal static void SetInstalled (bool installed)
 		{
 			IsInstalled = installed;
+		}
+
+		/// <summary>
+		/// Used by unit tests to fake having the sdk installed.
+		/// </summary>
+		internal static void SetSdkRootPath (string path)
+		{
+			SdkRootPath = path;
 		}
 	}
 }
