@@ -93,15 +93,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var separators = await lineSeparatorService.GetLineSeparatorsAsync (DocumentContext.AnalysisDocument, new TextSpan (0, Editor.Length), token);
 			if (token.IsCancellationRequested)
 				return;
-			await Runtime.RunInMainThread (delegate {
-				RemoveMarkers ();
-				foreach (var s in separators) {
-					var line = Editor.GetLineByOffset (s.Start);
-					var marker = Editor.TextMarkerFactory.CreateLineSeparatorMarker (Editor);
-					Editor.AddMarker (line, marker);
-					markers.Add (marker);
-				}
-			});
+			RemoveMarkers ();
+			foreach (var s in separators) {
+				var line = Editor.GetLineByOffset (s.Start);
+				var marker = Editor.TextMarkerFactory.CreateLineSeparatorMarker (Editor);
+				Editor.AddMarker (line, marker);
+				markers.Add (marker);
+			}
 		}
 
 		void RemoveMarkers ()
