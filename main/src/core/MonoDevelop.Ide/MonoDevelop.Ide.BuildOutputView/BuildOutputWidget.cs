@@ -341,7 +341,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				copyElementMenu.Clicked += (s, args) => ClipboardCopy (selectedNode);
 				menu.Items.Add (copyElementMenu);
 
-				menu.Show (treeView.ToGtkWidget (), (int) e.X, (int) e.Y);
+				menu.Show (treeView, (int) e.X, (int) e.Y);
 			}
 		}
 
