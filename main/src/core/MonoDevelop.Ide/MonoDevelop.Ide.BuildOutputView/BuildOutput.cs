@@ -172,7 +172,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 				FullMessage = message,
 				HasErrors = errorCount > 0,
 				HasWarnings = warningCount > 0,
-				HasData = false
+				HasData = false,
+				ErrorCount = errorCount,
+				WarningCount = warningCount
 			};
 
 			return result.Values.Concat (summaryNode);
