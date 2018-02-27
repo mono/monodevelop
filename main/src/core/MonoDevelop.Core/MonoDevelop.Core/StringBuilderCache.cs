@@ -33,6 +33,8 @@ namespace MonoDevelop.Core
 	/// </summary>
 	public static class StringBuilderCache
 	{
+		const int Threshold = 4096;
+
 		public static StringBuilder Allocate () 
 		{
 			var result = SharedPools.Default<StringBuilder> ().Allocate ();
@@ -47,6 +49,9 @@ namespace MonoDevelop.Core
 
 		public static void Free (StringBuilder sb)
 		{
+			sb.Clear ();
+			if (sb.Capacity > Threshold)
+				sb.Capacity = Threshold;
 			SharedPools.Default<StringBuilder> ().Free (sb);
 		}
 
