@@ -317,7 +317,7 @@ namespace MonoDevelop.CSharp.Completion
 				var memberAccess = ctx.TargetToken.Parent as MemberAccessExpressionSyntax;
 				if (memberAccess != null) {
 					var symbolInfo = ctx.SemanticModel.GetSymbolInfo (memberAccess.Expression);
-					if (symbolInfo.Symbol.Kind == SymbolKind.NamedType)
+					if (symbolInfo.Symbol == null || symbolInfo.Symbol.Kind == SymbolKind.NamedType)
 						return;
 					extensionType = ctx.SemanticModel.GetTypeInfo (memberAccess.Expression).Type;
 					if (extensionType == null) {
