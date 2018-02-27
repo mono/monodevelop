@@ -32,12 +32,30 @@ using MonoDevelop.Components;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using Xwt;
+using Gtk;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public abstract class ViewContent : BaseViewContent
+	public abstract class ViewContent : BaseViewContent, IDocumentReloadPresenter
 	{
+		const uint CHILD_PADDING = 0;
+
+		VBox vbox;
+		InfoBar infoBar;
+
+		public bool IsInfoBarVisible {
+			get { return infoBar != null; }
+		}
+
+		internal override Control ContentContainer {
+			get {
+				EnsureVBoxIsCreated ();
+				return vbox; 
+			}
+		}
+
 		#region ViewContent Members
 
 		string untitledName = "";
@@ -158,13 +176,128 @@ namespace MonoDevelop.Ide.Gui
 			if (ContentNameChanged != null)
 				ContentNameChanged (this, EventArgs.Empty);
 		}
+
+
+		void EnsureVBoxIsCreated ()
+		{
+			if (vbox != null)
+				return;
+			vbox = new VBox ();
+			vbox.SetSizeRequest (32, 32);
+			vbox.Accessible.SetShouldIgnore (true);
+			vbox.PackStart (Control, true, true, 0);
+			vbox.ShowAll ();
+		}
+
+		public async Task Reload ()
+		{
+			try {
+				if (!System.IO.File.Exists (ContentName))
+					return;
+				await Load (new FileOpenInformation (ContentName) { IsReloadOperation = true });
+				WorkbenchWindow.ShowNotification = false;
+			} catch (Exception ex) {
+				MessageService.ShowError ("Could not reload the file.", ex);
+			} finally {
+				RemoveInfoBar ();
+			}
+		}
+
+		void IDocumentReloadPresenter.ShowFileChangedWarning (bool multiple)
+		{
+			RemoveInfoBar ();
+
+			var infoBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
+			infoBar.SetMessageLabel (GettextCatalog.GetString (
+				"<b>The file \"{0}\" has been changed outside of {1}.</b>\n" +
+				"Do you want to keep your changes, or reload the file from disk?",
+				EllipsizeMiddle (ContentName, 50), BrandingService.ApplicationName));
+
+			var b1 = new Button (GettextCatalog.GetString ("_Reload from disk"));
+			b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
+			b1.Clicked += async delegate {
+				await Reload ();
+				WorkbenchWindow.SelectWindow ();
+				RemoveInfoBar ();
+			};
+			infoBar.ActionArea.Add (b1);
+
+			var b2 = new Button (GettextCatalog.GetString ("_Keep changes"));
+			b2.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
+			b2.Clicked += delegate {
+				RemoveInfoBar ();
+				WorkbenchWindow.ShowNotification = false;
+			};
+			infoBar.ActionArea.Add (b2);
+
+			if (multiple) {
+				var b3 = new Button (GettextCatalog.GetString ("_Reload all"));
+				b3.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
+				b3.Clicked += delegate {
+					DocumentRegistry.ReloadAllChangedFiles ();
+					RemoveInfoBar ();
+				};
+				infoBar.ActionArea.Add (b3);
+
+				var b4 = new Button (GettextCatalog.GetString ("_Ignore all"));
+				b4.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
+				b4.Clicked += delegate {
+					DocumentRegistry.IgnoreAllChangedFiles ();
+					RemoveInfoBar ();
+				};
+				infoBar.ActionArea.Add (b4);
+			}
+			ShowInfoBar (infoBar);
+		}
+
+		public virtual void ShowInfoBar (InfoBar infoBar)
+		{
+			EnsureVBoxIsCreated ();
+			this.infoBar = infoBar;
+			IsDirty = true;
+			// WarnOverwrite = true;
+			vbox.PackStart (infoBar, false, false, CHILD_PADDING);
+			vbox.ReorderChild (infoBar, 0);
+			infoBar.ShowAll ();
+			infoBar.QueueDraw ();
+			vbox.ShowAll ();
+			if (WorkbenchWindow != null)
+				WorkbenchWindow.ShowNotification = true;
+			Console.WriteLine (vbox.Children.Length);
+		}
+
+		public virtual void RemoveInfoBar ()
+		{
+			if (vbox == null)
+				return;
+			if (infoBar != null) {
+				if (infoBar.Parent == vbox)
+					vbox.Remove (infoBar);
+				infoBar.Destroy ();
+				infoBar = null;
+			}
+			vbox.ShowAll ();
+		}
+
+		internal static string EllipsizeMiddle (string str, int truncLen)
+		{
+			if (str == null)
+				return "";
+			if (str.Length <= truncLen)
+				return str;
+
+			string delimiter = "...";
+			int leftOffset = (truncLen - delimiter.Length) / 2;
+			int rightOffset = str.Length - truncLen + leftOffset + delimiter.Length;
+			return str.Substring (0, leftOffset) + delimiter + str.Substring (rightOffset);
+		}
 	}
 
 	public abstract class AbstractXwtViewContent : ViewContent
 	{
 		public sealed override Control Control {
 			get {
-				return (Gtk.Widget)Toolkit.CurrentEngine.GetNativeWidget (Widget);
+				return (Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (Widget);
 			}
 		}
 

@@ -62,6 +62,8 @@ namespace MonoDevelop.Ide.Editor
 
 		MonoDevelop.Projects.Policies.PolicyContainer policyContainer;
 
+		internal override Control ContentContainer { get => textEditorImpl.ViewContent.ContentContainer; }
+
 		public TextEditorViewContent (TextEditor textEditor, ITextEditorImpl textEditorImpl)
 		{
 			if (textEditor == null)
@@ -297,6 +299,7 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.ViewContent.WorkbenchWindow = WorkbenchWindow;
 		}
 
+
 		public override Control Control {
 			get {
 				return textEditorImpl.ViewContent.Control;
@@ -322,11 +325,20 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+        public override void RemoveInfoBar()
+        {
+			textEditorImpl.ViewContent.RemoveInfoBar ();
+        }
 
-		#endregion
+        public override void ShowInfoBar(InfoBar infoBar)
+        {
+			textEditorImpl.ViewContent.ShowInfoBar (infoBar);
+        }
 
-		#region IDisposable implementation
-		bool isDisposed;
+        #endregion
+
+        #region IDisposable implementation
+        bool isDisposed;
 
 		public override void Dispose ()
 		{

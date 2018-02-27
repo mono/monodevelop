@@ -65,7 +65,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.SourceEditor
 {	
-	partial class SourceEditorView : InfoBarViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
+	partial class SourceEditorView : ViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, IPrintable,
@@ -108,7 +108,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public override Widget ContentControl => widget?.Vbox;
+		public override Control Control => widget?.Vbox;
 
 		public int LineCount {
 			get {
@@ -990,7 +990,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			infoBar.ActionArea.Add (b2);
 			ShowInfoBar (infoBar);
-			ContentControl.Visible = false;
+			widget.Vbox.Visible = false;
 		}
 
 		void HandleTextEditorVAdjustmentChanged (object sender, EventArgs e)

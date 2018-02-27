@@ -50,7 +50,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			this.content = content;
 			this.contentBox = new Gtk.VBox ();
-			this.contentBox.PackEnd (content.Control, true, true, 0);
+			this.contentBox.PackEnd (content.ContentContainer, true, true, 0);
 			this.contentBox.ShowAll ();
 			
 			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);

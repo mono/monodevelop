@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Gui
 		public Widget TabPage {
 			get {
 				if (tabPage == null)
-					tabPage = content.Control;
+					tabPage = content.ContentContainer;
 				return tabPage;
 			}
 			set {
@@ -291,7 +291,7 @@ namespace MonoDevelop.Ide.Gui
 			// Focus the tab in the next iteration since presenting the window may take some time
 			Application.Invoke ((o, args) => {
 				DockNotebook.ActiveNotebook = tabControl;
-				DeepGrabFocus (this.ActiveViewContent.Control);
+				DeepGrabFocus (this.ActiveViewContent.ContentContainer);
 			});
 		}
 
@@ -597,7 +597,7 @@ namespace MonoDevelop.Ide.Gui
 			// may happen before the main content is added to 'box', so we
 			// have to check if the content is already parented or not
 
-			Gtk.Widget viewWidget = ViewContent.Control;
+			Gtk.Widget viewWidget = ViewContent.ContentContainer;
 			if (viewWidget.Parent != null)
 				box.Remove (viewWidget);
 			
@@ -662,7 +662,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			// If this is the current displayed document we need to add the control immediately as the tab is already active.
 			if (addedContent) {
-				widgetBox.Add (viewContent.Control);
+				widgetBox.Add (viewContent.ContentContainer);
 				widgetBox.Show ();
 			}
 
@@ -670,7 +670,7 @@ namespace MonoDevelop.Ide.Gui
 			subViewNotebook.InsertPage (widgetBox, new Gtk.Label (), index);
 			tab.Activated += (sender, e) => {
 				if (!addedContent) {
-					widgetBox.Add (viewContent.Control);
+					widgetBox.Add (viewContent.ContentContainer);
 					widgetBox.Show ();
 					addedContent = true;
 				}

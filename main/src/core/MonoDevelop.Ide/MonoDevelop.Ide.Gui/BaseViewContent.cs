@@ -41,6 +41,8 @@ namespace MonoDevelop.Ide.Gui
 		IWorkbenchWindow workbenchWindow;
 		Project project;
 
+		internal virtual Control ContentContainer { get => Control; }
+
 		public abstract Control Control { get; }
 
 		public IWorkbenchWindow WorkbenchWindow {
