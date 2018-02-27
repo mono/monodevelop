@@ -45,6 +45,13 @@ namespace MonoDevelop.Ide.Codons
 
 		public string ScanPath {
 			get {
+				// If the path starts with '${' then the path contains a placeholder
+				// that the StringParserService will replace. The path is returned
+				// without calling Addin.GetFilePath to prevent the addin directory
+				// being prefixed to the path.
+				if (path != null && path.StartsWith ("${", StringComparison.Ordinal)) {
+					return path;
+				}
 				return Addin.GetFilePath (path);
 			}
 		}
