@@ -31,6 +31,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Editor;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -92,16 +93,15 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var separators = await lineSeparatorService.GetLineSeparatorsAsync (DocumentContext.AnalysisDocument, new TextSpan (0, Editor.Length), token);
 			if (token.IsCancellationRequested)
 				return;
-			var newMarkers = new List<ITextLineMarker> ();
-			foreach (var s in separators) {
-				var line = Editor.GetLineByOffset (s.Start);
-				var marker = Editor.TextMarkerFactory.CreateLineSeparatorMarker (Editor);
-				Editor.AddMarker (line, marker);
-				newMarkers.Add (marker);
-			}
-
-			RemoveMarkers ();
-			markers = newMarkers;
+			await Runtime.RunInMainThread (delegate {
+				RemoveMarkers ();
+				foreach (var s in separators) {
+					var line = Editor.GetLineByOffset (s.Start);
+					var marker = Editor.TextMarkerFactory.CreateLineSeparatorMarker (Editor);
+					Editor.AddMarker (line, marker);
+					markers.Add (marker);
+				}
+			});
 		}
 
 		void RemoveMarkers ()
