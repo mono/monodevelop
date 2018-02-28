@@ -98,7 +98,6 @@ namespace Mono.TextEditor
 				var insertedLines = endLine.LineNumber - lineNumber + 1;
 				var oldState = lineNumber < lineStates.Count  && insertedLines == 1 ? lineStates [lineNumber] : null;
 				if (oldState != null && oldState.state == TextDocument.LineState.Dirty) {
-					Console.WriteLine ("skip!");
 					continue;
 				}
 				try {
