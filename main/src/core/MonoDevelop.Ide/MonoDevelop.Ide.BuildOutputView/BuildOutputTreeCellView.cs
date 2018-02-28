@@ -85,12 +85,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 		//This give us height and width of a character with this font
 		double fontHeight;
 		int informationContainerWidth => DefaultInformationContainerWidth;
-		double informationContainerStartX => BackgroundBounds.Width - informationContainerWidth;
 
 		IBuildOutputContextProvider contextProvider;
 
 		bool IsRootNode () => buildOutputNode.Parent == null;
-		bool IsRowExpanded () => ((Xwt.TreeView)ParentWidget).IsRowExpanded (buildOutputNode);
+		bool IsRowExpanded () => ((Xwt.TreeView)ParentWidget)?.IsRowExpanded (buildOutputNode) ?? false;
 
 		public BuildOutputTreeCellView (IBuildOutputContextProvider context)
 		{
@@ -118,8 +117,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		void DrawFirstNodeInformation (Context ctx, Xwt.Rectangle cellArea)
 		{
 			UpdateInformationTextColor (ctx);
-			var textStartX = informationContainerStartX;
-			DrawText (ctx, cellArea, textStartX, GetInformationMessage (), BackgroundBounds.Width - textStartX);
+			var textStartX = cellArea.Width - informationContainerWidth;
+			DrawText (ctx, cellArea, textStartX, GetInformationMessage (), cellArea.Width - textStartX);
 		}
 
 		string GetInformationMessage ()
@@ -134,7 +133,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			UpdateInformationTextColor (ctx);
 
-			var textStartX = informationContainerStartX;
+			var textStartX = cellArea.X + (cellArea.Width - informationContainerWidth);
 
 			//Duration text
 			var duration = buildOutputNode.GetDurationAsString (contextProvider.IsShowingDiagnostics);
@@ -200,7 +199,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			var startX = cellArea.Left + ImageSize - 3;
-			var width = informationContainerStartX - startX;
+			var width = (cellArea.Width - informationContainerWidth) - startX;
 
 			var layout = DrawText (ctx, cellArea, startX, buildOutputNode.Message, width, font);
 
@@ -268,7 +267,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			defaultFontLayout = layout.Font;
 			fontHeight = layout.GetSize ().Height;
 			return new Size (CellWidth, fontHeight * LinesDisplayedCount + DescriptionPaddingHeight + 
-			                 (buildOutputNode.NodeType == BuildOutputNodeType.Build ? 12 : 3));
+			                 (buildOutputNode?.NodeType == BuildOutputNodeType.Build ? 12 : 3));
 		}
 
 		protected override void OnDataChanged()
