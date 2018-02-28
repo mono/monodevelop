@@ -322,6 +322,7 @@
 		<Class class = "MonoDevelop.Ide.Editor.Extension.ErrorHandlerTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.AutoInsertBracketTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.HighlightUrlExtension" />
+		<Class class = "MonoDevelop.Ide.Editor.Extension.TagCommentsTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateFoldingTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateIndentationTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateCompletionTextEditorExtension" />

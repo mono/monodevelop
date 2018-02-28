@@ -53,6 +53,7 @@
 using System;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using Microsoft.CodeAnalysis.Editor;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -77,6 +78,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			this.key = key;
 			base.Region = region;
+		}
+	}
+
+	internal static class TodoItemExtensions
+	{
+		public static Tag ToTag (this TodoItem item)
+		{
+			var message = item.Message;
+			var index = message.IndexOf (':');
+			var tag = message.Substring (0, index);
+
+			return new Tag (tag, message, new Editor.DocumentRegion (item.MappedLine, item.MappedColumn, item.MappedLine, item.MappedColumn));
 		}
 	}
 }

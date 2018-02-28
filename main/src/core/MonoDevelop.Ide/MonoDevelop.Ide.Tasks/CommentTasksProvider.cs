@@ -46,26 +46,40 @@ namespace MonoDevelop.Ide.Tasks
 			Ide.IdeApp.Workspace.SolutionLoaded += OnSolutionLoaded;
 			CommentTag.SpecialCommentTagsChanged += OnSpecialTagsChanged;
 
-			todoListProvider.TodoListUpdated += (sender, args) => {
-				var ws = (MonoDevelopWorkspace)args.Workspace;
-				var doc = ws.GetDocument (args.DocumentId);
-				if (doc == null)
-					return;
-
-				var project = ws.GetMonoProject (args.ProjectId);
-				if (project == null)
-					return;
-
-				var file = doc.Name;
-				if (args.TodoItems.Length == 0)
-					TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, null, project));
-				else {
-					var items = args.TodoItems.SelectAsArray (x => new Tag (x.Message, new Editor.DocumentRegion (x.MappedLine, x.MappedColumn, x.MappedLine, x.MappedColumn)));
-					TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, items, project));
-				}
-			};
+			todoListProvider.TodoListUpdated += OnTodoListUpdated;
 
 			Legacy.Initialize ();
+		}
+
+		static bool TryGetDocument (Microsoft.CodeAnalysis.Common.UpdatedEventArgs args, out Document doc, out MonoDevelop.Projects.Project project)
+		{
+			doc = null;
+			project = null;
+
+			var ws = (MonoDevelopWorkspace)args.Workspace;
+			doc = ws.GetDocument (args.DocumentId);
+			if (doc == null)
+				return false;
+
+			project = ws.GetMonoProject (args.ProjectId);
+			if (project == null)
+				return false;
+
+			return true;
+		}
+
+		static void OnTodoListUpdated (object sender, TodoItemsUpdatedArgs args)
+		{
+			if (!TryGetDocument (args, out var doc, out var project))
+				return;
+
+			var file = doc.Name;
+			if (args.TodoItems.Length == 0)
+				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, null, project));
+			else {
+				var items = args.TodoItems.SelectAsArray (x => x.ToTag ());
+				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, items, project));
+			}
 		}
 
 		public static void Initialize ()
@@ -80,7 +94,12 @@ namespace MonoDevelop.Ide.Tasks
 			UpdateWorkspaceOptions (ws);
 
 			foreach (var ea in todoListProvider.GetTodoItemsUpdatedEventArgs (ws, CancellationToken.None)) {
-				// Do something.
+				if (!TryGetDocument (ea, out var doc, out var project))
+					return;
+
+				var file = doc.Name;
+				var tags = todoListProvider.GetTodoItems (ea.Workspace, ea.DocumentId, CancellationToken.None).SelectAsArray (x => x.ToTag ());
+				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, tags, project));
 			}
 		}
 

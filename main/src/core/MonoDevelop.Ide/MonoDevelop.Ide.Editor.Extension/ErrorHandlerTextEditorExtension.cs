@@ -174,17 +174,20 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return;
 			var newTasks = ImmutableArray<QuickTask>.Empty.ToBuilder ();
 			if (parsedDocument != null) {
-				foreach (var cmt in await parsedDocument.GetTagCommentsAsync(token).ConfigureAwait (false)) {
-					if (token.IsCancellationRequested)
-						return;
-					int offset;
-					try {
-						offset = Editor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column);
-					} catch (Exception) {
-						return;
+				var tagComments = await parsedDocument.GetTagCommentsAsync (token).ConfigureAwait (false);
+				if (tagComments != null) {
+					foreach (var cmt in tagComments) {
+						if (token.IsCancellationRequested)
+							return;
+						int offset;
+						try {
+							offset = Editor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column);
+						} catch (Exception) {
+							return;
+						}
+						var newTask = new QuickTask (cmt.Text, offset, DiagnosticSeverity.Info);
+						newTasks.Add (newTask);
 					}
-					var newTask = new QuickTask (cmt.Text, offset, DiagnosticSeverity.Info);
-					newTasks.Add (newTask);
 				}
 
 				foreach (var error in docErrors) {
