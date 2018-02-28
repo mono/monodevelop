@@ -340,7 +340,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		bool hasRegex;
 		Regex cachedRegex;
-		static readonly object lockObj = new object ();
+		object lockObj = new object ();
 
 		internal Regex GetRegex ()
 		{
