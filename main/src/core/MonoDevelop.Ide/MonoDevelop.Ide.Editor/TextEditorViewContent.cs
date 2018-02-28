@@ -325,15 +325,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-        public override void RemoveInfoBar()
-        {
-			textEditorImpl.ViewContent.RemoveInfoBar ();
-        }
-
-        public override void ShowInfoBar(InfoBar infoBar)
-        {
-			textEditorImpl.ViewContent.ShowInfoBar (infoBar);
-        }
+		public override Control InfoBar => textEditorImpl.ViewContent.InfoBar;
 
         #endregion
 

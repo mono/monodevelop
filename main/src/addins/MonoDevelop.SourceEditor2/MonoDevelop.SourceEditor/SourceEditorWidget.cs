@@ -802,7 +802,7 @@ namespace MonoDevelop.SourceEditor
 
 		void ShowIncorrectEolMarkers (string fileName, bool multiple)
 		{
-			view.RemoveInfoBar ();
+			view.InfoBar = null;
 			var hbox = new HBox ();
 			hbox.Spacing = 8;
 
@@ -857,7 +857,7 @@ namespace MonoDevelop.SourceEditor
 			image.Clicked += delegate {
 				UseIncorrectMarkers = true;
 				view.WorkbenchWindow.ShowNotification = false;
-				view.RemoveInfoBar ();
+				view.InfoBar = null;
 			};
 			okButton.Clicked += async delegate {
 				switch (combo.Active) {
@@ -877,7 +877,7 @@ namespace MonoDevelop.SourceEditor
 					FileRegistry.IgnoreLineEndingsInAllFiles ();
 					break;
 				}
-				view.RemoveInfoBar ();
+				view.InfoBar = null;
 			};
 		}
 

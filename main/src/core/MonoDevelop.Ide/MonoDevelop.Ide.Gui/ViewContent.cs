@@ -199,37 +199,40 @@ namespace MonoDevelop.Ide.Gui
 			} catch (Exception ex) {
 				MessageService.ShowError ("Could not reload the file.", ex);
 			} finally {
-				RemoveInfoBar ();
+				InfoBar = null;
 			}
 		}
 
-		public virtual void ShowInfoBar (InfoBar infoBar)
-		{
-			EnsureVBoxIsCreated ();
-			this.infoBar = infoBar;
-			IsDirty = true;
-			// WarnOverwrite = true;
-			vbox.PackStart (infoBar, false, false, CHILD_PADDING);
-			vbox.ReorderChild (infoBar, 0);
-			infoBar.ShowAll ();
-			infoBar.QueueDraw ();
-			vbox.ShowAll ();
-			if (WorkbenchWindow != null)
-				WorkbenchWindow.ShowNotification = true;
-			Console.WriteLine (vbox.Children.Length);
-		}
 
-		public virtual void RemoveInfoBar ()
-		{
-			if (vbox == null)
-				return;
-			if (infoBar != null) {
-				if (infoBar.Parent == vbox)
-					vbox.Remove (infoBar);
-				infoBar.Destroy ();
-				infoBar = null;
+		public virtual Control InfoBar {
+			get {
+				return infoBar;
 			}
-			vbox.ShowAll ();
+			set {
+				if (value != null) {
+					if (infoBar != null)
+						throw new InvalidOperationException ("Info bar already shown.");
+					EnsureVBoxIsCreated ();
+					this.infoBar = (InfoBar)value;
+					IsDirty = true;
+					// WarnOverwrite = true;
+					vbox.PackStart (infoBar, false, false, CHILD_PADDING);
+					vbox.ReorderChild (infoBar, 0);
+					infoBar.ShowAll ();
+					infoBar.QueueDraw ();
+					vbox.ShowAll ();
+					if (WorkbenchWindow != null)
+						WorkbenchWindow.ShowNotification = true;
+				} else {
+					if (vbox == null || infoBar == null)
+						return;
+					if (infoBar.Parent == vbox)
+						vbox.Remove (infoBar);
+					infoBar.Destroy ();
+					infoBar = null;
+					vbox.ShowAll ();
+				}
+			}
 		}
 
 		internal static string EllipsizeMiddle (string str, int truncLen)

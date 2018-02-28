@@ -168,7 +168,8 @@ namespace MonoDevelop.Ide.Gui
 			foreach (var view in GetAllChangedFiles ()) {
 				view.LastSaveTimeUtc = File.GetLastWriteTime (view.Document.FileName);
 				var presenter = view.Document.PrimaryView.BaseContent as ViewContent;
-				presenter?.RemoveInfoBar ();
+				if (presenter != null)
+					presenter.InfoBar = null;
 				view.Document.Window.ShowNotification = false;
 			}
 		}
@@ -240,7 +241,7 @@ namespace MonoDevelop.Ide.Gui
 
 		static void ShowFileChangedWarning (ViewContent viewContent, bool multiple)
 		{
-			viewContent.RemoveInfoBar ();
+			viewContent.InfoBar = null;
 
 			var infoBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
 			infoBar.SetMessageLabel (GettextCatalog.GetString (
@@ -253,14 +254,14 @@ namespace MonoDevelop.Ide.Gui
 			b1.Clicked += async delegate {
 				await viewContent.Reload ();
 				viewContent.WorkbenchWindow.SelectWindow ();
-				viewContent.RemoveInfoBar ();
+				viewContent.InfoBar = null;
 			};
 			infoBar.ActionArea.Add (b1);
 
 			var b2 = new Button (GettextCatalog.GetString ("_Keep changes"));
 			b2.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
 			b2.Clicked += delegate {
-				viewContent.RemoveInfoBar ();
+				viewContent.InfoBar = null;
 				viewContent.WorkbenchWindow.ShowNotification = false;
 			};
 			infoBar.ActionArea.Add (b2);
@@ -270,7 +271,7 @@ namespace MonoDevelop.Ide.Gui
 				b3.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
 				b3.Clicked += delegate {
 					DocumentRegistry.ReloadAllChangedFiles ();
-					viewContent.RemoveInfoBar ();
+					viewContent.InfoBar = null;
 				};
 				infoBar.ActionArea.Add (b3);
 
@@ -278,11 +279,11 @@ namespace MonoDevelop.Ide.Gui
 				b4.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
 				b4.Clicked += delegate {
 					DocumentRegistry.IgnoreAllChangedFiles ();
-					viewContent.RemoveInfoBar ();
+					viewContent.InfoBar = null;
 				};
 				infoBar.ActionArea.Add (b4);
 			}
-			viewContent.ShowInfoBar (infoBar);
+			viewContent.InfoBar = infoBar;
 		}
 
 	}

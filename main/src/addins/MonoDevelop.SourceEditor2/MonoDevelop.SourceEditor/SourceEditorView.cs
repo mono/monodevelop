@@ -946,7 +946,7 @@ namespace MonoDevelop.SourceEditor
 
 		void ShowAutoSaveWarning (string fileName)
 		{
-			RemoveInfoBar ();
+			InfoBar = null;
 			var infoBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
 			infoBar.SetMessageLabel (BrandingService.BrandApplicationName (GettextCatalog.GetString (
 					"<b>An autosave file has been found for this file.</b>\n" +
@@ -965,7 +965,7 @@ namespace MonoDevelop.SourceEditor
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not remove the autosave file.", ex);
 				} finally {
-					RemoveInfoBar ();
+					InfoBar = null;
 				}
 			};
 			infoBar.ActionArea.Add (b1);
@@ -984,12 +984,12 @@ namespace MonoDevelop.SourceEditor
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not remove the autosave file.", ex);
 				} finally {
-					RemoveInfoBar ();
+					InfoBar = null;
 				}
 
 			};
 			infoBar.ActionArea.Add (b2);
-			ShowInfoBar (infoBar);
+			InfoBar = infoBar;
 			widget.Vbox.Visible = false;
 		}
 
@@ -3673,10 +3673,13 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-        public override void RemoveInfoBar()
-        {
-			base.RemoveInfoBar();
-			widget.RemoveEolWarning ();
-        }
+		public override Control InfoBar {
+			get => base.InfoBar;
+			set {
+				base.InfoBar = value;
+				if (value == null)
+					widget.RemoveEolWarning ();
+			}
+		}
     }
 } 
