@@ -89,7 +89,7 @@ namespace MonoDevelop.Components
 			ContextMenuExtensionsGtk.ShowContextMenu (parent, x, y, this, closeHandler, selectFirstItem);
 		}
 
-		public void Show (Xwt.Widget parent, int x, int y, Action closeHandler, bool selectFirstItem = false)
+		internal void Show (Xwt.Widget parent, int x, int y, Action closeHandler, bool selectFirstItem = false)
 		{
 			if (parent.Surface.NativeWidget is Gtk.Widget widget) {
 				Show (widget, x, y, closeHandler, selectFirstItem);
@@ -109,7 +109,7 @@ namespace MonoDevelop.Components
 			Show (parent, x, y, null);
 		}
 
-		public void Show (Xwt.Widget parent, int x, int y)
+		internal void Show (Xwt.Widget parent, int x, int y)
 		{
 			Show (parent, x, y, null);
 		}
