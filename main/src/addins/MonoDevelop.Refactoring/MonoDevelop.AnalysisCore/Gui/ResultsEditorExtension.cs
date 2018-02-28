@@ -203,10 +203,11 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (doc == null || DocumentContext.IsAdHocProject)
 				return;
 
-			if (DocumentContext.AnalysisDocument == null)
+			var cad = DocumentContext.AnalysisDocument;
+			if (cad == null || cad.Project == null)
 				return;
 			
-			if (e.DocumentId != DocumentContext.AnalysisDocument.Id || e.ProjectId != DocumentContext.AnalysisDocument.Project.Id)
+			if (e.DocumentId != cad.Id || e.ProjectId != cad.Project.Id)
 				return;
 
 			var token = CancelUpdateTimeout (e.Id);
