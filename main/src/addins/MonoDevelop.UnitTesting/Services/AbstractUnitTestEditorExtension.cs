@@ -271,7 +271,8 @@ namespace MonoDevelop.UnitTesting
 						}
 					}
 				}
-				menu.Show (ext.Editor, x, y);
+				// FIXME: enforce public API by casting Control to Gtk.Widget, because of IVT
+				menu.Show ((Gtk.Widget)ext.Editor, x, y);
 			}
 
 			#endregion

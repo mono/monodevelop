@@ -78,17 +78,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public event EventHandler<FilePath> FileSaved;
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 
-		public BuildOutputWidget (BuildOutput output, string viewContentName)
+		public BuildOutputWidget (BuildOutput output, string viewContentName, DocumentToolbar toolbar)
 		{
-			Initialize ();
+			Initialize (toolbar);
 			ViewContentName = viewContentName;
 			SetupBuildOutput (output);
 			filePathLocation = FilePath.Empty;
 		}
 
-		public BuildOutputWidget (FilePath filePath)
+		public BuildOutputWidget (FilePath filePath, DocumentToolbar toolbar)
 		{
-			Initialize ();
+			Initialize (toolbar);
 
 			ViewContentName = filePath;
 			var output = new BuildOutput ();
@@ -119,47 +119,49 @@ namespace MonoDevelop.Ide.BuildOutputView
 			box.Show ();
 		}
 
-		void Initialize ()
+		void Initialize (DocumentToolbar toolbar)
 		{
 			Spacing = 0;
 
-			showDiagnosticsButton = new CheckBox (GettextCatalog.GetString ("Diagnostic log verbosity"));
-			showDiagnosticsButton.Accessible.Identifier = "BuildOutputWidget.ShowDiagnosticsButton";
-			showDiagnosticsButton.TooltipText = GettextCatalog.GetString ("Show full (diagnostics enabled) or reduced log");
-			showDiagnosticsButton.Accessible.Description = GettextCatalog.GetString ("Diagnostic log verbosity");
-			showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
+			// FIXME: DocumentToolbar does not support native widgets
+			// Toolbar items must use Gtk, for now
+			Xwt.Toolkit.Load (ToolkitType.Gtk).Invoke (() => {
+				showDiagnosticsButton = new CheckBox (GettextCatalog.GetString ("Diagnostic log verbosity"));
+				showDiagnosticsButton.Accessible.Identifier = "BuildOutputWidget.ShowDiagnosticsButton";
+				showDiagnosticsButton.TooltipText = GettextCatalog.GetString ("Show full (diagnostics enabled) or reduced log");
+				showDiagnosticsButton.Accessible.Description = GettextCatalog.GetString ("Diagnostic log verbosity");
+				showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 
-			saveButton = new Button (GettextCatalog.GetString ("Save"));
-			saveButton.Accessible.Identifier = "BuildOutputWidget.SaveButton";
-			saveButton.TooltipText = GettextCatalog.GetString ("Save build output");
-			saveButton.Accessible.Description = GettextCatalog.GetString ("Save build output");
+				saveButton = new Button (GettextCatalog.GetString ("Save"));
+				saveButton.Accessible.Identifier = "BuildOutputWidget.SaveButton";
+				saveButton.TooltipText = GettextCatalog.GetString ("Save build output");
+				saveButton.Accessible.Description = GettextCatalog.GetString ("Save build output");
 
-			saveButton.Clicked += SaveButtonClickedAsync;
+				saveButton.Clicked += SaveButtonClickedAsync;
 
-			searchEntry = new SearchEntry ();
-			searchEntry.Accessible.SetLabel (GettextCatalog.GetString ("Search"));
-			searchEntry.Accessible.Name = "BuildOutputWidget.Search";
-			searchEntry.Accessible.Description = GettextCatalog.GetString ("Search the build log");
-			searchEntry.WidthRequest = 200;
-			searchEntry.Visible = true;
-			searchEntry.EmptyMessage = GettextCatalog.GetString ("Search Build Output");
-			           
-			resultInformLabel = new Label ();
-			searchEntry.AddLabelWidget ((Gtk.Label) resultInformLabel.ToGtkWidget());
+				searchEntry = new SearchEntry ();
+				searchEntry.Accessible.SetLabel (GettextCatalog.GetString ("Search"));
+				searchEntry.Accessible.Name = "BuildOutputWidget.Search";
+				searchEntry.Accessible.Description = GettextCatalog.GetString ("Search the build log");
+				searchEntry.WidthRequest = 200;
+				searchEntry.Visible = true;
+				searchEntry.EmptyMessage = GettextCatalog.GetString ("Search Build Output");
 
-			searchEntry.Entry.Changed += FindFirst;
-			searchEntry.Entry.Activated += FindNext;
+				resultInformLabel = new Label ();
+				searchEntry.AddLabelWidget ((Gtk.Label)resultInformLabel.ToGtkWidget ());
 
-			buttonSearchBackward = new Button ();
-			buttonSearchForward = new Button ();
-			buttonSearchBackward.Clicked += FindPrevious;
-			buttonSearchForward.Clicked += FindNext;
-			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext, true));
-			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious, true));
-			buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
-			buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
+				searchEntry.Entry.Changed += FindFirst;
+				searchEntry.Entry.Activated += FindNext;
 
-			toolbar = new DocumentToolbar ();
+				buttonSearchBackward = new Button ();
+				buttonSearchForward = new Button ();
+				buttonSearchBackward.Clicked += FindPrevious;
+				buttonSearchForward.Clicked += FindNext;
+				buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext, true));
+				buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious, true));
+				buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
+				buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
+			});
 
 			box = new Gtk.VBox ();
 			box.Spacing = 0;
@@ -173,7 +175,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			toolbar.Add (buttonSearchBackward.ToGtkWidget ());
 			toolbar.Add (buttonSearchForward.ToGtkWidget ());
 
-			PackStart (toolbar.Container, expand: false, fill: true);
 
 			treeView = new TreeView ();
 			treeView.HeadersVisible = false;
@@ -190,7 +191,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				Expands = true
 			};
 			var pack = new BuildOutputTreeCellView (this);
-			treeColumn.Views.Add (pack);
+			treeColumn.Views.Add (pack, true);
 			treeView.Columns.Add (treeColumn);
 
 			PackStart (treeView, expand: true, fill: true);
@@ -340,7 +341,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				copyElementMenu.Clicked += (s, args) => ClipboardCopy (selectedNode);
 				menu.Items.Add (copyElementMenu);
 
-				menu.Show (treeView.ToGtkWidget (), (int) e.X, (int) e.Y);
+				menu.Show (treeView, (int) e.X, (int) e.Y);
 			}
 		}
 
@@ -468,7 +469,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				try {
 					BuildOutput.ProcessProjects ();
 
-					await Runtime.RunInMainThread (() => {
+					await InvokeAsync (() => {
 						currentSearch = null;
 						searchEntry.Entry.Text = String.Empty;
 						Find (null);

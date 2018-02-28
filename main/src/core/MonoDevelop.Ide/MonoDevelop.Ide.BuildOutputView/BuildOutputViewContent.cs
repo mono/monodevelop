@@ -40,20 +40,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 	{
 		FilePath filename;
 		BuildOutputWidget control;
+		BuildOutput buildOutput;
 
 		public BuildOutputViewContent (FilePath filename)
 		{
 			this.filename = filename;
 			this.ContentName = filename;
-			control = new BuildOutputWidget (filename);
-			control.FileSaved += FileNameChanged;
 		}
 
 		public BuildOutputViewContent (BuildOutput buildOutput)
 		{
-			ContentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("hh:mm:ss")}.binlog";
-			control = new BuildOutputWidget (buildOutput, ContentName);
-			control.FileSaved += FileNameChanged;
+			this.buildOutput = buildOutput;
+			this.ContentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("hh:mm:ss")}.binlog";
 		}
 
 		void FileNameChanged (object sender, FilePath file)
@@ -61,7 +59,25 @@ namespace MonoDevelop.Ide.BuildOutputView
 			ContentName = file;
 		}
 
-		public override Widget Widget => control;
+		public override Widget Widget {
+			get {
+				if (control != null)
+					return control;
+				var toolbar = WorkbenchWindow.GetToolbar (this);
+				// TODO: enable native backend by default without checking NATIVE_BUILD_OUTPUT env
+				var nativeEnabled = Environment.GetEnvironmentVariable ("NATIVE_BUILD_OUTPUT")?.ToLower () == "true";
+				// native mode on Mac only, until we support Wpf embedding
+				var engine = Xwt.Toolkit.NativeEngine.Type == ToolkitType.XamMac && nativeEnabled ? Xwt.Toolkit.NativeEngine : Xwt.Toolkit.CurrentEngine;
+				engine.Invoke (() => {
+					if (buildOutput != null)
+						control = new BuildOutputWidget (buildOutput, ContentName, toolbar);
+					else
+						control = new BuildOutputWidget (filename, toolbar);
+					control.FileSaved += FileNameChanged;
+				});
+				return control;
+			}
+		}
 
 		public override bool IsReadOnly {
 			get {

@@ -1173,7 +1173,10 @@ namespace MonoDevelop.Components.Commands
 		{
 #if MAC
 			var menu = CreateNSMenu (entrySet, initialCommandTarget ?? parent, closeHandler);
-			ContextMenuExtensionsMac.ShowContextMenu (parent, evt, menu);
+			if (parent.nativeWidget is AppKit.NSView)
+				ContextMenuExtensionsMac.ShowContextMenu ((AppKit.NSView)parent.nativeWidget, evt, menu);
+			else
+				ContextMenuExtensionsMac.ShowContextMenu ((Gtk.Widget)parent, evt, menu);
 #else
 			var menu = CreateMenu (entrySet, closeHandler);
 			if (menu != null)
@@ -1196,7 +1199,10 @@ namespace MonoDevelop.Components.Commands
 		{
 #if MAC
 			var menu = CreateNSMenu (entrySet, initialCommandTarget ?? parent);
-			ContextMenuExtensionsMac.ShowContextMenu (parent, x, y, menu);
+			if (parent.nativeWidget is AppKit.NSView)
+				ContextMenuExtensionsMac.ShowContextMenu ((AppKit.NSView)parent.nativeWidget, x, y, menu);
+			else
+				ContextMenuExtensionsMac.ShowContextMenu ((Gtk.Widget)parent, x, y, menu);
 #else
 			var menu = CreateMenu (entrySet);
 			if (menu != null)
