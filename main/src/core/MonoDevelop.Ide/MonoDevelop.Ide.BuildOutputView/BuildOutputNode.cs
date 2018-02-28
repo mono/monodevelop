@@ -183,62 +183,62 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public override BuildOutputNodeType NodeType {
 			get => nodes.FirstOrDefault ()?.NodeType ?? BuildOutputNodeType.Unknown;
-			set => throw new NotImplementedException ();
+			set => base.NodeType = value;
 		}
 
 		public override string Message {
 			get => nodes.FirstOrDefault ()?.Message;
-			set => throw new NotImplementedException ();
+			set => base.Message = value;
 		}
 
 		public override string Platform {
 			get => nodes.FirstOrDefault ()?.Platform;
-			set => throw new NotImplementedException ();
+			set => base.Platform = value;
 		}
 
 		public override string Configuration {
 			get => nodes.FirstOrDefault ()?.Configuration;
-			set => throw new NotImplementedException ();
+			set => base.Configuration = value;
 		}
 
 		public override string FullMessage {
 			get => nodes.FirstOrDefault ()?.FullMessage;
-			set => throw new NotImplementedException ();
+			set => base.FullMessage = value;
 		}
 
 		public override DateTime StartTime {
 			get => nodes.MinValue (x => x.StartTime)?.StartTime ?? DateTime.Now;
-			set => throw new NotImplementedException ();
+			set => base.StartTime = value;
 		}
 
 		public override DateTime EndTime {
 			get => nodes.MaxValue (x => x.EndTime)?.EndTime ?? DateTime.Now;
-			set => throw new NotImplementedException ();
+			set => base.EndTime = value;
 		}
 
 		public override bool HasErrors {
 			get => nodes.Any (x => x.HasErrors);
-			set => throw new NotImplementedException ();
+			set => base.HasErrors = value;
 		}
 
 		public override bool HasWarnings {
 			get => nodes.Any (x => x.HasWarnings);
-			set => throw new NotImplementedException ();
+			set => base.HasWarnings = value;
 		}
 
 		public override bool HasData {
 			get => nodes.Any (x => x.HasData);
-			set => throw new NotImplementedException ();
+			set => base.HasData = value;
 		}
 
 		public override int WarningCount {
 			get => nodes.Sum (x => x.WarningCount);
-			set => throw new NotImplementedException ();
+			set => base.WarningCount = value;
 		}
 
 		public override int ErrorCount {
 			get => nodes.Sum (x => x.ErrorCount);
-			set => throw new NotImplementedException ();
+			set => base.ErrorCount = value;
 		}
 	}
 	
