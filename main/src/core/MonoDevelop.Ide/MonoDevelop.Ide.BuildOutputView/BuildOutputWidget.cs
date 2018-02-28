@@ -530,13 +530,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		protected override void Dispose (bool disposing)
 		{
-			buttonSearchBackward.Clicked -= FindPrevious;
-			buttonSearchForward.Clicked -= FindNext;
-			searchEntry.Entry.Changed -= FindFirst;
-			searchEntry.Entry.Activated -= FindNext;
-			saveButton.Clicked -= SaveButtonClickedAsync;
-			treeView.SelectionChanged -= TreeView_SelectionChanged;
-			treeView.ButtonPressed -= TreeView_ButtonPressed;
+			if (disposing) {
+				buttonSearchBackward.Clicked -= FindPrevious;
+				buttonSearchForward.Clicked -= FindNext;
+				searchEntry.Entry.Changed -= FindFirst;
+				searchEntry.Entry.Activated -= FindNext;
+				saveButton.Clicked -= SaveButtonClickedAsync;
+				treeView.SelectionChanged -= TreeView_SelectionChanged;
+				treeView.ButtonPressed -= TreeView_ButtonPressed;
+			}
 
 			base.Dispose (disposing);
 		}

@@ -87,10 +87,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
+		bool disposed = false;
+
 		public override void Dispose ()
 		{
-			control.FileSaved -= FileNameChanged;
-			control.Dispose ();
+			if (!disposed) {
+				control.FileSaved -= FileNameChanged;
+				control.Dispose ();
+				disposed = true;
+			}
 			base.Dispose ();
 		}
 
