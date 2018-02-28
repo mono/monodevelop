@@ -35,7 +35,7 @@ using Newtonsoft.Json;
 
 namespace MonoDevelop.Core.Setup
 {
-	public class VisualStudioMarketplaceRepositoryProvider : AddinRepositoryProvider
+	class VisualStudioMarketplaceRepositoryProvider : AddinRepositoryProvider
 	{
 		public override Repository DownloadRepository (IProgressMonitor monitor, Uri absUri, AddinRepository rr)
 		{
@@ -68,6 +68,50 @@ namespace MonoDevelop.Core.Setup
 				using (var jsonTextReader = new JsonTextReader (sr)) {
 					var resp = serializer.Deserialize<SearchResult> (jsonTextReader);
 					return resp;
+				}
+			}
+
+			static string DownloadFile (IProgressMonitor monitor, string url)
+			{
+				string file = null;
+				FileStream fs = null;
+				Stream s = null;
+
+				try {
+					monitor.BeginTask ("Requesting " + url, 2);
+					var resp = WebRequestHelper.GetResponse (
+						() => (HttpWebRequest)WebRequest.Create (url),
+						r => r.Headers ["Pragma"] = "no-cache"
+					);
+					monitor.Step (1);
+					monitor.BeginTask ("Downloading " + url, (int)resp.ContentLength);
+
+					file = Path.GetTempFileName ();
+					fs = new FileStream (file, FileMode.Create, FileAccess.Write);
+					s = resp.GetResponseStream ();
+					byte [] buffer = new byte [4096];
+
+					int n;
+					while ((n = s.Read (buffer, 0, buffer.Length)) != 0) {
+						monitor.Step (n);
+						fs.Write (buffer, 0, n);
+						if (monitor.IsCancelRequested)
+							throw new InstallException ("Installation cancelled.");
+					}
+					fs.Close ();
+					s.Close ();
+					return file;
+				} catch {
+					if (fs != null)
+						fs.Close ();
+					if (s != null)
+						s.Close ();
+					if (file != null)
+						File.Delete (file);
+					throw;
+				} finally {
+					monitor.EndTask ();
+					monitor.EndTask ();
 				}
 			}
 
@@ -112,7 +156,7 @@ namespace MonoDevelop.Core.Setup
 						continue;
 					}
 					//TODO: Cache addinInfoUrl file
-					using (var fs = new StreamReader (AddinStore.DownloadFile (monitor, addinInfoUrl))) {
+					using (var fs = new StreamReader (DownloadFile (monitor, addinInfoUrl))) {
 						repo.Addins.Add (new PackageRepositoryEntry () {
 							Addin = AddinInfo.ReadFromAddinFile (fs),
 							Url = vsixDownloadUrl

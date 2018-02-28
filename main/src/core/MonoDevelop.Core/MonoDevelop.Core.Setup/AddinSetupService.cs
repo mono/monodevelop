@@ -70,7 +70,7 @@ namespace MonoDevelop.Core.Setup
 			return "http://addins.monodevelop.com/" + level + "/" + platform + "/" + AddinManager.CurrentAddin.Version + "/main.mrep";
 		}
 
-		public void RegisterOfficalVisualStudioMarketplace ()
+		internal void RegisterOfficialVisualStudioMarketplace ()
 		{
 			var url = "https://marketplace.visualstudio.com/";
 			if (!Repositories.ContainsRepository (url)) {
