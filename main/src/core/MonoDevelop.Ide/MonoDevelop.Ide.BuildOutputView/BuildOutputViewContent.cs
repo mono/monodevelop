@@ -64,8 +64,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 				if (control != null)
 					return control;
 				var toolbar = WorkbenchWindow.GetToolbar (this);
+				// TODO: enable native backend by default without checking NATIVE_BUILD_OUTPUT env
+				var nativeEnabled = Environment.GetEnvironmentVariable ("NATIVE_BUILD_OUTPUT")?.ToLower () == "true";
 				// native mode on Mac only, until we support Wpf embedding
-				var engine = Xwt.Toolkit.NativeEngine.Type == ToolkitType.XamMac ? Xwt.Toolkit.NativeEngine : Xwt.Toolkit.CurrentEngine;
+				var engine = Xwt.Toolkit.NativeEngine.Type == ToolkitType.XamMac && nativeEnabled ? Xwt.Toolkit.NativeEngine : Xwt.Toolkit.CurrentEngine;
 				engine.Invoke (() => {
 					if (buildOutput != null)
 						control = new BuildOutputWidget (buildOutput, ContentName, toolbar);
