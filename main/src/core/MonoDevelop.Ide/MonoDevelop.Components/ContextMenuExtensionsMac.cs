@@ -109,7 +109,50 @@ namespace MonoDevelop.Components
 			});
 		}
 
+		public static void ShowContextMenu (NSView parent, int x, int y, ContextMenu menu, Action closeHandler, bool selectFirstItem = false)
+		{
+			var nsMenu = FromMenu (menu, closeHandler, null);
+			ShowContextMenu (parent, x, y, nsMenu, selectFirstItem);
+		}
+
+		public static void ShowContextMenu (NSView parent, int x, int y, ContextMenu menu)
+		{
+			ShowContextMenu (parent, x, y, menu, null);
+		}
+
+		public static void ShowContextMenu (NSView parent, int x, int y, NSMenu menu, bool selectFirstItem = false)
+		{
+			if (parent == null)
+				throw new ArgumentNullException ("parent");
+			if (menu == null)
+				throw new ArgumentNullException ("menu");
+			
+			var pt = parent.ConvertPointToView (new CoreGraphics.CGPoint (x, y), null);
+			if (selectFirstItem) {
+				menu.PopUpMenu (menu.ItemAt (0), pt, parent);
+			} else {
+				var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
+												pt,
+												0, 0,
+												parent.Window.WindowNumber,
+												null, 0, 0, 0);
+				NSMenu.PopUpContextMenu (menu, tmp_event, parent);
+			}
+		}
+
 		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, NSMenu menu)
+		{
+			int x = 0, y = 0;
+
+			if (evt != null) {
+				x = (int)evt.X;
+				y = (int)evt.Y;
+			}
+
+			ShowContextMenu (parent, x, y, menu);
+		}
+
+		public static void ShowContextMenu (NSView parent, Gdk.EventButton evt, NSMenu menu)
 		{
 			int x = 0, y = 0;
 
