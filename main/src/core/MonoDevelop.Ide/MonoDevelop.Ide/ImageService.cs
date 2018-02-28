@@ -192,6 +192,21 @@ namespace MonoDevelop.Ide
 			AddIcon (iconId, icon);
 		}
 
+		public static bool TryGetImageId(string stockId, out ImageId imageId)
+		{
+			foreach(var pair in imageIdToStockId)
+			{
+				if (pair.Value == stockId)
+				{
+					imageId = pair.Key;
+					return true;
+				}
+			}
+
+			imageId = default(ImageId);
+			return false;
+		}
+
 		public static void AddIcon (string iconId, Xwt.Drawing.Image icon)
 		{
 			if (iconId == null)
