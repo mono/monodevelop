@@ -164,20 +164,24 @@ namespace MonoDevelop.Ide.BuildOutputView
 				}
 			}
 
-			// Add summary node
-			var message = errorCount > 0 ? GettextCatalog.GetString ("Build failed") : GettextCatalog.GetString ("Build succeeded");
-			var summaryNode = new BuildOutputNode {
-				NodeType = BuildOutputNodeType.BuildSummary,
-				Message = message,
-				FullMessage = message,
-				HasErrors = errorCount > 0,
-				HasWarnings = warningCount > 0,
-				HasData = false,
-				ErrorCount = errorCount,
-				WarningCount = warningCount
-			};
+			if (result.Values.Count > 0) {
+				// Add summary node
+				var message = errorCount > 0 ? GettextCatalog.GetString ("Build failed") : GettextCatalog.GetString ("Build succeeded");
+				var summaryNode = new BuildOutputNode {
+					NodeType = BuildOutputNodeType.BuildSummary,
+					Message = message,
+					FullMessage = message,
+					HasErrors = errorCount > 0,
+					HasWarnings = warningCount > 0,
+					HasData = false,
+					ErrorCount = errorCount,
+					WarningCount = warningCount
+				};
 
-			return result.Values.Concat (summaryNode);
+				return result.Values.Concat (summaryNode);
+			}
+
+			return result.Values;
 		}
 
 		public void ProcessProjects () 
