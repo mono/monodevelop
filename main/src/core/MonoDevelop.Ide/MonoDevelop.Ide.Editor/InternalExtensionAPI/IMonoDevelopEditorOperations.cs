@@ -1,10 +1,10 @@
 //
-// CodeDiagnosticProvider.cs
+// ITextEditor.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,23 +23,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
+using MonoDevelop.Core.Text;
 
-using System.Collections.Generic;
-using System.Threading;
-using MonoDevelop.CodeIssues;
-using System.Threading.Tasks;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.CodeActions;
-
-namespace MonoDevelop.CodeIssues
+namespace MonoDevelop.Ide.Editor
 {
-	/// <summary>
-	/// The code diagnostic provider gives a list of code diagnostic and fix providers from an arbitrary source.
-	/// </summary>
-	abstract class CodeDiagnosticProvider 
+	interface IMonoDevelopEditorOperations : Microsoft.VisualStudio.Text.Operations.IEditorOperations
 	{
-		public abstract Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeDiagnosticDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
-		public abstract Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
-		public abstract Task<IEnumerable<CodeRefactoringDescriptor>> GetCodeRefactoringDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
+		void SwitchCaretMode ();
+
+		void DeletePreviousSubword ();
+
+		void DeleteNextSubword ();
+
+		void StartCaretPulseAnimation ();
+
+		void JoinLines ();
+
+		void MoveToNextSubWord ();
+
+		void MoveToPrevSubWord ();
+
+		void Undo ();
+
+		void Redo ();
+
+		void MoveBlockUp ();
+
+		void MoveBlockDown ();
+
+		void ToggleBlockSelectionMode ();
+
+		void ShowQuickInfo ();
 	}
 }

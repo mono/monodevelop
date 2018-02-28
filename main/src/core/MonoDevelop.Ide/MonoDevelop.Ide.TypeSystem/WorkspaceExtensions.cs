@@ -1,10 +1,10 @@
 //
-// ValidCodeDiagnosticAction.cs
+// WorkspaceExtensions.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Kirill Osenkov <https://github.com/KirillOsenkov>
 //
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using Microsoft.CodeAnalysis.CodeActions;
-using MonoDevelop.Core.Text;
-using MonoDevelop.CodeActions;
 using Microsoft.CodeAnalysis;
-using MonoDevelop.CodeIssues;
-using Microsoft.CodeAnalysis.Text;
-using System.Collections.Immutable;
+using Microsoft.CodeAnalysis.SolutionCrawler;
 
-namespace MonoDevelop.CodeActions
+namespace MonoDevelop.Ide.TypeSystem
 {
-	/// <summary>
-	/// Represents a code action that's valid at a specific segment that was created as a action for a specific code diagnostic.
-	/// </summary>
-	class ValidCodeDiagnosticAction : ValidCodeAction
+	static class WorkspaceExtensions
 	{
-		ImmutableArray<Diagnostic> validDiagnostics;
-
-		public CodeDiagnosticFixDescriptor Diagnostic {
-			get;
-			private set;
-		}
-
-		public ImmutableArray<Diagnostic> ValidDiagnostics {
-			get {
-				return validDiagnostics;
-			}
-		}
-
-		public ValidCodeDiagnosticAction (CodeDiagnosticFixDescriptor diagnostic, CodeAction codeAction, ImmutableArray<Diagnostic> validDiagnostics, TextSpan validSegment) : base (codeAction, validSegment)
+		internal static void RegisterSolutionCrawler (Workspace workspace)
 		{
-			this.Diagnostic = diagnostic;
-			this.validDiagnostics = validDiagnostics;
+			var solutionCrawlerRegistrationService = workspace.Services.GetService<ISolutionCrawlerRegistrationService> ();
+			solutionCrawlerRegistrationService.Register (workspace);
+		}
+
+		internal static void UnregisterSolutionCrawler (Workspace workspace)
+		{
+			var solutionCrawlerRegistrationService = workspace.Services.GetService<ISolutionCrawlerRegistrationService> ();
+			solutionCrawlerRegistrationService.Unregister (workspace);
 		}
 	}
 }
