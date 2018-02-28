@@ -179,6 +179,7 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			comments.BeginTaskUpdates ();
 			try {
+				CommentTasksProvider.LoadCachedContents ();
 				foreach (var sln in IdeApp.Workspace.GetAllSolutions ()) {
 					CommentTasksProvider.Legacy.LoadSolutionContents (sln);
 					loadedSlns.Add (sln);

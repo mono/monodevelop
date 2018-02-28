@@ -68,6 +68,23 @@ namespace MonoDevelop.Ide.Tasks
 			return true;
 		}
 
+		static object lockObject = new object ();
+		static Dictionary<object, TodoItemsUpdatedArgs> cachedUntilViewCreated = new Dictionary<object, TodoItemsUpdatedArgs> ();
+		internal static void LoadCachedContents ()
+		{
+			lock (lockObject) {
+				foreach (var args in cachedUntilViewCreated) {
+					if (!TryGetDocument (args.Value, out var doc, out var project))
+						continue;
+
+					var file = doc.Name;
+					var items = args.Value.TodoItems.SelectAsArray (x => x.ToTag ());
+					TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, items, project));
+				}
+				cachedUntilViewCreated = null;
+			}
+		}
+
 		static void OnTodoListUpdated (object sender, TodoItemsUpdatedArgs args)
 		{
 			if (!TryGetDocument (args, out var doc, out var project))
@@ -77,6 +94,14 @@ namespace MonoDevelop.Ide.Tasks
 			if (args.TodoItems.Length == 0)
 				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, null, project));
 			else {
+				if (cachedUntilViewCreated != null) {
+					lock (lockObject) {
+						if (cachedUntilViewCreated != null)
+							cachedUntilViewCreated [args.Id] = args;
+						return;
+					}
+				}
+
 				var items = args.TodoItems.SelectAsArray (x => x.ToTag ());
 				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, items, project));
 			}
