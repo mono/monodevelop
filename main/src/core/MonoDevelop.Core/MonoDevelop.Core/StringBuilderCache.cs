@@ -33,19 +33,25 @@ namespace MonoDevelop.Core
 	/// </summary>
 	public static class StringBuilderCache
 	{
-		public static StringBuilder Allocate ()
+		const int Threshold = 4096;
+
+		public static StringBuilder Allocate () 
 		{
-			return SharedPools.Default<StringBuilder> ().Allocate ();
+			var result = SharedPools.Default<StringBuilder> ().Allocate ();
+			result.Clear ();
+			return result;
 		}
 
 		public static StringBuilder Allocate (string text)
 		{
-			return SharedPools.Default<StringBuilder> ().Allocate ().Append (text);
+			return Allocate ().Append (text);
 		}
 
 		public static void Free (StringBuilder sb)
 		{
 			sb.Clear ();
+			if (sb.Capacity > Threshold)
+				sb.Capacity = Threshold;
 			SharedPools.Default<StringBuilder> ().Free (sb);
 		}
 
