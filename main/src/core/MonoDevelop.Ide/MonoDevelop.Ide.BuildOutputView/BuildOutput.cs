@@ -37,13 +37,14 @@ using Microsoft.Build.Framework;
 using Gtk;
 using Xwt;
 using System.Linq;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutput : IDisposable
 	{
 		BuildOutputProgressMonitor progressMonitor;
-		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
+		ImmutableList<BuildOutputProcessor> projects = ImmutableList<BuildOutputProcessor>.Empty;
 		public event EventHandler OutputChanged;
 
 		public ProgressMonitor GetProgressMonitor ()
@@ -116,12 +117,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		internal void AddProcessor (BuildOutputProcessor processor)
 		{
-			projects.Add (processor);
+			projects = projects.Add (processor);
 		}
 
 		internal void Clear ()
 		{
-			projects.Clear ();
+			projects = projects.Clear ();
 			RaiseOutputChanged ();
 		}
 
