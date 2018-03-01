@@ -32,14 +32,14 @@ namespace MonoDevelop.Projects
 	{
 	}
 
-	public class ProjectStartedProgressEvent : ProgressEvent
+	public class BuildSessionStartedEvent : ProgressEvent
 	{
 		public int SessionId { get; set; }
 		public string LogFile { get; set; }
 		public DateTime TimeStamp { get; set; }
 	}
 
-	public class ProjectFinishedProgressEvent : ProgressEvent
+	public class BuildSessionFinishedEvent : ProgressEvent
 	{
 		public int SessionId { get; set; }
 		public DateTime TimeStamp { get; set; }

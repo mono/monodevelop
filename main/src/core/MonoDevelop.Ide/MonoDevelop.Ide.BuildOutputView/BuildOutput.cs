@@ -234,7 +234,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		protected override void OnWriteLogObject (object logObject)
 		{
 			switch (logObject) {
-			case ProjectStartedProgressEvent pspe:
+			case BuildSessionStartedEvent pspe:
 				if (File.Exists (pspe.LogFile)) {
 					binlogSessions [pspe.SessionId] = pspe.LogFile;
 				} else {
@@ -245,7 +245,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					                              true, pspe.TimeStamp);
 				}
 				break;
-			case ProjectFinishedProgressEvent psfe:
+			case BuildSessionFinishedEvent psfe:
 				if (currentCustomProject != null) {
 					currentCustomProject.EndCurrentNode (null, psfe.TimeStamp);
 					BuildOutput.AddProcessor (currentCustomProject);
