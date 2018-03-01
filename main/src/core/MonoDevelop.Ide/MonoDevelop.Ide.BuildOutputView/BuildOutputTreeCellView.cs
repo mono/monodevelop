@@ -217,9 +217,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				layout.Width = Math.Max (1, cellArea.Width - BuildExpandIcon.Width - padding);
 				if (!status.Expanded)
 					layout.Trimming = TextTrimming.WordElipsis;
-				var expanderX = cellArea.X + cellArea.Width - BuildExpandIcon.Width;
+
+				var startX = GetTextStartX (cellArea);
+				var width = Math.Max (1, (cellArea.Width - informationContainerWidth) - startX);
+
+				var expanderX = startX + width + padding;
 				if (expanderX > 0)
-					expanderRect = new Rectangle (expanderX, cellArea.Y, BuildExpandIcon.Width, BuildExpandIcon.Height);
+					expanderRect = new Rectangle (expanderX, cellArea.Y + padding, BuildExpandIcon.Width, BuildExpandIcon.Height);
 			}
 		}
 
