@@ -64,7 +64,7 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 				var classy = textRunClassification.Classification;
 				var color = classy.GetHashCode ().ToString ("X");
 				color = color.Substring (2);
-				markup.AppendLine ($"<span foreground=\"#{color}\">{run.Text}</span>");
+				markup.Append ($"<span foreground=\"#{color}\">{run.Text}</span>");
 			}
 			textBlock.Markup = markup.ToString ();
 

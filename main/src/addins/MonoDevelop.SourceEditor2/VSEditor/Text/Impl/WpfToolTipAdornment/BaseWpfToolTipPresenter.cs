@@ -72,7 +72,7 @@
             if (this.popup != null)
             {
                 this.popup.Closed -= this.OnPopupClosed;
-				this.popup.Visible = false;
+                this.popup.Visible = false;
                 //this.popup.Content = null;
                 this.isDismissed = true;
                 this.obscuringTipManager.RemoveTip(this.textView, this);
@@ -108,12 +108,11 @@
                 this.Dismiss();
                 return;
             }
-			
 
             this.Update(content);
 
             this.popup.Closed += this.OnPopupClosed;
-
+            this.popup.Padding = 4.0;
             this.popup.Visible = true;
            //todo this.popup.BringIntoView();
             this.obscuringTipManager.PushTip(this.textView, this);
@@ -127,18 +126,13 @@
                     this.textView, item))
                     .Where(item => item != null);
 
-			//var control = new WpfToolTipControl (this.WpfTextView) {
-			//	// Translate intermediate to UI.
-			//	DataContext = new WpfToolTipViewModel (
-			//		this.parameters,
-			//		contentViewElements,
-			//		this.presenterStyle)
-			//};
-			var vbox = new Xwt.VBox ();
-			foreach (var view in contentViewElements) {
-				vbox.PackStart (view);
-			}
-			this.popup.Content = vbox;
+            var vbox = new Xwt.VBox ();
+            foreach (var view in contentViewElements)
+            {
+                vbox.PackStart (view);
+            }
+            vbox.Margin = 4.0;
+            this.popup.Content = vbox;
         }
 
         protected ITrackingSpan PresentationSpan
