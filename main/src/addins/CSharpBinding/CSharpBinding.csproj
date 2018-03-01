@@ -100,7 +100,8 @@
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
-      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
+      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>./main/src/addins/CSharpBinding/CSharpBinding.csproj
+
       <Name>MonoDevelop.UnitTesting</Name>
       <Private>False</Private>
     </ProjectReference>
@@ -118,23 +119,18 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
@@ -157,24 +153,6 @@
     <Reference Include="Microsoft.VisualStudio.CodingConventions">
       <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.CodingConventions">
-      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.CoreUtility">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.CoreUtility.15.6.161-preview\lib\net46\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Language.StandardClassification">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Language.StandardClassification.15.6.161-preview\lib\net46\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.Data">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.Data.15.6.161-preview\lib\net46\Microsoft.VisualStudio.Text.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.Logic">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.Logic.15.6.161-preview\lib\net46\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.UI">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.UI.15.6.161-preview\lib\net46\Microsoft.VisualStudio.Text.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
