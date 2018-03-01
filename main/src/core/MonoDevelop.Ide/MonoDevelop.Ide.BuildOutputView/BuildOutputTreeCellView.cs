@@ -63,8 +63,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		const int DefaultInformationContainerWidth = 370;
 		const int ImageSize = 20;
 
-		public double CellWidth { get; set; }
-
 		public Color BackgroundColor { get; set; }
 		public Color StrongSelectionColor { get; set; }
 		public Color SelectionColor { get; set; }
@@ -72,14 +70,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public bool UseStrongSelectionColor { get; set; }
 
 		public IDataField<bool> HasBackgroundColorField { get; set; }
-
-		WidgetSpacing packageDescriptionPadding = new WidgetSpacing (5, 5, 5, 10);
-		WidgetSpacing packageImagePadding = new WidgetSpacing (0, 0, 0, 5);
-		WidgetSpacing checkBoxPadding = new WidgetSpacing (10, 0, 0, 10);
-
 		public IDataField<BuildOutputNode> BuildOutputNodeField { get; set; }
 
-		BuildOutputNode buildOutputNode;
 		Font defaultFontLayout;
 
 		//This give us height and width of a character with this font
@@ -88,8 +80,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		IBuildOutputContextProvider contextProvider;
 
-		bool IsRootNode () => buildOutputNode.Parent == null;
-		bool IsRowExpanded () => ((Xwt.TreeView)ParentWidget)?.IsRowExpanded (buildOutputNode) ?? false;
+		bool IsRootNode (BuildOutputNode buildOutputNode) => buildOutputNode.Parent == null;
+		bool IsRowExpanded (BuildOutputNode buildOutputNode) => ((Xwt.TreeView)ParentWidget)?.IsRowExpanded (buildOutputNode) ?? false;
+		string GetInformationMessage (BuildOutputNode buildOutputNode) => GettextCatalog.GetString ("{0} | {1}    Started at {2}", buildOutputNode.Configuration, buildOutputNode.Platform, buildOutputNode.StartTime.ToString ("h:m tt on MMMM d, yyyy"));
 
 		public BuildOutputTreeCellView (IBuildOutputContextProvider context)
 		{
@@ -102,31 +95,28 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
 		{
+			var buildOutputNode = GetValue (BuildOutputNodeField);
+
 			FillCellBackground (ctx);
 
-			DrawImageRow (ctx, cellArea);
-			DrawNodeText (ctx, cellArea);
+			DrawImageRow (ctx, cellArea, buildOutputNode);
+			DrawNodeText (ctx, cellArea, buildOutputNode);
 
-			if (!IsRootNode ()) {
-				DrawNodeInformation (ctx, cellArea);
+			if (!IsRootNode (buildOutputNode)) {
+				DrawNodeInformation (ctx, cellArea, buildOutputNode);
 			} else if (buildOutputNode.NodeType == BuildOutputNodeType.Build) {
-				DrawFirstNodeInformation (ctx, cellArea);
+				DrawFirstNodeInformation (ctx, cellArea, buildOutputNode);
 			}
 		}
 
-		void DrawFirstNodeInformation (Context ctx, Xwt.Rectangle cellArea)
+		void DrawFirstNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode)
 		{
 			UpdateInformationTextColor (ctx);
 			var textStartX = cellArea.Width - informationContainerWidth;
-			DrawText (ctx, cellArea, textStartX, GetInformationMessage (), cellArea.Width - textStartX);
+			DrawText (ctx, cellArea, textStartX, GetInformationMessage (buildOutputNode), cellArea.Width - textStartX);
 		}
 
-		string GetInformationMessage ()
-		{
-			return $"{buildOutputNode.Configuration} | {buildOutputNode.Platform}    Started at {buildOutputNode.StartTime.ToString ("h:m tt on MMMM d, yyyy")}";
-		}
-
-		void DrawNodeInformation (Context ctx, Xwt.Rectangle cellArea)
+		void DrawNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode)
 		{
 			if (!buildOutputNode.HasChildren)
 				return;
@@ -142,7 +132,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		
 			//Error and Warnings count
-			if (!IsRowExpanded () &&
+			if (!IsRowExpanded (buildOutputNode) &&
 			    (buildOutputNode.NodeType == BuildOutputNodeType.Task || buildOutputNode.NodeType == BuildOutputNodeType.Target) &&
 			    (buildOutputNode.ErrorCount > 0 || buildOutputNode.WarningCount > 0)) {
 				
@@ -187,12 +177,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return descriptionTextLayout;
 		}
 
-		void DrawNodeText (Context ctx, Xwt.Rectangle cellArea)
+		void DrawNodeText (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode)
 		{
-			UpdateTextColor (ctx);
+			UpdateTextColor (ctx, buildOutputNode);
 
 			Font font;
-			if (IsRootNode ()) {
+			if (IsRootNode (buildOutputNode)) {
 				font = defaultFontLayout.WithWeight (FontWeight.Bold);
 			} else {
 				font = defaultFontLayout.WithWeight (FontWeight.Light);
@@ -222,21 +212,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		void DrawImageRow (Context ctx, Xwt.Rectangle cellArea)
+		void DrawImageRow (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode)
 		{
 			DrawImage (ctx, cellArea, GetRowIcon (buildOutputNode), (cellArea.Left - 3), ImageSize);
 		}
 
-		Image GetRowIcon (BuildOutputNode node) 
+		Image GetRowIcon (BuildOutputNode buildOutputNode) 
 		{
-			if ((node.NodeType == BuildOutputNodeType.Task || node.NodeType == BuildOutputNodeType.Target) && !IsRowExpanded ()) {
-				if (node.HasErrors) {
+			if ((buildOutputNode.NodeType == BuildOutputNodeType.Task || buildOutputNode.NodeType == BuildOutputNodeType.Target) && !IsRowExpanded (buildOutputNode)) {
+				if (buildOutputNode.HasErrors) {
 					return Resources.ErrorIcon;
-				}  else if (node.HasWarnings) {
+				}  else if (buildOutputNode.HasWarnings) {
 					return Resources.WarningIcon;
 				}
 			}
-			return node.GetImage ();
+			return buildOutputNode.GetImage ();
 		}
 
 		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x, int imageSize)
@@ -261,19 +251,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		protected override Size OnGetRequiredSize ()
 		{
+			var buildOutputNode = GetValue (BuildOutputNodeField);
+
 			var layout = new TextLayout ();
 			layout.Text = "W";
 			layout.Font = layout.Font.WithSize (FontSize);
 			defaultFontLayout = layout.Font;
 			fontHeight = layout.GetSize ().Height;
-			return new Size (CellWidth, fontHeight * LinesDisplayedCount + DescriptionPaddingHeight + 
+			return new Size (30, fontHeight * LinesDisplayedCount + DescriptionPaddingHeight + 
 			                 (buildOutputNode?.NodeType == BuildOutputNodeType.Build ? 12 : 3));
-		}
-
-		protected override void OnDataChanged()
-		{
-			base.OnDataChanged();
-			buildOutputNode = GetValue (BuildOutputNodeField);
 		}
 
 		Color GetSelectedColor ()
@@ -284,7 +270,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return SelectionColor;
 		}
 
-		void UpdateTextColor (Context ctx)
+		void UpdateTextColor (Context ctx, BuildOutputNode buildOutputNode)
 		{
 			if (UseStrongSelectionColor && Selected) {
 				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
