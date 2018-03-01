@@ -278,7 +278,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			get {
 				if (!hasBeenFiltered) {
 					if ((masterNode.Children?.Count ?? 0) > 0) {
-						foreach (var child in masterNode.Children) {
+						for (int i = 0; i < masterNode.Children.Count; i++) {
+							var child = masterNode.Children [i];
 							if (!includeDiagnostics && (child.NodeType == BuildOutputNodeType.Diagnostics ||
 														(!child.HasData && !child.HasErrors && !child.HasWarnings))) {
 								continue;
