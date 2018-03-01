@@ -53,9 +53,9 @@ namespace MonoDevelop.Ide
 			var bo = new BuildOutput ();
 			var monitor = bo.GetProgressMonitor ();
 
-			monitor.LogObject (new ProjectStartedProgressEvent ());
+			monitor.LogObject (new BuildSessionStartedEvent ());
 			monitor.Log.Write ("Custom project built");
-			monitor.LogObject (new ProjectFinishedProgressEvent ());
+			monitor.LogObject (new BuildSessionFinishedEvent ());
 
 			var nodes = bo.GetRootNodes (true);
 			var dataSource = new BuildOutputDataSource (nodes);
@@ -86,12 +86,12 @@ namespace MonoDevelop.Ide
 			var bo = new BuildOutput ();
 			var monitor = bo.GetProgressMonitor ();
 
-			monitor.LogObject (new ProjectStartedProgressEvent ());
+			monitor.LogObject (new BuildSessionStartedEvent ());
 			for (int i = 0; i < 100; i++) {
 				monitor.Log.WriteLine ($"Message {i + 1}");
 			}
 			monitor.Log.WriteLine ("Custom project built");
-			monitor.LogObject (new ProjectFinishedProgressEvent ());
+			monitor.LogObject (new BuildSessionFinishedEvent ());
 
 			var nodes = bo.GetRootNodes (true);
 			var dataSource = new BuildOutputDataSource (nodes);

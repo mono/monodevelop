@@ -53,7 +53,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Button saveButton;
 		SearchEntry searchEntry;
 		Gtk.VBox box;
-		DocumentToolbar toolbar;
 		PathBar pathBar;
 		Button buttonSearchBackward;
 		Button buttonSearchForward;

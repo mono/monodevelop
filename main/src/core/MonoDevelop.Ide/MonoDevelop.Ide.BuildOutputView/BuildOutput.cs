@@ -37,13 +37,14 @@ using Microsoft.Build.Framework;
 using Gtk;
 using Xwt;
 using System.Linq;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutput : IDisposable
 	{
 		BuildOutputProgressMonitor progressMonitor;
-		readonly List<BuildOutputProcessor> projects = new List<BuildOutputProcessor> ();
+		ImmutableList<BuildOutputProcessor> projects = ImmutableList<BuildOutputProcessor>.Empty;
 		public event EventHandler OutputChanged;
 
 		public ProgressMonitor GetProgressMonitor ()
@@ -116,12 +117,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		internal void AddProcessor (BuildOutputProcessor processor)
 		{
-			projects.Add (processor);
+			projects = projects.Add (processor);
 		}
 
 		internal void Clear ()
 		{
-			projects.Clear ();
+			projects = projects.Clear ();
 			RaiseOutputChanged ();
 		}
 
@@ -164,20 +165,24 @@ namespace MonoDevelop.Ide.BuildOutputView
 				}
 			}
 
-			// Add summary node
-			var message = errorCount > 0 ? GettextCatalog.GetString ("Build failed") : GettextCatalog.GetString ("Build succeeded");
-			var summaryNode = new BuildOutputNode {
-				NodeType = BuildOutputNodeType.BuildSummary,
-				Message = message,
-				FullMessage = message,
-				HasErrors = errorCount > 0,
-				HasWarnings = warningCount > 0,
-				HasData = false,
-				ErrorCount = errorCount,
-				WarningCount = warningCount
-			};
+			if (result.Values.Count > 0) {
+				// Add summary node
+				var message = errorCount > 0 ? GettextCatalog.GetString ("Build failed") : GettextCatalog.GetString ("Build succeeded");
+				var summaryNode = new BuildOutputNode {
+					NodeType = BuildOutputNodeType.BuildSummary,
+					Message = message,
+					FullMessage = message,
+					HasErrors = errorCount > 0,
+					HasWarnings = warningCount > 0,
+					HasData = false,
+					ErrorCount = errorCount,
+					WarningCount = warningCount
+				};
 
-			return result.Values.Concat (summaryNode);
+				return result.Values.Concat (summaryNode);
+			}
+
+			return result.Values;
 		}
 
 		public void ProcessProjects () 
@@ -217,6 +222,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 	class BuildOutputProgressMonitor : ProgressMonitor
 	{
 		BuildOutputProcessor currentCustomProject;
+		Dictionary<int, string> binlogSessions = new Dictionary<int, string> ();
 
 		public BuildOutput BuildOutput { get; }
 
@@ -228,23 +234,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 		protected override void OnWriteLogObject (object logObject)
 		{
 			switch (logObject) {
-			case ProjectStartedProgressEvent pspe:
+			case BuildSessionStartedEvent pspe:
 				if (File.Exists (pspe.LogFile)) {
-					BuildOutput.Load (pspe.LogFile, true); 
+					binlogSessions [pspe.SessionId] = pspe.LogFile;
 				} else {
 					currentCustomProject = new BuildOutputProcessor (pspe.LogFile, false);
 					currentCustomProject.AddNode (BuildOutputNodeType.Project,
 					                              GettextCatalog.GetString ("Custom project"),
 					                              GettextCatalog.GetString ("Custom project started building"),
 					                              true, pspe.TimeStamp);
-					BuildOutput.AddProcessor (currentCustomProject);
 				}
 				break;
-			case ProjectFinishedProgressEvent psfe:
+			case BuildSessionFinishedEvent psfe:
 				if (currentCustomProject != null) {
 					currentCustomProject.EndCurrentNode (null, psfe.TimeStamp);
+					BuildOutput.AddProcessor (currentCustomProject);
+					currentCustomProject = null;
+				} else if (binlogSessions.TryGetValue (psfe.SessionId, out string logFile)) {
+					BuildOutput.Load (logFile, true);
+					binlogSessions.Remove (psfe.SessionId);
 				}
-				currentCustomProject = null;
 				BuildOutput.RaiseOutputChanged ();
 				break;
 			}
