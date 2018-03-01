@@ -51,13 +51,13 @@ namespace MonoDevelop.Core
 				var ae = (AggregateException)ex;
 				if (ae.InnerExceptions.Count == 1)
 					return GetErrorMessage (ae.InnerException);
-				StringBuilder sb = new StringBuilder ();
+				StringBuilder sb = StringBuilderCache.Allocate ();
 				foreach (var e in ae.InnerExceptions) {
 					if (sb.Length > 0 && sb [sb.Length - 1] != '.')
 						sb.Append (". ");
 					sb.Append (GetErrorMessage (ex).Trim ());
 				}
-				return sb.ToString ();
+				return StringBuilderCache.ReturnAndFree (sb);
 			} else if (ex is UserException) {
 				var ue = (UserException)ex;
 				if (!string.IsNullOrEmpty (ue.Details)) {

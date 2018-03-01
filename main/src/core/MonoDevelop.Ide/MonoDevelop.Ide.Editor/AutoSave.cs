@@ -70,11 +70,11 @@ namespace MonoDevelop.Ide.Editor
 		static MD5 md5 = MD5.Create ();
 		static string GetMD5 (string data)
 		{
-			var result = new StringBuilder();
+			var result = StringBuilderCache.Allocate();
 			foreach (var b in md5.ComputeHash (Encoding.ASCII.GetBytes (data))) {
 				result.Append(b.ToString("X2"));
 			}
-			return result.ToString();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		/// <summary>

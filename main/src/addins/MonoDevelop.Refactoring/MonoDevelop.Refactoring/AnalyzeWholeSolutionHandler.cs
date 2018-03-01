@@ -28,11 +28,11 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading.Tasks;
 using System.Threading;
-using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using MonoDevelop.CodeActions;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.Core;
@@ -42,23 +42,26 @@ using MonoDevelop.Ide.Gui.Pads;
 using System.Collections.Immutable;
 using System.Linq;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.AnalysisCore;
 
 namespace MonoDevelop.Refactoring
 {
 	class AnalyzeWholeSolutionHandler : CommandHandler
 	{
+		static MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable options =
+			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).Options; 
+		
 		internal static async Task<List<DiagnosticAnalyzer>> GetProviders (Project project)
 		{
 			var providers = new List<DiagnosticAnalyzer> ();
 			var alreadyAdded = new HashSet<Type> ();
-			var	diagnostics = await CodeRefactoringService.GetCodeDiagnosticsAsync (new EmptyDocumentContext (project), LanguageNames.CSharp, default (CancellationToken));
+			var diagnostics = options.AllDiagnostics.Where (x => x.Languages.Contains (LanguageNames.CSharp));
 			var diagnosticTable = new Dictionary<string, CodeDiagnosticDescriptor> ();
 			foreach (var diagnostic in diagnostics) {
-				if (alreadyAdded.Contains (diagnostic.DiagnosticAnalyzerType))
-					continue;
 				if (!diagnostic.IsEnabled)
 					continue;
-				alreadyAdded.Add (diagnostic.DiagnosticAnalyzerType);
+				if (!alreadyAdded.Add (diagnostic.DiagnosticAnalyzerType))
+					continue;
 				var provider = diagnostic.GetProvider ();
 				if (provider == null)
 					continue;

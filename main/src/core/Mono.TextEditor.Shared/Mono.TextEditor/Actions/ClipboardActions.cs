@@ -86,7 +86,7 @@ namespace Mono.TextEditor
 
 			string GetCopiedPlainText (string eol = "\n")
 			{
-				var plainText = new StringBuilder ();
+				var plainText = StringBuilderCache.Allocate ();
 				bool first = true;
 				foreach (var line in copiedColoredChunks) {
 					if (!first) {
@@ -99,7 +99,7 @@ namespace Mono.TextEditor
 						plainText.Append (chunk.Text);
 					}
 				}
-				return plainText.ToString ();
+				return StringBuilderCache.ReturnAndFree (plainText);
 			}
 
 			public void SetData (SelectionData selection_data, uint info)
@@ -435,12 +435,17 @@ namespace Mono.TextEditor
 			data.Document.CommitLineUpdate (data.GetLineByOffset (insertionOffset));
 			return result;
 		}
-		
+
 		public static void Paste (TextEditorData data)
 		{
+			PasteWithResult (data);
+		}
+
+		public static bool PasteWithResult (TextEditorData data)
+		{
 			if (!data.CanEditSelection)
-				return;
-			PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, false, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
+				return false;
+			return PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, false, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset) > 0;
 		}
 
 		public static string GetClipboardContent()

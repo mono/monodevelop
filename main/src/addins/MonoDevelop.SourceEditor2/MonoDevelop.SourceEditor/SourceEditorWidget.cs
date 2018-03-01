@@ -822,7 +822,7 @@ namespace MonoDevelop.SourceEditor
 		internal void ConvertLineEndings ()
 		{
 			string correctEol = TextEditor.Options.DefaultEolMarker;
-			var newText = new StringBuilder ();
+			var newText = StringBuilderCache.Allocate ();
 			int offset = 0;
 			foreach (var line in Document.Lines) {
 				newText.Append (TextEditor.GetTextAt (offset, line.Length));
@@ -831,7 +831,7 @@ namespace MonoDevelop.SourceEditor
 					newText.Append (correctEol);
 			}
 			view.StoreSettings ();
-			view.ReplaceContent (Document.FileName, newText.ToString (), view.SourceEncoding);
+			view.ReplaceContent (Document.FileName, StringBuilderCache.ReturnAndFree (newText), view.SourceEncoding);
 			Document.HasLineEndingMismatchOnTextSet = false;
 			view.LoadSettings ();
 		}

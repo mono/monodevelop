@@ -248,7 +248,7 @@ namespace MonoDevelop.Refactoring
 			var buffer = TextFileProvider.Instance.GetTextEditorData (fileName, out isOpen);
 
 
-			var code = new StringBuilder ();
+			var code = StringBuilderCache.Allocate ();
 			int pos = cls.Locations.First ().SourceSpan.Start;
 			var line = buffer.GetLineByOffset (pos);
 			code.Append (buffer.GetLineIndent (line));
@@ -266,7 +266,7 @@ namespace MonoDevelop.Refactoring
 			code.Append ("]");
 			code.AppendLine ();
 
-			buffer.InsertText (line.Offset, code.ToString ());
+			buffer.InsertText (line.Offset, StringBuilderCache.ReturnAndFree (code));
 
 			if (!isOpen) {
 				File.WriteAllText (fileName, buffer.Text);

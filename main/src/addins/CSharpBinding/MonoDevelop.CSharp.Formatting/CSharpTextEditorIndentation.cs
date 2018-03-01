@@ -235,7 +235,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		internal static string ConvertToStringLiteral (string text)
 		{
-			var result = new StringBuilder ();
+			var result = StringBuilderCache.Allocate ();
 			foreach (var ch in text) {
 				switch (ch) {
 				case '\t':
@@ -258,7 +258,7 @@ namespace MonoDevelop.CSharp.Formatting
 					break;
 				}
 			}
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		static void ConvertNormalToVerbatimString (ITextDocument textEditorData, int offset)

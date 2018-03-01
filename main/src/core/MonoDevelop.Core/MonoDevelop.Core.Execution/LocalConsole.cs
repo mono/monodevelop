@@ -221,36 +221,36 @@ namespace MonoDevelop.Core.Execution
 
 		public override string ReadLine ()
 		{
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			while (LoadCurrent (true)) {
 				for (int i=idx; i < current.Length; i++) {
 					if (current[i] == '\n') {
 						idx = i + 1;
 						sb.Append (current, 0, i);
-						return sb.ToString ();
+						return StringBuilderCache.ReturnAndFree (sb);
 					}
 					if (current[i] == '\r') {
 						idx = i + 1;
 						sb.Append (current, 0, i);
 						if (LoadCurrent (true) && current [idx] == '\n')
 							idx++;
-						return sb.ToString ();
+						return StringBuilderCache.ReturnAndFree (sb);
 					}
 				}
 				sb.Append (current, idx, current.Length - idx);
 				current = null;
 			}
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 
 		public override string ReadToEnd ()
 		{
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			while (LoadCurrent (true)) {
 				sb.Append (current, idx, current.Length - idx);
 				current = null;
 			}
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 	}
 	

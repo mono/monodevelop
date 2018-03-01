@@ -24,15 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.FindInFiles;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Refactoring;
-using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Navigation
 {
@@ -47,10 +48,24 @@ namespace MonoDevelop.CSharp.Navigation
 
 		protected async override void Run ()
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			var sym = await GetNamedTypeAtCaret (doc);
-			if (sym != null)
-				FindImplementingSymbols (await doc.GetCompilationAsync (), sym);
+			var metadata = Counters.CreateNavigateToMetadata ("ImplementingMembers");
+			using (var timer = Counters.NavigateTo.BeginTiming (metadata)) {
+				var doc = IdeApp.Workbench.ActiveDocument;
+				var sym = await GetNamedTypeAtCaret (doc);
+				if (sym == null) {
+					Counters.UpdateUserFault (metadata);
+					return;
+				}
+
+				using (var source = new CancellationTokenSource ()) {
+					try {
+						await FindImplementingSymbols (await doc.GetCompilationAsync (), sym, source);
+						Counters.UpdateNavigateResult (metadata, true);
+					} finally {
+						Counters.UpdateUserCancellation (metadata, source.Token);
+					}
+				}
+			}
 		}
 
 		static async Task<RefactoringSymbolInfo> GetNamedTypeAtCaret (Ide.Gui.Document doc)
@@ -65,14 +80,15 @@ namespace MonoDevelop.CSharp.Navigation
 			return info;
 		}
 
-		void FindImplementingSymbols (Compilation compilation, RefactoringSymbolInfo info)
+		Task FindImplementingSymbols (Compilation compilation, RefactoringSymbolInfo info, CancellationTokenSource cancellationTokenSource)
 		{
 			var interfaceType = info.Symbol as ITypeSymbol;
 			if (interfaceType == null)
-				return;
+				return Task.FromResult (0);
 
-			Task.Run (delegate {
-				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+			return Task.Run (delegate {
+				var searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
+				using (var monitor = searchMonitor.WithCancellationSource (cancellationTokenSource)) {
 					var parentTypeNode = info.Node?.Parent?.Parent?.Parent;
 					if (parentTypeNode == null)
 						return;
@@ -86,7 +102,7 @@ namespace MonoDevelop.CSharp.Navigation
 						if (impl == null)
 							continue;
 						var loc = impl.Locations.First ();
-						monitor.ReportResult (new MemberReference (impl, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+						searchMonitor.ReportResult (new MemberReference (impl, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
 					}
 					foreach (var iFace in interfaceType.AllInterfaces) {
 					
@@ -98,7 +114,7 @@ namespace MonoDevelop.CSharp.Navigation
 							if (impl == null)
 								continue;
 							var loc = impl.Locations.First ();
-							monitor.ReportResult (new MemberReference (impl, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+							searchMonitor.ReportResult (new MemberReference (impl, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
 						}
 					}
 						

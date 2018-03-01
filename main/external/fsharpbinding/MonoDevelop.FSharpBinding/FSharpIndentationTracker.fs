@@ -78,7 +78,7 @@ module indentationTracker =
         // newline.
         // We deal with that here as the indentation tracker
         // only deals with the line after the newline insertion.
-        if change.RemovalLength = 0 then
+        if String.IsNullOrWhiteSpace(change.InsertedText.Text) then
             let lineNumber = editor.OffsetToLineNumber change.Offset
             if lineNumber > 1 then
                 let text = editor.GetLineText(lineNumber-1, false)
@@ -130,10 +130,9 @@ type FSharpIndentationTracker(editor:TextEditor) =
         let initialIndentLength = initialWhiteSpace text
 
         if line.Length > 0 && (not (String.IsNullOrWhiteSpace text)) && (initialIndentLength+1) >= caretColumn then
-            editor.CaretColumn <- (initialIndentLength + 1)
             // whitespace to the left of the caret
             // leave the indentation as-is
-            line.GetIndentation editor
+            String(' ', caretColumn-1)
         elif initialIndentLength >= previousLineIndentation.Length then
             indentation
         else

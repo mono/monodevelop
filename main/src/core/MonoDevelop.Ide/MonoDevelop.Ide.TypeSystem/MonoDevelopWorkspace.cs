@@ -103,8 +103,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
 			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
-			//Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
-			//	.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true);
+			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
+				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true);
 
 			if (IdeApp.Preferences.EnableSourceAnalysis) {
 				solutionCrawler.Register (this);
@@ -757,6 +757,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		internal void InternalOnDocumentOpened (DocumentId documentId, SourceTextContainer textContainer, bool isCurrentContext = true)
+		{
+			OnDocumentOpened (documentId, textContainer, isCurrentContext);
+		}
+
+		internal void InternalOnDocumentClosed (DocumentId documentId, TextLoader reloader, bool updateActiveContext = false)
+		{
+			OnDocumentClosed (documentId, reloader, updateActiveContext);
+		}
+
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
 		internal void InformDocumentOpen (DocumentId documentId, TextEditor editor)
 		{
@@ -822,6 +832,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (openDoc != null) {
 						openDoc.Dispose ();
 						openDocuments.Remove (openDoc);
+					} else {
+						//Apparently something else opened this file via InternalOnDocumentOpened(e.g. .cshtml)
+						//it's job of whatever opened to also call InternalOnDocumentClosed
+						return;
 					}
 				}
 				if (!CurrentSolution.ContainsDocument (analysisDocument))
@@ -865,6 +879,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			var document = GetDocument (id);
 			if (document == null)
 				return;
+
+			var hostDocument = MonoDevelopHostDocumentRegistration.FromDocument (document);
+			if (hostDocument != null) {
+				hostDocument.UpdateText (text);
+				return;
+			}
+
 			bool isOpen;
 			var filePath = document.FilePath;
 			Projection projection = null;
@@ -1177,6 +1198,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			//however, our MetadataReferenceCache currently depends on (incorrectly) using TryApplyChanges
 			case ApplyChangesKind.AddMetadataReference:
 			case ApplyChangesKind.RemoveMetadataReference:
+			case ApplyChangesKind.AddProjectReference:
+			case ApplyChangesKind.RemoveProjectReference:
 				return true;
 			default:
 				return false;
@@ -1202,6 +1225,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, mdProject?.FileName.ParentDirectory, true);
+			// If file is already part of project don't re-add it, example of this is .cshtml
+			if (mdProject?.IsFileInProject (path) == true) {
+				this.OnDocumentAdded (info);
+				return;
+			}
 			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
 
 			string formattedText;
@@ -1288,6 +1316,84 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return path;
 		}
+
+		protected override void ApplyMetadataReferenceAdded (ProjectId projectId, MetadataReference metadataReference)
+		{
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var path = GetMetadataPath (metadataReference);
+			if (mdProject == null || path == null)
+				return;
+			foreach (var r in mdProject.References) {
+				if (r.ReferenceType == MonoDevelop.Projects.ReferenceType.Assembly && r.Reference == path) {
+					LoggingService.LogWarning ("Warning duplicate reference is added " + path);
+					return;
+				}
+
+				if (r.ReferenceType == MonoDevelop.Projects.ReferenceType.Project) {
+					foreach (var fn in r.GetReferencedFileNames (MonoDevelop.Projects.ConfigurationSelector.Default)) {
+						if (fn == path) {
+							LoggingService.LogWarning ("Warning duplicate reference is added " + path + " for project " + r.Reference);
+							return;
+						}
+					}
+				}
+			}
+
+			mdProject.AddReference (path);
+			tryApplyState_changedProjects.Add (mdProject);
+			this.OnMetadataReferenceAdded (projectId, metadataReference);
+		}
+
+		protected override void ApplyMetadataReferenceRemoved (ProjectId projectId, MetadataReference metadataReference)
+		{
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var path = GetMetadataPath (metadataReference);
+			if (mdProject == null || path == null)
+				return;
+			var item = mdProject.References.FirstOrDefault (r => r.ReferenceType == MonoDevelop.Projects.ReferenceType.Assembly && r.Reference == path);
+			if (item == null)
+				return;
+			mdProject.References.Remove (item);
+			tryApplyState_changedProjects.Add (mdProject);
+			this.OnMetadataReferenceRemoved (projectId, metadataReference);
+		}
+
+		string GetMetadataPath (MetadataReference metadataReference)
+		{
+			if (metadataReference is PortableExecutableReference fileMetadata) {
+				return fileMetadata.FilePath;
+			}
+			return null;
+		}
+
+		protected override void ApplyProjectReferenceAdded (ProjectId projectId, ProjectReference projectReference)
+		{
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var projectToReference = GetMonoProject (projectReference.ProjectId);
+			if (mdProject == null || projectToReference == null)
+				return;
+			var mdRef = MonoDevelop.Projects.ProjectReference.CreateProjectReference (projectToReference);
+			mdProject.References.Add (mdRef);
+			tryApplyState_changedProjects.Add (mdProject);
+			this.OnProjectReferenceAdded (projectId, projectReference);
+		}
+
+		protected override void ApplyProjectReferenceRemoved (ProjectId projectId, ProjectReference projectReference)
+		{
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var projectToReference = GetMonoProject (projectReference.ProjectId);
+			if (mdProject == null || projectToReference == null)
+				return;
+			foreach (var pr in mdProject.References.OfType<MonoDevelop.Projects.ProjectReference>()) {
+				if (pr.ProjectGuid == projectToReference.ItemId) {
+					mdProject.References.Remove (pr);
+					tryApplyState_changedProjects.Add (mdProject);
+					this.OnProjectReferenceRemoved (projectId, projectReference);
+					break;
+				}
+			}
+		}
+
 		#endregion
 
 		internal Document GetDocument (DocumentId documentId, CancellationToken cancellationToken = default (CancellationToken))
@@ -1403,7 +1509,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			originalOffset = offset;
 			return false;
 		}
-
 	}
 
 	//	static class MonoDevelopWorkspaceFeatures

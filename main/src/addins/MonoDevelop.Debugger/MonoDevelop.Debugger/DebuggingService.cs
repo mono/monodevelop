@@ -593,7 +593,6 @@ namespace MonoDevelop.Debugger
 			var session = debugger.CreateSession ();
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (proc.Name);
 			var sessionManager = new SessionManager (session, monitor.Console, debugger);
-			session.ExceptionHandler = ExceptionHandler;
 			SetupSession (sessionManager);
 			session.TargetExited += delegate {
 				monitor.Dispose ();
@@ -676,7 +675,6 @@ namespace MonoDevelop.Debugger
 				startInfo.CloseExternalConsoleOnExit = ((ExternalConsole)c).CloseOnDispose;
 
 			var session = factory.CreateSession ();
-			session.ExceptionHandler = ExceptionHandler;
 
 			SessionManager sessionManager;
 			// When using an external console, create a new internal console which will be used
@@ -690,8 +688,10 @@ namespace MonoDevelop.Debugger
 			SetDebugLayout ();
 
 			try {
+				sessionManager.PrepareForRun ();
 				session.Run (startInfo, GetUserOptions ());
 			} catch {
+				sessionManager.SessionError = true;
 				Cleanup (sessionManager);
 				throw;
 			}
@@ -713,6 +713,8 @@ namespace MonoDevelop.Debugger
 		{
 			OperationConsole console;
 			IDisposable cancelRegistration;
+			System.Diagnostics.Stopwatch firstAssemblyLoadTimer;
+
 			public readonly DebuggerSession Session;
 			public readonly DebugAsyncOperation debugOperation;
 			public readonly DebuggerEngine Engine;
@@ -721,6 +723,8 @@ namespace MonoDevelop.Debugger
 			{
 				Engine = engine;
 				Session = session;
+				session.ExceptionHandler = ExceptionHandler;
+				session.AssemblyLoaded += OnAssemblyLoaded;
 				this.console = console;
 				cancelRegistration = console.CancellationToken.Register (Cancel);
 				debugOperation = new DebugAsyncOperation (session);
@@ -761,12 +765,79 @@ namespace MonoDevelop.Debugger
 
 			public void Dispose ()
 			{
+				UpdateDebugSessionCounter ();
+				UpdateEvaluationStatsCounter ();
+
 				console?.Dispose ();
 				console = null;
+				Session.AssemblyLoaded -= OnAssemblyLoaded;
 				Session.Dispose ();
 				debugOperation.Cleanup ();
 				cancelRegistration?.Dispose ();
 				cancelRegistration = null;
+			}
+
+			/// <summary>
+			/// Indicates whether the debug session failed to an exception or any debugger
+			/// operation failed and was reported to the user.
+			/// </summary>
+			public bool SessionError { get; set; }
+
+			void UpdateDebugSessionCounter ()
+			{
+				var metadata = new Dictionary<string, string> ();
+				metadata ["Success"] = (!SessionError).ToString ();
+				metadata ["DebuggerType"] = Engine.Id;
+
+				if (firstAssemblyLoadTimer != null) {
+					if (firstAssemblyLoadTimer.IsRunning) {
+						// No first assembly load event.
+						firstAssemblyLoadTimer.Stop ();
+					} else {
+						metadata ["AssemblyFirstLoadDuration"] = firstAssemblyLoadTimer.ElapsedMilliseconds.ToString ();
+					}
+				}
+
+				Counters.DebugSession.Inc (metadata);
+			}
+
+			void UpdateEvaluationStatsCounter ()
+			{
+				if (Session.EvaluationStats.TimingsCount == 0 && Session.EvaluationStats.FailureCount == 0) {
+					// No timings or failures recorded.
+					return;
+				}
+
+				var metadata = new Dictionary<string, string> ();
+				metadata ["DebuggerType"] = Engine.Id;
+				metadata ["AverageDuration"] = Session.EvaluationStats.AverageTime.ToString ();
+				metadata ["MaximumDuration"] = Session.EvaluationStats.MaxTime.ToString ();
+				metadata ["MinimumDuration"] = Session.EvaluationStats.MinTime.ToString ();
+				metadata ["FailureCount"] = Session.EvaluationStats.FailureCount.ToString ();
+				metadata ["SuccessCount"] = Session.EvaluationStats.TimingsCount.ToString ();
+
+				Counters.EvaluationStats.Inc (metadata);
+			}
+
+			bool ExceptionHandler (Exception ex)
+			{
+				SessionError = true;
+				return DebuggingService.ExceptionHandler (ex);
+			}
+
+			/// <summary>
+			/// Called just before DebugSession.Run is called.
+			/// </summary>
+			public void PrepareForRun ()
+			{
+				firstAssemblyLoadTimer = new System.Diagnostics.Stopwatch ();
+				firstAssemblyLoadTimer.Start ();
+			}
+
+			void OnAssemblyLoaded (object sender, AssemblyEventArgs e)
+			{
+				DebuggerSession.AssemblyLoaded -= OnAssemblyLoaded;
+				firstAssemblyLoadTimer?.Stop ();
 			}
 		}
 

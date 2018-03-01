@@ -35,6 +35,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Ide.Composition;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core;
@@ -42,6 +43,7 @@ using System.IO;
 using MonoDevelop.Ide.Editor.Highlighting;
 using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Mono.TextEditor
 {
@@ -69,7 +71,7 @@ namespace Mono.TextEditor
 				return PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType(snapshot.ContentType) ?? snapshot.ContentType.TypeName;
 			}
 			set {
-				var newContentType = value != null ? GetContentTypeFromMimeType(value) : PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
+				var newContentType = value != null ? GetContentTypeFromMimeType(null, value) : PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 				if (this.TextBuffer.CurrentSnapshot.ContentType != newContentType) {
 					this.TextBuffer.ChangeContentType(newContentType, null);
@@ -77,9 +79,20 @@ namespace Mono.TextEditor
 			}
 		}
 
-		private static Microsoft.VisualStudio.Utilities.IContentType GetContentTypeFromMimeType(string mimeType)
+		private static Microsoft.VisualStudio.Utilities.IContentType GetContentTypeFromMimeType(string filePath, string mimeType)
 		{
-			Microsoft.VisualStudio.Utilities.IContentType contentType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetContentType(mimeType);
+			if (filePath != null)
+			{
+				IFilePathRegistryService filePathRegistryService = CompositionManager.GetExportedValue<IFilePathRegistryService> ();
+
+				IContentType contentTypeFromPath = filePathRegistryService.GetContentTypeForPath (filePath);
+				if (contentTypeFromPath != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType)
+				{
+					return contentTypeFromPath;
+				}
+			}
+
+			IContentType contentType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetContentType (mimeType);
 			if (contentType == null)
 			{
 				// fallback 1: see if there is a content tyhpe with the same name
@@ -147,7 +160,7 @@ namespace Mono.TextEditor
 
 		void SyntaxMode_HighlightingStateChanged (object sender, MonoDevelop.Ide.Editor.LineEventArgs e)
 		{
-			CommitDocumentUpdate ();
+			CommitMultipleLineUpdate (e.Line.LineNumber, e.Line.LineNumber);
 		}
 
 		void OnSyntaxModeChanged (SyntaxModeChangeEventArgs e)
@@ -213,6 +226,7 @@ namespace Mono.TextEditor
 
 			this.TextBuffer.Properties.AddProperty(typeof(ITextDocument), this);
 			this.TextBuffer.Changed += this.OnTextBufferChanged;
+			(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate += OnTextBufferChangedImmediate;
 			this.TextBuffer.ContentTypeChanged += this.OnTextBufferContentTypeChanged;
 
 			this.VsTextDocument.FileActionOccurred += this.OnTextDocumentFileActionOccured;
@@ -230,7 +244,7 @@ namespace Mono.TextEditor
 			SyntaxMode = null;
 		}
 
-		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
+		private void OnTextBufferChangedImmediate (object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
 		{
 			if (args.Changes == null)
 				return;
@@ -239,14 +253,25 @@ namespace Mono.TextEditor
 				changes.Add (new TextChange (change.OldPosition, change.NewPosition, change.OldText, change.NewText));
 				EnsureSegmentIsUnfolded(change.OldPosition, change.NewLength);
 			}
-			bool endUndo = false;
-			UndoOperation operation = null;
 			var textChange = new TextChangeEventArgs(changes);
 
 			InterruptFoldWorker();
 			TextChanging?.Invoke(this, textChange);           
 			// After TextChanging notification has been sent, we can update the cached snapshot
 			this.currentSnapshot = args.After;
+		}
+
+		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
+		{
+			if (args.Changes == null)
+				return;
+			var changes = new List<TextChange> ();
+			foreach (var change in args.Changes) {
+				changes.Add (new TextChange (change.OldPosition, change.NewPosition, change.OldText, change.NewText));
+			}
+			bool endUndo = false;
+			UndoOperation operation = null;
+			var textChange = new TextChangeEventArgs(changes);
 
 			if (!isInUndo) {
 				operation = new UndoOperation(args);
@@ -294,11 +319,11 @@ namespace Mono.TextEditor
 
 		public TextDocument (string fileName, string mimeType)
 		{
-			var contentType = GetContentTypeFromMimeType (mimeType);
+			var contentType = (mimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType(fileName, mimeType);
 			Encoding enc;
 			var text = TextFileUtility.GetText (fileName, out enc);
 			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text ?? string.Empty,
-			                                                                                 PlatformCatalog.Instance.TextBufferFactoryService.InertContentType);
+			                                                                                 contentType);
 			
 			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, fileName);
 			this.VsTextDocument.Encoding = enc;
@@ -306,13 +331,14 @@ namespace Mono.TextEditor
 			this.Initialize();
 		}
 
-		public TextDocument (string text = null)
+		public TextDocument (string text = null, string fileName = null, string mimeType = null)
 		{
-			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer(text ?? string.Empty,
-																							PlatformCatalog.Instance.TextBufferFactoryService.InertContentType);
+			var contentType = (mimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType(fileName, mimeType);
+			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text ?? string.Empty,
+																							contentType);
 
-			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument(buffer, string.Empty);
-			this.VsTextDocument.Encoding = MonoDevelop.Core.Text.TextFileUtility.DefaultEncoding;
+			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument(buffer, fileName ?? string.Empty);
+			this.VsTextDocument.Encoding = TextFileUtility.DefaultEncoding;
 
 			this.Initialize();
 		}

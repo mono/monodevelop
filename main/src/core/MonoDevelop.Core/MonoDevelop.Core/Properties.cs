@@ -344,7 +344,7 @@ namespace MonoDevelop.Core
 
 		public override string ToString ()
 		{
-			StringBuilder result = new StringBuilder ();
+			StringBuilder result = StringBuilderCache.Allocate ();
 			result.Append ("[Properties:");
 			foreach (KeyValuePair<string, object> property in this.properties) {
 				result.Append (property.Key);
@@ -353,7 +353,7 @@ namespace MonoDevelop.Core
 				result.Append (",");
 			}
 			result.Append ("]");
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 			
 		public Properties Clone ()

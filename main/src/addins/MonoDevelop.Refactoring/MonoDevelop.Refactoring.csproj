@@ -174,12 +174,6 @@
     <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticRunner.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionContainer.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\IssueMarker.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticProvider.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\BuiltInCodeDiagnosticProvider.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\AnalyzersFromAssembly.cs" />
-    <Compile Include="MonoDevelop.CodeActions\ValidCodeAction.cs" />
-    <Compile Include="MonoDevelop.CodeActions\ValidCodeDiagnosticAction.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticFixDescriptor.cs" />
     <Compile Include="MonoDevelop.Refactoring\Commands.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringSymbolInfo.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeFix.cs" />
@@ -203,6 +197,9 @@
     <Compile Include="MonoDevelop.Refactoring.ExtractInterface\ExtractInterfaceDialog.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.AnalyzerAssemblyLoader.cs" />
+    <Compile Include="MonoDevelop.Refactoring.PickMembersService\PickMembersService.cs" />
+    <Compile Include="MonoDevelop.Refactoring.PickMembersService\PickMembersDialog.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -215,6 +212,7 @@
     <Folder Include="MonoDevelop.Refactoring.GenerateType\" />
     <Folder Include="MonoDevelop.Refactoring.PackageInstaller\" />
     <Folder Include="MonoDevelop.Refactoring.ExtractInterface\" />
+    <Folder Include="MonoDevelop.Refactoring.PickMembersService\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">
@@ -350,6 +348,7 @@
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding" />
     <InternalsVisibleTo Include="MonoDevelop.PackageManagement" />
     <InternalsVisibleTo Include="MonoDevelop.MonoDroid" />
+    <InternalsVisibleTo Include="MonoDevelop.Refactoring.Tests" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

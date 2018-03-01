@@ -222,7 +222,7 @@ namespace MonoDevelop.Core.Text
 		{
 			if (text == null)
 				return null;
-			var sb = new StringBuilder ();
+			var sb = StringBuilderCache.Allocate ();
 			foreach (var ch in text) {
 				switch (ch) {
 				case '\r':
@@ -239,7 +239,7 @@ namespace MonoDevelop.Core.Text
 					break;
 				}
 			}
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 	}
 }
