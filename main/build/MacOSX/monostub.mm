@@ -393,12 +393,15 @@ int main (int argc, char **argv)
 	}
 
 #if STATIC_REGISTRAR
-	libvsmregistrar = dlopen ("@loader_path/libvsmregistrar.dylib", RTLD_LAZY);
-	if (!libvsmregistrar) {
-		libvsmregistrar = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libvsmregistrar.dylib", RTLD_LAZY);
+	char *registrar_toggle = getenv("MD_DISABLE_STATIC_REGISTRAR");
+	if (!registrar_toggle) {
+		libvsmregistrar = dlopen ("@loader_path/libvsmregistrar.dylib", RTLD_LAZY);
+		if (!libvsmregistrar) {
+			libvsmregistrar = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libvsmregistrar.dylib", RTLD_LAZY);
+		}
+		if (libvsmregistrar)
+			xamarin_create_classes ();
 	}
-	if (libvsmregistrar)
-		xamarin_create_classes ();
 #else
 	xamarin_create_classes_Xamarin_Mac ();
 #endif
