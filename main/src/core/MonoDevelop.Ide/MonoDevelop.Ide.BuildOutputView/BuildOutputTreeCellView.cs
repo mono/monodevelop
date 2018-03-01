@@ -69,12 +69,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			public double LastCalculatedHeight;
 		}
 
-		const int BuildTypeLinePadding = 6;
-		const int LinePadding = 3;
+		const int BuildTypeRowContentPadding = 6;
+		const int RowContentPadding = 1;
 
 		const int LinesDisplayedCount = 1;
 		const int DefaultInformationContainerWidth = 370;
 		const int ImageSize = 20;
+		const int FontSize = 11;
 
 		public Color BackgroundColor { get; set; }
 		public Color StrongSelectionColor { get; set; }
@@ -90,6 +91,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		int informationContainerWidth => DefaultInformationContainerWidth;
 
 		IBuildOutputContextProvider contextProvider;
+		Font defaultFont; 
 
 		bool IsRootNode (BuildOutputNode buildOutputNode) => buildOutputNode.Parent == null;
 
@@ -101,7 +103,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		double GetRowHeight (BuildOutputNode node, double fontSizeHeight) => fontSizeHeight + GetRowPadding (node) * 2;
 
-		double GetRowPadding (BuildOutputNode node) => node?.NodeType == BuildOutputNodeType.Build ? BuildTypeLinePadding : LinePadding;
+		double GetRowPadding (BuildOutputNode node) => node?.NodeType == BuildOutputNodeType.Build ? BuildTypeRowContentPadding : RowContentPadding;
 
 		public BuildOutputTreeCellView (IBuildOutputContextProvider context)
 		{
@@ -139,14 +141,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			UpdateTextColor (ctx, buildOutputNode, isSelected);
 
-			Font defaultFont;
 			if (IsRootNode (buildOutputNode)) {
-				defaultFont = layout.Font.WithWeight (FontWeight.Bold);
+				layout.Font = defaultFont.WithWeight (FontWeight.Bold);
 			} else {
-				defaultFont = layout.Font.WithWeight (FontWeight.Light);
+				layout.Font = defaultFont.WithWeight (FontWeight.Light);
 			}
-
-			layout.Font = defaultFont;
 
 			var startX = GetTextStartX (cellArea);
 			var width = Math.Max (1,  (cellArea.Width - informationContainerWidth) - startX);
@@ -379,9 +378,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			descriptionTextLayout.Trimming = trimming;
 
 			if (font == null) {
-				descriptionTextLayout.Font = descriptionTextLayout.Font.WithWeight (FontWeight.Light);
+				descriptionTextLayout.Font = defaultFont.WithWeight (FontWeight.Light);
 			} else {
-				descriptionTextLayout.Font = font;
+				descriptionTextLayout.Font = defaultFont;
 			}
 
 			descriptionTextLayout.Text = text;
@@ -433,6 +432,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var status = GetViewStatus (buildOutputNode);
 
 			TextLayout layout = new TextLayout ();
+			layout.Font = defaultFont = layout.Font.WithSize (FontSize);
 			layout.Text = buildOutputNode.Message;
 			var textSize = layout.GetSize ();
 			fontHeight = textSize.Height;
