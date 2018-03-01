@@ -87,7 +87,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public IDataField<BuildOutputNode> BuildOutputNodeField { get; set; }
 
 		//This give us height and width of a character with this font
-		double fontHeight;
 		int informationContainerWidth => DefaultInformationContainerWidth;
 
 		IBuildOutputContextProvider contextProvider;
@@ -127,8 +126,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			var status = GetViewStatus (buildOutputNode);
 
+			var startX = GetTextStartX (cellArea);
+			var width = Math.Max (1, (cellArea.Width - informationContainerWidth) - startX);
+
 			// Store the width, it will be used for calculating height in OnGetRequiredSize() when in expanded mode.
-			status.LastRenderWidth = cellArea.Width;
+			status.LastRenderWidth = width;
 
 			layout.Text = buildOutputNode.Message;
 
@@ -147,8 +149,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 				layout.Font = defaultFont.WithWeight (FontWeight.Light);
 			}
 
-			var startX = GetTextStartX (cellArea);
-			var width = Math.Max (1,  (cellArea.Width - informationContainerWidth) - startX);
 			var padding = GetRowPadding (buildOutputNode);
 
 			// Text doesn't fit. We need to render the expand icon
@@ -438,12 +438,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			TextLayout layout = new TextLayout ();
 			layout.Font = defaultFont = layout.Font.WithSize (FontSize);
 			layout.Text = buildOutputNode.Message;
+
 			var textSize = layout.GetSize ();
-			fontHeight = textSize.Height;
 			// When in expanded mode, the height of the row depends on the width. Since we don't know the width,
 			// let's use the last width that was used for rendering.
 
-			if (status.Expanded && status.LastRenderWidth != 0 && layout.GetSize ().Width > status.LastRenderWidth) {
+			if (status.Expanded && status.LastRenderWidth != 0 && textSize.Width > status.LastRenderWidth) {
 				layout.Width = status.LastRenderWidth - BuildExpandIcon.Width - 3;
 				textSize = layout.GetSize ();
 			} 
