@@ -221,6 +221,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 	class BuildOutputProgressMonitor : ProgressMonitor
 	{
 		BuildOutputProcessor currentCustomProject;
+		Dictionary<int, string> binlogSessions = new Dictionary<int, string> ();
 
 		public BuildOutput BuildOutput { get; }
 
@@ -234,21 +235,24 @@ namespace MonoDevelop.Ide.BuildOutputView
 			switch (logObject) {
 			case ProjectStartedProgressEvent pspe:
 				if (File.Exists (pspe.LogFile)) {
-					BuildOutput.Load (pspe.LogFile, true); 
+					binlogSessions [pspe.SessionId] = pspe.LogFile;
 				} else {
 					currentCustomProject = new BuildOutputProcessor (pspe.LogFile, false);
 					currentCustomProject.AddNode (BuildOutputNodeType.Project,
 					                              GettextCatalog.GetString ("Custom project"),
 					                              GettextCatalog.GetString ("Custom project started building"),
 					                              true, pspe.TimeStamp);
-					BuildOutput.AddProcessor (currentCustomProject);
 				}
 				break;
 			case ProjectFinishedProgressEvent psfe:
 				if (currentCustomProject != null) {
 					currentCustomProject.EndCurrentNode (null, psfe.TimeStamp);
+					BuildOutput.AddProcessor (currentCustomProject);
+					currentCustomProject = null;
+				} else if (binlogSessions.TryGetValue (psfe.SessionId, out string logFile)) {
+					BuildOutput.Load (logFile, true);
+					binlogSessions.Remove (psfe.SessionId);
 				}
-				currentCustomProject = null;
 				BuildOutput.RaiseOutputChanged ();
 				break;
 			}
