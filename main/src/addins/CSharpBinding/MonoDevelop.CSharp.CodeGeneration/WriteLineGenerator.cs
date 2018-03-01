@@ -124,7 +124,7 @@ namespace MonoDevelop.CodeGeneration
 			
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
-				var format = new StringBuilder ();
+				var format = StringBuilderCache.Allocate ();
 				int i = 0;
 				format.Append ("$\"");
 				foreach (var member in includedMembers) {
@@ -138,7 +138,7 @@ namespace MonoDevelop.CodeGeneration
 				}
 				format.Append ("\"");
 				var arguments = new List<ArgumentSyntax> ();
-				arguments.Add (SyntaxFactory.Argument (SyntaxFactory.ParseExpression (format.ToString ())));
+				arguments.Add (SyntaxFactory.Argument (SyntaxFactory.ParseExpression (StringBuilderCache.ReturnAndFree (format))));
 				var node = 
 					SyntaxFactory.ExpressionStatement (
 						SyntaxFactory.InvocationExpression (

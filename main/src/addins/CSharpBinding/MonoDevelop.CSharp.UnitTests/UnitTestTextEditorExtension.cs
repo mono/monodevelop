@@ -136,7 +136,7 @@ namespace MonoDevelop.CSharp
 
 			static string BuildArguments (AttributeData attr)
 			{
-				var sb = new StringBuilder ();
+				var sb = StringBuilderCache.Allocate ();
 				ImmutableArray<TypedConstant> args;
 				if (attr.ConstructorArguments.Length == 1 && attr.ConstructorArguments [0].Kind == TypedConstantKind.Array)
 					args = attr.ConstructorArguments [0].Values;
@@ -150,7 +150,7 @@ namespace MonoDevelop.CSharp
 
 					AddArgument (args [i], sb);
 				}
-				return sb.ToString ();
+				return StringBuilderCache.ReturnAndFree (sb);
 			}
 
 			static void AddArgument(TypedConstant arg, StringBuilder sb)

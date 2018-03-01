@@ -645,18 +645,18 @@ namespace MonoDevelop.Projects.MSBuild
 					items = result;
 					return true;
 				} else if (ExecuteTransformItemListFunction (ref transformItems, itemFunction, itemFunctionArgs, out ignoreMetadata)) {
-					var sb = new StringBuilder ();
+					var sb = StringBuilderCache.Allocate ();
 					for (int n = 0; n < transformItems.Length; n++) {
 						if (n > 0)
 							sb.Append (';');
 						sb.Append (transformItems[n].Include);
 					}	
-					items = sb.ToString ();
+					items = StringBuilderCache.ReturnAndFree (sb);
 					return true;
 				}
 			}
 
-			var sbi = new StringBuilder ();
+			var sbi = StringBuilderCache.Allocate ();
 
 			int count = 0;
 			foreach (var eit in transformItems) {
@@ -678,7 +678,7 @@ namespace MonoDevelop.Projects.MSBuild
 					context.ClearItemContext ();
 				}
 			}
-			items = sbi.ToString ();
+			items = Core.StringBuilderCache.ReturnAndFree (sbi);
 			return true;
 		}
 
@@ -943,7 +943,7 @@ namespace MonoDevelop.Projects.MSBuild
 		static string ExcludeToRegex (string exclude, bool excludeDirectoriesOnly = false)
 		{
 			exclude = exclude.Replace ('/', '\\').Replace (@"\\", @"\");
-			var sb = new StringBuilder ();
+			var sb = StringBuilderCache.Allocate ();
 			foreach (var ep in exclude.Split (new char [] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
 				var ex = ep.Trim ();
 				if (excludeDirectoriesOnly) {
@@ -977,7 +977,7 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 				sb.Append ('$');
 			}
-            return sb.ToString ();
+			return Core.StringBuilderCache.ReturnAndFree (sb);
         }
 
 		static char [] regexEscapeChars = { '\\', '^', '$', '{', '}', '[', ']', '(', ')', '.', '*', '+', '?', '|', '<', '>', '-', '&' };

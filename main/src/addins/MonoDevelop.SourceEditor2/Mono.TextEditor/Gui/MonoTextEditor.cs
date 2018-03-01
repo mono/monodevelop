@@ -46,7 +46,7 @@ namespace Mono.TextEditor
 {
 	[System.ComponentModel.Category("Mono.TextEditor")]
 	[System.ComponentModel.ToolboxItem(true)]
-	class MonoTextEditor : Container
+	partial class MonoTextEditor : Container
 	{
 		readonly TextArea textArea;
 
@@ -912,8 +912,7 @@ namespace Mono.TextEditor
 			} catch (Exception e) {
 				if (Debugger.IsAttached)
 					Debugger.Break ();
-				//TODO: we should really find a way to log this properly
-				Console.WriteLine ("Error while executing " + action + " :" + e);
+				LoggingService.LogError ("Error while executing " + action, e);
 			}
 		}
 

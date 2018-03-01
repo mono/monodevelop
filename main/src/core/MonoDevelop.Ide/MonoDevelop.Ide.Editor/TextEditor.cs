@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Editor
 	public sealed class TextEditor : Control, ITextDocument, IDisposable
 	{
 		readonly ITextEditorImpl textEditorImpl;
-		public Microsoft.VisualStudio.Text.Editor.ITextView TextView { get; }
+		public Microsoft.VisualStudio.Text.Editor.ITextView TextView { get => textEditorImpl.TextView; set => textEditorImpl.TextView = value; }
 
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
 
@@ -970,6 +970,8 @@ namespace MonoDevelop.Ide.Editor
 			if (isDisposed)
 				return;
 			Runtime.AssertMainThread ();
+			this.TextView.Close ();
+
 			// Break fileTypeCondition circular event handling reference.
 			fileTypeCondition = null;
 			isDisposed = true;
@@ -979,8 +981,6 @@ namespace MonoDevelop.Ide.Editor
 			foreach (var provider in textEditorImpl.TooltipProvider)
 				provider.Dispose ();
 			textEditorImpl.Dispose ();
-
-			this.TextView.Close();
 
 			base.Dispose (disposing);
 		}
@@ -1002,7 +1002,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		internal IEditorActionHost EditorActionHost {
+		internal Microsoft.VisualStudio.Text.Operations.IEditorOperations EditorOperations {
 			get {
 				return textEditorImpl.Actions;
 			}

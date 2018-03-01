@@ -150,4 +150,20 @@
 		<Assembly file="RefactoringEssentials.dll"/>
 	</Extension>
 
+	<ExtensionPoint path="/MonoDevelop/Refactoring/AnalyzerAssemblies">
+		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
+	</ExtensionPoint>
+
+	<Extension path="/MonoDevelop/Refactoring/AnalyzerAssemblies">
+		<Assembly file="RefactoringEssentials" />
+		<Assembly file="Refactoring Essentials" />
+		<Assembly file="Microsoft.CodeAnalysis.CSharp" />
+		<Assembly file="Microsoft.CodeAnalysis.CSharp.Features" />
+		<Assembly file="Microsoft.CodeAnalysis.EditorFeatures" />
+		<Assembly file="Microsoft.CodeAnalysis.EditorFeatures.CSharp" />
+		<Assembly file="Microsoft.CodeAnalysis.Features" />
+		<Assembly file="Microsoft.CodeAnalysis.VisualBasic" />
+		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Features" />
+	</Extension>
+
 </ExtensionModel>

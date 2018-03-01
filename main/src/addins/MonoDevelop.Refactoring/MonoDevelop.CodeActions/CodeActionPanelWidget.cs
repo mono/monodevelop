@@ -34,6 +34,8 @@ using MonoDevelop.Refactoring;
 using System.Collections.Generic;
 using GLib;
 using MonoDevelop.CodeIssues;
+using MonoDevelop.AnalysisCore;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace MonoDevelop.CodeActions
 {
@@ -59,10 +61,13 @@ namespace MonoDevelop.CodeActions
 		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(bool), typeof(CodeRefactoringDescriptor));
 		readonly Dictionary<CodeRefactoringDescriptor, bool> providerStates = new Dictionary<CodeRefactoringDescriptor, bool> ();
 
+		static MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable options =
+			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).Options; 
+		
 		void GetAllProviderStates ()
 		{
 			var language = CodeRefactoringService.MimeTypeToLanguage (mimeType);
-			foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeRefactoringDescriptorsAsync (CodeRefactoringService.MimeTypeToLanguage(language), true).Result) {
+			foreach (var node in options.AllRefactorings.Where (x => x.Language.Contains (language))) {
 				providerStates [node] = node.IsEnabled;
 			}
 		}

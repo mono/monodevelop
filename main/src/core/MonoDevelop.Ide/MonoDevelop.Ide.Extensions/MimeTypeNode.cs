@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Extensions
 			
 			Regex CreateRegex (MimeTypeNode node)
 			{
-				var globalPattern = new StringBuilder ();
+				var globalPattern = StringBuilderCache.Allocate ();
 				
 				foreach (MimeTypeFileNode file in node.ChildNodes) {
 					string pattern = Regex.Escape (file.Pattern);
@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Extensions
 						globalPattern.Append ('|');
 					globalPattern.Append (pattern);
 				}
-				return new Regex (globalPattern.ToString (), RegexOptions.IgnoreCase);
+				return new Regex (StringBuilderCache.ReturnAndFree (globalPattern), RegexOptions.IgnoreCase);
 			}
 			public bool SupportsFile (string fileName)
 			{

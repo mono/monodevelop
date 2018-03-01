@@ -119,13 +119,13 @@ namespace MonoDevelop.CSharp
 
 		string StripTrivia (string str)
 		{
-			var result = new StringBuilder ();
+			var result = StringBuilderCache.Allocate ();
 			foreach (char ch in str) {
 				if (char.IsWhiteSpace (ch))
 					continue;
 				result.Append (ch);
 			}
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		static void AppendEscaped (StringBuilder result, string text)
@@ -158,7 +158,7 @@ namespace MonoDevelop.CSharp
 		
 		public string GetEntityMarkup (SyntaxNode e)
 		{
-			var sb = new StringBuilder ();
+			var sb = StringBuilderCache.Allocate ();
 			if (e is NamespaceDeclarationSyntax) {
 				return ((NamespaceDeclarationSyntax)e).Name.ToString ();
 			}
@@ -292,7 +292,7 @@ namespace MonoDevelop.CSharp
 				sb.Append ("</s>");
 				sb.Insert (0, "<s>");
 			}
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 	}
 }

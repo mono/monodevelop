@@ -96,6 +96,9 @@ namespace MonoDevelop.Ide
 				return 1;
 			SetupExceptionManager ();
 
+			// explicit GLib type system initialization for GLib < 2.36 before any other type system access
+			GLib.GType.Init ();
+
 			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
 			try {
 				IdeApp.Customizer.Initialize ();
