@@ -185,6 +185,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeView.SelectionChanged += TreeView_SelectionChanged;
 			treeView.ButtonPressed += TreeView_ButtonPressed;
 
+			treeView.SelectionMode = Xwt.SelectionMode.None;
+
 			var treeColumn = new ListViewColumn {
 				CanResize = false,
 				Expands = true

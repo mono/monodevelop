@@ -57,6 +57,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputTreeCellView : CanvasCellView
 	{
+		static readonly Xwt.Drawing.Image BuildExpandIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildError, Gtk.IconSize.Menu).WithSize (16);
+		static readonly Xwt.Drawing.Image BuildExpandDisabledIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildExpandDisabled, Gtk.IconSize.Menu).WithSize (16);
+		static readonly Xwt.Drawing.Image BuildCollapseIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildCollapse, Gtk.IconSize.Menu).WithSize (16);
+		static readonly Xwt.Drawing.Image BuildCollapseDisabledIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildCollapseDisabled, Gtk.IconSize.Menu).WithSize (16);
+
+		class ViewStatus
+		{
+			public bool Expanded { get; set; }
+			public double LastRenderWidth;
+			public double LastCalculatedHeight;
+		}
+
 		const int FontSize = 11;
 		const int DescriptionPaddingHeight = 0;
 		const int LinesDisplayedCount = 1;
@@ -95,19 +107,180 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
 		{
-			var buildOutputNode = GetValue (BuildOutputNodeField);
-
+			//Draw the node background
 			FillCellBackground (ctx);
 
+			var buildOutputNode = GetValue (BuildOutputNodeField);
 			DrawImageRow (ctx, cellArea, buildOutputNode);
-			DrawNodeText (ctx, cellArea, buildOutputNode);
+
+			TextLayout layout = new TextLayout ();
+
+			var status = GetViewStatus (buildOutputNode);
+
+			// Store the width, it will be used for calculating height in OnGetRequiredSize() when in expanded mode.
+			status.LastRenderWidth = cellArea.Width;
+
+			layout.Text = buildOutputNode.Message;
+
+			var textSize = layout.GetSize ();
+
+			// Render the selection
+			if (selectionRow == buildOutputNode && selectionStart != selectionEnd)
+				layout.SetBackground (Colors.LightBlue, Math.Min (selectionStart, selectionEnd), Math.Abs (selectionEnd - selectionStart));
+
+			// Text doesn't fit. We need to render the expand icon
+			if (textSize.Width > cellArea.Width) {
+				layout.Width = Math.Max (1, cellArea.Width - BuildExpandIcon.Width - MoreLinkSpacing);
+				if (!status.Expanded)
+					layout.Trimming = TextTrimming.WordElipsis;
+				else
+					textSize = layout.GetSize (); // The height may have changed. We need the real height since we check it at the end of the method
+
+				// Draw the text
+				ctx.DrawTextLayout (layout, cellArea.X, cellArea.Y);
+
+				// Draw the image
+
+				var imageRect = new Rectangle (cellArea.X + layout.Width + MoreLinkSpacing, cellArea.Y, BuildExpandIcon.Width, BuildExpandIcon.Height);
+				bool hover = pointerPosition != Point.Zero && imageRect.Contains (pointerPosition);
+				Image icon;
+				if (status.Expanded)
+					icon = hover ? BuildCollapseIcon : BuildCollapseDisabledIcon;
+				else
+					icon = hover ? BuildExpandIcon : BuildExpandDisabledIcon;
+				ctx.DrawImage (icon, imageRect.X, imageRect.Y);
+			} else {
+				ctx.DrawTextLayout (layout, cellArea.X, cellArea.Y);
+			}
+
+			//DrawNodeText (ctx, cellArea, buildOutputNode);
 
 			if (!IsRootNode (buildOutputNode)) {
 				DrawNodeInformation (ctx, cellArea, buildOutputNode);
 			} else if (buildOutputNode.NodeType == BuildOutputNodeType.Build) {
 				DrawFirstNodeInformation (ctx, cellArea, buildOutputNode);
 			}
+
+			// If the height required by the text is not the same as what was calculated in OnGetRequiredSize(), it means that
+			// the required height has changed. In that case call QueueResize(), so that OnGetRequiredSize() is called
+			// again and the row is properly resized.
+
+			if (status.Expanded && textSize.Height != status.LastCalculatedHeight)
+				QueueResize ();
 		}
+
+		void CalcLayout (out TextLayout layout, out Rectangle cellArea, out Rectangle expanderRect)
+		{
+			var node = GetValue (BuildOutputNodeField);
+			var status = GetViewStatus (node);
+			expanderRect = Rectangle.Zero;
+			cellArea = BackgroundBounds;
+			layout = new TextLayout ();
+			layout.Text = node.Message;
+			var textSize = layout.GetSize ();
+			if (textSize.Width > cellArea.Width) {
+				layout.Width = Math.Max (1, cellArea.Width - BuildExpandIcon.Width - MoreLinkSpacing);
+				if (!status.Expanded)
+					layout.Trimming = TextTrimming.WordElipsis;
+				var expanderX = cellArea.X + cellArea.Width - BuildExpandIcon.Width;
+				if (expanderX > 0)
+					expanderRect = new Rectangle (expanderX, cellArea.Y, BuildExpandIcon.Width, BuildExpandIcon.Height);
+			}
+		}
+
+		#region Mouse Events
+
+		Point pointerPosition;
+
+		protected override void OnMouseMoved (MouseMovedEventArgs args)
+		{
+			CalcLayout (out var layout, out var cellArea, out var expanderRect);
+
+			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
+				pointerPosition = args.Position;
+				QueueDraw ();
+			} else if (pointerPosition != Point.Zero) {
+				pointerPosition = Point.Zero;
+				QueueDraw ();
+			}
+
+			var layoutSize = layout.GetSize ();
+			var insideText = new Rectangle (cellArea.TopLeft, layoutSize).Contains (args.Position);
+			var node = GetValue (BuildOutputNodeField);
+
+			if (dragging && insideText && selectionRow == node) {
+				var pos = layout.GetIndexFromCoordinates (args.Position.X - cellArea.X, args.Position.Y - cellArea.Y);
+				if (pos != -1) {
+					selectionEnd = pos;
+					QueueDraw ();
+				}
+			} else {
+				ParentWidget.Cursor = insideText ? CursorType.IBeam : CursorType.Arrow;
+			}
+		}
+
+		protected override void OnButtonPressed (ButtonEventArgs args)
+		{
+			CalcLayout (out var layout, out var cellArea, out var expanderRect);
+
+			var node = GetValue (BuildOutputNodeField);
+			var status = GetViewStatus (node);
+
+			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
+				status.Expanded = !status.Expanded;
+				QueueResize ();
+				return;
+			}
+
+			var pos = layout.GetIndexFromCoordinates (args.Position.X - cellArea.X, args.Position.Y - cellArea.Y);
+			if (pos != -1) {
+				selectionStart = selectionEnd = pos;
+				selectionRow = node;
+				dragging = true;
+			} else
+				selectionRow = null;
+
+			QueueDraw ();
+
+			base.OnButtonPressed (args);
+		}
+
+		protected override void OnButtonReleased (ButtonEventArgs args)
+		{
+			if (dragging) {
+				dragging = false;
+				QueueDraw ();
+			}
+			base.OnButtonReleased (args);
+		}
+
+		protected override void OnMouseExited ()
+		{
+			pointerPosition = Point.Zero;
+			ParentWidget.Cursor = CursorType.Arrow;
+			base.OnMouseExited ();
+		}
+
+		#endregion
+
+		// This could also be stored in the data store. In this example we keep it in
+		// an internal dictionary to clearly separate the data model from the view model.
+		// This is a simple implementation, it doesn't take into account that nodes could
+		// be removed
+		Dictionary<BuildOutputNode, ViewStatus> viewStatus = new Dictionary<BuildOutputNode, ViewStatus> ();
+
+		ViewStatus GetViewStatus (BuildOutputNode node)
+		{
+			if (!viewStatus.TryGetValue (node, out var status))
+				status = viewStatus [node] = new ViewStatus ();
+			return status;
+		}
+
+		// Used to track the selection
+		int selectionStart;
+		int selectionEnd;
+		BuildOutputNode selectionRow;
+		bool dragging;
 
 		void DrawFirstNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode)
 		{
@@ -249,17 +422,36 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
+		const double MoreLinkSpacing = 3;
+
 		protected override Size OnGetRequiredSize ()
 		{
 			var buildOutputNode = GetValue (BuildOutputNodeField);
+			var status = GetViewStatus (buildOutputNode);
 
-			var layout = new TextLayout ();
-			layout.Text = "W";
-			layout.Font = layout.Font.WithSize (FontSize);
-			defaultFontLayout = layout.Font;
-			fontHeight = layout.GetSize ().Height;
-			return new Size (30, fontHeight * LinesDisplayedCount + DescriptionPaddingHeight + 
-			                 (buildOutputNode?.NodeType == BuildOutputNodeType.Build ? 12 : 3));
+			TextLayout layout = new TextLayout ();
+			layout.Text = buildOutputNode.Message;
+			var textSize = layout.GetSize ();
+
+			// When in expanded mode, the height of the row depends on the width. Since we don't know the width,
+			// let's use the last width that was used for rendering.
+
+			if (status.Expanded && status.LastRenderWidth != 0 && layout.GetSize ().Width > status.LastRenderWidth) {
+				layout.Width = status.LastRenderWidth - BuildExpandIcon.Width - MoreLinkSpacing;
+				textSize = layout.GetSize ();
+			} 
+
+			status.LastCalculatedHeight = textSize.Height;
+
+			//var layout = new TextLayout ();
+			//layout.Text = "W";
+			//layout.Font = layout.Font.WithSize (FontSize);
+			//defaultFontLayout = layout.Font;
+			//fontHeight = layout.GetSize ().Height;
+			//return new Size (30, fontHeight * LinesDisplayedCount + DescriptionPaddingHeight + 
+			                 //(buildOutputNode?.NodeType == BuildOutputNodeType.Build ? 12 : 3));
+
+			return new Size (30, textSize.Height);
 		}
 
 		Color GetSelectedColor ()
