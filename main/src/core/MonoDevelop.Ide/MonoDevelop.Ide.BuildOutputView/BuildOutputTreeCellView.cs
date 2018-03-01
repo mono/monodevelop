@@ -84,8 +84,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public IDataField<bool> HasBackgroundColorField { get; set; }
 		public IDataField<BuildOutputNode> BuildOutputNodeField { get; set; }
 
-		Font defaultFontLayout;
-
 		//This give us height and width of a character with this font
 		double fontHeight;
 		int informationContainerWidth => DefaultInformationContainerWidth;
@@ -105,13 +103,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 			contextProvider = context;
 		}
 
+		double GetTextStartX (Xwt.Rectangle cellArea) => cellArea.Left + ImageSize - 3;
+		//double GetExpanderStartX (Xwt.Rectangle cellArea) => GetTextStartX (cellArea) + 
+
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
 		{
-			//Draw the node background
-			FillCellBackground (ctx);
-
 			var buildOutputNode = GetValue (BuildOutputNodeField);
-			DrawImageRow (ctx, cellArea, buildOutputNode);
+			var isSelected = buildOutputNode != null && buildOutputNode == selectionRow;
+			//Draw the node background
+			FillCellBackground (ctx, isSelected);
+
+		
+			DrawImageRow (ctx, cellArea, buildOutputNode, isSelected);
 
 			TextLayout layout = new TextLayout ();
 
@@ -125,23 +128,37 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var textSize = layout.GetSize ();
 
 			// Render the selection
-			if (selectionRow == buildOutputNode && selectionStart != selectionEnd)
+			if (selectionRow == buildOutputNode && selectionStart != selectionEnd) {
 				layout.SetBackground (Colors.LightBlue, Math.Min (selectionStart, selectionEnd), Math.Abs (selectionEnd - selectionStart));
+			}
+
+			UpdateTextColor (ctx, buildOutputNode, isSelected);
+
+			Font defaultFont;
+			if (IsRootNode (buildOutputNode)) {
+				defaultFont = layout.Font.WithWeight (FontWeight.Bold);
+			} else {
+				defaultFont = layout.Font.WithWeight (FontWeight.Light);
+			}
+
+			layout.Font = defaultFont;
+
+			var startX = GetTextStartX (cellArea);
+			var width = Math.Max (1,  (cellArea.Width - informationContainerWidth) - startX);
 
 			// Text doesn't fit. We need to render the expand icon
-			if (textSize.Width > cellArea.Width) {
-				layout.Width = Math.Max (1, cellArea.Width - BuildExpandIcon.Width - MoreLinkSpacing);
+			if (textSize.Width > width) {
+				layout.Width = width;
 				if (!status.Expanded)
 					layout.Trimming = TextTrimming.WordElipsis;
 				else
 					textSize = layout.GetSize (); // The height may have changed. We need the real height since we check it at the end of the method
 
 				// Draw the text
-				ctx.DrawTextLayout (layout, cellArea.X, cellArea.Y);
+				ctx.DrawTextLayout (layout, startX, cellArea.Y);
 
 				// Draw the image
-
-				var imageRect = new Rectangle (cellArea.X + layout.Width + MoreLinkSpacing, cellArea.Y, BuildExpandIcon.Width, BuildExpandIcon.Height);
+				var imageRect = new Rectangle (startX + layout.Width + DescriptionPaddingHeight, cellArea.Y, BuildExpandIcon.Width, BuildExpandIcon.Height);
 				bool hover = pointerPosition != Point.Zero && imageRect.Contains (pointerPosition);
 				Image icon;
 				if (status.Expanded)
@@ -150,15 +167,28 @@ namespace MonoDevelop.Ide.BuildOutputView
 					icon = hover ? BuildExpandIcon : BuildExpandDisabledIcon;
 				ctx.DrawImage (icon, imageRect.X, imageRect.Y);
 			} else {
-				ctx.DrawTextLayout (layout, cellArea.X, cellArea.Y);
+				ctx.DrawTextLayout (layout, startX, cellArea.Y);
 			}
 
-			//DrawNodeText (ctx, cellArea, buildOutputNode);
-
 			if (!IsRootNode (buildOutputNode)) {
-				DrawNodeInformation (ctx, cellArea, buildOutputNode);
+				DrawNodeInformation (ctx, cellArea, buildOutputNode, isSelected);
+			} else if (buildOutputNode.NodeType == BuildOutputNodeType.BuildSummary) {
+				// For build summary, display error/warning summary
+				startX += layout.GetSize ().Width + 25;
+				DrawImage (ctx, cellArea, Resources.ErrorIconSmall, startX, ImageSize, isSelected);
+
+				startX += ImageSize + 2;
+				var errors = GettextCatalog.GetString ("{0} errors", buildOutputNode.ErrorCount.ToString ());
+				layout = DrawText (ctx, cellArea, startX, errors, width, defaultFont);
+
+				startX += layout.GetSize ().Width;
+				DrawImage (ctx, cellArea, Resources.WarningIconSmall, startX, ImageSize, isSelected);
+
+				var warnings = GettextCatalog.GetString ("{0} warnings", buildOutputNode.WarningCount.ToString ());
+				startX += ImageSize + 2;
+				DrawText (ctx, cellArea, startX, warnings, font: defaultFont);
 			} else if (buildOutputNode.NodeType == BuildOutputNodeType.Build) {
-				DrawFirstNodeInformation (ctx, cellArea, buildOutputNode);
+				DrawFirstNodeInformation (ctx, cellArea, buildOutputNode, isSelected);
 			}
 
 			// If the height required by the text is not the same as what was calculated in OnGetRequiredSize(), it means that
@@ -168,6 +198,22 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (status.Expanded && textSize.Height != status.LastCalculatedHeight)
 				QueueResize ();
 		}
+
+		//void DrawNodeText (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode)
+		//{
+		//	Font font;
+		//	if (IsRootNode (buildOutputNode)) {
+		//		font = defaultFontLayout.WithWeight (FontWeight.Bold);
+		//	} else {
+		//		font = defaultFontLayout.WithWeight (FontWeight.Light);
+		//	}
+
+		//	var startX = cellArea.Left + ImageSize - 3;
+		//	var width = (cellArea.Width - informationContainerWidth) - startX;
+
+		//	var layout = DrawText (ctx, cellArea, startX, buildOutputNode.Message, width, font);
+
+		//}
 
 		void CalcLayout (out TextLayout layout, out Rectangle cellArea, out Rectangle expanderRect)
 		{
@@ -179,7 +225,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			layout.Text = node.Message;
 			var textSize = layout.GetSize ();
 			if (textSize.Width > cellArea.Width) {
-				layout.Width = Math.Max (1, cellArea.Width - BuildExpandIcon.Width - MoreLinkSpacing);
+				layout.Width = Math.Max (1, cellArea.Width - BuildExpandIcon.Width - DescriptionPaddingHeight);
 				if (!status.Expanded)
 					layout.Trimming = TextTrimming.WordElipsis;
 				var expanderX = cellArea.X + cellArea.Width - BuildExpandIcon.Width;
@@ -282,19 +328,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 		BuildOutputNode selectionRow;
 		bool dragging;
 
-		void DrawFirstNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode)
+		void DrawFirstNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode, bool isSelected)
 		{
-			UpdateInformationTextColor (ctx);
+			UpdateInformationTextColor (ctx, isSelected);
 			var textStartX = cellArea.Width - informationContainerWidth;
 			DrawText (ctx, cellArea, textStartX, GetInformationMessage (buildOutputNode), cellArea.Width - textStartX);
 		}
 
-		void DrawNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode)
+		void DrawNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode, bool isSelected)
 		{
 			if (!buildOutputNode.HasChildren)
 				return;
 
-			UpdateInformationTextColor (ctx);
+			UpdateInformationTextColor (ctx, isSelected);
 
 			var textStartX = cellArea.X + (cellArea.Width - informationContainerWidth);
 
@@ -311,14 +357,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 				
 				textStartX += 55;
 
-				DrawImage (ctx, cellArea, Resources.ErrorIcon, textStartX, ImageSize);
+				DrawImage (ctx, cellArea, Resources.ErrorIcon, textStartX, ImageSize, isSelected);
 				textStartX += ImageSize + 2;
 				var errors = buildOutputNode.ErrorCount.ToString ();
 
 				var layout = DrawText (ctx, cellArea, textStartX, errors, trimming: TextTrimming.Word);
 				textStartX += layout.GetSize ().Width;
 
-				DrawImage (ctx, cellArea, Resources.WarningIcon, textStartX, ImageSize);
+				DrawImage (ctx, cellArea, Resources.WarningIcon, textStartX, ImageSize, isSelected);
 				textStartX += ImageSize + 2;
 				DrawText (ctx, cellArea, textStartX, buildOutputNode.WarningCount.ToString (), 10, trimming: TextTrimming.Word);
 			}
@@ -339,7 +385,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			descriptionTextLayout.Trimming = trimming;
 
 			if (font == null) {
-				descriptionTextLayout.Font = defaultFontLayout.WithWeight (FontWeight.Light);
+				descriptionTextLayout.Font = descriptionTextLayout.Font.WithWeight (FontWeight.Light);
 			} else {
 				descriptionTextLayout.Font = font;
 			}
@@ -350,44 +396,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return descriptionTextLayout;
 		}
 
-		void DrawNodeText (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode)
+		void DrawImageRow (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode, bool isSelected)
 		{
-			UpdateTextColor (ctx, buildOutputNode);
-
-			Font font;
-			if (IsRootNode (buildOutputNode)) {
-				font = defaultFontLayout.WithWeight (FontWeight.Bold);
-			} else {
-				font = defaultFontLayout.WithWeight (FontWeight.Light);
-			}
-
-			var startX = cellArea.Left + ImageSize - 3;
-			var width = (cellArea.Width - informationContainerWidth) - startX;
-
-			var layout = DrawText (ctx, cellArea, startX, buildOutputNode.Message, width, font);
-
-			// For build summary, display error/warning summary
-			if (buildOutputNode.NodeType == BuildOutputNodeType.BuildSummary) {
-
-				startX += layout.GetSize ().Width + 25;
-				DrawImage (ctx, cellArea, Resources.ErrorIconSmall, startX, ImageSize);
-
-				startX += ImageSize + 2;
-				var errors = GettextCatalog.GetString ("{0} errors", buildOutputNode.ErrorCount.ToString ());
-				layout = DrawText (ctx, cellArea, startX, errors, width, font);
-
-				startX += layout.GetSize ().Width;
-				DrawImage (ctx, cellArea, Resources.WarningIconSmall, startX, ImageSize);
-
-				var warnings = GettextCatalog.GetString ("{0} warnings", buildOutputNode.WarningCount.ToString ());
-				startX += ImageSize + 2;
-				DrawText (ctx, cellArea, startX, warnings, font: font);
-			}
-		}
-
-		void DrawImageRow (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode)
-		{
-			DrawImage (ctx, cellArea, GetRowIcon (buildOutputNode), (cellArea.Left - 3), ImageSize);
+			DrawImage (ctx, cellArea, GetRowIcon (buildOutputNode), (cellArea.Left - 3), ImageSize, isSelected);
 		}
 
 		Image GetRowIcon (BuildOutputNode buildOutputNode) 
@@ -402,27 +413,25 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return buildOutputNode.GetImage ();
 		}
 
-		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x, int imageSize)
+		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x, int imageSize, bool isSelected)
 		{
 			ctx.DrawImage (
-				Selected ? image.WithStyles ("sel") : image,
+				isSelected ? image.WithStyles ("sel") : image,
 				x,
 				cellArea.Top - (imageSize - cellArea.Height) * .5,
 				imageSize,
 				imageSize);
 		}
 
-		void UpdateInformationTextColor (Context ctx)
+		void UpdateInformationTextColor (Context ctx, bool isSelected)
 		{
-			if (Selected) {
+			if (isSelected) {
 				ctx.SetColor (Styles.CellTextSelectionColor);
 			} else {
 				//TODO: this is not the correct colour we need a light grey colour
 				ctx.SetColor (Ide.Gui.Styles.TabBarInactiveTextColor);
 			}
 		}
-
-		const double MoreLinkSpacing = 3;
 
 		protected override Size OnGetRequiredSize ()
 		{
@@ -437,7 +446,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			// let's use the last width that was used for rendering.
 
 			if (status.Expanded && status.LastRenderWidth != 0 && layout.GetSize ().Width > status.LastRenderWidth) {
-				layout.Width = status.LastRenderWidth - BuildExpandIcon.Width - MoreLinkSpacing;
+				layout.Width = status.LastRenderWidth - BuildExpandIcon.Width - 3;
 				textSize = layout.GetSize ();
 			} 
 
@@ -451,8 +460,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 			//return new Size (30, fontHeight * LinesDisplayedCount + DescriptionPaddingHeight + 
 			                 //(buildOutputNode?.NodeType == BuildOutputNodeType.Build ? 12 : 3));
 
-			return new Size (30, textSize.Height);
+			return new Size (30, GetRowHeight (buildOutputNode, textSize.Height));
 		}
+
+		double GetRowHeight (BuildOutputNode node, double fontSizeHeight) => fontSizeHeight + DescriptionPaddingHeight + (node?.NodeType == BuildOutputNodeType.Build ? 12 : 3);
 
 		Color GetSelectedColor ()
 		{
@@ -462,9 +473,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return SelectionColor;
 		}
 
-		void UpdateTextColor (Context ctx, BuildOutputNode buildOutputNode)
+		void UpdateTextColor (Context ctx, BuildOutputNode buildOutputNode, bool isSelected)
 		{
-			if (UseStrongSelectionColor && Selected) {
+			if (UseStrongSelectionColor && isSelected) {
 				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
 					ctx.SetColor (Styles.CellTextSkippedSelectionColor);
 				} else {
@@ -484,9 +495,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return GetValue (HasBackgroundColorField, false);
 		}
 
-		void FillCellBackground (Context ctx)
+		void FillCellBackground (Context ctx, bool isSelected)
 		{
-			if (Selected) {
+			if (isSelected) {
 				FillCellBackground (ctx, GetSelectedColor ());
 			} else if (IsBackgroundColorFieldSet ()) {
 				FillCellBackground (ctx, BackgroundColor);
