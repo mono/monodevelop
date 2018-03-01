@@ -230,6 +230,7 @@ namespace MonoDevelop.Projects.MSBuild
 				});
 
 				monitor.LogObject (new ProjectStartedProgressEvent {
+					SessionId = buildSessionLoggerId,
 					LogFile = binLogPath,
 					TimeStamp = DateTime.Now
 				});
@@ -250,7 +251,10 @@ namespace MonoDevelop.Projects.MSBuild
 				await connection.SendMessage (new EndBuildRequest ());
 				await connection.ProcessPendingMessages ();
 
-				monitor.LogObject (new ProjectFinishedProgressEvent { TimeStamp = DateTime.Now });
+				monitor.LogObject (new ProjectFinishedProgressEvent {
+					SessionId = buildSessionLoggerId,
+					TimeStamp = DateTime.Now
+				});
 			} catch {
 				await CheckDisconnected ();
 				throw;
