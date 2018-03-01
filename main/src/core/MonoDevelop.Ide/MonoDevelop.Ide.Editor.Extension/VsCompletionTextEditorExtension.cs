@@ -145,6 +145,12 @@ namespace MonoDevelop.Ide.Editor.Extension
 				case SpecialKey.PageUp:
 					editorCommandHandlerService.Execute ((textView, textBuffer) => new PageUpKeyCommandArgs (textView, textBuffer), NextCommand);
 					break;
+				case SpecialKey.Left:
+					editorCommandHandlerService.Execute ((textView, textBuffer) => new LeftKeyCommandArgs (textView, textBuffer), NextCommand);
+					break;
+				case SpecialKey.Right:
+					editorCommandHandlerService.Execute ((textView, textBuffer) => new RightKeyCommandArgs (textView, textBuffer), NextCommand);
+					break;
 				default:
 					if (descriptor.KeyChar != '\0')
 						editorCommandHandlerService.Execute ((textView, textBuffer) => new TypeCharCommandArgs (textView, textBuffer, descriptor.KeyChar), NextCommand);
