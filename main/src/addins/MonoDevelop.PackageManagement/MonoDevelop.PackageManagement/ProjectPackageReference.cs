@@ -88,18 +88,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			var packageReference = CreatePackageReference ();
 			var requestedVersion = new NuGetVersion (version);
-			var comparer = VersionComparer.VersionRelease;
-			if (packageReference.HasAllowedVersions) {
-				var versionRange = packageReference.AllowedVersions;
-				if (versionRange.HasLowerBound) {
-					var result = comparer.Compare (versionRange.MinVersion, requestedVersion);
-					return versionRange.IsMinInclusive ? result <= 0 : result < 0;
-				}
-			} else if (packageReference.PackageIdentity.HasVersion) {
-				var packageVersion = packageReference.PackageIdentity.Version;
-				return comparer.Compare (requestedVersion, packageVersion) <= 0;
-			}
-			return false;
+			return packageReference.IsAtLeastVersion (requestedVersion);
 		}
 
 		public bool Equals (PackageIdentity packageIdentity, bool matchVersion = true)

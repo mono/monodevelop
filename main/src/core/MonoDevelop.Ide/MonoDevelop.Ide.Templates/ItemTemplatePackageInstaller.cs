@@ -1,5 +1,10 @@
 ﻿//
-// Copyright (c) Microsoft Corp.
+// ItemTemplatePackageInstaller.cs
+//
+// Author:
+//       Matt Ward <matt.ward@xamarin.com>
+//
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,9 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using MonoDevelop.Projects;
 
-[assembly: AssemblyTitle ("MonoDevelop.AzureFunctions")]
-[assembly: AssemblyCopyright ("Microsoft Corp.")]
-[assembly: AssemblyVersion ("1.0.0.0")]
+namespace MonoDevelop.Ide.Templates
+{
+	public abstract class ItemTemplatePackageInstaller
+	{
+		public abstract Task Run (Project project, IEnumerable<TemplatePackageReference> packageReferences);
+	}
+}
