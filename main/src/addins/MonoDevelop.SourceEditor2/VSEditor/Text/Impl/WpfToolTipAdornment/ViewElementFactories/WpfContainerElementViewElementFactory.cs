@@ -3,13 +3,13 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
     using System;
     using System.ComponentModel.Composition;
     using System.Text;
-	using UIElement = Xwt.Widget;
+    using UIElement = Xwt.Widget;
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Utilities;
-	using Xwt;
+    using Xwt;
 
-	[Export(typeof(IViewElementFactory))]
+    [Export(typeof(IViewElementFactory))]
     [Name("default ContainerElement to UIElement")]
     [TypeConversion(from: typeof(ContainerElement), to: typeof(UIElement))]
     [Order]
@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
                 throw new ArgumentException($"Invalid type conversion. Unsupported {nameof(model)} or {nameof(TView)} type");
             }
 
-            VBox containerControl;
+            Box containerControl;
 
             if (container.Style == ContainerElementStyle.Stacked)
             {
@@ -34,13 +34,11 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
             }
             else
             {
-                containerControl = new VBox ();//TODO
+                containerControl = new HBox();
             }
 
-			containerControl.HorizontalPlacement = WidgetPlacement.Start;
-			containerControl.VerticalPlacement = WidgetPlacement.Start;
-
-            var automationNameBuffer = new StringBuilder();
+            containerControl.HorizontalPlacement = WidgetPlacement.Start;
+            containerControl.VerticalPlacement = WidgetPlacement.Start;
 
             foreach (var element in container.Elements)
             {
