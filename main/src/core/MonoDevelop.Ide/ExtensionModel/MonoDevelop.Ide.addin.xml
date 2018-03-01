@@ -238,6 +238,10 @@
 		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/OptionProviders">
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+
   <!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">

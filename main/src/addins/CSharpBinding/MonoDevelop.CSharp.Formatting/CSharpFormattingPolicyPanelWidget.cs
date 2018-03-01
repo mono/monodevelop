@@ -90,7 +90,7 @@ namespace Example {
 		{
 			texteditor.Options = DefaultSourceEditorOptions.Instance.WithTextStyle (textStylePolicy);
 
-			texteditor.Text = CSharpFormatter.FormatText (policy, textStylePolicy, example, 0, example.Length);
+			texteditor.Text = CSharpFormatter.FormatText (policy.CreateOptions (textStylePolicy), example, 0, example.Length);
 		}
 
 		void HandleButtonEditClicked (object sender, EventArgs e)

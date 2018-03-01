@@ -211,6 +211,10 @@
       <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.CodingConventions">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -9637,6 +9641,7 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\KeyActions.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\D152AccessibilityPanel.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\EditorConfigService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StartupAssetType.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentRegistry.cs" />
   </ItemGroup>
@@ -9684,6 +9689,7 @@
     <Folder Include="MonoDevelop.Components\Xwt\" />
     <Folder Include="MonoDevelop.Components.AtkCocoaHelper\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Markdown\" />
+    <Folder Include="MonoDevelop.Ide.EditorConfig\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">
