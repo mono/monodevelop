@@ -177,5 +177,9 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId BuildTask = "build-task";
 		public static readonly IconId BuildWarning = "build-warning";
 		public static readonly IconId BuildWarningSmall = "build-warning-small";
+		public static readonly IconId BuildExpand = "build-expand";
+		public static readonly IconId BuildExpandDisabled = "build-expand-disabled";
+		public static readonly IconId BuildCollapse = "build-collapse";
+		public static readonly IconId BuildCollapseDisabled = "build-collapse-disabled";
 	}
 }
