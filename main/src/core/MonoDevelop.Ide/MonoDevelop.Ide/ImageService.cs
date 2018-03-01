@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide
 		// Dictionary of extension nodes by stock icon id. It holds nodes that have not yet been loaded
 		static Dictionary<string, List<StockIconCodon>> iconStock = new Dictionary<string, List<StockIconCodon>> ();
 		static Dictionary<ImageId, string> imageIdToStockId = new Dictionary<ImageId, string> ();
+		static Dictionary<string, ImageId> stockIdToImageId = new Dictionary<string, ImageId> ();
 
 		static Gtk.Requisition[] iconSizes = new Gtk.Requisition[7];
 
@@ -79,8 +80,10 @@ namespace MonoDevelop.Ide
 				case ExtensionChange.Add:
 					if (!iconStock.ContainsKey (iconCodon.StockId)) {
 						iconStock [iconCodon.StockId] = new List<StockIconCodon> ();
-						if (iconCodon.ImageId.Guid != Guid.Empty)
-							imageIdToStockId [iconCodon.ImageId] = iconCodon.StockId;
+						if (iconCodon.ImageId.Guid != Guid.Empty) {
+							imageIdToStockId[iconCodon.ImageId] = iconCodon.StockId;
+							stockIdToImageId[iconCodon.StockId] = iconCodon.ImageId;
+						}
 					}
 					iconStock[iconCodon.StockId].Add (iconCodon);
 					break;
@@ -189,7 +192,13 @@ namespace MonoDevelop.Ide
 				throw new ArgumentNullException (nameof (icon));
 			var iconId = $"{imageId.Guid};{imageId.Id}";
 			imageIdToStockId.Add (imageId, iconId);
+			stockIdToImageId.Add (iconId, imageId);
 			AddIcon (iconId, icon);
+		}
+
+		public static bool TryGetImageId(string stockId, out ImageId imageId)
+		{
+			return stockIdToImageId.TryGetValue (stockId, out imageId);
 		}
 
 		public static void AddIcon (string iconId, Xwt.Drawing.Image icon)
