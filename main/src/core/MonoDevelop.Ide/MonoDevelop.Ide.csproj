@@ -9633,6 +9633,9 @@
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\D152AccessibilityPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StartupAssetType.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentRegistry.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\ViewContent.InformationArea.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\ViewContent.InformationAreaWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\ViewContent.InfoButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

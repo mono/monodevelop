@@ -324,8 +324,7 @@ namespace MonoDevelop.Ide.Editor
 				textEditorImpl.ViewContent.IsDirty = value;
 			}
 		}
-
-		public override Control InfoBar => textEditorImpl.ViewContent.InfoBar;
+		public override InformationArea InfoArea => textEditorImpl.ViewContent.InfoArea;
 
         #endregion
 

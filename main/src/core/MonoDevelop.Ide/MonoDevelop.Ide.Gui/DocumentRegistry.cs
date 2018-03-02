@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide.Gui
 				view.LastSaveTimeUtc = File.GetLastWriteTime (view.Document.FileName);
 				var presenter = view.Document.PrimaryView.BaseContent as ViewContent;
 				if (presenter != null)
-					presenter.InfoBar = null;
+					presenter.InfoArea.Hide ();
 				view.Document.Window.ShowNotification = false;
 			}
 		}
@@ -241,49 +241,27 @@ namespace MonoDevelop.Ide.Gui
 
 		static void ShowFileChangedWarning (ViewContent viewContent, bool multiple)
 		{
-			viewContent.InfoBar = null;
+			var buttons = new List<ViewContent.InfoButton> ();
 
-			var infoBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
-			infoBar.SetMessageLabel (GettextCatalog.GetString (
-				"<b>The file \"{0}\" has been changed outside of {1}.</b>\n" +
-				"Do you want to keep your changes, or reload the file from disk?",
-				ViewContent.EllipsizeMiddle (viewContent.ContentName, 50), BrandingService.ApplicationName));
-
-			var b1 = new Button (GettextCatalog.GetString ("_Reload from disk"));
-			b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
-			b1.Clicked += async delegate {
+			buttons.Add (new ViewContent.InfoButton (Gtk.Stock.Refresh, GettextCatalog.GetString ("_Reload from disk"), async delegate {
 				await viewContent.Reload ();
 				viewContent.WorkbenchWindow.SelectWindow ();
-				viewContent.InfoBar = null;
-			};
-			infoBar.ActionArea.Add (b1);
-
-			var b2 = new Button (GettextCatalog.GetString ("_Keep changes"));
-			b2.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
-			b2.Clicked += delegate {
-				viewContent.InfoBar = null;
-				viewContent.WorkbenchWindow.ShowNotification = false;
-			};
-			infoBar.ActionArea.Add (b2);
+			}));
+			buttons.Add (new ViewContent.InfoButton (GettextCatalog.GetString ("_Keep changes"), () => viewContent.WorkbenchWindow.ShowNotification = false));
 
 			if (multiple) {
-				var b3 = new Button (GettextCatalog.GetString ("_Reload all"));
-				b3.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
-				b3.Clicked += delegate {
-					DocumentRegistry.ReloadAllChangedFiles ();
-					viewContent.InfoBar = null;
-				};
-				infoBar.ActionArea.Add (b3);
-
-				var b4 = new Button (GettextCatalog.GetString ("_Ignore all"));
-				b4.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
-				b4.Clicked += delegate {
-					DocumentRegistry.IgnoreAllChangedFiles ();
-					viewContent.InfoBar = null;
-				};
-				infoBar.ActionArea.Add (b4);
+				buttons.Add (new ViewContent.InfoButton (GettextCatalog.GetString ("_Reload all"), () => DocumentRegistry.ReloadAllChangedFiles ()));
+				buttons.Add (new ViewContent.InfoButton (GettextCatalog.GetString ("_Ignore all"), () => DocumentRegistry.IgnoreAllChangedFiles ()));
 			}
-			viewContent.InfoBar = infoBar;
+
+			viewContent.InfoArea.Show (
+				Stock.Warning,
+				GettextCatalog.GetString (
+				"<b>The file \"{0}\" has been changed outside of {1}.</b>\n" +
+				"Do you want to keep your changes, or reload the file from disk?",
+				ViewContent.EllipsizeMiddle (viewContent.ContentName, 50), BrandingService.ApplicationName),
+				buttons.ToArray()
+			);
 		}
 
 	}

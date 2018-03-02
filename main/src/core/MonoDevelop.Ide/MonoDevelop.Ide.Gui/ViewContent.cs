@@ -38,16 +38,11 @@ using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public abstract class ViewContent : BaseViewContent
+	public abstract partial class ViewContent : BaseViewContent
 	{
 		const uint CHILD_PADDING = 0;
 
 		VBox vbox;
-		InfoBar infoBar;
-
-		public bool IsInfoBarVisible {
-			get { return infoBar != null; }
-		}
 
 		internal override Control ContentContainer {
 			get {
@@ -164,6 +159,10 @@ namespace MonoDevelop.Ide.Gui
 
 		#endregion
 
+		public ViewContent ()
+		{
+			InfoArea = new InformationArea (this);
+		}
 
 		protected virtual void OnDirtyChanged ()
 		{
@@ -176,7 +175,6 @@ namespace MonoDevelop.Ide.Gui
 			if (ContentNameChanged != null)
 				ContentNameChanged (this, EventArgs.Empty);
 		}
-
 
 		void EnsureVBoxIsCreated ()
 		{
@@ -199,39 +197,7 @@ namespace MonoDevelop.Ide.Gui
 			} catch (Exception ex) {
 				MessageService.ShowError ("Could not reload the file.", ex);
 			} finally {
-				InfoBar = null;
-			}
-		}
-
-
-		public virtual Control InfoBar {
-			get {
-				return infoBar;
-			}
-			set {
-				if (value != null) {
-					if (infoBar != null)
-						throw new InvalidOperationException ("Info bar already shown.");
-					EnsureVBoxIsCreated ();
-					this.infoBar = (InfoBar)value;
-					IsDirty = true;
-					// WarnOverwrite = true;
-					vbox.PackStart (infoBar, false, false, CHILD_PADDING);
-					vbox.ReorderChild (infoBar, 0);
-					infoBar.ShowAll ();
-					infoBar.QueueDraw ();
-					vbox.ShowAll ();
-					if (WorkbenchWindow != null)
-						WorkbenchWindow.ShowNotification = true;
-				} else {
-					if (vbox == null || infoBar == null)
-						return;
-					if (infoBar.Parent == vbox)
-						vbox.Remove (infoBar);
-					infoBar.Destroy ();
-					infoBar = null;
-					vbox.ShowAll ();
-				}
+				InfoArea.Hide ();
 			}
 		}
 

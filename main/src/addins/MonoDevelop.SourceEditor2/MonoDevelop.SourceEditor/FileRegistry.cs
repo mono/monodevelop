@@ -71,7 +71,7 @@ namespace MonoDevelop.SourceEditor
 					continue;
 
 				view.SourceEditorWidget.ConvertLineEndings ();
-				view.InfoBar = null;
+				view.InfoArea.Hide ();
 				view.WorkbenchWindow.ShowNotification = false;
 				view.Save ();
 			}
@@ -89,7 +89,7 @@ namespace MonoDevelop.SourceEditor
 					continue;
 
 				view.SourceEditorWidget.UseIncorrectMarkers = true;
-				view.InfoBar = null;
+				view.InfoArea.Hide ();
 				view.WorkbenchWindow.ShowNotification = false;
 				view.Save ();
 			}

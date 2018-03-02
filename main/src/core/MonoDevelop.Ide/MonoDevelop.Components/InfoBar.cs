@@ -34,6 +34,7 @@ namespace MonoDevelop.Components
 	/// Widget for displaying an informational non-modal question or message at the top of a content area.
 	/// Very loosely modelled on the GTK+ 2.18 InfoBar widget.
 	/// </summary>
+	[Obsolete("Will be removed in later versions")]
 	public class InfoBar : HBox
 	{
 		ImageView img;

@@ -248,6 +248,10 @@ namespace MonoDevelop.SourceEditor
 
 			Document_MimeTypeChanged(this, EventArgs.Empty);
 			widget.TextEditor.Document.MimeTypeChanged += Document_MimeTypeChanged;
+
+			InfoArea.Hidden += delegate {
+				widget.RemoveEolWarning ();
+			};
 		}
 
 
@@ -692,7 +696,7 @@ namespace MonoDevelop.SourceEditor
 
 		public async Task Save (string fileName, Encoding encoding)
 		{
-			if (IsInfoBarVisible)
+			if (InfoArea.IsVisible)
 				return;
 			if (encoding != null) {
 				this.Document.VsTextDocument.Encoding = encoding;
@@ -946,50 +950,39 @@ namespace MonoDevelop.SourceEditor
 
 		void ShowAutoSaveWarning (string fileName)
 		{
-			InfoBar = null;
-			var infoBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
-			infoBar.SetMessageLabel (BrandingService.BrandApplicationName (GettextCatalog.GetString (
+			InfoArea.Hide ();
+			InfoArea.Show (
+				Ide.Gui.Stock.Warning,
+				BrandingService.BrandApplicationName (GettextCatalog.GetString (
 					"<b>An autosave file has been found for this file.</b>\n" +
 					"This could mean that another instance of MonoDevelop is editing this " +
 					"file, or that MonoDevelop crashed with unsaved changes.\n\n" +
-					"Do you want to use the original file, or load from the autosave file?")));
+					"Do you want to use the original file, or load from the autosave file?")),
+				new InfoButton (Gtk.Stock.Refresh, GettextCatalog.GetString ("_Use original file"), delegate {
+					try {
+						AutoSave.RemoveAutoSaveFile (fileName);
+						WorkbenchWindow.SelectWindow ();
+						Load (fileName);
+						WorkbenchWindow.Document.ReparseDocument ();
+					} catch (Exception ex) {
+						LoggingService.LogError ("Could not remove the autosave file.", ex);
+					}
+				}),
+				new InfoButton (Gtk.Stock.RevertToSaved, GettextCatalog.GetString ("_Load from autosave"), delegate {
+					try {
+						var content = AutoSave.LoadAndRemoveAutoSave (fileName);
+						WorkbenchWindow.SelectWindow ();
+						Load (new FileOpenInformation (fileName) {
+							ContentText = content.Text,
+							Encoding = content.Encoding
+						});
+						IsDirty = true;
+					} catch (Exception ex) {
+						LoggingService.LogError ("Could not remove the autosave file.", ex);
+					}
+				})
+			);
 
-			Button b1 = new Button (GettextCatalog.GetString ("_Use original file"));
-			b1.Image = new ImageView (Gtk.Stock.Refresh, IconSize.Button);
-			b1.Clicked += delegate {
-				try {
-					AutoSave.RemoveAutoSaveFile (fileName);
-					WorkbenchWindow.SelectWindow ();
-					Load (fileName);
-					WorkbenchWindow.Document.ReparseDocument ();
-				} catch (Exception ex) {
-					LoggingService.LogError ("Could not remove the autosave file.", ex);
-				} finally {
-					InfoBar = null;
-				}
-			};
-			infoBar.ActionArea.Add (b1);
-
-			Button b2 = new Button (GettextCatalog.GetString ("_Load from autosave"));
-			b2.Image = new ImageView (Gtk.Stock.RevertToSaved, IconSize.Button);
-			b2.Clicked += delegate {
-				try {
-					var content = AutoSave.LoadAndRemoveAutoSave (fileName);
-					WorkbenchWindow.SelectWindow ();
-					Load (new FileOpenInformation (fileName) {
-						ContentText = content.Text,
-						Encoding = content.Encoding
-					});
-					IsDirty = true;
-				} catch (Exception ex) {
-					LoggingService.LogError ("Could not remove the autosave file.", ex);
-				} finally {
-					InfoBar = null;
-				}
-
-			};
-			infoBar.ActionArea.Add (b2);
-			InfoBar = infoBar;
 			widget.Vbox.Visible = false;
 		}
 
@@ -3673,13 +3666,5 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public override Control InfoBar {
-			get => base.InfoBar;
-			set {
-				base.InfoBar = value;
-				if (value == null)
-					widget.RemoveEolWarning ();
-			}
-		}
     }
 } 
