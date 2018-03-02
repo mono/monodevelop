@@ -66,6 +66,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			public bool Expanded { get; set; }
 			public double LastRenderWidth;
+			public double LastRenderX;
+			public double LastRenderY;
 			public double LastCalculatedHeight;
 		}
 
@@ -153,6 +155,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 				layout.Font = defaultFont.WithWeight (FontWeight.Light);
 			}
 
+			status.LastRenderX = startX;
+			status.LastRenderY = cellArea.Y + padding;
+
 			// Text doesn't fit. We need to render the expand icon
 			if (textSize.Width > width) {
 				layout.Width = width;
@@ -162,7 +167,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					textSize = layout.GetSize (); // The height may have changed. We need the real height since we check it at the end of the method
 
 				// Draw the text
-				ctx.DrawTextLayout (layout, startX, cellArea.Y + padding);
+				ctx.DrawTextLayout (layout, status.LastRenderX, status.LastRenderY);
 
 				// Draw the image
 				var imageRect = new Rectangle (startX + layout.Width + padding, cellArea.Y + padding, BuildExpandIcon.Width, BuildExpandIcon.Height);
@@ -174,7 +179,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					icon = hover ? BuildExpandIcon : BuildExpandDisabledIcon;
 				ctx.DrawImage (icon, imageRect.X, imageRect.Y);
 			} else {
-				ctx.DrawTextLayout (layout, startX, cellArea.Y + padding);
+				ctx.DrawTextLayout (layout, status.LastRenderX, status.LastRenderY);
 			}
 
 			if (!IsRootNode (buildOutputNode)) {
@@ -211,19 +216,20 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var node = GetValue (BuildOutputNodeField);
 			var status = GetViewStatus (node);
 			expanderRect = Rectangle.Zero;
-			cellArea = BackgroundBounds;
+		
+			cellArea = new Rectangle (status.LastRenderX, status.LastRenderY, status.LastRenderWidth, status.LastRenderWidth);
+
 			layout = new TextLayout ();
+			layout.Font = defaultFont;
 			layout.Text = node.Message;
 			var textSize = layout.GetSize ();
+
 			if (textSize.Width > cellArea.Width) {
-				layout.Width = Math.Max (1, cellArea.Width - BuildExpandIcon.Width - padding);
+				layout.Width = Math.Max (1, cellArea.Width);
 				if (!status.Expanded)
 					layout.Trimming = TextTrimming.WordElipsis;
-
-				var startX = GetTextStartX (cellArea);
-				var width = Math.Max (1, (cellArea.Width - informationContainerWidth) - startX);
-
-				var expanderX = startX + width + padding;
+			
+				var expanderX = cellArea.X + cellArea.Width + padding;
 				if (expanderX > 0)
 					expanderRect = new Rectangle (expanderX, cellArea.Y + padding, BuildExpandIcon.Width, BuildExpandIcon.Height);
 			}
@@ -248,8 +254,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				QueueDraw ();
 			}
 
-			var layoutSize = layout.GetSize ();
-			var insideText = new Rectangle (cellArea.TopLeft, layoutSize).Contains (args.Position);
+			var insideText = cellArea.Contains (args.Position);
 		
 			if (dragging && insideText && selectionRow == node) {
 				var pos = layout.GetIndexFromCoordinates (args.Position.X - cellArea.X, args.Position.Y - cellArea.Y);
@@ -266,11 +271,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			var node = GetValue (BuildOutputNodeField);
 			var padding = GetRowPadding (node);
-
-			CalcLayout (padding, out var layout, out var cellArea, out var expanderRect);
-
 			var status = GetViewStatus (node);
 
+			CalcLayout (padding, out var layout, out var cellArea, out var expanderRect);
+		
 			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
 				status.Expanded = !status.Expanded;
 				QueueResize ();
@@ -348,7 +352,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (duration != "") {
 				DrawText (ctx, cellArea, textStartX, duration, padding, informationContainerWidth);
 			}
-		
+
 			//Error and Warnings count
 			if (!IsRowExpanded (buildOutputNode) &&
 			    (buildOutputNode.NodeType == BuildOutputNodeType.Task || buildOutputNode.NodeType == BuildOutputNodeType.Target) &&
