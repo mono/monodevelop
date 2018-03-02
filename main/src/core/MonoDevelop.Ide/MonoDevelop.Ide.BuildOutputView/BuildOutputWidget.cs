@@ -174,7 +174,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			toolbar.Add (buttonSearchBackward.ToGtkWidget ());
 			toolbar.Add (buttonSearchForward.ToGtkWidget ());
 
-
 			treeView = new TreeView ();
 			treeView.HeadersVisible = false;
 			treeView.BorderVisible = false;
@@ -185,8 +184,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeView.SelectionChanged += TreeView_SelectionChanged;
 			treeView.ButtonPressed += TreeView_ButtonPressed;
 
-			treeView.SelectionMode = Xwt.SelectionMode.None;
 
+			treeView.SelectionMode = Xwt.SelectionMode.Single;
 			var treeColumn = new ListViewColumn {
 				CanResize = false,
 				Expands = true

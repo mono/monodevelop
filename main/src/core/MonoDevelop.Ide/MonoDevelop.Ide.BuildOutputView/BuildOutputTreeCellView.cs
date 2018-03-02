@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		}
 
 		const int BuildTypeRowContentPadding = 6;
-		const int RowContentPadding = 1;
+		const int RowContentPadding = 3;
 
 		const int LinesDisplayedCount = 1;
 		const int DefaultInformationContainerWidth = 370;
@@ -117,15 +117,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			var buildOutputNode = GetValue (BuildOutputNodeField);
 			var isSelected = buildOutputNode != null && buildOutputNode == selectionRow;
+			var padding = GetRowPadding (buildOutputNode);
+			var status = GetViewStatus (buildOutputNode);
+
 			//Draw the node background
 			FillCellBackground (ctx, isSelected);
 
-			DrawImageRow (ctx, cellArea, buildOutputNode, isSelected);
+			var imageTopMargin = status.Expanded ? 0 : Math.Max ((cellArea.Height - ImageSize) * .5, 0);
+
+			//Draw the image row
+			DrawImage (ctx, cellArea, GetRowIcon (buildOutputNode), (cellArea.Left - 3), ImageSize, isSelected, imageTopMargin);
 
 			TextLayout layout = new TextLayout ();
-
-			var status = GetViewStatus (buildOutputNode);
-
+		
 			var startX = GetTextStartX (cellArea);
 			var width = Math.Max (1, (cellArea.Width - informationContainerWidth) - startX);
 
@@ -148,8 +152,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			} else {
 				layout.Font = defaultFont.WithWeight (FontWeight.Light);
 			}
-
-			var padding = GetRowPadding (buildOutputNode);
 
 			// Text doesn't fit. We need to render the expand icon
 			if (textSize.Width > width) {
@@ -393,11 +395,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return descriptionTextLayout;
 		}
 
-		void DrawImageRow (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode, bool isSelected)
-		{
-			DrawImage (ctx, cellArea, GetRowIcon (buildOutputNode), (cellArea.Left - 3), ImageSize, isSelected);
-		}
-
 		Image GetRowIcon (BuildOutputNode buildOutputNode) 
 		{
 			if ((buildOutputNode.NodeType == BuildOutputNodeType.Task || buildOutputNode.NodeType == BuildOutputNodeType.Target) && !IsRowExpanded (buildOutputNode)) {
@@ -410,14 +407,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return buildOutputNode.GetImage ();
 		}
 
-		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x, int imageSize, bool isSelected)
+		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x, int imageSize, bool isSelected, double topPadding = 0)
 		{
-			ctx.DrawImage (
-				isSelected ? image.WithStyles ("sel") : image,
-				x,
-				cellArea.Top - (imageSize - cellArea.Height) * .5,
-				imageSize,
-				imageSize);
+			ctx.DrawImage (isSelected ? image.WithStyles ("sel") : image, x, cellArea.Top + topPadding, imageSize, imageSize);
 		}
 
 		void UpdateInformationTextColor (Context ctx, bool isSelected)
