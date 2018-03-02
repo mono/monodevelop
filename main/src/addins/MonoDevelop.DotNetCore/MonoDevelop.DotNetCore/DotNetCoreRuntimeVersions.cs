@@ -37,6 +37,14 @@ namespace MonoDevelop.DotNetCore
 			if (dotNetCorePath.IsMissing)
 				return Enumerable.Empty<DotNetCoreVersion> ();
 
+			return GetInstalledVersions (dotNetCorePath.FileName);
+		}
+
+		public static IEnumerable<DotNetCoreVersion> GetInstalledVersions (string dotNetCorePath)
+		{
+			if (string.IsNullOrEmpty (dotNetCorePath))
+				return Enumerable.Empty<DotNetCoreVersion> ();
+
 			string runtimePath = GetDotNetCoreRuntimePath (dotNetCorePath);
 			if (!Directory.Exists (runtimePath))
 				return Enumerable.Empty<DotNetCoreVersion> ();
@@ -46,9 +54,9 @@ namespace MonoDevelop.DotNetCore
 				.Where (version => version != null);
 		}
 
-		static string GetDotNetCoreRuntimePath (DotNetCorePath dotNetCorePath)
+		static string GetDotNetCoreRuntimePath (string fileName)
 		{
-			string rootDirectory = Path.GetDirectoryName (dotNetCorePath.FileName);
+			string rootDirectory = Path.GetDirectoryName (fileName);
 			return Path.Combine (rootDirectory, "shared", "Microsoft.NETCore.App");
 		}
 	}
