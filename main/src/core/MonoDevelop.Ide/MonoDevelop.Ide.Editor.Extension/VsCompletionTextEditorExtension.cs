@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			base.Initialize ();
 			view = Editor.TextView;
-			editorCommandHandlerService = CompositionManager.GetExportedValue<IEditorCommandHandlerServiceFactory> ().GetService (view, view.TextBuffer);
+			editorCommandHandlerService = CompositionManager.GetExportedValue<IEditorCommandHandlerServiceFactory> ().GetService (view);
 		}
 
 		public override bool IsValidInContext (DocumentContext context)
