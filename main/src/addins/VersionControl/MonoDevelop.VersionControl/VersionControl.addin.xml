@@ -193,7 +193,7 @@
 		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.ShowLog"
 			_label = "S_how Log"/>
 		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.ShowBlameBefore"
-			_label = "Show _Authors Before"/>
+			_label = "Show _Authors prior to this change"/>
 		</Category>
 	</Extension>
 
