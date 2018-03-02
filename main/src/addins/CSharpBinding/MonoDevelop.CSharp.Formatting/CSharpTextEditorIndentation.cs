@@ -55,17 +55,6 @@ namespace MonoDevelop.CSharp.Formatting
 
 		readonly static IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 
-		CSharpFormattingPolicy Policy {
-			get {
-				return DocumentContext.GetPolicy<CSharpFormattingPolicy> (types);
-			}
-		}
-
-		TextStylePolicy TextStylePolicy {
-			get {
-				return DocumentContext.GetPolicy<TextStylePolicy> (types);
-			}
-		}
 
 		char lastCharInserted;
 
@@ -124,6 +113,7 @@ namespace MonoDevelop.CSharp.Formatting
 				HandleTextOptionsChanged (this, EventArgs.Empty);
 				Editor.TextChanging += HandleTextReplacing;
 				Editor.TextChanged += HandleTextReplaced;
+				DocumentContext.AnalysisDocumentChanged += HandleTextOptionsChanged;
 			}
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleTextOptionsChanged;
@@ -147,10 +137,15 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		void HandleTextOptionsChanged (object sender, EventArgs e)
+		async void HandleTextOptionsChanged (object sender, EventArgs e)
 		{
 			//var options = Editor.CreateNRefactoryTextEditorOptions ();
-			optionSet = Policy.CreateOptions (Editor.Options);
+			var optionTask = DocumentContext?.AnalysisDocument?.GetOptionsAsync ();
+			if (optionTask == null)
+				return;
+			optionSet = await optionTask;
+			if (optionSet == null)
+					return;
 			//options.IndentBlankLines = true;
 			ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine indentEngine;
 			try {
@@ -164,19 +159,22 @@ namespace MonoDevelop.CSharp.Formatting
 				LoggingService.LogError ("Error while creating the c# indentation engine", ex);
 				indentEngine = new ICSharpCode.NRefactory6.CSharp.NullIStateMachineIndentEngine ();
 			}
-			stateTracker = new ICSharpCode.NRefactory6.CSharp.CacheIndentEngine (indentEngine);
-			if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
-				Editor.IndentationTracker = null;
-			} else {
-				Editor.IndentationTracker = new IndentVirtualSpaceManager (Editor, stateTracker);
-			}
 
-			indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
-			if (indentationDisabled) {
-				Editor.SetTextPasteHandler (null);
-			} else {
-				Editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, optionSet));
-			}
+			await Runtime.RunInMainThread(delegate {
+				stateTracker = new ICSharpCode.NRefactory6.CSharp.CacheIndentEngine (indentEngine);
+				if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
+					Editor.IndentationTracker = null;
+				} else {
+					Editor.IndentationTracker = new IndentVirtualSpaceManager (Editor, stateTracker);
+				}
+
+				indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
+				if (indentationDisabled) {
+					Editor.SetTextPasteHandler (null);
+				} else {
+					Editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, optionSet));
+				}
+			});
 		}
 
 		public override void Dispose ()
@@ -187,6 +185,7 @@ namespace MonoDevelop.CSharp.Formatting
 				Editor.IndentationTracker  = null;
 				Editor.TextChanging -= HandleTextReplacing;
 				Editor.TextChanged -= HandleTextReplaced;
+				DocumentContext.AnalysisDocumentChanged -= HandleTextOptionsChanged;
 			}
 			IdeApp.Workspace.ActiveConfigurationChanged -= HandleTextOptionsChanged;
 			CompletionWindowManager.WindowClosed -= CompletionWindowManager_WindowClosed;

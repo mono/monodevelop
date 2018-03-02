@@ -211,6 +211,10 @@
       <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.CodingConventions">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -8562,9 +8566,13 @@
     <Compile Include="MonoDevelop.Ide.Commands\ViewCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\WindowCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\InlineRenameService.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\JoinableTaskContextHost.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PlatformCatalog.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PlatformExtensions.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\PreviewFactoryService.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\RoslynWaitIndicator.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\SuggestedActionCategoryRegistryService.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorFactoryService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBindingService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\BackgroundProgressMonitor.cs" />
@@ -8643,6 +8651,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\Workbench.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StartupInfo.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ProgressMonitors.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\IMonoDevelopHostDocument.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopPersistentStorageLocationService.cs" />
     <Compile Include="MonoDevelop.Ide\RoslynLogger.cs" />
     <Compile Include="MonoDevelop.Ide\Services.cs" />
@@ -9274,6 +9283,7 @@
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterHintingData.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\WorkspaceExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IDocumentLine.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorOptions.cs" />
@@ -9343,7 +9353,7 @@
     <Compile Include="MonoDevelop.Ide.Editor\TextMarkerFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextEditorImpl.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextMarkerFactory.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\IEditorActionHost.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\IMonoDevelopEditorOperations.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditActions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\DocumentContext.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextEditorFactory.cs" />
@@ -9631,11 +9641,20 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\KeyActions.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\D152AccessibilityPanel.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\EditorConfigService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StartupAssetType.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentRegistry.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ViewContent.InformationArea.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ViewContent.InformationAreaWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ViewContent.InfoButton.cs" />
+    <Compile Include="MonoDevelop.Ide.Codons\ItemTemplateExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineItemTemplatingProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ItemTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineItemTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngine.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\NewItemConfiguration.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ItemTemplatePackageInstaller.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplatePackageReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9681,6 +9700,7 @@
     <Folder Include="MonoDevelop.Components\Xwt\" />
     <Folder Include="MonoDevelop.Components.AtkCocoaHelper\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Markdown\" />
+    <Folder Include="MonoDevelop.Ide.EditorConfig\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">
@@ -9731,6 +9751,7 @@
     <InternalsVisibleTo Include="MonoDevelop.Refactoring.Tests" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Tests" />
+    <InternalsVisibleTo Include="WebToolingAddin" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

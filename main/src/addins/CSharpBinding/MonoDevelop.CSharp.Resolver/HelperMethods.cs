@@ -45,6 +45,8 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Options;
+using Roslyn.Utilities;
+using System.Threading;
 
 namespace MonoDevelop.CSharp
 {
@@ -95,19 +97,9 @@ namespace MonoDevelop.CSharp
 
 		public static OptionSet GetFormattingOptions (this DocumentContext doc)
 		{
-			return GetFormattingOptions (doc.Project);
+			return doc.AnalysisDocument.GetOptionsAsync ().WaitAndGetResult (default(CancellationToken));
 		}
-		
-		public static OptionSet GetFormattingOptions (this MonoDevelop.Projects.Project project)
-		{
-			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
-			var codePolicy = project != null ? project.Policies.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) :
-				MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			var textPolicy = project != null ? project.Policies.Get<TextStylePolicy> (types) :
-				MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
-			return codePolicy.CreateOptions (textPolicy);
-		}
-		
+
 //		public static bool TryResolveAt (this DocumentContext documentContext, DocumentLocation loc, out ResolveResult result, out AstNode node)
 //		{
 //			if (documentContext == null)

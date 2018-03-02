@@ -42,18 +42,14 @@ namespace MonoDevelop.Ide.Templates
 			this.templateInfo = templateInfo;
 			Description = template.OverrideDescription ?? templateInfo.Description;
 			Category = template.Category;
-			ICacheTag languageTag;
-			if (templateInfo.Tags.TryGetValue ("language", out languageTag))
-				Language = languageTag.DefaultValue;
-			else
-				Language = string.Empty;
+			Language = MicrosoftTemplateEngine.GetLanguage (templateInfo);
 			GroupId = template.GroupId ?? templateInfo.GroupIdentity;
 			//TODO: Support all this params
 			Condition = template.Condition;
 			//ProjectFileExtension = template.FileExtension;
 			Wizard = template.Wizard;
 			SupportedParameters = template.SupportedParameters;
-			DefaultParameters = MergeDefaultParameters (template.DefaultParameters);
+			DefaultParameters = MicrosoftTemplateEngine.MergeDefaultParameters (template.DefaultParameters, templateInfo);
 			ImageId = template.ImageId;
 			FileFormattingExclude = template.FileFormatExclude;
 			//ImageFile = template.ImageFile;

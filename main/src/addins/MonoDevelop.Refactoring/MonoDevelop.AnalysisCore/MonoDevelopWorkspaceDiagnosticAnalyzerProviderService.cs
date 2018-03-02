@@ -30,22 +30,35 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.AnalysisCore
 {
 	[Export(typeof(IWorkspaceDiagnosticAnalyzerProviderService))]
 	partial class MonoDevelopWorkspaceDiagnosticAnalyzerProviderService : IWorkspaceDiagnosticAnalyzerProviderService
 	{
+		static readonly AnalyzerAssemblyLoader analyzerAssemblyLoader = new AnalyzerAssemblyLoader ();
 		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
+
 		const bool ClrHeapEnabled = false;
 
-		static readonly AnalyzerAssemblyLoader analyzerAssemblyLoader = new AnalyzerAssemblyLoader ();
+		internal OptionsTable Options = new OptionsTable ();
 		readonly ImmutableArray<HostDiagnosticAnalyzerPackage> hostDiagnosticAnalyzerInfo;
 
+		const string extensionPath = "/MonoDevelop/Refactoring/AnalyzerAssemblies";
+		string [] RuntimeEnabledAssemblies;
 		public MonoDevelopWorkspaceDiagnosticAnalyzerProviderService ()
 		{
+			LoadAnalyzerAssemblies ();
+			RefactoringEssentials.NRefactory6Host.GetLocalizedString = GettextCatalog.GetString;
 			hostDiagnosticAnalyzerInfo = CreateHostDiagnosticAnalyzerPackages ();
+		}
+
+		void LoadAnalyzerAssemblies()
+		{
+			RuntimeEnabledAssemblies = AddinManager.GetExtensionNodes<AssemblyExtensionNode> (extensionPath).Select (b => b.FileName).ToArray ();
 		}
 
 		public IAnalyzerAssemblyLoader GetAnalyzerAssemblyLoader ()
@@ -58,7 +71,7 @@ namespace MonoDevelop.AnalysisCore
 			return hostDiagnosticAnalyzerInfo;
 		}
 
-		static ImmutableArray<HostDiagnosticAnalyzerPackage> CreateHostDiagnosticAnalyzerPackages ()
+		ImmutableArray<HostDiagnosticAnalyzerPackage> CreateHostDiagnosticAnalyzerPackages ()
 		{
 			var builder = ImmutableArray.CreateBuilder<HostDiagnosticAnalyzerPackage> ();
 			var assemblies = ImmutableArray.CreateBuilder<string> ();
@@ -66,33 +79,27 @@ namespace MonoDevelop.AnalysisCore
 			foreach (var asm in AppDomain.CurrentDomain.GetAssemblies ()) {
 				try {
 					var assemblyName = asm.GetName ().Name;
-					switch (assemblyName) {
-					//whitelist
-					case "RefactoringEssentials":
-					case "Refactoring Essentials":
-					case "Microsoft.CodeAnalysis.CSharp":
-					case "Microsoft.CodeAnalysis.CSharp.Features":
-					case "Microsoft.CodeAnalysis.Features":
-					case "Microsoft.CodeAnalysis.VisualBasic.Features":
-					case "Microsoft.CodeAnalysis.VisualBasic":
-						break;
-					case "ClrHeapAllocationAnalyzer":
-						if (!ClrHeapEnabled)
-							continue;
-						break;
-					//blacklist
-					case "FSharpBinding":
-						continue;
-					//addin assemblies that reference roslyn
-					default:
-						var refAsm = asm.GetReferencedAssemblies ();
-						if (refAsm.Any (a => a.Name == diagnosticAnalyzerAssembly) && refAsm.Any (a => a.Name == "MonoDevelop.Ide"))
+					if (Array.IndexOf (RuntimeEnabledAssemblies, assemblyName) == -1) {
+						switch (assemblyName) {
+						case "ClrHeapAllocationAnalyzer":
+							if (!ClrHeapEnabled)
+								continue;
 							break;
-						continue;
+						//blacklist
+						case "FSharpBinding":
+							continue;
+						//addin assemblies that reference roslyn
+						default:
+							var refAsm = asm.GetReferencedAssemblies ();
+							if (refAsm.Any (a => a.Name == diagnosticAnalyzerAssembly) && refAsm.Any (a => a.Name == "MonoDevelop.Ide"))
+								break;
+							continue;
+						}
 					}
 
 					// Figure out a way to disable E&C analyzers.
 					assemblies.Add (asm.Location);
+					Options.ProcessAssembly (asm);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while loading diagnostics in " + asm.FullName, e);
 				}

@@ -42,6 +42,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Projects;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -458,6 +460,7 @@ $void Bar ()
 		/// <summary>
 		/// Bug 55907 - switch case does not auto-indent correctly
 		/// </summary>
+		[Ignore("Fixme")]
 		[Test]
 		public void TestBug55907 ()
 		{
