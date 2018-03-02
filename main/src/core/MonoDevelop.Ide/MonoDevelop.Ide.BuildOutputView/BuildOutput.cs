@@ -160,8 +160,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 						result [node.Message] = new AggregatedBuildOutputNode (node);
 					}
 
-					errorCount += node.ErrorCount;
-					warningCount += node.WarningCount;
+					errorCount += node.Children.Sum (x => x.ErrorCount);
+					warningCount += node.Children.Sum (x => x.WarningCount);
 				}
 			}
 
