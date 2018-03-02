@@ -1017,6 +1017,7 @@ namespace MonoDevelop.Projects
 				context.BuilderQueue = BuilderQueue.ShortOperations;
 				context.LoadReferencedProjects = false;
 				context.LogVerbosity = MSBuildVerbosity.Quiet;
+				context.GlobalProperties.SetValue ("Silent", true);
 
 				var result = await RunTarget (monitor, "ResolveAssemblyReferences", configuration, context);
 
