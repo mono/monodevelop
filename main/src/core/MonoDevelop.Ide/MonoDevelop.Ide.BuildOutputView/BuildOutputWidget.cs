@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Button buttonSearchForward;
 		Label resultInformLabel;
 		BuildOutputDataSearch currentSearch;
+		BuildOutputTreeCellView cellView;
 
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
@@ -190,8 +191,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 				CanResize = false,
 				Expands = true
 			};
-			var pack = new BuildOutputTreeCellView (this);
-			treeColumn.Views.Add (pack, true);
+			cellView = new BuildOutputTreeCellView (this);
+			treeColumn.Views.Add (cellView, true);
 			treeView.Columns.Add (treeColumn);
 
 			PackStart (treeView, expand: true, fill: true);
@@ -338,7 +339,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				menu.Add (new SeparatorContextMenuItem ());
 				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy\t\t\t{0}", GetShortcut (EditCommands.Copy, false)));
-				copyElementMenu.Clicked += (s, args) => ClipboardCopy (selectedNode);
+				copyElementMenu.Clicked += (s, args) => {
+					if (cellView.SelectionStart != cellView.SelectionEnd) {
+						var init = Math.Min (cellView.SelectionStart, cellView.SelectionEnd);
+						var end = Math.Max (cellView.SelectionStart, cellView.SelectionEnd);
+						Clipboard.SetText (selectedNode.Message.Substring (init, end - init));
+					} else {
+						ClipboardCopy (selectedNode);
+					}
+				};
 				menu.Items.Add (copyElementMenu);
 
 				menu.Show (treeView, (int) e.X, (int) e.Y);

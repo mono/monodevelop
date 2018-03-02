@@ -255,7 +255,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			var insideText = cellArea.Contains (args.Position);
-		
+
 			if (dragging && insideText && selectionRow == node) {
 				var pos = layout.GetIndexFromCoordinates (args.Position.X - cellArea.X, args.Position.Y - cellArea.Y);
 				if (pos != -1) {
@@ -280,16 +280,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 				QueueResize ();
 				return;
 			}
+			if (args.Button != PointerButton.Right)  {
+				var pos = layout.GetIndexFromCoordinates (args.Position.X - cellArea.X, args.Position.Y - cellArea.Y);
+				if (pos != -1) {
+					selectionStart = selectionEnd = pos;
+					selectionRow = node;
+					dragging = true;
+				} else
+					selectionRow = null;
 
-			var pos = layout.GetIndexFromCoordinates (args.Position.X - cellArea.X, args.Position.Y - cellArea.Y);
-			if (pos != -1) {
-				selectionStart = selectionEnd = pos;
-				selectionRow = node;
-				dragging = true;
-			} else
-				selectionRow = null;
-
-			QueueDraw ();
+				QueueDraw ();
+			}
 
 			base.OnButtonPressed (args);
 		}
@@ -328,6 +329,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 		// Used to track the selection
 		int selectionStart;
 		int selectionEnd;
+
+		public int SelectionStart => selectionStart;
+		public int SelectionEnd => selectionEnd;
+
 		BuildOutputNode selectionRow;
 		bool dragging;
 
