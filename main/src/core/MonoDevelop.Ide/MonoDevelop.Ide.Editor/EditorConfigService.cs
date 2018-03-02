@@ -95,14 +95,19 @@ namespace MonoDevelop.Ide.Editor
 
 			public void StartWatching (string fileName, string directoryPath)
 			{
-				var watcher = new FileSystemWatcher ();
-				watcher.Path = directoryPath;
-				watcher.Filter = fileName;
-				watcher.Changed += OnChanged;
-				watcher.Deleted += OnChanged;
-				watcher.EnableRaisingEvents = true;
 				lock (watchers) {
-					watchers.Add (directoryPath + Path.DirectorySeparatorChar.ToString () + fileName, watcher);
+					var key = directoryPath + Path.DirectorySeparatorChar.ToString () + fileName;
+
+					if (watchers.ContainsKey (key))
+						return;
+
+					var watcher = new FileSystemWatcher ();
+					watcher.Path = directoryPath;
+					watcher.Filter = fileName;
+					watcher.Changed += OnChanged;
+					watcher.Deleted += OnChanged;
+					watcher.EnableRaisingEvents = true;
+					watchers.Add (key, watcher);
 				}
 			}
 
