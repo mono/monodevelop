@@ -94,6 +94,22 @@ namespace MonoDevelop.Ide.BuildOutputView
 		IBuildOutputContextProvider contextProvider;
 		Font defaultFont; 
 
+		// This could also be stored in the data store. In this example we keep it in
+		// an internal dictionary to clearly separate the data model from the view model.
+		// This is a simple implementation, it doesn't take into account that nodes could
+		// be removed
+		Dictionary<BuildOutputNode, ViewStatus> viewStatus = new Dictionary<BuildOutputNode, ViewStatus> ();
+
+		// Used to track the selection
+		int selectionStart;
+		int selectionEnd;
+
+		public int SelectionStart => selectionStart;
+		public int SelectionEnd => selectionEnd;
+
+		BuildOutputNode selectionRow;
+		bool dragging;
+
 		bool IsRootNode (BuildOutputNode buildOutputNode) => buildOutputNode.Parent == null;
 
 		bool IsRowExpanded (BuildOutputNode buildOutputNode) => ((Xwt.TreeView)ParentWidget)?.IsRowExpanded (buildOutputNode) ?? false;
@@ -210,131 +226,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (status.Expanded && textSize.Height != status.LastCalculatedHeight)
 				QueueResize ();
 		}
-
-		void CalcLayout (double padding, out TextLayout layout, out Rectangle cellArea, out Rectangle expanderRect)
-		{
-			var node = GetValue (BuildOutputNodeField);
-			var status = GetViewStatus (node);
-			expanderRect = Rectangle.Zero;
-		
-			cellArea = new Rectangle (status.LastRenderX, status.LastRenderY, status.LastRenderWidth, status.LastRenderWidth);
-
-			layout = new TextLayout ();
-			layout.Font = defaultFont;
-			layout.Text = node.Message;
-			var textSize = layout.GetSize ();
-
-			if (textSize.Width > cellArea.Width) {
-				layout.Width = Math.Max (1, cellArea.Width);
-				if (!status.Expanded)
-					layout.Trimming = TextTrimming.WordElipsis;
-			
-				var expanderX = cellArea.X + cellArea.Width + padding;
-				if (expanderX > 0)
-					expanderRect = new Rectangle (expanderX, cellArea.Y + padding, BuildExpandIcon.Width, BuildExpandIcon.Height);
-			}
-		}
-
-		#region Mouse Events
-
-		Point pointerPosition;
-
-		protected override void OnMouseMoved (MouseMovedEventArgs args)
-		{
-			var node = GetValue (BuildOutputNodeField);
-			var padding = GetRowPadding (node);
-
-			CalcLayout (padding, out var layout, out var cellArea, out var expanderRect);
-
-			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
-				pointerPosition = args.Position;
-				QueueDraw ();
-			} else if (pointerPosition != Point.Zero) {
-				pointerPosition = Point.Zero;
-				QueueDraw ();
-			}
-
-			var insideText = cellArea.Contains (args.Position);
-
-			if (dragging && insideText && selectionRow == node) {
-				var pos = layout.GetIndexFromCoordinates (args.Position.X - cellArea.X, args.Position.Y - cellArea.Y);
-				if (pos != -1) {
-					selectionEnd = pos;
-					QueueDraw ();
-				}
-			} else {
-				ParentWidget.Cursor = insideText ? CursorType.IBeam : CursorType.Arrow;
-			}
-		}
-
-		protected override void OnButtonPressed (ButtonEventArgs args)
-		{
-			var node = GetValue (BuildOutputNodeField);
-			var padding = GetRowPadding (node);
-			var status = GetViewStatus (node);
-
-			CalcLayout (padding, out var layout, out var cellArea, out var expanderRect);
-		
-			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
-				status.Expanded = !status.Expanded;
-				QueueResize ();
-				return;
-			}
-			if (args.Button != PointerButton.Right)  {
-				var pos = layout.GetIndexFromCoordinates (args.Position.X - cellArea.X, args.Position.Y - cellArea.Y);
-				if (pos != -1) {
-					selectionStart = selectionEnd = pos;
-					selectionRow = node;
-					dragging = true;
-				} else
-					selectionRow = null;
-
-				QueueDraw ();
-			}
-
-			base.OnButtonPressed (args);
-		}
-
-		protected override void OnButtonReleased (ButtonEventArgs args)
-		{
-			if (dragging) {
-				dragging = false;
-				QueueDraw ();
-			}
-			base.OnButtonReleased (args);
-		}
-
-		protected override void OnMouseExited ()
-		{
-			pointerPosition = Point.Zero;
-			ParentWidget.Cursor = CursorType.Arrow;
-			base.OnMouseExited ();
-		}
-
-		#endregion
-
-		// This could also be stored in the data store. In this example we keep it in
-		// an internal dictionary to clearly separate the data model from the view model.
-		// This is a simple implementation, it doesn't take into account that nodes could
-		// be removed
-		Dictionary<BuildOutputNode, ViewStatus> viewStatus = new Dictionary<BuildOutputNode, ViewStatus> ();
-
-		ViewStatus GetViewStatus (BuildOutputNode node)
-		{
-			if (!viewStatus.TryGetValue (node, out var status))
-				status = viewStatus [node] = new ViewStatus ();
-			return status;
-		}
-
-		// Used to track the selection
-		int selectionStart;
-		int selectionEnd;
-
-		public int SelectionStart => selectionStart;
-		public int SelectionEnd => selectionEnd;
-
-		BuildOutputNode selectionRow;
-		bool dragging;
 
 		void DrawFirstNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode, double padding, bool isSelected)
 		{
@@ -498,5 +389,114 @@ namespace MonoDevelop.Ide.BuildOutputView
 			ctx.SetColor (color);
 			ctx.Fill ();
 		}
+
+		ViewStatus GetViewStatus (BuildOutputNode node)
+		{
+			if (!viewStatus.TryGetValue (node, out var status))
+				status = viewStatus [node] = new ViewStatus ();
+			return status;
+		}
+
+		#region Mouse Events
+
+		Point pointerPosition;
+
+		protected override void OnMouseMoved (MouseMovedEventArgs args)
+		{
+			var node = GetValue (BuildOutputNodeField);
+			var padding = GetRowPadding (node);
+
+			CalcLayout (padding, out var layout, out var cellArea, out var expanderRect);
+
+			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
+				pointerPosition = args.Position;
+				QueueDraw ();
+			} else if (pointerPosition != Point.Zero) {
+				pointerPosition = Point.Zero;
+				QueueDraw ();
+			}
+
+			var insideText = cellArea.Contains (args.Position);
+
+			if (dragging && insideText && selectionRow == node) {
+				var pos = layout.GetIndexFromCoordinates (args.Position.X - cellArea.X, args.Position.Y - cellArea.Y);
+				if (pos != -1) {
+					selectionEnd = pos;
+					QueueDraw ();
+				}
+			} else {
+				ParentWidget.Cursor = insideText ? CursorType.IBeam : CursorType.Arrow;
+			}
+		}
+
+		protected override void OnButtonPressed (ButtonEventArgs args)
+		{
+			var node = GetValue (BuildOutputNodeField);
+			var padding = GetRowPadding (node);
+			var status = GetViewStatus (node);
+
+			CalcLayout (padding, out var layout, out var cellArea, out var expanderRect);
+
+			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
+				status.Expanded = !status.Expanded;
+				QueueResize ();
+				return;
+			}
+			if (args.Button != PointerButton.Right) {
+				var pos = layout.GetIndexFromCoordinates (args.Position.X - cellArea.X, args.Position.Y - cellArea.Y);
+				if (pos != -1) {
+					selectionStart = selectionEnd = pos;
+					selectionRow = node;
+					dragging = true;
+				} else
+					selectionRow = null;
+
+				QueueDraw ();
+			}
+
+			base.OnButtonPressed (args);
+		}
+
+		protected override void OnButtonReleased (ButtonEventArgs args)
+		{
+			if (dragging) {
+				dragging = false;
+				QueueDraw ();
+			}
+			base.OnButtonReleased (args);
+		}
+
+		protected override void OnMouseExited ()
+		{
+			pointerPosition = Point.Zero;
+			ParentWidget.Cursor = CursorType.Arrow;
+			base.OnMouseExited ();
+		}
+
+		void CalcLayout (double padding, out TextLayout layout, out Rectangle cellArea, out Rectangle expanderRect)
+		{
+			var node = GetValue (BuildOutputNodeField);
+			var status = GetViewStatus (node);
+			expanderRect = Rectangle.Zero;
+
+			cellArea = new Rectangle (status.LastRenderX, status.LastRenderY, status.LastRenderWidth, status.LastRenderWidth);
+
+			layout = new TextLayout ();
+			layout.Font = defaultFont;
+			layout.Text = node.Message;
+			var textSize = layout.GetSize ();
+
+			if (textSize.Width > cellArea.Width) {
+				layout.Width = Math.Max (1, cellArea.Width);
+				if (!status.Expanded)
+					layout.Trimming = TextTrimming.WordElipsis;
+
+				var expanderX = cellArea.X + cellArea.Width + padding;
+				if (expanderX > 0)
+					expanderRect = new Rectangle (expanderX, cellArea.Y + padding, BuildExpandIcon.Width, BuildExpandIcon.Height);
+			}
+		}
+
+		#endregion
 	}
 }
