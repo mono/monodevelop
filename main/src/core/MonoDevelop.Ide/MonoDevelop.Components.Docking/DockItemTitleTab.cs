@@ -124,14 +124,16 @@ namespace MonoDevelop.Components.Docking
 
 		internal void UpdateRole (bool isTab, TabStrip strip)
 		{
+			Atk.Object fromAccessible = null, toAccessible = null;
+
 			if (!isTab) {
 				Accessible.SetRole (AtkCocoa.Roles.AXGroup, "pad header");
 				Accessible.SetSubRole ("XAPadHeader");
 
 				// Take the button accessibles back from the strip
 				if (strip != null) {
-					strip.Accessible.TransferAccessibleChild (Accessible, btnDock.Accessible);
-					strip.Accessible.TransferAccessibleChild (Accessible, btnClose.Accessible);
+					fromAccessible = strip.Accessible;
+					toAccessible = Accessible;
 				}
 			} else {
 				Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, "tab");
@@ -139,9 +141,14 @@ namespace MonoDevelop.Components.Docking
 
 				// Give the button accessibles to the strip
 				if (strip != null) {
-					Accessible.TransferAccessibleChild (strip.Accessible, btnDock.Accessible);
-					Accessible.TransferAccessibleChild (strip.Accessible, btnClose.Accessible);
+					fromAccessible = Accessible;
+					toAccessible = strip.Accessible;
 				}
+			}
+
+			if (fromAccessible != null && toAccessible != null) {
+				fromAccessible.TransferAccessibleChild (toAccessible, btnDock.Accessible);
+				fromAccessible.TransferAccessibleChild (toAccessible, btnClose.Accessible);
 			}
 		}
 

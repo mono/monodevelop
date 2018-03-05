@@ -159,6 +159,8 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		}
 
 		public static void TransferAccessibleChild (this Atk.Object from, Atk.Object to, Atk.Object child)
+		{
+		}
 	}
 
 	public class AccessibilityElementProxy : IAccessibilityElementProxy
