@@ -242,9 +242,16 @@ namespace Mono.TextEditor
 		{
 			using (var undo = data.OpenUndoGroup ()) {
 				data.EnsureCaretIsNotVirtual ();
+
+				var oldCaretLine = data.Caret.Location.Line;
+
 				string indentString = data.GetIndentationString (data.Caret.Location);
 				data.InsertAtCaret (data.EolMarker);
-				data.InsertAtCaret (indentString);
+
+				// Don't insert the indent string if the EOL insertion modified the caret location in an unexpected fashion
+				//  (This likely means someone has custom logic regarding insertion of the EOL)
+				if (data.Caret.Location.Line == oldCaretLine + 1 && data.Caret.Location.Column == 1)
+					data.InsertAtCaret (indentString);
 			}
 		}
 		

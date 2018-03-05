@@ -1133,7 +1133,7 @@ namespace MonoDevelop.Components.Docking
 			return base.OnButtonPressEvent (evnt);
 		}
 
-		void MinimizeAllAutohidden ()
+		internal void MinimizeAllAutohidden ()
 		{
 			foreach (var it in GetItems ()) {
 				if (it.Visible && it.Status == DockItemStatus.AutoHide)

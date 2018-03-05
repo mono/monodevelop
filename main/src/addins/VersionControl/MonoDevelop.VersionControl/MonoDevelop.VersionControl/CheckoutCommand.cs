@@ -66,12 +66,7 @@ namespace MonoDevelop.VersionControl
 					FileService.CreateDirectory (path);
 				}
 
-				try {
-					vc.Checkout (path, null, true, Monitor);
-				} catch (VersionControlException e) {
-					Monitor.ReportError (e.Message, null);
-					return;
-				}
+				vc.Checkout (path, null, true, Monitor);
 
 				if (Monitor.CancellationToken.IsCancellationRequested) {
 					Monitor.ReportSuccess (GettextCatalog.GetString ("Checkout operation cancelled"));

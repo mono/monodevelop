@@ -50,13 +50,14 @@ namespace MonoDevelop.Ide
 		internal static Counter PadsLoaded = InstrumentationService.CreateCounter ("Pads loaded", "IDE");
 		internal static TimerCounter CommandTargetScanTime = InstrumentationService.CreateTimerCounter ("Command target scan", "Timing", 0.3, false);
 		internal static TimerCounter OpenWorkspaceItemTimer = InstrumentationService.CreateTimerCounter ("Solution opened in the IDE", "IDE", id:"Ide.Shell.SolutionOpened");
-		internal static TimerCounter OpenDocumentTimer = InstrumentationService.CreateTimerCounter ("Document opened", "IDE");
+		internal static TimerCounter OpenDocumentTimer = InstrumentationService.CreateTimerCounter ("Open document", "IDE", id:"Ide.Shell.OpenDocument");
 		internal static TimerCounter DocumentOpened = InstrumentationService.CreateTimerCounter ("Document opened", "IDE", id:"Ide.Shell.DocumentOpened");
 		internal static Counter AutoSavedFiles = InstrumentationService.CreateCounter ("Autosaved Files", "Text Editor");
 		internal static TimerCounter BuildItemTimer = InstrumentationService.CreateTimerCounter ("Project/Solution built in the IDE", "IDE", id:"Ide.Shell.ProjectBuilt");
 		internal static Counter PadShown = InstrumentationService.CreateCounter ("Pad focused", "IDE", id:"Ide.Shell.PadShown");
 		internal static TimerCounter SaveAllTimer = InstrumentationService.CreateTimerCounter ("Save all documents", "IDE", id:"Ide.Shell.SaveAll");
 		internal static TimerCounter CloseWorkspaceTimer = InstrumentationService.CreateTimerCounter ("Workspace closed", "IDE", id:"Ide.Shell.CloseWorkspace");
+		internal static Counter Startup = InstrumentationService.CreateTimerCounter ("IDE Startup", "IDE", id:"Ide.Startup");
 
 		internal static TimerCounter ProcessCodeCompletion = InstrumentationService.CreateTimerCounter ("Process Code Completion", "IDE", id: "Ide.ProcessCodeCompletion", logMessages:false);
 
@@ -86,6 +87,7 @@ namespace MonoDevelop.Ide
 			reports [12] = ParserService.ObjectDeserialized.ToString ();
 			reports [13] = ParserService.WorkspaceItemLoaded.ToString ();
 			reports [14] = ParserService.ProjectsLoaded.ToString ();
+			reports [15] = Startup.ToString ();
 
 			return reports;
 		}

@@ -32,6 +32,7 @@ using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.CSharp.Highlighting;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.FindInFiles;
@@ -49,7 +50,12 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (workspace == null)
 				return;
 			Task.Run (async delegate {
+				ITimeTracker timer = null;
+				var metadata = MonoDevelop.Refactoring.Counters.CreateFindReferencesMetadata ();
+
 				try {
+					timer = MonoDevelop.Refactoring.Counters.FindReferences.BeginTiming (metadata);
+
 					var antiDuplicatesSet = new HashSet<SearchResult> (new SearchResultComparer ());
 					foreach (var loc in symbol.Locations) {
 						if (monitor.CancellationToken.IsCancellationRequested)
@@ -97,6 +103,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 				} catch (OperationCanceledException) {
 				} catch (Exception ex) {
+					MonoDevelop.Refactoring.Counters.SetFailure (metadata);
 					if (monitor != null)
 						monitor.ReportError ("Error finding references", ex);
 					else
@@ -104,6 +111,10 @@ namespace MonoDevelop.CSharp.Refactoring
 				} finally {
 					if (monitor != null)
 						monitor.Dispose ();
+					if (monitor.CancellationToken.IsCancellationRequested)
+						MonoDevelop.Refactoring.Counters.SetUserCancel (metadata);
+					if (timer != null)
+						timer.Dispose ();
 				}
 			});
 		}

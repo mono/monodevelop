@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.StandardHeader
 				if (!char.IsWhiteSpace (cmt[cmt.Length - 1]))
 					cmt = cmt + " ";
 				
-				StringBuilder sb = new StringBuilder (policy.Text.Length);
+				StringBuilder sb = StringBuilderCache.Allocate ();
 				string[] lines = policy.Text.Split ('\n');
 				foreach (string line in lines) {
 					if (string.IsNullOrWhiteSpace (line)) {
@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.StandardHeader
 					sb.Append (line);
 					sb.Append (eolMarker);
 				}
-				result = sb.ToString ();
+				result = StringBuilderCache.ReturnAndFree (sb);
 			} else {
 				//multiline comment
 				result = String.Concat (comment[0], "\n", policy.Text, "\n", comment[1], "\n");

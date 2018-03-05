@@ -1,5 +1,6 @@
 //gcc -m32 monostub.m -o monostub -framework AppKit
 
+#include <mach-o/dyld.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -11,23 +12,39 @@
 #include <errno.h>
 #include <ctype.h>
 #include <time.h>
-
-#include "monostub-utils.h"
-
-#import <Foundation/Foundation.h>
+#include <limits.h>
+#include <libgen.h>
 
 typedef int (* mono_main) (int argc, char **argv);
 typedef void (* mono_free) (void *ptr);
 typedef char * (* mono_get_runtime_build_info) (void);
 typedef void (* gobject_tracker_init) (void *libmono);
 
+#include "monostub-utils.h"
+
+#if XM_REGISTRAR
 extern
 #if EXTERN_C
 "C"
 #endif
 int xamarin_create_classes_Xamarin_Mac ();
+#endif
 
-void *libmono, *libxammac;
+#if STATIC_REGISTRAR
+extern
+#if EXTERN_C
+"C"
+#endif
+void xamarin_create_classes ();
+#endif
+
+void *libmono;
+#if defined(XM_REGISTRAR) || defined(STATIC_REGISTRAR)
+void *libxammac;
+#if STATIC_REGISTRAR
+void *libvsmregistrar;
+#endif
+#endif
 
 static void
 exit_with_message (const char *reason, char *argv0)
@@ -259,6 +276,23 @@ try_load_gobject_tracker (void *libmono, char *entry_executable)
 	}
 }
 
+static void
+run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
+{
+    // if we are running inside an app bundle and --start-app-bundle has been passed
+    // run the actual bundle and exit.
+    if (![appDir isEqualToString:@"."] && argc > 1 && !strcmp(argv[1], "--start-app-bundle")) {
+        NSArray *arguments = [NSArray array];
+        if (argc > 2) {
+            NSString *strings[argc-2];
+            for (int i = 0; i < argc-2; i++)
+                strings [i] = [[NSString alloc] initWithUTF8String:argv[i+2]];
+            arguments = [NSArray arrayWithObjects:strings count:argc-2];
+        }
+        run_md_bundle (appDir, arguments);
+    }
+}
+
 int main (int argc, char **argv)
 {
 	//clock_t start = clock();
@@ -276,18 +310,7 @@ int main (int argc, char **argv)
 
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
 
-	// if we are running inside an app bundle and --start-app-bundle has been passed
-	// run the actual bundle and exit.
-	if (![appDir isEqualToString:@"."] && argc > 1 && !strcmp(argv[1],"--start-app-bundle")) {
-		NSArray *arguments = [NSArray array];
-		if (argc > 2) {
-			NSString *strings[argc-2];
-		for (int i = 0; i < argc-2; i++)
-			strings [i] = [[NSString alloc] initWithUTF8String:argv[i+2]];
-			arguments = [NSArray arrayWithObjects:strings count:argc-2];
-		}
-		run_md_bundle (appDir, arguments);
-	}
+	run_md_bundle_if_needed(appDir, argc, argv);
 
 	// can be overridden with plist string MonoMinVersion
 	NSString *req_mono_version = @"5.2.0.171";
@@ -358,7 +381,7 @@ int main (int argc, char **argv)
 		exit_with_message ((char *)[msg UTF8String], argv[0]);
 	}
 
-#if XM_REGISTRAR
+#if defined(XM_REGISTRAR) || defined(STATIC_REGISTRAR)
 	libxammac = dlopen ("@loader_path/libxammac.dylib", RTLD_LAZY);
 	if (!libxammac) {
 		libxammac = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libxammac.dylib", RTLD_LAZY);
@@ -369,7 +392,20 @@ int main (int argc, char **argv)
 		}
 	}
 
+#if STATIC_REGISTRAR
+	char *registrar_toggle = getenv("MD_DISABLE_STATIC_REGISTRAR");
+	if (!registrar_toggle) {
+		libvsmregistrar = dlopen ("@loader_path/libvsmregistrar.dylib", RTLD_LAZY);
+		if (!libvsmregistrar) {
+			libvsmregistrar = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libvsmregistrar.dylib", RTLD_LAZY);
+		}
+		if (libvsmregistrar)
+			xamarin_create_classes ();
+	}
+#else
 	xamarin_create_classes_Xamarin_Mac ();
+#endif
+
 #endif
 
 	try_load_gobject_tracker (libmono, argv [0]);
@@ -425,3 +461,4 @@ int main (int argc, char **argv)
 
 	return _mono_main (argc + extra_argc + injected, new_argv);
 }
+

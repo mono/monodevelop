@@ -115,11 +115,11 @@ namespace MonoDevelop.Core.Execution
 		/// arguments, only quoted arguments with escaped quotes.</remarks>
 		public static string Quote (string s)
 		{
-			var sb = new StringBuilder ();
+			var sb = StringBuilderCache.Allocate ();
 			sb.Append ('"');
 			AppendEscaped (sb, escapeDoubleQuoteCharsStr, s);
 			sb.Append ('"');
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 		
 		public override string ToString ()

@@ -317,7 +317,13 @@ namespace MonoDevelop.Ide
 		}
 		
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
-		public static async void OpenFiles (IEnumerable<FileOpenInformation> files)
+		public static void OpenFiles (IEnumerable<FileOpenInformation> files)
+		{
+			OpenFiles (files, null);
+		}
+
+		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
+		internal static async void OpenFiles (IEnumerable<FileOpenInformation> files, IDictionary<string, string> metadata)
 		{
 			if (!files.Any ())
 				return;
@@ -326,7 +332,7 @@ namespace MonoDevelop.Ide
 				EventHandler onInit = null;
 				onInit = delegate {
 					Initialized -= onInit;
-					OpenFiles (files);
+					OpenFiles (files, metadata);
 				};
 				Initialized += onInit;
 				return;
@@ -341,7 +347,7 @@ namespace MonoDevelop.Ide
 					try {
 						// Close the current solution, but only for the first solution we open.
 						// If more than one solution is specified in the list we want to open all them together.
-						await Workspace.OpenWorkspaceItem (file.FileName, closeCurrent);
+						await Workspace.OpenWorkspaceItem (file.FileName, closeCurrent, true, metadata);
 						closeCurrent = false;
 					} catch (Exception ex) {
 						MessageService.ShowError (GettextCatalog.GetString ("Could not load solution: {0}", file.FileName), ex);

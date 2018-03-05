@@ -44,7 +44,7 @@ namespace MonoDevelop.PackageManagement
 		IPackageSourceProvider packageSourceProvider;
 
 		IFolderBrowser folderBrowser;
-		PackageSourceViewModelChecker packageSourceChecker = new PackageSourceViewModelChecker ();
+		PackageSourceViewModelChecker packageSourceChecker;
 		
 		DelegateCommand addPackageSourceCommmand;
 		DelegateCommand removePackageSourceCommand;
@@ -58,18 +58,26 @@ namespace MonoDevelop.PackageManagement
 		bool isEditingSelectedPackageSource;
 
 		public RegisteredPackageSourcesViewModel (ISourceRepositoryProvider sourceRepositoryProvider)
-			: this (sourceRepositoryProvider.PackageSourceProvider, new FolderBrowser ())
+			: this (
+				sourceRepositoryProvider.PackageSourceProvider,
+				new FolderBrowser (),
+				new PackageSourceViewModelChecker ())
 		{
 		}
 
 		public RegisteredPackageSourcesViewModel (
 			IPackageSourceProvider packageSourceProvider,
-			IFolderBrowser folderBrowser)
+			IFolderBrowser folderBrowser,
+			PackageSourceViewModelChecker packageSourceChecker)
 		{
 			this.packageSourceProvider = packageSourceProvider;
 			this.folderBrowser = folderBrowser;
+			this.packageSourceChecker = packageSourceChecker;
 
-			packageSourceChecker.PackageSourceChecked += PackageSourceChecked;
+			if (packageSourceChecker != null) {
+				packageSourceChecker.PackageSourceChecked += PackageSourceChecked;
+			}
+
 			CreateCommands ();
 		}
 
@@ -153,7 +161,7 @@ namespace MonoDevelop.PackageManagement
 			var packageSourceViewModel = new PackageSourceViewModel(packageSource);
 			packageSourceViewModels.Add(packageSourceViewModel);
 
-			packageSourceChecker.Check (packageSourceViewModel);
+			packageSourceChecker?.Check (packageSourceViewModel);
 		}
 
 		void AddPackageSourceToViewModel (PackageSource packageSource, string password)
@@ -163,7 +171,7 @@ namespace MonoDevelop.PackageManagement
 
 			packageSourceViewModels.Add(packageSourceViewModel);
 
-			packageSourceChecker.Check (packageSourceViewModel);
+			packageSourceChecker?.Check (packageSourceViewModel);
 		}
 		
 		public void Save()
@@ -380,7 +388,7 @@ namespace MonoDevelop.PackageManagement
 
 			OnPackageSourceChanged (selectedPackageSourceViewModel);
 
-			packageSourceChecker.Check (selectedPackageSourceViewModel);
+			packageSourceChecker?.Check (selectedPackageSourceViewModel);
 		}
 
 		public void Save (IEnumerable<PackageSourceViewModel> packageSourceViewModels)
@@ -401,7 +409,7 @@ namespace MonoDevelop.PackageManagement
 		public void Dispose ()
 		{
 			try {
-				packageSourceChecker.Dispose ();
+				packageSourceChecker?.Dispose ();
 			} finally {
 				PackageManagementServices.InitializeCredentialService ();
 			}

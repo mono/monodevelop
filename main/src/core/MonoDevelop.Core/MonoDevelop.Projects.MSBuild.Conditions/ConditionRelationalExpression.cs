@@ -31,7 +31,8 @@ using System.Xml;
 using System.Text;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Projects.MSBuild.Conditions {
+namespace MonoDevelop.Projects.MSBuild.Conditions
+{
 	internal sealed class ConditionRelationalExpression : ConditionExpression {
 	
 		readonly ConditionExpression left;
@@ -47,56 +48,41 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			this.op = op;
 		}
 		
-		public override  bool BoolEvaluate (IExpressionContext context)
+		public override bool TryEvaluateToBool (IExpressionContext context, out bool result)
 		{
-			if (left.CanEvaluateToNumber (context) && right.CanEvaluateToNumber (context)) {
-				float l,r;
-				
-				l = left.NumberEvaluate (context);
-				r = right.NumberEvaluate (context);
-				
-				return NumberCompare (l, r, op);
-			} else if (left.CanEvaluateToBool (context) && right.CanEvaluateToBool (context)) {
-				bool l,r;
-				
-				l = left.BoolEvaluate (context);
-				r = right.BoolEvaluate (context);
-				
-				return BoolCompare (l, r, op);
-			} else {
-				string l,r;
-				
-				l = left.StringEvaluate (context);
-				r = right.StringEvaluate (context);
-				
-				return StringCompare (l, r, op);
+			if (left.TryEvaluateToBool (context, out bool l) && right.TryEvaluateToBool (context, out bool r)) {
+				result = BoolCompare (l, r, op);
+				return true;
 			}
-		}
-		
-		public override float NumberEvaluate (IExpressionContext context)
-		{
-			throw new NotSupportedException ();
-		}
-		
-		public override string StringEvaluate (IExpressionContext context)
-		{
-			throw new NotSupportedException ();
-		}
-		
-		// FIXME: check if we really can do it
-		public override bool CanEvaluateToBool (IExpressionContext context)
-		{
+
+			if (left.TryEvaluateToVersion (context, out Version vl)) {
+				if (right.TryEvaluateToVersion (context, out Version vr)) {
+					result = VersionCompare (vl, vr, op);
+					return true;
+				}
+				else if (right.TryEvaluateToNumber (context, out float fr)) {
+					result = VersionCompare (vl, fr, op);
+					return true;
+				}
+			}
+			else if (left.TryEvaluateToNumber (context, out float fl)) {
+				if (right.TryEvaluateToNumber (context, out float fr)) {
+					result = NumberCompare (fl, fr, op);
+					return true;
+				}
+				else if (right.TryEvaluateToVersion (context, out Version vr)) {
+					result = VersionCompare (fl, vr, op);
+					return true;
+				}
+			}
+
+			if (!left.TryEvaluateToString (context, out string ls) || !right.TryEvaluateToString (context, out string rs)) {
+				result = false;
+				return false;
+			}
+
+			result = StringCompare (ls, rs, op);
 			return true;
-		}
-		
-		public override bool CanEvaluateToNumber (IExpressionContext context)
-		{
-			return false;
-		}
-		
-		public override bool CanEvaluateToString (IExpressionContext context)
-		{
-			return false;
 		}
 		
 		static bool NumberCompare (float l,
@@ -149,7 +135,75 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			}
 		}
 
-		List<string> combinedProperty = null;
+		// see https://github.com/Microsoft/msbuild/blob/03d1435c95e6a85fbf949f94958e743bc44c4186/src/Build/Evaluation/Conditionals/NumericComparisonExpressionNode.cs#L42
+		static bool VersionCompare (Version l,
+					   Version r,
+					   RelationOperator op)
+		{
+			switch (op) {
+			case RelationOperator.Equal:
+				return l == r;
+			case RelationOperator.NotEqual:
+				return l != r;
+			case RelationOperator.Less:
+				return l < r;
+			case RelationOperator.Greater:
+				return l > r;
+			case RelationOperator.LessOrEqual:
+				return l <= r;
+			case RelationOperator.GreaterOrEqual:
+				return l >= r;
+			default:
+				throw new NotSupportedException ($"Relational operator {op} is not supported.");
+			}
+		}
+
+		static bool VersionCompare (Version l,
+					   float r,
+					   RelationOperator op)
+		{
+			switch (op) {
+			case RelationOperator.Equal:
+				return l.Major == r && l.Minor == 0 && l.Build == 0 && l.Revision == 0;
+			case RelationOperator.NotEqual:
+				return l.Major != r || l.Minor != 0 && l.Build != 0 || l.Revision != 0;
+			case RelationOperator.Less:
+				return l.Major != r ? l.Major < r : false;
+			case RelationOperator.Greater:
+				return l.Major != r ? l.Major > r : true;
+			case RelationOperator.LessOrEqual:
+				return l.Major != r ? l.Major <= r : false;
+			case RelationOperator.GreaterOrEqual:
+				return l.Major != r ? l.Major >= r : true;
+			default:
+				throw new NotSupportedException ($"Relational operator {op} is not supported.");
+			}
+		}
+
+		static bool VersionCompare (float l,
+					   Version r,
+					   RelationOperator op)
+		{
+			switch (op) {
+			case RelationOperator.Equal:
+				return r.Major == l && r.Minor == 0 && r.Build == 0 && r.Revision == 0;
+			case RelationOperator.NotEqual:
+				return r.Major != l || r.Minor != 0 && r.Build != 0 || r.Revision != 0;
+			case RelationOperator.Less:
+				return r.Major != l ? l < r.Major : true;
+			case RelationOperator.Greater:
+				return r.Major != l ? l > r.Major : false;
+			case RelationOperator.LessOrEqual:
+				return r.Major != l ? l <= r.Major : true;
+			case RelationOperator.GreaterOrEqual:
+				return r.Major != l ? l >= r.Major : false;
+			default:
+				throw new NotSupportedException ($"Relational operator {op} is not supported.");
+			}
+		}
+
+        // PERF: Cache this value to prevent recalculation.
+        List<string> combinedProperty = null;
 		List<string> combinedValue = null;
 		bool combinedPropertySet;
 		object conditionPropertiesLock = new object ();

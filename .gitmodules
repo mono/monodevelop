@@ -47,7 +47,7 @@
 [submodule "main/external/RefactoringEssentials"]
 	path = main/external/RefactoringEssentials
 	url = git://github.com/mono/RefactoringEssentials.git
-	branch = master
+	branch = monodevelop2
 [submodule "main/external/macdoc"]
 	path = main/external/macdoc
 	url = git://github.com/xamarin/macdoc

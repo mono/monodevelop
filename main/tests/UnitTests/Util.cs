@@ -133,7 +133,7 @@ namespace UnitTests
 				Directory.CreateDirectory (dst);
 			
 			foreach (string file in Directory.GetFiles (src))
-				File.Copy (file, Path.Combine (dst, Path.GetFileName (file)));
+				File.Copy (file, Path.Combine (dst, Path.GetFileName (file)), overwrite: true);
 			
 			foreach (string dir in Directory.GetDirectories (src))
 				CopyDir (dir, Path.Combine (dst, Path.GetFileName (dir)));

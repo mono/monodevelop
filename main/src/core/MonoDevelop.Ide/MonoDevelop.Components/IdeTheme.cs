@@ -57,6 +57,8 @@ namespace MonoDevelop.Components
 			//IdeApp.Preferences.UserInterfaceTheme.Changed += (sender, e) => UpdateGtkTheme ();
 		}
 
+		internal static bool AccessibilityEnabled { get; private set; }
+
 		internal static void InitializeGtk (string progname, ref string[] args)
 		{
 			if (Gtk.Settings.Default != null)
@@ -81,11 +83,13 @@ namespace MonoDevelop.Components
 
 				LoggingService.LogInfo ($"Loading modules from {gtkPath}");
 				Environment.SetEnvironmentVariable ("GTK_MODULES", $"{gtkPath}/libatkcocoa.so");
+				AccessibilityEnabled = true;
 			} else {
 				// If we are restarted from a running instance when changing the accessibility setting then
 				// we inherit the environment from it
 				Environment.SetEnvironmentVariable ("GTK_MODULES", null);
 				LoggingService.LogInfo ("Accessibility disabled");
+				AccessibilityEnabled = false;
 			}
 #endif
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);

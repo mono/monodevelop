@@ -188,8 +188,9 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void GetResults([MarshalAs(UnmanagedType.Interface)] out IShellItemArray ppenum);
 
-        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetSelectedItems([MarshalAs(UnmanagedType.Interface)] out IShellItemArray ppsai);
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime),
+        PreserveSig]
+        int GetSelectedItems([MarshalAs(UnmanagedType.Interface)] out IShellItemArray ppsai);
     }
 
     [ComImport(),

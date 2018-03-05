@@ -50,10 +50,11 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.SourceEditor
 {
-	class SourceEditorWidget : IServiceProvider
+	class SourceEditorWidget : IServiceProvider, IDocumentReloadPresenter
 	{
 		SourceEditorView view;
 		DecoratedScrolledWindow mainsw;
@@ -724,7 +725,6 @@ namespace MonoDevelop.SourceEditor
 				b2.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
 				b2.Clicked += delegate {
 					RemoveMessageBar ();
-					view.LastSaveTimeUtc = System.IO.File.GetLastWriteTimeUtc (view.ContentName);
 					view.WorkbenchWindow.ShowNotification = false;
 				};
 				messageBar.ActionArea.Add (b2);
@@ -733,14 +733,14 @@ namespace MonoDevelop.SourceEditor
 					var b3 = new Button (GettextCatalog.GetString ("_Reload all"));
 					b3.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
 					b3.Clicked += delegate {
-						FileRegistry.ReloadAllChangedFiles ();
+						DocumentRegistry.ReloadAllChangedFiles ();
 					};
 					messageBar.ActionArea.Add (b3);
 	
 					var b4 = new Button (GettextCatalog.GetString ("_Ignore all"));
 					b4.Image = new ImageView (Gtk.Stock.Cancel, IconSize.Button);
 					b4.Clicked += delegate {
-						FileRegistry.IgnoreAllChangedFiles ();
+						DocumentRegistry.IgnoreAllChangedFiles ();
 					};
 					messageBar.ActionArea.Add (b4);
 				}
@@ -822,7 +822,7 @@ namespace MonoDevelop.SourceEditor
 		internal void ConvertLineEndings ()
 		{
 			string correctEol = TextEditor.Options.DefaultEolMarker;
-			var newText = new StringBuilder ();
+			var newText = StringBuilderCache.Allocate ();
 			int offset = 0;
 			foreach (var line in Document.Lines) {
 				newText.Append (TextEditor.GetTextAt (offset, line.Length));
@@ -831,7 +831,7 @@ namespace MonoDevelop.SourceEditor
 					newText.Append (correctEol);
 			}
 			view.StoreSettings ();
-			view.ReplaceContent (Document.FileName, newText.ToString (), view.SourceEncoding);
+			view.ReplaceContent (Document.FileName, StringBuilderCache.ReturnAndFree (newText), view.SourceEncoding);
 			Document.HasLineEndingMismatchOnTextSet = false;
 			view.LoadSettings ();
 		}

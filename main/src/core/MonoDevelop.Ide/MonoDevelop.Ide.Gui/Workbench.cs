@@ -559,8 +559,10 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (string.IsNullOrEmpty (info.FileName))
 				return null;
-			// Ensure that paths like /a/./a.cs are equalized 
-			using (Counters.OpenDocumentTimer.BeginTiming ("Opening file " + info.FileName)) {
+
+			var metadata = CreateOpenDocumentTimerMetadata ();
+
+			using (Counters.OpenDocumentTimer.BeginTiming ("Opening file " + info.FileName, metadata)) {
 				NavigationHistoryService.LogActiveDocument ();
 				Counters.OpenDocumentTimer.Trace ("Look for open document");
 				foreach (Document doc in Documents) {
@@ -604,8 +606,10 @@ namespace MonoDevelop.Ide.Gui
 					true
 				);
 
-				await RealOpenFile (pm, info);
+				bool result = await RealOpenFile (pm, info);
 				pm.Dispose ();
+
+				AddOpenDocumentTimerMetadata (metadata, info, result);
 				
 				if (info.NewContent != null) {
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
@@ -625,12 +629,32 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		Dictionary<string, string> CreateOpenDocumentTimerMetadata ()
+		{
+			var metadata = new Dictionary<string, string> ();
+			metadata ["Result"] = "None";
+			return metadata;
+		}
+
+		void AddOpenDocumentTimerMetadata (IDictionary<string, string> metadata, FileOpenInformation info, bool result)
+		{
+			if (info.NewContent != null)
+				metadata ["EditorType"] = info.NewContent.GetType ().FullName;
+			if (info.Project != null)
+				metadata ["OwnerProjectGuid"] = info.Project?.ItemId;
+			
+			metadata ["Extension"] = info.FileName.Extension;
+			metadata ["Result"] = result ? "Success" : "Failure";
+		}
+
 		async Task<ViewContent> BatchOpenDocument (ProgressMonitor monitor, FilePath fileName, Project project, int line, int column, DockNotebook dockNotebook)
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return null;
-			
-			using (Counters.OpenDocumentTimer.BeginTiming ("Batch opening file " + fileName)) {
+
+			var metadata = CreateOpenDocumentTimerMetadata ();
+
+			using (Counters.OpenDocumentTimer.BeginTiming ("Batch opening file " + fileName, metadata)) {
 				var openFileInfo = new FileOpenInformation (fileName, project) {
 					Options = OpenDocumentOptions.OnlyInternalViewer,
 					Line = line,
@@ -638,7 +662,9 @@ namespace MonoDevelop.Ide.Gui
 					DockNotebook = dockNotebook
 				};
 				
-				await RealOpenFile (monitor, openFileInfo);
+				bool result = await RealOpenFile (monitor, openFileInfo);
+
+				AddOpenDocumentTimerMetadata (metadata, openFileInfo, result);
 				
 				return openFileInfo.NewContent;
 			}
@@ -974,7 +1000,12 @@ namespace MonoDevelop.Ide.Gui
 			
 			IDisplayBinding binding = null;
 			IViewDisplayBinding viewBinding = null;
-			Project project = openFileInfo.Project ?? GetProjectContainingFile (fileName);
+			if (openFileInfo.Project == null) {
+				// Set the project if one can be found. The project on the FileOpenInformation
+				// is used to add project metadata to the OpenDocumentTimer counter.
+				openFileInfo.Project = GetProjectContainingFile (fileName);
+			}
+			Project project = openFileInfo.Project;
 			
 			if (openFileInfo.DisplayBinding != null) {
 				binding = viewBinding = openFileInfo.DisplayBinding;

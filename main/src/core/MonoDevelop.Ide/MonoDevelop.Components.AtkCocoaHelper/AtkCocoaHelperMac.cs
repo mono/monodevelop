@@ -540,6 +540,12 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 	public class AccessibilityElementProxy : IAccessibilityElementProxy
 	{
+		public static bool Enabled {
+			get {
+				return IdeTheme.AccessibilityEnabled;
+			}
+		}
+
 		RealAccessibilityElementProxy realProxyElement;
 		internal object Proxy {
 			get {
@@ -656,6 +662,17 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			var realChild = proxy.realProxyElement;
 
 			realProxyElement.AccessibilityAddChildElement (realChild);
+		}
+
+		public void RemoveAccessibleChild (IAccessibilityElementProxy child)
+		{
+			var proxy = (AccessibilityElementProxy)child;
+			var realChild = proxy.realProxyElement;
+
+			var children = realProxyElement.AccessibilityChildren.ToList ();
+			children.Remove (realChild);
+
+			realProxyElement.AccessibilityChildren = children.ToArray ();
 		}
 
 		public void SetRole (string role, string description = null)

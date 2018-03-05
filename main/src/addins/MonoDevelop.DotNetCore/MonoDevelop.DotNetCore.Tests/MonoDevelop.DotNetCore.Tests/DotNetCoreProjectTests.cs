@@ -38,6 +38,17 @@ namespace MonoDevelop.DotNetCore.Tests
 	[TestFixture]
 	class DotNetCoreProjectExtensionTests : DotNetCoreTestBase
 	{
+		Solution solution;
+
+		[TearDown]
+		public override void TearDown ()
+		{
+			solution?.Dispose ();
+			solution = null;
+
+			base.TearDown ();
+		}
+
 		/// <summary>
 		/// ProjectGuid and DefaultTargets should not be added to .NET Core project when it is saved.
 		/// </summary>
@@ -45,7 +56,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		public async Task ConsoleProject_SaveProject_DoesNotAddExtraProperties ()
 		{
 			string solutionFileName = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-sdk-console.sln");
-			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = solution.GetAllProjects ().Single ();
 
 			// Original project does not have ProjectGuid nor DefaultTargets.
@@ -56,6 +67,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			await project.SaveAsync (Util.GetMonitor ());
 
 			// Reload project.
+			solution.Dispose ();
 			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			project = solution.GetAllProjects ().Single ();
 
@@ -70,7 +82,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		public async Task SdkConsoleProject_AddPackageReference_VersionWrittenAsAttribute ()
 		{
 			string solutionFileName = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-sdk-console.sln");
-			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = solution.GetAllProjects ().Single ();
 			string projectFileName = project.FileName;
 
@@ -100,7 +112,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		public async Task GetReferences_ThreeProjectReferences_TransitivelyReferencedProjectsIncluded ()
 		{
 			string solutionFileName = Util.GetSampleProject ("TransitiveProjectReferences", "TransitiveProjectReferences.sln");
-			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var projectLibC = solution.FindProjectByName ("LibC") as DotNetProject;
 			var projectLibB = solution.FindProjectByName ("LibB") as DotNetProject;
 			var projectLibA = solution.FindProjectByName ("LibA") as DotNetProject;
@@ -137,7 +149,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		public async Task GetReferences_ThreeProjectReferencesAndReferenceOutputAssemblyIsFalse_ReferenceOutputAssemblyIsFalseProjectsNotReturned ()
 		{
 			string solutionFileName = Util.GetSampleProject ("TransitiveProjectReferences", "TransitiveProjectReferences.sln");
-			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var projectLibC = solution.FindProjectByName ("LibC") as DotNetProject;
 			var projectLibB = solution.FindProjectByName ("LibB") as DotNetProject;
 			var projectLibA = solution.FindProjectByName ("LibA") as DotNetProject;
@@ -162,7 +174,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		public async Task GetReferences_ThreeProjectReferencesJsonNet_JsonNetReferenceAvailableToReferencingProjects ()
 		{
 			string solutionFileName = Util.GetSampleProject ("TransitiveProjectReferences", "TransitiveProjectReferences.sln");
-			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var projectLibC = solution.FindProjectByName ("LibC") as DotNetProject;
 			var projectLibB = solution.FindProjectByName ("LibB") as DotNetProject;
 			var projectLibA = solution.FindProjectByName ("LibA") as DotNetProject;
@@ -174,7 +186,9 @@ namespace MonoDevelop.DotNetCore.Tests
 			projectLibA.Items.Add (packageReference);
 			await projectLibA.SaveAsync (Util.GetMonitor ());
 
-			var process = Process.Start ("msbuild", $"/t:Restore {solutionFileName}");
+			CreateNuGetConfigFile (solution.BaseDirectory);
+
+			var process = Process.Start ("msbuild", $"/t:Restore /p:RestoreDisableParallel=true {solutionFileName}");
 			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
 			Assert.AreEqual (0, process.ExitCode);
 
@@ -199,7 +213,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		public async Task CanReference_PortableClassLibrary_FromNetStandardOrNetCoreAppProject ()
 		{
 			string solutionFileName = Util.GetSampleProject ("dotnetcore-pcl", "dotnetcore-pcl.sln");
-			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var pclProject = solution.FindProjectByName ("PclProfile111") as DotNetProject;
 			var netStandardProject = solution.FindProjectByName ("NetStandard14") as DotNetProject;
 			var netCoreProject = solution.FindProjectByName ("NetCore11") as DotNetProject;
@@ -220,7 +234,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		public async Task TizenProject_OpenProject_LoadedAsDotNetProjectNotUnknownSolutionItem ()
 		{
 			string solutionFileName = Util.GetSampleProject ("TizenProject", "TizenProject.sln");
-			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = solution.Items.Single (item => item.Name == "TizenProject");
 
 			Assert.IsInstanceOf<DotNetProject> (project);

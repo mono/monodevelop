@@ -201,7 +201,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			AccessibilityElementProxy [] children = null;
 
-			if (overviewMode != null) {
+			if (overviewMode != null && AccessibilityElementProxy.Enabled) {
 				children = overviewMode.UpdateAccessibility ();
 			}
 

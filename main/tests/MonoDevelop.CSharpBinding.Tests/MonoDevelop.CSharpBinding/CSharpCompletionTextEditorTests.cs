@@ -201,5 +201,26 @@ namespace console61
 				project.Dispose ();
 			}
 		}
+
+		/// <summary>
+		/// Bug 568065: Multiple identical entries for Tuple in completion list
+		/// </summary>
+		[Test]
+		public async Task TestVSTSBug568065 ()
+		{
+			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = true;
+			await TestCompletion (@"$", list => Assert.AreEqual (1, list.Where (d => d.CompletionText == "Tuple").Count ()));
+		}
+
+
+		/// <summary>
+		/// Bug 567937: Completion after using keyword should be in suggestion mode
+		/// </summary>
+		[Test]
+		public async Task TestVSTSBug567937 ()
+		{
+			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = true;
+			await TestCompletion (@"using S$", list => Assert.AreEqual (0, list.OfType<ImportSymbolCompletionData> ().Count ()));
+		}
 	}
 }

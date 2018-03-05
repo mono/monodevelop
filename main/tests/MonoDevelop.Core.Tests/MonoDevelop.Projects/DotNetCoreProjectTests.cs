@@ -342,6 +342,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (expectedProjectXml, projectXml);
+
+			sol.Dispose ();
 		}
 
 		[Test]

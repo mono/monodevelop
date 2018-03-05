@@ -15,29 +15,60 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using NUnit.Framework;
 using System;
-using UnitTests;
-using System.Threading.Tasks;
-using MonoDevelop.Projects;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using MonoDevelop.Ide;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.DotNetCore;
-using System.Diagnostics;
-using System.Threading;
+using MonoDevelop.Ide;
+using MonoDevelop.Projects;
+using NUnit.Framework;
+using UnitTests;
 
 namespace MonoDevelop.UnitTesting.Tests
 {
 	[TestFixture()]
 	public class BasicTests : TestBase
 	{
+		Solution sol;
+
 		[TestFixtureSetUp]
 		public void Start()
 		{
 			DesktopService.Initialize();
 			IdeApp.Initialize(new ProgressMonitor());
 			IdeApp.Workspace.ActiveConfigurationId = "Debug";
+		}
+
+		[TearDown]
+		public override void TearDown ()
+		{
+			sol?.Dispose ();
+			sol = null;
+
+			base.TearDown ();
+		}
+
+		/// <summary>
+		/// Clear all other package sources and just use the main NuGet package source when
+		/// restoring the packages for the project temlate tests.
+		/// </summary>
+		void CreateNuGetConfigFile (FilePath directory)
+		{
+			var fileName = directory.Combine ("NuGet.Config");
+
+			string xml =
+				"<configuration>\r\n" +
+				"  <packageSources>\r\n" +
+				"    <clear />\r\n" +
+				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
+				"  </packageSources>\r\n" +
+				"</configuration>";
+
+			File.WriteAllText (fileName, xml);
 		}
 
 		[Test()]
@@ -58,13 +89,15 @@ namespace MonoDevelop.UnitTesting.Tests
 
 		async Task CommonTestDiscovery(string projectName)
 		{
-			string solFile = Util.GetSampleProject("unit-testing-addin", "unit-testing-addin.sln");
+			FilePath solFile = Util.GetSampleProject("unit-testing-addin", "unit-testing-addin.sln");
 
-			var process = Process.Start("nuget", $"restore {solFile}");
+			CreateNuGetConfigFile (solFile.ParentDirectory);
+
+			var process = Process.Start("nuget", $"restore -DisableParallelProcessing {solFile}");
 			Assert.IsTrue(process.WaitForExit(60000), "Timeout restoring nuget packages.");
 			Assert.AreEqual(0, process.ExitCode);
 
-			var sol = await Services.ProjectService.ReadWorkspaceItem(Util.GetMonitor(), solFile) as Solution;
+			sol = await Services.ProjectService.ReadWorkspaceItem(Util.GetMonitor(), solFile) as Solution;
 			Assert.AreEqual(0, (await sol.Build(Util.GetMonitor(), "Debug")).ErrorCount);
 			var project1 = sol.GetAllProjects().Single(p => p.Name == projectName);
 			var rootUnitTest1 = UnitTestService.BuildTest(project1) as UnitTestGroup;

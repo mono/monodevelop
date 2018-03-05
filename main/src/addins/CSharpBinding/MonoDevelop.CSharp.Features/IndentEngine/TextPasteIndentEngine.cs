@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.CSharp.Formatting;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
@@ -132,8 +133,8 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 			var line = sourceText.Lines.GetLineFromPosition (offset);
 			var pasteAtLineStart = line.Start == offset;
-			var indentedText = new StringBuilder ();
-			var curLine = new StringBuilder ();
+			var indentedText = StringBuilderCache.Allocate ();
+			var curLine = StringBuilderCache.Allocate ();
 			var clonedEngine = engine.Clone ();
 			bool isNewLine = false, gotNewLine = false;
 			for (int i = 0; i < text.Length; i++) {
@@ -189,7 +190,8 @@ namespace ICSharpCode.NRefactory6.CSharp
 			if (curLine.Length > 0) {
 				indentedText.Append (curLine);
 			}
-			return indentedText.ToString ();
+			StringBuilderCache.Free (curLine);
+			return StringBuilderCache.ReturnAndFree (indentedText);
 		}
 
 		/// <inheritdoc />
@@ -489,7 +491,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			/// </summary>
 			public static string ConvertString (string str)
 			{
-				StringBuilder sb = new StringBuilder ();
+				StringBuilder sb = StringBuilderCache.Allocate ();
 				foreach (char ch in str) {
 					if (ch == '"') {
 						sb.Append ("\\\"");
@@ -497,13 +499,13 @@ namespace ICSharpCode.NRefactory6.CSharp
 						sb.Append (ConvertChar (ch));
 					}
 				}
-				return sb.ToString ();
+				return StringBuilderCache.ReturnAndFree (sb);
 			}
 
 			/// <inheritdoc />
 			public string Decode (string text)
 			{
-				var result = new StringBuilder ();
+				var result = StringBuilderCache.Allocate ();
 				bool isEscaped = false;
 
 				for (int i = 0; i < text.Length; i++) {
@@ -577,7 +579,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 					}
 				}
 
-				return result.ToString ();
+				return StringBuilderCache.ReturnAndFree (result);
 			}
 
 			static bool TryGetHex (string text, int count, ref int idx, out char r)

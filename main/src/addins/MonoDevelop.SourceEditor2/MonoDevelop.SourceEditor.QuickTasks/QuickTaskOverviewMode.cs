@@ -1298,6 +1298,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		public AccessibilityElementProxy[] UpdateAccessibility ()
 		{
+			if (!AccessibilityElementProxy.Enabled) {
+				return null;
+			}
+
 			DisposeProxies ();
 			allyChildren = new List<IQuickTaskAccessible>();
 			allyChildren.Add (new QuickTaskOverviewAccessible (parentStrip, this));

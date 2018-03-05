@@ -25,8 +25,8 @@
 //
 //
 
-
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.Commands;
@@ -191,8 +191,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 				completionTokenSrc = new CancellationTokenSource ();
 				var caretOffset = Editor.CaretOffset;
 				var token = completionTokenSrc.Token;
+
+				var metadata = new Dictionary<string, string> ();
+				metadata ["Result"] = "Success";
 				try {
-					Counters.ProcessCodeCompletion.BeginTiming ();
+					Counters.ProcessCodeCompletion.BeginTiming (metadata);
 					var task = DoHandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, descriptor.KeyChar), token);
 					if (task != null) {
 						// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
@@ -225,6 +228,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 									CurrentCompletionContext = null;
 								}
 							} finally {
+								if (token.IsCancellationRequested) {
+									metadata ["Result"] = "UserCancel";
+								}
 								Counters.ProcessCodeCompletion.EndTiming ();
 							}
 						}, Runtime.MainTaskScheduler);
@@ -233,10 +239,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 						Counters.ProcessCodeCompletion.EndTiming ();
 					}
 				} catch (TaskCanceledException) {
+					metadata ["Result"] = "UserCancel";
 					Counters.ProcessCodeCompletion.EndTiming ();
 				} catch (AggregateException) {
+					metadata ["Result"] = "Failure";
 					Counters.ProcessCodeCompletion.EndTiming ();
 				} catch {
+					metadata ["Result"] = "Failure";
 					Counters.ProcessCodeCompletion.EndTiming ();
 					throw;
 				}
@@ -260,8 +269,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 				completionTokenSrc = new CancellationTokenSource ();
 				var caretOffset = Editor.CaretOffset;
 				var token = completionTokenSrc.Token;
+
+				var metadata = new Dictionary<string, string> ();
+				metadata ["Result"] = "Success";
 				try {
-					Counters.ProcessCodeCompletion.BeginTiming ();
+					Counters.ProcessCodeCompletion.BeginTiming (metadata);
 					var task = DoHandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.BackspaceOrDeleteCommand, deleteOrBackspaceTriggerChar), token);
 					if (task != null) {
 						// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
@@ -299,6 +311,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 									CurrentCompletionContext = null;
 								}
 							} finally {
+								if (token.IsCancellationRequested) {
+									metadata ["Result"] = "UserCancel";
+								}
 								Counters.ProcessCodeCompletion.EndTiming ();
 							}
 						}, Runtime.MainTaskScheduler);
@@ -307,11 +322,14 @@ namespace MonoDevelop.Ide.Editor.Extension
 					}
 				} catch (TaskCanceledException) {
 					CurrentCompletionContext = null;
+					metadata ["Result"] = "UserCancel";
 					Counters.ProcessCodeCompletion.EndTiming ();
 				} catch (AggregateException) {
 					CurrentCompletionContext = null;
+					metadata ["Result"] = "Failure";
 					Counters.ProcessCodeCompletion.EndTiming ();
 				} catch {
+					metadata ["Result"] = "Failure";
 					Counters.ProcessCodeCompletion.EndTiming ();
 					throw;
 				}
@@ -422,11 +440,19 @@ namespace MonoDevelop.Ide.Editor.Extension
 				cpos = Editor.CaretOffset;
 				wlen = 0;
 			}
+
+			completionTokenSrc.Cancel ();
+			completionTokenSrc = new CancellationTokenSource ();
+			var token = completionTokenSrc.Token;
+
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
+
+			var metadata = new Dictionary<string, string> ();
+			metadata ["Result"] = "Success";
 			try {
-				Counters.ProcessCodeCompletion.BeginTiming ();
-				completionList = await DoHandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (reason));
+				Counters.ProcessCodeCompletion.BeginTiming (metadata);
+				completionList = await DoHandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (reason), token);
 				if (completionList != null && completionList.TriggerWordStart >= 0) {
 					CurrentCompletionContext.TriggerOffset = completionList.TriggerWordStart;
 					CurrentCompletionContext.TriggerWordLength = completionList.TriggerWordLength;
@@ -434,6 +460,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 				if (completionList == null || !CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext)) {
 					CurrentCompletionContext = null;
 				}
+			} catch (Exception) {
+				metadata ["Result"] = "Failure";
+				throw;
 			} finally {
 				Counters.ProcessCodeCompletion.EndTiming ();
 			}

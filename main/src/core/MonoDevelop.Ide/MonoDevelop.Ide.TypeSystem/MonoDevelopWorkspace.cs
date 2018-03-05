@@ -103,10 +103,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
 			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
-			if (IdeApp.Preferences.EnableSourceAnalysis)
+			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
+				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true);
+
+			if (IdeApp.Preferences.EnableSourceAnalysis) {
 				solutionCrawler.Register (this);
+			}
 
 			IdeApp.Preferences.EnableSourceAnalysis.Changed += OnEnableSourceAnalysisChanged;
+
+			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
+				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
+
 		}
 
 		void OnEnableSourceAnalysisChanged(object sender, EventArgs args)
@@ -241,14 +249,31 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (addLock) {
 					if (!added) {
 						added = true;
-						// HACK: https://github.com/dotnet/roslyn/issues/20581
-						RegisterPrimarySolutionForPersistentStorage (solutionId, solution);
+						lock (persistentStorageRegistrationLock) {
+							// HACK: https://github.com/dotnet/roslyn/issues/20581
+							// singleton HACK: https://github.com/dotnet/roslyn/issues/25152
+							// Unregister previous registration here
+
+							if (persistentStorageLastRegisteredSolutionId != solutionId) {
+								if (persistentStorageLastRegisteredSolutionId != null)
+									UnregisterPrimarySolutionForPersistentStorage (persistentStorageLastRegisteredSolutionId, false);
+
+								RegisterPrimarySolutionForPersistentStorage (solutionId, solution);
+								persistentStorageLastRegisteredSolutionId = solutionId;
+							}
+						}
 						OnSolutionAdded (solutionInfo);
 					}
 				}
 				return solutionInfo;
 			});
 		}
+
+		// Roslyn is horrifying, and the persistent storage service is a singleton. That means we can only register one workspace
+		// at a time. d15-7+ roslyn does not throw in the case of a storage already being there, but it's still bad design.
+		// https://github.com/dotnet/roslyn/issues/25152
+		static SolutionId persistentStorageLastRegisteredSolutionId;
+		static object persistentStorageRegistrationLock = new object ();
 
 		void RegisterPrimarySolutionForPersistentStorage (SolutionId solutionId, MonoDevelop.Projects.Solution solution)
 		{
@@ -753,6 +778,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		internal void InternalOnDocumentOpened (DocumentId documentId, SourceTextContainer textContainer, bool isCurrentContext = true)
+		{
+			OnDocumentOpened (documentId, textContainer, isCurrentContext);
+		}
+
+		internal void InternalOnDocumentClosed (DocumentId documentId, TextLoader reloader, bool updateActiveContext = false)
+		{
+			OnDocumentClosed (documentId, reloader, updateActiveContext);
+		}
+
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
 		internal void InformDocumentOpen (DocumentId documentId, TextEditor editor)
 		{
@@ -818,6 +853,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (openDoc != null) {
 						openDoc.Dispose ();
 						openDocuments.Remove (openDoc);
+					} else {
+						//Apparently something else opened this file via InternalOnDocumentOpened(e.g. .cshtml)
+						//it's job of whatever opened to also call InternalOnDocumentClosed
+						return;
 					}
 				}
 				if (!CurrentSolution.ContainsDocument (analysisDocument))
@@ -861,6 +900,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			var document = GetDocument (id);
 			if (document == null)
 				return;
+
+			var hostDocument = MonoDevelopHostDocumentRegistration.FromDocument (document);
+			if (hostDocument != null) {
+				hostDocument.UpdateText (text);
+				return;
+			}
+
 			bool isOpen;
 			var filePath = document.FilePath;
 			Projection projection = null;
@@ -1173,6 +1219,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			//however, our MetadataReferenceCache currently depends on (incorrectly) using TryApplyChanges
 			case ApplyChangesKind.AddMetadataReference:
 			case ApplyChangesKind.RemoveMetadataReference:
+			case ApplyChangesKind.AddProjectReference:
+			case ApplyChangesKind.RemoveProjectReference:
 				return true;
 			default:
 				return false;
@@ -1198,6 +1246,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, mdProject?.FileName.ParentDirectory, true);
+			// If file is already part of project don't re-add it, example of this is .cshtml
+			if (mdProject?.IsFileInProject (path) == true) {
+				this.OnDocumentAdded (info);
+				return;
+			}
 			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
 
 			string formattedText;
@@ -1284,6 +1337,84 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return path;
 		}
+
+		protected override void ApplyMetadataReferenceAdded (ProjectId projectId, MetadataReference metadataReference)
+		{
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var path = GetMetadataPath (metadataReference);
+			if (mdProject == null || path == null)
+				return;
+			foreach (var r in mdProject.References) {
+				if (r.ReferenceType == MonoDevelop.Projects.ReferenceType.Assembly && r.Reference == path) {
+					LoggingService.LogWarning ("Warning duplicate reference is added " + path);
+					return;
+				}
+
+				if (r.ReferenceType == MonoDevelop.Projects.ReferenceType.Project) {
+					foreach (var fn in r.GetReferencedFileNames (MonoDevelop.Projects.ConfigurationSelector.Default)) {
+						if (fn == path) {
+							LoggingService.LogWarning ("Warning duplicate reference is added " + path + " for project " + r.Reference);
+							return;
+						}
+					}
+				}
+			}
+
+			mdProject.AddReference (path);
+			tryApplyState_changedProjects.Add (mdProject);
+			this.OnMetadataReferenceAdded (projectId, metadataReference);
+		}
+
+		protected override void ApplyMetadataReferenceRemoved (ProjectId projectId, MetadataReference metadataReference)
+		{
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var path = GetMetadataPath (metadataReference);
+			if (mdProject == null || path == null)
+				return;
+			var item = mdProject.References.FirstOrDefault (r => r.ReferenceType == MonoDevelop.Projects.ReferenceType.Assembly && r.Reference == path);
+			if (item == null)
+				return;
+			mdProject.References.Remove (item);
+			tryApplyState_changedProjects.Add (mdProject);
+			this.OnMetadataReferenceRemoved (projectId, metadataReference);
+		}
+
+		string GetMetadataPath (MetadataReference metadataReference)
+		{
+			if (metadataReference is PortableExecutableReference fileMetadata) {
+				return fileMetadata.FilePath;
+			}
+			return null;
+		}
+
+		protected override void ApplyProjectReferenceAdded (ProjectId projectId, ProjectReference projectReference)
+		{
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var projectToReference = GetMonoProject (projectReference.ProjectId);
+			if (mdProject == null || projectToReference == null)
+				return;
+			var mdRef = MonoDevelop.Projects.ProjectReference.CreateProjectReference (projectToReference);
+			mdProject.References.Add (mdRef);
+			tryApplyState_changedProjects.Add (mdProject);
+			this.OnProjectReferenceAdded (projectId, projectReference);
+		}
+
+		protected override void ApplyProjectReferenceRemoved (ProjectId projectId, ProjectReference projectReference)
+		{
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var projectToReference = GetMonoProject (projectReference.ProjectId);
+			if (mdProject == null || projectToReference == null)
+				return;
+			foreach (var pr in mdProject.References.OfType<MonoDevelop.Projects.ProjectReference>()) {
+				if (pr.ProjectGuid == projectToReference.ItemId) {
+					mdProject.References.Remove (pr);
+					tryApplyState_changedProjects.Add (mdProject);
+					this.OnProjectReferenceRemoved (projectId, projectReference);
+					break;
+				}
+			}
+		}
+
 		#endregion
 
 		internal Document GetDocument (DocumentId documentId, CancellationToken cancellationToken = default (CancellationToken))
@@ -1399,7 +1530,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			originalOffset = offset;
 			return false;
 		}
-
 	}
 
 	//	static class MonoDevelopWorkspaceFeatures

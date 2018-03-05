@@ -130,6 +130,7 @@ namespace MonoDevelop.DotNetCore
 				Project.CompileTarget = dotNetCoreMSBuildProject.DefaultCompileTarget;
 
 			Project.UseAdvancedGlobSupport = true;
+			Project.UseFileWatcher = true;
 		}
 
 		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
@@ -515,6 +516,9 @@ namespace MonoDevelop.DotNetCore
 			base.OnBoundToSolution ();
 
 			if (Project.Loading)
+				return;
+
+			if (IdeApp.ProjectOperations == null)
 				return;
 
 			if (IdeApp.ProjectOperations.CurrentSelectedSolution != Project.ParentSolution)

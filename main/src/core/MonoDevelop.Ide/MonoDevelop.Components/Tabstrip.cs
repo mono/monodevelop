@@ -111,10 +111,12 @@ namespace MonoDevelop.Components
 			QueueResize ();
 
 			tab.Allocation = GetBounds (tab);
-			Accessible.AddAccessibleElement (tab.Accessible);
-			tab.AccessibilityPressed += OnTabPressed;
+			if (tab.Accessible != null) {
+				Accessible.AddAccessibleElement (tab.Accessible);
+				tab.AccessibilityPressed += OnTabPressed;
 
-			UpdateAccessibilityTabs ();
+				UpdateAccessibilityTabs ();
+			}
 		}
 
 		void OnTabPressed (object sender, EventArgs args)
@@ -124,6 +126,10 @@ namespace MonoDevelop.Components
 
 		void UpdateAccessibilityTabs ()
 		{
+			if (!AccessibilityElementProxy.Enabled) {
+				return;
+			}
+
 			int i = 0;
 			var proxies = new AtkCocoaHelper.AccessibilityElementProxy [tabs.Count];
 			foreach (var tab in tabs) {
@@ -366,9 +372,12 @@ namespace MonoDevelop.Components
 				allocation = value;
 
 				Gdk.Rectangle gdkRect = new Gdk.Rectangle ((int)allocation.X, (int)allocation.Y, (int)allocation.Width, (int)allocation.Height);
-				Accessible.FrameInGtkParent = gdkRect;
-				// If Y != 0, then we need to flip the y axis
-				Accessible.FrameInParent = gdkRect;
+
+				if (Accessible != null) {
+					Accessible.FrameInGtkParent = gdkRect;
+					// If Y != 0, then we need to flip the y axis
+					Accessible.FrameInParent = gdkRect;
+				}
 			}
 		}
 		
@@ -410,12 +419,14 @@ namespace MonoDevelop.Components
 			
 			this.TabPosition = tabPosition;
 
-			Accessible = AccessibilityElementProxy.ButtonElementProxy ();
-			Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, "tab");
-			Accessible.Title = label;
-			Accessible.GtkParent = parent;
-			Accessible.Identifier = "Tabstrip.Tab";
-			Accessible.PerformPress += OnTabPressed;
+			if (AccessibilityElementProxy.Enabled) {
+				Accessible = AccessibilityElementProxy.ButtonElementProxy ();
+				Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, "tab");
+				Accessible.Title = label;
+				Accessible.GtkParent = parent;
+				Accessible.Identifier = "Tabstrip.Tab";
+				Accessible.PerformPress += OnTabPressed;
+			}
 		}
 		
 		public Cairo.PointD Size {

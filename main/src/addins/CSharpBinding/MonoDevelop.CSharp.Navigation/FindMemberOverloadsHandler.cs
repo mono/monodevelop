@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System.Linq;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.Shared.Extensions;
@@ -53,9 +54,10 @@ namespace MonoDevelop.CSharp.Navigation
 			}
 		}
 
-		public static void FindOverloads (ISymbol symbol)
+		public static void FindOverloads (ISymbol symbol, CancellationTokenSource cancellationTokenSource)
 		{
-			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+			var searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
+			using (var monitor = searchMonitor.WithCancellationSource (cancellationTokenSource)) {
 				switch (symbol.Kind) {
 				case SymbolKind.Method:
 					foreach (var method in symbol.ContainingType.GetMembers (symbol.Name).OfType<IMethodSymbol> ()) {
@@ -63,7 +65,7 @@ namespace MonoDevelop.CSharp.Navigation
 							if (monitor.CancellationToken.IsCancellationRequested)
 								return;
 							
-							monitor.ReportResult (new MemberReference (method, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+							searchMonitor.ReportResult (new MemberReference (method, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
 						}
 					}
 					break;
@@ -73,7 +75,7 @@ namespace MonoDevelop.CSharp.Navigation
 							if (monitor.CancellationToken.IsCancellationRequested)
 								return;
 							
-							monitor.ReportResult (new MemberReference (property, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+							searchMonitor.ReportResult (new MemberReference (property, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
 						}
 					}
 					break;
@@ -100,10 +102,26 @@ namespace MonoDevelop.CSharp.Navigation
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
-			var sym = info.Symbol ?? info.DeclaredSymbol;
-			if (sym != null)
-				FindOverloads (sym);
+
+			var metadata = Counters.CreateNavigateToMetadata ("MemberOverloads");
+			using (var timer = Counters.NavigateTo.BeginTiming (metadata)) {
+
+				var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
+				var sym = info.Symbol ?? info.DeclaredSymbol;
+				if (sym == null) {
+					Counters.UpdateUserFault (metadata);
+					return;
+				}
+
+				using (var source = new CancellationTokenSource ()) {
+					try {
+						FindOverloads (sym, source);
+						Counters.UpdateNavigateResult (metadata, true);
+					} finally {
+						Counters.UpdateUserCancellation (metadata, source.Token);
+					}
+				}
+			}
 		}
 	}
 }

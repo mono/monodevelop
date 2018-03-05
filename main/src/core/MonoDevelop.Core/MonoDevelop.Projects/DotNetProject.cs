@@ -911,9 +911,9 @@ namespace MonoDevelop.Projects
 		{
 			List<AssemblyReference> result = new List<AssemblyReference> ();
 			if (CheckUseMSBuildEngine (configuration)) {
-					// Get the references list from the msbuild project
-					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-						result = await RunResolveAssemblyReferencesTarget (configuration);
+				// Get the references list from the msbuild project
+				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
+					result.AddRange (await RunResolveAssemblyReferencesTarget (configuration));
 			} else {
 				foreach (ProjectReference pref in References) {
 					if (pref.ReferenceType != ReferenceType.Project) {
@@ -986,15 +986,27 @@ namespace MonoDevelop.Projects
 		}
 
 		AsyncCriticalSection referenceCacheLock = new AsyncCriticalSection ();
-		Dictionary<string, List<AssemblyReference>> referenceCache = new Dictionary<string, List<AssemblyReference>> ();
+		ImmutableDictionary<string, List<AssemblyReference>> referenceCache = ImmutableDictionary<string, List<AssemblyReference>>.Empty;
+		bool referenceCacheNeedsRefresh;
 
 		async Task<List<AssemblyReference>> RunResolveAssemblyReferencesTarget (ConfigurationSelector configuration)
 		{
 			List<AssemblyReference> refs = null;
 			var confId = (GetConfiguration (configuration) ?? DefaultConfiguration)?.Id ?? "";
 
+			// Check the cache before waiting for the lock, which may be very slow
+			if (!referenceCacheNeedsRefresh && referenceCache.TryGetValue (confId, out refs))
+				return refs;
+
 			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false)) {
-				// Check the cache before starting the task
+
+				if (referenceCacheNeedsRefresh) {
+					// Refresh requested. Clear the whole cache.
+					referenceCache = ImmutableDictionary<string, List<AssemblyReference>>.Empty;
+					referenceCacheNeedsRefresh = false;
+				}
+
+				// Check again the cache before starting the task
 				if (referenceCache.TryGetValue (confId, out refs))
 					return refs;
 
@@ -1010,7 +1022,7 @@ namespace MonoDevelop.Projects
 
 				refs = result.Items.Select (i => new AssemblyReference (i.Include, i.Metadata)).ToList ();
 
-				referenceCache [confId] = refs;
+				referenceCache = referenceCache.SetItem (confId, refs);
 			}
 			return refs;
 		}
@@ -1034,15 +1046,27 @@ namespace MonoDevelop.Projects
 				return new List<PackageDependency> ();
 		}
 
-		Dictionary<string, List<PackageDependency>> packageDependenciesCache = new Dictionary<string, List<PackageDependency>> ();
+		ImmutableDictionary<string, List<PackageDependency>> packageDependenciesCache = ImmutableDictionary<string, List<PackageDependency>>.Empty;
 		AsyncCriticalSection packageDependenciesCacheLock = new AsyncCriticalSection ();
+		bool packageDependenciesNeedRefresh;
 
 		async Task<List<PackageDependency>> RunResolvePackageDependenciesTarget (ConfigurationSelector configuration, CancellationToken cancellationToken)
 		{
 			List<PackageDependency> packageDependencies = null;
 			var confId = (GetConfiguration (configuration) ?? DefaultConfiguration)?.Id ?? "";
 
+			// Check the cache before entering the lock, which may be slow
+			if (!packageDependenciesNeedRefresh && packageDependenciesCache.TryGetValue (confId, out packageDependencies))
+				return packageDependencies;
+			
 			using (await packageDependenciesCacheLock.EnterAsync ().ConfigureAwait (false)) {
+
+				if (packageDependenciesNeedRefresh) {
+					// Refresh requested. Clear the whole cache.
+					packageDependenciesCache = ImmutableDictionary<string, List<PackageDependency>>.Empty;
+					packageDependenciesNeedRefresh = false;
+				}
+
 				// Check the cache before starting the task
 				if (packageDependenciesCache.TryGetValue (confId, out packageDependencies))
 					return packageDependencies;
@@ -1062,7 +1086,7 @@ namespace MonoDevelop.Projects
 
 				packageDependencies = result.Items.Select (i => PackageDependency.Create (i)).Where (dependency => dependency != null).ToList ();
 
-				packageDependenciesCache [confId] = packageDependencies;
+				packageDependenciesCache = packageDependenciesCache .SetItem (confId, packageDependencies);
 			}
 
 			return packageDependencies;
@@ -1088,12 +1112,9 @@ namespace MonoDevelop.Projects
 		{
 			// Clean the reference and package cache
 
-			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false))
-				referenceCache.Clear ();
+			referenceCacheNeedsRefresh = true;
+			packageDependenciesNeedRefresh = true;
 
-			using (await packageDependenciesCacheLock.EnterAsync ().ConfigureAwait (false))
-				packageDependenciesCache.Clear ();
-			
 			await base.OnClearCachedData ();
 		}
 
@@ -1502,7 +1523,7 @@ namespace MonoDevelop.Projects
 			string root = null;
 			string dirNamespc = null;
 			string defaultNmspc = !string.IsNullOrEmpty (defaultNamespace)
-				? SanitisePotentialNamespace (defaultNamespace)
+				? SanitisePotentialNamespace (defaultNamespace) ?? "Application"
 				: SanitisePotentialNamespace (project.Name) ?? "Application";
 
 			if (string.IsNullOrEmpty (fileName)) {
@@ -1550,17 +1571,17 @@ namespace MonoDevelop.Projects
 
 		static string GetHierarchicalNamespace (string relativePath)
 		{
-			StringBuilder sb = new StringBuilder (relativePath);
+			StringBuilder sb = StringBuilderCache.Allocate (relativePath);
 			for (int i = 0; i < sb.Length; i++) {
 				if (sb[i] == Path.DirectorySeparatorChar)
 					sb[i] = '.';
 			}
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 
 		static string SanitisePotentialNamespace (string potential)
 		{
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			foreach (char c in potential) {
 				if (char.IsLetter (c) || c == '_' || (sb.Length > 0 && (char.IsLetterOrDigit (sb[sb.Length - 1]) || sb[sb.Length - 1] == '_') && (c == '.' || char.IsNumber (c)))) {
 					sb.Append (c);
@@ -1570,9 +1591,10 @@ namespace MonoDevelop.Projects
 				if (sb[sb.Length - 1] == '.')
 					sb.Remove (sb.Length - 1, 1);
 
-				return sb.ToString ();
-			} else
-				return null;
+				return StringBuilderCache.ReturnAndFree (sb);
+			}
+			StringBuilderCache.Free (sb);
+			return null;
 		}
 
 		void RuntimeSystemAssemblyServiceDefaultRuntimeChanged (object sender, EventArgs e)

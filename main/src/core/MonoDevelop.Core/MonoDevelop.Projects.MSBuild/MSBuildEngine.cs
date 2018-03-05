@@ -90,7 +90,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public abstract void GetEvaluatedItemInfo (object item, out string name, out string include, out string finalItemSpec, out bool imported);
 
-		public abstract void GetPropertyInfo (object property, out string name, out string value, out string finalValue);
+		public abstract void GetPropertyInfo (object property, out string name, out string value, out string finalValue, out bool definedMultipleTimes);
 
 		public abstract IEnumerable<MSBuildTarget> GetTargets (object projectInstance);
 

@@ -106,9 +106,10 @@ namespace MonoDevelop.Core.Execution
 		void PostSetStatus (ConnectionStatus s, string message, Exception e = null)
 		{
 			if (syncContext != null) {
-				syncContext.Post (delegate {
-					SetStatus (s, message, e);
-				}, null);
+				syncContext.Post (state => {
+					var (rpc, status, msg, exc) = (ValueTuple<RemoteProcessConnection, ConnectionStatus, string, Exception>)state;
+					rpc.SetStatus (status, msg, exc);
+				}, (this, s, message, e));
 			} else {
 				SetStatus (s, message, e);
 			}

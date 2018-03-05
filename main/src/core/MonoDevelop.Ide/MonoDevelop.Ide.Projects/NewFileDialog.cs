@@ -173,7 +173,11 @@ namespace MonoDevelop.Ide.Projects
 
 			if (catView.Selection.GetSelected (out treeModel, out treeIter)) {
 				FillCategoryTemplates (treeIter);
-				catView.ExpandRow (treeModel.GetPath (treeIter), false);
+				if (!DesktopService.AccessibilityInUse) {
+					// When accessibility is being used, don't expand rows automatically
+					// as it can be confusing when using a screen reader
+					catView.ExpandRow (treeModel.GetPath (treeIter), false);
+				}
 				UpdateOkStatus ();
 			}
 		}
@@ -503,7 +507,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public event EventHandler OnOked;
 
-		void OpenEvent (object sender, EventArgs e)
+		async  void OpenEvent (object sender, EventArgs e)
 		{
 			if (!okButton.Sensitive)
 				return;
@@ -527,7 +531,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 
 				try {
-					if (!item.Create (project, project, path, titem.Language, filename))
+					if (!await item.Create (project, project, path, titem.Language, filename))
 						return;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error creating file", ex);

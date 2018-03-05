@@ -46,6 +46,7 @@ namespace MonoDevelop.DotNetCore.Tests
 	class DotNetCoreProjectTemplateTests : DotNetCoreTestBase
 	{
 		TemplatingService templatingService;
+		Solution solution;
 
 		[TestFixtureSetUp]
 		public void SetUp ()
@@ -60,6 +61,15 @@ namespace MonoDevelop.DotNetCore.Tests
 			if (!IdeApp.IsInitialized) {
 				IdeApp.Initialize (Util.GetMonitor ());
 			}
+		}
+
+		[TearDown]
+		public override void TearDown ()
+		{
+			solution?.Dispose ();
+			solution = null;
+
+			base.TearDown ();
 		}
 
 		[Test]
@@ -220,25 +230,6 @@ namespace MonoDevelop.DotNetCore.Tests
 			return config;
 		}
 
-		/// <summary>
-		/// Clear all other package sources and just use the main NuGet package source when
-		/// restoring the packages for the project temlate tests.
-		/// </summary>
-		void CreateNuGetConfigFile (FilePath directory)
-		{
-			var fileName = directory.Combine ("NuGet.Config");
-
-			string xml =
-				"<configuration>\r\n" +
-				"  <packageSources>\r\n" +
-				"    <clear />\r\n" +
-				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
-				"  </packageSources>\r\n" +
-				"</configuration>";
-
-			File.WriteAllText (fileName, xml);
-		}
-
 		static string GetProjectName (string templateId)
 		{
 			return templateId.Replace ("Microsoft.Test.", "")
@@ -285,7 +276,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			var result = await templatingService.ProcessTemplate (template, config, null);
 
-			var solution = result.WorkspaceItems.FirstOrDefault () as Solution;
+			solution = result.WorkspaceItems.FirstOrDefault () as Solution;
 			await solution.SaveAsync (Util.GetMonitor ());
 
 			// RestoreDisableParallel prevents parallel restores which sometimes cause

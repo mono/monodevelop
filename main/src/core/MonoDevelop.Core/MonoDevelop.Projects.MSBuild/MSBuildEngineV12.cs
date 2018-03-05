@@ -1,4 +1,4 @@
-//
+﻿//
 // MSBuildEngineV12.cs
 //
 // Author:
@@ -146,12 +146,13 @@ namespace MonoDevelop.Projects.MSBuild
 			return ((MSProject)project).AllEvaluatedProperties;
 		}
 
-		public override void GetPropertyInfo (object property, out string name, out string value, out string finalValue)
+		public override void GetPropertyInfo (object property, out string name, out string value, out string finalValue, out bool definedMultipleTimes)
 		{
 			var p = (ProjectProperty)property;
 			name = p.Name;
 			value = p.UnevaluatedValue;
 			finalValue = p.EvaluatedValue;
+			definedMultipleTimes = true;
 		}
 
 		public override IEnumerable<MSBuildTarget> GetTargets (object project)

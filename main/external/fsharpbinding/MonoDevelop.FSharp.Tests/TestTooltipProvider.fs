@@ -26,7 +26,7 @@ type TestTooltipProvider() =
 
     let getTooltip source =
         let _, _, symbolUse, _ = getSymbol source
-        symbolUse |> Option.bind SymbolTooltips.getTooltipFromSymbolUse
+        symbolUse |> Option.bind MonoDevelop.FSharp.Shared.SymbolTooltips.getTooltipFromSymbolUse
 
     let getTooltipSignature (source: string) =
         match getTooltip source with
@@ -363,6 +363,12 @@ type TestTooltipProvider() =
 
         signature |> should startWith expected
         
+    [<Test>]
+    member this.``int list tooltip``() =
+        "type X$ = int list"
+        |> getTooltipSignature
+        |> should equal "type X = int list"
+
     [<Test>]
     member this.``Operator tooltip``() =
         let input =

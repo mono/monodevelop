@@ -83,6 +83,57 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
+		[DllImport("/usr/lib/libobjc.dylib")]
+		private static extern IntPtr class_getInstanceMethod(IntPtr classHandle, IntPtr Selector);
+
+		[DllImport("/usr/lib/libobjc.dylib")]
+		private static extern IntPtr method_getImplementation(IntPtr method);
+
+		[DllImport("/usr/lib/libobjc.dylib")]
+		private static extern IntPtr imp_implementationWithBlock(ref BlockLiteral block);
+
+		[DllImport("/usr/lib/libobjc.dylib")]
+		private static extern void method_setImplementation(IntPtr method, IntPtr imp);
+
+		[MonoNativeFunctionWrapper]
+		delegate void AccessibilitySetValueForAttributeDelegate (IntPtr self, IntPtr selector, IntPtr valueHandle, IntPtr attributeHandle);
+		delegate void SwizzledAccessibilitySetValueForAttributeDelegate (IntPtr block, IntPtr self, IntPtr valueHandle, IntPtr attributeHandle);
+
+		static IntPtr originalAccessibilitySetValueForAttributeMethod;
+		void SwizzleNSApplication ()
+		{
+			// Swizzle accessibilitySetValue:forAttribute: so that we can detect when VoiceOver gets enabled
+			var nsApplicationClassHandle = Class.GetHandle ("NSApplication");
+			var accessibilitySetValueForAttributeSelector = Selector.GetHandle ("accessibilitySetValue:forAttribute:");
+
+			var accessibilitySetValueForAttributeMethod = class_getInstanceMethod (nsApplicationClassHandle, accessibilitySetValueForAttributeSelector);
+			originalAccessibilitySetValueForAttributeMethod = method_getImplementation (accessibilitySetValueForAttributeMethod);
+
+			var block = new BlockLiteral ();
+
+			SwizzledAccessibilitySetValueForAttributeDelegate d = accessibilitySetValueForAttribute;
+			block.SetupBlock (d, null);
+			var imp = imp_implementationWithBlock (ref block);
+			method_setImplementation (accessibilitySetValueForAttributeMethod, imp);
+		}
+
+		[MonoPInvokeCallback (typeof (SwizzledAccessibilitySetValueForAttributeDelegate))]
+		static void accessibilitySetValueForAttribute (IntPtr block, IntPtr self, IntPtr valueHandle, IntPtr attributeHandle)
+		{
+			var d = Marshal.GetDelegateForFunctionPointer<AccessibilitySetValueForAttributeDelegate> (originalAccessibilitySetValueForAttributeMethod);
+			d (self, Selector.GetHandle ("accessibilitySetValue:forAttribute:"), valueHandle, attributeHandle);
+
+			NSString attrString = (NSString)ObjCRuntime.Runtime.GetNSObject (attributeHandle);
+			var val = (NSNumber)ObjCRuntime.Runtime.GetNSObject (valueHandle);
+
+			if (attrString == "AXEnhancedUserInterface" && !IdeTheme.AccessibilityEnabled) {
+				if (val.BoolValue) {
+					ShowVoiceOverNotice ();
+				}
+			}
+			AccessibilityInUse = val.BoolValue;
+		}
+
 		public MacPlatformService ()
 		{
 			if (initedGlobal)
@@ -169,6 +220,18 @@ namespace MonoDevelop.MacIntegration
 				};
 			}
 
+			// Listen to the AtkCocoa notification for the presence of VoiceOver
+			SwizzleNSApplication ();
+
+			var nc = NSNotificationCenter.DefaultCenter;
+			nc.AddObserver ((NSString)"AtkCocoaAccessibilityEnabled", (NSNotification) => {
+				Console.WriteLine ($"VoiceOver on {IdeTheme.AccessibilityEnabled}");
+				if (!IdeTheme.AccessibilityEnabled) {
+					Console.WriteLine ("Showing notice");
+					ShowVoiceOverNotice ();
+				}
+			}, NSApplication.SharedApplication);
+
 			// Now that Cocoa has been initialized we can check whether the keyboard focus mode is turned on
 			// See System Preferences - Keyboard - Shortcuts - Full Keyboard Access
 			var keyboardMode = NSUserDefaults.StandardUserDefaults.IntForKey ("AppleKeyboardUIMode");
@@ -181,6 +244,30 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			return loaded;
+		}
+
+		const string EnabledKey = "com.monodevelop.AccessibilityEnabled";
+		static void ShowVoiceOverNotice ()
+		{
+			var alert = new NSAlert ();
+			alert.MessageText = GettextCatalog.GetString ("Assistive Technology Detected");
+			alert.InformativeText = GettextCatalog.GetString ("{0} has detected an assistive technology (such as VoiceOver) is running. Do you want to restart {0} and enable the accessibility features?", BrandingService.ApplicationName);
+			alert.AddButton (GettextCatalog.GetString ("Restart and enable"));
+			alert.AddButton (GettextCatalog.GetString ("No"));
+
+			var result = alert.RunModal ();
+			switch (result) {
+			case 1000:
+				NSUserDefaults defaults = NSUserDefaults.StandardUserDefaults;
+				defaults.SetBool (true, EnabledKey);
+				defaults.Synchronize ();
+
+				IdeApp.Restart ();
+				break;
+
+			default:
+				break;
+			}
 		}
 
 		protected override string OnGetMimeTypeForUri (string uri)

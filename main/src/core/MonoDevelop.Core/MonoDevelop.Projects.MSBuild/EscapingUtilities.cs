@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using MonoDevelop.Core;
 
 namespace Microsoft.Build.Shared
 {
@@ -70,7 +71,7 @@ namespace Microsoft.Build.Shared
             }
 
             // This is where we're going to build up the final string to return to the caller.
-			StringBuilder unescapedString = new StringBuilder (escapedString.Length);
+			StringBuilder unescapedString = StringBuilderCache.Allocate ();
 
             int currentPosition = 0;
 
@@ -112,7 +113,7 @@ namespace Microsoft.Build.Shared
             // characters into the destination.
             unescapedString.Append(escapedString, currentPosition, escapedString.Length - currentPosition);
 
-            return unescapedString.ToString ();
+			return StringBuilderCache.ReturnAndFree (unescapedString);
         }
 
 
@@ -172,16 +173,16 @@ namespace Microsoft.Build.Shared
             }
 
             // This is where we're going to build up the final string to return to the caller.
-			StringBuilder escapedStringBuilder = new StringBuilder (unescapedString.Length * 2);
+			StringBuilder escapedStringBuilder = StringBuilderCache.Allocate ();
 
             AppendEscapedString(escapedStringBuilder, unescapedString);
 
             if (!cache)
             {
-                return escapedStringBuilder.ToString ();
+				return StringBuilderCache.ReturnAndFree (escapedStringBuilder);
             }
 
-            string escapedString = escapedStringBuilder.ToString ();
+			string escapedString = StringBuilderCache.ReturnAndFree (escapedStringBuilder);
 
             lock (s_unescapedToEscapedStrings)
             {

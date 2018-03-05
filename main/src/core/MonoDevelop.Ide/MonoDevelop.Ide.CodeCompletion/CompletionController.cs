@@ -1,4 +1,4 @@
-﻿//
+//
 // CodeCompletionSession.cs
 //
 // Author:
@@ -32,6 +32,7 @@ using Gtk;
 using MonoDevelop.Ide.Editor.Extension;
 using Xwt.Drawing;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -205,7 +206,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			initialWordLength = CompletionWidget.SelectedLength > 0 ? 0 : text.Length;
 			StartOffset = CompletionWidget.CaretOffset - initialWordLength;
-			HideWhenWordDeleted = initialWordLength != 0;
 
 			ResetSizes ();
 			UpdateWordSelection ();
@@ -259,8 +259,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			usingPreviewEntry = false;
 			previewCompletionEntryText = "";
-			StartOffset = 0;
-			HideWhenWordDeleted = false;
 			SelectedItemCompletionText = null;
 			ResetViewState();
 		}
@@ -407,8 +405,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (!object.ReferenceEquals (sender, mutableList))
 				return;
-			
-			ResetSizes ();
 
 			// Only hide the footer if it's finished changing
 			if (!mutableList.IsChanging)
@@ -506,10 +502,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public int InitialWordLength {
 			get { return initialWordLength; }
-		}
-
-		bool HideWhenWordDeleted {
-			get; set;
 		}
 
 		public CompletionTextEditorExtension Extension {
@@ -713,15 +705,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set;
 		}
 
-		int startOffset;
-		internal int StartOffset {
-			get {
-				return startOffset;
-			}
-			set {
-				startOffset = value;
-			}
-		}
+		internal int StartOffset { get; set; }
 
 		public int EndOffset {
 			get;
@@ -1061,13 +1045,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public KeyActions PostProcessKey (KeyDescriptor descriptor)
 		{
-			if (CompletionWidget == null || StartOffset > CompletionWidget.CaretOffset) {// CompletionWidget == null may happen in unit tests.
+			if (CompletionWidget == null) {// CompletionWidget == null may happen in unit tests.
 				return KeyActions.CloseWindow | KeyActions.Process;
 			}
 
-			if (HideWhenWordDeleted && StartOffset >= CompletionWidget.CaretOffset) {
-				return KeyActions.CloseWindow | KeyActions.Process;
-			}
 			switch (descriptor.SpecialKey) {
 			case SpecialKey.BackSpace:
 				ResetSizes ();
@@ -1169,7 +1150,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void UpdateLastWordChar ()
 		{
 			if (CompletionWidget != null)
-				EndOffset = CompletionWidget.CaretOffset;
+				EndOffset = Math.Max (StartOffset, CompletionWidget.CaretOffset);
 		}
 
 		void SelectEntry (string s)

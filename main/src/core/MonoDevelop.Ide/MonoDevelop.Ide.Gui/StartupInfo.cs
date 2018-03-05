@@ -57,6 +57,16 @@ namespace MonoDevelop.Ide.Gui
 				return requestedFileList.Any (f => File.Exists (f.FileName) && (Services.ProjectService.IsWorkspaceItemFile (f.FileName) || Services.ProjectService.IsSolutionItemFile (f.FileName)));
 			}
 		}
+
+		/// <summary>
+		/// Set to true if a project was opened on startup.
+		/// </summary>
+		internal bool OpenedRecentProject { get; set; }
+
+		/// <summary>
+		/// Set to true if files were opened on startup.
+		/// </summary>
+		internal bool OpenedFiles { get; set; }
 		
 		/// <summary>
 		/// Matches a filename string with optional line and column 

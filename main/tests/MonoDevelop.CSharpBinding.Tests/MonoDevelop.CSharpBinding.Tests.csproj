@@ -88,6 +88,10 @@
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Features\ParameterHinting\ParameterHintingTests.cs" />
@@ -126,6 +130,7 @@
     <Compile Include="MonoDevelop.CSharpBinding\CSharpAutoInsertBracketHandlerTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\ExpandSelectionHandlerTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Parser\CSharpParsedDocumentTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CSharpLanguageVersionHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
@@ -195,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.CSharpBinding.Parser\" />

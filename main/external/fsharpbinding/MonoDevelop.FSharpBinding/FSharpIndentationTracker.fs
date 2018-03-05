@@ -71,6 +71,24 @@ type FSharpTextPasteHandler(editor:TextEditor) =
         else
             text
 
+module indentationTracker =
+    let processTextChange (editor:TextEditor) (change:Text.TextChange) =
+        // When pressing Enter before the first non whitespace character,
+        // we end up with leading whitespace before the new
+        // newline.
+        // We deal with that here as the indentation tracker
+        // only deals with the line after the newline insertion.
+        if String.IsNullOrWhiteSpace(change.InsertedText.Text) then
+            let lineNumber = editor.OffsetToLineNumber change.Offset
+            if lineNumber > 1 then
+                let text = editor.GetLineText(lineNumber-1, false)
+                if String.IsNullOrWhiteSpace text then
+                    let previousLine = editor.GetLine(lineNumber - 1)
+                    editor.RemoveText(previousLine.Offset, text.Length)
+
+    let textChanged editor changes =
+        changes |> Seq.iter (processTextChange editor)
+
 type FSharpIndentationTracker(editor:TextEditor) =
     inherit IndentationTracker ()
     let indentSize = editor.Options.IndentationSize
@@ -78,7 +96,7 @@ type FSharpIndentationTracker(editor:TextEditor) =
          editor.SetTextPasteHandler (FSharpTextPasteHandler(editor))
 
     // Lines ending in  these strings will be indented
-    let indenters = ["=";" do"; "("; "{";"[";"[|";"->";" try"; " then"; " else"; "("]
+    let indenters = ["=";" do"; "("; "{";"[";"[|";"->";" try"; " then"; " else"; "<-"; " lazy"; " begin"; " finally"]
 
     let (|AddIndent|_|) (x:string) =
         if indenters |> List.exists(x.EndsWith) then Some ()
@@ -87,9 +105,7 @@ type FSharpIndentationTracker(editor:TextEditor) =
         if x.EndsWith "with" && x.Contains("match ") then Some (x.LastIndexOf "match ")
         else None
 
-    let initialWhiteSpace (s:string) offset =
-        if offset >= s.Length then 0 else
-        let s = s.Substring offset
+    let initialWhiteSpace (s:string) =
         s.Length - s.TrimStart([|' '|]).Length
 
     let rec getIndentation lineDistance (line: IDocumentLine) =
@@ -107,26 +123,45 @@ type FSharpIndentationTracker(editor:TextEditor) =
 
         let indentation = getIndentation 0 line
         if line = null then indentation else
-        // Find white space in front of the caret and strip it out
+
         let text = editor.GetLineText(line.LineNumber)
-        //TODO using 0 instead of column, which we dont have now
-        let reIndent = 0 = text.Length + 1 && caretColumn = 1
-        if not reIndent then indentation else
-            let indent = getIndentation 0 (line.PreviousLine)
-            let initialWs = initialWhiteSpace text 0
-            if initialWs >= indent.Length then indentation else
-            indent.Substring(initialWhiteSpace text 0)
+
+        let previousLineIndentation = getIndentation 0 (line.PreviousLine)
+        let initialIndentLength = initialWhiteSpace text
+
+        if line.Length > 0 && (not (String.IsNullOrWhiteSpace text)) && (initialIndentLength+1) >= caretColumn then
+            // whitespace to the left of the caret
+            // leave the indentation as-is
+            String(' ', caretColumn-1)
+        elif initialIndentLength >= previousLineIndentation.Length then
+            indentation
+        else
+            previousLineIndentation.Substring(initialIndentLength)
 
     override x.GetIndentationString (lineNumber) =
         try
             let line = editor.GetLine (lineNumber)
-            let indent =
-                if line = null then "" else
-                    getIndentString lineNumber
-            LoggingService.LogDebug ("FSharpIndentationTracker: indent: '{0}'", indent)
-            indent
+
+            if line = null then
+                ""
+            else
+                let indent = getIndentString lineNumber
+                LoggingService.LogDebug ("FSharpIndentationTracker: indent: '{0}'", indent)
+                indent
         with
         | ex -> LoggingService.LogError ("FSharpIndentationTracker", ex)
                 ""
 
     override x.SupportedFeatures = IndentationTrackerFeatures.None ||| IndentationTrackerFeatures.CustomIndentationEngine
+
+type IndentationTextEditorExtension() =
+    inherit TextEditorExtension()
+    let mutable disposable = None
+
+    override x.Initialize() =
+        disposable <-
+            x.Editor.TextChanged.Subscribe(fun e -> indentationTracker.textChanged x.Editor e.TextChanges) |> Some
+
+    override x.Dispose() =
+        disposable |> Option.iter(fun d -> d.Dispose())
+

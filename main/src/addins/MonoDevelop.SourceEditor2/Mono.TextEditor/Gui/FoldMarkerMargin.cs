@@ -31,8 +31,10 @@ using System.Linq;
 using Gtk;
 using System.Timers;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Core;
 
 namespace Mono.TextEditor
 {
@@ -73,6 +75,8 @@ namespace Mono.TextEditor
 			editor.Caret.PositionChanged += HandleEditorCaretPositionChanged;
 			editor.Document.FoldTreeUpdated += HandleEditorDocumentFoldTreeUpdated;
 			editor.Caret.PositionChanged += EditorCarethandlePositionChanged;
+
+			UpdateAccessibility ();
 		}
 
 		void EditorCarethandlePositionChanged (object sender, DocumentLocationEventArgs e)
@@ -85,9 +89,36 @@ namespace Mono.TextEditor
 
 		void HandleEditorDocumentFoldTreeUpdated (object sender, EventArgs e)
 		{
+			UpdateAccessibility ();
 			editor.RedrawMargin (this);
 		}
-		
+
+		Dictionary<FoldSegment, FoldingAccessible> accessibles = null;
+		void UpdateAccessibility ()
+		{
+			if (!IdeTheme.AccessibilityEnabled) {
+				return;
+			}
+
+			if (accessibles == null) {
+				accessibles = new Dictionary<FoldSegment, FoldingAccessible> ();
+			}
+			foreach (var a in accessibles.Values) {
+				Accessible.RemoveAccessibleChild (a.Accessible);
+				a.Dispose ();
+			}
+			accessibles.Clear ();
+
+			// Add any folds
+			var segments = editor.Document.FoldSegments;
+			foreach (var f in segments) {
+				var accessible = new FoldingAccessible (f, this, editor);
+				accessibles [f] = accessible;
+
+				Accessible.AddAccessibleChild (accessible.Accessible);
+			}
+		}
+
 		void HandleEditorCaretPositionChanged (object sender, DocumentLocationEventArgs e)
 		{
 			if (!IsInCodeFocusMode) 
@@ -269,6 +300,14 @@ namespace Mono.TextEditor
 			layout = layout.Kill ();
 			foldings = null;
 			startFoldings = containingFoldings = endFoldings = null;
+
+			if (accessibles != null) {
+				foreach (var a in accessibles.Values) {
+					Accessible.RemoveAccessibleChild (a.Accessible);
+					a.Dispose ();
+				}
+				accessibles.Clear ();
+			}
 		}
 		
 		void DrawFoldSegment (Cairo.Context ctx, double x, double y, bool isOpen, bool isSelected)
@@ -447,6 +486,86 @@ namespace Mono.TextEditor
 					}
 				}
 			}
+		}
+	}
+
+	class FoldingAccessible : IDisposable
+	{
+		public AccessibilityElementProxy Accessible { get; private set; }
+
+		FoldSegment segment;
+		FoldMarkerMargin margin;
+		MonoTextEditor editor;
+
+		double startY;
+
+		public FoldingAccessible (FoldSegment segment, FoldMarkerMargin margin, MonoTextEditor editor)
+		{
+			Accessible = AccessibilityElementProxy.ButtonElementProxy ();
+			Accessible.PerformPress += PerformPress;
+			Accessible.GtkParent = margin.Accessible.GtkParent;
+
+			this.segment = segment;
+			this.margin = margin;
+			this.editor = editor;
+
+			UpdateAccessibility ();
+		}
+
+		void UpdateAccessibility ()
+		{
+			var startLine = segment.GetStartLine (editor.Document).LineNumber;
+			var endLine = segment.GetEndLine (editor.Document).LineNumber;
+
+			Accessible.Label = GettextCatalog.GetString ("Fold Region: Line {0} to line {1} - {2}", startLine, endLine,
+														 segment.isFolded ? GettextCatalog.GetString ("Folded") : GettextCatalog.GetString ("Expanded"));
+			if (segment.isFolded) {
+				Accessible.Help = GettextCatalog.GetString ("Activate to expand the region");
+			} else {
+				Accessible.Help = GettextCatalog.GetString ("Activate to fold the region");
+			}
+
+			startY = editor.LineToY (startLine);
+			double endY;
+
+			if (segment.isFolded) {
+				endY = startY;
+			} else {
+				endY = editor.LineToY (endLine);
+			}
+
+			var rect = new Gdk.Rectangle (0, (int)startY, (int)margin.Width, (int)(endY - startY));
+			Accessible.FrameInGtkParent = rect;
+
+			var halfParentHeight = margin.RectInParent.Height / 2;
+			var dEndY = endY - halfParentHeight;
+			var cocoaEndY = halfParentHeight - dEndY;
+
+			var dStartY = startY - halfParentHeight;
+			var cocoaStartY = halfParentHeight - dStartY;
+
+			var minY = Math.Min (cocoaStartY, cocoaEndY);
+			var maxY = Math.Max (cocoaStartY, cocoaEndY);
+
+			Accessible.FrameInParent = new Gdk.Rectangle (0, (int)(minY - editor.LineHeight), (int)margin.Width, (int)((maxY - minY) + editor.LineHeight));
+		}
+
+		public void Dispose ()
+		{
+			margin = null;
+			editor = null;
+			segment = null;
+
+			Accessible.PerformPress -= PerformPress;
+			Accessible = null;
+		}
+
+		void PerformPress (object sender, EventArgs args)
+		{
+			var fakeEvent = new MarginMouseEventArgs (editor, Gdk.EventType.ButtonPress, 0, 0, startY, Gdk.ModifierType.None);
+			margin.MousePressed (fakeEvent);
+
+			UpdateAccessibility ();
 		}
 	}
 }

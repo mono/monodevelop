@@ -36,7 +36,7 @@ using Microsoft.Build.Exceptions;
 
 namespace MonoDevelop.Projects.MSBuild.Conditions {
 
-	internal class ConditionParser {
+	internal sealed class ConditionParser {
 	
 		ConditionTokenizer tokenizer;
 		string conditionStr;
@@ -56,10 +56,10 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			try {
 				ConditionExpression ce = ParseCondition (condition);
 
-				if (!ce.CanEvaluateToBool (context))
+				if (!ce.TryEvaluateToBool (context, out bool result))
 					throw new InvalidProjectFileException (String.Format ("Can not evaluate \"{0}\" to bool.", condition));
 
-				return ce.BoolEvaluate (context);
+				return result;
 			} catch (ExpressionParseException epe) {
 				throw new InvalidProjectFileException (
 						String.Format ("Unable to parse condition \"{0}\" : {1}", condition, epe.Message),
@@ -257,7 +257,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			if (tokenizer.IsEOF ())
 				throw new ExpressionParseException ("Missing closing parenthesis in condition " + conditionStr);
 
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = Core.StringBuilderCache.Allocate ();
 			sb.AppendFormat ("{0}({1}", prefix, tokenizer.Token.Value);
 
 			tokenizer.GetNextToken ();
@@ -280,7 +280,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			sb.Append (")");
 
 			//FIXME: HACKY!
-			return new ConditionFactorExpression (new Token (sb.ToString (), TokenType.String, token_pos));
+			return new ConditionFactorExpression (new Token (Core.StringBuilderCache.ReturnAndFree (sb), TokenType.String, token_pos));
 		}
 
 		void ThrowParseException(TokenType type, string error_fmt, params object[] args)

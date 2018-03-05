@@ -140,13 +140,13 @@ namespace MonoDevelop.CSharp.Completion
 
 			int offset = SearchUsingInsertionPoint (unit.SyntaxTree.GetRoot ());
 
-			var text = new StringBuilder ();
+			var text = StringBuilderCache.Allocate ();
 			text.Append ("using ");
 			text.Append (nsName);
 			text.Append (";");
 			text.Append (editor.EolMarker);
 
-			editor.InsertText (offset, text.ToString ());
+			editor.InsertText (offset, StringBuilderCache.ReturnAndFree (text));
 		}
 
 		static int SearchUsingInsertionPoint (SyntaxNode parent)

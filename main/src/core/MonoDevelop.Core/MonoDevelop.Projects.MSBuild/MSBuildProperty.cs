@@ -1,4 +1,4 @@
-//
+﻿//
 // MSBuildProperty.cs
 //
 // Author:
@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects.MSBuild
 		string rawValue, textValue;
 		string name;
 		string unevaluatedValue;
+		string originalEvaluatedValue;
 		LinkedPropertyFlags flags;
 		bool fromAttribute;
 		string afterAttribute;
@@ -381,21 +382,31 @@ namespace MonoDevelop.Projects.MSBuild
 				SetValue (Convert.ToString (value, CultureInfo.InvariantCulture), false, mergeToMainGroup);
 		}
 
-		internal void InitEvaluatedValue (string value)
+		internal void InitEvaluatedValue (string value, bool definedMultipleTimes)
 		{
 			this.value = value;
+			this.originalEvaluatedValue = value;
+			if (definedMultipleTimes)
+				flags |= LinkedPropertyFlags.DefinedMultipleTimes;
 		}
 
-		internal virtual void SetPropertyValue (string value)
+		internal virtual void SetPropertyValue (string newValue)
 		{
-			if (this.value == null || !valueType.Equals (this.value, value)) {
+			if (this.value == null || !valueType.Equals (this.value, newValue)) {
 				// If the property has an initial evaluated value, then set the EvaluatedValueModified flag
-				if (!Modified && this.value != null)
+				if (!Modified && this.value != null && (flags & LinkedPropertyFlags.DefinedMultipleTimes) != 0)
 					EvaluatedValueModified = true;
+
+				// If the value is the same as the one that was originally evaluated, then reset the EvaluatedValueModified flag.
+				// The case is: load a default value, change to non-default, save. At this point EvaluatedValueModified=true
+				// because we set a value different from the evaluated one. Now we set default value again. Since value is same
+				// as the one evaluated, EvaluatedValueModified should now be brought back to false.
+				if (originalEvaluatedValue != null && newValue != null && valueType.Equals (originalEvaluatedValue, newValue))
+				    EvaluatedValueModified = false;
 				
 				Modified = true;
-				this.value = value;
-				this.unevaluatedValue = value;
+				this.value = newValue;
+				this.unevaluatedValue = newValue;
 				this.rawValue = null;
 				this.textValue = null;
 				StartInnerWhitespace = null;

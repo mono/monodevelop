@@ -273,10 +273,10 @@ namespace Mono.TextEditor
 		TextViewMarginAccessibilityProxy accessible;
 		public override AccessibilityElementProxy Accessible {
 			get {
-				if (accessible == null) {
+				if (accessible == null && AccessibilityElementProxy.Enabled) {
 					accessible = new TextViewMarginAccessibilityProxy ();
 				}
-				return accessible.Accessible;
+				return accessible == null ? null : accessible.Accessible;
 			}
 		}
 
@@ -286,8 +286,13 @@ namespace Mono.TextEditor
 				throw new ArgumentNullException ("textEditor");
 
 			// Overwrite the default margin role
-			Accessible.SetRole (AtkCocoa.Roles.AXTextArea);
-			accessible.Margin = this;
+			if (Accessible != null) {
+				Accessible.SetRole (AtkCocoa.Roles.AXTextArea);
+			}
+
+			if (accessible != null) {
+				accessible.Margin = this;
+			}
 
 			this.textEditor = textEditor;
 
@@ -1048,7 +1053,7 @@ namespace Mono.TextEditor
 				wrapper.Layout.Wrap = Pango.WrapMode.WordChar;
 				wrapper.Layout.Width = (int)((textEditor.Allocation.Width - XOffset - TextStartPosition) * Pango.Scale.PangoScale);
 			}
-			StringBuilder textBuilder = new StringBuilder ();
+			StringBuilder textBuilder = StringBuilderCache.Allocate ();
 			var cachedChunks = GetCachedChunks (Document, line, offset, length);
 			var lineOffset = line.Offset;
 			var chunks = new List<ColoredSegment> (cachedChunks.Item1.Select (c => new ColoredSegment (c.Offset + lineOffset, c.Length, c.ScopeStack)));;
@@ -1068,7 +1073,7 @@ namespace Mono.TextEditor
 					Console.WriteLine (chunk);
 				}
 			}
-			string lineText = textBuilder.ToString ();
+			string lineText = StringBuilderCache.ReturnAndFree (textBuilder);
 			uint preeditLength = 0;
 			
 			if (containsPreedit) {
@@ -2479,7 +2484,7 @@ namespace Mono.TextEditor
 			codeSegmentEditorWindow.Resize (w, h);
 			int indentLength = -1;
 
-			StringBuilder textBuilder = new StringBuilder ();
+			StringBuilder textBuilder = StringBuilderCache.Allocate ();
 			int curOffset = previewSegment.Offset;
 			while (curOffset >= 0 && curOffset < previewSegment.EndOffset && curOffset < Document.Length) {
 				DocumentLine line = Document.GetLineByOffset (curOffset);
@@ -2497,7 +2502,7 @@ namespace Mono.TextEditor
 				curOffset = line.EndOffsetIncludingDelimiter;
 			}
 
-			codeSegmentEditorWindow.Text = textBuilder.ToString ();
+			codeSegmentEditorWindow.Text = StringBuilderCache.ReturnAndFree (textBuilder);
 
 			HideCodeSegmentPreviewWindow ();
 			codeSegmentEditorWindow.ShowAll ();

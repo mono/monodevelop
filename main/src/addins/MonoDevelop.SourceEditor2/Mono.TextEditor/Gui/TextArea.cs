@@ -53,7 +53,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	class TextArea : Container, ITextEditorDataProvider
+	partial class TextArea : Container, ITextEditorDataProvider
 	{
 
 		TextEditorData textEditorData;
@@ -235,7 +235,7 @@ namespace Mono.TextEditor
 				value = System.Math.Round (value);
 				this.textEditorData.VAdjustment.Value = value;
 			}
-			if (isMouseTrapped)
+			if (IsMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 			
 			double delta = value - this.oldVadjustment;
@@ -343,37 +343,47 @@ namespace Mono.TextEditor
 			textEditorData.Parent = editor;
 
 			iconMargin = new IconMargin (editor);
-			iconMargin.Accessible.Label = GettextCatalog.GetString ("Icon Margin");
-			iconMargin.Accessible.Help = GettextCatalog.GetString ("Icon margin contains breakpoints and bookmarks");
-			iconMargin.Accessible.Identifier = "TextArea.IconMargin";
-			iconMargin.Accessible.GtkParent = this;
-			Accessible.AddAccessibleElement (iconMargin.Accessible);
+			if (iconMargin.Accessible != null) {
+				iconMargin.Accessible.Label = GettextCatalog.GetString ("Icon Margin");
+				iconMargin.Accessible.Help = GettextCatalog.GetString ("Icon margin contains breakpoints and bookmarks");
+				iconMargin.Accessible.Identifier = "TextArea.IconMargin";
+				iconMargin.Accessible.GtkParent = this;
+				Accessible.AddAccessibleElement (iconMargin.Accessible);
+			}
 
 			gutterMargin = new GutterMargin (editor);
-			gutterMargin.Accessible.Label = GettextCatalog.GetString ("Line Numbers");
-			gutterMargin.Accessible.Help = GettextCatalog.GetString ("Shows the line numbers for the current file");
-			gutterMargin.Accessible.Identifier = "TextArea.GutterMargin";
-			gutterMargin.Accessible.GtkParent = this;
-			Accessible.AddAccessibleElement (gutterMargin.Accessible);
+			if (gutterMargin.Accessible != null) {
+				gutterMargin.Accessible.Label = GettextCatalog.GetString ("Line Numbers");
+				gutterMargin.Accessible.Help = GettextCatalog.GetString ("Shows the line numbers for the current file");
+				gutterMargin.Accessible.Identifier = "TextArea.GutterMargin";
+				gutterMargin.Accessible.GtkParent = this;
+				Accessible.AddAccessibleElement (gutterMargin.Accessible);
+			}
 
 			actionMargin = new ActionMargin (editor);
-			actionMargin.Accessible.Identifier = "TextArea.ActionMargin";
-			actionMargin.Accessible.GtkParent = this;
-			Accessible.AddAccessibleElement (actionMargin.Accessible);
+			if (actionMargin.Accessible != null) {
+				actionMargin.Accessible.Identifier = "TextArea.ActionMargin";
+				actionMargin.Accessible.GtkParent = this;
+				Accessible.AddAccessibleElement (actionMargin.Accessible);
+			}
 
 			foldMarkerMargin = new FoldMarkerMargin (editor);
-			foldMarkerMargin.Accessible.Label = GettextCatalog.GetString ("Fold Margin");
-			foldMarkerMargin.Accessible.Help = GettextCatalog.GetString ("Shows method and class folds");
-			foldMarkerMargin.Accessible.Identifier = "TextArea.FoldMarkerMargin";
-			foldMarkerMargin.Accessible.GtkParent = this;
-			Accessible.AddAccessibleElement (foldMarkerMargin.Accessible);
+			if (foldMarkerMargin.Accessible != null) {
+				foldMarkerMargin.Accessible.Label = GettextCatalog.GetString ("Fold Margin");
+				foldMarkerMargin.Accessible.Help = GettextCatalog.GetString ("Shows method and class folds");
+				foldMarkerMargin.Accessible.Identifier = "TextArea.FoldMarkerMargin";
+				foldMarkerMargin.Accessible.GtkParent = this;
+				Accessible.AddAccessibleElement (foldMarkerMargin.Accessible);
+			}
 
 			textViewMargin = new TextViewMargin (editor);
-			textViewMargin.Accessible.Label = GettextCatalog.GetString ("Text Editor");
-			textViewMargin.Accessible.Help = GettextCatalog.GetString ("Edit the current file");
-			textViewMargin.Accessible.Identifier = "TextArea.TextViewMargin";
-			textViewMargin.Accessible.GtkParent = this;
-			Accessible.AddAccessibleElement (textViewMargin.Accessible);
+			if (textViewMargin.Accessible != null) {
+				textViewMargin.Accessible.Label = GettextCatalog.GetString ("Text Editor");
+				textViewMargin.Accessible.Help = GettextCatalog.GetString ("Edit the current file");
+				textViewMargin.Accessible.Identifier = "TextArea.TextViewMargin";
+				textViewMargin.Accessible.GtkParent = this;
+				Accessible.AddAccessibleElement (textViewMargin.Accessible);
+			}
 
 			margins.Add (iconMargin);
 			margins.Add (gutterMargin);
@@ -1071,9 +1081,12 @@ namespace Mono.TextEditor
 				return true;
 			}
 			bool filter = IMFilterKeyPress (evt, key, unicodeChar, mod);
-			if (filter)
+			if (filter) {
+				imContextNeedsReset = false;
+				ResetIMContext ();
 				return true;
-			
+			}
+
 			//FIXME: OnIMProcessedKeyPressEvent should return false when it didn't handle the event
 			if (editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
 				return true;
@@ -1484,17 +1497,17 @@ namespace Mono.TextEditor
 			customText = null;
 		}
 		#endregion
-		bool isMouseTrapped = false;
+		internal bool IsMouseTrapped { get; set; } = false;
 		
 		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
 		{
-			isMouseTrapped = true;
+			IsMouseTrapped = true;
 			return base.OnEnterNotifyEvent (evnt);
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{
-			isMouseTrapped = false;
+			IsMouseTrapped = false;
 			if (tipWindow != null && currentTooltipProvider != null) {
 				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
 					DelayedHideTooltip ();
@@ -1818,7 +1831,7 @@ namespace Mono.TextEditor
 					Options.ZoomOut ();
 
 				this.QueueDraw ();
-				if (isMouseTrapped)
+				if (IsMouseTrapped)
 					FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 				return true;
 			}

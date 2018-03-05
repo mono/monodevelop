@@ -133,6 +133,7 @@ namespace MonoDevelop.Components.MainToolbar
 				new SearchMenuModel (GettextCatalog.GetString ("Search Files"), "file"),
 				new SearchMenuModel (GettextCatalog.GetString ("Search Types"), "type"),
 				new SearchMenuModel (GettextCatalog.GetString ("Search Members"), "member"),
+				new SearchMenuModel (GettextCatalog.GetString ("Search Commands"), "command"),
 			};
 
 			// Attach menu category handlers.
@@ -1091,7 +1092,7 @@ namespace MonoDevelop.Components.MainToolbar
 				int i = s.IndexOf ('_');
 				if (i == -1)
 					return s;
-				var sb = new StringBuilder (i);
+				var sb = StringBuilderCache.Allocate ();
 				sb.Append (s, 0, i);
 				for (; i < s.Length; i++) {
 					if (s [i] == '_') {
@@ -1101,7 +1102,7 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 					sb.Append (s [i]);
 				}
-				return sb.ToString ();
+				return StringBuilderCache.ReturnAndFree (sb);
 			}
 		}
 

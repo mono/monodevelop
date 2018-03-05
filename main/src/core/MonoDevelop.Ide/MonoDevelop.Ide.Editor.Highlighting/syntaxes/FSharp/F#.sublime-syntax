@@ -61,18 +61,18 @@ contexts:
     - match: '[(\)\[\]<>{}]|\|>'
       scope: punctuation.section.brackets
   comments:
-    - match: '//'
-      scope: comment.line.source.fs
-      push:
-        - include: commenttags
-        - match: $\n?
-          pop: true
     - match: '///'
       scope: comment.line.documentation.source.fs
       push:
         - match: '$\n?'
           pop: true
         - include: xmldoc
+    - match: '//'
+      scope: comment.line.source.fs
+      push:
+        - include: commenttags
+        - match: $\n?
+          pop: true
     - match: '\(\*'
       scope: comment.block.source.fs
       push:
@@ -193,7 +193,10 @@ contexts:
         2: entity.name.function
         3: source.fs
         4: entity.name.field
-
+    - match: '(let\s+)([\(]+)'
+      captures:
+        1: keyword.source.fs
+        2: source.fs
     - match: '(\.)(\w+|``[^`]*``)(?:\s*[\(]{1})'
       captures:
         1: source.fs

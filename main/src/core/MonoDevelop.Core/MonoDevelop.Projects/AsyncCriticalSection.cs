@@ -75,13 +75,15 @@ namespace MonoDevelop.Projects
 
 		void Exit ()
 		{
+			TaskCompletionSource<IDisposable> cs = null;
 			lock (queue) {
 				if (queue.Count > 0) {
-					var cs = queue.Dequeue ();
-					cs.SetResult (criticalSectionDisposer);
+					cs = queue.Dequeue ();
 				} else
 					locked = false;
 			}
+			// Set the result outside the lock, otherwise this can lead to stack overflow on task continuations.
+			cs?.SetResult (criticalSectionDisposer);
 		}
 	}
 }

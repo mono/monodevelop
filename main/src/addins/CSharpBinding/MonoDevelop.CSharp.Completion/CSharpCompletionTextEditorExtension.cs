@@ -59,6 +59,8 @@ using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.VisualStudio.Platform;
 
+using Counters = MonoDevelop.Ide.Counters;
+
 namespace MonoDevelop.CSharp.Completion
 {
 	sealed class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IDebuggerExpressionResolver
@@ -254,15 +256,8 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				}
 			case CompletionTriggerReason.BackspaceOrDeleteCommand:
-				//char completionChar = Editor.GetCharAt (completionContext.TriggerOffset - 1);
-				//Console.WriteLine ("completion char: " + completionChar);
-				//	var timer = Counters.ResolveTime.BeginTiming ();
-				char ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
-				char ch2 = completionContext.TriggerOffset < Editor.Length ? Editor.GetCharAt (completionContext.TriggerOffset) : '\0';
-				if (!IsIdentifierPart (ch) && !IsIdentifierPart (ch2))
-					return null;
 				try {
-					return InternalHandleCodeCompletion (completionContext, new CompletionTriggerInfo (CompletionTriggerReason.BackspaceOrDeleteCommand, ch), triggerWordLength, token).ContinueWith (t => {
+					return InternalHandleCodeCompletion (completionContext, triggerInfo, triggerWordLength, token).ContinueWith (t => {
 						var result = (CompletionDataList)t.Result;
 						if (result == null)
 							return null;
@@ -282,7 +277,7 @@ namespace MonoDevelop.CSharp.Completion
 					//				timer.Dispose ();
 				}
 			default:
-				ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
+				var ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
 				return InternalHandleCodeCompletion (completionContext, new CompletionTriggerInfo (CompletionTriggerReason.CompletionCommand, ch), triggerWordLength, default (CancellationToken));
 			}
 		}
@@ -314,7 +309,7 @@ namespace MonoDevelop.CSharp.Completion
 				syntaxTree.GetContainingTypeOrEnumDeclaration (position, cancellationToken) is EnumDeclarationSyntax ||
 				syntaxTree.IsPreProcessorDirectiveContext (position, cancellationToken))
 				return;
-
+			
 			var extensionMethodImport = syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken);
 			ITypeSymbol extensionType = null;
 
@@ -341,7 +336,6 @@ namespace MonoDevelop.CSharp.Completion
 				syntaxTree.IsStatementContext (position, tokenLeftOfPosition, cancellationToken) ||
 				syntaxTree.IsTypeContext (position, cancellationToken) ||
 				syntaxTree.IsTypeDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
-				syntaxTree.IsNamespaceContext (position, cancellationToken) ||
 				syntaxTree.IsMemberDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
 				syntaxTree.IsLabelContext (position, cancellationToken)) {
 				var usedNamespaces = new HashSet<string> ();
@@ -354,6 +348,7 @@ namespace MonoDevelop.CSharp.Completion
 				foreach (var member in semanticModel.Compilation.GlobalNamespace.GetNamespaceMembers ())
 					stack.Push (member);
 				var extMethodDict = extensionMethodImport ? new Dictionary<INamespaceSymbol, List<ImportSymbolCompletionData>> () : null;
+				var typeDict = new Dictionary<INamespaceSymbol, HashSet<string>> ();
 				while (stack.Count > 0) {
 					if (cancellationToken.IsCancellationRequested)
 						break;
@@ -402,7 +397,14 @@ namespace MonoDevelop.CSharp.Completion
 								}
 							}
 						} else {
-							result.Add (new ImportSymbolCompletionData (this, type, false));
+							HashSet<string> existingTypeHashSet;
+							if (!typeDict.TryGetValue (type.ContainingNamespace, out existingTypeHashSet)) {
+								typeDict.Add (type.ContainingNamespace, existingTypeHashSet = new HashSet<string> ());
+							}
+							if (!existingTypeHashSet.Contains (type.Name)) {
+								result.Add (new ImportSymbolCompletionData (this, type, false));
+								existingTypeHashSet.Add (type.Name);
+							}
 						}
 					}
 				}
@@ -450,9 +452,11 @@ namespace MonoDevelop.CSharp.Completion
 			}
 
 			Counters.ProcessCodeCompletion.Trace ("C#: Getting completions");
+			var customOptions = DocumentContext.RoslynWorkspace.Options
+				.WithChangedOption (CompletionOptions.TriggerOnDeletion, LanguageNames.CSharp, true)
+				.WithChangedOption (CompletionOptions.HideAdvancedMembers, LanguageNames.CSharp, IdeApp.Preferences.CompletionOptionsHideAdvancedMembers);
 
-			var completionList = await Task.Run (() => cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, cancellationToken: token)).ConfigureAwait (false);
-
+			var completionList = await Task.Run (() => cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, options: customOptions, cancellationToken: token)).ConfigureAwait (false);
 			Counters.ProcessCodeCompletion.Trace ("C#: Got completions");
 
 			if (completionList == null)
