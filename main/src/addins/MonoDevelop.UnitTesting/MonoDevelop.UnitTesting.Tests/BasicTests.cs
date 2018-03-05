@@ -72,12 +72,14 @@ namespace MonoDevelop.UnitTesting.Tests
 		}
 
 		[Test()]
+		[Ignore ("Randomly failing VSTS #576673")]
 		public async Task TestsXUnitDotNetFull()
 		{
 			await CommonTestDiscovery("unit-testing-xunit-dotnetfull");
 		}
 
 		[Test()]
+		[Ignore ("Randomly failing VSTS #576673")]
 		public async Task TestsXUnitDotNetCore()
 		{
 			if (!DotNetCoreRuntime.IsInstalled) {
