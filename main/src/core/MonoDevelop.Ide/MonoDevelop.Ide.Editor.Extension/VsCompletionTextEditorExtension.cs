@@ -109,6 +109,75 @@ namespace MonoDevelop.Ide.Editor.Extension
 			editorCommandHandlerService.Execute ((textView, textBuffer) => new ToggleCompletionModeCommandArgs (textView, textBuffer), null);
 		}
 
+		[CommandUpdateHandler (EditCommands.AddCodeComment)]
+		void OnAddCodeComment (CommandInfo info)
+		{
+			var commandState = editorCommandHandlerService.GetCommandState (CommentSelectionCommandArgsFactory, null);
+			info.Enabled = commandState.IsAvailable;
+			info.Visible = !commandState.IsUnspecified;
+		}
+
+		[CommandHandler (EditCommands.AddCodeComment)]
+		internal void AddCodeComment ()
+		{
+			editorCommandHandlerService.Execute (CommentSelectionCommandArgsFactory, null);
+		}
+
+		[CommandUpdateHandler (EditCommands.RemoveCodeComment)]
+		void OnRemoveCodeComment (CommandInfo info)
+		{
+			var commandState = editorCommandHandlerService.GetCommandState (UncommentSelectionCommandArgsFactory, null);
+			info.Enabled = commandState.IsAvailable;
+			info.Visible = !commandState.IsUnspecified;
+		}
+
+		[CommandHandler (EditCommands.RemoveCodeComment)]
+		internal void RemoveCodeComment ()
+		{
+			editorCommandHandlerService.Execute (UncommentSelectionCommandArgsFactory, null);
+		}
+
+		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
+		void OnUpdateToggleComment (CommandInfo info)
+		{
+			var uncommentCommandState = editorCommandHandlerService.GetCommandState (UncommentSelectionCommandArgsFactory, null);
+			if (uncommentCommandState.IsAvailable) {
+				info.Enabled = true;
+				info.Visible = true;
+			}
+			else {
+				var commentCommandState = editorCommandHandlerService.GetCommandState (CommentSelectionCommandArgsFactory, null);
+				if (commentCommandState.IsAvailable) {
+					info.Enabled = true;
+					info.Visible = true;
+				}
+				else if (!uncommentCommandState.IsUnspecified || !commentCommandState.IsUnspecified) {
+					info.Visible = true;
+				}
+			}
+		}
+
+		[CommandHandler (EditCommands.ToggleCodeComment)]
+		internal void ToggleCodeComment ()
+		{
+			if (editorCommandHandlerService.GetCommandState (UncommentSelectionCommandArgsFactory, null).IsAvailable)
+				editorCommandHandlerService.Execute (UncommentSelectionCommandArgsFactory, null);
+			else if (editorCommandHandlerService.GetCommandState (CommentSelectionCommandArgsFactory, null).IsAvailable)
+				editorCommandHandlerService.Execute (CommentSelectionCommandArgsFactory, null);
+		}
+
+		private Func<ITextView, ITextBuffer, UncommentSelectionCommandArgs> UncommentSelectionCommandArgsFactory {
+			get {
+				return (textView, textBuffer) => new UncommentSelectionCommandArgs (textView, textBuffer); ;
+			}
+		}
+
+		private Func<ITextView, ITextBuffer, CommentSelectionCommandArgs> CommentSelectionCommandArgsFactory {
+			get {
+				return (textView, textBuffer) => new CommentSelectionCommandArgs (textView, textBuffer);
+			}
+		}
+
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			bool? nextCommandResult = null;
