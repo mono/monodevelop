@@ -247,7 +247,6 @@ namespace MonoDevelop.Components.DockNotebook
 				CloseButtonAccessible.PerformShowMenu += OnCloseButtonShowMenu;
 				CloseButtonAccessible.Title = Core.GettextCatalog.GetString ("Close document");
 				CloseButtonAccessible.Identifier = "DockNotebook.Tab.CloseButton";
-				//Accessible.AddAccessibleChild (CloseButtonAccessible);
 			}
 
 			this.notebook = notebook;
