@@ -39,31 +39,44 @@ namespace Mono.TextEditor
 {
 	partial class MdTextViewLineCollection : List<ITextViewLine>, ITextViewLineCollection
 	{
-		readonly MonoTextEditor textView;
+		readonly MonoTextEditor textEditor;
 		readonly ITextSourceVersion version;
 
 		public MdTextViewLineCollection (MonoTextEditor textEditor) : base (64)
 		{
-			this.textView = textEditor;
-			this.version = this.textView.Document.Version;
+			this.textEditor = textEditor;
+			this.version = this.textEditor.Document.Version;
+		}
 
-			int startLine = textEditor.TextArea.YToLine (textEditor.VAdjustment.Value);
-			double startY = textEditor.TextArea.LineToY (startLine);
-			double curY = startY;
-			double lastY = textEditor.VAdjustment.Value + textEditor.Allocation.Height;
+		internal void Add (int logicalLineNumber, DocumentLine line)
+		{
+			if (line == null)
+				return;
+			var newLine = new MdTextViewLine (this, textEditor, line, logicalLineNumber, textEditor.TextViewMargin.GetLayout (line));
+			for (int i = 0; i < Count; i++) {
+				if (((MdTextViewLine)this [i]).LineNumber == logicalLineNumber) {
+					this [i] = newLine;
+					return;
+				}
+			}
+			Add (newLine);
+		}
 
-			for (int visualLineNumber = textEditor.GetTextEditorData ().LogicalToVisualLine (startLine); ; visualLineNumber++) {
-				int logicalLineNumber = textEditor.GetTextEditorData ().VisualToLogicalLine (visualLineNumber);
-				var line = textEditor.GetLine (logicalLineNumber);
+		internal void RemoveLinesBefore (int lineNumber)
+		{
+			for (int i = this.Count - 1; i >= 0; i--) {
+				if (((MdTextViewLine)this [i]).LineNumber < lineNumber) {
+					this.RemoveAt (i);
+				}
+			}
+		}
 
-				if (line == null)
-					break;
-
-				Add (new MdTextViewLine (this, textEditor, line, textEditor.TextViewMargin.GetLayout (line)));
-
-				curY += textEditor.TextArea.GetLineHeight (line);
-				if (curY >= lastY)
-					break;
+		internal void RemoveLinesAfter (int lineNumber)
+		{
+			for (int i = this.Count - 1; i >= 0; i--) {
+				if (((MdTextViewLine)this [i]).LineNumber > lineNumber) {
+					this.RemoveAt (i);
+				}
 			}
 		}
 
@@ -73,7 +86,7 @@ namespace Mono.TextEditor
 
 		public SnapshotSpan FormattedSpan => new SnapshotSpan (this [0].Start, this.Last ().EndIncludingLineBreak);
 
-		public bool IsValid => version.CompareAge (textView.Document.Version) == 0;
+		public bool IsValid => version.CompareAge (textEditor.Document.Version) == 0;
 
 		public bool ContainsBufferPosition (SnapshotPoint bufferPosition)
 		{
