@@ -32,6 +32,8 @@ using System;
 using System.Xml;
 using Mono.Unix;
 
+using MonoDevelop.Components.AtkCocoaHelper;
+
 namespace MonoDevelop.Components.Docking
 {
 	public class DockItem
@@ -87,7 +89,8 @@ namespace MonoDevelop.Components.Docking
 			get { return stickyVisible; }
 			set { stickyVisible = value; }
 		}
-		
+
+		internal event EventHandler LabelChanged;
 		public string Label {
 			get { return label ?? string.Empty; }
 			set {
@@ -97,6 +100,13 @@ namespace MonoDevelop.Components.Docking
 				frame.UpdateTitle (this);
 				if (floatingWindow != null)
 					floatingWindow.Title = GetWindowTitle ();
+
+				toolbarTop?.UpdateAccessibilityLabel ();
+				toolbarLeft?.UpdateAccessibilityLabel ();
+				toolbarRight?.UpdateAccessibilityLabel ();
+				toolbarBottom?.UpdateAccessibilityLabel ();
+
+				LabelChanged?.Invoke (this, EventArgs.Empty);
 			}
 		}
 
@@ -123,6 +133,10 @@ namespace MonoDevelop.Components.Docking
 					titleTab.VisualStyle = currentVisualStyle;
 					titleTab.SetLabel (Widget, icon, label);
 					titleTab.ShowAll ();
+
+					if (widget != null) {
+						titleTab.Accessible.AddLinkedUIElement (widget.Accessible);
+					}
 				}
 				return titleTab;
 			}
@@ -144,6 +158,10 @@ namespace MonoDevelop.Components.Docking
 					widget.VisualStyle = currentVisualStyle;
 					widget.Visible = false; // Required to ensure that the Shown event is fired
 					widget.Shown += SetupContent;
+
+					if (titleTab != null) {
+						titleTab.Accessible.AddLinkedUIElement (titleTab.Accessible);
+					}
 				}
 				return widget;
 			}
