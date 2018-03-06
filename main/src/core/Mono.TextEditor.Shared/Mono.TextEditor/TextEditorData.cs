@@ -39,6 +39,7 @@ using System.Threading;
 using MonoDevelop.Ide;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace Mono.TextEditor
 {
@@ -205,12 +206,13 @@ namespace Mono.TextEditor
 		{
 			LineHeight = 16;
 
-			caret = new CaretImpl (this);
-			caret.PositionChanged += CaretPositionChanged;
-
 			options = TextEditorOptions.DefaultOptions;
 			document = doc;
 			AttachDocument ();
+
+			caret = new CaretImpl (this);
+			caret.PositionChanged += CaretPositionChanged;
+
 			SearchEngine = new BasicSearchEngine ();
 
 			HeightTree = new HeightTree (this);
@@ -352,7 +354,7 @@ namespace Mono.TextEditor
 		{
 			if (str == null)
 				throw new ArgumentNullException ("str");
-			var result = new StringBuilder ();
+			var result = StringBuilderCache.Allocate ();
 			foreach (char ch in str) {
 				switch (ch) {
 				case '&':
@@ -376,7 +378,7 @@ namespace Mono.TextEditor
 					break;
 				}
 			}
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		internal static int CalcIndentLength (string indent)
@@ -424,7 +426,7 @@ namespace Mono.TextEditor
 			int indentLength = -1;
 			int curOffset = offset;
 
-			StringBuilder result = new StringBuilder ();
+			StringBuilder result = StringBuilderCache.Allocate ();
 			while (curOffset < offset + length && curOffset < Document.Length) {
 				DocumentLine line = Document.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.Length, offset + length);
@@ -481,7 +483,7 @@ namespace Mono.TextEditor
 				if (result.Length > 0 && curOffset < offset + length)
 					result.AppendLine ();
 			}
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		internal async Task<IEnumerable<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment>> GetChunks (DocumentLine line, int offset, int length)
@@ -518,7 +520,7 @@ namespace Mono.TextEditor
 		{
 			if (string.IsNullOrEmpty (str))
 				return "";
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			bool convertTabs = TabsToSpaces;
 			var tabSize = Options.TabSize;
 			for (int i = 0; i < str.Length; i++) {
@@ -549,7 +551,7 @@ namespace Mono.TextEditor
 					break;
 				}
 			}
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 		
 		public string FormatString (int offset, string str)

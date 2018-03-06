@@ -1232,8 +1232,9 @@ namespace MonoDevelop.Projects
 					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
 					}
 
-					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata (configuration));
-					var t2 = buildTimer != null ? buildTimer.BeginTiming (GetProjectEventMetadata (configuration)) : null;
+					var metadata = GetProjectEventMetadata (configuration);
+					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (metadata);
+					var t2 = buildTimer != null ? buildTimer.BeginTiming (metadata) : null;
 
 					IRemoteProjectBuilder builder = await GetProjectBuilder (monitor.CancellationToken, context, setBusy:operationRequiresExclusiveLock).ConfigureAwait (false);
 
@@ -1250,8 +1251,13 @@ namespace MonoDevelop.Projects
 					} finally {
 						builder.Dispose ();
 						t1.End ();
-						if (t2 != null)
+						if (t2 != null) {
+							AddRunMSBuildTargetTimerMetadata (metadata, result, target, configuration);
 							t2.End ();
+							if (IsFirstBuild && target == "Build") {
+								await Runtime.RunInMainThread (() => IsFirstBuild = false);
+							}
+						}
 					}
 				});
 
@@ -1304,6 +1310,62 @@ namespace MonoDevelop.Projects
 				}
 			}
 			return null;
+		}
+
+		/// <summary>
+		/// Gets or sets the FirstBuild user property. This is true if this is a new
+		/// project and has not yet been built.
+		/// </summary>
+		internal bool IsFirstBuild {
+			get {
+				return UserProperties.GetValue ("FirstBuild", false);
+			}
+			set {
+				if (value) {
+					UserProperties.SetValue ("FirstBuild", value);
+				} else {
+					UserProperties.RemoveValue ("FirstBuild");
+				}
+			}
+		}
+
+		void AddRunMSBuildTargetTimerMetadata (
+			IDictionary<string, string> metadata,
+			MSBuildResult result,
+			string target,
+			ConfigurationSelector configuration)
+		{
+			if (target == "Build") {
+				metadata ["BuildType"] = "4";
+			} else if (target == "Clean") {
+				metadata ["BuildType"] = "1";
+			}
+			metadata ["BuildTypeString"] = target;
+
+			metadata ["FirstBuild"] = IsFirstBuild.ToString ();
+			metadata ["ProjectID"] = ItemId;
+			metadata ["ProjectType"] = TypeGuid;
+			metadata ["ProjectFlavor"] = FlavorGuids.FirstOrDefault () ?? TypeGuid;
+
+			var c = GetConfiguration (configuration);
+			if (c != null) {
+				metadata ["Configuration"] = c.Id;
+				metadata ["Platform"] = GetExplicitPlatform (c);
+			}
+
+			bool success = false;
+			bool cancelled = false;
+
+			if (result != null) {
+				success = !result.Errors.Any (error => !error.IsWarning);
+
+				if (!success) {
+					cancelled = result.Errors [0].Message == "Build cancelled";
+				}
+			}
+
+			metadata ["Success"] = success.ToString ();
+			metadata ["Cancelled"] = cancelled.ToString ();
 		}
 
 		string activeTargetFramework;
@@ -3103,8 +3165,8 @@ namespace MonoDevelop.Projects
 				foreach (var p in globalGroup.GetProperties ()) {
 					if (p.Modified) {
 						foreach (ProjectConfiguration config in Configurations)
-                            if (config.ProjectInstance != null)
-    							config.ProjectInstance.SetPropertyDirty (p.Name);
+							if (config.ProjectInstance != null)
+								config.ProjectInstance.SetPropertyValueStale (p.Name);
 					}
 				}
 			}

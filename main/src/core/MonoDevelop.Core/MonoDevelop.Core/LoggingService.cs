@@ -37,6 +37,7 @@ using MonoDevelop.Core.LogReporting;
 using MonoDevelop.Core.Logging;
 using Mono.Unix.Native;
 using System.Text;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Core
 {
@@ -46,7 +47,8 @@ namespace MonoDevelop.Core
 		const string ReportCrashesKey = "MonoDevelop.LogAgent.ReportCrashes";
 		const string ReportUsageKey = "MonoDevelop.LogAgent.ReportUsage";
 
-		static List<ILogger> loggers = new List<ILogger> ();
+		static object serviceLock = new object ();
+		static ImmutableList<ILogger> loggers = ImmutableList<ILogger>.Empty;
 		static RemoteLogger remoteLogger;
 		static DateTime timestamp;
 		static int logFileSuffix;
@@ -65,8 +67,8 @@ namespace MonoDevelop.Core
 		static LoggingService ()
 		{
 			var consoleLogger = new ConsoleLogger ();
-			loggers.Add (consoleLogger);
-			loggers.Add (new InstrumentationLogger ());
+			loggers = loggers.Add (consoleLogger);
+			loggers = loggers.Add (new InstrumentationLogger ());
 			
 			string consoleLogLevelEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_LEVEL");
 			if (!string.IsNullOrEmpty (consoleLogLevelEnv)) {
@@ -88,7 +90,7 @@ namespace MonoDevelop.Core
 			if (!string.IsNullOrEmpty (logFileEnv)) {
 				try {
 					var fileLogger = new FileLogger (logFileEnv);
-					loggers.Add (fileLogger);
+					loggers = loggers.Add (fileLogger);
 					string logFileLevelEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL");
 					fileLogger.EnabledLevel = (EnabledLoggingLevel) Enum.Parse (typeof (EnabledLoggingLevel), logFileLevelEnv, true);
 				} catch (Exception e) {
@@ -412,17 +414,21 @@ namespace MonoDevelop.Core
 		
 		public static void AddLogger (ILogger logger)
 		{
-			if (GetLogger (logger.Name) != null)
-				throw new Exception ("There is already a logger with the name '" + logger.Name + "'");
-			loggers.Add (logger);
+			lock (serviceLock) {
+				if (GetLogger (logger.Name) != null)
+					throw new Exception ("There is already a logger with the name '" + logger.Name + "'");
+				loggers = loggers.Add (logger);
+			}
 		}
 		
 		public static void RemoveLogger (string name)
 		{
-			ILogger logger = GetLogger (name);
-			if (logger == null)
-				throw new Exception ("There is no logger registered with the name '" + name + "'");
-			loggers.Remove (logger);
+			lock (serviceLock) {
+				ILogger logger = GetLogger (name);
+				if (logger == null)
+					throw new Exception ("There is no logger registered with the name '" + name + "'");
+				loggers = loggers.Remove (logger);
+			}
 		}
 		
 #endregion

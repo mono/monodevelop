@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <Template Originator="Community" Created="10/6/2010" LastModified="10/6/2010">
 
   <!-- Template Header -->
@@ -32,7 +32,7 @@
         <Reference type="Package" refto="System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
       </References>
       <Packages requireLicenseAcceptance="false">
-        <Package Id="FSharp.Core" Version="4.1.0.2" local="true" /> 
+        <Package Id="FSharp.Core" Version="4.3.3" local="true" />
       </Packages>
       <Files>
         <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
@@ -41,7 +41,7 @@
 // See the 'F# Tutorial' project for more help.
 
 [<EntryPoint>]
-let main argv = 
+let main argv =
     printfn "%A" argv
     0 // return an integer exit code
 ]]></File>

@@ -40,13 +40,15 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 {
 	public static class ProgressHelper
 	{
-		public static void ShowResultDialog (this ProgressMonitor monitor)
+		public static void ShowResultDialog (this ProgressMonitor monitor) => ShowResultDialog (monitor, null);
+
+		public static void ShowResultDialog (this ProgressMonitor monitor, MonoDevelop.Components.Window parent)
 		{
 			if (monitor.Errors.Length == 1 && !monitor.HasWarnings) {
-				MessageService.ShowError (monitor.Errors [0].Message, monitor.Errors [0].Exception);
+				MessageService.ShowError (parent, monitor.Errors [0].Message, null, monitor.Errors [0].Exception);
 			}
 			else if (!monitor.HasErrors && monitor.Warnings.Length == 1) {
-				MessageService.ShowWarning (monitor.Warnings[0]);
+				MessageService.ShowWarning (parent, monitor.Warnings[0]);
 			}
 			else if (monitor.HasErrors || monitor.HasWarnings) {
 				using (var resultDialog = new MultiMessageDialog () {
@@ -56,7 +58,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 						resultDialog.AddError (m.DisplayMessage);
 					foreach (var m in monitor.Warnings)
 						resultDialog.AddWarning (m);
-					MessageService.ShowCustomDialog (resultDialog);
+					MessageService.ShowCustomDialog (resultDialog, parent);
 				}
 			}
 		}

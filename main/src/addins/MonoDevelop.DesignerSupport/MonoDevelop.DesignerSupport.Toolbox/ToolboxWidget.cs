@@ -282,6 +282,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					return true;
 
 				var icon = item.Icon;
+				if (!icon.HasFixedSize) {
+					var maxIconSize = Math.Min (itemDimension.Width, itemDimension.Height);
+					var fittingIconSize = maxIconSize > 32 ? Xwt.IconSize.Large : maxIconSize > 16 ? Xwt.IconSize.Medium : Xwt.IconSize.Small;
+					icon = item.Icon.WithSize (fittingIconSize);
+				}
 				if (item == SelectedItem) {
 					icon = icon.WithStyles ("sel");
 					cr.SetSourceColor (Style.Base (StateType.Selected).ToCairoColor ());
@@ -1121,9 +1126,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public Xwt.Drawing.Image Icon {
 			get {
-				if (node != null)
-					return node.Icon;
-				return icon ?? DefaultIcon;
+				return node?.Icon ?? icon ?? DefaultIcon;
 			}
 		}
 

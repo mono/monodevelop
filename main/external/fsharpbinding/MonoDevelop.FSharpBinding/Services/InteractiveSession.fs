@@ -170,3 +170,8 @@ type InteractiveSession(pathToExe) =
         sendCommand (sprintf "tooltip %s" input)
 
     member x.Exited = fsiProcess.Exited
+
+    member x.SetSourceDirectory directory =
+        x.SendInput ("#silentCd @\"" + directory + "\";;")
+        x.SendInput ("System.IO.Directory.SetCurrentDirectory @\"" + directory + "\";;")
+

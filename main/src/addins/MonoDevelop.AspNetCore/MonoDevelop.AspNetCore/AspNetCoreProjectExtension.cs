@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DotNetCore;
@@ -78,6 +79,22 @@ namespace MonoDevelop.AspNetCore
 				ApplicationURL = aspnetCoreRunConfiguration.ApplicationURL,
 				PipeTransport = aspnetCoreRunConfiguration.PipeTransport
 			};
+		}
+
+		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
+		{
+			if (DotNetCoreRuntime.IsInstalled) {
+				return CheckCertificateThenExecute (monitor, context, configuration, runConfiguration);
+			}
+			return base.OnExecute (monitor, context, configuration, runConfiguration);
+		}
+
+		async Task CheckCertificateThenExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
+		{
+			if (AspNetCoreCertificateManager.CheckDevelopmentCertificateIsTrusted (Project, runConfiguration)) {
+				await AspNetCoreCertificateManager.TrustDevelopmentCertificate (monitor);
+			}
+			await base.OnExecute (monitor, context, configuration, runConfiguration);
 		}
 	}
 }

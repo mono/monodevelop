@@ -38,13 +38,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public CompletionAppearancePanel ()
 		{
 			this.Build ();
-			filterByBrowsableCheckbutton.Toggled += FilterToggled;
-		}
-
-		void FilterToggled (object sender, EventArgs e)
-		{
-			label4.Sensitive = label5.Sensitive =
-			normalOnlyRadiobutton.Sensitive = includeAdvancedRadiobutton.Sensitive = filterByBrowsableCheckbutton.Active;
 		}
 
 		#region IOptionsPanel implementation
@@ -55,10 +48,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		Control IOptionsPanel.CreatePanelWidget ()
 		{
-			filterByBrowsableCheckbutton.Active = IdeApp.Preferences.FilterCompletionListByEditorBrowsable;
-			normalOnlyRadiobutton.Active = !IdeApp.Preferences.IncludeEditorBrowsableAdvancedMembers;
-			includeAdvancedRadiobutton.Active = IdeApp.Preferences.IncludeEditorBrowsableAdvancedMembers;
-			FilterToggled (this, EventArgs.Empty);
+			filterByBrowsableCheckbutton.Active = !IdeApp.Preferences.CompletionOptionsHideAdvancedMembers;
 			return this;
 		}
 
@@ -74,8 +64,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void IOptionsPanel.ApplyChanges ()
 		{
-			IdeApp.Preferences.FilterCompletionListByEditorBrowsable.Value = filterByBrowsableCheckbutton.Active;
-			IdeApp.Preferences.IncludeEditorBrowsableAdvancedMembers.Value = includeAdvancedRadiobutton.Active;
+			IdeApp.Preferences.CompletionOptionsHideAdvancedMembers.Value = !filterByBrowsableCheckbutton.Active;
 		}
 
 		#endregion

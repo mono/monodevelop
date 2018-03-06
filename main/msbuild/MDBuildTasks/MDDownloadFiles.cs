@@ -26,10 +26,15 @@ namespace MDBuildTasks
 					return false;
 				}
 
-				string sha1 = taskItem.GetMetadata ("SHA1");
-				if (string.IsNullOrEmpty (sha1)) {
-					Log.LogError (string.Format ("Item '{0}' has no SHA metadata", url));
-					return false;
+				bool useSha256 = false;
+				string sha = taskItem.GetMetadata ("SHA1");
+				if (string.IsNullOrEmpty (sha)) {
+					sha = taskItem.GetMetadata ("SHA2");
+					useSha256 = true;
+					if (string.IsNullOrEmpty (sha)) {
+						Log.LogError (string.Format ("Item '{0}' has no SHA metadata", url));
+						return false;
+					}
 				}
 
 				string outputName = taskItem.GetMetadata ("OutputName");
@@ -48,7 +53,7 @@ namespace MDBuildTasks
 					outDir = Path.GetFullPath (outDir);
 				}
 
-				if (!DownloadFile (cacheDirectory, url, sha1, outDir, outputName, string.Equals (taskItem.GetMetadata ("Unpack"), "true", StringComparison.OrdinalIgnoreCase))) {
+				if (!DownloadFile (cacheDirectory, url, sha, useSha256, outDir, outputName, string.Equals (taskItem.GetMetadata ("Unpack"), "true", StringComparison.OrdinalIgnoreCase))) {
 					return false;
 				}
 			}
@@ -56,9 +61,9 @@ namespace MDBuildTasks
 			return true;
 		}
 
-		bool DownloadFile (string cacheDir, string url, string sha1, string outputDir, string outputName, bool unpack)
+		bool DownloadFile (string cacheDir, string url, string sha, bool useSha2, string outputDir, string outputName, bool unpack)
 		{
-			string cacheFile = Path.Combine (cacheDir, string.Format("{0}-{1}", sha1.Substring(0, 8), outputName));
+			string cacheFile = Path.Combine (cacheDir, string.Format("{0}-{1}", sha.Substring(0, 8), outputName));
 			string verifiedFile = cacheFile + ".verified";
 
 			if (!File.Exists (verifiedFile)) {
@@ -70,9 +75,9 @@ namespace MDBuildTasks
 				var webClient = new WebClient ();
 				webClient.DownloadFile (url, cacheFile);
 				Log.LogMessage (string.Format ("File '{0}' downloaded to {1}", url, cacheFile));
-				string fileSha = GetFileSha1 (cacheFile);
-				if (!string.Equals (fileSha, sha1, StringComparison.OrdinalIgnoreCase)) {
-					Log.LogError (string.Format ("Hash mismatch for file '{0}': expected {1}, got {2}", cacheFile, sha1, fileSha));
+				string fileSha = GetFileSha (cacheFile, useSha2);
+				if (!string.Equals (fileSha, sha, StringComparison.OrdinalIgnoreCase)) {
+					Log.LogError (string.Format ("Hash mismatch for file '{0}': expected {1}, got {2}", cacheFile, sha, fileSha));
 					return false;
 				}
 				File.WriteAllText (verifiedFile, "");
@@ -167,16 +172,33 @@ namespace MDBuildTasks
 			return Path.Combine (cacheDir, name);
 		}
 
-		static string GetFileSha1 (string filename)
+		// get sha1 unless sha2 is true
+		static string GetFileSha (string filename, bool useSha2)
 		{
 			using (FileStream fileStream = new FileStream (filename, FileMode.Open, FileAccess.Read, FileShare.Read))
-			using (var provider = SHA1.Create ()) {
-				byte [] hash = provider.ComputeHash (fileStream);
-				var sb = new StringBuilder (hash.Length);
-				foreach (var b in hash) {
-					sb.Append (string.Format ("{0:x2}", b));
+			{
+				if (useSha2) 
+				{
+					using (var provider = SHA256Managed.Create ()) {
+						byte [] hash = provider.ComputeHash (fileStream);
+						var sb = new StringBuilder (hash.Length);
+						foreach (var b in hash) {
+							sb.Append (string.Format ("{0:x2}", b));
+						}
+						return sb.ToString ();
+					}
 				}
-				return sb.ToString ();
+				else 
+				{
+					using (var provider = SHA1.Create ()) {
+						byte [] hash = provider.ComputeHash (fileStream);
+						var sb = new StringBuilder (hash.Length);
+						foreach (var b in hash) {
+							sb.Append (string.Format ("{0:x2}", b));
+						}
+						return sb.ToString ();
+					}
+				}
 			}
 		}
 	}
