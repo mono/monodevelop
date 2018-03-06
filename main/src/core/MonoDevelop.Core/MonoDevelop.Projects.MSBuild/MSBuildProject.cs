@@ -1152,7 +1152,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (elem == null)
 				return "";
 			var node = elem.PreviousSibling;
-			StringBuilder res = new StringBuilder ();
+			StringBuilder res = StringBuilderCache.Allocate ();
 
 			while (node != null) {
 				var ws = node as XmlWhitespace;
@@ -1163,13 +1163,13 @@ namespace MonoDevelop.Projects.MSBuild
 						res.Append (t);
 					} else {
 						res.Append (t, i + 1, t.Length - i - 1);
-						return res.ToString ();
+						return StringBuilderCache.ReturnAndFree (res);
 					}
 				} else
 					res.Clear ();
 				node = node.PreviousSibling;
 			}
-			return res.ToString ();
+			return StringBuilderCache.ReturnAndFree (res);
 		}
 
 		public static void Indent (TextFormatInfo format, XmlElement elem, bool closeInNewLine)

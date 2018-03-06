@@ -35,10 +35,10 @@ System_Native.o: System_Native.cpp
 	g++ -std=c++14 -c -Wall -mmacosx-version-min=10.10 -o $@ $^
 
 monostub.o: monostub.mm $(MONOSTUB_EXTRA_SOURCES)
-	g++ $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm
+	g++ -g $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm
 
 monostub:  monostub.o System_Native.o $(MONOSTUB_STATIC_LINK)
-	clang++ -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
+	clang++ -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
 #	gcc -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.m -framework AppKit -isysroot $(SDK_PATH)
 	cp monostub ../bin/MonoDevelop
 	cp monostub ../bin/mdtool

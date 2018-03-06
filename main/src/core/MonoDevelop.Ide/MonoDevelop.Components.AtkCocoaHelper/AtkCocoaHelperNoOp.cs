@@ -157,6 +157,10 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public static void MakeAccessibilityAnnouncement (this Atk.Object o,  string message)
 		{
 		}
+
+		public static void TransferAccessibleChild (this Atk.Object from, Atk.Object to, Atk.Object child)
+		{
+		}
 	}
 
 	public class AccessibilityElementProxy : IAccessibilityElementProxy
@@ -242,6 +246,10 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public Gdk.Rectangle FrameInParent { get; set; }
 
 		public void AddAccessibleChild (IAccessibilityElementProxy child)
+		{
+		}
+
+		public void RemoveAccessibleChild (IAccessibilityElementProxy child)
 		{
 		}
 

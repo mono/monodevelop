@@ -1,0 +1,3 @@
+SUBDIRS = \
+	MonoDevelop.Debugger.VsCodeDebugProtocol
+

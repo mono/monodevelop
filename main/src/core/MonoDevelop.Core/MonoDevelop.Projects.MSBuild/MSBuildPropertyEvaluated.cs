@@ -73,7 +73,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		internal bool EvaluatedValueModified {
+		internal bool EvaluatedValueIsStale {
 			get { return (flags & LinkedPropertyFlags.EvaluatedValueModified) != 0; }
 			set {
 				if (value)
@@ -105,6 +105,19 @@ namespace MonoDevelop.Projects.MSBuild
 			// Binds this evaluated property to a property defined in a property group, so that if this evaluated property
 			// is modified, the change will be propagated to that linked property.
 			linkedProperty = property;
+
+			if (EvaluatedValueIsStale && property != null) {
+				
+				// This will be true if the property has been modified in the project,
+				// which means that the evaluated value of the property may be out of date.
+				// In that case, we set the EvaluatedValueModified on the linked property,
+				// which means that the property will be saved no matter what the
+				// evaluated value was. Also, InitEvaluatedValue() is not called
+				// because the evaluated value we have is stale
+
+				property.EvaluatedValueModified = true;
+				return;
+			}
 
 			// Initialize the linked property with the evaluated property only if it has not yet modified (it doesn't have
 			// its own value).

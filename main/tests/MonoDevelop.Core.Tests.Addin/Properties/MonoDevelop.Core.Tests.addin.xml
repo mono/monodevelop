@@ -1,0 +1,5 @@
+﻿<ExtensionModel>
+	<Runtime>
+		<Import assembly="MonoDevelop.Core.Tests.Addin.dll" />
+	</Runtime>
+</ExtensionModel>

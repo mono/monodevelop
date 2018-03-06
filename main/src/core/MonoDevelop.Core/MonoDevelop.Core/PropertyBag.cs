@@ -246,7 +246,7 @@ namespace MonoDevelop.Core
 		
 		string EscapeName (string str)
 		{
-			StringBuilder sb = new StringBuilder (str.Length);
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			for (int n=0; n<str.Length; n++) {
 				char c = str [n];
 				if (c == '_')
@@ -259,24 +259,24 @@ namespace MonoDevelop.Core
 				else
 					sb.Append (c);
 			}
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 		
 		string UnescapeName (string str)
 		{
-			StringBuilder sb = new StringBuilder (str.Length);
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			for (int n=0; n<str.Length; n++) {
 				char c = str [n];
 				if (c == '_') {
 					if (n + 1 >= str.Length)
-						return sb.ToString ();
+						return StringBuilderCache.ReturnAndFree (sb);
 					if (str [n + 1] == '_') {
 						sb.Append (c);
 						n++;
 					} else {
 						int len = int.Parse (str.Substring (n+1,1));
 						if (n + 2 + len - 1 >= str.Length)
-							return sb.ToString ();
+							return StringBuilderCache.ReturnAndFree (sb);
 						int ic;
 						if (int.TryParse (str.Substring (n + 2, len), NumberStyles.HexNumber, null, out ic))
 							sb.Append ((char)ic);
@@ -285,7 +285,7 @@ namespace MonoDevelop.Core
 				} else
 					sb.Append (c);
 			}
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 	}
 

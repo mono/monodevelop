@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core.Serialization;
@@ -64,7 +65,22 @@ namespace MonoDevelop.AspNetCore
 				if (!EnvironmentVariables.ContainsKey (pair.Name))
 					EnvironmentVariables.Add (pair.Name, pair.Value.Value<string> ());
 			}
-			ApplicationURL = settings?.GetValue ("applicationUrl")?.Value<string> () ?? "http://localhost:5000/";
+			ApplicationURL = GetApplicationUrl (settings, EnvironmentVariables);
+		}
+
+		static string GetApplicationUrl (JObject settings, IDictionary<string, string> environmentVariables)
+		{
+			var applicationUrl = settings?.GetValue ("applicationUrl")?.Value<string> ();
+			if (applicationUrl != null)
+				return applicationUrl;
+
+			if (environmentVariables.TryGetValue ("ASPNETCORE_URLS", out string applicationUrls)) {
+				applicationUrl = applicationUrls.Split (';').FirstOrDefault ();
+				if (applicationUrl != null)
+					return applicationUrl;
+			}
+
+			return "http://localhost:5000";
 		}
 
 		protected override void Read (IPropertySet pset)
@@ -102,6 +118,25 @@ namespace MonoDevelop.AspNetCore
 				PipeTransport = null;
 			else
 				PipeTransport = new PipeTransportSettings (other.PipeTransport);
+		}
+
+		internal bool UsingHttps ()
+		{
+			if (ApplicationURL != null) {
+				if (ApplicationURL.StartsWith ("https://", StringComparison.OrdinalIgnoreCase)) {
+					return true;
+				}
+			}
+
+			var environmentVariables = (IDictionary<string, string>)EnvironmentVariables;
+
+			if (environmentVariables.TryGetValue ("ASPNETCORE_URLS", out string applicationUrls)) {
+				if (applicationUrls != null) {
+					return applicationUrls.IndexOf ("https://", StringComparison.OrdinalIgnoreCase) >= 0;
+				}
+			}
+
+			return false;
 		}
 	}
 }

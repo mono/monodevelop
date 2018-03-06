@@ -79,6 +79,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\UrlMarker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextEditorData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\DefaultIndentationTracker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\CaretImpl.ITextCaret.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor\" />

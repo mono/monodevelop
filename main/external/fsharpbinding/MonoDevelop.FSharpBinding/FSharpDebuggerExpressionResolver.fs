@@ -1,4 +1,6 @@
 ﻿namespace MonoDevelop.FSharp
+
+open Microsoft.FSharp.Compiler
 open MonoDevelop
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Debugger
@@ -8,7 +10,7 @@ type FSharpDebuggerExpressionResolver() =
 
     interface IDebuggerExpressionResolver with
         member x.ResolveExpressionAsync (doc, context, offset, cancellationToken) =
-            let computation = async {
+            async {
                 let ast = context.TryGetAst()
                 let location =
                     match ast with
@@ -49,7 +51,9 @@ type FSharpDebuggerExpressionResolver() =
                             | SymbolUse.Pattern _p -> None
                             | SymbolUse.Property _pr ->
                                 let loc = symbolUse.RangeAlternate
-                                Some (loc, lineTxt.Substring(loc.StartColumn, loc.EndColumn-loc.StartColumn))
+                                let partialName = QuickParse.GetPartialLongNameEx(lineTxt, loc.EndColumn-1)
+                                let longName = (partialName.QualifyingIdents @ [partialName.PartialIdent]) |> String.concat "."
+                                Some (loc, longName)
                             | SymbolUse.Record r ->
                                 let loc = r.DeclarationLocation
                                 Some (loc, r.DisplayName)
@@ -67,5 +71,5 @@ type FSharpDebuggerExpressionResolver() =
                     let ts = Symbols.getTextSpan range doc
                     return DebugDataTipInfo(ts, name)}
 
-            Async.StartAsTask (computation, cancellationToken = cancellationToken)
+            |> StartAsyncAsTask cancellationToken
 

@@ -91,14 +91,16 @@ type FSharpTooltipProvider() =
                 Task.FromResult keywordTip
             | None ->
 
-            Async.StartAsTask(
-                async {
+            async {
 
                     let! tooltipResult = tooltipComputation
                     match tooltipResult with
                     | Success(tip) -> return tip
                     | Operators.Error(warning) -> LoggingService.LogWarning warning
-                                                  return Unchecked.defaultof<_> }, cancellationToken = cancellationToken)
+                                                  return Unchecked.defaultof<_> 
+            }
+            |> StartAsyncAsTask cancellationToken
+                                                  
 
         with exn ->
             LoggingService.LogError ("TooltipProvider: Error retrieving tooltip", exn)

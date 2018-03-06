@@ -88,7 +88,7 @@ namespace MonoDevelop.DocFood
 		{
 			if (string.IsNullOrEmpty (xmlDoc))
 				return;
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			sb.Append ("<root>");
 			bool wasWs = false;
 			foreach (char ch in xmlDoc) {
@@ -105,7 +105,7 @@ namespace MonoDevelop.DocFood
 			}
 			sb.Append ("</root>");
 			try {
-				using (var reader = XmlTextReader.Create (new System.IO.StringReader (sb.ToString ()))) {
+				using (var reader = XmlTextReader.Create (new System.IO.StringReader (StringBuilderCache.ReturnAndFree (sb)))) {
 					while (reader.Read ()) {
 						if (reader.NodeType != XmlNodeType.Element)
 							continue;
@@ -447,7 +447,7 @@ namespace MonoDevelop.DocFood
 				var parameters = property != null? property.Parameters : method.Parameters;
 				var parameterNames = new List<string> (from p in parameters select p.Name);
 				tags ["ParameterSentence"] = string.Join (" ", parameterNames.ToArray ());
-				StringBuilder paramList = new StringBuilder ();
+				StringBuilder paramList = StringBuilderCache.Allocate ();
 				for (int i = 0; i < parameterNames.Count; i++) {
 					if (i > 0) {
 						if (i == parameterNames.Count - 1) {
@@ -458,7 +458,7 @@ namespace MonoDevelop.DocFood
 					}
 					paramList.Append (parameterNames [i]);
 				}
-				tags ["ParameterList"] = paramList.ToString ();
+				tags ["ParameterList"] = StringBuilderCache.ReturnAndFree (paramList);
 				for (int i = 0; i < parameters.Length; i++) {
 					tags ["Parameter" + i + ".Type"] = parameters [i].Type != null ? "<see cref=\"" + parameters [i].Type + "\"/>" : "";
 					tags ["Parameter" + i + ".Name"] = "<c>" + parameters [i].Name + "</c>";
@@ -940,7 +940,7 @@ namespace MonoDevelop.DocFood
 
 		static string SeparateWords (string name)
 		{
-			var result = new StringBuilder ();
+			var result = StringBuilderCache.Allocate ();
 			bool wasUnderscore = false;
 			for (int i = 0; i < name.Length; i++) {
 				char ch = name [i];
@@ -975,7 +975,7 @@ namespace MonoDevelop.DocFood
 				result.Append (char.ToLower (ch));
 			}
 
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		static ImmutableArray<IParameterSymbol> GetParameters (ISymbol symbol)

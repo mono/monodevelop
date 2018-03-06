@@ -1,19 +1,21 @@
 ﻿namespace MonoDevelopTests
 open NUnit.Framework
-open MonoDevelop.FSharp
 open FsUnit
 open Mono.TextEditor
+open MonoDevelop.FSharp
+open MonoDevelop.Ide.Editor
 
 [<TestFixture>]
 type IndentationTrackerTests() =
 
     let docWithCaretAt (content:string) =
         let d = TestHelpers.createDoc(content.Replace("§", "")) ""
+        d.Editor.Options <- new CustomEditorOptions(TabsToSpaces=true, IndentationSize=4, IndentStyle=IndentStyle.Smart, TabSize=4)
         d.Editor.IndentationTracker <- new FSharpIndentationTracker(d.Editor)
-        do match content.IndexOf('§') with
-           | -1 -> ()
-           | x  -> let l = d.Editor.OffsetToLocation(x)
-                   d.Editor.SetCaretLocation(l.Line, l.Column)
+        d.Editor.TextChanged.Add(fun e -> indentationTracker.textChanged d.Editor e.TextChanges)
+        match content.IndexOf('§') with
+        | -1 -> ()
+        | x  -> d.Editor.CaretOffset <- x
         d
 
     let getIndent (content:string) =
@@ -23,12 +25,9 @@ type IndentationTrackerTests() =
         tracker.GetIndentationString(caretLine).Length
 
     let insertEnterAtSection (text:string) =
-        let idx = text.IndexOf ('§')
-        let doc = new TextDocument(text.Replace("§", ""))
-        use data = new TextEditorData (doc)
-        data.Caret.Offset <- idx
-        MiscActions.InsertNewLine(data)
-        data.Document.Text
+        let doc = docWithCaretAt text
+        EditActions.InsertNewLine doc.Editor
+        doc.Editor.Text.Insert(doc.Editor.CaretOffset, "§")
 
     [<Test>]
     member x.``Basic indents``() =
@@ -71,7 +70,7 @@ let b = (fun a ->
         |> insertEnterAtSection
         |> should equal @"  let a = 123
 
-  let c = 321"
+  §let c = 321"
 
     [<Test>]
     member x.``Enter after equals indents``() =
@@ -79,4 +78,48 @@ let b = (fun a ->
         input
         |> insertEnterAtSection
         |> shouldEqualIgnoringLineEndings """  let a = 
-  123"""
+  §123"""
+
+    [<Test>]
+    member x.``Enter at line start``() =
+        let input =
+            """
+            type Item =
+                 { Text: string; Description: string }
+            §type Model =
+                 { Count : int
+                   Items : Item[] }
+            """
+        input
+        |> insertEnterAtSection
+        |> shouldEqualIgnoringLineEndings
+            """
+            type Item =
+                 { Text: string; Description: string }
+
+            §type Model =
+                 { Count : int
+                   Items : Item[] }
+            """
+
+    [<Test>]
+    member x.``Enter before line start``() =
+        let input =
+            """
+            type Item =
+                 { Text: string; Description: string }
+     §       type Model =
+                 { Count : int
+                   Items : Item[] }
+            """
+        input
+        |> insertEnterAtSection
+        |> shouldEqualIgnoringLineEndings
+            """
+            type Item =
+                 { Text: string; Description: string }
+
+     §       type Model =
+                 { Count : int
+                   Items : Item[] }
+            """

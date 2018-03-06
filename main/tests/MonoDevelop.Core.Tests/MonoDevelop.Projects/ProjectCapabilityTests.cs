@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using MonoDevelop.Projects.Extensions;
 using NUnit.Framework;
@@ -49,6 +50,10 @@ namespace MonoDevelop.Projects
 		public void Teardown ()
 		{
 			WorkspaceObject.UnregisterCustomExtension (capaNode);
+
+			// Ensure MonoDevelop.Core.Tests addin is not registered in local-config after tests are run.
+			string localConfigFile = Path.Combine (Util.TestsRootDir, "..", "..", "local-config", "MonoDevelop.Core.Tests.Addin.addins");
+			File.Delete (localConfigFile);
 		}
 
 		List<string> defaultCapabilities;
@@ -119,13 +124,13 @@ namespace MonoDevelop.Projects
 			string solFile = Util.GetSampleProject ("project-capability-tests", "ConsoleProject.csproj");
 			var item = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
 
-			string azureFunctionsProjectExtension = "AzureFunctionsProjectExtension";
-			Func<ProjectExtension, bool> isMatch = f => f.GetType ().Name == azureFunctionsProjectExtension;
+			string projectExtension = "TestCapabilityProjectExtension";
+			Func<ProjectExtension, bool> isMatch = f => f.GetType ().Name == projectExtension;
 			var ext = item.GetFlavors ().FirstOrDefault (isMatch);
 			Assert.IsNull (ext);
 
-			// Now activate "AzureFunctions" capability
-			var import = item.MSBuildProject.AddNewImport ("azurefunctions.targets");
+			// Now activate "TestCapability"
+			var import = item.MSBuildProject.AddNewImport ("testcapability.targets");
 			await item.ReevaluateProject (Util.GetMonitor ());
 
 			ext = item.GetFlavors ().FirstOrDefault (isMatch);

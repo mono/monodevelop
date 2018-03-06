@@ -90,19 +90,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				var modifier = GetItemModifier ();
 				var type = GetItemType ();
-				var hash = CalculateHashCode (modifier, type);
+				var hash = modifier | type << 16;
 				if (!IconIdCache.ContainsKey (hash))
-					IconIdCache [hash] = "md-" + modifier + type;
+					IconIdCache [hash] = "md-" + modifierType [modifier] + completionType [type];
 				return IconIdCache [hash];
 			}
 		}
 
-		internal static int CalculateHashCode (string modifier, string type)
-		{
-			return modifier.GetHashCode () ^ type.GetHashCode ();
-		}
-
-		static Dictionary<int, string> IconIdCache = new Dictionary<int, string>();
+		static Dictionary<int, string> IconIdCache = new Dictionary<int, string> ();
 
 		public RoslynCompletionData (Microsoft.CodeAnalysis.Document document, ITextSnapshot triggerSnapshot, CompletionService completionService, CompletionItem completionItem)
 		{
@@ -126,80 +121,108 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return null;
 		}
 
-		internal static Dictionary<string, string> roslynCompletionTypeTable = new Dictionary<string, string> {
-			{ "Field", "field" },
-			{ "Alias", "field" },
-			{ "ArrayType", "field" },
-			{ "Assembly", "field" },
-			{ "DynamicType", "field" },
-			{ "ErrorType", "field" },
-			{ "Label", "field" },
-			{ "NetModule", "field" },
-			{ "PointerType", "field" },
-			{ "RangeVariable", "field" },
-			{ "TypeParameter", "field" },
-			{ "Preprocessing", "field" },
-
-			{ "Constant", "literal" },
-
-			{ "Parameter", "variable" },
-			{ "Local", "variable" },
-
-			{ "Method", "method" },
-
-			{ "Namespace", "name-space" },
-
-			{ "Property", "property" },
-
-			{ "Event", "event" },
-
-			{ "Class", "class" },
-
-			{ "Delegate", "delegate" },
-
-			{ "Enum", "enum" },
-
-			{ "Interface", "interface" },
-
-			{ "Struct", "struct" },
-			{ "Structure", "struct" },
-
-			{ "Keyword", "keyword" },
-
-			{ "Snippet", "template"},
-
-			{ "EnumMember", "literal" },
-
-			{ "NewMethod", "newmethod" },
-
-			{ "ExtensionMethod", "extensionmethod" }
+		string [] completionType = {
+			"field",
+			"literal",
+			"variable",
+			"method",
+			"name-space",
+			"property",
+			"event",
+			"class",
+			"delegate",
+			"enum",
+			"interface",
+			"struct",
+			"keyword",
+			"template",
+			"newmethod",
+			"extensionmethod"
 		};
 
-		string GetItemType ()
+		static Dictionary<string, int> roslynCompletionTypeTable = new Dictionary<string, int> {
+			{ "Field", 0 },
+			{ "Alias", 0 },
+			{ "ArrayType", 0 },
+			{ "Assembly", 0 },
+			{ "DynamicType", 0 },
+			{ "ErrorType", 0 },
+			{ "Label", 0 },
+			{ "NetModule", 0 },
+			{ "PointerType", 0 },
+			{ "RangeVariable", 0 },
+			{ "TypeParameter", 0 },
+			{ "Preprocessing", 0 },
+
+			{ "Constant", 1 },
+			{ "EnumMember", 1 },
+
+			{ "Parameter", 2 },
+			{ "Local", 2 },
+
+			{ "Method", 3 },
+
+			{ "Namespace", 4 },
+
+			{ "Property", 5 },
+
+			{ "Event", 6 },
+
+			{ "Class", 7 },
+
+			{ "Delegate", 8 },
+
+			{ "Enum", 9 },
+
+			{ "Interface", 10 },
+
+			{ "Struct", 11 },
+			{ "Structure", 11 },
+
+			{ "Keyword", 12 },
+
+			{ "Snippet", 13},
+
+			{ "NewMethod", 14 },
+
+			{ "ExtensionMethod", 15 }
+		};
+
+		int GetItemType ()
 		{
 			foreach (var tag in CompletionItem.Tags) {
-				if (roslynCompletionTypeTable.TryGetValue (tag, out string result))
+				if (roslynCompletionTypeTable.TryGetValue (tag, out int result))
 					return result;
 			}
 			LoggingService.LogWarning ("RoslynCompletionData: Can't find item type '" + string.Join (",", CompletionItem.Tags) + "'");
-			return "literal";
+			return 1;
 		}
 
-		internal static Dictionary<string, string> modifierTypeTable = new Dictionary<string, string> {
-			{ "Private", "private-" },
-			{ "ProtectedAndInternal", "ProtectedOrInternal-" },
-			{ "Protected", "protected-" },
-			{ "Internal", "internal-" },
-			{ "ProtectedOrInternal", "ProtectedOrInternal-" }
+		string [] modifierType = {
+			"",
+			"private-",
+			"ProtectedOrInternal-",
+			"protected-",
+			"internal-",
+			"ProtectedOrInternal-"
 		};
 
-		string GetItemModifier ()
+
+		static Dictionary<string, int> modifierTypeTable = new Dictionary<string, int> {
+			{ "Private", 1 },
+			{ "ProtectedAndInternal", 2 },
+			{ "Protected", 3 },
+			{ "Internal", 4 },
+			{ "ProtectedOrInternal", 5 }
+		};
+
+		int GetItemModifier ()
 		{
 			foreach (var tag in CompletionItem.Tags) {
-				if (modifierTypeTable.TryGetValue (tag, out string result))
+				if (modifierTypeTable.TryGetValue (tag, out int result))
 					return result;
 			}
-			return "";
+			return 0;
 		}
 
 		public override DisplayFlags DisplayFlags {
@@ -234,7 +257,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					editor.ReplaceText (mappedSpan.Start + 1, mappedSpan.Length - 1, completionChange.TextChange.NewText);
 				} else
 					editor.ReplaceText (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
-			
+
 
 				if (completionChange.NewPosition.HasValue)
 					editor.CaretOffset = completionChange.NewPosition.Value;
@@ -250,9 +273,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{
-			var description = await completionService.GetDescriptionAsync (doc, CompletionItem);
-			var markup = new StringBuilder ();
-			var theme = DefaultSourceEditorOptions.Instance.GetEditorTheme ();
+			CompletionDescription description;
+			if (CommonCompletionItem.HasDescription (CompletionItem)) {
+				description = CommonCompletionItem.GetDescription (CompletionItem);
+			} else {
+				description = await Task.Run (() => completionService.GetDescriptionAsync (doc, CompletionItem)).ConfigureAwait (false);
+			}
+			var markup = StringBuilderCache.Allocate ();
+			var theme = SyntaxHighlightingService.GetIdeFittingTheme (DefaultSourceEditorOptions.Instance.GetEditorTheme ());
 			var taggedParts = description.TaggedParts;
 			int i = 0;
 			while (i < taggedParts.Length) {
@@ -271,9 +299,27 @@ namespace MonoDevelop.Ide.CodeCompletion
 				markup.Append ("</span>");
 			}
 			return new TooltipInformation {
-				SignatureMarkup = markup.ToString ()
+				SignatureMarkup = StringBuilderCache.ReturnAndFree (markup)
 			};
 		}
-	}
 
+		public override bool IsCommitCharacter (char keyChar, string partialWord)
+		{
+			foreach (var rule in CompletionItem.Rules.CommitCharacterRules) {
+				switch (rule.Kind) {
+				case CharacterSetModificationKind.Add:
+					if (rule.Characters.Contains (keyChar))
+						return true;
+					continue;
+				case CharacterSetModificationKind.Remove:
+					if (rule.Characters.Contains (keyChar))
+						return false;
+					continue;
+				case CharacterSetModificationKind.Replace:
+					return rule.Characters.Contains (keyChar);
+				}
+			}
+			return base.IsCommitCharacter (keyChar, partialWord);
+		}
+	}
 }

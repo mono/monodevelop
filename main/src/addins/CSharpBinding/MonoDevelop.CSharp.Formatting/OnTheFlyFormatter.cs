@@ -36,7 +36,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Policies;
-using Roslyn.Utilities;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -62,7 +61,7 @@ namespace MonoDevelop.CSharp.Formatting
 			Format (policyParent, mimeTypeChain, editor, context, offset, offset, false, true, optionSet: optionSet);
 		}
 
-		static async void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact, bool formatLastStatementOnly = false, OptionSet optionSet = null)
+		static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact, bool formatLastStatementOnly = false, OptionSet optionSet = null)
 		{
 			TextSpan span;
 			if (exact) {
@@ -76,7 +75,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			using (var undo = editor.OpenUndoGroup (/*OperationType.Format*/)) {
 				try {
-					var syntaxTree = await analysisDocument.GetSyntaxTreeAsync ();
+					var syntaxTree = analysisDocument.GetSyntaxTreeAsync ().WaitAndGetResult (default (CancellationToken));
 					var root = syntaxTree.GetRoot ();
 					if (formatLastStatementOnly) {
 						var token = root.FindToken (endOffset);
@@ -89,14 +88,11 @@ namespace MonoDevelop.CSharp.Formatting
 								span = new TextSpan (parent.FullSpan.Start, editor.CaretOffset - parent.FullSpan.Start);
 						}
 					}
-
 					if (optionSet == null) {
-						var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-						var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
-						optionSet = policy.CreateOptions (textPolicy);
+						optionSet = context.AnalysisDocument.GetOptionsAsync ().WaitAndGetResult (default (CancellationToken));
 					}
 					var rules = Formatter.GetDefaultFormattingRules (analysisDocument);
-					var changes = Formatter.GetFormattedTextChanges (root, SpecializedCollections.SingletonEnumerable (span), context.RoslynWorkspace, optionSet, rules, default(CancellationToken));
+					var changes = Formatter.GetFormattedTextChanges (root, Roslyn.Utilities.SpecializedCollections.SingletonEnumerable (span), context.RoslynWorkspace, optionSet, rules, default(CancellationToken));
 					editor.ApplyTextChanges (changes.Where(c => {
 						if (!exact)
 							return true;

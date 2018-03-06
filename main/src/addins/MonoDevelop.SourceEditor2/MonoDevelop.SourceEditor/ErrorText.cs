@@ -43,12 +43,14 @@ namespace MonoDevelop.SourceEditor
 		public TaskListEntry Task { get; set; }
 		public bool IsError { get; set; }
 		public string ErrorMessage { get; set; }
+		public string FullErrorMessage { get; set; }
 
-		public ErrorText (TaskListEntry task, bool isError, string errorMessage)
+		public ErrorText (TaskListEntry task, bool isError, string errorMessage, string fullErrorMessage)
 		{
 			this.Task = task;
 			this.IsError = isError;
 			this.ErrorMessage = errorMessage;
+			this.FullErrorMessage = fullErrorMessage;
 		}
 
 		public override string ToString ()

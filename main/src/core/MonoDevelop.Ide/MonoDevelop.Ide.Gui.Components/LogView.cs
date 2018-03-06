@@ -487,6 +487,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			return new LogViewProgressMonitor (this, clearConsole);
 		}
 
+		internal TextMark CreateMark ()
+		{
+			return buffer.CreateMark (null, buffer.EndIter, false);
+		}
+
 		public void Clear ()
 		{
 			lock (updates) {
@@ -546,37 +551,71 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		protected void UnsafeBeginTask (string name, int totalWork)
+		protected void UnsafeBeginTask (LogViewProgressMonitor monitor, string name, int totalWork)
 		{
-			if (!string.IsNullOrEmpty (name)) {
-				Indent ();
+			if (!string.IsNullOrEmpty (name) && monitor != null) {
+				var indent = monitor.Indent;
+				var t = indent.Indent ();
+				buffer.TagTable.Add (t);
 				indents.Push (name);
 			} else
 				indents.Push (null);
 
 			if (name != null)
-				UnsafeAddText (Environment.NewLine + name + Environment.NewLine, bold);
+				UnsafeAddText (null, Environment.NewLine + name + Environment.NewLine, bold);
+			else {
+				UnsafeAddText (null, Environment.NewLine, null);
+			}
+
+			var marker = buffer.CreateMark (name, buffer.EndIter, false);
+			if (monitor != null) {
+				monitor.Marker = marker;
+			}
+			UnsafeAddText (null, Environment.NewLine, null);
+
+			// Move the mark to the line before EndIter, so other text inserted at EndIter
+			// doesn't move this mark.
+			buffer.MoveMark (marker, buffer.GetIterAtOffset (buffer.CharCount - 1));
 		}
-		
+
 		public void BeginTask (string name, int totalWork)
 		{
-			var bt = new QueuedBeginTask (name, totalWork);
+			BeginTask (null, name, totalWork);
+		}
+
+		internal void BeginTask (LogViewProgressMonitor monitor, string name, int totalWork)
+		{
+			var bt = new QueuedBeginTask (monitor, name, totalWork);
 			addQueuedUpdate (bt);
 		}
-		
+
 		public void EndTask ()
 		{
-			var et = new QueuedEndTask ();
+			EndTask (null);
+		}
+
+		internal void EndTask (LogViewProgressMonitor monitor)
+		{
+			var et = new QueuedEndTask (monitor);
 			addQueuedUpdate (et);
 		}
 		
-		protected void UnsafeEndTask ()
+		protected void UnsafeEndTask (LogViewProgressMonitor monitor)
 		{
-			if (indents.Count > 0 && indents.Pop () != null)
-				Unindent ();
+			if (indents.Count > 0 && indents.Pop () != null) {
+				if (monitor != null) {
+					buffer.TagTable.Remove (monitor.Indent.IndentTag);
+					monitor.Indent.Unindent ();
+				}
+			}
 		}
-		
+
 		public void WriteText (string text)
+		{
+			WriteText (null, text);
+		}
+
+		public void WriteText (LogViewProgressMonitor monitor, string text)
 		{
 			//raw text has an extra optimisation here, as we can append it to existing updates
 			lock (updates) {
@@ -588,11 +627,16 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			}
 
-			var qtw = new QueuedTextWrite (text, null);
+			var qtw = new QueuedTextWrite (monitor, text, null);
 			addQueuedUpdate (qtw);
 		}
-		
+
 		public void WriteConsoleLogText (string text)
+		{
+			WriteConsoleLogText (null, text);
+		}
+
+		public void WriteConsoleLogText (LogViewProgressMonitor monitor, string text)
 		{
 			lock (updates) {
 				if (lastTextWrite != null && lastTextWrite.Tag == consoleLogTag) {
@@ -601,23 +645,33 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			}
 
-			var w = new QueuedTextWrite (text, consoleLogTag);
+			var w = new QueuedTextWrite (monitor, text, consoleLogTag);
 			addQueuedUpdate (w);
 		}
-		
+
 		public void WriteError (string text)
 		{
-			var w = new QueuedTextWrite (text, errorTag);
+			WriteError (null, text);
+		}
+
+		public void WriteError (LogViewProgressMonitor monitor, string text)
+		{
+			var w = new QueuedTextWrite (monitor, text, errorTag);
 			addQueuedUpdate (w);
 		}
 
 		public void WriteDebug (int level, string category, string message)
 		{
+			WriteDebug (null, level, category, message);
+		}
+
+		public void WriteDebug (LogViewProgressMonitor monitor, int level, string category, string message)
+		{
 			//TODO: Give user ability to filter levels and categories
 			if (string.IsNullOrEmpty (category))
-				addQueuedUpdate (new QueuedTextWrite (message, debugTag));
+				addQueuedUpdate (new QueuedTextWrite (monitor, message, debugTag));
 			else
-				addQueuedUpdate (new QueuedTextWrite (category + ": " + message, debugTag));
+				addQueuedUpdate (new QueuedTextWrite (monitor, category + ": " + message, debugTag));
 		}
 
 		bool ShouldAutoScroll ()
@@ -629,7 +683,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return scrollView.Vadjustment.Value + scrollView.Vadjustment.PageSize >= scrollView.Vadjustment.Upper;
 		}
 
-		protected void UnsafeAddText (string text, TextTag extraTag)
+		protected void UnsafeAddText (TextMark mark, string text, TextTag extraTag)
 		{
 			//don't allow the pad to hold more than MAX_BUFFER_LENGTH chars
 			int overrun = (buffer.CharCount + text.Length) - MAX_BUFFER_LENGTH;
@@ -642,7 +696,12 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			bool scrollToEnd = ShouldAutoScroll ();
 
-			TextIter it = buffer.EndIter;
+			TextIter it;
+			if (mark != null) {
+				it = buffer.GetIterAtMark (mark);
+			} else {
+				it = buffer.EndIter;
+			}
 
 			if (extraTag != null)
 				buffer.InsertWithTags (ref it, text, tag, extraTag);
@@ -653,27 +712,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				it.LineOffset = 0;
 				buffer.MoveMark (endMark, it);
 				textEditorControl.ScrollToMark (endMark, 0, false, 0, 0);
-			}
-		}
-		
-		void Indent ()
-		{
-			ident++;
-			if (ident >= tags.Count) {
-				tag = new TextTag (ident.ToString ());
-				tag.LeftMargin = 10 + 15 * (ident - 1);
-				buffer.TagTable.Add (tag);
-				tags.Add (tag);
-			} else {
-				tag = tags [ident];
-			}
-		}
-		
-		void Unindent ()
-		{
-			if (ident >= 0) {
-				ident--;
-				tag = tags [ident];
 			}
 		}
 
@@ -692,6 +730,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		abstract class QueuedUpdate
 		{
+			public LogViewProgressMonitor Monitor { get; protected set; }
 			public abstract void Execute (LogView pad);
 		}
 		
@@ -702,11 +741,12 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public override void Execute (LogView pad)
 			{
-				pad.UnsafeAddText (Text.ToString (), Tag);
+				pad.UnsafeAddText (Monitor?.Marker, Text.ToString (), Tag);
 			}
 			
-			public QueuedTextWrite (string text, TextTag tag)
+			public QueuedTextWrite (LogViewProgressMonitor monitor, string text, TextTag tag)
 			{
+				Monitor = monitor;
 				Text = new System.Text.StringBuilder (text);
 				Tag = tag;
 			}
@@ -723,13 +763,15 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			public string Name;
 			public int TotalWork;
+
 			public override void Execute (LogView pad)
 			{
-				pad.UnsafeBeginTask (Name, TotalWork);
+				pad.UnsafeBeginTask (Monitor, Name, TotalWork);
 			}
-			
-			public QueuedBeginTask (string name, int totalWork)
+
+			public QueuedBeginTask (LogViewProgressMonitor monitor, string name, int totalWork)
 			{
+				Monitor = monitor;
 				TotalWork = totalWork;
 				Name = name;
 			}
@@ -739,7 +781,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			public override void Execute (LogView pad)
 			{
-				pad.UnsafeEndTask ();
+				pad.UnsafeEndTask (Monitor);
+			}
+
+			public QueuedEndTask (LogViewProgressMonitor monitor)
+			{
+				Monitor = monitor;
 			}
 		}
 	}
@@ -755,13 +802,50 @@ namespace MonoDevelop.Ide.Gui.Components
 		internal LogView LogView {
 			get { return outputPad; }
 		}
-		
+
+		internal class IndentTracker {
+			List<TextTag> tags = new List<TextTag> ();
+			public TextTag IndentTag;
+
+			int indent = 0;
+			public TextTag Indent ()
+			{
+				TextTag tag;
+
+				indent++;
+				if (indent >= tags.Count) {
+					tag = new TextTag (indent.ToString ());
+					tag.LeftMargin = 10 + 15 * (indent - 1);
+					tags.Add (tag);
+				} else {
+					tag = tags [indent];
+				}
+
+				IndentTag = tag;
+				return tag;
+			}
+
+			public void Unindent ()
+			{
+				if (indent >= 0) {
+					indent--;
+					IndentTag = tags [indent];
+				}
+			}
+		}
+
+		internal IndentTracker Indent { get; set; }
+		internal TextMark Marker { get; set; }
+
 		internal LogViewProgressMonitor (LogView pad, bool clearConsole): base (Runtime.MainSynchronizationContext)
 		{
 			outputPad = pad;
+
+			Indent = new IndentTracker ();
+
 			if (clearConsole)
 				outputPad.Clear ();
-			internalLogger.TextWritten += outputPad.WriteConsoleLogText;
+			internalLogger.TextWritten += WriteConsoleLogText;
 			console = new LogViewProgressConsole (this);
 		}
 
@@ -776,28 +860,33 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		protected override void OnWriteLog (string message)
 		{
-			outputPad.WriteText (message);
+			outputPad.WriteText (this, message);
 			base.OnWriteLog (message);
 		}
 
 		protected override void OnWriteErrorLog (string message)
 		{
-			outputPad.WriteText (message);
+			outputPad.WriteText (this, message);
 			base.OnWriteErrorLog (message);
 		}
 
 		protected override void OnBeginTask (string name, int totalWork, int stepWork)
 		{
 			if (outputPad == null) throw GetDisposedException ();
-			outputPad.BeginTask (name, totalWork);
+			outputPad.BeginTask (this, name, totalWork);
 			base.OnBeginTask (name, totalWork, stepWork);
 		}
 
 		protected override void OnEndTask (string name, int totalWork, int stepWork)
 		{
 			if (outputPad == null) throw GetDisposedException ();
-			outputPad.EndTask ();
+			outputPad.EndTask (this);
 			base.OnEndTask (name, totalWork, stepWork);
+		}
+
+		void WriteConsoleLogText (string text)
+		{
+			outputPad.WriteConsoleLogText (this, text);
 		}
 
 		Exception GetDisposedException ()
@@ -808,16 +897,16 @@ namespace MonoDevelop.Ide.Gui.Components
 		protected override void OnCompleted ()
 		{
 			if (outputPad == null) throw GetDisposedException ();
-			outputPad.WriteText ("\n");
+			outputPad.WriteText (this, "\n");
 
 			foreach (string msg in SuccessMessages)
-				outputPad.WriteText (msg + "\n");
+				outputPad.WriteText (this, msg + "\n");
 
 			foreach (string msg in Warnings)
-				outputPad.WriteText (msg + "\n");
+				outputPad.WriteText (this, msg + "\n");
 
 			foreach (ProgressError msg in Errors)
-				outputPad.WriteError (msg.DisplayMessage + "\n");
+				outputPad.WriteError (this, msg.DisplayMessage + "\n");
 			
 			base.OnCompleted ();
 

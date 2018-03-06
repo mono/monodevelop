@@ -8,12 +8,14 @@ FILES = $(addsuffix .po, $(ALL_LINGUAS))
 GMO_FILES = $(patsubst %.po,$(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo,$(FILES))
 MO_FILES = $(foreach po,$(FILES), $(INSTALL_DIR)/$(basename $(po))/LC_MESSAGES/$(PACKAGE).mo)
 
-all: $(GMO_FILES) post-strip-mnemonics
+all: | strip-mnemonics update-locale post-strip-mnemonics
+
+update-locale: $(GMO_FILES)
 
 update-po:
 	$(MDTOOL_RUN) gettext-update --sort -f:$(top_srcdir)/Main.sln
 
-$(GMO_FILES): $(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo: %.po strip-mnemonics
+$(GMO_FILES): $(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo: %.po
 	$(MKDIR_P) $(dir $@)
 	msgfmt '$<' -o '$@'
 
@@ -54,6 +56,6 @@ uninstall-local:
 	done
 
 CLEANFILES = $(GMO_FILES)
-EXTRA_DIST = Makefile $(FILES)
+EXTRA_DIST = Makefile po.mdproj $(FILES)
 
 include $(top_srcdir)/Makefile.include

@@ -526,6 +526,8 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		Gdk.Rectangle FrameInParent { get; set; }
 
 		void AddAccessibleChild (IAccessibilityElementProxy child);
+		void RemoveAccessibleChild (IAccessibilityElementProxy child);
+
 		void SetRole (string role, string description = null);
 		void SetRole (AtkCocoa.Roles role, string description = null);
 

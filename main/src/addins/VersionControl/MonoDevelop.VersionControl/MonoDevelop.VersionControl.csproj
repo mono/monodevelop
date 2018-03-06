@@ -118,6 +118,10 @@
       <HintPath>..\..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI">
+      <HintPath>..\..\..\..\build\bin\Microsoft.VisualStudio.Text.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\added-overlay-16.png">

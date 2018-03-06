@@ -39,6 +39,7 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	public abstract class Scope
 	{
+		[Obsolete ("Unused - will be removed")]
 		public bool IncludeBinaryFiles {
 			get;
 			set;
@@ -145,7 +146,7 @@ namespace MonoDevelop.Ide.FindInFiles
 							  () => new List<FileProvider> (),
 							  (folder, loop, providers) => {
 								  foreach (var file in folder.Files.Where (f => filterOptions.NameMatches (f.FileName) && File.Exists (f.FullPath))) {
-									  if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.FullPath))
+									  if (!DesktopService.GetFileIsText (file.FullPath))
 										  continue;
 									  lock (alreadyVisited) {
 										  if (alreadyVisited.Contains (file.FullPath))
@@ -171,7 +172,7 @@ namespace MonoDevelop.Ide.FindInFiles
 								  foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
 									  if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
 										  continue;
-									  if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.FilePath))
+									  if (!DesktopService.GetFileIsText (file.FilePath))
 										  continue;
 
 									  lock (alreadyVisited) {
@@ -227,7 +228,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
 					if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
 						continue;
-					if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.Name))
+					if (!DesktopService.GetFileIsText (file.Name))
 						continue;
 					if (alreadyVisited.Contains (file.FilePath.FullPath))
 						continue;
@@ -280,6 +281,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			get { return PathMode.Absolute; }
 		}
 
+		[Obsolete ("Unused - will be removed")]
 		public bool IncludeHiddenFiles {
 			get;
 			set;
@@ -315,33 +317,29 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 
 				foreach (string fileName in Directory.EnumerateFiles (curPath, "*")) {
-					if (!IncludeHiddenFiles) {
-						if (Platform.IsWindows) {
-							var attr = File.GetAttributes (fileName);
-							if (attr.HasFlag (FileAttributes.Hidden))
-								continue;
-						}
-						if (Path.GetFileName (fileName).StartsWith (".", StringComparison.Ordinal))
+					if (Platform.IsWindows) {
+						var attr = File.GetAttributes (fileName);
+						if (attr.HasFlag (FileAttributes.Hidden))
 							continue;
 					}
+					if (Path.GetFileName (fileName).StartsWith (".", StringComparison.Ordinal))
+						continue;
 					if (!filterOptions.NameMatches (fileName))
 						continue;
-					if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (fileName))
+					if (!DesktopService.GetFileIsText (fileName))
 						continue;
 					yield return fileName;
 				}
 
 				if (recurse) {
 					foreach (string directoryName in Directory.EnumerateDirectories (curPath)) {
-						if (!IncludeHiddenFiles) {
-							if (Platform.IsWindows) {
-								var attr = File.GetAttributes (directoryName);
-								if (attr.HasFlag (FileAttributes.Hidden))
-									continue;
-							}
-							if (Path.GetFileName (directoryName).StartsWith (".", StringComparison.Ordinal))
+						if (Platform.IsWindows) {
+							var attr = File.GetAttributes (directoryName);
+							if (attr.HasFlag (FileAttributes.Hidden))
 								continue;
 						}
+						if (Path.GetFileName (directoryName).StartsWith (".", StringComparison.Ordinal))
+							continue;
 						directoryStack.Push (directoryName);
 					}
 				}

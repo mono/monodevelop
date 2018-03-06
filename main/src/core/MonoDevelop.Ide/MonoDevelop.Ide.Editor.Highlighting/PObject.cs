@@ -887,13 +887,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public string ToStringList ()
 		{
-			var sb = new StringBuilder ();
+			var sb = StringBuilderCache.Allocate ();
 			foreach (PString str in list.OfType<PString> ()) {
 				if (sb.Length > 0)
 					sb.Append (", ");
 				sb.Append (str);
 			}
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 
 		public IEnumerator<PObject> GetEnumerator ()

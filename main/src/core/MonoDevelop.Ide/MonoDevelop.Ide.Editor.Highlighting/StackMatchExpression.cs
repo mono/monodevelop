@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Text;
 using Roslyn.Utilities;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -38,7 +39,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public static StackMatchExpression Parse (string expression)
 		{
-			var sb = new StringBuilder ();
+			var sb = StringBuilderCache.Allocate ();
 
 			var stackStack = new Stack<Stack<StackMatchExpression>> ();
 			var exprStack = new Stack<StackMatchExpression> ();
@@ -88,6 +89,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 			if (sb.Length > 0)
 				exprStack.Push (CreateMatchExpression (sb));
+			StringBuilderCache.Free (sb);
 			ShrinkStack (exprStack);
 			if (exprStack.IsEmpty ())
 				return new StringMatchExpression ("");

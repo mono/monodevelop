@@ -100,7 +100,7 @@ namespace MonoDevelop.CodeGeneration
 
 			string GetFormatString (IEnumerable<object> includedMembers)
 			{
-				var format = new StringBuilder ();
+				var format = StringBuilderCache.Allocate ();
 				format.Append ("[");
 				format.Append (Options.EnclosingType.Name);
 				format.Append (": ");
@@ -114,7 +114,7 @@ namespace MonoDevelop.CodeGeneration
 					format.Append ("}");
 				}
 				format.Append ("]");
-				return format.ToString ();
+				return StringBuilderCache.ReturnAndFree (format);
 			}
 
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)

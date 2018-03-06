@@ -122,8 +122,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			var result = new CodeTemplate ();
 			result.Shortcut = setting.TabTrigger;
-			var sb = new StringBuilder ();
-			var nameBuilder = new StringBuilder ();
+			var sb = StringBuilderCache.Allocate ();
+			var nameBuilder = StringBuilderCache.Allocate ();
 			bool readDollar = false;
 			bool inBracketExpression = false;
 			bool inExpressionContent = false;
@@ -194,8 +194,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				nameBuilder.Length = 0;
 				inVariable = false;
 			}
-
-			result.Code = sb.ToString ();
+			StringBuilderCache.Free (nameBuilder);
+			result.Code = StringBuilderCache.ReturnAndFree (sb);
 			result.CodeTemplateContext = CodeTemplateContext.Standard;
 			result.CodeTemplateType = CodeTemplateType.Expansion;
 			result.Description = setting.Name;

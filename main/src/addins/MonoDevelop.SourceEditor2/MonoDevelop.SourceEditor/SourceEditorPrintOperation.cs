@@ -206,12 +206,12 @@ namespace MonoDevelop.SourceEditor
 
 		string Subst (string text, int page)
 		{
-			var sb = new StringBuilder (text);
+			var sb = StringBuilderCache.Allocate (text);
 			sb.Replace ("%N", (page + 1).ToString ());
 			sb.Replace ("%Q", totalPages.ToString ());
 			//FIXME: use font width for ellipsizing better 
 			sb.Replace ("%F", SourceEditorWidget.EllipsizeMiddle (filename, 60));
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 		
 		void PrintFooter (Cairo.Context cr, PrintContext context, int page, ref double xPos, ref double yPos)

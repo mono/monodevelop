@@ -234,6 +234,48 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task TestConfigurationMergingChangeMergeToParent5 ()
+		{
+			// Test for VSTS bug 518933 - Serialization issue with ItemProperty and MergeToProject
+
+			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging11.csproj");
+			DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration debugConf = p.Configurations ["Debug|x86"] as DotNetProjectConfiguration;
+			DotNetProjectConfiguration releaseConf = p.Configurations ["Release|x86"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (debugConf);
+
+			debugConf.Properties.SetValue ("AndroidUseSharedRuntime", false, defaultValue:true, mergeToMainGroup: true);
+			releaseConf.Properties.SetValue ("AndroidUseSharedRuntime", false, defaultValue:true, mergeToMainGroup: true);
+
+			// Release config already has SignAssembly=true, so the property should be merged to main group
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			debugConf.Properties.SetValue ("AndroidUseSharedRuntime", true, defaultValue:true, mergeToMainGroup: true);
+			releaseConf.Properties.SetValue ("AndroidUseSharedRuntime", false, defaultValue:true, mergeToMainGroup: true);
+
+			// Release config still has SignAssembly=true, so the property should be removed from the main group and
+			// assigned to true in Release configuration.
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved2")), File.ReadAllText (p.FileName));
+
+			debugConf.Properties.SetValue ("AndroidUseSharedRuntime", false, defaultValue: true, mergeToMainGroup: true);
+			releaseConf.Properties.SetValue ("AndroidUseSharedRuntime", false, defaultValue: true, mergeToMainGroup: true);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
+		}
+
+		[Test]
 		public async Task ProjectSerializationRoundtrip (
 			[Values (
 				"TestConfigurationMerging8.csproj",

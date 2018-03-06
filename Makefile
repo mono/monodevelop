@@ -3,8 +3,24 @@ include main/monodevelop_version
 EXTRA_DIST = configure code_of_conduct.md
 SPACE := 
 SPACE +=  
-AOT_DIRECTORIES:=$(subst $(SPACE),:,$(shell find main/build/* -type d))
-MONO_AOT:=MONO_PATH=$(AOT_DIRECTORIES):$(MONO_PATH) mono64 --aot --debug --apply-bindings=main/build/bin/MonoDevelop.exe.config
+
+ifeq ($(origin APP), undefined)
+BIN_DIR=main/build
+else
+BIN_DIR="$(APP)/Contents/Resources/lib/monodevelop"
+endif
+
+AOT_DIRECTORIES:=$(subst $(SPACE),:,$(shell find $(BIN_DIR)/* -not -path "*azure-functions-cli*" -not -path "*.dSYM*" -not -path "*/ServiceHub/*" -not -path $(BIN_DIR)/tests* -type d))
+
+MONO_DIR=/Library/Frameworks/Mono.framework/Libraries/mono
+MSBUILD_PATH=$(MONO_DIR)/msbuild/15.0/bin
+
+# --assembly-loader=strict will not work for valuetuples here, even with binding redirects
+AOT_COMMAND=mono64 --aot=hybrid --debug --assembly-loader=strict
+MONO_AOT:=MONO_PATH="$(AOT_DIRECTORIES):$(MSBUILD_PATH):$(MONO_PATH)" $(AOT_COMMAND) --apply-bindings=$(BIN_DIR)/bin/MonoDevelop.exe.config
+
+MSBUILD_LIBRARIES=Microsoft.Build.dll Microsoft.Build.Framework.dll Microsoft.Build.Utilities.Core.dll
+MSBUILD_DLLS=$(patsubst %, $(MSBUILD_PATH)/%, $(MSBUILD_LIBRARIES))
 
 all: update_submodules all-recursive
 
@@ -87,23 +103,31 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 	@echo Decompressing monodevelop-$(PACKAGE_VERSION).tar.bz2
 	@cd tarballs && tar xvjf monodevelop-$(PACKAGE_VERSION).tar.bz2
 	@cp version.config tarballs/monodevelop-$(PACKAGE_VERSION)
+	@cp NuGet.config tarballs/monodevelop-$(PACKAGE_VERSION)
 	@rm -f main/build/bin/buildinfo
 	@cd main && make buildinfo
 	@cp main/build/bin/buildinfo tarballs/monodevelop-$(PACKAGE_VERSION)/
 	@echo Generating merged tarball
-	@find tarballs/monodevelop-$(PACKAGE_VERSION)/ -type f -a \
-		\( -name \*.exe -o \
-		-name \*.dll -o \
-		-name \*.mdb \) \
-		-delete
 	@cd tarballs && tar -cjf monodevelop-$(PACKAGE_VERSION).tar.bz2 monodevelop-$(PACKAGE_VERSION)
 	@cd tarballs && rm -rf monodevelop-$(PACKAGE_VERSION)
 
+aot-all: aot aot-gac aot-msbuild-with-copy
+
+aot-msbuild-with-copy: aot-msbuild
+	@for i in $(MSBUILD_DLLS); do cp -r "$$i" "$$i.dylib" "$$i.dylib.dSYM" $(BIN_DIR)/bin; done
+
 aot:
-	@for i in main/build/bin/*.dll; do ($(MONO_AOT) $$i &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
-	@for i in main/build/AddIns/*.dll; do ($(MONO_AOT) $$i &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
-	@for i in main/build/AddIns/*/*.dll; do ($(MONO_AOT) $$i &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
-	@for i in main/build/AddIns/*/*/*.dll; do ($(MONO_AOT) $$i &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in $(BIN_DIR)/bin/*.dll; do ($(MONO_AOT) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in $(BIN_DIR)/AddIns/*.dll; do ($(MONO_AOT) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in $(BIN_DIR)/AddIns/*/*.dll; do ($(MONO_AOT) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in $(BIN_DIR)/AddIns/*/*/*.dll; do ($(MONO_AOT) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+
+aot-gac:
+	@for i in $(MONO_DIR)/4.5/*.dll; do (sudo $(AOT_COMMAND) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in $(MONO_DIR)/gac/*/*/*.dll; do (sudo $(AOT_COMMAND) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+
+aot-msbuild:
+	@for i in $(MSBUILD_DLLS); do (sudo $(AOT_COMMAND) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
 
 run:
 	cd main && $(MAKE) run

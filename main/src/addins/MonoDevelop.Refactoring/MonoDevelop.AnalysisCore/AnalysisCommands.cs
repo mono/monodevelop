@@ -44,6 +44,9 @@ namespace MonoDevelop.AnalysisCore
 
 	class ExportRulesHandler : CommandHandler
 	{
+		static MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable options =
+			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).Options; 
+
 		protected override void Run ()
 		{
 			var lang = "text/x-csharp";
@@ -55,7 +58,8 @@ namespace MonoDevelop.AnalysisCore
 
 			Dictionary<CodeDiagnosticDescriptor, DiagnosticSeverity?> severities = new Dictionary<CodeDiagnosticDescriptor, DiagnosticSeverity?> ();
 
-			foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeDiagnosticDescriptorsAsync (CodeRefactoringService.MimeTypeToLanguage(lang), true).Result) {
+			var language = CodeRefactoringService.MimeTypeToLanguage (lang);
+			foreach (var node in options.AllDiagnostics.Where (x => x.Languages.Contains (language))) {
 				severities [node] = node.DiagnosticSeverity;
 //				if (node.GetProvider ().SupportedDiagnostics.Length > 1) {
 //					foreach (var subIssue in node.GetProvider ().SupportedDiagnostics) {
@@ -90,7 +94,7 @@ namespace MonoDevelop.AnalysisCore
 				}
 
 				var providerStates = new Dictionary<CodeRefactoringDescriptor, bool> ();
-				foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeRefactoringDescriptorsAsync (CodeRefactoringService.MimeTypeToLanguage(lang), true).Result) {
+				foreach (var node in options.AllRefactorings.Where (x => x.Language.Contains (language))) {
 					providerStates [node] = node.IsEnabled;
 				}
 

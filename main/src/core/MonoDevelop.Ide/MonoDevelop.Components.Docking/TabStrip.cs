@@ -49,6 +49,9 @@ namespace MonoDevelop.Components.Docking
 		public TabStrip (DockFrame frame)
 		{
 			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
+			Accessible.SetCommonAttributes ("Docking.TabStrip",
+			                                GettextCatalog.GetString ("Pad Tab Bar"),
+			                                GettextCatalog.GetString ("The different pads in this dock position"));
 
 			VBox vbox = new VBox ();
 			vbox.Accessible.SetShouldIgnore (true);
@@ -95,12 +98,16 @@ namespace MonoDevelop.Components.Docking
 			}
 			
 			tab.TabPressed += OnTabPress;
+			tab.UpdateRole (true, this);
+
 			UpdateAccessibilityTabs ();
 		}
 
 		void HandleRemoved (object o, RemovedArgs args)
 		{
 			var w = (DockItemTitleTab)args.Widget;
+			w.UpdateRole (false, this);
+
 			w.TabPressed -= OnTabPress;
 			if (currentTab >= box.Children.Length)
 				currentTab = box.Children.Length - 1;

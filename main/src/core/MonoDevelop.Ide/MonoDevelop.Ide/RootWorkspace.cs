@@ -467,7 +467,12 @@ namespace MonoDevelop.Ide
 			return OpenWorkspaceItem (file, closeCurrent, true);
 		}
 
-		public async Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences)
+		public Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences)
+		{
+			return OpenWorkspaceItem (file, closeCurrent, loadPreferences, null);
+		}
+
+		internal async Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences, IDictionary<string, string> metadata)
 		{
 			lock (loadLock) {
 				if (++loadOperationsCount == 1)
@@ -484,7 +489,7 @@ namespace MonoDevelop.Ide
 			}
 
 			try {
-				return await OpenWorkspaceItemInternal (file, closeCurrent, loadPreferences);
+				return await OpenWorkspaceItemInternal (file, closeCurrent, loadPreferences, metadata);
 			}
 			finally {
 				lock (loadLock) {
@@ -496,7 +501,12 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public async Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences)
+		public Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences)
+		{
+			return OpenWorkspaceItemInternal (file, closeCurrent, loadPreferences, null);
+		}
+
+		async Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences, IDictionary<string, string> metadata)
 		{
 			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
 			if (item != null) {
@@ -516,9 +526,10 @@ namespace MonoDevelop.Ide
 			monitor = monitor.WithCancellationSource (openingItemCancellationSource);
 
 			IdeApp.Workbench.LockGui ();
-			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming ();
+			metadata = GetOpenWorkspaceItemMetadata (metadata);
+			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming (metadata);
 			try {
-				var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading, timer);
+				var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading, metadata, timer);
 				return await oper;
 			} finally {
 				timer.End ();
@@ -543,7 +554,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		async Task<bool> BackgroundLoadWorkspace (ProgressMonitor monitor, FilePath file, bool loadPreferences, bool reloading, ITimeTracker timer)
+		async Task<bool> BackgroundLoadWorkspace (ProgressMonitor monitor, FilePath file, bool loadPreferences, bool reloading, IDictionary<string, string> metadata, ITimeTracker timer)
 		{
 			WorkspaceItem item = null;
 
@@ -563,7 +574,13 @@ namespace MonoDevelop.Ide
 					}
 
 					// It is a project, not a solution. Try to create a dummy solution and add the project to it
-					
+
+					if (File.Exists (Path.ChangeExtension (file, ".sln"))) {
+						metadata ["Reason"] = "OpenProject";
+					} else {
+						metadata ["Reason"] = "CreateSolution";
+					}
+
 					timer.Trace ("Getting wrapper solution");
 					item = await IdeApp.Services.ProjectService.GetWrapperSolution (monitor, file);
 				}
@@ -613,8 +630,32 @@ namespace MonoDevelop.Ide
 				timer.Trace ("Reattaching documents");
 				ReattachDocumentProjects (null);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
+
+				UpdateOpenWorkspaceItemMetadata (metadata, item);
 			}
 			return true;
+		}
+
+		static IDictionary<string, string> GetOpenWorkspaceItemMetadata (IDictionary<string, string> metadata)
+		{
+			if (metadata == null) {
+				metadata = new Dictionary<string, string> ();
+				metadata ["OnStartup"] = bool.FalseString;
+			}
+
+			// Will be set to true after a successful load.
+			metadata ["LoadSucceed"] = bool.FalseString;
+			metadata ["Reason"] = "OpenSolution";
+
+			return metadata;
+		}
+
+		static void UpdateOpenWorkspaceItemMetadata (IDictionary<string, string> metadata, WorkspaceItem item)
+		{
+			// Is this a workspace or a solution?
+			metadata ["IsSolution"] = (item is Solution).ToString ();
+			metadata ["LoadSucceed"] = bool.TrueString;
+			metadata ["TotalProjectCount"] = item.GetAllItems<Project> ().Count ().ToString ();
 		}
 
 		async Task RestoreWorkspacePreferences (WorkspaceItem item)
