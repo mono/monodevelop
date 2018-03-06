@@ -202,7 +202,7 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 		}
 		
-		internal int StoreValue (string message, TimeCounter timer, IDictionary<string, string> metadata)
+		internal int StoreValue (string message, ITimeCounter timer, IDictionary<string, string> metadata)
 		{
 			DateTime now = DateTime.Now;
 			if (resolution.Ticks != 0) {

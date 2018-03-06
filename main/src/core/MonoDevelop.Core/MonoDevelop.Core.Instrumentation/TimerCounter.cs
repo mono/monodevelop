@@ -30,38 +30,38 @@ using System.Collections.Generic;
 namespace MonoDevelop.Core.Instrumentation
 {
 	[Serializable]
-	public class TimerCounter: Counter
+	public class TimerCounter : Counter
 	{
 		[NonSerialized]
-		TimeCounter lastTimer;
+		ITimeCounter lastTimer;
 		double minSeconds;
 		TimeSpan totalTime;
 		int totalCountWithTime;
 		TimeSpan minTime = TimeSpan.MaxValue;
 		TimeSpan maxTime;
-		
-		public TimerCounter (string name, CounterCategory category): base (name, category)
+
+		public TimerCounter (string name, CounterCategory category) : base (name, category)
 		{
 		}
 
 		public override string ToString ()
 		{
-			return string.Format ("[TimerCounter: Name={0} Id={1} Category={2} MinSeconds={3}, TotalTime={4}, AverageTime={5}, MinTime={6}, MaxTime={7}, CountWithDuration={8}]",Name, Id, Category, MinSeconds, TotalTime, AverageTime, MinTime, MaxTime, CountWithDuration);
+			return string.Format ("[TimerCounter: Name={0} Id={1} Category={2} MinSeconds={3}, TotalTime={4}, AverageTime={5}, MinTime={6}, MaxTime={7}, CountWithDuration={8}]", Name, Id, Category, MinSeconds, TotalTime, AverageTime, MinTime, MaxTime, CountWithDuration);
 		}
 
 		public double MinSeconds {
 			get { return this.minSeconds; }
 			set { this.minSeconds = value; }
 		}
-		
+
 		public TimeSpan TotalTime {
 			get { return totalTime; }
 		}
-		
+
 		public TimeSpan AverageTime {
 			get { return totalCountWithTime > 0 ? new TimeSpan (totalTime.Ticks / totalCountWithTime) : TimeSpan.FromTicks (0); }
 		}
-		
+
 		public TimeSpan MinTime {
 			get { return totalCountWithTime > 0 ? this.minTime : TimeSpan.Zero; }
 		}
@@ -69,11 +69,11 @@ namespace MonoDevelop.Core.Instrumentation
 		public TimeSpan MaxTime {
 			get { return this.maxTime; }
 		}
-		
+
 		public int CountWithDuration {
 			get { return totalCountWithTime; }
 		}
-		
+
 		internal void AddTime (TimeSpan time)
 		{
 			lock (values) {
@@ -85,7 +85,7 @@ namespace MonoDevelop.Core.Instrumentation
 					maxTime = time;
 			}
 		}
-		
+
 		public override void Trace (string message)
 		{
 			if (Enabled) {
@@ -103,12 +103,12 @@ namespace MonoDevelop.Core.Instrumentation
 					InstrumentationService.LogMessage (message);
 			}
 		}
-		
+
 		public ITimeTracker BeginTiming ()
 		{
 			return BeginTiming (null, null);
 		}
-		
+
 		public ITimeTracker BeginTiming (string message)
 		{
 			return BeginTiming (message, null);
@@ -121,17 +121,23 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public ITimeTracker BeginTiming (string message, IDictionary<string, string> metadata)
 		{
-			ITimeTracker timer;
+			return BeginTiming (message, metadata != null ? new CounterMetadata (metadata) : null);
+		}
+
+		internal ITimeTracker<T> BeginTiming<T> (string message, T metadata) where T : CounterMetadata
+		{
+			ITimeTracker<T> timer;
 			if (!Enabled && !LogMessages) {
-				timer = dummyTimer;
+				timer = new DummyTimerCounter<T> (metadata);
 			} else {
-				var c = new TimeCounter (this);
+				var c = new TimeCounter<T> (this, metadata);
 				if (Enabled) {
 					lock (values) {
-						timer = lastTimer = c;
+						lastTimer = c;
+						timer = c;
 						count++;
 						totalCount++;
-						int i = StoreValue (message, lastTimer, metadata);
+						int i = StoreValue (message, lastTimer, metadata?.Properties);
 						lastTimer.TraceList.ValueIndex = i;
 					}
 				} else {
@@ -139,7 +145,8 @@ namespace MonoDevelop.Core.Instrumentation
 						InstrumentationService.LogMessage (message);
 					else
 						InstrumentationService.LogMessage ("START: " + Name);
-					timer = lastTimer = c;
+					lastTimer = c;
+					timer = c;
 				}
 			}
 			return timer;
@@ -152,8 +159,79 @@ namespace MonoDevelop.Core.Instrumentation
 				lastTimer = null;
 			}
 		}
-		
-		static ITimeTracker dummyTimer = new DummyTimerCounter ();
 	}
+
+	public class TimerCounter<T> : TimerCounter where T : CounterMetadata, new()
+	{
+		public TimerCounter (string name, CounterCategory category) : base (name, category)
+		{
+		}
+
+		new public ITimeTracker<T> BeginTiming ()
+		{
+			return base.BeginTiming<T> (null, new T ());
+		}
+
+		public ITimeTracker<T> BeginTiming (T metadata)
+		{
+			return base.BeginTiming<T> (null, metadata);
+		}
+
+		new public ITimeTracker<T> BeginTiming (string message)
+		{
+			return base.BeginTiming<T> (message, new T ());
+		}
+
+		public ITimeTracker<T> BeginTiming (string message, T metadata)
+		{
+			return base.BeginTiming<T> (message, metadata);
+		}
+	}
+
+	public class CounterMetadata
+	{
+		IDictionary<string, string> properties;
+
+		internal protected IDictionary<string, string> Properties => properties;
+
+		public CounterMetadata ()
+		{
+			properties = new Dictionary<string, string> ();
+		}
+
+		public CounterMetadata (IDictionary<string, string> properties)
+		{
+			this.properties = properties;
+		}
+
+		public CounterResult Result {
+			get {
+				if (!properties.TryGetValue ("Result", out var result) || !Enum.TryParse (result, out CounterResult res))
+					return CounterResult.Unspecified;
+				return res;
+			}
+			set {
+				if (value == CounterResult.Unspecified)
+					properties.Remove ("Result");
+				else
+					properties ["Result"] = value.ToString ();
+			}
+		}
+
+		public void SetUserFault ()
+		{
+			properties ["Result"] = "UserFault";
+		}
+	}
+
+	public enum CounterResult
+	{
+		Unspecified,
+		Success,
+		Failure,
+		UserCancel,
+		UserFault
+	}
+
 }
 

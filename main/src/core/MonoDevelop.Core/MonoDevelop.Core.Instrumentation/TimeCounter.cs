@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -36,8 +37,24 @@ namespace MonoDevelop.Core.Instrumentation
 		void End ();
 	}
 	
-	class DummyTimerCounter: ITimeTracker
+	public interface ITimeTracker<T>: IDisposable, ITimeTracker where T : CounterMetadata
 	{
+		T Metadata { get; }
+	}
+
+	interface ITimeCounter: ITimeTracker
+	{
+		void AddHandlerTracker (IDisposable t);
+		TimerTraceList TraceList { get; }
+	}
+	
+	class DummyTimerCounter<T>: ITimeTracker<T> where T : CounterMetadata
+	{
+		public DummyTimerCounter (T metadata)
+		{
+			Metadata = metadata;
+		}
+
 		public void Trace (string message)
 		{
 		}
@@ -49,9 +66,11 @@ namespace MonoDevelop.Core.Instrumentation
 		public void Dispose ()
 		{
 		}
+
+		public T Metadata { get; private set; }
 	}
 	
-	class TimeCounter: ITimeTracker
+	class TimeCounter<T>: ITimeTracker<T>, ITimeCounter where T:CounterMetadata
 	{
 		Stopwatch stopWatch = new Stopwatch ();
 		TimerTraceList traceList;
@@ -59,14 +78,20 @@ namespace MonoDevelop.Core.Instrumentation
 		TimerCounter counter;
 		object linkedTrackers;
 		long lastTraceTime;
+		T metadata;
+		CancellationToken cancellationToken;
 
-		internal TimeCounter (TimerCounter counter)
+		internal TimeCounter (TimerCounter counter, T metadata, CancellationToken cancellationToken)
 		{
 			this.counter = counter;
 			if (counter.Enabled)
 				traceList = new TimerTraceList ();
+			this.metadata = metadata;
+			this.cancellationToken = cancellationToken;
 			Begin ();
 		}
+
+		public T Metadata => metadata;
 
 		public void AddHandlerTracker (IDisposable t)
 		{
@@ -80,7 +105,7 @@ namespace MonoDevelop.Core.Instrumentation
 				((List<IDisposable>)linkedTrackers).Add (t);
 		}
 		
-		internal TimerTraceList TraceList {
+		TimerTraceList ITimeCounter.TraceList {
 			get { return this.traceList; }
 		}
 		
@@ -111,6 +136,9 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public void End ()
 		{
+			if (metadata != null && cancellationToken != CancellationToken.None && cancellationToken.IsCancellationRequested)
+				metadata.Result = CounterResult.UserCancel;
+			
 			if (!stopWatch.IsRunning) {
 				Console.WriteLine ("Timer already finished");
 				return;
