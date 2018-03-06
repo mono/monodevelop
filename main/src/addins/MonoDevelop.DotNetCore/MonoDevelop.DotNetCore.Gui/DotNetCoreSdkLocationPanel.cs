@@ -47,10 +47,7 @@ namespace MonoDevelop.DotNetCore.Gui
 
 		public FilePath LoadSdkLocationSetting ()
 		{
-			if (DotNetCoreRuntime.IsInstalled) {
-				return DotNetCoreRuntime.FileName;
-			}
-			return FilePath.Null;
+			return DotNetCoreRuntime.FileName;
 		}
 
 		public void SaveSdkLocationSetting (FilePath location)
