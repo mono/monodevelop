@@ -1013,8 +1013,9 @@ namespace MonoDevelop.Projects
 			p.Dispose ();
 		}
 
-		[Test]
-		public async Task AddFile_WildCardHasMetadataProperties ()
+		[TestCase (true)] // Add metadata to xaml file before adding to project.
+		[TestCase (false)] // Do not add any metadata to xaml file before adding to project.
+		public async Task AddFile_WildCardHasMetadataProperties (bool addXamlFileMetadataBeforeAddingToProject)
 		{
 			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
 			WorkspaceObject.RegisterCustomExtension (fn);
@@ -1025,6 +1026,7 @@ namespace MonoDevelop.Projects
 
 				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 				p.UseAdvancedGlobSupport = true;
+				p.UseDefaultMetadataForExcludedExpandedItems = true;
 
 				var xamlFileName1 = projFile.ParentDirectory.Combine ("MyView1.xaml");
 				File.WriteAllText (xamlFileName1, "xaml1");
@@ -1033,8 +1035,10 @@ namespace MonoDevelop.Projects
 
 				// Xaml file with Generator and Subtype set to match that defined in the glob.
 				var xamlFile1 = new ProjectFile (xamlFileName1, BuildAction.EmbeddedResource);
-				xamlFile1.Generator = "MSBuild:UpdateDesignTimeXaml";
-				xamlFile1.ContentType = "Designer";
+				if (addXamlFileMetadataBeforeAddingToProject) {
+					xamlFile1.Generator = "MSBuild:UpdateDesignTimeXaml";
+					xamlFile1.ContentType = "Designer";
+				}
 				p.Files.Add (xamlFile1);
 
 				var xamlCSharpFile = p.AddFile (xamlCSharpFileName);
@@ -1108,6 +1112,244 @@ namespace MonoDevelop.Projects
 				WorkspaceObject.UnregisterCustomExtension (fn);
 			}
 		}
+
+		/// <summary>
+		/// With no other .cs files in the project directory when removing the .xaml and .xaml.cs
+		/// file from the project, but not deleting it, was not adding a Remove item for the .xaml.cs file.
+		/// </summary>
+		[TestCase (true)] // Adds .xaml files before loading project the first time.
+		[TestCase (false)] // Loads the project first then adds the .xaml files.
+		public async Task RemoveXamlAndDependentXamlCSharpFile (bool addXamlFilesBeforeLoading)
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-metadata-prop2.csproj");
+				string expectedProjectXml = File.ReadAllText (projFile);
+
+				// Ensure no other files are in the project's directory.
+				FilePath oldProjFile = projFile;
+				var subDir = projFile.ParentDirectory.Combine ("subdir");
+				Directory.CreateDirectory (subDir);
+				projFile = subDir.Combine (projFile.FileName);
+
+				foreach (FilePath file in Directory.GetFiles (oldProjFile.ParentDirectory, "glob-import-metadata-prop2.*")) {
+					var newFile = subDir.Combine (file.FileName);
+					File.Move (file, newFile);
+				}
+
+				DotNetProject p = null;
+
+				if (!addXamlFilesBeforeLoading) {
+					p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+					p.UseAdvancedGlobSupport = true;
+				}
+
+				var xamlFileName = projFile.ParentDirectory.Combine ("MyView1.xaml");
+				File.WriteAllText (xamlFileName, "xaml1");
+				var xamlCSharpFileName = projFile.ParentDirectory.Combine ("MyView1.xaml.cs");
+				File.WriteAllText (xamlCSharpFileName, "csharpxaml");
+
+				if (addXamlFilesBeforeLoading) {
+					p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+					p.UseAdvancedGlobSupport = true;
+				} else {
+					p.AddFiles (new [] { xamlFileName, xamlCSharpFileName });
+					await p.SaveAsync (Util.GetMonitor ());
+					Assert.AreEqual (expectedProjectXml, File.ReadAllText (p.FileName));
+				}
+
+				var xamlFile = p.Files.SingleOrDefault (f => f.FilePath.FileName == "MyView1.xaml");
+				var xamlCSharpFile = p.Files.SingleOrDefault (f => f.FilePath.FileName == "MyView1.xaml.cs");
+
+				// Remove files but do not delete them.
+				// Remove dependency C# file first to mirror what happens in the
+				// IDE when removing the .xaml file.
+				p.Files.Remove (xamlCSharpFile);
+				p.Files.Remove (xamlFile);
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				expectedProjectXml = File.ReadAllText (oldProjFile.ChangeName ("glob-import-metadata-prop2-saved3"));
+				var projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		/// <summary>
+		/// Imported wildcard: EmbeddedResource Include="**\*.xaml"
+		/// Project has a EmbeddedResource Remove="MyPage.xaml"
+		/// File exists and is included.
+		/// Remove item should be removed.
+		/// </summary>
+		[TestCase (true)] // Use Project.AddFiles.
+		[TestCase (false)] // Use Project.AddFile. Code is different in these methods.
+		public async Task IncludeFileWithExistingRemoveItem_ItemHasImportedWildcardInclude (bool addFiles)
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-metadata-prop2.csproj");
+				string expectedProjectXml = File.ReadAllText (projFile);
+
+				var xamlFileName = projFile.ParentDirectory.Combine ("test.xaml");
+				File.WriteAllText (xamlFileName, "xaml");
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				var xamlFile = p.Files.Single (fi => fi.FilePath.FileName == "test.xaml");
+
+				// Remove .xaml file but do not delete it.
+				p.Files.Remove (xamlFile);
+				await p.SaveAsync (Util.GetMonitor ());
+
+				var projSavedFileName = projFile.ChangeName ("glob-import-metadata-prop2-saved");
+				string expectedProjectXmlAfterExclude = File.ReadAllText (projSavedFileName);
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXmlAfterExclude, projectXml);
+
+				if (addFiles) {
+					// Include file back in project. Using AddFiles to mirror what happens
+					// when a file is included back in the Solution pad.
+					p.AddFiles (new [] { xamlFile.FilePath });
+				} else {
+					// Code in AddFile is not shared with AddFiles so both are tested.
+					p.AddFile (xamlFile.FilePath);
+				}
+				await p.SaveAsync (Util.GetMonitor ());
+
+				// The EmbeddedResource remove item should be removed after the
+				// .xaml file is included back in the project.
+				projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				// Save again. On adding files in the IDE the project is written twice,
+				// once in memory when the type system re-loads the project after the file is
+				// added, then again when the project is saved to disk. The second write
+				// was causing the EmbeddedResource to be added as a new Include item.
+				await p.SaveAsync (Util.GetMonitor ());
+
+				projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		/// <summary>
+		/// Imported wildcard: EmbeddedResource Include="**\*.xaml"
+		/// Project has a EmbeddedResource Remove="MyPage.xaml"
+		/// File exists and is included.
+		/// Remove item should be removed.
+		/// </summary>
+		[TestCase (true)] // Use Project.AddFiles.
+		[TestCase (false)] // Use Project.AddFile. Code is different in these methods.
+		public async Task AddFileWithDifferentBuildAction_ItemHasImportedWildcardInclude (bool addFiles)
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-metadata-prop2.csproj");
+				string expectedProjectXml = File.ReadAllText (projFile);
+
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				var xamlFileName = projFile.ParentDirectory.Combine ("test.xaml");
+				File.WriteAllText (xamlFileName, "xaml");
+
+				if (addFiles) {
+					// Include file back in project. Using AddFiles to mirror what happens
+					// when a file is included back in the Solution pad.
+					p.AddFiles (new [] { xamlFileName }, BuildAction.Content);
+				} else {
+					// Code in AddFile is not shared with AddFiles so both are tested.
+					p.AddFile (xamlFileName, BuildAction.Content);
+				}
+				await p.SaveAsync (Util.GetMonitor ());
+
+				var projSavedFileName = projFile.ChangeName ("glob-import-metadata-prop2-saved2");
+				string expectedProjectXmlAfterExclude = File.ReadAllText (projSavedFileName);
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXmlAfterExclude, projectXml);
+
+				var xamlFile = p.Files.Single (fi => fi.FilePath.FileName == "test.xaml");
+				Assert.AreEqual (BuildAction.Content, xamlFile.BuildAction);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[TestCase (true)] // Adds .xaml files before loading project the first time.
+		[TestCase (false)] // Loads the project first then adds the .xaml files.
+		public async Task RenameXamlAndXamlCSharpFileAtSameTime (bool addXamlFilesBeforeLoading)
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-metadata-prop2.csproj");
+				string expectedProjectXml = File.ReadAllText (projFile);
+
+				DotNetProject p = null;
+
+				if (!addXamlFilesBeforeLoading) {
+					p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+					p.UseAdvancedGlobSupport = true;
+				}
+
+				var xamlFileName = projFile.ParentDirectory.Combine ("MyView1.xaml");
+				File.WriteAllText (xamlFileName, "xaml1");
+				var xamlCSharpFileName = projFile.ParentDirectory.Combine ("MyView1.xaml.cs");
+				File.WriteAllText (xamlCSharpFileName, "csharpxaml");
+
+				if (addXamlFilesBeforeLoading) {
+					p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+					p.UseAdvancedGlobSupport = true;
+				} else {
+					p.AddFiles (new [] { xamlFileName, xamlCSharpFileName });
+					await p.SaveAsync (Util.GetMonitor ());
+					Assert.AreEqual (expectedProjectXml, File.ReadAllText (p.FileName));
+				}
+
+				var xamlFile = p.Files.Single (f => f.FilePath.FileName == "MyView1.xaml");
+				var xamlCSharpFile = p.Files.Single (f => f.FilePath.FileName == "MyView1.xaml.cs");
+
+				// Simulate a rename of the xaml file and its dependent xaml.cs file in the Solution pad.
+				var renamedXamlFileName = xamlFileName.ParentDirectory.Combine ("MyViewRename.xaml");
+				FileService.RenameFile (xamlFileName, renamedXamlFileName.FileName);
+				xamlFile.Name = renamedXamlFileName;
+
+				var renamedXamlCSharpFileName = xamlCSharpFileName.ParentDirectory.Combine ("MyViewRename.xaml.cs");
+				FileService.RenameFile (xamlCSharpFileName, renamedXamlCSharpFileName.FileName);
+				xamlCSharpFile.Name = renamedXamlCSharpFileName;
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				xamlFile = p.Files.Single (f => f.FilePath.FileName == "MyViewRename.xaml");
+				xamlCSharpFile = p.Files.Single (f => f.FilePath.FileName == "MyViewRename.xaml.cs");
+
+				// Project xml should be unchanged.
+				var projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 
 		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
 		{
