@@ -11,14 +11,14 @@ script_name=./`basename $0`
 # To reset a dependency to the needed version, run the script with "reset <dependency>"
 # It is also possible to pass "reset all" to reset all dependencies
 #
- 
+
 # md-addins
 DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=b8d026c384d12cf4f404a8a04cea13bb172f52a8
-DEP_BRANCH_AND_REMOTE[0]="d15-7-support-xamarin-forms-default-msbuild-items origin/d15-7-support-xamarin-forms-default-msbuild-items"
+DEP_NEEDED_VERSION[0]=e583b228e8985137deae5ab7d1ada8b9945f7875
+DEP_BRANCH_AND_REMOTE[0]="d15-7 origin/d15-7"
 
 # heap-shot
 DEP[1]=heap-shot
