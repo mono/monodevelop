@@ -100,16 +100,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		// be removed
 		Dictionary<BuildOutputNode, ViewStatus> viewStatus = new Dictionary<BuildOutputNode, ViewStatus> ();
 
-		// Used to track the selection
-		int selectionStart;
-		int selectionEnd;
-
-		public int SelectionStart => selectionStart;
-		public int SelectionEnd => selectionEnd;
-
-		BuildOutputNode selectionRow;
-		bool dragging;
-
 		bool IsRootNode (BuildOutputNode buildOutputNode) => buildOutputNode.Parent == null;
 
 		bool IsRowExpanded (BuildOutputNode buildOutputNode) => ((Xwt.TreeView)ParentWidget)?.IsRowExpanded (buildOutputNode) ?? false;
@@ -134,7 +124,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
 		{
 			var buildOutputNode = GetValue (BuildOutputNodeField);
-			var isSelected = buildOutputNode != null && buildOutputNode == selectionRow;
+			var isSelected = Selected;
 			var padding = GetRowPadding (buildOutputNode);
 			var status = GetViewStatus (buildOutputNode);
 
@@ -157,11 +147,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			layout.Text = buildOutputNode.Message;
 
 			var textSize = layout.GetSize ();
-
-			// Render the selection
-			if (selectionRow == buildOutputNode && selectionStart != selectionEnd) {
-				layout.SetBackground (Colors.LightBlue, Math.Min (selectionStart, selectionEnd), Math.Abs (selectionEnd - selectionStart));
-			}
 
 			UpdateTextColor (ctx, buildOutputNode, isSelected);
 
@@ -415,18 +400,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 				pointerPosition = Point.Zero;
 				QueueDraw ();
 			}
-
-			var insideText = cellArea.Contains (args.Position);
-
-			if (dragging && insideText && selectionRow == node) {
-				var pos = layout.GetIndexFromCoordinates (args.Position.X - cellArea.X, args.Position.Y - cellArea.Y);
-				if (pos != -1) {
-					selectionEnd = pos;
-					QueueDraw ();
-				}
-			} else {
-				ParentWidget.Cursor = insideText ? CursorType.IBeam : CursorType.Arrow;
-			}
 		}
 
 		protected override void OnButtonPressed (ButtonEventArgs args)
@@ -442,35 +415,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 				QueueResize ();
 				return;
 			}
-			if (args.Button != PointerButton.Right) {
-				var pos = layout.GetIndexFromCoordinates (args.Position.X - cellArea.X, args.Position.Y - cellArea.Y);
-				if (pos != -1) {
-					selectionStart = selectionEnd = pos;
-					selectionRow = node;
-					dragging = true;
-				} else
-					selectionRow = null;
-
-				QueueDraw ();
-			}
-
+		
 			base.OnButtonPressed (args);
-		}
-
-		protected override void OnButtonReleased (ButtonEventArgs args)
-		{
-			if (dragging) {
-				dragging = false;
-				QueueDraw ();
-			}
-			base.OnButtonReleased (args);
-		}
-
-		protected override void OnMouseExited ()
-		{
-			pointerPosition = Point.Zero;
-			ParentWidget.Cursor = CursorType.Arrow;
-			base.OnMouseExited ();
 		}
 
 		void CalcLayout (double padding, out TextLayout layout, out Rectangle cellArea, out Rectangle expanderRect)

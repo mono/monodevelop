@@ -185,7 +185,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeView.SelectionChanged += TreeView_SelectionChanged;
 			treeView.ButtonPressed += TreeView_ButtonPressed;
 
-
 			treeView.SelectionMode = Xwt.SelectionMode.Single;
 			var treeColumn = new ListViewColumn {
 				CanResize = false,
@@ -340,13 +339,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				menu.Add (new SeparatorContextMenuItem ());
 				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy\t\t\t{0}", GetShortcut (EditCommands.Copy, false)));
 				copyElementMenu.Clicked += (s, args) => {
-					if (cellView.SelectionStart != cellView.SelectionEnd) {
-						var init = Math.Min (cellView.SelectionStart, cellView.SelectionEnd);
-						var end = Math.Max (cellView.SelectionStart, cellView.SelectionEnd);
-						Clipboard.SetText (selectedNode.Message.Substring (init, end - init));
-					} else {
-						ClipboardCopy (selectedNode);
-					}
+					ClipboardCopy (selectedNode);
 				};
 				menu.Items.Add (copyElementMenu);
 
