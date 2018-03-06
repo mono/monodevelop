@@ -956,8 +956,7 @@ namespace MonoDevelop.Projects
 			if (buildActions != null)
 				return buildActions;
 
-			Predicate<string> predicate = null;
-			buildActions = GetBuildActions (predicate);
+			buildActions = GetBuildActions (predicate: null);
 			return buildActions;
 		}
 
@@ -3728,7 +3727,10 @@ namespace MonoDevelop.Projects
 		{
 			MSBuildEvaluationContext context = null;
 
-			foreach (var updateItem in evalItem.SourceItems.Where (it => it.IsUpdate)) {
+			foreach (var updateItem in evalItem.SourceItems) {
+				if (!updateItem.IsUpdate)
+					continue;
+
 				var p2 = updateItem.Metadata.GetProperty (p.Name);
 				if (p2 != null) {
 					if (context == null) {
