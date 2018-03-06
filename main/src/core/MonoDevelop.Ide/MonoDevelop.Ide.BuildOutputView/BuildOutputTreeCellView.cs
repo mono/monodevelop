@@ -92,7 +92,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		int informationContainerWidth => DefaultInformationContainerWidth;
 
 		IBuildOutputContextProvider contextProvider;
-		Font defaultFont; 
 
 		// This could also be stored in the data store. In this example we keep it in
 		// an internal dictionary to clearly separate the data model from the view model.
@@ -112,6 +111,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		double GetRowPadding (BuildOutputNode node) => node?.NodeType == BuildOutputNodeType.Build ? BuildTypeRowContentPadding : RowContentPadding;
 
+		double defaultHeight;
+		//Font defaultFont;
+		Font defaultLightFont;
+		Font defaultBoldFont;
+
 		public BuildOutputTreeCellView (IBuildOutputContextProvider context)
 		{
 			BackgroundColor = Styles.CellBackgroundColor;
@@ -119,6 +123,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			SelectionColor = Styles.CellSelectionColor;
 			UseStrongSelectionColor = true;
 			contextProvider = context;
+			var defaultLayout = new TextLayout () { Text = "A" };
+
+			var defaultFont = defaultLayout.Font.WithSize (FontSize);
+			defaultBoldFont = defaultFont.WithWeight (FontWeight.Bold);
+			defaultLightFont = defaultFont.WithWeight(FontWeight.Light);
+
+			defaultHeight = defaultLayout.GetSize ().Height;
 		}
 
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
@@ -150,11 +161,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			UpdateTextColor (ctx, buildOutputNode, isSelected);
 
-			if (IsRootNode (buildOutputNode)) {
-				layout.Font = defaultFont.WithWeight (FontWeight.Bold);
-			} else {
-				layout.Font = defaultFont.WithWeight (FontWeight.Light);
-			}
+			var actualFont = GetFont (buildOutputNode);
+
+			layout.Font = actualFont;
 
 			status.LastRenderX = startX;
 			status.LastRenderY = cellArea.Y + padding;
@@ -192,14 +201,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				startX += ImageSize + 2;
 				var errors = GettextCatalog.GetString ("{0} errors", buildOutputNode.ErrorCount.ToString ());
-				layout = DrawText (ctx, cellArea, startX, errors, padding, width, defaultFont);
+				layout = DrawText (ctx, cellArea, startX, errors, padding, width, defaultLightFont);
 
 				startX += layout.GetSize ().Width;
 				DrawImage (ctx, cellArea, Resources.WarningIconSmall, startX, ImageSize, isSelected);
 
 				var warnings = GettextCatalog.GetString ("{0} warnings", buildOutputNode.WarningCount.ToString ());
 				startX += ImageSize + 2;
-				DrawText (ctx, cellArea, startX, warnings, padding, font: defaultFont);
+				DrawText (ctx, cellArea, startX, warnings, padding, font: defaultLightFont);
 			} else if (buildOutputNode.NodeType == BuildOutputNodeType.Build) {
 				DrawFirstNodeInformation (ctx, cellArea, buildOutputNode, padding, isSelected);
 			}
@@ -269,9 +278,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			descriptionTextLayout.Trimming = trimming;
 
 			if (font == null) {
-				descriptionTextLayout.Font = defaultFont.WithWeight (FontWeight.Light);
+				descriptionTextLayout.Font = defaultLightFont;
 			} else {
-				descriptionTextLayout.Font = defaultFont;
+				descriptionTextLayout.Font = defaultBoldFont;
 			}
 
 			descriptionTextLayout.Text = text;
@@ -313,7 +322,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var status = GetViewStatus (buildOutputNode);
 
 			TextLayout layout = new TextLayout ();
-			layout.Font = defaultFont = layout.Font.WithSize (FontSize);
+			layout.Font = GetFont (buildOutputNode);
 			layout.Text = buildOutputNode.Message;
 
 			var textSize = layout.GetSize ();
@@ -428,7 +437,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			cellArea = new Rectangle (status.LastRenderX, status.LastRenderY, status.LastRenderWidth, status.LastRenderWidth);
 
 			layout = new TextLayout ();
-			layout.Font = defaultFont;
+			layout.Font = GetFont (node);
 			layout.Text = node.Message;
 			var textSize = layout.GetSize ();
 
@@ -441,6 +450,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 				if (expanderX > 0)
 					expanderRect = new Rectangle (expanderX, cellArea.Y + padding, BuildExpandIcon.Width, BuildExpandIcon.Height);
 			}
+		}
+
+		Font GetFont (BuildOutputNode node)
+		{
+			if (IsRootNode (node)) {
+				return defaultBoldFont;
+			}
+			return defaultLightFont;
 		}
 
 		#endregion
