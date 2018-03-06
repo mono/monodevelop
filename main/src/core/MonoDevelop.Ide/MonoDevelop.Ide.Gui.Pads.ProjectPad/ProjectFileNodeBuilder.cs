@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			try {
 				if (CanRenameFile (file, newName)) {
 					if (dependentFilesToRename != null) {
-						if (dependentFilesToRename.Any (f => !CanRenameFile (f.Item1, f.Item2))) {
+						if (dependentFilesToRename.Any (f => !CanRenameFile (f.File, f.NewName))) {
 							return;
 						}
 					}
@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 					if (dependentFilesToRename != null) {
 						foreach (var dependentFile in dependentFilesToRename) {
-							FileService.RenameFile (dependentFile.Item1.FilePath, dependentFile.Item2);
+							FileService.RenameFile (dependentFile.File.FilePath, dependentFile.NewName);
 						}
 					}
 
@@ -203,22 +203,22 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		/// <summary>
 		/// Returns all dependent files that have names that start with the old name of the file.
 		/// </summary>
-		static List<Tuple<ProjectFile, string>> GetDependentFilesToRename (ProjectFile file, string newName)
+		static List<(ProjectFile File, string NewName)> GetDependentFilesToRename (ProjectFile file, string newName)
 		{
 			if (!file.HasChildren)
 				return null;
 
-			List<Tuple<ProjectFile, string>> files = null;
+			List<(ProjectFile File, string NewName)> files = null;
 
 			string oldName = file.FilePath.FileName;
 			foreach (ProjectFile child in file.DependentChildren) {
 				string oldChildName = child.FilePath.FileName;
-				if (oldChildName.StartsWith (oldName)) {
+				if (oldChildName.StartsWith (oldName, StringComparison.CurrentCultureIgnoreCase)) {
 					string childNewName = newName + oldChildName.Substring (oldName.Length);
 
 					if (files == null)
-						files = new List<Tuple<ProjectFile, string>> ();
-					files.Add (new Tuple<ProjectFile, string> (child, childNewName));
+						files = new List<(ProjectFile projectFile, string name)> ();
+					files.Add ((child, childNewName));
 				}
 			}
 			return files;
