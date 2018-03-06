@@ -211,7 +211,7 @@ type ``Template tests``() =
             | errors -> Assert.Fail (sprintf "%A" errors)
         } |> toTask
 
-    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Forms FSharp FormsApp``()= testWithParameters "Xamarin.Forms.FSharp.FormsApp" "Xamarin.Forms.FSharp.FormsApp" "SafeUserDefinedProjectName=Xamarin_Forms_FSharp_FormsApp_Shared"
+    [<Ignore("Currently not testable as SDK project is dependent on wizard being ran");AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Forms FSharp FormsApp``()= testWithParameters "Xamarin.Forms.FSharp.FormsApp" "Xamarin.Forms.FSharp.FormsApp" "SafeUserDefinedProjectName=Xamarin_Forms_FSharp_FormsApp_Shared"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpPortableLibrary``()= test "FSharpPortableLibrary"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Forms FSharp ClassLibrary``()= test "Xamarin.Forms.FSharp.ClassLibrary"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Forms FSharp UITestApp-Mac``()= test "Xamarin.Forms.FSharp.UITestApp-Mac"
@@ -222,7 +222,7 @@ type ``Template tests``() =
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Android FSharp OpenGLGame``()= test "Xamarin.Android.FSharp.OpenGLGame"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Android FSharp ClassLibrary``()= test "Xamarin.Android.FSharp.ClassLibrary"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Android FSharp UnitTestApp``()= test "Xamarin.Android.FSharp.UnitTestApp"
-    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Mac FSharp CocoaApp-XIB``()= test "Xamarin.Mac.FSharp.CocoaApp-XIB"
+    [<Ignore;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Mac FSharp CocoaApp-XIB``()= test "Xamarin.Mac.FSharp.CocoaApp-XIB"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Mac FSharp ClassLibrary``()= test "Xamarin.Mac.FSharp.ClassLibrary"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin tvOS FSharp SingleViewApp``()= test "Xamarin.tvOS.FSharp.SingleViewApp"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``MonoDevelop FSharp ConsoleProject``()= test "MonoDevelop.FSharp.ConsoleProject"

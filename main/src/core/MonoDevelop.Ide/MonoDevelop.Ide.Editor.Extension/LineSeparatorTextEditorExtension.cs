@@ -85,12 +85,14 @@ namespace MonoDevelop.Ide.Editor.Extension
 			src = new CancellationTokenSource ();
 			if (!enabled)
 				return;
-			var token = src.Token;
-
-			var lineSeparatorService = DocumentContext?.RoslynWorkspace?.Services.GetLanguageServices (DocumentContext.AnalysisDocument.Project.Language).GetService<ILineSeparatorService> ();
+			var analysisDocument = DocumentContext?.AnalysisDocument;
+			if (analysisDocument == null)
+				return;
+			var lineSeparatorService = DocumentContext?.RoslynWorkspace?.Services.GetLanguageServices (analysisDocument.Project.Language).GetService<ILineSeparatorService> ();
 			if (lineSeparatorService == null)
 				return;
-			var separators = await lineSeparatorService.GetLineSeparatorsAsync (DocumentContext.AnalysisDocument, new TextSpan (0, Editor.Length), token);
+			var token = src.Token;
+			var separators = await lineSeparatorService.GetLineSeparatorsAsync (analysisDocument, new TextSpan (0, Editor.Length), token);
 			if (token.IsCancellationRequested)
 				return;
 			RemoveMarkers ();
