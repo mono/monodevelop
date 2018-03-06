@@ -17,8 +17,8 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=636c97c6af1810a8693d526684dccf408733e8ec
-DEP_BRANCH_AND_REMOTE[0]="d15-7-registrar-disable origin/d15-7-registrar-disable"
+DEP_NEEDED_VERSION[0]=5db352030fcfd38242177f65276a9a3e5efaac35
+DEP_BRANCH_AND_REMOTE[0]="d15-7 origin/d15-7"
 
 # heap-shot
 DEP[1]=heap-shot
