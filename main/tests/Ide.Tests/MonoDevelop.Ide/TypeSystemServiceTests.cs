@@ -86,10 +86,10 @@ namespace MonoDevelop.Ide
 		public async Task ProjectReferencingOutputTrackedReference()
 		{
 			string solFile = Util.GetSampleProject("csharp-app-fsharp-lib", "csappfslib.sln");
-			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem(Util.GetMonitor(), solFile);
-			var fsharpLibrary = sol.Items.FirstOrDefault(pr => pr.Name == "fslib") as DotNetProject;
-			Assert.IsTrue(TypeSystemService.IsOutputTrackedProject(fsharpLibrary));
-			sol.Dispose();
+			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var fsharpLibrary = sol.Items.FirstOrDefault (pr => pr.Name == "fslib") as DotNetProject;
+				Assert.IsTrue (TypeSystemService.IsOutputTrackedProject (fsharpLibrary));
+			}
 		}
 
 		[Test]
