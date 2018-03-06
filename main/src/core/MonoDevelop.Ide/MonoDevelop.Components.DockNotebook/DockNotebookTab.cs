@@ -79,10 +79,10 @@ namespace MonoDevelop.Components.DockNotebook
 				Gdk.Rectangle cocoaFrame;
 
 				// value is in the TabStrip's coordinate space, whereas we need to set the button in the tab space.
-				cocoaFrame.X = (int)value.X - allocation.X;
-				int halfParentWidth = allocation.Height / 2;
-				double dy = value.Y - halfParentWidth;
-				cocoaFrame.Y = (int) (halfParentWidth + dy) - allocation.Y;
+				cocoaFrame.X = (int)value.X;// - allocation.X;
+				int halfParentHeight = (int)(strip.Allocation.Height / 2);
+				double dy = value.Y - halfParentHeight;
+				cocoaFrame.Y = (int) ((halfParentHeight + dy) - ((int)value.Height / 2));
 				cocoaFrame.Width = (int) value.Width;
 				cocoaFrame.Height = (int) value.Height;
 
@@ -247,7 +247,6 @@ namespace MonoDevelop.Components.DockNotebook
 				CloseButtonAccessible.PerformShowMenu += OnCloseButtonShowMenu;
 				CloseButtonAccessible.Title = Core.GettextCatalog.GetString ("Close document");
 				CloseButtonAccessible.Identifier = "DockNotebook.Tab.CloseButton";
-				Accessible.AddAccessibleChild (CloseButtonAccessible);
 			}
 
 			this.notebook = notebook;

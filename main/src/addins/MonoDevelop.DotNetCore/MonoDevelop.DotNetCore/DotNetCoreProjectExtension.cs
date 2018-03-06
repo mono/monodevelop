@@ -130,6 +130,7 @@ namespace MonoDevelop.DotNetCore
 				Project.CompileTarget = dotNetCoreMSBuildProject.DefaultCompileTarget;
 
 			Project.UseAdvancedGlobSupport = true;
+			Project.UseDefaultMetadataForExcludedExpandedItems = true;
 			Project.UseFileWatcher = true;
 		}
 

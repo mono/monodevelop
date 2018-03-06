@@ -489,11 +489,14 @@ namespace MonoDevelop.Projects.MSBuild
 		static void AddRemoveToGlobInclude (ProjectInfo project, MSBuildItem item, string remove)
 		{
 			var exclude = ExcludeToRegex (remove);
-			foreach (var globInclude in project.GlobIncludes.Where (g => g.Item.Name == item.Name)) {
-				if (globInclude.RemoveRegex != null)
-					exclude = globInclude.RemoveRegex + "|" + exclude;
-				globInclude.RemoveRegex = new Regex (exclude);
-			}
+			do {
+				foreach (var globInclude in project.GlobIncludes.Where (g => g.Item.Name == item.Name)) {
+					if (globInclude.RemoveRegex != null)
+						exclude = globInclude.RemoveRegex + "|" + exclude;
+					globInclude.RemoveRegex = new Regex (exclude);
+				}
+				project = project.Parent;
+			} while (project != null);
 		}
 
 		static void RemoveEvaluatedItemFromAllProjects (ProjectInfo project, MSBuildItem item, string include, bool trueCond)

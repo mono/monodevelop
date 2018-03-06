@@ -431,6 +431,7 @@ namespace MonoDevelop.Ide.Gui
                             await Window.ViewContent.Save (fileName + "~");
 							FileService.NotifyFileChanged (fileName + "~");
 						}
+						DocumentRegistry.SkipNextChange (fileName);
 						await Window.ViewContent.Save (fileName);
 						FileService.NotifyFileChanged (fileName);
                         OnSaved(EventArgs.Empty);

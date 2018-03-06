@@ -239,5 +239,17 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			Assert.IsInstanceOf<DotNetProject> (project);
 		}
+
+		[Test]
+		public async Task ConsoleProject_UseDefaultMetadataForExcludedExpandedItems_IsTrue ()
+		{
+			string solutionFileName = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-sdk-console.sln");
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = solution.GetAllProjects ().Single ();
+
+			Assert.IsTrue (project.UseDefaultMetadataForExcludedExpandedItems);
+			Assert.IsTrue (project.UseAdvancedGlobSupport);
+			Assert.IsTrue (project.UseFileWatcher);
+		}
 	}
 }
