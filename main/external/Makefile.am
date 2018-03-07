@@ -1,5 +1,6 @@
 TARBALL_PATH=../../tarballs/external
 XAMMAC_PATH=/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib
+XAMMAC_PDB=$(XAMMAC_PATH)/@MAC_ARCHITECTURE@/full/Xamarin.Mac.pdb
 all:
 
 clean:
@@ -10,7 +11,8 @@ all: Xamarin.Mac.dll Xamarin.Mac.registrar.full.a libxammac.dylib
 
 Xamarin.Mac.dll: $(XAMMAC_PATH)/@MAC_ARCHITECTURE@/full/Xamarin.Mac.dll
 	cp -p $< $@
-	cp -p $<.mdb $@.mdb
+	if [[ -f $<.mdb ]]; then cp -p $<.mdb $@.mdb; fi;
+	if [[ -f $(XAMMAC_PDB) ]]; then cp -p $(XAMMAC_PDB) Xamarin.Mac.pdb; fi;
 
 Xamarin.Mac.registrar.full.a: $(XAMMAC_PATH)/mmp/Xamarin.Mac.registrar.full.a
 	cp -p $< $@
