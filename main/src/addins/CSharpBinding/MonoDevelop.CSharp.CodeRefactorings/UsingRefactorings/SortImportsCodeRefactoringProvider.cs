@@ -73,7 +73,7 @@ namespace MonoDevelop.CSharp.CodeRefactorings.IntroduceVariable
 
 			context.RegisterRefactoring (
 				new CodeAction.DocumentChangeAction (
-					GettextCatalog.GetString ("Sort usings"),
+					GettextCatalog.GetString ("Sort Usings"),
 					(t) => OrganizeImportsCommandHandler.SortUsingsAsync (document, t)));
 		}
 	}
@@ -111,7 +111,7 @@ namespace MonoDevelop.CSharp.CodeRefactorings.IntroduceVariable
 
 			context.RegisterRefactoring (
 				new CodeAction.DocumentChangeAction (
-					GettextCatalog.GetString ("Sort and remove usings"),
+					GettextCatalog.GetString ("Remove and Sort Usings"),
 					(t) => SortAndRemoveImportsCommandHandler.SortAndRemoveAsync (document, t)));
 		}
 	}
