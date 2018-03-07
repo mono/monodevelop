@@ -28,6 +28,8 @@ using System;
 using System.Linq;
 using Gtk;
 
+using MonoDevelop.Components.AtkCocoaHelper;
+
 namespace MonoDevelop.Components.Docking
 {
 	public class DockItemToolbar
@@ -76,6 +78,35 @@ namespace MonoDevelop.Components.Docking
 			topFrame.Add (box);
 
 //			topFrame.GradientBackround = true;
+
+			box.Accessible.SetShouldIgnore (false);
+			box.Accessible.Role = Atk.Role.ToolBar;
+
+			UpdateAccessibilityLabel ();
+		}
+
+		internal void UpdateAccessibilityLabel ()
+		{
+			string name = "";
+			switch (position) {
+			case DockPositionType.Bottom:
+				name = Core.GettextCatalog.GetString ("Bottom {0} pad toolbar", parentItem.Label);
+				break;
+
+			case DockPositionType.Left:
+				name = Core.GettextCatalog.GetString ("Left {0} pad toolbar", parentItem.Label);
+				break;
+
+			case DockPositionType.Right:
+				name = Core.GettextCatalog.GetString ("Right {0} pad toolbar", parentItem.Label);
+				break;
+
+			case DockPositionType.Top:
+				name = Core.GettextCatalog.GetString ("Top {0} pad toolbar", parentItem.Label);
+				break;
+			}
+
+			box.Accessible.SetCommonAttributes ("padtoolbar", name, "");
 		}
 
 		internal void SetStyle (DockVisualStyle style)

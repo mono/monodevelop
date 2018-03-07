@@ -745,7 +745,6 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			DocumentRegistry.SkipNextChange (fileName);
 			try {
 				object attributes = null;
 				if (File.Exists (fileName)) {
