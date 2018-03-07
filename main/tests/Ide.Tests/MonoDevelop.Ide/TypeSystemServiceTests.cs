@@ -106,8 +106,12 @@ namespace MonoDevelop.Ide
 				Assert.AreNotSame (workspace, TypeSystemService.emptyWorkspace);
 				tcs.SetResult (true);
 			};
-			await IdeApp.Workspace.OpenWorkspaceItem (solFile);
-			await tcs.Task;
+			try {
+				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
+				await tcs.Task;
+			} finally {
+				await IdeApp.Workspace.Close (false);
+			}
 		}
 	}
 }

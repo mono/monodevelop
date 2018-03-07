@@ -75,14 +75,15 @@ namespace MonoDevelop.Ide
 		{
 			FilePath directory = Util.CreateTmpDir ("MySolution");
 			var fileName = directory.Combine ("MySolution.sln");
-			var solution = new Solution ();
-			solution.FileName = fileName;
-			var paths = new [] { ".vs", "MySolution", "xs", "UserPrefs.xml" };
-			string expectedFileName = solution.BaseDirectory.Combine (paths);
+			using (var solution = new Solution ()) {
+				solution.FileName = fileName;
+				var paths = new [] { ".vs", "MySolution", "xs", "UserPrefs.xml" };
+				string expectedFileName = solution.BaseDirectory.Combine (paths);
 
-			string userPreferencesFileName = solution.GetPreferencesFileName ();
+				string userPreferencesFileName = solution.GetPreferencesFileName ();
 
-			Assert.AreEqual (expectedFileName, userPreferencesFileName);
+				Assert.AreEqual (expectedFileName, userPreferencesFileName);
+			}
 		}
 
 		[Test]
