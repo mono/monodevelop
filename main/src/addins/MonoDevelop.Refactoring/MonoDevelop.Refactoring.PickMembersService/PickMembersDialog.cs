@@ -89,13 +89,15 @@ namespace MonoDevelop.Refactoring.PickMembersService
 			listBoxPublicMembers.Views.Add (new TextCellView (symbolTextField));
 		}
 
+		VBox contentVBox;
+
 		void Build ()
 		{
 			this.TransientFor = MessageDialog.RootWindow;
 			this.Title = GettextCatalog.GetString ("Pick members");
 
 			treeStore = new ListStore (symbolIncludedField, symbolField, symbolTextField, symbolIconField);
-			var box = new VBox {
+			contentVBox = new VBox {
 			//	Margin = 6,
 			//	Spacing = 6
 			};
@@ -127,9 +129,9 @@ namespace MonoDevelop.Refactoring.PickMembersService
 
 			hbox.PackStart (vbox);
 
-			box.PackStart (hbox, true);
+			contentVBox.PackStart (hbox, true);
 
-			Content = box;
+			Content = contentVBox;
 			Buttons.Add (new DialogButton (Command.Cancel));
 			Buttons.Add (okButton = new DialogButton (Command.Ok));
 			this.DefaultCommand = okButton.Command;
@@ -163,6 +165,14 @@ namespace MonoDevelop.Refactoring.PickMembersService
 				treeStore.SetValue (row, symbolField, member);
 				treeStore.SetValue (row, symbolTextField, member.ToDisplayString (memberDisplayFormat));
 				treeStore.SetValue (row, symbolIconField, ImageService.GetIcon (MonoDevelop.Ide.TypeSystem.Stock.GetStockIcon (member)));
+			}
+			foreach (var option in options) {
+				var checkBox = new CheckBox (option.Title);
+				checkBox.State = option.Value ? CheckBoxState.On : CheckBoxState.Off;
+				checkBox.Toggled += delegate {
+					option.Value = !option.Value;
+				};
+				contentVBox.PackStart (checkBox);
 			}
 		}
 
