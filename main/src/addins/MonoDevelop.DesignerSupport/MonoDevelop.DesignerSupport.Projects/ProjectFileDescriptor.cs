@@ -151,7 +151,7 @@ namespace MonoDevelop.DesignerSupport
 					context.Instance as ProjectFileDescriptor : null;
 				
 				if (descriptor != null && descriptor.file != null && descriptor.file.Project != null) {
-					return descriptor.file.Project.GetBuildActions ();
+					return descriptor.file.Project.GetBuildActions (descriptor.file.FilePath);
 				} else {
 					return new string[] {"Content", "None", "Compile"};
 				}

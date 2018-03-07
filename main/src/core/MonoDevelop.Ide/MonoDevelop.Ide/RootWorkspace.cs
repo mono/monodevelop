@@ -426,15 +426,21 @@ namespace MonoDevelop.Ide
 				item.Dispose ();
 			}
 		}
-		
+
 		public bool RequestItemUnload (WorkspaceObject item)
 		{
-			if (ItemUnloading != null) {
+			var itemUnloading = ItemUnloading;
+			if (itemUnloading != null) {
 				try {
+					bool haveAnyCancelled = false;
 					ItemUnloadingEventArgs args = new ItemUnloadingEventArgs (item);
-					ItemUnloading (this, args);
-					return !args.Cancel;
-				} catch (Exception ex) {
+					foreach (EventHandler<ItemUnloadingEventArgs> handler in itemUnloading.GetInvocationList ()) {
+						handler (this, args);
+						haveAnyCancelled |= args.Cancel;
+					}
+					return !haveAnyCancelled;
+				}
+				catch (Exception ex) {
 					LoggingService.LogError ("Exception in ItemUnloading.", ex);
 				}
 			}
