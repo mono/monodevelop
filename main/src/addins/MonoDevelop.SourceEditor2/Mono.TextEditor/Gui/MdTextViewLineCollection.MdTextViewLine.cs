@@ -43,13 +43,15 @@ namespace Mono.TextEditor
 			MonoTextEditor textEditor;
 			SnapshotSpan lineSpan;
 			int lineBreakLength;
+			public int LineNumber { get; private set; }
 
-			public MdTextViewLine(MdTextViewLineCollection collection, MonoTextEditor textEditor, DocumentLine line, TextViewMargin.LayoutWrapper layoutWrapper)
+			public MdTextViewLine(MdTextViewLineCollection collection, MonoTextEditor textEditor, DocumentLine line, int lineNumber, TextViewMargin.LayoutWrapper layoutWrapper)
 			{
 				this.collection = collection;
 				this.layoutWrapper = layoutWrapper;
 				this.textEditor = textEditor;
 				this.line = line;
+				this.LineNumber = lineNumber;
  				this.lineSpan = new SnapshotSpan(textEditor.VisualSnapshot, line.Offset, line.LengthIncludingDelimiter);
 				this.lineBreakLength = line.DelimiterLength;
 			}
