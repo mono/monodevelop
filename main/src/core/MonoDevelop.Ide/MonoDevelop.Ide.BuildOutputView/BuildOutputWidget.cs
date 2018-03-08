@@ -477,9 +477,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 						Find (null);
 
 						var buildOutputDataSource = new BuildOutputDataSource (BuildOutput.GetRootNodes (showDiagnostics));
-						treeView.DataSource = buildOutputDataSource;
-
 						(treeView.Columns [0].Views [0] as BuildOutputTreeCellView).BuildOutputNodeField = buildOutputDataSource.BuildOutputNodeField;
+
+						treeView.DataSource = buildOutputDataSource;
+						cellView.OnDataSourceChanged ();
 
 						// Expand root nodes and nodes with errors
 						int rootsCount = buildOutputDataSource.GetChildrenCount (null);

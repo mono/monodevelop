@@ -391,6 +391,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return status;
 		}
 
+		internal void OnDataSourceChanged () 
+		{
+			viewStatus.Clear ();
+		}
+
 		#region Mouse Events
 
 		Point pointerPosition;
