@@ -141,6 +141,13 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		public event EventHandler<DotNetProjectImportEventArgs> ImportAdded;
+
+		public void OnImportAdded (IDotNetProject project, string import)
+		{
+			ImportAdded?.Invoke (this, new DotNetProjectImportEventArgs (project, import));
+		}
+
 		public event EventHandler<DotNetProjectImportEventArgs> ImportRemoved;
 
 		public void OnImportRemoved (IDotNetProject project, string import)

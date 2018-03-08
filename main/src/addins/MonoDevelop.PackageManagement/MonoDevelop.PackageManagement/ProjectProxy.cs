@@ -35,7 +35,7 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class ProjectProxy : IProject
 	{
-		Project project;
+		readonly Project project;
 
 		public ProjectProxy (Project project)
 		{
@@ -79,6 +79,29 @@ namespace MonoDevelop.PackageManagement
 			using (var monitor = new ProgressMonitor ()) {
 				await project.SaveAsync (monitor);
 			}
+		}
+
+		public Task ReevaluateProject (ProgressMonitor monitor)
+		{
+			return project.ReevaluateProject (monitor);
+		}
+
+		public override int GetHashCode ()
+		{
+			return project.GetHashCode ();
+		}
+
+		public override bool Equals (object obj)
+		{
+			return Equals (obj as ProjectProxy);
+		}
+
+		public bool Equals (ProjectProxy other)
+		{
+			if (other != null) {
+				return other.project == project;
+			}
+			return false;
 		}
 	}
 }

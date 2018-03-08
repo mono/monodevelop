@@ -823,6 +823,72 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (info.IsUninstallPending);
 			Assert.IsFalse (info.IsRestorePending);
 		}
+
+		[Test]
+		public void Run_ImportRemoved_ProjectBuilderDisposed ()
+		{
+			CreateRunner ();
+			var project = new FakeDotNetProject ();
+			var solution = new FakeSolution ();
+			solution.Projects.Add (project);
+			project.ParentSolution = solution;
+			AddInstallActionWithCustomExecuteAction (() => {
+				packageManagementEvents.OnImportRemoved (project, "Test.targets");
+			});
+
+			Run ();
+
+			Assert.IsTrue (project.IsProjectBuilderDisposed);
+		}
+
+		[Test]
+		public void Run_ImportRemoved_ProjectIsReevaluated ()
+		{
+			CreateRunner ();
+			var project = new FakeDotNetProject ();
+			var solution = new FakeSolution ();
+			solution.Projects.Add (project);
+			project.ParentSolution = solution;
+			AddInstallActionWithCustomExecuteAction (() => {
+				packageManagementEvents.OnImportRemoved (project, "Test.targets");
+			});
+
+			Run ();
+
+			Assert.IsTrue (project.IsReevaluated);
+		}
+
+		[Test]
+		public void Run_ImportAdded_ProjectIsReevaluated ()
+		{
+			CreateRunner ();
+			var project = new FakeDotNetProject ();
+			var solution = new FakeSolution ();
+			solution.Projects.Add (project);
+			project.ParentSolution = solution;
+			AddInstallActionWithCustomExecuteAction (() => {
+				packageManagementEvents.OnImportAdded (project, "Test.targets");
+			});
+
+			Run ();
+
+			Assert.IsTrue (project.IsReevaluated);
+		}
+
+		[Test]
+		public void Run_NoImportAddedOrRemoved_ProjectIsNotReevaluated ()
+		{
+			CreateRunner ();
+			var project = new FakeDotNetProject ();
+			var solution = new FakeSolution ();
+			solution.Projects.Add (project);
+			project.ParentSolution = solution;
+			AddInstallActionWithCustomExecuteAction (() => {});
+
+			Run ();
+
+			Assert.IsFalse (project.IsReevaluated);
+		}
 	}
 }
 
