@@ -69,6 +69,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			public double LastRenderX;
 			public double LastRenderY;
 			public double LastCalculatedHeight;
+
+			public int NewLineCharIndex;
 		}
 
 		const int BuildTypeRowContentPadding = 6;
@@ -151,7 +153,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			// Store the width, it will be used for calculating height in OnGetRequiredSize() when in expanded mode.
 			status.LastRenderWidth = width;
 
-			layout.Text = buildOutputNode.Message;
+			if (!status.Expanded && status.NewLineCharIndex > -1) {
+				layout.Text = buildOutputNode.Message.Substring (0, status.NewLineCharIndex);
+			} else {
+				layout.Text = buildOutputNode.Message;
+			}
 
 			UpdateTextColor (ctx, buildOutputNode, isSelected);
 
@@ -162,8 +168,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			status.LastRenderY = cellArea.Y + padding;
 
 			// Text doesn't fit. We need to render the expand icon
-			if (textSize.Width > width) {
+			if (textSize.Width > width || status.NewLineCharIndex > -1) {
+				
 				layout.Width = width;
+
+				if (textSize.Height > cellArea.Height) {
+					layout.Height = cellArea.Height;
+				}
+
 				if (!status.Expanded)
 					layout.Trimming = TextTrimming.WordElipsis;
 				else
@@ -320,7 +332,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			TextLayout layout = new TextLayout ();
 			layout.Font = GetFont (buildOutputNode);
-			layout.Text = buildOutputNode.Message;
+
+			if (!status.Expanded && status.NewLineCharIndex > -1) {
+				layout.Text = buildOutputNode.Message.Substring (0, status.NewLineCharIndex);
+			} else {
+				layout.Text = buildOutputNode.Message;
+			}
 
 			var textSize = layout.GetSize ();
 
@@ -391,6 +408,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return status;
 		}
 
+		protected override void OnDataChanged ()
+		{
+			base.OnDataChanged ();
+			var node = GetValue (BuildOutputNodeField);
+			if (node != null) {
+				var status = GetViewStatus (node);
+				status.NewLineCharIndex = node.Message.IndexOf ('\n');
+			}
+		}
+
 		internal void OnDataSourceChanged () 
 		{
 			viewStatus.Clear ();
@@ -444,7 +471,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			layout.Text = node.Message;
 			var textSize = layout.GetSize ();
 
-			if (textSize.Width > cellArea.Width) {
+			if (textSize.Width > cellArea.Width || layout.Text.IndexOf ('\n') > -1) {
 				layout.Width = Math.Max (1, cellArea.Width);
 				if (!status.Expanded)
 					layout.Trimming = TextTrimming.WordElipsis;
