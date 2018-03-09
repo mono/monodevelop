@@ -49,6 +49,11 @@ namespace MonoDevelop.SourceEditor
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
+			if (solution != null) {
+				TypeSystemService.Unload (solution);
+				solution.Dispose ();
+			}
+			
 			var project = Services.ProjectService.CreateDotNetProject ("C#");
 			project.Name = "test";
 			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("mscorlib"));
@@ -196,7 +201,10 @@ namespace DebuggerTooltipTests
 
 		public override void TearDown()
 		{
-			TypeSystemService.Unload (solution);
+			if (solution != null) {
+				TypeSystemService.Unload (solution);
+				solution.Dispose ();
+			}
 			base.TearDown ();
 		}
 

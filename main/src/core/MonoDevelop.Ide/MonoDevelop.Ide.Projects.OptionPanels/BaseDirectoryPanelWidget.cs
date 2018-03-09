@@ -41,6 +41,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public BaseDirectoryPanelWidget()
 		{
 			this.Build();
+
+			label2.Accessible.SetShouldIgnore (true);
 			var a = folderentry.EntryAccessible;
 			a.SetTitleUIElement (label3.Accessible);
 			label3.Accessible.SetTitleFor (a);
