@@ -221,7 +221,7 @@ namespace MonoDevelop.Core
 			Counters.AddinsLoaded.Dec ("Add-in unloaded: " + args.AddinId);
 		}
 		
-		internal static bool Initialized {
+		public static bool Initialized {
 			get { return initialized; }
 		}
 		

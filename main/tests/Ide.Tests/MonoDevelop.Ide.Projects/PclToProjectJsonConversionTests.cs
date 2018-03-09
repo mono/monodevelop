@@ -47,18 +47,18 @@ namespace MonoDevelop.Ide.Projects
 		{
 			FilePath solFile = Util.GetSampleProject ("XamarinFormsPcl", "XamarinFormsPcl.sln");
 
-			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			var p = (DotNetProject)sol.Items [0];
-			string expectedProjectXml = File.ReadAllText (p.FileName.ChangeName ("XamarinFormsPcl-migrated"));
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (DotNetProject)sol.Items [0];
+				string expectedProjectXml = File.ReadAllText (p.FileName.ChangeName ("XamarinFormsPcl-migrated"));
 
-			var projectJsonFile = PortableRuntimeOptionsPanelWidget.MigrateToProjectJson (p);
-			await p.SaveAsync (Util.GetMonitor ());
+				var projectJsonFile = PortableRuntimeOptionsPanelWidget.MigrateToProjectJson (p);
+				await p.SaveAsync (Util.GetMonitor ());
 
-			string projectXml = File.ReadAllText (p.FileName);
-			Assert.AreEqual (BuildAction.None, projectJsonFile.BuildAction);
-			Assert.AreEqual (p.BaseDirectory.Combine ("project.json"), projectJsonFile.FilePath);
-			Assert.AreEqual (expectedProjectXml, projectXml);
-			sol.Dispose ();
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (BuildAction.None, projectJsonFile.BuildAction);
+				Assert.AreEqual (p.BaseDirectory.Combine ("project.json"), projectJsonFile.FilePath);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+			}
 		}
 	}
 }
