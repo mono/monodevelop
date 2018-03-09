@@ -116,6 +116,20 @@ namespace Microsoft.VisualStudio.Platform
             CurrentHandlers.Execute (_languageBuffer.ContentType,
                 args: new InvokeCompletionListCommandArgs (_textView, _languageBuffer),
                 lastHandler: executeNextCommandTarget);
-        }
+		}
+
+		public void ExecuteCommitUniqueCompletionListItemCommand (Action executeNextCommandTarget)
+		{
+			CurrentHandlers.Execute (_languageBuffer.ContentType,
+				args: new CommitUniqueCompletionListItemCommandArgs (_textView, _languageBuffer),
+				lastHandler: executeNextCommandTarget);
+		}
+
+		public void ExecuteEscapeKeyCommandArgs (Action executeNextCommandTarget)
+		{
+			CurrentHandlers.Execute (_languageBuffer.ContentType,
+				args: new EscapeKeyCommandArgs (_textView, _languageBuffer),
+				lastHandler: executeNextCommandTarget);
+		}
     }
 }
