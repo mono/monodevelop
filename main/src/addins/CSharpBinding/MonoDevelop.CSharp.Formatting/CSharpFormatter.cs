@@ -56,16 +56,29 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override bool SupportsPartialDocumentFormatting { get { return true; } }
 
-		protected override void CorrectIndentingImplementation (PolicyContainer policyParent, TextEditor editor, int line)
+		protected override async void CorrectIndentingImplementation (PolicyContainer policyParent, TextEditor editor, int line)
 		{
 			var lineSegment = editor.GetLine (line);
 			if (lineSegment == null)
 				return;
 
 			try {
-				var policy = policyParent.Get<CSharpFormattingPolicy> (MimeType);
-				var textpolicy = policyParent.Get<TextStylePolicy> (MimeType);
-				var tracker = new CSharpIndentEngine (policy.CreateOptions (textpolicy));
+				Microsoft.CodeAnalysis.Options.OptionSet options = null;
+
+				foreach (var doc in IdeApp.Workbench.Documents) {
+					if (doc.Editor == editor) {
+						options = await doc.AnalysisDocument?.GetOptionsAsync ();
+						break;
+					}
+				}
+
+				if (options == null) {
+					var policy = policyParent.Get<CSharpFormattingPolicy> (MimeType);
+					var textpolicy = policyParent.Get<TextStylePolicy> (MimeType);
+					options = policy.CreateOptions (textpolicy);
+				}
+
+				var tracker = new CSharpIndentEngine (options);
 
 				tracker.Update (IdeApp.Workbench.ActiveDocument.Editor, lineSegment.Offset);
 				for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.Length; i++) {
