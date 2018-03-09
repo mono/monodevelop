@@ -375,6 +375,7 @@ namespace MonoDevelop.CSharp.Project
 			case LanguageVersion.CSharp1: return "ISO-1";
 			case LanguageVersion.CSharp2: return "ISO-2";
 			case LanguageVersion.CSharp7_1: return "7.1";
+			case LanguageVersion.CSharp7_2: return "7.2";
 			default: return ((int)value).ToString ();
 			}
 		}
