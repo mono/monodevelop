@@ -405,6 +405,10 @@ namespace MonoDevelop.CSharp.Project
 			case "7.1":
 				version = LanguageVersion.CSharp7_1;
 				return true;
+				
+			case "7.2":
+				version = LanguageVersion.CSharp7_2;
+				return true;
 
 			case "default":
 				version = LanguageVersion.Default;
