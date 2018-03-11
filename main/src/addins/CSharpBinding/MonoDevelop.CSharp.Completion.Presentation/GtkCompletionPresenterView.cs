@@ -615,8 +615,6 @@ namespace MonoDevelop.CSharp.Completion.Presentation
 			if (description == null)
 				return;
 
-			var markup = new StringBuilder ();
-			markup.AppendTaggedText (DefaultSourceEditorOptions.Instance.GetEditorTheme (), description.TaggedParts);
 			descriptionWindow = new TooltipInformationWindow ();
 			descriptionWindow.AddOverload (description);
 			ShowDescription ();
