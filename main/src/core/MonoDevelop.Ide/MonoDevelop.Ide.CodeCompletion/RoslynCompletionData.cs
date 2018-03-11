@@ -82,19 +82,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected abstract string MimeType { get; }
 
 		public override IconId Icon {
-			get {
-				if (CompletionItem.Tags.Contains ("Snippet")) {
-					var template = CodeTemplateService.GetCodeTemplates (MimeType).FirstOrDefault (t => t.Shortcut == CompletionItem.DisplayText);
-					if (template != null)
-						return template.Icon;
-				}
-				var modifier = GetItemModifier ();
-				var type = GetItemType ();
-				var hash = modifier | type << 16;
-				if (!IconIdCache.ContainsKey (hash))
-					IconIdCache [hash] = "md-" + modifierType [modifier] + completionType [type];
-				return IconIdCache [hash];
+			get => GetIcon (CompletionItem, MimeType);
+		}
+
+
+		internal static string GetIcon (CompletionItem completionItem, string mimeType)
+		{
+			if (completionItem.Tags.Contains ("Snippet")) {
+				var template = CodeTemplateService.GetCodeTemplates (mimeType).FirstOrDefault (t => t.Shortcut == completionItem.DisplayText);
+				if (template != null)
+					return template.Icon;
 			}
+			var modifier = GetItemModifier (completionItem);
+			var type = GetItemType (completionItem);
+			var hash = modifier | type << 16;
+			if (!IconIdCache.ContainsKey (hash))
+				IconIdCache [hash] = "md-" + modifierType [modifier] + completionType [type];
+			return IconIdCache [hash];
 		}
 
 		static Dictionary<int, string> IconIdCache = new Dictionary<int, string> ();
@@ -121,7 +125,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return null;
 		}
 
-		string [] completionType = {
+		readonly static string [] completionType = {
 			"field",
 			"literal",
 			"variable",
@@ -140,7 +144,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			"extensionmethod"
 		};
 
-		static Dictionary<string, int> roslynCompletionTypeTable = new Dictionary<string, int> {
+		readonly static Dictionary<string, int> roslynCompletionTypeTable = new Dictionary<string, int> {
 			{ "Field", 0 },
 			{ "Alias", 0 },
 			{ "ArrayType", 0 },
@@ -188,17 +192,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 			{ "ExtensionMethod", 15 }
 		};
 
-		int GetItemType ()
+		static int GetItemType (CompletionItem completionItem)
 		{
-			foreach (var tag in CompletionItem.Tags) {
+			foreach (var tag in completionItem.Tags) {
 				if (roslynCompletionTypeTable.TryGetValue (tag, out int result))
 					return result;
 			}
-			LoggingService.LogWarning ("RoslynCompletionData: Can't find item type '" + string.Join (",", CompletionItem.Tags) + "'");
+			LoggingService.LogWarning ("RoslynCompletionData: Can't find item type '" + string.Join (",", completionItem.Tags) + "'");
 			return 1;
 		}
 
-		string [] modifierType = {
+		readonly static string [] modifierType = {
 			"",
 			"private-",
 			"ProtectedOrInternal-",
@@ -208,7 +212,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		};
 
 
-		static Dictionary<string, int> modifierTypeTable = new Dictionary<string, int> {
+		readonly static Dictionary<string, int> modifierTypeTable = new Dictionary<string, int> {
 			{ "Private", 1 },
 			{ "ProtectedAndInternal", 2 },
 			{ "Protected", 3 },
@@ -216,9 +220,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			{ "ProtectedOrInternal", 5 }
 		};
 
-		int GetItemModifier ()
+		static int GetItemModifier (CompletionItem completionItem)
 		{
-			foreach (var tag in CompletionItem.Tags) {
+			foreach (var tag in completionItem.Tags) {
 				if (modifierTypeTable.TryGetValue (tag, out int result))
 					return result;
 			}
