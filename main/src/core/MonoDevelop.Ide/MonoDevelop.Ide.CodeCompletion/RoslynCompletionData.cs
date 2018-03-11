@@ -275,9 +275,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		protected abstract void Format (TextEditor editor, Gui.Document document, int start, int end);
 
-		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
+		public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
+		{
+			return CreateTooltipInformation (doc, CompletionItem, smartWrap, cancelToken);
+		}
+
+		internal static async Task<TooltipInformation> CreateTooltipInformation (Microsoft.CodeAnalysis.Document doc, CompletionItem CompletionItem, bool smartWrap, CancellationToken cancelToken)
 		{
 			CompletionDescription description;
+			var completionService = TypeSystem.TypeSystemService.Workspace.Services.GetLanguageServices (LanguageNames.CSharp).GetService<CompletionService> ();
 			if (CommonCompletionItem.HasDescription (CompletionItem)) {
 				description = CommonCompletionItem.GetDescription (CompletionItem);
 			} else {

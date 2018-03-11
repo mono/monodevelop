@@ -585,7 +585,7 @@ namespace MonoDevelop.CSharp.Completion.Presentation
 		}
 
 		CancellationTokenSource descriptionCts = new CancellationTokenSource ();
-		XwtThemedPopup descriptionWindow;
+		TooltipInformationWindow descriptionWindow;
 		private async Task UpdateDescription ()
 		{
 			if (descriptionWindow != null) {
@@ -598,10 +598,12 @@ namespace MonoDevelop.CSharp.Completion.Presentation
 			var completionItem = SelectedItem;
 			descriptionCts = new CancellationTokenSource ();
 			var token = descriptionCts.Token;
-			CompletionDescription description = null;
+
+
+			TooltipInformation description = null;
 			try {
 				var document = _subjectBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChanges ();
-				description = await completionService.GetDescriptionAsync (document, completionItem, token);
+				RoslynCompletionData.CreateTooltipInformation (document, completionItem, false, token);
 			} catch {
 			}
 			if (token.IsCancellationRequested)
@@ -610,18 +612,13 @@ namespace MonoDevelop.CSharp.Completion.Presentation
 				descriptionWindow.Destroy ();
 				descriptionWindow = null;
 			}
-			if (string.IsNullOrEmpty (description?.Text))
+			if (description == null)
 				return;
 
 			var markup = new StringBuilder ();
 			markup.AppendTaggedText (DefaultSourceEditorOptions.Instance.GetEditorTheme (), description.TaggedParts);
-			descriptionWindow = new XwtThemedPopup ();
-			var label = new FixedWidthWrapLabel ();
-			label.Markup = markup.ToString ();
-			label.MaxWidth = 400;
-			label.ShowAll ();
-			descriptionWindow.Content = Xwt.Toolkit.CurrentEngine.WrapWidget (label, Xwt.NativeWidgetSizing.DefaultPreferredSize);
-			descriptionWindow.ShowArrow = true;
+			descriptionWindow = new TooltipInformationWindow ();
+			descriptionWindow.AddOverload (description);
 			ShowDescription ();
 		}
 
