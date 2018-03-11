@@ -5,9 +5,10 @@ using Microsoft.CodeAnalysis.Completion;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.Ide.CodeCompletion
+namespace MonoDevelop.CSharp.Completion.Presentation
 {
 	public class MyCSharpCompletionData : MyRoslynCompletionData
 	{
@@ -18,7 +19,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		protected override string MimeType => "text/csharp";
 
-		protected override void Format (TextEditor editor, Gui.Document document, SnapshotPoint start, SnapshotPoint end)
+		protected override void Format (TextEditor editor, Ide.Gui.Document document, SnapshotPoint start, SnapshotPoint end)
 		{
 			return;
 			//MonoDevelop.CSharp.Formatting.OnTheFlyFormatter.Format (editor, document, start, end);

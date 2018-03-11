@@ -2,7 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Formatting.Rules;
 using Microsoft.CodeAnalysis.Options;
 
-namespace Microsoft.VisualStudio.Platform
+namespace MonoDevelop.CSharp.Completion.Presentation
 {
 	internal class ContainedDocumentPreserveFormattingRule : AbstractFormattingRule
 	{

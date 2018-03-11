@@ -22,7 +22,7 @@ using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.TypeSystem;
 using Roslyn.Utilities;
 
-namespace Microsoft.VisualStudio.Platform
+namespace MonoDevelop.CSharp.Completion.Presentation
 {
 	public class MonoDevelopContainedDocument : IMonoDevelopHostDocument
 	{
