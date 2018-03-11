@@ -1,4 +1,4 @@
-//
+﻿//
 // RoslynCompletionData.cs
 //
 // Author:
@@ -46,7 +46,7 @@ using System.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Fonts;
 
-namespace MonoDevelop.CSharp.Completion.Presentation
+namespace MonoDevelop.Ide.Completion.Presentation
 {
 	public abstract class MyRoslynCompletionData : CompletionData
 	{

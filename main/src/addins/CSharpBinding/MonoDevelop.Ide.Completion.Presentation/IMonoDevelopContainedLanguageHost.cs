@@ -1,4 +1,4 @@
-namespace MonoDevelop.CSharp.Completion.Presentation
+﻿namespace MonoDevelop.Ide.Completion.Presentation
 {
 	public interface IMonoDevelopContainedLanguageHost
 	{

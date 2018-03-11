@@ -1,8 +1,8 @@
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Formatting.Rules;
 using Microsoft.CodeAnalysis.Options;
 
-namespace MonoDevelop.CSharp.Completion.Presentation
+namespace MonoDevelop.Ide.Completion.Presentation
 {
 	internal class ContainedDocumentPreserveFormattingRule : AbstractFormattingRule
 	{

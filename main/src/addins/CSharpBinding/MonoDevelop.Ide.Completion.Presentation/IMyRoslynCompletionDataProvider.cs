@@ -1,8 +1,8 @@
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
 using Microsoft.VisualStudio.Text;
 
-namespace MonoDevelop.CSharp.Completion.Presentation
+namespace MonoDevelop.Ide.Completion.Presentation
 {
 	public interface IMyRoslynCompletionDataProvider
 	{
