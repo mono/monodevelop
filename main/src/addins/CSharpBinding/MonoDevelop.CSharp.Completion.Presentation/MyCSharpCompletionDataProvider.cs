@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.Ide.CodeCompletion
+namespace MonoDevelop.CSharp.Completion.Presentation
 {
 	[Export (typeof (IMyRoslynCompletionDataProvider))]
 	[ContentType ("CSharp")]

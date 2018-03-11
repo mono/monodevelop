@@ -46,7 +46,7 @@ using System.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Fonts;
 
-namespace MonoDevelop.Ide.CodeCompletion
+namespace MonoDevelop.CSharp.Completion.Presentation
 {
 	public abstract class MyRoslynCompletionData : CompletionData
 	{
@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		protected abstract void Format (TextEditor editor, Gui.Document document, SnapshotPoint start, SnapshotPoint end);
+		protected abstract void Format (TextEditor editor, Ide.Gui.Document document, SnapshotPoint start, SnapshotPoint end);
 
 		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{

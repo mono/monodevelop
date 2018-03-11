@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using MonoDevelop.Ide.Composition;
 
-namespace Microsoft.VisualStudio.Platform
+namespace MonoDevelop.CSharp.Completion.Presentation
 {
     public class RoslynCommandTarget
     {
