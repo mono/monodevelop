@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 
-namespace MonoDevelop.CSharp.Completion.Presentation
+namespace MonoDevelop.Ide.Completion.Presentation
 {
     public interface IContentTypeMetadata
     {

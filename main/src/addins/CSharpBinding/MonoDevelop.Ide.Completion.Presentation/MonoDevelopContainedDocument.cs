@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -22,7 +22,7 @@ using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.TypeSystem;
 using Roslyn.Utilities;
 
-namespace MonoDevelop.CSharp.Completion.Presentation
+namespace MonoDevelop.Ide.Completion.Presentation
 {
 	public class MonoDevelopContainedDocument : IMonoDevelopHostDocument
 	{

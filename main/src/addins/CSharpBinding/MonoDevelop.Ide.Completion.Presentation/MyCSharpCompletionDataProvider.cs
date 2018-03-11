@@ -1,11 +1,11 @@
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.CSharp.Completion.Presentation
+namespace MonoDevelop.Ide.Completion.Presentation
 {
 	[Export (typeof (IMyRoslynCompletionDataProvider))]
 	[ContentType ("CSharp")]

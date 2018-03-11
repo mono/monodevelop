@@ -6,6 +6,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis.Completion;
+using Microsoft.CodeAnalysis.Editor;
+using Microsoft.VisualStudio.Text;
+using Microsoft.CodeAnalysis.Editor.Shared.Extensions;
+using System.Linq;
+using MonoDevelop.Core;
+using Microsoft.VisualStudio.Text.Editor;
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Gdk;
@@ -19,16 +30,88 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui;
 using Pango;
+using Microsoft.CodeAnalysis.Editor.Shared.Extensions;
+using System.Linq;
+using MonoDevelop.Core;
 using Microsoft.CodeAnalysis.Text;
 using System.Text;
 using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 
-namespace MonoDevelop.CSharp.Completion.Presentation
+namespace MonoDevelop.Ide.Completion.Presentation
 {
-	class GtkCompletionPresenterView : Gtk.DrawingArea, ICompletionPresenterView
+	internal class RoslynCompletionPresenterSession : Gtk.DrawingArea, ICompletionPresenterSession
 	{
+		public event EventHandler<CompletionItemEventArgs> ItemSelected;
+		public event EventHandler<CompletionItemEventArgs> ItemCommitted;
+		public event EventHandler<CompletionItemFilterStateChangedEventArgs> FilterStateChanged;
+		public event EventHandler<EventArgs> Dismissed;
+
+		public void Dismiss ()
+		{
+			Close ();
+		}
+
+		bool opened = false;
+		public void PresentItems (ITrackingSpan triggerSpan, IList<CompletionItem> items, CompletionItem selectedItem, CompletionItem suggestionModeItem, bool suggestionMode, bool isSoftSelected, ImmutableArray<CompletionItemFilter> completionItemFilters, string filterText)
+		{
+			if (!opened) {
+				Open (triggerSpan, items, selectedItem, suggestionModeItem, suggestionMode, isSoftSelected);
+				opened = true;
+			} else {
+				Update (triggerSpan, items, selectedItem, suggestionModeItem, suggestionMode, isSoftSelected);
+			}
+		}
+
+		public void SelectNextItem ()
+		{
+			if (filteredItems.Count == 0)
+				return;
+			if (SelectedItemIndex == filteredItems.Count - 1)
+				SelectedItemIndex = 0;
+			else
+				SelectedItemIndex++;
+			ItemSelected?.Invoke (this, new CompletionItemEventArgs (SelectedItem));
+		}
+
+		public void SelectNextPageItem ()
+		{
+			if (filteredItems.Count == 0)
+				return;
+			if (SelectedItemIndex == filteredItems.Count - 1)
+				SelectedItemIndex = 0;
+			else if (SelectedItemIndex + rows < filteredItems.Count)
+				SelectedItemIndex += rows;
+			else
+				SelectedItemIndex = filteredItems.Count - 1;
+			ItemSelected?.Invoke (this, new CompletionItemEventArgs (SelectedItem));
+		}
+
+		public void SelectPreviousItem ()
+		{
+			if (filteredItems.Count == 0)
+				return;
+			if (SelectedItemIndex == 0)
+				SelectedItemIndex = filteredItems.Count - 1;
+			else
+				SelectedItemIndex--;
+			ItemSelected?.Invoke (this, new CompletionItemEventArgs (SelectedItem));
+		}
+
+		public void SelectPreviousPageItem ()
+		{
+			if (filteredItems.Count == 0)
+				return;
+			if (SelectedItemIndex == 0)
+				SelectedItemIndex = filteredItems.Count - 1;
+			else if (SelectedItemIndex - rows > 0)
+				SelectedItemIndex -= rows;
+			else
+				SelectedItemIndex = 0;
+			ItemSelected?.Invoke (this, new CompletionItemEventArgs (SelectedItem));
+		}
+
+
 		const int minSize = 400;
 		const int maxListWidth = 800;
 		internal const int rows = 13;
@@ -50,10 +133,8 @@ namespace MonoDevelop.CSharp.Completion.Presentation
 		ISpaceReservationAgent agent;
 
 		bool buttonPressed;
-		List<CompletionItem> filteredItems = new List<CompletionItem> (0);
+		IList<CompletionItem> filteredItems = new List<CompletionItem> (0);
 
-		public IReadOnlyList<CompletionItem> FilteredItems { get => filteredItems; }
-		public int Rows => rows;
 		void SetFont ()
 		{
 			// TODO: Add font property to ICompletionWidget;
@@ -84,7 +165,7 @@ namespace MonoDevelop.CSharp.Completion.Presentation
 		ScrolledWindow scrollbar;
 		EventBox box;
 		ITextBuffer _subjectBuffer;
-		public GtkCompletionPresenterView (IMdTextView textView, ITextBuffer subjectBuffer, CompletionService completionService)
+		public RoslynCompletionPresenterSession (IMdTextView textView, ITextBuffer subjectBuffer, CompletionService completionService)
 		{
 			var vbox = new VBox ();
 			this.textView = textView;
@@ -173,7 +254,6 @@ namespace MonoDevelop.CSharp.Completion.Presentation
 					ScrollToSelectedItem ();
 					QueueDraw ();
 					UpdateDescription ().Ignore ();
-					ItemSelected?.Invoke (this, new CompletionItemEventArgs (SelectedItem));
 				}
 			}
 		}
@@ -347,7 +427,7 @@ namespace MonoDevelop.CSharp.Completion.Presentation
 					//	layout.Attributes = attrList;
 					//}
 
-					Xwt.Drawing.Image icon = ImageService.GetIcon (RoslynCompletionData.GetIcon (item, "text/x-csharp"));
+					Xwt.Drawing.Image icon = ImageService.GetIcon (GetIcon (item));
 					int iconHeight, iconWidth;
 					if (icon != null) {
 						if (drawIconAsSelected)
@@ -564,8 +644,7 @@ namespace MonoDevelop.CSharp.Completion.Presentation
 		public void Update (ITrackingSpan triggerSpan, IList<CompletionItem> items, CompletionItem selectedItem, CompletionItem suggestionModeItem, bool suggestionMode, bool isSoftSelected)
 		{
 			this.triggerSpan = triggerSpan;
-			filteredItems.Clear ();
-			filteredItems.AddRange (items);
+			filteredItems = items;
 			SelectionEnabled = !suggestionMode;
 			CalcVisibleRows ();
 			SetAdjustments ();
@@ -585,7 +664,7 @@ namespace MonoDevelop.CSharp.Completion.Presentation
 		}
 
 		CancellationTokenSource descriptionCts = new CancellationTokenSource ();
-		TooltipInformationWindow descriptionWindow;
+		XwtThemedPopup descriptionWindow;
 		private async Task UpdateDescription ()
 		{
 			if (descriptionWindow != null) {
@@ -603,7 +682,7 @@ namespace MonoDevelop.CSharp.Completion.Presentation
 			TooltipInformation description = null;
 			try {
 				var document = _subjectBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChanges ();
-				RoslynCompletionData.CreateTooltipInformation (document, completionItem, false, token);
+				description = await RoslynCompletionData.CreateTooltipInformation (document, completionItem, false, token);
 			} catch {
 			}
 			if (token.IsCancellationRequested)
@@ -614,9 +693,9 @@ namespace MonoDevelop.CSharp.Completion.Presentation
 			}
 			if (description == null)
 				return;
-
-			descriptionWindow = new TooltipInformationWindow ();
-			descriptionWindow.AddOverload (description);
+			var window = new TooltipInformationWindow ();
+			window.AddOverload (description);
+			descriptionWindow = window;
 			ShowDescription ();
 		}
 
@@ -663,8 +742,93 @@ namespace MonoDevelop.CSharp.Completion.Presentation
 			this.ModifyBg (StateType.Normal, Styles.CodeCompletion.BackgroundColor.ToGdkColor ());
 		}
 
-		public event EventHandler<CompletionItemEventArgs> ItemSelected;
+		string GetIcon (CompletionItem completionItem)
+		{
+			if (completionItem.Tags.Contains ("Snippet")) {
+				//TODO: Todd, can you sprinkle some magic on this to do
+				//textView.GetTextBufferFromSpan(triggerSpan).GetMimeType() instead fixed text/csharp?
+				var template = MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/csharp").FirstOrDefault (t => t.Shortcut == completionItem.DisplayText);
+				if (template != null)
+					return template.Icon;
+			}
 
-		public event EventHandler<CompletionItemEventArgs> ItemCommitted;
+			var modifier = GetItemModifier (completionItem);
+			var type = GetItemType (completionItem);
+			return "md-" + modifier + type;
+		}
+
+		static Dictionary<string, string> roslynCompletionTypeTable = new Dictionary<string, string> {
+			{ "Field", "field" },
+			{ "Alias", "field" },
+			{ "ArrayType", "field" },
+			{ "Assembly", "field" },
+			{ "DynamicType", "field" },
+			{ "ErrorType", "field" },
+			{ "Label", "field" },
+			{ "NetModule", "field" },
+			{ "PointerType", "field" },
+			{ "RangeVariable", "field" },
+			{ "TypeParameter", "field" },
+			{ "Preprocessing", "field" },
+
+			{ "Constant", "literal" },
+
+			{ "Parameter", "variable" },
+			{ "Local", "variable" },
+
+			{ "Method", "method" },
+
+			{ "Namespace", "name-space" },
+
+			{ "Property", "property" },
+
+			{ "Event", "event" },
+
+			{ "Class", "class" },
+
+			{ "Delegate", "delegate" },
+
+			{ "Enum", "enum" },
+
+			{ "Interface", "interface" },
+
+			{ "Struct", "struct" },
+			{ "Structure", "struct" },
+
+			{ "Keyword", "keyword" },
+
+			{ "Snippet", "template"},
+
+			{ "EnumMember", "literal" },
+
+			{ "NewMethod", "newmethod" }
+		};
+
+		string GetItemType (CompletionItem completionItem)
+		{
+			foreach (var tag in completionItem.Tags) {
+				if (roslynCompletionTypeTable.TryGetValue (tag, out string result))
+					return result;
+			}
+			LoggingService.LogWarning ("RoslynCompletionData: Can't find item type '" + string.Join (",", completionItem.Tags) + "'");
+			return "literal";
+		}
+
+		static Dictionary<string, string> modifierTypeTable = new Dictionary<string, string> {
+			{ "Private", "private-" },
+			{ "ProtectedAndInternal", "ProtectedOrInternal-" },
+			{ "Protected", "protected-" },
+			{ "Internal", "internal-" },
+			{ "ProtectedOrInternal", "ProtectedOrInternal-" }
+		};
+
+		string GetItemModifier (CompletionItem completionItem)
+		{
+			foreach (var tag in completionItem.Tags) {
+				if (modifierTypeTable.TryGetValue (tag, out string result))
+					return result;
+			}
+			return "";
+		}
 	}
 }
