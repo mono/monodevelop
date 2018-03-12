@@ -248,9 +248,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 				break;
 			}
 
-			string shortMessage = stringPool.Add (e.Message.Replace ("\r\n", " ").Replace ('\n', ' '));
+			string shortMessage = stringPool.Add (e.Message);
 			processor.AddNode (e.Importance == MessageImportance.Low ? BuildOutputNodeType.Diagnostics : BuildOutputNodeType.Message,
-			                   shortMessage, stringPool.Add (e.Message),
+			                   shortMessage, shortMessage,
 			                   false, 
 			                   e.Timestamp,
 			                   !String.IsNullOrEmpty (e.File) ? stringPool.Add (e.File) : null,
@@ -264,9 +264,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				var message = stringPool.Add (e.Message, TaskParameterMessagePrefix.Length, e.Message.Length - TaskParameterMessagePrefix.Length);
 				processor.CurrentNode.AddParameter (message, message);
 			} else {
-				string content = e.Message.Substring (TaskParameterMessagePrefix.Length)
-									  .Replace ("\r\n", " ")
-									  .Replace ('\n', ' ');
+				string content = e.Message.Substring (TaskParameterMessagePrefix.Length);
 				int equalSign = content.IndexOf ('=');
 				if (equalSign < 0) {
 					return false;

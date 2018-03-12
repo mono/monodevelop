@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Button buttonSearchForward;
 		Label resultInformLabel;
 		BuildOutputDataSearch currentSearch;
+		BuildOutputTreeCellView cellView;
 
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
@@ -174,7 +175,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			toolbar.Add (buttonSearchBackward.ToGtkWidget ());
 			toolbar.Add (buttonSearchForward.ToGtkWidget ());
 
-
 			treeView = new TreeView ();
 			treeView.HeadersVisible = false;
 			treeView.BorderVisible = false;
@@ -185,12 +185,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeView.SelectionChanged += TreeView_SelectionChanged;
 			treeView.ButtonPressed += TreeView_ButtonPressed;
 
+			treeView.SelectionMode = Xwt.SelectionMode.Single;
 			var treeColumn = new ListViewColumn {
 				CanResize = false,
 				Expands = true
 			};
-			var pack = new BuildOutputTreeCellView (this);
-			treeColumn.Views.Add (pack, true);
+			cellView = new BuildOutputTreeCellView (this);
+			treeColumn.Views.Add (cellView, true);
 			treeView.Columns.Add (treeColumn);
 
 			PackStart (treeView, expand: true, fill: true);
@@ -337,7 +338,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				menu.Add (new SeparatorContextMenuItem ());
 				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy\t\t\t{0}", GetShortcut (EditCommands.Copy, false)));
-				copyElementMenu.Clicked += (s, args) => ClipboardCopy (selectedNode);
+				copyElementMenu.Clicked += (s, args) => {
+					ClipboardCopy (selectedNode);
+				};
 				menu.Items.Add (copyElementMenu);
 
 				menu.Show (treeView, (int) e.X, (int) e.Y);
@@ -474,9 +477,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 						Find (null);
 
 						var buildOutputDataSource = new BuildOutputDataSource (BuildOutput.GetRootNodes (showDiagnostics));
-						treeView.DataSource = buildOutputDataSource;
-
 						(treeView.Columns [0].Views [0] as BuildOutputTreeCellView).BuildOutputNodeField = buildOutputDataSource.BuildOutputNodeField;
+
+						treeView.DataSource = buildOutputDataSource;
+						cellView.OnDataSourceChanged ();
 
 						// Expand root nodes and nodes with errors
 						int rootsCount = buildOutputDataSource.GetChildrenCount (null);

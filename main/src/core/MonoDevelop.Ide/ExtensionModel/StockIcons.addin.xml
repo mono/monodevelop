@@ -485,6 +485,10 @@
 	<StockIcon stockid="build-task" resource="build-task-16.png" size="Menu" />
 	<StockIcon stockid="build-warning" resource="build-warning-16.png" size="Menu" />
 	<StockIcon stockid="build-warning-small" resource="build-warning-small-16.png" size="Menu" />
+	<StockIcon stockid="build-expand" resource="add-simple-16.png" size="Menu" />
+	<StockIcon stockid="build-expand-disabled" resource="add-simple-16.png" size="Menu" />
+	<StockIcon stockid="build-collapse" resource="remove-simple-16.png" size="Menu" />
+	<StockIcon stockid="build-collapse-disabled" resource="remove-simple-16.png" size="Menu" />
 </Extension>
 
 </ExtensionModel>
