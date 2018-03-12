@@ -284,7 +284,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			CompletionDescription description;
 			var completionService = TypeSystem.TypeSystemService.Workspace.Services.GetLanguageServices (LanguageNames.CSharp).GetService<CompletionService> ();
-			Console.WriteLine (	"cs:"+ completionService);
 			if (completionService == null)
 				return null;
 			if (CommonCompletionItem.HasDescription (CompletionItem)) {
@@ -311,7 +310,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				markup.AppendTaggedText (theme, taggedParts.Skip (i + 1));
 				markup.Append ("</span>");
 			}
-			Console.WriteLine (markup);
 			return new TooltipInformation {
 				SignatureMarkup = StringBuilderCache.ReturnAndFree (markup)
 			};
