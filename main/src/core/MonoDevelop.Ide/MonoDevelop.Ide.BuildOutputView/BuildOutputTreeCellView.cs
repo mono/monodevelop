@@ -114,6 +114,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		static Font defaultLightFont;
 		static Font defaultBoldFont;
 
+		double lastErrorPanelStartX;
+
 		static BuildOutputTreeCellView ()
 		{
 			var fontName = Font.FromName (Gui.Styles.DefaultFontName)
@@ -251,10 +253,20 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			var textStartX = cellArea.X + (cellArea.Width - informationContainerWidth);
 
+			Size size = Size.Zero;
+
 			//Duration text
 			var duration = buildOutputNode.GetDurationAsString (contextProvider.IsShowingDiagnostics);
 			if (duration != "") {
-				DrawText (ctx, cellArea, textStartX, duration, padding, defaultLightFont, informationContainerWidth);
+				size = DrawText (ctx, cellArea, textStartX, duration, padding, defaultLightFont, informationContainerWidth).GetSize ();
+
+				textStartX += size.Width + 2;
+			}
+
+			if (textStartX > lastErrorPanelStartX) {
+				lastErrorPanelStartX = textStartX;
+			} else {
+				textStartX = lastErrorPanelStartX;
 			}
 
 			//Error and Warnings count
@@ -262,8 +274,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			    (buildOutputNode.NodeType == BuildOutputNodeType.Task || buildOutputNode.NodeType == BuildOutputNodeType.Target) &&
 			    (buildOutputNode.ErrorCount > 0 || buildOutputNode.WarningCount > 0)) {
 				
-				textStartX += 55;
-
 				DrawImage (ctx, cellArea, Resources.ErrorIcon, textStartX, imageSize, isSelected, imagePadding);
 				textStartX += ImageSize + 2;
 				var errors = buildOutputNode.ErrorCount.ToString ();
