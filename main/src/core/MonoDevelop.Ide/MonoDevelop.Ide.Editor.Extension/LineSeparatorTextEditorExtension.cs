@@ -92,7 +92,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var lineSeparatorService = DocumentContext?.RoslynWorkspace?.Services.GetLanguageServices (LanguageNames.CSharp).GetService<ILineSeparatorService> ();
 			if (lineSeparatorService == null)
 				return;
-			var separators = await lineSeparatorService.GetLineSeparatorsAsync (DocumentContext.AnalysisDocument, new TextSpan (0, Editor.Length), token);
+			var analysisDocument = DocumentContext.AnalysisDocument;
+			if (analysisDocument == null)
+				return;
+			var separators = await lineSeparatorService.GetLineSeparatorsAsync (analysisDocument, new TextSpan (0, Editor.Length), token);
 			if (token.IsCancellationRequested)
 				return;
 			var newMarkers = new List<ITextLineMarker> ();
