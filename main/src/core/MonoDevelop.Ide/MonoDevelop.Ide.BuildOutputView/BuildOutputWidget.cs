@@ -190,10 +190,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 				CanResize = false,
 				Expands = true
 			};
+
 			cellView = new BuildOutputTreeCellView (this);
 			treeColumn.Views.Add (cellView, true);
 			treeView.Columns.Add (treeColumn);
 
+			treeView.BoundsChanged += (s, e) => cellView.OnBoundsChanged (s, e);
+			cellView.GoToTask += (s, e) => GoToTask (e);
+		
 			PackStart (treeView, expand: true, fill: true);
 		}
 
