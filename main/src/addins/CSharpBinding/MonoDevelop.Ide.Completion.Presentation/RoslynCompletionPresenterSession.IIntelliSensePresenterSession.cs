@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 {
 	partial class RoslynCompletionPresenterSession : IIntelliSensePresenterSession
 	{
-		public event EventHandler<EventArgs> IIntelliSensePresenterSession.Dismissed;
+		public event EventHandler<EventArgs> Dismissed;
 
 		void IIntelliSensePresenterSession.Dismiss ()
 		{
