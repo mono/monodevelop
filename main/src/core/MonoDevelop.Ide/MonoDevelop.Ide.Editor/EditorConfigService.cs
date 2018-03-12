@@ -30,6 +30,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.CodingConventions;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -42,9 +43,16 @@ namespace MonoDevelop.Ide.Editor
 
 		public async static Task<ICodingConventionContext> GetEditorConfigContext (string fileName, CancellationToken token = default (CancellationToken))
 		{
+			if (!File.Exists (fileName))
+				return null;
 			if (contextCache.TryGetValue (fileName, out ICodingConventionContext result))
 				return result;
-			result = await codingConventionsManager.GetConventionContextAsync (fileName, token);
+			try {
+				result = await codingConventionsManager.GetConventionContextAsync (fileName, token);
+			} catch (OperationCanceledException) {
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting coding conventions,", e);
+			}
 			if (result == null)
 				return null;
 			lock (contextCacheLock) {
