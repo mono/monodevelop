@@ -62,6 +62,9 @@ namespace Mono.TextEditor
 		protected ActionMargin     actionMargin;
 		protected GutterMargin     gutterMargin;
 		protected FoldMarkerMargin foldMarkerMargin;
+
+		internal MdTextViewLineCollection TextViewLines { get; set; }
+
 		protected TextViewMargin   textViewMargin;
 
 		DocumentLine longestLine      = null;
@@ -241,7 +244,13 @@ namespace Mono.TextEditor
 			double delta = value - this.oldVadjustment;
 			oldVadjustment = value;
 			TextViewMargin.caretY -= delta;
-			
+
+			int startLine = YToLine (this.textEditorData.VAdjustment.Value);
+			TextViewLines.RemoveLinesBefore (startLine);
+
+			int endlLine = YToLine (this.textEditorData.VAdjustment.Value + Allocation.Height);
+			TextViewLines.RemoveLinesAfter (endlLine);
+
 			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.InSelectionDrag) {
 				this.QueueDraw ();
 				OnVScroll (EventArgs.Empty);
@@ -1960,7 +1969,7 @@ namespace Mono.TextEditor
 					if (wrapper.IsUncached)
 						wrapper.Dispose ();
 				}
-
+				TextViewLines.Add (logicalLineNumber, line);
 				double lineHeight = GetLineHeight (line);
 				foreach (var margin in this.margins) {
 					if (!margin.IsVisible)
