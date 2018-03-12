@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.Composition
 
 			var discoveryErrors = catalog.DiscoveredParts.DiscoveryErrors;
 			if (!discoveryErrors.IsEmpty) {
-				throw new ApplicationException ($"MEF catalog scanning errors encountered.\n{string.Join ("\n", discoveryErrors)}");
+				// throw new ApplicationException ($"MEF catalog scanning errors encountered.\n{string.Join ("\n", discoveryErrors)}");
 			}
 
 			CompositionConfiguration configuration = CompositionConfiguration.Create (catalog);
