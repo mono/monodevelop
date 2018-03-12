@@ -16,6 +16,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public static Xwt.Drawing.Color CellTextSelectionColor { get; internal set; }
 		public static Xwt.Drawing.Color CellTextSkippedColor { get; internal set; }
 		public static Xwt.Drawing.Color CellTextSkippedSelectionColor { get; internal set; }
+		public static Xwt.Drawing.Color LinkForegroundColor { get; internal set; }
 
 		static Styles ()
 		{
@@ -38,6 +39,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			CellTextSelectionColor = Ide.Gui.Styles.BaseSelectionTextColor;
 			CellTextSkippedColor = Ide.Gui.Styles.SecondaryTextColor;
 			CellTextSkippedSelectionColor = Ide.Gui.Styles.SecondarySelectionTextColor;
+			LinkForegroundColor = Ide.Gui.Styles.LinkForegroundColor;
 		}
 	}
 
@@ -62,6 +64,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		static readonly Xwt.Drawing.Image BuildCollapseIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildCollapse, Gtk.IconSize.Menu).WithSize (16);
 		static readonly Xwt.Drawing.Image BuildCollapseDisabledIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildCollapseDisabled, Gtk.IconSize.Menu).WithSize (16);
 
+		public EventHandler<BuildOutputNode> GoToTask;
+
 		class ViewStatus
 		{
 			public bool Expanded { get; set; }
@@ -69,6 +73,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 			public double LastRenderX;
 			public double LastRenderY;
 			public double LastCalculatedHeight;
+
+			public double LastRenderStartingInfo;
+
+			public Rectangle TaskLinkRenderRectangle = Rectangle.Zero;
 
 			public int NewLineCharIndex;
 		}
@@ -131,6 +139,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			SelectionColor = Styles.CellSelectionColor;
 			UseStrongSelectionColor = true;
 			contextProvider = context;
+		}
+
+		internal void OnBoundsChanged (object sender, EventArgs args) 
+		{
+			lastErrorPanelStartX = 0;
 		}
 
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
@@ -201,7 +214,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			//Information section
 			if (!IsRootNode (buildOutputNode)) {
-				DrawNodeInformation (ctx, cellArea, buildOutputNode, padding, isSelected, ImageSize, ImagePadding);
+				DrawNodeInformation (ctx, cellArea, buildOutputNode, padding, isSelected, ImageSize, ImagePadding, status);
 			} else if (buildOutputNode.NodeType == BuildOutputNodeType.BuildSummary) {
 				// For build summary, display error/warning summary
 				startX += layout.GetSize ().Width + 25;
@@ -244,10 +257,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 			DrawText (ctx, cellArea, textStartX, GetInformationMessage (buildOutputNode), padding, defaultLightFont, cellArea.Width - textStartX);
 		}
 
-		void DrawNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode, double padding, bool isSelected, int imageSize, int imagePadding)
+		void DrawNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode, double padding, bool isSelected, int imageSize, int imagePadding, ViewStatus status)
 		{
-			if (!buildOutputNode.HasChildren)
+			if (!buildOutputNode.HasChildren) {
+				if (buildOutputNode.NodeType == BuildOutputNodeType.Error || buildOutputNode.NodeType == BuildOutputNodeType.Warning) {
+					if (isSelected) {
+						ctx.SetColor (Styles.CellTextSelectionColor);
+					} else {
+						ctx.SetColor (Styles.LinkForegroundColor);
+					}
+					var text = string.Format ("{0}, line {1}", buildOutputNode.File, buildOutputNode.LineNumber);
+
+					status.TaskLinkRenderRectangle.X = lastErrorPanelStartX + 5;
+					status.TaskLinkRenderRectangle.Y = cellArea.Y + padding;
+
+					var layout = DrawText (ctx, cellArea, status.TaskLinkRenderRectangle.X, text, padding, font: defaultLightFont, trimming: TextTrimming.Word, underline: true);
+					status.TaskLinkRenderRectangle.Size = layout.GetSize ();
+					return;
+				}
 				return;
+			}
 
 			UpdateInformationTextColor (ctx, isSelected);
 
@@ -259,8 +288,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var duration = buildOutputNode.GetDurationAsString (contextProvider.IsShowingDiagnostics);
 			if (duration != "") {
 				size = DrawText (ctx, cellArea, textStartX, duration, padding, defaultLightFont, informationContainerWidth).GetSize ();
-
-				textStartX += size.Width + 2;
+				textStartX += size.Width + 10;
 			}
 
 			if (textStartX > lastErrorPanelStartX) {
@@ -268,6 +296,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			} else {
 				textStartX = lastErrorPanelStartX;
 			}
+
+			status.TaskLinkRenderRectangle.X = status.TaskLinkRenderRectangle.Y = status.TaskLinkRenderRectangle.Width = status.TaskLinkRenderRectangle.Height = 0;
 
 			//Error and Warnings count
 			if (!IsRowExpanded (buildOutputNode) &&
@@ -287,22 +317,27 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		TextLayout DrawText (Context ctx, Xwt.Rectangle cellArea, double x, string text, double padding, Font font, double width = 0, TextTrimming trimming = TextTrimming.WordElipsis) 
+		TextLayout DrawText (Context ctx, Xwt.Rectangle cellArea, double x, string text, double padding, Font font, double width = 0, TextTrimming trimming = TextTrimming.WordElipsis, bool underline = false) 
 		{
 			if (width < 0) {
 				throw new Exception ("width cannot be negative");
 			}
 
 			var descriptionTextLayout = new TextLayout ();
+
+			descriptionTextLayout.Font = font;
+			descriptionTextLayout.Text = text;
+			descriptionTextLayout.Trimming = trimming;
+		
+			if (underline) {
+				descriptionTextLayout.SetUnderline (0, text.Length);
+			}
+		
 			if (width != 0) {
 				descriptionTextLayout.Width = width;
 			}
 
 			descriptionTextLayout.Height = cellArea.Height;
-			descriptionTextLayout.Trimming = trimming;
-
-			descriptionTextLayout.Font = font;
-			descriptionTextLayout.Text = text;
 
 			ctx.DrawTextLayout (descriptionTextLayout, x, cellArea.Y + padding);
 			return descriptionTextLayout;
@@ -440,8 +475,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 		protected override void OnMouseMoved (MouseMovedEventArgs args)
 		{
 			var node = GetValue (BuildOutputNodeField);
-		
-			CalcLayout (out var layout, out var cellArea, out var expanderRect);
+			var status = GetViewStatus (node);
+
+			if (status.TaskLinkRenderRectangle != Rectangle.Zero && status.TaskLinkRenderRectangle.Contains (args.Position)) {
+				ParentWidget.Cursor = CursorType.Hand;
+			} else {
+				ParentWidget.Cursor = CursorType.Arrow;
+			}
+
+			CalcLayout (node, status, out var layout, out var cellArea, out var expanderRect);
 
 			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
 				pointerPosition = args.Position;
@@ -457,23 +499,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var node = GetValue (BuildOutputNodeField);
 			var status = GetViewStatus (node);
 
-			CalcLayout (out var layout, out var cellArea, out var expanderRect);
+			if (args.Button == PointerButton.Left && args.MultiplePress == 0 && status.TaskLinkRenderRectangle != Rectangle.Zero && status.TaskLinkRenderRectangle.Contains (args.Position) ) {
+				GoToTask?.Invoke (this, node);
+				return;
+			}
+
+			CalcLayout (node, status, out var layout, out var cellArea, out var expanderRect);
 
 			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
 				status.Expanded = !status.Expanded;
 				QueueResize ();
 				return;
 			}
+
 		
 			base.OnButtonPressed (args);
 		}
 
-		void CalcLayout (out TextLayout layout, out Rectangle cellArea, out Rectangle expanderRect)
+		void CalcLayout (BuildOutputNode node, ViewStatus status, out TextLayout layout, out Rectangle cellArea, out Rectangle expanderRect)
 		{
-			var node = GetValue (BuildOutputNodeField);
-			var status = GetViewStatus (node);
 			expanderRect = Rectangle.Zero;
-
 			cellArea = new Rectangle (status.LastRenderX, status.LastRenderY, status.LastRenderWidth, status.LastCalculatedHeight);
 
 			layout = new TextLayout ();
@@ -498,6 +543,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return defaultBoldFont;
 			}
 			return defaultLightFont;
+		}
+
+		protected override void OnMouseExited ()
+		{
+			pointerPosition = Point.Zero;
+			ParentWidget.Cursor = CursorType.Arrow;
+			base.OnMouseExited ();
 		}
 
 		#endregion

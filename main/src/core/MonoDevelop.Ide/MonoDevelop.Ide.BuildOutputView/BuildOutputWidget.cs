@@ -190,10 +190,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 				CanResize = false,
 				Expands = true
 			};
+
 			cellView = new BuildOutputTreeCellView (this);
 			treeColumn.Views.Add (cellView, true);
 			treeView.Columns.Add (treeColumn);
 
+			treeView.BoundsChanged += (s, e) => cellView.OnBoundsChanged (s, e);
+			cellView.GoToTask += (s, e) => GoToTask (e);
+		
 			PackStart (treeView, expand: true, fill: true);
 		}
 
@@ -295,6 +299,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 			if (e.MultiplePress == 2 && e.Button == PointerButton.Left) {
+				if (selectedNode.NodeType == BuildOutputNodeType.Warning || selectedNode.NodeType == BuildOutputNodeType.Error) {
+					GoToTask (selectedNode);
+					return;
+				}
 				if (treeView.IsRowExpanded (selectedNode)) {
 					treeView.CollapseRow (selectedNode);
 				} else {
@@ -310,12 +318,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				if (IsSelectableTask (selectedNode)) {
 					jump = new ContextMenuItem (GettextCatalog.GetString ("_Jump to {0}", selectedNode.NodeType.ToString ()));
 					jump.Clicked += (s,evnt) => {
-						var path = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (selectedNode.Project), selectedNode.File);
-						IdeApp.Workbench.OpenDocument (new FilePath (path), 
-						                               null, 
-						                               Math.Max (1, selectedNode.LineNumber),
-						                               Math.Max (1, 0)
-						                              );
+						GoToTask (selectedNode);
 					};
 					menu.Add (jump);
 					menu.Add (new SeparatorContextMenuItem ());
@@ -345,6 +348,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				menu.Show (treeView, (int) e.X, (int) e.Y);
 			}
+		}
+
+		void GoToTask (BuildOutputNode selectedNode)
+		{
+			var path = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (selectedNode.Project), selectedNode.File);
+			IdeApp.Workbench.OpenDocument (new FilePath (path),
+			                               null,
+			                               Math.Max (1, selectedNode.LineNumber),
+			                               Math.Max (1, 0)
+			                              );
 		}
 
 		void UpdatePathBarEntries (PathEntry[] entries)
