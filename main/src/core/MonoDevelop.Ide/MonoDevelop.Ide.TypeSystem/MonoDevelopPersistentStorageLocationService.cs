@@ -51,10 +51,26 @@ namespace MonoDevelop.Ide.TypeSystem
 		// PERF: cache for the solution location. This is needed due to roslyn querying GetStorageLocation a lot of times.
 		internal ConditionalWeakTable<SolutionId, string> storageMap = new ConditionalWeakTable<SolutionId, string> ();
 
-		public string GetStorageLocation (Solution solution)
+		public event EventHandler<PersistentStorageLocationChangingEventArgs> StorageLocationChanging;
+
+		internal void NotifyStorageLocationChanging (SolutionId sol, string path)
 		{
-			storageMap.TryGetValue (solution.Id, out var path);
-			return path;
+			lock (storageMap) {
+				if (storageMap.TryGetValue (sol, out string cached) && path == cached)
+					return;
+
+				StorageLocationChanging?.Invoke (this, new PersistentStorageLocationChangingEventArgs (sol, path, true));
+				storageMap.Remove (sol);
+				storageMap.Add (sol, path);
+			}
+		}
+
+		public string TryGetStorageLocation (SolutionId solutionId)
+		{
+			lock (storageMap) {
+				storageMap.TryGetValue (solutionId, out var path);
+				return path;
+			}
 		}
 	}
 }
