@@ -43,6 +43,7 @@ namespace MonoDevelop.PackageManagement
 		List<FileEventArgs> fileChangedEvents = new List<FileEventArgs> ();
 		ISolution solutionContainingProjectBuildersToDispose;
 		TaskCompletionSource<bool> taskCompletionSource;
+		HashSet<IDotNetProject> projectsToReevaluate = new HashSet<IDotNetProject> ();
 
 		public PackageManagementEventsMonitor (
 			ProgressMonitor progressMonitor,
@@ -63,12 +64,14 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
 			packageManagementEvents.ResolveFileConflict += ResolveFileConflict;
 			packageManagementEvents.FileChanged += FileChanged;
+			packageManagementEvents.ImportAdded += ImportAdded;
 			packageManagementEvents.ImportRemoved += ImportRemoved;
 		}
 
 		public void Dispose ()
 		{
 			packageManagementEvents.ImportRemoved -= ImportRemoved;
+			packageManagementEvents.ImportAdded -= ImportAdded;
 			packageManagementEvents.FileChanged -= FileChanged;
 			packageManagementEvents.ResolveFileConflict -= ResolveFileConflict;
 			packageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
@@ -193,19 +196,31 @@ namespace MonoDevelop.PackageManagement
 			progressMonitor.ShowPackageConsole ();
 		}
 
+		void ImportAdded (object sender, DotNetProjectImportEventArgs e)
+		{
+			projectsToReevaluate.Add (e.Project);
+		}
+
 		void ImportRemoved (object sender, DotNetProjectImportEventArgs e)
 		{
 			solutionContainingProjectBuildersToDispose = e.Project.ParentSolution;
+			projectsToReevaluate.Add (e.Project);
 		}
 
 		void UnloadMSBuildHost ()
 		{
-			if (solutionContainingProjectBuildersToDispose == null)
+			if (solutionContainingProjectBuildersToDispose == null && !projectsToReevaluate.Any ())
 				return;
 
-			GuiSyncDispatch (() => {
-				foreach (IDotNetProject project in solutionContainingProjectBuildersToDispose.GetAllProjects ()) {
-					project.DisposeProjectBuilder ();
+			GuiSyncDispatch (async () => {
+				if (solutionContainingProjectBuildersToDispose != null) {
+					foreach (IDotNetProject project in solutionContainingProjectBuildersToDispose.GetAllProjects ()) {
+						project.DisposeProjectBuilder ();
+					}
+				}
+
+				foreach (IDotNetProject project in projectsToReevaluate) {
+					await project.ReevaluateProject (progressMonitor);
 				}
 			});
 		}

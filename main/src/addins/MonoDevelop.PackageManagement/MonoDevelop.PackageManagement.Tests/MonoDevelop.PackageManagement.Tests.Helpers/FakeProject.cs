@@ -84,6 +84,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public IMSBuildEvaluatedPropertyCollection EvaluatedProperties {
 			get { return FakeEvaluatedProperties; }
 		}
+
+		public bool IsReevaluated;
+
+		public Task ReevaluateProject (ProgressMonitor monitor)
+		{
+			IsReevaluated = true;
+			return Task.FromResult (0);
+		}
 	}
 }
 

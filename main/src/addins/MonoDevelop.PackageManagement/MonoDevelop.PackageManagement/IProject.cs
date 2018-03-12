@@ -44,6 +44,7 @@ namespace MonoDevelop.PackageManagement
 		IMSBuildEvaluatedPropertyCollection EvaluatedProperties { get; }
 
 		Task SaveAsync ();
+		Task ReevaluateProject (ProgressMonitor monitor);
 	}
 }
 

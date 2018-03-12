@@ -1174,6 +1174,28 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public void AddImport_ImportAlreadyAddedToBottomOfProject_ImportAddedEventIsFired ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem (project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
+			projectSystem.AddImport (targetPath, ImportLocation.Bottom);
+			const string expectedImportAdded = @"..\packages\Foo.0.1\build\Foo.targets";
+			DotNetProjectImportEventArgs eventArgs = null;
+			projectSystem.PackageManagementEvents.ImportAdded += (sender, e) => {
+				eventArgs = e;
+			};
+
+			projectSystem.AddImport (targetPath, ImportLocation.Bottom);
+
+			AssertLastMSBuildChildElementHasProjectAttributeValue (@"..\packages\Foo.0.1\build\Foo.targets");
+			AssertLastImportHasImportLocation (ImportLocation.Bottom);
+			Assert.IsFalse (project.IsProjectBuilderDisposed);
+			Assert.AreEqual (project, eventArgs.Project);
+			Assert.AreEqual (expectedImportAdded, eventArgs.Import);
+		}
+
+		[Test]
 		public async Task AddReferenceAsync_AddReferenceToNUnitFramework_ReferenceAddingEventIsFired ()
 		{
 			CreateTestProject ();
