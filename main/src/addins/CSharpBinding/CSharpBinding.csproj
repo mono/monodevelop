@@ -367,19 +367,19 @@
     <Compile Include="MonoDevelop.CSharp.Navigation\Counters.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpLanguageVersionHelper.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\HighlightUsagesExtension.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion.Presentation\RoslynCompletionPresenter.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion.Presentation\RoslynCompletionPresenterSession.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion.Presentation\ContainedDocumentPreserveFormattingRule.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion.Presentation\IMonoDevelopContainedLanguageHost.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion.Presentation\IMyRoslynCompletionDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion.Presentation\MonoDevelopContainedDocument.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion.Presentation\MonoDevelopFormattingRuleFactoryServiceFactory.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion.Presentation\MyCSharpCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion.Presentation\MyCSharpCompletionDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion.Presentation\MyRoslynCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion.Presentation\RoslynCommandTarget.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion.Presentation\GtkCompletionPresenterView.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion.Presentation\ICompletionPresenterView.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynCompletionPresenter.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynCompletionPresenterSession.ICompletionPresenterSession.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\ContainedDocumentPreserveFormattingRule.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\IMonoDevelopContainedLanguageHost.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\IMyRoslynCompletionDataProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\MonoDevelopContainedDocument.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\MonoDevelopFormattingRuleFactoryServiceFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\MyCSharpCompletionData.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\MyCSharpCompletionDataProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\MyRoslynCompletionData.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynCommandTarget.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynCompletionPresenterSession.View.cs" />
+    <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynCompletionPresenterSession.IIntelliSensePresenterSession.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -400,7 +400,7 @@
     <InternalsVisibleTo Include="WebToolingAddin" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MonoDevelop.CSharp.Completion.Presentation\" />
+    <Folder Include="MonoDevelop.Ide.Completion.Presentation\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
  </Project>
