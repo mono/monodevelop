@@ -51,6 +51,7 @@ using Microsoft.CodeAnalysis.Internal.Log;
 using Microsoft.CodeAnalysis.Shared.Utilities;
 using Microsoft.CodeAnalysis.SolutionCrawler;
 using MonoDevelop.Ide.Composition;
+using Lucene.Net.Support;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -252,6 +253,10 @@ namespace MonoDevelop.Ide.TypeSystem
 						// HACK: https://github.com/dotnet/roslyn/issues/20581
 						RegisterPrimarySolutionForPersistentStorage (solutionId, solution);
 						OnSolutionAdded (solutionInfo);
+						foreach (var generatedFile in generatedFiles) {
+							if (!this.IsDocumentOpen (generatedFile.Key.Id))
+								OnDocumentOpened (generatedFile.Key.Id, generatedFile.Value);
+						}
 					}
 				}
 				return solutionInfo;
@@ -604,6 +609,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			}
+			foreach (var generatedFile in generatedFiles) {
+				if (generatedFile.Key.Id.ProjectId == oldProjectData.Info.Id)
+					documents.Add (generatedFile.Key);
+			}
 			return Tuple.Create (documents, additionalDocuments);
 		}
 
@@ -761,14 +770,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal void InternalOnDocumentOpened (DocumentId documentId, SourceTextContainer textContainer, bool isCurrentContext = true)
+		Dictionary<DocumentInfo, SourceTextContainer> generatedFiles = new Dictionary<DocumentInfo, SourceTextContainer> ();
+		internal void AddAndOpenDocumentInternal (DocumentInfo documentInfo, SourceTextContainer textContainer)
 		{
-			OnDocumentOpened (documentId, textContainer, isCurrentContext);
+			generatedFiles [documentInfo] = textContainer;
+			OnDocumentAdded (documentInfo);
+			OnDocumentOpened (documentInfo.Id, textContainer);
 		}
 
-		internal void InternalOnDocumentClosed (DocumentId documentId, TextLoader reloader, bool updateActiveContext = false)
+		internal void CloseAndRemoveDocumentInternal (DocumentInfo documentInfo, TextLoader reloader)
 		{
-			OnDocumentClosed (documentId, reloader, updateActiveContext);
+			generatedFiles.Remove (documentInfo);
+			OnDocumentClosed (documentInfo.Id, reloader);
+			OnDocumentRemoved (documentInfo.Id);
 		}
 
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
@@ -837,8 +851,8 @@ namespace MonoDevelop.Ide.TypeSystem
 						openDoc.Dispose ();
 						openDocuments.Remove (openDoc);
 					} else {
-						//Apparently something else opened this file via InternalOnDocumentOpened(e.g. .cshtml)
-						//it's job of whatever opened to also call InternalOnDocumentClosed
+						//Apparently something else opened this file via AddAndOpenDocumentInternal(e.g. .cshtml)
+						//it's job of whatever opened to also call CloseAndRemoveDocumentInternal
 						return;
 					}
 				}
