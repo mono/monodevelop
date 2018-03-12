@@ -226,6 +226,8 @@ namespace MonoDevelop.PackageManagement
 					handler.AddImportIfMissing (relativeTargetPath, condition, location);
 					await project.SaveAsync ();
 				}
+
+				packageManagementEvents.OnImportAdded (project, relativeTargetPath);
 			});
 		}
 

@@ -46,6 +46,7 @@ namespace MonoDevelop.PackageManagement
 		event EventHandler UpdatedPackagesAvailable;
 		event EventHandler<DotNetProjectReferenceEventArgs> ReferenceAdding;
 		event EventHandler<DotNetProjectReferenceEventArgs> ReferenceRemoving;
+		event EventHandler<DotNetProjectImportEventArgs> ImportAdded;
 		event EventHandler<DotNetProjectImportEventArgs> ImportRemoved;
 		event EventHandler<PackageManagementEventArgs> PackageInstalled;
 		event EventHandler<PackageManagementEventArgs> PackageUninstalling;
@@ -63,6 +64,7 @@ namespace MonoDevelop.PackageManagement
 		bool OnFileRemoving (string path);
 		void OnReferenceAdding (ProjectReference reference);
 		void OnReferenceRemoving (ProjectReference reference);
+		void OnImportAdded (IDotNetProject project, string import);
 		void OnImportRemoved (IDotNetProject project, string import);
 		void OnNoUpdateFound (IDotNetProject project);
 	}
