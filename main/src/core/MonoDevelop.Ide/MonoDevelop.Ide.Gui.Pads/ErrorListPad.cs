@@ -378,15 +378,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			var menu = new ContextMenu ();
 
-			var help = new ContextMenuItem (GettextCatalog.GetString ("Show Error Reference"));
+			var help = new ContextMenuItem (GettextCatalog.GetString ("Go to _Reference"));
 			help.Clicked += OnShowReference;
 			menu.Add (help);
 
-			var copy = new ContextMenuItem (GettextCatalog.GetString ("_Copy"));
-			copy.Clicked += OnTaskCopied;
-			menu.Add (copy);
-
-			var goBuild = new ContextMenuItem (GettextCatalog.GetString ("Go to Log"));
+			var goBuild = new ContextMenuItem (GettextCatalog.GetString ("Go to _Log"));
 			goBuild.Clicked += async (s, e) => await OnGoToLog (s, e);
 			menu.Add (goBuild);
 
@@ -398,6 +394,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 			                                          restoreID,
 			                                          GettextCatalog.GetString ("Type"),
 			                                          GettextCatalog.GetString ("Validity"));
+
+			menu.Add (new SeparatorContextMenuItem ());
+
+			var copy = new ContextMenuItem (GettextCatalog.GetString ("_Copy"));
+			copy.Clicked += OnTaskCopied;
+			menu.Add (copy);
+
+
+			menu.Add (new SeparatorContextMenuItem ());
 
 			var columns = new ContextMenuItem (GettextCatalog.GetString ("Columns"));
 			columns.SubMenu = columnsMenu;
