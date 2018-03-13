@@ -563,6 +563,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		public void Open (ITrackingSpan triggerSpan, IList<CompletionItem> items, CompletionItem selectedItem, CompletionItem suggestionModeItem, bool suggestionMode, bool isSoftSelected)
 		{
+			textView.Properties ["RoslynCompletionPresenterSession.IsCompletionActive"] = true;
 			box.ShowAll ();
 			var manager = textView.GetSpaceReservationManager ("completion");
 			agent = manager.CreatePopupAgent (triggerSpan, Microsoft.VisualStudio.Text.Adornments.PopupStyles.None, Xwt.Toolkit.CurrentEngine.WrapWidget (box, Xwt.NativeWidgetSizing.DefaultPreferredSize));
@@ -592,6 +593,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		public void Close ()
 		{
+			textView.Properties ["RoslynCompletionPresenterSession.IsCompletionActive"] = false;
 			if (descriptionWindow != null) {
 				descriptionWindow.Destroy ();
 				descriptionWindow = null;
