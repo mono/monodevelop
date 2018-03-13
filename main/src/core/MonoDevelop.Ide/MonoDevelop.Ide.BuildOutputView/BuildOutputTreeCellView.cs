@@ -83,6 +83,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		const int BuildTypeRowContentPadding = 6;
 		const int RowContentPadding = 3;
+		const int BuildConfigurationInformationLeftPadding = 32;
 
 		const int LinesDisplayedCount = 1;
 		const int DefaultInformationContainerWidth = 370;
@@ -114,7 +115,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		bool IsRowExpanded (BuildOutputNode buildOutputNode) => ((Xwt.TreeView)ParentWidget)?.IsRowExpanded (buildOutputNode) ?? false;
 
-		string GetInformationMessage (BuildOutputNode buildOutputNode) => GettextCatalog.GetString ("{0} | {1}    Started at {2}", buildOutputNode.Configuration, buildOutputNode.Platform, buildOutputNode.StartTime.ToString ("h:m tt on MMMM d, yyyy"));
+		string GetInformationMessage (BuildOutputNode buildOutputNode) => GettextCatalog.GetString ("{0} | {1}     Started at {2}", buildOutputNode.Configuration, buildOutputNode.Platform, buildOutputNode.StartTime.ToString ("h:m tt on MMM d, yyyy"));
 
 		//Left includes node level padding
 		double GetTextStartX (Xwt.Rectangle cellArea) => cellArea.Left + ImageSize - 3;
@@ -231,7 +232,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 				startX += ImageSize + 2;
 				DrawText (ctx, cellArea, startX, warnings, padding, font: defaultLightFont);
 			} else if (buildOutputNode.NodeType == BuildOutputNodeType.Build) {
-				DrawFirstNodeInformation (ctx, cellArea, buildOutputNode, padding, isSelected);
+				var textStartX = startX + textSize.Width + BuildConfigurationInformationLeftPadding; 
+				DrawText (ctx, cellArea, textStartX, GetInformationMessage (buildOutputNode), padding, defaultLightFont, cellArea.Width - textStartX);
 			}
 
 			// If the height required by the text is not the same as what was calculated in OnGetRequiredSize(), it means that
@@ -248,13 +250,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return 0;
 			}
 			return (rowHeight - currentHeight) * .5;
-		}
-
-		void DrawFirstNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode, double padding, bool isSelected)
-		{
-			UpdateInformationTextColor (ctx, isSelected);
-			var textStartX = cellArea.Width - informationContainerWidth;
-			DrawText (ctx, cellArea, textStartX, GetInformationMessage (buildOutputNode), padding, defaultLightFont, cellArea.Width - textStartX);
 		}
 
 		void DrawNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode, double padding, bool isSelected, int imageSize, int imagePadding, ViewStatus status)
