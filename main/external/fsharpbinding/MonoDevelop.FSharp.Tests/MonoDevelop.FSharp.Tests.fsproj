@@ -195,6 +195,7 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Compile Include="SolutionPadOrdering.fs" />
   </ItemGroup>
   <Import Project="..\.paket\paket.targets" />
   <ProjectExtensions>
