@@ -8,43 +8,56 @@ using Microsoft.VisualStudio.Text.Classification;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 {
 	static class MDUtils
 	{
-		public static string ClassificationsToMarkup (ITextSnapshot snapshot, IList<ClassificationSpan> classifications, Span? locus)
+		public static string ClassificationsToMarkup (ITextSnapshot snapshot, IList<ClassificationSpan> classifications, IParameter currentParameter)
 		{
 			var markup = new StringBuilder ();
 			var theme = DefaultSourceEditorOptions.Instance.GetEditorTheme ();
-			foreach (var part in classifications) {
-				//if () { TODO: Check if we hanle new lines
-				//	markup.AppendLine ();
-				//	continue;
-				//}
+			Span? locus = currentParameter?.Locus;
+			bool inDocumentation = false;
+			for (int i = 0; i < classifications.Count; i++) {
+				var part = classifications [i];
 				markup.Append ("<span foreground=\"");
 				markup.Append (GetThemeColor (theme, GetThemeColor (part.ClassificationType.Classification)));
 				markup.Append ("\">");
+				if (!inDocumentation) {
+					if (part.ClassificationType.Classification == ClassificationTypeNames.Text) {
+						inDocumentation = true;
+						markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+						markup.AppendLine ();
+						markup.AppendLine ();
+
+					}
+				}
+
 				if (locus is Span locusSpan && part.Span.Intersection (locusSpan) is SnapshotSpan intersection) {
 					if (intersection.Start == part.Span.Start) {
 						if (intersection.End == part.Span.End) {
 							markup.Append ("<b>");
 							markup.Append (Ambience.EscapeText (snapshot.GetText (part.Span)));
 							markup.Append ("</b>");
-						} else {
+						}
+						else {
 							markup.Append ("<b>");
 							markup.Append (Ambience.EscapeText (snapshot.GetText (intersection)));
 							markup.Append ("</b>");
 							markup.Append (Ambience.EscapeText (snapshot.GetText (intersection.End, part.Span.End - intersection.End)));
 						}
-					} else {
+					}
+					else {
 						if (intersection.End == part.Span.End) {
 							markup.Append (Ambience.EscapeText (snapshot.GetText (part.Span.Start, intersection.Start - part.Span.Start)));
 							markup.Append ("<b>");
 							markup.Append (Ambience.EscapeText (snapshot.GetText (intersection)));
 							markup.Append ("</b>");
-						} else {
+						}
+						else {
 							markup.Append (Ambience.EscapeText (snapshot.GetText (part.Span.Start, intersection.Start - part.Span.Start)));
 							markup.Append ("<b>");
 							markup.Append (Ambience.EscapeText (snapshot.GetText (intersection)));
@@ -52,11 +65,28 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 							markup.Append (Ambience.EscapeText (snapshot.GetText (intersection.End, part.Span.End - intersection.End)));
 						}
 					}
-				} else {
+				}
+				else {
 					markup.Append (Ambience.EscapeText (snapshot.GetText (part.Span)));
 				}
 				markup.Append ("</span>");
 			}
+			if (inDocumentation)
+				markup.Append ("</span>");
+
+			if (currentParameter != null) {
+				if (!string.IsNullOrEmpty(currentParameter.Documentation)) {
+					markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+					markup.AppendLine ();
+					markup.AppendLine ();
+					markup.Append ("<b>");
+					markup.Append (currentParameter.Name);
+					markup.Append (": </b>");
+					markup.Append (currentParameter.Documentation);
+					markup.Append ("</span>");
+				}
+			}
+
 			return markup.ToString ();
 		}
 
