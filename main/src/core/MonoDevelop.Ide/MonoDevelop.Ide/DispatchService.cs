@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide
 
 			internal class TimeoutProxy
 			{
-				SendOrPostCallback d;
+				internal SendOrPostCallback d;
 				object state;
 				ManualResetEventSlim resetEvent;
 
@@ -89,8 +89,34 @@ namespace MonoDevelop.Ide
 			[DllImport ("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 			static extern uint g_timeout_add_full (int priority, uint interval, GSourceFuncInternal d, IntPtr data, GLib.DestroyNotify notify);
 
+			class ExceptionWithStackTraceWithoutThrowing : Exception
+			{
+				readonly string stacktrace;
+
+				public ExceptionWithStackTraceWithoutThrowing (string message) : base (message)
+				{
+					stacktrace = Environment.StackTrace;
+				}
+
+				public override string StackTrace => stacktrace;
+			}
+
 			static void AddTimeout (TimeoutProxy proxy)
 			{
+				if (proxy.d == null) {
+					// Create an exception without throwing it, as throwing is expensive and these exceptions can be
+					// hit a lot of times.
+
+					const string exceptionMessage = "Unexpected null delegate sent to synchronization context";
+					LoggingService.LogInternalError (exceptionMessage,
+					                                 new ExceptionWithStackTraceWithoutThrowing (exceptionMessage));
+
+					// Return here without queueing the UI operation. Async calls which await on the given callback
+					// will continue immediately, but at least we won't crash.
+					// Having a null continuation won't do anything anyway.
+					return;
+				}
+
 				var gch = GCHandle.Alloc (proxy);
 
 				g_timeout_add_full (defaultPriority, 0, TimeoutProxy.SourceHandler, (IntPtr)gch, GLib.DestroyHelper.NotifyHandler);
