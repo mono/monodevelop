@@ -44,6 +44,7 @@ namespace MonoDevelop.CSharp.Project
 			yield return (GettextCatalog.GetString ("Version 7"), LanguageVersion.CSharp7);
 			yield return (GettextCatalog.GetString ("Version 7.1"), LanguageVersion.CSharp7_1);
 			yield return (GettextCatalog.GetString ("Version 7.2"), LanguageVersion.CSharp7_2);
+			yield return (GettextCatalog.GetString ("Version 7.3"), LanguageVersion.CSharp7_3);
 			yield return (GettextCatalog.GetString ("Latest"), LanguageVersion.Latest);
 		}
 	}
