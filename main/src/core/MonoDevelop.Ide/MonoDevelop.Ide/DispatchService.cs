@@ -46,8 +46,40 @@ namespace MonoDevelop.Ide
 
 		class GtkSynchronizationContext: SynchronizationContext
 		{
+			class ExceptionWithStackTraceWithoutThrowing : Exception
+			{
+				readonly string stacktrace;
+
+				public ExceptionWithStackTraceWithoutThrowing (string message) : base (message)
+				{
+					stacktrace = Environment.StackTrace;
+				}
+
+				public override string StackTrace => stacktrace;
+			}
+			
+			static bool VerifyCallback (SendOrPostCallback d)
+			{
+				if (d != null)
+					return true;
+
+				// Create an exception without throwing it, as throwing is expensive and these exceptions can be
+				// hit a lot of times.
+
+				const string exceptionMessage = "Unexpected null delegate sent to synchronization context";
+				LoggingService.LogInternalError (exceptionMessage, new ExceptionWithStackTraceWithoutThrowing (exceptionMessage));
+
+				// Return false here so we don't queue the UI operation. Async calls which await on the given callback
+				// will continue immediately, but at least we won't crash.
+				// Having a null continuation won't do anything anyway.
+				return false;
+			}
+
 			public override void Post (SendOrPostCallback d, object state)
 			{
+				if (!VerifyCallback (d))
+					return;
+
 				Gtk.Application.Invoke ((o, args) => {
 					d (state);
 				});
@@ -55,6 +87,9 @@ namespace MonoDevelop.Ide
 
 			public override void Send (SendOrPostCallback d, object state)
 			{
+				if (!VerifyCallback (d))
+					return;
+
 				if (Runtime.IsMainThread) {
 					d (state);
 					return;
