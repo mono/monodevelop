@@ -249,14 +249,31 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (addLock) {
 					if (!added) {
 						added = true;
-						// HACK: https://github.com/dotnet/roslyn/issues/20581
-						RegisterPrimarySolutionForPersistentStorage (solutionId, solution);
+						lock (persistentStorageRegistrationLock) {
+							// HACK: https://github.com/dotnet/roslyn/issues/20581
+							// singleton HACK: https://github.com/dotnet/roslyn/issues/25152
+							// Unregister previous registration here
+
+							if (persistentStorageLastRegisteredSolutionId != solutionId) {
+								if (persistentStorageLastRegisteredSolutionId != null)
+									UnregisterPrimarySolutionForPersistentStorage (persistentStorageLastRegisteredSolutionId, false);
+
+								RegisterPrimarySolutionForPersistentStorage (solutionId, solution);
+								persistentStorageLastRegisteredSolutionId = solutionId;
+							}
+						}
 						OnSolutionAdded (solutionInfo);
 					}
 				}
 				return solutionInfo;
 			});
 		}
+
+		// Roslyn is horrifying, and the persistent storage service is a singleton. That means we can only register one workspace
+		// at a time. d15-7+ roslyn does not throw in the case of a storage already being there, but it's still bad design.
+		// https://github.com/dotnet/roslyn/issues/25152
+		static SolutionId persistentStorageLastRegisteredSolutionId;
+		static object persistentStorageRegistrationLock = new object ();
 
 		void RegisterPrimarySolutionForPersistentStorage (SolutionId solutionId, MonoDevelop.Projects.Solution solution)
 		{
