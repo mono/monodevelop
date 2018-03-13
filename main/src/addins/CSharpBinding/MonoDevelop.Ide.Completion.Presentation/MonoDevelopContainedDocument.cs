@@ -68,8 +68,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		public static void DetachFromBuffer(ITextBuffer languageBuffer)
 		{
-			var document = languageBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChanges ();
-			MonoDevelopHostDocumentRegistration.UnRegister (document);
+			MonoDevelopHostDocumentRegistration.UnRegister (languageBuffer);
 		}
 
 		private MonoDevelopContainedDocument (ITextBuffer languageBuffer, IProjectionBuffer dataBuffer, IMonoDevelopContainedLanguageHost containedLanguageHost)
@@ -113,7 +112,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			Language = project.Language;
 			Id = document.Id;
 
-			MonoDevelopHostDocumentRegistration.Register (document, this);
+			MonoDevelopHostDocumentRegistration.Register (LanguageBuffer, this);
 		}
 
 		public ITextBuffer GetOpenTextBuffer ()
