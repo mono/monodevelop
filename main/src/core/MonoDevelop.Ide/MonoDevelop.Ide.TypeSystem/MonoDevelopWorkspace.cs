@@ -608,10 +608,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			}
-			lock (generatedFiles) {
-				foreach (var generatedFile in generatedFiles) {
-					if (generatedFile.Key.Id.ProjectId == oldProjectData.Info.Id)
-						documents.Add (generatedFile.Key);
+			// TODO: we have seen oldProjectData being null, need to investigate
+			if (oldProjectData != null) {
+				lock (generatedFiles) {
+					foreach (var generatedFile in generatedFiles) {
+						if (generatedFile.Key.Id.ProjectId == oldProjectData.Info.Id)
+							documents.Add (generatedFile.Key);
+					}
 				}
 			}
 			return Tuple.Create (documents, additionalDocuments);
