@@ -261,12 +261,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		static async void OnSolutionModified (object sender, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
 			var sol = (MonoDevelop.Projects.Solution)args.Item;
+			if (string.IsNullOrWhiteSpace (sol.BaseDirectory))
+				return;
 
 			var workspace = await TypeSystemService.GetWorkspaceAsync (sol, CancellationToken.None);
 			var solId = workspace.GetSolutionId (sol);
 			if (solId == null)
 				return;
-
+			
 			var locService = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
 			locService.NotifyStorageLocationChanging (solId, sol.GetPreferencesDirectory ());
 		}
