@@ -75,6 +75,7 @@ Thumbs.db
 /main/external/fsharpbinding/paket-files
 /main/external/Xamarin.Mac.registrar.full.a
 /main/external/Xamarin.Mac.dll*
+/main/external/Xamarin.Mac.pdb
 /main/external/libxammac.dylib
 /main/external/libxammac-system.a
 
