@@ -82,6 +82,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				[ClassificationTypeNames.StructName] = MakeScope ("entity.name.struct." + defaultScope),
 				[ClassificationTypeNames.TypeParameterName] = MakeScope ("entity.name.typeparameter." + defaultScope),
 
+				[ClassificationTypeNames.FieldName] = MakeScope ("entity.name.field." + defaultScope),
+				[ClassificationTypeNames.EnumMemberName] = MakeScope ("entity.name.enummember." + defaultScope),
+				[ClassificationTypeNames.ConstantName] = MakeScope ("entity.name.constant." + defaultScope),
+				[ClassificationTypeNames.LocalName] = MakeScope ("entity.name.local." + defaultScope),
+				[ClassificationTypeNames.ParameterName] = MakeScope ("entity.name.parameter." + defaultScope),
+				[ClassificationTypeNames.ExtensionMethodName] = MakeScope ("entity.name.extensionmethod." + defaultScope),
+				[ClassificationTypeNames.MethodName] = MakeScope ("entity.name.function." + defaultScope),
+				[ClassificationTypeNames.PropertyName] = MakeScope ("entity.name.property." + defaultScope),
+				[ClassificationTypeNames.EventName] = MakeScope ("entity.name.event." + defaultScope),
+
 				[ClassificationTypeNames.XmlDocCommentAttributeName] = MakeScope ("comment.line.documentation." + defaultScope),
 				[ClassificationTypeNames.XmlDocCommentAttributeQuotes] = MakeScope ("comment.line.documentation." + defaultScope),
 				[ClassificationTypeNames.XmlDocCommentAttributeValue] = MakeScope ("comment.line.documentation." + defaultScope),
