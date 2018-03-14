@@ -79,7 +79,9 @@ type CompilerArgumentsTests() =
             if Platform.IsMac then
                 use! testProject = createFSharpProject()
                 let _ = testProject.AddReference "mscorlib"
-                let reference = testProject.AddReference "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/FSharp.Core.dll"
+                // we need to use a path to FSharp.Core.dll that exists on disk
+                let fscorePath = typeof<FSharp.Core.PrintfFormat<_,_,_,_>>.Assembly.Location
+                let reference = testProject.AddReference fscorePath
                 let references =
                     CompilerArguments.generateReferences(testProject,
                                                          testProject.ReferencedAssemblies,

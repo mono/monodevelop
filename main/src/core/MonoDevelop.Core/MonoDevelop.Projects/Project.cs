@@ -556,8 +556,29 @@ namespace MonoDevelop.Projects
 			return results.ToArray ();
 		}
 
+		/// <summary>
+		/// When the MSBuild imports in a project change we need to let the type system know so
+		/// it can update its source files. A NuGet package may contain only MSBuild targets
+		/// which modify the CoreCompileDependsOn property. Just having the MSBuild targets
+		/// file in the NuGet package will not trigger any notifications that the type system
+		/// is monitoring so here we trigger a Files notification.
+		/// </summary>
+		void OnMSBuildProjectImportChanged (object sender, EventArgs args)
+		{
+			lock (evaluatedCompileItemsLock) {
+				// Do not re-evaluate if the compile items have never been evaluated.
+				if (evaluatedCompileItemsTask != null)
+					reevaluateCoreCompileDependsOn = true;
+			}
+
+			Runtime.RunInMainThread (() => {
+				NotifyModified ("Files");
+			}).Ignore ();
+		}
+
 		object evaluatedCompileItemsLock = new object ();
 		string evaluatedCompileItemsConfiguration;
+		bool reevaluateCoreCompileDependsOn;
 		TaskCompletionSource<ProjectFile[]> evaluatedCompileItemsTask;
 
 		/// <summary>
@@ -573,15 +594,24 @@ namespace MonoDevelop.Projects
 
 			TaskCompletionSource<ProjectFile []> currentTask = null;
 			bool startTask = false;
+			bool reevaluate = false;
 
 			lock (evaluatedCompileItemsLock) {
-				if (evaluatedCompileItemsConfiguration != config.Id) {
+
+				if (evaluatedCompileItemsConfiguration != config.Id || reevaluateCoreCompileDependsOn) {
 					// The configuration changed or query not yet done
 					evaluatedCompileItemsConfiguration = config.Id;
 					evaluatedCompileItemsTask = new TaskCompletionSource<ProjectFile []> ();
 					startTask = true;
+					reevaluate = reevaluateCoreCompileDependsOn;
+					reevaluateCoreCompileDependsOn = false;
 				}
 				currentTask = evaluatedCompileItemsTask;
+			}
+
+			if (reevaluate) {
+				// Ensure CoreCompileDependsOn is up to date.
+				await ReevaluateProject (monitor, resetCachedCompileItems: false);
 			}
 
 			if (startTask) {
@@ -620,6 +650,7 @@ namespace MonoDevelop.Projects
 		{
 			lock (evaluatedCompileItemsLock) {
 				evaluatedCompileItemsConfiguration = null;
+				reevaluateCoreCompileDependsOn = false;
 			}
 		}
 
@@ -693,6 +724,9 @@ namespace MonoDevelop.Projects
 			base.OnEndLoad ();
 
 			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata (null));
+
+			if (sourceProject != null)
+				sourceProject.ImportChanged += OnMSBuildProjectImportChanged;
 
 			InitializeFileWatcher ();
 		}
@@ -1059,6 +1093,7 @@ namespace MonoDevelop.Projects
 			RemoteBuildEngineManager.UnloadProject (FileName).Ignore ();
 
 			if (sourceProject != null) {
+				sourceProject.ImportChanged -= OnMSBuildProjectImportChanged;
 				sourceProject.Dispose ();
 				sourceProject = null;
 			}
@@ -3916,6 +3951,15 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		public Task ReevaluateProject (ProgressMonitor monitor)
 		{
+			return ReevaluateProject (monitor, true);
+		}
+
+		/// <summary>
+		/// Reevaluates the MSBuild project and optionally resets the cached compile items
+		/// taken from CoreCompileDependsOn.
+		/// </summary>
+		Task ReevaluateProject (ProgressMonitor monitor, bool resetCachedCompileItems)
+		{
 			return BindTask (ct => Runtime.RunInMainThread (async () => {
 				using (await writeProjectLock.EnterAsync ()) {
 					var oldCapabilities = new HashSet<string> (projectCapabilities);
@@ -3939,7 +3983,8 @@ namespace MonoDevelop.Projects
 						IsReevaluating = false;
 					}
 
-					ResetCachedCompileItems ();
+					if (resetCachedCompileItems)
+						ResetCachedCompileItems ();
 
 					if (!oldCapabilities.SetEquals (projectCapabilities))
 						NotifyProjectCapabilitiesChanged ();

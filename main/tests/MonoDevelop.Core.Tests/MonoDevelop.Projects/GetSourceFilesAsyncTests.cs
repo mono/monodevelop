@@ -29,6 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.MSBuild;
 using NUnit.Framework;
 using UnitTests;
 
@@ -166,6 +167,41 @@ namespace MonoDevelop.Projects
 			sourceFiles = await project.GetSourceFilesAsync (project.Configurations ["Release|x86"].Selector);
 
 			Assert.IsFalse (sourceFiles.Any (f => f.FilePath.FileName == "Conditioned.cs"));
+			project.Dispose ();
+		}
+
+		[Test]
+		public async Task ImportWithCoreCompileDependsOnAddedAfterSourceFilesCached ()
+		{
+			string projectFile = Util.GetSampleProject ("project-with-corecompiledepends", "consoleproject.csproj");
+			var project = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile);
+
+			var projectFiles = project.Files.Where (f => f.Subtype != Subtype.Directory).ToList ();
+			var sourceFiles = await project.GetSourceFilesAsync (project.Configurations[0].Selector);
+
+			Assert.AreEqual (projectFiles.Count, sourceFiles.Count ());
+			Assert.AreEqual (0, sourceFiles.Count ());
+
+			string modifiedHint = null;
+			project.Modified += (sender, args) => modifiedHint = args.First ().Hint;
+
+			var before = new MSBuildItem (); // Ensures import added at end of project.
+			project.MSBuildProject.AddNewImport ("consoleproject-import.targets", null, before);
+			Assert.AreEqual ("Files", modifiedHint);
+
+			sourceFiles = await project.GetSourceFilesAsync (project.Configurations[0].Selector);
+
+			Assert.IsTrue (sourceFiles.Any (f => f.FilePath.FileName == "GeneratedFile.g.cs"));
+
+			modifiedHint = null;
+			project.MSBuildProject.RemoveImport ("consoleproject-import.targets");
+			Assert.AreEqual ("Files", modifiedHint);
+
+			sourceFiles = await project.GetSourceFilesAsync (project.Configurations[0].Selector);
+
+			Assert.IsFalse (sourceFiles.Any (f => f.FilePath.FileName == "GeneratedFile.g.cs"));
+			Assert.AreEqual (0, sourceFiles.Count ());
+
 			project.Dispose ();
 		}
 	}

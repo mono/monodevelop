@@ -147,6 +147,9 @@ namespace MonoDevelop.Components.DockNotebook
 			if (notebook == null)
 				throw new ArgumentNullException ("notebook");
 
+			Accessible.SetCommonAttributes ("Document.Tabstrip",
+			                                Core.GettextCatalog.GetString ("Document Navigation Bar"),
+			                                Core.GettextCatalog.GetString ("Contains controls to select which document is being edited"));
 			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
 
 			// Handle focus for the tabs.
@@ -255,6 +258,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 			if (tab.Accessible != null) {
 				Accessible.AddAccessibleElement (tab.Accessible);
+				Accessible.AddAccessibleElement (tab.CloseButtonAccessible);
 
 				tab.AccessibilityPressTab += OnAccessibilityPressTab;
 				tab.AccessibilityPressCloseButton += OnAccessibilityPressCloseButton;
@@ -276,6 +280,7 @@ namespace MonoDevelop.Components.DockNotebook
 				tab.AccessibilityShowMenu -= OnAccessibilityShowMenu;
 
 				Accessible.RemoveAccessibleElement (tab.Accessible);
+				Accessible.RemoveAccessibleElement (tab.CloseButtonAccessible);
 			}
 
 			tab.Dispose ();

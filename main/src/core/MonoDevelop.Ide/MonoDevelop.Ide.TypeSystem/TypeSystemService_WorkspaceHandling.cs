@@ -263,7 +263,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var workspace = await GetWorkspaceAsync (parentSolution, cancellationToken);
 			var projectId = workspace.GetProjectId (project);
 			if (projectId == null)
-				throw new Exception ("Project not part of workspace");
+				return null;
 			var proj = workspace.CurrentSolution.GetProject (projectId);
 			if (proj != null)
 				return proj;

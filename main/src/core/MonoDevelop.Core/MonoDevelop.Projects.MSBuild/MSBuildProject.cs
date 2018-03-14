@@ -432,6 +432,18 @@ namespace MonoDevelop.Projects.MSBuild
 			changeStamp++;
 		}
 
+		internal void NotifyImportChanged ()
+		{
+			NotifyChanged ();
+
+			ImportChanged?.Invoke (this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Occurs when an import has changed, is added or removed.
+		/// </summary>
+		internal event EventHandler ImportChanged;
+
 		/// <summary>
 		/// Gets or sets a value indicating whether this project uses the msbuild engine for evaluation.
 		/// </summary>
@@ -613,7 +625,7 @@ namespace MonoDevelop.Projects.MSBuild
 				ChildNodes = ChildNodes.Add (import);
 
 			import.ResetIndent (false);
-			NotifyChanged ();
+			NotifyImportChanged ();
 			return import;
 		}
 
@@ -629,7 +641,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (i != null) {
 				i.RemoveIndent ();
 				ChildNodes = ChildNodes.Remove (i);
-				NotifyChanged ();
+				NotifyImportChanged ();
 			}
 		}
 
@@ -642,7 +654,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (import.ParentObject == this) {
 				import.RemoveIndent ();
 				ChildNodes = ChildNodes.Remove (import);
-				NotifyChanged ();
+				NotifyImportChanged ();
 			} else
 				((MSBuildImportGroup)import.ParentObject).RemoveImport (import);
 		}
