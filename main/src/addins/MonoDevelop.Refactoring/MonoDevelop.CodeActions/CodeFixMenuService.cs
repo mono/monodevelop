@@ -54,29 +54,6 @@ namespace MonoDevelop.CodeActions
 {
 	internal static class CodeFixMenuService
 	{
-		static readonly Dictionary<string, int> CodeActionUsages = new Dictionary<string, int> ();
-
-		static CodeFixMenuService ()
-		{
-			var usages = PropertyService.Get ("CodeActionUsages", new Properties ());
-			foreach (var key in usages.Keys) {
-				CodeActionUsages [key] = usages.Get<int> (key);
-			}
-		}
-
-		static void ConfirmUsage (string id)
-		{
-			if (id == null)
-				return;
-			if (!CodeActionUsages.ContainsKey (id)) {
-				CodeActionUsages [id] = 1;
-			} else {
-				CodeActionUsages [id]++;
-			}
-			var usages = PropertyService.Get ("CodeActionUsages", new Properties ());
-			usages.Set (id, CodeActionUsages [id]);
-		}
-
 		static MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable options =
 			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).Options;
 		public static async Task<CodeFixMenu> CreateFixMenu (TextEditor editor, CodeActionContainer fixes, CancellationToken cancellationToken = default(CancellationToken))
@@ -99,7 +76,7 @@ namespace MonoDevelop.CodeActions
 			var configureMenu = new CodeFixMenu (configureLabel);
 			var fixAllTasks = new List<Task<CodeAction>> ();
 
-			foreach (var cfa in fixes.CodeFixActions.OrderByDescending (x => x.Fixes.Max(y => GetUsage (y.Action.EquivalenceKey)))) {
+			foreach (var cfa in fixes.CodeFixActions) {
 				var state = cfa.FixAllState;
 				var scopes = cfa.SupportedScopes;
 
@@ -207,7 +184,6 @@ namespace MonoDevelop.CodeActions
 			var label = mnemonic < 0 ? fix.Title : CreateLabel (fix.Title, ref mnemonic);
 			var item = new CodeFixMenuEntry (label, async delegate {
 				await new ContextActionRunner (editor, fix).Run ();
-				ConfirmUsage (fix.EquivalenceKey);
 			});
 
 			item.ShowPreviewTooltip = delegate (Xwt.Rectangle rect) {
@@ -252,14 +228,6 @@ namespace MonoDevelop.CodeActions
 #else
 			return (mnemonic <= 10) ? "_" + mnemonic++ % 10 + " \u2013 " + escapedLabel : "  " + escapedLabel;
 #endif
-		}
-
-		static int GetUsage (string id)
-		{
-			int result;
-			if (id == null || !CodeActionUsages.TryGetValue (id, out result))
-				return 0;
-			return result;
 		}
 
 		internal class ContextActionRunner
