@@ -400,5 +400,7 @@ namespace MonoDevelop.Ide
 				return PlatformService.AccessibilityInUse;
 			}
 		}
+
+		internal static string GetNativeRuntimeDescription () => PlatformService.GetNativeRuntimeDescription ();
 	}
 }

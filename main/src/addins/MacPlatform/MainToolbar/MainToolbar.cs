@@ -325,6 +325,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 			set {
 				searchEntry.StringValue = value;
+				// BXC #61249: setting StringValue programmatically won't raise the Changed event,
+				// but we want to start a new search when the controller updates the search text
+				SearchEntryChanged?.Invoke (searchEntry, EventArgs.Empty);
 			}
 		}
 					

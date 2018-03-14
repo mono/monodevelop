@@ -128,20 +128,24 @@ namespace MonoDevelop.Ide.Composition
 
 			var discoveryErrors = catalog.DiscoveredParts.DiscoveryErrors;
 			if (!discoveryErrors.IsEmpty) {
-				throw new ApplicationException ($"MEF catalog scanning errors encountered.\n{string.Join ("\n", discoveryErrors)}");
+				foreach	(var error in discoveryErrors) {
+					LoggingService.LogInfo ("MEF discovery error", error);
+				}
+				
+				// throw new ApplicationException ("MEF discovery errors");
 			}
 
 			CompositionConfiguration configuration = CompositionConfiguration.Create (catalog);
 
 			if (!configuration.CompositionErrors.IsEmpty) {
 				// capture the errors in an array for easier debugging
-				var errors = configuration.CompositionErrors.ToArray ();
+				var errors = configuration.CompositionErrors.SelectMany (e => e).ToArray ();
+				foreach	(var error in errors) {
+					LoggingService.LogInfo ("MEF composition error: " + error.Message);
+				}
 
 				// For now while we're still transitioning to VSMEF it's useful to work
 				// even if the composition has some errors. TODO: re-enable this.
-				//var messages = errors.SelectMany (e => e).Select (e => e.Message);
-				//var text = string.Join (Environment.NewLine, messages);
-				//Xwt.Clipboard.SetText (text);
 				//configuration.ThrowOnErrors ();
 			}
 
