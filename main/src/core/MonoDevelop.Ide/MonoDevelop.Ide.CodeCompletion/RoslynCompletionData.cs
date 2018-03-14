@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal static async Task<TooltipInformation> CreateTooltipInformation (Microsoft.CodeAnalysis.Document doc, CompletionItem CompletionItem, bool smartWrap, CancellationToken cancelToken)
 		{
 			CompletionDescription description;
-			var completionService = TypeSystem.TypeSystemService.Workspace.Services.GetLanguageServices (LanguageNames.CSharp).GetService<CompletionService> ();
+			var completionService = doc.Project.Solution.Workspace.Services.GetLanguageServices (doc.Project.Language).GetService<CompletionService> ();
 			if (completionService == null)
 				return null;
 			if (CommonCompletionItem.HasDescription (CompletionItem)) {
