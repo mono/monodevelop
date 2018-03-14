@@ -2366,6 +2366,9 @@ namespace Mono.TextEditor
 						Caret.PreserveSelection = false;
 					} else {
 						textEditor.ClearSelection ();
+						if (Caret.Location.Line != clickLocation.Line && !String.IsNullOrEmpty (textEditor.preeditString)) {
+							textEditor.CommitPreedit ();
+						}
 						Caret.Location = clickLocation;
 						InSelectionDrag = true;
 						textEditor.MainSelection = new MonoDevelop.Ide.Editor.Selection (clickLocation, clickLocation);
