@@ -221,9 +221,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var p in toDispose)
 					p.Dispose ();
 				
-				projectIdMap.Clear ();
-				projectIdToMdProjectMap = projectIdToMdProjectMap.Clear ();
-				projectDataMap.Clear ();
 				solutionData = new SolutionData ();
 				List<Task> allTasks = new List<Task> ();
 				foreach (var proj in mdProjects) {
@@ -617,13 +614,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			}
-			// TODO: we have seen oldProjectData being null, need to investigate
-			if (oldProjectData != null) {
-				lock (generatedFiles) {
-					foreach (var generatedFile in generatedFiles) {
-						if (generatedFile.Key.Id.ProjectId == oldProjectData.Info.Id)
-							documents.Add (generatedFile.Key);
-					}
+			var projectId = GetProjectId (p);
+			lock (generatedFiles) {
+				foreach (var generatedFile in generatedFiles) {
+					if (generatedFile.Key.Id.ProjectId == projectId)
+						documents.Add (generatedFile.Key);
 				}
 			}
 			return Tuple.Create (documents, additionalDocuments);
@@ -1514,7 +1509,13 @@ namespace MonoDevelop.Ide.TypeSystem
 						return;
 					var projectId = GetProjectId (project);
 					if (CurrentSolution.ContainsProject (projectId)) {
-						HandleActiveConfigurationChanged (this, EventArgs.Empty);
+						var projectInfo = LoadProject (project, CancellationToken.None, null).ContinueWith (t => {
+							if (t.IsFaulted) {
+								LoggingService.LogError ("Failed to reload project", t.Exception);
+								return;
+							}
+							OnProjectReloaded (t.Result);
+						});
 					} else {
 						modifiedProjects.Add (project);
 					}
