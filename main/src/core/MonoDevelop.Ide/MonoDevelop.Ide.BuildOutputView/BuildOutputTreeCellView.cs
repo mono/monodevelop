@@ -17,6 +17,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public static Xwt.Drawing.Color CellTextSkippedColor { get; internal set; }
 		public static Xwt.Drawing.Color CellTextSkippedSelectionColor { get; internal set; }
 		public static Xwt.Drawing.Color LinkForegroundColor { get; internal set; }
+		public static Xwt.Drawing.Color SearchMatchFocusedBackgroundColor { get; internal set; }
+		public static Xwt.Drawing.Color SearchMatchUnfocusedBackgroundColor { get; internal set; }
 
 		static Styles ()
 		{
@@ -28,8 +30,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				CellBackgroundColor = Ide.Gui.Styles.PadBackground;
+				SearchMatchUnfocusedBackgroundColor = Xwt.Drawing.Color.FromName ("#fdffa9");
 			} else {
 				CellBackgroundColor = Xwt.Drawing.Color.FromName ("#3c3c3c");
+				SearchMatchUnfocusedBackgroundColor = Xwt.Drawing.Color.FromName ("#a2a53f");
 			}
 
 			// Shared
@@ -40,6 +44,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			CellTextSkippedColor = Ide.Gui.Styles.SecondaryTextColor;
 			CellTextSkippedSelectionColor = Ide.Gui.Styles.SecondarySelectionTextColor;
 			LinkForegroundColor = Ide.Gui.Styles.LinkForegroundColor;
+			SearchMatchFocusedBackgroundColor = Xwt.Drawing.Color.FromName ("#fcff54");
 		}
 	}
 
@@ -147,7 +152,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			lastErrorPanelStartX = 0;
 		}
 
-		string GetSearchMarkup (string message, Color background, Color foreground)
+		string GetSearchMarkup (string message, Color background)
 		{
 			return $"<span background=\"{background.ToHexString ()}\">{message}</span>";
 		}
@@ -163,7 +168,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (index > 0) {
 				bld.Append (message.Substring (0, index));
 			}
-			bld.Append (GetSearchMarkup (message.Substring (index, search.Length), Colors.Yellow, Colors.Yellow));
+			bld.Append (GetSearchMarkup (message.Substring (index, search.Length),
+			                             HasFocus ? Styles.SearchMatchFocusedBackgroundColor : Styles.SearchMatchUnfocusedBackgroundColor));
 			if (message.Length > index + search.Length) {
 				bld.Append (message.Substring (index + search.Length));
 			}
