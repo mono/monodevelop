@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var netProj = proj as MonoDevelop.Projects.DotNetProject;
 					if (netProj != null && !netProj.SupportsRoslyn)
 						continue;
-					var tp = LoadProject (proj, token).ContinueWith (t => {
+					var tp = LoadProject (proj, token, null).ContinueWith (t => {
 						if (!t.IsCanceled)
 							projects.Add (t.Result);
 					});
@@ -456,10 +456,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			project.Modified -= OnProjectModified;
 		}
 
-		async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token)
+		internal async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.Project oldProject)
 		{
 			if (!projectIdMap.ContainsKey (p)) {
 				p.Modified += OnProjectModified;
+			}
+
+			if (oldProject != null) {
+				lock (projectIdMap) {
+					oldProject.Modified -= OnProjectModified;
+					projectIdMap.TryRemove (oldProject, out var id);
+					projectIdMap[p] = id;
+					projectIdToMdProjectMap = projectIdToMdProjectMap.SetItem (id, p);
+				}
 			}
 
 			var projectId = GetOrCreateProjectId (p);
