@@ -9749,6 +9749,10 @@
     <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Tests" />
     <InternalsVisibleTo Include="WebToolingAddin" />
+    <InternalsVisibleTo Include="Xamarin.Designer.MonoDevelop" />
+    <InternalsVisibleTo Include="Xamarin.AndroidDesigner.MonoDevelop" />
+    <InternalsVisibleTo Include="Xamarin.iOSDesigner.MonoDevelop" />
+    <InternalsVisibleTo Include="Xamarin.FormsPreviewer.MonoDevelop" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
