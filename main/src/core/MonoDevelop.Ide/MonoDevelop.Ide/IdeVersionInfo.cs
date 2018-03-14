@@ -131,6 +131,13 @@ namespace MonoDevelop.Ide
 					sb.Append (" (").Append (gtkTheme).AppendLine (" theme)");
 				else
 					sb.AppendLine ();
+
+				var nativeRuntime = DesktopService.GetNativeRuntimeDescription ();
+				if (!string.IsNullOrEmpty (nativeRuntime)) {
+					sb.Append ('\t');
+					sb.AppendLine (nativeRuntime);
+				}
+
 				if (Platform.IsWindows && !IsMono ()) {
 					using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Xamarin\GtkSharp\Version")) {
 						Version ver;
