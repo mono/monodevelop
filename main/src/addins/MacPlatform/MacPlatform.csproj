@@ -225,6 +225,10 @@
     <EmbeddedResource Include="icons\status-stop-16~dark%402x.png">
       <LogicalName>status-stop-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\external\Xamarin.Mac.buildinfo">
+      <Link>Xamarin.Mac.buildinfo</Link>
+      <LogicalName>Xamarin.Mac.buildinfo</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dialogs\" />
