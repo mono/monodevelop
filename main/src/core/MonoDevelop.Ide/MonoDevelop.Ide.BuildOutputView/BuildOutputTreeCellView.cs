@@ -147,6 +147,29 @@ namespace MonoDevelop.Ide.BuildOutputView
 			lastErrorPanelStartX = 0;
 		}
 
+		string GetSearchMarkup (string message, Color background, Color foreground)
+		{
+			return $"<span background=\"{background.ToHexString ()}\">{message}</span>";
+		}
+
+		void CreateMarkupText (TextLayout layout, string message, string search)
+		{
+			int index = -1;
+			if (search == "" || (index = message.IndexOf (search, StringComparison.Ordinal)) == -1) {
+				layout.Markup = message;
+				return;
+			}
+			System.Text.StringBuilder bld = new System.Text.StringBuilder ();
+			if (index > 0) {
+				bld.Append (message.Substring (0, index));
+			}
+			bld.Append (GetSearchMarkup (message.Substring (index, search.Length), Colors.Yellow, Colors.Yellow));
+			if (message.Length > index + search.Length) {
+				bld.Append (message.Substring (index + search.Length));
+			}
+			layout.Markup = bld.ToString ();
+		}
+
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
 		{
 			var buildOutputNode = GetValue (BuildOutputNodeField);
@@ -170,9 +193,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			status.LastRenderWidth = width;
 
 			if (!status.Expanded && status.NewLineCharIndex > -1) {
-				layout.Text = buildOutputNode.Message.Substring (0, status.NewLineCharIndex);
+				CreateMarkupText (layout, buildOutputNode.Message.Substring (0, status.NewLineCharIndex), contextProvider.SearchString);
 			} else {
-				layout.Text = buildOutputNode.Message;
+				CreateMarkupText (layout, buildOutputNode.Message, contextProvider.SearchString);
 			}
 
 			UpdateTextColor (ctx, buildOutputNode, isSelected);
