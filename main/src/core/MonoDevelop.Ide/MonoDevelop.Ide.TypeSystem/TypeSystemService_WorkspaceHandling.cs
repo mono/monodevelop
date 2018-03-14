@@ -64,8 +64,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					return ws;
 			}
 			return emptyWorkspace;
-			}
-		
+		}
+
 		public static async Task<MonoDevelopWorkspace> GetWorkspaceAsync (MonoDevelop.Projects.Solution solution, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var workspace = GetWorkspace (solution);
@@ -250,7 +250,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (project == null)
 				throw new ArgumentNullException (nameof(project));
 			foreach (var w in workspaces) {
-				var projectId = w.GetProjectId (project); 
+				var projectId = w.GetProjectId (project);
 				if (projectId != null)
 					return w.CurrentSolution.GetProject (projectId);
 			}
@@ -292,7 +292,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (project == null)
 				throw new ArgumentNullException (nameof(project));
 			foreach (var w in workspaces) {
-				var projectId = w.GetProjectId (project); 
+				var projectId = w.GetProjectId (project);
 				if (projectId == null)
 					continue;
 				var roslynProject = w.CurrentSolution.GetProject (projectId);
@@ -313,17 +313,31 @@ namespace MonoDevelop.Ide.TypeSystem
 			Unload (args.Item);
 		}
 
-		static void OnSolutionItemAdded (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
+		static async void OnSolutionItemAdded (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
 		{
-			var project = args.SolutionItem as MonoDevelop.Projects.Project;
-			if (project != null) {
-				Unload (project.ParentSolution);
-				Load (project.ParentSolution, null).Ignore ();
+			try {
+				var project = args.SolutionItem as MonoDevelop.Projects.Project;
+				if (project != null) {
+					var ws = GetWorkspace (args.Solution);
+					var projectInfo = await ws.LoadProject (project, CancellationToken.None, args.ReplacedItem as MonoDevelop.Projects.Project);
+					if (args.Reloading) {
+						ws.OnProjectReloaded (projectInfo);
+					}
+					else {
+						ws.OnProjectAdded (projectInfo);
+					}
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("OnSolutionItemAdded failed", ex);
 			}
 		}
 
 		static void OnSolutionItemRemoved (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
 		{
+			if (args.Reloading) {
+				return;
+			}
+
 			var project = args.SolutionItem as MonoDevelop.Projects.Project;
 			var solution = sender as MonoDevelop.Projects.Solution;
 			if (project != null) {
@@ -386,7 +400,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException (nameof(project));
-			return outputTrackedProjects.Any (otp => string.Equals (otp.LanguageName, project.LanguageName, StringComparison.OrdinalIgnoreCase)) || 
+			return outputTrackedProjects.Any (otp => string.Equals (otp.LanguageName, project.LanguageName, StringComparison.OrdinalIgnoreCase)) ||
 				project.GetTypeTags().Any (tag => outputTrackedProjects.Any (otp => string.Equals (otp.ProjectType, tag, StringComparison.OrdinalIgnoreCase)));
 		}
 
