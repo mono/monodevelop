@@ -139,22 +139,45 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public static readonly string UserTypesDelegates = "entity.name.delegate";
 		public static readonly string UserTypesMutable = "entity.name.mutable";
 
+		public static readonly string UserField = "entity.name.field";
+		[Obsolete ("Use UserField")]
 		public static readonly string UserFieldDeclaration = "entity.name.field";
-		public static readonly string UserFieldUsage = "entity.name.field.usage";
+		[Obsolete ("Use UserField")]
+		public static readonly string UserFieldUsage = "entity.name.field";
 
+		public static readonly string UserEnumMember = "entity.name.enummember";
+		public static readonly string UserConstant = "entity.name.constant";
+
+		public static readonly string UserProperty = "entity.name.property";
+		[Obsolete ("Use UserProperty")]
 		public static readonly string UserPropertyDeclaration = "entity.name.property";
-		public static readonly string UserPropertyUsage = "entity.name.property.usage";
+		[Obsolete ("Use UserProperty")]
+		public static readonly string UserPropertyUsage = "entity.name.property";
 
+
+		public static readonly string UserEvent = "entity.name.event";
+		[Obsolete ("Use UserEvent")]
 		public static readonly string UserEventDeclaration = "entity.name.event";
+		[Obsolete ("Use UserEvent")]
 		public static readonly string UserEventUsage = "entity.name.event.usage";
 
+		public static readonly string UserMethod = "entity.name.function";
+		public static readonly string UserExtensionMethod = "entity.name.extensionmethod";
+		[Obsolete ("Use UserMethod")]
 		public static readonly string UserMethodDeclaration = "entity.name.function";
+		[Obsolete ("Use UserMethod")]
 		public static readonly string UserMethodUsage = "entity.name.function.usage";
 
+		public static readonly string UserParameter = "entity.name.parameter";
+		[Obsolete ("Use UserParameter")]
 		public static readonly string UserParameterDeclaration = "entity.name.parameter";
+		[Obsolete ("Use UserParameter")]
 		public static readonly string UserParameterUsage = "entity.name.parameter.usage";
 
+		public static readonly string UserLocal = "entity.name.local";
+		[Obsolete ("Use UserLocal")]
 		public static readonly string UserVariableDeclaration = "entity.name.local";
+		[Obsolete ("Use UserLocal")]
 		public static readonly string UserVariableUsage = "entity.name.local.usage";
 	}
 	
