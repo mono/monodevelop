@@ -152,12 +152,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			lastErrorPanelStartX = 0;
 		}
 
-		string GetSearchMarkup (string message, Color background)
+		string GetSearchMarkup (string message, Color foreground, Color background)
 		{
-			return $"<span background=\"{background.ToHexString ()}\">{message}</span>";
+			return $"<span foreground=\"{foreground.ToHexString ()}\" background=\"{background.ToHexString ()}\">{message}</span>";
 		}
 
-		void CreateMarkupText (TextLayout layout, string message, string search)
+		void CreateMarkupText (TextLayout layout, BuildOutputNode buildOutputNode, string message, string search)
 		{
 			int index = -1;
 			if (search == "" || (index = message.IndexOf (search, StringComparison.OrdinalIgnoreCase)) == -1) {
@@ -169,6 +169,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				bld.Append (message.Substring (0, index));
 			}
 			bld.Append (GetSearchMarkup (message.Substring (index, search.Length),
+			                             GetTextColor (buildOutputNode, false),
 			                             HasFocus ? Styles.SearchMatchFocusedBackgroundColor : Styles.SearchMatchUnfocusedBackgroundColor));
 			if (message.Length > index + search.Length) {
 				bld.Append (message.Substring (index + search.Length));
@@ -199,9 +200,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			status.LastRenderWidth = width;
 
 			if (!status.Expanded && status.NewLineCharIndex > -1) {
-				CreateMarkupText (layout, buildOutputNode.Message.Substring (0, status.NewLineCharIndex), contextProvider.SearchString);
+				CreateMarkupText (layout, buildOutputNode, buildOutputNode.Message.Substring (0, status.NewLineCharIndex), contextProvider.SearchString);
 			} else {
-				CreateMarkupText (layout, buildOutputNode.Message, contextProvider.SearchString);
+				CreateMarkupText (layout, buildOutputNode, buildOutputNode.Message, contextProvider.SearchString);
 			}
 
 			UpdateTextColor (ctx, buildOutputNode, isSelected);
@@ -432,21 +433,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return SelectionColor;
 		}
 
-		void UpdateTextColor (Context ctx, BuildOutputNode buildOutputNode, bool isSelected)
+		Xwt.Drawing.Color GetTextColor (BuildOutputNode buildOutputNode, bool isSelected)
 		{
 			if (UseStrongSelectionColor && isSelected) {
 				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
-					ctx.SetColor (Styles.CellTextSkippedSelectionColor);
+					return Styles.CellTextSkippedSelectionColor;
 				} else {
-					ctx.SetColor (Styles.CellTextSelectionColor);
+					return Styles.CellTextSelectionColor;
 				}
 			} else {
 				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
-					ctx.SetColor (Styles.CellTextSkippedColor);
+					return Styles.CellTextSkippedColor;
 				} else {
-					ctx.SetColor (Styles.CellTextColor);
+					return Styles.CellTextColor;
 				}
 			}
+		}
+
+		void UpdateTextColor (Context ctx, BuildOutputNode buildOutputNode, bool isSelected)
+		{
+			ctx.SetColor (GetTextColor (buildOutputNode, isSelected));
 		}
 
 		bool IsBackgroundColorFieldSet ()
