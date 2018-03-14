@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		void CreateMarkupText (TextLayout layout, string message, string search)
 		{
 			int index = -1;
-			if (search == "" || (index = message.IndexOf (search, StringComparison.Ordinal)) == -1) {
+			if (search == "" || (index = message.IndexOf (search, StringComparison.OrdinalIgnoreCase)) == -1) {
 				layout.Markup = message;
 				return;
 			}
