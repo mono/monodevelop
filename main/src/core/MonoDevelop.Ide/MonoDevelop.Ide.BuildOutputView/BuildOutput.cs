@@ -335,6 +335,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 		}
 
 		#endregion
+
+		public void RaiseNodeChanged (BuildOutputNode node)
+		{
+			if (node != null) {
+				NodeChanged?.Invoke (this, new TreeNodeEventArgs (node));
+			}
+		}
 	}
 
 	class BuildOutputDataSearch
@@ -357,6 +364,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 		/// </summary>
 		/// <value>The current position.</value>
 		public int CurrentAbsoluteMatchIndex => currentMatchIndex + 1;
+
+		/// <summary>
+		/// Gets all matches.
+		/// </summary>
+		/// <value>All matches.</value>
+		public IReadOnlyList<BuildOutputNode> AllMatches => currentSearchMatches;
 
 		/// <summary>
 		/// Gets the matches count. 
