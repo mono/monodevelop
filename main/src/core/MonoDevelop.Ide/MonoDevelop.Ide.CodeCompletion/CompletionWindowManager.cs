@@ -186,10 +186,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 			isInUpdate = true;
 			try {
-				ITextEditorImpl impl = wnd.CompletionWidget as ITextEditorImpl;
+				var widget = wnd.CompletionWidget;
+				if (widget == null)
+					return;
+				var impl = widget as ITextEditorImpl;
 				if (impl != null)
 					impl.EnsureCaretIsNotVirtual ();
-				var caretOffset = wnd.CompletionWidget.CaretOffset;
+				var caretOffset = widget.CaretOffset;
 				if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset + 1) {
 					HideWindow ();
 				}
