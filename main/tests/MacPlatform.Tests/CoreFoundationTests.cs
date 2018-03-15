@@ -27,6 +27,7 @@ using System;
 using System.IO;
 using MonoDevelop.MacInterop;
 using NUnit.Framework;
+using UnitTests;
 
 namespace MacPlatform.Tests
 {
@@ -54,14 +55,7 @@ namespace MacPlatform.Tests
 			MonoDevelop.MacInterop.CoreFoundation.Release (testUrl);
 		}
 
-		static string plistFile = Path.GetFullPath (
-			Path.Combine (
-				Path.GetDirectoryName (typeof (PListFile).Assembly.Location),
-				"..",
-				"MacOSX",
-				"Info.plist.in"
-			)
-		);
+		static string plistFile = Path.Combine (Util.TestsRootDir, "test-projects", "mac-platform", "Info.plist");
 
 		[Test]
 		public void TestApplicationUrls ()
