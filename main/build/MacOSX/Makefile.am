@@ -42,11 +42,11 @@ monostub-nogui.o: monostub.mm $(MONOSTUB_EXTRA_SOURCES)
 
 monostub: monostub.o System_Native.o $(MONOSTUB_STATIC_LINK)
 	clang++ -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
-	cp monostub ../bin/MonoDevelop
+	cp $@ ../bin/MonoDevelop
 
 monostub-nogui: monostub-nogui.o System_Native.o $(MONOSTUB_STATIC_LINK)
 	clang++ -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
-	cp monostub ../bin/mdtool
+	cp $@ ../bin/mdtool
 
 monostub-test: monostub-test.m $(MONOSTUB_EXTRA_SOURCES)
 	gcc -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub-test.m -framework AppKit
