@@ -382,14 +382,29 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
+		static void RefreshSearchMatches (BuildOutputDataSource dataSource, BuildOutputDataSearch search)
+		{
+			foreach (var match in search.AllMatches) {
+				dataSource.RaiseNodeChanged (match);
+			}
+		}
+
 		async void FindFirst (object sender, EventArgs args)
 		{
 			var dataSource = treeView.DataSource as BuildOutputDataSource;
 			if (dataSource == null)
 				return;
 
+			// Cleanup previous search
+			if (currentSearch != null) {
+				RefreshSearchMatches (dataSource, currentSearch);
+			}
+
 			currentSearch = new BuildOutputDataSearch (dataSource.RootNodes);
-			Find (await currentSearch.FirstMatch (searchEntry.Entry.Text));
+			var firstMatch = await currentSearch.FirstMatch (searchEntry.Entry.Text);
+			RefreshSearchMatches (dataSource, currentSearch);
+
+			Find (firstMatch);
 		}
 
 		public void FindNext (object sender, EventArgs args)

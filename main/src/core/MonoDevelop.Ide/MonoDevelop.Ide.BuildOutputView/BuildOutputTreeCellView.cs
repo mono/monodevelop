@@ -18,6 +18,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public static Xwt.Drawing.Color CellTextSkippedColor { get; internal set; }
 		public static Xwt.Drawing.Color CellTextSkippedSelectionColor { get; internal set; }
 		public static Xwt.Drawing.Color LinkForegroundColor { get; internal set; }
+		public static Xwt.Drawing.Color SearchMatchFocusedBackgroundColor { get; internal set; }
+		public static Xwt.Drawing.Color SearchMatchUnfocusedBackgroundColor { get; internal set; }
 
 		static Styles ()
 		{
@@ -29,8 +31,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				CellBackgroundColor = Ide.Gui.Styles.PadBackground;
+				SearchMatchUnfocusedBackgroundColor = Xwt.Drawing.Color.FromName ("#fdffa9");
 			} else {
 				CellBackgroundColor = Xwt.Drawing.Color.FromName ("#3c3c3c");
+				SearchMatchUnfocusedBackgroundColor = Xwt.Drawing.Color.FromName ("#a2a53f");
 			}
 
 			// Shared
@@ -41,6 +45,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			CellTextSkippedColor = Ide.Gui.Styles.SecondaryTextColor;
 			CellTextSkippedSelectionColor = Ide.Gui.Styles.SecondarySelectionTextColor;
 			LinkForegroundColor = Ide.Gui.Styles.LinkForegroundColor;
+			SearchMatchFocusedBackgroundColor = Xwt.Drawing.Color.FromName ("#fcff54");
 		}
 	}
 
@@ -150,6 +155,31 @@ namespace MonoDevelop.Ide.BuildOutputView
 			lastErrorPanelStartX = 0;
 		}
 
+		string GetSearchMarkup (string message, Color foreground, Color background)
+		{
+			return $"<span foreground=\"{foreground.ToHexString ()}\" background=\"{background.ToHexString ()}\">{message}</span>";
+		}
+
+		void CreateMarkupText (TextLayout layout, BuildOutputNode buildOutputNode, string message, string search)
+		{
+			int index = -1;
+			if (search == "" || (index = message.IndexOf (search, StringComparison.OrdinalIgnoreCase)) == -1) {
+				layout.Markup = message;
+				return;
+			}
+			System.Text.StringBuilder bld = new System.Text.StringBuilder ();
+			if (index > 0) {
+				bld.Append (message.Substring (0, index));
+			}
+			bld.Append (GetSearchMarkup (message.Substring (index, search.Length),
+			                             GetTextColor (buildOutputNode, false),
+			                             HasFocus ? Styles.SearchMatchFocusedBackgroundColor : Styles.SearchMatchUnfocusedBackgroundColor));
+			if (message.Length > index + search.Length) {
+				bld.Append (message.Substring (index + search.Length));
+			}
+			layout.Markup = bld.ToString ();
+		}
+
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
 		{
 			var buildOutputNode = GetValue (BuildOutputNodeField);
@@ -173,9 +203,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			status.LastRenderWidth = width;
 
 			if (!status.Expanded && status.NewLineCharIndex > -1) {
-				layout.Text = buildOutputNode.Message.Substring (0, status.NewLineCharIndex);
+				CreateMarkupText (layout, buildOutputNode, buildOutputNode.Message.Substring (0, status.NewLineCharIndex), contextProvider.SearchString);
 			} else {
-				layout.Text = buildOutputNode.Message;
+				CreateMarkupText (layout, buildOutputNode, buildOutputNode.Message, contextProvider.SearchString);
 			}
 
 			UpdateTextColor (ctx, buildOutputNode, isSelected);
@@ -406,21 +436,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return SelectionColor;
 		}
 
-		void UpdateTextColor (Context ctx, BuildOutputNode buildOutputNode, bool isSelected)
+		Xwt.Drawing.Color GetTextColor (BuildOutputNode buildOutputNode, bool isSelected)
 		{
 			if (UseStrongSelectionColor && isSelected) {
 				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
-					ctx.SetColor (Styles.CellTextSkippedSelectionColor);
+					return Styles.CellTextSkippedSelectionColor;
 				} else {
-					ctx.SetColor (Styles.CellTextSelectionColor);
+					return Styles.CellTextSelectionColor;
 				}
 			} else {
 				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
-					ctx.SetColor (Styles.CellTextSkippedColor);
+					return Styles.CellTextSkippedColor;
 				} else {
-					ctx.SetColor (Styles.CellTextColor);
+					return Styles.CellTextColor;
 				}
 			}
+		}
+
+		void UpdateTextColor (Context ctx, BuildOutputNode buildOutputNode, bool isSelected)
+		{
+			ctx.SetColor (GetTextColor (buildOutputNode, isSelected));
 		}
 
 		bool IsBackgroundColorFieldSet ()
