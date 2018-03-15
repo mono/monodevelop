@@ -80,11 +80,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			"Fsc"
 		};
 
-		public virtual bool IsCommandLine {
-			get {
-				return NodeType == BuildOutputNodeType.Message && Parent.NodeType == BuildOutputNodeType.Task && KnownTools.Contains (Parent.Message);
-			}
-		}
+		public virtual bool IsCommandLine { get; private set; }
 
 		List<BuildOutputNode> children;
 		public virtual IReadOnlyList<BuildOutputNode> Children => children;
@@ -95,6 +91,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 				children = new List<BuildOutputNode> ();
 			}
 
+			if (child.NodeType == BuildOutputNodeType.Message && NodeType == BuildOutputNodeType.Task && KnownTools.Contains (Message)) {
+				child.IsCommandLine = true;
+			}
 			children.Add (child);
 
 			child.Parent = this;
