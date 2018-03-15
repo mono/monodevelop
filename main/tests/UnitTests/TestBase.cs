@@ -46,6 +46,9 @@ namespace UnitTests
 		static string LocateTopLevel ()
 		{
 			var cwd = typeof (TestBase).Assembly.Location;
+			if (Path.GetDirectoryName (cwd) == Util.TestsRootDir)
+				return Util.TestsRootDir;
+			
 			while (!string.IsNullOrEmpty (cwd) && !File.Exists (Path.Combine (cwd, "top_level_monodevelop")))
 				cwd = Path.GetDirectoryName (cwd);
 			return cwd;
