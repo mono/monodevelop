@@ -51,7 +51,7 @@ using System.Threading;
 
 namespace MonoDevelop.CSharp
 {
-	class SignatureMarkupCreator
+	internal class SignatureMarkupCreator
 	{
 		const double optionalAlpha = 0.7;
 		readonly DocumentContext ctx;

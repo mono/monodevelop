@@ -143,7 +143,14 @@ type FSharpProjectFileNodeExtension() =
         | SupportedProjectFolder(folder) ->
             let childfile =
                 folder.Project.Files
-                |> Seq.tryFind (fun p -> p.FilePath.IsChildPathOf folder.Path)
+                |> Seq.tryFind (fun p ->
+                    let filePath =
+                        match p.IsLink with
+                        | true -> 
+                            p.Link.ToAbsolute(folder.Project.FileName.ParentDirectory)
+                        | false ->
+                            p.FilePath
+                    filePath.IsChildPathOf folder.Path)
 
             match childfile with
             | Some file -> folder.Project.Files.IndexOf file
@@ -162,12 +169,15 @@ type FSharpProjectFileNodeExtension() =
         // Extend any file or folder belonging to a F# project
         typedefof<ProjectFile>.IsAssignableFrom(dataType) || typedefof<ProjectFolder>.IsAssignableFrom (dataType)
 
-    override x.CompareObjects(thisNode:ITreeNavigator, otherNode:ITreeNavigator) : int =
-        match (otherNode.DataItem, thisNode.DataItem) with
-        | SupportedProjectFile other, SupportedProjectFile thisNode -> compare (findIndex thisNode) (findIndex other)
-        | SupportedProjectFolder other, SupportedProjectFolder thisNode -> compare (findIndex thisNode) (findIndex other)
-        | SupportedProjectFile other, SupportedProjectFolder thisNode -> compare (findIndex thisNode) (findIndex other)
-        | SupportedProjectFolder other, SupportedProjectFile thisNode -> compare (findIndex thisNode) (findIndex other)
+    member x.Compare (thisDataItem: 'a) (otherDataItem: 'a) =
+        match (thisDataItem, otherDataItem) with
+        | SupportedProjectFile thisNode, SupportedProjectFile other -> compare (findIndex thisNode) (findIndex other)
+        | SupportedProjectFolder thisNode, SupportedProjectFolder other -> compare (findIndex thisNode) (findIndex other)
+        | SupportedProjectFile thisNode, SupportedProjectFolder other -> compare (findIndex thisNode) (findIndex other)
+        | SupportedProjectFolder thisNode, SupportedProjectFile other -> compare (findIndex thisNode) (findIndex other)
         | _ -> NodeBuilder.DefaultSort
+
+    override x.CompareObjects(thisNode:ITreeNavigator, otherNode:ITreeNavigator) : int =
+        x.Compare thisNode.DataItem otherNode.DataItem
 
     override x.CommandHandlerType = typeof<FSharpProjectNodeCommandHandler>

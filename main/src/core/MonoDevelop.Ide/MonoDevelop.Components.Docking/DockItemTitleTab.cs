@@ -105,8 +105,7 @@ namespace MonoDevelop.Components.Docking
 			actionHandler.PerformPress += HandlePress;
 			actionHandler.PerformShowMenu += HandleShowMenu;
 
-			Accessible.SetRole (AtkCocoa.Roles.AXGroup, "pad header");
-			Accessible.SetSubRole ("XAPadHeader");
+			UpdateRole (false, null);
 
 			CanFocus = true;
 			this.item = item;
@@ -121,6 +120,36 @@ namespace MonoDevelop.Components.Docking
 			KeyReleaseEvent += HeaderKeyRelease;
 
 			subscribedLeaveEvent = this.SubscribeLeaveEvent (OnLeave);
+		}
+
+		internal void UpdateRole (bool isTab, TabStrip strip)
+		{
+			Atk.Object fromAccessible = null, toAccessible = null;
+
+			if (!isTab) {
+				Accessible.SetRole (AtkCocoa.Roles.AXGroup, "pad header");
+				Accessible.SetSubRole ("XAPadHeader");
+
+				// Take the button accessibles back from the strip
+				if (strip != null) {
+					fromAccessible = strip.Accessible;
+					toAccessible = Accessible;
+				}
+			} else {
+				Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, "tab");
+				Accessible.SetSubRole ("");
+
+				// Give the button accessibles to the strip
+				if (strip != null) {
+					fromAccessible = Accessible;
+					toAccessible = strip.Accessible;
+				}
+			}
+
+			if (fromAccessible != null && toAccessible != null) {
+				fromAccessible.TransferAccessibleChild (toAccessible, btnDock.Accessible);
+				fromAccessible.TransferAccessibleChild (toAccessible, btnClose.Accessible);
+			}
 		}
 
 		public DockVisualStyle VisualStyle {

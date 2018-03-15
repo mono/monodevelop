@@ -100,12 +100,21 @@ namespace MonoDevelop.Ide.Gui.Content
 			};
 		}
 
-		public TextStylePolicy WithTabWidth(int tabWidth)
+		public TextStylePolicy WithTabWidth (int tabWidth)
 		{
 			if (tabWidth == TabWidth)
 				return this;
-			return new TextStylePolicy(this) {
+			return new TextStylePolicy (this) {
 				TabWidth = tabWidth
+			};
+		}
+
+		public TextStylePolicy WithEolMarker (EolMarker eolMarker)
+		{
+			if (eolMarker == EolMarker)
+				return this;
+			return new TextStylePolicy (this) {
+				EolMarker = eolMarker
 			};
 		}
 

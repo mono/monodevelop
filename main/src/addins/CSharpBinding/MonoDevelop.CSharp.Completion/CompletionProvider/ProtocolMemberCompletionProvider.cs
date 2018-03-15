@@ -226,7 +226,11 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				if (containingType.TypeKind == TypeKind.Class || containingType.TypeKind == TypeKind.Struct) {
 					var baseTypes = containingType.GetBaseTypesMD ().Reverse ().Concat (containingType.AllInterfaces);
 					foreach (var type in baseTypes) {
-						cancellationToken.ThrowIfCancellationRequested ();
+						if (cancellationToken.IsCancellationRequested) {
+							overridableMembers = null;
+							return false;
+						}
+
 
 						// Prefer overrides in derived classes
 						// RemoveOverriddenMembers (result, type, cancellationToken);

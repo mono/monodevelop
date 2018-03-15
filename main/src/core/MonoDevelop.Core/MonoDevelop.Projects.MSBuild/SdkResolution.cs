@@ -115,7 +115,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 					resolvers.AddRange (assembly.ExportedTypes
 						.Select (type => new { type, info = type.GetTypeInfo () })
-						.Where (t => t.info.IsClass && t.info.IsPublic && typeof (SdkResolver).IsAssignableFrom (t.type))
+						.Where (t => t.info.IsClass && t.info.IsPublic && !t.info.IsAbstract && typeof (SdkResolver).IsAssignableFrom (t.type))
 						.Select (t => (SdkResolver)Activator.CreateInstance (t.type)));
 				} catch (Exception e) {
 					logger.LogWarning (e.Message);

@@ -103,14 +103,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
 			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
-			//Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
-			//	.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true);
+			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
+				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true);
 
 			if (IdeApp.Preferences.EnableSourceAnalysis) {
 				solutionCrawler.Register (this);
 			}
 
 			IdeApp.Preferences.EnableSourceAnalysis.Changed += OnEnableSourceAnalysisChanged;
+
+			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
+				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
+
 		}
 
 		void OnEnableSourceAnalysisChanged(object sender, EventArgs args)
@@ -245,8 +249,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (addLock) {
 					if (!added) {
 						added = true;
-						// HACK: https://github.com/dotnet/roslyn/issues/20581
-						RegisterPrimarySolutionForPersistentStorage (solutionId, solution);
+						solution.Modified += OnSolutionModified;
+						OnSolutionModified (solution, new MonoDevelop.Projects.WorkspaceItemEventArgs (solution));
 						OnSolutionAdded (solutionInfo);
 					}
 				}
@@ -254,30 +258,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			});
 		}
 
-		void RegisterPrimarySolutionForPersistentStorage (SolutionId solutionId, MonoDevelop.Projects.Solution solution)
+		static async void OnSolutionModified (object sender, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
-			var locService = (MonoDevelopPersistentStorageLocationService)Services.GetService<IPersistentStorageLocationService> ();
-			locService.storageMap.Add (solutionId, solution.GetPreferencesDirectory ());
-
-			var service = Services.GetService<IPersistentStorageService> () as Microsoft.CodeAnalysis.Storage.AbstractPersistentStorageService;
-			if (service == null) {
+			var sol = (MonoDevelop.Projects.Solution)args.Item;
+			if (string.IsNullOrWhiteSpace (sol.BaseDirectory))
 				return;
-			}
 
-			service.RegisterPrimarySolution (solutionId);
-		}
-
-		void UnregisterPrimarySolutionForPersistentStorage (SolutionId solutionId, bool synchronousShutdown)
-		{
-			var locService = (MonoDevelopPersistentStorageLocationService)Services.GetService<IPersistentStorageLocationService> ();
-			locService.storageMap.Remove (solutionId);
-
-			var service = Services.GetService<IPersistentStorageService> () as Microsoft.CodeAnalysis.Storage.AbstractPersistentStorageService;
-			if (service == null) {
+			var workspace = await TypeSystemService.GetWorkspaceAsync (sol, CancellationToken.None);
+			var solId = workspace.GetSolutionId (sol);
+			if (solId == null)
 				return;
-			}
-
-			service.UnregisterPrimarySolution (solutionId, synchronousShutdown);
+			
+			var locService = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
+			locService.NotifyStorageLocationChanging (solId, sol.GetPreferencesDirectory ());
 		}
 
 		internal Task<SolutionInfo> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
@@ -288,7 +281,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void UnloadSolution ()
 		{
 			OnSolutionRemoved ();
-			UnregisterPrimarySolutionForPersistentStorage (CurrentSolution.Id, synchronousShutdown: false);
 		}
 
 		Dictionary<MonoDevelop.Projects.Solution, SolutionId> solutionIdMap = new Dictionary<MonoDevelop.Projects.Solution, SolutionId> ();
@@ -757,6 +749,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		internal void InternalOnDocumentOpened (DocumentId documentId, SourceTextContainer textContainer, bool isCurrentContext = true)
+		{
+			OnDocumentOpened (documentId, textContainer, isCurrentContext);
+		}
+
+		internal void InternalOnDocumentClosed (DocumentId documentId, TextLoader reloader, bool updateActiveContext = false)
+		{
+			OnDocumentClosed (documentId, reloader, updateActiveContext);
+		}
+
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
 		internal void InformDocumentOpen (DocumentId documentId, TextEditor editor)
 		{
@@ -822,6 +824,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (openDoc != null) {
 						openDoc.Dispose ();
 						openDocuments.Remove (openDoc);
+					} else {
+						//Apparently something else opened this file via InternalOnDocumentOpened(e.g. .cshtml)
+						//it's job of whatever opened to also call InternalOnDocumentClosed
+						return;
 					}
 				}
 				if (!CurrentSolution.ContainsDocument (analysisDocument))
@@ -865,6 +871,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			var document = GetDocument (id);
 			if (document == null)
 				return;
+
+			var hostDocument = MonoDevelopHostDocumentRegistration.FromDocument (document);
+			if (hostDocument != null) {
+				hostDocument.UpdateText (text);
+				return;
+			}
+
 			bool isOpen;
 			var filePath = document.FilePath;
 			Projection projection = null;
@@ -1204,6 +1217,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, mdProject?.FileName.ParentDirectory, true);
+			// If file is already part of project don't re-add it, example of this is .cshtml
+			if (mdProject?.IsFileInProject (path) == true) {
+				this.OnDocumentAdded (info);
+				return;
+			}
 			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
 
 			string formattedText;
@@ -1483,7 +1501,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			originalOffset = offset;
 			return false;
 		}
-
 	}
 
 	//	static class MonoDevelopWorkspaceFeatures

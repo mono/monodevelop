@@ -39,115 +39,126 @@ namespace MonoDevelop.Ide
 		public async Task MoveEmptyFolder ()
 		{
 			string solFile = Util.GetSampleProject ("transfer-tests", "console-with-libs.sln");
-			var sol = (Solution) await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			var lib1 = (DotNetProject) sol.FindProjectByName ("library1");
-			var lib2 = (DotNetProject) sol.FindProjectByName ("library2");
+			using (var sol = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var lib1 = (DotNetProject)sol.FindProjectByName ("library1");
+				var lib2 = (DotNetProject)sol.FindProjectByName ("library2");
 
-			var sourceDir = lib2.ItemDirectory.Combine ("f2-empty");
-			var targetDir = lib1.ItemDirectory.Combine ("f2-empty");
+				var sourceDir = lib2.ItemDirectory.Combine ("f2-empty");
+				var targetDir = lib1.ItemDirectory.Combine ("f2-empty");
 
-			// Git can't commit empty folders, so that folder has a dummy file that needs to be deleted
-			File.Delete (sourceDir.Combine ("delete-me"));
+				// Git can't commit empty folders, so that folder has a dummy file that needs to be deleted
+				File.Delete (sourceDir.Combine ("delete-me"));
 
-			Assert.IsTrue (lib2.Files.GetFile (sourceDir) != null);
+				Assert.IsTrue (lib2.Files.GetFile (sourceDir) != null);
 
-			ProjectOperations.TransferFilesInternal (Util.GetMonitor (), lib2, sourceDir, lib1, targetDir, true, true);
+				ProjectOperations.TransferFilesInternal (Util.GetMonitor (), lib2, sourceDir, lib1, targetDir, true, true);
 
-			Assert.IsTrue (Directory.Exists (targetDir));
-			Assert.IsFalse (Directory.Exists (sourceDir));
+				Assert.IsTrue (Directory.Exists (targetDir));
+				Assert.IsFalse (Directory.Exists (sourceDir));
 
-			Assert.IsTrue (lib1.Files.GetFile (targetDir) != null);
-			Assert.IsFalse (lib2.Files.GetFile (sourceDir) != null);
+				Assert.IsTrue (lib1.Files.GetFile (targetDir) != null);
+				Assert.IsFalse (lib2.Files.GetFile (sourceDir) != null);
+			}
 		}
 
 		[Test]
 		public async Task MoveFolder ()
 		{
 			string solFile = Util.GetSampleProject ("transfer-tests", "console-with-libs.sln");
-			var sol = (Solution) await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			var lib1 = (DotNetProject) sol.FindProjectByName ("library1");
-			var lib2 = (DotNetProject) sol.FindProjectByName ("library2");
+			using (var sol = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var lib1 = (DotNetProject)sol.FindProjectByName ("library1");
+				var lib2 = (DotNetProject)sol.FindProjectByName ("library2");
 
-			var sourceDir = lib2.ItemDirectory.Combine ("f2");
-			var targetDir = lib1.ItemDirectory.Combine ("f2");
-			var sourceFile = sourceDir.Combine ("a.cs");
-			var targetFile = targetDir.Combine ("a.cs");
+				var sourceDir = lib2.ItemDirectory.Combine ("f2");
+				var targetDir = lib1.ItemDirectory.Combine ("f2");
+				var sourceFile = sourceDir.Combine ("a.cs");
+				var targetFile = targetDir.Combine ("a.cs");
 
-			Assert.IsTrue (lib2.Files.GetFile (sourceDir) != null);
-			Assert.IsTrue (lib2.Files.GetFile (sourceFile) != null);
+				Assert.IsTrue (lib2.Files.GetFile (sourceDir) != null);
+				Assert.IsTrue (lib2.Files.GetFile (sourceFile) != null);
 
-			ProjectOperations.TransferFilesInternal (Util.GetMonitor (), lib2, sourceDir, lib1, targetDir, true, true);
+				ProjectOperations.TransferFilesInternal (Util.GetMonitor (), lib2, sourceDir, lib1, targetDir, true, true);
 
-			Assert.IsTrue (Directory.Exists (targetDir));
-			Assert.IsTrue (File.Exists (targetFile));
-			Assert.IsFalse (Directory.Exists (sourceDir));
+				Assert.IsTrue (Directory.Exists (targetDir));
+				Assert.IsTrue (File.Exists (targetFile));
+				Assert.IsFalse (Directory.Exists (sourceDir));
 
-			Assert.IsTrue (lib1.Files.GetFile (targetDir) != null);
-			Assert.IsTrue (lib1.Files.GetFile (targetFile) != null);
-			Assert.IsFalse (lib2.Files.GetFile (sourceDir) != null);
-			Assert.IsFalse (lib2.Files.GetFile (sourceFile) != null);
+				Assert.IsTrue (lib1.Files.GetFile (targetDir) != null);
+				Assert.IsTrue (lib1.Files.GetFile (targetFile) != null);
+				Assert.IsFalse (lib2.Files.GetFile (sourceDir) != null);
+				Assert.IsFalse (lib2.Files.GetFile (sourceFile) != null);
+			}
 		}
 
 		[Test]
 		public async Task MoveFileFromOneFolderToAnotherAndSaveProject ()
 		{
 			string solFile = Util.GetSampleProject ("transfer-tests", "console-with-libs.sln");
-			var sol = (Solution) await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			var lib2 = (DotNetProject) sol.FindProjectByName ("library2");
+			string targetFile;
+			string sourceFile;
 
-			var sourceDir = lib2.ItemDirectory.Combine ("f2");
-			var targetDir = lib2.ItemDirectory.Combine ("f2-empty");
-			var sourceFile = sourceDir.Combine ("a.cs");
-			var targetFile = targetDir.Combine ("a.cs");
+			using (var sol = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var lib2 = (DotNetProject)sol.FindProjectByName ("library2");
 
-			// Git can't commit empty folders, so that folder has a dummy file that needs to be deleted
-			File.Delete (targetDir.Combine ("delete-me"));
+				var sourceDir = lib2.ItemDirectory.Combine ("f2");
+				var targetDir = lib2.ItemDirectory.Combine ("f2-empty");
+				sourceFile = sourceDir.Combine ("a.cs");
+				targetFile = targetDir.Combine ("a.cs");
 
-			Assert.IsTrue (lib2.Files.GetFile (sourceFile) != null);
-			Assert.IsFalse (lib2.Files.GetFile (targetFile) != null);
+				// Git can't commit empty folders, so that folder has a dummy file that needs to be deleted
+				File.Delete (targetDir.Combine ("delete-me"));
 
-			ProjectOperations.TransferFilesInternal (Util.GetMonitor (), lib2, sourceFile, lib2, targetFile, true, true);
+				Assert.IsTrue (lib2.Files.GetFile (sourceFile) != null);
+				Assert.IsFalse (lib2.Files.GetFile (targetFile) != null);
 
-			Assert.IsFalse (lib2.Files.GetFile (sourceFile) != null);
-			Assert.IsTrue (lib2.Files.GetFile (targetFile) != null);
+				ProjectOperations.TransferFilesInternal (Util.GetMonitor (), lib2, sourceFile, lib2, targetFile, true, true);
 
-			await lib2.SaveAsync (Util.GetMonitor ());
-			sol = (Solution) await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			var reloadedLib2 = (DotNetProject) sol.FindProjectByName ("library2");
+				Assert.IsFalse (lib2.Files.GetFile (sourceFile) != null);
+				Assert.IsTrue (lib2.Files.GetFile (targetFile) != null);
 
-			Assert.IsTrue (reloadedLib2.Files.GetFile (targetFile) != null);
-			Assert.IsFalse (reloadedLib2.Files.GetFile (sourceFile) != null);
+				await lib2.SaveAsync (Util.GetMonitor ());
+			}
+			using (var sol = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var reloadedLib2 = (DotNetProject)sol.FindProjectByName ("library2");
+
+				Assert.IsTrue (reloadedLib2.Files.GetFile (targetFile) != null);
+				Assert.IsFalse (reloadedLib2.Files.GetFile (sourceFile) != null);
+			}
 		}
 
 		[Test]
 		public async Task CopyFileFromOneFolderToAnotherAndSaveProject ()
 		{
 			string solFile = Util.GetSampleProject ("transfer-tests", "console-with-libs.sln");
-			var sol = (Solution) await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			var lib2 = (DotNetProject) sol.FindProjectByName ("library2");
+			string targetFile;
+			string sourceFile;
 
-			var sourceDir = lib2.ItemDirectory.Combine ("f2");
-			var targetDir = lib2.ItemDirectory.Combine ("f2-empty");
-			var sourceFile = sourceDir.Combine ("a.cs");
-			var targetFile = targetDir.Combine ("a.cs");
+			using (var sol = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var lib2 = (DotNetProject)sol.FindProjectByName ("library2");
 
-			// Git can't commit empty folders, so that folder has a dummy file that needs to be deleted
-			File.Delete (targetDir.Combine ("delete-me"));
+				var sourceDir = lib2.ItemDirectory.Combine ("f2");
+				var targetDir = lib2.ItemDirectory.Combine ("f2-empty");
+				sourceFile = sourceDir.Combine ("a.cs");
+				targetFile = targetDir.Combine ("a.cs");
 
-			Assert.IsTrue (lib2.Files.GetFile (sourceFile) != null);
-			Assert.IsFalse (lib2.Files.GetFile (targetFile) != null);
+				// Git can't commit empty folders, so that folder has a dummy file that needs to be deleted
+				File.Delete (targetDir.Combine ("delete-me"));
 
-			ProjectOperations.TransferFilesInternal (Util.GetMonitor (), lib2, sourceFile, lib2, targetFile, false, true);
+				Assert.IsTrue (lib2.Files.GetFile (sourceFile) != null);
+				Assert.IsFalse (lib2.Files.GetFile (targetFile) != null);
 
-			Assert.IsTrue (lib2.Files.GetFile (sourceFile) != null);
-			Assert.IsTrue (lib2.Files.GetFile (targetFile) != null);
+				ProjectOperations.TransferFilesInternal (Util.GetMonitor (), lib2, sourceFile, lib2, targetFile, false, true);
 
-			await lib2.SaveAsync (Util.GetMonitor ());
-			sol = (Solution) await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			var reloadedLib2 = (DotNetProject) sol.FindProjectByName ("library2");
+				Assert.IsTrue (lib2.Files.GetFile (sourceFile) != null);
+				Assert.IsTrue (lib2.Files.GetFile (targetFile) != null);
+				await lib2.SaveAsync (Util.GetMonitor ());
+			}
 
-			Assert.IsTrue (reloadedLib2.Files.GetFile (targetFile) != null);
-			Assert.IsTrue (reloadedLib2.Files.GetFile (sourceFile) != null);
+			using (var sol = (Solution)await MonoDevelop.Projects.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var reloadedLib2 = (DotNetProject)sol.FindProjectByName ("library2");
+				Assert.IsTrue (reloadedLib2.Files.GetFile (targetFile) != null);
+				Assert.IsTrue (reloadedLib2.Files.GetFile (sourceFile) != null);
+			}
 		}
 	}
 }

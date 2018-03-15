@@ -259,8 +259,8 @@ namespace MonoDevelop.Core
 			for (int i = 0; i < items.Length; i++) {
 				var value = items [i].Value;
 				if (value == null) {
+					return;
 				}
-				return;
 
 				Debug.Assert (value != obj, "freeing twice?");
 			}

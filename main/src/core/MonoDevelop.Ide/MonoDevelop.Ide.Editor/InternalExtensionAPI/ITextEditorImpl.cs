@@ -46,6 +46,8 @@ namespace MonoDevelop.Ide.Editor
 
 	interface ITextEditorImpl : IDisposable
 	{
+		Microsoft.VisualStudio.Text.Editor.ITextView TextView { get; set; }
+
 		ViewContent ViewContent { get; }
 
 		string ContentName { get; set; }
@@ -98,7 +100,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void FixVirtualIndentation ();
 
-		IEditorActionHost Actions { get; }
+		IMonoDevelopEditorOperations Actions { get; }
 
 		ITextMarkerFactory TextMarkerFactory { get; }
 

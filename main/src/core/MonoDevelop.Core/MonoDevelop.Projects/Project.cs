@@ -556,8 +556,29 @@ namespace MonoDevelop.Projects
 			return results.ToArray ();
 		}
 
+		/// <summary>
+		/// When the MSBuild imports in a project change we need to let the type system know so
+		/// it can update its source files. A NuGet package may contain only MSBuild targets
+		/// which modify the CoreCompileDependsOn property. Just having the MSBuild targets
+		/// file in the NuGet package will not trigger any notifications that the type system
+		/// is monitoring so here we trigger a Files notification.
+		/// </summary>
+		void OnMSBuildProjectImportChanged (object sender, EventArgs args)
+		{
+			lock (evaluatedCompileItemsLock) {
+				// Do not re-evaluate if the compile items have never been evaluated.
+				if (evaluatedCompileItemsTask != null)
+					reevaluateCoreCompileDependsOn = true;
+			}
+
+			Runtime.RunInMainThread (() => {
+				NotifyModified ("Files");
+			}).Ignore ();
+		}
+
 		object evaluatedCompileItemsLock = new object ();
 		string evaluatedCompileItemsConfiguration;
+		bool reevaluateCoreCompileDependsOn;
 		TaskCompletionSource<ProjectFile[]> evaluatedCompileItemsTask;
 
 		/// <summary>
@@ -573,15 +594,24 @@ namespace MonoDevelop.Projects
 
 			TaskCompletionSource<ProjectFile []> currentTask = null;
 			bool startTask = false;
+			bool reevaluate = false;
 
 			lock (evaluatedCompileItemsLock) {
-				if (evaluatedCompileItemsConfiguration != config.Id) {
+
+				if (evaluatedCompileItemsConfiguration != config.Id || reevaluateCoreCompileDependsOn) {
 					// The configuration changed or query not yet done
 					evaluatedCompileItemsConfiguration = config.Id;
 					evaluatedCompileItemsTask = new TaskCompletionSource<ProjectFile []> ();
 					startTask = true;
+					reevaluate = reevaluateCoreCompileDependsOn;
+					reevaluateCoreCompileDependsOn = false;
 				}
 				currentTask = evaluatedCompileItemsTask;
+			}
+
+			if (reevaluate) {
+				// Ensure CoreCompileDependsOn is up to date.
+				await ReevaluateProject (monitor, resetCachedCompileItems: false);
 			}
 
 			if (startTask) {
@@ -620,6 +650,7 @@ namespace MonoDevelop.Projects
 		{
 			lock (evaluatedCompileItemsLock) {
 				evaluatedCompileItemsConfiguration = null;
+				reevaluateCoreCompileDependsOn = false;
 			}
 		}
 
@@ -693,6 +724,9 @@ namespace MonoDevelop.Projects
 			base.OnEndLoad ();
 
 			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata (null));
+
+			if (sourceProject != null)
+				sourceProject.ImportChanged += OnMSBuildProjectImportChanged;
 
 			InitializeFileWatcher ();
 		}
@@ -956,6 +990,12 @@ namespace MonoDevelop.Projects
 			if (buildActions != null)
 				return buildActions;
 
+			buildActions = GetBuildActions (predicate: null);
+			return buildActions;
+		}
+
+		string[] GetBuildActions (Predicate<string> predicate)
+		{
 			// find all the actions in use and add them to the list of standard actions
 			HashSet<string> actions = new HashSet<string> ();
 			//ad the standard actions
@@ -972,6 +1012,9 @@ namespace MonoDevelop.Projects
 				if (actions.Contains (action))
 					actions.Remove (action);
 
+			if (predicate != null)
+				commonActions = commonActions.Where (action => predicate (action)).ToList ();
+
 			//calculate dimensions for our new array and create it
 			int dashPos = commonActions.Count;
 			bool hasDash = commonActions.Count > 0 && actions.Count > 0;
@@ -979,7 +1022,7 @@ namespace MonoDevelop.Projects
 			int uncommonStart = hasDash ? dashPos + 1 : dashPos;
 			if (hasDash)
 				arrayLen++;
-			buildActions = new string[arrayLen];
+			var buildActions = new string[arrayLen];
 
 			//populate it
 			if (commonActions.Count > 0)
@@ -999,6 +1042,18 @@ namespace MonoDevelop.Projects
 			}
 			return buildActions;
 		}
+
+		/// <summary>
+		/// Gets a list of build actions supported by this project for the file.
+		/// </summary>
+		/// <remarks>
+		/// Common actions are grouped at the top, separated by a "--" entry *IF* there are
+		/// "uncommon" actions and "common" actions
+		/// </remarks>
+		public string[] GetBuildActions (string fileName)
+		{
+			return GetBuildActions (buildAction => ProjectExtension.OnGetFileSupportsBuildAction (fileName, buildAction));
+		}
 		
 		/// <summary>
 		/// Gets a list of standard build actions.
@@ -1014,6 +1069,11 @@ namespace MonoDevelop.Projects
 		protected virtual IList<string> OnGetCommonBuildActions ()
 		{
 			return BuildAction.StandardActions;
+		}
+
+		protected virtual bool OnGetFileSupportsBuildAction (string fileName, string buildAction)
+		{
+			return true;
 		}
 
 		protected override void OnDispose ()
@@ -1033,6 +1093,7 @@ namespace MonoDevelop.Projects
 			RemoteBuildEngineManager.UnloadProject (FileName).Ignore ();
 
 			if (sourceProject != null) {
+				sourceProject.ImportChanged -= OnMSBuildProjectImportChanged;
 				sourceProject.Dispose ();
 				sourceProject = null;
 			}
@@ -1584,6 +1645,12 @@ namespace MonoDevelop.Projects
 				}
 			}
 
+			ProjectFile newFile = CreateProjectFileForGlobItem (filename, buildAction);
+			if (newFile != null) {
+				Files.Add (newFile);
+				return newFile;
+			}
+
 			if (String.IsNullOrEmpty (buildAction)) {
 				buildAction = GetDefaultBuildAction (filename);
 			}
@@ -1597,6 +1664,12 @@ namespace MonoDevelop.Projects
 		{
 			List<ProjectFile> newFiles = new List<ProjectFile> ();
 			foreach (FilePath filename in files) {
+				ProjectFile newFile = CreateProjectFileForGlobItem (filename, buildAction);
+				if (newFile != null) {
+					newFiles.Add (newFile);
+					continue;
+				}
+
 				string ba = buildAction;
 				if (String.IsNullOrEmpty (ba))
 					ba = GetDefaultBuildAction (filename);
@@ -1606,6 +1679,31 @@ namespace MonoDevelop.Projects
 			}
 			Files.AddRange (newFiles);
 			return newFiles;
+		}
+
+		/// <summary>
+		/// Imported glob item may define a different build action and metadata for a file
+		/// so this is read and applied to the new ProjectFile.
+		/// </summary>
+		ProjectFile CreateProjectFileForGlobItem (FilePath file, string buildAction)
+		{
+			if (!UseAdvancedGlobSupport)
+				return null;
+
+			var include = MSBuildProjectService.ToMSBuildPath (ItemDirectory, file);
+			var globItems = sourceProject.FindGlobItemsIncludingFile (include).ToList ();
+			if ((globItems.Count == 1) && (buildAction == null || globItems [0].Name == buildAction)) {
+				var eit = CreateFakeEvaluatedItem (sourceProject, globItems [0], include, null);
+				var projectFile = CreateProjectItem (eit) as ProjectFile;
+				if (projectFile != null) {
+					projectFile.Read (this, eit);
+					// Force UnevaluatedInclude to be reset to prevent Remove items
+					// being left in project after file is re-added.
+					projectFile.BackingItem = null;
+					return projectFile;
+				}
+			}
+			return null;
 		}
 		
 		/// <summary>
@@ -2827,8 +2925,11 @@ namespace MonoDevelop.Projects
 					continue;
 				it.Flags = flags;
 				localItems.Add (it);
-				if (loadedItems != null)
-					loadedItems.Add (buildItem.SourceItem);
+				if (loadedItems != null) {
+					foreach (var item in buildItem.SourceItems) {
+						loadedItems.Add (item);
+					}
+				}
 			}
 			if (IsReevaluating)
 				Items.SetItems (localItems);
@@ -3275,6 +3376,14 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public bool UseAdvancedGlobSupport { get; set; }
 
+		/// <summary>
+		/// When set to true if new file is added to a project that does not have
+		/// the metadata properties defined by a update glob item then the item will
+		/// not be excluded but will be treated as though it had these metadata properties
+		/// with the same values.
+		/// </summary>
+		public bool UseDefaultMetadataForExcludedExpandedItems { get; set; }
+
 		HashSet<MSBuildItem> usedMSBuildItems = new HashSet<MSBuildItem> ();
 		HashSet<ProjectItem> loadedProjectItems = new HashSet<ProjectItem> ();
 
@@ -3333,7 +3442,7 @@ namespace MonoDevelop.Projects
 			foreach (var it in unusedItems) {
 				if (it.ParentGroup != null) { // It may already have been deleted
 					// Remove wildcard item if it is not imported.
-					if (!it.IsWildcardItem || it.ParentProject == msproject) {
+					if ((!it.IsWildcardItem && it.ParentProject == msproject) || it.ParentProject == msproject) {
 						msproject.RemoveItem (it);
 
 						if (!UseAdvancedGlobSupport)
@@ -3496,6 +3605,13 @@ namespace MonoDevelop.Projects
 			loadedItems.Add (buildItem);
 			unusedItems.Remove (buildItem);
 
+			if (sourceItems != null) {
+				foreach (var sourceItem in sourceItems) {
+					loadedItems.Add (sourceItem);
+					unusedItems.Remove (sourceItem);
+				}
+			}
+
 			if (!buildItem.IsWildcardItem) {
 				if (buildItem.IsUpdate) {
 					var propertiesAlreadySet = new HashSet<string> (buildItem.Metadata.GetProperties ().Select (p => p.Name));
@@ -3597,6 +3713,8 @@ namespace MonoDevelop.Projects
 						updateItems = FindUpdateItemsForItem (globItem, item.Include).ToList ();
 						updateItem = updateItems.LastOrDefault ();
 						if (updateItem == null) {
+							if (UpdateGlobHasMatchingPropertyValue (p, evalItem))
+								continue;
 							// There is no existing update item. A new one will be generated.
 							generateNewUpdateItem = true;
 							continue;
@@ -3661,7 +3779,7 @@ namespace MonoDevelop.Projects
 							it.ParentProject.RemoveItem (it);
 					}
 					// If this metadata is defined in the glob item, the only option is to exclude the item from the glob.
-					if (globItem.Metadata.HasProperty (p.Name)) {
+					if (globItem.Metadata.HasProperty (p.Name) && !UseDefaultMetadataForExcludedExpandedItems) {
 						// Get rid of all update items, not needed anymore since a full new item will be added
 						foreach (var it in updateItems) {
 							if (it.ParentNode != null)
@@ -3700,6 +3818,28 @@ namespace MonoDevelop.Projects
 						yield return it;
 				}
 			}
+		}
+
+		bool UpdateGlobHasMatchingPropertyValue (MSBuildProperty p, IMSBuildItemEvaluated evalItem)
+		{
+			MSBuildEvaluationContext context = null;
+
+			foreach (var updateItem in evalItem.SourceItems) {
+				if (!updateItem.IsUpdate)
+					continue;
+
+				var p2 = updateItem.Metadata.GetProperty (p.Name);
+				if (p2 != null) {
+					if (context == null) {
+						context = new MSBuildEvaluationContext ();
+						context.InitEvaluation (MSBuildProject);
+					}
+
+					string value = context.Evaluate (p.UnevaluatedValue);
+					return p.ValueType.Equals (p.Value, value);
+				}
+			}
+			return false;
 		}
 
 		bool ItemsAreEqual (IMSBuildItemEvaluated item1, IMSBuildItemEvaluated item2)
@@ -3811,6 +3951,15 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		public Task ReevaluateProject (ProgressMonitor monitor)
 		{
+			return ReevaluateProject (monitor, true);
+		}
+
+		/// <summary>
+		/// Reevaluates the MSBuild project and optionally resets the cached compile items
+		/// taken from CoreCompileDependsOn.
+		/// </summary>
+		Task ReevaluateProject (ProgressMonitor monitor, bool resetCachedCompileItems)
+		{
 			return BindTask (ct => Runtime.RunInMainThread (async () => {
 				using (await writeProjectLock.EnterAsync ()) {
 					var oldCapabilities = new HashSet<string> (projectCapabilities);
@@ -3834,7 +3983,8 @@ namespace MonoDevelop.Projects
 						IsReevaluating = false;
 					}
 
-					ResetCachedCompileItems ();
+					if (resetCachedCompileItems)
+						ResetCachedCompileItems ();
 
 					if (!oldCapabilities.SetEquals (projectCapabilities))
 						NotifyProjectCapabilitiesChanged ();
@@ -4233,6 +4383,11 @@ namespace MonoDevelop.Projects
 			internal protected override IList<string> OnGetCommonBuildActions ()
 			{
 				return Project.OnGetCommonBuildActions ();
+			}
+
+			internal protected override bool OnGetFileSupportsBuildAction (string fileName, string buildAction)
+			{
+				return Project.OnGetFileSupportsBuildAction (fileName, buildAction);
 			}
 
 			internal protected override ProjectItem OnCreateProjectItem (IMSBuildItemEvaluated item)

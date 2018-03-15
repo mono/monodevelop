@@ -749,7 +749,9 @@ namespace MonoDevelop.CSharp
 						var prevPath = CurrentPath;
 						CurrentPath = new PathEntry [] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
 						isPathSet = false;
-						OnPathChanged (new DocumentPathChangedEventArgs (prevPath));
+						await Runtime.RunInMainThread (delegate {
+							OnPathChanged (new DocumentPathChangedEventArgs (prevPath));
+						});
 						return;
 					}
 					node = root.FindNode(TextSpan.FromBounds(caretOffset, caretOffset));

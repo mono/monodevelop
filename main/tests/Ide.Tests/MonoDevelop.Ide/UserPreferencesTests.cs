@@ -39,37 +39,35 @@ namespace MonoDevelop.Ide
 		public async Task LoadUserPreferences()
 		{
 			string wsFile = Util.GetSampleProject("workspace-userprefs", "workspace.mdw");
-			var wsi = await Services.ProjectService.ReadWorkspaceItem(new ProgressMonitor(), wsFile);
-			Assert.IsInstanceOf<Workspace>(wsi);
-			var ws = (Workspace)wsi;
+			using (var wsi = await Services.ProjectService.ReadWorkspaceItem (new ProgressMonitor (), wsFile)) {
+				Assert.IsInstanceOf<Workspace> (wsi);
+				var ws = (Workspace)wsi;
 
-			var userData = ws.UserProperties.GetValue<WorkspaceUserData>("MonoDevelop.Ide.Workspace");
+				var userData = ws.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
 
-			Assert.IsFalse(ws.UserProperties.IsEmpty);
-			Assert.IsNotNull(userData);
-			Assert.AreEqual("Release", userData.ActiveConfiguration);
-
-			ws.Dispose();
+				Assert.IsFalse (ws.UserProperties.IsEmpty);
+				Assert.IsNotNull (userData);
+				Assert.AreEqual ("Release", userData.ActiveConfiguration);
+			}
 		}
 
 		[Test]
 		public async Task UserProperties ()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			var p = (DotNetProject)sol.Items [0];
-			sol.UserProperties.SetValue ("SolProp", "foo");
-			p.UserProperties.SetValue ("ProjectProp", "bar");
-			await sol.SaveUserProperties ();
-			sol.Dispose ();
+			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (DotNetProject)sol.Items [0];
+				sol.UserProperties.SetValue ("SolProp", "foo");
+				p.UserProperties.SetValue ("ProjectProp", "bar");
+				await sol.SaveUserProperties ();
+				sol.Dispose ();
+			}
 
-			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			p = (DotNetProject)sol.Items [0];
-
-			Assert.AreEqual ("foo", sol.UserProperties.GetValue<string> ("SolProp"));
-			Assert.AreEqual ("bar", p.UserProperties.GetValue<string> ("ProjectProp"));
-
-			sol.Dispose ();
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (DotNetProject)sol.Items [0];
+				Assert.AreEqual ("foo", sol.UserProperties.GetValue<string> ("SolProp"));
+				Assert.AreEqual ("bar", p.UserProperties.GetValue<string> ("ProjectProp"));
+			}
 		}
 
 		[Test]
@@ -77,14 +75,15 @@ namespace MonoDevelop.Ide
 		{
 			FilePath directory = Util.CreateTmpDir ("MySolution");
 			var fileName = directory.Combine ("MySolution.sln");
-			var solution = new Solution ();
-			solution.FileName = fileName;
-			var paths = new [] { ".vs", "MySolution", "xs", "UserPrefs.xml" };
-			string expectedFileName = solution.BaseDirectory.Combine (paths);
+			using (var solution = new Solution ()) {
+				solution.FileName = fileName;
+				var paths = new [] { ".vs", "MySolution", "xs", "UserPrefs.xml" };
+				string expectedFileName = solution.BaseDirectory.Combine (paths);
 
-			string userPreferencesFileName = solution.GetPreferencesFileName ();
+				string userPreferencesFileName = solution.GetPreferencesFileName ();
 
-			Assert.AreEqual (expectedFileName, userPreferencesFileName);
+				Assert.AreEqual (expectedFileName, userPreferencesFileName);
+			}
 		}
 
 		[Test]
@@ -92,39 +91,41 @@ namespace MonoDevelop.Ide
 		{
 			FilePath directory = Util.CreateTmpDir ("MigrateUserPreferences");
 			var fileName = directory.Combine ("MigrateUserPreferences.sln");
+			string userPreferencesOldLocationFileName;
 
-			var solution = new Solution ();
-			solution.FileName = fileName;
-			solution.UserProperties.SetValue ("Test", "Test-Value");
+			using (var solution = new Solution ()) {
+				solution.FileName = fileName;
+				solution.UserProperties.SetValue ("Test", "Test-Value");
 
-			// Create a user prefs file.
-			await solution.SaveAsync (Util.GetMonitor ());
+				// Create a user prefs file.
+				await solution.SaveAsync (Util.GetMonitor ());
 
-			Assert.IsTrue (File.Exists (solution.GetPreferencesFileName ()));
+				Assert.IsTrue (File.Exists (solution.GetPreferencesFileName ()));
 
-			var userPreferencesOldLocationFileName = solution.FileName.ChangeExtension (".userprefs");
-			Assert.IsFalse (File.Exists (userPreferencesOldLocationFileName));
+				userPreferencesOldLocationFileName = solution.FileName.ChangeExtension (".userprefs");
+				Assert.IsFalse (File.Exists (userPreferencesOldLocationFileName));
 
-			// Create a legacy user prefs file.
-			FilePath preferencesFileName = solution.GetPreferencesFileName ();
-			File.Move (preferencesFileName, userPreferencesOldLocationFileName);
+				// Create a legacy user prefs file.
+				FilePath preferencesFileName = solution.GetPreferencesFileName ();
+				File.Move (preferencesFileName, userPreferencesOldLocationFileName);
 
-			// Ensure migration handles the missing directory for the new prefs file.
-			Directory.Delete (preferencesFileName.ParentDirectory);
+				// Ensure migration handles the missing directory for the new prefs file.
+				Directory.Delete (preferencesFileName.ParentDirectory);
+			}
 
-			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), fileName);
+			using (var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), fileName)) {
 
-			Assert.AreEqual ("Test-Value", solution.UserProperties.GetValue<string> ("Test"));
+				Assert.AreEqual ("Test-Value", solution.UserProperties.GetValue<string> ("Test"));
 
-			// Change user property and save user prefs.
-			solution.UserProperties.SetValue ("Test", "Test-Value-Updated");
-			await solution.SaveUserProperties ();
+				// Change user property and save user prefs.
+				solution.UserProperties.SetValue ("Test", "Test-Value-Updated");
+				await solution.SaveUserProperties ();
 
-			Assert.IsFalse (File.Exists (userPreferencesOldLocationFileName));
+				Assert.IsFalse (File.Exists (userPreferencesOldLocationFileName));
+			}
 
-			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), fileName);
-
-			Assert.AreEqual ("Test-Value-Updated", solution.UserProperties.GetValue<string> ("Test"));
+			using (var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), fileName))
+				Assert.AreEqual ("Test-Value-Updated", solution.UserProperties.GetValue<string> ("Test"));
 		}
 	}
 }

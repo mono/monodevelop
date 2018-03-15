@@ -135,14 +135,14 @@
     <Reference Include="Microsoft.TemplateEngine.Utils">
       <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Utils.1.0.0-beta2-20170523-241\lib\net45\Microsoft.TemplateEngine.Utils.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Composition, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Composition.15.3.38\lib\net45\Microsoft.VisualStudio.Composition.dll</HintPath>
+    <Reference Include="Microsoft.VisualStudio.Composition, Version=15.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Composition.15.6.36\lib\net45\Microsoft.VisualStudio.Composition.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Threading, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Threading.15.4.4\lib\net45\Microsoft.VisualStudio.Threading.dll</HintPath>
+    <Reference Include="Microsoft.VisualStudio.Threading, Version=15.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Threading.15.6.46\lib\net45\Microsoft.VisualStudio.Threading.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Validation, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Validation.15.3.15\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Validation.15.3.32\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Cairo" />
@@ -225,6 +225,8 @@
     </Reference>
     <Reference Include="Microsoft.Build.Utilities.Core">
       <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</HintPath>
+    <Reference Include="Microsoft.VisualStudio.CodingConventions">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -8746,9 +8748,13 @@
     <Compile Include="MonoDevelop.Ide.Commands\ViewCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\WindowCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\InlineRenameService.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\JoinableTaskContextHost.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PlatformCatalog.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PlatformExtensions.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\PreviewFactoryService.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\RoslynWaitIndicator.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\SuggestedActionCategoryRegistryService.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorFactoryService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBindingService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\BackgroundProgressMonitor.cs" />
@@ -8827,6 +8833,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\Workbench.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StartupInfo.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ProgressMonitors.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\IMonoDevelopHostDocument.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopPersistentStorageLocationService.cs" />
     <Compile Include="MonoDevelop.Ide\RoslynLogger.cs" />
     <Compile Include="MonoDevelop.Ide\Services.cs" />
@@ -9458,6 +9465,7 @@
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterHintingData.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\WorkspaceExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IDocumentLine.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorOptions.cs" />
@@ -9527,7 +9535,7 @@
     <Compile Include="MonoDevelop.Ide.Editor\TextMarkerFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextEditorImpl.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextMarkerFactory.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\IEditorActionHost.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\IMonoDevelopEditorOperations.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditActions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\DocumentContext.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextEditorFactory.cs" />
@@ -9821,11 +9829,20 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\KeyActions.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\D152AccessibilityPanel.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\EditorConfigService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StartupAssetType.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentRegistry.cs" />
     <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildOutputNode.cs" />
     <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildOutputTreeCellView.cs" />
     <Compile Include="MonoDevelop.Ide.BuildOutputView\IBuildOutputContextProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Codons\ItemTemplateExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineItemTemplatingProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ItemTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineItemTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngine.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\NewItemConfiguration.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ItemTemplatePackageInstaller.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplatePackageReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9872,6 +9889,7 @@
     <Folder Include="MonoDevelop.Components.AtkCocoaHelper\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Markdown\" />
     <Folder Include="MonoDevelop.Ide.BuildOutputView\" />
+    <Folder Include="MonoDevelop.Ide.EditorConfig\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">
@@ -9922,6 +9940,7 @@
     <InternalsVisibleTo Include="MonoDevelop.Refactoring.Tests" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Tests" />
+    <InternalsVisibleTo Include="WebToolingAddin" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

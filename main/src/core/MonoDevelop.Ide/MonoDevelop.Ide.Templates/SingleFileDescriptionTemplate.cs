@@ -43,6 +43,7 @@ using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Projects.SharedAssetsProjects;
 using MonoDevelop.Core.StringParsing;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -112,14 +113,14 @@ namespace MonoDevelop.Ide.Templates
 			set { addStandardHeader = value; }
 		}
 		
-		public sealed override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
+		public sealed override async Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
 		{
-			return AddFileToProject (policyParent, project, language, directory, name) != null;
+			return await AddFileToProject (policyParent, project, language, directory, name) != null;
 		}
 		
-		public ProjectFile AddFileToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
+		public async Task<ProjectFile> AddFileToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
 		{
-			generatedFile = SaveFile (policyParent, project, language, directory, name);
+			generatedFile = await SaveFile (policyParent, project, language, directory, name);
 			if (generatedFile != null) {		
 				string buildAction = this.buildAction ?? project.GetDefaultBuildAction (generatedFile);
 				ProjectFile projectFile = project.AddFile (generatedFile, buildAction);
@@ -202,7 +203,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		// Creates a file and saves it to disk. Returns the path to the new file
 		// All parameters are optional (can be null)
-		public string SaveFile (SolutionFolderItem policyParent, Project project, string language, string baseDirectory, string entryName)
+		public async Task<string> SaveFile (SolutionFolderItem policyParent, Project project, string language, string baseDirectory, string entryName)
 		{
 			string file = GetFileName (policyParent, project, language, baseDirectory, entryName);
 			AlertButton questionResult = null;
@@ -221,7 +222,7 @@ namespace MonoDevelop.Ide.Templates
 				Directory.CreateDirectory (Path.GetDirectoryName (file));
 
 			if (questionResult == null || questionResult == AlertButton.OverwriteFile) {
-				Stream stream = CreateFileContent (policyParent, project, language, file, entryName);
+				Stream stream = CreateFileContent (policyParent, project, language, file, entryName) ?? await CreateFileContentAsync (policyParent, project, language, file, entryName);
 
 				byte [] buffer = new byte [2048];
 				int nr;
@@ -279,9 +280,15 @@ namespace MonoDevelop.Ide.Templates
 			return StringParserService.Parse (content, tags);
 		}
 
+		[Obsolete("Use public virtual async Task<Stream> CreateFileContentAsync (SolutionFolderItem policyParent, Project project, string language, string fileName, string identifier).")]
+		public virtual Stream CreateFileContent (SolutionFolderItem policyParent, Project project, string language, string fileName, string identifier)
+		{
+			return null;
+		}
+
 		// Returns a stream with the content of the file.
 		// project and language parameters are optional
-		public virtual Stream CreateFileContent (SolutionFolderItem policyParent, Project project, string language, string fileName, string identifier)
+		public virtual async Task<Stream> CreateFileContentAsync (SolutionFolderItem policyParent, Project project, string language, string fileName, string identifier)
 		{
 			var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, identifier, fileName);
 
@@ -301,38 +308,56 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			var ms = new MemoryStream ();
+			Encoding encoding = null; 
+			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> (mime ?? "text/plain")
+				: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (mime ?? "text/plain");
+			string eolMarker = TextStylePolicy.GetEolMarker (textPolicy.EolMarker);
 
-			var bom = Encoding.UTF8.GetPreamble ();
-			ms.Write (bom, 0, bom.Length);
+			var ctx = await EditorConfigService.GetEditorConfigContext (fileName);
+			if (ctx != null) {
+				ctx.CurrentConventions.UniversalConventions.TryGetEncoding (out encoding);
+				if (ctx.CurrentConventions.UniversalConventions.TryGetLineEnding (out string lineEnding))
+					eolMarker = lineEnding;
+			}
+			if (encoding == null)
+				encoding = System.Text.Encoding.UTF8;
+			var bom = encoding.GetPreamble ();
+			if (bom != null && bom.Length > 0)
+				ms.Write (bom, 0, bom.Length);
 
 			byte[] data;
 			if (AddStandardHeader) {
 				string header = StandardHeaderService.GetHeader (policyParent, fileName, true);
-				data = System.Text.Encoding.UTF8.GetBytes (header);
+				data = encoding.GetBytes (header);
 				ms.Write (data, 0, data.Length);
 			}
 			
 			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = content;
 			
-			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> (mime ?? "text/plain")
-				: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (mime ?? "text/plain");
-			string eolMarker = TextStylePolicy.GetEolMarker (textPolicy.EolMarker);
-			byte[] eolMarkerBytes = System.Text.Encoding.UTF8.GetBytes (eolMarker);
+
+			byte[] eolMarkerBytes = encoding.GetBytes (eolMarker);
 			
 			var tabToSpaces = textPolicy.TabsToSpaces? new string (' ', textPolicy.TabWidth) : null;
-			
+			IDocumentLine lastLine = null;
 			foreach (var line in doc.GetLines ()) {
 				var lineText = doc.GetTextAt (line.Offset, line.Length);
 				if (tabToSpaces != null)
 					lineText = lineText.Replace ("\t", tabToSpaces);
 				if (line.LengthIncludingDelimiter > 0) {
-					data = System.Text.Encoding.UTF8.GetBytes (lineText);
+					data = encoding.GetBytes (lineText);
 					ms.Write (data, 0, data.Length);
 					ms.Write (eolMarkerBytes, 0, eolMarkerBytes.Length);
 				}
+				lastLine = line;
 			}
-			
+			if (ctx != null && lastLine != null && lastLine.Length > 0) {
+				if (ctx.CurrentConventions.UniversalConventions.TryGetRequireFinalNewline (out bool requireNewLine)) {
+					if (requireNewLine)
+						ms.Write (eolMarkerBytes, 0, eolMarkerBytes.Length);
+				}
+			}
+
 			ms.Position = 0;
 			return ms;
 		}

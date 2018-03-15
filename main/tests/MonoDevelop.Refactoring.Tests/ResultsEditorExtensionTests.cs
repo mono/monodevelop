@@ -1,5 +1,5 @@
 ﻿//
-// Test.cs
+// ResultsEditorExtensionTests.cs
 //
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>

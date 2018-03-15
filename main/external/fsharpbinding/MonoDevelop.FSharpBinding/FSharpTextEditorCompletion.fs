@@ -380,8 +380,10 @@ module Completion =
                           DisplayFlags = DisplayFlags.DescriptionHasMarkup) ]
 
     let keywordCompletionData =
-        [for keyValuePair in KeywordList.keywordDescriptions do
-            yield CompletionData(keyValuePair.Key, IconId("md-keyword"),keyValuePair.Value) ]
+        Keywords.KeywordsWithDescription
+        |> List.filter (fun (keyword, _) -> not (PrettyNaming.IsOperatorName keyword))
+        |> List.map (fun (keyword, description) ->
+            CompletionData(keyword, IconId("md-keyword"), description))
 
     let modifierCompletionData =
         [for keyValuePair in KeywordList.modifiers do

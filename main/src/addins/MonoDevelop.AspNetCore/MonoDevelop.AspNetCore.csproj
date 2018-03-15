@@ -52,6 +52,9 @@
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreExecutionCommand.cs" />
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreRunConfigurationEditor.cs" />
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreExecutionHandler.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\AspNetCoreCertificateManager.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\DotNetCoreDevCertsTool.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\CertificateCheckResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml">

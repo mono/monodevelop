@@ -91,19 +91,6 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 
-		public OptionSet FormattingOptions
-		{
-			get
-			{
-				var doc = DocumentContext;
-				var policyParent = doc.Project != null ? doc.Project.Policies : null;
-				var types = DesktopService.GetMimeTypeInheritanceChain (Editor.MimeType);
-				var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-				var textPolicy = policyParent != null ? policyParent.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
-				return codePolicy.CreateOptions (textPolicy);
-			}
-		}
-
 		public SemanticModel CurrentState
 		{
 			get;
@@ -146,7 +133,8 @@ namespace MonoDevelop.CodeGeneration
 
 		public async Task<string> OutputNode (SyntaxNode node, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			node = Formatter.Format (node, TypeSystemService.Workspace, FormattingOptions, cancellationToken);
+			var options = await DocumentContext.AnalysisDocument.GetOptionsAsync (cancellationToken);
+			node = Formatter.Format (node, TypeSystemService.Workspace, options, cancellationToken);
 
 			var text = Editor.Text;
 			string nodeText = node.ToString ();
