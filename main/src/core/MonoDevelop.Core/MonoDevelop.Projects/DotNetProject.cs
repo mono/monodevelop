@@ -1084,6 +1084,11 @@ namespace MonoDevelop.Projects
 				if (result == null)
 					return new List<PackageDependency> ();
 
+				if (monitor.CancellationToken.IsCancellationRequested && !result.Items.Any ()) {
+					// Avoid caching 0 items which can happen if a cancellation occurs.
+					return new List<PackageDependency> ();
+				}
+
 				packageDependencies = result.Items.Select (i => PackageDependency.Create (i)).Where (dependency => dependency != null).ToList ();
 
 				packageDependenciesCache = packageDependenciesCache .SetItem (confId, packageDependencies);
