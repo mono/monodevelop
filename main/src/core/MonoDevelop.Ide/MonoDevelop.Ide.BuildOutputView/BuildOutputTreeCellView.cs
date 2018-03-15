@@ -4,6 +4,7 @@ using MonoDevelop.Ide.Gui;
 using Xwt;
 using Xwt.Drawing;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -122,6 +123,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		static Font defaultLightFont;
 		static Font defaultBoldFont;
+		static Font monospaceFont;
 
 		double lastErrorPanelStartX;
 
@@ -131,6 +133,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			                   .WithSize (FontSize);
 			defaultBoldFont = fontName.WithWeight (FontWeight.Bold);
 			defaultLightFont = fontName.WithWeight (FontWeight.Light);
+			monospaceFont = FontService.MonospaceFont.ToXwtFont ().WithSize (FontSize);
 		}
 
 		public BuildOutputTreeCellView (IBuildOutputContextProvider context)
@@ -536,6 +539,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			if (IsRootNode (node)) {
 				return defaultBoldFont;
+			} else if (node.IsCommandLine) {
+				return monospaceFont;
 			}
 			return defaultLightFont;
 		}

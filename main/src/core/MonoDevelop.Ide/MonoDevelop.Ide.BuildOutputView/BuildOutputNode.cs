@@ -73,6 +73,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public virtual int ErrorCount { get; set; }
 		public virtual int WarningCount { get; set; }
 
+		public virtual bool IsCommandLine {
+			get {
+				return NodeType == BuildOutputNodeType.Message && Parent.NodeType == BuildOutputNodeType.Task &&
+					                                  (Parent.Message == "Csc" || Parent.Message == "AL" ||
+					                                   Parent.Message == "Exec" || Parent.Message == "Fsc");
+			}
+		}
+
 		List<BuildOutputNode> children;
 		public virtual IReadOnlyList<BuildOutputNode> Children => children;
 
@@ -240,6 +248,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			get => nodes.Sum (x => x.ErrorCount);
 			set => base.ErrorCount = value;
 		}
+
+		public override bool IsCommandLine => false;
 	}
 	
 	class FilteredBuildOutputNode : BuildOutputNode
@@ -273,6 +283,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public override int WarningCount { get => masterNode.WarningCount; set => masterNode.WarningCount = value; }
 		public override int ErrorCount { get => masterNode.ErrorCount; set => masterNode.ErrorCount = value; }
+
+		public override bool IsCommandLine => masterNode.IsCommandLine;
 
 		public override IReadOnlyList<BuildOutputNode> Children {
 			get {
