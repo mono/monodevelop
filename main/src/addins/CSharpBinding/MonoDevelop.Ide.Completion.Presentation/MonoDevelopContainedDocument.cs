@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -22,7 +22,7 @@ using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.TypeSystem;
 using Roslyn.Utilities;
 
-namespace Microsoft.VisualStudio.Platform
+namespace MonoDevelop.Ide.Completion.Presentation
 {
 	public class MonoDevelopContainedDocument : IMonoDevelopHostDocument
 	{
@@ -68,8 +68,7 @@ namespace Microsoft.VisualStudio.Platform
 
 		public static void DetachFromBuffer(ITextBuffer languageBuffer)
 		{
-			var document = languageBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChanges ();
-			MonoDevelopHostDocumentRegistration.UnRegister (document);
+			MonoDevelopHostDocumentRegistration.UnRegister (languageBuffer);
 		}
 
 		private MonoDevelopContainedDocument (ITextBuffer languageBuffer, IProjectionBuffer dataBuffer, IMonoDevelopContainedLanguageHost containedLanguageHost)
@@ -113,7 +112,7 @@ namespace Microsoft.VisualStudio.Platform
 			Language = project.Language;
 			Id = document.Id;
 
-			MonoDevelopHostDocumentRegistration.Register (document, this);
+			MonoDevelopHostDocumentRegistration.Register (LanguageBuffer, this);
 		}
 
 		public ITextBuffer GetOpenTextBuffer ()
