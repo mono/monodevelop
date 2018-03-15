@@ -4188,7 +4188,14 @@ namespace MonoDevelop.Projects
 			}
 
 			string include = MSBuildProjectService.ToMSBuildPath (ItemDirectory, fileName);
-			foreach (var it in sourceProject.FindGlobItemsIncludingFile (include).Where (it => it.Metadata.GetProperties ().Count () == 0)) {
+			var globItems = sourceProject.FindGlobItemsIncludingFile (include);
+			if (globItems == null) {
+				// If the MSBuildEngine no glob items can be found.
+				LoggingService.LogWarning ("File created externally not processed. {0}", fileName);
+				return;
+			}
+
+			foreach (var it in globItems.Where (it => it.Metadata.GetProperties ().Count () == 0)) {
 				var eit = CreateFakeEvaluatedItem (sourceProject, it, include, null);
 				var pi = CreateProjectItem (eit);
 				pi.Read (this, eit);
