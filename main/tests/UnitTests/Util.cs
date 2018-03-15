@@ -45,7 +45,7 @@ namespace UnitTests
 					rootDir = Path.GetDirectoryName (typeof(Util).Assembly.Location);
 					// If the test suite is running outside the source directory,
 					// the test-projects folder should be a direct subdirectory
-					if (!Directory.Exists (Path.Combine (rootDir, "test-projects")) {
+					if (!Directory.Exists (Path.Combine (rootDir, "test-projects"))) {
 						rootDir = Path.Combine (Path.Combine (rootDir, ".."), "..");
 						rootDir = Path.GetFullPath (Path.Combine (rootDir, "tests"));
 					}
