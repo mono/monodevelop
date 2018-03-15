@@ -21,6 +21,7 @@ obj/
 /main/tests/config
 /main/tests/UnitTests/test-results
 /main/build/MacOSX/monostub
+/main/build/MacOSX/monostub-nogui
 /main/build/MacOSx/monostub-test
 /main/contrib/bin/
 /main/contrib/*/*/bin/
