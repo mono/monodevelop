@@ -73,11 +73,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public virtual int ErrorCount { get; set; }
 		public virtual int WarningCount { get; set; }
 
+		static string [] KnownTools = new string[] {
+			"AL",
+			"Csc",
+			"Exec",
+			"Fsc"
+		};
+
 		public virtual bool IsCommandLine {
 			get {
-				return NodeType == BuildOutputNodeType.Message && Parent.NodeType == BuildOutputNodeType.Task &&
-					                                  (Parent.Message == "Csc" || Parent.Message == "AL" ||
-					                                   Parent.Message == "Exec" || Parent.Message == "Fsc");
+				return NodeType == BuildOutputNodeType.Message && Parent.NodeType == BuildOutputNodeType.Task && KnownTools.Contains (Parent.Message);
 			}
 		}
 
