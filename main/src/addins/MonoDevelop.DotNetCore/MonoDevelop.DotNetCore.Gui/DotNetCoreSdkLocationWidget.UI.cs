@@ -37,13 +37,10 @@ namespace MonoDevelop.DotNetCore.Gui
 		ImageView commandLineFoundIcon;
 		Label sdkFoundLabel;
 		ImageView sdkFoundIcon;
-		Label sdkVersionsFoundLabel;
-		ScrollView sdkVersionsScrollView;
+		ListBox sdkVersionsListBox;
 		Label runtimeFoundLabel;
 		ImageView runtimeFoundIcon;
-		Label runtimeVersionsFoundLabel;
-		ScrollView runtimeVersionsScrollView;
-		Label runtimeVersionsFoundScrollViewLabel;
+		ListBox runtimeVersionsListBox;
 
 		void Build ()
 		{
@@ -81,41 +78,6 @@ namespace MonoDevelop.DotNetCore.Gui
 			locationFileSelector = new FileSelector ();
 			locationBox.PackStart (locationFileSelector, true, true);
 
-			// .NET Core runtime section
-			var runtimeVersionsTitleLabel = new Label ();
-			runtimeVersionsTitleLabel.Markup = GetBoldMarkup (GettextCatalog.GetString (".NET Core Runtime"));
-			mainVBox.PackStart (runtimeVersionsTitleLabel);
-
-			var runtimeVersionsVBox = new VBox ();
-			runtimeVersionsVBox.Spacing = 6;
-			runtimeVersionsVBox.MarginLeft = 24;
-			mainVBox.PackStart (runtimeVersionsVBox, false, false);
-
-			var runtimeFoundHBox = new HBox ();
-			runtimeFoundHBox.Spacing = 6;
-			runtimeFoundHBox.MarginBottom = 6;
-			runtimeVersionsVBox.PackStart (runtimeFoundHBox, false, false);
-
-			runtimeFoundIcon = new ImageView ();
-			runtimeFoundHBox.PackStart (runtimeFoundIcon, false, false);
-
-			runtimeFoundLabel = new Label ();
-			runtimeFoundHBox.PackStart (runtimeFoundLabel, false, false);
-
-			runtimeVersionsFoundLabel = new Label ();
-
-			runtimeVersionsVBox.PackStart (runtimeVersionsFoundLabel, false, false);
-
-			runtimeVersionsFoundScrollViewLabel = new Label ();
-			var runtimeVersionsScrollViewVBox = new VBox ();
-			runtimeVersionsScrollViewVBox.PackStart (runtimeVersionsFoundScrollViewLabel, false, false);
-
-			runtimeVersionsScrollView = new ScrollView ();
-			runtimeVersionsScrollView.HorizontalScrollPolicy = ScrollPolicy.Never;
-			runtimeVersionsScrollView.BorderVisible = false;
-			runtimeVersionsScrollView.Content = runtimeVersionsScrollViewVBox;
-			runtimeVersionsVBox.PackStart (runtimeVersionsScrollView, false, false);
-
 			// .NET Core SDK section.
 			var sdkVersionsTitleLabel = new Label ();
 			sdkVersionsTitleLabel.Markup = GetBoldMarkup (GettextCatalog.GetString (".NET Core SDK"));
@@ -137,16 +99,32 @@ namespace MonoDevelop.DotNetCore.Gui
 			sdkFoundLabel = new Label ();
 			sdkFoundHBox.PackStart (sdkFoundLabel, false, false);
 
-			sdkVersionsFoundLabel = new Label ();
+			sdkVersionsListBox = new ListBox ();
+			sdkVersionsVBox.PackStart (sdkVersionsListBox, true, true);
 
-			var sdkVersionsScrollViewVBox = new VBox ();
-			sdkVersionsScrollViewVBox.PackStart (sdkVersionsFoundLabel, false, false);
+			// .NET Core runtime section
+			var runtimeVersionsTitleLabel = new Label ();
+			runtimeVersionsTitleLabel.Markup = GetBoldMarkup (GettextCatalog.GetString (".NET Core Runtime"));
+			mainVBox.PackStart (runtimeVersionsTitleLabel);
 
-			sdkVersionsScrollView = new ScrollView ();
-			sdkVersionsScrollView.HorizontalScrollPolicy = ScrollPolicy.Never;
-			sdkVersionsScrollView.BorderVisible = false;
-			sdkVersionsScrollView.Content = sdkVersionsScrollViewVBox;
-			sdkVersionsVBox.PackStart (sdkVersionsScrollView, true, true);
+			var runtimeVersionsVBox = new VBox ();
+			runtimeVersionsVBox.Spacing = 6;
+			runtimeVersionsVBox.MarginLeft = 24;
+			mainVBox.PackStart (runtimeVersionsVBox, true, true);
+
+			var runtimeFoundHBox = new HBox ();
+			runtimeFoundHBox.Spacing = 6;
+			runtimeFoundHBox.MarginBottom = 6;
+			runtimeVersionsVBox.PackStart (runtimeFoundHBox, false, false);
+
+			runtimeFoundIcon = new ImageView ();
+			runtimeFoundHBox.PackStart (runtimeFoundIcon, false, false);
+
+			runtimeFoundLabel = new Label ();
+			runtimeFoundHBox.PackStart (runtimeFoundLabel, false, false);
+
+			runtimeVersionsListBox = new ListBox ();
+			runtimeVersionsVBox.PackStart (runtimeVersionsListBox, true, true);
 
 			Content = mainVBox;
 		}

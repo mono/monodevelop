@@ -114,8 +114,11 @@ namespace MonoDevelop.DotNetCore.Gui
 			sdkFoundIcon.Image = GetIcon (Gtk.Stock.Apply);
 			UpdateSdkIconAccessibility (true);
 
-			sdkVersionsFoundLabel.Text = GetVersionsText (versions);
-			sdkVersionsScrollView.Visible = true;
+			sdkVersionsListBox.Items.Clear ();
+
+			foreach (var version in versions) {
+				sdkVersionsListBox.Items.Add (version.OriginalString);
+			}
 		}
 
 		static Image GetIcon (string name)
@@ -123,24 +126,12 @@ namespace MonoDevelop.DotNetCore.Gui
 			return ImageService.GetIcon (name, Gtk.IconSize.Menu);
 		}
 
-		static string GetVersionsText (IEnumerable<DotNetCoreVersion> versions)
-		{
-			var versionText = new StringBuilder ();
-
-			foreach (var version in versions) {
-				versionText.AppendLine (version.OriginalString);
-			}
-
-			return versionText.ToString ().Trim ();
-		}
-
 		void ShowNoSdkFound ()
 		{
 			sdkFoundLabel.Text = GettextCatalog.GetString ("Not found");
 			sdkFoundIcon.Image = GetIcon (Gtk.Stock.Cancel);
+			sdkVersionsListBox.Items.Clear ();
 			UpdateSdkIconAccessibility (false);
-
-			sdkVersionsScrollView.Visible = false;
 		}
 
 		void ShowRuntimes (DotNetCoreVersion[] versions)
@@ -149,21 +140,10 @@ namespace MonoDevelop.DotNetCore.Gui
 			runtimeFoundIcon.Image = GetIcon (Gtk.Stock.Apply);
 			UpdateRuntimeIconAccessibility (true);
 
-			// HACK - Use scrollview if there more than 5 runtime versions.
-			// Using the scrollview for a single runtime version adds too much space in the UI
-			// even though it is set to not expand nor fill.
-			if (versions.Length > 5) {
-				runtimeVersionsFoundLabel.Text = string.Empty;
-				runtimeVersionsFoundLabel.Visible = false;
+			runtimeVersionsListBox.Items.Clear ();
 
-				runtimeVersionsFoundScrollViewLabel.Text = GetVersionsText (versions);
-				runtimeVersionsScrollView.Visible = true;
-			} else {
-				runtimeVersionsFoundLabel.Text = GetVersionsText (versions);
-				runtimeVersionsFoundLabel.Visible = true;
-
-				runtimeVersionsFoundScrollViewLabel.Text = string.Empty;
-				runtimeVersionsScrollView.Visible = false;
+			foreach (var version in versions) {
+				runtimeVersionsListBox.Items.Add (version.OriginalString);
 			}
 		}
 
@@ -171,10 +151,8 @@ namespace MonoDevelop.DotNetCore.Gui
 		{
 			runtimeFoundLabel.Text = GettextCatalog.GetString ("Not found");
 			runtimeFoundIcon.Image = GetIcon (Gtk.Stock.Cancel);
+			runtimeVersionsListBox.Items.Clear ();
 			UpdateRuntimeIconAccessibility (false);
-
-			runtimeVersionsFoundLabel.Visible = false;
-			runtimeVersionsScrollView.Visible = false;
 		}
 	}
 }
