@@ -31,6 +31,7 @@ using MonoDevelop.Core.Text;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -41,6 +42,20 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		/// The segment offsets are 0 at line start regardless of where the line is inside the document.
 		/// </summary>
 		public IReadOnlyList<ColoredSegment> Segments { get; private set; }
+
+		bool? isContinuedBeyondLineEnd;
+		public bool? IsContinuedBeyondLineEnd {
+			get {
+				if (isContinuedBeyondLineEnd.HasValue)
+					return isContinuedBeyondLineEnd.Value;
+				var result = Segments.Count > 0 ? TextSegment.Length < Segments.Last ().EndOffset : false;
+				return isContinuedBeyondLineEnd = result;
+			}
+			set {
+				isContinuedBeyondLineEnd = value;
+			}
+		}
+
 		public HighlightedLine (ISegment textSegment, IReadOnlyList<ColoredSegment> segments)
 		{
 			TextSegment = textSegment;
