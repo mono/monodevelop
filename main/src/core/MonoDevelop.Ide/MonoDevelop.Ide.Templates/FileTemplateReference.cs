@@ -80,7 +80,27 @@ namespace MonoDevelop.Ide.Templates
 			
 			foreach (FileDescriptionTemplate fdt in innerTemplate.Files) {
 				if (fdt.EvaluateCreateCondition ()) {
-					if (!await fdt.AddToProjectAsync (policyParent, project, language, directory, substName) || !fdt.AddToProject (policyParent, project, language, directory, substName))
+					if (!await fdt.AddToProjectAsync (policyParent, project, language, directory, substName))
+						return false;
+				}
+			}
+			return true;
+		}
+
+		[Obsolete ("Use public Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string entryName).")]
+		public override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string entryName)
+		{
+			string[,] customTags = new string[,] {
+				{"ProjectName", project.Name},
+				{"EntryName", entryName},
+				{"EscapedProjectName", GetDotNetIdentifier (project.Name) }
+			};
+
+			string substName = StringParserService.Parse (this.name, customTags);
+
+			foreach (FileDescriptionTemplate fdt in innerTemplate.Files) {
+				if (fdt.EvaluateCreateCondition ()) {
+					if (!fdt.AddToProject (policyParent, project, language, directory, substName))
 						return false;
 				}
 			}
