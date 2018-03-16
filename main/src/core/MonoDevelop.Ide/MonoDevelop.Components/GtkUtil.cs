@@ -945,12 +945,16 @@ namespace MonoDevelop.Components
 	{
 		TreeViewColumn col;
 		TreeView tree;
+		TreePath path;
 		TreeIter iter;
+		TreeStore treeStore;
 
 		public CellTooltipWindow (TreeView tree, TreeViewColumn col, TreePath path)
 		{
 			this.tree = tree;
 			this.col = col;
+			this.treeStore = tree.Model as TreeStore;
+			this.path = path;
 			
 			NudgeHorizontal = true;
 			
@@ -991,6 +995,12 @@ namespace MonoDevelop.Components
 			bool hasFgColor = false;
 			int x = 1;
 
+			// Make sure that the row has not been removed inbetween.
+			// If the model is a TreeStore, it can do the validation for us, otherwise we need to validate the path.
+			if ((treeStore != null && treeStore.IterIsValid (iter) == false) || !tree.Model.GetIter (out iter, path)) {
+				GtkUtil.HideTooltip (tree);
+				return true;
+			}
 			col.CellSetCellData (tree.Model, iter, false, false);
 
 			foreach (CellRenderer cr in col.CellRenderers) {
