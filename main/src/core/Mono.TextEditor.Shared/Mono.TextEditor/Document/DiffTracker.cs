@@ -75,6 +75,8 @@ namespace Mono.TextEditor
 				return;
 			for(int i = e.TextChanges.Count - 1; i >= 0; i--) {
 				var change = e.TextChanges[i];
+				if (change.RemovalLength == 0)
+					continue;
 				var startLine = trackDocument.GetLineByOffset (change.Offset);
 				var endRemoveLine = trackDocument.GetLineByOffset (change.Offset + change.RemovalLength);
 				if (startLine == null || endRemoveLine == null)
@@ -95,15 +97,18 @@ namespace Mono.TextEditor
 				var startLine = trackDocument.GetLineByOffset (change.NewOffset);
 				var endLine = trackDocument.GetLineByOffset (change.NewOffset + change.InsertionLength);
 				var lineNumber = startLine.LineNumber;
-				var insertedLines = endLine.LineNumber - lineNumber + 1;
-				var oldState = lineNumber < lineStates.Count  && insertedLines == 1 ? lineStates [lineNumber] : null;
-				if (oldState != null && oldState.state == TextDocument.LineState.Dirty) {
+				var insertedLines = endLine.LineNumber - lineNumber;
+				if (insertedLines == 0) {
+					var oldState = lineNumber < lineStates.Count ? lineStates [lineNumber] : null;
+					if (oldState != null && oldState.state == TextDocument.LineState.Dirty) 
+						continue;
+					lineStates[lineNumber] = LineChangeInfo.Dirty;
+					if (trackDocument != null)
+						trackDocument.CommitMultipleLineUpdate (lineNumber, lineNumber + insertedLines);
 					continue;
 				}
 				try {
-					if (lineStates.Count < lineNumber + insertedLines) 
-						lineStates.InsertRange (lineStates.Count, lineNumber + insertedLines - lineStates.Count, LineChangeInfo.Unchanged);
-					lineStates.SetRange (lineNumber, insertedLines, LineChangeInfo.Dirty);
+					lineStates.InsertRange (lineNumber, insertedLines , LineChangeInfo.Dirty);
 					if (trackDocument != null)
 						trackDocument.CommitMultipleLineUpdate (lineNumber, lineNumber + insertedLines);
 				} catch (Exception ex) {

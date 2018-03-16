@@ -120,7 +120,7 @@ module Patterns =
         match ts with
         | IdentifierSymbol symbolUse ->
             match symbolUse with
-            | SymbolUse.Property _pr -> Some symbolUse.IsFromDefinition
+            | SymbolUse.Property _pr -> Some Property
             | _ -> None
         | _ -> None
 
@@ -128,7 +128,7 @@ module Patterns =
         match ts with
         | IdentifierSymbol symbolUse ->
             match symbolUse with
-            | SymbolUse.Field f -> Some (symbolUse.IsFromDefinition, f.IsMutable)
+            | SymbolUse.Field f -> Some f.IsMutable
             | _ -> None
         | _ -> None
 
@@ -136,7 +136,7 @@ module Patterns =
         match ts with
         | IdentifierSymbol symbolUse ->
             match symbolUse with
-            | SymbolUse.Function _ | SymbolUse.ClosureOrNestedFunction _  -> Some symbolUse.IsFromDefinition
+            | SymbolUse.Function _ | SymbolUse.ClosureOrNestedFunction _  -> Some Function
             | _ -> None
         | _ -> None
         
@@ -154,7 +154,7 @@ module Patterns =
             match symbolUse with
             | SymbolUse.Val v ->
                 let isMut = v.IsMutable && (match v.EnclosingEntity with Some de -> not de.IsEnum | None -> v.IsMutable)
-                Some (symbolUse, isMut)
+                Some isMut
             | _ -> None
         | _ -> None
 
@@ -170,7 +170,7 @@ module Patterns =
         match ts with
         | IdentifierSymbol symbolUse ->
             match symbolUse with
-            | SymbolUse.Event _ev -> Some symbolUse.IsFromDefinition
+            | SymbolUse.Event _ev -> Some Event
             | _ -> None
         | _ -> None
 
@@ -305,28 +305,23 @@ module Patterns =
                     makeSeg EditorThemeColors.UserTypesTypeParameters
                 | Namespace _ ->
                     makeSeg "source.fs"
-                | Property fromDef ->
-                    if fromDef then makeSeg EditorThemeColors.UserPropertyDeclaration 
-                    else makeSeg EditorThemeColors.UserPropertyUsage
-                | Field (fromDef, isMut) ->
+                | Property ->
+                    makeSeg EditorThemeColors.UserProperty
+                | Field isMut ->
                     if highlightMutable isMut then makeSeg EditorThemeColors.UserTypesMutable
-                    elif fromDef then makeSeg EditorThemeColors.UserFieldDeclaration
-                    else makeSeg EditorThemeColors.UserFieldUsage
-                | Function fromDef ->
-                    if fromDef then makeSeg EditorThemeColors.UserMethodDeclaration
-                    else makeSeg EditorThemeColors.UserMethodUsage
-                | Val (su, isMut) ->
+                    else makeSeg EditorThemeColors.UserField
+                | Function ->
+                    makeSeg EditorThemeColors.UserMethod
+                | Val isMut ->
                     if highlightMutable isMut then makeSeg EditorThemeColors.UserTypesMutable
                     //elif su.Symbol.DisplayName.StartsWith "_" then style.ExcludedCode 
-                    elif su.IsFromDefinition then makeSeg EditorThemeColors.UserFieldDeclaration
-                    else makeSeg EditorThemeColors.UserFieldUsage
+                    else makeSeg EditorThemeColors.UserField
                 | UnionCase | Enum _ ->
                     makeSeg EditorThemeColors.UserTypes
                 | Delegate _ ->
                     makeSeg EditorThemeColors.UserTypesDelegates
-                | Event fromDef ->
-                    if fromDef then makeSeg EditorThemeColors.UserEventDeclaration
-                    else makeSeg EditorThemeColors.UserEventUsage
+                | Event ->
+                    makeSeg EditorThemeColors.UserEvent
                 | Interface ->
                     makeSeg EditorThemeColors.UserTypesInterfaces
                 | ValueType _ ->
