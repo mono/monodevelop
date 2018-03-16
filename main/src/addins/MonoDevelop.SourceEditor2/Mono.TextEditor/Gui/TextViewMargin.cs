@@ -1361,21 +1361,17 @@ namespace Mono.TextEditor
 				cachedLines = cachedLines.SetItem (lineNumber, highlightedLine);
 				int curLineNumber = lineNumber + 1;
 				var curLine = line.NextLine;
-				while (curLine != null) {
-					if (cachedLines.TryGetValue (curLineNumber, out HighlightedLine highlightedCurLine) && highlightedCurLine?.TextSegment.Length == curLine.Length) {
-						var updatedCurLine = await doc.SyntaxMode.GetHighlightedLineAsync (curLine, token);
-						if (!LinesAreEqual(highlightedCurLine, updatedCurLine)) {
-							cachedLines = cachedLines.SetItem (curLineNumber, updatedCurLine);
-						} else {
-							break;
-						}
-					}else {
-						break;
+				if (cachedLines.TryGetValue (curLineNumber, out HighlightedLine highlightedCurLine) && highlightedCurLine?.TextSegment.Length == curLine.Length) {
+					var updatedCurLine = await doc.SyntaxMode.GetHighlightedLineAsync (curLine, token);
+					if (!LinesAreEqual(highlightedCurLine, updatedCurLine)) {
+						cachedLines = cachedLines.SetItem (curLineNumber, updatedCurLine);
+						await Runtime.RunInMainThread (delegate {
+							Document.CommitMultipleLineUpdate (lineNumber, lineNumber + (int)(textEditor.Allocation.Height / textEditor.LineHeight) + 1);
+						});
+						return;
 					}
-					curLineNumber++;
-					curLine = curLine.NextLine;
 				}
-				Runtime.RunInMainThread (delegate {
+				await Runtime.RunInMainThread (delegate {
 					Document.CommitMultipleLineUpdate (lineNumber, curLineNumber - 1);
 				});
 			});
