@@ -1358,14 +1358,30 @@ namespace Mono.TextEditor
 			var token = cacheSrc.Token;
 			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
 			if (task.IsCompleted) {
+				if (result != null && ShouldUpdateSpan (result, task.Result))
+					textEditor.QueueDraw ();
 				cachedLines [lineNumber] = task.Result;
 				return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
 			}
 			task.ContinueWith (t => {
 				cachedLines [lineNumber] = t.Result;
-				Document.CommitLineUpdate (lineNumber); // Required for highlighting updates
+				if (result != null && ShouldUpdateSpan (result, t.Result)) {
+					textEditor.QueueDraw ();
+				} else {
+					Document.CommitLineUpdate (line);
+				}
 			}, token, TaskContinuationOptions.OnlyOnRanToCompletion, Runtime.MainTaskScheduler);
 			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
+		}
+
+		static bool ShouldUpdateSpan (HighlightedLine line1, HighlightedLine line2)
+		{
+			if (line1.IsContinuedBeyondLineEnd != line2.IsContinuedBeyondLineEnd)
+				return true;
+			if (line1.IsContinuedBeyondLineEnd == true) {
+				return line1.Segments.Last ().ScopeStack.Peek () != line2.Segments.Last ().ScopeStack.Peek ();
+			}
+			return false;
 		}
 
 		internal static List<ColoredSegment> TrimChunks (IReadOnlyList<ColoredSegment> segments, int offset, int length)
