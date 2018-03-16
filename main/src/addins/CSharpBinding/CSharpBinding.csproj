@@ -380,6 +380,7 @@
     <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynCommandTarget.cs" />
     <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynCompletionPresenterSession.View.cs" />
     <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynCompletionPresenterSession.IIntelliSensePresenterSession.cs" />
+    <Compile Include="MonoDevelop.CSharp\DocumentContextExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
