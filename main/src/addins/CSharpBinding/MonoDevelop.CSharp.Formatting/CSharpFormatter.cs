@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 				foreach (var doc in IdeApp.Workbench.Documents) {
 					if (doc.Editor == editor) {
-						options = await doc.AnalysisDocument?.GetOptionsAsync ();
+						options = await doc.GetOptionsAsync ();
 						break;
 					}
 				}

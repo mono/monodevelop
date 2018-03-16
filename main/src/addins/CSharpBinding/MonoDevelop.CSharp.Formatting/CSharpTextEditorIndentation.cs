@@ -55,7 +55,6 @@ namespace MonoDevelop.CSharp.Formatting
 
 		readonly static IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 
-
 		char lastCharInserted;
 
 		static CSharpTextEditorIndentation ()
@@ -139,15 +138,9 @@ namespace MonoDevelop.CSharp.Formatting
 
 		async void HandleTextOptionsChanged (object sender, EventArgs e)
 		{
-			//var options = Editor.CreateNRefactoryTextEditorOptions ();
-			var optionTask = DocumentContext?.AnalysisDocument?.GetOptionsAsync ();
-			if (optionTask == null)
-				return;
-			optionSet = await optionTask;
-			if (optionSet == null)
-					return;
-			//options.IndentBlankLines = true;
-			ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine indentEngine;
+			optionSet = await DocumentContext.GetOptionsAsync ();
+
+			IStateMachineIndentEngine indentEngine;
 			try {
 				var csharpIndentEngine = new ICSharpCode.NRefactory6.CSharp.CSharpIndentEngine (optionSet);
 				//csharpIndentEngine.EnableCustomIndentLevels = true;
