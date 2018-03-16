@@ -40,7 +40,7 @@ namespace MonoDevelop.CSharp
 			if (ctx == null)
 				throw new ArgumentNullException (nameof (ctx));
 			if (ctx.AnalysisDocument != null) {
-				var result = await ctx.AnalysisDocument.GetOptionsAsync ();
+				var result = await ctx.AnalysisDocument.GetOptionsAsync ().ConfigureAwait (false);
 				if (result != null)
 					return result;
 			}
