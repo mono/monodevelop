@@ -51,7 +51,8 @@ namespace MonoDevelop.DotNetCore
 
 			return Directory.EnumerateDirectories (runtimePath)
 				.Select (directory => DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory))
-				.Where (version => version != null);
+				.Where (version => version != null)
+				.OrderByDescending (version => version);
 		}
 
 		static string GetDotNetCoreRuntimePath (string fileName)
