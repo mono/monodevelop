@@ -150,9 +150,6 @@ type ExpandSelectionTextEditorExtension () =
         else
             editor.ClearSelection()
 
-    static member SupportedFileExtensions =
-        [".fsscript"; ".fs"; ".fsx"; ".fsi"; ".sketchfs"]
-
     override x.IsValidInContext (context) =
         context.Name <> null && FileService.supportedFileName context.Name
 

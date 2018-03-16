@@ -1345,7 +1345,7 @@ namespace Mono.TextEditor
 				this.Chunk = chunk;
 			}
 		}
-		Dictionary<int, HighlightedLine> cachedLines = new Dictionary<int, HighlightedLine> ();
+		ImmutableDictionary<int, HighlightedLine> cachedLines = ImmutableDictionary<int, HighlightedLine>.Empty;
 		CancellationTokenSource cacheSrc = new CancellationTokenSource ();
 		Tuple<List<ColoredSegment>, bool> GetCachedChunks (TextDocument doc, DocumentLine line, int offset, int length)
 		{
@@ -1356,16 +1356,39 @@ namespace Mono.TextEditor
 					return Tuple.Create (TrimChunks (result.Segments, offset - line.Offset, length), true);
 			}
 			var token = cacheSrc.Token;
-			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
-			if (task.IsCompleted) {
-				cachedLines [lineNumber] = task.Result;
-				return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
-			}
-			task.ContinueWith (t => {
-				cachedLines [lineNumber] = t.Result;
-				Document.CommitLineUpdate (lineNumber); // Required for highlighting updates
-			}, token, TaskContinuationOptions.OnlyOnRanToCompletion, Runtime.MainTaskScheduler);
+			var task = Task.Run(async delegate {
+				var highlightedLine = await doc.SyntaxMode.GetHighlightedLineAsync (line, token);
+				cachedLines = cachedLines.SetItem (lineNumber, highlightedLine);
+				int curLineNumber = lineNumber + 1;
+				var curLine = line.NextLine;
+				if (cachedLines.TryGetValue (curLineNumber, out HighlightedLine highlightedCurLine) && highlightedCurLine?.TextSegment.Length == curLine.Length) {
+					var updatedCurLine = await doc.SyntaxMode.GetHighlightedLineAsync (curLine, token);
+					if (!LinesAreEqual(highlightedCurLine, updatedCurLine)) {
+						cachedLines = cachedLines.SetItem (curLineNumber, updatedCurLine);
+						await Runtime.RunInMainThread (delegate {
+							Document.CommitMultipleLineUpdate (lineNumber, lineNumber + (int)(textEditor.Allocation.Height / textEditor.LineHeight) + 1);
+						});
+						return;
+					}
+				}
+				await Runtime.RunInMainThread (delegate {
+					Document.CommitMultipleLineUpdate (lineNumber, curLineNumber - 1);
+				});
+			});
 			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
+		}
+
+		static bool LinesAreEqual (HighlightedLine line1, HighlightedLine line2)
+		{
+			if (line1.Segments.Count != line2.Segments.Count)
+				return false;
+			for (int i = 0; i < line1.Segments.Count; i++) {
+				var seg1 = line1.Segments [i];
+				var seg2 = line2.Segments [i];
+				if (seg1.Length != seg2.Length || seg1.ColorStyleKey != seg2.ColorStyleKey)
+					return false;
+			}
+			return true;
 		}
 
 		internal static List<ColoredSegment> TrimChunks (IReadOnlyList<ColoredSegment> segments, int offset, int length)

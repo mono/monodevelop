@@ -46,7 +46,7 @@ type FSharpBraceMatcher() =
     let defaultMatcher = new DefaultBraceMatcher()
 
     override x.CanHandle editor =
-        FileService.supportedFileName (editor.FileName.ToString())
+        FileService.supportedFilePath editor.FileName
 
     override x.GetMatchingBracesAsync (editor, context, caretOffset, cancellationToken) =
         if caretOffset = -1 || caretOffset >= editor.Length then

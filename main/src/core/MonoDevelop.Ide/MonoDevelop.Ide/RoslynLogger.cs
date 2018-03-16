@@ -5,12 +5,20 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Internal.Log;
+using Microsoft.CodeAnalysis.ErrorReporting;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide
 {
 	class RoslynLogger : ILogger
 	{
+		static RoslynLogger ()
+		{
+			// Maybe we should crash here?
+			FatalError.Handler = exception => LoggingService.LogInternalError ("Roslyn fatal exception", exception);
+			FatalError.NonFatalHandler = exception => LoggingService.LogInternalError ("Roslyn non-fatal exception", exception);
+		}
+
 		public bool IsEnabled (FunctionId functionId)
 		{
 			// ? Maybe log more than these exceptions? http://source.roslyn.io/#Microsoft.CodeAnalysis.Workspaces/Log/FunctionId.cs,8
