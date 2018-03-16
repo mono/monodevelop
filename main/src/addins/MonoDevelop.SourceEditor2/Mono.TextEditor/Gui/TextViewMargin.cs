@@ -1345,7 +1345,7 @@ namespace Mono.TextEditor
 				this.Chunk = chunk;
 			}
 		}
-		Dictionary<int, HighlightedLine> cachedLines = new Dictionary<int, HighlightedLine> ();
+		ImmutableDictionary<int, HighlightedLine> cachedLines = ImmutableDictionary<int, HighlightedLine>.Empty;
 		CancellationTokenSource cacheSrc = new CancellationTokenSource ();
 		Tuple<List<ColoredSegment>, bool> GetCachedChunks (TextDocument doc, DocumentLine line, int offset, int length)
 		{
