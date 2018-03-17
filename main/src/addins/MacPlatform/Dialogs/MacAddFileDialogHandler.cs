@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using AppKit;
 using CoreGraphics;
 
@@ -44,38 +46,68 @@ namespace MonoDevelop.MacIntegration
 				CanChooseFiles = true,
 			}) {
 				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
-				
-				var popup = new NSPopUpButton (new CGRect (0, 0, 200, 28), false);
-				var dropdownBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
-					{ new MDLabel (GettextCatalog.GetString ("Override build action:")), true },
-					{ new MDAlignment (popup, true) { MinWidth = 200 }  }
-				};
+
+				var labels = new List<MDAlignment> ();
+				var controls = new List<MDAlignment> ();
 				
 				var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
+				MDBox accessoryBox = new MDBox (LayoutDirection.Vertical, 2, 2);
 				if (filterPopup != null) {
-					dropdownBox.Layout ();
-					var box = new MDBox (LayoutDirection.Vertical, 2, 2) {
-						dropdownBox.View,
-						filterPopup,
+					var filterLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Show Files:")) { Alignment = NSTextAlignment.Right }, true);
+					labels.Add (filterLabel);
+
+					var filterPopupAlignment = new MDAlignment (filterPopup, true) { MinWidth = 200 };
+					controls.Add (filterPopupAlignment);
+					var filterBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
+						{ filterLabel },
+						{ filterPopupAlignment }
 					};
-					box.Layout ();
-					panel.AccessoryView = box.View;
-					if (box.View.Superview != null)
-						box.Layout (box.View.Superview.Frame.Size);
-				} else {
-					dropdownBox.Layout ();
-					panel.AccessoryView = dropdownBox.View;
+
+					accessoryBox.Add (filterBox);
 				}
-				
+
+				var popup = new NSPopUpButton (new CGRect (0, 0, 200, 28), false);
 				popup.AddItem (GettextCatalog.GetString ("(Default)"));
 				popup.Menu.AddItem (NSMenuItem.SeparatorItem);
-				
+
 				foreach (var b in data.BuildActions) {
 					if (b == "--")
 						popup.Menu.AddItem (NSMenuItem.SeparatorItem);
 					else
 						popup.AddItem (b);
 				}
+
+				var dropdownLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Override build action:")) { Alignment = NSTextAlignment.Right }, true);
+				labels.Add (dropdownLabel);
+
+				var dropdownAlignment = new MDAlignment (popup, true) { MinWidth = 200 };
+				controls.Add (dropdownAlignment);
+
+				var dropdownBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
+					dropdownLabel,
+					dropdownAlignment,
+				};
+
+				accessoryBox.Add (dropdownBox);
+
+				if (labels.Count > 0) {
+					float w = labels.Max (l => l.MinWidth);
+					foreach (var l in labels) {
+						l.MinWidth = w;
+						l.XAlign = LayoutAlign.Begin;
+					}
+				}
+
+				if (controls.Count > 0) {
+					float w = controls.Max (c => c.MinWidth);
+					foreach (var c in controls) {
+						c.MinWidth = w;
+						c.XAlign = LayoutAlign.Begin;
+					}
+				}
+
+				accessoryBox.Layout ();
+				panel.AccessoryView = accessoryBox.View;
 				
 				if (panel.RunModal () == 0) {
 					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
