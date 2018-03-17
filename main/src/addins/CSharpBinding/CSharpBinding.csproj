@@ -373,6 +373,7 @@
     <Compile Include="MonoDevelop.CSharp.OptionProvider\CSharpDocumentOptionsProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Navigation\Counters.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpLanguageVersionHelper.cs" />
+    <Compile Include="MonoDevelop.CSharp\DocumentContextExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
