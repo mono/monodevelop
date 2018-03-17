@@ -204,48 +204,6 @@ namespace MonoDevelop.MacIntegration
 			
 			return popup;
 		}
-		
-		internal static NSView CreateLabelledDropdown (string label, float popupWidth, out NSPopUpButton popup)
-		{
-			popup = new NSPopUpButton (new CGRect (0, 6, popupWidth, 18), false) {
-				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
-			};
-			return LabelControl (label, 200, popup);
-		}
-		
-		internal static NSView LabelControl (string label, float controlWidth, NSControl control)
-		{
-			var view = new NSView (new CGRect (0, 0, controlWidth, 28)) {
-				AutoresizesSubviews = true,
-				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
-			};
-			
-			var text = new NSTextField (new CGRect (0, 6, 100, 20)) {
-				StringValue = label,
-				DrawsBackground = false,
-				Bordered = false,
-				Editable = false,
-				Selectable = false
-			};
-			text.SizeToFit ();
-			var textWidth = text.Frame.Width;
-			var textHeight = text.Frame.Height;
-			
-			control.SizeToFit ();
-			var rect = control.Frame;
-			var controlHeight = rect.Height;
-			control.Frame = new CGRect (textWidth + 5, 0, controlWidth, rect.Height);
-			
-			rect = view.Frame;
-			rect.Width = control.Frame.Width + textWidth + 5;
-			rect.Height = NMath.Max (controlHeight, textHeight);
-			view.Frame = rect;
-			
-			view.AddSubview (text);
-			view.AddSubview (control);
-			
-			return view;
-		}
 	}
 }
 
