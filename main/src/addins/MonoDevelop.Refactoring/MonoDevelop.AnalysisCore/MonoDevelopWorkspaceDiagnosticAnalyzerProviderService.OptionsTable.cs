@@ -66,6 +66,8 @@ namespace MonoDevelop.AnalysisCore
 			{
 				try {
 					foreach (var type in asm.GetTypes ()) {
+						if (type.IsAbstract)
+							continue;
 
 						var analyzerAttr = (DiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof (DiagnosticAnalyzerAttribute), false).FirstOrDefault ();
 						if (analyzerAttr != null) {
