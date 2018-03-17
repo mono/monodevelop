@@ -79,40 +79,21 @@ namespace MonoDevelop.MacIntegration
 				NSPopUpButton viewerSelector = null;
 				NSButton closeSolutionButton = null;
 				
-				var box = new MDBox (LayoutDirection.Vertical, 2, 2);
+				var box = new MDAccessoryViewBox ();
 				
 				List<FileViewer> currentViewers = null;
-				var labels = new List<MDAlignment> ();
-				var controls = new List<MDAlignment> ();
-				
+
 				if ((data.Action & FileChooserAction.FileFlags) != 0) {
 					var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
-
 					if (filterPopup != null) {
-						var filterLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Show Files:")) { Alignment = NSTextAlignment.Right }, true);
-						var filterPopupAlignment = new MDAlignment (filterPopup, true) { MinWidth = 200 };
-						var filterBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
-							{ filterLabel },
-							{ filterPopupAlignment }
-						};
-						labels.Add (filterLabel);
-						controls.Add (filterPopupAlignment);
-						box.Add (filterBox);
+						box.AddControl (filterPopup, GettextCatalog.GetString ("Show Files:"));
 					}
 
 					if (data.ShowEncodingSelector) {
 						encodingSelector = new SelectEncodingPopUpButton (data.Action != FileChooserAction.Save);
 						encodingSelector.SelectedEncodingId = data.Encoding != null ? data.Encoding.CodePage : 0;
-						
-						var encodingLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Encoding:")) { Alignment = NSTextAlignment.Right }, true);
-						var encodingSelectorAlignment = new MDAlignment (encodingSelector, true) { MinWidth = 200 };
-						var encodingBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
-							{ encodingLabel },
-							{ encodingSelectorAlignment }
-						};
-						labels.Add (encodingLabel);
-						controls.Add (encodingSelectorAlignment);
-						box.Add (encodingBox);
+
+						box.AddControl (encodingSelector, GettextCatalog.GetString ("Encoding:"));
 					}
 					
 					if (data.ShowViewerSelector && panel is NSOpenPanel) {
@@ -146,44 +127,10 @@ namespace MonoDevelop.MacIntegration
 							closeSolutionButton.SetButtonType (NSButtonType.Switch);
 							closeSolutionButton.SizeToFit ();
 
-							var closeSolutionLabelBox = new MDAlignment (new MDLabel (string.Empty), true);
-							var closeSolutionButtonAlignment = new MDAlignment (closeSolutionButton, true);
-							var closeSolutionBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
-								{ closeSolutionLabelBox },
-								{ closeSolutionButtonAlignment }
-							};
-
-							labels.Add (closeSolutionLabelBox);
-							controls.Add (closeSolutionButtonAlignment);
-							box.Add (closeSolutionBox);
+							box.AddControl (closeSolutionButton, string.Empty);
 						}
 
-						var viewSelLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Open With:")) { Alignment = NSTextAlignment.Right }, true);
-						var viewSelectorAlignemnt = new MDAlignment (viewerSelector, true) { MinWidth = 200 };
-						var viewSelBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
-							{ viewSelLabel },
-							{ viewSelectorAlignemnt }
-						};
-
-						labels.Add (viewSelLabel);
-						controls.Add (viewSelectorAlignemnt);
-						box.Add (viewSelBox);
-					}
-				}
-				
-				if (labels.Count > 0) {
-					float w = labels.Max (l => l.MinWidth);
-					foreach (var l in labels) {
-						l.MinWidth = w;
-						l.XAlign = LayoutAlign.Begin;
-					}
-				}
-
-				if (controls.Count > 0) {
-					float w = controls.Max (c => c.MinWidth);
-					foreach (var c in controls) {
-						c.MinWidth = w;
-						c.XAlign = LayoutAlign.Begin;
+						box.AddControl (viewerSelector, GettextCatalog.GetString ("Open With:"));
 					}
 				}
 				

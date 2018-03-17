@@ -135,6 +135,7 @@
     <Compile Include="MimeMapLoader.cs" />
     <Compile Include="ScreenMonitor.cs" />
     <Compile Include="MainToolbar\NSFocusButton.cs" />
+    <Compile Include="Dialogs\MDAccessoryViewBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
