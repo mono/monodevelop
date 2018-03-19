@@ -35,7 +35,7 @@ namespace MonoDevelop.StressTest
 		public static ITestScenario GetTestScenario ()
 		{
             string testProjectPath = Path.Combine(Path.GetDirectoryName(typeof(TestScenarioProvider).Assembly.Location), "TestProject");
-            var monoAddinsPath = Path.Combine(testProjectPath, "mono-addins");
+            var monoAddinsPath = Path.Combine(testProjectPath, "mono-addins", "Mono.Addins");
 
 			var scenario = new TestScenario (
                 Path.Combine (testProjectPath, "TestProject.sln"),
