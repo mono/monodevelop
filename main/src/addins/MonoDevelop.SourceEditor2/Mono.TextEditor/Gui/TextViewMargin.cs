@@ -1372,12 +1372,16 @@ namespace Mono.TextEditor
 			var token = cacheSrc.Token;
 			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
 			if (task.IsCompleted) {
-				UpdateLineHighlight (lineNumber, result, task.Result);
-				return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
+				if (task.Result != null) {
+					UpdateLineHighlight (lineNumber, result, task.Result);
+					return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
+				}
 			}
 			task.ContinueWith (t => {
+				if (t.Result == null)
+					return;
 				if (UpdateLineHighlight (lineNumber, result, t.Result)) {
-					RemoveCachedLine (lineNumber)
+					RemoveCachedLine (lineNumber);
 					Document.CommitLineUpdate (line);
 				}
 			}, token, TaskContinuationOptions.OnlyOnRanToCompletion, Runtime.MainTaskScheduler);
