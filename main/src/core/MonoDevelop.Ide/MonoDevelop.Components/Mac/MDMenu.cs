@@ -82,7 +82,7 @@ namespace MonoDevelop.Components.Mac
 					continue;
 				}
 
-				Command cmd = manager.GetCommand (ce.CommandId);
+				Command cmd = ce.GetCommand (manager);
 				if (cmd == null) {
 					LoggingService.LogError ("MacMenu: '{0}' maps to null command", ce.CommandId);
 					continue;
