@@ -30,245 +30,252 @@ using NUnit.Framework;
 using System.IO;
 using System.Collections.Generic;
 using LibGit2Sharp;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Git.Tests
 {
 	[TestFixture]
 	public class GitIntegrityTests
 	{
-		readonly string PROJECT_ROOT = "../../../";
 		readonly Dictionary<string, Commit[]> blames = new Dictionary<string, Commit[]>();
 		LibGit2Sharp.Repository repo;
 
+		protected static void DeleteDirectory (string path)
+		{
+			string[] files = Directory.GetFiles (path);
+			string[] dirs = Directory.GetDirectories (path);
+
+			foreach (var file in files) {
+				File.SetAttributes (file, FileAttributes.Normal);
+				File.Delete (file);
+			}
+
+			foreach (var dir in dirs) {
+				DeleteDirectory (dir);
+			}
+
+			Directory.Delete (path, true);
+		}
+
 		[SetUp]
 		public void Setup() {
-			var gitDir = new DirectoryInfo (PROJECT_ROOT + ".git");
-			repo = new LibGit2Sharp.Repository (gitDir.FullName);
+			var path = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
+
+			var repoPath = LibGit2Sharp.Repository.Init (path.FullPath + "repo.git", false);
+			repo = new LibGit2Sharp.Repository (repoPath);
+
+			CreateData ();
+		}
+
+		[TearDown]
+		public void TearDown ()
+		{
+			var workDir = repo.Info.WorkingDirectory;
+			repo.Dispose ();
+			DeleteDirectory (workDir);
+		}
+
+		class BlameData {
+			public string File { get; }
+			public string [] Lines { get; }
+			public int ChunkCount { get; }
+			public int [] ChunkLengths { get; }
+
+			public BlameData (string file, string[] lines, int count, int[] lengths)
+			{
+				File = file;
+				Lines = lines;
+				ChunkCount = count;
+				ChunkLengths = lengths;
+			}
+
+			public string AsText ()
+			{
+				return string.Join (Environment.NewLine, Lines) + Environment.NewLine;
+			}
+		}
+
+		class CommitData {
+			public List<BlameData> Datas = new List<BlameData> ();
+			public Commit Commit { get; set; }
+		}
+
+		static CommitData [] commits = {
+			// Initial
+			new CommitData {
+				Datas = {
+					// File content text to write to file and commit.
+					new BlameData ("a.cs", new [] { "a", "a", "b", "c" }, 1, new int [] { 4, }),
+					new BlameData ("b.cs", new [] { "a", }, 1, new int [] { 1, }),
+					new BlameData ("insert_lines.cs", new [] { "Line1", "Line5" }, 1, new int[] { 2 } ),
+				},
+			},
+			// Second
+			new CommitData {
+				Datas = {
+					new BlameData ("b.cs", new [] { "b", }, 1, new int [] { 1, }),
+					new BlameData ("c.cs", Enumerable.Repeat ("a", 10).ToArray (), 1, new int [] { 10, }),
+					new BlameData ("insert_lines.cs", new [] { "Line1", "Line2", "Line 3", "Line 4", "Line5" }, 3, new int[] { 1, 3, 1 } ),
+				},
+			},
+			new CommitData { Datas = { new BlameData ("a.cs", new [] { "b", "a", "b", "c" }, 2, new int [] { 1, 3, }), } },
+			new CommitData { Datas = { new BlameData ("a.cs", new [] { "b", "a", "b", "d" }, 3, new int [] { 1, 2, 1, }), } },
+			new CommitData { Datas = { new BlameData ("a.cs", new [] { "b", "a", "c", "d" }, 4, new int [] { 1, 1, 1, 1, }), } },
+			new CommitData { Datas = { new BlameData ("a.cs", new [] { "e", "f", "g", "h" }, 1, new int [] { 4, }), } },
+			new CommitData { Datas = { new BlameData ("a.cs", new [] { "e", "f", "g", }, 1, new int [] { 3, }), } },
+		};
+
+		static Signature signature = new Signature ("author", "email@domain.com", DateTimeOffset.UtcNow);
+		// Created on repo init.
+		string GetPath (string relativePath)
+		{
+			return Path.Combine (repo.Info.WorkingDirectory, relativePath);
+		}
+
+		void CreateData ()
+		{
+			int index = 0;
+			foreach (var commit in commits) {
+				foreach (var data in commit.Datas) {
+					var path = GetPath (data.File);
+					File.WriteAllText (path, data.AsText ());
+				}
+
+				repo.Stage ("*");
+
+				var gitCommit = repo.Commit ($"commit - {index}", signature, signature);
+				commit.Commit = gitCommit;
+			}
+		}
+
+		void AssertBlame (BlameData data, Commit compareCommit)
+		{
+			var blame = GetBlameForFile (compareCommit.Sha, data.File);
+
+			AssertBlame (data, blame);
+		}
+
+		void AssertBlame (BlameData data, Commit[] blame)
+		{
+			var allLines = data.ChunkLengths.Sum ();
+			Assert.AreEqual (allLines, blame.Length);
+
+			int lastIndex = 0;
+			for (int i = 0; i < data.ChunkCount; ++i) {
+				var blameCommit = blame [lastIndex];
+
+				for (int j = 0; j < data.ChunkLengths [i]; ++j) {
+					Assert.AreEqual (blameCommit, blame [lastIndex]);
+				}
+			}
 		}
 
 		[Test]
-		public void TestBlameLineCountWithMultipleCommits ()
+		public void TestFinalData ()
 		{
-			Commit[] blameCommits = GetBlameForFixedFile ("c5f4319ee3e077436e3950c8a764959d50bf57c0");
-			Assert.That (blameCommits.Length, Is.EqualTo (72));
+			Dictionary<string, BlameData> headBlames = new Dictionary<string, BlameData> ();
+			// Look for the last blame data, it has the required hunks.
+			foreach (var commit in commits) {
+				foreach (var data in commit.Datas) {
+					headBlames [data.File] = data;
+				}
+			}
+
+			foreach (var data in headBlames) {
+				AssertBlame (data.Value, repo.Head.Tip);
+			}
 		}
 
 		[Test]
-		public void TestBlameRevisionsWithMultipleCommits ()
+		public void TestCommittedData()
 		{
-			Commit[] blameCommits = GetBlameForFixedFile ("c5f4319ee3e077436e3950c8a764959d50bf57c0");
-			var blames = new List<BlameFragment> ();
-			blames.Add (new BlameFragment (1, 27, "b6e41ee2"));
-			blames.Add (new BlameFragment (28, 1, "15ed2793"));
-			blames.Add (new BlameFragment (29, 1, "a78c32a5"));
-			blames.Add (new BlameFragment (30, 5, "b6e41ee2"));
-			blames.Add(new BlameFragment(35, 2, "a78c32a5"));
-			blames.Add(new BlameFragment(37, 2, "927ca9cd"));
-			blames.Add(new BlameFragment(39, 2, "a78c32a5"));
-			blames.Add(new BlameFragment(41, 6, "b6e41ee2"));
-			blames.Add(new BlameFragment(47, 1, "927ca9cd"));
-			blames.Add(new BlameFragment(48, 3, "b6e41ee2"));
-			blames.Add(new BlameFragment(51, 2, "15ed2793"));
-			blames.Add(new BlameFragment(53, 1, "39f9d8e3"));
-			blames.Add(new BlameFragment(54, 7, "15ed2793"));
-			blames.Add(new BlameFragment(61, 2, "b6e41ee2"));
-			blames.Add(new BlameFragment(63, 1, "15ed2793"));
-			blames.Add(new BlameFragment(64, 2, "b6e41ee2"));
-			blames.Add(new BlameFragment(66, 1, "c5f4319e"));
-			blames.Add(new BlameFragment(67, 1, "b6e41ee2"));
-			blames.Add(new BlameFragment(68, 1, "c5f4319e"));
-			blames.Add(new BlameFragment(69, 4, "b6e41ee2"));
-
-			CompareBlames (blameCommits, blames);
+			foreach (var commit in commits) {
+				foreach (var data in commit.Datas) {
+					AssertBlame (data, commit.Commit);
+				}
+			}
 		}
 
 		[Test]
-		public void TestBlameRevisionsWithTwoCommits ()
+		public void BlameWithNoCommits()
 		{
-			string commit1 = "b6e41ee2dd00e8744abc4835567e06667891b2cf";
-			string commit2 = "15ed279";
-			Commit[] blameCommits = GetBlameForFixedFile (commit2);
-			var blames = new List<BlameFragment> ();
-			blames.Add (new BlameFragment (1, 27, commit1));
-			blames.Add (new BlameFragment (28, 1, commit2));
-			blames.Add (new BlameFragment (29, 5, commit1));
-			blames.Add (new BlameFragment (34, 1, commit2));
-			blames.Add (new BlameFragment (35, 7, commit1));
-			blames.Add (new BlameFragment (42, 1, commit2));
-			blames.Add (new BlameFragment (43, 3, commit1));
-			blames.Add (new BlameFragment (46, 10, commit2));
-			blames.Add (new BlameFragment (56, 2, commit1));
-			blames.Add (new BlameFragment (58, 1, commit2));
-			blames.Add (new BlameFragment (59, 4, commit1));
-			blames.Add (new BlameFragment (63, 1, commit2));
-			blames.Add (new BlameFragment (64, 4, commit1));
-			CompareBlames (blameCommits, blames);
+			Assert.Throws<NotFoundException> (() => GetBlameForFile (commits[0].Commit.Sha, ".cs"));
 		}
 
 		[Test]
-		public void TestBlameLineCountWithTwoCommits ()
+		public void BlameWithRename ()
 		{
-			Commit[] blameCommits = GetBlameForFixedFile ("15ed279");
-			Assert.That (blameCommits.Length, Is.EqualTo (67));
+			repo.Move ("a.cs", "d.cs");
+			repo.Commit ("Remove commit", signature, signature);
+
+			var dData = commits [commits.Length - 1].Datas.Single (x => x.File == "a.cs");
+
+			var commit = repo.Head.Tip;
+			var blame = GetBlameForFile (commit.Sha, "d.cs");
+
+			AssertBlame (dData, blame);
+
+			// Also assert the changekind
+			var changes = GitUtil.CompareCommits (repo, commit.Parents.Single (), commit).ToArray ();
+
+			Assert.AreEqual (1, changes.Length);
+			Assert.AreEqual (ChangeKind.Renamed, changes [0].Status);
+			Assert.AreEqual ("a.cs", changes [0].OldPath);
+			Assert.AreEqual ("d.cs", changes [0].Path);
 		}
 
 		[Test]
-		public void TestBlameRevisionsWithOneCommit ()
+		public void GetCommitChangesIgnoresUnchangedFiles ()
 		{
-			string commit = "b6e41ee2dd00e8744abc4835567e06667891b2cf";
-			Commit[] blameCommits = GetBlameForFixedFile (commit);
-			var blames = new List<BlameFragment> ();
-			blames.Add (new BlameFragment (1, 56, commit));
-			CompareBlames (blameCommits, blames);
+			var initial = commits [0];
+			var second = commits [1];
+
+			var changes = GitUtil.CompareCommits (repo, initial.Commit, second.Commit).ToArray ();
+
+			Assert.AreEqual (3, changes.Length);
+
+			var changeForB = changes.Single (x => x.Path == "b.cs");
+			var changeForC = changes.Single (x => x.Path == "c.cs");
+
+			Assert.AreEqual (ChangeKind.Modified, changeForB.Status);
+			Assert.AreEqual (ChangeKind.Added, changeForC.Status);
 		}
 
 		[Test]
-		public void TestBlameLineCountWithOneCommit ()
+		public void GetCommitChangesFromInitial ()
 		{
-			Commit[] blameCommits = GetBlameForFixedFile ("b6e41ee2dd00e8744abc4835567e06667891b2cf");
-			Assert.That (blameCommits.Length, Is.EqualTo (56));
+			var initial = commits [0];
+			var second = commits [commits.Length - 1];
+
+			var changes = GitUtil.CompareCommits (repo, initial.Commit, second.Commit).ToArray ();
+
+			Assert.AreEqual (4, changes.Length);
+
+			var changeForA = changes.Single (x => x.Path == "a.cs");
+			var changeForB = changes.Single (x => x.Path == "b.cs");
+			var changeForC = changes.Single (x => x.Path == "c.cs");
+
+			Assert.AreEqual (ChangeKind.Modified, changeForA.Status);
+			Assert.AreEqual (ChangeKind.Modified, changeForB.Status);
+			Assert.AreEqual (ChangeKind.Added, changeForC.Status);
 		}
 
 		[Test]
-		public void TestBlameLineCountWithNoCommits ()
+		public void GetCommitChangesFullHistory ()
 		{
-			Assert.Throws<NotFoundException> (() => GetBlameForFixedFile ("39fe1158de8da8b82822e299958d35c51d493298"));
-		}
+			Commit initial = null;
+			Commit second = commits [commits.Length - 1].Commit;
 
-		[Test]
-		public void TestBlameForProjectDom ()
-		{
-			Commit[] blameCommits = GetBlameForFile ("6469602e3c0ba6953fd3ef0ae01d77abe1d9ab70", "main/src/core/MonoDevelop.Core/MonoDevelop.Projects.Dom.Parser/ProjectDom.cs");
-			var blames = new List<BlameFragment> ();
-			blames.Add(new BlameFragment(1, 59, "3352c438"));
-			blames.Add(new BlameFragment(60, 5, "85dfe8a5"));
-			blames.Add(new BlameFragment(65, 3, "3352c438"));
-			blames.Add(new BlameFragment(68, 3, "c45c8708"));
-			blames.Add(new BlameFragment(71, 112, "3352c438"));
-			blames.Add(new BlameFragment(183, 1, "c7da699"));
-			blames.Add(new BlameFragment(184, 1, "3352c438"));
-			blames.Add(new BlameFragment(185, 1, "c7da699"));
-			blames.Add(new BlameFragment(186, 1, "3352c438"));
-			blames.Add(new BlameFragment(187, 9, "e2ddc3e3"));
-			blames.Add(new BlameFragment(196, 14, "3352c438"));
-			blames.Add(new BlameFragment(210, 1, "3352c438"));
-			blames.Add(new BlameFragment(211, 2, "4d06ef70"));
-			blames.Add(new BlameFragment(213, 18, "3352c438"));
-			blames.Add(new BlameFragment(231, 1, "d802c4d2"));
-			blames.Add(new BlameFragment(232, 5, "3352c438"));
-			blames.Add(new BlameFragment(237, 1, "d802c4d2"));
-			blames.Add(new BlameFragment(238, 9, "3352c438"));
-			blames.Add(new BlameFragment(247, 1, "d802c4d2"));
-			blames.Add(new BlameFragment(248, 5, "3352c438"));
-			blames.Add(new BlameFragment(253, 1, "d802c4d2"));
-			blames.Add(new BlameFragment(254, 10, "3352c438"));
-			blames.Add(new BlameFragment(264, 1, "0095b4ad"));
-			blames.Add(new BlameFragment(265, 22, "3352c438"));
-			blames.Add(new BlameFragment(287, 2, "0095b4ad"));
-			blames.Add(new BlameFragment(289, 4, "3352c438"));
-			blames.Add(new BlameFragment(293, 1, "0095b4ad"));
-			blames.Add(new BlameFragment(294, 19, "3352c438"));
-			blames.Add(new BlameFragment(313, 11, "0095b4ad"));
-			blames.Add(new BlameFragment(324, 13, "3352c438"));
-			blames.Add(new BlameFragment(337, 2, "7c9a428e"));
-			blames.Add(new BlameFragment(339, 119, "3352c438"));
-			blames.Add(new BlameFragment(458, 1, "165e9be7"));
-			blames.Add(new BlameFragment(459, 1, "3352c438"));
-			blames.Add(new BlameFragment(460, 1, "165e9be7"));
-			blames.Add(new BlameFragment(461, 43, "3352c438"));
-			blames.Add(new BlameFragment(504, 1, "37041bcf"));
-			blames.Add(new BlameFragment(505, 3, "1ee2429c"));
-			blames.Add(new BlameFragment(508, 11, "37041bcf"));
-			blames.Add(new BlameFragment(519, 1, "1ee2429c"));
-			blames.Add(new BlameFragment(520, 5, "37041bcf"));
-			blames.Add(new BlameFragment(525, 1, "1ee2429c"));
-			blames.Add(new BlameFragment(526, 1, "37041bcf"));
-			blames.Add(new BlameFragment(527, 1, "1ee2429c"));
-			blames.Add(new BlameFragment(528, 1, "37041bcf"));
-			blames.Add(new BlameFragment(529, 1, "1ee2429c"));
-			blames.Add(new BlameFragment(530, 1, "37041bcf"));
-			blames.Add(new BlameFragment(531, 11, "1ee2429c"));
-			blames.Add(new BlameFragment(542, 1, "37041bcf"));
-			//Another minor discrepancy from "git blame" on a blank line that matches what is found by "git diff"
-			blames.Add(new BlameFragment(543, 1, "1ee2429c"));
-			blames.Add(new BlameFragment(544, 2, "3352c438"));
-			blames.Add(new BlameFragment(546, 3, "37041bcf"));
-			blames.Add(new BlameFragment(549, 59, "3352c438"));
-			blames.Add(new BlameFragment(608, 1, "08a25d26"));
-			blames.Add(new BlameFragment(609, 162, "3352c438"));
-			blames.Add(new BlameFragment(771, 1, "c7da699f"));
-			blames.Add(new BlameFragment(772, 16, "3352c438"));
-			blames.Add(new BlameFragment(788, 13, "4d06ef70"));
-			blames.Add(new BlameFragment(801, 37, "c3609340"));
-			blames.Add(new BlameFragment(838, 2, "4d06ef70"));
-			blames.Add(new BlameFragment(840, 1, "0f6822a9"));
-			blames.Add(new BlameFragment(841, 1, "4d06ef70"));
-			blames.Add(new BlameFragment(842, 1, "e262ac50"));
-			blames.Add(new BlameFragment(843, 1, "4d06ef70"));
-			blames.Add(new BlameFragment(844, 2, "daabc6e1"));
-			blames.Add(new BlameFragment(846, 7, "e262ac50"));
-			blames.Add(new BlameFragment(853, 3, "4d06ef70"));
-			blames.Add(new BlameFragment(856, 37, "3352c438"));
-			blames.Add(new BlameFragment(893, 1, "cc279afd"));
-			blames.Add(new BlameFragment(894, 121, "3352c438"));
-			blames.Add(new BlameFragment(1015, 10, "85dfe8a5"));
-			blames.Add(new BlameFragment(1025, 43, "3352c438"));
-			CompareBlames(blameCommits, blames);
-		}
+			var changes = GitUtil.CompareCommits (repo, initial, second).ToArray ();
 
-		[Test]
-		public void GetCommitChangesAddedRemoved ()
-		{
-			var commit = "9ed729ee";
-			var com = repo.Lookup<Commit> (commit);
-			var changes = GitUtil.CompareCommits (repo, com.Parents.First (), com).ToArray ();
-
-			var add = changes.First (c => c.Path.EndsWith ("DocumentLine.cs", StringComparison.Ordinal));
-			var remove = changes.First (c => c.OldPath.EndsWith ("LineSegment.cs", StringComparison.Ordinal));
-
-			Assert.AreEqual (ChangeKind.Renamed, add.Status, "#1");
-			Assert.AreEqual ("main/src/core/Mono.Texteditor/Mono.TextEditor/Document/LineSegment.cs".Replace ('/', Path.DirectorySeparatorChar), add.OldPath, "#2");
-			Assert.AreEqual (ChangeKind.Renamed, remove.Status, "#3");
-			Assert.AreEqual ("main/src/core/Mono.Texteditor/Mono.TextEditor/Document/DocumentLine.cs".Replace ('/', Path.DirectorySeparatorChar), remove.Path, "#4");
-		}
-
-		[Test]
-		public void GetCommitChangesModifications ()
-		{
-			var commit = "c6798c34577";
-			var changedFiles = new [] {
-				"EditActions.cs",
-				"SourceEditorView.cs",
-				"SourceEditorWidget.cs",
-				"DeleteActions.cs",
-				"DocumentUpdateRequest.cs",
-				"FoldMarkerMargin.cs",
-				"HeightTree.cs",
-				"LineSplitter.cs",
-				"TextDocument.cs",
-				"TextEditor.cs",
-				"TextViewMargin.cs",
-			};
-
-			var c = repo.Lookup<Commit> (commit);
-			var changes = GitUtil.CompareCommits (repo, c.Parents.First (), c).ToArray ();
-			Assert.AreEqual (11, changes.Length, "#1");
-
-			foreach (var file in changedFiles)
-				Assert.IsTrue (changes.Any (f => f.Path.EndsWith (".cs", StringComparison.Ordinal)), "#2." + file);
-		}
-
-		Commit[] GetBlameForFixedFile (string revision)
-		{
-			string filePath = "main/src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitVersionControl.cs";
-			return GetBlameForFile (revision, filePath);
+			Assert.AreEqual (4, changes.Length);
+			Assert.That (changes.Select (x => x.Status), Is.All.EqualTo (ChangeKind.Added));
 		}
 
 		Commit[] GetBlameForFile (string revision, string filePath)
 		{
 			Commit[] blame;
-			string path = PROJECT_ROOT + filePath;
-			string key = path + revision;
+			string key = filePath + revision;
 			blames.TryGetValue(key, out blame);
 
 			if (blame == null)
@@ -291,31 +298,6 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			}
 
 			return blame;
-		}
-
-		static void CompareBlames (Commit[] blameCommits,List<BlameFragment> blames)
-		{
-			foreach (BlameFragment blame in blames) {
-				int zeroBasedStartLine = blame.StartLine - 1;
-
-				for (int i = 0; i < blame.LineCount; i++) {
-					Assert.That (blameCommits [zeroBasedStartLine + i].Id.Sha, Is.StringStarting (blame.RevID), "Error at line {0}", blame.StartLine + i);
-				}
-			}
-		}
-	}
-
-	struct BlameFragment
-	{
-		public int StartLine;
-		public int LineCount;
-		public string RevID;
-
-		public BlameFragment (int start,int count, string revision)
-		{
-			StartLine = start;
-			LineCount = count;
-			RevID = revision;
 		}
 	}
 }
