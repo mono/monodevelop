@@ -33,6 +33,10 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
+using Microsoft.CodeAnalysis.Host;
+using Microsoft.CodeAnalysis.SolutionCrawler;
+using Microsoft.CodeAnalysis.SolutionSize;
 
 namespace MonoDevelop.Ide
 {
@@ -109,6 +113,53 @@ namespace MonoDevelop.Ide
 			try {
 				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
 				await tcs.Task;
+			} finally {
+				await IdeApp.Workspace.Close (false);
+			}
+		}
+
+		[Test]
+		public async Task TestWorkspacePersistentStorage ()
+		{
+			//Initialize IdeApp so IdeApp.Workspace is not null
+			if (!IdeApp.IsInitialized)
+				IdeApp.Initialize (new ProgressMonitor ());
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			var tcs = new TaskCompletionSource<Solution> ();
+			IdeApp.Workspace.SolutionLoaded += (s, e) => {
+				tcs.SetResult (e.Solution);
+			};
+			try {
+				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
+				var sol = await tcs.Task;
+				var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol);
+
+				var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.GetExportedValue<ISolutionSizeTracker> ();
+
+				// This will return the tracker, since it's a singleton.
+				var analyzer = solutionSizeTracker.CreateIncrementalAnalyzer (ws);
+
+				// We need this hack because we can't guess when the work coordinator will run the incremental analyzers.
+				await analyzer.NewSolutionSnapshotAsync (ws.CurrentSolution, CancellationToken.None);
+
+				foreach (var projectFile in sol.GetAllProjects ().SelectMany (x => x.Files.Where (file => file.BuildAction == BuildAction.Compile))) {
+					var projectId = ws.GetProjectId (projectFile.Project);
+					var docId = ws.GetDocumentId (projectId, projectFile.FilePath);
+					var doc = ws.GetDocument (docId);
+					if (!doc.SupportsSyntaxTree)
+						continue;
+
+					await Microsoft.CodeAnalysis.FindSymbols.SyntaxTreeIndex.PrecalculateAsync (doc, CancellationToken.None);
+				}
+
+				var storageLocationService = ws.Services.GetService<IPersistentStorageLocationService> ();
+				var storageLocation = System.IO.Path.Combine (
+					storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id),
+					"sqlite3",
+					"storage.ide");
+
+				var fi = new System.IO.FileInfo (storageLocation);
+				Assert.That (fi.Length, Is.GreaterThan (0));
 			} finally {
 				await IdeApp.Workspace.Close (false);
 			}
