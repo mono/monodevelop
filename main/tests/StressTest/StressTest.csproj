@@ -92,12 +92,16 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
+      <PropertyGroup>
+        <MonoAddinsDir>..\..\external\mono-addins</MonoAddinsDir>
+      </PropertyGroup>
       <ItemGroup>
           <TestProjectFiles Include="TestProject\**" />
-          <MonoAddinsFiles Include="..\..\external\mono-addins\Mono.Addins\**" />
+          <MonoAddinsFiles Include="$(MonoAddinsDir)\Mono.Addins\**" Exclude="$(MonoAddinsDir)\Mono.Addins\obj\**;$(MonoAddinsDir)\**\.DS_Store"/>
       </ItemGroup>
       <Copy SourceFiles="@(TestProjectFiles)" DestinationFolder="$(OutputPath)\TestProject\%(RecursiveDir)" SkipUnchangedFiles="true" />
-      <Copy SourceFiles="@(MonoAddinsFiles)" DestinationFolder="$(OutputPath)\TestProject\mono-addins\%(RecursiveDir)" SkipUnchangedFiles="true" />
+      <Copy SourceFiles="@(MonoAddinsFiles)" DestinationFolder="$(OutputPath)\TestProject\mono-addins\Mono.Addins\%(RecursiveDir)" SkipUnchangedFiles="true" />
+      <Copy SourceFiles="$(MonoAddinsDir)\Version.props;$(MonoAddinsDir)\mono-addins.snk" DestinationFolder="$(OutputPath)\TestProject\mono-addins" SkipUnchangedFiles="true" />
   </Target>
   <ProjectExtensions>
     <MonoDevelop>
