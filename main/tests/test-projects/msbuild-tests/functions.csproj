@@ -37,6 +37,7 @@
 	<CharTrim>$(Path.Trim (\b))</CharTrim>
 	<OutDir>foo</OutDir>
 	<FullPath>$([System.IO.Path]::GetFullPath(`$([System.IO.Path]::Combine(`$(MSBuildProjectDirectory)`, `$(OutDir)`))`))</FullPath>
+    <FullPathWithSpaces>$([System.IO.Path]::GetFullPath(`$([System.IO.Path]::Combine(`$(MSBuildProjectDirectory)`, `(a b)`))`))</FullPathWithSpaces>
 	<P1>AAA</P1>
 	<Files>$(P1);@(File)</Files>
 	<Prefix>Post</Prefix>
@@ -60,4 +61,5 @@
   <ItemGroup>
 	<File Include="$(P1).$(Prefix)Test2" />
   </ItemGroup>
+  <Import Project="(some files)\functions.props" />
 </Project>
