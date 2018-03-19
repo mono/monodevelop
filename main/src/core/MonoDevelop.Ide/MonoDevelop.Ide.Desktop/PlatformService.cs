@@ -301,15 +301,19 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			IFilePathRegistryService filePathRegistryService = CompositionManager.GetExportedValue<IFilePathRegistryService> ();
 
-			IContentType contentType = filePathRegistryService.GetContentTypeForPath (fileName);
-			if (contentType != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {
-				string mimeType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType(contentType);
-				if (mimeType != null) {
-					MimeTypeNode mt = FindMimeType(mimeType);
-					if (mt != null) {
-						return mt;
+			try {
+				IContentType contentType = filePathRegistryService.GetContentTypeForPath (fileName);
+				if (contentType != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {
+					string mimeType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType (contentType);
+					if (mimeType != null) {
+						MimeTypeNode mt = FindMimeType (mimeType);
+						if (mt != null) {
+							return mt;
+						}
 					}
 				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("IFilePathRegistryService query failed", ex);
 			}
 
 			foreach (MimeTypeNode mt in mimeTypeNodes) {
