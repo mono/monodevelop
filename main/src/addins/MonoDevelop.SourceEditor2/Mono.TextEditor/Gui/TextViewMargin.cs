@@ -332,7 +332,6 @@ namespace Mono.TextEditor
 		{
 			for (int i = 0; i < e.TextChanges.Count; ++i) {
 				var change = e.TextChanges[i];
-				RemoveCachedLine (Document.OffsetToLineNumber (change.NewOffset));
 				if (mouseSelectionMode == MouseSelectionMode.Word && change.Offset < mouseWordStart) {
 					int delta = change.ChangeDelta;
 					mouseWordStart += delta;
@@ -1322,10 +1321,25 @@ namespace Mono.TextEditor
 			cacheSrc = new CancellationTokenSource ();
 			cachedLines.Clear ();
 		}
-
 		public void PurgeLayoutCache ()
 		{
 			DisposeLayoutDict ();
+		}
+
+		void PurgeLayoutCacheAfter (int lineNumber)
+		{
+			foreach (var descr in layoutDict.ToArray()) {
+				if (descr.Key >= lineNumber) {
+					descr.Value.Dispose ();
+					layoutDict.Remove (descr.Key);
+				}
+			}
+
+			foreach (var descr in cachedLines.ToArray()) {
+				if (descr.Key >= lineNumber) {
+					cachedLines.Remove (descr.Key);
+				}
+			}
 		}
 
 		class ChunkDescriptor : LineDescriptor
@@ -1353,20 +1367,28 @@ namespace Mono.TextEditor
 			var token = cacheSrc.Token;
 			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
 			if (task.IsCompleted) {
-				if (result != null && ShouldUpdateSpan (result, task.Result))
-					textEditor.QueueDraw ();
-				cachedLines [lineNumber] = task.Result;
+				UpdateLineHighlight (lineNumber, result, task.Result);
 				return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
 			}
 			task.ContinueWith (t => {
-				cachedLines [lineNumber] = t.Result;
-				if (result != null && ShouldUpdateSpan (result, t.Result)) {
-					textEditor.QueueDraw ();
-				} else {
+				if (UpdateLineHighlight (lineNumber, result, t.Result)) {
+					RemoveCachedLine (lineNumber)
 					Document.CommitLineUpdate (line);
 				}
 			}, token, TaskContinuationOptions.OnlyOnRanToCompletion, Runtime.MainTaskScheduler);
 			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
+		}
+
+		bool UpdateLineHighlight (int lineNumber, HighlightedLine oldLine, HighlightedLine newLine)
+		{
+			if (oldLine != null && ShouldUpdateSpan (oldLine, newLine)) {
+				PurgeLayoutCacheAfter (lineNumber);
+				cachedLines [lineNumber] = newLine;
+				textEditor.QueueDraw ();
+				return false;
+			}
+			cachedLines [lineNumber] = newLine;
+			return true;
 		}
 
 		static bool ShouldUpdateSpan (HighlightedLine line1, HighlightedLine line2)

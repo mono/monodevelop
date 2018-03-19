@@ -188,7 +188,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				int lastMatch = -1;
 				var highlightedSegment = new TextSegment (startOffset, length);
 				string lineText = text.GetTextAt (startOffset, length);
-
+				var initialState = state.Clone ();
 				int timeoutOccursAt;
 				unchecked {
 					timeoutOccursAt = Environment.TickCount + (int)matchTimeout.TotalMilliseconds;
@@ -330,7 +330,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					segments.Add (new ColoredSegment (curSegmentOffset, endOffset - curSegmentOffset, ScopeStack));
 				}
 
-				return Task.FromResult (new HighlightedLine (highlightedSegment, segments));
+				return Task.FromResult (new HighlightedLine (highlightedSegment, segments) {
+					IsContinuedBeyondLineEnd = !initialState.Equals (state)
+				});
 			}
 
 			void PushStack (SyntaxMatch curMatch, IEnumerable<SyntaxContext> nextContexts)
