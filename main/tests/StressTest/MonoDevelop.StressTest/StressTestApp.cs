@@ -111,7 +111,7 @@ namespace MonoDevelop.StressTest
 
 		public static string GetMonoDevelopMainPath ()
 		{
-			return Path.GetFullPath (Path.Combine ("..", ".."));
+			return Path.GetFullPath (Path.Combine ("..", "..", "..", ".."));
 		}
 
 		string GetDefaultMonoDevelopBinPath ()
