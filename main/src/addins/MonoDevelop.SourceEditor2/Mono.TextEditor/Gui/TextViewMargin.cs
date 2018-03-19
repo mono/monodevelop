@@ -1371,20 +1371,31 @@ namespace Mono.TextEditor
 			}
 			var token = cacheSrc.Token;
 			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
-			if (task.IsCompleted) {
+			switch (task.Status)  {
+			case TaskStatus.Faulted:
+				LoggingService.LogError ("Error while highlighting line " + lineNumber, task.Exception);
+				break;
+			case TaskStatus.RanToCompletion:
 				if (task.Result != null) {
 					UpdateLineHighlight (lineNumber, result, task.Result);
 					return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
 				}
+				break;
+			default:
+				task.ContinueWith (t => {
+					if (t.Status == TaskStatus.Faulted) {
+						LoggingService.LogError ("Error while highlighting line " + lineNumber, t.Exception);
+						return;
+					}
+					if (t.Result == null)
+						return;
+					if (UpdateLineHighlight (lineNumber, result, t.Result)) {
+						RemoveCachedLine (lineNumber);
+						Document.CommitLineUpdate (line);
+					}
+				}, Runtime.MainTaskScheduler);
+				break;
 			}
-			task.ContinueWith (t => {
-				if (t.Result == null)
-					return;
-				if (UpdateLineHighlight (lineNumber, result, t.Result)) {
-					RemoveCachedLine (lineNumber);
-					Document.CommitLineUpdate (line);
-				}
-			}, token, TaskContinuationOptions.OnlyOnRanToCompletion, Runtime.MainTaskScheduler);
 			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
 		}
 
