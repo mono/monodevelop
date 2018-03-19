@@ -563,6 +563,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		public void Open (ITrackingSpan triggerSpan, IList<CompletionItem> items, CompletionItem selectedItem, CompletionItem suggestionModeItem, bool suggestionMode, bool isSoftSelected)
 		{
+			Instance = this;
 			textView.Properties ["RoslynCompletionPresenterSession.IsCompletionActive"] = true;
 			box.ShowAll ();
 			var manager = textView.GetSpaceReservationManager ("completion");
@@ -593,6 +594,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		public void Close ()
 		{
+			Instance = null;
 			textView.Properties ["RoslynCompletionPresenterSession.IsCompletionActive"] = false;
 			if (descriptionWindow != null) {
 				descriptionWindow.Destroy ();
