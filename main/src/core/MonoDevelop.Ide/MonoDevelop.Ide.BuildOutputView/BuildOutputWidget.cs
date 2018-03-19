@@ -177,6 +177,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			treeView = new TreeView ();
 			treeView.HeadersVisible = false;
+			treeView.AnimationsEnabled = false;
 			treeView.BorderVisible = false;
 			treeView.UseAlternatingRowColors = true;
 			treeView.Accessible.Identifier = "BuildOutputWidget.TreeView";
