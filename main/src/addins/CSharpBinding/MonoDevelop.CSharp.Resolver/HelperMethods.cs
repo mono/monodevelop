@@ -97,7 +97,7 @@ namespace MonoDevelop.CSharp
 
 		public static OptionSet GetFormattingOptions (this DocumentContext doc)
 		{
-			return doc.AnalysisDocument.GetOptionsAsync ().WaitAndGetResult (default(CancellationToken));
+			return doc.GetOptionsAsync ().WaitAndGetResult (default(CancellationToken));
 		}
 
 //		public static bool TryResolveAt (this DocumentContext documentContext, DocumentLocation loc, out ResolveResult result, out AstNode node)
