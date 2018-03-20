@@ -58,11 +58,6 @@
       <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\external\debugger-libs\UnitTests\MonoDevelop.Debugger.Tests.TestApp\MonoDevelop.Debugger.Tests.TestApp.csproj">
-      <Project>{05EDFE55-C8D1-47E4-BB61-0BC809CD82E2}</Project>
-      <Name>MonoDevelop.Debugger.Tests.TestApp</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
@@ -88,4 +83,15 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+	
+  <Target Name="AfterBuild">
+      <PropertyGroup>
+        <UnitTestsDir>..\..\..\..\external\debugger-libs\UnitTests</UnitTestsDir>
+      </PropertyGroup>
+      <ItemGroup>
+          <TestProjectFiles Include="$(UnitTestsDir)\**" Exclude="$(UnitTestsDir)\Mono.Debugging.Tests\**;$(UnitTestsDir)\**\.DS_Store" />
+      </ItemGroup>
+      <Copy SourceFiles="@(TestProjectFiles)" DestinationFolder="$(OutputPath)\DebuggerTestProjects\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>
