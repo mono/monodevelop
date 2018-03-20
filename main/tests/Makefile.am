@@ -7,6 +7,7 @@ RUN_TEST=$(MDTOOL_RUN) run-md-tests
 TEST_DIR=$(top_builddir)/build/tests
 EXTERNAL=$(top_builddir)/external
 MACOS_10_10=$(shell (test `sw_vers -productVersion | cut -f1 -d.` = 10 && test `sw_vers -productVersion | cut -f2 -d.` -ge 10) && echo yes)
+TEST_DEPLOY_DIR=$(top_builddir)/build/test-deploy
 
 TEST_PROJECTS_MAC = \
 	MacPlatform.Tests/MacPlatform.Tests.csproj
@@ -124,6 +125,16 @@ coverage:
 		done; \
 	fi
 
+deploy-tests:
+	mkdir -p "$(TEST_DEPLOY_DIR)/tests/test-projects"
+	cp -r $(TEST_DIR)/ "$(TEST_DEPLOY_DIR)/tests"; \
+	cp -r $(top_srcdir)/tests/test-projects "$(TEST_DEPLOY_DIR)/tests"; \
+	for asm in $(TEST_ASSEMBLIES); do \
+		if ! [ -e $(TEST_DIR)/`basename $$asm` ]; then \
+			cp -r `dirname $$asm`/* "$(TEST_DEPLOY_DIR)/tests"; \
+		fi \
+	done;
+
 include $(top_srcdir)/Makefile.include
 
 EXTRA_DIST = \
@@ -182,4 +193,4 @@ EXTRA_DIST = \
 	test-projects/console-project/ConsoleProject/Properties/AssemblyInfo.cs \
 	test-projects/console-project/ConsoleProject/Program.cs \
 	test-projects/console-project/ConsoleProject.sln
-
+    
