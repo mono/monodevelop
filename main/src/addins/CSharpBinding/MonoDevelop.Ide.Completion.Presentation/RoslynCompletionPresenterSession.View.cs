@@ -565,6 +565,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		{
 			Instance = this;
 			textView.Properties ["RoslynCompletionPresenterSession.IsCompletionActive"] = true;
+			textView.LostAggregateFocus += CloseOnTextviewLostFocus;
 			box.ShowAll ();
 			var manager = textView.GetSpaceReservationManager ("completion");
 			agent = manager.CreatePopupAgent (triggerSpan, Microsoft.VisualStudio.Text.Adornments.PopupStyles.None, Xwt.Toolkit.CurrentEngine.WrapWidget (box, Xwt.NativeWidgetSizing.DefaultPreferredSize));
@@ -580,6 +581,12 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			manager.AddAgent (agent);
 			textView.QueueSpaceReservationStackRefresh ();
 		}
+
+		private void CloseOnTextviewLostFocus (object sender, EventArgs e)
+		{
+			Close ();
+		}
+
 		ITrackingSpan triggerSpan;
 		public void Update (ITrackingSpan triggerSpan, IList<CompletionItem> items, CompletionItem selectedItem, CompletionItem suggestionModeItem, bool suggestionMode, bool isSoftSelected)
 		{
@@ -594,6 +601,8 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		public void Close ()
 		{
+			Dismissed?.Invoke (this, EventArgs.Empty);
+			textView.LostAggregateFocus -= CloseOnTextviewLostFocus;
 			Instance = null;
 			textView.Properties ["RoslynCompletionPresenterSession.IsCompletionActive"] = false;
 			if (descriptionWindow != null) {
