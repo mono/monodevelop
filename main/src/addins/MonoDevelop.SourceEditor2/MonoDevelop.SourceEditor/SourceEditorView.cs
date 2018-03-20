@@ -264,6 +264,9 @@ namespace MonoDevelop.SourceEditor
 
 			Document_MimeTypeChanged(this, EventArgs.Empty);
 			widget.TextEditor.Document.MimeTypeChanged += Document_MimeTypeChanged;
+			if (loadedInCtor) {
+				Document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
+			}
 		}
 
 
@@ -916,7 +919,7 @@ namespace MonoDevelop.SourceEditor
 
 					string text = null;
 					if (loadEncoding == null) {
-						text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText(fileName, out loadEncoding);
+						text = TextFileUtility.ReadAllText(fileName, out loadEncoding);
 					} else {
 						text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText(fileName, loadEncoding);
 					}
@@ -929,8 +932,8 @@ namespace MonoDevelop.SourceEditor
 						document.DiffTracker.Reset();
 					} else {
 						document.Text = text;
-						document.DiffTracker.SetBaseDocument(Document.CreateDocumentSnapshot());
 					}
+					document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
 
 					didLoadCleanly = true;
 				}

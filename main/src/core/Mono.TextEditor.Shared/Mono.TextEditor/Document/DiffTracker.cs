@@ -33,9 +33,13 @@ namespace Mono.TextEditor
 	{
 		class LineChangeInfo
 		{
+			internal readonly static LineChangeInfo Unchanged = new LineChangeInfo (TextDocument.LineState.Unchanged);
+			internal readonly static LineChangeInfo Dirty = new LineChangeInfo (TextDocument.LineState.Dirty);
+			internal readonly static LineChangeInfo Changed = new LineChangeInfo (TextDocument.LineState.Changed);
+
 			public Mono.TextEditor.TextDocument.LineState state;
 
-			public LineChangeInfo (Mono.TextEditor.TextDocument.LineState state)
+			LineChangeInfo (Mono.TextEditor.TextDocument.LineState state)
 			{
 				this.state = state;
 			}
@@ -71,6 +75,8 @@ namespace Mono.TextEditor
 				return;
 			for(int i = e.TextChanges.Count - 1; i >= 0; i--) {
 				var change = e.TextChanges[i];
+				if (change.RemovalLength == 0)
+					continue;
 				var startLine = trackDocument.GetLineByOffset (change.Offset);
 				var endRemoveLine = trackDocument.GetLineByOffset (change.Offset + change.RemovalLength);
 				if (startLine == null || endRemoveLine == null)
@@ -91,17 +97,20 @@ namespace Mono.TextEditor
 				var startLine = trackDocument.GetLineByOffset (change.NewOffset);
 				var endLine = trackDocument.GetLineByOffset (change.NewOffset + change.InsertionLength);
 				var lineNumber = startLine.LineNumber;
-				var oldState = lineNumber < lineStates.Count ? lineStates [lineNumber] : null;
-				if (oldState != null && oldState.state == TextDocument.LineState.Dirty)
-					continue;
 				var insertedLines = endLine.LineNumber - lineNumber;
-				try {
-					lineStates [lineNumber] = new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty);
+				if (insertedLines == 0) {
+					var oldState = lineNumber < lineStates.Count ? lineStates [lineNumber] : null;
+					if (oldState != null && oldState.state == TextDocument.LineState.Dirty) 
+						continue;
+					lineStates[lineNumber] = LineChangeInfo.Dirty;
 					if (trackDocument != null)
-						trackDocument.CommitLineUpdate (lineNumber);
-					while (insertedLines-- > 0) {
-						lineStates.Insert (lineNumber, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty));
-					}
+						trackDocument.CommitMultipleLineUpdate (lineNumber, lineNumber + insertedLines);
+					continue;
+				}
+				try {
+					lineStates.InsertRange (lineNumber, insertedLines , LineChangeInfo.Dirty);
+					if (trackDocument != null)
+						trackDocument.CommitMultipleLineUpdate (lineNumber, lineNumber + insertedLines);
 				} catch (Exception ex) {
 					Console.WriteLine ("error while DiffTracker.TrackDocument_TextChanged:" + ex);
 				}
@@ -113,11 +122,11 @@ namespace Mono.TextEditor
 			if (lineStates != null) {
 				foreach (var node in lineStates.tree) {
 					if (node.value.state == Mono.TextEditor.TextDocument.LineState.Dirty)
-						node.value.state = Mono.TextEditor.TextDocument.LineState.Changed;
+						node.value = LineChangeInfo.Changed;
 				}
 			} else {
 				lineStates = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
-				lineStates.InsertRange(0, document.LineCount + 1, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Unchanged));
+				lineStates.InsertRange (0, document.LineCount + 1, LineChangeInfo.Unchanged);
 				trackDocument.TextChanging += TrackDocument_TextChanging;
 				trackDocument.TextChanged += TrackDocument_TextChanged;
 			}
@@ -126,7 +135,7 @@ namespace Mono.TextEditor
 		public void Reset ()
 		{
 			lineStates = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
-			lineStates.InsertRange(0, trackDocument.LineCount + 1, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Unchanged));
+			lineStates.InsertRange(0, trackDocument.LineCount + 1, LineChangeInfo.Unchanged);
 		}
 	}
 }

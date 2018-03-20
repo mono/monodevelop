@@ -37,7 +37,7 @@ namespace Mono.TextEditor.Utils
 
 		internal class CompressingNode : IRedBlackTreeNode
 		{
-			internal readonly T value;
+			internal T value;
 			internal int count, totalCount;
 
 			public CompressingNode (T value, int count)

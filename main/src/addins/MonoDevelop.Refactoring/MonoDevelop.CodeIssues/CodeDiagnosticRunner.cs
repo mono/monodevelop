@@ -196,7 +196,7 @@ namespace MonoDevelop.CodeIssues
 					if (DataHasTag (data, WellKnownDiagnosticTags.EditAndContinue))
 						continue;
 
-					if (!diagnosticTable [data.Id].IsEnabled)
+					if (!diagnosticTable.TryGetValue (data.Id, out var desc) || !desc.IsEnabled)
 						continue;
 					
 					var diagnostic = await data.ToDiagnosticAsync (analysisDocument, cancellationToken);
