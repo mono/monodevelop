@@ -19,6 +19,6 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="${Name}.cshtml" src="RazorPage.cshtml" />
+		<File name="${Name}.cshtml" src="RazorPage.cshtml" BuildAction="Content" />
 	</TemplateFiles>
 </Template>
