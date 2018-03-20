@@ -97,43 +97,32 @@ namespace MonoDevelop.Ide
 		}
 
 		[Test]
-		public async Task TestWorkspaceImmediatelyAvailable ()
+		public async Task TestWorkspacePersistentStorageLocationService ()
 		{
-			//Initialize IdeApp so IdeApp.Workspace is not null
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			var tcs = new TaskCompletionSource<bool> ();
-			IdeApp.Workspace.SolutionLoaded += (s, e) => {
-				var workspace = TypeSystemService.GetWorkspace (e.Solution);
-				Assert.IsNotNull (workspace);
-				Assert.AreNotSame (workspace, TypeSystemService.emptyWorkspace);
-				tcs.SetResult (true);
-			};
-			try {
-				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
-				await tcs.Task;
-			} finally {
-				await IdeApp.Workspace.Close (false);
+
+			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
+				Assert.That (storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id), Is.Not.Null.Or.Empty);
 			}
 		}
 
 		[Test]
 		public async Task TestWorkspacePersistentStorage ()
 		{
-			//Initialize IdeApp so IdeApp.Workspace is not null
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			var tcs = new TaskCompletionSource<Solution> ();
-			IdeApp.Workspace.SolutionLoaded += (s, e) => {
-				tcs.SetResult (e.Solution);
-			};
-			try {
-				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
-				var sol = await tcs.Task;
-				var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol);
 
+			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
+				var storageLocation = System.IO.Path.Combine (
+					storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id),
+					"sqlite3",
+					"storage.ide");
+
+				System.IO.File.Delete (storageLocation);
+				
 				var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.GetExportedValue<ISolutionSizeTracker> ();
 
 				// This will return the tracker, since it's a singleton.
@@ -152,14 +141,29 @@ namespace MonoDevelop.Ide
 					await Microsoft.CodeAnalysis.FindSymbols.SyntaxTreeIndex.PrecalculateAsync (doc, CancellationToken.None);
 				}
 
-				var storageLocationService = ws.Services.GetService<IPersistentStorageLocationService> ();
-				var storageLocation = System.IO.Path.Combine (
-					storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id),
-					"sqlite3",
-					"storage.ide");
-
 				var fi = new System.IO.FileInfo (storageLocation);
 				Assert.That (fi.Length, Is.GreaterThan (0));
+			}
+		}
+
+		[Test]
+		public async Task TestWorkspaceImmediatelyAvailable ()
+		{
+			//Initialize IdeApp so IdeApp.Workspace is not null
+			if (!IdeApp.IsInitialized)
+				IdeApp.Initialize (new ProgressMonitor ());
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			var tcs = new TaskCompletionSource<bool> ();
+			IdeApp.Workspace.SolutionLoaded += (s, e) => {
+				var workspace = TypeSystemService.GetWorkspace (e.Solution);
+				Assert.IsNotNull (workspace);
+				Assert.AreNotSame (workspace, TypeSystemService.emptyWorkspace);
+				workspace.Dispose ();
+				tcs.SetResult (true);
+			};
+			try {
+				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
+				await tcs.Task;
 			} finally {
 				await IdeApp.Workspace.Close (false);
 			}
