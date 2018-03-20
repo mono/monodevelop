@@ -121,7 +121,8 @@ namespace MonoDevelop.Ide
 					"sqlite3",
 					"storage.ide");
 
-				System.IO.File.Delete (storageLocation);
+				if (System.IO.File.Exists (storageLocation))
+					System.IO.File.Delete (storageLocation);
 				
 				var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.GetExportedValue<ISolutionSizeTracker> ();
 
