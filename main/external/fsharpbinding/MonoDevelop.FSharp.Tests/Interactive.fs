@@ -22,7 +22,7 @@ module Interactive =
         async {
             let (/) a b = Path.Combine(a,b)
             let testDllFolder = Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName
-            let pathToExe = "\"" + testDllFolder/".."/".."/".."/".."/".."/"build"/"AddIns"/"FSharpBinding"/"MonoDevelop.FSharpInteractive.Service.exe\""
+            let pathToExe = "\"" + testDllFolder/"MonoDevelop.FSharpInteractive.Service.exe\""
             let ses = InteractiveSession(pathToExe)
             ses.StartReceiving()
             let finished = new AutoResetEvent(false) // using AutoResetEvent because I can't get Async.AwaitEvent to work here without a hang
