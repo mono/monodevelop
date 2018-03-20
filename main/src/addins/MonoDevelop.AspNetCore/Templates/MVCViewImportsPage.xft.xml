@@ -19,6 +19,6 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="${Name}.cshtml" src="MVCViewImportsPage.cshtml" />
+		<File name="${Name}.cshtml" src="MVCViewImportsPage.cshtml" BuildAction="Content" />
 	</TemplateFiles>
 </Template>

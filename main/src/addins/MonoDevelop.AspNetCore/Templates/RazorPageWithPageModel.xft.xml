@@ -19,7 +19,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="${Name}.cshtml" src="RazorPageWithPageModel.cshtml" />
-		<File name="${Name}.cshtml.cs" src="RazorPageWithPageModel.cshtml.cs" DependsOn="${Name}.cshtml"  />
+		<File name="${Name}.cshtml" src="RazorPageWithPageModel.cshtml" BuildAction="Content" />
+		<File name="${Name}.cshtml.cs" src="RazorPageWithPageModel.cshtml.cs" />
 	</TemplateFiles>
 </Template>
