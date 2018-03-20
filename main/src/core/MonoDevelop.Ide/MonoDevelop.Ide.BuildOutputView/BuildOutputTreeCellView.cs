@@ -359,33 +359,35 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		protected override Size OnGetRequiredSize ()
+		protected override Size OnGetRequiredSize (SizeConstraint widthConstraint)
 		{
 			var buildOutputNode = GetValue (BuildOutputNodeField);
 			var status = GetViewStatus (buildOutputNode);
 
-			var minWidth = ImageSize + MinLayoutWidth + DefaultInformationContainerWidth;
+			double minWidth = ImageSize + MinLayoutWidth + DefaultInformationContainerWidth;
+			if (widthConstraint.IsConstrained)
+				minWidth = Math.Max (minWidth, widthConstraint.AvailableSize);
 
 			// in collapsed state we have always the same height and require the minimal width
 			// if the layout height has not been calculated yet, use the ImageSize for the height
-			if (!status.Expanded)
+			if (!status.Expanded) {
 				return new Size (minWidth, status.CollapsedRowHeight > -1 ? status.CollapsedRowHeight : ImageSize);
+			}
+
+			double maxLayoutWidth;
+			if (widthConstraint.IsConstrained)
+				maxLayoutWidth = minWidth - ((BuildExpandIcon.Width - 3) + ImageSize + DefaultInformationContainerWidth);
+			else
+				maxLayoutWidth = status.LastRenderLayoutBounds.Width - BuildExpandIcon.Width - 3;
 
 			TextLayout layout = status.GetUnconstrainedLayout ();
 			layout.Markup = buildOutputNode.Message;
+			layout.Width = maxLayoutWidth;
 			var textSize = layout.GetSize ();
-
-			// When in expanded mode, the height of the row depends on the width. Since we don't know the width,
-			// let's use the last width that was used for rendering.
-
-			if (status.LastRenderLayoutBounds.Width >= 0 && textSize.Width > status.LastRenderLayoutBounds.Width) {
-				layout.Width = status.LastRenderLayoutBounds.Width - BuildExpandIcon.Width - 3;
-				textSize = layout.GetSize ();
-			}
 			status.LastCalculatedHeight = textSize.Height;
-			textSize.Height = Math.Max (textSize.Height + 2 * status.LayoutYPadding, ImageSize);
+			var height = Math.Max (textSize.Height + 2 * status.LayoutYPadding, ImageSize);
 
-			return new Size (minWidth, textSize.Height);
+			return new Size (minWidth, height);
 		}
 
 		Color GetSelectedColor ()
