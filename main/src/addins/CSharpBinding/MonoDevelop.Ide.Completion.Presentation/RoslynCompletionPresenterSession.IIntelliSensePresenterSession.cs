@@ -38,5 +38,10 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			Close ();
 			Dismissed?.Invoke (this, EventArgs.Empty);
 		}
+
+		public void Dismiss ()
+		{
+			(this as IIntelliSensePresenterSession).Dismiss ();
+		}
 	}
 }
