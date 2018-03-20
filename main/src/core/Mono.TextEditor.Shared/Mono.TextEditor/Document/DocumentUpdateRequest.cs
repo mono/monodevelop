@@ -84,12 +84,8 @@ namespace Mono.TextEditor
 		public override void Update (MonoTextEditor editor)
 		{
 			if (start == end) {
-				editor.TextViewMargin.RemoveCachedLine (start);
 				editor.RedrawLine (start);
 			} else {
-				for (int i = start; i <= end; i++) {
-					editor.TextViewMargin.RemoveCachedLine (i);
-				}
 				editor.RedrawLines (start, end);
 			}
 		}
