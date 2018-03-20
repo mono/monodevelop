@@ -104,6 +104,9 @@
       <Private>False</Private>
       <HintPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.Compiler.Interactive.Settings">
+      <HintPath>..\MonoDevelop.FSharpi.Service\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup>
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
@@ -195,6 +198,11 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Compile Include="SolutionPadOrdering.fs" />
+    <None Include="..\..\..\build\AddIns\FSharpBinding\MonoDevelop.FSharpInteractive.Service.exe">
+      <Link>MonoDevelop.FSharpInteractive.Service.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="..\.paket\paket.targets" />
   <ProjectExtensions>
