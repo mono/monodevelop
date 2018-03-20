@@ -1,10 +1,10 @@
 ﻿//
-// Program.cs
+// LogMessageValidator.cs
 //
 // Author:
-//       Lluis Sanchez <llsan@microsoft.com>
+//       Manish Sinha <manish.sinha@xamarin.com>
 //
-// Copyright (c) 2018 Microsoft
+// Copyright (c) 2015 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,43 +24,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.IO;
+using NUnit.Framework;
+using System.Collections.Generic;
 
-namespace PerfTool
+namespace MonoDevelop.UserInterfaceTesting
 {
-	class MainClass
+	public class LogMessageValidator
 	{
-		public static void Main (string [] args)
+		static List<string> invalidLogStrings = new List<string> {
+			"Gtk-Critical: void gtk_container_remove(GtkContainer , GtkWidget )"
+		};
+
+		public static void Validate (string fileName)
 		{
-			if (args.Length == 0) {
-				PrintHelp ();
-				return;
+			string readIdeLog = string.Empty;
+			using (FileStream fileStream = new FileStream (fileName, FileMode.Open, 
+				                               FileAccess.Read, FileShare.ReadWrite)) {
+				using (StreamReader streamReader = new StreamReader (fileStream)) {
+					readIdeLog = streamReader.ReadToEnd ();
+				}
 			}
 
-			var command = args [0];
-			if (command == "generate-results" && args.Length == 4) {
-				GenerateResults (args [1], args [2], args [3]);
-			} else
-				PrintHelp ();
-		}
-
-		static void GenerateResults (string baseFile, string inputFile, string resultsFile)
-		{
-			var baseTestSuite = new TestSuiteResult ();
-			baseTestSuite.Read (baseFile);
-
-			var inputTestSuite = new TestSuiteResult ();
-			inputTestSuite.Read (inputFile);
-
-			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite);
-			inputTestSuite.Write (resultsFile);
-		}
-
-		static void PrintHelp ()
-		{
-			Console.WriteLine ("Usage:");
-			Console.WriteLine ("generate-results <base-file> <input-file> <output-file>");
-			Console.WriteLine ("    Detects regressions in input-file when compared to base-file.");
-			Console.WriteLine ("    It generates an NUnit test results file with test failures.");
+			foreach (var error in invalidLogStrings) {
+				Assert.IsFalse (readIdeLog.Contains (error),
+					string.Format ("GTK Error detected in Ide.log file:\n\t{0}",error));
+			}
 		}
 	}
 }
+

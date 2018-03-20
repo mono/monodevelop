@@ -1,5 +1,5 @@
 ﻿//
-// Program.cs
+// BenchmarkTolerance.cs
 //
 // Author:
 //       Lluis Sanchez <llsan@microsoft.com>
@@ -24,43 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Text;
+using NUnit.Framework;
 
-namespace PerfTool
+namespace MonoDevelop.PerformanceTesting
 {
-	class MainClass
+	public class BenchmarkAttribute: PropertyAttribute
 	{
-		public static void Main (string [] args)
+		public BenchmarkAttribute ()
 		{
-			if (args.Length == 0) {
-				PrintHelp ();
-				return;
+			Properties ["Time"] = new StringBuilder ();
+		}
+
+		public double Tolerance {
+			get {
+				var val = Properties ["Tolerance"];
+				if (val != null)
+					return (double)val;
+				else
+					return 0;
 			}
-
-			var command = args [0];
-			if (command == "generate-results" && args.Length == 4) {
-				GenerateResults (args [1], args [2], args [3]);
-			} else
-				PrintHelp ();
-		}
-
-		static void GenerateResults (string baseFile, string inputFile, string resultsFile)
-		{
-			var baseTestSuite = new TestSuiteResult ();
-			baseTestSuite.Read (baseFile);
-
-			var inputTestSuite = new TestSuiteResult ();
-			inputTestSuite.Read (inputFile);
-
-			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite);
-			inputTestSuite.Write (resultsFile);
-		}
-
-		static void PrintHelp ()
-		{
-			Console.WriteLine ("Usage:");
-			Console.WriteLine ("generate-results <base-file> <input-file> <output-file>");
-			Console.WriteLine ("    Detects regressions in input-file when compared to base-file.");
-			Console.WriteLine ("    It generates an NUnit test results file with test failures.");
+			set {
+				Properties ["Tolerance"] = value;
+			}
 		}
 	}
 }

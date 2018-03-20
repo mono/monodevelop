@@ -129,7 +129,6 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.Implementation">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
       <Private>False</Private>
     </Reference>

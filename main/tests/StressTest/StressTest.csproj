@@ -97,7 +97,7 @@
       </PropertyGroup>
       <ItemGroup>
           <TestProjectFiles Include="TestProject\**" />
-          <MonoAddinsFiles Include="$(MonoAddinsDir)\Mono.Addins\**" Exclude="$(MonoAddinsDir)\Mono.Addins\obj\**;$(MonoAddinsDir)\**\.DS_Store"/>
+          <MonoAddinsFiles Include="$(MonoAddinsDir)\Mono.Addins\**" Exclude="$(MonoAddinsDir)\Mono.Addins\obj\**;$(MonoAddinsDir)\**\.DS_Store" />
       </ItemGroup>
       <Copy SourceFiles="@(TestProjectFiles)" DestinationFolder="$(OutputPath)\TestProject\%(RecursiveDir)" SkipUnchangedFiles="true" />
       <Copy SourceFiles="@(MonoAddinsFiles)" DestinationFolder="$(OutputPath)\TestProject\mono-addins\Mono.Addins\%(RecursiveDir)" SkipUnchangedFiles="true" />

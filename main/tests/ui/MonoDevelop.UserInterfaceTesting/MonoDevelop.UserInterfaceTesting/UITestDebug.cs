@@ -1,10 +1,10 @@
 ﻿//
-// Program.cs
+// UITestDebug.cs
 //
 // Author:
-//       Lluis Sanchez <llsan@microsoft.com>
+//       iain holmes <iain@xamarin.com>
 //
-// Copyright (c) 2018 Microsoft
+// Copyright (c) 2015 Xamarin, Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,43 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Runtime.InteropServices;
+using MonoDevelop.Components.AutoTest;
 
-namespace PerfTool
+namespace MonoDevelop.UserInterfaceTesting
 {
-	class MainClass
+	public class UITestDebug : MarshalByRefObject, IAutoTestSessionDebug<MarshalByRefObject>
 	{
-		public static void Main (string [] args)
+		public void Debug (string message)
 		{
-			if (args.Length == 0) {
-				PrintHelp ();
-				return;
-			}
-
-			var command = args [0];
-			if (command == "generate-results" && args.Length == 4) {
-				GenerateResults (args [1], args [2], args [3]);
-			} else
-				PrintHelp ();
-		}
-
-		static void GenerateResults (string baseFile, string inputFile, string resultsFile)
-		{
-			var baseTestSuite = new TestSuiteResult ();
-			baseTestSuite.Read (baseFile);
-
-			var inputTestSuite = new TestSuiteResult ();
-			inputTestSuite.Read (inputFile);
-
-			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite);
-			inputTestSuite.Write (resultsFile);
-		}
-
-		static void PrintHelp ()
-		{
-			Console.WriteLine ("Usage:");
-			Console.WriteLine ("generate-results <base-file> <input-file> <output-file>");
-			Console.WriteLine ("    Detects regressions in input-file when compared to base-file.");
-			Console.WriteLine ("    It generates an NUnit test results file with test failures.");
+			Console.WriteLine ("{0}: {1}", DateTime.Now, message);
 		}
 	}
 }
+

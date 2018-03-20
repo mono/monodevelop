@@ -1,5 +1,5 @@
 ﻿//
-// Program.cs
+// Benchmark.cs
 //
 // Author:
 //       Lluis Sanchez <llsan@microsoft.com>
@@ -24,43 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Globalization;
+using System.Text;
+using NUnit.Framework;
 
-namespace PerfTool
+namespace MonoDevelop.PerformanceTesting
 {
-	class MainClass
+	public class Benchmark
 	{
-		public static void Main (string [] args)
+		public static void SetTime (double time)
 		{
-			if (args.Length == 0) {
-				PrintHelp ();
-				return;
-			}
-
-			var command = args [0];
-			if (command == "generate-results" && args.Length == 4) {
-				GenerateResults (args [1], args [2], args [3]);
-			} else
-				PrintHelp ();
-		}
-
-		static void GenerateResults (string baseFile, string inputFile, string resultsFile)
-		{
-			var baseTestSuite = new TestSuiteResult ();
-			baseTestSuite.Read (baseFile);
-
-			var inputTestSuite = new TestSuiteResult ();
-			inputTestSuite.Read (inputFile);
-
-			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite);
-			inputTestSuite.Write (resultsFile);
-		}
-
-		static void PrintHelp ()
-		{
-			Console.WriteLine ("Usage:");
-			Console.WriteLine ("generate-results <base-file> <input-file> <output-file>");
-			Console.WriteLine ("    Detects regressions in input-file when compared to base-file.");
-			Console.WriteLine ("    It generates an NUnit test results file with test failures.");
+			var sb = (StringBuilder)TestContext.CurrentContext.Test.Properties ["Time"];
+			if (sb != null)
+				sb.Append (time.ToString (CultureInfo.InvariantCulture));
 		}
 	}
 }

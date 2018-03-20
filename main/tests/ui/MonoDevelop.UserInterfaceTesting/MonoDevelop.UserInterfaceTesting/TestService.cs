@@ -1,10 +1,10 @@
 ﻿//
-// Program.cs
+// TestService.cs
 //
 // Author:
-//       Lluis Sanchez <llsan@microsoft.com>
+//       Michael Hutchinson <m.j.hutchinson@gmail.com>
 //
-// Copyright (c) 2018 Microsoft
+// Copyright (c) 2014 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,44 +23,32 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using MonoDevelop.Components.AutoTest;
+using System.Collections.Generic;
 
-namespace PerfTool
+namespace MonoDevelop.UserInterfaceTesting
 {
-	class MainClass
+	public static class TestService
 	{
-		public static void Main (string [] args)
-		{
-			if (args.Length == 0) {
-				PrintHelp ();
-				return;
-			}
+		public static AutoTestClientSession Session { get; private set; }
 
-			var command = args [0];
-			if (command == "generate-results" && args.Length == 4) {
-				GenerateResults (args [1], args [2], args [3]);
-			} else
-				PrintHelp ();
+		public static void StartSession (string file = null, string profilePath = null, string args = null)
+		{
+			Session = new AutoTestClientSession ();
+
+			Session.StartApplication (file: file, args: args, environment: new Dictionary<string, string> {
+				{ "MONODEVELOP_PROFILE", profilePath ?? Util.CreateTmpDir ("profile") }
+			});
+
+			Session.SetGlobalValue ("MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled", true);
+			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.GrabDesktopFocus");
 		}
 
-		static void GenerateResults (string baseFile, string inputFile, string resultsFile)
+		public static void EndSession ()
 		{
-			var baseTestSuite = new TestSuiteResult ();
-			baseTestSuite.Read (baseFile);
-
-			var inputTestSuite = new TestSuiteResult ();
-			inputTestSuite.Read (inputFile);
-
-			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite);
-			inputTestSuite.Write (resultsFile);
-		}
-
-		static void PrintHelp ()
-		{
-			Console.WriteLine ("Usage:");
-			Console.WriteLine ("generate-results <base-file> <input-file> <output-file>");
-			Console.WriteLine ("    Detects regressions in input-file when compared to base-file.");
-			Console.WriteLine ("    It generates an NUnit test results file with test failures.");
+			Session.Stop ();
 		}
 	}
 }
