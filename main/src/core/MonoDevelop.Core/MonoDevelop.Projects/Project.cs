@@ -2914,17 +2914,41 @@ namespace MonoDevelop.Projects
 			if (loadedItems != null)
 				loadedItems.Clear ();
 
+			HashSet<ProjectItem> unusedItems = null;
+			Dictionary<string, ProjectItem> lookupItems = null;
+			List<ProjectItem> newItems = null;
+			if (IsReevaluating) {
+				unusedItems = new HashSet<ProjectItem> (Items);
+				lookupItems = new Dictionary<string, ProjectItem> ();
+				newItems = new List<ProjectItem> ();
+
+				// Improve ReadItem performance by creating a dictionary of items that can be
+				// searched faster than using Items.FirstOrDefault. Building this dictionary takes ~15ms
+				foreach (var it in Items) {
+					if (it.BackingItem != null && it.BackingEvalItem != null) {
+						lookupItems.Add (GetProjectItemLookupKey (it.BackingEvalItem), it);
+					}
+				}
+			}
+
 			var localItems = new List<ProjectItem> ();
 			foreach (var buildItem in msproject.EvaluatedItemsIgnoringCondition) {
 				if (buildItem.IsImported && !ProjectExtension.OnGetSupportsImportedItem (buildItem))
 					continue;
 				if (BuildAction.ReserverIdeActions.Contains (buildItem.Name))
 					continue;
-				ProjectItem it = ReadItem (buildItem);
-				if (it == null)
+				var result = ReadItem (buildItem, lookupItems);
+				if (result.Item == null)
 					continue;
-				it.Flags = flags;
-				localItems.Add (it);
+
+				result.Item.Flags = flags;
+				localItems.Add (result.Item);
+				if (result.IsNew) {
+					newItems?.Add (result.Item);
+				} else {
+					unusedItems?.Remove (result.Item);
+				}
+
 				if (loadedItems != null) {
 					foreach (var item in buildItem.SourceItems) {
 						loadedItems.Add (item);
@@ -2932,9 +2956,14 @@ namespace MonoDevelop.Projects
 				}
 			}
 			if (IsReevaluating)
-				Items.SetItems (localItems);
+				Items.SetItems (localItems, newItems, unusedItems);
 			else
 				Items.AddRange (localItems);
+		}
+
+		static string GetProjectItemLookupKey (IMSBuildItemEvaluated item)
+		{
+			return $"{item.Name}-{item.Include}";
 		}
 
 		protected override void OnSetFormat (MSBuildFileFormat format)
@@ -2954,15 +2983,16 @@ namespace MonoDevelop.Projects
 				productVersion = FileFormat.DefaultProductVersion;
 		}
 
-		internal ProjectItem ReadItem (IMSBuildItemEvaluated buildItem)
+		internal (ProjectItem Item, bool IsNew) ReadItem (IMSBuildItemEvaluated buildItem, Dictionary<string, ProjectItem> lookupItems)
 		{
 			if (IsReevaluating) {
 				// If this item already exists in the current collection of items, reuse it
-				var eit = Items.FirstOrDefault (it => it.BackingItem != null && it.BackingEvalItem != null && it.BackingEvalItem.Name == buildItem.Name && it.BackingEvalItem.Include == buildItem.Include && ItemsAreEqual (buildItem, it.BackingEvalItem));
-				if (eit != null) {
-					eit.BackingItem = buildItem.SourceItem;
-					eit.BackingEvalItem = buildItem;
-					return eit;
+				if (lookupItems.TryGetValue (GetProjectItemLookupKey (buildItem), out ProjectItem eit)) {
+					if (ItemsAreEqual (buildItem, eit.BackingEvalItem) || CheckProjectReferenceItemsAreEqual (buildItem, eit)) {
+						eit.BackingItem = buildItem.SourceItem;
+						eit.BackingEvalItem = buildItem;
+						return (eit, false);
+					}
 				}
 			}
 
@@ -2970,7 +3000,27 @@ namespace MonoDevelop.Projects
 			item.Read (this, buildItem);
 			item.BackingItem = buildItem.SourceItem;
 			item.BackingEvalItem = buildItem;
-			return item;
+			return (item, true);
+		}
+
+		/// <summary>
+		/// Special case ProjectReference items when checking for a match for ReadItem. The underlying build
+		/// items may not have matching metadata properties but the ProjectReference.Equals method may
+		/// indicate a match. This is tested for in the ProjectReevaluationTests
+		/// ReevaluateNewProjectReferencesAfterSave test.
+		/// </summary>
+		bool CheckProjectReferenceItemsAreEqual (IMSBuildItemEvaluated buildItem, ProjectItem item)
+		{
+			if (!(item is ProjectReference existingProjectReference))
+				return false;
+
+			var newProjectReference = CreateProjectItem (buildItem) as ProjectReference;
+			if (newProjectReference != null) {
+				newProjectReference.Read (this, buildItem);
+				return item.Equals (newProjectReference);
+			}
+
+			return false;
 		}
 
 		struct MergedPropertyValue
