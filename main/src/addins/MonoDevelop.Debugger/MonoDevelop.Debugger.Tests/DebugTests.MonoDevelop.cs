@@ -33,7 +33,9 @@ namespace Mono.Debugging.Tests
 
 			if (!testProjectReady) {
 				testProjectReady = true;
-				var si = new ProcessStartInfo ("msbuild");
+				var packagesConfig = Path.Combine (TargetProjectSourceDir, "packages.config");
+				var packagesDir = Path.Combine (TargetProjectSourceDir, "packages");
+				Process.Start ("nuget", $"restore \"{packagesConfig}\" -PackagesDirectory \"{packagesDir}\"").WaitForExit ();
 				Process.Start ("msbuild", "\"" + TargetProjectSourceDir + "\"").WaitForExit ();
 			}
 		}
