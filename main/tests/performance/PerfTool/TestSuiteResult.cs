@@ -24,12 +24,123 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Xml;
+using System.Linq;
+using System.Globalization;
+using System.Xml.Serialization;
+using PerfTool.TestModel;
+using System.IO;
+
 namespace PerfTool
 {
-	public class TestResult
+	public class TestSuiteResult
 	{
-		public TestResult ()
+		Dictionary<string,TestCase> resultsByTestId = new Dictionary<string, TestCase> ();
+		TestResults results;
+
+		public TestSuiteResult ()
 		{
+		}
+
+		public void Read (string file)
+		{
+			var serializer = new XmlSerializer (typeof (TestResults));
+			using (var sr = new StreamReader (file)) {
+				results = (TestResults) serializer.Deserialize (sr);
+			}
+
+			CollectResults (results.TestSuite);
+		}
+
+		private void CollectResults (TestSuite testSuite)
+		{
+			foreach (var testCase in testSuite.Results.TestCases) {
+				resultsByTestId [testCase.Name] = testCase;
+				var timeProp = testCase.Properties?.FirstOrDefault (p => p.Name == "Time");
+				if (timeProp != null) {
+					if (!string.IsNullOrEmpty (timeProp.Value) && double.TryParse (timeProp.Value, NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double customTime))
+						testCase.Time = customTime;
+					testCase.Properties.Remove (timeProp);
+				}
+			}
+			foreach (var ts in testSuite.Results.TestSuites)
+				CollectResults (ts);
+		}
+
+		public void Write (string file)
+		{
+			using (var w = XmlWriter.Create (file, new XmlWriterSettings { Indent = true })) {
+				var serializer = new XmlSerializer (typeof (TestResults));
+				serializer.Serialize (w, results);
+			}
+		}
+
+		public IEnumerable<TestCase> GetRegressions (TestSuiteResult baseline)
+		{
+			foreach (var testResult in resultsByTestId.Values) {
+				if (baseline.resultsByTestId.TryGetValue (testResult.Name, out var baselineResult)) {
+					if (IsRegression (baselineResult, testResult))
+						yield return testResult;
+				}
+			}
+		}
+
+		public IEnumerable<TestCase> GetImprovements (TestSuiteResult baseline)
+		{
+			foreach (var testResult in resultsByTestId.Values) {
+				if (baseline.resultsByTestId.TryGetValue (testResult.Name, out var baselineResult)) {
+					if (IsImprovement (baselineResult, testResult))
+						yield return testResult;
+				}
+			}
+		}
+
+		public bool UpgradeToBaseline (TestSuiteResult oldBaseline)
+		{
+			bool changed = false;
+			foreach (var oldBaselineResult in oldBaseline.resultsByTestId.Values) {
+				if (resultsByTestId.TryGetValue (oldBaselineResult.Name, out var currentResult) && !IsImprovement (oldBaselineResult, currentResult)) {
+					currentResult.Time = oldBaselineResult.Time;
+					changed = true;
+				}
+			}
+			return changed;
+		}
+
+		public void RegisterPerformanceRegressions (TestSuiteResult baseline)
+		{
+			foreach (var testResult in resultsByTestId.Values) {
+				if (testResult.Success && baseline.resultsByTestId.TryGetValue (testResult.Name, out var baselineResult)) {
+					if (IsRegression (baselineResult, testResult)) {
+						testResult.Success = false;
+						testResult.Result = "Failed";
+						testResult.Reason = new Reason {
+							Message = $"Performance regression. Baseline: {baselineResult.Time}, Result: {testResult.Time}"
+						};
+					}
+				}
+			}
+		}
+
+		public bool IsRegression (TestCase baselineTestCase, TestCase testCase)
+		{
+			return testCase.Time - baselineTestCase.Time > GetThreshold (testCase);
+		}
+
+		public bool IsImprovement (TestCase baselineTestCase, TestCase testCase)
+		{
+			return baselineTestCase.Time - testCase.Time > GetThreshold (testCase);
+		}
+
+		public double GetThreshold (TestCase testCase)
+		{
+			double tolerance = 0.1;
+			var toleranceProp = testCase.Properties?.FirstOrDefault (p => p.Name == "Tolerance");
+			if (toleranceProp != null && double.TryParse (toleranceProp.Value, NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double customTolerance))
+				tolerance = customTolerance;
+			
+			return testCase.Time * tolerance;
 		}
 	}
 }

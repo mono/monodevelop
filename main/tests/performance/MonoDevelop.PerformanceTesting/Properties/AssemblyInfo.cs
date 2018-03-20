@@ -1,5 +1,5 @@
 ﻿//
-// Program.cs
+// AssemblyInfo.cs
 //
 // Author:
 //       Lluis Sanchez <llsan@microsoft.com>
@@ -23,44 +23,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
-namespace PerfTool
-{
-	class MainClass
-	{
-		public static void Main (string [] args)
-		{
-			if (args.Length == 0) {
-				PrintHelp ();
-				return;
-			}
+// Information about this assembly is defined by the following attributes. 
+// Change them to the values specific to your project.
 
-			var command = args [0];
-			if (command == "generate-results" && args.Length == 4) {
-				GenerateResults (args [1], args [2], args [3]);
-			} else
-				PrintHelp ();
-		}
+[assembly: AssemblyTitle ("MonoDevelop.PerformanceTesting")]
+[assembly: AssemblyDescription ("")]
+[assembly: AssemblyConfiguration ("")]
+[assembly: AssemblyCompany ("Microsoft")]
+[assembly: AssemblyProduct ("")]
+[assembly: AssemblyCopyright ("Microsoft")]
+[assembly: AssemblyTrademark ("")]
+[assembly: AssemblyCulture ("")]
 
-		static void GenerateResults (string baseFile, string inputFile, string resultsFile)
-		{
-			var baseTestSuite = new TestSuiteResult ();
-			baseTestSuite.Read (baseFile);
+// The assembly version has the format "{Major}.{Minor}.{Build}.{Revision}".
+// The form "{Major}.{Minor}.*" will automatically update the build and revision,
+// and "{Major}.{Minor}.{Build}.*" will update just the revision.
 
-			var inputTestSuite = new TestSuiteResult ();
-			inputTestSuite.Read (inputFile);
+[assembly: AssemblyVersion ("1.0.*")]
 
-			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite);
-			inputTestSuite.Write (resultsFile);
-		}
+// The following attributes are used to specify the signing key for the assembly, 
+// if desired. See the Mono documentation for more information about signing.
 
-		static void PrintHelp ()
-		{
-			Console.WriteLine ("Usage:");
-			Console.WriteLine ("generate-results <base-file> <input-file> <output-file>");
-			Console.WriteLine ("    Detects regressions in input-file when compared to base-file.");
-			Console.WriteLine ("    It generates an NUnit test results file with test failures.");
-		}
-	}
-}
+//[assembly: AssemblyDelaySign(false)]
+//[assembly: AssemblyKeyFile("")]

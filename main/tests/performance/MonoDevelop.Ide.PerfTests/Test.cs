@@ -25,14 +25,23 @@
 // THE SOFTWARE.
 using NUnit.Framework;
 using System;
+using System.Diagnostics;
+using System.Text;
+using System.Globalization;
+using MonoDevelop.PerformanceTesting;
+
 namespace MonoDevelop.Ide.PerfTests
 {
-	[TestFixture ()]
+	[TestFixture]
 	public class Test
 	{
-		[Test ()]
+		[Test]
+		[Benchmark(Tolerance=0.1)]
 		public void TestCase ()
 		{
+			var t = System.Diagnostics.Stopwatch.StartNew ();
+			System.Threading.Thread.Sleep (605);
+			Benchmark.SetTime ((double)t.ElapsedMilliseconds / 1000d);
 		}
 	}
 }
