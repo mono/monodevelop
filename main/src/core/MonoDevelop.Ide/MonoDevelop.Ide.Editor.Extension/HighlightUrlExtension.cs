@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				var matches = new List<(UrlType, Match, IDocumentLine)> ();
 				var line = startLine;
 				int o = 0;
-				while (line != null && line.Offset < endOffset) {
+				while (line != null && line.Offset <= endOffset) {
 					if (token.IsCancellationRequested)
 						return;
 					string lineText = input.GetTextAt (line.Offset, line.Length);
@@ -143,7 +143,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 					if (token.IsCancellationRequested)
 						return;
 					line = startLine;
-					while (line != null && line.Offset < endOffset) {
+					while (line != null && line.Offset <= endOffset) {
 						foreach (var u in Editor.GetLineMarkers (line).OfType<IUrlTextLineMarker> ()) {
 							Editor.RemoveMarker (u);
 							markers.Remove (u);
