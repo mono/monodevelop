@@ -105,7 +105,7 @@ type ScriptBuildTarget(scriptPath, consoleKind, source) =
                     | External -> context.ExternalConsoleFactory.CreateConsole token
                 let oper = context.ExecutionHandler.Execute(command, console)
 
-                use stopper = monitor.CancellationToken.Register (Action(fun() -> oper.Cancel()))
+                use _stopper = monitor.CancellationToken.Register (Action(fun() -> oper.Cancel()))
                 do! oper.Task |> Async.AwaitTask 
             } |> StartAsyncAsTask monitor.CancellationToken :> Task
 

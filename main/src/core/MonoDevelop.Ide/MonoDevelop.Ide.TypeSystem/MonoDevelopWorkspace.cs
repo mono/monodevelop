@@ -103,8 +103,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
 			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+
+			// Trigger running compiler syntax and semantic errors via the diagnostic analyzer engine
 			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
-				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true);
+				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true)
+			// Always use persistent storage regardless of solution size, at least until a consensus is reached
+			// https://github.com/mono/monodevelop/issues/4149 https://github.com/dotnet/roslyn/issues/25453
+				.WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, 0);
 
 			if (IdeApp.Preferences.EnableSourceAnalysis) {
 				solutionCrawler.Register (this);
@@ -249,19 +254,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (addLock) {
 					if (!added) {
 						added = true;
-						lock (persistentStorageRegistrationLock) {
-							// HACK: https://github.com/dotnet/roslyn/issues/20581
-							// singleton HACK: https://github.com/dotnet/roslyn/issues/25152
-							// Unregister previous registration here
-
-							if (persistentStorageLastRegisteredSolutionId != solutionId) {
-								if (persistentStorageLastRegisteredSolutionId != null)
-									UnregisterPrimarySolutionForPersistentStorage (persistentStorageLastRegisteredSolutionId, false);
-
-								RegisterPrimarySolutionForPersistentStorage (solutionId, solution);
-								persistentStorageLastRegisteredSolutionId = solutionId;
-							}
-						}
+						solution.Modified += OnSolutionModified;
+						NotifySolutionModified (solution, solutionId, this);
 						OnSolutionAdded (solutionInfo);
 					}
 				}
@@ -269,36 +263,24 @@ namespace MonoDevelop.Ide.TypeSystem
 			});
 		}
 
-		// Roslyn is horrifying, and the persistent storage service is a singleton. That means we can only register one workspace
-		// at a time. d15-7+ roslyn does not throw in the case of a storage already being there, but it's still bad design.
-		// https://github.com/dotnet/roslyn/issues/25152
-		static SolutionId persistentStorageLastRegisteredSolutionId;
-		static object persistentStorageRegistrationLock = new object ();
-
-		void RegisterPrimarySolutionForPersistentStorage (SolutionId solutionId, MonoDevelop.Projects.Solution solution)
+		static async void OnSolutionModified (object sender, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
-			var locService = (MonoDevelopPersistentStorageLocationService)Services.GetService<IPersistentStorageLocationService> ();
-			locService.storageMap.Add (solutionId, solution.GetPreferencesDirectory ());
-
-			var service = Services.GetService<IPersistentStorageService> () as Microsoft.CodeAnalysis.Storage.AbstractPersistentStorageService;
-			if (service == null) {
+			var sol = (MonoDevelop.Projects.Solution)args.Item;
+			var workspace = await TypeSystemService.GetWorkspaceAsync (sol, CancellationToken.None);
+			var solId = workspace.GetSolutionId (sol);
+			if (solId == null)
 				return;
-			}
-
-			service.RegisterPrimarySolution (solutionId);
+			
+			NotifySolutionModified (sol, solId, workspace);
 		}
 
-		void UnregisterPrimarySolutionForPersistentStorage (SolutionId solutionId, bool synchronousShutdown)
+		static void NotifySolutionModified (MonoDevelop.Projects.Solution sol, SolutionId solId, MonoDevelopWorkspace workspace)
 		{
-			var locService = (MonoDevelopPersistentStorageLocationService)Services.GetService<IPersistentStorageLocationService> ();
-			locService.storageMap.Remove (solutionId);
-
-			var service = Services.GetService<IPersistentStorageService> () as Microsoft.CodeAnalysis.Storage.AbstractPersistentStorageService;
-			if (service == null) {
+			if (string.IsNullOrWhiteSpace (sol.BaseDirectory))
 				return;
-			}
-
-			service.UnregisterPrimarySolution (solutionId, synchronousShutdown);
+			
+			var locService = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
+			locService.NotifyStorageLocationChanging (solId, sol.GetPreferencesDirectory ());
 		}
 
 		internal Task<SolutionInfo> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
@@ -309,7 +291,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void UnloadSolution ()
 		{
 			OnSolutionRemoved ();
-			UnregisterPrimarySolutionForPersistentStorage (CurrentSolution.Id, synchronousShutdown: false);
 		}
 
 		Dictionary<MonoDevelop.Projects.Solution, SolutionId> solutionIdMap = new Dictionary<MonoDevelop.Projects.Solution, SolutionId> ();

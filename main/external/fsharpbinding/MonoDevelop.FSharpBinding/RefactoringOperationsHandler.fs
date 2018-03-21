@@ -446,7 +446,7 @@ type CurrentRefactoringOperationsHandler() =
         match tryGetValidDoc() with
         | None -> ()
         | Some doc ->
-            if not (FileService.supportedFileName (doc.FileName.ToString())) then ()
+            if not (FileService.supportedFilePath doc.FileName) then ()
             else
                 match doc.TryGetAst () with
                 | None -> ()
@@ -652,7 +652,7 @@ type GotoDeclarationHandler() =
             x.Run(doc.Editor, doc)
 
     member x.Run(editor, context:DocumentContext) =
-        if FileService.supportedFileName (editor.FileName.ToString()) then
+        if FileService.supportedFilePath editor.FileName then
             match context.TryGetAst() with
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
@@ -669,7 +669,7 @@ type FSharpJumpToDeclarationHandler () =
                 // We only need to run this when the editor isn't F#
                 match IdeApp.Workbench.ActiveDocument with
                 | null -> return false
-                | doc when FileService.supportedFileName (doc.FileName.ToString()) -> return false
+                | doc when FileService.supportedFilePath doc.FileName -> return false
                 | _doc -> return! Refactoring.jumpToDocIdInFSharp documentationIdString
 
         }

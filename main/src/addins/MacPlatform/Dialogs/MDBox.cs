@@ -62,16 +62,10 @@ namespace MonoDevelop.MacIntegration
 			ownsView = unownedView == null;
 		}
 		
-		public void Layout ()
+		public virtual void Layout ()
 		{
 			var request = BeginLayout ();
 			EndLayout (request, CGPoint.Empty, request.Size);
-		}
-		
-		public void Layout (CGSize allocation)
-		{
-			var request = BeginLayout ();
-			EndLayout (request, CGPoint.Empty, allocation);
 		}
 		
 		public void Add (NSView view)

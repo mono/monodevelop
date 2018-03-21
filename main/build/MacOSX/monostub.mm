@@ -46,24 +46,19 @@ void *libvsmregistrar;
 #endif
 #endif
 
+#if NOGUI
 static void
-exit_with_message (const char *reason, char *argv0)
+show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
 {
-	fprintf (stderr, "Failed to launch: %s", reason);
-
-	NSString *appName = nil;
-	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
-	if (plist) {
-		appName = (NSString *) [plist objectForKey:(NSString *)kCFBundleNameKey];
-	}
-	if (!appName) {
-		appName = [[NSString stringWithUTF8String: argv0] lastPathComponent];
-	}
-
+	fprintf(stderr, "%s\n", [msg UTF8String]);
+	fprintf(stderr, "%s\n", [mono_download_url UTF8String]);
+}
+#else
+static void
+show_alert (NSString *msg, NSString *appName, NSString *mono_download_url)
+{
 	NSAlert *alert = [[NSAlert alloc] init];
 	[alert setMessageText:[NSString stringWithFormat:@"Could not launch %@", appName]];
-	NSString *fmt = @"%s\n\nPlease download and install the latest version of Mono.";
-	NSString *msg = [NSString stringWithFormat:fmt, reason];
 	[alert setInformativeText:msg];
 	[alert addButtonWithTitle:@"Download Mono Framework"];
 	[alert addButtonWithTitle:@"Cancel"];
@@ -76,9 +71,28 @@ exit_with_message (const char *reason, char *argv0)
 		LSOpenCFURLRef (url, NULL);
 		CFRelease (url);
 	}
+}
+#endif
+
+static void
+exit_with_message (const char *reason, char *argv0)
+{
+	NSString *appName = nil;
+	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
+	if (plist) {
+		appName = (NSString *) [plist objectForKey:(NSString *)kCFBundleNameKey];
+	}
+	if (!appName) {
+		appName = [[NSString stringWithUTF8String: argv0] lastPathComponent];
+	}
+
+	NSString *fmt = @"%s\n\nPlease download and install the latest version of Mono.";
+	NSString *msg = [NSString stringWithFormat:fmt, reason];
+	NSString *mono_download_url = @"https://go.microsoft.com/fwlink/?linkid=835346";
+
+	show_alert(msg, appName, mono_download_url);
 	exit (1);
 }
-
 
 typedef struct _ListNode {
 	struct _ListNode *next;
@@ -313,7 +327,7 @@ int main (int argc, char **argv)
 	run_md_bundle_if_needed(appDir, argc, argv);
 
 	// can be overridden with plist string MonoMinVersion
-	NSString *req_mono_version = @"5.10.0.124";
+	NSString *req_mono_version = @"5.10.0.171";
 	NSString *req_mono_version_stable = @"5.8.0.130"; // remove this when not needed anymore
 
 	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env

@@ -351,7 +351,7 @@ namespace MonoDevelop.Ide.Templates
 				}
 				lastLine = line;
 			}
-			if (lastLine != null && lastLine.Length > 0) {
+			if (ctx != null && lastLine != null && lastLine.Length > 0) {
 				if (ctx.CurrentConventions.UniversalConventions.TryGetRequireFinalNewline (out bool requireNewLine)) {
 					if (requireNewLine)
 						ms.Write (eolMarkerBytes, 0, eolMarkerBytes.Length);

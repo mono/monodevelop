@@ -2,15 +2,26 @@
 
 open NUnit.Framework
 open MonoDevelop.FSharp
+open MonoDevelop.Ide.Editor
+
+open Microsoft.FSharp.Compiler
 
 [<TestFixture>]
 module ``Highlight unused opens`` =
+    let textFromRange (editor:TextEditor) (range:Range.range) =
+        let getOffset (pos:Range.pos) =
+            editor.LocationToOffset (pos.Line, pos.Column+1)
+
+        let startOffset = getOffset range.Start
+        let endOffset = getOffset range.End
+        editor.GetTextBetween (startOffset, endOffset)    
+
     let assertUnusedOpens source expected =
         let doc = TestHelpers.createDoc source "defined"
         let res =
             highlightUnusedCode.getUnusedCode doc doc.Editor
             |> Async.RunSynchronously
-        let opens = res.Value |> List.map(fun range -> highlightUnusedCode.textFromRange doc.Editor range)
+        let opens = res.Value |> List.map(fun range -> textFromRange doc.Editor range)
         Assert.AreEqual(expected, opens, sprintf "%A" opens)
 
     [<Test>]

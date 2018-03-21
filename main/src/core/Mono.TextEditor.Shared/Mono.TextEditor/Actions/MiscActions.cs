@@ -372,6 +372,8 @@ namespace Mono.TextEditor
 				//int relCaretOffset = data.Caret.Offset - startLine.Offset;
 				
 				Mono.TextEditor.DocumentLine prevLine = data.Document.GetLine (lineStart - 1);
+				if (prevLine == null)
+					return;
 				string text = data.Document.GetTextAt (prevLine.Offset, prevLine.Length);
 				List<TextLineMarker> prevLineMarkers = new List<TextLineMarker> (data.Document.GetMarkers (prevLine));
 				data.Document.ClearMarkers (prevLine);

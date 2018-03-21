@@ -21,6 +21,7 @@ obj/
 /main/tests/config
 /main/tests/UnitTests/test-results
 /main/build/MacOSX/monostub
+/main/build/MacOSX/monostub-nogui
 /main/build/MacOSx/monostub-test
 /main/contrib/bin/
 /main/contrib/*/*/bin/
@@ -39,6 +40,7 @@ obj/
 /main/.nuget/
 pull-package.exe
 /main/tests/StressTest/TestProject/bin
+/main/tests/MonoDevelop.Core.Tests.Addin/bin/
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files
@@ -73,8 +75,10 @@ Thumbs.db
 /main/build/MacOSX/*.o
 /main/external/fsharpbinding/.paket
 /main/external/fsharpbinding/paket-files
+/main/external/Xamarin.Mac.buildinfo
 /main/external/Xamarin.Mac.registrar.full.a
 /main/external/Xamarin.Mac.dll*
+/main/external/Xamarin.Mac.pdb
 /main/external/libxammac.dylib
 /main/external/libxammac-system.a
 

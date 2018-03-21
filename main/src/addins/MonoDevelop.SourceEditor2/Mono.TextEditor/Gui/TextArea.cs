@@ -246,10 +246,10 @@ namespace Mono.TextEditor
 			TextViewMargin.caretY -= delta;
 
 			int startLine = YToLine (this.textEditorData.VAdjustment.Value);
-			TextViewLines.RemoveLinesBefore (startLine);
+			TextViewLines?.RemoveLinesBefore (startLine);
 
 			int endlLine = YToLine (this.textEditorData.VAdjustment.Value + Allocation.Height);
-			TextViewLines.RemoveLinesAfter (endlLine);
+			TextViewLines?.RemoveLinesAfter (endlLine);
 
 			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.InSelectionDrag) {
 				this.QueueDraw ();
@@ -501,10 +501,7 @@ namespace Mono.TextEditor
 
 		void PreeditStringChanged (object sender, EventArgs e)
 		{
-			if (imContextNeedsReset)
-				preeditString = null;
-			else
-				imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorCharIndex);
+			imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorCharIndex);
 			if (!string.IsNullOrEmpty (preeditString)) {
 				if (preeditOffset < 0) {
 					preeditOffset = Caret.Offset;
@@ -1969,7 +1966,7 @@ namespace Mono.TextEditor
 					if (wrapper.IsUncached)
 						wrapper.Dispose ();
 				}
-				TextViewLines.Add (logicalLineNumber, line);
+				TextViewLines?.Add (logicalLineNumber, line);
 				double lineHeight = GetLineHeight (line);
 				foreach (var margin in this.margins) {
 					if (!margin.IsVisible)

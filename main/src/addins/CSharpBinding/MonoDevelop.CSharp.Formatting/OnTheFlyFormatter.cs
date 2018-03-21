@@ -89,7 +89,7 @@ namespace MonoDevelop.CSharp.Formatting
 						}
 					}
 					if (optionSet == null) {
-						optionSet = context.AnalysisDocument.GetOptionsAsync ().WaitAndGetResult (default (CancellationToken));
+						optionSet = context.GetOptionsAsync ().WaitAndGetResult (default (CancellationToken));
 					}
 					var rules = Formatter.GetDefaultFormattingRules (analysisDocument);
 					var changes = Formatter.GetFormattedTextChanges (root, Roslyn.Utilities.SpecializedCollections.SingletonEnumerable (span), context.RoslynWorkspace, optionSet, rules, default(CancellationToken));
