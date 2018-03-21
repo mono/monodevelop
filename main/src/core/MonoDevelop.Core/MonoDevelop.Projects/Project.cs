@@ -2915,12 +2915,12 @@ namespace MonoDevelop.Projects
 				loadedItems.Clear ();
 
 			HashSet<ProjectItem> unusedItems = null;
-			Dictionary<string, ProjectItem> lookupItems = null;
-			List<ProjectItem> newItems = null;
+			Dictionary<(string Name, string Include), ProjectItem> lookupItems = null;
+			ImmutableList<ProjectItem>.Builder newItems = null;
 			if (IsReevaluating) {
 				unusedItems = new HashSet<ProjectItem> (Items);
-				lookupItems = new Dictionary<string, ProjectItem> ();
-				newItems = new List<ProjectItem> ();
+				lookupItems = new Dictionary<(string Name, string Include), ProjectItem> ();
+				newItems = ImmutableList.CreateBuilder<ProjectItem> ();
 
 				// Improve ReadItem performance by creating a dictionary of items that can be
 				// searched faster than using Items.FirstOrDefault. Building this dictionary takes ~15ms
@@ -2961,9 +2961,9 @@ namespace MonoDevelop.Projects
 				Items.AddRange (localItems);
 		}
 
-		static string GetProjectItemLookupKey (IMSBuildItemEvaluated item)
+		static (string Name, string Include) GetProjectItemLookupKey (IMSBuildItemEvaluated item)
 		{
-			return $"{item.Name}-{item.Include}";
+			return (item.Name, item.Include);
 		}
 
 		protected override void OnSetFormat (MSBuildFileFormat format)
@@ -2983,7 +2983,7 @@ namespace MonoDevelop.Projects
 				productVersion = FileFormat.DefaultProductVersion;
 		}
 
-		internal (ProjectItem Item, bool IsNew) ReadItem (IMSBuildItemEvaluated buildItem, Dictionary<string, ProjectItem> lookupItems)
+		internal (ProjectItem Item, bool IsNew) ReadItem (IMSBuildItemEvaluated buildItem, Dictionary<(string Name, string Include), ProjectItem> lookupItems)
 		{
 			if (IsReevaluating) {
 				// If this item already exists in the current collection of items, reuse it
