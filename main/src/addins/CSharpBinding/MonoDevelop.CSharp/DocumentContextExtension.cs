@@ -1,10 +1,10 @@
-﻿//
-// TypeSystemServiceTestExtensions.cs
+//
+// DocumentContextExtension.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Mike Krüger <mikkrg@microsoft.com>
 //
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2018 Microsoft Corporation. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,30 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Linq;
+using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.Options;
+using System.Threading;
 using System.Threading.Tasks;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Projects;
+using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.Ide.Gui.Content;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.CSharp
 {
-	public static class TypeSystemServiceTestExtensions
+	static class DocumentContextExtension
 	{
-		public static async Task<MonoDevelopWorkspace> LoadSolution (Solution solution)
+		public static async Task<OptionSet> GetOptionsAsync (this DocumentContext ctx, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			using (var monitor = new ProgressMonitor ()) {
-				var res = await TypeSystemService.Load (solution, monitor);
-				return res.Single ();
+			if (ctx == null)
+				throw new ArgumentNullException (nameof (ctx));
+			if (ctx.AnalysisDocument != null) {
+				var result = await ctx.AnalysisDocument.GetOptionsAsync ().ConfigureAwait (false);
+				if (result != null)
+					return result;
 			}
-		}
-
-		public static void UnloadSolution (Solution solution)
-		{
-			TypeSystemService.Unload (solution);
+			var policy = ctx.Project.Policies.Get<CSharpFormattingPolicy> (CSharpFormatter.MimeType);
+			var textpolicy = ctx.Project.Policies.Get<TextStylePolicy> (CSharpFormatter.MimeType);
+			return policy.CreateOptions (textpolicy);
 		}
 	}
 }
-

@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using AppKit;
 using CoreGraphics;
 
@@ -35,48 +37,19 @@ using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MacIntegration
 {
-	class MacAddFileDialogHandler : IAddFileDialogHandler
+	class MacAddFileDialogHandler : MacCommonFileDialogHandler<AddFileDialogData, NSPopUpButton>, IAddFileDialogHandler
 	{
-		public bool Run (AddFileDialogData data)
+		protected override NSSavePanel OnCreatePanel (AddFileDialogData data)
 		{
-			using (var panel = new NSOpenPanel {
+			return new NSOpenPanel {
 				CanChooseDirectories = false,
 				CanChooseFiles = true,
-			}) {
-				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
-				
-				var popup = new NSPopUpButton (new CGRect (0, 0, 200, 28), false);
-				var dropdownBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
-					{ new MDLabel (GettextCatalog.GetString ("Override build action:")), true },
-					{ new MDAlignment (popup, true) { MinWidth = 200 }  }
-				};
-				
-				var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
-				if (filterPopup != null) {
-					dropdownBox.Layout ();
-					var box = new MDBox (LayoutDirection.Vertical, 2, 2) {
-						dropdownBox.View,
-						filterPopup,
-					};
-					box.Layout ();
-					panel.AccessoryView = box.View;
-					if (box.View.Superview != null)
-						box.Layout (box.View.Superview.Frame.Size);
-				} else {
-					dropdownBox.Layout ();
-					panel.AccessoryView = dropdownBox.View;
-				}
-				
-				popup.AddItem (GettextCatalog.GetString ("(Default)"));
-				popup.Menu.AddItem (NSMenuItem.SeparatorItem);
-				
-				foreach (var b in data.BuildActions) {
-					if (b == "--")
-						popup.Menu.AddItem (NSMenuItem.SeparatorItem);
-					else
-						popup.AddItem (b);
-				}
-				
+			};
+		}
+
+		public bool Run (AddFileDialogData data)
+		{
+			using (var panel = CreatePanel (data, out NSPopUpButton popup)) {
 				if (panel.RunModal () == 0) {
 					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 					return false;
@@ -91,6 +64,25 @@ namespace MonoDevelop.MacIntegration
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 				return true;
 			}
+		}
+
+		protected override IEnumerable<(NSControl control, string text)> OnGetAccessoryBoxControls (AddFileDialogData data, NSSavePanel panel, out NSPopUpButton saveState)
+		{
+			var popup = saveState = new NSPopUpButton (new CGRect (0, 0, 200, 28), false);
+
+			popup.AddItem (GettextCatalog.GetString ("(Default)"));
+			popup.Menu.AddItem (NSMenuItem.SeparatorItem);
+
+			foreach (var b in data.BuildActions) {
+				if (b == "--")
+					popup.Menu.AddItem (NSMenuItem.SeparatorItem);
+				else
+					popup.AddItem (b);
+			}
+
+			return new (NSControl, string) [] {
+				(popup, GettextCatalog.GetString ("Override build action:")),
+			};
 		}
 	}
 }

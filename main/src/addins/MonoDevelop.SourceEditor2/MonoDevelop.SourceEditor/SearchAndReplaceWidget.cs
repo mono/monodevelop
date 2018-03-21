@@ -633,21 +633,6 @@ But I leave it in in the case I've missed something. Mike
 					buttonSearchMode.Visible = false;
 			}
 		}
-
-		protected override void OnFocusChildSet (Widget widget)
-		{
-			base.OnFocusChildSet (widget);
-			var mainResult = textEditor.TextViewMargin.MainSearchResult;
-			if (mainResult != null) {
-				textEditor.TextViewMargin.HideSelection = widget == table && !mainResult.IsInvalid () &&
-					textEditor.IsSomethingSelected && textEditor.SelectionRange.Offset == mainResult.Offset && textEditor.SelectionRange.EndOffset == mainResult.EndOffset;
-			} else {
-				textEditor.TextViewMargin.HideSelection = false;
-			}
-			
-			if (textEditor.TextViewMargin.HideSelection)
-				textEditor.QueueDraw ();
-		}
 		
 		protected override void OnDestroyed ()
 		{
@@ -655,7 +640,6 @@ But I leave it in in the case I've missed something. Mike
 			SearchAndReplaceOptions.SearchPatternChanged -= HandleSearchPatternChanged;
 			SearchAndReplaceOptions.ReplacePatternChanged -= HandleReplacePatternChanged;
 
-			textEditor.TextViewMargin.HideSelection = false;
 			textEditor.Caret.PositionChanged -= HandleWidgetTextEditorCaretPositionChanged;
 			textEditor.TextViewMargin.SearchRegionsUpdated -= HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated;
 			SizeAllocated -= HandleViewTextEditorhandleSizeAllocated;
@@ -841,7 +825,6 @@ But I leave it in in the case I've missed something. Mike
 					}
 					resultInformLabelEventBox.ModifyBg (StateType.Normal, entry.Style.Base (entry.State));
 					resultInformLabel.ModifyFg (StateType.Normal, entry.Style.Foreground (StateType.Insensitive));
-					textEditor.TextViewMargin.HideSelection = FocusChild == table;
 					textEditor.TextViewMargin.MainSearchResult = foundSegment;
 				}
 			} catch (Exception ex) {

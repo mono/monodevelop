@@ -103,8 +103,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
 			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+
+			// Trigger running compiler syntax and semantic errors via the diagnostic analyzer engine
 			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
-				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true);
+				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true)
+			// Always use persistent storage regardless of solution size, at least until a consensus is reached
+			// https://github.com/mono/monodevelop/issues/4149 https://github.com/dotnet/roslyn/issues/25453
+				.WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, 0);
 
 			if (IdeApp.Preferences.EnableSourceAnalysis) {
 				solutionCrawler.Register (this);
@@ -250,7 +255,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!added) {
 						added = true;
 						solution.Modified += OnSolutionModified;
-						OnSolutionModified (solution, new MonoDevelop.Projects.WorkspaceItemEventArgs (solution));
+						NotifySolutionModified (solution, solutionId, this);
 						OnSolutionAdded (solutionInfo);
 					}
 				}
@@ -261,12 +266,17 @@ namespace MonoDevelop.Ide.TypeSystem
 		static async void OnSolutionModified (object sender, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
 			var sol = (MonoDevelop.Projects.Solution)args.Item;
-			if (string.IsNullOrWhiteSpace (sol.BaseDirectory))
-				return;
-
 			var workspace = await TypeSystemService.GetWorkspaceAsync (sol, CancellationToken.None);
 			var solId = workspace.GetSolutionId (sol);
 			if (solId == null)
+				return;
+			
+			NotifySolutionModified (sol, solId, workspace);
+		}
+
+		static void NotifySolutionModified (MonoDevelop.Projects.Solution sol, SolutionId solId, MonoDevelopWorkspace workspace)
+		{
+			if (string.IsNullOrWhiteSpace (sol.BaseDirectory))
 				return;
 			
 			var locService = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();

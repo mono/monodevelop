@@ -126,7 +126,7 @@ type MDLanguageService() =
 
   static member invalidateFiles (args:#ProjectFileEventInfo seq) =
       for projectFileEvent in args do
-          if FileService.supportedFileName (projectFileEvent.ProjectFile.FilePath.ToString()) then
+          if FileService.supportedFilePath projectFileEvent.ProjectFile.FilePath then
               MDLanguageService.invalidateProjectFile(projectFileEvent.ProjectFile.FilePath)
 [<AutoOpen>]
 module MDLanguageServiceImpl =
