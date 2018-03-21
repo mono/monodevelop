@@ -92,7 +92,6 @@ namespace MonoDevelop.Ide.Gui
 				owner.vbox.ReorderChild (infoBar, 0);
 				infoBar.ShowAll ();
 				infoBar.QueueDraw ();
-				owner.vbox.ShowAll ();
 				if (owner.WorkbenchWindow != null)
 					owner.WorkbenchWindow.ShowNotification = true;
 
@@ -107,7 +106,6 @@ namespace MonoDevelop.Ide.Gui
 					owner.vbox.Remove (infoBar);
 				infoBar.Destroy ();
 				infoBar = null;
-				owner.vbox.ShowAll ();
 
 				Hidden?.Invoke (this, EventArgs.Empty);
 			}

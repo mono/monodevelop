@@ -971,6 +971,8 @@ namespace MonoDevelop.SourceEditor
 						WorkbenchWindow.Document.ReparseDocument ();
 					} catch (Exception ex) {
 						LoggingService.LogError ("Could not remove the autosave file.", ex);
+					} finally {
+						widget.Vbox.Visible = true;
 					}
 				}),
 				new InfoButton (Gtk.Stock.RevertToSaved, GettextCatalog.GetString ("_Load from autosave"), delegate {
@@ -984,6 +986,8 @@ namespace MonoDevelop.SourceEditor
 						IsDirty = true;
 					} catch (Exception ex) {
 						LoggingService.LogError ("Could not remove the autosave file.", ex);
+					} finally {
+						widget.Vbox.Visible = true;
 					}
 				})
 			);
