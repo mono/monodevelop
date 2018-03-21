@@ -364,7 +364,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var buildOutputNode = GetValue (BuildOutputNodeField);
 			var status = GetViewStatus (buildOutputNode);
 
-			double minWidth = ImageSize + MinLayoutWidth + DefaultInformationContainerWidth;
+			double minWidth = ImageSize + ImagePadding + MinLayoutWidth + DefaultInformationContainerWidth;
 			if (widthConstraint.IsConstrained)
 				minWidth = Math.Max (minWidth, widthConstraint.AvailableSize);
 
@@ -376,16 +376,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			double maxLayoutWidth;
 			if (widthConstraint.IsConstrained)
-				maxLayoutWidth = minWidth - ((BuildExpandIcon.Width - 3) + ImageSize + DefaultInformationContainerWidth);
+				maxLayoutWidth = minWidth - ((ImageSize - 3) + ImageSize + ImagePadding + DefaultInformationContainerWidth);
 			else
-				maxLayoutWidth = status.LastRenderLayoutBounds.Width - BuildExpandIcon.Width - 3;
+				maxLayoutWidth = status.LastRenderLayoutBounds.Width;
 
 			TextLayout layout = status.GetUnconstrainedLayout ();
 			layout.Markup = buildOutputNode.Message;
 			layout.Width = maxLayoutWidth;
 			var textSize = layout.GetSize ();
-			status.LastCalculatedHeight = textSize.Height;
 			var height = Math.Max (textSize.Height + 2 * status.LayoutYPadding, ImageSize);
+			status.LastCalculatedHeight = height;
 
 			return new Size (minWidth, height);
 		}
