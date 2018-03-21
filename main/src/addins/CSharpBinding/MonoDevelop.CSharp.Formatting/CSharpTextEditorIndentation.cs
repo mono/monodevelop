@@ -154,18 +154,25 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 
 			await Runtime.RunInMainThread(delegate {
-				stateTracker = new ICSharpCode.NRefactory6.CSharp.CacheIndentEngine (indentEngine);
-				if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
-					Editor.IndentationTracker = null;
-				} else {
-					Editor.IndentationTracker = new IndentVirtualSpaceManager (Editor, stateTracker);
-				}
+				try {
+					var editor = Editor;
+					if (editor == null) // disposed
+						return;
+					stateTracker = new ICSharpCode.NRefactory6.CSharp.CacheIndentEngine (indentEngine);
+					if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
+						editor.IndentationTracker = null;
+					} else {
+						editor.IndentationTracker = new IndentVirtualSpaceManager (editor, stateTracker);
+					}
 
-				indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
-				if (indentationDisabled) {
-					Editor.SetTextPasteHandler (null);
-				} else {
-					Editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, optionSet));
+					indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
+					if (indentationDisabled) {
+						editor.SetTextPasteHandler (null);
+					} else {
+						editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, optionSet));
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while handling text option change.", ex);
 				}
 			});
 		}

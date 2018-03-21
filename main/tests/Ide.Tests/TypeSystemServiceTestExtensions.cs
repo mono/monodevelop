@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
@@ -34,10 +35,12 @@ namespace MonoDevelop.Ide
 {
 	public static class TypeSystemServiceTestExtensions
 	{
-		public static async Task LoadSolution (Solution solution)
+		public static async Task<MonoDevelopWorkspace> LoadSolution (Solution solution)
 		{
-			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
+			using (var monitor = new ProgressMonitor ()) {
+				var res = await TypeSystemService.Load (solution, monitor);
+				return res.Single ();
+			}
 		}
 
 		public static void UnloadSolution (Solution solution)

@@ -86,25 +86,9 @@ namespace Mono.TextEditor
 			this.endColumn = endColumn;
 		}
 
-
-		void Doc_TextChanging (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
-		{
-			var lineSegment = LineSegment.Segment;
-			for (int i = 0; i < e.TextChanges.Count; ++i) {
-				var change = e.TextChanges[i];
-				if (lineSegment.IsInside (change.Offset) || lineSegment.IsInside (change.Offset + change.RemovalLength) ||
-					change.Offset <= lineSegment.Offset && lineSegment.Offset <= change.Offset + change.RemovalLength) {
-					doc.RemoveMarker (this);
-				}
-			}
-		}
-
 		public void Dispose ()
 		{
-			if (doc != null) {
-				doc.TextChanging -= Doc_TextChanging;
-				doc = null;
-			}
+			doc = null;
 		}
 		
 		public override void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
@@ -146,9 +130,12 @@ namespace Mono.TextEditor
 			to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
 				if (color == null) {
-					foreach (var chunk in metrics.Layout.Chunks)
-						if (chunk.Contains (startOffset))
+					foreach (var chunk in metrics.Layout.Chunks) {
+						if (chunk.Contains (markerStart)) {
 							color = editor.EditorTheme.GetForeground (editor.EditorTheme.GetChunkStyle (chunk.ScopeStack));
+							break;
+						}
+					}
 					if (color == null)
 						color = editor.EditorTheme.GetForeground (editor.EditorTheme.GetChunkStyle (new ScopeStack (style)));
 				}
