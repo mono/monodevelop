@@ -417,6 +417,11 @@ namespace MonoDevelop.Core
 		}
 
 		/// <summary>
+		/// The main UI thread of the application. Needed to initialize the JoinableTaskContext.
+		/// </summary>
+		public static Thread MainThread => mainThread;
+
+		/// <summary>
 		/// Returns true if current thread is GUI thread.
 		/// </summary>
 		public static bool IsMainThread
