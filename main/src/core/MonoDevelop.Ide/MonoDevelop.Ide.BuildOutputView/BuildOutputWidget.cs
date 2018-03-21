@@ -177,6 +177,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			treeView = new TreeView ();
 			treeView.HeadersVisible = false;
+			treeView.AnimationsEnabled = false;
 			treeView.BorderVisible = false;
 			treeView.UseAlternatingRowColors = true;
 			treeView.Accessible.Identifier = "BuildOutputWidget.TreeView";
@@ -195,7 +196,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeColumn.Views.Add (cellView, true);
 			treeView.Columns.Add (treeColumn);
 
-			treeView.BoundsChanged += (s, e) => cellView.OnBoundsChanged (s, e);
+			// HACK: this should not be required, atomic cell calculation should depend on the final column size.
+			// This workaround causes the node information to float in a weird way when the tab is being resized.
+			// FIXME: Xwt.XamMac does not raise the TreeView.BoundsChanged event, however it's ok to use the container instead.
+			BoundsChanged += (s, e) => cellView.OnBoundsChanged (s, e);
 			cellView.GoToTask += (s, e) => GoToTask (e);
 		
 			PackStart (treeView, expand: true, fill: true);
