@@ -163,6 +163,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			ScopeStack scopeStack;
 
 			foreach (var curSpan in classifications) {
+				if (curSpan.TextSpan.Start < lastClassifiedOffsetEnd) // Work around for : https://github.com/dotnet/roslyn/issues/25648
+					continue;
 				if (curSpan.TextSpan.Start > lastClassifiedOffsetEnd) {
 					scopeStack = userScope;
 					ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - offset, curSpan.TextSpan.Start - lastClassifiedOffsetEnd, scopeStack);
