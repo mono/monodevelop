@@ -31,6 +31,7 @@ using System.Reflection;
 using System.Linq;
 using System.Collections.ObjectModel;
 using MonoDevelop.Components.AutoTest.Results;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -140,9 +141,15 @@ namespace MonoDevelop.Components.AutoTest
 
 		protected object GetPropertyValue (string propertyName, object requestedObject)
 		{
+			if (requestedObject == null) {
+				LoggingService.LogError ("GetPropertyValue : requestedObject == null property requested : " + propertyName);
+				return null;
+			}
 			return AutoTestService.CurrentSession.UnsafeSync (delegate {
 				PropertyInfo propertyInfo = requestedObject.GetType().GetProperty(propertyName,
 					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
+				if (propertyInfo == null)
+					LoggingService.LogError ($"GetPropertyValue : propertyName {propertyName} not found on object {requestedObject}.");
 				if (propertyInfo != null && propertyInfo.CanRead && !propertyInfo.GetIndexParameters ().Any ()) {
 					var propertyValue = propertyInfo.GetValue (requestedObject);
 					if (propertyValue != null) {
