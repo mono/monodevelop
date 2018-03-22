@@ -198,7 +198,6 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Compile Include="SolutionPadOrdering.fs" />
     <None Include="..\..\..\build\AddIns\FSharpBinding\MonoDevelop.FSharpInteractive.Service.exe">
       <Link>MonoDevelop.FSharpInteractive.Service.exe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
