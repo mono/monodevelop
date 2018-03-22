@@ -1,4 +1,4 @@
-namespace Microsoft.VisualStudio.Platform
+﻿namespace MonoDevelop.Ide.Completion.Presentation
 {
 	public interface IMonoDevelopContainedLanguageHost
 	{
