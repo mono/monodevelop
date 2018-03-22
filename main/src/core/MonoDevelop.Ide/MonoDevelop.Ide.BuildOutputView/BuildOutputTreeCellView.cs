@@ -96,24 +96,84 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		class ViewStatus
 		{
-			public bool Expanded;
-			public Rectangle LastRenderBounds;
-			public Rectangle LastRenderLayoutBounds;
+			TextLayout layout = new TextLayout ();
+
+			bool expanded;
+			public Rectangle LastRenderBounds = Rectangle.Zero;
+			public Rectangle LastRenderLayoutBounds = Rectangle.Zero;
+			public Rectangle LastRenderExpanderBounds = Rectangle.Zero;
 			public double CollapsedRowHeight = -1;
 			public double CollapsedLayoutHeight = -1;
 			public double LayoutYPadding = 0;
-			public double LastCalculatedHeight;
-			TextLayout layout = new TextLayout ();
+			public int NewLineCharIndex = -1;
+			public Rectangle TaskLinkRenderRectangle = Rectangle.Zero;
+
+			public bool Expanded {
+				get { return expanded; }
+				set {
+					if (expanded != value) {
+						expanded = value;
+						Reload ();
+						LastRenderBounds = Rectangle.Zero;
+						LastRenderLayoutBounds = Rectangle.Zero;
+						LastRenderExpanderBounds = Rectangle.Zero;
+						layout.Width = layout.Height = -1;
+					}
+				}
+			}
+
+			public BuildOutputNode Node { get; private set; }
+
+			public bool IsRootNode => Node.Parent == null;
+
+			public ViewStatus (BuildOutputNode node)
+			{
+				if (node == null)
+					throw new ArgumentNullException (nameof (node));
+				Node = node;
+				layout.Font = GetFont (node);
+			}
+
+			Font GetFont (BuildOutputNode node)
+			{
+				if (IsRootNode) {
+					return defaultBoldFont;
+				} else if (node.IsCommandLine) {
+					return monospaceFont;
+				}
+				return defaultLightFont;
+			}
+
+			public void Reload ()
+			{
+				var message = Node.Message;
+				NewLineCharIndex = message.IndexOf ('\n');
+				if (!Expanded && NewLineCharIndex > -1)
+					message = message.Substring (0, NewLineCharIndex);
+				if (layout.Text != message) {
+					layout.Text = message;
+
+					// PERF: calculate the height in collapsed state only once
+					// The layout height of the first line is always the same and we want
+					// the first line to be always aligned to the left icon in all states.
+					// The heights calculated here will be used to always report the static
+					// height in collapsed state and to calculate the padding.
+					if (!Expanded || CollapsedLayoutHeight < 0) {
+						layout.Trimming = TextTrimming.WordElipsis;
+						var textSize = layout.GetSize ();
+						CollapsedLayoutHeight = textSize.Height;
+						CollapsedRowHeight = Math.Max (textSize.Height, ImageSize);
+						LayoutYPadding = (CollapsedRowHeight - CollapsedLayoutHeight) * .5;
+					}
+				}
+				layout.Trimming = Expanded ? TextTrimming.Word : TextTrimming.WordElipsis;
+			}
+
 			public TextLayout GetUnconstrainedLayout ()
 			{
 				layout.Width = layout.Height = -1;
-				layout.Trimming = TextTrimming.Word;
 				return layout;
 			}
-
-			public Rectangle TaskLinkRenderRectangle = Rectangle.Zero;
-
-			public int NewLineCharIndex;
 		}
 
 		const int BuildTypeRowContentPadding = 6;
@@ -143,8 +203,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		// This is a simple implementation, it doesn't take into account that nodes could
 		// be removed
 		Dictionary<BuildOutputNode, ViewStatus> viewStatus = new Dictionary<BuildOutputNode, ViewStatus> ();
-
-		bool IsRootNode (BuildOutputNode buildOutputNode) => buildOutputNode.Parent == null;
 
 		bool IsRowExpanded (BuildOutputNode buildOutputNode) => ((Xwt.TreeView)ParentWidget)?.IsRowExpanded (buildOutputNode) ?? false;
 
@@ -179,16 +237,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			lastErrorPanelStartX = 0;
 		}
 
-		static void SetTextWithSearchAttributes (TextLayout layout, string message, string search, Color foreground, Color background)
+		static void HighlightSearchResults (TextLayout layout, string search, Color foreground, Color background)
 		{
-			if (message == null)
-				message = string.Empty;
-			layout.Text = message;
-			layout.ClearAttributes ();
-			if (string.IsNullOrEmpty (message) || string.IsNullOrEmpty (search))
+			var text = layout?.Text;
+			if (string.IsNullOrEmpty (text) || string.IsNullOrEmpty (search))
 				return;
+			layout.ClearAttributes ();
 			int index = 0;
-			while ((index = message.IndexOf (search, index, StringComparison.OrdinalIgnoreCase)) > -1) {
+			while ((index = text.IndexOf (search, index, StringComparison.OrdinalIgnoreCase)) > -1) {
 				layout.SetForeground (foreground, index, search.Length);
 				layout.SetBackground (background, index, search.Length);
 				index++;
@@ -208,9 +264,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 			//Draw the image row
 			DrawImage (ctx, cellArea, GetRowIcon (buildOutputNode), (cellArea.Left - 3), ImageSize, isSelected, ImagePadding);
 
-			CalcLayout (buildOutputNode, status, Bounds, out var layout, out var layoutBounds, out var expanderRect);
+			// If the height required by the text is not the same as what was calculated in OnGetRequiredSize(), it means that
+			// the required height has changed and CalcLayout will return false. In that case call QueueResize(),
+			// so that OnGetRequiredSize() is called again and the row is properly resized.
+			if (!CalcLayout (status, cellArea, out var layout, out var layoutBounds, out var expanderRect))
+				QueueResize ();
+
+			status.LastRenderBounds = cellArea;
+			status.LastRenderLayoutBounds = layoutBounds;
+			status.LastRenderExpanderBounds = expanderRect;
 
 			ctx.SetColor (Styles.GetTextColor (buildOutputNode, UseStrongSelectionColor && isSelected));
+
+			HighlightSearchResults (layout, contextProvider.SearchString, Styles.GetTextColor (buildOutputNode, false), Styles.GetSearchMatchBackgroundColor (isSelected));
 
 			// Draw the text
 			ctx.DrawTextLayout (layout, layoutBounds.X, layoutBounds.Y);
@@ -227,7 +293,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			//Information section
-			if (!IsRootNode (buildOutputNode)) {
+			if (!status.IsRootNode) {
 				DrawNodeInformation (ctx, cellArea, buildOutputNode, status.LayoutYPadding, isSelected, ImageSize, ImagePadding, status);
 			} else if (buildOutputNode.NodeType == BuildOutputNodeType.BuildSummary) {
 				// For build summary, display error/warning summary
@@ -248,15 +314,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 				var textStartX = layoutBounds.Right + BuildConfigurationInformationLeftPadding; 
 				DrawText (ctx, cellArea, textStartX, GetInformationMessage (buildOutputNode), status.LayoutYPadding, defaultLightFont, cellArea.Width - textStartX);
 			}
-
-			status.LastRenderBounds = cellArea;
-			status.LastRenderLayoutBounds = layoutBounds;
-
-			// If the height required by the text is not the same as what was calculated in OnGetRequiredSize(), it means that
-			// the required height has changed. In that case call QueueResize(), so that OnGetRequiredSize() is called
-			// again and the row is properly resized.
-			if (status.Expanded && Math.Abs (layoutBounds.Height - status.LastCalculatedHeight) > 1)
-				QueueResize ();
 		}
 
 		void DrawNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode, double padding, bool isSelected, int imageSize, int imagePadding, ViewStatus status)
@@ -394,11 +451,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 				maxLayoutWidth = status.LastRenderLayoutBounds.Width;
 
 			TextLayout layout = status.GetUnconstrainedLayout ();
-			layout.Text = buildOutputNode.Message;
 			layout.Width = maxLayoutWidth;
 			var textSize = layout.GetSize ();
 			var height = Math.Max (textSize.Height + 2 * status.LayoutYPadding, ImageSize);
-			status.LastCalculatedHeight = height;
 
 			return new Size (minWidth, height);
 		}
@@ -435,7 +490,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		ViewStatus GetViewStatus (BuildOutputNode node)
 		{
 			if (!viewStatus.TryGetValue (node, out var status))
-				status = viewStatus [node] = new ViewStatus ();
+				status = viewStatus [node] = new ViewStatus (node);
 			return status;
 		}
 
@@ -445,23 +500,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var node = GetValue (BuildOutputNodeField);
 			if (node != null) {
 				var status = GetViewStatus (node);
-				status.NewLineCharIndex = node.Message.IndexOf ('\n');
-
-				// PERF: calculate the height in collapsed state only once
-				// The layout height of the first line is always the same and we want
-				// the first line to be always aligned to the left icon in all states.
-				// The heights calculated here will be used to always report the static
-				// height in collapsed state and to calculate the padding.
-				var layout = status.GetUnconstrainedLayout ();
-				layout.Font = GetFont (node);
-				if (status.NewLineCharIndex > -1)
-					layout.Text = node.Message.Substring (0, status.NewLineCharIndex);
-				else
-					layout.Text = node.Message;
-				var textSize = layout.GetSize ();
-				status.CollapsedLayoutHeight = textSize.Height;
-				status.CollapsedRowHeight = Math.Max (textSize.Height, ImageSize);
-				status.LayoutYPadding = (status.CollapsedRowHeight - status.CollapsedLayoutHeight) * .5;
+				status.Reload ();
 			}
 		}
 
@@ -494,7 +533,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				ParentWidget.Cursor = CursorType.Arrow;
 			}
 
-			CalcLayout (node, status, Bounds, out var layout, out var layoutBounds, out var expanderRect);
+			CalcLayout (status, Bounds, out var layout, out var layoutBounds, out var expanderRect);
 
 			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
 				ExpanderHovered = true;
@@ -513,7 +552,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			CalcLayout (node, status, Bounds, out var layout, out var layoutBounds, out var expanderRect);
+			CalcLayout (status, Bounds, out var layout, out var layoutBounds, out var expanderRect);
 
 			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
 				status.Expanded = !status.Expanded;
@@ -524,26 +563,31 @@ namespace MonoDevelop.Ide.BuildOutputView
 			base.OnButtonPressed (args);
 		}
 
-		void CalcLayout (BuildOutputNode node, ViewStatus status, Rectangle cellArea, out TextLayout layout, out Rectangle layoutBounds, out Rectangle expanderRect)
+		bool CalcLayout (ViewStatus status, Rectangle cellArea, out TextLayout layout, out Rectangle layoutBounds, out Rectangle expanderRect)
 		{
+			// Relayouting is expensive and not required if the size didn't change. Just update the locations in that case.
+			if (!status.LastRenderBounds.IsEmpty && status.LastRenderBounds.Contains (status.LastRenderLayoutBounds) && cellArea.Size == status.LastRenderBounds.Size) {
+				expanderRect = status.LastRenderExpanderBounds.Offset (-status.LastRenderBounds.X, -status.LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
+				layoutBounds = status.LastRenderLayoutBounds.Offset (-status.LastRenderBounds.X, -status.LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
+				layout = status.GetUnconstrainedLayout ();
+				layout.Width = layoutBounds.Width;
+				return true; // no resize is required
+			}
+
 			expanderRect = Rectangle.Zero;
 			layoutBounds = cellArea;
 			layoutBounds.X += ImageSize - 3;
 			layoutBounds.Width -= (ImageSize - 3) + DefaultInformationContainerWidth;
 
 			layout = status.GetUnconstrainedLayout ();
-			if (!status.Expanded && status.NewLineCharIndex > -1)
-				SetTextWithSearchAttributes (layout, node.Message.Substring (0, status.NewLineCharIndex), contextProvider.SearchString, Styles.GetTextColor (node, false), Styles.GetSearchMatchBackgroundColor (HasFocus));
-			else
-				SetTextWithSearchAttributes (layout, node.Message, contextProvider.SearchString, Styles.GetTextColor (node, false), Styles.GetSearchMatchBackgroundColor (HasFocus));
-			
 			var textSize = layout.GetSize ();
 
 			if (textSize.Width > layoutBounds.Width || status.NewLineCharIndex > -1) {
 				layoutBounds.Width -= (ImageSize + ImagePadding);
-				layout.Width = Math.Max (MinLayoutWidth, layoutBounds.Width);
-				if (!status.Expanded)
-					layout.Trimming = TextTrimming.WordElipsis;
+				layoutBounds.Width = Math.Max (MinLayoutWidth, layoutBounds.Width);
+				layout.Width = layoutBounds.Width;
+				layout.Height = status.Expanded ? -1 : cellArea.Height;
+				
 				textSize = layout.GetSize ();
 
 				var expanderX = layoutBounds.Right + ImagePadding;
@@ -551,21 +595,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 					expanderRect = new Rectangle (expanderX, cellArea.Y + ((status.CollapsedLayoutHeight - BuildExpandIcon.Height) * .5), BuildExpandIcon.Width, BuildExpandIcon.Height);
 			}
 
-			if (layoutBounds.Height > textSize.Height) {
-				var padding = status.LayoutYPadding > 0 ? status.LayoutYPadding : (layoutBounds.Height - textSize.Height) * .5;
-				layoutBounds.Y += padding;
-				expanderRect.Y += padding;
-			}
-		}
+			layoutBounds.Height = textSize.Height;
+			layoutBounds.Y += status.LayoutYPadding;
+			expanderRect.Y += status.LayoutYPadding;
 
-		Font GetFont (BuildOutputNode node)
-		{
-			if (IsRootNode (node)) {
-				return defaultBoldFont;
-			} else if (node.IsCommandLine) {
-				return monospaceFont;
-			}
-			return defaultLightFont;
+			// check that the text still fits into the cell
+			if (!cellArea.Contains (layoutBounds))
+				return false; // resize required
+			// if the cell is too large, we need to resize it
+			else if (status.Expanded && Math.Abs (layoutBounds.Height - status.LayoutYPadding - cellArea.Height) > 1)
+				return false; // resize required
+			return true;
 		}
 
 		protected override void OnMouseExited ()
