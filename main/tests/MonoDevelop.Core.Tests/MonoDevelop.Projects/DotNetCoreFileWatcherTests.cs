@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (0, project.Files.Count);
 
-			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true {solution.FileName}");
+			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solution.FileName}\"");
 
 			return project;
 		}

@@ -841,9 +841,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (sval != null && parameterType.IsEnum) {
 				var enumValue = sval;
-				if (enumValue.StartsWith (parameterType.Name))
+				if (enumValue.StartsWith (parameterType.Name, StringComparison.Ordinal))
 					enumValue = enumValue.Substring (parameterType.Name.Length + 1);
-				if (enumValue.StartsWith (parameterType.FullName))
+				if (enumValue.StartsWith (parameterType.FullName, StringComparison.Ordinal))
 					enumValue = enumValue.Substring (parameterType.FullName.Length + 1);
 				return Enum.Parse(parameterType, enumValue, ignoreCase: true);
 			}
@@ -854,9 +854,12 @@ namespace MonoDevelop.Projects.MSBuild
 			var res = Convert.ChangeType (value, parameterType, CultureInfo.InvariantCulture);
 			bool convertPath = false;
 
-			if ((method.DeclaringType == typeof (System.IO.File) || method.DeclaringType == typeof (System.IO.Directory)) && argNum == 0) {
+			if ((method.DeclaringType == typeof (System.IO.File) || method.DeclaringType == typeof (System.IO.Directory)) && argNum == 0)
 				convertPath = true;
-			} else if (method.DeclaringType == typeof (IntrinsicFunctions)) {
+			else if (method.DeclaringType == typeof (System.IO.Path))
+				// The windows path is already converted to a native path, but it may contain escape sequences
+				res = MSBuildProjectService.UnescapePath ((string)res);
+			else if (method.DeclaringType == typeof (IntrinsicFunctions)) {
 				if (method.Name == "MakeRelative")
 					convertPath = true;
 				else if (method.Name == "GetDirectoryNameOfFileAbove" && argNum == 0)
