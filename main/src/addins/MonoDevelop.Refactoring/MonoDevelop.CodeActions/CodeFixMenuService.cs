@@ -74,6 +74,7 @@ namespace MonoDevelop.CodeActions
 
 			var configureLabel = GettextCatalog.GetString ("_Options");
 			var configureMenu = new CodeFixMenu (configureLabel);
+			var fixAllTasks = new List<Task<CodeAction>> ();
 
 			foreach (var cfa in fixes.CodeFixActions) {
 				var state = cfa.FixAllState;
@@ -119,10 +120,14 @@ namespace MonoDevelop.CodeActions
 						continue;
 
 					// FIXME: Use a real progress tracker.
-					var fixAll = await provider.GetFixAsync (fixState.CreateFixAllContext (new RoslynProgressTracker (), cancellationToken));
-					AddFixMenuItem (editor, fixAllMenu, ref mnemonic, fixAll);
+					var fixAll = Task.Run (() => provider.GetFixAsync (fixState.CreateFixAllContext (new RoslynProgressTracker (), cancellationToken)));
+					fixAllTasks.Add (fixAll);
 				}
 			}
+
+			var fixAllActions = await Task.WhenAll (fixAllTasks);
+			foreach (var fixAllAction in fixAllActions)
+				AddFixMenuItem (editor, fixAllMenu, ref mnemonic, fixAllAction);
 
 			bool first = true;
 			foreach (var refactoring in fixes.CodeRefactoringActions) {

@@ -291,7 +291,6 @@ ffffffffff");
 			TextEditorData data = Create (@"$1234567890
 1234567890");
 			MiscActions.MoveBlockUp (data);
-			Assert.AreEqual (new DocumentLocation (3, 6), data.Caret.Location);
 		}
 	}
 }

@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Diagnostics;
 
 namespace MonoDevelop.StressTest
 {
@@ -33,15 +34,15 @@ namespace MonoDevelop.StressTest
 	{
 		public static ITestScenario GetTestScenario ()
 		{
-			string mainPath = StressTestApp.GetMonoDevelopMainPath ();
-			string filesRootPath = Path.Combine (mainPath, "external/mono-addins");
+            string testProjectPath = Path.Combine(Path.GetDirectoryName(typeof(TestScenarioProvider).Assembly.Location), "TestProject");
+            var monoAddinsPath = Path.Combine(testProjectPath, "mono-addins", "Mono.Addins");
 
 			var scenario = new TestScenario (
-				Path.Combine (mainPath, "tests/StressTest/TestProject/TestProject.sln"),
+                Path.Combine (testProjectPath, "TestProject.sln"),
 				new [] {
-					Path.Combine (filesRootPath, "Mono.Addins/Mono.Addins/Addin.cs"),
-					Path.Combine (filesRootPath, "Mono.Addins/Mono.Addins.Localization/StringResourceLocalizer.cs"),
-					Path.Combine (filesRootPath, "Mono.Addins/Mono.Addins.Description/AddinDescription.cs"),
+					Path.Combine (monoAddinsPath, "Mono.Addins/Addin.cs"),
+					Path.Combine (monoAddinsPath, "Mono.Addins.Localization/StringResourceLocalizer.cs"),
+					Path.Combine (monoAddinsPath, "Mono.Addins.Description/AddinDescription.cs"),
 					"Program.cs"
 				}
 			);

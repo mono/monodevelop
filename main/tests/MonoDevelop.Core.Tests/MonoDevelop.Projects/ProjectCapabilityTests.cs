@@ -51,7 +51,8 @@ namespace MonoDevelop.Projects
 			if (!Directory.Exists (AddinManager.Registry.DefaultAddinsFolder))
 				Directory.CreateDirectory (AddinManager.Registry.DefaultAddinsFolder);
 
-			string testAddinBuildPath = Path.Combine (Util.TestsRootDir, "MonoDevelop.Core.Tests.Addin", "bin", "MonoDevelop.Core.Tests.Addin.dll");
+			var thisDir = Path.GetDirectoryName (GetType ().Assembly.Location);
+			string testAddinBuildPath = Path.Combine (thisDir, "MonoDevelop.Core.Tests.Addin.dll");
 			testAddinAssemblyPath = Path.Combine (AddinManager.Registry.DefaultAddinsFolder, "MonoDevelop.Core.Tests.Addin.dll");
 			File.Copy (testAddinBuildPath, testAddinAssemblyPath);
 			AddinManager.Registry.Update (null);

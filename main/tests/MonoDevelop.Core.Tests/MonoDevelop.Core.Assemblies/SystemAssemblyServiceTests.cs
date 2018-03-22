@@ -60,7 +60,7 @@ namespace MonoDevelop.Core.Assemblies
 				"System"
 			};
 
-			var references = SystemAssemblyService.GetAssemblyReferences(Path.Combine(Path.GetDirectoryName (GetType().Assembly.Location), "..", "bin", "Mono.Cecil.dll"));
+			var references = SystemAssemblyService.GetAssemblyReferences(Path.Combine(Path.GetDirectoryName (GetType().Assembly.Location), "Mono.Cecil.dll"));
 			Assert.That(references, Is.EquivalentTo(names));
 		}
 	}
