@@ -42,6 +42,9 @@ namespace Mono.TextEditor
 {
 	static class CaretMoveActions
 	{
+		internal const ushort HighSurrogateMarker = 0b1101_1000_0000_0000;
+		internal const ushort LowSurrogateMarker = 0b1101_1100_0000_0000;
+
 		public static void Left (TextEditorData data)
 		{
 			using (var undo = data.OpenUndoGroup ()) {
@@ -88,6 +91,10 @@ namespace Mono.TextEditor
 						nextLocation = new DocumentLocation (data.Caret.Line - 1, data.GetVirtualIndentationColumn (nextLocation));
 					data.Caret.Location = nextLocation;
 				}
+				var curOffset = data.Caret.Offset;
+				if (curOffset > 0 && curOffset < data.Length && ((ushort)data.GetCharAt (curOffset) & LowSurrogateMarker) == LowSurrogateMarker)
+					data.Caret.Offset--;
+
 			}
 		}
 		
@@ -104,7 +111,7 @@ namespace Mono.TextEditor
 				data.Caret.Offset = data.FindPrevSubwordOffset (data.Caret.Offset);
 			}
 		}
-		
+
 		public static void Right (TextEditorData data)
 		{
 			using (var undo = data.OpenUndoGroup ()) {
@@ -113,9 +120,8 @@ namespace Mono.TextEditor
 					data.ClearSelection ();
 					return;
 				}
-				
 				DocumentLine line = data.Document.GetLine (data.Caret.Line);
-				IEnumerable<FoldSegment > foldings = data.Document.GetStartFoldings (line);
+				IEnumerable<FoldSegment> foldings = data.Document.GetStartFoldings (line);
 				FoldSegment segment = null;
 				foreach (FoldSegment folding in foldings) {
 					if (folding.IsCollapsed && folding.Offset == data.Caret.Offset) {
@@ -124,7 +130,7 @@ namespace Mono.TextEditor
 					}
 				}
 				if (segment != null) {
-					data.Caret.Offset = segment.EndOffset; 
+					data.Caret.Offset = segment.EndOffset;
 					return;
 				}
 
@@ -156,9 +162,17 @@ namespace Mono.TextEditor
 						}
 					}
 				}
+				MoveOutOfUTF32Character (data);
 			}
 		}
-		
+
+		static void MoveOutOfUTF32Character (TextEditorData data)
+		{
+			var curOffset = data.Caret.Offset;
+			if (curOffset > 0 && curOffset < data.Length && ((ushort)data.GetCharAt (curOffset) & HighSurrogateMarker) == HighSurrogateMarker)
+				data.Caret.Offset++;
+		}
+
 		public static void NextWord (TextEditorData data)
 		{
 			using (var undo = data.OpenUndoGroup ()) {
@@ -185,6 +199,7 @@ namespace Mono.TextEditor
 					data.ClearSelection ();
 					data.Caret.Location = (line >= DocumentLocation.MinLine) ? new DocumentLocation (line, col) : new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn);
 					data.Caret.SetToDesiredColumn (desiredColumn);
+					MoveOutOfUTF32Character (data);
 					return;
 				}
 
@@ -196,6 +211,7 @@ namespace Mono.TextEditor
 				} else {
 					ToDocumentStart (data);
 				}
+				MoveOutOfUTF32Character (data);
 			}
 		}
 
@@ -237,6 +253,7 @@ namespace Mono.TextEditor
 					} else {
 						data.Caret.Offset = data.Document.Length;
 					}
+					MoveOutOfUTF32Character (data);
 					return;
 				}
 				
@@ -248,6 +265,7 @@ namespace Mono.TextEditor
 				} else {
 					ToDocumentEnd (data);
 				}
+				MoveOutOfUTF32Character (data);
 			}
 		}
 		
