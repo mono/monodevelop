@@ -145,6 +145,30 @@ namespace MonoDevelop.Ide.BuildOutputView
 			control.ClipboardCopy ();
 		}
 
+		[CommandHandler (TextEditorCommands.LineEnd)]
+		public void ExpandAll ()
+		{
+			control.ExpandAll ();
+		}
+
+		[CommandHandler (TextEditorCommands.LineStart)]
+		public void CollapseAll ()
+		{
+			control.CollapseAll ();
+		}
+
+		[CommandHandler (TextEditorCommands.DocumentStart)]
+		public void GoToFirstNode ()
+		{
+			control.GoToFirstNode ();
+		}
+
+		[CommandHandler (TextEditorCommands.DocumentEnd)]
+		public void GoToLastNode ()
+		{
+			control.GoToLastNode ();
+		}
+
 		[CommandHandler (SearchCommands.Find)]
 		public void Find ()
 		{
