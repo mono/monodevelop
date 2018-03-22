@@ -47,6 +47,28 @@ namespace MonoDevelop.Ide.BuildOutputView
 			LinkForegroundColor = Ide.Gui.Styles.LinkForegroundColor;
 			SearchMatchFocusedBackgroundColor = Xwt.Drawing.Color.FromName ("#fcff54");
 		}
+
+		public static Xwt.Drawing.Color GetTextColor (BuildOutputNode buildOutputNode, bool isSelected)
+		{
+			if (isSelected) {
+				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
+					return Styles.CellTextSkippedSelectionColor;
+				} else {
+					return Styles.CellTextSelectionColor;
+				}
+			} else {
+				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
+					return Styles.CellTextSkippedColor;
+				} else {
+					return Styles.CellTextColor;
+				}
+			}
+		}
+
+		public static Color GetSearchMatchBackgroundColor (bool focused)
+		{
+			return focused ? Styles.SearchMatchFocusedBackgroundColor : Styles.SearchMatchUnfocusedBackgroundColor;
+		}
 	}
 
 	static class Resources
@@ -157,29 +179,20 @@ namespace MonoDevelop.Ide.BuildOutputView
 			lastErrorPanelStartX = 0;
 		}
 
-		string GetSearchMarkup (string message, Color foreground, Color background)
+		static void SetTextWithSearchAttributes (TextLayout layout, string message, string search, Color foreground, Color background)
 		{
-			return $"<span foreground=\"{foreground.ToHexString ()}\" background=\"{background.ToHexString ()}\">{message}</span>";
-		}
-
-		void CreateMarkupText (TextLayout layout, BuildOutputNode buildOutputNode, string message, string search)
-		{
-			int index = -1;
-			if (search == "" || (index = message.IndexOf (search, StringComparison.OrdinalIgnoreCase)) == -1) {
-				layout.Markup = message;
+			if (message == null)
+				message = string.Empty;
+			layout.Text = message;
+			layout.ClearAttributes ();
+			if (string.IsNullOrEmpty (message) || string.IsNullOrEmpty (search))
 				return;
+			int index = 0;
+			while ((index = message.IndexOf (search, index, StringComparison.OrdinalIgnoreCase)) > -1) {
+				layout.SetForeground (foreground, index, search.Length);
+				layout.SetBackground (background, index, search.Length);
+				index++;
 			}
-			System.Text.StringBuilder bld = new System.Text.StringBuilder ();
-			if (index > 0) {
-				bld.Append (message.Substring (0, index));
-			}
-			bld.Append (GetSearchMarkup (message.Substring (index, search.Length),
-			                             GetTextColor (buildOutputNode, false),
-			                             HasFocus ? Styles.SearchMatchFocusedBackgroundColor : Styles.SearchMatchUnfocusedBackgroundColor));
-			if (message.Length > index + search.Length) {
-				bld.Append (message.Substring (index + search.Length));
-			}
-			layout.Markup = bld.ToString ();
 		}
 
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
@@ -197,7 +210,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			CalcLayout (buildOutputNode, status, Bounds, out var layout, out var layoutBounds, out var expanderRect);
 
-			ctx.SetColor (GetTextColor (buildOutputNode, isSelected));
+			ctx.SetColor (Styles.GetTextColor (buildOutputNode, UseStrongSelectionColor && isSelected));
 
 			// Draw the text
 			ctx.DrawTextLayout (layout, layoutBounds.X, layoutBounds.Y);
@@ -381,7 +394,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				maxLayoutWidth = status.LastRenderLayoutBounds.Width;
 
 			TextLayout layout = status.GetUnconstrainedLayout ();
-			layout.Markup = buildOutputNode.Message;
+			layout.Text = buildOutputNode.Message;
 			layout.Width = maxLayoutWidth;
 			var textSize = layout.GetSize ();
 			var height = Math.Max (textSize.Height + 2 * status.LayoutYPadding, ImageSize);
@@ -396,23 +409,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return StrongSelectionColor;
 			}
 			return SelectionColor;
-		}
-
-		Xwt.Drawing.Color GetTextColor (BuildOutputNode buildOutputNode, bool isSelected)
-		{
-			if (UseStrongSelectionColor && isSelected) {
-				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
-					return Styles.CellTextSkippedSelectionColor;
-				} else {
-					return Styles.CellTextSelectionColor;
-				}
-			} else {
-				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
-					return Styles.CellTextSkippedColor;
-				} else {
-					return Styles.CellTextColor;
-				}
-			}
 		}
 
 		bool IsBackgroundColorFieldSet ()
@@ -459,9 +455,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 				var layout = status.GetUnconstrainedLayout ();
 				layout.Font = GetFont (node);
 				if (status.NewLineCharIndex > -1)
-					layout.Markup = node.Message.Substring (0, status.NewLineCharIndex);
+					layout.Text = node.Message.Substring (0, status.NewLineCharIndex);
 				else
-					layout.Markup = node.Message;
+					layout.Text = node.Message;
 				var textSize = layout.GetSize ();
 				status.CollapsedLayoutHeight = textSize.Height;
 				status.CollapsedRowHeight = Math.Max (textSize.Height, ImageSize);
@@ -537,9 +533,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			layout = status.GetUnconstrainedLayout ();
 			if (!status.Expanded && status.NewLineCharIndex > -1)
-				CreateMarkupText (layout, node, node.Message.Substring (0, status.NewLineCharIndex), contextProvider.SearchString);
+				SetTextWithSearchAttributes (layout, node.Message.Substring (0, status.NewLineCharIndex), contextProvider.SearchString, Styles.GetTextColor (node, false), Styles.GetSearchMatchBackgroundColor (HasFocus));
 			else
-				CreateMarkupText (layout, node, node.Message, contextProvider.SearchString);
+				SetTextWithSearchAttributes (layout, node.Message, contextProvider.SearchString, Styles.GetTextColor (node, false), Styles.GetSearchMatchBackgroundColor (HasFocus));
 			
 			var textSize = layout.GetSize ();
 
