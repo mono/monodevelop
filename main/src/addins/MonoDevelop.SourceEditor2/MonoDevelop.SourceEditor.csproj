@@ -605,6 +605,7 @@
     <InternalsVisibleTo Include="MonoDevelop.AspNet.Tests" />
     <InternalsVisibleTo Include="FSharpBinding" />
     <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
   </ItemGroup>

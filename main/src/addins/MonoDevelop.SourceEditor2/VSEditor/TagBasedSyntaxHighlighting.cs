@@ -36,6 +36,7 @@ namespace Microsoft.VisualStudio.Platform
 
     internal sealed class TagBasedSyntaxHighlighting : ISyntaxHighlighting
     {
+        private static string[] delimiters = new string[] { " - " };
         private ITextBuffer textBuffer { get; }
         private IClassifier classifier { get; set; }
         private MonoDevelop.Ide.Editor.ITextDocument textDocument { get; }
@@ -148,13 +149,23 @@ namespace Microsoft.VisualStudio.Platform
             }
         }
 
-        private string GetStyleNameFromClassificationType(IClassificationType classificationType)
+        private string GetStyleNameFromClassificationType (IClassificationType classificationType)
         {
-            string styleName = EditorThemeColors.Foreground;
+            string styleName = null;
+            string[] classificationNames = classificationType.Classification.Split (TagBasedSyntaxHighlighting.delimiters, StringSplitOptions.None);
+
+            for (int i = classificationNames.Length - 1; i >= 0 && styleName == null; i--) {
+                styleName = GetStyleNameFromClassificationName (classificationNames[i]);
+            }
+
+            return styleName ?? EditorThemeColors.Foreground;
+        }
+
+        private string GetStyleNameFromClassificationName (string classificationName) {
+            string styleName = null;
 
             // MONO: TODO: get this from the EditorFormat?
-            switch (classificationType.Classification)
-            {
+            switch (classificationName) {
                 // MONO: TODO: Make each language MEF export this knowledge?
 
                 // CSS Entries
@@ -207,6 +218,12 @@ namespace Microsoft.VisualStudio.Platform
                     break;
                 case "RazorCode":
                     //styleName = style.RazorCode.Name;
+                    break;
+                case "RazorTagHelperAttribute":
+                    styleName = "markup.bold";
+                    break;
+                case "RazorTagHelperElement":
+                    styleName = "markup.bold";
                     break;
 
                 // JSON Entries
@@ -264,9 +281,8 @@ namespace Microsoft.VisualStudio.Platform
                     break;
                 default:
                     // If the stylename looks like a textmate style, just use it
-                    if (classificationType.Classification.IndexOf('.') >= 0)
-                    {
-                        styleName = classificationType.Classification;
+                    if (classificationName.IndexOf ('.') >= 0) {
+                        styleName = classificationName;
                     }
 
                     break;
@@ -275,8 +291,8 @@ namespace Microsoft.VisualStudio.Platform
             return styleName;
         }
 
-		public void Dispose()
-		{
-		}
+        public void Dispose()
+        {
+        }
     }
 }

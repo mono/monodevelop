@@ -365,7 +365,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             _signatureTextBuffer.Replace(new Span(0, _signatureTextBuffer.CurrentSnapshot.Length), sigToRender.Content);
             var classifierSpans = PlatformCatalog.Instance.ClassifierAggregatorService.GetClassifier(_signatureTextBuffer)?.GetClassificationSpans(new SnapshotSpan(_signatureTextBuffer.CurrentSnapshot, 0, _signatureTextBuffer.CurrentSnapshot.Length));
             if (classifierSpans != null && classifierSpans.Count > 0)
-                _signatureWpfTextView.Markup = MDUtils.ClassificationsToMarkup(_signatureTextBuffer.CurrentSnapshot, classifierSpans, sigToRender.CurrentParameter?.Locus);
+                _signatureWpfTextView.Markup = MDUtils.ClassificationsToMarkup(_signatureTextBuffer.CurrentSnapshot, classifierSpans, sigToRender.CurrentParameter);
             else
             {
                 _signatureWpfTextView.Markup = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText(_signatureTextBuffer.CurrentSnapshot.GetText());
@@ -383,7 +383,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             _signatureTextBuffer.Replace(new Span(0, _signatureTextBuffer.CurrentSnapshot.Length), sigToRender.PrettyPrintedContent);
             var classifierSpans = PlatformCatalog.Instance.ClassifierAggregatorService.GetClassifier(_signatureTextBuffer)?.GetClassificationSpans(new SnapshotSpan(_signatureTextBuffer.CurrentSnapshot, 0, _signatureTextBuffer.CurrentSnapshot.Length));
             if (classifierSpans != null && classifierSpans.Count > 0)
-                _signatureWpfTextView.Markup = MDUtils.ClassificationsToMarkup(_signatureTextBuffer.CurrentSnapshot, classifierSpans, sigToRender.CurrentParameter?.Locus);
+                _signatureWpfTextView.Markup = MDUtils.ClassificationsToMarkup(_signatureTextBuffer.CurrentSnapshot, classifierSpans, sigToRender.CurrentParameter);
             else
             {
                 _signatureWpfTextView.Markup = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText(_signatureTextBuffer.CurrentSnapshot.GetText());
