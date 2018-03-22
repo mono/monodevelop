@@ -386,6 +386,7 @@ tests/TestRunner/Makefile
 tests/Ide.Tests/Makefile
 tests/MacPlatform.Tests/Makefile
 tests/MonoDevelop.Core.Tests/Makefile
+tests/MonoDevelop.Core.Tests.Addin/Makefile
 tests/MonoDevelop.CSharpBinding.Tests/Makefile
 tests/MonoDevelop.Refactoring.Tests/Makefile
 tests/WindowsPlatform.Tests/Makefile
