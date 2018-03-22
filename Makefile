@@ -18,6 +18,8 @@ MSBUILD_PATH=$(MONO_DIR)/msbuild/15.0/bin
 # --assembly-loader=strict will not work for valuetuples here, even with binding redirects
 AOT_COMMAND=mono64 --aot=hybrid --debug --assembly-loader=strict
 MONO_AOT:=MONO_PATH="$(AOT_DIRECTORIES):$(MSBUILD_PATH):$(MONO_PATH)" $(AOT_COMMAND) --apply-bindings=$(BIN_DIR)/bin/MonoDevelop.exe.config
+AOT_METADATA_COMMAND=mono64 --aot=metadata-only --debug --assembly-loader=strict
+MONO_AOT_METADATA:=MONO_PATH="$(AOT_DIRECTORIES):$(MSBUILD_PATH):$(MONO_PATH)" $(AOT_METADATA_COMMAND) --apply-bindings=$(BIN_DIR)/bin/MonoDevelop.exe.config
 
 MSBUILD_LIBRARIES=Microsoft.Build.dll Microsoft.Build.Framework.dll Microsoft.Build.Utilities.Core.dll
 MSBUILD_DLLS=$(patsubst %, $(MSBUILD_PATH)/%, $(MSBUILD_LIBRARIES))
@@ -99,7 +101,7 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 		echo Decompressing $$tb; \
 		tar xvjf external/$$tb; \
 	done
-	@rm -rf tarballs/external	
+	@rm -rf tarballs/external
 	@echo Decompressing monodevelop-$(PACKAGE_VERSION).tar.bz2
 	@cd tarballs && tar xvjf monodevelop-$(PACKAGE_VERSION).tar.bz2
 	@cp version.config tarballs/monodevelop-$(PACKAGE_VERSION)
@@ -129,6 +131,13 @@ aot-gac:
 aot-msbuild:
 	@for i in $(MSBUILD_DLLS); do (sudo $(AOT_COMMAND) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
 
+aot-metadata:
+	@for i in $(BIN_DIR)/bin/*.dll; do ($(MONO_AOT_METADATA) "$$i" && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in $(BIN_DIR)/AddIns/*.dll; do ($(MONO_AOT_METADATA) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in $(BIN_DIR)/AddIns/*/*.dll; do ($(MONO_AOT_METADATA) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in $(BIN_DIR)/AddIns/*/*/*.dll; do ($(MONO_AOT_METADATA) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+
+
 run:
 	cd main && $(MAKE) run
 
@@ -154,7 +163,7 @@ run-no-accessibility:
 	cd main && $(MAKE) run-no-accessibility
 test:
 	cd main && $(MAKE) test assembly=$(assembly)
-    
+
 deploy-tests:
 	cd main && $(MAKE) deploy-tests
 
