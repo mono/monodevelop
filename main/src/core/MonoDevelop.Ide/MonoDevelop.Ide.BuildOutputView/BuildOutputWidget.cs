@@ -346,7 +346,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				menu.Add (new SeparatorContextMenuItem ());
 				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy\t\t\t{0}", GetShortcut (EditCommands.Copy, false)));
 				copyElementMenu.Clicked += (s, args) => {
-					ClipboardCopy (selectedNode);
+					if (cellView.SelectionStart != cellView.SelectionEnd) {
+						var init = Math.Min (cellView.SelectionStart, cellView.SelectionEnd);
+						var end = Math.Max (cellView.SelectionStart, cellView.SelectionEnd);
+						Clipboard.SetText (selectedNode.Message.Substring (init, end - init));
+					} else {
+						ClipboardCopy (selectedNode);
+					}
 				};
 				menu.Items.Add (copyElementMenu);
 

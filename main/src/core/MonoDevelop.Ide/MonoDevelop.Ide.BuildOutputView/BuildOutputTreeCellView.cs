@@ -70,6 +70,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 		static readonly Xwt.Drawing.Image BuildCollapseIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildCollapse, Gtk.IconSize.Menu).WithSize (16);
 		static readonly Xwt.Drawing.Image BuildCollapseDisabledIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildCollapseDisabled, Gtk.IconSize.Menu).WithSize (16);
 
+		public int SelectionStart { get; private set; }
+		public int SelectionEnd { get; private set; }
+		BuildOutputNode selectionRow;
+		bool clicking;
+
 		public EventHandler<BuildOutputNode> GoToTask;
 
 		class ViewStatus
@@ -196,6 +201,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			DrawImage (ctx, cellArea, GetRowIcon (buildOutputNode), (cellArea.Left - 3), ImageSize, isSelected, ImagePadding);
 
 			CalcLayout (buildOutputNode, status, Bounds, out var layout, out var layoutBounds, out var expanderRect);
+
+			// Render the selection
+			if (selectionRow == buildOutputNode && SelectionStart != SelectionEnd) {
+				layout.SetBackground (Colors.LightBlue, Math.Min (SelectionStart, SelectionEnd), Math.Abs (SelectionEnd - SelectionStart));
+			}
 
 			ctx.SetColor (GetTextColor (buildOutputNode, isSelected));
 
@@ -505,6 +515,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 			} else {
 				ExpanderHovered = false;
 			}
+
+			var layoutSize = layout.GetSize ();
+			var insideText = new Rectangle (layoutBounds.TopLeft, layoutSize).Contains (args.Position);
+			if (clicking && insideText && selectionRow == node) {
+				var pos = layout.GetIndexFromCoordinates (args.Position.X - layoutBounds.X, args.Position.Y - layoutBounds.Y);
+				if (pos != -1) {
+					SelectionEnd = pos;
+					QueueDraw ();
+				}
+			} else {
+				ParentWidget.Cursor = insideText ? CursorType.IBeam : CursorType.Arrow;
+			}
 		}
 
 		protected override void OnButtonPressed (ButtonEventArgs args)
@@ -523,6 +545,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 				status.Expanded = !status.Expanded;
 				QueueResize ();
 				return;
+			}
+
+			if (args.Button != PointerButton.Right) {
+				var pos = layout.GetIndexFromCoordinates (args.Position.X - layoutBounds.X, args.Position.Y - layoutBounds.Y);
+				if (pos != -1) {
+					SelectionStart = SelectionEnd = pos;
+					selectionRow = node;
+					clicking = true;
+				} else {
+					selectionRow = null;
+				}
+				
+				QueueDraw ();
 			}
 		
 			base.OnButtonPressed (args);
@@ -560,6 +595,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 				layoutBounds.Y += padding;
 				expanderRect.Y += padding;
 			}
+		}
+
+		protected override void OnButtonReleased (ButtonEventArgs args)
+		{
+			if (clicking) {
+				clicking = false;
+				QueueDraw ();
+			}
+			base.OnButtonReleased (args);
 		}
 
 		Font GetFont (BuildOutputNode node)
