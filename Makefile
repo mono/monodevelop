@@ -119,6 +119,7 @@ aot-msbuild-with-copy: aot-msbuild
 	@for i in $(MSBUILD_DLLS); do cp -r "$$i" "$$i.dylib" "$$i.dylib.dSYM" $(BIN_DIR)/bin; done
 
 aot:
+	@for i in $(BIN_DIR)/bin/*.exe; do ($(MONO_AOT) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
 	@for i in $(BIN_DIR)/bin/*.dll; do ($(MONO_AOT) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
 	@for i in $(BIN_DIR)/AddIns/*.dll; do ($(MONO_AOT) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
 	@for i in $(BIN_DIR)/AddIns/*/*.dll; do ($(MONO_AOT) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
@@ -132,6 +133,7 @@ aot-msbuild:
 	@for i in $(MSBUILD_DLLS); do (sudo $(AOT_COMMAND) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
 
 aot-metadata:
+	@for i in $(BIN_DIR)/bin/*.exe; do ($(MONO_AOT_METADATA) "$$i" && echo AOT successful: $$i) || (echo AOT failed: $$i); done
 	@for i in $(BIN_DIR)/bin/*.dll; do ($(MONO_AOT_METADATA) "$$i" && echo AOT successful: $$i) || (echo AOT failed: $$i); done
 	@for i in $(BIN_DIR)/AddIns/*.dll; do ($(MONO_AOT_METADATA) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
 	@for i in $(BIN_DIR)/AddIns/*/*.dll; do ($(MONO_AOT_METADATA) "$$i" &> /dev/null && echo AOT successful: $$i) || (echo AOT failed: $$i); done
