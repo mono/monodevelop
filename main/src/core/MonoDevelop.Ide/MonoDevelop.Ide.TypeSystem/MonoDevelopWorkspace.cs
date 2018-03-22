@@ -252,7 +252,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!added) {
 						added = true;
 						solution.Modified += OnSolutionModified;
-						OnSolutionModified (solution, new MonoDevelop.Projects.WorkspaceItemEventArgs (solution));
+						NotifySolutionModified (solution, solutionId, this);
 						OnSolutionAdded (solutionInfo);
 						lock (generatedFiles) {
 							foreach (var generatedFile in generatedFiles) {
@@ -269,12 +269,17 @@ namespace MonoDevelop.Ide.TypeSystem
 		static async void OnSolutionModified (object sender, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
 			var sol = (MonoDevelop.Projects.Solution)args.Item;
-			if (string.IsNullOrWhiteSpace (sol.BaseDirectory))
-				return;
-
 			var workspace = await TypeSystemService.GetWorkspaceAsync (sol, CancellationToken.None);
 			var solId = workspace.GetSolutionId (sol);
 			if (solId == null)
+				return;
+			
+			NotifySolutionModified (sol, solId, workspace);
+		}
+
+		static void NotifySolutionModified (MonoDevelop.Projects.Solution sol, SolutionId solId, MonoDevelopWorkspace workspace)
+		{
+			if (string.IsNullOrWhiteSpace (sol.BaseDirectory))
 				return;
 			
 			var locService = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
