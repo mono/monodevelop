@@ -673,7 +673,19 @@ namespace MonoDevelop.Ide.Gui
 
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
+		}
 
+		/* In some situation, a document can be associated with an editor
+		 * outside of the normal document opening process. This happens
+		 * for instance with the designers where a single view content
+		 * can host multiple text editor instances. In that case we need
+		 * a way to tell the underlying document both that extensions needs
+		 * to be re-registered and that previous GetContent calls may now
+		 * be out of date. This method serves that purpose.
+		 */
+		internal void ReloadExtensions ()
+		{
+			InitializeExtensionChain ();
 		}
 
 		void InitializeEditor ()
