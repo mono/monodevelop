@@ -12,9 +12,13 @@
 
 	<Extension path = "/MonoDevelop/Ide/Commands/Hidden">
 		<Command id = "MonoDevelop.Ide.BuildOutputView.BuildOutputCommands.ExpandAll"
-			 _label = "_Expand All" />
+			 _label = "_Expand All"
+		   shortcut = "Control|Right"
+		macShortcut = "Meta|Right" />
 		<Command id = "MonoDevelop.Ide.BuildOutputView.BuildOutputCommands.CollapseAll"
-			 _label = "_Collapse All" />
+			 _label = "_Collapse All"
+		   shortcut = "Control|Left"
+		macShortcut = "Meta|Left" />
 		<Command id = "MonoDevelop.Ide.BuildOutputView.BuildOutputCommands.JumpTo"
 			 _label = "_Jump To" />
 	</Extension>
