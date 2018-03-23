@@ -62,6 +62,10 @@ namespace MonoDevelop.DotNetCore
 				.OrderByDescending (version => version)
 				.ToArray ();
 
+			// If there are no runtimes then do not consider the runtime to be installed.
+			if (!Versions.Any ())
+				IsInstalled = false;
+
 			// Used by the DotNetMSBuildSdkResolver to find the .NET Core SDK.
 			// Not sure this is needed - seems to work without it.
 			Environment.SetEnvironmentVariable ("DOTNET_MSBUILD_SDK_RESOLVER_CLI_DIR", path.ParentDirectory);
