@@ -315,43 +315,62 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			if (e.Button == PointerButton.Right) {
-				var menu = new ContextMenu ();
-
-				ContextMenuItem jump = null;
-				if (IsSelectableTask (selectedNode)) {
-					jump = new ContextMenuItem (GettextCatalog.GetString ("_Jump to {0}", selectedNode.NodeType.ToString ()));
-					jump.Clicked += (s,evnt) => {
-						GoToTask (selectedNode);
-					};
-					menu.Add (jump);
-					menu.Add (new SeparatorContextMenuItem ());
-				}
-
-				var expandAllMenu = new ContextMenuItem (GettextCatalog.GetString ("Expand All"));
-				expandAllMenu.Clicked += (s, args) => treeView.ExpandAll ();
-				menu.Items.Add (expandAllMenu);
-
-				var collapseAllMenu = new ContextMenuItem (GettextCatalog.GetString ("Collapse All"));
-				collapseAllMenu.Clicked += (s, args) => {
-					var dataSource = (BuildOutputDataSource) treeView.DataSource;
-					if (dataSource != null) {
-						foreach (var root in dataSource.RootNodes) {
-							treeView.CollapseRow (root);
-						}
-					}
-				};
-				menu.Items.Add (collapseAllMenu);
-
-				menu.Add (new SeparatorContextMenuItem ());
-				var copyElementMenu = new ContextMenuItem (GettextCatalog.GetString ("Copy\t\t\t{0}", GetShortcut (EditCommands.Copy, false)));
-				copyElementMenu.Clicked += (s, args) => {
-					ClipboardCopy (selectedNode);
-				};
-				menu.Items.Add (copyElementMenu);
-
-				menu.Show (treeView, (int) e.X, (int) e.Y);
+			if (e.IsContextMenuTrigger) {
+				CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/BuildOutput/ContextMenu");
+				IdeApp.CommandService.ShowContextMenu (treeView, (int)e.X, (int)e.Y, cset, this);
 			}
+		}
+
+		[CommandHandler (EditCommands.Copy)]
+		public void Copy ()
+		{
+			ClipboardCopy ();
+		}
+
+		[CommandUpdateHandler (EditCommands.Copy)]
+		public void UpdateCopyHandler (CommandInfo cinfo)
+		{
+			cinfo.Enabled = CanClipboardCopy ();
+		}
+
+		[CommandHandler (BuildOutputCommands.ExpandAll)]
+		public void ExpandAll ()
+		{
+			treeView.ExpandAll ();
+		}
+
+		[CommandHandler (BuildOutputCommands.CollapseAll)]
+		public void CollapseAll ()
+		{
+			var dataSource = (BuildOutputDataSource)treeView.DataSource;
+			if (dataSource != null) {
+				foreach (var root in dataSource.RootNodes) {
+					treeView.CollapseRow (root);
+				}
+			}
+		}
+
+		[CommandUpdateHandler (BuildOutputCommands.ExpandAll)]
+		[CommandUpdateHandler (BuildOutputCommands.CollapseAll)]
+		public void UpdateExpandCollapseAllHandler (CommandInfo cinfo)
+		{
+			cinfo.Enabled = (treeView?.DataSource as BuildOutputDataSource) != null;
+		}
+
+		[CommandHandler (BuildOutputCommands.JumpTo)]
+		public void JumpTo ()
+		{
+			var selectedNode = treeView.SelectedRow as BuildOutputNode;
+			GoToTask (selectedNode);
+		}
+
+		[CommandUpdateHandler (BuildOutputCommands.JumpTo)]
+		public void UpdateJumpToHandler (CommandInfo cinfo)
+		{
+			var selectedNode = treeView.SelectedRow as BuildOutputNode;
+			cinfo.Visible = cinfo.Enabled = selectedNode?.NodeType == BuildOutputNodeType.Warning || selectedNode?.NodeType == BuildOutputNodeType.Error;
+			if (cinfo.Visible)
+				cinfo.Text = GettextCatalog.GetString ("_Jump To {0}", selectedNode.NodeType.ToString ());
 		}
 
 		void GoToTask (BuildOutputNode selectedNode)
