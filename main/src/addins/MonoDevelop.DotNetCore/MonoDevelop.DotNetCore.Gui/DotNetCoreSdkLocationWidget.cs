@@ -49,12 +49,13 @@ namespace MonoDevelop.DotNetCore.Gui
 
 			locationFileSelector.FileChanged += LocationChanged;
 
-			Validate ();
+			LocationChanged (null, null);
 		}
 
 		void LocationChanged (object sender, EventArgs e)
 		{
 			Validate ();
+			UpdateFileSelectorDirectory ();
 		}
 
 		void Validate ()
@@ -63,6 +64,16 @@ namespace MonoDevelop.DotNetCore.Gui
 			panel.ValidateSdkLocation (location);
 
 			ShowDotNetCoreInformation ();
+		}
+
+		void UpdateFileSelectorDirectory ()
+		{
+			FilePath location = CleanPath (locationFileSelector.FileName);
+			if (location.IsNull) {
+				locationFileSelector.CurrentFolder = null;
+			} else {
+				locationFileSelector.CurrentFolder = location.ParentDirectory;
+			}
 		}
 
 		FilePath CleanPath (FilePath path)
