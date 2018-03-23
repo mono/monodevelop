@@ -96,7 +96,7 @@ namespace MonoDevelop.DotNetCore.Gui
 
 		void ShowDotNetCoreInformation ()
 		{
-			if (panel.DotNetCorePath?.Exists == true) {
+			if (panel.DotNetCorePath?.Exists == true && panel.RuntimeVersions.Any ()) {
 				commandLineFoundLabel.Text = GettextCatalog.GetString ("Found");
 				commandLineFoundIcon.Image = GetIcon (Gtk.Stock.Apply);
 				UpdateCommandLineIconAccessibility (true);
