@@ -85,10 +85,10 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 				if (!(parentMember is BaseTypeDeclarationSyntax) &&
 
-					/* May happen in case: 
-					 * 
+					/* May happen in case:
+					 *
 					 * override $
-					 * public override string Foo () {} 
+					 * public override string Foo () {}
 					 */
 					!(token.IsKind (SyntaxKind.OverrideKeyword) && token.Span.Start <= parentMember.Span.Start))
 					return;
@@ -147,9 +147,11 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				var lastRegion = result.BodyRegions.LastOrDefault ();
 				var region = lastRegion == null ? null
 					: new CodeGeneratorBodyRegion (lastRegion.StartOffset - trimStart, lastRegion.EndOffset - trimStart);
-				
+
 				pDict = pDict.Add ("InsertionText", sb.ToString ());
-				pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + GettextCatalog.GetString("Implement protocol member") + "</span>");
+				pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + GettextCatalog.GetString ("Implement protocol member") + "</span>");
+				pDict = pDict.Add ("DeclarationBegin", declarationBegin.ToString());
+
 				var tags = ImmutableArray<string>.Empty.Add ("NewMethod");
 				var completionData = CompletionItem.Create (m.Name, properties: pDict, rules: ProtocolCompletionRules, tags: tags);
 				context.AddItem (completionData);
@@ -161,7 +163,10 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		protected override Task<TextChange?> GetTextChangeAsync (CompletionItem selectedItem, char? ch, CancellationToken cancellationToken)
 		{
 			var text = Microsoft.CodeAnalysis.Completion.Providers.SymbolCompletionItem.GetInsertionText (selectedItem);
-			return Task.FromResult<TextChange?> (new TextChange (new TextSpan (selectedItem.Span.Start, selectedItem.Span.Length), text));
+			int? declarationBegin = null;
+			if (selectedItem.Properties.TryGetValue ("DeclarationBegin", out string declarationBeginString))
+				declarationBegin = int.Parse (declarationBeginString);
+			return Task.FromResult<TextChange?> (new TextChange (TextSpan.FromBounds (declarationBegin.HasValue ? declarationBegin.Value : selectedItem.Span.Start, selectedItem.Span.End), text));
 		}
 
 		static bool TryDetermineOverridableProtocolMembers (SemanticModel semanticModel, SyntaxToken startToken, Accessibility seenAccessibility, out ISet<ISymbol> overridableMembers, CancellationToken cancellationToken)

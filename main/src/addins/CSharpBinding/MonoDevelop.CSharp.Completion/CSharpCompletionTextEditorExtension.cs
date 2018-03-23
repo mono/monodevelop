@@ -59,6 +59,10 @@ using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.VisualStudio.Platform;
 
+using Counters = MonoDevelop.Ide.Counters;
+using Microsoft.CodeAnalysis.CSharp.Completion.Providers;
+using MonoDevelop.CSharp.Completion.Provider;
+
 namespace MonoDevelop.CSharp.Completion
 {
 	sealed class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IDebuggerExpressionResolver
@@ -461,21 +465,42 @@ namespace MonoDevelop.CSharp.Completion
 			var result = new CompletionDataList ();
 			result.TriggerWordLength = triggerWordLength;
 			CSharpCompletionData defaultCompletionData = null;
+			bool first = true, addProtocolCompletion = false;
 			foreach (var item in completionList.Items) {
 				if (string.IsNullOrEmpty (item.DisplayText))
 					continue;
 				var data = new CSharpCompletionData (analysisDocument, triggerSnapshot, cs, item);
+				if (first) {
+					first = false;
+					addProtocolCompletion = data.Provider is OverrideCompletionProvider;
+				}
 				result.Add (data);
 				if (item.Rules.MatchPriority > 0) {
-					if (defaultCompletionData == null || defaultCompletionData.Rules.MatchPriority < item.Rules.MatchPriority) 
+					if (defaultCompletionData == null || defaultCompletionData.Rules.MatchPriority < item.Rules.MatchPriority)
 						defaultCompletionData = data;
 				}
 			}
+
 			result.AutoCompleteUniqueMatch = (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand);
 
 			var partialDoc = analysisDocument.WithFrozenPartialSemantics (token);
 			var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
 			var syntaxContext = CSharpSyntaxContext.CreateContext (DocumentContext.RoslynWorkspace, semanticModel, completionContext.TriggerOffset, token);
+
+			if (addProtocolCompletion) {
+				var provider = new ProtocolMemberCompletionProvider ();
+				var customOptions = await analysisDocument.GetOptionsAsync ();
+				var protocolMemberContext = new CompletionContext (provider, analysisDocument, completionContext.TriggerOffset, new TextSpan (completionContext.TriggerOffset, completionContext.TriggerWordLength), trigger, customOptions, token);
+
+				await provider.ProvideCompletionsAsync (protocolMemberContext);
+
+				foreach (var item in protocolMemberContext.Items) {
+					if (string.IsNullOrEmpty (item.DisplayText))
+						continue;
+					var data = new CSharpCompletionData (analysisDocument, triggerSnapshot, cs, item);
+					result.Add (data);
+				}
+			}
 
 			if (forceSymbolCompletion || IdeApp.Preferences.AddImportedItemsToCompletionList) {
 				Counters.ProcessCodeCompletion.Trace ("C#: Adding import completion data");
@@ -806,7 +831,7 @@ namespace MonoDevelop.CSharp.Completion
 				return;
 			var partialDoc = analysisDocument.WithFrozenPartialSemantics (default (CancellationToken));
 			var semanticModel = await partialDoc.GetSemanticModelAsync (default (CancellationToken));
-			
+
 			var syntaxContext = CSharpSyntaxContext.CreateContext (DocumentContext.RoslynWorkspace, semanticModel, Editor.CaretOffset, default (CancellationToken));
 			if (syntaxContext.InferredTypes.Any(t => t.TypeKind == TypeKind.Delegate)) {
 				CompletionWindowManager.HideWindow ();
