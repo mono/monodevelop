@@ -94,6 +94,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public EventHandler<BuildOutputNode> GoToTask;
 
+		public EventHandler<BuildOutputNode> ExpandErrors;
+		public EventHandler<BuildOutputNode> ExpandWarnings;
+
 		class ViewStatus
 		{
 			TextLayout layout = new TextLayout ();
@@ -106,7 +109,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			public double CollapsedLayoutHeight = -1;
 			public double LayoutYPadding = 0;
 			public int NewLineCharIndex = -1;
+
 			public Rectangle TaskLinkRenderRectangle = Rectangle.Zero;
+			public Rectangle ErrorsRectangle = Rectangle.Zero;
+			public Rectangle WarningsRectangle = Rectangle.Zero;
+
+			public Rectangle Task = Rectangle.Zero;
 
 			public bool Expanded {
 				get { return expanded; }
@@ -298,18 +306,35 @@ namespace MonoDevelop.Ide.BuildOutputView
 			} else if (buildOutputNode.NodeType == BuildOutputNodeType.BuildSummary) {
 				// For build summary, display error/warning summary
 				var startX = layoutBounds.Right + 25;
+
+				status.ErrorsRectangle.X = startX;
+				status.ErrorsRectangle.Y = cellArea.Y;
 				DrawImage (ctx, cellArea, Resources.ErrorIconSmall, startX, ImageSize, isSelected, ImagePadding);
 
 				startX += ImageSize + 2;
 				var errors = GettextCatalog.GetString ("{0} errors", buildOutputNode.ErrorCount.ToString ());
 				layout = DrawText (ctx, cellArea, startX, errors, status.LayoutYPadding, defaultLightFont, layoutBounds.Width);
 
-				startX += layout.GetSize ().Width;
+				var size = layout.GetSize ();
+				//Our error rectangle includes text + image + margin
+				status.ErrorsRectangle.Width = size.Width + ImageSize + 2;
+				status.ErrorsRectangle.Height = size.Height;
+
+				startX += size.Width;
+
+				status.WarningsRectangle.X = startX;
+				status.WarningsRectangle.Y = cellArea.Y;
+
 				DrawImage (ctx, cellArea, Resources.WarningIconSmall, startX, ImageSize, isSelected, ImagePadding);
 
 				var warnings = GettextCatalog.GetString ("{0} warnings", buildOutputNode.WarningCount.ToString ());
 				startX += ImageSize + 2;
-				DrawText (ctx, cellArea, startX, warnings, status.LayoutYPadding, font: defaultLightFont);
+				layout = DrawText (ctx, cellArea, startX, warnings, status.LayoutYPadding, font: defaultLightFont);
+
+				size = layout.GetSize ();
+				status.WarningsRectangle.Width = size.Width + ImageSize + 2;
+				status.WarningsRectangle.Height = size.Height;
+
 			} else if (buildOutputNode.NodeType == BuildOutputNodeType.Build) {
 				var textStartX = layoutBounds.Right + BuildConfigurationInformationLeftPadding; 
 				DrawText (ctx, cellArea, textStartX, GetInformationMessage (buildOutputNode), status.LayoutYPadding, defaultLightFont, cellArea.Width - textStartX);
@@ -527,7 +552,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var node = GetValue (BuildOutputNodeField);
 			var status = GetViewStatus (node);
 
-			if (status.TaskLinkRenderRectangle != Rectangle.Zero && status.TaskLinkRenderRectangle.Contains (args.Position)) {
+			if (status.TaskLinkRenderRectangle.Contains (args.Position) || status.ErrorsRectangle.Contains (args.Position) || status.WarningsRectangle.Contains (args.Position)) {
 				ParentWidget.Cursor = CursorType.Hand;
 			} else {
 				ParentWidget.Cursor = CursorType.Arrow;
@@ -547,8 +572,23 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var node = GetValue (BuildOutputNodeField);
 			var status = GetViewStatus (node);
 
-			if (args.Button == PointerButton.Left && args.MultiplePress == 0 && status.TaskLinkRenderRectangle != Rectangle.Zero && status.TaskLinkRenderRectangle.Contains (args.Position) ) {
-				GoToTask?.Invoke (this, node);
+			if (args.Button == PointerButton.Left && args.MultiplePress == 0) {
+
+				if (status.TaskLinkRenderRectangle.Contains (args.Position)) {
+					GoToTask?.Invoke (this, node);
+					return;
+				}
+
+				if (status.ErrorsRectangle.Contains (args.Position)) {
+					ExpandErrors?.Invoke (this, node);
+					return;
+				}
+
+				if (status.WarningsRectangle.Contains (args.Position)) {
+					ExpandWarnings?.Invoke (this, node);
+					return;
+				}
+
 				return;
 			}
 

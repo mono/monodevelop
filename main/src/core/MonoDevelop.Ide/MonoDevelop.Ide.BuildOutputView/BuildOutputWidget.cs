@@ -201,8 +201,31 @@ namespace MonoDevelop.Ide.BuildOutputView
 			// FIXME: Xwt.XamMac does not raise the TreeView.BoundsChanged event, however it's ok to use the container instead.
 			BoundsChanged += (s, e) => cellView.OnBoundsChanged (s, e);
 			cellView.GoToTask += (s, e) => GoToTask (e);
-		
+
+			cellView.ExpandWarnings += (s, e) => ExpandRows (BuildOutputNodeType.Warning);
+			cellView.ExpandErrors += (s, e) => ExpandRows (BuildOutputNodeType.Error);
+
 			PackStart (treeView, expand: true, fill: true);
+		}
+
+		void ExpandRows (BuildOutputNodeType type) 
+		{
+			var dataSource = treeView.DataSource as BuildOutputDataSource;
+			if (dataSource == null) {
+				return;
+			}
+			List<BuildOutputNode> matches = new List<BuildOutputNode> ();
+			dataSource.RootNodes.Search (matches, new [] { type });
+
+			//We expand all nodes with this type
+			foreach (var node in matches) {
+				treeView.ExpandToRow (node);
+			}
+
+			//Focus first coincidence
+			if (matches.Count > 0) {
+				treeView.FocusedRow = matches [0];
+			}
 		}
 
 		internal Task GoToError (string description, string project)
