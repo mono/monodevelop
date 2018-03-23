@@ -36,6 +36,13 @@ using Xwt;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
+	public enum BuildOutputCommands
+	{
+		ExpandAll,
+		CollapseAll,
+		JumpTo
+	}
+
 	class BuildOutputViewContent : AbstractXwtViewContent
 	{
 		FilePath filename;
