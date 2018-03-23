@@ -1248,6 +1248,33 @@ namespace MonoDevelop.Components.Commands
 		}
 
 		/// <summary>
+		/// Shows the context menu.
+		/// </summary>
+		/// <returns><c>true</c>, if context menu was shown, <c>false</c> otherwise.</returns>
+		/// <param name="parent">Widget for which the context menu is shown</param>
+		/// <param name="x">The x coordinate.</param>
+		/// <param name="y">The y coordinate.</param>
+		/// <param name="entrySet">Entry set with the command definitions</param>
+		/// <param name="initialCommandTarget">Initial command target.</param>
+		internal bool ShowContextMenu (Xwt.Widget parent, int x, int y, CommandEntrySet entrySet,
+			object initialCommandTarget = null)
+		{
+			#if MAC
+			var menu = CreateNSMenu (entrySet, initialCommandTarget ?? parent);
+			if (parent.Surface.NativeWidget is AppKit.NSView view)
+				ContextMenuExtensionsMac.ShowContextMenu (view, x, y, menu);
+			else
+				ContextMenuExtensionsMac.ShowContextMenu ((Gtk.Widget)parent.Surface.NativeWidget, x, y, menu);
+			#else
+			var menu = CreateMenu (entrySet);
+			if (menu != null)
+				ShowContextMenu ((Gtk.Widget)parent.Surface.NativeWidget, x, y, menu, initialCommandTarget);
+			#endif
+
+			return true;
+		}
+
+		/// <summary>
 		/// Dispatches a command.
 		/// </summary>
 		/// <returns>
