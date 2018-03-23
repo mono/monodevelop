@@ -1,4 +1,9 @@
 ﻿<ExtensionModel>
+
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding id    = "BuildLogViewer"
+						class = "MonoDevelop.Ide.BuildOutputView.BuildLogDisplayBinding" />
+	</Extension>
 	
 	<ExtensionPoint path = "/MonoDevelop/BuildOutput/ContextMenu" name = "Build output context menu">
 		<Description>Context menu for the build output.</Description>;
