@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 
-namespace MonoDevelop.Ide.CodeCompletion
+namespace MonoDevelop.Ide.Completion.Presentation
 {
     public interface IContentTypeMetadata
     {
@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.CodeCompletion
                         if (TryGetLanguageNameFromContentType (subjectBuffer.ContentType, out languageName)) {
                             if (Workspace.TryGetWorkspace (subjectBuffer.AsTextContainer (), out var workspace)) {
                                 CompletionService completionService = workspace.Services.GetLanguageServices (languageName).GetService<CompletionService> ();
-                                return new RoslynCompletionPresenterSession (textView, subjectBuffer, completionDataProviderHandle.Value, completionService);
+								return new RoslynCompletionPresenterSession ((IMdTextView)textView, subjectBuffer, completionService);
                             }
                         }
                     }

@@ -235,7 +235,6 @@ namespace MonoDevelop.Ide.Gui
 			get { return adhocProject != null; }
 		}
 
-
 		public override bool IsCompileableInProject {
 			get {
 				var project = Project;
@@ -839,6 +838,11 @@ namespace MonoDevelop.Ide.Gui
 			analysisDocumentSrc = new CancellationTokenSource ();
 		}
 
+		/// <summary>
+		/// During that process ad hoc projects shouldn't be created.
+		/// </summary>
+		internal static bool IsInProjectSettingLoadingProcess { get; set; }
+
 		Task EnsureAnalysisDocumentIsOpen ()
 		{
 			if (analysisDocument != null) {
@@ -866,13 +870,13 @@ namespace MonoDevelop.Ide.Gui
 					if (analysisDocument != null && !RoslynWorkspace.IsDocumentOpen(analysisDocument)) {
 						TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
 						OnAnalysisDocumentChanged (EventArgs.Empty);
-						return Task.CompletedTask;
 					}
+					return Task.CompletedTask;
 				}
 			}
 			lock (adhocProjectLock) {
 				var token = analysisDocumentSrc.Token;
-				if (adhocProject != null) {
+				if (adhocProject != null || IsInProjectSettingLoadingProcess) {
 					return Task.CompletedTask;
 				}
 

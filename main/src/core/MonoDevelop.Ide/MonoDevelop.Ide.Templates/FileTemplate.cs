@@ -323,7 +323,7 @@ namespace MonoDevelop.Ide.Templates
 					throw new InvalidOperationException ("Single file template expected");
 
 				if (directory != null) {
-					string fileName = await singleFile.SaveFile (policyParent, project, language, directory, name);
+					string fileName = await singleFile.SaveFileAsync (policyParent, project, language, directory, name);
 					if (fileName != null) {
 						IdeApp.Workbench.OpenDocument (fileName, project);
 						return true;
