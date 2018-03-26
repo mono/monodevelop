@@ -153,7 +153,7 @@ module Patterns =
         | IdentifierSymbol symbolUse ->
             match symbolUse with
             | SymbolUse.Val v ->
-                let isMut = v.IsMutable && (match v.EnclosingEntity with Some de -> not de.IsEnum | None -> v.IsMutable)
+                let isMut = v.IsMutable && (match v.DeclaringEntity with Some de -> not de.IsEnum | None -> v.IsMutable)
                 Some isMut
             | _ -> None
         | _ -> None
