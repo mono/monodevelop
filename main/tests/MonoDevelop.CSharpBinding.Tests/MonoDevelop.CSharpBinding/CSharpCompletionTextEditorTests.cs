@@ -222,5 +222,52 @@ namespace console61
 			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = true;
 			await TestCompletion (@"using S$", list => Assert.AreEqual (0, list.OfType<ImportSymbolCompletionData> ().Count ()));
 		}
+
+		/// <summary>
+		/// Bug 564610: code completion is broken
+		/// </summary>
+		[Test]
+		public async Task TestVSTSBug564610 ()
+		{
+			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = true;
+
+			await TestCompletion (@"
+using System;
+using Foundation;
+
+namespace Foundation
+{
+	public class ExportAttribute : Attribute
+	{
+		public ExportAttribute(string id) { }
+	}
+
+	public class ProtocolAttribute : Attribute
+	{
+		public string Name { get; set; }
+		public ProtocolAttribute() { }
+	}
+}
+
+class MyProtocol
+{
+	[Export("":FooBar"")]
+	public virtual void FooBar() { }
+}
+
+
+[Protocol(Name = ""MyProtocol"")]
+class ProtocolClass
+{
+}
+
+class FooBar : ProtocolClass
+{
+	override $$
+}
+
+
+", list => Assert.AreEqual (1, list.Where (d => d.CompletionText == "FooBar").Count ()));
+		}
 	}
 }

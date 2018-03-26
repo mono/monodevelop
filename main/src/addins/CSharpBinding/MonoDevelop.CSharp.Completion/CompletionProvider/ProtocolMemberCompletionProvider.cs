@@ -164,6 +164,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 		static async Task<string> GenerateQuickInfo (SemanticModel semanticModel, int position, ISymbol m, CancellationToken cancellationToken)
 		{
+			if (IdeApp.Workbench?.ActiveDocument == null)
+				return "";
 			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
 
 			var displayService = ws.Services.GetLanguageServices (LanguageNames.CSharp).GetService<ISymbolDisplayService> ();
