@@ -36,6 +36,15 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute ("property")]
 		public string Property { get; set; }
 
+		string msbuildProperty;
+		internal string MSBuildProperty {
+			get {
+				if (msbuildProperty == null)
+					msbuildProperty = "$(" + Property + ")";
+				return msbuildProperty;
+			}
+		}
+
 		string path;
 
 		public new string Path {
