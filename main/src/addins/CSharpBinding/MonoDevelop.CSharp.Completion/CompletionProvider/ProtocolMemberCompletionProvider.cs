@@ -154,6 +154,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				pDict = pDict.Add ("InsertionText", sb.ToString ());
 				pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + GettextCatalog.GetString ("Implement protocol member") + "</span>");
 				pDict = pDict.Add ("Description", await GenerateQuickInfo (semanticModel, position, m, cancellationToken));
+				pDict = pDict.Add ("DeclarationBegin", declarationBegin.ToString());
 
 				var tags = ImmutableArray<string>.Empty.Add ("NewMethod");
 				var completionData = CompletionItem.Create (m.Name, properties: pDict, rules: ProtocolCompletionRules, tags: tags);
@@ -163,6 +164,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 		static async Task<string> GenerateQuickInfo (SemanticModel semanticModel, int position, ISymbol m, CancellationToken cancellationToken)
 		{
+			if (IdeApp.Workbench?.ActiveDocument == null)
+				return "";
 			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
 
 			var displayService = ws.Services.GetLanguageServices (LanguageNames.CSharp).GetService<ISymbolDisplayService> ();
@@ -218,7 +221,10 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		Task<TextChange?> GetTextChangeAsync (CompletionItem selectedItem, char? ch, CancellationToken cancellationToken)
 		{
 			var text = Microsoft.CodeAnalysis.Completion.Providers.SymbolCompletionItem.GetInsertionText (selectedItem);
-			return Task.FromResult<TextChange?> (new TextChange (new TextSpan (selectedItem.Span.Start, selectedItem.Span.Length), text));
+			int? declarationBegin = null;
+			if (selectedItem.Properties.TryGetValue ("DeclarationBegin", out string declarationBeginString))
+				declarationBegin = int.Parse (declarationBeginString);
+			return Task.FromResult<TextChange?> (new TextChange (TextSpan.FromBounds (declarationBegin.HasValue ? declarationBegin.Value : selectedItem.Span.Start, selectedItem.Span.End), text));
 		}
 
 		static bool TryDetermineOverridableProtocolMembers (SemanticModel semanticModel, SyntaxToken startToken, Accessibility seenAccessibility, out ISet<ISymbol> overridableMembers, CancellationToken cancellationToken)
