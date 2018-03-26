@@ -354,4 +354,8 @@
 	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
 		<Assembly file="MonoDevelop.CSharpBinding.dll"/>
 	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/TypeService/OptionProviders">
+		<Class class="MonoDevelop.CSharp.OptionProvider.EditorConfigDocumentOptionsProviderFactory"/>
+	</Extension>
 </ExtensionModel>

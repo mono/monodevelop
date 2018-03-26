@@ -466,6 +466,33 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityChildren = newChildren;
 		}
 
+		public static void TransferAccessibleChild (this Atk.Object from, Atk.Object to, Atk.Object child)
+		{
+			var fromNsa = GetNSAccessibilityElement (from);
+			var toNsa = GetNSAccessibilityElement (to);
+			var childNsa = GetNSAccessibilityElement (child);
+
+			if (fromNsa == null || toNsa == null || childNsa == null) {
+				return;
+			}
+
+			var fromChildren = fromNsa.AccessibilityChildren;
+
+			if (fromChildren == null || fromChildren.Length == 0) {
+				return;
+			}
+
+			var fromList = fromChildren.ToList ();
+			fromList.Remove ((NSObject) childNsa);
+			fromNsa.AccessibilityChildren = fromList.ToArray ();
+
+			var toChildren = toNsa.AccessibilityChildren;
+			List<NSObject> toList = toChildren == null ? new List<NSObject> () : toChildren.ToList ();
+
+			toList.Add ((NSObject)childNsa);
+			toNsa.AccessibilityChildren = toList.ToArray ();
+		}
+
 		public static void SetAccessibleChildren (this Atk.Object o, AccessibilityElementProxy [] children)
 		{
 			var nsa = GetNSAccessibilityElement (o);

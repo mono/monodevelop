@@ -33,6 +33,10 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
+using Microsoft.CodeAnalysis.Host;
+using Microsoft.CodeAnalysis.SolutionCrawler;
+using Microsoft.CodeAnalysis.SolutionSize;
 
 namespace MonoDevelop.Ide
 {
@@ -86,10 +90,84 @@ namespace MonoDevelop.Ide
 		public async Task ProjectReferencingOutputTrackedReference()
 		{
 			string solFile = Util.GetSampleProject("csharp-app-fsharp-lib", "csappfslib.sln");
-			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem(Util.GetMonitor(), solFile);
-			var fsharpLibrary = sol.Items.FirstOrDefault(pr => pr.Name == "fslib") as DotNetProject;
-			Assert.IsTrue(TypeSystemService.IsOutputTrackedProject(fsharpLibrary));
-			sol.Dispose();
+			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var fsharpLibrary = sol.Items.FirstOrDefault (pr => pr.Name == "fslib") as DotNetProject;
+				Assert.IsTrue (TypeSystemService.IsOutputTrackedProject (fsharpLibrary));
+			}
+		}
+
+		[Test]
+		public async Task TestWorkspacePersistentStorageLocationService ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
+				Assert.That (storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id), Is.Not.Null.Or.Empty);
+			}
+		}
+
+		[Test]
+		public async Task TestWorkspacePersistentStorage ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
+				var storageLocation = System.IO.Path.Combine (
+					storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id),
+					"sqlite3",
+					"storage.ide");
+
+				if (System.IO.File.Exists (storageLocation))
+					System.IO.File.Delete (storageLocation);
+				
+				var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.GetExportedValue<ISolutionSizeTracker> ();
+
+				// This will return the tracker, since it's a singleton.
+				var analyzer = solutionSizeTracker.CreateIncrementalAnalyzer (ws);
+
+				// We need this hack because we can't guess when the work coordinator will run the incremental analyzers.
+				await analyzer.NewSolutionSnapshotAsync (ws.CurrentSolution, CancellationToken.None);
+
+				foreach (var projectFile in sol.GetAllProjects ().SelectMany (x => x.Files.Where (file => file.BuildAction == BuildAction.Compile))) {
+					var projectId = ws.GetProjectId (projectFile.Project);
+					var docId = ws.GetDocumentId (projectId, projectFile.FilePath);
+					var doc = ws.GetDocument (docId);
+					if (!doc.SupportsSyntaxTree)
+						continue;
+
+					await Microsoft.CodeAnalysis.FindSymbols.SyntaxTreeIndex.PrecalculateAsync (doc, CancellationToken.None);
+				}
+
+				var fi = new System.IO.FileInfo (storageLocation);
+				Assert.That (fi.Length, Is.GreaterThan (0));
+			}
+		}
+
+		[Test]
+		public async Task TestWorkspaceImmediatelyAvailable ()
+		{
+			//Initialize IdeApp so IdeApp.Workspace is not null
+			if (!IdeApp.IsInitialized)
+				IdeApp.Initialize (new ProgressMonitor ());
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			var tcs = new TaskCompletionSource<bool> ();
+			IdeApp.Workspace.SolutionLoaded += (s, e) => {
+				var workspace = TypeSystemService.GetWorkspace (e.Solution);
+				Assert.IsNotNull (workspace);
+				Assert.AreNotSame (workspace, TypeSystemService.emptyWorkspace);
+				workspace.Dispose ();
+				tcs.SetResult (true);
+			};
+			try {
+				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
+				await tcs.Task;
+			} finally {
+				await IdeApp.Workspace.Close (false);
+			}
 		}
 	}
 }

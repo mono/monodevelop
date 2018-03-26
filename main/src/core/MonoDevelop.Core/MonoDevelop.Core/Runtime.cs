@@ -221,7 +221,7 @@ namespace MonoDevelop.Core
 			Counters.AddinsLoaded.Dec ("Add-in unloaded: " + args.AddinId);
 		}
 		
-		internal static bool Initialized {
+		public static bool Initialized {
 			get { return initialized; }
 		}
 		
@@ -415,6 +415,11 @@ namespace MonoDevelop.Core
 				return ts.Task;
 			}
 		}
+
+		/// <summary>
+		/// The main UI thread of the application. Needed to initialize the JoinableTaskContext.
+		/// </summary>
+		public static Thread MainThread => mainThread;
 
 		/// <summary>
 		/// Returns true if current thread is GUI thread.

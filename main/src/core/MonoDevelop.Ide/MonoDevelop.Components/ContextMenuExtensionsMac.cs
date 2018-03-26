@@ -157,7 +157,8 @@ namespace MonoDevelop.Components
 			public NSContextMenuItem (string label, ContextMenuItem item) : base (label)
 			{
 				contextMenu = new WeakReference<ContextMenuItem> (item);
-				this.Activated += OnActivated;
+				if (item.SubMenu == null || item.SubMenu.Items.Count == 0) 
+					this.Activated += OnActivated;
 			}
 
 			static void OnActivated (object sender, EventArgs args)
@@ -195,6 +196,7 @@ namespace MonoDevelop.Components
 			public NSLocationAwareMenu (ContextMenu menu, Action closeHandler, NSLocationAwareMenu parent)
 			{
 				WeakDelegate = new ContextMenuDelegate (menu) { CloseHandler = closeHandler };
+
 				Parent = parent != null ? new WeakReference<NSLocationAwareMenu> (parent) : null;
 			}
 

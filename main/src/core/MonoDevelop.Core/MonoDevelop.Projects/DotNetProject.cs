@@ -1084,6 +1084,11 @@ namespace MonoDevelop.Projects
 				if (result == null)
 					return new List<PackageDependency> ();
 
+				if (monitor.CancellationToken.IsCancellationRequested && !result.Items.Any ()) {
+					// Avoid caching 0 items which can happen if a cancellation occurs.
+					return new List<PackageDependency> ();
+				}
+
 				packageDependencies = result.Items.Select (i => PackageDependency.Create (i)).Where (dependency => dependency != null).ToList ();
 
 				packageDependenciesCache = packageDependenciesCache .SetItem (confId, packageDependencies);
@@ -1571,17 +1576,17 @@ namespace MonoDevelop.Projects
 
 		static string GetHierarchicalNamespace (string relativePath)
 		{
-			StringBuilder sb = new StringBuilder (relativePath);
+			StringBuilder sb = StringBuilderCache.Allocate (relativePath);
 			for (int i = 0; i < sb.Length; i++) {
 				if (sb[i] == Path.DirectorySeparatorChar)
 					sb[i] = '.';
 			}
-			return sb.ToString ();
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 
 		static string SanitisePotentialNamespace (string potential)
 		{
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = StringBuilderCache.Allocate ();
 			foreach (char c in potential) {
 				if (char.IsLetter (c) || c == '_' || (sb.Length > 0 && (char.IsLetterOrDigit (sb[sb.Length - 1]) || sb[sb.Length - 1] == '_') && (c == '.' || char.IsNumber (c)))) {
 					sb.Append (c);
@@ -1591,9 +1596,10 @@ namespace MonoDevelop.Projects
 				if (sb[sb.Length - 1] == '.')
 					sb.Remove (sb.Length - 1, 1);
 
-				return sb.ToString ();
-			} else
-				return null;
+				return StringBuilderCache.ReturnAndFree (sb);
+			}
+			StringBuilderCache.Free (sb);
+			return null;
 		}
 
 		void RuntimeSystemAssemblyServiceDefaultRuntimeChanged (object sender, EventArgs e)

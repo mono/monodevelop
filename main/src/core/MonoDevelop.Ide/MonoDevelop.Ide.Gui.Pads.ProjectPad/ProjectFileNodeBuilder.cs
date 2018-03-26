@@ -155,7 +155,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		public async override void RenameItem (string newName)
 		{
-			ProjectFile newProjectFile = null;
 			var file = (ProjectFile) CurrentNode.DataItem;
 
 			string oldFileName = file.FilePath;
@@ -163,26 +162,24 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (oldFileName == newFileName)
 				return;
 
-			FilePath newPath, newLink = FilePath.Null;
-			if (file.IsLink) {
-				var oldLink = file.ProjectVirtualPath;
-				newLink = oldLink.ParentDirectory.Combine (newName);
-				newPath = file.Project.BaseDirectory.Combine (newLink);
-			} else {
-				newPath = file.FilePath.ParentDirectory.Combine (newName);	
-			}
-			
-			try {
-				if (file.Project != null)
-					newProjectFile = file.Project.Files.GetFileWithVirtualPath (newPath.ToRelative (file.Project.BaseDirectory));
+			var dependentFilesToRename = GetDependentFilesToRename (file, newName);
 
-				if (!FileService.IsValidPath (newPath) || ProjectFolderCommandHandler.ContainsDirectorySeparator (newName)) {
-					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
-				} else if ((newProjectFile != null && newProjectFile != file) || FileExistsCaseSensitive (file.FilePath.ParentDirectory, newName)) {
-					// If there is already a file under the newPath which is *different*, then throw an exception
-					MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
-				} else {
+			try {
+				if (CanRenameFile (file, newName)) {
+					if (dependentFilesToRename != null) {
+						if (dependentFilesToRename.Any (f => !CanRenameFile (f.File, f.NewName))) {
+							return;
+						}
+					}
+
 					FileService.RenameFile (file.FilePath, newName);
+
+					if (dependentFilesToRename != null) {
+						foreach (var dependentFile in dependentFilesToRename) {
+							FileService.RenameFile (dependentFile.File.FilePath, dependentFile.NewName);
+						}
+					}
+
 					if (file.Project != null)
 						await IdeApp.ProjectOperations.SaveAsync (file.Project);
 				}
@@ -191,6 +188,60 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			} catch (IOException ex) {
 				MessageService.ShowError (GettextCatalog.GetString ("There was an error renaming the file."), ex);
 			}
+		}
+
+		static FilePath GetRenamedFilePath (ProjectFile file, string newName)
+		{
+			if (file.IsLink) {
+				var oldLink = file.ProjectVirtualPath;
+				var newLink = oldLink.ParentDirectory.Combine (newName);
+				return file.Project.BaseDirectory.Combine (newLink);
+			}
+			return file.FilePath.ParentDirectory.Combine (newName);	
+		}
+
+		/// <summary>
+		/// Returns all dependent files that have names that start with the old name of the file.
+		/// </summary>
+		static List<(ProjectFile File, string NewName)> GetDependentFilesToRename (ProjectFile file, string newName)
+		{
+			if (!file.HasChildren)
+				return null;
+
+			List<(ProjectFile File, string NewName)> files = null;
+
+			string oldName = file.FilePath.FileName;
+			foreach (ProjectFile child in file.DependentChildren) {
+				string oldChildName = child.FilePath.FileName;
+				if (oldChildName.StartsWith (oldName, StringComparison.CurrentCultureIgnoreCase)) {
+					string childNewName = newName + oldChildName.Substring (oldName.Length);
+
+					if (files == null)
+						files = new List<(ProjectFile projectFile, string name)> ();
+					files.Add ((child, childNewName));
+				}
+			}
+			return files;
+		}
+
+		static bool CanRenameFile (ProjectFile file, string newName)
+		{
+			ProjectFile newProjectFile = null;
+			FilePath newPath = GetRenamedFilePath (file, newName);
+
+			if (file.Project != null)
+				newProjectFile = file.Project.Files.GetFileWithVirtualPath (newPath.ToRelative (file.Project.BaseDirectory));
+
+			if (!FileService.IsValidPath (newPath) || ProjectFolderCommandHandler.ContainsDirectorySeparator (newName)) {
+				MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
+				return false;
+			} else if ((newProjectFile != null && newProjectFile != file) || FileExistsCaseSensitive (file.FilePath.ParentDirectory, newName)) {
+				// If there is already a file under the newPath which is *different*, then throw an exception
+				MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
+				return false;
+			}
+
+			return true;
 		}
 
 		static bool FileExistsCaseSensitive (FilePath parentDirectory, string fileName)
@@ -393,9 +444,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			var toggledActions = new Set<string> ();
 			Project proj = null;
+			ProjectFile finfo = null;
 
 			foreach (var node in CurrentNodes) {
-				var finfo = (ProjectFile) node.DataItem;
+				finfo = (ProjectFile) node.DataItem;
 				
 				//disallow multi-slect on more than one project, since available build actions may differ
 				if (proj == null && finfo.Project != null) {
@@ -410,7 +462,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (proj == null)
 				return;
 			
-			foreach (string action in proj.GetBuildActions ()) {
+			foreach (string action in proj.GetBuildActions (finfo.FilePath)) {
 				if (action == "--") {
 					info.AddSeparator ();
 				} else {

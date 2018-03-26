@@ -362,6 +362,15 @@ namespace MonoDevelop.Ide.Gui
 			listWindow.ShowListWindow (list, listWindow.CodeCompletionContext);
 		}
 
+		[TearDown]
+		public void TearDown ()
+		{
+			if (listWindow != null) {
+				listWindow.Destroy ();
+				listWindow = null;
+			}
+		}
+
 		void AssertCompletionList (params string[] items)
 		{
 			var result = completionView.GetVisibleItemsAndCategories ().ToArray ();

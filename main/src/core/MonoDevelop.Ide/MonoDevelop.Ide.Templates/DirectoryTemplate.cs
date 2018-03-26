@@ -30,6 +30,7 @@ using System.Xml;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -85,7 +86,7 @@ namespace MonoDevelop.Ide.Templates
 				t.Show ();
 		}
 			
-		public override bool AddToProject (SolutionFolderItem policyParent, Project project,
+		public override async Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project,
 		                                   string language, string directory, string name)
 		{
 			bool addedSomething = false;
@@ -96,6 +97,26 @@ namespace MonoDevelop.Ide.Templates
 					addedSomething = true;
 			}
 			
+			foreach (FileDescriptionTemplate t in templates) {
+				if (t.EvaluateCreateCondition ()) {
+					addedSomething |= await t.AddToProjectAsync (policyParent, project, language, directory, name);
+				}
+			}
+			return addedSomething;
+		}
+
+		[Obsolete ("Use public Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string entryName).")]
+		public override bool AddToProject (SolutionFolderItem policyParent, Project project,
+		                                   string language, string directory, string name)
+		{
+			bool addedSomething = false;
+			directory = Path.Combine (directory, dirName);
+			if (templates.Count == 0) {
+				string relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, directory);
+				if (project.AddDirectory (relPath) != null)
+					addedSomething = true;
+			}
+
 			foreach (FileDescriptionTemplate t in templates) {
 				if (t.EvaluateCreateCondition ())
 					addedSomething |= t.AddToProject (policyParent, project, language, directory, name);

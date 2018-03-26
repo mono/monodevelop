@@ -285,7 +285,7 @@ namespace MonoDevelop.Ide.Projects
 
 		internal static string GetMatchMarkup (Gtk.Widget widget, string text, int[] matches, int startIndex)
 		{
-			StringBuilder result = new StringBuilder ();
+			StringBuilder result = StringBuilderCache.Allocate ();
 			int lastPos = 0;
 			var color = HslColor.GenerateHighlightColors (widget.Style.Base (StateType.Normal), 
 				widget.Style.Text (StateType.Normal), 3)[2];
@@ -304,7 +304,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 			if (lastPos < text.Length)
 				result.Append (GLib.Markup.EscapeText (text.Substring (lastPos, text.Length - lastPos)));
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		public void AddReference (object sender, Gtk.ToggledArgs e)

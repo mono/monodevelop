@@ -27,6 +27,7 @@ using System;
 using System.IO;
 using MonoDevelop.MacInterop;
 using NUnit.Framework;
+using UnitTests;
 
 namespace MacPlatform.Tests
 {
@@ -54,14 +55,7 @@ namespace MacPlatform.Tests
 			MonoDevelop.MacInterop.CoreFoundation.Release (testUrl);
 		}
 
-		static string plistFile = Path.GetFullPath (
-			Path.Combine (
-				Path.GetDirectoryName (typeof (PListFile).Assembly.Location),
-				"..",
-				"MacOSX",
-				"Info.plist.in"
-			)
-		);
+		static string plistFile = Path.Combine (Util.TestsRootDir, "test-projects", "mac-platform", "Info.plist.in");
 
 		[Test]
 		public void TestApplicationUrls ()
@@ -88,7 +82,7 @@ namespace MacPlatform.Tests
 		{
 			string [] results = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrls (plistFile, MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
 
-			Assert.AreEqual (results.Length, 0);
+			Assert.AreEqual (0, results.Length);
 
 			string result = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrl (plistFile, MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
 

@@ -32,6 +32,7 @@ using Mono.TextEditor.Highlighting;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Core;
 
 namespace Mono.TextEditor
 {
@@ -175,7 +176,7 @@ namespace Mono.TextEditor
 		/// </returns>
 		public string GetIndentation (TextDocument doc)
 		{
-			var result = new StringBuilder ();
+			var result = StringBuilderCache.Allocate ();
 			int offset = Offset;
 			int max = System.Math.Min (offset + LengthIncludingDelimiter, doc.Length);
 			for (int i = offset; i < max; i++) {
@@ -184,7 +185,7 @@ namespace Mono.TextEditor
 					break;
 				result.Append (ch);
 			}
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		public int GetLogicalColumn (TextEditorData editor, int visualColumn)

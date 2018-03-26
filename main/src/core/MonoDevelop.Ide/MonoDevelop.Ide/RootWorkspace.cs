@@ -426,15 +426,21 @@ namespace MonoDevelop.Ide
 				item.Dispose ();
 			}
 		}
-		
+
 		public bool RequestItemUnload (WorkspaceObject item)
 		{
-			if (ItemUnloading != null) {
+			var itemUnloading = ItemUnloading;
+			if (itemUnloading != null) {
 				try {
+					bool haveAnyCancelled = false;
 					ItemUnloadingEventArgs args = new ItemUnloadingEventArgs (item);
-					ItemUnloading (this, args);
-					return !args.Cancel;
-				} catch (Exception ex) {
+					foreach (EventHandler<ItemUnloadingEventArgs> handler in itemUnloading.GetInvocationList ()) {
+						handler (this, args);
+						haveAnyCancelled |= args.Cancel;
+					}
+					return !haveAnyCancelled;
+				}
+				catch (Exception ex) {
 					LoggingService.LogError ("Exception in ItemUnloading.", ex);
 				}
 			}
@@ -619,19 +625,24 @@ namespace MonoDevelop.Ide
 				}
 				if (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem == null)
 					IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = GetAllSolutions ().FirstOrDefault ();
-				if (Items.Count == 1 && loadPreferences) {
-					timer.Trace ("Restoring workspace preferences");
-					await RestoreWorkspacePreferences (item);
+				Document.IsInProjectSettingLoadingProcess = true;
+				try {
+					if (Items.Count == 1 && loadPreferences) {
+						timer.Trace ("Restoring workspace preferences");
+						await RestoreWorkspacePreferences (item);
+					}
+
+					if (Items.Count == 1 && !reloading)
+						FirstWorkspaceItemRestored?.Invoke (this, new WorkspaceItemEventArgs (item));
+
+					timer.Trace ("Reattaching documents");
+					ReattachDocumentProjects (null);
+					monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
+
+					UpdateOpenWorkspaceItemMetadata (metadata, item);
+				} finally {
+					Document.IsInProjectSettingLoadingProcess = false;
 				}
-
-				if (Items.Count == 1 && !reloading)
-					FirstWorkspaceItemRestored?.Invoke (this, new WorkspaceItemEventArgs (item));
-
-				timer.Trace ("Reattaching documents");
-				ReattachDocumentProjects (null);
-				monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
-
-				UpdateOpenWorkspaceItemMetadata (metadata, item);
 			}
 			return true;
 		}

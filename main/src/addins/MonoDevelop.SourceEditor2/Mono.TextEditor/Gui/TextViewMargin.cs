@@ -337,7 +337,6 @@ namespace Mono.TextEditor
 		{
 			for (int i = 0; i < e.TextChanges.Count; ++i) {
 				var change = e.TextChanges[i];
-				RemoveCachedLine (Document.OffsetToLineNumber (change.NewOffset));
 				if (mouseSelectionMode == MouseSelectionMode.Word && change.Offset < mouseWordStart) {
 					int delta = change.ChangeDelta;
 					mouseWordStart += delta;
@@ -1053,7 +1052,7 @@ namespace Mono.TextEditor
 				wrapper.Layout.Wrap = Pango.WrapMode.WordChar;
 				wrapper.Layout.Width = (int)((textEditor.Allocation.Width - XOffset - TextStartPosition) * Pango.Scale.PangoScale);
 			}
-			StringBuilder textBuilder = new StringBuilder ();
+			StringBuilder textBuilder = StringBuilderCache.Allocate ();
 			var cachedChunks = GetCachedChunks (Document, line, offset, length);
 			var lineOffset = line.Offset;
 			var chunks = new List<ColoredSegment> (cachedChunks.Item1.Select (c => new ColoredSegment (c.Offset + lineOffset, c.Length, c.ScopeStack)));;
@@ -1073,7 +1072,7 @@ namespace Mono.TextEditor
 					Console.WriteLine (chunk);
 				}
 			}
-			string lineText = textBuilder.ToString ();
+			string lineText = StringBuilderCache.ReturnAndFree (textBuilder);
 			uint preeditLength = 0;
 			
 			if (containsPreedit) {
@@ -1327,10 +1326,25 @@ namespace Mono.TextEditor
 			cacheSrc = new CancellationTokenSource ();
 			cachedLines.Clear ();
 		}
-
 		public void PurgeLayoutCache ()
 		{
 			DisposeLayoutDict ();
+		}
+
+		void PurgeLayoutCacheAfter (int lineNumber)
+		{
+			foreach (var descr in layoutDict.ToArray()) {
+				if (descr.Key >= lineNumber) {
+					descr.Value.Dispose ();
+					layoutDict.Remove (descr.Key);
+				}
+			}
+
+			foreach (var descr in cachedLines.ToArray()) {
+				if (descr.Key >= lineNumber) {
+					cachedLines.Remove (descr.Key);
+				}
+			}
 		}
 
 		class ChunkDescriptor : LineDescriptor
@@ -1357,15 +1371,54 @@ namespace Mono.TextEditor
 			}
 			var token = cacheSrc.Token;
 			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
-			if (task.IsCompleted) {
-				cachedLines [lineNumber] = task.Result;
-				return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
+			switch (task.Status)  {
+			case TaskStatus.Faulted:
+				LoggingService.LogError ("Error while highlighting line " + lineNumber, task.Exception);
+				break;
+			case TaskStatus.RanToCompletion:
+				if (task.Result != null) {
+					UpdateLineHighlight (lineNumber, result, task.Result);
+					return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
+				}
+				break;
+			default:
+				task.ContinueWith (t => {
+					if (t.Status == TaskStatus.Faulted) {
+						LoggingService.LogError ("Error while highlighting line " + lineNumber, t.Exception);
+						return;
+					}
+					if (t.Result == null)
+						return;
+					if (UpdateLineHighlight (lineNumber, result, t.Result)) {
+						RemoveCachedLine (lineNumber);
+						Document.CommitLineUpdate (line);
+					}
+				}, Runtime.MainTaskScheduler);
+				break;
 			}
-			task.ContinueWith (t => {
-				cachedLines [lineNumber] = t.Result;
-				Document.CommitLineUpdate (lineNumber); // Required for highlighting updates
-			}, token, TaskContinuationOptions.OnlyOnRanToCompletion, Runtime.MainTaskScheduler);
 			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
+		}
+
+		bool UpdateLineHighlight (int lineNumber, HighlightedLine oldLine, HighlightedLine newLine)
+		{
+			if (oldLine != null && ShouldUpdateSpan (oldLine, newLine)) {
+				PurgeLayoutCacheAfter (lineNumber);
+				cachedLines [lineNumber] = newLine;
+				textEditor.QueueDraw ();
+				return false;
+			}
+			cachedLines [lineNumber] = newLine;
+			return true;
+		}
+
+		static bool ShouldUpdateSpan (HighlightedLine line1, HighlightedLine line2)
+		{
+			if (line1.IsContinuedBeyondLineEnd != line2.IsContinuedBeyondLineEnd)
+				return true;
+			if (line1.IsContinuedBeyondLineEnd == true) {
+				return line1.Segments.Last ().ScopeStack.Peek () != line2.Segments.Last ().ScopeStack.Peek ();
+			}
+			return false;
 		}
 
 		internal static List<ColoredSegment> TrimChunks (IReadOnlyList<ColoredSegment> segments, int offset, int length)
@@ -2484,7 +2537,7 @@ namespace Mono.TextEditor
 			codeSegmentEditorWindow.Resize (w, h);
 			int indentLength = -1;
 
-			StringBuilder textBuilder = new StringBuilder ();
+			StringBuilder textBuilder = StringBuilderCache.Allocate ();
 			int curOffset = previewSegment.Offset;
 			while (curOffset >= 0 && curOffset < previewSegment.EndOffset && curOffset < Document.Length) {
 				DocumentLine line = Document.GetLineByOffset (curOffset);
@@ -2502,7 +2555,7 @@ namespace Mono.TextEditor
 				curOffset = line.EndOffsetIncludingDelimiter;
 			}
 
-			codeSegmentEditorWindow.Text = textBuilder.ToString ();
+			codeSegmentEditorWindow.Text = StringBuilderCache.ReturnAndFree (textBuilder);
 
 			HideCodeSegmentPreviewWindow ();
 			codeSegmentEditorWindow.ShowAll ();

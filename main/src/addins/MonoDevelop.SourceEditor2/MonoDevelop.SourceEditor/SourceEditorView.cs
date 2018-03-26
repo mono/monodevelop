@@ -1,4 +1,4 @@
-﻿// SourceEditorView.cs
+// SourceEditorView.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -69,7 +69,7 @@ namespace MonoDevelop.SourceEditor
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, IPrintable,
-	ITextEditorImpl, IEditorActionHost, ITextMarkerFactory, IUndoHandler
+	ITextEditorImpl, ITextMarkerFactory, IUndoHandler
 	{
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -252,6 +252,9 @@ namespace MonoDevelop.SourceEditor
 
 			Document_MimeTypeChanged(this, EventArgs.Empty);
 			widget.TextEditor.Document.MimeTypeChanged += Document_MimeTypeChanged;
+			if (loadedInCtor) {
+				Document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
+			}
 		}
 
 
@@ -267,13 +270,15 @@ namespace MonoDevelop.SourceEditor
 			public DocumentAndLoaded (string fileName, string mimeType) {
 				if (AutoSave.AutoSaveExists(fileName)) {
 					// Don't load the document now, let Load() handle it
-					this.Document = new TextDocument();
-					this.Document.MimeType = mimeType;
-					this.Document.FileName = fileName;
+					this.Document = new TextDocument(string.Empty, fileName, mimeType);
 
 					this.Loaded = false;
 				} else {
-					this.Document = new TextDocument(fileName, mimeType);
+					// HACK we really need to be told explicitly that the document is for an existing file (that we should load) or a new file (which will have the given name/mime type)
+					// so we don't need to use File.Exists().
+					this.Document = File.Exists(fileName)
+					                ? new TextDocument(fileName, mimeType)
+					                : new TextDocument(string.Empty, fileName, mimeType);
 
 					this.Loaded = true;
 				}
@@ -744,7 +749,6 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			DocumentRegistry.SkipNextChange (fileName);
 			try {
 				object attributes = null;
 				if (File.Exists (fileName)) {
@@ -901,7 +905,7 @@ namespace MonoDevelop.SourceEditor
 
 					string text = null;
 					if (loadEncoding == null) {
-						text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText(fileName, out loadEncoding);
+						text = TextFileUtility.ReadAllText(fileName, out loadEncoding);
 					} else {
 						text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText(fileName, loadEncoding);
 					}
@@ -914,8 +918,8 @@ namespace MonoDevelop.SourceEditor
 						document.DiffTracker.Reset();
 					} else {
 						document.Text = text;
-						document.DiffTracker.SetBaseDocument(Document.CreateDocumentSnapshot());
 					}
+					document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
 
 					didLoadCleanly = true;
 				}
@@ -2918,7 +2922,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		IEditorActionHost ITextEditorImpl.Actions {
+		IMonoDevelopEditorOperations ITextEditorImpl.Actions {
 			get {
 				return this;
 			}
@@ -3237,236 +3241,6 @@ namespace MonoDevelop.SourceEditor
 
 
 
-
-		#region IEditorActionHost implementation
-
-		void IEditorActionHost.MoveCaretDown ()
-		{
-			CaretMoveActions.Down (TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.MoveCaretUp ()
-		{
-			CaretMoveActions.Up (TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.MoveCaretRight ()
-		{
-			CaretMoveActions.Right (TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.MoveCaretLeft ()
-		{
-			CaretMoveActions.Left (TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.MoveCaretToLineEnd ()
-		{
-			CaretMoveActions.LineEnd (TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.MoveCaretToLineStart ()
-		{
-			CaretMoveActions.LineHome (TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.MoveCaretToDocumentStart ()
-		{
-			CaretMoveActions.ToDocumentStart (TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.MoveCaretToDocumentEnd ()
-		{
-			CaretMoveActions.ToDocumentEnd (TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.Backspace ()
-		{
-			DeleteActions.Backspace (TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.ClipboardCopy ()
-		{
-			ClipboardActions.Copy (TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.ClipboardCut ()
-		{
-			ClipboardActions.Cut (TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.ClipboardPaste ()
-		{
-			ClipboardActions.Paste (TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.NewLine ()
-		{
-			MiscActions.InsertNewLine (TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.SwitchCaretMode ()
-		{
-			TextEditor.RunAction (MiscActions.SwitchCaretMode);
-		}
-
-		void IEditorActionHost.InsertTab ()
-		{
-			TextEditor.RunAction (MiscActions.InsertTab);
-		}
-
-		void IEditorActionHost.RemoveTab ()
-		{
-			TextEditor.RunAction (MiscActions.RemoveTab);
-		}
-
-		void IEditorActionHost.InsertNewLine ()
-		{
-			TextEditor.RunAction (MiscActions.InsertNewLine);
-		}
-
-		void IEditorActionHost.DeletePreviousWord ()
-		{
-			TextEditor.RunAction (DeleteActions.PreviousWord);
-		}
-
-		void IEditorActionHost.DeleteNextWord ()
-		{
-			TextEditor.RunAction (DeleteActions.NextWord);
-		}
-
-		void IEditorActionHost.DeletePreviousSubword ()
-		{
-			TextEditor.RunAction (DeleteActions.PreviousSubword);
-		}
-
-		void IEditorActionHost.DeleteNextSubword ()
-		{
-			TextEditor.RunAction (DeleteActions.NextSubword);
-		}
-
-		void IEditorActionHost.StartCaretPulseAnimation ()
-		{
-			TextEditor.StartCaretPulseAnimation ();
-		}
-
-		void IEditorActionHost.RecenterEditor ()
-		{
-			TextEditor.RunAction (MiscActions.RecenterEditor);
-		}
-
-		void IEditorActionHost.JoinLines ()
-		{
-			using (var undo = Document.OpenUndoGroup ()) {
-				TextEditor.RunAction (Mono.TextEditor.Vi.ViActions.Join);
-			}
-		}
-
-		void IEditorActionHost.MoveNextSubWord ()
-		{
-			TextEditor.RunAction (SelectionActions.MoveNextSubword);
-		}
-
-		void IEditorActionHost.MovePrevSubWord ()
-		{
-			TextEditor.RunAction (SelectionActions.MovePreviousSubword);
-		}
-
-		void IEditorActionHost.MoveNextWord ()
-		{
-			TextEditor.RunAction (CaretMoveActions.NextWord);
-		}
-
-		void IEditorActionHost.MovePrevWord ()
-		{
-			TextEditor.RunAction (CaretMoveActions.PreviousWord);
-		}
-
-		void IEditorActionHost.PageUp ()
-		{
-			TextEditor.RunAction (CaretMoveActions.PageUp);
-		}
-
-		void IEditorActionHost.PageDown ()
-		{
-			TextEditor.RunAction (CaretMoveActions.PageDown);
-		}
-
-		void IEditorActionHost.DeleteCurrentLine ()
-		{
-			TextEditor.RunAction (DeleteActions.CaretLine);
-		}
-
-		void IEditorActionHost.DeleteCurrentLineToEnd ()
-		{
-			TextEditor.RunAction (DeleteActions.CaretLineToEnd);
-		}
-
-		void IEditorActionHost.ScrollLineUp ()
-		{
-			TextEditor.RunAction (ScrollActions.Up);
-		}
-
-		void IEditorActionHost.ScrollLineDown ()
-		{
-			TextEditor.RunAction (ScrollActions.Down);
-		}
-
-		void IEditorActionHost.ScrollPageUp ()
-		{
-			TextEditor.RunAction (ScrollActions.PageUp);
-		}
-
-		void IEditorActionHost.ScrollPageDown ()
-		{
-			TextEditor.RunAction (ScrollActions.PageDown);
-		}
-
-		void IEditorActionHost.MoveBlockUp ()
-		{
-			using (var undo = TextEditor.OpenUndoGroup ()) {
-				TextEditor.RunAction (MiscActions.MoveBlockUp);
-				CorrectIndenting ();
-			}
-		}
-
-		void IEditorActionHost.MoveBlockDown ()
-		{
-			using (var undo = TextEditor.OpenUndoGroup ()) {
-				TextEditor.RunAction (MiscActions.MoveBlockDown);
-				CorrectIndenting ();
-			}
-		}
-
-		void IEditorActionHost.ToggleBlockSelectionMode ()
-		{
-			TextEditor.SelectionMode = TextEditor.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Normal ? MonoDevelop.Ide.Editor.SelectionMode.Block : MonoDevelop.Ide.Editor.SelectionMode.Normal;
-			TextEditor.QueueDraw ();
-		}
-
-		void IEditorActionHost.IndentSelection ()
-		{
-			if (widget.TextEditor.IsSomethingSelected) {
-				MiscActions.IndentSelection (widget.TextEditor.GetTextEditorData ());
-			} else {
-				int offset = widget.TextEditor.LocationToOffset (widget.TextEditor.Caret.Line, 1);
-				widget.TextEditor.Insert (offset, widget.TextEditor.Options.IndentationString);
-			}
-		}
-
-		void IEditorActionHost.UnIndentSelection ()
-		{
-			MiscActions.RemoveTab (widget.TextEditor.GetTextEditorData ());
-		}
-
-		void IEditorActionHost.ShowQuickInfo ()
-		{
-			widget.TextEditor.TextArea.ShowQuickInfo ();
-		}
-
-		#endregion
-
-
 		#region ISegmentMarkerHost implementation
 
 		ITextSegmentMarker ITextMarkerFactory.CreateUsageMarker (MonoDevelop.Ide.Editor.TextEditor editor, Usage usage)
@@ -3508,11 +3282,22 @@ namespace MonoDevelop.SourceEditor
 		{
 			switch (effect) {
 			case TextSegmentMarkerEffect.DottedLine:
-			case TextSegmentMarkerEffect.WavedLine: 
-				var result = new GenericUnderlineMarker (new TextSegment (offset, length), effect);
-				if (color.HasValue)
-					result.Color = color.Value;
-				return result;
+			case TextSegmentMarkerEffect.WavedLine:
+				{
+					var result = new GenericUnderlineMarker (new TextSegment (offset, length), effect);
+					if (color.HasValue)
+						result.Color = color.Value;
+					return result;
+				}
+			case TextSegmentMarkerEffect.Underline:
+				{
+					var result = new GenericUnderlineMarker (new TextSegment (offset, length), effect);
+					if (color.HasValue)
+						result.Color = color.Value;
+					result.Wave = false;
+					return result;
+				}
+
 			case TextSegmentMarkerEffect.GrayOut:
 				return new GrayOutMarker (new TextSegment (offset, length));
 			default:

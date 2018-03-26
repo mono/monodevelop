@@ -32,6 +32,8 @@ using Gdk;
 using GLib;
 using Gtk;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+using MonoDevelop.AnalysisCore;
 using MonoDevelop.CodeActions;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
@@ -79,9 +81,16 @@ namespace MonoDevelop.CodeIssues
 		readonly Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> severities = new Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> ();
 		readonly Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, bool> enableState = new Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, bool> ();
 
+		static MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable options =
+			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).Options; 
+		
 		void GetAllSeverities ()
 		{
-			foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeDiagnosticDescriptorsAsync (CodeRefactoringService.MimeTypeToLanguage (mimeType), true).Result) {
+			var language = CodeRefactoringService.MimeTypeToLanguage (mimeType);
+			foreach (var node in options.AllDiagnostics) {
+				if (!node.Languages.Contains (language))
+					continue;
+				
 				foreach (var subIssue in node.GetProvider ().SupportedDiagnostics.Where (IsConfigurable).ToList ()) {
 					var sub = new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor> (node, subIssue);
 					severities [sub] = node.GetSeverity (subIssue);

@@ -31,6 +31,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Editor;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -84,24 +85,23 @@ namespace MonoDevelop.Ide.Editor.Extension
 			src = new CancellationTokenSource ();
 			if (!enabled)
 				return;
-			var token = src.Token;
-
-			var lineSeparatorService = DocumentContext?.RoslynWorkspace?.Services.GetLanguageServices (DocumentContext.AnalysisDocument.Project.Language).GetService<ILineSeparatorService> ();
+			var analysisDocument = DocumentContext?.AnalysisDocument;
+			if (analysisDocument == null)
+				return;
+			var lineSeparatorService = DocumentContext?.RoslynWorkspace?.Services.GetLanguageServices (analysisDocument.Project.Language).GetService<ILineSeparatorService> ();
 			if (lineSeparatorService == null)
 				return;
-			var separators = await lineSeparatorService.GetLineSeparatorsAsync (DocumentContext.AnalysisDocument, new TextSpan (0, Editor.Length), token);
+			var token = src.Token;
+			var separators = await lineSeparatorService.GetLineSeparatorsAsync (analysisDocument, new TextSpan (0, Editor.Length), token);
 			if (token.IsCancellationRequested)
 				return;
-			var newMarkers = new List<ITextLineMarker> ();
+			RemoveMarkers ();
 			foreach (var s in separators) {
 				var line = Editor.GetLineByOffset (s.Start);
 				var marker = Editor.TextMarkerFactory.CreateLineSeparatorMarker (Editor);
 				Editor.AddMarker (line, marker);
-				newMarkers.Add (marker);
+				markers.Add (marker);
 			}
-
-			RemoveMarkers ();
-			markers = newMarkers;
 		}
 
 		void RemoveMarkers ()

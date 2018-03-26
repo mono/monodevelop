@@ -82,22 +82,26 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected abstract string MimeType { get; }
 
 		public override IconId Icon {
-			get {
-				if (CompletionItem.Tags.Contains ("Snippet")) {
-					var template = CodeTemplateService.GetCodeTemplates (MimeType).FirstOrDefault (t => t.Shortcut == CompletionItem.DisplayText);
-					if (template != null)
-						return template.Icon;
-				}
-				var modifier = GetItemModifier ();
-				var type = GetItemType ();
-				var hash = modifier | type << 16;
-				if (!IconIdCache.ContainsKey (hash))
-					IconIdCache [hash] = "md-" + modifierType[modifier] + completionType[type];
-				return IconIdCache [hash];
-			}
+			get => GetIcon (CompletionItem, MimeType);
 		}
 
-		static Dictionary<int, string> IconIdCache = new Dictionary<int, string>();
+
+		internal static string GetIcon (CompletionItem completionItem, string mimeType)
+		{
+			if (completionItem.Tags.Contains ("Snippet")) {
+				var template = CodeTemplateService.GetCodeTemplates (mimeType).FirstOrDefault (t => t.Shortcut == completionItem.DisplayText);
+				if (template != null)
+					return template.Icon;
+			}
+			var modifier = GetItemModifier (completionItem);
+			var type = GetItemType (completionItem);
+			var hash = modifier | type << 16;
+			if (!IconIdCache.ContainsKey (hash))
+				IconIdCache [hash] = "md-" + modifierType [modifier] + completionType [type];
+			return IconIdCache [hash];
+		}
+
+		static Dictionary<int, string> IconIdCache = new Dictionary<int, string> ();
 
 		public RoslynCompletionData (Microsoft.CodeAnalysis.Document document, ITextSnapshot triggerSnapshot, CompletionService completionService, CompletionItem completionItem)
 		{
@@ -121,7 +125,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return null;
 		}
 
-		string [] completionType = {
+		readonly static string [] completionType = {
 			"field",
 			"literal",
 			"variable",
@@ -140,7 +144,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			"extensionmethod"
 		};
 
-		static Dictionary<string, int> roslynCompletionTypeTable = new Dictionary<string, int> {
+		readonly static Dictionary<string, int> roslynCompletionTypeTable = new Dictionary<string, int> {
 			{ "Field", 0 },
 			{ "Alias", 0 },
 			{ "ArrayType", 0 },
@@ -188,17 +192,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 			{ "ExtensionMethod", 15 }
 		};
 
-		int GetItemType ()
+		static int GetItemType (CompletionItem completionItem)
 		{
-			foreach (var tag in CompletionItem.Tags) {
+			foreach (var tag in completionItem.Tags) {
 				if (roslynCompletionTypeTable.TryGetValue (tag, out int result))
 					return result;
 			}
-			LoggingService.LogWarning ("RoslynCompletionData: Can't find item type '" + string.Join (",", CompletionItem.Tags) + "'");
+			LoggingService.LogWarning ("RoslynCompletionData: Can't find item type '" + string.Join (",", completionItem.Tags) + "'");
 			return 1;
 		}
 
-		string[] modifierType = {
+		readonly static string [] modifierType = {
 			"",
 			"private-",
 			"ProtectedOrInternal-",
@@ -208,7 +212,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		};
 
 
-		static Dictionary<string, int> modifierTypeTable = new Dictionary<string, int> {
+		readonly static Dictionary<string, int> modifierTypeTable = new Dictionary<string, int> {
 			{ "Private", 1 },
 			{ "ProtectedAndInternal", 2 },
 			{ "Protected", 3 },
@@ -216,9 +220,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			{ "ProtectedOrInternal", 5 }
 		};
 
-		int GetItemModifier ()
+		static int GetItemModifier (CompletionItem completionItem)
 		{
-			foreach (var tag in CompletionItem.Tags) {
+			foreach (var tag in completionItem.Tags) {
 				if (modifierTypeTable.TryGetValue (tag, out int result))
 					return result;
 			}
@@ -257,7 +261,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					editor.ReplaceText (mappedSpan.Start + 1, mappedSpan.Length - 1, completionChange.TextChange.NewText);
 				} else
 					editor.ReplaceText (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
-			
+
 
 				if (completionChange.NewPosition.HasValue)
 					editor.CaretOffset = completionChange.NewPosition.Value;
@@ -271,10 +275,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		protected abstract void Format (TextEditor editor, Gui.Document document, int start, int end);
 
-		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
+		public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{
-			var description = await Task.Run (() => completionService.GetDescriptionAsync (doc, CompletionItem)).ConfigureAwait (false);
-			var markup = new StringBuilder ();
+			return CreateTooltipInformation (doc, CompletionItem, smartWrap, cancelToken);
+		}
+
+		internal static async Task<TooltipInformation> CreateTooltipInformation (Microsoft.CodeAnalysis.Document doc, CompletionItem CompletionItem, bool smartWrap, CancellationToken cancelToken)
+		{
+			CompletionDescription description;
+			var completionService = doc.Project.Solution.Workspace.Services.GetLanguageServices (doc.Project.Language).GetService<CompletionService> ();
+			if (completionService == null)
+				return null;
+			if (CommonCompletionItem.HasDescription (CompletionItem)) {
+				description = CommonCompletionItem.GetDescription (CompletionItem);
+			} else {
+				description = await Task.Run (() => completionService.GetDescriptionAsync (doc, CompletionItem)).ConfigureAwait (false);
+			}
+			var markup = StringBuilderCache.Allocate ();
 			var theme = SyntaxHighlightingService.GetIdeFittingTheme (DefaultSourceEditorOptions.Instance.GetEditorTheme ());
 			var taggedParts = description.TaggedParts;
 			int i = 0;
@@ -294,9 +311,27 @@ namespace MonoDevelop.Ide.CodeCompletion
 				markup.Append ("</span>");
 			}
 			return new TooltipInformation {
-				SignatureMarkup = markup.ToString ()
+				SignatureMarkup = StringBuilderCache.ReturnAndFree (markup)
 			};
 		}
-	}
 
+		public override bool IsCommitCharacter (char keyChar, string partialWord)
+		{
+			foreach (var rule in CompletionItem.Rules.CommitCharacterRules) {
+				switch (rule.Kind) {
+				case CharacterSetModificationKind.Add:
+					if (rule.Characters.Contains (keyChar))
+						return true;
+					continue;
+				case CharacterSetModificationKind.Remove:
+					if (rule.Characters.Contains (keyChar))
+						return false;
+					continue;
+				case CharacterSetModificationKind.Replace:
+					return rule.Characters.Contains (keyChar);
+				}
+			}
+			return base.IsCommitCharacter (keyChar, partialWord);
+		}
+	}
 }

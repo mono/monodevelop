@@ -169,8 +169,7 @@ namespace MonoDevelop.CSharp.Project
 			if (configuration != null)
 				symbols = symbols.Concat (configuration.GetDefineSymbols ()).Distinct ();
 
-			LanguageVersion lv;
-			TryParseLanguageVersion (langVersion, out lv);
+			langVersion.TryParse (out LanguageVersion lv);
 
 			return new CSharpParseOptions (
 				lv,
@@ -183,8 +182,7 @@ namespace MonoDevelop.CSharp.Project
 
 		public LanguageVersion LangVersion {
 			get {
-				LanguageVersion val;
-				if (!TryParseLanguageVersion (langVersion, out val)) {
+				if (!langVersion.TryParse (out LanguageVersion val)) {
 					throw new Exception ("Unknown LangVersion string '" + langVersion + "'");
 				}
 				return val;
@@ -375,62 +373,9 @@ namespace MonoDevelop.CSharp.Project
 			case LanguageVersion.CSharp1: return "ISO-1";
 			case LanguageVersion.CSharp2: return "ISO-2";
 			case LanguageVersion.CSharp7_1: return "7.1";
+			case LanguageVersion.CSharp7_2: return "7.2";
+			case LanguageVersion.CSharp7_3: return "7.3";
 			default: return ((int)value).ToString ();
-			}
-		}
-
-		// From https://github.com/dotnet/roslyn/blob/f60facc9f40ddc40f85411372f5b8dde9dd5e3b4/src/Compilers/CSharp/Portable/CommandLine/CSharpCommandLineParser.cs
-		// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-		static bool TryParseLanguageVersion (string str, out LanguageVersion version)
-		{
-			if (str == null) {
-				version = LanguageVersion.Default;
-				return true;
-			}
-
-			switch (str.ToLowerInvariant ()) {
-			case "iso-1":
-				version = LanguageVersion.CSharp1;
-				return true;
-
-			case "iso-2":
-				version = LanguageVersion.CSharp2;
-				return true;
-
-			case "7":
-				version = LanguageVersion.CSharp7;
-				return true;
-
-			case "7.1":
-				version = LanguageVersion.CSharp7_1;
-				return true;
-
-			case "default":
-				version = LanguageVersion.Default;
-				return true;
-
-			case "latest":
-				version = LanguageVersion.Latest;
-				return true;
-
-			default:
-				// We are likely to introduce minor version numbers after C# 7, thus breaking the
-				// one-to-one correspondence between the integers and the corresponding
-				// LanguageVersion enum values. But for compatibility we continue to accept any
-				// integral value parsed by int.TryParse for its corresponding LanguageVersion enum
-				// value for language version C# 6 and earlier (e.g. leading zeros are allowed)
-				int versionNumber;
-				if (int.TryParse (str, NumberStyles.None, CultureInfo.InvariantCulture, out versionNumber) &&
-					//HACK: IsValid isn't accessible, do our own check here
-					//&& versionNumber <= 6 && ((LanguageVersion)versionNumber).IsValid ())
-					versionNumber > 0 && versionNumber <= 6)
-				{
-					version = (LanguageVersion)versionNumber;
-					return true;
-				}
-
-				version = LanguageVersion.Default;
-				return false;
 			}
 		}
 

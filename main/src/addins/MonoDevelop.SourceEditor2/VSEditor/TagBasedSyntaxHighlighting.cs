@@ -1,4 +1,4 @@
-//
+﻿//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -36,6 +36,7 @@ namespace Microsoft.VisualStudio.Platform
 
     internal sealed class TagBasedSyntaxHighlighting : ISyntaxHighlighting
     {
+        private static string[] delimiters = new string[] { " - " };
         private ITextBuffer textBuffer { get; }
         private IClassifier classifier { get; set; }
         private MonoDevelop.Ide.Editor.ITextDocument textDocument { get; }
@@ -48,6 +49,9 @@ namespace Microsoft.VisualStudio.Platform
 
         public Task<HighlightedLine> GetHighlightedLineAsync(IDocumentLine line, CancellationToken cancellationToken)
         {
+            //TODO verify that the snapshot line from this.textBuffer is equivalent to the document line converted to a snapshotline.
+            //Possibly take in a TextDataModel as a parameter and verify the buffers are appropriate.
+            //ITextSnapshotLine snapshotLine = (line as Mono.TextEditor.TextDocument.DocumentLineFromTextSnapshotLine)?.Line;
             ITextSnapshotLine snapshotLine = textBuffer.CurrentSnapshot.GetLineFromLineNumber (line.LineNumber - 1);
             if ((this.classifier == null) || (snapshotLine == null))
             {
@@ -145,13 +149,23 @@ namespace Microsoft.VisualStudio.Platform
             }
         }
 
-        private string GetStyleNameFromClassificationType(IClassificationType classificationType)
+        private string GetStyleNameFromClassificationType (IClassificationType classificationType)
         {
-            string styleName = EditorThemeColors.Foreground;
+            string styleName = null;
+            string[] classificationNames = classificationType.Classification.Split (TagBasedSyntaxHighlighting.delimiters, StringSplitOptions.None);
+
+            for (int i = classificationNames.Length - 1; i >= 0 && styleName == null; i--) {
+                styleName = GetStyleNameFromClassificationName (classificationNames[i]);
+            }
+
+            return styleName ?? EditorThemeColors.Foreground;
+        }
+
+        private string GetStyleNameFromClassificationName (string classificationName) {
+            string styleName = null;
 
             // MONO: TODO: get this from the EditorFormat?
-            switch (classificationType.Classification)
-            {
+            switch (classificationName) {
                 // MONO: TODO: Make each language MEF export this knowledge?
 
                 // CSS Entries
@@ -194,6 +208,9 @@ namespace Microsoft.VisualStudio.Platform
                     styleName = "punctuation.separator.key-value.html";
                     break;
                 case "HTML Server-Side Script":
+                    //styleName = "punctuation.section.embedded.begin"; // suggested by mike, does nothing
+                    //styleName = "punctuation.section.embedded.begin.cs"; // suggested by mike, does nothing
+                    styleName = "meta.preprocessor.source.cs"; // TODO: Find a name to use here
                     //styleName = style.HtmlServerSideScript.Name;
                     break;
                 case "HTML Tag Delimiter":
@@ -201,6 +218,12 @@ namespace Microsoft.VisualStudio.Platform
                     break;
                 case "RazorCode":
                     //styleName = style.RazorCode.Name;
+                    break;
+                case "RazorTagHelperAttribute":
+                    styleName = "markup.bold";
+                    break;
+                case "RazorTagHelperElement":
+                    styleName = "markup.bold";
                     break;
 
                 // JSON Entries
@@ -257,15 +280,19 @@ namespace Microsoft.VisualStudio.Platform
                     styleName = "variable.other.less";
                     break;
                 default:
-                    styleName = EditorThemeColors.Foreground;
+                    // If the stylename looks like a textmate style, just use it
+                    if (classificationName.IndexOf ('.') >= 0) {
+                        styleName = classificationName;
+                    }
+
                     break;
             }
 
             return styleName;
         }
 
-		public void Dispose()
-		{
-		}
+        public void Dispose()
+        {
+        }
     }
 }

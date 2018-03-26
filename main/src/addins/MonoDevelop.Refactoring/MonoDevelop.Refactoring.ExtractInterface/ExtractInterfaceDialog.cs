@@ -108,7 +108,12 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 			listViewPublicMembers.DataSource = treeStore;
 			var checkBoxCellView = new CheckBoxCellView (symbolIncludedField);
 			checkBoxCellView.Editable = true;
-			checkBoxCellView.Toggled += delegate { UpdateOkButton ();};
+			checkBoxCellView.Toggled += delegate { 
+				GLib.Timeout.Add (20, delegate {
+					UpdateOkButton (); 
+					return false;
+				});
+			};
 			listViewPublicMembers.Columns.Add ("", checkBoxCellView);
 			listViewPublicMembers.Columns.Add ("", new ImageCellView (symbolIconField), new TextCellView (symbolTextField));
 
@@ -222,6 +227,7 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 				treeStore.SetValue (row, symbolTextField, member.ToDisplayString (memberDisplayFormat));
 				treeStore.SetValue (row, symbolIconField, ImageService.GetIcon (MonoDevelop.Ide.TypeSystem.Stock.GetStockIcon (member)));
 			}
+			UpdateOkButton ();
 		}
 
 		void UpdateOkButton ()
@@ -233,19 +239,15 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 		{
 			var trimmedInterfaceName = InterfaceName.Trim ();
 			var trimmedFileName = FileName.Trim ();
-
 			if (!IncludedMembers.Any ()) {
 				return false;
 			}
-
 			if (conflictingTypeNames.Contains (trimmedInterfaceName)) {
 				return false;
 			}
-
 			if (!syntaxFactsService.IsValidIdentifier (trimmedInterfaceName)) {
 				return false;
 			}
-
 			if (trimmedFileName.IndexOfAny (System.IO.Path.GetInvalidFileNameChars ()) >= 0) {
 				return false;
 			}

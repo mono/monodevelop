@@ -188,7 +188,7 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			CreateNuGetConfigFile (solution.BaseDirectory);
 
-			var process = Process.Start ("msbuild", $"/t:Restore /p:RestoreDisableParallel=true {solutionFileName}");
+			var process = Process.Start ("msbuild", $"/t:Restore /p:RestoreDisableParallel=true \"{solutionFileName}\"");
 			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
 			Assert.AreEqual (0, process.ExitCode);
 
@@ -238,6 +238,18 @@ namespace MonoDevelop.DotNetCore.Tests
 			var project = solution.Items.Single (item => item.Name == "TizenProject");
 
 			Assert.IsInstanceOf<DotNetProject> (project);
+		}
+
+		[Test]
+		public async Task ConsoleProject_UseDefaultMetadataForExcludedExpandedItems_IsTrue ()
+		{
+			string solutionFileName = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-sdk-console.sln");
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = solution.GetAllProjects ().Single ();
+
+			Assert.IsTrue (project.UseDefaultMetadataForExcludedExpandedItems);
+			Assert.IsTrue (project.UseAdvancedGlobSupport);
+			Assert.IsTrue (project.UseFileWatcher);
 		}
 	}
 }

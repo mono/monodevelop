@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -192,6 +192,10 @@ namespace MonoDevelop.Configuration
 			var txt = "Release ID: " + ReleaseId + "\n";
 			txt += "Git revision: " + head + "\n";
 			txt += "Build date: " + DateTime.Now.ToString ("yyyy-MM-dd HH:mm:sszz") + "\n";
+
+			var buildBranch = Environment.GetEnvironmentVariable ("BUILD_SOURCEBRANCHNAME");
+			if (!string.IsNullOrWhiteSpace (buildBranch))
+				txt += "Build branch: " + buildBranch;
 
             File.WriteAllText(Path.Combine(targetDir, "buildinfo"), txt);
 		}

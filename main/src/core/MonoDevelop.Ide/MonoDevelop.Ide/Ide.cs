@@ -534,13 +534,22 @@ namespace MonoDevelop.Ide
 				DispatchIdleActions (500);
 		}
 
-		
+
 		internal static bool OnExit ()
 		{
-			if (Exiting != null) {
-				ExitEventArgs args = new ExitEventArgs ();
-				Exiting (null, args);
-				return !args.Cancel;
+			var exiting = Exiting;
+			if (exiting != null) {
+				bool haveAnyCancelled = false;
+				var args = new ExitEventArgs ();
+				foreach (ExitEventHandler handler in exiting.GetInvocationList ()) {
+					try {
+						handler (null, args);
+						haveAnyCancelled |= args.Cancel;
+					} catch (Exception ex) {
+						LoggingService.LogError ("Exception processing IdeApp.Exiting handler.", ex);
+					}
+				}
+				return !haveAnyCancelled;
 			}
 			return true;
 		}

@@ -454,13 +454,13 @@ namespace MonoDevelop.CSharp
 				if (tag is SyntaxTree) {
 					var type = node;
 					if (type != null) {
-						var sb = new StringBuilder ();
+						var sb = StringBuilderCache.Allocate ();
 						sb.Append (ext.GetEntityMarkup (type));
 						while (type.Parent is BaseTypeDeclarationSyntax) {
 							sb.Insert (0, ext.GetEntityMarkup (type.Parent) + ".");
 							type = type.Parent;
 						}
-						return sb.ToString ();
+						return StringBuilderCache.ReturnAndFree (sb);
 					}
 				}
 				var accessor = node as AccessorDeclarationSyntax;
@@ -506,13 +506,13 @@ namespace MonoDevelop.CSharp
 				if (tag is SyntaxTree) {
 					var type = node;
 					if (type != null) {
-						var sb = new StringBuilder ();
+						var sb = StringBuilderCache.Allocate ();
 						sb.Append (ext.GetEntityMarkup (type));
 						while (type.Parent is BaseTypeDeclarationSyntax) {
 							sb.Insert (0, ext.GetEntityMarkup (type.Parent) + ".");
 							type = type.Parent;
 						}
-						return sb.ToString ();
+						return StringBuilderCache.ReturnAndFree (sb);
 					}
 				}
 				return ext.GetEntityMarkup (node);
@@ -749,7 +749,9 @@ namespace MonoDevelop.CSharp
 						var prevPath = CurrentPath;
 						CurrentPath = new PathEntry [] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
 						isPathSet = false;
-						OnPathChanged (new DocumentPathChangedEventArgs (prevPath));
+						await Runtime.RunInMainThread (delegate {
+							OnPathChanged (new DocumentPathChangedEventArgs (prevPath));
+						});
 						return;
 					}
 					node = root.FindNode(TextSpan.FromBounds(caretOffset, caretOffset));

@@ -46,6 +46,14 @@
     <Reference Include="System.ValueTuple">
       <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ProjectTemplateTests.cs" />
@@ -108,6 +116,7 @@
     <Compile Include="MonoDevelop.Ide.Projects\DotNetCoreProjectTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\MockCompletionView.cs" />
     <Compile Include="MonoDevelop.Ide\MonoDocDocumentationProviderTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\EditorConfigTests.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\PclToProjectJsonConversionTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

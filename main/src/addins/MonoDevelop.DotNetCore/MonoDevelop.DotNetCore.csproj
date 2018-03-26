@@ -123,6 +123,7 @@
     <Compile Include="MonoDevelop.DotNetCore.Gui\GtkDotNetCoreProjectTemplateWizardPageWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.DotNetCore.Gui.GtkDotNetCoreProjectTemplateWizardPageWidget.cs" />
     <Compile Include="MonoDevelop.DotNetCore\MSBuildSdksPathGlobalPropertyProvider.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreShortTargetFramework.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />

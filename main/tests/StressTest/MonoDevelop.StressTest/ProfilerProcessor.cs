@@ -76,7 +76,7 @@ namespace MonoDevelop.StressTest
 				}
 				using (var fs = new FileStream (Options.MlpdOutputPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
 				using (var logStream = new NeverEndingLogStream (fs, cts.Token)) {
-					processor = new LogProcessor (logStream, new Visitor (this), null);
+					processor = new LogProcessor (logStream, null, new Visitor (this));
 					processor.Process (cts.Token);
 				}
 			} catch (OperationCanceledException) { } catch (Exception ex) {

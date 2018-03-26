@@ -30,6 +30,7 @@ using System;
 using System.Xml;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -53,9 +54,21 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
+		[Obsolete("Use public Task<ProjectFile> AddFileToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string name).")]
 		public override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
 		{
 			ProjectFile file = template.AddFileToProject (policyParent, project, language, directory, name);
+			if (file != null) {
+				file.BuildAction = BuildAction.EmbeddedResource;
+				return true;
+			}
+			else
+				return false;
+		}
+
+		public override async Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
+		{
+			ProjectFile file = await template.AddFileToProjectAsync (policyParent, project, language, directory, name);
 			if (file != null) {
 				file.BuildAction = BuildAction.EmbeddedResource;
 				return true;

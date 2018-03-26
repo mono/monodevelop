@@ -124,12 +124,13 @@ namespace MonoDevelop.DotNetCore
 
 			base.OnReadProject (monitor, msproject);
 
-			dotNetCoreMSBuildProject.ReadProject (msproject);
+			dotNetCoreMSBuildProject.ReadProject (msproject, Project.TargetFramework.Id);
 
 			if (!dotNetCoreMSBuildProject.IsOutputTypeDefined)
 				Project.CompileTarget = dotNetCoreMSBuildProject.DefaultCompileTarget;
 
 			Project.UseAdvancedGlobSupport = true;
+			Project.UseDefaultMetadataForExcludedExpandedItems = true;
 			Project.UseFileWatcher = true;
 		}
 

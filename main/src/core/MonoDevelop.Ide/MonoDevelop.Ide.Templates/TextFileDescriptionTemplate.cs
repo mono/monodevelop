@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.StringParsing;
@@ -103,6 +104,13 @@ namespace MonoDevelop.Ide.Templates
 			contentSrcFile = contentSrcFile.ToAbsolute (baseDirectory);
 		}
 		
+		public override Task<Stream> CreateFileContentAsync (SolutionFolderItem policyParent, Project project, string language,
+			string fileName, string identifier)
+		{
+			return Task.FromResult<Stream>(File.OpenRead (contentSrcFile));
+		}
+
+		[Obsolete ("Use public Task<Stream> CreateFileContentAsync (SolutionFolderItem policyParent, Project project, string language, string fileName, string identifier).")]
 		public override Stream CreateFileContent (SolutionFolderItem policyParent, Project project, string language,
 			string fileName, string identifier)
 		{

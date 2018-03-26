@@ -53,7 +53,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	class TextArea : Container, ITextEditorDataProvider
+	partial class TextArea : Container, ITextEditorDataProvider
 	{
 
 		TextEditorData textEditorData;
@@ -62,6 +62,9 @@ namespace Mono.TextEditor
 		protected ActionMargin     actionMargin;
 		protected GutterMargin     gutterMargin;
 		protected FoldMarkerMargin foldMarkerMargin;
+
+		internal MdTextViewLineCollection TextViewLines { get; set; }
+
 		protected TextViewMargin   textViewMargin;
 
 		DocumentLine longestLine      = null;
@@ -235,13 +238,19 @@ namespace Mono.TextEditor
 				value = System.Math.Round (value);
 				this.textEditorData.VAdjustment.Value = value;
 			}
-			if (isMouseTrapped)
+			if (IsMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 			
 			double delta = value - this.oldVadjustment;
 			oldVadjustment = value;
 			TextViewMargin.caretY -= delta;
-			
+
+			int startLine = YToLine (this.textEditorData.VAdjustment.Value);
+			TextViewLines?.RemoveLinesBefore (startLine);
+
+			int endlLine = YToLine (this.textEditorData.VAdjustment.Value + Allocation.Height);
+			TextViewLines?.RemoveLinesAfter (endlLine);
+
 			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.InSelectionDrag) {
 				this.QueueDraw ();
 				OnVScroll (EventArgs.Empty);
@@ -492,10 +501,7 @@ namespace Mono.TextEditor
 
 		void PreeditStringChanged (object sender, EventArgs e)
 		{
-			if (imContextNeedsReset)
-				preeditString = null;
-			else
-				imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorCharIndex);
+			imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorCharIndex);
 			if (!string.IsNullOrEmpty (preeditString)) {
 				if (preeditOffset < 0) {
 					preeditOffset = Caret.Offset;
@@ -1497,17 +1503,17 @@ namespace Mono.TextEditor
 			customText = null;
 		}
 		#endregion
-		bool isMouseTrapped = false;
+		internal bool IsMouseTrapped { get; set; } = false;
 		
 		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
 		{
-			isMouseTrapped = true;
+			IsMouseTrapped = true;
 			return base.OnEnterNotifyEvent (evnt);
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{
-			isMouseTrapped = false;
+			IsMouseTrapped = false;
 			if (tipWindow != null && currentTooltipProvider != null) {
 				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
 					DelayedHideTooltip ();
@@ -1831,7 +1837,7 @@ namespace Mono.TextEditor
 					Options.ZoomOut ();
 
 				this.QueueDraw ();
-				if (isMouseTrapped)
+				if (IsMouseTrapped)
 					FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 				return true;
 			}
@@ -1960,7 +1966,7 @@ namespace Mono.TextEditor
 					if (wrapper.IsUncached)
 						wrapper.Dispose ();
 				}
-
+				TextViewLines?.Add (logicalLineNumber, line);
 				double lineHeight = GetLineHeight (line);
 				foreach (var margin in this.margins) {
 					if (!margin.IsVisible)

@@ -103,14 +103,23 @@ namespace MonoDevelop.Ide.TypeSystem
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
 			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
-			//Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
-			//	.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true);
+
+			// Trigger running compiler syntax and semantic errors via the diagnostic analyzer engine
+			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
+				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true)
+			// Always use persistent storage regardless of solution size, at least until a consensus is reached
+			// https://github.com/mono/monodevelop/issues/4149 https://github.com/dotnet/roslyn/issues/25453
+				.WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, 0);
 
 			if (IdeApp.Preferences.EnableSourceAnalysis) {
 				solutionCrawler.Register (this);
 			}
 
 			IdeApp.Preferences.EnableSourceAnalysis.Changed += OnEnableSourceAnalysisChanged;
+
+			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
+				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
+
 		}
 
 		void OnEnableSourceAnalysisChanged(object sender, EventArgs args)
@@ -212,9 +221,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var p in toDispose)
 					p.Dispose ();
 				
-				projectIdMap.Clear ();
-				projectIdToMdProjectMap = projectIdToMdProjectMap.Clear ();
-				projectDataMap.Clear ();
 				solutionData = new SolutionData ();
 				List<Task> allTasks = new List<Task> ();
 				foreach (var proj in mdProjects) {
@@ -223,7 +229,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var netProj = proj as MonoDevelop.Projects.DotNetProject;
 					if (netProj != null && !netProj.SupportsRoslyn)
 						continue;
-					var tp = LoadProject (proj, token).ContinueWith (t => {
+					var tp = LoadProject (proj, token, null).ContinueWith (t => {
 						if (!t.IsCanceled)
 							projects.Add (t.Result);
 					});
@@ -245,39 +251,39 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (addLock) {
 					if (!added) {
 						added = true;
-						// HACK: https://github.com/dotnet/roslyn/issues/20581
-						RegisterPrimarySolutionForPersistentStorage (solutionId, solution);
+						solution.Modified += OnSolutionModified;
+						NotifySolutionModified (solution, solutionId, this);
 						OnSolutionAdded (solutionInfo);
+						lock (generatedFiles) {
+							foreach (var generatedFile in generatedFiles) {
+								if (!this.IsDocumentOpen (generatedFile.Key.Id))
+									OnDocumentOpened (generatedFile.Key.Id, generatedFile.Value);
+							}
+						}
 					}
 				}
 				return solutionInfo;
 			});
 		}
 
-		void RegisterPrimarySolutionForPersistentStorage (SolutionId solutionId, MonoDevelop.Projects.Solution solution)
+		static async void OnSolutionModified (object sender, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
-			var locService = (MonoDevelopPersistentStorageLocationService)Services.GetService<IPersistentStorageLocationService> ();
-			locService.storageMap.Add (solutionId, solution.GetPreferencesDirectory ());
-
-			var service = Services.GetService<IPersistentStorageService> () as Microsoft.CodeAnalysis.Storage.AbstractPersistentStorageService;
-			if (service == null) {
+			var sol = (MonoDevelop.Projects.Solution)args.Item;
+			var workspace = await TypeSystemService.GetWorkspaceAsync (sol, CancellationToken.None);
+			var solId = workspace.GetSolutionId (sol);
+			if (solId == null)
 				return;
-			}
-
-			service.RegisterPrimarySolution (solutionId);
+			
+			NotifySolutionModified (sol, solId, workspace);
 		}
 
-		void UnregisterPrimarySolutionForPersistentStorage (SolutionId solutionId, bool synchronousShutdown)
+		static void NotifySolutionModified (MonoDevelop.Projects.Solution sol, SolutionId solId, MonoDevelopWorkspace workspace)
 		{
-			var locService = (MonoDevelopPersistentStorageLocationService)Services.GetService<IPersistentStorageLocationService> ();
-			locService.storageMap.Remove (solutionId);
-
-			var service = Services.GetService<IPersistentStorageService> () as Microsoft.CodeAnalysis.Storage.AbstractPersistentStorageService;
-			if (service == null) {
+			if (string.IsNullOrWhiteSpace (sol.BaseDirectory))
 				return;
-			}
-
-			service.UnregisterPrimarySolution (solutionId, synchronousShutdown);
+			
+			var locService = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
+			locService.NotifyStorageLocationChanging (solId, sol.GetPreferencesDirectory ());
 		}
 
 		internal Task<SolutionInfo> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
@@ -288,7 +294,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void UnloadSolution ()
 		{
 			OnSolutionRemoved ();
-			UnregisterPrimarySolutionForPersistentStorage (CurrentSolution.Id, synchronousShutdown: false);
 		}
 
 		Dictionary<MonoDevelop.Projects.Solution, SolutionId> solutionIdMap = new Dictionary<MonoDevelop.Projects.Solution, SolutionId> ();
@@ -448,10 +453,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			project.Modified -= OnProjectModified;
 		}
 
-		async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token)
+		internal async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.Project oldProject)
 		{
 			if (!projectIdMap.ContainsKey (p)) {
 				p.Modified += OnProjectModified;
+			}
+
+			if (oldProject != null) {
+				lock (projectIdMap) {
+					oldProject.Modified -= OnProjectModified;
+					projectIdMap.TryRemove (oldProject, out var id);
+					projectIdMap[p] = id;
+					projectIdToMdProjectMap = projectIdToMdProjectMap.SetItem (id, p);
+				}
 			}
 
 			var projectId = GetOrCreateProjectId (p);
@@ -598,6 +612,13 @@ namespace MonoDevelop.Ide.TypeSystem
 							continue;
 						documents.Add (projectedDocument);
 					}
+				}
+			}
+			var projectId = GetProjectId (p);
+			lock (generatedFiles) {
+				foreach (var generatedFile in generatedFiles) {
+					if (generatedFile.Key.Id.ProjectId == projectId)
+						documents.Add (generatedFile.Key);
 				}
 			}
 			return Tuple.Create (documents, additionalDocuments);
@@ -757,6 +778,27 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		readonly Dictionary<DocumentInfo, SourceTextContainer> generatedFiles = new Dictionary<DocumentInfo, SourceTextContainer> ();
+		internal void AddAndOpenDocumentInternal (DocumentInfo documentInfo, SourceTextContainer textContainer)
+		{
+			lock (generatedFiles) {
+				generatedFiles[documentInfo] = textContainer;
+				OnDocumentAdded (documentInfo);
+				OnDocumentOpened (documentInfo.Id, textContainer);
+			}
+		}
+
+		internal void CloseAndRemoveDocumentInternal (DocumentId documentId, TextLoader reloader)
+		{
+			lock (generatedFiles) {
+				var documentInfo = generatedFiles.FirstOrDefault (kvp => kvp.Key.Id == documentId).Key;
+				if (documentInfo != null && generatedFiles.Remove(documentInfo) && CurrentSolution.ContainsDocument(documentId)) {
+					OnDocumentClosed (documentId, reloader);
+					OnDocumentRemoved (documentId);
+				}
+			}
+		}
+
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
 		internal void InformDocumentOpen (DocumentId documentId, TextEditor editor)
 		{
@@ -822,6 +864,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (openDoc != null) {
 						openDoc.Dispose ();
 						openDocuments.Remove (openDoc);
+					} else {
+						//Apparently something else opened this file via AddAndOpenDocumentInternal(e.g. .cshtml)
+						//it's job of whatever opened to also call CloseAndRemoveDocumentInternal
+						return;
 					}
 				}
 				if (!CurrentSolution.ContainsDocument (analysisDocument))
@@ -865,6 +911,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			var document = GetDocument (id);
 			if (document == null)
 				return;
+
+			var hostDocument = MonoDevelopHostDocumentRegistration.FromDocument (document);
+			if (hostDocument != null) {
+				hostDocument.UpdateText (text);
+				return;
+			}
+
 			bool isOpen;
 			var filePath = document.FilePath;
 			Projection projection = null;
@@ -1204,6 +1257,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, mdProject?.FileName.ParentDirectory, true);
+			// If file is already part of project don't re-add it, example of this is .cshtml
+			if (mdProject?.IsFileInProject (path) == true) {
+				this.OnDocumentAdded (info);
+				return;
+			}
 			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
 
 			string formattedText;
@@ -1297,6 +1355,22 @@ namespace MonoDevelop.Ide.TypeSystem
 			var path = GetMetadataPath (metadataReference);
 			if (mdProject == null || path == null)
 				return;
+			foreach (var r in mdProject.References) {
+				if (r.ReferenceType == MonoDevelop.Projects.ReferenceType.Assembly && r.Reference == path) {
+					LoggingService.LogWarning ("Warning duplicate reference is added " + path);
+					return;
+				}
+
+				if (r.ReferenceType == MonoDevelop.Projects.ReferenceType.Project) {
+					foreach (var fn in r.GetReferencedFileNames (MonoDevelop.Projects.ConfigurationSelector.Default)) {
+						if (fn == path) {
+							LoggingService.LogWarning ("Warning duplicate reference is added " + path + " for project " + r.Reference);
+							return;
+						}
+					}
+				}
+			}
+
 			mdProject.AddReference (path);
 			tryApplyState_changedProjects.Add (mdProject);
 			this.OnMetadataReferenceAdded (projectId, metadataReference);
@@ -1435,7 +1509,13 @@ namespace MonoDevelop.Ide.TypeSystem
 						return;
 					var projectId = GetProjectId (project);
 					if (CurrentSolution.ContainsProject (projectId)) {
-						HandleActiveConfigurationChanged (this, EventArgs.Empty);
+						var projectInfo = LoadProject (project, CancellationToken.None, null).ContinueWith (t => {
+							if (t.IsFaulted) {
+								LoggingService.LogError ("Failed to reload project", t.Exception);
+								return;
+							}
+							OnProjectReloaded (t.Result);
+						});
 					} else {
 						modifiedProjects.Add (project);
 					}
@@ -1467,7 +1547,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			originalOffset = offset;
 			return false;
 		}
-
 	}
 
 	//	static class MonoDevelopWorkspaceFeatures

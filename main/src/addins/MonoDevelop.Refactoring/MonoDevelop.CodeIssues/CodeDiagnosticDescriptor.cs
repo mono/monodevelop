@@ -124,6 +124,11 @@ namespace MonoDevelop.CodeIssues
 			return PropertyService.Get ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".enabled", true);
 		}
 
+		internal bool GetIsEnabled (string diagnosticId)
+		{
+			return PropertyService.Get ("CodeIssues." + Languages + "." + IdString + "." + diagnosticId + ".enabled", true);
+		}
+
 		internal void SetIsEnabled (DiagnosticDescriptor diagnostic, bool value)
 		{
 			PropertyService.Set ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".enabled", value);

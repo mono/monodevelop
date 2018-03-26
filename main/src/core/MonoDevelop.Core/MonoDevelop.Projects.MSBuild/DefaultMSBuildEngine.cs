@@ -64,6 +64,7 @@ namespace MonoDevelop.Projects.MSBuild
 			public Dictionary<MSBuildImport, List<ProjectInfo>> ImportedProjects = new Dictionary<MSBuildImport, List<ProjectInfo>> ();
 			public ConditionedPropertyCollection ConditionedProperties = new ConditionedPropertyCollection ();
 			public List<GlobInfo> GlobIncludes = new List<GlobInfo> ();
+			public bool OnlyEvaluateProperties;
 
 			public MSBuildProject GetRootMSBuildProject ()
 			{
@@ -182,6 +183,11 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public override void Evaluate (object projectInstance)
 		{
+			Evaluate (projectInstance, false);
+		}
+
+		public override void Evaluate (object projectInstance, bool onlyEvaluateProperties)
+		{
 			var pi = (ProjectInfo) projectInstance;
 
 			pi.EvaluatedItemsIgnoringCondition.Clear ();
@@ -190,6 +196,7 @@ namespace MonoDevelop.Projects.MSBuild
 			pi.Imports.Clear ();
 			pi.Targets.Clear ();
 			pi.TargetsIgnoringCondition.Clear ();
+			pi.OnlyEvaluateProperties = onlyEvaluateProperties;
 
 			// Unload referenced projects after evaluating to avoid unnecessary unload + load
 			var oldRefProjects = pi.ReferencedProjects;
@@ -248,13 +255,15 @@ namespace MonoDevelop.Projects.MSBuild
 			LogEndEvalProject (context, pi);
 			LogEndEvaluationStage (context);
 
-			LogBeginEvaluationStage (context, "Evaluating Items");
-			LogBeginEvalProject (context, pi);
+			if (!pi.OnlyEvaluateProperties) {
+				LogBeginEvaluationStage (context, "Evaluating Items");
+				LogBeginEvalProject (context, pi);
 
-			EvaluateObjects (pi, context, objects, true);
+				EvaluateObjects (pi, context, objects, true);
 
-			LogEndEvalProject (context, pi);
-			LogEndEvaluationStage (context);
+				LogEndEvalProject (context, pi);
+				LogEndEvaluationStage (context);
+			}
 
 			// Once items have been evaluated, we need to re-evaluate properties that contain item transformations
 			// (or that contain references to properties that have transformations).
@@ -489,11 +498,14 @@ namespace MonoDevelop.Projects.MSBuild
 		static void AddRemoveToGlobInclude (ProjectInfo project, MSBuildItem item, string remove)
 		{
 			var exclude = ExcludeToRegex (remove);
-			foreach (var globInclude in project.GlobIncludes.Where (g => g.Item.Name == item.Name)) {
-				if (globInclude.RemoveRegex != null)
-					exclude = globInclude.RemoveRegex + "|" + exclude;
-				globInclude.RemoveRegex = new Regex (exclude);
-			}
+			do {
+				foreach (var globInclude in project.GlobIncludes.Where (g => g.Item.Name == item.Name)) {
+					if (globInclude.RemoveRegex != null)
+						exclude = globInclude.RemoveRegex + "|" + exclude;
+					globInclude.RemoveRegex = new Regex (exclude);
+				}
+				project = project.Parent;
+			} while (project != null);
 		}
 
 		static void RemoveEvaluatedItemFromAllProjects (ProjectInfo project, MSBuildItem item, string include, bool trueCond)
@@ -645,18 +657,18 @@ namespace MonoDevelop.Projects.MSBuild
 					items = result;
 					return true;
 				} else if (ExecuteTransformItemListFunction (ref transformItems, itemFunction, itemFunctionArgs, out ignoreMetadata)) {
-					var sb = new StringBuilder ();
+					var sb = StringBuilderCache.Allocate ();
 					for (int n = 0; n < transformItems.Length; n++) {
 						if (n > 0)
 							sb.Append (';');
 						sb.Append (transformItems[n].Include);
 					}	
-					items = sb.ToString ();
+					items = StringBuilderCache.ReturnAndFree (sb);
 					return true;
 				}
 			}
 
-			var sbi = new StringBuilder ();
+			var sbi = StringBuilderCache.Allocate ();
 
 			int count = 0;
 			foreach (var eit in transformItems) {
@@ -678,7 +690,7 @@ namespace MonoDevelop.Projects.MSBuild
 					context.ClearItemContext ();
 				}
 			}
-			items = sbi.ToString ();
+			items = Core.StringBuilderCache.ReturnAndFree (sbi);
 			return true;
 		}
 
@@ -943,7 +955,7 @@ namespace MonoDevelop.Projects.MSBuild
 		static string ExcludeToRegex (string exclude, bool excludeDirectoriesOnly = false)
 		{
 			exclude = exclude.Replace ('/', '\\').Replace (@"\\", @"\");
-			var sb = new StringBuilder ();
+			var sb = StringBuilderCache.Allocate ();
 			foreach (var ep in exclude.Split (new char [] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
 				var ex = ep.Trim ();
 				if (excludeDirectoriesOnly) {
@@ -977,7 +989,7 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 				sb.Append ('$');
 			}
-            return sb.ToString ();
+			return Core.StringBuilderCache.ReturnAndFree (sb);
         }
 
 		static char [] regexEscapeChars = { '\\', '^', '$', '{', '}', '[', ']', '(', ')', '.', '*', '+', '?', '|', '<', '>', '-', '&' };

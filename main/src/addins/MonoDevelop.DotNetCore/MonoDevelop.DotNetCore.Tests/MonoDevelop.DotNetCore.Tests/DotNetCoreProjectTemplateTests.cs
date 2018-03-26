@@ -281,8 +281,8 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			// RestoreDisableParallel prevents parallel restores which sometimes cause
 			// the restore to fail on Mono.
-			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true {solution.FileName}");
-			RunMSBuild ($"/t:Build {solution.FileName}");
+			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solution.FileName}\"");
+			RunMSBuild ($"/t:Build \"{solution.FileName}\"");
 		}
 
 		void RunMSBuild (string arguments)

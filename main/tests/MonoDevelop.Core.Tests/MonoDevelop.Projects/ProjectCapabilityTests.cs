@@ -24,7 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.IO;
 using System.Threading.Tasks;
+using Mono.Addins;
 using MonoDevelop.Projects.Extensions;
 using NUnit.Framework;
 using UnitTests;
@@ -37,18 +39,33 @@ namespace MonoDevelop.Projects
 	public class ProjectCapabilityTests : TestBase
 	{
 		CustomCapabilityNode capaNode;
+		string testAddinAssemblyPath;
 
 		[TestFixtureSetUp]
 		public void SetUp ()
 		{
 			capaNode = new CustomCapabilityNode ();
 			WorkspaceObject.RegisterCustomExtension (capaNode);
+
+			// Register test addin.
+			if (!Directory.Exists (AddinManager.Registry.DefaultAddinsFolder))
+				Directory.CreateDirectory (AddinManager.Registry.DefaultAddinsFolder);
+
+			var thisDir = Path.GetDirectoryName (GetType ().Assembly.Location);
+			string testAddinBuildPath = Path.Combine (thisDir, "MonoDevelop.Core.Tests.Addin.dll");
+			testAddinAssemblyPath = Path.Combine (AddinManager.Registry.DefaultAddinsFolder, "MonoDevelop.Core.Tests.Addin.dll");
+			File.Copy (testAddinBuildPath, testAddinAssemblyPath);
+			AddinManager.Registry.Update (null);
 		}
 	
 		[TestFixtureTearDown]
 		public void Teardown ()
 		{
 			WorkspaceObject.UnregisterCustomExtension (capaNode);
+
+			// Unregister test addin.
+			File.Delete (testAddinAssemblyPath);
+			AddinManager.Registry.Update (null);
 		}
 
 		List<string> defaultCapabilities;
@@ -119,13 +136,13 @@ namespace MonoDevelop.Projects
 			string solFile = Util.GetSampleProject ("project-capability-tests", "ConsoleProject.csproj");
 			var item = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
 
-			string azureFunctionsProjectExtension = "AzureFunctionsProjectExtension";
-			Func<ProjectExtension, bool> isMatch = f => f.GetType ().Name == azureFunctionsProjectExtension;
+			string projectExtension = "TestCapabilityProjectExtension";
+			Func<ProjectExtension, bool> isMatch = f => f.GetType ().Name == projectExtension;
 			var ext = item.GetFlavors ().FirstOrDefault (isMatch);
 			Assert.IsNull (ext);
 
-			// Now activate "AzureFunctions" capability
-			var import = item.MSBuildProject.AddNewImport ("azurefunctions.targets");
+			// Now activate "TestCapability"
+			var import = item.MSBuildProject.AddNewImport ("testcapability.targets");
 			await item.ReevaluateProject (Util.GetMonitor ());
 
 			ext = item.GetFlavors ().FirstOrDefault (isMatch);

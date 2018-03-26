@@ -57,12 +57,18 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			RunAction (progressMessage, action);
 		}
 
+		public Action<ProgressMonitorStatusMessage, IEnumerable<IPackageAction>, bool> RunActions =
+			(progressMessage, action, clearConsole) => { };
+
 		public void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
 		{
+			Run (progressMessage, actions, true);
 		}
 
 		public void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions, bool clearConsole)
 		{
+			RunProgressMessage = progressMessage;
+			RunActions (progressMessage, actions, clearConsole);
 		}
 
 		public void ShowError (ProgressMonitorStatusMessage progressMessage, Exception exception)
@@ -77,9 +83,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			ShowErrorMessage = message;
 		}
 
+		public Action<ProgressMonitorStatusMessage, IEnumerable<IPackageAction>> RunAsyncAction =
+			(progressMessage, actions) => { };
+
 		public Task RunAsync (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
 		{
-			throw new NotImplementedException ();
+			RunAsyncAction (progressMessage, actions);
+			return Task.FromResult (0);
 		}
 
 		public Task RunAsync (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions, bool clearConsole)

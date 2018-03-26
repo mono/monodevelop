@@ -33,6 +33,7 @@ using System.Xml.XPath;
 using System.Reflection;
 using System.Text;
 using System.Xml;
+using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Text;
 using System.Collections.Immutable;
@@ -77,7 +78,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			};
 			if (style.FontStyle != Xwt.Drawing.FontStyle.Normal || 
 			    style.FontWeight != Xwt.Drawing.FontWeight.Normal) {
-				var fontStyle = new StringBuilder ();
+				var fontStyle = StringBuilderCache.Allocate ();
 				if (style.FontStyle != Xwt.Drawing.FontStyle.Normal) {
 					fontStyle.Append (style.FontStyle.ToString ().ToLower ());
 					fontStyle.Append (" ");
@@ -85,7 +86,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (style.FontWeight != Xwt.Drawing.FontWeight.Normal) {
 					fontStyle.Append (style.FontWeight.ToString ().ToLower ());
 				}
-				result ["fontStyle"] = fontStyle.ToString ();
+				result ["fontStyle"] = StringBuilderCache.ReturnAndFree (fontStyle);
 			}
 			return result;
 		}
@@ -258,18 +259,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("User Types(Delegates)", new List<string> { EditorThemeColors.UserTypesDelegates }, ConvertChunkStyle (colorScheme.UserTypesDelegates)));
 			settings.Add (new ThemeSetting ("User Types(Mutable)", new List<string> { EditorThemeColors.UserTypesMutable }, ConvertChunkStyle (colorScheme.UserTypesMutable)));
 
-			settings.Add (new ThemeSetting ("User Field(Declaration)", new List<string> { EditorThemeColors.UserFieldDeclaration }, ConvertChunkStyle (colorScheme.UserFieldDeclaration)));
-			settings.Add (new ThemeSetting ("User Field(Usage)", new List<string> { EditorThemeColors.UserFieldUsage }, ConvertChunkStyle (colorScheme.UserFieldUsage)));
-			settings.Add (new ThemeSetting ("User Property(Declaration)", new List<string> { EditorThemeColors.UserPropertyDeclaration }, ConvertChunkStyle (colorScheme.UserPropertyDeclaration)));
-			settings.Add (new ThemeSetting ("User Property(Usage)", new List<string> { EditorThemeColors.UserPropertyUsage }, ConvertChunkStyle (colorScheme.UserPropertyUsage)));
-			settings.Add (new ThemeSetting ("User Event(Declaration)", new List<string> { EditorThemeColors.UserEventDeclaration }, ConvertChunkStyle (colorScheme.UserEventDeclaration)));
-			settings.Add (new ThemeSetting ("User Event(Usage)", new List<string> { EditorThemeColors.UserEventUsage }, ConvertChunkStyle (colorScheme.UserEventUsage)));
-			settings.Add (new ThemeSetting ("User Method(Declaration)", new List<string> { EditorThemeColors.UserMethodDeclaration }, ConvertChunkStyle (colorScheme.UserMethodDeclaration)));
-			settings.Add (new ThemeSetting ("User Method(Usage)", new List<string> { EditorThemeColors.UserMethodUsage }, ConvertChunkStyle (colorScheme.UserMethodUsage)));
-			settings.Add (new ThemeSetting ("User Parameter(Declaration)", new List<string> { EditorThemeColors.UserParameterDeclaration }, ConvertChunkStyle (colorScheme.UserParameterDeclaration)));
-			settings.Add (new ThemeSetting ("User Parameter(Usage)", new List<string> { EditorThemeColors.UserParameterUsage }, ConvertChunkStyle (colorScheme.UserParameterUsage)));
-			settings.Add (new ThemeSetting ("User Variable(Declaration)", new List<string> { EditorThemeColors.UserVariableDeclaration }, ConvertChunkStyle (colorScheme.UserVariableDeclaration)));
-			settings.Add (new ThemeSetting ("User Variable(Usage)", new List<string> { EditorThemeColors.UserVariableUsage }, ConvertChunkStyle (colorScheme.UserVariableUsage)));
+			settings.Add (new ThemeSetting ("User Field", new List<string> { EditorThemeColors.UserField }, ConvertChunkStyle (colorScheme.UserFieldDeclaration)));
+			settings.Add (new ThemeSetting ("User Enum Member", new List<string> { EditorThemeColors.UserField }, ConvertChunkStyle (colorScheme.UserFieldDeclaration)));
+			settings.Add (new ThemeSetting ("User Constant", new List<string> { EditorThemeColors.UserConstant }, ConvertChunkStyle (colorScheme.UserFieldDeclaration)));
+
+			settings.Add (new ThemeSetting ("User Property", new List<string> { EditorThemeColors.UserProperty }, ConvertChunkStyle (colorScheme.UserPropertyDeclaration)));
+			settings.Add (new ThemeSetting ("User Event", new List<string> { EditorThemeColors.UserEvent }, ConvertChunkStyle (colorScheme.UserEventDeclaration)));
+			settings.Add (new ThemeSetting ("User Method", new List<string> { EditorThemeColors.UserMethod }, ConvertChunkStyle (colorScheme.UserMethodDeclaration)));
+			settings.Add (new ThemeSetting ("User Extension Method", new List<string> { EditorThemeColors.UserExtensionMethod }, ConvertChunkStyle (colorScheme.UserMethodDeclaration)));
+			settings.Add (new ThemeSetting ("User Parameter", new List<string> { EditorThemeColors.UserParameter }, ConvertChunkStyle (colorScheme.UserParameterDeclaration)));
+			settings.Add (new ThemeSetting ("User Variable", new List<string> { EditorThemeColors.UserLocal }, ConvertChunkStyle (colorScheme.UserVariableDeclaration)));
 
 			settings.Add (new ThemeSetting ("CSS Comment", new List<string> { "comment.block.css" }, ConvertChunkStyle (colorScheme.CssComment)));
 			settings.Add (new ThemeSetting ("CSS Keyword", new List<string> { "keyword.other.css" }, ConvertChunkStyle (colorScheme.CssKeyword)));

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading.Tasks;
 using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
@@ -66,6 +67,12 @@ namespace MonoDevelop.Ide.Templates
 
 			if (String.IsNullOrEmpty (filenode.InnerText))
 				throw new InvalidOperationException ("Property is empty");
+		}
+
+		public override Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
+		{
+			AddToProject (policyParent, project, language, directory, name);
+			return Task.FromResult(true);
 		}
 
 		public override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)

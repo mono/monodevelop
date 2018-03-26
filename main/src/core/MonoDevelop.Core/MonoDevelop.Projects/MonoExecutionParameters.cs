@@ -269,7 +269,7 @@ namespace MonoDevelop.Projects
 
 		public string GenerateDescription ()
 		{
-			StringBuilder ops = new StringBuilder ();
+			StringBuilder ops = StringBuilderCache.Allocate ();
 
 			foreach (var kvp in itemPropertyAttributes) {
 				var prop = kvp.Key;
@@ -286,7 +286,7 @@ namespace MonoDevelop.Projects
 					ops.Append (": ").Append (GetValue (pval));
 				}
 			}
-			return ops.ToString ();
+			return StringBuilderCache.ReturnAndFree (ops);
 		}		
 		public MonoExecutionParameters Clone ()
 		{

@@ -167,6 +167,8 @@ namespace MonoDevelop.DesignerSupport
 				OnToolboxContentsChanged ();
 
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+					if (!Runtime.Initialized)
+						return;
 					List<ItemToolboxNode> nodes = new List<ItemToolboxNode> ();
 					try {
 						IEnumerable<ItemToolboxNode> newItems = provider.GetDefaultItems ();
@@ -181,14 +183,20 @@ namespace MonoDevelop.DesignerSupport
 						IEnumerable<string> files = provider.GetDefaultFiles ();
 						if (files != null) {
 							ctx = new LoaderContext ();
-							foreach (string f in files)
+							foreach (string f in files) {
+								if (ctx.CancellationToken.IsCancellationRequested)
+									break;
 								nodes.AddRange (GetFileItems (ctx, f));
+							}
 						}
 					} finally {
 						if (ctx != null)
 							ctx.Dispose ();
 					}
 
+					if (!Runtime.Initialized)
+						return;
+					
 					Runtime.RunInMainThread (delegate {
 						AddUserItems (nodes);
 						initializing--;
@@ -236,6 +244,8 @@ namespace MonoDevelop.DesignerSupport
 					continue;
 				
 				try {
+					if (ctx.CancellationToken.IsCancellationRequested)
+						break;
 					IList<ItemToolboxNode> loadedItems = loader.Load (ctx, fileName);
 					items.AddRange (loadedItems);
 				}

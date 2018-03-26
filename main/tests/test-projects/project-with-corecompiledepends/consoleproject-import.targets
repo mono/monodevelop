@@ -1,0 +1,14 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <CoreCompileDependsOn>
+      $(CoreCompileDependsOn);
+      GenerateFiles;
+    </CoreCompileDependsOn>
+  </PropertyGroup>
+  <Target Name="GenerateFiles" BeforeTargets="CoreCompile">
+    <WriteLinesToFile File="GeneratedFile.g.cs" Lines="hello" Overwrite="true" />
+    <ItemGroup Condition="Exists('GeneratedFile.g.cs')">
+        <Compile Include="GeneratedFile.g.cs" />
+    </ItemGroup>    
+  </Target>
+</Project>

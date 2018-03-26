@@ -55,18 +55,6 @@ namespace MonoDevelop.CSharp.Formatting
 
 		readonly static IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 
-		CSharpFormattingPolicy Policy {
-			get {
-				return DocumentContext.GetPolicy<CSharpFormattingPolicy> (types);
-			}
-		}
-
-		TextStylePolicy TextStylePolicy {
-			get {
-				return DocumentContext.GetPolicy<TextStylePolicy> (types);
-			}
-		}
-
 		char lastCharInserted;
 
 		static CSharpTextEditorIndentation ()
@@ -124,6 +112,7 @@ namespace MonoDevelop.CSharp.Formatting
 				HandleTextOptionsChanged (this, EventArgs.Empty);
 				Editor.TextChanging += HandleTextReplacing;
 				Editor.TextChanged += HandleTextReplaced;
+				DocumentContext.AnalysisDocumentChanged += HandleTextOptionsChanged;
 			}
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleTextOptionsChanged;
@@ -147,12 +136,11 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		void HandleTextOptionsChanged (object sender, EventArgs e)
+		async void HandleTextOptionsChanged (object sender, EventArgs e)
 		{
-			//var options = Editor.CreateNRefactoryTextEditorOptions ();
-			optionSet = Policy.CreateOptions (Editor.Options);
-			//options.IndentBlankLines = true;
-			ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine indentEngine;
+			optionSet = await DocumentContext.GetOptionsAsync ();
+
+			IStateMachineIndentEngine indentEngine;
 			try {
 				var csharpIndentEngine = new ICSharpCode.NRefactory6.CSharp.CSharpIndentEngine (optionSet);
 				//csharpIndentEngine.EnableCustomIndentLevels = true;
@@ -164,19 +152,29 @@ namespace MonoDevelop.CSharp.Formatting
 				LoggingService.LogError ("Error while creating the c# indentation engine", ex);
 				indentEngine = new ICSharpCode.NRefactory6.CSharp.NullIStateMachineIndentEngine ();
 			}
-			stateTracker = new ICSharpCode.NRefactory6.CSharp.CacheIndentEngine (indentEngine);
-			if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
-				Editor.IndentationTracker = null;
-			} else {
-				Editor.IndentationTracker = new IndentVirtualSpaceManager (Editor, stateTracker);
-			}
 
-			indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
-			if (indentationDisabled) {
-				Editor.SetTextPasteHandler (null);
-			} else {
-				Editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, optionSet));
-			}
+			await Runtime.RunInMainThread(delegate {
+				try {
+					var editor = Editor;
+					if (editor == null) // disposed
+						return;
+					stateTracker = new ICSharpCode.NRefactory6.CSharp.CacheIndentEngine (indentEngine);
+					if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
+						editor.IndentationTracker = null;
+					} else {
+						editor.IndentationTracker = new IndentVirtualSpaceManager (editor, stateTracker);
+					}
+
+					indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
+					if (indentationDisabled) {
+						editor.SetTextPasteHandler (null);
+					} else {
+						editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, optionSet));
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while handling text option change.", ex);
+				}
+			});
 		}
 
 		public override void Dispose ()
@@ -187,6 +185,7 @@ namespace MonoDevelop.CSharp.Formatting
 				Editor.IndentationTracker  = null;
 				Editor.TextChanging -= HandleTextReplacing;
 				Editor.TextChanged -= HandleTextReplaced;
+				DocumentContext.AnalysisDocumentChanged -= HandleTextOptionsChanged;
 			}
 			IdeApp.Workspace.ActiveConfigurationChanged -= HandleTextOptionsChanged;
 			CompletionWindowManager.WindowClosed -= CompletionWindowManager_WindowClosed;
@@ -235,7 +234,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		internal static string ConvertToStringLiteral (string text)
 		{
-			var result = new StringBuilder ();
+			var result = StringBuilderCache.Allocate ();
 			foreach (var ch in text) {
 				switch (ch) {
 				case '\t':
@@ -258,7 +257,7 @@ namespace MonoDevelop.CSharp.Formatting
 					break;
 				}
 			}
-			return result.ToString ();
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		static void ConvertNormalToVerbatimString (ITextDocument textEditorData, int offset)

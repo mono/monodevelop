@@ -58,56 +58,79 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			this.defaultScope = new ScopeStack (defaultScope);
 			this.userScope = this.defaultScope.Push (EditorThemeColors.UserTypes);
 
-			classificationMap = new Dictionary<string, ScopeStack> {
-				[ClassificationTypeNames.Comment] = MakeScope ("comment." + defaultScope),
-				[ClassificationTypeNames.ExcludedCode] = MakeScope ("comment.excluded." + defaultScope),
-				[ClassificationTypeNames.Identifier] = MakeScope (defaultScope),
-				[ClassificationTypeNames.Keyword] = MakeScope ("keyword." + defaultScope),
-				[ClassificationTypeNames.NumericLiteral] = MakeScope ("constant.numeric." + defaultScope),
-				[ClassificationTypeNames.Operator] = MakeScope (defaultScope),
-				[ClassificationTypeNames.PreprocessorKeyword] = MakeScope ("meta.preprocessor." + defaultScope),
-				[ClassificationTypeNames.StringLiteral] = MakeScope ("string." + defaultScope),
-				[ClassificationTypeNames.WhiteSpace] = MakeScope ("text." + defaultScope),
-				[ClassificationTypeNames.Text] = MakeScope ("text." + defaultScope),
+			classificationMap = GetClassificationMap (defaultScope);
+		}
+		static ImmutableDictionary<string, Dictionary<string, ScopeStack>> classificationMapCache = ImmutableDictionary<string, Dictionary<string, ScopeStack>>.Empty;
 
-				[ClassificationTypeNames.PreprocessorText] = MakeScope ("meta.preprocessor.region.name." + defaultScope),
-				[ClassificationTypeNames.Punctuation] = MakeScope ("punctuation." + defaultScope),
-				[ClassificationTypeNames.VerbatimStringLiteral] = MakeScope ("string.verbatim." + defaultScope),
+		public static Dictionary<string, ScopeStack> GetClassificationMap (string scope)
+		{
+			Dictionary<string, ScopeStack> result;
+			if (classificationMapCache.TryGetValue (scope, out result))
+				return result;
+			var defaultScopeStack = new ScopeStack (scope);
+			result = new Dictionary<string, ScopeStack> {
+				[ClassificationTypeNames.Comment] = MakeScope (defaultScopeStack, "comment." + scope),
+				[ClassificationTypeNames.ExcludedCode] = MakeScope (defaultScopeStack, "comment.excluded." + scope),
+				[ClassificationTypeNames.Identifier] = MakeScope (defaultScopeStack, scope),
+				[ClassificationTypeNames.Keyword] = MakeScope (defaultScopeStack, "keyword." + scope),
+				[ClassificationTypeNames.NumericLiteral] = MakeScope (defaultScopeStack, "constant.numeric." + scope),
+				[ClassificationTypeNames.Operator] = MakeScope (defaultScopeStack, scope),
+				[ClassificationTypeNames.PreprocessorKeyword] = MakeScope (defaultScopeStack, "meta.preprocessor." + scope),
+				[ClassificationTypeNames.StringLiteral] = MakeScope (defaultScopeStack, "string." + scope),
+				[ClassificationTypeNames.WhiteSpace] = MakeScope (defaultScopeStack, "text." + scope),
+				[ClassificationTypeNames.Text] = MakeScope (defaultScopeStack, "text." + scope),
 
-				[ClassificationTypeNames.ClassName] = MakeScope ("entity.name.class." + defaultScope),
-				[ClassificationTypeNames.DelegateName] = MakeScope ("entity.name.delegate." + defaultScope),
-				[ClassificationTypeNames.EnumName] = MakeScope ("entity.name.enum." + defaultScope),
-				[ClassificationTypeNames.InterfaceName] = MakeScope ("entity.name.interface." + defaultScope),
-				[ClassificationTypeNames.ModuleName] = MakeScope ("entity.name.module." + defaultScope),
-				[ClassificationTypeNames.StructName] = MakeScope ("entity.name.struct." + defaultScope),
-				[ClassificationTypeNames.TypeParameterName] = MakeScope ("entity.name.typeparameter." + defaultScope),
+				[ClassificationTypeNames.PreprocessorText] = MakeScope (defaultScopeStack, "meta.preprocessor.region.name." + scope),
+				[ClassificationTypeNames.Punctuation] = MakeScope (defaultScopeStack, "punctuation." + scope),
+				[ClassificationTypeNames.VerbatimStringLiteral] = MakeScope (defaultScopeStack, "string.verbatim." + scope),
 
-				[ClassificationTypeNames.XmlDocCommentAttributeName] = MakeScope ("comment.line.documentation." + defaultScope),
-				[ClassificationTypeNames.XmlDocCommentAttributeQuotes] = MakeScope ("comment.line.documentation." + defaultScope),
-				[ClassificationTypeNames.XmlDocCommentAttributeValue] = MakeScope ("comment.line.documentation." + defaultScope),
-				[ClassificationTypeNames.XmlDocCommentCDataSection] = MakeScope ("comment.line.documentation." + defaultScope),
-				[ClassificationTypeNames.XmlDocCommentComment] = MakeScope ("comment.line.documentation." + defaultScope),
-				[ClassificationTypeNames.XmlDocCommentDelimiter] = MakeScope ("comment.line.documentation." + defaultScope),
-				[ClassificationTypeNames.XmlDocCommentEntityReference] = MakeScope ("comment.line.documentation." + defaultScope),
-				[ClassificationTypeNames.XmlDocCommentName] = MakeScope ("comment.line.documentation." + defaultScope),
-				[ClassificationTypeNames.XmlDocCommentProcessingInstruction] = MakeScope ("comment.line.documentation." + defaultScope),
-				[ClassificationTypeNames.XmlDocCommentText] = MakeScope ("comment.line.documentation." + defaultScope),
+				[ClassificationTypeNames.ClassName] = MakeScope (defaultScopeStack, "entity.name.class." + scope),
+				[ClassificationTypeNames.DelegateName] = MakeScope (defaultScopeStack, "entity.name.delegate." + scope),
+				[ClassificationTypeNames.EnumName] = MakeScope (defaultScopeStack, "entity.name.enum." + scope),
+				[ClassificationTypeNames.InterfaceName] = MakeScope (defaultScopeStack, "entity.name.interface." + scope),
+				[ClassificationTypeNames.ModuleName] = MakeScope (defaultScopeStack, "entity.name.module." + scope),
+				[ClassificationTypeNames.StructName] = MakeScope (defaultScopeStack, "entity.name.struct." + scope),
+				[ClassificationTypeNames.TypeParameterName] = MakeScope (defaultScopeStack, "entity.name.typeparameter." + scope),
 
-				[ClassificationTypeNames.XmlLiteralAttributeName] = MakeScope ("entity.other.attribute-name." + defaultScope),
-				[ClassificationTypeNames.XmlLiteralAttributeQuotes] = MakeScope ("punctuation.definition.string." + defaultScope),
-				[ClassificationTypeNames.XmlLiteralAttributeValue] = MakeScope ("string.quoted." + defaultScope),
-				[ClassificationTypeNames.XmlLiteralCDataSection] = MakeScope ("text." + defaultScope),
-				[ClassificationTypeNames.XmlLiteralComment] = MakeScope ("comment.block." + defaultScope),
-				[ClassificationTypeNames.XmlLiteralDelimiter] = MakeScope (defaultScope),
-				[ClassificationTypeNames.XmlLiteralEmbeddedExpression] = MakeScope (defaultScope),
-				[ClassificationTypeNames.XmlLiteralEntityReference] = MakeScope (defaultScope),
-				[ClassificationTypeNames.XmlLiteralName] = MakeScope ("entity.name.tag.localname." + defaultScope),
-				[ClassificationTypeNames.XmlLiteralProcessingInstruction] = MakeScope (defaultScope),
-				[ClassificationTypeNames.XmlLiteralText] = MakeScope ("text." + defaultScope),
+				[ClassificationTypeNames.FieldName] = MakeScope (defaultScopeStack, "entity.name.field." + scope),
+				[ClassificationTypeNames.EnumMemberName] = MakeScope (defaultScopeStack, "entity.name.enummember." + scope),
+				[ClassificationTypeNames.ConstantName] = MakeScope (defaultScopeStack, "entity.name.constant." + scope),
+				[ClassificationTypeNames.LocalName] = MakeScope (defaultScopeStack, "entity.name.local." + scope),
+				[ClassificationTypeNames.ParameterName] = MakeScope (defaultScopeStack, "entity.name.parameter." + scope),
+				[ClassificationTypeNames.ExtensionMethodName] = MakeScope (defaultScopeStack, "entity.name.extensionmethod." + scope),
+				[ClassificationTypeNames.MethodName] = MakeScope (defaultScopeStack, "entity.name.function." + scope),
+				[ClassificationTypeNames.PropertyName] = MakeScope (defaultScopeStack, "entity.name.property." + scope),
+				[ClassificationTypeNames.EventName] = MakeScope (defaultScopeStack, "entity.name.event." + scope),
+
+				[ClassificationTypeNames.XmlDocCommentAttributeName] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentAttributeQuotes] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentAttributeValue] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentCDataSection] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentComment] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentDelimiter] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentEntityReference] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentName] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentProcessingInstruction] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentText] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
+
+				[ClassificationTypeNames.XmlLiteralAttributeName] = MakeScope (defaultScopeStack, "entity.other.attribute-name." + scope),
+				[ClassificationTypeNames.XmlLiteralAttributeQuotes] = MakeScope (defaultScopeStack, "punctuation.definition.string." + scope),
+				[ClassificationTypeNames.XmlLiteralAttributeValue] = MakeScope (defaultScopeStack, "string.quoted." + scope),
+				[ClassificationTypeNames.XmlLiteralCDataSection] = MakeScope (defaultScopeStack, "text." + scope),
+				[ClassificationTypeNames.XmlLiteralComment] = MakeScope (defaultScopeStack, "comment.block." + scope),
+				[ClassificationTypeNames.XmlLiteralDelimiter] = MakeScope (defaultScopeStack, scope),
+				[ClassificationTypeNames.XmlLiteralEmbeddedExpression] = MakeScope (defaultScopeStack, scope),
+				[ClassificationTypeNames.XmlLiteralEntityReference] = MakeScope (defaultScopeStack, scope),
+				[ClassificationTypeNames.XmlLiteralName] = MakeScope (defaultScopeStack, "entity.name.tag.localname." + scope),
+				[ClassificationTypeNames.XmlLiteralProcessingInstruction] = MakeScope (defaultScopeStack, scope),
+				[ClassificationTypeNames.XmlLiteralText] = MakeScope (defaultScopeStack, "text." + scope),
 			};
+			classificationMapCache = classificationMapCache.SetItem (scope, result);
+
+			return result;
 		}
 
-		ScopeStack MakeScope (string scope)
+		static ScopeStack MakeScope (ScopeStack defaultScope, string scope)
 		{
 			return defaultScope.Push (scope);
 		}
@@ -140,14 +163,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			ScopeStack scopeStack;
 
 			foreach (var curSpan in classifications) {
-				if (curSpan.TextSpan.Start > lastClassifiedOffsetEnd) {
+				var start = Math.Max (offset, curSpan.TextSpan.Start);
+				if (start < lastClassifiedOffsetEnd) { // Work around for : https://github.com/dotnet/roslyn/issues/25648
+					continue;
+				}
+				if (start > lastClassifiedOffsetEnd) {
 					scopeStack = userScope;
-					ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - offset, curSpan.TextSpan.Start - lastClassifiedOffsetEnd, scopeStack);
+					ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - offset, start - lastClassifiedOffsetEnd, scopeStack);
 					coloredSegments.Add (whitespaceSegment);
 				}
 
 				scopeStack = GetStyleScopeStackFromClassificationType (curSpan.ClassificationType);
-				ColoredSegment curColoredSegment = new ColoredSegment (curSpan.TextSpan.Start - offset, curSpan.TextSpan.Length, scopeStack);
+				ColoredSegment curColoredSegment = new ColoredSegment (start - offset, curSpan.TextSpan.Length, scopeStack);
 				coloredSegments.Add (curColoredSegment);
 
 				lastClassifiedOffsetEnd = curSpan.TextSpan.End;

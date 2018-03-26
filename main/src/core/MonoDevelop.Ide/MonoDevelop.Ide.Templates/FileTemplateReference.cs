@@ -34,6 +34,7 @@ using System.Xml;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.StringParsing;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -67,7 +68,7 @@ namespace MonoDevelop.Ide.Templates
 			get { return name;}
 		}
 		
-		public override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string entryName)
+		public override async Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string entryName)
 		{
 			string[,] customTags = new string[,] {
 				{"ProjectName", project.Name},
@@ -77,6 +78,26 @@ namespace MonoDevelop.Ide.Templates
 			
 			string substName = StringParserService.Parse (this.name, customTags);
 			
+			foreach (FileDescriptionTemplate fdt in innerTemplate.Files) {
+				if (fdt.EvaluateCreateCondition ()) {
+					if (!await fdt.AddToProjectAsync (policyParent, project, language, directory, substName))
+						return false;
+				}
+			}
+			return true;
+		}
+
+		[Obsolete ("Use public Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string entryName).")]
+		public override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string entryName)
+		{
+			string[,] customTags = new string[,] {
+				{"ProjectName", project.Name},
+				{"EntryName", entryName},
+				{"EscapedProjectName", GetDotNetIdentifier (project.Name) }
+			};
+
+			string substName = StringParserService.Parse (this.name, customTags);
+
 			foreach (FileDescriptionTemplate fdt in innerTemplate.Files) {
 				if (fdt.EvaluateCreateCondition ()) {
 					if (!fdt.AddToProject (policyParent, project, language, directory, substName))

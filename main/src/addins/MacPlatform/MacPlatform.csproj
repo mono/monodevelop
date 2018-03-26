@@ -55,6 +55,11 @@
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="mscorlib" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -135,9 +140,12 @@
     <Compile Include="MimeMapLoader.cs" />
     <Compile Include="ScreenMonitor.cs" />
     <Compile Include="MainToolbar\NSFocusButton.cs" />
+    <Compile Include="Dialogs\MDAccessoryViewBox.cs" />
+    <Compile Include="Dialogs\MacCommonFileDialogHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -224,6 +232,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-stop-16~dark%402x.png">
       <LogicalName>status-stop-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\external\Xamarin.Mac.buildinfo">
+      <Link>Xamarin.Mac.buildinfo</Link>
+      <LogicalName>Xamarin.Mac.buildinfo</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

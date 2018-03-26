@@ -37,6 +37,8 @@ using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoFunctionBreakpoint = Mono.Debugging.Client.FunctionBreakpoint;
+using VsCodeFunctionBreakpoint = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.FunctionBreakpoint;
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 {
@@ -344,6 +346,12 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						break;
 					}
 					break;
+				case "module":
+					var moduleEvent = (ModuleEvent)obj.Body;
+					if (moduleEvent.Reason == ModuleEvent.ReasonValue.New) {
+						OnAssemblyLoaded (moduleEvent.Module.Path);
+					}
+					break;
 				}
 			});
 		}
@@ -356,7 +364,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			if (protocolClient == null)
 				return;
 
-			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().Where (b => b.Enabled).GroupBy (b => b.FileName).ToArray ();
+			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().Where (b => b.Enabled && !string.IsNullOrEmpty (b.FileName)).GroupBy (b => b.FileName).ToArray ();
 			var filesForRemoval = pathsWithBreakpoints.Where (path => !bks.Any (b => b.Key == path)).ToArray ();
 			pathsWithBreakpoints = bks.Select (b => b.Key).ToList ();
 
@@ -382,6 +390,15 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						});
 					});
 			}
+
+			//Notice that .NET Core adapter doesn't support Functions breakpoints yet: https://github.com/OmniSharp/omnisharp-vscode/issues/295
+			protocolClient.SendRequest (
+				new SetFunctionBreakpointsRequest (
+					breakpoints.Select (b => b.Key).OfType<MonoFunctionBreakpoint> ()
+					.Where (b => b.Enabled)
+					.Select (b => new VsCodeFunctionBreakpoint (b.FunctionName))
+					.ToList ()),
+				(obj) => { });
 		}
 
 		protected InitializeResponse Capabilities;
