@@ -59,6 +59,7 @@ type FileSystem (defaultFileSystem : IFileSystem, openDocuments: unit -> Documen
         member x.FileDelete fileName = defaultFileSystem.FileDelete fileName
         member x.AssemblyLoadFrom fileName = defaultFileSystem.AssemblyLoadFrom fileName
         member x.AssemblyLoad(assemblyName) = defaultFileSystem.AssemblyLoad assemblyName
+        member x.IsStableFileHeuristic fileName = true
 
 module FileService =
     let supportedFileExtensions =
