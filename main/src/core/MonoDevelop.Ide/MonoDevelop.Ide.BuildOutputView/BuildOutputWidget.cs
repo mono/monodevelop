@@ -417,7 +417,17 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public void ClipboardCopy ()
 		{
-			ClipboardCopy (treeView.SelectedRow as BuildOutputNode);
+			var selectedNode = treeView.SelectedRow as BuildOutputNode;
+			if (selectedNode == null)
+				return;
+			
+			if (cellView.SelectionStart != cellView.SelectionEnd) {
+				var init = Math.Min (cellView.SelectionStart, cellView.SelectionEnd);
+				var end = Math.Max (cellView.SelectionStart, cellView.SelectionEnd);
+				Clipboard.SetText (selectedNode.Message.Substring (init, end - init));
+			} else {
+				ClipboardCopy (selectedNode);
+			}
 		}
 
 		private void ClipboardCopy (BuildOutputNode selectedNode)
