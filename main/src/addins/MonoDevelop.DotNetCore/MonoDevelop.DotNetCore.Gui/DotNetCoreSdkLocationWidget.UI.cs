@@ -24,15 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Xwt;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Components.Extensions;
 using MonoDevelop.Core;
+using Xwt;
 
 namespace MonoDevelop.DotNetCore.Gui
 {
 	partial class DotNetCoreSdkLocationWidget : Widget
 	{
-		FileSelector locationFileSelector;
+		CustomFileSelector locationFileSelector;
 		Label commandLineFoundLabel;
 		ImageView commandLineFoundIcon;
 		Label sdkFoundLabel;
@@ -75,7 +79,7 @@ namespace MonoDevelop.DotNetCore.Gui
 			locationLabel.Text = GettextCatalog.GetString ("Location:");
 			locationBox.PackStart (locationLabel, false, false);
 
-			locationFileSelector = new FileSelector ();
+			locationFileSelector = new CustomFileSelector ();
 			locationBox.PackStart (locationFileSelector, true, true);
 
 			// .NET Core SDK section.
@@ -156,6 +160,88 @@ namespace MonoDevelop.DotNetCore.Gui
 				"DotNetCoreRuntimeFoundImage",
 				found ? GettextCatalog.GetString ("A Tick") : GettextCatalog.GetString ("A Cross"),
 				found ? GettextCatalog.GetString ("A .NET Core runtime was found") : GettextCatalog.GetString ("A .NET Core runtime was not found"));
+		}
+
+		/// <summary>
+		/// This is slightly different from the standard FileSelector. When the select file
+		/// dialog is cancelled the current directory is not remembered. This keeps the
+		/// behaviour consistent with the other SDK pages that use the FileSelector from
+		/// MonoDevelop.Components.
+		/// </summary>
+		class CustomFileSelector : Widget
+		{
+			TextEntry entry;
+			FileDialog dialog;
+			string currentFolder;
+			bool enableFileChangedEvent;
+			string title;
+
+			public CustomFileSelector ()
+			{
+				var box = new HBox ();
+				entry = new TextEntry ();
+				entry.Changed += EntryChanged;
+				box.PackStart (entry, true);
+
+				var browseButton = new Button ("…");
+				box.PackStart (browseButton);
+				browseButton.Clicked += BrowseButtonClicked;
+
+				Content = box;
+			}
+
+			public string CurrentFolder {
+				get {
+					return dialog != null ? dialog.CurrentFolder : currentFolder;
+				}
+				set {
+					if (dialog != null)
+						dialog.CurrentFolder = value;
+
+					currentFolder = value;
+				}
+			}
+
+			public string FileName {
+				get { return dialog != null ? dialog.FileName : entry.Text; }
+				set { entry.Text = value; }
+			}
+
+			public string Title {
+				get {
+					return title;
+				}
+
+				set {
+					title = value;
+					if (dialog != null)
+						dialog.Title = value;
+				}
+			}
+
+			public event EventHandler FileChanged;
+
+			void EntryChanged (object sender, EventArgs e)
+			{
+				FileChanged?.Invoke (sender, e);
+			}
+
+			void BrowseButtonClicked (object sender, EventArgs e)
+			{
+				dialog = new OpenFileDialog ();
+
+				try {
+					if (!string.IsNullOrEmpty (currentFolder))
+						dialog.CurrentFolder = currentFolder;
+					if (!string.IsNullOrEmpty (title))
+						dialog.Title = title;
+					if (dialog.Run (ParentWindow))
+						FileName = dialog.FileName;
+				} finally {
+					dialog.Dispose ();
+					dialog = null;
+				}
+			}
 		}
 	}
 }
