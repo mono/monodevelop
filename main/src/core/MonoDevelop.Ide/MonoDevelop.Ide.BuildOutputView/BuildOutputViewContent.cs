@@ -108,8 +108,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public override void Dispose ()
 		{
 			if (!disposed) {
-				control.FileSaved -= FileNameChanged;
-				control.Dispose ();
+				if (control != null) {
+					control.FileSaved -= FileNameChanged;
+					control.Dispose ();
+				}
 				disposed = true;
 			}
 			base.Dispose ();
