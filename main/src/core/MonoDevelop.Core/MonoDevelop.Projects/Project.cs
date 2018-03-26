@@ -45,6 +45,7 @@ using MonoDevelop.Projects.Extensions;
 using System.Collections.Immutable;
 using System.Threading;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.Core.Collections;
 
 namespace MonoDevelop.Projects
 {
@@ -2915,15 +2916,15 @@ namespace MonoDevelop.Projects
 				loadedItems.Clear ();
 
 			HashSet<ProjectItem> unusedItems = null;
-			Dictionary<(string Name, string Include), ProjectItem> lookupItems = null;
+			LookupTable<(string Name, string Include), ProjectItem> lookupItems = null;
 			ImmutableList<ProjectItem>.Builder newItems = null;
 			if (IsReevaluating) {
 				unusedItems = new HashSet<ProjectItem> (Items);
-				lookupItems = new Dictionary<(string Name, string Include), ProjectItem> ();
+				lookupItems = new LookupTable<(string Name, string Include), ProjectItem> ();
 				newItems = ImmutableList.CreateBuilder<ProjectItem> ();
 
 				// Improve ReadItem performance by creating a dictionary of items that can be
-				// searched faster than using Items.FirstOrDefault. Building this dictionary takes ~15ms
+				// searched faster than using Items.FirstOrDefault. Building this dictionary takes ~17ms
 				foreach (var it in Items) {
 					if (it.BackingItem != null && it.BackingEvalItem != null) {
 						lookupItems.Add (GetProjectItemLookupKey (it.BackingEvalItem), it);
@@ -2983,12 +2984,14 @@ namespace MonoDevelop.Projects
 				productVersion = FileFormat.DefaultProductVersion;
 		}
 
-		internal (ProjectItem Item, bool IsNew) ReadItem (IMSBuildItemEvaluated buildItem, Dictionary<(string Name, string Include), ProjectItem> lookupItems)
+		internal (ProjectItem Item, bool IsNew) ReadItem (IMSBuildItemEvaluated buildItem, LookupTable<(string Name, string Include), ProjectItem> lookupItems)
 		{
 			if (IsReevaluating) {
 				// If this item already exists in the current collection of items, reuse it
-				if (lookupItems.TryGetValue (GetProjectItemLookupKey (buildItem), out ProjectItem eit)) {
-					if (ItemsAreEqual (buildItem, eit.BackingEvalItem) || CheckProjectReferenceItemsAreEqual (buildItem, eit)) {
+				var key = GetProjectItemLookupKey (buildItem);
+				foreach (var eit in lookupItems.GetItems (key)) {
+					if (ItemsAreEqual (buildItem, eit)) {
+						lookupItems.Remove (key, eit);
 						eit.BackingItem = buildItem.SourceItem;
 						eit.BackingEvalItem = buildItem;
 						return (eit, false);
@@ -3001,6 +3004,11 @@ namespace MonoDevelop.Projects
 			item.BackingItem = buildItem.SourceItem;
 			item.BackingEvalItem = buildItem;
 			return (item, true);
+		}
+
+		bool ItemsAreEqual (IMSBuildItemEvaluated buildItem, ProjectItem item)
+		{
+			return ItemsAreEqual (buildItem, item.BackingEvalItem) || CheckProjectReferenceItemsAreEqual (buildItem, item);
 		}
 
 		/// <summary>

@@ -257,5 +257,30 @@ namespace MonoDevelop.Projects
 
 			sol.Dispose ();
 		}
+
+		[TestCase ("ConsoleProject-duplicate-reference.csproj", 2)]
+		[TestCase ("ConsoleProject-triplicate-reference.csproj", 3)]
+		public async Task ReevaluateProjectWithDuplicateReference (string projectName, int expectedReferences)
+		{
+			string projectFile = Util.GetSampleProject ("console-project", "ConsoleProject", projectName);
+
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile);
+
+			Assert.AreEqual (expectedReferences, p.References.Count (reference => reference.Include == "System.Xml"));
+
+			int itemAdded = 0;
+			int itemRemoved = 0;
+			p.ProjectItemAdded += (sender, e) => itemAdded += e.Count;
+			p.ProjectItemRemoved += (sender, e) => itemRemoved += e.Count;
+
+			// Make sure this does not fail.
+			await p.ReevaluateProject (Util.GetMonitor ());
+
+			Assert.AreEqual (expectedReferences, p.References.Count (reference => reference.Include == "System.Xml"));
+			Assert.AreEqual (0, itemAdded);
+			Assert.AreEqual (0, itemRemoved);
+
+			p.Dispose ();
+		}
 	}
 }
