@@ -592,7 +592,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 					return;
 				}
 
-				return;
 			}
 
 			CalcLayout (status, Bounds, out var layout, out var layoutBounds, out var expanderRect);
