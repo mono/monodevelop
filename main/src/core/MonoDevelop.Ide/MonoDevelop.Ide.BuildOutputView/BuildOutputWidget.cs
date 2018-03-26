@@ -647,7 +647,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			public void ActivateItem (int n)
 			{
-				if (list [n].HasChildren)
+				if (list [n].HasChildren || list [n].NodeType == BuildOutputNodeType.BuildSummary)
 					widget.FocusRow (list [n]);
 			}
 
