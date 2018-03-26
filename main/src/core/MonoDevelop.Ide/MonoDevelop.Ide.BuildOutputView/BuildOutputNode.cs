@@ -341,8 +341,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public static void Search (this IReadOnlyList<BuildOutputNode> buildOutputNodes, List<BuildOutputNode> matches, BuildOutputNodeType[] types)
 		{
-			foreach (var node in buildOutputNodes) {
-				node.Search (matches, types);
+			for (int i = 0; i < buildOutputNodes.Count; i++) {
+				buildOutputNodes[i].Search (matches, types);
 			}
 		}
 
@@ -353,8 +353,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			if (buildOutputNode.HasChildren) {
-				foreach (var child in buildOutputNode.Children) {
-					child.Search (matches, types);
+				for (int i = 0; i < buildOutputNode.Children.Count; i++) {
+					buildOutputNode.Children [i].Search (matches, types);
 				}
 			}
 		}
