@@ -202,30 +202,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 			BoundsChanged += (s, e) => cellView.OnBoundsChanged (s, e);
 			cellView.GoToTask += (s, e) => GoToTask (e);
 
-			cellView.ExpandWarnings += (s, e) => ExpandRows (BuildOutputNodeType.Warning);
-			cellView.ExpandErrors += (s, e) => ExpandRows (BuildOutputNodeType.Error);
+			cellView.ExpandWarnings += (s, e) => ExpandErrorOrWarningsNodes (treeView, true);
+			cellView.ExpandErrors += (s, e) => ExpandErrorOrWarningsNodes (treeView, false);
 
 			PackStart (treeView, expand: true, fill: true);
 		}
 
-		void ExpandRows (BuildOutputNodeType type) 
+		static void ExpandErrorOrWarningsNodes (TreeView treeView, bool warnings)
 		{
 			var dataSource = treeView.DataSource as BuildOutputDataSource;
 			if (dataSource == null) {
 				return;
 			}
-			List<BuildOutputNode> matches = new List<BuildOutputNode> ();
-			dataSource.RootNodes.Search (matches, new [] { type });
+			ExpandErrorOrWarningsNodes (treeView, dataSource, warnings);
+		}
 
-			//We expand all nodes with this type
-			foreach (var node in matches) {
-				treeView.ExpandToRow (node);
-			}
-
-			//Focus first coincidence
-			if (matches.Count > 0) {
-				treeView.FocusedRow = matches [0];
-			}
+		static void ExpandErrorOrWarningsNodes (TreeView treeView, BuildOutputDataSource dataSource, bool warnings)
+		{
+			var root = dataSource.GetChild (null, 0) as BuildOutputNode;
+			treeView.ExpandRow (root, false);
+			ExpandChildrenWithErrorsOrWarnings (treeView, dataSource, root, warnings);
 		}
 
 		internal Task GoToError (string description, string project)
@@ -518,14 +514,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return includeParen ? "(" + nextShortcut + ")" : nextShortcut;
 		}
 
-		static void ExpandChildrenWithErrors (TreeView tree, BuildOutputDataSource dataSource, BuildOutputNode parent)
+		static void ExpandChildrenWithErrorsOrWarnings (TreeView tree, BuildOutputDataSource dataSource, BuildOutputNode parent, bool expandWarnings)
 		{
 			int totalChildren = dataSource.GetChildrenCount (parent);
 			for (int i = 0; i < totalChildren; i++) {
 				var child = dataSource.GetChild (parent, i) as BuildOutputNode;
-				if ((child?.HasErrors ?? false)) {
+				var containNodes = expandWarnings ? (child?.HasWarnings ?? false) : (child?.HasErrors ?? false);
+				if (containNodes) {
 					tree.ExpandToRow (child);
-					ExpandChildrenWithErrors (tree, dataSource, child);
+					ExpandChildrenWithErrorsOrWarnings (tree, dataSource, child, expandWarnings);
 				}
 			}
 		}
@@ -559,9 +556,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 						// Expand root nodes and nodes with errors
 						int rootsCount = buildOutputDataSource.GetChildrenCount (null);
 						for (int i = 0; i < rootsCount; i++) {
-							var root = buildOutputDataSource.GetChild (null, i) as BuildOutputNode;
-							treeView.ExpandRow (root, false);
-							ExpandChildrenWithErrors (treeView, buildOutputDataSource, root);
+							ExpandErrorOrWarningsNodes (treeView, buildOutputDataSource, false);
 						}
 						processingCompletion.TrySetResult (null);
 					});

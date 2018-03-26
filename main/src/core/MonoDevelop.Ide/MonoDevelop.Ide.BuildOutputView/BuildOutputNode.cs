@@ -339,26 +339,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public static void Search (this IReadOnlyList<BuildOutputNode> buildOutputNodes, List<BuildOutputNode> matches, BuildOutputNodeType[] types)
-		{
-			for (int i = 0; i < buildOutputNodes.Count; i++) {
-				buildOutputNodes[i].Search (matches, types);
-			}
-		}
-
-		public static void Search (this BuildOutputNode buildOutputNode, List<BuildOutputNode> matches, BuildOutputNodeType[] types)
-		{
-			if (types.Contains (buildOutputNode.NodeType)) {
-				matches.Add (buildOutputNode);
-			}
-
-			if (buildOutputNode.HasChildren) {
-				for (int i = 0; i < buildOutputNode.Children.Count; i++) {
-					buildOutputNode.Children [i].Search (matches, types);
-				}
-			}
-		}
-
 		public static BuildOutputNode SearchFirstNode (this BuildOutputNode buildOutputNode, BuildOutputNodeType type, string search = null)
 		{
 			if (type == buildOutputNode.NodeType) {
