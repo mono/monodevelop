@@ -227,7 +227,7 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return project; }
 		}
 
-		public IEnumerable<ImportSearchPathExtensionNode> GetProjectImportSearchPaths ()
+		public IReadOnlyList<ImportSearchPathExtensionNode> GetProjectImportSearchPaths ()
 		{
 			if (parentContext != null)
 				return parentContext.GetProjectImportSearchPaths ();
