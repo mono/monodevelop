@@ -297,10 +297,9 @@ namespace MonoDevelop.Ide.Desktop
 			}
 		}
 
+		static IFilePathRegistryService filePathRegistryService = CompositionManager.GetExportedValue<IFilePathRegistryService> ();
 		MimeTypeNode FindMimeTypeForFile (string fileName)
 		{
-			IFilePathRegistryService filePathRegistryService = CompositionManager.GetExportedValue<IFilePathRegistryService> ();
-
 			try {
 				IContentType contentType = filePathRegistryService.GetContentTypeForPath (fileName);
 				if (contentType != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {
