@@ -161,7 +161,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			int lastClassifiedOffsetEnd = offset;
 			ScopeStack scopeStack;
-
 			foreach (var curSpan in classifications) {
 				var start = Math.Max (offset, curSpan.TextSpan.Start);
 				if (start < lastClassifiedOffsetEnd) { // Work around for : https://github.com/dotnet/roslyn/issues/25648
@@ -172,9 +171,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - offset, start - lastClassifiedOffsetEnd, scopeStack);
 					coloredSegments.Add (whitespaceSegment);
 				}
-
 				scopeStack = GetStyleScopeStackFromClassificationType (curSpan.ClassificationType);
-				ColoredSegment curColoredSegment = new ColoredSegment (start - offset, curSpan.TextSpan.Length, scopeStack);
+				ColoredSegment curColoredSegment = new ColoredSegment (curSpan.TextSpan.Start - offset, curSpan.TextSpan.Length, scopeStack);
 				coloredSegments.Add (curColoredSegment);
 
 				lastClassifiedOffsetEnd = curSpan.TextSpan.End;
