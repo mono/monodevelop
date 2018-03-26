@@ -204,6 +204,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public IDataField<bool> HasBackgroundColorField { get; set; }
 		public IDataField<BuildOutputNode> BuildOutputNodeField { get; set; }
 
+		// Used to track the selection
+		int selectionStart;
+		int selectionEnd;
+
+		public int SelectionStart => selectionStart;
+		public int SelectionEnd => selectionEnd;
+
+		BuildOutputNode selectionRow;
+		bool clicking;
+
 		IBuildOutputContextProvider contextProvider;
 
 		// This could also be stored in the data store. In this example we keep it in
@@ -288,6 +298,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			ctx.SetColor (Styles.GetTextColor (buildOutputNode, UseStrongSelectionColor && isSelected));
 
 			HighlightSearchResults (layout, contextProvider.SearchString, Styles.GetTextColor (buildOutputNode, false), Styles.GetSearchMatchBackgroundColor (isSelected));
+
+			// Render the selection
+			if (selectionRow == buildOutputNode && selectionStart != selectionEnd) {
+				layout.SetBackground (Colors.LightBlue, Math.Min (selectionStart, selectionEnd), Math.Abs (selectionEnd - selectionStart));
+			}
 
 			// Draw the text
 			ctx.DrawTextLayout (layout, layoutBounds.X, layoutBounds.Y);
@@ -568,6 +583,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 			} else {
 				ExpanderHovered = false;
 			}
+
+			var insideText = layoutBounds.Contains (args.Position);
+			if (clicking && insideText && selectionRow == node) {
+				var pos = layout.GetIndexFromCoordinates (args.Position.X - layoutBounds.X, args.Position.Y - layoutBounds.Y);
+				if (pos != -1) {
+					selectionEnd = pos;
+					QueueDraw ();
+				}
+			} else {
+				ParentWidget.Cursor = insideText ? CursorType.IBeam : CursorType.Arrow;
+			}
+
 		}
 
 		protected override void OnButtonPressed (ButtonEventArgs args)
@@ -601,8 +628,30 @@ namespace MonoDevelop.Ide.BuildOutputView
 				QueueResize ();
 				return;
 			}
-		
+
+			if (args.Button == PointerButton.Left && layoutBounds.Contains (args.Position)) {
+
+				var pos = layout.GetIndexFromCoordinates (args.Position.X - layoutBounds.X, args.Position.Y - layoutBounds.Y);
+				if (pos != -1) {
+					selectionStart = selectionEnd = pos;
+					selectionRow = node;
+					clicking = true;
+				} else
+					selectionRow = null;
+
+				QueueDraw ();
+			}
+
 			base.OnButtonPressed (args);
+		}
+
+		protected override void OnButtonReleased (ButtonEventArgs args)
+		{
+			if (clicking) {
+				clicking = false;
+				QueueDraw ();
+			}
+			base.OnButtonReleased (args);
 		}
 
 		bool CalcLayout (ViewStatus status, Rectangle cellArea, out TextLayout layout, out Rectangle layoutBounds, out Rectangle expanderRect)
