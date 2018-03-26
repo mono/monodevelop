@@ -239,10 +239,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		static void HighlightSearchResults (TextLayout layout, string search, Color foreground, Color background)
 		{
-			var text = layout?.Text;
+			string text = null;
+			if (layout != null) {
+				text = layout.Text;
+				layout.ClearAttributes ();
+			}
 			if (string.IsNullOrEmpty (text) || string.IsNullOrEmpty (search))
 				return;
-			layout.ClearAttributes ();
 			int index = 0;
 			while ((index = text.IndexOf (search, index, StringComparison.OrdinalIgnoreCase)) > -1) {
 				layout.SetForeground (foreground, index, search.Length);
