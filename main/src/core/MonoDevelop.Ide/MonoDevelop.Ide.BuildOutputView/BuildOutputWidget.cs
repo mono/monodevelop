@@ -219,9 +219,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		static void ExpandErrorOrWarningsNodes (TreeView treeView, BuildOutputDataSource dataSource, bool warnings)
 		{
-			var root = dataSource.GetChild (null, 0) as BuildOutputNode;
-			treeView.ExpandRow (root, false);
-			ExpandChildrenWithErrorsOrWarnings (treeView, dataSource, root, warnings);
+			int rootsCount = dataSource.GetChildrenCount (null);
+			for (int i = 0; i < rootsCount; i++) {
+				var root = dataSource.GetChild (null, i) as BuildOutputNode;
+				treeView.ExpandRow (root, false);
+				ExpandChildrenWithErrorsOrWarnings (treeView, dataSource, root, warnings);
+			}
 		}
 
 		internal Task GoToError (string description, string project)
@@ -554,10 +557,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 						cellView.OnDataSourceChanged ();
 
 						// Expand root nodes and nodes with errors
-						int rootsCount = buildOutputDataSource.GetChildrenCount (null);
-						for (int i = 0; i < rootsCount; i++) {
-							ExpandErrorOrWarningsNodes (treeView, buildOutputDataSource, false);
-						}
+						ExpandErrorOrWarningsNodes (treeView, buildOutputDataSource, false);
 						processingCompletion.TrySetResult (null);
 					});
 				} catch (Exception ex) {
