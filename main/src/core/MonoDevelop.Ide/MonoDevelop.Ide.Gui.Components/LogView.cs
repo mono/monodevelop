@@ -804,6 +804,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		internal class IndentTracker {
+			static int trackerID = 0;
+
 			List<TextTag> tags = new List<TextTag> ();
 			public TextTag IndentTag;
 
@@ -814,7 +816,12 @@ namespace MonoDevelop.Ide.Gui.Components
 
 				indent++;
 				if (indent >= tags.Count) {
-					tag = new TextTag (indent.ToString ());
+					// create a unique tagname
+					// Fixes VSTS 584931
+					tag = new TextTag ($"{trackerID}-{indent}");
+					System.Console.WriteLine ($"{tag.Name}");
+					trackerID++;
+
 					tag.LeftMargin = 10 + 15 * (indent - 1);
 					tags.Add (tag);
 				} else {
