@@ -488,7 +488,12 @@ namespace MonoDevelop.Debugger
 			if (!this.Model.GetIterFirst (out iter))
 				return;
 			foreach (var column in new [] { expCol, valueCol }) {//No need to calculate for Type and PinIcon columns
-				column.FixedWidth = GetMaxWidth (column, iter);
+				// +1 is here because apperently when we calculate MaxWidth and set to FixedWidth
+				// later GTK when cacluate needed width for Label it doesn't have enough space
+				// and puts "..." to end of text thinking there is not enough space
+				// I assume this is because rounding(floating point) calculation errors
+				// hence do +1 and avoid such problems.
+				column.FixedWidth = GetMaxWidth (column, iter) + 1;
 			}
 		}
 
