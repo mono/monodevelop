@@ -2915,18 +2915,31 @@ namespace MonoDevelop.Projects
 				loadedItems.Clear ();
 
 			HashSet<ProjectItem> unusedItems = null;
-			Dictionary<(string Name, string Include), ProjectItem> lookupItems = null;
+			Dictionary<(string Name, string Include), (ProjectItem Item, ImmutableList<ProjectItem>.Builder List)> lookupItems = null;
 			ImmutableList<ProjectItem>.Builder newItems = null;
 			if (IsReevaluating) {
 				unusedItems = new HashSet<ProjectItem> (Items);
-				lookupItems = new Dictionary<(string Name, string Include), ProjectItem> ();
+				lookupItems = new Dictionary<(string Name, string Include), (ProjectItem Item, ImmutableList<ProjectItem>.Builder List)> ();
 				newItems = ImmutableList.CreateBuilder<ProjectItem> ();
 
 				// Improve ReadItem performance by creating a dictionary of items that can be
-				// searched faster than using Items.FirstOrDefault. Building this dictionary takes ~15ms
+				// searched faster than using Items.FirstOrDefault. Building this dictionary takes ~17ms
 				foreach (var it in Items) {
 					if (it.BackingItem != null && it.BackingEvalItem != null) {
-						lookupItems.Add (GetProjectItemLookupKey (it.BackingEvalItem), it);
+						var key = GetProjectItemLookupKey (it.BackingEvalItem);
+						(ProjectItem Item, ImmutableList<ProjectItem>.Builder List) existingItem;
+						if (lookupItems.TryGetValue (key, out existingItem)) {
+							if (existingItem.List == null) {
+								existingItem.List = ImmutableList.CreateBuilder<ProjectItem> ();
+								existingItem.List.Add (existingItem.Item);
+								// Need to add the updated tuple back to the dictionary
+								// otherwise the list is not added.
+								lookupItems [key] = existingItem;
+							}
+							existingItem.List.Add (it);
+						} else {
+							lookupItems.Add (key, (it, null));
+						}
 					}
 				}
 			}
@@ -2983,12 +2996,22 @@ namespace MonoDevelop.Projects
 				productVersion = FileFormat.DefaultProductVersion;
 		}
 
-		internal (ProjectItem Item, bool IsNew) ReadItem (IMSBuildItemEvaluated buildItem, Dictionary<(string Name, string Include), ProjectItem> lookupItems)
+		internal (ProjectItem Item, bool IsNew) ReadItem (IMSBuildItemEvaluated buildItem, Dictionary<(string Name, string Include), (ProjectItem Item, ImmutableList<ProjectItem>.Builder List)> lookupItems)
 		{
 			if (IsReevaluating) {
 				// If this item already exists in the current collection of items, reuse it
-				if (lookupItems.TryGetValue (GetProjectItemLookupKey (buildItem), out ProjectItem eit)) {
-					if (ItemsAreEqual (buildItem, eit.BackingEvalItem) || CheckProjectReferenceItemsAreEqual (buildItem, eit)) {
+				(ProjectItem Item, ImmutableList<ProjectItem>.Builder List) existingItem;
+				if (lookupItems.TryGetValue (GetProjectItemLookupKey (buildItem), out existingItem)) {
+					ProjectItem eit = null;
+					if (existingItem.List != null) {
+						eit = existingItem.List.FirstOrDefault (it => ItemsAreEqual (buildItem, it));
+						if (eit != null)
+							existingItem.List.Remove (eit);
+					} else if (ItemsAreEqual (buildItem, existingItem.Item)) {
+						eit = existingItem.Item;
+					}
+
+					if (eit != null) {
 						eit.BackingItem = buildItem.SourceItem;
 						eit.BackingEvalItem = buildItem;
 						return (eit, false);
@@ -3001,6 +3024,11 @@ namespace MonoDevelop.Projects
 			item.BackingItem = buildItem.SourceItem;
 			item.BackingEvalItem = buildItem;
 			return (item, true);
+		}
+
+		bool ItemsAreEqual (IMSBuildItemEvaluated buildItem, ProjectItem item)
+		{
+			return ItemsAreEqual (buildItem, item.BackingEvalItem) || CheckProjectReferenceItemsAreEqual (buildItem, item);
 		}
 
 		/// <summary>
