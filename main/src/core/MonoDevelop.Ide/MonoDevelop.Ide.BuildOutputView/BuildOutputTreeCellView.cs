@@ -85,6 +85,20 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public static readonly Xwt.Drawing.Image FolderIcon = ImageService.GetIcon (Ide.Gui.Stock.OpenFolder, Gtk.IconSize.Menu);
 	}
 
+	class BuildOutputCellSelection
+	{
+		public int SelectionStart { get; private set; }
+		public int SelectionEnd { get; private set; }
+		public BuildOutputNode Node { get; private set; }
+
+		public BuildOutputCellSelection (BuildOutputNode node, int selectionStart, int selectionEnd)
+		{
+			SelectionStart = selectionStart;
+			SelectionEnd = selectionEnd;
+			Node = node;
+		}
+	}
+
 	class BuildOutputTreeCellView : CanvasCellView
 	{
 		static readonly Xwt.Drawing.Image BuildExpandIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildExpand, Gtk.IconSize.Menu).WithSize (16);
@@ -207,10 +221,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		// Used to track the selection
 		int selectionStart;
 		int selectionEnd;
-
-		public int SelectionStart => selectionStart;
-		public int SelectionEnd => selectionEnd;
-
 		BuildOutputNode selectionRow;
 		bool clicking;
 
@@ -225,6 +235,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		bool IsRowExpanded (BuildOutputNode buildOutputNode) => ((Xwt.TreeView)ParentWidget)?.IsRowExpanded (buildOutputNode) ?? false;
 
 		string GetInformationMessage (BuildOutputNode buildOutputNode) => GettextCatalog.GetString ("{0} | {1}     Started at {2}", buildOutputNode.Configuration, buildOutputNode.Platform, buildOutputNode.StartTime.ToString ("h:m tt on MMM d, yyyy"));
+
+		public BuildOutputCellSelection GetCurrentSelection () => new BuildOutputCellSelection (selectionRow, selectionStart, selectionEnd);
 
 		static Font defaultLightFont;
 		static Font defaultBoldFont;
