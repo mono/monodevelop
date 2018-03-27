@@ -642,6 +642,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 				QueueDraw ();
 			}
 
+			//HACK: to avoid automatic scroll behaviour in Gtk (we handle the behaviour)
+			args.Handled = true;
+			((TreeView)ParentWidget).SelectRow (node);
 			base.OnButtonPressed (args);
 		}
 
