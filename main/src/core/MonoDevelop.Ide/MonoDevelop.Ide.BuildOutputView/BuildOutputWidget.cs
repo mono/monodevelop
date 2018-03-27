@@ -325,11 +325,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			//HACK: to avoid automatic scroll behaviour in Gtk 
-			e.Handled = true;
-			treeView.SelectRow (selectedNode);
-
-			if (e.MultiplePress == 2 && e.Button == PointerButton.Left) {
+			if (e.Button == PointerButton.Left && e.MultiplePress == 2) {
 				if (selectedNode.NodeType == BuildOutputNodeType.Warning || selectedNode.NodeType == BuildOutputNodeType.Error) {
 					GoToTask (selectedNode);
 					return;
