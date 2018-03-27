@@ -20,6 +20,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public static Xwt.Drawing.Color LinkForegroundColor { get; internal set; }
 		public static Xwt.Drawing.Color SearchMatchFocusedBackgroundColor { get; internal set; }
 		public static Xwt.Drawing.Color SearchMatchUnfocusedBackgroundColor { get; internal set; }
+		public static Xwt.Drawing.Color CellTextSelectionColorSecundary { get; internal set; }
 
 		static Styles ()
 		{
@@ -46,6 +47,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			CellTextSkippedSelectionColor = Ide.Gui.Styles.SecondarySelectionTextColor;
 			LinkForegroundColor = Ide.Gui.Styles.LinkForegroundColor;
 			SearchMatchFocusedBackgroundColor = Xwt.Drawing.Color.FromName ("#fcff54");
+			CellTextSelectionColorSecundary = Colors.LightBlue;
 		}
 
 		public static Xwt.Drawing.Color GetTextColor (BuildOutputNode buildOutputNode, bool isSelected)
@@ -313,7 +315,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			// Render the selection
 			if (selectionRow == buildOutputNode && selectionStart != selectionEnd) {
-				layout.SetBackground (Colors.LightBlue, Math.Min (selectionStart, selectionEnd), Math.Abs (selectionEnd - selectionStart));
+				layout.SetBackground (Styles.CellTextSelectionColorSecundary, Math.Min (selectionStart, selectionEnd), Math.Abs (selectionEnd - selectionStart));
 			}
 
 			// Draw the text
