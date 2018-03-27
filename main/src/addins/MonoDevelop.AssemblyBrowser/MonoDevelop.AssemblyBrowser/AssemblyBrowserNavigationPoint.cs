@@ -28,7 +28,6 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Navigation;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

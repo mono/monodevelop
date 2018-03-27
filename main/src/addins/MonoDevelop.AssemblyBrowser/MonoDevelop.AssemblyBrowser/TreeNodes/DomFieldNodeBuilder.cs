@@ -31,14 +31,13 @@ using System.Text;
 
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
-using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler;
+using System.Text;
 using System.Threading;
 using System.Collections.Generic;
 using Mono.Cecil;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.Decompiler.TypeSystem;
 using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AssemblyBrowser
@@ -81,30 +80,20 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var field = GetCecilLoader (navigator).GetCecilObject ((IUnresolvedField)navigator.DataItem);
+			var field = GetCecilLoader (navigator).GetCecilObject <FieldDefinition>((IUnresolvedField)navigator.DataItem);
 			if (field == null)
 				return null;
 			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleField (field));
 		}
 		
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var field = GetCecilLoader (navigator).GetCecilObject ((IUnresolvedField)navigator.DataItem);
+			var field = GetCecilLoader (navigator).GetCecilObject <FieldDefinition>((IUnresolvedField)navigator.DataItem);
 			if (field == null)
 				return null;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), field.DeclaringType, b => b.AddField (field));
-		}
-
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
-		{
-			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
-				return null;
-			var field = GetCecilLoader (navigator).GetCecilObject ((IUnresolvedField)navigator.DataItem);
-			if (field == null)
-				return null;
-			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), field.DeclaringType, b => b.AddField (field));
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (field), flags: flags);
 		}
 
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
