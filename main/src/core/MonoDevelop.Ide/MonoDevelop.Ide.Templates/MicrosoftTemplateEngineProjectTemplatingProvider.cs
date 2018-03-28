@@ -1,4 +1,4 @@
-﻿//
+//
 // MicrosoftTemplateEngineProjectTemplatingProvider.cs
 //
 // Author:

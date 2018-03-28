@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
@@ -38,6 +39,7 @@ namespace MonoDevelop.DotNetCore
 			var sdkPaths = new DotNetCoreSdkPaths ();
 			sdkPaths.FindMSBuildSDKsPath ();
 
+			SdkRootPath = sdkPaths.SdkRootPath;
 			MSBuildSDKsPath = sdkPaths.MSBuildSDKsPath;
 			IsInstalled = !string.IsNullOrEmpty (MSBuildSDKsPath);
 			Versions = sdkPaths.SdkVersions ?? new DotNetCoreVersion [0];
@@ -51,6 +53,7 @@ namespace MonoDevelop.DotNetCore
 
 		public static bool IsInstalled { get; private set; }
 		public static string MSBuildSDKsPath { get; private set; }
+		internal static string SdkRootPath { get; private set; }
 
 		internal static DotNetCoreVersion[] Versions { get; private set; }
 
@@ -137,6 +140,30 @@ namespace MonoDevelop.DotNetCore
 				Environment.SetEnvironmentVariable ("FSharpPropsShim", directory.Combine ("Microsoft.FSharp.NetSdk.props").FullPath);
 				Environment.SetEnvironmentVariable ("FSharpTargetsShim", directory.Combine ("Microsoft.FSharp.NetSdk.targets").FullPath);
 			}
+		}
+
+		/// <summary>
+		/// Used by unit tests to fake having different .NET Core sdks installed.
+		/// </summary>
+		internal static void SetVersions (IEnumerable<DotNetCoreVersion> versions)
+		{
+			Versions = versions.ToArray ();
+		}
+
+		/// <summary>
+		/// Used by unit tests to fake having the sdk installed.
+		/// </summary>
+		internal static void SetInstalled (bool installed)
+		{
+			IsInstalled = installed;
+		}
+
+		/// <summary>
+		/// Used by unit tests to fake having the sdk installed.
+		/// </summary>
+		internal static void SetSdkRootPath (string path)
+		{
+			SdkRootPath = path;
 		}
 	}
 }
