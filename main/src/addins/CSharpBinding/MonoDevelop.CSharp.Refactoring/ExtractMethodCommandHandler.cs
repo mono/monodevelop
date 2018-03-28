@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		protected override void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			info.Enabled = doc != null && doc.ParsedDocument != null && doc.ParsedDocument.GetAst<SemanticModel> () != null;
+			info.Enabled = doc != null && doc.AnalysisDocument != null;
 		}
 
 		public async static Task Run (MonoDevelop.Ide.Gui.Document doc)

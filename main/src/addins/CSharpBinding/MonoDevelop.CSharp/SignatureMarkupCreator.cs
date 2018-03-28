@@ -48,6 +48,7 @@ using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.CSharp.Completion;
 using System.Threading;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp
 {
@@ -131,9 +132,9 @@ namespace MonoDevelop.CSharp
 			if (ctx != null) {
 				SemanticModel model = SemanticModel;
 				if (model == null) {
-					var parsedDocument = ctx.ParsedDocument;
-					if (parsedDocument != null) {
-						model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument?.GetSemanticModelAsync ().Result;
+					var analysisDocument = ctx.AnalysisDocument;
+					if (analysisDocument != null) {
+						model = analysisDocument.GetSemanticModelAsync ().WaitAndGetResult ();
 					}
 				}
 				//Math.Min (model.SyntaxTree.Length, offset)) is needed in case parsedDocument.GetAst<SemanticModel> () is outdated
