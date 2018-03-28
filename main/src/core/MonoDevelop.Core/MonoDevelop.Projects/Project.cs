@@ -2326,6 +2326,12 @@ namespace MonoDevelop.Projects
 					throw new InvalidOperationException (it.GetType ().Name + " already belongs to a project");
 				it.Project = this;
 			}
+
+			if (monitorItemsModifiedDuringReevaluation) {
+				if (itemsAddedDuringReevaluation == null)
+					itemsAddedDuringReevaluation = ImmutableList.CreateBuilder<ProjectItem> ();
+				itemsAddedDuringReevaluation.AddRange (objs);
+			}
 		
 			NotifyModified ("Items");
 			if (ProjectItemAdded != null)
@@ -2345,6 +2351,9 @@ namespace MonoDevelop.Projects
 		
 			NotifyFileRemovedFromProject (objs.OfType<ProjectFile> ());
 		}
+
+		bool monitorItemsModifiedDuringReevaluation;
+		internal ImmutableList<ProjectItem>.Builder itemsAddedDuringReevaluation;
 
 		internal void NotifyFileChangedInProject (ProjectFile file)
 		{
@@ -2955,9 +2964,16 @@ namespace MonoDevelop.Projects
 					}
 				}
 			}
-			if (IsReevaluating)
+			if (IsReevaluating) {
+				if (itemsAddedDuringReevaluation != null) {
+					// Handle new items added whilst re-evaluating the MSBuildProject.
+					foreach (var item in itemsAddedDuringReevaluation) {
+						unusedItems.Remove (item);
+						localItems.Add (item);
+					}
+				}
 				Items.SetItems (localItems, newItems, unusedItems);
-			else
+			} else
 				Items.AddRange (localItems);
 		}
 
@@ -4012,6 +4028,12 @@ namespace MonoDevelop.Projects
 		{
 			return BindTask (ct => Runtime.RunInMainThread (async () => {
 				using (await writeProjectLock.EnterAsync ()) {
+
+					if (modifiedInMemory) {
+						await Task.Run (() => WriteProject (monitor));
+						modifiedInMemory = false;
+					}
+
 					var oldCapabilities = new HashSet<string> (projectCapabilities);
 					bool oldSupportsExecute = SupportsExecute ();
 
@@ -4019,7 +4041,9 @@ namespace MonoDevelop.Projects
 						IsReevaluating = true;
 
 						// Reevaluate the msbuild project
+						monitorItemsModifiedDuringReevaluation = true;
 						await sourceProject.EvaluateAsync ();
+						monitorItemsModifiedDuringReevaluation = false;
 
 						// Loads minimal data required to instantiate extensions and prepare for project loading
 						InitBeforeProjectExtensionLoad ();
@@ -4031,6 +4055,8 @@ namespace MonoDevelop.Projects
 
 					} finally {
 						IsReevaluating = false;
+						monitorItemsModifiedDuringReevaluation = false;
+						itemsAddedDuringReevaluation = null;
 					}
 
 					if (resetCachedCompileItems)
