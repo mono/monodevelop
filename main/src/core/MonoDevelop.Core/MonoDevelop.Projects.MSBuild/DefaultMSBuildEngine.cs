@@ -46,7 +46,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			public MSBuildProject Project;
 			public DateTime LastWriteTime;
-			public int ReferenceCount;
+			public int ReferenceCount = 1;
 		}
 
 		class ProjectInfo
