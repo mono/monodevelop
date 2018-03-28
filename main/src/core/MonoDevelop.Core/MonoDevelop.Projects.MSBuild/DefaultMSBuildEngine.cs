@@ -47,6 +47,8 @@ namespace MonoDevelop.Projects.MSBuild
 			public MSBuildProject Project;
 			public DateTime LastWriteTime;
 			public int ReferenceCount = 1;
+			public bool NeedsLoad = false;
+			public object LockObject = new object ();
 		}
 
 		class ProjectInfo
@@ -130,38 +132,53 @@ namespace MonoDevelop.Projects.MSBuild
 		MSBuildProject LoadProject (MSBuildEvaluationContext context, FilePath fileName)
 		{
 			fileName = fileName.CanonicalPath;
+
+			LoadedProjectInfo pi;
 			lock (loadedProjects) {
-				LoadedProjectInfo pi;
-				if (loadedProjects.TryGetValue (fileName, out pi)) {
-					pi.ReferenceCount++;
-					var lastWriteTime = File.GetLastWriteTime (fileName);
-					if (pi.LastWriteTime != lastWriteTime) {
-						pi.LastWriteTime = lastWriteTime;
-						pi.Project.Load (fileName, new MSBuildXmlReader { ForEvaluation = true });
-					}
-					return pi.Project;
+				if (!loadedProjects.TryGetValue (fileName, out pi)) {
+					loadedProjects [fileName] = pi = new LoadedProjectInfo ();
 				}
-				LogBeginProjectFileLoad (context, fileName);
-				MSBuildProject p = new MSBuildProject (EngineManager);
-				p.Load (fileName, new MSBuildXmlReader { ForEvaluation = true });
-				loadedProjects [fileName] = new LoadedProjectInfo { Project = p, LastWriteTime = File.GetLastWriteTime (fileName) };
-				LogEndProjectFileLoad (context);
-				return p;
+				pi.ReferenceCount++;
+			}
+
+			lock (pi.LockObject) {
+				if (pi.Project == null) {
+					pi.Project = new MSBuildProject (EngineManager);
+					pi.NeedsLoad = true;
+				}
+			}
+
+			lock (pi.LockObject) {
+				if (!pi.NeedsLoad)
+					pi.NeedsLoad = pi.LastWriteTime != File.GetLastWriteTimeUtc (fileName);
+
+				if (pi.NeedsLoad) {
+					LogBeginProjectFileLoad (context, fileName);
+					pi.Project.Load (fileName, new MSBuildXmlReader { ForEvaluation = true });
+					pi.NeedsLoad = false;
+					pi.LastWriteTime = File.GetLastWriteTimeUtc (fileName);
+					LogEndProjectFileLoad (context);
+				}
+
+				return pi.Project;
 			}
 		}
 
 		void UnloadProject (MSBuildProject project)
 		{
 			var fileName = project.FileName.CanonicalPath;
+			LoadedProjectInfo pi;
 			lock (loadedProjects) {
-				LoadedProjectInfo pi;
-				if (loadedProjects.TryGetValue (fileName, out pi)) {
-					pi.ReferenceCount--;
-					if (pi.ReferenceCount == 0) {
-						loadedProjects.Remove (fileName);
-						project.Dispose ();
-						//Console.WriteLine ("Unloaded: " + fileName);
-					}
+				if (!loadedProjects.TryGetValue (fileName, out pi))
+					return;
+
+				pi.ReferenceCount--;
+				if (pi.ReferenceCount == 0) {
+					loadedProjects.Remove (fileName);
+					lock (pi.LockObject)
+						pi.Project = null;
+					project.Dispose ();
+					//Console.WriteLine ("Unloaded: " + fileName);
 				}
 			}
 		}
