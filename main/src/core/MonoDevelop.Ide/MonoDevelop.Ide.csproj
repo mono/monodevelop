@@ -8751,6 +8751,7 @@
     <Compile Include="MonoDevelop.Ide.Commands\ToolsCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\ViewCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\WindowCommands.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\CommonEditorAssetServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\InlineRenameService.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\JoinableTaskContextHost.cs" />
@@ -8758,6 +8759,7 @@
     <Compile Include="MonoDevelop.Ide.Composition\PlatformExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PreviewFactoryService.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\RoslynWaitIndicator.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\StreamingFindUsagesPresenter.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\SuggestedActionCategoryRegistryService.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorFactoryService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBindingService.cs" />
@@ -9811,7 +9813,6 @@
     <Compile Include="MonoDevelop.Ide.Projects\LanguageCellRenderer.cs" />
     <Compile Include="MonoDevelop.Components\RestartPanel.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopSourceText.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionPresenterSession.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\TaggedTextUtil.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\SignatureHelpParameterHintingData.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\RoslynCompletionData.cs" />

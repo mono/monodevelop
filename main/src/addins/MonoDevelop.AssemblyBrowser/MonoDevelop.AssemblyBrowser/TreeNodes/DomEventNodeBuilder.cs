@@ -31,16 +31,13 @@ using System.Text;
 
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
-using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler;
 using System.Threading;
 using System.Collections.Generic;
 using Mono.Cecil;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.Decompiler.TypeSystem;
 using MonoDevelop.Ide.Editor;
-using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -95,28 +92,18 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var evt = GetCecilLoader (navigator).GetCecilObject ((IUnresolvedEvent)navigator.DataItem);
+			var evt = GetCecilLoader (navigator).GetCecilObject <EventDefinition> ((IUnresolvedEvent)navigator.DataItem);
 			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleEvent (evt));
 		}
 		
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var evt = GetCecilLoader (navigator).GetCecilObject ((IUnresolvedEvent)navigator.DataItem);
+			var evt = GetCecilLoader (navigator).GetCecilObject <EventDefinition>((IUnresolvedEvent)navigator.DataItem);
 			if (evt == null)
 				return null;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), evt.DeclaringType, b => b.AddEvent (evt));
-		}
-
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
-		{
-			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
-				return null;
-			var evt = GetCecilLoader (navigator).GetCecilObject ((IUnresolvedEvent)navigator.DataItem);
-			if (evt == null)
-				return null;
-			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), evt.DeclaringType, b => b.AddEvent (evt));
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (evt), flags: flags);
 		}
 
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

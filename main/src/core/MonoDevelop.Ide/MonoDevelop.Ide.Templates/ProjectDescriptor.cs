@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.Templates
 				try {
 					if (!projectCreateInformation.ShouldCreate (resourceTemplate.CreateCondition))
 						continue;
-					var projectFile = new ProjectFile (await resourceTemplate.SaveFile (policyParent, project, defaultLanguage, project.BaseDirectory, null));
+					var projectFile = new ProjectFile (await resourceTemplate.SaveFileAsync (policyParent, project, defaultLanguage, project.BaseDirectory, null));
 					projectFile.BuildAction = BuildAction.EmbeddedResource;
 					project.Files.Add (projectFile);
 				} catch (Exception ex) {

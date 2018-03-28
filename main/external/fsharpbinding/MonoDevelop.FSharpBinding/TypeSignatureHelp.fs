@@ -96,7 +96,7 @@ module signatureHelp =
         let baseType =
             match mfv.IsOverrideOrExplicitInterfaceImplementation, mfv.IsExplicitInterfaceImplementation with
             | true, false ->
-                mfv.EnclosingEntity
+                mfv.DeclaringEntity
                 |> Option.bind(fun ent -> ent.BaseType)
                 |> Option.bind typeDefinitionSafe
             | true, true ->
@@ -104,7 +104,7 @@ module signatureHelp =
                 |> Seq.tryHead
                 |> Option.map(fun s -> s.DeclaringType)
                 |> Option.bind typeDefinitionSafe
-            | _ -> mfv.EnclosingEntity
+            | _ -> mfv.DeclaringEntity
 
         baseType
         |> Option.map(fun ent -> ent.IsFSharp)

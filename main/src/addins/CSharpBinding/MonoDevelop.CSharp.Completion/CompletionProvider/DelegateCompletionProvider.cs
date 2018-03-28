@@ -342,7 +342,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			pDict = pDict.Add ("NewMethod", StringBuilderCache.ReturnAndFree (sb));
 			pDict = pDict.Add ("MethodName", varName);
 
-			return CompletionItem.Create (uniqueName, properties: pDict, tags: newMethodTags, rules: NewMethodRules);
+			return CompletionItem.Create (uniqueName, properties: pDict, tags: newMethodTags, rules: NewMethodRules.WithMatchPriority (int.MaxValue));
 		}
 		static readonly ImmutableArray<string> newMethodTags = ImmutableArray<string>.Empty.AddRange (new [] { "NewMethod" });
 

@@ -43,10 +43,7 @@ namespace MonoDevelop.Ide.Composition
 		[ImportingConstructor]
 		public JoinableTaskContextHost ()
 		{
-			Runtime.RunInMainThread (() => {
-				var joinableTaskContext = new JoinableTaskContext ();
-				this.JoinableTaskContext = joinableTaskContext;
-			});
+			JoinableTaskContext = new JoinableTaskContext (Runtime.MainThread, Runtime.MainSynchronizationContext);
 		}
 	}
 }

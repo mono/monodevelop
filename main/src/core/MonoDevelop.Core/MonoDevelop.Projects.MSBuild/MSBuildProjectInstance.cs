@@ -87,7 +87,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (projectInstance != null)
 				engine.DisposeProjectInstance (projectInstance);
 
-			info = msproject.LoadNativeInstance ();
+			info = msproject.LoadNativeInstance (!OnlyEvaluateProperties);
 
 			engine = info.Engine;
 			projectInstance = engine.CreateProjectInstance (info.Project);
@@ -103,7 +103,7 @@ namespace MonoDevelop.Projects.MSBuild
 				foreach (var prop in globalProperties)
 					engine.SetGlobalProperty (projectInstance, prop.Key, prop.Value);
 
-				engine.Evaluate (projectInstance);
+				engine.Evaluate (projectInstance, OnlyEvaluateProperties);
 
 				SyncBuildProject (info.ItemMap, info.Engine, projectInstance);
 			} catch (Exception ex) {

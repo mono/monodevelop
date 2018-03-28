@@ -65,6 +65,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 			return "<RunSettings>" + new Microsoft.VisualStudio.TestPlatform.ObjectModel.RunConfiguration () {
 				TargetFrameworkVersion = Framework.FromString ((project as DotNetProject)?.TargetFramework?.Id?.ToString ()),
 				DisableAppDomain = true,
+				ResultsDirectory = project.BaseIntermediateOutputPath.Combine (Constants.ResultsDirectoryName),
 				ShouldCollectSourceInformation = false,
 				TestAdaptersPaths = GetTestAdapters (project),
 				TestSessionTimeout = 60000,

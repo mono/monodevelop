@@ -71,12 +71,18 @@ namespace MonoDevelop.Ide.Templates
 
 		public override Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
 		{
+			AddToProject (policyParent, project, language, directory, name);
+			return Task.FromResult(true);
+		}
+
+		public override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
+		{
 			var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, name, null);
 			var fileName = StringParserService.Parse (name, model);
 
 			project.ProjectProperties.SetValue (typeAtt.Value, string.IsNullOrEmpty (fileName) ? propertyInnerText : string.Concat (fileName, extension));
 
-			return Task.FromResult(true);
+			return true;
 		}
 	}
 }

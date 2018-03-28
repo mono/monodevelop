@@ -413,7 +413,7 @@ module SymbolTooltips =
         let functionName =
             let name =
                 if func.IsConstructor then
-                    match func.EnclosingEntity with
+                    match func.DeclaringEntity with
                     | Some ent -> ent.DisplayName
                     | _ ->
                         //LoggingService.LogWarning(sprintf "getFuncSignatureWithFormat: No enclosing entity found for: %s" func.DisplayName)
@@ -433,7 +433,7 @@ module SymbolTooltips =
             let modifier =
                 //F# types are prefixed with new, should non F# types be too for consistancy?
                 if func.IsConstructor then
-                    match func.EnclosingEntity with
+                    match func.DeclaringEntity with
                     | Some ent -> if ent.IsFSharp then "new" ++ accessibility
                                   else accessibility
                     | _ ->
@@ -488,7 +488,7 @@ module SymbolTooltips =
             | _ -> indent + name.PadRight padding + ":"
 
         let isDelegate =
-            match func.EnclosingEntity with
+            match func.DeclaringEntity with
             | Some ent -> ent.IsDelegate
             | _ ->
                 //LoggingService.logWarning "getFuncSignatureWithFormat: No enclosing entity found for: %s" func.DisplayName
@@ -616,7 +616,7 @@ module SymbolTooltips =
 
     let getAPCaseSignature displayContext (apc:FSharpActivePatternCase) =
       let findVal =
-          apc.Group.EnclosingEntity
+          apc.Group.DeclaringEntity
           |> Option.bind (fun ent -> ent.MembersFunctionsAndValues
                                     |> Seq.tryFind (fun func -> func.DisplayName.Contains apc.DisplayName)
                                     |> Option.map (getFuncSignature displayContext))
@@ -652,7 +652,7 @@ module SymbolTooltips =
       
         | ActivePatternCase ap ->
           let parent =
-              ap.Group.EnclosingEntity
+              ap.Group.DeclaringEntity
               |> Option.map (fun enclosing -> enclosing.UnAnnotate().DisplayName)
               |> Option.fill "None"
           sprintf "<small>From type:\t%s</small>%s<small>Assembly:\t%s</small>" parent Environment.NewLine ap.Assembly.SimpleName
@@ -673,7 +673,7 @@ module SymbolTooltips =
                 None
 
         | Constructor func ->
-            match func.EnclosingEntity with
+            match func.DeclaringEntity with
             | Some ent when ent.IsValueType || ent.IsEnum ->
                   //ValueTypes
                   let signature = getFuncSignature symbol.DisplayContext func

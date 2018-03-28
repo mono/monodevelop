@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Composition;
 using System.Threading;
@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Microsoft.VisualStudio.Platform
+namespace MonoDevelop.Ide.Completion.Presentation
 {
 	[ExportWorkspaceServiceFactory (typeof (IHostDependentFormattingRuleFactoryService), ServiceLayer.Host), Shared]
 	internal sealed class MonoDevelopFormattingRuleFactoryServiceFactory : IWorkspaceServiceFactory

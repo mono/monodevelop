@@ -36,6 +36,7 @@ namespace MonoDevelop.DotNetCore
 	class DotNetCoreSdkPaths
 	{
 		string msbuildSDKsPath;
+		string sdkRootPath;
 
 		public void FindMSBuildSDKsPath ()
 		{
@@ -44,7 +45,7 @@ namespace MonoDevelop.DotNetCore
 				return;
 
 			string rootDirectory = Path.GetDirectoryName (dotNetCorePath.FileName);
-			string sdkRootPath = Path.Combine (rootDirectory, "sdk");
+			sdkRootPath = Path.Combine (rootDirectory, "sdk");
 			if (!Directory.Exists (sdkRootPath))
 				return;
 
@@ -90,6 +91,10 @@ namespace MonoDevelop.DotNetCore
 					SdksParentDirectory = Path.GetDirectoryName (msbuildSDKsPath);
 				}
 			}
+		}
+
+		public string SdkRootPath {
+			get { return sdkRootPath; }
 		}
 
 		public DotNetCoreVersion[] SdkVersions { get; private set; }

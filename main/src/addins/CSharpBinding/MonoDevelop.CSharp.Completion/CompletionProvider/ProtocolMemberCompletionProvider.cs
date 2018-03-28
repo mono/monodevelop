@@ -52,66 +52,69 @@ namespace MonoDevelop.CSharp.Completion.Provider
 	{
 		public override async Task ProvideCompletionsAsync (Microsoft.CodeAnalysis.Completion.CompletionContext context)
 		{
-			var document = context.Document;
-			var position = context.Position;
-			var cancellationToken = context.CancellationToken;
+			try {
+				var document = context.Document;
+				var position = context.Position;
+				var cancellationToken = context.CancellationToken;
 
-			var model = await document.GetSemanticModelForSpanAsync (new TextSpan (position, 0), cancellationToken).ConfigureAwait (false);
+				var model = await document.GetSemanticModelForSpanAsync (new TextSpan (position, 0), cancellationToken).ConfigureAwait (false);
 
-			var tree = model.SyntaxTree;
-			if (tree.IsInNonUserCode (context.Position, cancellationToken))
-				return;
-
-			var text = await document.GetTextAsync (cancellationToken).ConfigureAwait (false);
-
-			var startLineNumber = text.Lines.IndexOf (context.Position);
-
-			// modifiers* override modifiers* type? |
-			//DeclarationModifiers modifiers;
-			var token = tree.FindTokenOnLeftOfPosition (context.Position, cancellationToken);
-			if (token.Parent == null)
-				return;
-
-			// don't show up in that case: int { $$
-			if (token.Parent.IsKind (SyntaxKind.SkippedTokensTrivia))
-				return;
-
-			var im = token.Parent.Ancestors ().OfType<IncompleteMemberSyntax> ().FirstOrDefault ();
-			if (im != null) {
-				var token2 = tree.FindTokenOnLeftOfPosition (im.Span.Start, cancellationToken);
-				if (token2.Parent.IsKind (SyntaxKind.SkippedTokensTrivia))
+				var tree = model.SyntaxTree;
+				if (tree.IsInNonUserCode (context.Position, cancellationToken))
 					return;
-			}
 
-			var parentMember = token.Parent.AncestorsAndSelf ().OfType<MemberDeclarationSyntax> ().FirstOrDefault (m => !m.IsKind (SyntaxKind.IncompleteMember));
+				var text = await document.GetTextAsync (cancellationToken).ConfigureAwait (false);
 
-			if (!(parentMember is BaseTypeDeclarationSyntax) &&
+				var startLineNumber = text.Lines.IndexOf (context.Position);
 
-				/* May happen in case: 
-				 * 
-				 * override $
-				 * public override string Foo () {} 
-				 */
-				!(token.IsKind (SyntaxKind.OverrideKeyword) && token.Span.Start <= parentMember.Span.Start))
-				return;
+				// modifiers* override modifiers* type? |
+				//DeclarationModifiers modifiers;
+				var token = tree.FindTokenOnLeftOfPosition (context.Position, cancellationToken);
+				if (token.Parent == null)
+					return;
 
-			var startToken = token.GetPreviousTokenIfTouchingWord (position);
-			TryDetermineReturnType (startToken, model, cancellationToken, out ITypeSymbol returnType, out SyntaxToken tokenBeforeReturnType);
-			if (returnType == null) {
-				var enclosingType = model.GetEnclosingSymbol (position, cancellationToken) as INamedTypeSymbol;
-				if (enclosingType != null && (startToken.IsKind (SyntaxKind.OpenBraceToken) || startToken.IsKind (SyntaxKind.CloseBraceToken) || startToken.IsKind (SyntaxKind.SemicolonToken))) {
-					CreateCompletionData (context, model, position, returnType, Accessibility.NotApplicable, startToken, tokenBeforeReturnType, false, cancellationToken);
+				// don't show up in that case: int { $$
+				if (token.Parent.IsKind (SyntaxKind.SkippedTokensTrivia))
+					return;
+
+				var im = token.Parent.Ancestors ().OfType<IncompleteMemberSyntax> ().FirstOrDefault ();
+				if (im != null) {
+					var token2 = tree.FindTokenOnLeftOfPosition (im.Span.Start, cancellationToken);
+					if (token2.Parent.IsKind (SyntaxKind.SkippedTokensTrivia))
+						return;
+				}
+
+				var parentMember = token.Parent.AncestorsAndSelf ().OfType<MemberDeclarationSyntax> ().FirstOrDefault (m => !m.IsKind (SyntaxKind.IncompleteMember));
+
+				if (!(parentMember is BaseTypeDeclarationSyntax) &&
+
+					/* May happen in case: 
+					 * 
+					 * override $
+					 * public override string Foo () {} 
+					 */
+					!(token.IsKind (SyntaxKind.OverrideKeyword) && token.Span.Start <= parentMember.Span.Start))
+					return;
+
+				var startToken = token.GetPreviousTokenIfTouchingWord (position);
+				TryDetermineReturnType (startToken, model, cancellationToken, out ITypeSymbol returnType, out SyntaxToken tokenBeforeReturnType);
+				if (returnType == null) {
+					var enclosingType = model.GetEnclosingSymbol (position, cancellationToken) as INamedTypeSymbol;
+					if (enclosingType != null && (startToken.IsKind (SyntaxKind.OpenBraceToken) || startToken.IsKind (SyntaxKind.CloseBraceToken) || startToken.IsKind (SyntaxKind.SemicolonToken))) {
+						CreateCompletionData (context, model, position, returnType, Accessibility.NotApplicable, startToken, tokenBeforeReturnType, false, cancellationToken);
+						return;
+					}
+				}
+
+				if (!TryDetermineModifiers (ref tokenBeforeReturnType, text, startLineNumber, out Accessibility seenAccessibility/*, out modifiers*/) ||
+					!TryCheckForTrailingTokens (tree, text, startLineNumber, position, cancellationToken)) {
 					return;
 				}
-			}
 
-			if (!TryDetermineModifiers (ref tokenBeforeReturnType, text, startLineNumber, out Accessibility seenAccessibility/*, out modifiers*/) ||
-				!TryCheckForTrailingTokens (tree, text, startLineNumber, position, cancellationToken)) {
+				CreateCompletionData (context, model, position, returnType, seenAccessibility, startToken, tokenBeforeReturnType, true, cancellationToken);
+			} catch (OperationCanceledException) {
 				return;
 			}
-
-			CreateCompletionData (context, model, position, returnType, seenAccessibility, startToken, tokenBeforeReturnType, true, cancellationToken);
-
 		}
 
 		protected async void CreateCompletionData (CompletionContext context, SemanticModel semanticModel, int position, ITypeSymbol returnType, Accessibility seenAccessibility, SyntaxToken startToken, SyntaxToken tokenBeforeReturnType, bool afterKeyword, CancellationToken cancellationToken)
@@ -151,6 +154,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				pDict = pDict.Add ("InsertionText", sb.ToString ());
 				pDict = pDict.Add ("DescriptionMarkup", "- <span foreground=\"darkgray\" size='small'>" + GettextCatalog.GetString ("Implement protocol member") + "</span>");
 				pDict = pDict.Add ("Description", await GenerateQuickInfo (semanticModel, position, m, cancellationToken));
+				pDict = pDict.Add ("DeclarationBegin", declarationBegin.ToString());
 
 				var tags = ImmutableArray<string>.Empty.Add ("NewMethod");
 				var completionData = CompletionItem.Create (m.Name, properties: pDict, rules: ProtocolCompletionRules, tags: tags);
@@ -160,6 +164,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 		static async Task<string> GenerateQuickInfo (SemanticModel semanticModel, int position, ISymbol m, CancellationToken cancellationToken)
 		{
+			if (IdeApp.Workbench?.ActiveDocument == null)
+				return "";
 			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
 
 			var displayService = ws.Services.GetLanguageServices (LanguageNames.CSharp).GetService<ISymbolDisplayService> ();
@@ -215,7 +221,10 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		Task<TextChange?> GetTextChangeAsync (CompletionItem selectedItem, char? ch, CancellationToken cancellationToken)
 		{
 			var text = Microsoft.CodeAnalysis.Completion.Providers.SymbolCompletionItem.GetInsertionText (selectedItem);
-			return Task.FromResult<TextChange?> (new TextChange (new TextSpan (selectedItem.Span.Start, selectedItem.Span.Length), text));
+			int? declarationBegin = null;
+			if (selectedItem.Properties.TryGetValue ("DeclarationBegin", out string declarationBeginString))
+				declarationBegin = int.Parse (declarationBeginString);
+			return Task.FromResult<TextChange?> (new TextChange (TextSpan.FromBounds (declarationBegin.HasValue ? declarationBegin.Value : selectedItem.Span.Start, selectedItem.Span.End), text));
 		}
 
 		static bool TryDetermineOverridableProtocolMembers (SemanticModel semanticModel, SyntaxToken startToken, Accessibility seenAccessibility, out ISet<ISymbol> overridableMembers, CancellationToken cancellationToken)

@@ -86,6 +86,17 @@ namespace MonoDevelop.Projects
 				OnItemsRemoved (removedItems);
 		}
 
+		internal void SetItems (IEnumerable<T> items, IEnumerable<T> newItems, IEnumerable<T> removedItems)
+		{
+			AssertCanWrite ();
+
+			list = ImmutableList<T>.Empty.AddRange (items);
+			if (newItems.Any ())
+				OnItemsAdded (newItems);
+			if (removedItems.Any ())
+				OnItemsRemoved (removedItems);
+		}
+
 		IEnumerable<T> ReuseExistingItems (IEnumerable<T> items)
 		{
 			var updatedItems = new List<T> ();

@@ -64,6 +64,7 @@ namespace MonoDevelop.Projects.MSBuild
 			public Dictionary<MSBuildImport, List<ProjectInfo>> ImportedProjects = new Dictionary<MSBuildImport, List<ProjectInfo>> ();
 			public ConditionedPropertyCollection ConditionedProperties = new ConditionedPropertyCollection ();
 			public List<GlobInfo> GlobIncludes = new List<GlobInfo> ();
+			public bool OnlyEvaluateProperties;
 
 			public MSBuildProject GetRootMSBuildProject ()
 			{
@@ -182,6 +183,11 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public override void Evaluate (object projectInstance)
 		{
+			Evaluate (projectInstance, false);
+		}
+
+		public override void Evaluate (object projectInstance, bool onlyEvaluateProperties)
+		{
 			var pi = (ProjectInfo) projectInstance;
 
 			pi.EvaluatedItemsIgnoringCondition.Clear ();
@@ -190,6 +196,7 @@ namespace MonoDevelop.Projects.MSBuild
 			pi.Imports.Clear ();
 			pi.Targets.Clear ();
 			pi.TargetsIgnoringCondition.Clear ();
+			pi.OnlyEvaluateProperties = onlyEvaluateProperties;
 
 			// Unload referenced projects after evaluating to avoid unnecessary unload + load
 			var oldRefProjects = pi.ReferencedProjects;
@@ -248,13 +255,15 @@ namespace MonoDevelop.Projects.MSBuild
 			LogEndEvalProject (context, pi);
 			LogEndEvaluationStage (context);
 
-			LogBeginEvaluationStage (context, "Evaluating Items");
-			LogBeginEvalProject (context, pi);
+			if (!pi.OnlyEvaluateProperties) {
+				LogBeginEvaluationStage (context, "Evaluating Items");
+				LogBeginEvalProject (context, pi);
 
-			EvaluateObjects (pi, context, objects, true);
+				EvaluateObjects (pi, context, objects, true);
 
-			LogEndEvalProject (context, pi);
-			LogEndEvaluationStage (context);
+				LogEndEvalProject (context, pi);
+				LogEndEvaluationStage (context);
+			}
 
 			// Once items have been evaluated, we need to re-evaluate properties that contain item transformations
 			// (or that contain references to properties that have transformations).

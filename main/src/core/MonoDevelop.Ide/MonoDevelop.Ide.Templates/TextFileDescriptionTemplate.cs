@@ -109,5 +109,12 @@ namespace MonoDevelop.Ide.Templates
 		{
 			return Task.FromResult<Stream>(File.OpenRead (contentSrcFile));
 		}
+
+		[Obsolete ("Use public Task<Stream> CreateFileContentAsync (SolutionFolderItem policyParent, Project project, string language, string fileName, string identifier).")]
+		public override Stream CreateFileContent (SolutionFolderItem policyParent, Project project, string language,
+			string fileName, string identifier)
+		{
+			return File.OpenRead (contentSrcFile);
+		}
 	}
 }
