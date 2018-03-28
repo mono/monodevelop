@@ -220,11 +220,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
-			var parsedDocument = DocumentContext.ParsedDocument;
-			if (parsedDocument == null)
-				return;
-			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
-			if (semanticModel == null)
+			if (DocumentContext.AnalysisDocument == null)
 				return;
 			TypeSegmentTreeUpdated?.Invoke (this, EventArgs.Empty);
 		}

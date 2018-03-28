@@ -102,8 +102,8 @@ namespace MonoDevelop.CodeGeneration
 		{
 			Editor = editor;
 			DocumentContext = ctx;
-			if (ctx.ParsedDocument != null)
-				CurrentState = ctx.ParsedDocument.GetAst<SemanticModel> ();
+			if (ctx.AnalysisDocument != null)
+				CurrentState = ctx.AnalysisDocument.GetSemanticModelAsync ().WaitAndGetResult ();
 			offset = editor.CaretOffset;
 			var tree = CurrentState.SyntaxTree;
 			EnclosingPart = tree.GetContainingTypeDeclaration (offset, default(CancellationToken));

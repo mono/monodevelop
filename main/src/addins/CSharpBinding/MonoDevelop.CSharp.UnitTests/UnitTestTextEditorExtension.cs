@@ -56,18 +56,18 @@ namespace MonoDevelop.CSharp
 			return false;
 		}
 
-		public override Task<IList<UnitTestLocation>> GatherUnitTests (IUnitTestMarkers[] unitTestMarkers, CancellationToken token)
+		public override async Task<IList<UnitTestLocation>> GatherUnitTests (IUnitTestMarkers[] unitTestMarkers, CancellationToken token)
 		{
-			var parsedDocument = DocumentContext.ParsedDocument;
-			if (parsedDocument == null)
-				return Task.FromResult (emptyList);
+			var analysisDocument = DocumentContext.AnalysisDocument;
+			if (analysisDocument == null)
+				return emptyList;
 			
-			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
+			var semanticModel = await analysisDocument.GetSemanticModelAsync (token);
 			if (semanticModel == null)
-				return Task.FromResult (emptyList);
+				return emptyList;
 
 			if (!HasMethodMarkerAttribute (semanticModel, unitTestMarkers))
-				return Task.FromResult (emptyList);
+				return emptyList;
 
 			var visitor = new NUnitVisitor (semanticModel, unitTestMarkers, token);
 			try {
@@ -76,9 +76,9 @@ namespace MonoDevelop.CSharp
 				throw;
 			}catch (Exception ex) {
 				LoggingService.LogError ("Exception while analyzing ast for unit tests.", ex);
-				return Task.FromResult (emptyList);
+				return emptyList;
 			}
-			return Task.FromResult (visitor.FoundTests);
+			return visitor.FoundTests;
 		}
 
 		class NUnitVisitor : CSharpSyntaxWalker

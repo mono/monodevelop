@@ -567,8 +567,6 @@ namespace MonoDevelop.CSharp.Formatting
 			SafeUpdateIndentEngine (Editor.CaretOffset);
 			bool skipFormatting = stateTracker.IsInsideOrdinaryCommentOrString;
 			if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
-				if (DocumentContext.ParsedDocument == null || DocumentContext.ParsedDocument.GetAst<SemanticModel> () == null)
-					return;
 				var document = DocumentContext.AnalysisDocument;
 				if (document == null)
 					return;

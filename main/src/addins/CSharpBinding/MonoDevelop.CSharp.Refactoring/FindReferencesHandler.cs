@@ -126,8 +126,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				info.Enabled = false;
 				return;
 			}
-			var pd = doc.ParsedDocument.GetAst<SemanticModel> ();
-			info.Enabled = pd != null;
+			info.Enabled = doc.AnalysisDocument != null;
 		}
 
 		public void Run (object data)
@@ -169,8 +168,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				info.Enabled = false;
 				return;
 			}
-			var pd = doc.ParsedDocument.GetAst<SemanticModel> ();
-			info.Enabled = pd != null;
+			info.Enabled = doc.AnalysisDocument != null;
 		}
 
 		public void Run (object data)
