@@ -31,6 +31,7 @@ using System.Collections;
 using Microsoft.Build.Logging;
 using Microsoft.Build.Framework;
 using MonoDevelop.Core;
+using Humanizer;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -160,7 +161,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		private void BinLog_TargetStarted (object sender, TargetStartedEventArgs e)
 		{
 			AddNode (BuildOutputNodeType.Target, 
-			         stringPool.Add (e.TargetName), 
+			         stringPool.Add (e.TargetName.Humanize (LetterCasing.Title)), 
 			         stringPool.Add (e.Message), 
 			         true, 
 			         e.Timestamp);
@@ -238,7 +239,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					if (nextQuoteIndex >= 0) {
 						if (e.Message.IndexOf (SkippedSuffix, nextQuoteIndex + 1, SkippedSuffix.Length, StringComparison.Ordinal) == nextQuoteIndex + 1) {
 							processor.AddNode (BuildOutputNodeType.TargetSkipped,
-							                   stringPool.Add (e.Message, TargetMessagePrefix.Length, nextQuoteIndex - TargetMessagePrefix.Length),
+							                   stringPool.Add (e.Message, TargetMessagePrefix.Length, nextQuoteIndex - TargetMessagePrefix.Length).Humanize (LetterCasing.Title),
 							                   stringPool.Add (e.Message),
 							                   false,
 							                   e.Timestamp);
