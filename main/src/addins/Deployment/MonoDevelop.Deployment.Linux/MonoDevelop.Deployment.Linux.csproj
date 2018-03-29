@@ -119,9 +119,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Deployment.Linux\DesktopInfo.xml">
       <LogicalName>DesktopInfo.xml</LogicalName>
     </EmbeddedResource>
@@ -133,7 +130,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.Deployment.Linux\BasicOptionPanelWidget.cs" />
     <Compile Include="MonoDevelop.Deployment.Linux\DesktopPanelWidget.cs" />
     <Compile Include="MonoDevelop.Deployment.Linux\DotDesktopViewWidget.cs" />
@@ -145,16 +141,19 @@
     <Compile Include="MonoDevelop.Deployment.Linux\LinuxDeployData.cs" />
     <Compile Include="MonoDevelop.Deployment.Linux\LinuxDeployExtension.cs" />
     <Compile Include="MonoDevelop.Deployment.Linux\LinuxTargetDirectory.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Linux.DesktopPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Deployment.Linux\LinuxDeploymentSetup.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Linux.DesktopPanelWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

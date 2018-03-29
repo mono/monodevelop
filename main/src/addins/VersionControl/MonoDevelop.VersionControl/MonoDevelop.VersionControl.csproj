@@ -670,9 +670,6 @@
     <EmbeddedResource Include="Policies.xml">
       <LogicalName>Policies.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\version-control-16.png">
       <LogicalName>version-control-16.png</LogicalName>
     </EmbeddedResource>
@@ -1167,7 +1164,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\CellRendererDiff.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\LogView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\StatusView.cs" />
@@ -1197,10 +1193,6 @@
     <Compile Include="MonoDevelop.VersionControl\VersionStatus.cs" />
     <Compile Include="MonoDevelop.VersionControl\FileUpdateEventHandler.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlFileSystemExtension.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Dialogs.CommitDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl\RevertRevisionsCommands.cs" />
     <Compile Include="MonoDevelop.VersionControl\LockCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\UnlockCommand.cs" />
@@ -1210,7 +1202,6 @@
     <Compile Include="MonoDevelop.VersionControl\VersionControlCommandHandler.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\CommitMessageStylePanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl\CommitMessageStyle.cs" />
     <Compile Include="MonoDevelop.VersionControl\CommitMessageFormat.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlPolicy.cs" />
@@ -1227,10 +1218,8 @@
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBase.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\DiffView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\DiffWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Views.DiffWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\SubviewAttachmentHandler.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\LogWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Views.LogWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl\IRepositoryEditor.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlOperation.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\VersionControlDocumentInfo.cs" />
@@ -1256,6 +1245,13 @@
     <Compile Include="MonoDevelop.VersionControl.Views\Styles.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlInitializer.cs" />
     <Compile Include="MonoDevelop.VersionControl\RevisionHelpers.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Dialogs.CommitDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Views.DiffWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Views.LogWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -1263,6 +1259,9 @@
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.MacDev" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

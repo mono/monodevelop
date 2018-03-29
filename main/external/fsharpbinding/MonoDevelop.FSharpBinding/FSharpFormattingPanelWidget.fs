@@ -65,9 +65,9 @@ type FSharpFormattingPolicyPanelWidget() =
             appendSettings s
 
     member private this.Build() =
-        Stetic.Gui.Initialize(this)
+        MonoDevelop.Components.Gui.Initialize(this)
         // Widget MonoDevelop.Xml.Formatting.XmlFormattingPolicyPanelWidget
-        Stetic.BinContainer.Attach (this) |> ignore
+        MonoDevelop.Components.BinContainer.Attach (this) |> ignore
         this.Name <- "MonoDevelop.FSharp.FSharpFormattingPolicyPanelWidget"
         // Container child MonoDevelop.Xml.Formatting.XmlFormattingPolicyPanelWidget.Gtk.Container+ContainerChild
         vbox2 <- new Gtk.VBox()

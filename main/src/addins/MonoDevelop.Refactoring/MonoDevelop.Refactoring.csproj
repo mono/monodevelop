@@ -145,7 +145,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Gui\ResultsEditorExtension.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Gui\ResultTooltipProvider.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Gui\AnalysisOptionsPanel.cs" />
@@ -157,15 +156,11 @@
     <Compile Include="MonoDevelop.Refactoring\Change.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameItemDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringOptions.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionEditorExtension.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CodeActions.ContextActionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssuePanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssuePanelWidget.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.CodeIssues\DiagnosticResult.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeRefactoringDescriptor.cs" />
@@ -186,7 +181,6 @@
     <Compile Include="MonoDevelop.CodeActions\CodeFixMenuService.cs" />
     <Compile Include="MonoDevelop.Refactoring.SignatureChange\SignatureChangeOptionService.cs" />
     <Compile Include="MonoDevelop.Refactoring.SignatureChange\SignatureChangeDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Refactoring.SignatureChange.SignatureChangeDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring.GenerateType\GenerateTypeDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring.GenerateType\GenerateTypeOptionsService.cs" />
     <Compile Include="MonoDevelop.Refactoring\QuickFixMenuHandler.cs" />
@@ -200,6 +194,11 @@
     <Compile Include="MonoDevelop.Refactoring.PickMembersService\PickMembersService.cs" />
     <Compile Include="MonoDevelop.Refactoring.PickMembersService\PickMembersDialog.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable.cs" />
+    <Compile Include="Gui\MonoDevelop.CodeActions.ContextActionPanelWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.CodeIssues.CodeIssuePanelWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.Refactoring.SignatureChange.SignatureChangeDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -213,13 +212,11 @@
     <Folder Include="MonoDevelop.Refactoring.PackageInstaller\" />
     <Folder Include="MonoDevelop.Refactoring.ExtractInterface\" />
     <Folder Include="MonoDevelop.Refactoring.PickMembersService\" />
+    <Folder Include="Gui\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">
       <LogicalName>MonoDevelop.Refactoring.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -353,8 +350,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="MonoDevelop.Refactoring\QuickFixHandler.cs" />
-    <None Include="gtk-gui\MonoDevelop.Refactoring.OverridesImplementsDialog.cs" />
-    <None Include="gtk-gui\MonoDevelop.Refactoring.EncapsulateFieldDialog.cs" />
     <None Include="MonoDevelop.CodeIssues\Pad\Runner\AnalysisJobQueue.cs" />
     <None Include="MonoDevelop.CodeIssues\Pad\Runner\CodeIssueEventArgs.cs" />
     <None Include="MonoDevelop.CodeIssues\Pad\Runner\IAnalysisJob.cs" />

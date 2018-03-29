@@ -106,7 +106,6 @@
     <Compile Include="SolutionDeployer.cs" />
     <Compile Include="SolutionMakefileHandler.cs" />
     <Compile Include="TemplateEngine.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="CustomMakefile.cs" />
     <Compile Include="MakefileGeneratorTool.cs" />
     <Compile Include="MakefileOptionPanelWidget.cs" />
@@ -119,18 +118,18 @@
     <Compile Include="FileNodeBuilderExtension.cs" />
     <Compile Include="TarballBuilderEditorWidget.cs" />
     <Compile Include="MakefileIntegrationFeatureWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Autotools.MakefileOptionPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Autotools.TarballBuilderEditorWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Autotools.MakefileIntegrationFeatureWidget.cs" />
     <Compile Include="PropertyProvider.cs" />
     <Compile Include="GenerateMakefilesDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Autotools.GenerateMakefilesDialog.cs" />
     <Compile Include="MakefileSwitchEditorWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Autotools.MakefileSwitchEditorWidget.cs" />
     <Compile Include="MakefileSwitchEditor.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Autotools.MakefileSwitchEditor.cs" />
     <Compile Include="Switch.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="Gui\MonoDevelop.Autotools.GenerateMakefilesDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.Autotools.MakefileIntegrationFeatureWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Autotools.MakefileOptionPanelWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Autotools.MakefileSwitchEditor.cs" />
+    <Compile Include="Gui\MonoDevelop.Autotools.MakefileSwitchEditorWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Autotools.TarballBuilderEditorWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -174,12 +173,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Autotools.addin.xml">
       <LogicalName>MonoDevelop.Autotools.addin.xml</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
