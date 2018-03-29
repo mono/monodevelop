@@ -1,4 +1,4 @@
-﻿//
+//
 // MicrosoftTemplateEngine.cs
 //
 // Author:
@@ -86,12 +86,18 @@ namespace MonoDevelop.Ide.Templates
 			paths.DeleteDirectory (paths.User.BaseDir);//Delete cache
 			var settingsLoader = (SettingsLoader)environmentSettings.SettingsLoader;
 
-			foreach (var scanPath in projectTemplateNodes.Select (t => t.ScanPath).Distinct ()) {
-				settingsLoader.UserTemplateCache.Scan (scanPath);
+			foreach (var path in projectTemplateNodes.Select (t => t.ScanPath).Distinct ()) {
+				string scanPath = StringParserService.Parse (path);
+				if (!string.IsNullOrEmpty (scanPath)) {
+					settingsLoader.UserTemplateCache.Scan (scanPath);
+				}
 			}
 
-			foreach (var scanPath in itemTemplateNodes.Select (t => t.ScanPath).Distinct ()) {
-				settingsLoader.UserTemplateCache.Scan (scanPath);
+			foreach (var path in itemTemplateNodes.Select (t => t.ScanPath).Distinct ()) {
+				string scanPath = StringParserService.Parse (path);
+				if (!string.IsNullOrEmpty (scanPath)) {
+					settingsLoader.UserTemplateCache.Scan (scanPath);
+				}
 			}
 
 			settingsLoader.Save ();
