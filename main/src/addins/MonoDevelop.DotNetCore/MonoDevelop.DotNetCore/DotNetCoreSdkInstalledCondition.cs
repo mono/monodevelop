@@ -32,6 +32,16 @@ namespace MonoDevelop.DotNetCore
 {
 	internal class DotNetCoreSdkInstalledCondition : ConditionType
 	{
+		public DotNetCoreSdkInstalledCondition ()
+		{
+			DotNetCoreRuntime.Changed += OnLocationChanged;
+		}
+
+		void OnLocationChanged (object sender, EventArgs e)
+		{
+			NotifyChanged ();
+		}
+
 		/// <summary>
 		/// The SDK version check is not quite correct. It currently only checks the
 		/// latest installed version when it should check all versions installed.
