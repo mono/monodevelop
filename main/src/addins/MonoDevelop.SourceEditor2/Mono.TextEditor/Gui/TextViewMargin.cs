@@ -332,6 +332,8 @@ namespace Mono.TextEditor
 		{
 			for (int i = 0; i < e.TextChanges.Count; ++i) {
 				var change = e.TextChanges[i];
+				// It's required to remove the cached line here, otherwise the layout cache could chose to wrongly dipslay an older version of the line.
+				RemoveCachedLine (Document.OffsetToLineNumber (change.NewOffset));
 				if (mouseSelectionMode == MouseSelectionMode.Word && change.Offset < mouseWordStart) {
 					int delta = change.ChangeDelta;
 					mouseWordStart += delta;
