@@ -68,6 +68,10 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 		}
 
+		public virtual void Evaluate (object projectInstance, bool onlyEvaluateProperties)
+		{
+		}
+
 		public abstract bool GetItemHasMetadata (object item, string name);
 
 		public abstract string GetItemMetadata (object item, string name);

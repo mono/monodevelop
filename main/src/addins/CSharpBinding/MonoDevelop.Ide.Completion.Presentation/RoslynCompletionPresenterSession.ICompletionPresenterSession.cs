@@ -20,6 +20,8 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		public event EventHandler<CompletionItemEventArgs> ItemCommitted;
 		public event EventHandler<CompletionItemFilterStateChangedEventArgs> FilterStateChanged;
 
+		public static RoslynCompletionPresenterSession Instance { get; private set; }
+
 
 		void ICompletionPresenterSession.PresentItems (ITrackingSpan triggerSpan, IList<CompletionItem> items, CompletionItem selectedItem, CompletionItem suggestionModeItem, bool suggestionMode, bool isSoftSelected, ImmutableArray<CompletionItemFilter> completionItemFilters, string filterText)
 		{

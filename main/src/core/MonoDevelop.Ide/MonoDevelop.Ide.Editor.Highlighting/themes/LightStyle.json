@@ -29,7 +29,7 @@
 	"colors": [
 		{ "name": "Background(Read Only)", "color": "white" },
 
-		{ "name": "Search result background", "color": "#fffeb7" },
+		{ "name": "Search result background", "color": "#fcff54" },
 		{ "name": "Search result background (highlighted)", "color": "#fffc38" },
 
 		{ "name": "Column Ruler", "color": "#eeeeee" },

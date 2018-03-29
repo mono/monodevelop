@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 
@@ -63,6 +64,27 @@ namespace MonoDevelop.DotNetCore
 		internal static bool IsNetCore20Installed ()
 		{
 			return Versions.Any (version => version.Major == 2 && version.Minor == 0);
+		}
+
+		internal static bool IsNetCore2xInstalled ()
+		{
+			return Versions.Any (version => version.Major == 2);
+		}
+
+		/// <summary>
+		/// Used by unit tests to fake having different .NET Core sdks installed.
+		/// </summary>
+		internal static void SetVersions (IEnumerable<DotNetCoreVersion> versions)
+		{
+			Versions = versions.ToArray ();
+		}
+
+		/// <summary>
+		/// Used by unit tests to fake having the sdk installed.
+		/// </summary>
+		internal static void SetInstalled (bool installed)
+		{
+			IsInstalled = installed;
 		}
 	}
 }

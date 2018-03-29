@@ -242,5 +242,21 @@ namespace Mono.TextEditor.Tests.Actions
 			MonoDevelop.SourceEditor.EditActions.AdvancedBackspace (data);
 			Check (data, @""" $)");
 		}
+
+		[Test]
+		public void TestBackspaceUTF32 ()
+		{
+			var data = Create (@"12🚀$34");
+			DeleteActions.Backspace (data);
+			Check (data, @"12$34");
+		}
+
+		[Test]
+		public void TestDeleteUTF32 ()
+		{
+			var data = Create (@"12$🚀34");
+			DeleteActions.Delete (data);
+			Check (data, @"12$34");
+		}
 	}
 }

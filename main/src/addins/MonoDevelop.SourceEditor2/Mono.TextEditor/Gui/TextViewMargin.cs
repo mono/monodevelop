@@ -1186,8 +1186,9 @@ namespace Mono.TextEditor
 					}
 				}
 				if (containsPreedit) {
+					var byteLength = Encoding.UTF8.GetByteCount (textEditor.preeditString);
 					var si = TranslateToUTF8Index (lineText, (uint)(textEditor.preeditOffset - offset), ref curIndex, ref byteIndex);
-					var ei = TranslateToUTF8Index (lineText, (uint)(textEditor.preeditOffset - offset + preeditLength), ref curIndex, ref byteIndex);
+					var ei = TranslateToUTF8Index (lineText, (uint)(textEditor.preeditOffset - offset + byteLength), ref curIndex, ref byteIndex);
 
 					if (textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
 						uint len = (uint)textEditor.GetTextEditorData ().GetIndentationString (textEditor.Caret.Location).Length;
@@ -2419,6 +2420,9 @@ namespace Mono.TextEditor
 						Caret.PreserveSelection = false;
 					} else {
 						textEditor.ClearSelection ();
+						if (Caret.Location.Line != clickLocation.Line && !String.IsNullOrEmpty (textEditor.preeditString)) {
+							textEditor.CommitPreedit ();
+						}
 						Caret.Location = clickLocation;
 						InSelectionDrag = true;
 						textEditor.MainSelection = new MonoDevelop.Ide.Editor.Selection (clickLocation, clickLocation);

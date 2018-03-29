@@ -1,10 +1,10 @@
-//
-// RoslynCompletionPresenterSession.IIntelliSensePresenterSession.cs
+﻿//
+// PreProcessorCompletionProviderTests.cs
 //
 // Author:
 //       Mike Krüger <mikkrg@microsoft.com>
 //
-// Copyright (c) 2018 Microsoft Corporation
+// Copyright (c) 2018 Microsoft Corporation. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,23 +25,27 @@
 // THE SOFTWARE.
 
 using System;
-using Microsoft.CodeAnalysis.Editor;
+using System.Collections.Generic;
+using Microsoft.CodeAnalysis.Completion;
+using MonoDevelop.CSharp.Completion.Provider;
+using NUnit.Framework;
 
-namespace MonoDevelop.Ide.Completion.Presentation
+namespace MonoDevelop.CSharpBinding.Tests.Features.Completion
 {
-	partial class RoslynCompletionPresenterSession : IIntelliSensePresenterSession
+	[TestFixture]
+	class PreProcessorCompletionProviderTests : AbstractCSharpCompletionProviderTests
 	{
-		public event EventHandler<EventArgs> Dismissed;
-
-		void IIntelliSensePresenterSession.Dismiss ()
+		protected override IEnumerable<CompletionProvider> CreateCompletionProvider ()
 		{
-			Close ();
-			Dismissed?.Invoke (this, EventArgs.Empty);
+			yield return new PreProcessorCompletionProvider ();
 		}
 
-		public void Dismiss ()
+		[Test]
+		public void TestIfDirective ()
 		{
-			(this as IIntelliSensePresenterSession).Dismiss ();
+			VerifyItemExists (@"#if $$", "DEBUG");
 		}
+
+
 	}
 }
