@@ -39,12 +39,31 @@ namespace MonoDevelop.Ide.Gui
 {
 	public static class DisplayBindingService
 	{
+		const string extensionPath = "/MonoDevelop/Ide/DisplayBindings";
+
+		static DisplayBindingService ()
+		{
+			AddinManager.ExtensionChanged += OnExtensionChanged;
+			UpdateExtensionObjects ();
+		}
+
+		static void OnExtensionChanged (object sender, ExtensionEventArgs args)
+		{
+			if (args.PathChanged (extensionPath))
+				UpdateExtensionObjects ();
+		}
+
+		static void UpdateExtensionObjects ()
+		{
+			registeredObjects = AddinManager.GetExtensionObjects (extensionPath);
+		}
+
+		static object [] registeredObjects;
 		private static List<IDisplayBinding> runtimeBindings = new List<IDisplayBinding>();
 
 		public static IEnumerable<T> GetBindings<T> ()
 		{
-			return runtimeBindings.OfType<T>().Concat(AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/DisplayBindings")
-				.OfType<T> ());
+			return runtimeBindings.OfType<T> ().Concat (registeredObjects.OfType<T> ());
 		}
 
 		public static void RegisterRuntimeDisplayBinding(IDisplayBinding binding)
