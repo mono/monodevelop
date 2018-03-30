@@ -602,4 +602,14 @@
 			id="DotNetCoreMSBuildSdksPathPropertyProvider"
 			class="MonoDevelop.DotNetCore.MSBuildSdksPathGlobalPropertyProvider" />
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Projects/SdkLocations">
+		<Section id="DotNetCore" _label=".NET Core" icon="md-platform-netcore">
+			<Panel
+				id="DotNetCoreSdkSettings"
+				_label=".NET Core"
+				fill="true"
+				class="MonoDevelop.DotNetCore.Gui.DotNetCoreSdkLocationPanel" />
+		</Section>
+	</Extension>
 </ExtensionModel>

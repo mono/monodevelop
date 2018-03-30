@@ -125,6 +125,11 @@
     <Compile Include="MonoDevelop.DotNetCore\MSBuildSdksPathGlobalPropertyProvider.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreShortTargetFramework.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Templating\DotNetCoreProjectTemplateStringTagProvider.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Gui\DotNetCoreSdkLocationPanel.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Gui\DotNetCoreSdkLocationWidget.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Gui\DotNetCoreSdkLocationWidget.UI.cs">
+      <DependentUpon>DotNetCoreSdkLocationWidget.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
