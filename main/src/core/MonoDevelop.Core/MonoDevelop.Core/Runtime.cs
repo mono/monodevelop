@@ -210,10 +210,16 @@ namespace MonoDevelop.Core
 			string msg = "Add-in error (" + args.AddinId + "): " + args.Message;
 			LoggingService.LogError (msg, args.Exception);
 		}
-		
+
 		static void OnLoad (object s, AddinEventArgs args)
 		{
-			Counters.AddinsLoaded.Inc ("Add-in loaded: " + args.AddinId, new Dictionary<string,string> { { "AddinId", args.AddinId } });
+			Counters.AddinsLoaded.Inc ("Add-in loaded: " + args.AddinId, new Dictionary<string, string> {
+				{ "AddinId", args.AddinId },
+				{ "LoadTrace", Environment.StackTrace },
+			});
+#if DEBUG
+			LoggingService.LogDebug (Environment.StackTrace);
+#endif
 		}
 		
 		static void OnUnload (object s, AddinEventArgs args)
