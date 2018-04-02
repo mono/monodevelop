@@ -2693,7 +2693,7 @@ namespace Mono.TextEditor
 
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
-			var loc = PointToLocation (args.X, args.Y, snapCharacters: true);
+			var loc = args.Location;
 			if (loc.Line < DocumentLocation.MinLine || loc.Column < DocumentLocation.MinColumn)
 				return;
 			var line = Document.GetLine (loc.Line);
