@@ -123,5 +123,29 @@ public void Foo(int i, int j) {}
 			Assert.AreEqual (2, refs.Count);
 		}
 
+		/// <summary>
+		/// Bug 591385: [Feedback] Visual Studio Mac Community, find reference stops working in some classes.
+		/// </summary>
+		[Test]
+		public async Task TestBug591385 ()
+		{
+			var refs = await GatherReferences (@"
+public class RefBug {
+    public int xxx;
+    public void Meth() { xxx++; }
+}
+
+public class RefBug2
+{
+    public int xxx;
+    public void Meth() { xxx++; }
+}
+
+", project => {
+				var provider = new CSharpFindReferencesProvider ();
+				return provider.FindAllReferences ("F:RefBug2.xxx", project, default (CancellationToken));
+			});
+			Assert.AreEqual (2, refs.Count);
+		}
 	}
 }
