@@ -37,8 +37,8 @@ namespace MonoDevelop.PackageManagement.Gui
 
 		void Build ()
 		{
-			global::Stetic.Gui.Initialize (this);
-			global::Stetic.BinContainer.Attach (this);
+			MonoDevelop.Components.Gui.Initialize (this);
+			MonoDevelop.Components.BinContainer.Attach (this);
 
 			var vbox = new VBox ();
 			vbox.Spacing = 6;

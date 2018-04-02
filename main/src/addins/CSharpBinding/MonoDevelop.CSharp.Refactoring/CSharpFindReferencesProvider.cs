@@ -157,7 +157,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			if (typeId.Length < reminder)
 				return null;
-			if (string.CompareOrdinal (documentationCommentId, reminder, typeId, reminder, idx - reminder - 1) == 0) {
+			if (string.CompareOrdinal (documentationCommentId, reminder, typeId + ".", reminder, idx - reminder) == 0) {
 				if (typeId.Length > idx)
 					return null;
 				foreach (var subType in current.GetTypeMembers ()) {

@@ -232,7 +232,12 @@ namespace Mono.TextEditor
 			get;
 			private set;
 		}
-		
+
+		public DocumentLocation Location {
+			get;
+			internal set;
+		}
+
 		public bool TriggersContextMenu ()
 		{
 			var evt = RawEvent as Gdk.EventButton;

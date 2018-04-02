@@ -115,44 +115,43 @@
     <Compile Include="MonoDevelop.VersionControl.Git\GitVersionControl.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitRepository.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\Commands.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\PushDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.PushDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitNodeBuilderExtension.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitService.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\UserInfoConflictDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.ConflictResolutionDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\ConflictResolutionDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitConfigurationDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\EditBranchDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.EditBranchDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\EditRemoteDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.EditRemoteDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.MergeDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\MergeDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\Stash.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitUtil.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\CredentialsDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.CredentialsDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitCredentials.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitOptionsPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitOptionsPanel.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\StashManagerDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.StashManagerDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\NewStashDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.NewStashDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitCommitDialogExtensionWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.GitCommitDialogExtensionWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitCommitDialogExtension.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\UserGitConfigDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.UserGitConfigDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitSelectRevisionDialog.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\ProjectTemplateHandler.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\TfsSmartSubtransport.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Git.ConflictResolutionDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Git.CredentialsDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Git.EditBranchDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Git.EditRemoteDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Git.GitCommitDialogExtensionWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Git.MergeDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Git.NewStashDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Git.PushDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Git.StashManagerDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Git.UserGitConfigDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -199,9 +198,6 @@
     <EmbeddedResource Include="MonoDevelop.VersionControl.Git.addin.xml">
       <LogicalName>MonoDevelop.VersionControl.Git.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'DebugWin32' OR '$(Configuration)' == 'ReleaseWin32' ">
     <EmbeddedResource Include="MonoDevelop.VersionControl.Git.Win32.addin.xml">
@@ -225,6 +221,9 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Choose>
