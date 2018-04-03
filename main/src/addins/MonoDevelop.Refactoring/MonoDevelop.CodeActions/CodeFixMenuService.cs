@@ -147,25 +147,22 @@ namespace MonoDevelop.CodeActions
 
 			first = true;
 
-			if (fixAllMenu.Items.Count != 0) {
-				if (first)
-					menu.Add (CodeFixMenuEntry.Separator);
-				menu.Add (fixAllMenu);
-				first = false;
-			}
-			if (suppressMenu.Items.Count != 0) {
-				if (first)
-					menu.Add (CodeFixMenuEntry.Separator);
-				menu.Add (suppressMenu);
-				first = false;
-			}
-			if (configureMenu.Items.Count != 0) {
-				if (first)
-					menu.Add (CodeFixMenuEntry.Separator);
-				menu.Add (configureMenu);
-				first = false;
-			}
+			AddMenuWithSeparatorIfNeeded (fixAllMenu, menu, ref first);
+			AddMenuWithSeparatorIfNeeded (suppressMenu, menu, ref first);
+			AddMenuWithSeparatorIfNeeded (configureMenu, menu, ref first);
+
 			return menu;
+		}
+
+		static void AddMenuWithSeparatorIfNeeded (CodeFixMenu toAdd, CodeFixMenu into, ref bool first)
+		{
+			if (toAdd.Items.Count == 0)
+				return;
+			
+			if (first)
+				into.Add (CodeFixMenuEntry.Separator);
+			into.Add (toAdd);
+			first = false;
 		}
 
 		static bool DescriptorHasTag (DiagnosticDescriptor desc, string tag)
