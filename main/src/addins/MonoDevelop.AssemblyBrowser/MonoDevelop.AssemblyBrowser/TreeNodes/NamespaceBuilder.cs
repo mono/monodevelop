@@ -107,12 +107,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return null;
 		}
 		
-		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
-		{
-			return Disassemble (data, navigator);
-		}
-
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
+		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			return Disassemble (data, navigator);
 		}

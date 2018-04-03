@@ -108,23 +108,19 @@
   <ItemGroup>
     <Compile Include="ChangeLogAddIn.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="AddLogEntryDialog.cs" />
     <Compile Include="CommitDialogExtensionWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs" />
     <Compile Include="ProjectOptionPanel.cs" />
     <Compile Include="ProjectOptionPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs" />
     <Compile Include="ChangeLogService.cs" />
     <Compile Include="ChangeLogPolicy.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="Gui\MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ChangeLogAddIn.addin.xml">
       <LogicalName>ChangeLogAddIn.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Policies.xml">
       <LogicalName>Policies.xml</LogicalName>
@@ -132,6 +128,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

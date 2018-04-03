@@ -69,11 +69,6 @@
       <Name>MonoDevelop.Refactoring</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\contrib\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
-      <Project>{984CC812-9470-4A13-AFF9-CC44068D666C}</Project>
-      <Name>ICSharpCode.Decompiler</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
@@ -121,6 +116,10 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Drawing" />
     <Reference Include="Mono.Posix" />
+    <Reference Include="ICSharpCode.Decompiler">
+      <HintPath>..\..\..\packages\ICSharpCode.Decompiler.3.0.0.3403-beta4\lib\net46\ICSharpCode.Decompiler.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -178,9 +177,6 @@
     <EmbeddedResource Include="CSharpBinding.addin.xml">
       <LogicalName>CSharpBinding.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="templates\AssemblyInfo.xft.xml">
       <LogicalName>AssemblyInfo.xft.xml</LogicalName>
     </EmbeddedResource>
@@ -210,7 +206,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynParameterHintingEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextEditorIndentation.cs" />
@@ -221,19 +216,14 @@
     <Compile Include="MonoDevelop.CSharp.Project\CSharpResourceIdBuilder.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CodeGenerationPanel.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CompilerOptionsPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpBindingCompilerManager.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpEnhancedCodeProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\Indent.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\OnTheFlyFormatter.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\MoveToUsagesHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicyPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\NewFormattingProfileDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingProfileDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\HelperMethods.cs" />
     <Compile Include="MonoDevelop.CSharp\ExpandSelectionHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\TypeSystemProvider.cs" />
@@ -254,7 +244,6 @@
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\PropertyGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ToStringGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\WriteLineGenerator.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CodeGeneration.GenerateCodeWindow.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentVirtualSpaceManager.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ReadonlyPropertyGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\RaiseEventMethodGenerator.cs" />
@@ -271,7 +260,6 @@
     <Compile Include="MonoDevelop.CSharp.Project\PortableCSharpProjectFlavor.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\CSharpOutlineTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineSortingPreferencesDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.ClassOutline.OutlineSortingPreferencesDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineSettings.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineNodeComparer.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.cs" />
@@ -381,6 +369,14 @@
     <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynCommandTarget.cs" />
     <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynCompletionPresenterSession.View.cs" />
     <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynCompletionPresenterSession.IIntelliSensePresenterSession.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\PreProcessorCompletionProvider.cs" />
+    <Compile Include="Gui\MonoDevelop.CodeGeneration.GenerateCodeWindow.cs" />
+    <Compile Include="Gui\MonoDevelop.CSharp.ClassOutline.OutlineSortingPreferencesDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanelWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -402,6 +398,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Ide.Completion.Presentation\" />
+    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
  </Project>

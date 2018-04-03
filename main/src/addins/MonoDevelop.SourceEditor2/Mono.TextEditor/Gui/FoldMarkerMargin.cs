@@ -43,7 +43,7 @@ namespace Mono.TextEditor
 		MonoTextEditor editor;
 		DocumentLine lineHover;
 		Pango.Layout layout;
-		
+
 		double foldSegmentSize = 8;
 		double marginWidth;
 		public override double Width {
@@ -283,12 +283,13 @@ namespace Mono.TextEditor
 			foldToggleMarkerBackground = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.FoldCrossBackground);
 			lineStateChangedGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.QuickDiffChanged);
 			lineStateDirtyGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.QuickDiffDirty);
-			
+			backgroundColor = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.IndicatorMargin);
+
 			marginWidth = editor.LineHeight  * 3 / 4;
 		}
 		
 		Cairo.Color foldBgGC, foldLineGC, foldLineHighlightedGC, foldLineHighlightedGCBg, foldToggleMarkerGC, foldToggleMarkerBackground;
-		Cairo.Color lineStateChangedGC, lineStateDirtyGC;
+		Cairo.Color lineStateChangedGC, lineStateDirtyGC, backgroundColor;
 		
 		public override void Dispose ()
 		{
@@ -364,7 +365,13 @@ namespace Mono.TextEditor
 
 			foldSegmentSize = marginWidth * 4 / 6;
 			foldSegmentSize -= (foldSegmentSize) % 2;
-			
+
+			if (HasFocus) {
+				cr.Rectangle (x, y, Width, lineHeight);
+				cr.SetSourceColor (backgroundColor);
+				cr.Fill ();
+			}
+
 			Cairo.Rectangle drawArea = new Cairo.Rectangle (x, y, marginWidth, lineHeight);
 			var state = editor.Document.GetLineState (lineSegment);
 
@@ -485,6 +492,97 @@ namespace Mono.TextEditor
 						cr.DrawLine (isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, drawArea.Y, xPos, drawArea.Y + drawArea.Height);
 					}
 				}
+			}
+		}
+
+		FoldSegment[] focusSegments;
+		int focusedIndex;
+		protected internal override bool SupportsItemCommands => true;
+		protected internal override bool HandleItemCommand(ItemCommand command)
+		{
+			bool highlightFold = false;
+
+			switch (command) {
+			case ItemCommand.ActivateCurrentItem:
+				ActivateFold (focusSegments[focusedIndex]);
+				break;
+
+			case ItemCommand.FocusNextItem:
+				focusedIndex++;
+				if (focusedIndex >= focusSegments.Length) {
+					focusedIndex = focusSegments.Length - 1;
+				}
+
+				highlightFold = true;
+				break;
+
+			case ItemCommand.FocusPreviousItem:
+				focusedIndex--;
+				if (focusedIndex < 0) {
+					focusedIndex = 0;
+				}
+
+				highlightFold = true;
+				break;
+			}
+
+			if (highlightFold && focusSegments.Length > 0) {
+				var segment = focusSegments[focusedIndex];
+
+				HighlightFold (segment);
+			}
+
+			return base.HandleItemCommand(command);
+		}
+
+		protected internal override void FocusIn()
+		{
+			base.FocusIn();
+
+			focusSegments = editor.Document.FoldSegments.ToArray ();
+			focusedIndex = 0;
+
+			if (focusSegments.Length > 0) {
+				HighlightFold (focusSegments[0]);
+			}
+		}
+
+		protected internal override void FocusOut()
+		{
+			focusSegments = null;
+			focusedIndex = 0;
+
+			editor.TextViewMargin.BackgroundRenderer = null;
+			editor.QueueDraw ();
+			base.FocusOut();
+
+			editor.RedrawMargin (this);
+		}
+
+		void ActivateFold (FoldSegment segment)
+		{
+			segment.IsCollapsed = !segment.IsCollapsed;
+			editor.Document.InformFoldChanged (new FoldSegmentEventArgs (segment));
+
+			editor.SetAdjustments ();
+			editor.Caret.MoveCaretBeforeFoldings ();
+
+			// Collapsing the fold causes highlighting to disappear
+			HighlightFold (segment);
+		}
+
+		void HighlightFold (FoldSegment segment)
+		{
+			var line = segment.GetStartLine (editor.Document);
+			var list = new List<FoldSegment>(editor.Document.GetFoldingContaining (line));
+			list.Sort ((x, y) => x.Offset.CompareTo (y.Offset));
+
+			editor.TextViewMargin.DisposeLayoutDict ();
+			editor.TextViewMargin.BackgroundRenderer = new FoldingScreenbackgroundRenderer (editor, list);
+			editor.ScrollTo (line.LineNumber, 0);
+
+			if (accessibles != null) {
+				AtkCocoaExtensions.SetCurrentFocus (accessibles[segment].Accessible);
 			}
 		}
 	}
