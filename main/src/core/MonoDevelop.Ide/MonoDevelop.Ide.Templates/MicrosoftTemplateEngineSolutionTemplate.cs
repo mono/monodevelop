@@ -24,11 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Microsoft.TemplateEngine.Abstractions;
 using Microsoft.TemplateEngine.Edge.Settings;
-using System.Linq;
 using MonoDevelop.Ide.Codons;
-using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -40,7 +41,7 @@ namespace MonoDevelop.Ide.Templates
 			: base (template.Id, template.OverrideName ?? templateInfo.Name, template.Icon)
 		{
 			this.templateInfo = templateInfo;
-			Description = template.OverrideDescription ?? templateInfo.Description;
+			Description = ParseDescription (template.OverrideDescription) ?? templateInfo.Description;
 			Category = template.Category;
 			Language = MicrosoftTemplateEngine.GetLanguage (templateInfo);
 			GroupId = template.GroupId ?? templateInfo.GroupIdentity;
@@ -119,6 +120,51 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 			return result;
+		}
+
+		/// <summary>
+		/// Replaces \n in description with new lines unless escaped with an extra backslash.
+		/// </summary>
+		static internal string ParseDescription (string description)
+		{
+			if (string.IsNullOrEmpty (description)) {
+				return description;
+			}
+
+			int index = description.IndexOf ("\\n", StringComparison.Ordinal);
+			if (index == -1) {
+				return description;
+			}
+
+			var textBuilder = new StringBuilder (description.Length);
+
+			index = 0;
+			while (index < description.Length) {
+				char ch = description [index];
+
+				if (ch == '\\') {
+					index++;
+					if (index >= description.Length) {
+						textBuilder.Append (ch);
+					} else if (description [index] == 'n') {
+						textBuilder.Append (Environment.NewLine);
+					} else if (description [index] == '\\') {
+						textBuilder.Append ('\\');
+						index++;
+						if (index < description.Length && description [index] == 'n') {
+							textBuilder.Append ("n");
+						} else {
+							textBuilder.Append ("\\");
+						}
+					}
+				} else {
+					textBuilder.Append (ch);
+				}
+
+				index++;
+			}
+
+			return textBuilder.ToString ();
 		}
 	}
 }
