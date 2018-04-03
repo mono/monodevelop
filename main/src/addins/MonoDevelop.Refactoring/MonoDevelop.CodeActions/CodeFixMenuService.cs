@@ -173,12 +173,6 @@ namespace MonoDevelop.CodeActions
 			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
 		}
 
-		static CodeFixMenuEntry CreateFixMenuEntry (TextEditor editor, CodeAction fix)
-		{
-			int mnemonic = -1;
-			return CreateFixMenuEntry (editor, fix, ref mnemonic);
-		}
-
 		static CodeFixMenuEntry CreateFixMenuEntry (TextEditor editor, CodeAction fix, ref int mnemonic)
 		{
 			var label = mnemonic < 0 ? fix.Title : CreateLabel (fix.Title, ref mnemonic);
@@ -191,12 +185,6 @@ namespace MonoDevelop.CodeActions
 			};
 
 			return item;
-		}
-
-		static void AddFixMenuItem (TextEditor editor, CodeFixMenu menu, CodeAction fix)
-		{
-			int _m = 0;
-			AddFixMenuItem (editor, menu, ref _m, fix);
 		}
 
 		static void AddFixMenuItem (TextEditor editor, CodeFixMenu menu, ref int mnemonic, CodeAction fix)
