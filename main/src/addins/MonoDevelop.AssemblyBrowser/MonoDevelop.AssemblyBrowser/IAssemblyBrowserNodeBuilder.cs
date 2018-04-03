@@ -38,7 +38,12 @@ namespace MonoDevelop.AssemblyBrowser
 	{
 		string GetDocumentationMarkup (ITreeNavigator navigator);
 		List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator);
-		List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly);
-		List<ReferenceSegment> GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly);
+		List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags);
+	}
+
+	class DecompileFlags
+	{
+		public bool PublicOnly { get; set; }
+		public bool MethodBodies { get; set; }
 	}
 }

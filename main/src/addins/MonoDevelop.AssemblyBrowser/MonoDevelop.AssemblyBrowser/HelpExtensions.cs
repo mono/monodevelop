@@ -35,9 +35,9 @@ using System.Collections.Generic;
 using MonoDevelop.Projects.Extensions;
 using System.Text;
 using System.Xml;
-using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.Decompiler.TypeSystem;
 using MonoDevelop.Projects;
-using ICSharpCode.NRefactory.Documentation;
+using ICSharpCode.Decompiler.Documentation;
 
 namespace MonoDevelop.AssemblyBrowser
 {

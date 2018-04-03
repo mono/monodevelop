@@ -289,8 +289,6 @@ echo PACKAGE_VERSION=$PACKAGE_VERSION > monodevelop_version
 AC_OUTPUT([
 build/Makefile
 build/MacOSX/Makefile
-contrib/Makefile
-contrib/ICSharpCode.Decompiler/Makefile
 external/Makefile
 msbuild/Makefile
 src/Makefile
