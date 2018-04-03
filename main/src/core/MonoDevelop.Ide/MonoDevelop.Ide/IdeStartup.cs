@@ -80,6 +80,7 @@ namespace MonoDevelop.Ide
 
 			//ensure native libs initialized before we hit anything that p/invokes
 			Platform.Initialize ();
+			GettextCatalog.Initialize ();
 
 			LoggingService.LogInfo ("Operating System: {0}", SystemInformation.GetOperatingSystemDescription ());
 
