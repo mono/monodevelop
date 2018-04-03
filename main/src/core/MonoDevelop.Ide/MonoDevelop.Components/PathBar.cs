@@ -256,6 +256,11 @@ namespace MonoDevelop.Components
 			}
 		}
 
+		public void HandlePathChange (object sender, MonoDevelop.Ide.Gui.Content.DocumentPathChangedEventArgs args)
+		{ 
+			SetPath (((Ide.Gui.Content.IPathedDocument)sender).CurrentPath);
+		}
+
 		public void SetPath (PathEntry[] path)
 		{
 			if (ArrSame (this.leftPath, path))

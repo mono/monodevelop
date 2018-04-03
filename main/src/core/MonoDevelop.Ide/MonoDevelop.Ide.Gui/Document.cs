@@ -592,8 +592,6 @@ namespace MonoDevelop.Ide.Gui
 			UnsubscribeAnalysisDocument ();
 			UnsubscribeRoslynWorkspace ();
 			UnloadAdhocProject ();
-			if (window is SdiWorkspaceWindow)
-				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
 			window.Closed -= OnClosed;
 			window.ActiveViewContentChanged -= OnActiveViewContentChanged;
 			if (IdeApp.Workspace != null)
@@ -602,7 +600,7 @@ namespace MonoDevelop.Ide.Gui
 			// Unsubscribe project events
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified -= HandleProjectModified;
-			window.ViewsChanged += HandleViewsChanged;
+			window.ViewsChanged -= HandleViewsChanged;
 			MonoDevelopWorkspace.LoadingFinished -= ReloadAnalysisDocumentHandler;
 
 			window = null;
@@ -672,7 +670,7 @@ namespace MonoDevelop.Ide.Gui
 			Editor.InitializeExtensionChain (this);
 
 			if (window is SdiWorkspaceWindow)
-				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
+				((SdiWorkspaceWindow)window).UpdatePathedDocument ();
 
 		}
 

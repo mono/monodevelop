@@ -352,7 +352,7 @@ namespace MonoDevelop.Components
 			get { return Label == "|"; }
 		}
 		
-		public object Tag {
+		public BaseViewContent[] ViewsSelection {
 			get;
 			set;
 		}

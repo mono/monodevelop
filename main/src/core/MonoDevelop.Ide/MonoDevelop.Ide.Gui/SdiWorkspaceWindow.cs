@@ -49,13 +49,54 @@ namespace MonoDevelop.Ide.Gui
 		ViewContent content;
 		ExtensionContext extensionContext;
 		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
+
+		HPaned subViewNotebook = null;
+		Tabstrip subViewToolbar = null;
+		HBox toolbarBox = null;
 		
 		List<BaseViewContent> viewContents = new List<BaseViewContent> ();
-		Notebook subViewNotebook = null;
-		Tabstrip subViewToolbar = null;
-		PathBar pathBar = null;
-		HBox toolbarBox = null;
-		Dictionary<BaseViewContent,DocumentToolbar> documentToolbars = new Dictionary<BaseViewContent, DocumentToolbar> ();
+		List<BaseViewContent> currentViews = new List<BaseViewContent> ();
+
+		Dictionary<BaseViewContent, ViewContentData> viewContentData = new Dictionary<BaseViewContent, ViewContentData> ();
+
+		class ViewContentData : IDisposable
+		{
+			private readonly SdiWorkspaceWindow window;
+			public ViewContentData(SdiWorkspaceWindow window)
+			{
+				this.window = window;
+			}
+			public BaseViewContent ViewContent;
+			public VBox VBox = new VBox ();
+			public DocumentToolbar Toolbar;
+			public PathBar Pathbar;
+			public IPathedDocument PathedDocument;
+			bool controlAlreadyAdded = false;
+
+			public void EnsureControlAdded ()
+			{
+				if (controlAlreadyAdded)
+					return;
+				controlAlreadyAdded = true;
+				VBox.Add (ViewContent.Control);
+				VBox.Show ();
+				VBox.FocusChildSet += ChildGotFocus;
+			}
+
+			void ChildGotFocus (object o, FocusChildSetArgs args)
+			{
+				window.ActiveViewContent = ViewContent;
+			}
+
+			public void Dispose ()
+			{
+				if (VBox != null) {
+					VBox.FocusChildSet -= ChildGotFocus;
+					VBox.Destroy ();
+					VBox = null;
+				}
+			}
+		}
 
 		VBox box;
 		DockNotebookTab tab;
@@ -66,7 +107,6 @@ namespace MonoDevelop.Ide.Gui
 		string _titleHolder = "";
 		
 		string documentType;
-		MonoDevelop.Ide.Gui.Content.IPathedDocument pathDoc;
 		
 		bool show_notification = false;
 
@@ -103,6 +143,11 @@ namespace MonoDevelop.Ide.Gui
 			box.Accessible.SetShouldIgnore (true);
 
 			viewContents.Add (content);
+
+			var viewData = new ViewContentData (this) {
+				ViewContent = content
+			};
+			viewContentData.Add (content, viewData);
 
 			//this fires an event that the content uses to access this object's ExtensionContext
 			content.WorkbenchWindow = this;
@@ -145,8 +190,10 @@ namespace MonoDevelop.Ide.Gui
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			if (tabPage == null && subViewNotebook == null)
-				box.PackStart (TabPage);
+			if (subViewNotebook == null) {
+				CheckCreateSubViewContents ();
+				SetCurrentViews (new [] { content });
+			}
 		}
 
 		Document document;
@@ -220,11 +267,11 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (activeView != null)
 					return activeView;
-				if (subViewToolbar != null)
-					return viewContents[subViewToolbar.ActiveTab];
 				return content;
 			}
 			set {
+				if (activeView == value)
+					return;
 				this.activeView = value;
 				this.OnActiveViewContentChanged (new ActiveViewContentEventArgs (value));
 			}
@@ -233,13 +280,13 @@ namespace MonoDevelop.Ide.Gui
 		public void SwitchView (int viewNumber)
 		{
 			if (subViewNotebook != null)
-				ShowPage (viewNumber);
+				ShowPage (viewContents [viewNumber]);
 		}
 
 		public void SwitchView (BaseViewContent view)
 		{
 			if (subViewNotebook != null)
-				ShowPage (viewContents.IndexOf (view));
+				ShowPage (view);
 		}
 		
 		public int FindView<T> ()
@@ -254,8 +301,9 @@ namespace MonoDevelop.Ide.Gui
 
 		public void OnDeactivated ()
 		{
-			if (pathBar != null)
-				pathBar.HideMenu ();
+			foreach (var data in viewContentData.Values) {
+				data.Pathbar?.HideMenu ();
+			}
 		}
 		
 		public void OnActivated ()
@@ -403,16 +451,16 @@ namespace MonoDevelop.Ide.Gui
 
 		public DocumentToolbar GetToolbar (BaseViewContent targetView)
 		{
-			DocumentToolbar toolbar;
-			if (!documentToolbars.TryGetValue (targetView, out toolbar)) {
-				toolbar = new DocumentToolbar ();
-				documentToolbars [targetView] = toolbar;
-				box.PackStart (toolbar.Container, false, false, 0);
-				box.ReorderChild (toolbar.Container, 0);
-				toolbar.Visible = (targetView == ActiveViewContent);
-				PathWidgetEnabled = !toolbar.Visible;
+			if (!viewContentData.TryGetValue (targetView, out var data))
+				throw new ArgumentException ("viewContent is not registered in window.");
+			if (data.Toolbar == null) {
+				var toolbar = new DocumentToolbar ();
+				data.Toolbar = toolbar;
+				data.VBox.PackStart (toolbar.Container, false, false, 0);
+				data.VBox.ReorderChild (toolbar.Container, 0);
+				DetachFromPathedDocument (targetView);
 			}
-			return toolbar;
+			return data.Toolbar;
 		}
 
 		public ViewContent ViewContent {
@@ -519,6 +567,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (viewContents != null) {
 				foreach (BaseViewContent sv in SubViewContents) {
+					DetachFromPathedDocument (sv);
 					sv.Dispose ();
 				}
 				viewContents = null;
@@ -537,7 +586,11 @@ namespace MonoDevelop.Ide.Gui
 				subViewToolbar = null;
 			}
 
-			DetachFromPathedDocument ();
+			foreach (var data in viewContentData.Values) {
+				data.Dispose ();
+			}
+			viewContentData.Clear ();
+
 			commandHandler = null;
 			document = null;
 			extensionContext = null;
@@ -557,28 +610,7 @@ namespace MonoDevelop.Ide.Gui
 			CheckCreateToolbarBox ();
 			toolbarBox.PackStart (subViewToolbar, true, true, 0);
 		}
-		
-		void EnsureToolbarBoxSeparator ()
-		{
-/*			The path bar is now shown at the top
 
-			if (toolbarBox == null || subViewToolbar == null)
-				return;
-
-			if (separatorItem != null && pathBar == null) {
-				subViewToolbar.Remove (separatorItem);
-				separatorItem = null;
-			} else if (separatorItem == null && pathBar != null) {
-				separatorItem = new SeparatorToolItem ();
-				subViewToolbar.PackStart (separatorItem, false, false, 0);
-			} else if (separatorItem != null && pathBar != null) {
-				Widget[] buttons = subViewToolbar.Children;
-				if (separatorItem != buttons [buttons.Length - 1])
-					subViewToolbar.ReorderChild (separatorItem, buttons.Length - 1);
-			}
-			*/
-		}
-		
 		void CheckCreateToolbarBox ()
 		{
 			if (toolbarBox != null)
@@ -592,23 +624,10 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (subViewNotebook != null)
 				return;
-
-			// The view may call AttachViewContent when initialized, and this
-			// may happen before the main content is added to 'box', so we
-			// have to check if the content is already parented or not
-
-			Gtk.Widget viewWidget = ViewContent.Control;
-			if (viewWidget.Parent != null)
-				box.Remove (viewWidget);
 			
-			subViewNotebook = new Notebook ();
-			subViewNotebook.TabPos = PositionType.Bottom;
-			subViewNotebook.ShowTabs = false;
-			subViewNotebook.ShowBorder = false;
-			subViewNotebook.Show ();
-			
+			subViewNotebook = new HPaned ();
 			//add existing ViewContent
-			AddButton (this.ViewContent.TabPageLabel, this.ViewContent);
+			InsertButton (0, this.ViewContent);
 			
 			//pack them in a box
 			subViewNotebook.Show ();
@@ -633,164 +652,140 @@ namespace MonoDevelop.Ide.Gui
 			CheckCreateSubViewContents ();
 
 			viewContents.Insert (index, subViewContent);
+			var viewData = new ViewContentData (this) {
+				ViewContent = subViewContent
+			};
+			viewContentData.Add (subViewContent, viewData);
 			subViewContent.WorkbenchWindow = this;
-			InsertButton (index, subViewContent.TabPageLabel, subViewContent);
+			InsertButton (index, subViewContent);
 
 			if (ViewsChanged != null)
 				ViewsChanged (this, EventArgs.Empty);
 		}
 
-		protected Tab AddButton (string label, BaseViewContent viewContent)
-		{
-			return InsertButton (viewContents.Count, label, viewContent);
-		}
-
 		bool updating = false;
-		protected Tab InsertButton (int index, string label, BaseViewContent viewContent)
+		protected void InsertButton (int index, BaseViewContent viewContent)
 		{
 			CheckCreateSubViewToolbar ();
 			updating = true;
 
 			var addedContent = (index == 0 || subViewToolbar.TabCount == 0) && IdeApp.Workbench.ActiveDocument == Document;
-			var widgetBox = new Gtk.VBox ();
-			var tab = new Tab (subViewToolbar, label) {
-				Tag = viewContent
-			};
-			if (tab.Accessible != null) {
-				tab.Accessible.Help = viewContent.TabAccessibilityDescription;
-			}
-			
 			// If this is the current displayed document we need to add the control immediately as the tab is already active.
-			if (addedContent) {
-				widgetBox.Add (viewContent.Control);
-				widgetBox.Show ();
+			if (addedContent)
+				SetCurrentViews (new [] { viewContent });
+			foreach (var tabInfo in viewContent.GetTabPageInfos ()) {
+				var newTab = new Tab (subViewToolbar, tabInfo.Label) {
+					ViewsSelection = tabInfo.ViewsSelection
+				};
+				if (newTab.Accessible != null) {
+					newTab.Accessible.Help = tabInfo.AccessibilityDescription;
+				}
+				subViewToolbar.InsertTab (index, newTab);
+				newTab.Activated += (sender, e) => {
+					SetCurrentViews (((Tab)sender).ViewsSelection);
+				};
 			}
 
-			subViewToolbar.InsertTab (index, tab);
-			subViewNotebook.InsertPage (widgetBox, new Gtk.Label (), index);
-			tab.Activated += (sender, e) => {
-				if (!addedContent) {
-					widgetBox.Add (viewContent.Control);
-					widgetBox.Show ();
-					addedContent = true;
-				}
-
-				int page = viewContents.IndexOf ((BaseViewContent) tab.Tag);
-				SetCurrentView (page);
-				QueueDraw ();
-			};
-
-			EnsureToolbarBoxSeparator ();
 			updating = false;
 
 			if (index == 0)
-				ShowPage (0);
-
-			return tab;
+				ShowPage (viewContent);
 		}
-		
+
 		#region Track and display document's "path"
-		
-		internal void AttachToPathedDocument (MonoDevelop.Ide.Gui.Content.IPathedDocument pathDoc)
+
+		void AttachToPathedDocument (BaseViewContent viewContent)
 		{
-			if (this.pathDoc != pathDoc)
-				DetachFromPathedDocument ();
+			if (!viewContentData.TryGetValue (viewContent, out var data))
+				throw new ArgumentException ("viewContent is not registered in window.");
+			// For backward compatibility don't show PathBar if Toolbar is present
+			if (data.Toolbar != null)
+				return;
+			var pathDoc = viewContent.GetContent<IPathedDocument> ();
+			if (data.PathedDocument == pathDoc)
+				return;
+			DetachFromPathedDocument (viewContent);
 			if (pathDoc == null)
 				return;
-			pathDoc.PathChanged += HandlePathChange;
-			this.pathDoc = pathDoc;
+			var pathBar = new PathBar (pathDoc.CreatePathWidget);
+			pathDoc.PathChanged += pathBar.HandlePathChange;
+			data.VBox.PackStart (pathBar, false, true, 0);
+			data.VBox.ReorderChild (pathBar, 0);
+			pathBar.Show ();
 
-			// If a toolbar is already being shown, we don't show the pathbar yet
-			DocumentToolbar toolbar;
-			if (documentToolbars.TryGetValue (ActiveViewContent, out toolbar) && toolbar.Visible)
-				return;
-
-			PathWidgetEnabled = true;
 			pathBar.SetPath (pathDoc.CurrentPath);
+			data.Pathbar = pathBar;
+			data.PathedDocument = pathDoc;
 		}
-		
-		internal void DetachFromPathedDocument ()
+
+		void DetachFromPathedDocument (BaseViewContent viewContent)
 		{
-			if (pathDoc == null)
+			if (!viewContentData.TryGetValue (viewContent, out var data))
+				throw new ArgumentException ("viewContent is not registered in this window.");
+			if (data.PathedDocument == null)
 				return;
-			PathWidgetEnabled = false;
-			pathDoc.PathChanged -= HandlePathChange;
-			pathDoc = null;
+			data.PathedDocument.PathChanged -= data.Pathbar.HandlePathChange;
+			data.PathedDocument = null;
+			data.VBox.Remove (data.Pathbar);
+			data.Pathbar.Destroy ();
+			data.Pathbar = null;
 		}
-		
-		void HandlePathChange (object sender, MonoDevelop.Ide.Gui.Content.DocumentPathChangedEventArgs args)
+
+		#endregion
+
+		protected void ShowPage (BaseViewContent viewContent)
 		{
-			var pathDoc = (MonoDevelop.Ide.Gui.Content.IPathedDocument) sender;
-			if (pathBar != null)
-				pathBar.SetPath (pathDoc.CurrentPath);
-//			pathBar.SetActive (pathDoc.SelectedIndex);
-		}
-		
-		bool PathWidgetEnabled {
-			get { return (pathBar != null); }
-			set {
-				if (PathWidgetEnabled == value)
-					return;
-				if (value) {
-					pathBar = new PathBar (pathDoc.CreatePathWidget);
-					box.PackStart (pathBar, false, true, 0);
-					box.ReorderChild (pathBar, 0);
-					pathBar.Show ();
-				} else {
-					box.Remove (pathBar);
-					pathBar.Destroy ();
-					pathBar = null;
+			if (updating || viewContent == null) return;
+			updating = true;
+			for (int i = 0; i < subViewToolbar.TabCount; i++) {
+				var tab = subViewToolbar.Tabs [i];
+				if (tab.ViewsSelection.Length == 1 && tab.ViewsSelection [0] == viewContent) {
+					subViewToolbar.ActiveTab = i;
+					break;
 				}
 			}
-		}
-		
-		#endregion
-		
-		protected void ShowPage (int npage)
-		{
-			if (updating || npage < 0) return;
-			updating = true;
-			subViewToolbar.ActiveTab = npage;
 			updating = false;
 		}
-		
-		void SetCurrentView (int newIndex)
+
+		internal void UpdatePathedDocument ()
 		{
-			BaseViewContent subViewContent;
+			foreach (var view in currentViews) {
+				AttachToPathedDocument (view);
+			}
+		}
 
-			int oldIndex = subViewNotebook.CurrentPage;
-			subViewNotebook.CurrentPage = newIndex;
-
-			if (oldIndex != -1) {
-				subViewContent = viewContents[oldIndex] as BaseViewContent;
-				if (subViewContent != null)
-					subViewContent.OnDeselected ();
+		void SetCurrentViews (BaseViewContent[] newSelection)
+		{
+			var removedViews = currentViews.Except (newSelection).ToArray ();
+			var addedViews = newSelection.Except (currentViews).ToArray ();
+			currentViews.Clear ();
+			currentViews.AddRange (newSelection);
+			while (subViewNotebook.Children.Length > 0)
+				subViewNotebook.Remove (subViewNotebook.Children [0]);
+			if (currentViews.Count > 0) {
+				var data = viewContentData [currentViews [0]];
+				data.EnsureControlAdded ();
+				subViewNotebook.Pack1 (data.VBox, true, true);
+				AttachToPathedDocument (currentViews [0]);
+			}
+			if (currentViews.Count > 1) {
+				var data = viewContentData [currentViews [1]];
+				data.EnsureControlAdded ();
+				subViewNotebook.Pack2 (data.VBox, true, true);
+				subViewNotebook.Position = box.Allocation.Width / 2;
+				AttachToPathedDocument (currentViews [1]);
+			}
+			foreach (var removedView in removedViews) {
+				removedView.OnDeselected ();
+			}
+			foreach (var addedView in addedViews) {
+				addedView.OnSelected ();
 			}
 
-			subViewContent = viewContents[newIndex] as BaseViewContent;
-
-			DetachFromPathedDocument ();
-			
-			MonoDevelop.Ide.Gui.Content.IPathedDocument pathedDocument;
-			if (newIndex < 0 || newIndex == viewContents.IndexOf ((BaseViewContent)ViewContent)) {
-				pathedDocument = Document != null ? Document.GetContent<IPathedDocument> () : (IPathedDocument)ViewContent.GetContent (typeof(IPathedDocument));
-			} else {
-				pathedDocument = (IPathedDocument)viewContents[newIndex].GetContent (typeof(IPathedDocument));
+			if(!currentViews.Contains(ActiveViewContent)){
+				ActiveViewContent = currentViews [0];
 			}
-
-			var toolbarVisible = false;
-			foreach (var t in documentToolbars) {
-				toolbarVisible = ActiveViewContent == t.Key;
-				t.Value.Container.GetNativeWidget<Gtk.Widget> ().Visible = toolbarVisible;
-			}
-
-			if (pathedDocument != null && !toolbarVisible)
-				AttachToPathedDocument (pathedDocument);
-
-			if (subViewContent != null)
-				subViewContent.OnSelected ();
-
-			OnActiveViewContentChanged (new ActiveViewContentEventArgs (this.ActiveViewContent));
+			QueueDraw ();
 		}
 
 		object ICommandDelegatorRouter.GetNextCommandTarget ()
