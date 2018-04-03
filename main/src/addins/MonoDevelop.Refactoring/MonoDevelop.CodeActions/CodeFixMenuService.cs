@@ -189,16 +189,12 @@ namespace MonoDevelop.CodeActions
 			var title = fixState.GetDefaultFixAllTitle ();
 			var label = mnemonic < 0 ? title : CreateLabel (title, ref mnemonic);
 
-			// Task.Run here so we don't end up binding the whole document on popping the menu, also there is no cancellation token support
-			var fix = Task.Run (() => provider.GetFixAsync (context));
-
 			var item = new CodeFixMenuEntry (label, async delegate {
+				// Task.Run here so we don't end up binding the whole document on popping the menu, also there is no cancellation token support
+				var fix = Task.Run (() => provider.GetFixAsync (context));
+
 				await new ContextActionRunner (editor, await fix).Run ();
 			});
-
-			item.ShowPreviewTooltip = delegate (Xwt.Rectangle rect) {
-				RefactoringPreviewTooltipWindow.ShowPreviewTooltip (editor, fix, rect);
-			};
 
 			return item;
 		}
