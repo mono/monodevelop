@@ -189,9 +189,16 @@ namespace MonoDevelop.CodeActions
 
 		static void AddFixMenuItem (TextEditor editor, CodeFixMenu menu, ref int mnemonic, CodeAction fix)
 		{
-			var nested = fix as CodeAction.CodeActionWithNestedActions;
-			if (nested != null) {
-				AddNestedFixMenu (editor, menu, nested);
+			if (fix is CodeAction.CodeActionWithNestedActions nested) {
+				// Inline code actions if they are, otherwise add a nested fix menu
+				if (nested.IsInlinable) {
+					foreach (var nestedAction in nested.NestedCodeActions)
+						menu.Add (CreateFixMenuEntry (editor, fix, ref mnemonic));
+					return;
+				}
+
+				if (nested.NestedCodeActions.Length > 0)
+					AddNestedFixMenu (editor, menu, nested);
 				return;
 			}
 
