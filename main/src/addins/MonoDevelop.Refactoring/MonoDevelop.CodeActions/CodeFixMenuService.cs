@@ -183,8 +183,7 @@ namespace MonoDevelop.CodeActions
 			var provider = fixState?.FixAllProvider;
 			if (provider == null)
 				return null;
-
-			// TODO: Use cancellation token.
+			
 			var context = fixState.CreateFixAllContext (new RoslynProgressTracker (), token);
 
 			var title = fixState.GetDefaultFixAllTitle ();
