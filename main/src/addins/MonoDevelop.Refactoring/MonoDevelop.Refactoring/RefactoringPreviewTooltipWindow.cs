@@ -46,6 +46,7 @@ namespace MonoDevelop.Refactoring
 	{
 		TextEditor editor;
 		CodeAction codeAction;
+		Task<CodeAction> codeActionTask;
 		DocumentContext documentContext;
 		CancellationTokenSource popupSrc = new CancellationTokenSource ();
 		ITextDocument changedTextDocument;
@@ -58,11 +59,21 @@ namespace MonoDevelop.Refactoring
 
 		static RefactoringPreviewTooltipWindow currentPreviewWindow;
 
-		RefactoringPreviewTooltipWindow (TextEditor editor, CodeAction codeAction)
+		RefactoringPreviewTooltipWindow (TextEditor editor, CodeAction codeAction) : this(editor)
+		{
+			this.codeAction = codeAction;
+		}
+
+		RefactoringPreviewTooltipWindow (TextEditor editor, Task<CodeAction> codeActionTask) : this (editor)
+		{
+			this.codeActionTask = codeActionTask;
+		}
+
+		RefactoringPreviewTooltipWindow (TextEditor editor)
 		{
 			this.editor = editor;
 			this.documentContext = documentContext = editor.DocumentContext;
-			this.codeAction = codeAction;
+
 			TransientFor = IdeApp.Workbench.RootWindow;
 
 			fontDescription = Pango.FontDescription.FromString (DefaultSourceEditorOptions.Instance.FontName);
@@ -74,6 +85,13 @@ namespace MonoDevelop.Refactoring
 		}
 
 		public static void ShowPreviewTooltip (TextEditor editor, CodeAction fix, Xwt.Rectangle rect)
+		{
+			HidePreviewTooltip ();
+			currentPreviewWindow = new RefactoringPreviewTooltipWindow (editor, fix);
+			currentPreviewWindow.RequestPopup (rect);
+		}
+
+		public static void ShowPreviewTooltip (TextEditor editor, Task<CodeAction> fix, Xwt.Rectangle rect)
 		{
 			HidePreviewTooltip ();
 			currentPreviewWindow = new RefactoringPreviewTooltipWindow (editor, fix);
@@ -94,6 +112,9 @@ namespace MonoDevelop.Refactoring
 
 			diff = await Task.Run (async delegate {
 				try {
+					if (codeActionTask != null)
+						codeAction = await codeActionTask;
+
 					foreach (var op in await codeAction.GetPreviewOperationsAsync (token)) {
 						var ac = op as ApplyChangesOperation;
 						if (ac == null) {
