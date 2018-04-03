@@ -29,22 +29,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreSdkPaths
 	{
 		string msbuildSDKsPath;
+		string sdkRootPath;
 
 		public void FindMSBuildSDKsPath ()
 		{
-			var dotNetCorePath = new DotNetCorePath ();
-			if (dotNetCorePath.IsMissing)
+			if (DotNetCoreRuntime.IsInstalled)
+				FindMSBuildSDKsPath (DotNetCoreRuntime.FileName);
+		}
+
+		public void FindMSBuildSDKsPath (string dotNetCorePath)
+		{
+			if (string.IsNullOrEmpty (dotNetCorePath))
 				return;
 
-			string rootDirectory = Path.GetDirectoryName (dotNetCorePath.FileName);
-			string sdkRootPath = Path.Combine (rootDirectory, "sdk");
+			string rootDirectory = Path.GetDirectoryName (dotNetCorePath);
+			sdkRootPath = Path.Combine (rootDirectory, "sdk");
+
 			if (!Directory.Exists (sdkRootPath))
 				return;
 
@@ -60,8 +66,7 @@ namespace MonoDevelop.DotNetCore
 				return;
 
 			msbuildSDKsPath = Path.Combine (SdksParentDirectory, "Sdks");
-
-			MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", MSBuildSDKsPath);
+			Exist = true;
 		}
 
 		public void FindSdkPaths (string sdk)
@@ -90,6 +95,10 @@ namespace MonoDevelop.DotNetCore
 					SdksParentDirectory = Path.GetDirectoryName (msbuildSDKsPath);
 				}
 			}
+		}
+
+		public string SdkRootPath {
+			get { return sdkRootPath; }
 		}
 
 		public DotNetCoreVersion[] SdkVersions { get; private set; }

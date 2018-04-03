@@ -26,6 +26,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Mono.Addins;
 using MonoDevelop.Projects.Extensions;
 using NUnit.Framework;
 using UnitTests;
@@ -38,12 +39,23 @@ namespace MonoDevelop.Projects
 	public class ProjectCapabilityTests : TestBase
 	{
 		CustomCapabilityNode capaNode;
+		string testAddinAssemblyPath;
 
 		[TestFixtureSetUp]
 		public void SetUp ()
 		{
 			capaNode = new CustomCapabilityNode ();
 			WorkspaceObject.RegisterCustomExtension (capaNode);
+
+			// Register test addin.
+			if (!Directory.Exists (AddinManager.Registry.DefaultAddinsFolder))
+				Directory.CreateDirectory (AddinManager.Registry.DefaultAddinsFolder);
+
+			var thisDir = Path.GetDirectoryName (GetType ().Assembly.Location);
+			string testAddinBuildPath = Path.Combine (thisDir, "MonoDevelop.Core.Tests.Addin.dll");
+			testAddinAssemblyPath = Path.Combine (AddinManager.Registry.DefaultAddinsFolder, "MonoDevelop.Core.Tests.Addin.dll");
+			File.Copy (testAddinBuildPath, testAddinAssemblyPath);
+			AddinManager.Registry.Update (null);
 		}
 	
 		[TestFixtureTearDown]
@@ -51,9 +63,9 @@ namespace MonoDevelop.Projects
 		{
 			WorkspaceObject.UnregisterCustomExtension (capaNode);
 
-			// Ensure MonoDevelop.Core.Tests addin is not registered in local-config after tests are run.
-			string localConfigFile = Path.Combine (Util.TestsRootDir, "..", "..", "local-config", "MonoDevelop.Core.Tests.Addin.addins");
-			File.Delete (localConfigFile);
+			// Unregister test addin.
+			File.Delete (testAddinAssemblyPath);
+			AddinManager.Registry.Update (null);
 		}
 
 		List<string> defaultCapabilities;

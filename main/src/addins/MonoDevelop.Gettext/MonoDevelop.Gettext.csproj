@@ -112,14 +112,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.Gettext.Editor\CatalogEditorView.cs" />
     <Compile Include="MonoDevelop.Gettext.Editor\GtkSpell.cs" />
     <Compile Include="MonoDevelop.Gettext.Editor\CatalogHeadersWidget.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="MonoDevelop.Gettext.Translator\LanguageChooserDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs" />
     <Compile Include="MonoDevelop.Gettext.Editor\GettextEditorDisplayBinding.cs" />
     <Compile Include="MonoDevelop.Gettext\TranslationProject.cs" />
     <Compile Include="MonoDevelop.Gettext\Translation.cs" />
@@ -127,9 +124,7 @@
     <Compile Include="MonoDevelop.Gettext.NodeBuilders\TranslationNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Gettext\TranslationService.cs" />
     <Compile Include="MonoDevelop.Gettext\TranslationProjectOptionsDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs" />
     <Compile Include="MonoDevelop.Gettext.Editor\POEditorWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Gettext.POEditorWidget.cs" />
     <Compile Include="MonoDevelop.Gettext\Catalog.cs" />
     <Compile Include="MonoDevelop.Gettext\CatalogEntry.cs" />
     <Compile Include="MonoDevelop.Gettext\CatalogParser.cs" />
@@ -137,7 +132,6 @@
     <Compile Include="MonoDevelop.Gettext\IsoCodes.cs" />
     <Compile Include="MonoDevelop.Gettext\PropertyProvider.cs" />
     <Compile Include="MonoDevelop.Gettext\GettextFeatureWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Gettext.GettextFeatureWidget.cs" />
     <Compile Include="MonoDevelop.Gettext\MakefileHandler.cs" />
     <Compile Include="MonoDevelop.Gettext\GettextTool.cs" />
     <Compile Include="MonoDevelop.Gettext\IFileScanner.cs" />
@@ -153,11 +147,13 @@
     <Compile Include="MonoDevelop.Gettext.NodeBuilders\ProjectFileNodeBuilderExtension.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Gettext.Editor\Styles.cs" />
+    <Compile Include="Gui\MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Gettext.GettextFeatureWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Gettext.POEditorWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Gettext.addin.xml">
       <LogicalName>MonoDevelop.Gettext.addin.xml</LogicalName>
     </EmbeddedResource>
@@ -330,6 +326,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

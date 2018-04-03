@@ -40,6 +40,7 @@ obj/
 /main/.nuget/
 pull-package.exe
 /main/tests/StressTest/TestProject/bin
+/main/tests/MonoDevelop.Core.Tests.Addin/bin/
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files
@@ -196,6 +197,7 @@ Thumbs.db
 /main/contrib/ICSharpCode.NRefactory/Makefile
 /main/src/addins/TextTemplating/Mono.TextTemplating.Tests/Makefile
 /main/tests/MacPlatform.Tests/Makefile
+/main/tests/MonoDevelop.Core.Tests.Addin/Makefile
 /main/tests/MonoDevelop.CSharpBinding.Tests/Makefile
 /main/tests/MonoDevelop.MacDev.Tests/Makefile
 /main/tests/MonoDevelop.Refactoring.Tests/Makefile

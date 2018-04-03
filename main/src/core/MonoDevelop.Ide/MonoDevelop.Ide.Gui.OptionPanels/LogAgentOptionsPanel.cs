@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public LogAgentPanelWidget ()
 		{
-			global::Stetic.BinContainer.Attach (this);
+			BinContainer.Attach (this);
 
 			var reportingLabel = GettextCatalog.GetString ("Report errors and usage information to help {0} improve my experience.", BrandingService.SuiteName);
 

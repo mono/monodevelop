@@ -35,7 +35,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {

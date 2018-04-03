@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using ICSharpCode.NRefactory;
 
 using System;
 using System.Text;
@@ -32,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
+using ICSharpCode.Decompiler.CSharp.Syntax;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -106,9 +106,9 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		public ICSharpCode.NRefactory.TextLocation Location {
+		public TextLocation Location {
 			get {
-				return new ICSharpCode.NRefactory.TextLocation (currentLine, 1);
+				return new TextLocation (currentLine, 1);
 			}
 		}
 		
@@ -134,27 +134,6 @@ namespace MonoDevelop.AssemblyBrowser
 			sb.Append (text);
 		}
 
-		void ITextOutput.WritePrimitiveValue (object value, string literalValue)
-		{
-			WriteIndent ();
-			if (value == null) {
-				sb.Append ("null");
-			} else if (value is string) {
-				sb.Append ("\"");
-				sb.Append (value);
-				sb.Append ("\"");
-			} else if (value is char) {
-				sb.Append ("'");
-				sb.Append (value);
-				sb.Append ("'");
-			} else if (value is bool) {
-				sb.Append ((bool)value ? "true" : "false");
-			} else {
-				sb.Append (value.ToString());
-			}
-
-		}
-
 		void WriteIndent ()
 		{
 			if (!write_indent)
@@ -175,10 +154,6 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			WriteIndent ();
 			sb.Append (text);
-		}
-
-		public void AddDebugSymbols (MethodDebugSymbols methodDebugSymbols)
-		{
 		}
 
 		public void WriteReference (string text, object reference, bool isLocal)

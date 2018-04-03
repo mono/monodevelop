@@ -47,7 +47,7 @@ namespace Mono.TextEditor
 	{
 		#region Private Members
 
-		public MonoTextEditor VisualElement { get => this; }
+		public Gtk.Container VisualElement { get => this; }
 
 		ITextBuffer textBuffer;
 

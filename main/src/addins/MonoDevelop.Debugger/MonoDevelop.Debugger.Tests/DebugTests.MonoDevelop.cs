@@ -9,6 +9,7 @@ using MonoDevelop.Debugger;
 using NUnit.Framework;
 
 using MDTextFile = MonoDevelop.Projects.Text.TextFile;
+using System.Diagnostics;
 
 namespace Mono.Debugging.Tests
 {
@@ -16,6 +17,8 @@ namespace Mono.Debugging.Tests
 	{
 		DebuggerEngine engine;
 		TargetRuntime runtime;
+
+		static bool testProjectReady;
 
 		partial void SetUpPartial()
 		{
@@ -27,32 +30,33 @@ namespace Mono.Debugging.Tests
 			}
 			if (engine == null)
 				Assert.Ignore ("Engine not found: {0}", EngineId);
+
+			if (!testProjectReady) {
+				testProjectReady = true;
+				var packagesConfig = Path.Combine (TargetProjectSourceDir, "packages.config");
+				var packagesDir = Path.Combine (TargetProjectSourceDir, "packages");
+				Process.Start ("nuget", $"restore \"{packagesConfig}\" -PackagesDirectory \"{packagesDir}\"").WaitForExit ();
+				Process.Start ("msbuild", "\"" + TargetProjectSourceDir + "\"").WaitForExit ();
+			}
 		}
 
 		partial void TearDownPartial ()
 		{
 		}
 
-		FilePath UnitTestsDir
-		{
-			get{
-				FilePath thisAssemblyPath = GetType ().Assembly.Location;
-				return thisAssemblyPath.ParentDirectory.ParentDirectory.ParentDirectory.Combine ("external", "debugger-libs", "UnitTests");
-			}
-		}
-
 		protected string TargetExeDirectory
 		{
-			get{
-				return Path.GetDirectoryName (GetType ().Assembly.Location);
+			get {
+				FilePath path = TargetProjectSourceDir;
+				return path.Combine ("bin", "Debug");
 			}
 		}
 
 		protected string TargetProjectSourceDir
 		{
-			get{
-				FilePath path = TargetExeDirectory;
-				return UnitTestsDir.Combine (TestAppProjectDirName);
+			get {
+				FilePath path = Path.GetDirectoryName (GetType ().Assembly.Location);
+				return path.Combine ("DebuggerTestProjects", TestAppProjectDirName);
 			}
 		}
 

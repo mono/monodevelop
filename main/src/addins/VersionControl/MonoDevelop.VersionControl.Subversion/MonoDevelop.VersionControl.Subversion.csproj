@@ -99,32 +99,23 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion\SubversionRepository.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion\SubversionVersionControl.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion.Gui\ClientCertificateDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion.Gui\ClientCertificatePasswordDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion.Gui\SslServerTrustDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion.Gui\UserPasswordDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion\SvnRevision.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion.Gui\WorkingCopyFormatDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="gtk-gui\objects.xml">
-      <LogicalName>objects.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Subversion.Tests" />
@@ -134,5 +125,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="MonoDevelop.VersionControl.Subversion\" />
+    <Folder Include="Gui\" />
   </ItemGroup>
 </Project>

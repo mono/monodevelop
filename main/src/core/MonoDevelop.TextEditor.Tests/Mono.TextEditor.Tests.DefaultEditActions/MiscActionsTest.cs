@@ -281,6 +281,17 @@ dddddd$dddd
 eeeeeeeeee
 ffffffffff");
 		}
+
+		/// <summary>
+		/// Bug 586125: Alt+Up at beginning of the document results in an exception
+		/// </summary>
+		[Test ()]
+		public void TestBug586125 ()
+		{
+			TextEditorData data = Create (@"$1234567890
+1234567890");
+			MiscActions.MoveBlockUp (data);
+		}
 	}
 }
 

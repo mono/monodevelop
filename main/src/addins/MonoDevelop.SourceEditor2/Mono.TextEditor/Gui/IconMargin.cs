@@ -38,7 +38,7 @@ namespace Mono.TextEditor
 	class IconMargin : Margin
 	{
 		MonoTextEditor editor;
-		Cairo.Color backgroundColor, separatorColor;
+		Cairo.Color backgroundColor, separatorColor, focusedBackgroundColor, focusedMarkerColor;
 		const int marginWidth = 22;
 
 		public IconMargin (MonoTextEditor editor)
@@ -73,6 +73,8 @@ namespace Mono.TextEditor
 		internal protected override void OptionsChanged ()
 		{
 			backgroundColor = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.IndicatorMargin);
+			focusedBackgroundColor = backgroundColor.AddLight (-0.02);
+			focusedMarkerColor = backgroundColor.AddLight (-0.3);
 			separatorColor = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.IndicatorMarginSeparator);
 		}
 
@@ -131,18 +133,31 @@ namespace Mono.TextEditor
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine line, int lineNumber, double x, double y, double lineHeight)
 		{
 			bool backgroundIsDrawn = false;
+			bool lineMarkerIsSelected = false;
 			if (line != null) {
 				foreach (var marker in editor.Document.GetMarkersOrderedByInsertion (line)) {
 					var marginMarker = marker as MarginMarker;
-					if (marginMarker != null && marginMarker.CanDrawBackground (this)) {
-						backgroundIsDrawn = marginMarker.DrawBackground (editor, cr, new MarginDrawMetrics (this, area, line, lineNumber, x, y, lineHeight));
+					if (marginMarker != null) {
+						if (marginMarker.CanDrawBackground (this)) {
+							backgroundIsDrawn = marginMarker.DrawBackground (editor, cr, new MarginDrawMetrics (this, area, line, lineNumber, x, y, lineHeight));
+						}
+
+						if (focusMarkers != null) {
+							SanitizeFocusedIndex ();
+
+							lineMarkerIsSelected = (HasFocus && (marginMarker == focusMarkers[focusedIndex]));
+						}
 					}
 				}
 			}
 
 			if (!backgroundIsDrawn) {
 				cr.Rectangle (x, y, Width, lineHeight);
-				cr.SetSourceColor (backgroundColor);
+				if (HasFocus && lineMarkerIsSelected) {
+					cr.SetSourceColor (focusedMarkerColor);
+				} else {
+					cr.SetSourceColor (HasFocus ? focusedBackgroundColor : backgroundColor);
+				}
 				cr.Fill ();
 
 				cr.MoveTo (x + Width - 0.5, y);
@@ -187,6 +202,10 @@ namespace Mono.TextEditor
 			Accessible.AddAccessibleChild (proxy.Accessible);
 
 			markerToAccessible [e.TextMarker] = proxy;
+
+			if (focusMarkers != null) {
+				UpdateMarkers ();
+			}
 		}
 
 		void OnMarkerRemoved (object sender, TextMarkerEvent e)
@@ -206,6 +225,114 @@ namespace Mono.TextEditor
 
 			Accessible.RemoveAccessibleChild (proxy.Accessible);
 			markerToAccessible.Remove (e.TextMarker);
+
+			if (focusMarkers != null) {
+				UpdateMarkers ();
+			}
+		}
+
+		List<TextLineMarker> focusMarkers;
+		int focusedIndex;
+		protected internal override bool SupportsItemCommands => true;
+
+		void SanitizeFocusedIndex ()
+		{
+			if (focusMarkers == null) {
+				focusedIndex = 0;
+				return;
+			}
+
+			var count = focusMarkers.Count;
+			focusedIndex = focusedIndex < 0 ? 0 : focusedIndex >= count ? count - 1 : focusedIndex;
+		}
+
+		void UpdateMarkers ()
+		{
+			focusMarkers = new List<TextLineMarker> ();
+
+			for (int lineNumber = 0; lineNumber <= editor.Document.LineCount; lineNumber++) {
+				foreach (var marker in editor.Document.GetMarkersOrderedByInsertion (editor.GetLine (lineNumber))) {
+					focusMarkers.Add (marker);
+				}
+			}
+		}
+
+		protected internal override void FocusIn()
+		{
+			base.FocusIn();
+
+			UpdateMarkers ();
+			focusedIndex = 0;
+
+			if (focusMarkers.Count == 0) {
+				return;
+			}
+
+			var marker = focusMarkers[0];
+			editor.CenterTo (marker.LineSegment.LineNumber, 1);
+		}
+
+		protected internal override void FocusOut()
+		{
+			base.FocusOut();
+
+			focusMarkers = null;
+			focusedIndex = 0;
+
+			editor.RedrawMargin (this);
+		}
+
+		protected internal override bool HandleItemCommand(ItemCommand command)
+		{
+			if (focusMarkers.Count == 0) {
+				return false;
+			}
+
+			var marker = focusMarkers[focusedIndex] as MarginMarker;
+
+			if (marker == null) {
+				return false;
+			}
+
+			switch (command) {
+			case ItemCommand.ActivateCurrentItem:
+				var lineNumber = marker.LineSegment.LineNumber;
+				var y = editor.LineToY (lineNumber);
+				MousePressed (new MarginMouseEventArgs (editor, EventType.ButtonPress, 1, 0, y, ModifierType.None));
+
+				if (focusedIndex >= focusMarkers.Count) {
+					focusedIndex = focusMarkers.Count - 1;
+				}
+
+				editor.RedrawMargin (this);
+				break;
+
+			case ItemCommand.FocusNextItem:
+				focusedIndex++;
+
+				SanitizeFocusedIndex ();
+
+				marker = focusMarkers[focusedIndex] as MarginMarker;
+				editor.CenterTo (marker.LineSegment.LineNumber, 1);
+				break;
+
+			case ItemCommand.FocusPreviousItem:
+				focusedIndex--;
+
+				SanitizeFocusedIndex ();
+
+				marker = focusMarkers[focusedIndex] as MarginMarker;
+				editor.CenterTo (marker.LineSegment.LineNumber, 1);
+				break;
+			}
+
+			if (marker != null && markerToAccessible != null) {
+				var accessible = markerToAccessible[marker];
+				if (accessible != null) {
+					AtkCocoaExtensions.SetCurrentFocus (accessible.Accessible);
+				}
+			}
+			return true;
 		}
 
 		public EventHandler<BookmarkMarginDrawEventArgs> DrawEvent;
@@ -227,6 +354,7 @@ namespace Mono.TextEditor
 
 			set {
 				metrics = value;
+
 				Accessible.FrameInGtkParent = new Rectangle ((int)metrics.X, (int)metrics.Y, (int)metrics.Width, (int)metrics.Height);
 
 				var halfParentHeight = margin.RectInParent.Height / 2.0f;

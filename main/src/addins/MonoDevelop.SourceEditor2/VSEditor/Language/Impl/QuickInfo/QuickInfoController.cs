@@ -73,16 +73,16 @@
             CancelAndDisposeToken();
 
             this.cancellationTokenSource = new CancellationTokenSource();
+			var cancellationToken = cancellationTokenSource.Token;
 
             // Start quick info session async on the UI thread.
             this.joinableTaskContext.Factory.RunAsync(async delegate
             {
-                await UpdateSessionStateAsync(surfaceHoverPointNullable.Value, this.cancellationTokenSource.Token);
+                await UpdateSessionStateAsync(surfaceHoverPointNullable.Value, cancellationToken);
 
                 // Clean up the cancellation token source.
                 Debug.Assert(this.joinableTaskContext.IsOnMainThread);
-                this.cancellationTokenSource.Dispose();
-                this.cancellationTokenSource = null;
+				CancelAndDisposeToken ();
             });
         }
 

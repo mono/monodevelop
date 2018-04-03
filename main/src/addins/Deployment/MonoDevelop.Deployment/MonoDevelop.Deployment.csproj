@@ -143,7 +143,6 @@
     <Compile Include="MonoDevelop.Deployment.Gui\IFileCopyConfigurationEditor.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\LocalFileCopyConfigurationEditor.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\LocalFileCopyConfigurationEditorWidget.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.Deployment.Commands\Commands.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\DeployDialog.cs" />
     <Compile Include="MonoDevelop.Deployment\IDeployDirectoryResolver.cs" />
@@ -179,27 +178,27 @@
     <Compile Include="MonoDevelop.Deployment.Gui\DeployFileListWidget.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\PackagingFeatureWidget.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\BinariesZipEditorWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.DeployDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.InstallDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.EntrySelectionTree.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.EditPackageDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.DeployFileListWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.PackagingFeatureWidget.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\FileReplaceDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.FileReplaceDialog.cs" />
     <Compile Include="MonoDevelop.Deployment.Targets\BaseFuseFileCopyHandler.cs" />
     <Compile Include="MonoDevelop.Deployment.Targets\SshFuseFileCopyHandler.cs" />
     <Compile Include="MonoDevelop.Deployment.Targets\BaseFuseFileCopyConfiguration.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\SshFuseFileCopyConfigurationEditorWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\SshFuseFileCopyConfigurationEditor.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.DeployFileListWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.FileReplaceDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Gui.DeployDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Gui.EditPackageDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Gui.EntrySelectionTree.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Gui.InstallDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Gui.PackagingFeatureWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\package-16.png">
@@ -274,9 +273,6 @@
     <EmbeddedResource Include="icons\package-48~dark~sel%402x.png">
       <LogicalName>package-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="templates\PackagingProject.xpt.xml">
       <LogicalName>PackagingProject.xpt.xml</LogicalName>
     </EmbeddedResource>
@@ -324,5 +320,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="templates\images\" />
+    <Folder Include="Gui\" />
   </ItemGroup>
 </Project>

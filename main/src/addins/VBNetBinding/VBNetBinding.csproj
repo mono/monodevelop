@@ -103,10 +103,7 @@
     <Compile Include="VBBindingCompilerServices.cs" />
     <Compile Include="Project\VBCompilerParameters.cs" />
     <Compile Include="VBCodeGenerator.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Project\VBNetResourceIdBuilder.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs" />
     <Compile Include="Gui\ProjectOptionsPanelWidget.cs" />
     <Compile Include="Gui\ConfigurationOptionsPanelWidget.cs" />
     <Compile Include="Gui\ConfigurationOptionsPanel.cs" />
@@ -114,11 +111,13 @@
     <Compile Include="Project\Import.cs" />
     <Compile Include="Gui\ImportsOptionsPanelWidget.cs" />
     <Compile Include="Gui\ImportsOptionsPanel.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="Project\VBProjectExtension.cs" />
     <Compile Include="Project\ImprovedCodeDomProvider.cs" />
     <Compile Include="MonoDevelop.VBNet\VBNetTextEditorExtension.cs" />
+    <Compile Include="Gui\MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\EmptyVBFile.xft.xml">
@@ -138,9 +137,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="templates\AssemblyInfo.xft.xml">
       <LogicalName>AssemblyInfo.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
