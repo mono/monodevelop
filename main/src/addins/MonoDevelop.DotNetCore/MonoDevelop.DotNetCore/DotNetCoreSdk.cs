@@ -1,4 +1,4 @@
-﻿//
+//
 // DotNetCoreSdk.cs
 //
 // Author:
@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -39,16 +40,34 @@ namespace MonoDevelop.DotNetCore
 			var sdkPaths = new DotNetCoreSdkPaths ();
 			sdkPaths.FindMSBuildSDKsPath ();
 
-			SdkRootPath = sdkPaths.SdkRootPath;
+			Update (sdkPaths);
+		}
+
+		internal static void Update (DotNetCoreSdkPaths sdkPaths)
+		{
+			RegisterProjectImportSearchPath (MSBuildSDKsPath, sdkPaths.MSBuildSDKsPath);
+
 			MSBuildSDKsPath = sdkPaths.MSBuildSDKsPath;
+			SdkRootPath = sdkPaths.SdkRootPath;
 			IsInstalled = !string.IsNullOrEmpty (MSBuildSDKsPath);
-			Versions = sdkPaths.SdkVersions ?? new DotNetCoreVersion [0];
+			Versions = sdkPaths.SdkVersions ?? Array.Empty<DotNetCoreVersion> ();
 
 			if (!IsInstalled)
 				LoggingService.LogInfo (".NET Core SDK not found.");
 
 			if (IsInstalled)
 				SetFSharpShims ();
+		}
+
+		static void RegisterProjectImportSearchPath (string oldPath, string newPath)
+		{
+			const string propertyName = "MSBuildSDKsPath";
+
+			if (!string.IsNullOrEmpty (oldPath))
+				MSBuildProjectService.UnregisterProjectImportSearchPath (propertyName, oldPath);
+
+			if (!string.IsNullOrEmpty (newPath))
+				MSBuildProjectService.RegisterProjectImportSearchPath (propertyName, newPath);
 		}
 
 		public static bool IsInstalled { get; private set; }
