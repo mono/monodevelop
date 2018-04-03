@@ -95,19 +95,7 @@ namespace MonoDevelop.CodeActions
 
 					AddFixMenuItem (editor, menu, ref mnemonic, fix.Action);
 
-					var configurable = !DescriptorHasTag (diag.Descriptor, WellKnownDiagnosticTags.NotConfigurable);
-					if (descriptor != null && configurable) {
-						var optionsMenuItem = new CodeFixMenuEntry (GettextCatalog.GetString ("_Configure Rule \u2018{0}\u2019", diag.Descriptor.Title),
-							delegate {
-								IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
-									var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
-									if (panel == null)
-										return;
-									panel.Widget.SelectCodeIssue (fix.PrimaryDiagnostic.Descriptor.Id);
-								});
-							});
-						configureMenu.Add (optionsMenuItem);
-					}
+					AddConfigurationMenuEntry (diag, descriptor, fix, configureMenu);
 
 					if (!scopes.Contains (FixAllScope.Document))
 						continue;
@@ -168,6 +156,23 @@ namespace MonoDevelop.CodeActions
 		static bool DescriptorHasTag (DiagnosticDescriptor desc, string tag)
 		{
 			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
+		}
+
+		static void AddConfigurationMenuEntry (Diagnostic diag, CodeDiagnosticDescriptor descriptor, Microsoft.CodeAnalysis.CodeFixes.CodeFix fix, CodeFixMenu configureMenu)
+		{
+			var configurable = !DescriptorHasTag (diag.Descriptor, WellKnownDiagnosticTags.NotConfigurable);
+			if (descriptor != null && configurable) {
+				var optionsMenuItem = new CodeFixMenuEntry (GettextCatalog.GetString ("_Configure Rule \u2018{0}\u2019", diag.Descriptor.Title),
+					delegate {
+						IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
+							var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
+							if (panel == null)
+								return;
+							panel.Widget.SelectCodeIssue (fix.PrimaryDiagnostic.Descriptor.Id);
+						});
+					});
+				configureMenu.Add (optionsMenuItem);
+			}
 		}
 
 		static CodeFixMenuEntry CreateFixMenuEntry (TextEditor editor, CodeAction fix, ref int mnemonic)
