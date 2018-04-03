@@ -27,22 +27,37 @@
 using System;
 using MonoDevelop.Projects;
 using Gtk;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
 	public class CodeCompletionContext
 	{
+		public static readonly CodeCompletionContext Invalid = new CodeCompletionContext ();
+
 		public int TriggerOffset { get; set; }
 		public int TriggerLine { get; set; }
 		public int TriggerLineOffset { get; set; }
+
+		[Obsolete ("Use GetCoordinatesAsync ()")]
 		public int TriggerXCoord { get; set; }
+
+		[Obsolete ("Use GetCoordinatesAsync ()")]
 		public int TriggerYCoord { get; set; }
+
+		[Obsolete ("Use GetCoordinatesAsync ()")]
 		public int TriggerTextHeight { get; set; }
+
 		public int TriggerWordLength { get; set; }
 
 		public override string ToString ()
 		{
 			return string.Format ("[CodeCompletionContext: TriggerOffset={0}, TriggerLine={1}, TriggerLineOffset={2}, TriggerXCoord={3}, TriggerYCoord={4}, TriggerTextHeight={5}, TriggerWordLength={6}]", TriggerOffset, TriggerLine, TriggerLineOffset, TriggerXCoord, TriggerYCoord, TriggerTextHeight, TriggerWordLength);
+		}
+
+		public virtual Task<(int x, int y, int textHeight)> GetCoordinatesAsync ()
+		{
+			return Task.FromResult ((TriggerXCoord, TriggerYCoord, TriggerTextHeight));
 		}
 	}
 }

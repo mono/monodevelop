@@ -395,15 +395,27 @@ namespace MonoDevelop.Ide.Editor.Projection
 				}
 			}
 
-			return new MonoDevelop.Ide.CodeCompletion.CodeCompletionContext {
+			return new ProjectedContext (completionContext) {
 				TriggerOffset = offset,
 				TriggerLine = line,
 				TriggerLineOffset  = lineOffset,
-				TriggerXCoord  = completionContext.TriggerXCoord,
-				TriggerYCoord  = completionContext.TriggerYCoord,
-				TriggerTextHeight  = completionContext.TriggerTextHeight,
 				TriggerWordLength  = completionContext.TriggerWordLength
 			};
+		}
+
+		internal class ProjectedContext : CodeCompletionContext
+		{
+			private readonly CodeCompletionContext baseContext;
+
+			public ProjectedContext (CodeCompletionContext baseContext)
+			{
+				this.baseContext = baseContext;
+			}
+
+			public override Task<(int x, int y, int textHeight)> GetCoordinatesAsync ()
+			{
+				return baseContext.GetCoordinatesAsync ();
+			}
 		}
 
 		static CodeCompletionContext ImportContext (CodeCompletionContext completionContext, Projection projection)
@@ -424,13 +436,10 @@ namespace MonoDevelop.Ide.Editor.Projection
 				}
 			}
 
-			return new MonoDevelop.Ide.CodeCompletion.CodeCompletionContext {
+			return new ProjectedContext (completionContext) {
 				TriggerOffset = offset,
 				TriggerLine = line,
 				TriggerLineOffset  = lineOffset,
-				TriggerXCoord  = completionContext.TriggerXCoord,
-				TriggerYCoord  = completionContext.TriggerYCoord,
-				TriggerTextHeight  = completionContext.TriggerTextHeight,
 				TriggerWordLength  = completionContext.TriggerWordLength
 			};
 		}
