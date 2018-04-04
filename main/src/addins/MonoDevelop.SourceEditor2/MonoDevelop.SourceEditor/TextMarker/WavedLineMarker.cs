@@ -89,8 +89,12 @@ namespace MonoDevelop.SourceEditor
 			
 			drawFrom = Math.Max (drawFrom, editor.TextViewMargin.XOffset);
 			drawTo = Math.Max (drawTo, editor.TextViewMargin.XOffset);
-			if (drawFrom >= drawTo)
+
+			if (drawFrom > drawTo)
 				return;
+
+			if (drawFrom == drawTo)
+				drawTo += editor.TextViewMargin.charWidth;
 			
 			double height = editor.LineHeight / 5;
 			cr.SetSourceColor (Color);

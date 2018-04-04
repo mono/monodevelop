@@ -352,8 +352,13 @@ namespace MonoDevelop.AnalysisCore.Gui
 					if (currentResult.InspectionMark != IssueMarker.None) {
 						int start = currentResult.Region.Start;
 						int end = currentResult.Region.End;
-						if (start >= end)
+						if (start > end)
 							continue;
+
+						// In case a diagnostic has a 0 length span, force it to 1.
+						if (start == end)
+							end = end + 1;
+						
 						var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, GetSegmentMarkerEffect (currentResult.InspectionMark), TextSegment.FromBounds (start, end));
 						marker.Tag = currentResult;
 						marker.IsVisible = currentResult.Underline;
