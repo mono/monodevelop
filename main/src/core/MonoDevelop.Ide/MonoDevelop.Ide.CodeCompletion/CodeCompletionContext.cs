@@ -28,25 +28,47 @@ using System;
 using MonoDevelop.Projects;
 using Gtk;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
 	public class CodeCompletionContext
 	{
 		public static readonly CodeCompletionContext Invalid = new CodeCompletionContext ();
+		int? triggerXCoord;
+		int? triggerYCoord;
+		int? triggerTextHeight;
 
 		public int TriggerOffset { get; set; }
 		public int TriggerLine { get; set; }
 		public int TriggerLineOffset { get; set; }
 
 		[Obsolete ("Use GetCoordinatesAsync ()")]
-		public int TriggerXCoord { get; set; }
+		public int TriggerXCoord { 
+			get {
+				EnsureCoordinatesCalculated ();
+				return triggerXCoord.Value; 
+			} 
+			set => triggerXCoord = value; 
+		}
 
 		[Obsolete ("Use GetCoordinatesAsync ()")]
-		public int TriggerYCoord { get; set; }
+		public int TriggerYCoord { 
+			get {
+				EnsureCoordinatesCalculated ();
+				return triggerYCoord.Value;
+			} 
+			set => triggerYCoord = value; 
+		}
 
 		[Obsolete ("Use GetCoordinatesAsync ()")]
-		public int TriggerTextHeight { get; set; }
+		public int TriggerTextHeight {
+			get {
+				EnsureCoordinatesCalculated ();
+				return triggerTextHeight.Value;
+			}
+			set => triggerTextHeight = value; 
+		}
 
 		public int TriggerWordLength { get; set; }
 
@@ -55,9 +77,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return string.Format ("[CodeCompletionContext: TriggerOffset={0}, TriggerLine={1}, TriggerLineOffset={2}, TriggerXCoord={3}, TriggerYCoord={4}, TriggerTextHeight={5}, TriggerWordLength={6}]", TriggerOffset, TriggerLine, TriggerLineOffset, TriggerXCoord, TriggerYCoord, TriggerTextHeight, TriggerWordLength);
 		}
 
+		void EnsureCoordinatesCalculated ()
+		{
+			if (triggerXCoord.HasValue && triggerYCoord.HasValue && triggerTextHeight.HasValue)
+				return;
+			var coordinates = GetCoordinatesAsync ().WaitAndGetResult(default(CancellationToken));
+			if (!triggerXCoord.HasValue)
+				triggerXCoord = coordinates.x;
+			if (!triggerYCoord.HasValue)
+				triggerYCoord = coordinates.y;
+			if (!triggerTextHeight.HasValue)
+				triggerTextHeight = coordinates.textHeight;
+		}
+
 		public virtual Task<(int x, int y, int textHeight)> GetCoordinatesAsync ()
 		{
-			return Task.FromResult ((TriggerXCoord, TriggerYCoord, TriggerTextHeight));
+			return Task.FromResult ((triggerXCoord.HasValue ? triggerXCoord.Value : 0, triggerYCoord.HasValue ? triggerYCoord.Value : 0, triggerTextHeight.HasValue ? triggerTextHeight.Value : 0));
 		}
 	}
 }
