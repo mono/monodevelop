@@ -206,6 +206,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					lastContexts.Clear ();
 					lastContexts.Add (currentContext);
 				}
+				if (offset >= lineText.Length)
+					goto end;
 				lastMatch = offset;
 				currentContext = ContextStack.Peek ();
 				match = null;

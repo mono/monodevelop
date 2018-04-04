@@ -1,4 +1,4 @@
-﻿//
+//
 // MicrosoftTemplateEngine.cs
 //
 // Author:
@@ -63,9 +63,7 @@ namespace MonoDevelop.Ide.Templates
 			UpdateCache ();
 		}
 
-		static List<TemplateExtensionNode> projectTemplateNodes = new List<TemplateExtensionNode> ();
 		static List<MicrosoftTemplateEngineSolutionTemplate> projectTemplates = new List<MicrosoftTemplateEngineSolutionTemplate> ();
-		static List<ItemTemplateExtensionNode> itemTemplateNodes = new List<ItemTemplateExtensionNode> ();
 		static List<MicrosoftTemplateEngineItemTemplate> itemTemplates = new List<MicrosoftTemplateEngineItemTemplate> ();
 
 		static void UpdateCache ()
@@ -76,6 +74,8 @@ namespace MonoDevelop.Ide.Templates
 			// Prevent a TypeInitializationException in when calling SettingsLoader.Save when no templates
 			// are available, which throws an exception, by returning here. This prevents the MonoDevelop.Ide addin
 			// from loading. In practice this should not happen unless the .NET Core addin is disabled.
+			var projectTemplateNodes = AddinManager.GetExtensionNodes<TemplateExtensionNode> ("/MonoDevelop/Ide/Templates");
+			var itemTemplateNodes = AddinManager.GetExtensionNodes<ItemTemplateExtensionNode> ("/MonoDevelop/Ide/ItemTemplates");
 			if (!projectTemplateNodes.Any () && !itemTemplateNodes.Any ())
 				return;
 
@@ -86,12 +86,18 @@ namespace MonoDevelop.Ide.Templates
 			paths.DeleteDirectory (paths.User.BaseDir);//Delete cache
 			var settingsLoader = (SettingsLoader)environmentSettings.SettingsLoader;
 
-			foreach (var scanPath in projectTemplateNodes.Select (t => t.ScanPath).Distinct ()) {
-				settingsLoader.UserTemplateCache.Scan (scanPath);
+			foreach (var path in projectTemplateNodes.Select (t => t.ScanPath).Distinct ()) {
+				string scanPath = StringParserService.Parse (path);
+				if (!string.IsNullOrEmpty (scanPath)) {
+					settingsLoader.UserTemplateCache.Scan (scanPath);
+				}
 			}
 
-			foreach (var scanPath in itemTemplateNodes.Select (t => t.ScanPath).Distinct ()) {
-				settingsLoader.UserTemplateCache.Scan (scanPath);
+			foreach (var path in itemTemplateNodes.Select (t => t.ScanPath).Distinct ()) {
+				string scanPath = StringParserService.Parse (path);
+				if (!string.IsNullOrEmpty (scanPath)) {
+					settingsLoader.UserTemplateCache.Scan (scanPath);
+				}
 			}
 
 			settingsLoader.Save ();
@@ -123,53 +129,12 @@ namespace MonoDevelop.Ide.Templates
 
 		static void OnProjectTemplateExtensionChanged (object sender, ExtensionNodeEventArgs args)
 		{
-			var node = (TemplateExtensionNode)args.ExtensionNode;
-
-			OnExtensionChanged (projectTemplateNodes, node, args.Change);
+			UpdateCache ();
 		}
 
 		static void OnItemTemplateExtensionChanged (object sender, ExtensionNodeEventArgs args)
 		{
-			var node = (ItemTemplateExtensionNode)args.ExtensionNode;
-
-			OnExtensionChanged (itemTemplateNodes, node, args.Change);
-		}
-
-		static void OnExtensionChanged<T> (List<T> extensionNodes, T node, ExtensionChange change)
-			where T : ExtensionNode
-		{
-			if (change == ExtensionChange.Add) {
-				try {
-					extensionNodes.Add (node);
-				} catch (Exception ex) {
-					LogExtensionChangedError (ex, node);
-				}
-			} else {
-				foreach (var existingNode in extensionNodes) {
-					if (existingNode.Id == node.Id) {
-						extensionNodes.Remove (existingNode);
-						break;
-					}
-				}
-			}
-
 			UpdateCache ();
-		}
-
-		static void LogExtensionChangedError (Exception ex, ExtensionNode node)
-		{
-			string extId = null;
-			string addinId = null;
-
-			if (node != null) {
-				if (node.HasId)
-					extId = node.Id;
-				if (node.Addin != null)
-					addinId = node.Addin.Id;
-			}
-
-			LoggingService.LogError ("Error loading template id {0} in addin {1}:\n{2}",
-				extId ?? "(null)", addinId ?? "(null)", ex.ToString ());
 		}
 
 		public static IEnumerable<SolutionTemplate> GetProjectTemplates ()
@@ -327,25 +292,11 @@ namespace MonoDevelop.Ide.Templates
 
 		class MyTemplateEngineHost : DefaultTemplateEngineHost
 		{
-			public MyTemplateEngineHost ()
-				: base (BrandingService.ApplicationName, BuildInfo.CompatVersion, "en-US", new Dictionary<string, string> { { "dotnet-cli-version", "0" } }, new Dictionary<Guid, Func<Type>>
-			{
-				{ new Guid("0C434DF7-E2CB-4DEE-B216-D7C58C8EB4B3"), () => typeof(RunnableProjectGenerator) },
-				{ new Guid("3147965A-08E5-4523-B869-02C8E9A8AAA1"), () => typeof(BalancedNestingConfig) },
-				{ new Guid("3E8BCBF0-D631-45BA-A12D-FBF1DE03AA38"), () => typeof(ConditionalConfig) },
-				{ new Guid("A1E27A4B-9608-47F1-B3B8-F70DF62DC521"), () => typeof(FlagsConfig) },
-				{ new Guid("3FAE1942-7257-4247-B44D-2DDE07CB4A4A"), () => typeof(IncludeConfig) },
-				{ new Guid("3D33B3BF-F40E-43EB-A14D-F40516F880CD"), () => typeof(RegionConfig) },
-				{ new Guid("62DB7F1F-A10E-46F0-953F-A28A03A81CD1"), () => typeof(ReplacementConfig) },
-				{ new Guid("370996FE-2943-4AED-B2F6-EC03F0B75B4A"), () => typeof(ConstantMacro) },
-				{ new Guid("BB625F71-6404-4550-98AF-B2E546F46C5F"), () => typeof(EvaluateMacro) },
-				{ new Guid("10919008-4E13-4FA8-825C-3B4DA855578E"), () => typeof(GuidMacro) },
-				{ new Guid("F2B423D7-3C23-4489-816A-41D8D2A98596"), () => typeof(NowMacro) },
-				{ new Guid("011E8DC1-8544-4360-9B40-65FD916049B7"), () => typeof(RandomMacro) },
-				{ new Guid("8A4D4937-E23F-426D-8398-3BDBD1873ADB"), () => typeof(RegexMacro) },
-				{ new Guid("B57D64E0-9B4F-4ABE-9366-711170FD5294"), () => typeof(SwitchMacro) },
-				{ new Guid("10919118-4E13-4FA9-825C-3B4DA855578E"), () => typeof(CaseChangeMacro) }
-			}.ToList ())
+			static readonly AssemblyComponentCatalog builtIns = new AssemblyComponentCatalog (new[] {
+				typeof (RunnableProjectGenerator).Assembly,
+			});
+
+			public MyTemplateEngineHost () : base (BrandingService.ApplicationName, BuildInfo.CompatVersion, "en-US", new Dictionary<string, string> { { "dotnet-cli-version", "0" } }, builtIns)
 			{
 			}
 

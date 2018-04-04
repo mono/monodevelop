@@ -266,6 +266,46 @@ namespace MonoDevelop.Ide
 				Assert.AreEqual (expectedXml, xml);
 			}
 		}
+
+		/// <summary>
+		/// Support new lines in a description that is a single line.
+		/// </summary>
+		[Test]
+		public void MicrosoftTemplateEngine_DescriptionParsing ()
+		{
+			string result = MicrosoftTemplateEngineSolutionTemplate.ParseDescription ("test");
+			Assert.AreEqual ("test", result);
+
+			result = MicrosoftTemplateEngineSolutionTemplate.ParseDescription (@"test\n");
+			Assert.AreEqual ("test" + Environment.NewLine, result);
+
+			result = MicrosoftTemplateEngineSolutionTemplate.ParseDescription (@"\ntest");
+			Assert.AreEqual (Environment.NewLine + "test", result);
+
+			result = MicrosoftTemplateEngineSolutionTemplate.ParseDescription (@"t\nest");
+			Assert.AreEqual ("t" + Environment.NewLine + "est", result);
+
+			result = MicrosoftTemplateEngineSolutionTemplate.ParseDescription (@"t\n\nest");
+			Assert.AreEqual ("t" + Environment.NewLine + Environment.NewLine + "est", result);
+
+			result = MicrosoftTemplateEngineSolutionTemplate.ParseDescription (@"test\\n");
+			Assert.AreEqual (@"test\n", result);
+
+			result = MicrosoftTemplateEngineSolutionTemplate.ParseDescription (@"\\ntest");
+			Assert.AreEqual (@"\ntest", result);
+
+			result = MicrosoftTemplateEngineSolutionTemplate.ParseDescription (@"test\");
+			Assert.AreEqual (@"test\", result);
+
+			result = MicrosoftTemplateEngineSolutionTemplate.ParseDescription (@"te\st");
+			Assert.AreEqual (@"te\st", result);
+
+			result = MicrosoftTemplateEngineSolutionTemplate.ParseDescription (@"te\\st");
+			Assert.AreEqual (@"te\\st", result);
+
+			result = MicrosoftTemplateEngineSolutionTemplate.ParseDescription (null);
+			Assert.IsNull (result);
+		}
 	}
 }
 

@@ -224,7 +224,7 @@ contexts:
         2: source.fs
         3: punctuation.section.brackets
   functions2:
-    - match: '(\|>\s?)(fun|function)'
+    - match: '(\|>\s?)\b(function|fun)\b'
       captures:
         1: source.fs
         2: keyword.source.fs

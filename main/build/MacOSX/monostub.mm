@@ -409,8 +409,8 @@ int main (int argc, char **argv)
 	}
 
 #if STATIC_REGISTRAR
-	char *registrar_toggle = getenv("MD_DISABLE_STATIC_REGISTRAR");
-	if (!registrar_toggle) {
+	char *registrar_toggle = getenv("MD_ENABLE_STATIC_REGISTRAR");
+	if (registrar_toggle) {
 		libvsmregistrar = dlopen ("@loader_path/libvsmregistrar.dylib", RTLD_LAZY);
 		if (!libvsmregistrar) {
 			libvsmregistrar = dlopen ("@loader_path/../Resources/lib/monodevelop/bin/libvsmregistrar.dylib", RTLD_LAZY);

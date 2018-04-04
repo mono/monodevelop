@@ -96,6 +96,7 @@ namespace MonoDevelop.DotNetCore.Templating
 			TargetFramework framework = targetFrameworks [selectedTargetFrameworkIndex];
 			wizard.Parameters ["Framework"] = framework.Id.GetShortFrameworkName ();
 
+			wizard.Parameters ["UseNetCore21"] = framework.IsNetCoreApp21 ().ToString ();
 			wizard.Parameters ["UseNetCore20"] = framework.IsNetCoreApp20 ().ToString ();
 			wizard.Parameters ["UseNetCore1x"] = framework.IsNetCoreApp1x ().ToString ();
 

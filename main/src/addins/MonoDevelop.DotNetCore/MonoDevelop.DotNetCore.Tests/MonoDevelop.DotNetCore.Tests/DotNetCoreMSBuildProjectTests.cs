@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System.Linq;
-using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.MSBuild;
 using NUnit.Framework;
@@ -68,15 +67,16 @@ namespace MonoDevelop.DotNetCore.Tests
 				.HasProperty (name);
 		}
 
-		void ReadProject ()
+		void ReadProject (string frameworkMoniker = ".NETCoreApp,Version=v1.0")
 		{
+			var moniker = TargetFrameworkMoniker.Parse (frameworkMoniker);
 			project.ReadProjectHeader (msbuildProject);
-			project.ReadProject (msbuildProject);
+			project.ReadProject (msbuildProject, moniker);
 		}
 
-		void WriteProject (string framework = ".NETCoreApp", string version = "1.0")
+		void WriteProject (string frameworkMoniker = ".NETCoreApp,Version=v1.0")
 		{
-			var moniker = new TargetFrameworkMoniker (framework, version);
+			var moniker = TargetFrameworkMoniker.Parse (frameworkMoniker);
 			project.WriteProject (msbuildProject, moniker);
 		}
 
@@ -361,7 +361,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			ReadProject ();
 			project.Sdk = "Microsoft.NET.Sdk";
 
-			WriteProject (".NETCoreApp", "1.1");
+			WriteProject (".NETCoreApp,Version=v1.1");
 
 			string savedFramework = msbuildProject.GetGlobalPropertyGroup ()
 				.GetValue ("TargetFramework");
@@ -379,10 +379,10 @@ namespace MonoDevelop.DotNetCore.Tests
 				"  </PropertyGroup>\r\n" +
 				"</Project>");
 			msbuildProject.Evaluate ();
-			ReadProject ();
+			ReadProject (".NET Standard,Version=v1.0");
 			project.Sdk = "Microsoft.NET.Sdk";
 
-			WriteProject (".NETStandard", "1.6");
+			WriteProject (".NETStandard,Version=v1.6");
 
 			string savedFramework = msbuildProject.GetGlobalPropertyGroup ()
 				.GetValue ("TargetFramework");
@@ -403,7 +403,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			ReadProject ();
 			project.Sdk = "Microsoft.NET.Sdk";
 
-			WriteProject (".NETFramework", "4.6");
+			WriteProject (".NETFramework,Version=v4.6");
 
 			string savedFramework = msbuildProject.GetGlobalPropertyGroup ()
 				.GetValue ("TargetFramework");
@@ -424,7 +424,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			ReadProject ();
 			project.Sdk = "Microsoft.NET.Sdk";
 
-			WriteProject (".NETCoreApp", "1.1");
+			WriteProject (".NETCoreApp,Version=v1.1");
 
 			string savedFramework = msbuildProject.GetGlobalPropertyGroup ()
 				 .GetValue ("TargetFrameworks");
@@ -450,6 +450,80 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			Assert.AreEqual ("NewAssemblyName", GetPropertyValueFromMSBuildProject ("AssemblyName"));
 			Assert.AreEqual ("NewRootNamespace", GetPropertyValueFromMSBuildProject ("RootNamespace"));
+		}
+
+		[TestCase ("netcoreapp1.0", ".NETCoreApp,Version=v1.0")]
+		[TestCase ("netcoreapp10", ".NETCoreApp,Version=v1.0")]
+		[TestCase ("NetCoreApp1.0", ".NETCoreApp,Version=v1.0")]
+		[TestCase ("net461", ".NETFramework,Version=v4.6.1")]
+		[TestCase ("net4.6.1", ".NETFramework,Version=v4.6.1")]
+		[TestCase ("Net461", ".NETFramework,Version=v4.6.1")]
+		[TestCase ("NET461", ".NETFramework,Version=v4.6.1")]
+		[TestCase ("netstandard2.0", ".NETStandard,Version=v2.0")]
+		[TestCase ("netstandard20", ".NETStandard,Version=v2.0")]
+		[TestCase ("NetStandard2.0", ".NETStandard,Version=v2.0")]
+		[TestCase ("tizen40", "Tizen,Version=v4.0")]
+		[TestCase ("tizen4.0", "Tizen,Version=v4.0")]
+		[TestCase ("Tizen4.0", "Tizen,Version=v4.0")]
+		public void WriteProject_ProjectTargetFrameworkUnchanged_TargetFrameworkPropertyNotModified (
+			string shortFrameworkName,
+			string fullFrameworkName)
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>" + shortFrameworkName + "</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			msbuildProject.Evaluate ();
+			ReadProject (fullFrameworkName);
+
+			WriteProject (fullFrameworkName);
+
+			string savedFramework = msbuildProject.GetGlobalPropertyGroup ()
+				.GetValue ("TargetFramework");
+			Assert.AreEqual (shortFrameworkName, savedFramework);
+		}
+
+		[TestCase ("netcoreapp1.0", ".NETCoreApp,Version=v1.0", ".NETCoreApp,Version=v1.1", "netcoreapp1.1")]
+		[TestCase ("netcoreapp10", ".NETCoreApp,Version=v1.0", ".NETCoreApp,Version=v1.1", "netcoreapp11")]
+		[TestCase ("NetCoreApp1.0", ".NETCoreApp,Version=v1.0", ".NETCoreApp,Version=v1.1", "NetCoreApp1.1")]
+		[TestCase ("net461", ".NETFramework,Version=v4.6.1", ".NETFramework,Version=v4.7.1", "net471")]
+		[TestCase ("net4.6.1", ".NETFramework,Version=v4.6.1", ".NETFramework,Version=v4.7.1", "net4.7.1")]
+		[TestCase ("Net461", ".NETFramework,Version=v4.6.1", ".NETFramework,Version=v4.7.1", "Net471")]
+		[TestCase ("NET461", ".NETFramework,Version=v4.6.1", ".NETFramework,Version=v4.7.1", "NET471")]
+		[TestCase ("netstandard2.0", ".NETStandard,Version=v2.0", ".NETStandard,Version=v1.1", "netstandard1.1")]
+		[TestCase ("netstandard20", ".NETStandard,Version=v2.0", ".NETStandard,Version=v1.1", "netstandard11")]
+		[TestCase ("NetStandard2.0", ".NETStandard,Version=v2.0", ".NETStandard,Version=v1.1", "NetStandard1.1")]
+		[TestCase ("tizen40", "Tizen,Version=v4.0", "Tizen,Version=v4.1", "tizen41")]
+		[TestCase ("tizen4.0", "Tizen,Version=v4.0", "Tizen,Version=v4.1", "tizen4.1")]
+		[TestCase ("Tizen4.0", "Tizen,Version=v4.0", "Tizen,Version=v4.1", "Tizen4.1")]
+
+		// Changing the target framework name should not happen in practice.
+		[TestCase ("netcoreapp1.0", ".NETCoreApp,Version=v1.0", ".NETFramework,Version=v4.6.1", "net461")] // Use default dotted version format for .NETFramework
+		[TestCase ("net461", ".NETFramework,Version=v4.6.1", ".NETCoreApp,Version=v1.1", "netcoreapp1.1")] // Use default dotted format for .NET Core.
+		[TestCase ("netcoreapp1.0", ".NETCoreApp,Version=v1.0", ".NETStandard,Version=v1.1", "netstandard1.1")]
+		[TestCase ("netcoreapp10", ".NETCoreApp,Version=v1.0", ".NETStandard,Version=v1.0", "netstandard1.0")]
+		public void WriteProject_ProjectTargetFrameworkChanged_TargetFrameworkPropertyModified (
+			string shortFrameworkName,
+			string originalFullFrameworkName,
+			string finalFullFrameworkName,
+			string expectedShortFrameworkName)
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>" + shortFrameworkName + "</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			msbuildProject.Evaluate ();
+			ReadProject (originalFullFrameworkName);
+
+			WriteProject (finalFullFrameworkName);
+
+			string savedFramework = msbuildProject.GetGlobalPropertyGroup ()
+				.GetValue ("TargetFramework");
+			Assert.AreEqual (expectedShortFrameworkName, savedFramework);
 		}
 	}
 }

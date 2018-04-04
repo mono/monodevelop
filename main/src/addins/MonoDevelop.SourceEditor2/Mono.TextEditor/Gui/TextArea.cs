@@ -627,6 +627,17 @@ namespace Mono.TextEditor
 			oldSelection = selection;
 			OnSelectionChanged (EventArgs.Empty);
 		}
+
+		internal void CommitPreedit ()
+		{
+			CommitString (preeditString);
+
+			preeditOffset = -1;
+			preeditString = null;
+			preeditAttrs = null;
+			preeditCursorCharIndex = 0;
+			imContextNeedsReset = true;
+		}
 		
 		internal void ResetIMContext ()
 		{
@@ -635,64 +646,227 @@ namespace Mono.TextEditor
 				imContextNeedsReset = false;
 			}
 		}
-		
-		void IMCommit (object sender, Gtk.CommitArgs ca)
+
+		void CommitString (string str)
 		{
 			if (!IsRealized || !IsFocus)
 				return;
-			
-			//this, if anywhere, is where we should handle UCS4 conversions
-			for (int i = 0; i < ca.Str.Length; i++) {
+
+			for (int i = 0; i < str.Length; i++) {
 				int utf32Char;
-				if (char.IsHighSurrogate (ca.Str, i)) {
-					utf32Char = char.ConvertToUtf32 (ca.Str, i);
+				if (char.IsHighSurrogate (str, i)) {
+					utf32Char = char.ConvertToUtf32 (str, i);
 					i++;
 				} else {
-					utf32Char = (int)ca.Str [i];
+					utf32Char = (int)str [i];
 				}
-				
+
 				//include the other pre-IM state *if* the post-IM char matches the pre-IM (key-mapped) one
-				 if (lastIMEventMappedChar == utf32Char && lastIMEventMappedChar == (uint)lastIMEventMappedKey) {
+				if (lastIMEventMappedChar == utf32Char && lastIMEventMappedChar == (uint)lastIMEventMappedKey) {
 					editor.OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastIMEventMappedChar, lastIMEventMappedModifier);
 				} else {
 					editor.OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
 				}
 			}
-			
+
 			//the IME can commit while there's still a pre-edit string
 			//since we cached the pre-edit offset when it started, need to update it
 			if (preeditOffset > -1) {
 				preeditOffset = Caret.Offset;
 			}
 		}
-		
-		protected override bool OnFocusInEvent (EventFocus evnt)
+
+		void IMCommit (object sender, Gtk.CommitArgs ca)
 		{
-			var result = base.OnFocusInEvent (evnt);
+			CommitString (ca.Str);
+		}
+
+		enum FocusMargin {
+			None,
+			Icon,
+			Action,
+			Gutter,
+			FoldMarker,
+			TextView,
+		};
+
+		FocusMargin currentFocus = FocusMargin.None;
+
+		Margin GetMargin (FocusMargin margin)
+		{
+			switch (margin) {
+			case FocusMargin.None:
+				return null;
+
+			case FocusMargin.Icon:
+				return IconMargin;
+
+			case FocusMargin.Action:
+				return ActionMargin;
+
+			case FocusMargin.Gutter:
+				return GutterMargin;
+
+			case FocusMargin.FoldMarker:
+				return foldMarkerMargin;
+
+			case FocusMargin.TextView:
+				return TextViewMargin;
+
+			default:
+				return null;
+			}
+		}
+
+		FocusMargin GetNextMargin (FocusMargin current, DirectionType direction)
+		{
+			switch (direction) {
+			case DirectionType.TabForward:
+			case DirectionType.Right:
+				switch (current) {
+				case FocusMargin.None:
+					return FocusMargin.Icon;
+
+				case FocusMargin.Icon:
+					return FocusMargin.Action;
+
+				case FocusMargin.Action:
+					return FocusMargin.Gutter;
+
+				case FocusMargin.Gutter:
+					return FocusMargin.FoldMarker;
+
+				case FocusMargin.FoldMarker:
+					return FocusMargin.TextView;
+
+				case FocusMargin.TextView:
+					return FocusMargin.None;
+				}
+
+				break;
+
+			case DirectionType.TabBackward:
+			case DirectionType.Left:
+				switch (current) {
+				case FocusMargin.None:
+					return FocusMargin.TextView;
+
+				case FocusMargin.Icon:
+					return FocusMargin.None;
+
+				case FocusMargin.Action:
+					return FocusMargin.Icon;
+
+				case FocusMargin.Gutter:
+					return FocusMargin.Action;
+
+				case FocusMargin.FoldMarker:
+					return FocusMargin.Gutter;
+
+				case FocusMargin.TextView:
+					return FocusMargin.FoldMarker;
+				}
+
+				break;
+			}
+
+			return FocusMargin.None;
+		}
+
+		bool FocusNextMargin (Gtk.DirectionType direction)
+		{
+			FocusMargin nextFocus = currentFocus;
+			Margin margin = null;
+
+			while ((nextFocus = GetNextMargin (nextFocus, direction)) != FocusMargin.TextView) {
+				if (nextFocus == FocusMargin.None) {
+					break;
+				}
+
+				var m = GetMargin (nextFocus);
+
+				if (m.SupportsItemCommands) {
+					margin = m;
+					break;
+				}
+			}
+
+			var previousMargin = GetMargin (currentFocus);
+			if (previousMargin != null && previousMargin.SupportsItemCommands) {
+				previousMargin.FocusOut ();
+			}
+			currentFocus = nextFocus;
+
+			if (margin != null) {
+				margin.FocusIn ();
+			} else if (currentFocus == FocusMargin.TextView) {
+				textViewMargin.FocusIn ();
+			}
+
+			return currentFocus != FocusMargin.None;
+		}
+
+		void FocusIn ()
+		{
 			imContextNeedsReset = true;
 			IMContext.FocusIn ();
 			RequestResetCaretBlink ();
 			Document.CommitLineUpdate (Caret.Line);
+		}
+
+		protected override bool OnFocusInEvent (EventFocus evnt)
+		{
+			var result = base.OnFocusInEvent (evnt);
+
+			currentFocus = FocusMargin.TextView;
+			textViewMargin.FocusIn ();
+			FocusIn ();
+
 			return result;
 		}
-		
+
+		void FocusOut ()
+		{
+			if (currentFocus == FocusMargin.TextView) {
+				imContextNeedsReset = true;
+				mouseButtonPressed = 0;
+				imContext.FocusOut ();
+
+				if (tipWindow != null && currentTooltipProvider != null) {
+					if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
+						DelayedHideTooltip ();
+				} else {
+					HideTooltip ();
+				}
+
+				TextViewMargin.StopCaretThread ();
+				Document.CommitLineUpdate (Caret.Line);
+				textViewMargin.FocusOut ();
+			} else if (currentFocus != FocusMargin.None){
+				var cm = GetMargin (currentFocus);
+				cm.FocusOut ();
+			}
+		}
+
 		protected override bool OnFocusOutEvent (EventFocus evnt)
 		{
 			var result = base.OnFocusOutEvent (evnt);
-			imContextNeedsReset = true;
-			mouseButtonPressed = 0;
-			imContext.FocusOut ();
 
-			if (tipWindow != null && currentTooltipProvider != null) {
-				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
-					DelayedHideTooltip ();
-			} else {
-				HideTooltip ();
-			}
+			FocusOut ();
 
-			TextViewMargin.StopCaretThread ();
-			Document.CommitLineUpdate (Caret.Line);
 			return result;
+		}
+
+		protected override void OnFocusGrabbed()
+		{
+			if (currentFocus != FocusMargin.TextView && currentFocus != FocusMargin.None) {
+				var m = GetMargin (currentFocus);
+				m.FocusOut ();
+			}
+			currentFocus = FocusMargin.TextView;
+			textViewMargin.FocusIn ();
+
+			base.OnFocusGrabbed();
 		}
 
 		protected override void OnRealized ()
@@ -1044,59 +1218,97 @@ namespace Mono.TextEditor
 
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
-			Gdk.Key key;
-			Gdk.ModifierType mod;
-			KeyboardShortcut[] accels;
-			GtkWorkarounds.MapKeys (evt, out key, out mod, out accels);
-			//HACK: we never call base.OnKeyPressEvent, so implement the popup key manually
-			if (key == Gdk.Key.Menu || (key == Gdk.Key.F10 && mod.HasFlag (ModifierType.ShiftMask))) {
-				OnPopupMenu ();
-				return true;
-			}
-			uint keyVal = (uint)key;
-			CurrentMode.SelectValidShortcut (accels, out key, out mod);
-			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
-				var p = LocationToPoint (Caret.Location);
-				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
-				return true;
-			}
-			if (key == Gdk.Key.F2 && textViewMargin.IsCodeSegmentPreviewWindowShown) {
-				textViewMargin.OpenCodeSegmentEditor ();
-				return true;
-			}
-			
-			//FIXME: why are we doing this?
-			if ((key == Gdk.Key.space || key == Gdk.Key.parenleft || key == Gdk.Key.parenright) && (mod & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
-				mod = Gdk.ModifierType.None;
-			
-			uint unicodeChar = Gdk.Keyval.ToUnicode (keyVal);
-			
-			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (key, unicodeChar, mod)) {
-				ResetIMContext ();
-				//FIXME: should call base.OnKeyPressEvent when SimulateKeyPress didn't handle the event
-				SimulateKeyPress (key, unicodeChar, mod);
-				return true;
-			}
-			bool filter = IMFilterKeyPress (evt, key, unicodeChar, mod);
-			if (filter) {
-				imContextNeedsReset = false;
-				ResetIMContext ();
-				return true;
+			if (currentFocus == FocusMargin.TextView) {
+				Gdk.Key key;
+				Gdk.ModifierType mod;
+				KeyboardShortcut[] accels;
+				GtkWorkarounds.MapKeys (evt, out key, out mod, out accels);
+				//HACK: we never call base.OnKeyPressEvent, so implement the popup key manually
+				if (key == Gdk.Key.Menu || (key == Gdk.Key.F10 && mod.HasFlag (ModifierType.ShiftMask))) {
+					OnPopupMenu ();
+					return true;
+				}
+
+				if (key == Gdk.Key.Tab && mod.HasFlag (ModifierType.Mod1Mask)) {
+					currentFocus = FocusMargin.None;
+					return FocusNextMargin (Gtk.DirectionType.TabForward);
+				}
+
+				uint keyVal = (uint)key;
+				CurrentMode.SelectValidShortcut (accels, out key, out mod);
+				if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
+					var p = LocationToPoint (Caret.Location);
+					ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
+					return true;
+				}
+				if (key == Gdk.Key.F2 && textViewMargin.IsCodeSegmentPreviewWindowShown) {
+					textViewMargin.OpenCodeSegmentEditor ();
+					return true;
+				}
+				
+				//FIXME: why are we doing this?
+				if ((key == Gdk.Key.space || key == Gdk.Key.parenleft || key == Gdk.Key.parenright) && (mod & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
+					mod = Gdk.ModifierType.None;
+				
+				uint unicodeChar = Gdk.Keyval.ToUnicode (keyVal);
+				
+				if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (key, unicodeChar, mod)) {
+					ResetIMContext ();
+					//FIXME: should call base.OnKeyPressEvent when SimulateKeyPress didn't handle the event
+					SimulateKeyPress (key, unicodeChar, mod);
+					return true;
+				}
+				bool filter = IMFilterKeyPress (evt, key, unicodeChar, mod);
+				if (filter) {
+					imContextNeedsReset = false;
+					ResetIMContext ();
+					return true;
+				}
+
+				//FIXME: OnIMProcessedKeyPressEvent should return false when it didn't handle the event
+				if (editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
+					return true;
+			} else if (currentFocus != FocusMargin.None) {
+				return HandleMarginKeyCommand (evt);
 			}
 
-			//FIXME: OnIMProcessedKeyPressEvent should return false when it didn't handle the event
-			if (editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
-				return true;
-			
 			return base.OnKeyPressEvent (evt);
 		}
 		
+		bool HandleMarginKeyCommand (EventKey evnt)
+		{
+			var cm = GetMargin (currentFocus);
+			Gdk.Key key;
+			Gdk.ModifierType mod;
+			KeyboardShortcut[] accels;
+
+			GtkWorkarounds.MapKeys (evnt, out key, out mod, out accels);
+
+			if (key == Gdk.Key.space) {
+				cm.HandleItemCommand (Margin.ItemCommand.ActivateCurrentItem);
+			} else if (key == Gdk.Key.Up) {
+				cm.HandleItemCommand (Margin.ItemCommand.FocusPreviousItem);
+			} else if (key == Gdk.Key.Down) {
+				cm.HandleItemCommand (Margin.ItemCommand.FocusNextItem);
+			} else if (key == Gdk.Key.Tab || key == Gdk.Key.Right) {
+				return FocusNextMargin (Gtk.DirectionType.TabForward);
+			} else if (key == Gdk.Key.ISO_Left_Tab || key == Gdk.Key.Left) {
+				return FocusNextMargin (DirectionType.TabBackward);
+			} else {
+				return false;
+			}
+
+			return true;
+		}
 
 		protected override bool OnKeyReleaseEvent (EventKey evnt)
 		{
-			if (IMFilterKeyPress (evnt, 0, 0, ModifierType.None)) {
-				imContextNeedsReset = true;
+			if (currentFocus == FocusMargin.TextView) {
+				if (IMFilterKeyPress (evnt, 0, 0, ModifierType.None)) {
+					imContextNeedsReset = true;
+				}
 			}
+
 			return true;
 		}
 		
@@ -1123,6 +1335,9 @@ namespace Mono.TextEditor
 				double startPos;
 				Margin margin = GetMarginAtX (e.X, out startPos);
 				if (margin == textViewMargin) {
+					currentFocus = FocusMargin.TextView;
+					textViewMargin.FocusIn ();
+
 					//main context menu
 					if (DoPopupMenu != null && e.TriggersContextMenu ()) {
 						DoClickedPopupMenu (e);

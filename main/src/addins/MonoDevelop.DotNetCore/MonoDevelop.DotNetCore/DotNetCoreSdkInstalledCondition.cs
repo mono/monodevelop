@@ -32,12 +32,27 @@ namespace MonoDevelop.DotNetCore
 {
 	internal class DotNetCoreSdkInstalledCondition : ConditionType
 	{
+		public DotNetCoreSdkInstalledCondition ()
+		{
+			DotNetCoreRuntime.Changed += OnLocationChanged;
+		}
+
+		void OnLocationChanged (object sender, EventArgs e)
+		{
+			NotifyChanged ();
+		}
+
 		/// <summary>
 		/// The SDK version check is not quite correct. It currently only checks the
 		/// latest installed version when it should check all versions installed.
 		/// The runtime check also needs improving. Currently it only checks that dotnet
 		/// is available. It should check the runtimes installed so it is possible
 		/// to create a .NET Core 2.0 project if only the 2.0 runtime is installed.
+		///
+		/// Note that the .NET Core SDK version is the logical version. Currently
+		/// .NET Core SDK 2.1.4 supports .NET Core 2.0 projects but it is considered
+		/// here to be version 2.0. .NET Core 2.1.300 supports .NET Core 2.1 projects
+		/// so it is considered to be version 2.1
 		/// </summary>
 		public override bool Evaluate (NodeElement conditionNode)
 		{
@@ -61,8 +76,31 @@ namespace MonoDevelop.DotNetCore
 			if (string.IsNullOrEmpty (requiredSdkversion))
 				return true;
 
+			// Special case '2.1' and '2.0'.
+			if (requiredSdkversion == "2.1") {
+				return versions.Any (IsNetCoreSdk21);
+			} else if (requiredSdkversion == "2.0") {
+				return versions.Any (IsNetCoreSdk20);
+			}
+
 			requiredSdkversion = requiredSdkversion.Replace ("*", string.Empty);
 			return versions.Any (version => version.ToString ().StartsWith (requiredSdkversion, StringComparison.OrdinalIgnoreCase));
+		}
+
+		/// <summary>
+		/// 2.1.300 is the lowest version that supports .NET Core 2.1 projects.
+		/// </summary>
+		static bool IsNetCoreSdk21 (DotNetCoreVersion version)
+		{
+			return version.Major == 2 && version.Minor == 1 && version.Patch >= 300;
+		}
+
+		/// <summary>
+		/// 2.1.300 is the lowest version that supports .NET Core 2.1 projects.
+		/// </summary>
+		static bool IsNetCoreSdk20 (DotNetCoreVersion version)
+		{
+			return version.Major == 2 && version.Minor <= 1 && version.Patch < 300;
 		}
 
 		/// <summary>
