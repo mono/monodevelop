@@ -1786,7 +1786,7 @@ namespace Mono.TextEditor
 			marker.insertId = textSegmentInsertId++;
 			textSegmentMarkerTree.Add (marker);
 			var startLine = OffsetToLineNumber (marker.Offset);
-			var endLine = OffsetToLineNumber (marker.EndOffset);
+			var endLine = OffsetToLineNumber (Math.Min (marker.EndOffset, Length));
 			CommitMultipleLineUpdate (startLine, endLine);
 		}
 
@@ -1798,10 +1798,10 @@ namespace Mono.TextEditor
 		public bool RemoveMarker (TextSegmentMarker marker)
 		{
 			ClearTextMarkerCache ();
+			var startLine = OffsetToLineNumber (marker.Offset);
+			var endLine = OffsetToLineNumber (Math.Min (marker.EndOffset, Length));
 			bool wasRemoved = textSegmentMarkerTree.Remove (marker);
 			if (wasRemoved) {
-				var startLine = OffsetToLineNumber (marker.Offset);
-				var endLine = OffsetToLineNumber (marker.EndOffset);
 				CommitMultipleLineUpdate (startLine, endLine);
 			}
 			return wasRemoved;
