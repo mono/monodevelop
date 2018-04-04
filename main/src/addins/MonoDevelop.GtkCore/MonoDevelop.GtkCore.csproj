@@ -233,9 +233,6 @@
     <EmbeddedResource Include="icons\image-x-generic.png">
       <LogicalName>image-x-generic.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.GtkCore.Commands\GladeCommands.cs" />
@@ -270,15 +267,17 @@
     <Compile Include="MonoDevelop.GtkCore.NodeBuilders\StockIconsNodeBuilder.cs" />
     <Compile Include="MonoDevelop.GtkCore.Dialogs\GtkFeatureWidget.cs" />
     <Compile Include="MonoDevelop.GtkCore.GuiBuilder\ToolboxLoader.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.GtkCore\ObjectsDocument.cs" />
     <Compile Include="MonoDevelop.GtkCore\WidgetParser.cs" />
     <Compile Include="MonoDevelop.GtkCore\ReferenceManager.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.GtkCore.Dialogs\GtkDesignerOptionsPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.GtkCore\Counters.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="Gui\MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionsPanelWidget.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

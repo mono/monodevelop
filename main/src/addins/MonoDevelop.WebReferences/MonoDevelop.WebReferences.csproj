@@ -107,10 +107,7 @@
     <Compile Include="MonoDevelop.WebReferences\WebReferenceItem.cs" />
     <Compile Include="MonoDevelop.WebReferences.NodeBuilders\WebReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.WebReferences\DiscoveryProtocol.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs" />
     <Compile Include="MonoDevelop.WebReferences.Dialogs\UserPasswordDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.WebReferences.Dialogs.UserPasswordDialog.cs" />
     <Compile Include="MonoDevelop.WebReferences\WebServiceEngine.cs" />
     <Compile Include="MonoDevelop.WebReferences\MoonlightChannelBaseExtension.cs" />
     <Compile Include="MonoDevelop.WebReferences.WCF\ReferenceGroup.cs" />
@@ -131,8 +128,10 @@
     <Compile Include="MonoDevelop.WebReferences.WCF\WCFMetadata.cs" />
     <Compile Include="MonoDevelop.WebReferences.WCF\WCFMetadataStorage.cs" />
     <Compile Include="MonoDevelop.WebReferences.Dialogs\WCFConfigWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="Gui\MonoDevelop.WebReferences.Dialogs.UserPasswordDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.WebReferences.addin.xml">
@@ -196,14 +195,12 @@
   <ItemGroup>
     <None Include="TODO" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="gtk-gui\gui.stetic" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="MonoDevelop.WebReferences.WCF\" />
     <Folder Include="MonoDevelop.WebReferences\" />
     <Folder Include="MonoDevelop.WebReferences.WS\" />
     <Folder Include="icons\" />
+    <Folder Include="Gui\" />
   </ItemGroup>
 </Project>

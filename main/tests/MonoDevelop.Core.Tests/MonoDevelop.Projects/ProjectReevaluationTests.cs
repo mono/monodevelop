@@ -24,9 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using NUnit.Framework;
 using UnitTests;
 
@@ -126,6 +128,239 @@ namespace MonoDevelop.Projects
 
 			sol.Dispose ();
 		}
+
+		/// <summary>
+		/// Ensure that changes to the project which are not yet saved are handled if a re-evaluation occurs
+		/// </summary>
+		[Test]
+		public async Task Reevaluate_AfterReferenceAddedToProject_BeforeProjectSaved ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject)sol.Items [0];
+			Assert.AreEqual (3, p.References.Count);
+
+			var systemXmlLinqRef = ProjectReference.CreateAssemblyReference ("System.Xml.Linq");
+			p.References.Add (systemXmlLinqRef);
+
+			var systemNetRef = ProjectReference.CreateAssemblyReference ("System.Net");
+			p.References.Add (systemNetRef);
+
+			int itemAdded = 0;
+			int itemRemoved = 0;
+			int configAdded = 0;
+			int configRemoved = 0;
+			bool configsChanged = false;
+			bool runConfigsChanged = false;
+			bool capabilitiesChanged = false;
+			p.ProjectItemAdded += (sender, e) => itemAdded += e.Count;
+			p.ProjectItemRemoved += (sender, e) => itemRemoved += e.Count;
+			p.ConfigurationAdded += (sender, e) => configAdded++;
+			p.ConfigurationRemoved += (sender, e) => configRemoved++;
+			p.ConfigurationsChanged += (sender, e) => configsChanged = true;
+			p.RunConfigurationsChanged += (sender, e) => runConfigsChanged = true;
+			p.ProjectCapabilitiesChanged += (sender, e) => capabilitiesChanged = true;
+
+			await p.ReevaluateProject (Util.GetMonitor ());
+
+			Assert.AreEqual (0, itemAdded);
+			Assert.AreEqual (0, itemRemoved);
+			Assert.AreEqual (0, configAdded);
+			Assert.AreEqual (0, configRemoved);
+			Assert.IsFalse (configsChanged);
+			Assert.IsFalse (runConfigsChanged);
+			Assert.IsFalse (capabilitiesChanged);
+
+			Assert.AreEqual (systemXmlLinqRef, p.References.Single (r => r.Include == "System.Xml.Linq"));
+			Assert.AreEqual (systemNetRef, p.References.Single (r => r.Include == "System.Net"));
+			Assert.AreEqual (5, p.References.Count);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (File.ReadAllText (p.FileName), Util.ToSystemEndings (File.ReadAllText (p.FileName + ".reference-added")));
+
+			sol.Dispose ();
+		}
+
+		/// <summary>
+		/// Ensure that changes to the project which are not yet saved are handled if a re-evaluation occurs.
+		/// Similar to the test above but the references are added during the re-evaluation itself. This is to
+		/// simulate the references added on the UI thread whilst the ReevaluateProject calls sourceProject.EvaluateAsync.
+		/// </summary>
+		[Test]
+		public async Task Reevaluate_AfterReferenceAddedToProject_BeforeProjectSaved2 ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject)sol.Items [0];
+			Assert.AreEqual (3, p.References.Count);
+
+			var fn = new CustomItemNode<AddReferenceOnReevaluateProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				int itemAdded = 0;
+				int itemRemoved = 0;
+				int configAdded = 0;
+				int configRemoved = 0;
+				bool configsChanged = false;
+				bool runConfigsChanged = false;
+				bool capabilitiesChanged = false;
+				p.ProjectItemAdded += (sender, e) => itemAdded += e.Count;
+				p.ProjectItemRemoved += (sender, e) => itemRemoved += e.Count;
+				p.ConfigurationAdded += (sender, e) => configAdded++;
+				p.ConfigurationRemoved += (sender, e) => configRemoved++;
+				p.ConfigurationsChanged += (sender, e) => configsChanged = true;
+				p.RunConfigurationsChanged += (sender, e) => runConfigsChanged = true;
+				p.ProjectCapabilitiesChanged += (sender, e) => capabilitiesChanged = true;
+
+				await p.ReevaluateProject (Util.GetMonitor ());
+
+				Assert.AreEqual (1, p.References.Count (r => r.Include == "System.Xml.Linq"));
+				Assert.AreEqual (1, p.References.Count (r => r.Include == "System.Net"));
+				Assert.AreEqual (5, p.References.Count);
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (File.ReadAllText (p.FileName), Util.ToSystemEndings (File.ReadAllText (p.FileName + ".reference-added")));
+
+				Assert.AreEqual (2, itemAdded);
+				Assert.AreEqual (0, itemRemoved);
+				Assert.AreEqual (0, configAdded);
+				Assert.AreEqual (0, configRemoved);
+				Assert.IsFalse (configsChanged);
+				Assert.IsFalse (runConfigsChanged);
+				Assert.IsFalse (capabilitiesChanged);
+
+				sol.Dispose ();
+
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+
+		/// <summary>
+		/// Ensure that changes to the project which are not yet saved are handled if a re-evaluation occurs
+		/// </summary>
+		[Test]
+		public async Task Reevaluate_AfterReferenceRemovedFromProject_BeforeProjectSaved ()
+		{
+			FilePath oldProjectFile = Util.GetSampleProject ("console-project", "ConsoleProject", "ConsoleProject.csproj.reference-added");
+			FilePath projectFile = oldProjectFile.ParentDirectory.Combine ("ConsoleProject-reference-added.csproj");
+			File.Move (oldProjectFile, projectFile);
+
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile);
+
+			var systemXmlLinqRef = p.References.Single (r => r.Include == "System.Xml.Linq");
+			var systemNetRef = p.References.Single (r => r.Include == "System.Net");
+			Assert.AreEqual (5, p.References.Count);
+
+			p.References.Remove (systemXmlLinqRef);
+			p.References.Remove (systemNetRef);
+
+			int itemAdded = 0;
+			int itemRemoved = 0;
+			int configAdded = 0;
+			int configRemoved = 0;
+			bool configsChanged = false;
+			bool runConfigsChanged = false;
+			bool capabilitiesChanged = false;
+			p.ProjectItemAdded += (sender, e) => itemAdded += e.Count;
+			p.ProjectItemRemoved += (sender, e) => itemRemoved += e.Count;
+			p.ConfigurationAdded += (sender, e) => configAdded++;
+			p.ConfigurationRemoved += (sender, e) => configRemoved++;
+			p.ConfigurationsChanged += (sender, e) => configsChanged = true;
+			p.RunConfigurationsChanged += (sender, e) => runConfigsChanged = true;
+			p.ProjectCapabilitiesChanged += (sender, e) => capabilitiesChanged = true;
+
+			await p.ReevaluateProject (Util.GetMonitor ());
+
+			Assert.AreEqual (0, itemAdded);
+			Assert.AreEqual (0, itemRemoved);
+			Assert.AreEqual (0, configAdded);
+			Assert.AreEqual (0, configRemoved);
+			Assert.IsFalse (configsChanged);
+			Assert.IsFalse (runConfigsChanged);
+			Assert.IsFalse (capabilitiesChanged);
+
+			Assert.IsFalse (p.References.Any (r => r.Include == "System.Xml.Linq"));
+			Assert.IsFalse (p.References.Any (r => r.Include == "System.Net"));
+			Assert.AreEqual (3, p.References.Count);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName)), File.ReadAllText (p.FileName.ParentDirectory.Combine ("ConsoleProject.csproj")));
+
+			p.Dispose ();
+		}
+
+		/// <summary>
+		/// Ensure that changes to the project which are not yet saved are handled if a re-evaluation occurs
+		/// Similar to the test above but the references are removed during the re-evaluation itself. This is to
+		/// simulate the references added on the UI thread whilst the ReevaluateProject calls sourceProject.EvaluateAsync.
+		/// </summary>
+		[Test]
+		public async Task Reevaluate_AfterReferenceRemovedFromProject_BeforeProjectSaved2 ()
+		{
+			FilePath oldProjectFile = Util.GetSampleProject ("console-project", "ConsoleProject", "ConsoleProject.csproj.reference-added");
+			FilePath projectFile = oldProjectFile.ParentDirectory.Combine ("ConsoleProject-reference-added.csproj");
+			File.Move (oldProjectFile, projectFile);
+
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile);
+
+			var systemXmlLinqRef = p.References.Single (r => r.Include == "System.Xml.Linq");
+			var systemNetRef = p.References.Single (r => r.Include == "System.Net");
+			Assert.AreEqual (5, p.References.Count);
+
+			var fn = new CustomItemNode<RemoveReferenceOnReevaluateProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				int itemAdded = 0;
+				int itemRemoved = 0;
+				int configAdded = 0;
+				int configRemoved = 0;
+				bool configsChanged = false;
+				bool runConfigsChanged = false;
+				bool capabilitiesChanged = false;
+				p.ProjectItemAdded += (sender, e) => itemAdded += e.Count;
+				p.ProjectItemRemoved += (sender, e) => itemRemoved += e.Count;
+				p.ConfigurationAdded += (sender, e) => configAdded++;
+				p.ConfigurationRemoved += (sender, e) => configRemoved++;
+				p.ConfigurationsChanged += (sender, e) => configsChanged = true;
+				p.RunConfigurationsChanged += (sender, e) => runConfigsChanged = true;
+				p.ProjectCapabilitiesChanged += (sender, e) => capabilitiesChanged = true;
+
+				await p.ReevaluateProject (Util.GetMonitor ());
+
+				Assert.IsFalse (p.References.Any (r => r.Include == "System.Xml.Linq"));
+				Assert.IsFalse (p.References.Any (r => r.Include == "System.Net"));
+				Assert.AreEqual (3, p.References.Count);
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName)), File.ReadAllText (p.FileName.ParentDirectory.Combine ("ConsoleProject.csproj")));
+
+				Assert.AreEqual (0, itemAdded);
+				Assert.AreEqual (2, itemRemoved);
+				Assert.AreEqual (0, configAdded);
+				Assert.AreEqual (0, configRemoved);
+				Assert.IsFalse (configsChanged);
+				Assert.IsFalse (runConfigsChanged);
+				Assert.IsFalse (capabilitiesChanged);
+
+				p.Dispose ();
+
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 
 		[Test ()]
 		public async Task ReevaluateModifyItem ()
@@ -256,6 +491,73 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (library1Reference, library1Item);
 
 			sol.Dispose ();
+		}
+
+		[TestCase ("ConsoleProject-duplicate-reference.csproj", 2)]
+		[TestCase ("ConsoleProject-triplicate-reference.csproj", 3)]
+		public async Task ReevaluateProjectWithDuplicateReference (string projectName, int expectedReferences)
+		{
+			string projectFile = Util.GetSampleProject ("console-project", "ConsoleProject", projectName);
+
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile);
+
+			Assert.AreEqual (expectedReferences, p.References.Count (reference => reference.Include == "System.Xml"));
+
+			int itemAdded = 0;
+			int itemRemoved = 0;
+			p.ProjectItemAdded += (sender, e) => itemAdded += e.Count;
+			p.ProjectItemRemoved += (sender, e) => itemRemoved += e.Count;
+
+			// Make sure this does not fail.
+			await p.ReevaluateProject (Util.GetMonitor ());
+
+			Assert.AreEqual (expectedReferences, p.References.Count (reference => reference.Include == "System.Xml"));
+			Assert.AreEqual (0, itemAdded);
+			Assert.AreEqual (0, itemRemoved);
+
+			p.Dispose ();
+		}
+    
+		class AddReferenceOnReevaluateProjectExtension : DotNetProjectExtension
+		{
+			protected internal override Task OnReevaluateProject (ProgressMonitor monitor)
+			{
+				var builder = ImmutableList.CreateBuilder<ProjectItem> ();
+
+				var systemXmlLinq = ProjectReference.CreateAssemblyReference ("System.Xml.Linq");
+				var systemNet = ProjectReference.CreateAssemblyReference ("System.Net");
+
+				builder.Add (systemXmlLinq);
+				builder.Add (systemNet);
+
+				Project.References.Add (systemXmlLinq);
+				Project.References.Add (systemNet);
+
+				Project.itemsAddedDuringReevaluation = builder;
+
+				return base.OnReevaluateProject (monitor);
+			}
+		}
+
+		class RemoveReferenceOnReevaluateProjectExtension : DotNetProjectExtension
+		{
+			protected internal override Task OnReevaluateProject (ProgressMonitor monitor)
+			{
+				var builder = ImmutableList.CreateBuilder<ProjectItem> ();
+
+				var systemXmlLinq = Project.References.Single (r => r.Include == "System.Xml.Linq");
+				var systemNet = Project.References.Single (r => r.Include == "System.Net");
+
+				builder.Add (systemXmlLinq);
+				builder.Add (systemNet);
+
+				Project.References.Remove (systemXmlLinq);
+				Project.References.Remove (systemNet);
+
+				Project.itemsRemovedDuringReevaluation = builder;
+
+				return base.OnReevaluateProject (monitor);
+			}
 		}
 	}
 }

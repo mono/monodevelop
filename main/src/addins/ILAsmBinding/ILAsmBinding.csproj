@@ -83,19 +83,15 @@
     <EmbeddedResource Include="ILAsmBinding.addin.xml">
       <LogicalName>ILAsmBinding.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Project\ILAsmCompilerParameters.cs" />
     <Compile Include="ILAsmCompilerManager.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Gui\CompilerParametersPanelWidget.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="gtk-gui\ILAsmBinding.CompilerParametersPanelWidget.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="ILAsmProject.cs" />
+    <Compile Include="Gui\CompilerParametersPanelWidget.cs" />
+    <Compile Include="Gui\ILAsmBinding.CompilerParametersPanelWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

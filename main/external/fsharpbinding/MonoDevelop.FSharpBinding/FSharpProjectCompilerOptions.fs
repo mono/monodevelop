@@ -20,7 +20,7 @@ type FSharpProjectCompilerOptions(project:DotNetProject) as this =
     let combo = new DotNetCompileTargetSelector(CompileTarget = project.CompileTarget)
 
     do
-        Stetic.BinContainer.Attach (this) |> ignore
+        MonoDevelop.Components.BinContainer.Attach (this) |> ignore
         let label = new Label(GettextCatalog.GetString "Compile target:")
         let hbox = new HBox(Spacing = 6)
         hbox.Add label
