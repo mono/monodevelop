@@ -159,24 +159,6 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		/// <value>The display binding used to create this view.</value>
 		public IDisplayBinding Binding { get; internal set; }
-
-		public virtual IEnumerable<TabPageInfo> GetTabPageInfos() {
-			return new [] { new TabPageInfo (TabPageLabel, TabAccessibilityDescription, new [] { this }) };
-		}
-	}
-
-	public class TabPageInfo
-	{
-		public TabPageInfo (string label, string accessibilityDescription, BaseViewContent [] viewsSelection)
-		{
-			Label = label;
-			AccessibilityDescription = accessibilityDescription;
-			ViewsSelection = viewsSelection;
-		}
-
-		public string Label { get; set; }
-		public string AccessibilityDescription { get; set; }
-		public BaseViewContent [] ViewsSelection { get; set; }
 	}
 
 	public enum ProjectReloadCapability

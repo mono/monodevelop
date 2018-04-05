@@ -673,14 +673,22 @@ namespace MonoDevelop.Ide.Gui
 			// If this is the current displayed document we need to add the control immediately as the tab is already active.
 			if (addedContent)
 				SetCurrentViews (new [] { viewContent });
-			foreach (var tabInfo in viewContent.GetTabPageInfos ()) {
+			var tabIndex = index;
+			IEnumerable<TabPageInfo> tabPageInfos;
+			if (viewContent is IMultipleTabs multipleTabs) {
+				tabPageInfos = multipleTabs.GetTabPageInfos ();
+			} else {
+				tabPageInfos = new [] { new TabPageInfo (viewContent.TabPageLabel, viewContent.TabAccessibilityDescription, new [] { viewContent }) };
+			}
+
+			foreach (var tabInfo in tabPageInfos) {
 				var newTab = new Tab (subViewToolbar, tabInfo.Label) {
 					ViewsSelection = tabInfo.ViewsSelection
 				};
 				if (newTab.Accessible != null) {
 					newTab.Accessible.Help = tabInfo.AccessibilityDescription;
 				}
-				subViewToolbar.InsertTab (index, newTab);
+				subViewToolbar.InsertTab (tabIndex++, newTab);
 				newTab.Activated += (sender, e) => {
 					SetCurrentViews (((Tab)sender).ViewsSelection);
 				};
