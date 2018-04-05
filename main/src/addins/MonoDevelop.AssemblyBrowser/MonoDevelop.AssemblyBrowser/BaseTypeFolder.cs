@@ -27,7 +27,7 @@
 //
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.Decompiler.TypeSystem;
 using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser

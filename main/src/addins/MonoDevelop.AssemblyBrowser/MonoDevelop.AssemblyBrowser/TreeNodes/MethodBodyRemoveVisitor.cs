@@ -1,10 +1,10 @@
 // 
-// AssemblyReferenceFolder.cs
+// MethodBodyRemoveVisitor.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Kirill Osenkov <https://github.com/KirillOsenkov>
 // 
-// Copyright (c) 2012 Xamarin <http://xamarin.com>
+// Copyright (c) 2018 Microsoft
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,42 +24,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Linq;
-using System.Text;
-
-using Mono.Cecil;
-
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Components;
-using System.Collections.Generic;
+using ICSharpCode.Decompiler.CSharp.Syntax;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class AssemblyReferenceFolder
+	class MethodBodyRemoveVisitor : DepthFirstAstVisitor
 	{
-		AssemblyDefinition definition;
-		
-		public IEnumerable<AssemblyNameReference> AssemblyReferences {
-			get {
-				return definition.MainModule.AssemblyReferences;
-			}
-		}
-		
-		public IEnumerable<ModuleReference> ModuleReferences {
-			get {
-				return definition.MainModule.ModuleReferences;
-			}
-		}
-		
-		public AssemblyReferenceFolder (AssemblyDefinition definition)
+		public override void VisitMethodDeclaration (MethodDeclaration methodDeclaration)
 		{
-			if (definition == null)
-				throw new ArgumentNullException ("definition");
-			this.definition = definition;
+			methodDeclaration.Body = null;
+		}
+
+		public override void VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration)
+		{
+			constructorDeclaration.Body = null;
+		}
+
+		public override void VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration)
+		{
+			destructorDeclaration.Body = null;
+		}
+
+		public override void VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration)
+		{
+			operatorDeclaration.Body = null;
+		}
+
+		public override void VisitAccessor (Accessor accessor)
+		{
+			accessor.Body = null;
+		}
+
+		internal static void RemoveMethodBodies (SyntaxTree syntaxTree)
+		{
+			syntaxTree.AcceptVisitor (new MethodBodyRemoveVisitor ());
 		}
 	}
-	
 }

@@ -26,8 +26,8 @@
 
 using System;
 using System.Text;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.Decompiler.TypeSystem;
+using ICSharpCode.Decompiler.TypeSystem.Implementation;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -75,7 +75,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (parameterizedMember != null && parameterizedMember.Parameters.Count > 0) {
 				var parameters = parameterizedMember.Parameters;
 				int start = 0;
-				if (method?.IsExtensionMethod == true)
+				if (method is DefaultUnresolvedMethod unresolved && unresolved.IsExtensionMethod)
 					start = 1;
 				if (start < parameters.Count) {
 					sb.Append ('(');
@@ -109,10 +109,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			switch  (type) {
 			case TypeParameterReference tp:
-				sb.Append ('`');
-				if (tp.OwnerType == SymbolKind.Method)
-					sb.Append ('`');
-				sb.Append (tp.Index);
+				sb.Append (tp.ToString());
 				break;
 			case ArrayTypeReference array:
 				AppendTypeName (sb, array.ElementType, explicitInterfaceImpl, outerTypeParameterCount);
