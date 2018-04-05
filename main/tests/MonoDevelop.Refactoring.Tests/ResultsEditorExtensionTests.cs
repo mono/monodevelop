@@ -114,6 +114,10 @@ class MyClass
 	}
 ";
 		static readonly ExpectedDiagnostic[] OneFromEachDiagnostics = {
+			// Compiler diagnostics
+			new ExpectedDiagnostic (251, DiagnosticSeverity.Error, "; expected"),
+			new ExpectedDiagnostic (254, DiagnosticSeverity.Error, "} expected"),
+
 			new ExpectedDiagnostic (68, DiagnosticSeverity.Hidden, "Accessibility modifiers required"),
 			new ExpectedDiagnostic (248, DiagnosticSeverity.Error, "The name 'cls' does not exist in the current context"),
 			new ExpectedDiagnostic (144, DiagnosticSeverity.Info, "Empty constructor is redundant"),
@@ -157,7 +161,7 @@ class MyClass
 
 				Assert.AreEqual (OneFromEachDiagnostics.Length, diagnostics.Length);
 
-				for (int i = 0; i < 3; ++i) {
+				for (int i = 0; i < diagnostics.Length; ++i) {
 					AssertExpectedDiagnostic (OneFromEachDiagnostics [i], diagnostics [i]);
 				}
 			} finally {
@@ -177,17 +181,21 @@ class MyClass
 				var tuple = await GatherDiagnosticsNoDispose<bool> (OneFromEach, (ext, tcs) => {
 					--expectedUpdates;
 					if (expectedUpdates == 4) {
-						Assert.AreEqual (0, ext.QuickTasks.Length);
+						Assert.AreEqual (2, ext.QuickTasks.Length);
+						for (int i = 0; i < ext.QuickTasks.Length; ++i) {
+							AssertExpectedDiagnostic (OneFromEachDiagnostics [i], ext.QuickTasks [i]);
+						}
 					}
 
 					if (expectedUpdates == 1) {
 						IdeApp.Preferences.EnableSourceAnalysis.Value = false;
 
-						Assert.AreEqual (3, ext.QuickTasks.Length);
-						for (int i = 0; i < 3; ++i) {
+						Assert.AreEqual (5, ext.QuickTasks.Length);
+						for (int i = 0; i < ext.QuickTasks.Length; ++i) {
 							AssertExpectedDiagnostic (OneFromEachDiagnostics [i], ext.QuickTasks [i]);
 						}
 					}
+
 					if (expectedUpdates == 0) {
 						Assert.AreEqual (0, ext.QuickTasks.Length);
 						tcs.SetResult (true);
