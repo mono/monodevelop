@@ -50,6 +50,10 @@ namespace MonoDevelop.DotNetCore.Templating
 			get { return "MonoDevelop.DotNetCore.ProjectTemplateWizard"; }
 		}
 
+		internal IList<TargetFramework> TargetFrameworks {
+			get { return targetFrameworks; }
+		}
+
 		/// <summary>
 		/// When only .NET Core 2.0 is installed there is only one option in the drop down
 		/// list for the target framework for .NET Core projects so there is no point in displaying
@@ -123,11 +127,22 @@ namespace MonoDevelop.DotNetCore.Templating
 				}
 			} else {
 				if (!SupportsNetCore1x ()) {
-					Parameters ["UseNetCore20"] = "true";
+					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
+					if (highestFramework != null && highestFramework.IsNetCoreApp21 ()) {
+						Parameters ["UseNetCore21"] = "true";
+					} else {
+						Parameters ["UseNetCore20"] = "true";
+					}
 				} else {
 					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
-					if (highestFramework != null && highestFramework.IsNetCoreApp20 ()) {
-						Parameters ["UseNetCore20"] = "true";
+					if (highestFramework != null) {
+						if (highestFramework.IsNetCoreApp21 ()) {
+							Parameters ["UseNetCore21"] = "true";
+						} else if (highestFramework.IsNetCoreApp20 ()) {
+							Parameters ["UseNetCore20"] = "true";
+						} else {
+							Parameters ["UseNetCore1x"] = "true";
+						}
 					} else {
 						Parameters ["UseNetCore1x"] = "true";
 					}

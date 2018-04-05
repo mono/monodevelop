@@ -260,7 +260,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("User Types(Mutable)", new List<string> { EditorThemeColors.UserTypesMutable }, ConvertChunkStyle (colorScheme.UserTypesMutable)));
 
 			settings.Add (new ThemeSetting ("User Field", new List<string> { EditorThemeColors.UserField }, ConvertChunkStyle (colorScheme.UserFieldDeclaration)));
-			settings.Add (new ThemeSetting ("User Enum Member", new List<string> { EditorThemeColors.UserField }, ConvertChunkStyle (colorScheme.UserFieldDeclaration)));
+			settings.Add (new ThemeSetting ("User Enum Member", new List<string> { EditorThemeColors.UserEnumMember }, ConvertChunkStyle (colorScheme.UserVariableDeclaration)));
 			settings.Add (new ThemeSetting ("User Constant", new List<string> { EditorThemeColors.UserConstant }, ConvertChunkStyle (colorScheme.UserFieldDeclaration)));
 
 			settings.Add (new ThemeSetting ("User Property", new List<string> { EditorThemeColors.UserProperty }, ConvertChunkStyle (colorScheme.UserPropertyDeclaration)));

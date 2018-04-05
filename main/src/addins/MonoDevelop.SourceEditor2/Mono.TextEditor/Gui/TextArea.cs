@@ -636,6 +636,17 @@ namespace Mono.TextEditor
 			oldSelection = selection;
 			OnSelectionChanged (EventArgs.Empty);
 		}
+
+		internal void CommitPreedit ()
+		{
+			CommitString (preeditString);
+
+			preeditOffset = -1;
+			preeditString = null;
+			preeditAttrs = null;
+			preeditCursorCharIndex = 0;
+			imContextNeedsReset = true;
+		}
 		
 		internal void ResetIMContext ()
 		{
@@ -644,30 +655,29 @@ namespace Mono.TextEditor
 				imContextNeedsReset = false;
 			}
 		}
-		
-		void IMCommit (object sender, Gtk.CommitArgs ca)
+
+		void CommitString (string str)
 		{
 			if (!IsRealized || !IsFocus)
 				return;
-			
-			//this, if anywhere, is where we should handle UCS4 conversions
-			for (int i = 0; i < ca.Str.Length; i++) {
+
+			for (int i = 0; i < str.Length; i++) {
 				int utf32Char;
-				if (char.IsHighSurrogate (ca.Str, i)) {
-					utf32Char = char.ConvertToUtf32 (ca.Str, i);
+				if (char.IsHighSurrogate (str, i)) {
+					utf32Char = char.ConvertToUtf32 (str, i);
 					i++;
 				} else {
-					utf32Char = (int)ca.Str [i];
+					utf32Char = (int)str [i];
 				}
-				
+
 				//include the other pre-IM state *if* the post-IM char matches the pre-IM (key-mapped) one
-				 if (lastIMEventMappedChar == utf32Char && lastIMEventMappedChar == (uint)lastIMEventMappedKey) {
+				if (lastIMEventMappedChar == utf32Char && lastIMEventMappedChar == (uint)lastIMEventMappedKey) {
 					editor.OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastIMEventMappedChar, lastIMEventMappedModifier);
 				} else {
 					editor.OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
 				}
 			}
-			
+
 			//the IME can commit while there's still a pre-edit string
 			//since we cached the pre-edit offset when it started, need to update it
 			if (preeditOffset > -1) {
@@ -675,6 +685,11 @@ namespace Mono.TextEditor
 			}
 		}
 
+		void IMCommit (object sender, Gtk.CommitArgs ca)
+		{
+			CommitString (ca.Str);
+		}
+		
 		enum FocusMargin {
 			None,
 			Icon,
@@ -1652,8 +1667,6 @@ namespace Mono.TextEditor
 			mx = x - textViewMargin.XOffset;
 			my = y;
 
-			ShowTooltip (state);
-
 			double startPos;
 			Margin margin;
 			if (textViewMargin.InSelectionDrag) {
@@ -1672,12 +1685,18 @@ namespace Mono.TextEditor
 				}
 			}
 
+			var location = textViewMargin.PointToLocation (x - startPos, y, snapCharacters: true);
 			if (oldMargin != margin && oldMargin != null)
 				oldMargin.MouseLeft ();
-			
-			if (margin != null) 
-				margin.MouseHover (new MarginMouseEventArgs (textEditorData.Parent, EventType.MotionNotify,
-					mouseButtonPressed, x - startPos, y, state));
+
+			ShowTooltip (state, location);
+			if (margin != null) {
+				var args = new MarginMouseEventArgs (textEditorData.Parent, EventType.MotionNotify,
+				                                     mouseButtonPressed, x - startPos, y, state);
+				args.Location = location;
+				margin.MouseHover (args);
+			}
+
 			oldMargin = margin;
 		}
 
@@ -3075,28 +3094,27 @@ namespace Mono.TextEditor
 		Gdk.ModifierType nextTipModifierState = ModifierType.None;
 		DateTime nextTipScheduledTime; // Time at which we want the tooltip to show
 		
-		void ShowTooltip (Gdk.ModifierType modifierState)
+		void ShowTooltip (Gdk.ModifierType modifierState, DocumentLocation location)
 		{
 			if (mx < TextViewMargin.TextStartPosition) {
 				HideTooltip ();
 				return;
 			}
 
-			var loc = PointToLocation (mx, my, true);
-			if (loc.IsEmpty) {
+			if (location.IsEmpty) {
 				HideTooltip ();
 				return;
 			}
 
 			// Hide editor tooltips for text marker extended regions (message bubbles)
-			double y = LineToY (loc.Line);
+			double y = LineToY (location.Line);
 			if (y + LineHeight < my) {
 				HideTooltip ();
 				return;
 			}
 			
 			ShowTooltip (modifierState, 
-			             Document.LocationToOffset (loc),
+			             Document.LocationToOffset (location),
 			             (int)mx,
 			             (int)my);
 		}

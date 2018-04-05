@@ -112,19 +112,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.RegexToolkit\Commands.cs" />
     <Compile Include="MonoDevelop.RegexToolkit\RegexToolkitWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.RegexToolkit.RegexToolkitWidget.cs" />
     <Compile Include="MonoDevelop.RegexToolkit\ElementHelpWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.RegexToolkit.ElementHelpWidget.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.RegexToolkit\ValidateActionCodeRefactoringProvider.cs" />
+    <Compile Include="Gui\MonoDevelop.RegexToolkit.ElementHelpWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.RegexToolkit.RegexToolkitWidget.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.RegexToolkit.addin.xml">
       <LogicalName>MonoDevelop.RegexToolkit.addin.xml</LogicalName>
     </EmbeddedResource>
@@ -134,6 +130,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
