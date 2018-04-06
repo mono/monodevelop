@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide
 			public static readonly Task<IEnumerable<T>> EmptyEnumerable = Task.FromResult<IEnumerable<T>>(new T[0]);
 		}
 
-		public static T WaitAndGetResult<T> (this Task<T> task, CancellationToken cancellationToken)
+		public static T WaitAndGetResult<T> (this Task<T> task, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			task.Wait (cancellationToken);
 			return task.Result;

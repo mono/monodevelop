@@ -45,7 +45,7 @@ using System.Threading.Tasks;
 namespace MonoDevelop.CSharpBinding
 {
 	[TestFixture]
-	public class NamedArgumentCompletionTests : TestBase
+	class NamedArgumentCompletionTests : ICSharpCode.NRefactory6.TestBase
 	{
 		class TestCompletionWidget : ICompletionWidget
 		{
@@ -155,7 +155,7 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 
-		static async Task<Tuple<CSharpCompletionTextEditorExtension,TestViewContent>> Setup (string input)
+		static async Task Setup (string input, Action<(CSharpCompletionTextEditorExtension, TestViewContent)> test)
 		{
 			var tww = new TestWorkbenchWindow ();
 			TestViewContent content = new TestViewContent ();
@@ -191,30 +191,32 @@ namespace MonoDevelop.CSharpBinding
 			content.Contents.Add (compExt);
 
 			await doc.UpdateParseDocument ();
+			test ((compExt, content));
 			TypeSystemService.Unload (solution);
-			return Tuple.Create (compExt, content);
 		}
 
 		async Task<string> Test(string input, string type, string member, Gdk.Key key = Gdk.Key.Return)
 		{
-			var s = await Setup (input);
-			var ext = s.Item1;
-			TestViewContent content = s.Item2;
+			string result = null;
+			await Setup (input, async (s) => {
+				var ext = s.Item1;
+				TestViewContent content = s.Item2;
+				var listWindow = new CompletionListWindow ();
+				var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
+				listWindow.CompletionWidget = widget;
+				listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
+				var sm = await ext.DocumentContext.AnalysisDocument.GetSemanticModelAsync ();
 
-			var listWindow = new CompletionListWindow ();
-			var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
-			listWindow.CompletionWidget = widget;
-			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
-			var sm = ext.DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
+				var t = sm.Compilation.GetTypeByMetadataName (type);
+				var foundMember = t.GetMembers ().First (m => m.Name == member);
+				var data = new CompletionData (foundMember.Name);
+				data.DisplayFlags |= DisplayFlags.NamedArgument;
+				KeyActions ka = KeyActions.Process;
+				data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None));
+				result = widget.CompletedWord;
+			});
 
-			var t = sm.Compilation.GetTypeByMetadataName (type);
-			var foundMember = t.GetMembers().First (m => m.Name == member);
-			var data = new CompletionData (foundMember.Name);
-			data.DisplayFlags |= DisplayFlags.NamedArgument;
-			KeyActions ka = KeyActions.Process;
-			data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None));
-
-			return widget.CompletedWord;
+			return result;
 		}
 
 		[Ignore ("Changed in roslyn completion.")]
