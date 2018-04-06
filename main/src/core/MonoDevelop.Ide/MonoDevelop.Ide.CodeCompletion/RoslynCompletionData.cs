@@ -40,11 +40,14 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text;
+using Microsoft.CodeAnalysis.Editor.Shared.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Ide.CodeTemplates;
 using System.Linq;
 using System.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Fonts;
+using Microsoft.CodeAnalysis.Editor;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -272,15 +275,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 					editor.CaretOffset = completionChange.NewPosition.Value;
 
 				if (CompletionItem.Rules.FormatOnCommit) {
-					var endOffset = mappedSpan.Start.Position + completionChange.TextChange.NewText.Length;
-					// TODO: Remove Format (TextEditor editor, Gui.Document document, int start, int end)
-					// Note it's always Gui.Document in IDE case - only in the unit tests other DocumentContext implementations can happen.
-					if (context is Gui.Document) {
-						#pragma warning disable 618 // back-compat for obsolete API
-						Format (editor, (Gui.Document)context, mappedSpan.Start, endOffset);
-						#pragma warning restore 618
-					} else {
-						Format (editor, context, mappedSpan.Start, endOffset);
+					var spanToFormat = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
+					var formattingService = document.AnalysisDocument.GetLanguageService<IEditorFormattingService> ();
+
+					if (formattingService != null) {
+						var changes = formattingService.GetFormattingChangesAsync (document.AnalysisDocument, spanToFormat.Span.ToTextSpan (), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
+						editor.ApplyTextChanges (changes);
 					}
 				}
 			}
@@ -292,7 +292,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		[Obsolete("Use Format (TextEditor editor, DocumentContext document, int start, int end)")]
 		protected virtual void Format (TextEditor editor, Gui.Document document, int start, int end)
 		{
-			Format (editor, (DocumentContext)document, start, end);
 		}
 
 		public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
