@@ -42,7 +42,7 @@ using MonoDevelop.UnitTesting;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture]
-	public class UnitTesteditorIntegrationTests : UnitTests.TestBase
+	class UnitTesteditorIntegrationTests : ICSharpCode.NRefactory6.TestBase
 	{
 		class UnitTestMarkers: IUnitTestMarkers
 		{
@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			}
 		};
 
-		static async Task<UnitTestTextEditorExtension> Setup (string input)
+		static async Task Setup (string input, Action<UnitTestTextEditorExtension> test)
 		{
 			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
@@ -99,8 +99,8 @@ namespace MonoDevelop.CSharpBinding.Tests
 			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 			await doc.UpdateParseDocument ();
+			test (compExt);
 			TypeSystemService.Unload (solution);
-			return compExt;
 		}
 
 		protected override void InternalSetup (string rootDir)
@@ -112,31 +112,33 @@ namespace MonoDevelop.CSharpBinding.Tests
 		[Test]
 		public async Task TestSimple ()
 		{
-			var ext = await Setup (@"using NUnit.Framework;
+			await Setup (@"using NUnit.Framework;
 [TestFixture]
 class TestClass
 {
 	[Test]
 	public void MyTest () {}
 }
-");
-			var tests = await ext.GatherUnitTests (unitTestMarkers, default(CancellationToken));
-			Assert.IsNotNull (tests);
-			Assert.AreEqual (2, tests.Count);
+", async ext => {
+				var tests = await ext.GatherUnitTests (unitTestMarkers, default (CancellationToken));
+				Assert.IsNotNull (tests);
+				Assert.AreEqual (2, tests.Count);
+			});
 		}
 
 		[Test]
 		public async Task TestNoTests ()
 		{
-			var ext = await Setup (@"using NUnit.Framework;
+			await Setup (@"using NUnit.Framework;
 class TestClass
 {
 	public void MyTest () {}
 }
-");
-			var tests = await ext.GatherUnitTests (unitTestMarkers, default(CancellationToken));
-			Assert.IsNotNull (tests);
-			Assert.AreEqual (0, tests.Count);
+", async ext => {
+				var tests = await ext.GatherUnitTests (unitTestMarkers, default (CancellationToken));
+				Assert.IsNotNull (tests);
+				Assert.AreEqual (0, tests.Count);
+			});
 		}
 
 
@@ -147,7 +149,7 @@ class TestClass
 		[Test]
 		public async Task TestBug14522 ()
 		{
-			var ext = await Setup (@"using NUnit.Framework;
+			await Setup (@"using NUnit.Framework;
 [TestFixture]
 abstract class MyBase
 {
@@ -158,13 +160,14 @@ public class Derived : MyBase
 	[Test]
 	public void MyTest () {}
 }
-");
-			var tests = await ext.GatherUnitTests (unitTestMarkers, default(CancellationToken));
-			Assert.IsNotNull (tests);
-			Assert.AreEqual (2, tests.Count);
+", async ext => {
+				var tests = await ext.GatherUnitTests (unitTestMarkers, default (CancellationToken));
+				Assert.IsNotNull (tests);
+				Assert.AreEqual (2, tests.Count);
 
-			Assert.AreEqual ("TestNs.Derived", tests [0].UnitTestIdentifier);
-			Assert.AreEqual ("TestNs.Derived.MyTest", tests [1].UnitTestIdentifier);
+				Assert.AreEqual ("TestNs.Derived", tests [0].UnitTestIdentifier);
+				Assert.AreEqual ("TestNs.Derived.MyTest", tests [1].UnitTestIdentifier);
+			});
 		}
 
 
@@ -174,16 +177,17 @@ public class Derived : MyBase
 		[Test]
 		public async Task TestBug19651 ()
 		{
-			var ext = await Setup (@"using NUnit.Framework;
+			await Setup (@"using NUnit.Framework;
 class TestClass
 {
 	[Test]
 	public void MyTest () {}
 }
-");
-			var tests = await ext.GatherUnitTests (unitTestMarkers, default(CancellationToken));
-			Assert.IsNotNull (tests);
-			Assert.AreEqual (2, tests.Count);
+", async ext => {
+				var tests = await ext.GatherUnitTests (unitTestMarkers, default (CancellationToken));
+				Assert.IsNotNull (tests);
+				Assert.AreEqual (2, tests.Count);
+			});
 		}
 
 	}

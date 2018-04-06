@@ -103,6 +103,9 @@
     <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Unix' and '$(MSBuild_OSS_BinDir)' == '' and Exists('$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\MSBuild.dll')">$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\</MSBuild_OSS_BinDir>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.Decompiler">
+      <HintPath>..\..\..\packages\ICSharpCode.Decompiler.3.0.0.3403-beta4\lib\net46\ICSharpCode.Decompiler.dll</HintPath>
+    </Reference>
     <Reference Include="Humanizer.Core">
       <HintPath>..\..\..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
     </Reference>

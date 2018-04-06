@@ -131,10 +131,9 @@ namespace MonoDevelop.CSharp.Completion
 			ka |= KeyActions.Ignore;
 		}
 
-		static void AddGlobalNamespaceImport (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, string nsName)
+		static async void AddGlobalNamespaceImport (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, string nsName)
 		{
-			var parsedDocument = context.ParsedDocument;
-			var unit = parsedDocument.GetAst<SemanticModel> ();
+			var unit = await context.AnalysisDocument.GetSemanticModelAsync ();
 			if (unit == null)
 				return;
 

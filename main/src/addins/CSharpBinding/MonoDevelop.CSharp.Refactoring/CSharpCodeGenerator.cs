@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			public SemanticModel SemanticModel {
 				get {
 					if (semanticModel == null) {
-						var model = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
+						var model = DocumentContext.AnalysisDocument.GetSemanticModelAsync ().WaitAndGetResult ();
 						return model;
 					}
 					return semanticModel;
@@ -104,7 +104,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (DocumentContext == null || Editor == null || SemanticModel == null || DocumentContext.ParsedDocument == null)
 					return ns + "." + name;
 
-				var model = DocumentContext.ParsedDocument.GetAst<SemanticModel>();
+				var model = DocumentContext.AnalysisDocument.GetSemanticModelAsync ().WaitAndGetResult ();
 
 				if (model == null)
 					return ns + "." + name;

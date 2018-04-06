@@ -27,6 +27,7 @@ using MonoDevelop.Ide.Gui.Content;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
 using System.Linq;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Resolver
 {
@@ -37,10 +38,10 @@ namespace MonoDevelop.CSharp.Resolver
 		public ISymbol GetLanguageItem (MonoDevelop.Ide.Gui.Document document, int offset, out DocumentRegion expressionRegion)
 		{
 			expressionRegion = DocumentRegion.Empty;
-			var parsedDocument = document.ParsedDocument;
+			var parsedDocument = document.AnalysisDocument;
 			if (parsedDocument == null)
 				return null;
-			var model = parsedDocument.GetAst<SemanticModel> ();
+			var model = parsedDocument.GetSemanticModelAsync ().WaitAndGetResult ();
 			if (model == null)
 				return null;
 			foreach (var symbol in model.LookupSymbols (offset)) {
@@ -57,9 +58,9 @@ namespace MonoDevelop.CSharp.Resolver
 
 		public ISymbol GetLanguageItem (MonoDevelop.Ide.Gui.Document document, int offset, string identifier)
 		{
-			if (document.ParsedDocument == null)
+			if (document.AnalysisDocument == null)
 				return null;
-			var model = document.ParsedDocument.GetAst<SemanticModel> ();
+			var model = document.AnalysisDocument.GetSemanticModelAsync ().WaitAndGetResult ();
 			if (model == null)
 				return null;
 
