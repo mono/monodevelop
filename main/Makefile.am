@@ -190,6 +190,9 @@ check-addins:
 test:
 	cd tests && $(MAKE) test assembly=$(assembly)
 
+deploy-tests:
+	cd tests && $(MAKE) deploy-tests
+
 uitest:
 	cd tests && $(MAKE) uitest assembly=$(assembly) categories=$(categories) tests=$(tests)
 

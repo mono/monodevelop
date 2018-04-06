@@ -154,6 +154,9 @@ run-no-accessibility:
 	cd main && $(MAKE) run-no-accessibility
 test:
 	cd main && $(MAKE) test assembly=$(assembly)
+    
+deploy-tests:
+	cd main && $(MAKE) deploy-tests
 
 uitest:
 	cd main && $(MAKE) uitest assembly=$(assembly) tests=$(tests)

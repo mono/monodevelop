@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject.csproj", "{3DDE5347-7E00-40F6-806C-2697A42E25C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Addins", "..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj", "{91DD5A2D-9FE3-4C3C-9253-876141874DAD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Addins", "mono-addins\Mono.Addins\Mono.Addins.csproj", "{91DD5A2D-9FE3-4C3C-9253-876141874DAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

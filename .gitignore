@@ -40,6 +40,7 @@ obj/
 /main/.nuget/
 pull-package.exe
 /main/tests/StressTest/TestProject/bin
+/main/tests/MonoDevelop.Core.Tests.Addin/bin/
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files

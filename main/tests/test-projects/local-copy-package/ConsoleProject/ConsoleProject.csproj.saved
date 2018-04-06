@@ -38,7 +38,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Xwt">
-      <HintPath>..\..\..\..\build\bin\Xwt.dll</HintPath>
+      <HintPath>Xwt.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

@@ -13,7 +13,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\build\tests\MonoDevelop.Core.Tests.Addin\</OutputPath>
+    <OutputPath>..\..\build\tests</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -21,7 +21,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
-    <OutputPath>..\..\build\tests\MonoDevelop.Core.Tests.Addin\</OutputPath>
+    <OutputPath>..\..\build\tests</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -52,8 +52,4 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Target Name="AfterBuild">
-    <MakeDir Directories="..\..\..\local-config" />
-    <WriteLinesToFile File="..\..\..\local-config\$(AssemblyName).addins" Lines="%3CAddins%3E%3CDirectory include-subdirs='false'%3E$(MSBuildProjectDirectory)\$(OutputPath)%3C/Directory%3E%3C/Addins%3E" Overwrite="true" />
-  </Target>
 </Project>
