@@ -149,12 +149,18 @@ type ``Template tests``() =
 
     [<TestFixtureSetUp>]
     member x.Setup() =
-        let config = """
-<configuration>  
-  <config>
-    <add key="repositoryPath" value="packages" />
-  </config>
-</configuration>"""
+        let config =
+            """
+            <configuration>
+              <config>
+                <add key="repositoryPath" value="packages" />
+              </config>
+              <packageSources>
+                  <clear /> <!-- ensure only the sources defined below are used -->
+                  <add key="NuGet official package source" value="https://api.nuget.org/v3/index.json" />
+              </packageSources>
+            </configuration>
+            """
         if not (Directory.Exists templatesDir) then
             Directory.CreateDirectory templatesDir |> ignore
         let configFileName = templatesDir/"NuGet.Config"
