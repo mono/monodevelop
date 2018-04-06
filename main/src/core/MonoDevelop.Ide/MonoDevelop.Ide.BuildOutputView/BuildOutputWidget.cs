@@ -180,13 +180,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			treeView.AnimationsEnabled = false;
 			treeView.BorderVisible = false;
 			treeView.UseAlternatingRowColors = true;
+			treeView.SelectionMode = Xwt.SelectionMode.Single;
 			treeView.Accessible.Identifier = "BuildOutputWidget.TreeView";
 			treeView.Accessible.Description = GettextCatalog.GetString ("Structured build output");
 			treeView.HorizontalScrollPolicy = ScrollPolicy.Never;
 			treeView.SelectionChanged += TreeView_SelectionChanged;
 			treeView.ButtonPressed += TreeView_ButtonPressed;
 
-			treeView.SelectionMode = Xwt.SelectionMode.Single;
 			var treeColumn = new ListViewColumn {
 				CanResize = false,
 				Expands = true
@@ -404,6 +404,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 			                               Math.Max (1, selectedNode.LineNumber),
 			                               Math.Max (1, 0)
 			                              );
+		}
+
+		public void GoToFirstNode ()
+		{
+			var dataSource = (BuildOutputDataSource)treeView.DataSource;
+			if (dataSource != null) {
+				if (dataSource.RootNodes.Count > 0) {
+					treeView.FocusedRow = dataSource.RootNodes [0];
+				}
+			}
+		}
+
+		public void GoToLastNode ()
+		{
+			var dataSource = (BuildOutputDataSource)treeView.DataSource;
+			if (dataSource != null) {
+				if (dataSource.RootNodes.Count > 0) {
+					treeView.FocusedRow = dataSource.RootNodes [dataSource.RootNodes.Count - 1];
+				}
+			}
 		}
 
 		void UpdatePathBarEntries (PathEntry[] entries)
