@@ -44,7 +44,7 @@ namespace MonoDevelop.Refactoring
 			try {
 				info.Add (new CommandInfo (GettextCatalog.GetString ("Loading..."), false, false), null);
 				var currentFixes = await ext.GetCurrentFixesAsync (cancelToken);
-				var menu = await CodeFixMenuService.CreateFixMenu (editor, currentFixes, cancelToken);
+				var menu = CodeFixMenuService.CreateFixMenu (editor, currentFixes, cancelToken);
 				info.Clear ();
 				foreach (var item in menu.Items) {
 					AddItem (info, item);
