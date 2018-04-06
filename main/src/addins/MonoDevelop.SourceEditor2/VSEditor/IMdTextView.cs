@@ -2,7 +2,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.Text.Editor
 {
-	interface IMdTextView : ITextView
+	internal interface IMdTextView : ITextView
 	{
 		/// <summary>
 		/// Gets a named <see cref="ISpaceReservationManager"/>.
@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.Text.Editor
 		/// </remarks>
 		ISpaceReservationManager GetSpaceReservationManager (string name);
 
-		Mono.TextEditor.MonoTextEditor VisualElement
+		Gtk.Container VisualElement
         {
             get;
         }

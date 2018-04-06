@@ -10,6 +10,7 @@ using System.IO.Compression;
 using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.Core.Text;
+using Microsoft.CodeAnalysis.Execution;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -205,7 +206,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					lastContexts.Clear ();
 					lastContexts.Add (currentContext);
 				}
-				if (length <= 0)
+				if (offset >= lineText.Length)
 					goto end;
 				lastMatch = offset;
 				currentContext = ContextStack.Peek ();
@@ -218,7 +219,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (r == null)
 						continue;
 					try {
-						var possibleMatch = r.Match (lineText, offset, length, matchTimeout);
+						Match possibleMatch;
+						if (r.pattern == "(?<=\\})" && offset > 0) { // HACK to fix typescript highlighting.
+							possibleMatch = r.Match (lineText, offset - 1, length, matchTimeout);
+						} else {
+							possibleMatch = r.Match (lineText, offset, length, matchTimeout);
+						}
 						if (possibleMatch.Success) {
 							if (match == null || possibleMatch.Index < match.Index) {
 								match = possibleMatch;
@@ -236,6 +242,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						continue;
 					}
 				}
+				if (length <= 0 && curMatch == null)
+					goto end;
+
 				if (Environment.TickCount >= timeoutOccursAt) {
 					curMatch.GotTimeout = true;
 					goto end;

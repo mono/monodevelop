@@ -477,7 +477,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		object readLock = new object ();
 
-		internal MSBuildProjectInstanceInfo LoadNativeInstance ()
+		internal MSBuildProjectInstanceInfo LoadNativeInstance (bool evaluateItems)
 		{
 			lock (readLock) {
 				var supportsMSBuild = UseMSBuildEngine && GetGlobalPropertyGroup ().GetValue ("UseMSBuildEngine", true);
@@ -514,8 +514,10 @@ namespace MonoDevelop.Projects.MSBuild
 						};
 						var xml = SaveToString (ctx);
 
-						foreach (var it in GetAllItems ())
-							it.EvaluatedItemCount = 0;
+						if (evaluateItems) {
+							foreach (var it in GetAllItems ())
+								it.EvaluatedItemCount = 0;
+						}
 
 						nativeProjectInfo.Project = e.LoadProject (this, xml, FileName);
 					} catch (Exception ex) {

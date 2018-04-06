@@ -158,7 +158,38 @@ namespace Mono.TextEditor
 			if (MouseLeave != null)
 				MouseLeave (this, EventArgs.Empty);
 		}
-		
+
+		internal protected virtual bool SupportsItemCommands {
+			get {
+				return false;
+			}
+		}
+		internal enum ItemCommand {
+			FocusNextItem,
+			FocusPreviousItem,
+			ActivateCurrentItem
+		};
+
+		internal protected virtual bool HandleItemCommand (ItemCommand command)
+		{
+			return false;
+		}
+
+		internal bool HasFocus { get; private set; }
+		internal protected virtual void FocusIn ()
+		{
+			HasFocus = true;
+
+			// Set the margin as the current focused accessibility element
+			AtkCocoaExtensions.SetCurrentFocus (Accessible);
+		}
+
+		internal protected virtual void FocusOut ()
+		{
+			HasFocus = false;
+			AtkCocoaExtensions.SetCurrentFocus (null);
+		}
+
 		public virtual void Dispose ()
 		{
 			cursor = cursor.Kill ();
@@ -201,7 +232,12 @@ namespace Mono.TextEditor
 			get;
 			private set;
 		}
-		
+
+		public DocumentLocation Location {
+			get;
+			internal set;
+		}
+
 		public bool TriggersContextMenu ()
 		{
 			var evt = RawEvent as Gdk.EventButton;

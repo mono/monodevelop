@@ -1,4 +1,4 @@
-﻿//
+//
 // DotNetCoreRuntime.cs
 //
 // Author:
@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 
@@ -31,9 +33,28 @@ namespace MonoDevelop.DotNetCore
 {
 	public static class DotNetCoreRuntime
 	{
+		internal static readonly string DotNetCoreRuntimeFileNameProperty = "DotNetCoreRuntimeFileName";
+
 		static DotNetCoreRuntime ()
 		{
-			var path = new DotNetCorePath ();
+			Init (GetDotNetCorePath ());
+
+			if (!IsInstalled)
+				LoggingService.LogInfo (".NET Core runtime not found.");
+		}
+
+		static DotNetCorePath GetDotNetCorePath ()
+		{
+			string fileName = PropertyService.Get<string> (DotNetCoreRuntimeFileNameProperty);
+
+			if (!string.IsNullOrEmpty (fileName))
+				return new DotNetCorePath (fileName);
+
+			return new DotNetCorePath ();
+		}
+
+		static void Init (DotNetCorePath path)
+		{
 			IsInstalled = !path.IsMissing;
 			FileName = path.FileName;
 
@@ -41,8 +62,36 @@ namespace MonoDevelop.DotNetCore
 				.OrderByDescending (version => version)
 				.ToArray ();
 
-			if (!IsInstalled)
-				LoggingService.LogInfo (".NET Core runtime not found.");
+			// If there are no runtimes then do not consider the runtime to be installed.
+			if (!Versions.Any ())
+				IsInstalled = false;
+
+			// Used by the DotNetMSBuildSdkResolver to find the .NET Core SDK.
+			// Not sure this is needed - seems to work without it.
+			Environment.SetEnvironmentVariable ("DOTNET_MSBUILD_SDK_RESOLVER_CLI_DIR", path.ParentDirectory);
+		}
+
+		internal static void Update (DotNetCorePath path)
+		{
+			if (path.FileName == FileName)
+				return;
+
+			Init (path);
+
+			if (path.IsDefault ()) {
+				PropertyService.Set (DotNetCoreRuntimeFileNameProperty, null);
+			} else {
+				PropertyService.Set (DotNetCoreRuntimeFileNameProperty, path.FileName);
+			}
+
+			OnChanged ();
+		}
+
+		static internal event EventHandler Changed;
+
+		static void OnChanged ()
+		{
+			Changed?.Invoke (null, EventArgs.Empty);
 		}
 
 		public static string FileName { get; private set; }
@@ -63,6 +112,27 @@ namespace MonoDevelop.DotNetCore
 		internal static bool IsNetCore20Installed ()
 		{
 			return Versions.Any (version => version.Major == 2 && version.Minor == 0);
+		}
+
+		internal static bool IsNetCore2xInstalled ()
+		{
+			return Versions.Any (version => version.Major == 2);
+		}
+
+		/// <summary>
+		/// Used by unit tests to fake having different .NET Core sdks installed.
+		/// </summary>
+		internal static void SetVersions (IEnumerable<DotNetCoreVersion> versions)
+		{
+			Versions = versions.ToArray ();
+		}
+
+		/// <summary>
+		/// Used by unit tests to fake having the sdk installed.
+		/// </summary>
+		internal static void SetInstalled (bool installed)
+		{
+			IsInstalled = installed;
 		}
 	}
 }

@@ -106,7 +106,21 @@ namespace MonoDevelop.Debugger
 				// Refresh the evaluators list
 				evaluators = null;
 			});
+			IdeApp.Exiting += IdeApp_Exiting;
 		}
+
+		static void IdeApp_Exiting (object sender, ExitEventArgs args)
+		{
+			if (!IsDebugging)
+				return;
+			if (MessageService.Confirm (GettextCatalog.GetString (
+						"The debugger is currently running and will have to be stopped. Do you want to stop debugging?"),
+						new AlertButton (GettextCatalog.GetString ("Stop Debugging")))) {
+				Stop ();
+			} else
+				args.Cancel = true;
+		}
+
 
 		public static IExecutionHandler GetExecutionHandler ()
 		{

@@ -73,32 +73,34 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var handler = TextChanged;
 			if (handler != null) {
-				lock (replaceLock) {
-					var oldText = CurrentText;
-					var changes = new Microsoft.CodeAnalysis.Text.TextChange[e.TextChanges.Count];
-					var changeRanges = new TextChangeRange[e.TextChanges.Count];
-					for (int i = 0; i < e.TextChanges.Count; ++i) {
-						var c = e.TextChanges[i];
-						var span = new TextSpan (c.Offset, c.RemovalLength);
-						changes[i] = new Microsoft.CodeAnalysis.Text.TextChange (span, c.InsertedText.Text);
-						changeRanges[i] = new TextChangeRange (span, c.InsertionLength);
-					}
-					var newText = oldText.WithChanges (changes);
-					currentText = newText;
-					try {
-						handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, changeRanges));
-					} catch (ArgumentException ae) {
-						if (!workspace.TryGetTarget (out var ws))
-							return;
-						if (!editor.TryGetTarget (out var ed))
-							return;
-						LoggingService.LogWarning (ae.Message + " re opening " + ed.FileName + " as roslyn source text.");
-						ws.InformDocumentClose (Id, ed.FileName);
-						Dispose (); // 100% ensure that this object is disposed
-						if (ws.GetDocument (Id) != null)
-							TypeSystemService.InformDocumentOpen (Id, ed);
-					} catch (Exception ex) {
-						LoggingService.LogError ("Error while text replacing", ex);
+				if (e.TextChanges.Count > 0) {
+					lock (replaceLock) {
+						var oldText = CurrentText;
+						var changes = new Microsoft.CodeAnalysis.Text.TextChange[e.TextChanges.Count];
+						var changeRanges = new TextChangeRange[e.TextChanges.Count];
+						for (int i = 0; i < e.TextChanges.Count; ++i) {
+							var c = e.TextChanges[i];
+							var span = new TextSpan (c.Offset, c.RemovalLength);
+							changes[i] = new Microsoft.CodeAnalysis.Text.TextChange (span, c.InsertedText.Text);
+							changeRanges[i] = new TextChangeRange (span, c.InsertionLength);
+						}
+						var newText = oldText.WithChanges (changes);
+						currentText = newText;
+						try {
+							handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, changeRanges));
+						} catch (ArgumentException ae) {
+							if (!workspace.TryGetTarget (out var ws))
+								return;
+							if (!editor.TryGetTarget (out var ed))
+								return;
+							LoggingService.LogWarning (ae.Message + " re opening " + ed.FileName + " as roslyn source text.");
+							ws.InformDocumentClose (Id, ed.FileName);
+							Dispose (); // 100% ensure that this object is disposed
+							if (ws.GetDocument (Id) != null)
+								TypeSystemService.InformDocumentOpen (Id, ed);
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error while text replacing", ex);
+						}
 					}
 				}
 			}

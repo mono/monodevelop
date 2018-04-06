@@ -467,6 +467,15 @@ typedef struct
 			Assert.AreEqual ("(?<interface_name>\\k<type_name>\\s*\\.\\s*)?", Sublime3Format.CompileRegex ("(?<interface-name>\\g<type-name>\\s*\\.\\s*)?"));
 		}
 
+		/// <summary>
+		/// Bug 589495: Opening Makefile in mono/monodevelop crashes IDE
+		/// </summary>
+		[Test]
+		public void TestBug589495 ()
+		{
+			Assert.AreEqual ("(\\$?\\$)[%*+<?@^]", Sublime3Format.CompileRegex ("(\\$?\\$)[@%<?^+*]"));
+		}
+
 		[Ignore("Fixme")]
 		[Test]
 		public void TestLookbehindBug ()

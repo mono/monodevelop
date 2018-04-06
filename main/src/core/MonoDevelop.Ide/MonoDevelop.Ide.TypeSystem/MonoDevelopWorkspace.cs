@@ -221,9 +221,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var p in toDispose)
 					p.Dispose ();
 				
-				projectIdMap.Clear ();
-				projectIdToMdProjectMap = projectIdToMdProjectMap.Clear ();
-				projectDataMap.Clear ();
 				solutionData = new SolutionData ();
 				List<Task> allTasks = new List<Task> ();
 				foreach (var proj in mdProjects) {
@@ -232,7 +229,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var netProj = proj as MonoDevelop.Projects.DotNetProject;
 					if (netProj != null && !netProj.SupportsRoslyn)
 						continue;
-					var tp = LoadProject (proj, token).ContinueWith (t => {
+					var tp = LoadProject (proj, token, null).ContinueWith (t => {
 						if (!t.IsCanceled)
 							projects.Add (t.Result);
 					});
@@ -257,6 +254,12 @@ namespace MonoDevelop.Ide.TypeSystem
 						solution.Modified += OnSolutionModified;
 						NotifySolutionModified (solution, solutionId, this);
 						OnSolutionAdded (solutionInfo);
+						lock (generatedFiles) {
+							foreach (var generatedFile in generatedFiles) {
+								if (!this.IsDocumentOpen (generatedFile.Key.Id))
+									OnDocumentOpened (generatedFile.Key.Id, generatedFile.Value);
+							}
+						}
 					}
 				}
 				return solutionInfo;
@@ -450,10 +453,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			project.Modified -= OnProjectModified;
 		}
 
-		async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token)
+		internal async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.Project oldProject)
 		{
 			if (!projectIdMap.ContainsKey (p)) {
 				p.Modified += OnProjectModified;
+			}
+
+			if (oldProject != null) {
+				lock (projectIdMap) {
+					oldProject.Modified -= OnProjectModified;
+					projectIdMap.TryRemove (oldProject, out var id);
+					projectIdMap[p] = id;
+					projectIdToMdProjectMap = projectIdToMdProjectMap.SetItem (id, p);
+				}
 			}
 
 			var projectId = GetOrCreateProjectId (p);
@@ -600,6 +612,13 @@ namespace MonoDevelop.Ide.TypeSystem
 							continue;
 						documents.Add (projectedDocument);
 					}
+				}
+			}
+			var projectId = GetProjectId (p);
+			lock (generatedFiles) {
+				foreach (var generatedFile in generatedFiles) {
+					if (generatedFile.Key.Id.ProjectId == projectId)
+						documents.Add (generatedFile.Key);
 				}
 			}
 			return Tuple.Create (documents, additionalDocuments);
@@ -759,14 +778,25 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal void InternalOnDocumentOpened (DocumentId documentId, SourceTextContainer textContainer, bool isCurrentContext = true)
+		readonly Dictionary<DocumentInfo, SourceTextContainer> generatedFiles = new Dictionary<DocumentInfo, SourceTextContainer> ();
+		internal void AddAndOpenDocumentInternal (DocumentInfo documentInfo, SourceTextContainer textContainer)
 		{
-			OnDocumentOpened (documentId, textContainer, isCurrentContext);
+			lock (generatedFiles) {
+				generatedFiles[documentInfo] = textContainer;
+				OnDocumentAdded (documentInfo);
+				OnDocumentOpened (documentInfo.Id, textContainer);
+			}
 		}
 
-		internal void InternalOnDocumentClosed (DocumentId documentId, TextLoader reloader, bool updateActiveContext = false)
+		internal void CloseAndRemoveDocumentInternal (DocumentId documentId, TextLoader reloader)
 		{
-			OnDocumentClosed (documentId, reloader, updateActiveContext);
+			lock (generatedFiles) {
+				var documentInfo = generatedFiles.FirstOrDefault (kvp => kvp.Key.Id == documentId).Key;
+				if (documentInfo != null && generatedFiles.Remove(documentInfo) && CurrentSolution.ContainsDocument(documentId)) {
+					OnDocumentClosed (documentId, reloader);
+					OnDocumentRemoved (documentId);
+				}
+			}
 		}
 
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
@@ -835,8 +865,8 @@ namespace MonoDevelop.Ide.TypeSystem
 						openDoc.Dispose ();
 						openDocuments.Remove (openDoc);
 					} else {
-						//Apparently something else opened this file via InternalOnDocumentOpened(e.g. .cshtml)
-						//it's job of whatever opened to also call InternalOnDocumentClosed
+						//Apparently something else opened this file via AddAndOpenDocumentInternal(e.g. .cshtml)
+						//it's job of whatever opened to also call CloseAndRemoveDocumentInternal
 						return;
 					}
 				}
@@ -1479,7 +1509,13 @@ namespace MonoDevelop.Ide.TypeSystem
 						return;
 					var projectId = GetProjectId (project);
 					if (CurrentSolution.ContainsProject (projectId)) {
-						HandleActiveConfigurationChanged (this, EventArgs.Empty);
+						var projectInfo = LoadProject (project, CancellationToken.None, null).ContinueWith (t => {
+							if (t.IsFaulted) {
+								LoggingService.LogError ("Failed to reload project", t.Exception);
+								return;
+							}
+							OnProjectReloaded (t.Result);
+						});
 					} else {
 						modifiedProjects.Add (project);
 					}

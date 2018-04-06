@@ -146,6 +146,7 @@ type SyntaxHighlighting() =
     [<TestCase("$/// Some comment$", "comment.line.documentation.source.fs")>]
     [<TestCase("$(* Some comment*)$", "comment.block.source.fs")>]
     [<TestCase("$let$ ((x,y", "keyword.source.fs")>]
+    [<TestCase("|> $function$", "keyword.source.fs")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 

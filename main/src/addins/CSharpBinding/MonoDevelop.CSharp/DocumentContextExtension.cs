@@ -30,6 +30,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.Policies;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp
 {
@@ -39,14 +41,25 @@ namespace MonoDevelop.CSharp
 		{
 			if (ctx == null)
 				throw new ArgumentNullException (nameof (ctx));
-			if (ctx.AnalysisDocument != null) {
-				var result = await ctx.AnalysisDocument.GetOptionsAsync ().ConfigureAwait (false);
-				if (result != null)
-					return result;
+			try {
+				if (ctx.AnalysisDocument != null) {
+					var result = await ctx.AnalysisDocument.GetOptionsAsync ().ConfigureAwait (false);
+					if (result != null)
+						return result;
+				}
+				var policies = ctx.Project?.Policies;
+				if (policies == null) {
+					var defaultPolicy = PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (CSharpFormatter.MimeType);
+					var defaultTextPolicy = PolicyService.GetDefaultPolicy<TextStylePolicy> (CSharpFormatter.MimeType);
+					return defaultPolicy.CreateOptions (defaultTextPolicy);
+				}
+				var policy = policies.Get<CSharpFormattingPolicy> (CSharpFormatter.MimeType);
+				var textpolicy = policies.Get<TextStylePolicy> (CSharpFormatter.MimeType);
+				return policy.CreateOptions (textpolicy);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting document options", e);
+				return ctx.GetOptionSet ();
 			}
-			var policy = ctx.Project.Policies.Get<CSharpFormattingPolicy> (CSharpFormatter.MimeType);
-			var textpolicy = ctx.Project.Policies.Get<TextStylePolicy> (CSharpFormatter.MimeType);
-			return policy.CreateOptions (textpolicy);
 		}
 	}
 }

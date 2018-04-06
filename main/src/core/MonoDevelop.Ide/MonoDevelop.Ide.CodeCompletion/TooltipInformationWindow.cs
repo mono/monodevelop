@@ -100,6 +100,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (cancelToken.IsCancellationRequested)
 					return;
 				AddOverload (tooltipInformation);
+			} catch (OperationCanceledException) {
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while adding overload : " + data, e);
 			}

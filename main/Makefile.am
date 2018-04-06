@@ -1,6 +1,6 @@
 include $(top_srcdir)/xbuild.include
 
-SUBDIRS = external . contrib src po man theme-icons msbuild build tests
+SUBDIRS = external . src po man theme-icons msbuild build tests
 
 MD_CONFIGURE=$(top_srcdir)/../scripts/configure.sh
 
@@ -189,6 +189,9 @@ check-addins:
 
 test:
 	cd tests && $(MAKE) test assembly=$(assembly)
+
+deploy-tests:
+	cd tests && $(MAKE) deploy-tests
 
 uitest:
 	cd tests && $(MAKE) uitest assembly=$(assembly) categories=$(categories) tests=$(tests)

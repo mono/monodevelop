@@ -324,7 +324,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath solFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms.sln");
 
-			var process = Process.Start ("msbuild", $"/t:Restore {solFile}");
+			var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
 			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
 			Assert.AreEqual (0, process.ExitCode);
 
@@ -351,7 +351,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath solFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms.sln");
 
-			var process = Process.Start ("msbuild", $"/t:Restore {solFile}");
+			var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
 			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
 			Assert.AreEqual (0, process.ExitCode);
 
@@ -401,7 +401,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath solFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms.sln");
 
-			var process = Process.Start ("msbuild", $"/t:Restore {solFile}");
+			var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
 			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
 			Assert.AreEqual (0, process.ExitCode);
 

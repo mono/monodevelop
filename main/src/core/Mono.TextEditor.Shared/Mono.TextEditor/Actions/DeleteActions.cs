@@ -315,7 +315,12 @@ namespace Mono.TextEditor
 			if (offset <= 0)
 				return;
 			var version = data.Version;
-			data.Remove (offset - 1, 1);
+			var o = data.Caret.Offset;
+			if (((ushort)data.GetCharAt (offset - 1) & CaretMoveActions.LowSurrogateMarker) == CaretMoveActions.LowSurrogateMarker) {
+				data.Remove (offset - 2, 2);
+			} else {
+				data.Remove (offset - 1, 1);
+			}
 			data.Caret.Location = data.OffsetToLocation (version.MoveOffsetTo (data.Version, offset));
 		}
 		
@@ -380,7 +385,12 @@ namespace Mono.TextEditor
 							line.UnicodeNewline = UnicodeNewline.Unknown;
 					}
 				} else {
-					data.Remove (data.Caret.Offset, 1); 
+					var o = data.Caret.Offset;
+					if (((ushort)data.GetCharAt (o) & CaretMoveActions.HighSurrogateMarker) == CaretMoveActions.HighSurrogateMarker) {
+						data.Remove (o, 2);
+					} else {
+						data.Remove (o, 1);
+					}
 					data.Document.CommitLineUpdate (data.Caret.Line);
 				}
 				data.FixVirtualIndentation ();

@@ -223,9 +223,6 @@
     <EmbeddedResource Include="MonoDevelop.UnitTesting.addin.xml">
       <LogicalName>MonoDevelop.UnitTesting.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\pad-unit-test-16.png">
       <LogicalName>pad-unit-test-16.png</LogicalName>
     </EmbeddedResource>
@@ -283,7 +280,6 @@
     <Compile Include="Services\IResultsStore.cs" />
     <Compile Include="Services\UnitTestResultsStore.cs" />
     <Compile Include="Services\WorkspaceTestGroup.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Services\UnitTestResult.cs" />
     <Compile Include="Services\UnitTestStatus.cs" />
     <Compile Include="Services\UnitTestProjectServiceExtension.cs" />
