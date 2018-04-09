@@ -23,7 +23,12 @@ module highlightUnusedCode =
         async {
             match context.TryGetCheckResults() with
             | Some checkResults ->
-                let! opens = UnusedOpens.getUnusedOpens(checkResults, fun lineNum -> editor.GetLineText(lineNum))
+                let! opens = UnusedOpens.getUnusedOpens(checkResults, fun lineNum ->
+                    let line = editor.GetLine lineNum
+                    if not(isNull line) then
+                        editor.GetTextAt line
+                    else
+                        "")
                 return Some opens
             | None -> return None
         }

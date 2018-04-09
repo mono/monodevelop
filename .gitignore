@@ -197,6 +197,7 @@ Thumbs.db
 /main/contrib/ICSharpCode.NRefactory/Makefile
 /main/src/addins/TextTemplating/Mono.TextTemplating.Tests/Makefile
 /main/tests/MacPlatform.Tests/Makefile
+/main/tests/MonoDevelop.Core.Tests.Addin/Makefile
 /main/tests/MonoDevelop.CSharpBinding.Tests/Makefile
 /main/tests/MonoDevelop.MacDev.Tests/Makefile
 /main/tests/MonoDevelop.Refactoring.Tests/Makefile

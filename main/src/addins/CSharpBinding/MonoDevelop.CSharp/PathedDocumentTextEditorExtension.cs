@@ -724,15 +724,15 @@ namespace MonoDevelop.CSharp
 			Update ();
 		}
 
-		void Update()
+		async void Update()
 		{
 			if (DocumentContext == null)
 				return;
-			var parsedDocument = DocumentContext.ParsedDocument;
-			if (parsedDocument == null)
+			var analysisDocument = DocumentContext.AnalysisDocument;
+			if (analysisDocument == null)
 				return;
 			var caretOffset = Editor.CaretOffset;
-			var model = parsedDocument.GetAst<SemanticModel>();
+			var model = await analysisDocument.GetSemanticModelAsync ();
 			if (model == null)
 				return;
 			CancelUpdatePath ();
@@ -766,7 +766,6 @@ namespace MonoDevelop.CSharp
 				var curType = node != null ? node.AncestorsAndSelf ().FirstOrDefault (IsType) : null;
 
 				var curProject = ownerProjects != null && ownerProjects.Count > 1 ? DocumentContext.Project : null;
-
 				if (curType == curMember || curType is DelegateDeclarationSyntax)
 					curMember = null;
 				if (isPathSet && curType == lastType && curMember == lastMember && curProject == lastProject) {

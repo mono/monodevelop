@@ -269,20 +269,20 @@ module Completion =
             try
                 match symbolUse with
                 | SymbolUse.Constructor c ->
-                    c.EnclosingEntity
+                    c.DeclaringEntity
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, un)
                 | SymbolUse.Event ev ->
-                    ev.EnclosingEntity
+                    ev.DeclaringEntity
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, un)
                 | SymbolUse.Property pr ->
-                    pr.EnclosingEntity
+                    pr.DeclaringEntity
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, un)
                 | SymbolUse.ActivePatternCase ap ->
                     if ap.Group.Names.Count > 1 then
-                        ap.Group.EnclosingEntity
+                        ap.Group.DeclaringEntity
                         |> Option.map (fun enclosing -> let un = enclosing.UnAnnotate()
                                                         un.DisplayName, un)
                     else None
@@ -293,22 +293,22 @@ module Completion =
                     else None
                 | SymbolUse.Function f ->
                     if f.IsExtensionMember then
-                        let real = f.LogicalEnclosingEntity.UnAnnotate()
+                        let real = f.ApparentEnclosingEntity.UnAnnotate()
                         Some(real.DisplayName, real)
                     else
-                        f.EnclosingEntity
+                        f.DeclaringEntity
                         |> Option.map (fun real -> let un = real.UnAnnotate()
                                                    un.DisplayName, un)
                 | SymbolUse.Operator o ->
-                    o.EnclosingEntity
+                    o.DeclaringEntity
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, un)
                 | SymbolUse.Pattern p ->
-                    p.EnclosingEntity
+                    p.DeclaringEntity
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, ent)
                 | SymbolUse.Val v ->
-                    v.EnclosingEntity
+                    v.DeclaringEntity
                     |> Option.map (fun ent -> let un  = ent.UnAnnotate()
                                               un.DisplayName, un)
                 | SymbolUse.TypeAbbreviation ta ->

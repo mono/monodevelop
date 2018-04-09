@@ -1,0 +1,8 @@
+<Project>
+  <!-- Coverity runs on VSTS resolves gtk# from a local directory -->
+  <Target Name="BeforeResolveReferences" Condition=" '$(COVERITY_GTK)' != '' ">
+    <CreateProperty Value="$(MSBuildThisFileDirectory)\$(COVERITY_GTK);$(AssemblySearchPaths)">
+      <Output TaskParameter="Value" PropertyName="AssemblySearchPaths" />
+    </CreateProperty>
+  </Target>
+</Project>

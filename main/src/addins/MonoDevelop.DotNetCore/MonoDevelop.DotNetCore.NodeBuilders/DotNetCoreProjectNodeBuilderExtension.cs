@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects;
@@ -34,6 +35,28 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 {
 	class DotNetCoreProjectNodeBuilderExtension : NodeBuilderExtension
 	{
+		protected override void Initialize ()
+		{
+			base.Initialize ();
+			DotNetCoreRuntime.Changed += DotNetCoreRuntimeChanged;
+		}
+
+		public override void Dispose ()
+		{
+			DotNetCoreRuntime.Changed -= DotNetCoreRuntimeChanged;
+			base.Dispose ();
+		}
+
+		void DotNetCoreRuntimeChanged (object sender, EventArgs e)
+		{
+			foreach (DotNetProject project in IdeApp.Workspace.GetAllItems<DotNetProject> ()) {
+				if (project.HasFlavor<DotNetCoreProjectExtension> ()) {
+					ITreeBuilder builder = Context.GetTreeBuilder (project);
+					builder?.Update ();
+				}
+			}
+		}
+
 		public override bool CanBuildNode (Type dataType)
 		{
 			return typeof (DotNetProject).IsAssignableFrom (dataType);

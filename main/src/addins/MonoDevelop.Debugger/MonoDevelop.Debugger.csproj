@@ -162,20 +162,16 @@
     <Compile Include="MonoDevelop.Debugger\LocalsPad.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValuePad.cs" />
     <Compile Include="MonoDevelop.Debugger\ThreadsPad.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.Debugger\DebugExecutionHandlerFactory.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggingService.cs" />
     <Compile Include="MonoDevelop.Debugger\DebugCommands.cs" />
     <Compile Include="MonoDevelop.Debugger\Extensions.cs" />
     <Compile Include="MonoDevelop.Debugger\AttachToProcessDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.AttachToProcessDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\ExpressionEvaluatorDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\DebugExecutionModeSet.cs" />
     <Compile Include="MonoDevelop.Debugger\IDebuggerEngine.cs" />
     <Compile Include="MonoDevelop.Debugger\ImmediatePad.cs" />
     <Compile Include="MonoDevelop.Debugger\BusyEvaluatorDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.BusyEvaluatorDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Debugger\PinnedWatch.cs" />
     <Compile Include="MonoDevelop.Debugger\PinnedWatchStore.cs" />
@@ -183,7 +179,6 @@
     <Compile Include="MonoDevelop.Debugger\DebuggerEngineExtensionNode.cs" />
     <Compile Include="MonoDevelop.Debugger\ExceptionCaughtDialog.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\ValueVisualizerDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\TextVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\PixbufVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger\ExpressionEvaluatorExtensionNode.cs" />
@@ -204,7 +199,6 @@
     <Compile Include="MonoDevelop.Debugger\BreakpointPropertiesDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\TextEntryWithCodeCompletion.cs" />
     <Compile Include="MonoDevelop.Debugger\SourceCodeLookup.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.DebugApplicationDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\DebugApplicationDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\Styles.cs" />
     <Compile Include="MonoDevelop.Debugger\ProcessAttacher.cs" />
@@ -212,13 +206,15 @@
     <Compile Include="MonoDevelop.Debugger\DebugSourceFilesOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Debugger\SolutionHasDebugSourceFilesCondition.cs" />
     <Compile Include="MonoDevelop.Debugger\Counters.cs" />
+    <Compile Include="Gui\MonoDevelop.Debugger.AttachToProcessDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.Debugger.BusyEvaluatorDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.Debugger.DebugApplicationDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
       <LogicalName>MonoDevelop.Debugger.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-16.png">
       <LogicalName>breakpoint-16.png</LogicalName>
@@ -723,6 +719,7 @@
     <Folder Include="MonoDevelop.Debugger.PreviewVisualizers\" />
     <Folder Include="MonoDevelop.Debugger.Converters\" />
     <Folder Include="icons\mac\" />
+    <Folder Include="Gui\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

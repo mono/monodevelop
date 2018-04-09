@@ -184,7 +184,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Mono.TextEditor\Gui\MdTextViewLineCollection.MdTextViewLine.cs" />
     <Compile Include="Mono.TextEditor\Gui\MdTextViewLineCollection.cs" />
     <Compile Include="Mono.TextEditor\Gui\MonoTextEditor.IViewScroller.cs" />
@@ -206,21 +205,13 @@
     <Compile Include="MonoDevelop.SourceEditor\CompileErrorTooltipProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueTooltipProvider.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.GotoLineNumberWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\Counters.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PinnedWatchWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorPrintOperation.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PrintSettingsWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.PrintSettingsWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCache.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\NewColorShemeDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.NewColorShemeDialog.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskStrip.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\ScrollbarCommand.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\ScrollBarMode.cs" />
@@ -230,9 +221,7 @@
     <Compile Include="MonoDevelop.SourceEditor\SearchAndReplaceOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ErrorText.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionOptionsPanel.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionAppearancePanel.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionCharactersPanel.cs" />
     <Compile Include="MonoDevelop.SourceEditor\OverlayMessageWindow.cs" />
@@ -357,11 +346,19 @@
     <Compile Include="VSEditor\Text\Impl\WpfView\SpaceReservationStack.cs" />
     <Compile Include="VSEditor\Text\Util\TextDataUtil\MappingHelper.cs" />
     <Compile Include="VSEditor\VisualStudio\Impl\ViewAdapter\TipManager.cs" />
+    <Compile Include="Gui\MonoDevelop.SourceEditor.GotoLineNumberWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs" />
+    <Compile Include="Gui\MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs" />
+    <Compile Include="Gui\MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs" />
+    <Compile Include="Gui\MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs" />
+    <Compile Include="Gui\MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs" />
+    <Compile Include="Gui\MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs" />
+    <Compile Include="Gui\MonoDevelop.SourceEditor.OptionPanels.NewColorShemeDialog.cs" />
+    <Compile Include="Gui\MonoDevelop.SourceEditor.PrintSettingsWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.SourceEditor.SearchWidget.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml">
       <LogicalName>MonoDevelop.SourceEditor.addin.xml</LogicalName>
     </EmbeddedResource>
@@ -611,5 +608,14 @@
   </ItemGroup>
   <Import Project="..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="MonoDevelop.SourceEditor\" />
+    <Folder Include="MonoDevelop.SourceEditor.QuickTasks\" />
+    <Folder Include="MonoDevelop.SourceEditor.Wrappers\" />
+    <Folder Include="MonoDevelop.SourceEditor\TextMarker\" />
+    <Folder Include="Mono.TextEditor\" />
+    <Folder Include="Mono.TextEditor.PopupWindow\" />
+    <Folder Include="Mono.TextEditor.Theatrics\" />
+    <Folder Include="Gui\" />
+  </ItemGroup>
 </Project>

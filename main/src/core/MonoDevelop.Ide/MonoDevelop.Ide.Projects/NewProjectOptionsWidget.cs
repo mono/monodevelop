@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		public NewProjectOptionsWidget ()
 		{
-			Stetic.BinContainer.Attach (this);
+			BinContainer.Attach (this);
 			
 			AttachOptions fill = AttachOptions.Fill;
 			AttachOptions expand = AttachOptions.Expand | fill;

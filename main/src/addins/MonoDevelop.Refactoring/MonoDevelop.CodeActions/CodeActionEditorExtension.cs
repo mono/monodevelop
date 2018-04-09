@@ -173,7 +173,15 @@ namespace MonoDevelop.CodeActions
 
 		async void PopupQuickFixMenu (Gdk.EventButton evt, Action<CodeFixMenu> menuAction)
 		{
-			var menu = await CodeFixMenuService.CreateFixMenu (Editor, await GetCurrentFixesAsync(default (CancellationToken)));
+			var token = quickFixCancellationTokenSource.Token;
+
+			var fixes = await GetCurrentFixesAsync (token);
+			if (token.IsCancellationRequested)
+				return;
+
+			var menu = CodeFixMenuService.CreateFixMenu (Editor, fixes, token);
+			if (token.IsCancellationRequested)
+				return;
 
 			if (menu.Items.Count == 0) {
 				return;

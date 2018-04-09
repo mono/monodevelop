@@ -29,25 +29,23 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using System.Threading;
+using ICSharpCode.Decompiler;
+using ICSharpCode.Decompiler.CSharp;
+using ICSharpCode.Decompiler.CSharp.OutputVisitor;
+using ICSharpCode.Decompiler.CSharp.Resolver;
+using ICSharpCode.Decompiler.CSharp.Syntax;
+using ICSharpCode.Decompiler.CSharp.TypeSystem;
+using ICSharpCode.Decompiler.Disassembler;
+using ICSharpCode.Decompiler.TypeSystem;
+using ICSharpCode.Decompiler.TypeSystem.Implementation;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide;
-using ICSharpCode.Decompiler.Ast;
-using ICSharpCode.Decompiler;
-using System.Threading;
-using ICSharpCode.Decompiler.Disassembler;
-using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using System.IO;
-using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -108,90 +106,47 @@ namespace MonoDevelop.AssemblyBrowser
 			return String.Format ("IL_{0:X4}", instruction.Offset);
 		}
 		
-		public static ModuleDefinition GetModule (ITreeNavigator navigator)
+		public static AssemblyLoader GetAssemblyLoader (ITreeNavigator navigator)
 		{
 			var nav = navigator.Clone ();
-			while (!(nav.DataItem is ModuleDefinition) && !(nav.DataItem is Tuple<AssemblyDefinition, IProjectContent>)) {
+			while (!(nav.DataItem is AssemblyLoader)) {
 				if (!nav.MoveToParent ())
-					return ModuleDefinition.CreateModule ("empty", ModuleKind.Console);
+					return null;
 			}
-			if (nav.DataItem is Tuple<AssemblyDefinition, IProjectContent>)
-				return ((Tuple<AssemblyDefinition, IProjectContent>)nav.DataItem).Item1.MainModule;
 				
-			return (ModuleDefinition)nav.DataItem;
+			return (AssemblyLoader)nav.DataItem;
 		}
 
-		public static List<ReferenceSegment> Decompile (TextEditor data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
+		public static DecompilerSettings GetDecompilerSettings (TextEditor data, bool publicOnly = false)
 		{
 			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			var settings = DomTypeNodeBuilder.CreateDecompilerSettings (false, codePolicy);
-			return Decompile (data, module, currentType, setData, settings);
+			var settings = DomTypeNodeBuilder.CreateDecompilerSettings (publicOnly, codePolicy);
+			return settings;
 		}
 
 
-		public static List<ReferenceSegment> Decompile (TextEditor data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData, DecompilerSettings settings)
+		public static List<ReferenceSegment> Decompile (TextEditor data, AssemblyLoader assemblyLoader, Func<CSharpDecompiler, SyntaxTree> decompile, DecompilerSettings settings = null, DecompileFlags flags = null)
 		{
-			var context = new DecompilerContext (module);
-			var source = new CancellationTokenSource ();
-			context.CancellationToken = source.Token;
-			context.CurrentType = currentType;
-			context.Settings = settings;
-			try {
-				var astBuilder = new AstBuilder (context);
-				setData (astBuilder);
-				astBuilder.RunTransformations (o => false);
-				GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
-				var output = new ColoredCSharpFormatter (data);
-				astBuilder.GenerateCode (output);
-				output.SetDocumentData ();
-				return output.ReferencedSegments;
-			} catch (Exception e) {
-				// exception  -> try to decompile without method bodies
-				try {
-					var astBuilder = new AstBuilder (context);
-					astBuilder.DecompileMethodBodies = false;
-					setData (astBuilder);
-					astBuilder.RunTransformations (o => false);
-					GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
-					var output = new ColoredCSharpFormatter (data);
-					astBuilder.GenerateCode (output);
-					output.SetDocumentData ();
-					data.InsertText (data.Length, "/* body decompilation failed: \n" + e + " */"); 
-				} catch (Exception e2) {
-					data.Text = "/* fallback decompilation failed: \n" + e2 +"*/";
+			settings = settings ?? GetDecompilerSettings (data, publicOnly: flags.PublicOnly);
+			var csharpDecompiler = assemblyLoader.CSharpDecompiler;
+			try
+			{
+				var syntaxTree = decompile(csharpDecompiler);
+				if (!flags.MethodBodies) {
+					MethodBodyRemoveVisitor.RemoveMethodBodies (syntaxTree);
 				}
-			}
-			return null;
-		}
 
-		public static List<ReferenceSegment> GetSummary (TextEditor data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
-		{
-			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
-			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			var settings = DomTypeNodeBuilder.CreateDecompilerSettings (false, codePolicy);
-			return GetSummary (data, module, currentType, setData, settings);
-		}
-
-		public static List<ReferenceSegment> GetSummary (TextEditor data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData, DecompilerSettings settings)
-		{
-			var context = new DecompilerContext (module);
-			var source = new CancellationTokenSource ();
-			context.CancellationToken = source.Token;
-			context.CurrentType = currentType;
-			context.Settings = settings;
-			try {
-				var astBuilder = new AstBuilder (context);
-				astBuilder.DecompileMethodBodies = false;
-				setData (astBuilder);
-				astBuilder.RunTransformations (o => false);
-				GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
-				var output = new ColoredCSharpFormatter (data);
-				astBuilder.GenerateCode (output);
-				output.SetDocumentData ();
+				var output = new ColoredCSharpFormatter(data);
+				TokenWriter tokenWriter = new TextTokenWriter(output, settings, csharpDecompiler.TypeSystem) { FoldBraces = settings.FoldBraces };
+				var formattingPolicy = settings.CSharpFormattingOptions;
+				syntaxTree.AcceptVisitor(new CSharpOutputVisitor(tokenWriter, formattingPolicy));
+				output.SetDocumentData();
 				return output.ReferencedSegments;
-			} catch (Exception e) {
-				data.Text = "/* decompilation failed: \n" + e +"*/";
+			}
+			catch (Exception e)
+			{
+				data.InsertText(data.Length, "/* decompilation failed: \n" + e + " */");
 			}
 			return null;
 		}
@@ -211,28 +166,17 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
+		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			if (HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var cecilMethod = GetCecilLoader (navigator).GetCecilObject (method);
+			var cecilMethod = GetCecilLoader (navigator).GetCecilObject<MethodDefinition> (method);
 			if (cecilMethod == null)
 				return null;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), cecilMethod.DeclaringType, b => b.AddMethod (cecilMethod));
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (cecilMethod), flags: flags);
 		}
 		
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
-		{
-			var method = (IUnresolvedMethod)navigator.DataItem;
-			if (HandleSourceCodeEntity (navigator, data)) 
-				return null;
-			var cecilMethod = GetCecilLoader (navigator).GetCecilObject (method);
-			if (cecilMethod == null)
-				return null;
-			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), cecilMethod.DeclaringType, b => b.AddMethod (cecilMethod));
-		}
-
 		static void AppendLink (StringBuilder sb, string link, string text)
 		{
 			sb.Append ("<span style=\"text.link\"><u><a ref=\"");
@@ -246,7 +190,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			var source = new CancellationTokenSource ();
 			var output = new ColoredCSharpFormatter (data);
-			var disassembler = new ReflectionDisassembler (output, true, source.Token);
+			var disassembler = new ReflectionDisassembler (output, source.Token);
 			setData (disassembler);
 			output.SetDocumentData ();
 			return output.ReferencedSegments;
@@ -269,7 +213,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			if (HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var cecilMethod = GetCecilLoader (navigator).GetCecilObject (method);
+			var cecilMethod = GetCecilLoader (navigator).GetCecilObject <MethodDefinition> (method);
 			if (cecilMethod == null)
 				return null;
 			return Disassemble (data, rd => rd.DisassembleMethod (cecilMethod));

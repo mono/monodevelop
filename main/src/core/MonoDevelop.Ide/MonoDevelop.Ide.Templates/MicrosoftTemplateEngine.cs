@@ -63,9 +63,7 @@ namespace MonoDevelop.Ide.Templates
 			UpdateCache ();
 		}
 
-		static List<TemplateExtensionNode> projectTemplateNodes = new List<TemplateExtensionNode> ();
 		static List<MicrosoftTemplateEngineSolutionTemplate> projectTemplates = new List<MicrosoftTemplateEngineSolutionTemplate> ();
-		static List<ItemTemplateExtensionNode> itemTemplateNodes = new List<ItemTemplateExtensionNode> ();
 		static List<MicrosoftTemplateEngineItemTemplate> itemTemplates = new List<MicrosoftTemplateEngineItemTemplate> ();
 
 		static void UpdateCache ()
@@ -76,6 +74,8 @@ namespace MonoDevelop.Ide.Templates
 			// Prevent a TypeInitializationException in when calling SettingsLoader.Save when no templates
 			// are available, which throws an exception, by returning here. This prevents the MonoDevelop.Ide addin
 			// from loading. In practice this should not happen unless the .NET Core addin is disabled.
+			var projectTemplateNodes = AddinManager.GetExtensionNodes<TemplateExtensionNode> ("/MonoDevelop/Ide/Templates");
+			var itemTemplateNodes = AddinManager.GetExtensionNodes<ItemTemplateExtensionNode> ("/MonoDevelop/Ide/ItemTemplates");
 			if (!projectTemplateNodes.Any () && !itemTemplateNodes.Any ())
 				return;
 
@@ -86,12 +86,18 @@ namespace MonoDevelop.Ide.Templates
 			paths.DeleteDirectory (paths.User.BaseDir);//Delete cache
 			var settingsLoader = (SettingsLoader)environmentSettings.SettingsLoader;
 
-			foreach (var scanPath in projectTemplateNodes.Select (t => t.ScanPath).Distinct ()) {
-				settingsLoader.UserTemplateCache.Scan (scanPath);
+			foreach (var path in projectTemplateNodes.Select (t => t.ScanPath).Distinct ()) {
+				string scanPath = StringParserService.Parse (path);
+				if (!string.IsNullOrEmpty (scanPath)) {
+					settingsLoader.UserTemplateCache.Scan (scanPath);
+				}
 			}
 
-			foreach (var scanPath in itemTemplateNodes.Select (t => t.ScanPath).Distinct ()) {
-				settingsLoader.UserTemplateCache.Scan (scanPath);
+			foreach (var path in itemTemplateNodes.Select (t => t.ScanPath).Distinct ()) {
+				string scanPath = StringParserService.Parse (path);
+				if (!string.IsNullOrEmpty (scanPath)) {
+					settingsLoader.UserTemplateCache.Scan (scanPath);
+				}
 			}
 
 			settingsLoader.Save ();
@@ -123,53 +129,12 @@ namespace MonoDevelop.Ide.Templates
 
 		static void OnProjectTemplateExtensionChanged (object sender, ExtensionNodeEventArgs args)
 		{
-			var node = (TemplateExtensionNode)args.ExtensionNode;
-
-			OnExtensionChanged (projectTemplateNodes, node, args.Change);
+			UpdateCache ();
 		}
 
 		static void OnItemTemplateExtensionChanged (object sender, ExtensionNodeEventArgs args)
 		{
-			var node = (ItemTemplateExtensionNode)args.ExtensionNode;
-
-			OnExtensionChanged (itemTemplateNodes, node, args.Change);
-		}
-
-		static void OnExtensionChanged<T> (List<T> extensionNodes, T node, ExtensionChange change)
-			where T : ExtensionNode
-		{
-			if (change == ExtensionChange.Add) {
-				try {
-					extensionNodes.Add (node);
-				} catch (Exception ex) {
-					LogExtensionChangedError (ex, node);
-				}
-			} else {
-				foreach (var existingNode in extensionNodes) {
-					if (existingNode.Id == node.Id) {
-						extensionNodes.Remove (existingNode);
-						break;
-					}
-				}
-			}
-
 			UpdateCache ();
-		}
-
-		static void LogExtensionChangedError (Exception ex, ExtensionNode node)
-		{
-			string extId = null;
-			string addinId = null;
-
-			if (node != null) {
-				if (node.HasId)
-					extId = node.Id;
-				if (node.Addin != null)
-					addinId = node.Addin.Id;
-			}
-
-			LoggingService.LogError ("Error loading template id {0} in addin {1}:\n{2}",
-				extId ?? "(null)", addinId ?? "(null)", ex.ToString ());
 		}
 
 		public static IEnumerable<SolutionTemplate> GetProjectTemplates ()
