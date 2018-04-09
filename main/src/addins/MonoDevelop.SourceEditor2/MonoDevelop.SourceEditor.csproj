@@ -357,6 +357,7 @@
     <Compile Include="Gui\MonoDevelop.SourceEditor.PrintSettingsWidget.cs" />
     <Compile Include="Gui\MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs" />
     <Compile Include="Gui\MonoDevelop.SourceEditor.SearchWidget.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\BackgroundTextMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml">

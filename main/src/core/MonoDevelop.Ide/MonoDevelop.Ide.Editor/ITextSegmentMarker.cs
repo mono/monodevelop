@@ -66,7 +66,12 @@ namespace MonoDevelop.Ide.Editor
 		/// <summary>
 		/// Just a simple underline
 		/// </summary>
-		Underline
+		Underline,
+
+		/// <summary>
+		/// Marks the background of the text as block
+		/// </summary>
+		Background
 	}
 
 	public interface IGenericTextSegmentMarker : ITextSegmentMarker

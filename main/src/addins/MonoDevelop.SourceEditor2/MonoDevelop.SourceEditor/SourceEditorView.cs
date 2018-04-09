@@ -3300,6 +3300,8 @@ namespace MonoDevelop.SourceEditor
 
 			case TextSegmentMarkerEffect.GrayOut:
 				return new GrayOutMarker (new TextSegment (offset, length));
+			case TextSegmentMarkerEffect.Background:
+				return new BackgroundTextMarker (new TextSegment (offset, length), color);
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
