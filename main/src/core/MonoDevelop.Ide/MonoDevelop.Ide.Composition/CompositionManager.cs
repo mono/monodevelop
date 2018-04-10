@@ -87,6 +87,14 @@ namespace MonoDevelop.Ide.Composition
 			return Instance.ExportProvider.GetExportedValue<T> ();
 		}
 
+		/// <summary>
+		/// Returns all instance of type T that are exported by some composition part. The instances are shared (singletons).
+		/// </summary>
+		public static IEnumerable<T> GetExportedValues<T> ()
+		{
+			return Instance.ExportProvider.GetExportedValues<T> ();
+		}
+
 		public RuntimeComposition RuntimeComposition { get; private set; }
 		public IExportProviderFactory ExportProviderFactory { get; private set; }
 		public ExportProvider ExportProvider { get; private set; }
