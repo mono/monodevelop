@@ -78,13 +78,13 @@ namespace MonoDevelop.CSharp
 			Run (doc);
 		}
 
-		internal static void Run (Ide.Gui.Document doc)
+		internal static async void Run (Ide.Gui.Document doc)
 		{
 			var selectionRange = doc.Editor.SelectionRange;
-			var parsedDocument = doc.ParsedDocument;
-			if (parsedDocument == null)
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
 				return;
-			var model = parsedDocument.GetAst<SemanticModel> ();
+			var model = await analysisDocument.GetSemanticModelAsync ();
 			if (model == null)
 				return;
 			var unit = model.SyntaxTree.GetRoot ();

@@ -116,36 +116,39 @@ namespace MonoDevelop.Core
 		[TestCase (LogLevel.Debug, "LogDebug")]
 		public void TestSimpleLogging (LogLevel level, string methodName)
 		{
-			var logMethod = typeof(LoggingService).GetMethod (methodName, new[] { typeof(string) });
-			logMethod.Invoke (null, new[] { message });
-			AssertLastMessageEqual (message, level);
+			// Run the test inside a lock to avoid log from background processes to cause this test to fail
+			lock (logger.SyncObject) {
+				var logMethod = typeof (LoggingService).GetMethod (methodName, new [] { typeof (string) });
+				logMethod.Invoke (null, new [] { message });
+				AssertLastMessageEqual (message, level);
 
-			var logFormat = typeof(LoggingService).GetMethod (methodName, new[] { typeof(string), typeof(object[]) });
-			logFormat.Invoke (null, new object[] { format, new object[] { message } });
-			AssertLastMessageEqual (message, level);
+				var logFormat = typeof (LoggingService).GetMethod (methodName, new [] { typeof (string), typeof (object []) });
+				logFormat.Invoke (null, new object [] { format, new object [] { message } });
+				AssertLastMessageEqual (message, level);
 
-			try {
-				var e = new Exception ();
-				e.Data["key"] = "value";
-				e.Data["key2"] = "value2";
-				throw e;
-			} catch (Exception e) {
-				// Test exception logging.
-				var logException = typeof(LoggingService).GetMethod (methodName, new[] { typeof(string), typeof(Exception) });
-				logException.Invoke (null, new object[] { message, e });
+				try {
+					var e = new Exception ();
+					e.Data ["key"] = "value";
+					e.Data ["key2"] = "value2";
+					throw e;
+				} catch (Exception e) {
+					// Test exception logging.
+					var logException = typeof (LoggingService).GetMethod (methodName, new [] { typeof (string), typeof (Exception) });
+					logException.Invoke (null, new object [] { message, e });
 
-				var levelMessage = logger.Messages [logger.Messages.Count - 1];
-				var actualMessage = levelMessage.Item2.Split (new[] { Environment.NewLine }, StringSplitOptions.None);
-				var actualLevel = levelMessage.Item1;
+					var levelMessage = logger.Messages [logger.Messages.Count - 1];
+					var actualMessage = levelMessage.Item2.Split (new [] { Environment.NewLine }, StringSplitOptions.None);
+					var actualLevel = levelMessage.Item1;
 
-				Assert.AreEqual (level, actualLevel);
-				for (int i = 0; i < actualMessage.Length; ++i)
-					Assert.IsTrue (actualMessage[i].Contains (exceptionMessage[i]), "Line {0} mismatches.{1}Expected: {2}{3}Actual: {4}", i, Environment.NewLine,
-						exceptionMessage[i], Environment.NewLine, actualMessage[i]);
+					Assert.AreEqual (level, actualLevel);
+					for (int i = 0; i < actualMessage.Length; ++i)
+						Assert.IsTrue (actualMessage [i].Contains (exceptionMessage [i]), "Line {0} mismatches.{1}Expected: {2}{3}Actual: {4}", i, Environment.NewLine,
+							exceptionMessage [i], Environment.NewLine, actualMessage [i]);
 
-				// Test that the message is the same when no exception is sent.
-				logException.Invoke (null, new object[] { message, null });
-				Assert.AreSame (message, logger.Messages [logger.Messages.Count - 1].Item2);
+					// Test that the message is the same when no exception is sent.
+					logException.Invoke (null, new object [] { message, null });
+					Assert.AreSame (message, logger.Messages [logger.Messages.Count - 1].Item2);
+				}
 			}
 		}
 
@@ -179,6 +182,8 @@ namespace MonoDevelop.Core
 			#region ILogger implementation
 			List<Tuple<LogLevel, string>> messages = new List<Tuple<LogLevel, string>> ();
 
+			public object SyncObject = new object ();
+
 			public LoggingServiceTestsLogger ()
 			{
 			}
@@ -189,7 +194,8 @@ namespace MonoDevelop.Core
 
 			public void Log (LogLevel level, string message)
 			{
-				messages.Add (new Tuple<LogLevel, string> (level, message));
+				lock (SyncObject)
+					messages.Add (new Tuple<LogLevel, string> (level, message));
 			}
 
 			EnabledLoggingLevel enabledLevel;

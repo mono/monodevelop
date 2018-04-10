@@ -625,6 +625,23 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task SaveProjectWithWildcardLink ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-link-wildcard.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<DotNetProject> (p);
+			var mp = (DotNetProject)p;
+			mp.DefaultNamespace = "ConsoleProjectWithWildcardLink";
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved1")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
+		}
+
+		[Test]
 		public async Task LoadProjectWithWildcardLinks3 ()
 		{
 			// %(RecursiveDir) is empty when used in a non-recursive include

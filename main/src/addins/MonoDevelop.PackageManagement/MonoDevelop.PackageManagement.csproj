@@ -176,14 +176,11 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopHttpUserAgent.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SolutionExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ViewModelBase.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\LicenseAcceptanceDialog.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesOptionsPanel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PackageSourcesWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageManagementOptionsPanel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageManagementOptionsWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PackageManagementOptionsWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\AddPackagesHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialog.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialog.UI.cs">
@@ -413,11 +410,12 @@
     <Compile Include="MonoDevelop.PackageManagement\NuGetProjectServices.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectSystemReferencesReader.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ItemTemplateNuGetPackageInstaller.cs" />
+    <Compile Include="Gui\MonoDevelop.PackageManagement.PackageManagementOptionsWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.PackageManagement.PackageSourcesWidget.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml">
+      <LogicalName>MonoDevelop.PackageManagement.addin.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-source-32.png">
       <LogicalName>package-source-32.png</LogicalName>
@@ -607,6 +605,7 @@
     <Folder Include="MonoDevelop.PackageManagement.NodeBuilders\" />
     <Folder Include="NuGet.PackageManagement.UI\" />
     <Folder Include="NuGet.Commands\" />
+    <Folder Include="Gui\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\external\nuget-binary\NuGet-LICENSE.txt">

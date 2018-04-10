@@ -47,6 +47,11 @@ namespace MonoDevelop.Core
 
 		const int LOCALE_CUSTOM_UNSPECIFIED = 4096;
 
+		public static void Initialize ()
+		{
+			// no-op, triggers static ctor.
+		}
+
 		static Dictionary<string, string> localeToCulture = new Dictionary<string, string> {
 			{ "cs", "cs-CZ" },
 			{ "de", "de-DE" },

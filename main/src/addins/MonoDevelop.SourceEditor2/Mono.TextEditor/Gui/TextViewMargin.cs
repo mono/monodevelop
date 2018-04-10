@@ -337,6 +337,8 @@ namespace Mono.TextEditor
 		{
 			for (int i = 0; i < e.TextChanges.Count; ++i) {
 				var change = e.TextChanges[i];
+				// It's required to remove the cached line here, otherwise the layout cache could chose to wrongly dipslay an older version of the line.
+				RemoveCachedLine (Document.OffsetToLineNumber (change.NewOffset));
 				if (mouseSelectionMode == MouseSelectionMode.Word && change.Offset < mouseWordStart) {
 					int delta = change.ChangeDelta;
 					mouseWordStart += delta;
@@ -1186,8 +1188,9 @@ namespace Mono.TextEditor
 					}
 				}
 				if (containsPreedit) {
+					var byteLength = Encoding.UTF8.GetByteCount (textEditor.preeditString);
 					var si = TranslateToUTF8Index (lineText, (uint)(textEditor.preeditOffset - offset), ref curIndex, ref byteIndex);
-					var ei = TranslateToUTF8Index (lineText, (uint)(textEditor.preeditOffset - offset + preeditLength), ref curIndex, ref byteIndex);
+					var ei = TranslateToUTF8Index (lineText, (uint)(textEditor.preeditOffset - offset + byteLength), ref curIndex, ref byteIndex);
 
 					if (textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
 						uint len = (uint)textEditor.GetTextEditorData ().GetIndentationString (textEditor.Caret.Location).Length;
@@ -1381,22 +1384,15 @@ namespace Mono.TextEditor
 					return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
 				}
 				break;
-			default:
-				task.ContinueWith (t => {
-					if (t.Status == TaskStatus.Faulted) {
-						LoggingService.LogError ("Error while highlighting line " + lineNumber, t.Exception);
-						return;
-					}
-					if (t.Result == null)
-						return;
-					if (UpdateLineHighlight (lineNumber, result, t.Result)) {
-						RemoveCachedLine (lineNumber);
-						Document.CommitLineUpdate (line);
-					}
-				}, Runtime.MainTaskScheduler);
-				break;
 			}
-			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
+			try {
+				var taskResult = task.WaitAndGetResult (default (CancellationToken));
+				UpdateLineHighlight (lineNumber, result, task.Result);
+				return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while highlighting", e);
+				return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
+			}
 		}
 
 		bool UpdateLineHighlight (int lineNumber, HighlightedLine oldLine, HighlightedLine newLine)
@@ -2419,6 +2415,9 @@ namespace Mono.TextEditor
 						Caret.PreserveSelection = false;
 					} else {
 						textEditor.ClearSelection ();
+						if (Caret.Location.Line != clickLocation.Line && !String.IsNullOrEmpty (textEditor.preeditString)) {
+							textEditor.CommitPreedit ();
+						}
 						Caret.Location = clickLocation;
 						InSelectionDrag = true;
 						textEditor.MainSelection = new MonoDevelop.Ide.Editor.Selection (clickLocation, clickLocation);
@@ -2692,7 +2691,7 @@ namespace Mono.TextEditor
 
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
-			var loc = PointToLocation (args.X, args.Y, snapCharacters: true);
+			var loc = args.Location;
 			if (loc.Line < DocumentLocation.MinLine || loc.Column < DocumentLocation.MinColumn)
 				return;
 			var line = Document.GetLine (loc.Line);

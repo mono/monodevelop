@@ -170,6 +170,7 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\IToolboxCustomizer.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Projects\ImplicitFrameworkAssemblyReferenceDescriptor.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml">

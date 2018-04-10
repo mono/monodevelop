@@ -128,7 +128,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			content.Project = project;
 			doc.SetProject (project);
 			var parsedFile = await doc.UpdateParseDocument ();
-			var model = parsedFile.GetAst<SemanticModel> ();
+			var model = await doc.AnalysisDocument.GetSemanticModelAsync ();
 			var sym = model?.GetEnclosingSymbol (data.Text.IndexOf ('{'));
 			var type = sym as INamedTypeSymbol ?? sym?.ContainingType;
 			if (type != null) {

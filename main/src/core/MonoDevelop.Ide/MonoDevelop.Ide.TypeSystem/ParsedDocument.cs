@@ -120,7 +120,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			get;
 			set;
 		}
-		
+
+
+		[Obsolete("Do not use this system anymore. Use the analysisDocument.GetSemanticModelAsync () instead.")]
 		public T GetAst<T> () where T : class
 		{
 			return Ast as T;

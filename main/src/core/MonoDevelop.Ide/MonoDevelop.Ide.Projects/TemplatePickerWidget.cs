@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		public TemplatePickerWidget ()
 		{
-			Stetic.BinContainer.Attach (this);
+			BinContainer.Attach (this);
 			
 			infoBox.BorderWidth = 4;
 			infoBox.Spacing = 4;

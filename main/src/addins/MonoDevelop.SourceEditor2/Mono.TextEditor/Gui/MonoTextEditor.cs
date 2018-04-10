@@ -648,6 +648,11 @@ namespace Mono.TextEditor
 			textArea.ResetIMContext ();
 		}
 
+		internal void CommitPreedit ()
+		{
+			textArea.CommitPreedit ();
+		}
+
 		internal bool ContainsPreedit (int offset, int length)
 		{
 			return textArea.ContainsPreedit (offset, length);

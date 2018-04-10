@@ -71,14 +71,11 @@
     <Compile Include="MonoDevelop.Packaging\PackagingProject.cs" />
     <Compile Include="MonoDevelop.Packaging\PackagingCompilerParameters.cs" />
     <Compile Include="MonoDevelop.Packaging\MSBuildGlobalPropertyProvider.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.Packaging.Templating\PackagingProjectTemplateWizard.cs" />
     <Compile Include="MonoDevelop.Packaging.Templating\PackagingProjectTemplateWizardPage.cs" />
     <Compile Include="MonoDevelop.Packaging.Gui\GtkPackagingProjectTemplateWizardPageWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs" />
     <Compile Include="MonoDevelop.Packaging.OptionPanels\NuGetPackageMetadataOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Packaging.Gui\GtkNuGetPackageMetadataOptionsPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Packaging\NuGetPackageMetadata.cs" />
     <Compile Include="MonoDevelop.Packaging\MSBuildProjectExtensions.cs" />
     <Compile Include="MonoDevelop.Packaging\DotNetProjectExtensions.cs" />
@@ -97,7 +94,6 @@
     <Compile Include="MonoDevelop.Packaging\ProjectFileMigrator.cs" />
     <Compile Include="MonoDevelop.Packaging.Templating\CrossPlatformLibraryTemplateWizard.cs" />
     <Compile Include="MonoDevelop.Packaging.Gui\GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs" />
     <Compile Include="MonoDevelop.Packaging.Templating\CrossPlatformLibraryTemplateWizardPage.cs" />
     <Compile Include="MonoDevelop.Packaging.OptionPanels\ReferenceAssembliesOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Packaging.Gui\GtkReferenceAssembliesOptionsPanelWidget.cs" />
@@ -116,6 +112,9 @@
     </Compile>
     <Compile Include="MonoDevelop.Packaging.OptionPanels\ProjectNuGetBuildOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Packaging\ProjectPackageReferenceExtensions.cs" />
+    <Compile Include="Gui\MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs" />
+    <Compile Include="Gui\MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.Packaging.Tests" />
@@ -156,9 +155,6 @@
     <EmbeddedResource Include="MonoDevelop.Packaging.addin.xml">
       <LogicalName>MonoDevelop.Packaging.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Templates\Images\preview-multiplatform-library.png">
       <LogicalName>preview-multiplatform-library.png</LogicalName>
     </EmbeddedResource>
@@ -189,6 +185,7 @@
     <Folder Include="MonoDevelop.Packaging.Templating\" />
     <Folder Include="MonoDevelop.Packaging.Gui\" />
     <Folder Include="MonoDevelop.Packaging.OptionPanels\" />
+    <Folder Include="Gui\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -157,7 +157,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				pDict = pDict.Add ("DeclarationBegin", declarationBegin.ToString());
 
 				var tags = ImmutableArray<string>.Empty.Add ("NewMethod");
-				var completionData = CompletionItem.Create (m.Name, properties: pDict, rules: ProtocolCompletionRules, tags: tags);
+				var completionData = CompletionItem.Create (m.Name, sortText: m.ToSignatureDisplayString (), properties: pDict, rules: ProtocolCompletionRules, tags: tags);
 				context.AddItem (completionData);
 			}
 		}
