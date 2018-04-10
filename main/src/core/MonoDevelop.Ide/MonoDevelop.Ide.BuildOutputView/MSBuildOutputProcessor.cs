@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				foreach (DictionaryEntry x in e.Properties) {
 					var key = (string)x.Key;
 					if (key == "SolutionFilename") {
-						this.CurrentNode.Message = (string)x.Value;
+						this.CurrentNode.Message = Path.GetFileNameWithoutExtension ((string)x.Value);
 						continue;
 					} else if (key == "Configuration") {
 						this.CurrentNode.Configuration = (string)x.Value;
@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 			
 			AddNode (BuildOutputNodeType.Project,
-			         stringPool.Add (Path.GetFileName (e.ProjectFile)), 
+			         stringPool.Add (Path.GetFileNameWithoutExtension (e.ProjectFile)), 
 			         stringPool.Add (e.Message), 
 			         true,
 			         e.Timestamp);
