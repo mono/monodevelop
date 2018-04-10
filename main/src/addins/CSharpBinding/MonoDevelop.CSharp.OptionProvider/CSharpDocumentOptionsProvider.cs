@@ -45,7 +45,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 	{
 		async Task<IDocumentOptions> IDocumentOptionsProvider.GetOptionsForDocumentAsync (Document document, CancellationToken cancellationToken)
 		{
-			var mdws = document?.Project?.Solution?.Workspace as MonoDevelopWorkspace;
+			var mdws = document.Project.Solution.Workspace as MonoDevelopWorkspace;
 			var project = mdws?.GetMonoProject (document.Project.Id);
 
 			CSharpFormattingPolicy policy;
@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 				return document.FilePath;
 
 			// The file might not actually have a path yet, if it's a file being proposed by a code action. We'll guess a file path to use
-			if (document.Name != null && document?.Project.FilePath != null) {
+			if (document.Name != null && document.Project.FilePath != null) {
 				return Path.Combine (Path.GetDirectoryName (document.Project.FilePath), document.Name);
 			}
 
