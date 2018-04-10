@@ -237,6 +237,7 @@ namespace Mono.TextEditor
 
 		public void Dispose()
 		{
+			(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate -= OnTextBufferChangedImmediate;
 			this.TextBuffer.Changed -= this.OnTextBufferChanged;
 			this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
 			this.TextBuffer.Properties.RemoveProperty(typeof(ITextDocument));
