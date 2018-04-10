@@ -26,6 +26,7 @@
 using System;
 using AppKit;
 using CoreGraphics;
+using Foundation;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -35,6 +36,29 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public VerticallyCenteredTextFieldCell (nfloat yOffset)
 		{
 			offset = yOffset;
+		}
+
+		// This is invoked from the `Copy (NSZone)` method. ObjC sometimes clones the native NSTextFieldCell so we need to be able
+		// to create a new managed wrapper for it.
+		protected VerticallyCenteredTextFieldCell (IntPtr ptr)
+			: base (ptr)
+		{
+		}
+
+		/// <summary>
+		/// Like what happens for the ios designer, AppKit can sometimes clone the native `NSTextFieldCell` using the Copy (NSZone)
+		/// method. We *need* to ensure we can create a new managed wrapper for the cloned native object so we need the IntPtr
+		/// constructor. NOTE: By keeping this override in managed we ensure the new wrapper C# object is created ~immediately,
+		/// which makes it easier to debug issues.
+		/// </summary>
+		/// <returns>The copy.</returns>
+		/// <param name="zone">Zone.</param>
+		public override NSObject Copy (NSZone zone)
+		{
+			// Don't remove this override because the comment on this explains why we need this!
+			var newCell = (VerticallyCenteredTextFieldCell) base.Copy (zone);
+			newCell.offset = offset;
+			return newCell;
 		}
 
 		public override CGRect DrawingRectForBounds (CGRect theRect)
