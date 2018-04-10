@@ -59,6 +59,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Features.GotoDefinition
 
 		public static async Task<ISymbol> FindSymbolAsync (Document document, int position, CancellationToken cancellationToken)
 		{
+			if (document == null)
+				return null;
 			var workspace = document.Project.Solution.Workspace;
 
 			var semanticModel = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
