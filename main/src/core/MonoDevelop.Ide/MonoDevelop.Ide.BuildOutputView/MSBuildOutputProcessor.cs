@@ -242,6 +242,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 							                   stringPool.Add (e.Message),
 							                   false,
 							                   e.Timestamp);
+							return;
 						}
 					}
 				}
