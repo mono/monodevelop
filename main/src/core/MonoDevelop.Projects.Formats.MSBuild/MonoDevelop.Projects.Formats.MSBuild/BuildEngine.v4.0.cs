@@ -79,6 +79,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal void UnloadProject (string file)
 		{
+			lock (unsavedProjects) {
+				unsavedProjects.Remove (file);
+			}
+
 			RunSTA (delegate
 			{
 				// Unloading projects modifies the collection, so copy it
@@ -86,10 +90,6 @@ namespace MonoDevelop.Projects.MSBuild
 
 				if (loadedProjects.Length == 0)
 					return;
-
-				lock (unsavedProjects) {
-					unsavedProjects.Remove (file);
-				}
 
 				var rootElement = loadedProjects[0].Xml;
 
