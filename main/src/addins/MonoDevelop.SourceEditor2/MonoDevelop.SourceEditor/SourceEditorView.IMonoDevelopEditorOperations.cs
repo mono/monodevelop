@@ -80,9 +80,9 @@ namespace MonoDevelop.SourceEditor
 		void IEditorOperations.MoveToNextCharacter (bool extendSelection)
 		{
 			if (extendSelection) {
-				SelectionActions.MoveLeft (TextEditor.GetTextEditorData ());
+				SelectionActions.MoveRight (TextEditor.GetTextEditorData ());
 			} else {
-				CaretMoveActions.Left (TextEditor.GetTextEditorData ());
+				CaretMoveActions.Right (TextEditor.GetTextEditorData ());
 			}
 		}
 

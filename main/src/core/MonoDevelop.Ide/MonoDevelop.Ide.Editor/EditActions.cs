@@ -47,12 +47,12 @@ namespace MonoDevelop.Ide.Editor
 
 		public static void MoveCaretRight (TextEditor editor)
 		{
-			editor.EditorOperations.MoveToPreviousCharacter (false);
+			editor.EditorOperations.MoveToNextCharacter (false);
 		}
 
 		public static void MoveCaretLeft (TextEditor editor)
 		{
-			editor.EditorOperations.MoveToNextCharacter (false);
+			editor.EditorOperations.MoveToPreviousCharacter (false);
 		}
 
 		public static void MoveCaretToLineEnd (TextEditor editor)
