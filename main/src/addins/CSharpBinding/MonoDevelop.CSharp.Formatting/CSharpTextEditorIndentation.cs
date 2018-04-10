@@ -95,11 +95,12 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		void RunFormatter (MonoDevelop.Ide.Editor.DocumentLocation location)
+		async void RunFormatter (MonoDevelop.Ide.Editor.DocumentLocation location)
 		{
 			if (!OnTheFlyFormatting || Editor == null || Editor.EditMode != EditMode.Edit)
 				return;
 			var offset = Editor.LocationToOffset (location);
+			var optionSet = await DocumentContext.GetOptionsAsync ();
 			OnTheFlyFormatter.Format (Editor, DocumentContext, offset, offset, optionSet: optionSet);
 		}
 
@@ -138,7 +139,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		async void HandleTextOptionsChanged (object sender, EventArgs e)
 		{
-			optionSet = await DocumentContext.GetOptionsAsync ();
+			var optionSet = await DocumentContext.GetOptionsAsync ();
 
 			IStateMachineIndentEngine indentEngine;
 			try {
@@ -407,7 +408,7 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				using (var undo = Editor.OpenUndoGroup ()) {
 					if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-						OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
+						OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: DocumentContext.GetOptionsAsync ().WaitAndGetResult ());
 					}
 				}
 				return retval;
@@ -560,7 +561,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return result;
 		}
 
-		void HandleOnTheFlyFormatting (KeyDescriptor descriptor)
+		async void HandleOnTheFlyFormatting (KeyDescriptor descriptor)
 		{
 			if (descriptor.KeyChar == '{')
 				return;
@@ -580,6 +581,7 @@ namespace MonoDevelop.CSharp.Formatting
 					using (var undo = Editor.OpenUndoGroup ()) {
 						if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
 							var oldVersion = Editor.Version;
+							var optionSet = await DocumentContext.GetOptionsAsync ();
 							OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
 							if (oldVersion.CompareAge (Editor.Version) != 0)
 								CompletionWindowManager.HideWindow ();
@@ -610,6 +612,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 
 			var value = tokenRange.Value;
+			var optionSet = await DocumentContext.GetOptionsAsync ();
 			using (var undo = Editor.OpenUndoGroup ()) {
 				OnTheFlyFormatter.Format (Editor, DocumentContext, value.Item1.SpanStart, value.Item2.Span.End, optionSet: optionSet);
 			}
@@ -635,6 +638,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (tokenRange == null || !tokenRange.HasValue || tokenRange.Value.Item1.Equals (tokenRange.Value.Item2))
 				return;
 			var value = tokenRange.Value;
+			var optionSet = await DocumentContext.GetOptionsAsync ();
 			using (var undo = Editor.OpenUndoGroup ()) {
 				OnTheFlyFormatter.Format (Editor, DocumentContext, value.Item1.SpanStart, value.Item2.Span.End, optionSet: optionSet);
 			}
@@ -784,7 +788,6 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 
 		internal bool wasInStringLiteral;
-		OptionSet optionSet;
 		bool completionWindowWasVisible;
 
 		public bool FixLineStart (TextEditor textEditorData, ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine stateTracker, int lineNumber)
