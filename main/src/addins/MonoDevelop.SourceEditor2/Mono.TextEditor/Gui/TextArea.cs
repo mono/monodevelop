@@ -3079,7 +3079,7 @@ namespace Mono.TextEditor
 	
 		#region Tooltips
 		// Tooltip fields
-		const int TooltipTimeout = 650;
+		const int TooltipTimeout = 200;
 		TooltipItem tipItem;
 		
 		int tipX, tipY, tipOffset;
