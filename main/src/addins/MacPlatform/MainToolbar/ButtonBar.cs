@@ -43,11 +43,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	{
 		class DarkThemeSegmentedCell : NSSegmentedCell
 		{
-			ButtonBar buttonBar;
+			readonly WeakReference<ButtonBar> buttonBarRef;
 
 			public DarkThemeSegmentedCell (ButtonBar buttonBar)
 			{
-				this.buttonBar = buttonBar;
+				this.buttonBarRef = new WeakReference<ButtonBar> (buttonBar);
 			}
 
 			public override void DrawWithFrame (CGRect cellFrame, NSView inView)
@@ -84,6 +84,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				var img = base.GetImageForSegment (segment);
 				var rect = new CGRect (Math.Round (frame.X + ((frame.Width / 2) - (img.Size.Width  / 2))), Math.Round (frame.Y + ((frame.Height / 2) - (img.Size.Height  / 2))), img.Size.Width, img.Size.Height);
 				img.Draw (rect);
+
+				if (!buttonBarRef.TryGetTarget(out var buttonBar))
+					return;
 
 				if (segment == buttonBar.focusedSegment && buttonBar.HasFocus) {
 					var path = NSBezierPath.FromRoundedRect (frame, 3, 3);
