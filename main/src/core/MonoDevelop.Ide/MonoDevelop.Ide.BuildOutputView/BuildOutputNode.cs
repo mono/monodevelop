@@ -108,9 +108,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return Resources.BuildIcon;
 			case BuildOutputNodeType.BuildSummary:
 				return HasErrors ? Resources.ErrorIcon : Resources.TaskIcon;
-			case BuildOutputNodeType.Diagnostics:
-			case BuildOutputNodeType.Message:
-				return Resources.MessageIcon;
 			case BuildOutputNodeType.Error:
 				return Resources.ErrorIconSmall;
 			case BuildOutputNodeType.Parameters:
