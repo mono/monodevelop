@@ -232,7 +232,6 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		object registerLock = new object ();
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{
 			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
@@ -240,15 +239,6 @@ namespace MonoDevelop.MacIntegration
 
 			// Also calls NSApplication.Init();
 			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
-
-			// Register all the assemblies that are not loaded at this point manually.
-			// The static registrar initialization tells the runtime that it should
-			// find the assembly in there, thus it would fail to for any addins
-			// that are loaded after the fact and not in the static registrar.
-			AppDomain.CurrentDomain.AssemblyLoad += (o, args) => {
-				lock (registerLock)
-					ObjCRuntime.Runtime.RegisterAssembly (args.LoadedAssembly);
-			};
 
 			loaded.RegisterBackend<Xwt.Backends.IDialogBackend, ThemedMacDialogBackend> ();
 			loaded.RegisterBackend<Xwt.Backends.IWindowBackend, ThemedMacWindowBackend> ();
