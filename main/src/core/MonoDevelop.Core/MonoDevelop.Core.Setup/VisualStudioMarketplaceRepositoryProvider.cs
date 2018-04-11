@@ -129,10 +129,14 @@ namespace MonoDevelop.Core.Setup
 
 			internal Repository DownloadRepository (IProgressMonitor monitor, Uri url, string file)
 			{
-				var cacheDir = Path.Combine (Path.GetDirectoryName (file), Path.GetFileNameWithoutExtension (file) + "_files");
-				const int AllExtensions = 300;
-				var extensions = Search (url, new MarketplaceQuery () {
-					Filters = new Filter []{ new Filter(){
+				var repo = new Repository () {
+					Name = "Visual Studio Marketplace"
+				};
+				try {
+					var cacheDir = Path.Combine (Path.GetDirectoryName (file), Path.GetFileNameWithoutExtension (file) + "_files");
+					const int AllExtensions = 300;
+					var extensions = Search (url, new MarketplaceQuery () {
+						Filters = new Filter []{ new Filter(){
 						PageSize = AllExtensions,
 						SortBy = SortBy.LastUpdatedDate,
 						PageNumber = 0,
@@ -142,38 +146,38 @@ namespace MonoDevelop.Core.Setup
 							Value = "Microsoft.VisualStudio.Mac"
 							}}
 					}},
-					Flags = Flags.IncludeLatestVersionOnly | Flags.IncludeFiles,
-					AssetTypes = new [] {
+						Flags = Flags.IncludeLatestVersionOnly | Flags.IncludeFiles,
+						AssetTypes = new [] {
 					"Microsoft.VisualStudio.Services.VSIXPackage",
 					"Microsoft.VisualStudio.Mac.AddinInfo"
 				}
-				}).Results.SelectMany (r => r.Extensions);
+					}).Results.SelectMany (r => r.Extensions);
 
-				// We should probably reconsider fetching logic instread of fetching everything when this warning starts poping up...
-				if (extensions.Count () == AllExtensions)
-					monitor.ReportWarning ("Number of all extensions on marketplace is past page size.");
+					// We should probably reconsider fetching logic instread of fetching everything when this warning starts poping up...
+					if (extensions.Count () == AllExtensions)
+						monitor.ReportWarning ("Number of all extensions on marketplace is past page size.");
 
-				var repo = new Repository () {
-					Name = "Visual Studio Marketplace"
-				};
-				foreach (var extension in extensions) {
-					var vsixDownloadUrl = extension.Versions [0].Files.Single (f => f.AssetType == "Microsoft.VisualStudio.Services.VSIXPackage").Source;
-					if (string.IsNullOrEmpty (vsixDownloadUrl)) {
-						monitor.ReportWarning ($"Extension {extension.ExtensionId}:{extension.Versions [0].Version} does not have Microsoft.VisualStudio.Services.VSIXPackage file.");
-						continue;
+					foreach (var extension in extensions) {
+						var vsixDownloadUrl = extension.Versions [0].Files.Single (f => f.AssetType == "Microsoft.VisualStudio.Services.VSIXPackage").Source;
+						if (string.IsNullOrEmpty (vsixDownloadUrl)) {
+							monitor.ReportWarning ($"Extension {extension.ExtensionId}:{extension.Versions [0].Version} does not have Microsoft.VisualStudio.Services.VSIXPackage file.");
+							continue;
+						}
+						var addinInfoUrl = extension.Versions [0].Files.Single (f => f.AssetType == "Microsoft.VisualStudio.Mac.AddinInfo").Source;
+						if (string.IsNullOrEmpty (addinInfoUrl)) {
+							monitor.ReportWarning ($"Extension {extension.ExtensionId}:{extension.Versions [0].Version} does not have Microsoft.VisualStudio.Mac.AddinInfo file.");
+							continue;
+						}
+						//TODO: Cache addinInfoUrl file
+						using (var fs = new StreamReader (DownloadFile (monitor, addinInfoUrl))) {
+							repo.Addins.Add (new PackageRepositoryEntry () {
+								Addin = AddinInfo.ReadFromAddinFile (fs),
+								Url = vsixDownloadUrl
+							});
+						}
 					}
-					var addinInfoUrl = extension.Versions [0].Files.Single (f => f.AssetType == "Microsoft.VisualStudio.Mac.AddinInfo").Source;
-					if (string.IsNullOrEmpty (addinInfoUrl)) {
-						monitor.ReportWarning ($"Extension {extension.ExtensionId}:{extension.Versions [0].Version} does not have Microsoft.VisualStudio.Mac.AddinInfo file.");
-						continue;
-					}
-					//TODO: Cache addinInfoUrl file
-					using (var fs = new StreamReader (DownloadFile (monitor, addinInfoUrl))) {
-						repo.Addins.Add (new PackageRepositoryEntry () {
-							Addin = AddinInfo.ReadFromAddinFile (fs),
-							Url = vsixDownloadUrl
-						});
-					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Failed to update Marketplace gallery", ex);
 				}
 				return repo;
 			}
