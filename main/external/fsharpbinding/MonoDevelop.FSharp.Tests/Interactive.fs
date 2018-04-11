@@ -24,7 +24,7 @@ module Interactive =
             let testDllFolder = Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName
 
             let pathToExe = "\"" + testDllFolder/"MonoDevelop.FSharpInteractive.Service.exe\""
-            let ses = InteractiveSession(pathToExe)
+            let ses = new InteractiveSession(pathToExe)
             ses.StartReceiving()
             do! ses.PromptReady |> Async.AwaitEvent
             return ses
@@ -37,6 +37,7 @@ module Interactive =
             session.SendCompletionRequest "Lis" 3
             let! completions = session.CompletionsReceived |> Async.AwaitEvent
             let results = completions |> Array.map(fun c -> c.displayText)
+            session.KillNow()
             results |> should contain "List"
         } |> toTask
 
@@ -52,6 +53,7 @@ module Interactive =
                                 | MonoDevelop.FSharp.Shared.ParameterTooltip.ToolTip (_signature, _doc, parameters) -> parameters
                                 | MonoDevelop.FSharp.Shared.ParameterTooltip.EmptyTip -> [||])
 
+            session.KillNow()
             results |> should equal [| [|"value"|] |]
         } |> toTask
 
@@ -61,6 +63,7 @@ module Interactive =
             let! session = createSession()
             session.SendInput "1+1;;"
             let! results = session.TextReceived |> Async.AwaitEvent
+            session.KillNow()
             results |> should equal "val it : int = 2\n"
         } |> toTask
 
@@ -74,6 +77,7 @@ module Interactive =
             session.SendInput ";;"    
 
             let! results = session.TextReceived |> Async.AwaitEvent
+            session.KillNow()
             results |> should equal "val myfun : x:int -> char\n"
         } |> toTask
 
@@ -83,6 +87,7 @@ module Interactive =
             let! session = createSession()
             session.SendInput "type CmdResult = ErrorLevel of string * int;;"
             let! results = session.TextReceived |> Async.AwaitEvent
+            session.KillNow()
             results |> should equal "type CmdResult = | ErrorLevel of string * int\n"
         } |> toTask
 
@@ -95,6 +100,7 @@ module Interactive =
             do! session.TextReceived |> Async.AwaitEvent |> Async.Ignore
             do! session.TextReceived |> Async.AwaitEvent |> Async.Ignore
             let! results = session.TextReceived |> Async.AwaitEvent
+            session.KillNow()
             results |> should equal "val it : O [] = [|{X = \"\";}|]\n"
         } |> toTask
 
@@ -133,6 +139,7 @@ module Interactive =
 
                 }
             let! results = getOutput()
+            session.KillNow()
             results |> should equal "val jsonObj : string = \"[{\"Name\":\"Bad Boys\",\"Year\":1995}]\"\n"
         } |> toTask
 
@@ -173,5 +180,6 @@ module Interactive =
             let! output = session.TextReceived |> Async.AwaitEvent
             session.SendInput "printfn __SOURCE_DIRECTORY__;;"
             let! results = session.TextReceived |> Async.AwaitEvent
+            session.KillNow()
             results |> should equal "/\n"
         } |> toTask
