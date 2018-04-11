@@ -59,8 +59,8 @@ namespace MonoDevelop.Ide.Projects
 		string configureYourWorkspaceBannerText = GettextCatalog.GetString ("Configure your new workspace");
 		string configureYourSolutionBannerText = GettextCatalog.GetString ("Configure your new solution");
 
-		const string UseGitPropertyName = "Dialogs.NewProjectDialog.UseGit";
-		const string CreateGitIgnoreFilePropertyName = "Dialogs.NewProjectDialog.CreateGitIgnoreFile";
+		internal const string UseGitPropertyName = "Dialogs.NewProjectDialog.UseGit";
+		internal const string CreateGitIgnoreFilePropertyName = "Dialogs.NewProjectDialog.CreateGitIgnoreFile";
 		internal const string CreateProjectSubDirectoryPropertyName = "MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir";
 		const string NewSolutionLastSelectedCategoryPropertyName = "Dialogs.NewProjectDialog.LastSelectedCategoryPath";
 		const string NewSolutionLastSelectedTemplatePropertyName = "Dialogs.NewProjectDialog.LastSelectedTemplate";
@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide.Projects
 		void UpdateDefaultSettings ()
 		{
 			UpdateDefaultGitSettings ();
-			if (IsNewSolution)
+			if (IsNewSolution && finalConfigurationPage.IsCreateProjectDirectoryInsideSolutionDirectoryEnabled)
 				PropertyService.Set (CreateProjectSubDirectoryPropertyName, projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
 			PropertyService.Set (SelectedLanguagePropertyName, GetLanguageForTemplateProcessing ());
 			DefaultSelectedCategoryPath = GetSelectedCategoryPath ();
@@ -270,7 +270,9 @@ namespace MonoDevelop.Ide.Projects
 		void UpdateDefaultGitSettings ()
 		{
 			PropertyService.Set (UseGitPropertyName, projectConfiguration.UseGit);
-			PropertyService.Set (CreateGitIgnoreFilePropertyName, projectConfiguration.CreateGitIgnoreFile);
+
+			if (finalConfigurationPage.IsGitIgnoreEnabled)
+				PropertyService.Set (CreateGitIgnoreFilePropertyName, projectConfiguration.CreateGitIgnoreFile);
 		}
 
 		protected virtual INewProjectDialogBackend CreateNewProjectDialog ()
