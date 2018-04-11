@@ -1787,7 +1787,7 @@ namespace Mono.TextEditor
 			textSegmentMarkerTree.Add (marker);
 			var startLine = OffsetToLineNumber (marker.Offset);
 			var endLine = OffsetToLineNumber (Math.Min (marker.EndOffset, Length));
-			CommitMultipleLineUpdate (startLine, endLine);
+			CommitMultipleLineUpdate (startLine, endLine, marker is IChunkMarker);
 		}
 
 		/// <summary>
@@ -1802,7 +1802,7 @@ namespace Mono.TextEditor
 			var endLine = OffsetToLineNumber (Math.Min (marker.EndOffset, Length));
 			bool wasRemoved = textSegmentMarkerTree.Remove (marker);
 			if (wasRemoved) {
-				CommitMultipleLineUpdate (startLine, endLine);
+				CommitMultipleLineUpdate (startLine, endLine, marker is IChunkMarker);
 			}
 			return wasRemoved;
 		}
@@ -1884,7 +1884,14 @@ namespace Mono.TextEditor
 			RequestUpdate (new MultipleLineUpdate (start, end));
 			CommitDocumentUpdate ();
 		}
-		
+
+		// TODO: Merge with CommitMultipleLineUpdate (ABI break!
+		public void CommitMultipleLineUpdate (int start, int end, bool removeLineCache)
+		{
+			RequestUpdate (new MultipleLineUpdate (start, end) { RemoveLineCache = removeLineCache});
+			CommitDocumentUpdate ();
+		}
+
 		public event EventHandler DocumentUpdated;
 #endregion
 

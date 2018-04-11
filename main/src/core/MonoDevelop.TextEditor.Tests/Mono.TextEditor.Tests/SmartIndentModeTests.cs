@@ -40,6 +40,7 @@ namespace Mono.TextEditor.Tests
 		internal class TestIndentTracker : IndentationTracker
 		{
 			string indentString;
+			Dictionary<int, string> definedIndents = new Dictionary<int, string> ();
 
 			public override IndentationTrackerFeatures SupportedFeatures {
 				get {
@@ -54,7 +55,14 @@ namespace Mono.TextEditor.Tests
 
 			public override string GetIndentationString (int lineNumber)
 			{
+				if (definedIndents.TryGetValue (lineNumber, out string result))
+					return result;
 				return indentString;
+			}
+
+			public void SetIndent(int lineNumber, string indentationString)
+			{
+				definedIndents [lineNumber] = indentationString;
 			}
 		}
 
