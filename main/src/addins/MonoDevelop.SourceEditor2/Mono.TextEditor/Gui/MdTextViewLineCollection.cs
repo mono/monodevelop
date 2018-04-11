@@ -130,20 +130,50 @@ namespace Mono.TextEditor
 
 		public ITextViewLine GetTextViewLineContainingBufferPosition (SnapshotPoint bufferPosition)
 		{
-			return this.FirstOrDefault (l => l.ContainsBufferPosition (bufferPosition));
+			if (bufferPosition.Position < this [0].Start.Position)
+				return null;
+
+			{
+				//If the position starts on or after the start of the last line, then use the
+				//line's ContainsBufferPosition logic to handle the special case at the end of
+				//the buffer.
+				ITextViewLine lastLine = this [this.Count - 1];
+
+				if (bufferPosition.Position >= lastLine.Start.Position)
+					return lastLine.ContainsBufferPosition (bufferPosition) ? lastLine : null;
+			}
+
+			int low = 0;
+			int high = this.Count;
+			while (low < high) {
+				int middle = (low + high) / 2;
+				var middleLine = this [middle];
+
+				if (bufferPosition.Position < middleLine.Start.Position)
+					high = middle;
+				else
+					low = middle + 1;
+			}
+
+			return this[low - 1];
 		}
 
 		public ITextViewLine GetTextViewLineContainingYCoordinate (double y)
 		{
-			return this.FirstOrDefault (l => l.Top <= y && l.Top + l.Height >= y);
+			foreach (var l in this) {
+				if (l.Top <= y && l.Top + l.Height >= y)
+					return l;
+			}
+			return null;
 		}
 
 		public Collection<ITextViewLine> GetTextViewLinesIntersectingSpan (SnapshotSpan bufferSpan)
 		{
 			var result = new Collection<ITextViewLine> ();
-			foreach (var line in this)
+			foreach (var line in this) {
 				if (line.IntersectsBufferSpan (bufferSpan))
 					result.Add (line);
+			}
 			return result;
 		}
 
