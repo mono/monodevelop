@@ -2,33 +2,36 @@ TARBALL_PATH=../../tarballs/external
 XAMMAC_PATH=/Library/Frameworks/Xamarin.Mac.framework/Versions/Current
 XAMMAC_LIB_PATH=$(XAMMAC_PATH)/lib
 XAMMAC_PDB=$(XAMMAC_LIB_PATH)/@MAC_ARCHITECTURE@/full/Xamarin.Mac.pdb
-all:
-
-clean:
 
 if ENABLE_MACPLATFORM
 all: Xamarin.Mac.dll Xamarin.Mac.registrar.full.a libxammac.dylib Xamarin.Mac.buildinfo
 	$(MAKE) -C monomac/src
 
 Xamarin.Mac.dll: $(XAMMAC_LIB_PATH)/@MAC_ARCHITECTURE@/full/Xamarin.Mac.dll
-	cp -p $< $@
-	if [[ -f $<.mdb ]]; then cp -p $<.mdb $@.mdb; fi;
-	if [[ -f $(XAMMAC_PDB) ]]; then cp -p $(XAMMAC_PDB) Xamarin.Mac.pdb; fi;
+	cp $< $@
+	if [[ -f $<.mdb ]]; then cp $<.mdb $@.mdb; fi;
+	if [[ -f $(XAMMAC_PDB) ]]; then cp $(XAMMAC_PDB) Xamarin.Mac.pdb; fi;
 
 Xamarin.Mac.registrar.full.a: $(XAMMAC_LIB_PATH)/mmp/Xamarin.Mac.registrar.full.a
-	cp -p $< $@
+	cp $< $@
 
 libxammac.dylib: $(XAMMAC_LIB_PATH)/libxammac.dylib
-	cp -p $< $@
+	cp $< $@
 
 Xamarin.Mac.buildinfo: $(XAMMAC_PATH)/buildinfo
-	cp -p $< $@
+	cp $< $@
 
 clean:
 	$(MAKE) -C monomac/src clean
 	rm -f Xamarin.Mac.Registrar.full.a
 	rm -f Xamarin.Mac.dll*
 	rm -f libxammac.dylib
+
+else
+all:
+
+clean:
+
 endif
 
 install:
@@ -53,4 +56,3 @@ dist-clean:
 		fi \
 	done
 
-.PHONY: Xamarin.Mac.dll 
