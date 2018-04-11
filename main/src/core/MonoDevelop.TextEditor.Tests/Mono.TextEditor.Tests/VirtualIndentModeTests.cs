@@ -568,6 +568,22 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (new DocumentLocation (2, 6), data.Caret.Location);
 			Assert.AreEqual ("\n\t\tFooBar", data.Document.Text);
 		}
+
+		/// <summary>
+		/// Virtual indentation handling broken #4489 
+		/// https://github.com/mono/monodevelop/issues/4489
+		/// </summary>
+		[Test]
+		public void TestIssue4489 ()
+		{
+			var data = CreateDataWithSpaces ("\n\t\t\n\n");
+			var tracker = new SmartIndentModeTests.TestIndentTracker ();
+			tracker.SetIndent (1, "    ");
+			data.IndentationTracker = tracker;
+			data.Caret.Location = new DocumentLocation (2, 2);
+			data.FixVirtualIndentation ();
+			Assert.AreEqual ("\n\n\n", data.Document.Text);
+		}
 	}
 }
 
