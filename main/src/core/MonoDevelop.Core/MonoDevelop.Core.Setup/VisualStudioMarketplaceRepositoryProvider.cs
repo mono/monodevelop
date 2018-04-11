@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -92,11 +93,22 @@ namespace MonoDevelop.Core.Setup
 					byte [] buffer = new byte [4096];
 
 					int n;
-					while ((n = s.Read (buffer, 0, buffer.Length)) != 0) {
-						monitor.Step (n);
-						fs.Write (buffer, 0, n);
-						if (monitor.IsCancelRequested)
-							throw new InstallException ("Installation cancelled.");
+					using (var ms = new MemoryStream ()) {
+						while ((n = s.Read (buffer, 0, buffer.Length)) != 0) {
+							monitor.Step (n);
+							ms.Write (buffer, 0, n);
+							if (monitor.IsCancelRequested)
+								throw new InstallException ("Installation cancelled.");
+						}
+						var bytes = ms.GetBuffer ();
+						ms.Position = 0;
+						if (bytes.Length > 2 && bytes [0] == 0x1F && bytes [1] == 0x8B && bytes [2] == 0x08) {
+							using (var gzStream = new GZipStream (ms, CompressionMode.Decompress)) {
+								gzStream.CopyTo (fs);
+							}
+						} else {
+							ms.CopyTo (fs);
+						}
 					}
 					fs.Close ();
 					s.Close ();
