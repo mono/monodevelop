@@ -54,6 +54,7 @@ using ObjCRuntime;
 using System.Diagnostics;
 using Xwt.Mac;
 using MonoDevelop.Components.Mac;
+using System.Reflection;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -231,10 +232,13 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
+		object registerLock = new object ();
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{
 			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
-			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
+			Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
+
+			// Also calls NSApplication.Init();
 			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
 
 			// Register all the assemblies that are not loaded at this point manually.
@@ -242,7 +246,8 @@ namespace MonoDevelop.MacIntegration
 			// find the assembly in there, thus it would fail to for any addins
 			// that are loaded after the fact and not in the static registrar.
 			AppDomain.CurrentDomain.AssemblyLoad += (o, args) => {
-				ObjCRuntime.Runtime.RegisterAssembly (args.LoadedAssembly);
+				lock (registerLock)
+					ObjCRuntime.Runtime.RegisterAssembly (args.LoadedAssembly);
 			};
 
 			loaded.RegisterBackend<Xwt.Backends.IDialogBackend, ThemedMacDialogBackend> ();
