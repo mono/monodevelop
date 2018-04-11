@@ -51,7 +51,7 @@ using System.Threading.Tasks;
 
 namespace Mono.TextEditor
 {
-	class TextViewMargin : Margin
+	partial class TextViewMargin : Margin
 	{
 		readonly MonoTextEditor textEditor;
 		Pango.TabArray tabArray;
@@ -62,6 +62,9 @@ namespace Mono.TextEditor
 
 		internal double charWidth;
 		bool isMonospacedFont;
+		SpanUpdateListener spanUpdateListener;
+
+		internal SpanUpdateListener SpanUpdater { get => spanUpdateListener; }
 
 		double LineHeight {
 			get {
@@ -295,7 +298,7 @@ namespace Mono.TextEditor
 			}
 
 			this.textEditor = textEditor;
-
+			spanUpdateListener = new SpanUpdateListener (textEditor);
 			textEditor.Document.TextChanged += HandleTextReplaced;
 			textEditor.HighlightSearchPatternChanged += TextEditor_HighlightSearchPatternChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
@@ -721,7 +724,10 @@ namespace Mono.TextEditor
 					marker.Dispose ();
 				eolMarkerLayout = null;
 			}
-
+			if (spanUpdateListener != null) {
+				spanUpdateListener.Dispose ();
+				spanUpdateListener = null;
+			}
 			DisposeLayoutDict ();
 			if (tabArray != null)
 				tabArray.Dispose ();
@@ -1070,7 +1076,7 @@ namespace Mono.TextEditor
 					continue;
 				chunkMarker.TransformChunks (chunks);
 			}
-
+			wrapper.HighlightedLine = cachedChunks.Item3;
 			wrapper.Chunks = chunks;
 			foreach (var chunk in chunks) {
 				try {
@@ -1360,36 +1366,33 @@ namespace Mono.TextEditor
 			}
 		}
 		CancellationTokenSource cacheSrc = new CancellationTokenSource ();
-		Tuple<List<ColoredSegment>, bool> GetCachedChunks (TextDocument doc, DocumentLine line, int offset, int length)
+		Tuple<List<ColoredSegment>, bool, HighlightedLine> GetCachedChunks (TextDocument doc, DocumentLine line, int offset, int length)
 		{
 			var lineNumber = line.LineNumber;
 			var token = cacheSrc.Token;
 			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
-			switch (task.Status)  {
+			switch (task.Status) {
 			case TaskStatus.Faulted:
 				LoggingService.LogError ("Error while highlighting line " + lineNumber, task.Exception);
 				break;
 			case TaskStatus.RanToCompletion:
 				if (task.Result != null) {
-					return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
+					return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true, task.Result);
 				}
 				break;
-			default:
-				var taskResult = task.WaitAndGetResult (default (CancellationToken));
-				return Tuple.Create (TrimChunks (taskResult.Segments, offset - line.Offset, length), true);
 			}
-			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
+			try {
+				var taskResult = task.WaitAndGetResult (default (CancellationToken));
+				return Tuple.Create (TrimChunks (taskResult.Segments, offset - line.Offset, length), true, taskResult);
+			} catch (AggregateException e) {
+				e.Flatten().Handle (x => x is OperationCanceledException);
+			} catch (OperationCanceledException) {
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while highlighting", e);
+			}
+			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false, (HighlightedLine)null);
 		}
 
-		static bool ShouldUpdateSpan (HighlightedLine line1, HighlightedLine line2)
-		{
-			if (line1.IsContinuedBeyondLineEnd != line2.IsContinuedBeyondLineEnd)
-				return true;
-			if (line1.IsContinuedBeyondLineEnd == true) {
-				return line1.Segments.Last ().ScopeStack.Peek () != line2.Segments.Last ().ScopeStack.Peek ();
-			}
-			return false;
-		}
 
 		internal static List<ColoredSegment> TrimChunks (IReadOnlyList<ColoredSegment> segments, int offset, int length)
 		{
@@ -1543,6 +1546,8 @@ namespace Mono.TextEditor
 				get;
 				set;
 			}
+
+			internal HighlightedLine HighlightedLine { get; set; }
 
 			public string Text {
 				get {
