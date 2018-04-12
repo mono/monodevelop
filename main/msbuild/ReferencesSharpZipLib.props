@@ -5,7 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib">
+    <!-- Modify this every time the library is bumped -->
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.0.6375.31400">
       <HintPath>$(PackagesDirectory)\JetBrains.SharpZipLib.Stripped.$(NuGetVersionSharpZipLib)\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>$(ReferencesSharpZipLibCopyToOutput)</Private>
     </Reference>
