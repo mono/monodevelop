@@ -1921,7 +1921,7 @@ namespace MonoDevelop.SourceEditor
 
 			// for named arguments invoke(arg:<Expr>);
 			if (completeWord.EndsWith (":", StringComparison.Ordinal)) {
-				if (data.GetCharAt (triggerOffset + length) == ':')
+				if (data.Length > triggerOffset + length && data.GetCharAt (triggerOffset + length) == ':')
 					length++;
 			}
 
