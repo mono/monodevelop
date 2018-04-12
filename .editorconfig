@@ -25,6 +25,11 @@ indent_size = 2
 indent_style = space
 indent_size = 2
 
+# F# files
+[*.{fs, fsx, fsi}]
+indent_style = space
+indent_size = 4
+
 # Dotnet code style settings:
 [*.{cs,vb}]
 
