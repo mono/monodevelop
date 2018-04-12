@@ -55,7 +55,6 @@
     <Compile Include="AssemblyInfo.v14.0.cs" />
   </ItemGroup>
   <Import Project="MonoDevelop.Projects.MSBuild.Shared\MonoDevelop.Projects.MSBuild.Shared.projitems" Label="Shared" Condition="Exists('MonoDevelop.Projects.MSBuild.Shared\MonoDevelop.Projects.MSBuild.Shared.projitems')" />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="MonoDevelop.Projects.Formats.MSBuild\" />
   </ItemGroup>
