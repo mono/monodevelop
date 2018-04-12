@@ -17,8 +17,8 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=65b87d32fb2f7275b8bee47dc8f37af176987b87
-DEP_BRANCH_AND_REMOTE[0]="d15-7-xamarin-mac-resolve-facades-directory origin/d15-7-xamarin-mac-resolve-facades-directory"
+DEP_NEEDED_VERSION[0]=ca9bc3575ea53c0940a34569fd1630a0df96bb2f
+DEP_BRANCH_AND_REMOTE[0]="d15-7 origin/d15-7"
 
 # heap-shot
 DEP[1]=heap-shot
