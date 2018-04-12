@@ -129,6 +129,11 @@ namespace MonoDevelop.Components
 			return new Xwt.Drawing.Color (r, g, b, hsl.Alpha);
 		}
 
+		public static implicit operator HslColor (Xwt.Drawing.Color color)
+		{
+			return new HslColor (color.Red, color.Green, color.Blue, color.Alpha);
+		}
+
 		public static implicit operator HslColor (Color color)
 		{
 			return new HslColor (color);
