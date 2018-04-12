@@ -2,6 +2,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
+    <ReferencesMonoDocCopyToOutput>true</ReferencesMonoDocCopyToOutput>
     <ReferencesVSEditorCopyToOutput>true</ReferencesVSEditorCopyToOutput>
     <ReferencesRoslynCopyToOutput>true</ReferencesRoslynCopyToOutput>
     <ReferencesCecilCopyToOutput>true</ReferencesCecilCopyToOutput>
@@ -9,6 +10,7 @@
     <ReferencesSystemCollectionsImmutableCopyToOutput>true</ReferencesSystemCollectionsImmutableCopyToOutput>
     <ReferencesSystemValueTupleCopyToOutput>true</ReferencesSystemValueTupleCopyToOutput>
   </PropertyGroup>
+  <Import Project="$(ReferencesMonoDoc)" />
   <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesCecil)" />
@@ -149,7 +151,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.ServiceModel" />
@@ -170,7 +171,6 @@
       <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.Tasks.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>

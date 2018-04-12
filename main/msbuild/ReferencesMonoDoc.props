@@ -1,0 +1,14 @@
+<Project>
+
+  <PropertyGroup>
+    <ReferencesMonoDocCopyToOutput Condition="$(ReferencesMonoDocCopyToOutput) == ''">false</ReferencesMonoDocCopyToOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="monodoc">
+      <HintPath>$(PackagesDirectory)\mdoc.$(NuGetVersionMonoDoc)\tools\monodoc.dll</HintPath>
+      <Private>$(ReferencesMonoDocCopyToOutput)</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

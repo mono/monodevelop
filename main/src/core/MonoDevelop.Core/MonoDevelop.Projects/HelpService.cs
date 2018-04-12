@@ -77,6 +77,18 @@ namespace MonoDevelop.Projects
 				Counters.HelpServiceInitialization.BeginTiming ();
 				
 				try {
+					// Temporary hack to make monodoc work from nuget
+					var type = Type.GetType ("Mono.Runtime");
+					if (type != null) {
+						// We need to get from corlib to monodoc
+						// "/Library/Frameworks/Mono.framework/Versions/5.12.0/lib/mono/4.5/mscorlib.dll"
+						// "/Library/Frameworks/Mono.framework/Versions/5.12.0/lib/monodoc"
+						var mscorlib = type.Assembly.Location;
+						var monoLib = Path.GetDirectoryName (Path.GetDirectoryName (Path.GetDirectoryName (mscorlib)));
+						var monodocPath = Path.Combine (monoLib, "monodoc");
+						Config.AppSettings.Add ("docPath", monodocPath);
+					}
+
 					helpTree = RootTree.LoadTree ();
 					
 					foreach (var node in AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/MonoDocSources"))

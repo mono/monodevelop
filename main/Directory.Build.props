@@ -3,12 +3,16 @@
   <PropertyGroup>
     <RootDirectory>$(MSBuildThisFileDirectory)</RootDirectory>
     <PackagesDirectory>$(RootDirectory)packages</PackagesDirectory>
+
+    <ReferencesMonoDoc>$(RootDirectory)\msbuild\ReferencesMonoDoc.props</ReferencesMonoDoc>
     <ReferencesRoslyn>$(RootDirectory)\msbuild\ReferencesRoslyn.props</ReferencesRoslyn>
     <ReferencesVSEditor>$(RootDirectory)\msbuild\ReferencesVSEditor.props</ReferencesVSEditor>
     <ReferencesCecil>$(RootDirectory)\msbuild\ReferencesCecil.props</ReferencesCecil>
     <ReferencesSharpZipLib>$(RootDirectory)\msbuild\ReferencesSharpZipLib.props</ReferencesSharpZipLib>
     <ReferencesSystemCollectionsImmutable>$(RootDirectory)\msbuild\ReferencesSystemCollectionsImmutable.props</ReferencesSystemCollectionsImmutable>
     <ReferencesSystemValueTuple>$(RootDirectory)\msbuild\ReferencesSystemValueTuple.props</ReferencesSystemValueTuple>
+
+    <NuGetVersionMonoDoc>5.6.3</NuGetVersionMonoDoc>
     <NuGetVersionRoslyn>2.8.0-beta3-62728-05</NuGetVersionRoslyn>
     <NuGetVersionVSEditor>15.7.153-preview-g7d0635149a</NuGetVersionVSEditor>
     <NuGetVersionCecil>0.10.0-beta7</NuGetVersionCecil>
