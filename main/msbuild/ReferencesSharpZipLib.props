@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <ReferencesSharpZipLibCopyToOutput Condition="$(ReferencesSharpZipLibCopyToOutput) == ''">false</ReferencesSharpZipLibCopyToOutput>
+    <ReferencesSharpZipLibCopyToOutput Condition="'$(ReferencesSharpZipLibCopyToOutput)' == ''">false</ReferencesSharpZipLibCopyToOutput>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <ReferencesCecilCopyToOutput Condition="$(ReferencesCecilCopyToOutput) == ''">false</ReferencesCecilCopyToOutput>
+    <ReferencesCecilCopyToOutput Condition="'$(ReferencesCecilCopyToOutput)' == ''">false</ReferencesCecilCopyToOutput>
   </PropertyGroup>
 
   <ItemGroup>

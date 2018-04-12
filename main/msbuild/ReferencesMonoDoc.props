@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <ReferencesMonoDocCopyToOutput Condition="$(ReferencesMonoDocCopyToOutput) == ''">false</ReferencesMonoDocCopyToOutput>
+    <ReferencesMonoDocCopyToOutput Condition="'$(ReferencesMonoDocCopyToOutput)' == ''">false</ReferencesMonoDocCopyToOutput>
   </PropertyGroup>
 
   <ItemGroup>
