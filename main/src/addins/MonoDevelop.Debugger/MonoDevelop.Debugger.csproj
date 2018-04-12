@@ -3,6 +3,7 @@
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
+  <Import Project="$(ReferencesSystemValueTuple)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -108,10 +109,6 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="mscorlib" />
@@ -717,8 +714,5 @@
     <Folder Include="MonoDevelop.Debugger.Converters\" />
     <Folder Include="icons\mac\" />
     <Folder Include="Gui\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>

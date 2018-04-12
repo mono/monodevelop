@@ -3,6 +3,7 @@
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
+  <Import Project="$(ReferencesSystemValueTuple)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -144,10 +145,6 @@
     </Reference>
     <Reference Include="System.Reflection.Metadata">
       <HintPath>..\..\..\build\bin\System.Reflection.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.CodingConventions">
@@ -378,7 +375,6 @@
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />

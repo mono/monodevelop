@@ -1,0 +1,14 @@
+<Project>
+
+  <PropertyGroup>
+    <ReferencesSystemValueTupleCopyToOutput Condition="$(ReferencesSystemValueTupleCopyToOutput) == ''">false</ReferencesSystemValueTupleCopyToOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.ValueTuple">
+      <HintPath>$(PackagesDirectory)\System.ValueTuple.$(NuGetVersionSystemValueTuple)\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <Private>$(ReferencesSystemValueTupleCopyToOutput)</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

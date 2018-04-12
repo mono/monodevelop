@@ -3,6 +3,7 @@
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
+  <Import Project="$(ReferencesSystemValueTuple)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -165,10 +166,6 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="mscorlib" />
   </ItemGroup>
   <ItemGroup>
@@ -268,7 +265,6 @@
     <Compile Include="Mono.TextEditor.Theatrics\SingleActorStage.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\SmartScrolledWindow.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\Stage.cs" />
-    <None Include="packages.config" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\LineSeparatorMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.IndicatorDrawingCache.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.IdleUpdater.cs" />

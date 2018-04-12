@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesSystemValueTuple)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -81,10 +82,6 @@
       <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.Utilities.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' OR '$(Configuration)' == 'Release' ">
     <None Include="app.v15.0.config">
@@ -105,9 +102,6 @@
     <Compile Include="AssemblyInfo.v15.0.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildLoggerAdapter.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="MonoDevelop.Projects.MSBuild.Shared\MonoDevelop.Projects.MSBuild.Shared.projitems" Label="Shared" Condition="Exists('MonoDevelop.Projects.MSBuild.Shared\MonoDevelop.Projects.MSBuild.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

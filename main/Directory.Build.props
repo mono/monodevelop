@@ -8,11 +8,13 @@
     <ReferencesCecil>$(RootDirectory)\msbuild\ReferencesCecil.props</ReferencesCecil>
     <ReferencesSharpZipLib>$(RootDirectory)\msbuild\ReferencesSharpZipLib.props</ReferencesSharpZipLib>
     <ReferencesSystemCollectionsImmutable>$(RootDirectory)\msbuild\ReferencesSystemCollectionsImmutable.props</ReferencesSystemCollectionsImmutable>
+    <ReferencesSystemValueTuple>$(RootDirectory)\msbuild\ReferencesSystemValueTuple.props</ReferencesSystemValueTuple>
     <NuGetVersionRoslyn>2.8.0-beta3-62728-05</NuGetVersionRoslyn>
     <NuGetVersionVSEditor>15.7.153-preview-g7d0635149a</NuGetVersionVSEditor>
     <NuGetVersionCecil>0.10.0-beta7</NuGetVersionCecil>
     <NuGetVersionSharpZipLib>0.87.20170615.10</NuGetVersionSharpZipLib>
     <NuGetVersionSystemCollectionsImmutable>1.3.1</NuGetVersionSystemCollectionsImmutable>
+    <NuGetVersionSystemValueTuple>4.4.0</NuGetVersionSystemValueTuple>
   </PropertyGroup>
 
 </Project>
