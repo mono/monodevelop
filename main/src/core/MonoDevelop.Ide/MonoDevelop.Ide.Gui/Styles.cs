@@ -272,6 +272,7 @@ namespace MonoDevelop.Ide.Gui
 			public static Color SmartTagMarkerColorDark { get; internal set; }
 			public static Color SearchErrorForegroundColor { get; internal set; }
 			public static Color SearchMarkerFallbackColor { get; internal set; }
+			public static Color SearchMarkerSelectedFallbackColor { get; internal set; }
 		}
 
 		public static class KeyBindingsPanel
@@ -433,6 +434,8 @@ namespace MonoDevelop.Ide.Gui
 			Editor.SmartTagMarkerColorDark = Color.FromName ("#ffffff").WithAlpha (.5);
 			Editor.SearchErrorForegroundColor = ErrorForegroundColor;
 			Editor.SearchMarkerFallbackColor = Color.FromName ("#f3da2d");
+			// TODO: FINAL COLOR!
+			Editor.SearchMarkerSelectedFallbackColor = Color.FromName ("#ff00ff");
 
 			// Key Bindings Preferences
 
