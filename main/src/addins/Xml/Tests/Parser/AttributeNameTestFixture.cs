@@ -47,6 +47,12 @@ namespace MonoDevelop.Xml.Tests.Parser
 		}	
 		
 		[Test]
+		public void SuccessTest7()
+		{
+			AssertAttributeName ("< foo=$", "foo");
+		}
+		
+		[Test]
 		public void FailureTest1()
 		{
 			NotAttribute ("foo=$");
@@ -67,7 +73,10 @@ namespace MonoDevelop.Xml.Tests.Parser
 		[Test]
 		public void FailureTest4()
 		{
-			NotAttribute ("< a$");
+			// It's ok if we are already in attribute naming state at this point
+			// even if element is not named yet, but until = is written, attribute
+			// is not named yet, hence null
+			AssertAttributeName ("< a$", null);
 		}	
 		
 		[Test]
