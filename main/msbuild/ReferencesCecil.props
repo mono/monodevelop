@@ -1,0 +1,26 @@
+<Project>
+
+  <PropertyGroup>
+    <ReferencesCecilCopyToOutput Condition="$(ReferencesCecilCopyToOutput) == ''">false</ReferencesCecilCopyToOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Mono.Cecil">
+      <HintPath>$(PackagesDirectory)\Mono.Cecil.$(NuGetVersionCecil)\lib\net40\Mono.Cecil.dll</HintPath>
+      <Private>$(ReferencesCecilCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>$(PackagesDirectory)\Mono.Cecil.$(NuGetVersionCecil)\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
+      <Private>$(ReferencesCecilCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>$(PackagesDirectory)\Mono.Cecil.$(NuGetVersionCecil)\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
+      <Private>$(ReferencesCecilCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks">
+      <HintPath>$(PackagesDirectory)\Mono.Cecil.$(NuGetVersionCecil)\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
+      <Private>$(ReferencesCecilCopyToOutput)</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>
