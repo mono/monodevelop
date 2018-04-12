@@ -51,7 +51,7 @@ using System.Threading.Tasks;
 
 namespace Mono.TextEditor
 {
-	class TextViewMargin : Margin
+	partial class TextViewMargin : Margin
 	{
 		readonly MonoTextEditor textEditor;
 		Pango.TabArray tabArray;
@@ -62,6 +62,9 @@ namespace Mono.TextEditor
 
 		internal double charWidth;
 		bool isMonospacedFont;
+		SpanUpdateListener spanUpdateListener;
+
+		internal SpanUpdateListener SpanUpdater { get => spanUpdateListener; }
 
 		double LineHeight {
 			get {
@@ -295,7 +298,7 @@ namespace Mono.TextEditor
 			}
 
 			this.textEditor = textEditor;
-
+			spanUpdateListener = new SpanUpdateListener (textEditor);
 			textEditor.Document.TextChanged += HandleTextReplaced;
 			textEditor.HighlightSearchPatternChanged += TextEditor_HighlightSearchPatternChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
@@ -721,7 +724,10 @@ namespace Mono.TextEditor
 					marker.Dispose ();
 				eolMarkerLayout = null;
 			}
-
+			if (spanUpdateListener != null) {
+				spanUpdateListener.Dispose ();
+				spanUpdateListener = null;
+			}
 			DisposeLayoutDict ();
 			if (tabArray != null)
 				tabArray.Dispose ();
@@ -945,7 +951,7 @@ namespace Mono.TextEditor
 				get;
 				private set;
 			}
-			readonly TextDocument doc;
+			protected readonly TextDocument doc;
 			protected LineDescriptor (TextDocument doc, DocumentLine line, int offset, int length)
 			{
 				this.Offset = offset;
@@ -962,6 +968,8 @@ namespace Mono.TextEditor
 
 		class LayoutDescriptor : LineDescriptor, IDisposable
 		{
+			readonly ITextSourceVersion version;
+
 			public LayoutWrapper Layout {
 				get;
 				private set;
@@ -979,6 +987,7 @@ namespace Mono.TextEditor
 
 			public LayoutDescriptor (TextDocument doc, DocumentLine line, int offset, int length, LayoutWrapper layout, int selectionStart, int selectionEnd) : base(doc, line, offset, length)
 			{
+				this.version = doc.Version;
 				this.Layout = layout;
 				if (selectionEnd >= 0) {
 					this.SelectionStart = selectionStart;
@@ -1001,7 +1010,9 @@ namespace Mono.TextEditor
 					selStart = selectionStart;
 					selEnd = selectionEnd;
 				}
-				return base.Equals (line, offset, length) && selStart == this.SelectionStart && selEnd == this.SelectionEnd;
+				if (selStart != this.SelectionStart || selEnd != this.SelectionEnd || Length != length || MarkerLength != doc.GetMarkers (line).Count ())
+					return false;
+				return doc.Version.MoveOffsetTo (version, offset) == Offset;
 			}
 
 			public override bool Equals (object obj)
@@ -1065,7 +1076,7 @@ namespace Mono.TextEditor
 					continue;
 				chunkMarker.TransformChunks (chunks);
 			}
-
+			wrapper.HighlightedLine = cachedChunks.Item3;
 			wrapper.Chunks = chunks;
 			foreach (var chunk in chunks) {
 				try {
@@ -1315,7 +1326,6 @@ namespace Mono.TextEditor
 				descriptor.Dispose ();
 				layoutDict.Remove (lineNumber);
 			}
-			cachedLines.Remove (lineNumber);
 		}
 
 		internal void DisposeLayoutDict ()
@@ -1327,7 +1337,6 @@ namespace Mono.TextEditor
 			layoutDict.Clear ();
 			cacheSrc.Cancel ();
 			cacheSrc = new CancellationTokenSource ();
-			cachedLines.Clear ();
 		}
 		public void PurgeLayoutCache ()
 		{
@@ -1340,12 +1349,6 @@ namespace Mono.TextEditor
 				if (descr.Key >= lineNumber) {
 					descr.Value.Dispose ();
 					layoutDict.Remove (descr.Key);
-				}
-			}
-
-			foreach (var descr in cachedLines.ToArray()) {
-				if (descr.Key >= lineNumber) {
-					cachedLines.Remove (descr.Key);
 				}
 			}
 		}
@@ -1362,60 +1365,34 @@ namespace Mono.TextEditor
 				this.Chunk = chunk;
 			}
 		}
-		Dictionary<int, HighlightedLine> cachedLines = new Dictionary<int, HighlightedLine> ();
 		CancellationTokenSource cacheSrc = new CancellationTokenSource ();
-		Tuple<List<ColoredSegment>, bool> GetCachedChunks (TextDocument doc, DocumentLine line, int offset, int length)
+		Tuple<List<ColoredSegment>, bool, HighlightedLine> GetCachedChunks (TextDocument doc, DocumentLine line, int offset, int length)
 		{
-			HighlightedLine result;
 			var lineNumber = line.LineNumber;
-			if (cachedLines.TryGetValue (lineNumber, out result)) {
-				if (result.TextSegment.Length == line.Length && result.TextSegment.Offset == line.Offset)
-					return Tuple.Create (TrimChunks (result.Segments, offset - line.Offset, length), true);
-			}
 			var token = cacheSrc.Token;
 			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
-			switch (task.Status)  {
+			switch (task.Status) {
 			case TaskStatus.Faulted:
 				LoggingService.LogError ("Error while highlighting line " + lineNumber, task.Exception);
 				break;
 			case TaskStatus.RanToCompletion:
 				if (task.Result != null) {
-					UpdateLineHighlight (lineNumber, result, task.Result);
-					return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
+					return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true, task.Result);
 				}
 				break;
 			}
 			try {
 				var taskResult = task.WaitAndGetResult (default (CancellationToken));
-				UpdateLineHighlight (lineNumber, result, task.Result);
-				return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
+				return Tuple.Create (TrimChunks (taskResult.Segments, offset - line.Offset, length), true, taskResult);
+			} catch (AggregateException e) {
+				e.Flatten().Handle (x => x is OperationCanceledException);
+			} catch (OperationCanceledException) {
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while highlighting", e);
-				return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
 			}
+			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false, (HighlightedLine)null);
 		}
 
-		bool UpdateLineHighlight (int lineNumber, HighlightedLine oldLine, HighlightedLine newLine)
-		{
-			if (oldLine != null && ShouldUpdateSpan (oldLine, newLine)) {
-				PurgeLayoutCacheAfter (lineNumber);
-				cachedLines [lineNumber] = newLine;
-				textEditor.QueueDraw ();
-				return false;
-			}
-			cachedLines [lineNumber] = newLine;
-			return true;
-		}
-
-		static bool ShouldUpdateSpan (HighlightedLine line1, HighlightedLine line2)
-		{
-			if (line1.IsContinuedBeyondLineEnd != line2.IsContinuedBeyondLineEnd)
-				return true;
-			if (line1.IsContinuedBeyondLineEnd == true) {
-				return line1.Segments.Last ().ScopeStack.Peek () != line2.Segments.Last ().ScopeStack.Peek ();
-			}
-			return false;
-		}
 
 		internal static List<ColoredSegment> TrimChunks (IReadOnlyList<ColoredSegment> segments, int offset, int length)
 		{
@@ -1569,6 +1546,8 @@ namespace Mono.TextEditor
 				get;
 				set;
 			}
+
+			internal HighlightedLine HighlightedLine { get; set; }
 
 			public string Text {
 				get {

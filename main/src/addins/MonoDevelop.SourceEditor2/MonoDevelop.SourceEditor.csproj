@@ -357,6 +357,7 @@
     <Compile Include="VSEditor\Text\Impl\WpfView\SpaceReservationStack.cs" />
     <Compile Include="VSEditor\Text\Util\TextDataUtil\MappingHelper.cs" />
     <Compile Include="VSEditor\VisualStudio\Impl\ViewAdapter\TipManager.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TextViewMargin.SpanUpdateListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
