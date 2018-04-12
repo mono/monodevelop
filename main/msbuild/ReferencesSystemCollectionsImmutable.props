@@ -1,0 +1,14 @@
+<Project>
+
+  <PropertyGroup>
+    <ReferencesSystemCollectionsImmutableCopyToOutput Condition="$(ReferencesSystemCollectionsImmutableCopyToOutput) == ''">false</ReferencesSystemCollectionsImmutableCopyToOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>$(PackagesDirectory)\System.Collections.Immutable.$(NuGetVersionSystemCollectionsImmutable)\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>$(ReferencesSystemCollectionsImmutableCopyToOutput)</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

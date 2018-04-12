@@ -6,11 +6,13 @@
     <ReferencesRoslynCopyToOutput>true</ReferencesRoslynCopyToOutput>
     <ReferencesCecilCopyToOutput>true</ReferencesCecilCopyToOutput>
     <ReferencesSharpZipLibCopyToOutput>true</ReferencesSharpZipLibCopyToOutput>
+    <ReferencesSystemCollectionsImmutableCopyToOutput>true</ReferencesSystemCollectionsImmutableCopyToOutput>
   </PropertyGroup>
   <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesCecil)" />
   <Import Project="$(ReferencesSharpZipLib)" />
+  <Import Project="$(ReferencesSystemCollectionsImmutable)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -174,9 +176,6 @@
     <Reference Include="System" />
     <Reference Include="System.AppContext">
       <HintPath>..\..\..\packages\System.AppContext.4.3.0\lib\net46\System.AppContext.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Console">
       <HintPath>..\..\..\packages\System.Console.4.3.0\lib\net46\System.Console.dll</HintPath>
