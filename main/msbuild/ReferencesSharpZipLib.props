@@ -1,0 +1,14 @@
+<Project>
+
+  <PropertyGroup>
+    <ReferencesSharpZipLibCopyToOutput Condition="$(ReferencesSharpZipLibCopyToOutput) == ''">false</ReferencesSharpZipLibCopyToOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>$(PackagesDirectory)\JetBrains.SharpZipLib.Stripped.$(NuGetVersionSharpZipLib)\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>$(ReferencesSharpZipLibCopyToOutput)</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

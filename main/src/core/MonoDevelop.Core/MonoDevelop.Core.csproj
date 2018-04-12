@@ -5,10 +5,12 @@
     <ReferencesVSEditorCopyToOutput>true</ReferencesVSEditorCopyToOutput>
     <ReferencesRoslynCopyToOutput>true</ReferencesRoslynCopyToOutput>
     <ReferencesCecilCopyToOutput>true</ReferencesCecilCopyToOutput>
+    <ReferencesSharpZipLibCopyToOutput>true</ReferencesSharpZipLibCopyToOutput>
   </PropertyGroup>
   <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesCecil)" />
+  <Import Project="$(ReferencesSharpZipLib)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
