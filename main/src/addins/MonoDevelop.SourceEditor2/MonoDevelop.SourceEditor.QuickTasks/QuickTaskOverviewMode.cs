@@ -901,6 +901,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		void DrawSearchResults (Cairo.Context cr, IndicatorDrawingState state, int i)
 		{
 			var color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.FindHighlight);
+			if (Math.Abs (HslColor.Brightness (color) - HslColor.Brightness (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Background))) < 0.1)
+				color = Styles.Editor.SearchMarkerFallbackColor;
+
 			if (i == state.MainSelection) {
 				// TODO: EditorTheme does that look ok ?
 				if (HslColor.Brightness (color) < 0.5) {
