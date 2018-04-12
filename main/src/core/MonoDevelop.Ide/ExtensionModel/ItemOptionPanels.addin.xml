@@ -53,9 +53,6 @@
 			<Condition id="ItemType" value="Solution">
 				<Panel id = "SolutionGeneral" _label = "Build" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineBuildOptions"/>
 			</Condition>
-			<Condition id="ItemType" value="DotNetProject">
-				<Panel id = "MSBuildOptionsPanel" _label = "Build" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineMSBuildOptions"/>
-			</Condition>
 		</Section>
 		<Condition id="ItemType" value="SolutionItem">
 			<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.BuildCustomCommandPanel" icon = "md-prefs-generic" />

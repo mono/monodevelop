@@ -910,7 +910,7 @@ namespace MonoDevelop.Projects
 		internal protected virtual async Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
 			List<AssemblyReference> result = new List<AssemblyReference> ();
-			if (CheckUseMSBuildEngine (configuration)) {
+			if (MSBuildProject.UseMSBuildEngine) {
 				// Get the references list from the msbuild project
 				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
 					result.AddRange (await RunResolveAssemblyReferencesTarget (configuration));
@@ -1038,7 +1038,7 @@ namespace MonoDevelop.Projects
 		internal protected virtual async Task<List<PackageDependency>> OnGetPackageDependencies (ConfigurationSelector configuration, CancellationToken cancellationToken)
 		{
 			var result = new List<PackageDependency> ();
-			if (CheckUseMSBuildEngine (configuration)) {
+			if (MSBuildProject.UseMSBuildEngine) {
 				// Get the references list from the msbuild project
 				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
 					return await RunResolvePackageDependenciesTarget (configuration, cancellationToken);
@@ -1300,7 +1300,7 @@ namespace MonoDevelop.Projects
 
 		public FilePath GetAssemblyDebugInfoFile (ConfigurationSelector configuration, FilePath exeFile)
 		{
-			if (CheckUseMSBuildEngine (configuration)) {
+			if (MSBuildProject.UseMSBuildEngine) {
 				var mono = TargetRuntime as MonoTargetRuntime;
 				if (mono != null) {
 					var version = mono.MonoRuntimeInfo?.RuntimeVersion;

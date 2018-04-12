@@ -27,7 +27,7 @@ using System;
 
 namespace MonoDevelop.Projects
 {
-	[Flags]
+	[Flags, Obsolete]
 	public enum MSBuildSupport
 	{
 		/// <summary>
