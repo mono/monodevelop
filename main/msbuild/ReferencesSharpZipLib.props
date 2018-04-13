@@ -9,6 +9,7 @@
     <Reference Include="ICSharpCode.SharpZipLib, Version=1.0.6375.31400">
       <HintPath>$(PackagesDirectory)\JetBrains.SharpZipLib.Stripped.$(NuGetVersionSharpZipLib)\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>$(ReferencesSharpZipLibCopyToOutput)</Private>
+      <SpecificVersion>true</SpecificVersion>
     </Reference>
   </ItemGroup>
 
