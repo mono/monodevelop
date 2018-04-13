@@ -25,6 +25,11 @@
 // THE SOFTWARE.
 
 using System.IO;
+using System.Collections.Generic;
+
+using Xwt;
+using Xwt.Drawing;
+
 using Microsoft.TemplateEngine.Abstractions;
 using MonoDevelop.Ide.Codons;
 
@@ -45,6 +50,11 @@ namespace MonoDevelop.Ide.Templates
 		public override Stream GetStream (string path)
 		{
 			return MicrosoftTemplateEngine.GetStream (TemplateInfo, path);
+		}
+
+		public override Image GetImage (string path)
+		{
+			return MicrosoftTemplateEngine.GetImage (TemplateInfo, path);
 		}
 	}
 }

@@ -27,6 +27,8 @@
 using System;
 using System.IO;
 
+using Xwt.Drawing;
+
 namespace MonoDevelop.Ide.Templates
 {
 	public class ItemTemplate
@@ -44,6 +46,16 @@ namespace MonoDevelop.Ide.Templates
 		public virtual Stream GetStream (string path)
 		{
 			return null;
+		}
+
+		public virtual Image GetImage (string path)
+		{
+			var stream = GetStream (path);
+
+			if (stream == null)
+				return null;
+
+			return Image.FromStream (stream);
 		}
 	}
 }
