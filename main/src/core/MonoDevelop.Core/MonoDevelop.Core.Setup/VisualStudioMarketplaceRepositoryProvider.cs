@@ -54,9 +54,10 @@ namespace MonoDevelop.Core.Setup
 					request.Method = "POST";
 					request.Accept = "application/json;api-version=3.0-preview.1";
 					request.ContentType = "application/json";
-					//request.Headers.Add ("X-Market-User-Id", "");//TODO: Get MachineId(MAC?) from IDE?
-					request.Headers.Add ("X-Market-Client-Id", $"VSMac");//TODO: Add version
-					request.UserAgent = "VSMac";//TODO: Add version
+					var clientId = $"VSMac " + Runtime.Version;
+					request.Headers.Add ("X-Market-User-Id", SystemInformation.InstallationUuid);
+					request.Headers.Add ("X-Market-Client-Id", clientId);
+					request.UserAgent = clientId;
 					return request;
 				}, (r) => {
 					var json = JsonConvert.SerializeObject (query);
@@ -172,7 +173,7 @@ namespace MonoDevelop.Core.Setup
 						using (var fs = new StreamReader (DownloadFile (monitor, addinInfoUrl))) {
 							repo.Addins.Add (new PackageRepositoryEntry () {
 								Addin = AddinInfo.ReadFromAddinFile (fs),
-								Url = vsixDownloadUrl
+								Url = vsixDownloadUrl + "?redirect=true&install=true"
 							});
 						}
 					}
