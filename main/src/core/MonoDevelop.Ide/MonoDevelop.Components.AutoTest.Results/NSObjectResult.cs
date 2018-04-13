@@ -122,9 +122,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 				{
 					var cell = control.GetCell (i, index);
 					var possValues = GetPossibleNSCellValues (cell);
-					LoggingService.LogInfo ($"Possible values for NSTableView with column {i} and row {index} -> "+string.Join (", ", possValues));
-					if (possValues.Any (haystack => CheckForText (text, haystack, exact)))
+					LoggingService.LogInfo ($"[Text] Looking for '{text}' with '{exact}', Possible values for NSTableView with column {i} and row {index} -> "+string.Join (", ", possValues));
+					if (possValues.Any (haystack => CheckForText (text, haystack, exact))) {
+						LoggingService.LogInfo ($"\t[Text] Found '{text}' with '{exact}' in {string.Join (", ", possValues)}");
 						return this;
+					}
 				}
 			}
 			if (ResultObject is NSControl) {
@@ -195,7 +197,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				var control = (NSTableView)ResultObject;
 				var children = new List<AppResult> ();
 				for (int i = 0; i < control.RowCount; i++) {
-					LoggingService.LogInfo ($"Found row {i} of NSTableView -  {control.Identifier} - {control.AccessibilityIdentifier}");
+					LoggingService.LogInfo ($"[Children] Found row {i} of NSTableView -  {control.Identifier} - {control.AccessibilityIdentifier}");
 					children.Add (new NSObjectResult (control, i));
 				}
 				return children;
@@ -212,10 +214,10 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			if (ResultObject is NSTableView) {
 				var control = (NSTableView)ResultObject;
-				LoggingService.LogInfo($"Found NSTableView with index: {index}");
+				LoggingService.LogInfo($"[Select] Found NSTableView with index: {index}");
 				if (index >= 0)
 				{
-					LoggingService.LogInfo ($"Selecting row '{index}' of ");
+					LoggingService.LogInfo ($"[Select] Selecting row '{index}' of NSTableView");
 					control.SelectRow(index, true);
 					control.PerformClick(0, index);
 				}
@@ -228,8 +230,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			if (ResultObject is NSTableView) {
 				var control = (NSTableView)ResultObject;
-				if(control.SelectedRow == index || control.SelectedRows.Contains((nuint)index))
+				LoggingService.LogInfo ($"[Selected] Checking if row '{index}' is selected using control.SelectedRow '{control.SelectedRow}' or present in control.SelectedRows: {string.Join (", ", control.SelectedRows.ToArray())}");
+				if (control.SelectedRow == index || control.SelectedRows.Contains ((nuint)index)) {
+					LoggingService.LogInfo ($"[Selected] Selecting row '{index}'");
 					return this;
+				}
 			}
 			return null;
 		}
