@@ -40,13 +40,19 @@ namespace MonoDevelop.Ide.Editor
 			get {
 				if (image != null)
 					return image;
-				var cacheFileName = Path.Combine(UserProfile.Current.CacheDir, "MacCursorImage.tiff");
-				if (!File.Exists(cacheFileName))
-					NSCursor.IBeamCursor.Image.AsTiff().Save(cacheFileName, true);
-				var img = Xwt.Drawing.Image.FromFile(cacheFileName);
-				var size = NSCursor.IBeamCursor.Image.Size;
-				image = img.WithSize(size.Width, size.Height);
-				return image;
+				try {
+					var cacheFileName = Path.Combine(UserProfile.Current.CacheDir, "MacCursorImage.tiff");
+					if (!File.Exists(cacheFileName)) {
+							NSCursor.IBeamCursor.Image.AsTiff().Save(cacheFileName, true);
+					}
+					var img = Xwt.Drawing.Image.FromFile(cacheFileName);
+					var size = NSCursor.IBeamCursor.Image.Size;
+					image = img.WithSize(size.Width, size.Height);
+					return image;
+				} catch (Exception e) {
+					LoggingService.LogError("Error while getting IBeam cursor image.", e);
+					return null;
+				}
 			}
 		}
 
