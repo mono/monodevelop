@@ -212,7 +212,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool Select ()
 		{
-			LoggingService.LogInfo($"[Select] ResultObject type is : {typeof(ResultObject)}");
+			LoggingService.LogInfo($"[Select] ResultObject type is : {ResultObject.GetType().FullName}");
 			if (ResultObject is NSTableView) {
 				var control = (NSTableView)ResultObject;
 				LoggingService.LogInfo($"[Select] Found NSTableView with index: {index}");
