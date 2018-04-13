@@ -1,0 +1,15 @@
+<Project>
+
+  <PropertyGroup>
+    <ReferencesJsonCopyToOutput Condition="'$(ReferencesJsonCopyToOutput)' == ''">false</ReferencesJsonCopyToOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(PackagesDirectory)\Newtonsoft.Json.$(NuGetVersionJson)\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <Private>$(ReferencesJsonCopyToOutput)</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>
+

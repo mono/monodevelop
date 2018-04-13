@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesJson)" />
   <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
   <Import Project="$(ReferencesSystemReflectionMetadata)" />
@@ -70,10 +71,6 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation">
       <HintPath>..\..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
       <Private>False</Private>
@@ -301,7 +298,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.UnitTesting.VsTest\" />

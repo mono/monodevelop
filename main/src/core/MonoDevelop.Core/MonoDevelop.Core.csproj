@@ -7,6 +7,7 @@
     <ReferencesVSEditorCopyToOutput>true</ReferencesVSEditorCopyToOutput>
     <ReferencesRoslynCopyToOutput>true</ReferencesRoslynCopyToOutput>
     <ReferencesCecilCopyToOutput>true</ReferencesCecilCopyToOutput>
+    <ReferencesJsonCopyToOutput>true</ReferencesJsonCopyToOutput>
     <ReferencesSharpZipLibCopyToOutput>true</ReferencesSharpZipLibCopyToOutput>
     <ReferencesSystemCompositionCopyToOutput>true</ReferencesSystemCompositionCopyToOutput>
     <ReferencesSystemCollectionsImmutableCopyToOutput>true</ReferencesSystemCollectionsImmutableCopyToOutput>
@@ -17,6 +18,7 @@
   <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesCecil)" />
+  <Import Project="$(ReferencesJson)" />
   <Import Project="$(ReferencesSharpZipLib)" />
   <Import Project="$(ReferencesSystemComposition)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
@@ -165,9 +167,6 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext">
       <HintPath>..\..\..\packages\System.AppContext.4.3.0\lib\net46\System.AppContext.dll</HintPath>

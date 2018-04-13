@@ -10,6 +10,7 @@
     <ReferencesVSEditor>$(RootDirectory)\msbuild\ReferencesVSEditor.props</ReferencesVSEditor>
     <ReferencesVSThreading>$(RootDirectory)\msbuild\ReferencesVSThreading.props</ReferencesVSThreading>
     <ReferencesCecil>$(RootDirectory)\msbuild\ReferencesCecil.props</ReferencesCecil>
+    <ReferencesJson>$(RootDirectory)\msbuild\ReferencesJson.props</ReferencesJson>
     <ReferencesSharpZipLib>$(RootDirectory)\msbuild\ReferencesSharpZipLib.props</ReferencesSharpZipLib>
     <ReferencesSystemComposition>$(RootDirectory)\msbuild\ReferencesSystemComposition.props</ReferencesSystemComposition>
     <ReferencesSystemCollectionsImmutable>$(RootDirectory)\msbuild\ReferencesSystemCollectionsImmutable.props</ReferencesSystemCollectionsImmutable>
@@ -23,6 +24,7 @@
     <NuGetVersionVSThreading>15.6.46</NuGetVersionVSThreading>
     <NuGetVersionCecil>0.10.0-beta7</NuGetVersionCecil>
     <!-- Also edit the ReferencesSharpZipLib.props file when modifying this to set the right assembly version -->
+    <NuGetVersionJson>10.0.3</NuGetVersionJson>
     <NuGetVersionSharpZipLib>0.87.20170615.10</NuGetVersionSharpZipLib>
     <NuGetVersionSystemComposition>1.0.31</NuGetVersionSystemComposition>
     <NuGetVersionSystemCollectionsImmutable>1.3.1</NuGetVersionSystemCollectionsImmutable>
