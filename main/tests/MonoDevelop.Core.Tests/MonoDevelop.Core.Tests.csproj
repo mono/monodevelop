@@ -4,6 +4,7 @@
     <ReferencesCecilCopyToOutput>true</ReferencesCecilCopyToOutput>
   </PropertyGroup>
   <Import Project="$(ReferencesCecil)" />
+  <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
   <Import Project="$(ReferencesSystemValueTuple)" />
   <PropertyGroup>
@@ -36,10 +37,6 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.$(NuGetVersionRoslyn)\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Test.cs" />

@@ -1,0 +1,14 @@
+<Project>
+
+  <PropertyGroup>
+    <ReferencesVSCodingConventionsCopyToOutput Condition="$(ReferencesVSCodingConventionsCopyToOutput) == ''">false</ReferencesVSCodingConventionsCopyToOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.CodingConventions">
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.CodingConventions.$(NuGetVersionVSCodingConventions)\lib\netstandard1.3\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
+      <Private>$(ReferencesVSCodingConventionsCopyToOutput)</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

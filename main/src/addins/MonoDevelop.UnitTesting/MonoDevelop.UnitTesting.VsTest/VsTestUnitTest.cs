@@ -38,13 +38,13 @@ namespace MonoDevelop.UnitTesting.VsTest
 {
 	class VsTestUnitTest : UnitTest, IVsTestTestProvider
 	{
-		public Project Project { get; private set; }
+		public MonoDevelop.Projects.Project Project { get; private set; }
 		TestCase test;
 		IVsTestTestRunner testRunner;
 		string name;
 		SourceCodeLocation sourceCodeLocation;
 
-		public VsTestUnitTest (IVsTestTestRunner testRunner, TestCase test, Project project)
+		public VsTestUnitTest (IVsTestTestRunner testRunner, TestCase test, MonoDevelop.Projects.Project project)
 			: base (test.DisplayName)
 		{
 			this.Project = project;

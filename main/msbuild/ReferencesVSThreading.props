@@ -1,0 +1,14 @@
+<Project>
+
+  <PropertyGroup>
+    <ReferencesVSThreadingCopyToOutput Condition="$(ReferencesVSThreadingCopyToOutput) == ''">false</ReferencesVSThreadingCopyToOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.Threading">
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Threading.$(NuGetVersionVSThreading)\lib\net45\Microsoft.VisualStudio.Threading.dll</HintPath>
+      <Private>$(ReferencesVSThreadingCopyToOutput)</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

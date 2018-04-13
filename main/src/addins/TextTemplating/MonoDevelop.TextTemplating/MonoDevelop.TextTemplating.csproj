@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesRoslyn)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -75,10 +76,6 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Mono.TextTemplating">
       <HintPath>..\..\..\..\packages\Mono.TextTemplating.1.3.1\lib\net45\Mono.TextTemplating.dll</HintPath>
     </Reference>

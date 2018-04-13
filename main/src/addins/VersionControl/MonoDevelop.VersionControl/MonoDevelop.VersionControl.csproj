@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesRoslyn)" />
+  <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
   <Import Project="$(ReferencesSystemReflectionMetadata)" />
   <PropertyGroup>
@@ -108,14 +110,6 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.UI">
-      <HintPath>..\..\..\..\build\bin\Microsoft.VisualStudio.Text.UI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\added-overlay-16.png">

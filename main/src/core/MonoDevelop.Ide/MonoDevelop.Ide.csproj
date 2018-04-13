@@ -1,8 +1,13 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
+  <PropertyGroup>
+    <ReferencesVSThreadingCopyToOutput>true</ReferencesVSThreadingCopyToOutput>
+  </PropertyGroup>
   <Import Project="$(ReferencesMonoDoc)" />
   <Import Project="$(ReferencesRoslyn)" />
+  <Import Project="$(ReferencesVSCodingConventions)" />
   <Import Project="$(ReferencesVSEditor)" />
+  <Import Project="$(ReferencesVSThreading)" />
   <Import Project="$(ReferencesSharpZipLib)" />
   <Import Project="$(ReferencesSystemComposition)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
@@ -141,9 +146,6 @@
     <Reference Include="Microsoft.VisualStudio.Composition, Version=15.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Composition.15.6.36\lib\net45\Microsoft.VisualStudio.Composition.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Threading, Version=15.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Threading.15.6.46\lib\net45\Microsoft.VisualStudio.Threading.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.Validation, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Validation.15.3.32\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
       <Private>True</Private>
@@ -189,10 +191,6 @@
     </Reference>
     <Reference Include="YamlDotNet">
       <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.CodingConventions">
-      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
-      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
