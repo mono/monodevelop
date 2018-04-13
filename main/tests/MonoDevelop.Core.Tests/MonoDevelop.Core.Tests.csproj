@@ -1,5 +1,8 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\MonoDevelop.props" />
+  <PropertyGroup>
+    <ReferencesCecilCopyToOutput>true</ReferencesCecilCopyToOutput>
+  </PropertyGroup>
   <Import Project="$(ReferencesCecil)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
   <Import Project="$(ReferencesSystemValueTuple)" />
