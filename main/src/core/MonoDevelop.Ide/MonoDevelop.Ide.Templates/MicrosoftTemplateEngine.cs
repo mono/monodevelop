@@ -279,6 +279,16 @@ namespace MonoDevelop.Ide.Templates
 			return null;
 		}
 
+		public static Xwt.Drawing.Image GetImage (ITemplateInfo template, string path)
+		{
+			var settingsLoader = (SettingsLoader) environmentSettings.SettingsLoader;
+			var loader = new MicrosoftTemplateEngineImageLoader (settingsLoader, template);
+
+			path = NormalizePath (template, path);
+
+			return Xwt.Drawing.Image.FromCustomLoader (loader, path);
+		}
+
 		static string NormalizePath (ITemplateInfo template, string path)
 		{
 			path = NormalizePath (path);
