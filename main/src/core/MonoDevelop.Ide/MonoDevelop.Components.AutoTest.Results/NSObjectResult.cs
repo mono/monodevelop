@@ -212,6 +212,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool Select ()
 		{
+			LoggingService.LogInfo($"[Select] ResultObject type is : {typeof(ResultObject)}");
 			if (ResultObject is NSTableView) {
 				var control = (NSTableView)ResultObject;
 				LoggingService.LogInfo($"[Select] Found NSTableView with index: {index}");
@@ -220,8 +221,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 					LoggingService.LogInfo ($"[Select] Selecting row '{index}' of NSTableView");
 					control.SelectRow(index, true);
 					control.PerformClick(0, index);
+					return true;
 				}
-				return true;
 			}
 			return false;
 		}
@@ -230,7 +231,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			if (ResultObject is NSTableView) {
 				var control = (NSTableView)ResultObject;
-				LoggingService.LogInfo ($"[Selected] Checking if row '{index}' is selected using control.SelectedRow '{control.SelectedRow}' or present in control.SelectedRows: {string.Join (", ", control.SelectedRows.ToArray())}");
+				LoggingService.LogInfo ($"\n[Selected] Checking if row '{index}' is selected using control.SelectedRow '{control.SelectedRow}' or present in control.SelectedRows: {string.Join (", ", control.SelectedRows.ToArray())}");
 				if (control.SelectedRow == index || control.SelectedRows.Contains ((nuint)index)) {
 					LoggingService.LogInfo ($"[Selected] Selecting row '{index}'");
 					return this;
