@@ -84,6 +84,63 @@ type ProjectTests() =
             newXml |> should equal expected
 
     [<Test;AsyncStateMachine(typeof<Task>)>]
+    member this.``Can reorder files with dependent files``() =
+        async {
+        if not MonoDevelop.Core.Platform.IsWindows then
+            let xml =
+                """
+                <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+                  <PropertyGroup>
+                    <ProjectGuid>{F614AE96-C732-4C45-B098-52015B759E6B}</ProjectGuid>
+                    <TargetProfile>netcore</TargetProfile>
+                    <OutputType>Library</OutputType>
+                  </PropertyGroup>
+                  <ItemGroup>
+                    <EmbeddedResource Include="outerfile.xaml">
+                      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+                    </EmbeddedResource>
+                    <Compile Include="innerfile.xaml.fs">
+                      <DependentUpon>outerfile.xaml</DependentUpon>
+                    </Compile>
+                    <Compile Include="test1.fs" />
+                  </ItemGroup>
+                </Project>
+                """
+            let path = Path.GetTempPath()
+            let fsproj = path / Guid.NewGuid().ToString() + ".fsproj"
+            File.WriteAllText (fsproj, xml)
+            let! (solutionItem:SolutionItem) = Services.ProjectService.ReadSolutionItem(monitor, fsproj)
+            let project = solutionItem :?> DotNetProject
+            let moveToFile = project.Files.GetFile(path/"test1.fs" |> FilePath)
+            let outerFile = project.Files.GetFile(path/"outerfile.xaml" |> FilePath)
+
+            let fsp = new FSharpProjectNodeCommandHandler()
+            fsp.MoveNodes moveToFile outerFile DropPosition.After
+
+            let newXml = File.ReadAllText fsproj
+            printfn "%s" newXml
+            let expected =
+                """<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{F614AE96-C732-4C45-B098-52015B759E6B}</ProjectGuid>
+    <TargetProfile>netcore</TargetProfile>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="test1.fs" />
+    <EmbeddedResource Include="outerfile.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <Compile Include="innerfile.xaml.fs">
+      <DependentUpon>outerfile.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>"""
+
+            newXml |> should equal expected
+        } |> toTask
+
+    [<Test;AsyncStateMachine(typeof<Task>)>]
     member this.``Doesn't change forward slashes to backslashes ``() =
         toTask <| async {
             if not MonoDevelop.Core.Platform.IsWindows then
