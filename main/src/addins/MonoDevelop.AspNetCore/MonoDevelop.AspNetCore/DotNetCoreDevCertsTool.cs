@@ -26,103 +26,19 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DotNetCore;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.AspNetCore
 {
 	static class DotNetCoreDevCertsTool
 	{
-		public static bool IsInstalled ()
-		{
-			FilePath toolsDirectory = GetToolsDirectory ();
-			if (toolsDirectory.IsNullOrEmpty)
-				return false;
-
-			var devCertsTool = toolsDirectory.Combine (GetDevCertsToolFileName ());
-			return File.Exists (devCertsTool);
-		}
-
-		static FilePath GetToolsDirectory ()
-		{
-			FilePath homePath = Environment.GetEnvironmentVariable ("HOME");
-			if (homePath.IsNotNull) {
-				homePath = homePath.Combine (".dotnet", "tools");
-			}
-			return homePath;
-		}
-
-		static string GetDevCertsToolFileName ()
-		{
-			if (Platform.IsWindows) {
-				return "dotnet-dev-certs.exe";
-			}
-			return "dotnet-dev-certs";
-		}
-
-		/// <summary>
-		/// Should not need to install the dev certs tool. For the preview we need to install it.
-		/// </summary>
-		public static async Task<bool> Install (CancellationToken cancellationToken)
-		{
-			using (var progressMonitor = CreateProgressMonitor ()) {
-				try {
-					string arguments = "install tool dotnet-dev-certs -g --version " + GetDevCertsVersion ();
-					progressMonitor.Log.WriteLine ("{0} {1}", DotNetCoreRuntime.FileName, arguments);
-
-					var process = Runtime.ProcessService.StartConsoleProcess (
-						DotNetCoreRuntime.FileName,
-						arguments,
-						null,
-						progressMonitor.Console
-					);
-
-					using (var customCancelToken = cancellationToken.Register (process.Cancel)) {
-						await process.Task;
-						if (process.ExitCode == 0) {
-							return true;
-						} else {
-							progressMonitor.Log.WriteLine (GettextCatalog.GetString ("Install failed. dotnet install returned {0}", process.ExitCode));
-							return false;
-						}
-					}
-				} catch (OperationCanceledException) {
-					throw;
-				} catch (Exception ex) {
-					progressMonitor.Log.WriteLine (ex.Message);
-					LoggingService.LogError ("Failed to install dotnet-dev-certs.", ex);
-					return false;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Try to find the dev-certs version that is included with the .NET Core SDK
-		/// and return that. Otherwise default to the preview version: 2.1.0-preview1-final
-		/// </summary>
-		static string GetDevCertsVersion ()
-		{
-			FilePath dotNetRuntime = DotNetCoreRuntime.FileName;
-			var fallbackFolder = dotNetRuntime.ParentDirectory.Combine ("sdk", "NuGetFallbackFolder");
-			var devCertsDirectory = fallbackFolder.Combine ("dotnet-dev-certs");
-
-			if (Directory.Exists (devCertsDirectory)) {
-				FilePath fullPath = Directory.EnumerateDirectories (devCertsDirectory).FirstOrDefault ();
-				if (!fullPath.IsNullOrEmpty) {
-					return fullPath.FileName;
-				}
-			}
-
-			return "2.1.0-preview1-final";
-		}
-
 		static OutputProgressMonitor CreateProgressMonitor ()
 		{
 			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
