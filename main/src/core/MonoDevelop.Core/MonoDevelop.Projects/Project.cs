@@ -3823,6 +3823,8 @@ namespace MonoDevelop.Projects
 				if (p2 == null || !p.ValueType.Equals (p.Value, p2.UnevaluatedValue)) {
 					if (generateNewUpdateItem)
 						continue;
+					if (p2?.UnevaluatedValue != null && p2.UnevaluatedValue.Contains ('%') && p.ValueType.Equals (p.Value, p2.Value))
+						continue;
 					if (updateItem == null) {
 						updateItems = FindUpdateItemsForItem (globItem, item.Include).ToList ();
 						updateItem = updateItems.LastOrDefault ();
