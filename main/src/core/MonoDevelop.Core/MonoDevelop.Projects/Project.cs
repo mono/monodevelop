@@ -3780,7 +3780,6 @@ namespace MonoDevelop.Projects
 		{
 			// Compare only metadata, since item name and include can't change
 
-			MSBuildEvaluationContext context = null;
 			var n = 0;
 			foreach (var p in item.Metadata.GetProperties ()) {
 				var p2 = evalItem.Metadata.GetProperty (p.Name);
@@ -3789,12 +3788,7 @@ namespace MonoDevelop.Projects
 				if (!p.ValueType.Equals (p.Value, p2.UnevaluatedValue)) {
 					if (p2.UnevaluatedValue != null && p2.UnevaluatedValue.Contains ('%')) {
 						// Check evaluated value is a match.
-						if (context == null) {
-							context = new MSBuildEvaluationContext ();
-							context.InitEvaluation (MSBuildProject);
-						}
-						string value = context.Evaluate (p.UnevaluatedValue);
-						if (!p.ValueType.Equals (p.Value, value))
+						if (!p.ValueType.Equals (p.Value, p2.Value))
 							return false;
 					} else
 						return false;
