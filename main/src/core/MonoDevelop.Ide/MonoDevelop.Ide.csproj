@@ -4,7 +4,9 @@
   <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesSharpZipLib)" />
+  <Import Project="$(ReferencesSystemComposition)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
+  <Import Project="$(ReferencesSystemReflectionMetadata)" />
   <Import Project="$(ReferencesSystemValueTuple)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -160,30 +162,12 @@
     <Reference Include="PresentationFramework" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Composition.AttributedModel">
-      <HintPath>..\..\..\packages\System.Composition.AttributedModel.1.0.31\lib\netstandard1.0\System.Composition.AttributedModel.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.Convention">
-      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.30\lib\portable-net45+win8+wp8+wpa81\System.Composition.Convention.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.Hosting">
-      <HintPath>..\..\..\packages\System.Composition.Hosting.1.0.31\lib\netstandard1.0\System.Composition.Hosting.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.Runtime">
-      <HintPath>..\..\..\packages\System.Composition.Runtime.1.0.31\lib\netstandard1.0\System.Composition.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.TypedParts">
-      <HintPath>..\..\..\packages\System.Composition.TypedParts.1.0.31\lib\netstandard1.0\System.Composition.TypedParts.dll</HintPath>
-    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression">
       <HintPath>..\..\..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.4.2\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Runtime.Serialization" />

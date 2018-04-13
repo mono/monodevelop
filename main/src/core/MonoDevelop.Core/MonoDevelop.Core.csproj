@@ -7,7 +7,9 @@
     <ReferencesRoslynCopyToOutput>true</ReferencesRoslynCopyToOutput>
     <ReferencesCecilCopyToOutput>true</ReferencesCecilCopyToOutput>
     <ReferencesSharpZipLibCopyToOutput>true</ReferencesSharpZipLibCopyToOutput>
+    <ReferencesSystemCompositionCopyToOutput>true</ReferencesSystemCompositionCopyToOutput>
     <ReferencesSystemCollectionsImmutableCopyToOutput>true</ReferencesSystemCollectionsImmutableCopyToOutput>
+    <ReferencesSystemReflectionMetadataCopyToOutput>true</ReferencesSystemReflectionMetadataCopyToOutput>
     <ReferencesSystemValueTupleCopyToOutput>true</ReferencesSystemValueTupleCopyToOutput>
   </PropertyGroup>
   <Import Project="$(ReferencesMonoDoc)" />
@@ -15,7 +17,9 @@
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesCecil)" />
   <Import Project="$(ReferencesSharpZipLib)" />
+  <Import Project="$(ReferencesSystemComposition)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
+  <Import Project="$(ReferencesSystemReflectionMetadata)" />
   <Import Project="$(ReferencesSystemValueTuple)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -132,18 +136,6 @@
       <HintPath>..\..\..\packages\SQLitePCLRaw.provider.e_sqlite3.net45.1.1.9\lib\net45\SQLitePCLRaw.provider.e_sqlite3.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Posix" />
-    <Reference Include="System.Composition.AttributedModel, Version=1.0.31.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Composition.AttributedModel.1.0.31\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.Hosting, Version=1.0.31.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Composition.Hosting.1.0.31\lib\portable-net45+win8+wp8+wpa81\System.Composition.Hosting.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.Runtime, Version=1.0.31.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Composition.Runtime.1.0.31\lib\portable-net45+win8+wp8+wpa81\System.Composition.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.TypedParts, Version=1.0.31.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Composition.TypedParts.1.0.31\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
-    </Reference>
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\..\packages\System.Threading.Tasks.Dataflow.4.7.0\lib\netstandard1.0\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>true</Private>
@@ -198,10 +190,6 @@
       <HintPath>..\..\..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Remoting" />
-    <!-- NOTE: NuGet installs the PCL version of System.Reflection.Metadata by default but it is windows-specific. Use netstandard version instead. -->
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.4.2\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation">
       <HintPath>..\..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
     </Reference>

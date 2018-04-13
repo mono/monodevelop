@@ -4,6 +4,8 @@
   <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesSystemValueTuple)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
+  <Import Project="$(ReferencesSystemComposition)" />
+  <Import Project="$(ReferencesSystemReflectionMetadata)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -38,23 +40,11 @@
     <Reference Include="System.ComponentModel.Composition">
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Composition.Runtime">
-      <HintPath>..\..\build\bin\System.Composition.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\build\bin\System.Reflection.Metadata.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.AttributedModel">
-      <HintPath>..\..\build\bin\System.Composition.AttributedModel.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Composition.TypedParts">
-      <HintPath>..\..\build\bin\System.Composition.TypedParts.dll</HintPath>
-    </Reference>
     <Reference Include="Mono.Cairo" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>

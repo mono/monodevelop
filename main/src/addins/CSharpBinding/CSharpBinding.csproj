@@ -3,7 +3,9 @@
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
+  <Import Project="$(ReferencesSystemComposition)" />
   <Import Project="$(ReferencesSystemValueTuple)" />
+  <Import Project="$(ReferencesSystemReflectionMetadata)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -139,14 +141,6 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="System.Composition.AttributedModel">
-      <HintPath>..\..\..\build\bin\System.Composition.AttributedModel.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\build\bin\System.Reflection.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.CodingConventions">
       <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
       <Private>False</Private>

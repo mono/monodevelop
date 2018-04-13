@@ -1,0 +1,16 @@
+<Project>
+
+  <PropertyGroup>
+    <ReferencesSystemReflectionMetadataCopyToOutput Condition="$(ReferencesSystemReflectionMetadataCopyToOutput) == ''">false</ReferencesSystemReflectionMetadataCopyToOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Reflection.Metadata">
+      <!-- NOTE: NuGet installs the PCL version of SRM by default, but it is Windows-specific. Use netstandard instead.
+-->
+      <HintPath>$(PackagesDirectory)\System.Reflection.Metadata.$(NuGetVersionSystemReflectionMetadata)\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
+      <Private>$(ReferencesSystemReflectionMetadataCopyToOutput)</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

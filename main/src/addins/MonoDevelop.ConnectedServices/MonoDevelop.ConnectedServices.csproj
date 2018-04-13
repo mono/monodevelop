@@ -3,6 +3,7 @@
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesSystemCollectionsImmutable)" />
+  <Import Project="$(ReferencesSystemComposition)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -48,10 +49,6 @@
     </Reference>
     <Reference Include="ICSharpCode.NRefactory.CSharp">
       <HintPath>..\..\..\build\bin\ICSharpCode.NRefactory.CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Composition.AttributedModel">
-      <HintPath>..\..\..\build\bin\System.Composition.AttributedModel.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">

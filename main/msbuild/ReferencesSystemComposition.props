@@ -1,0 +1,30 @@
+<Project>
+
+  <PropertyGroup>
+    <ReferencesSystemCompositionCopyToOutput Condition="$(ReferencesSystemCompositionCopyToOutput) == ''">false</ReferencesSystemCompositionCopyToOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Composition.AttributedModel, Version=$(AssemblyVersionSystemComposition), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>$(PackagesDirectory)\System.Composition.AttributedModel.$(NuGetVersionSystemComposition)\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
+      <Private>$(ReferencesSystemCompositionCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="System.Composition.Convention, Version=$(AssemblyVersionSystemComposition), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>$(PackagesDirectory)\System.Composition.Convention.$(NuGetVersionSystemComposition)\lib\portable-net45+win8+wp8+wpa81\System.Composition.Convention.dll</HintPath>
+      <Private>$(ReferencesSystemCompositionCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="System.Composition.Hosting, Version=$(AssemblyVersionSystemComposition), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>$(PackagesDirectory)\System.Composition.Hosting.$(NuGetVersionSystemComposition)\lib\portable-net45+win8+wp8+wpa81\System.Composition.Hosting.dll</HintPath>
+      <Private>$(ReferencesSystemCompositionCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="System.Composition.Runtime, Version=$(AssemblyVersionSystemComposition), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>$(PackagesDirectory)\System.Composition.Runtime.$(NuGetVersionSystemComposition)\lib\portable-net45+win8+wp8+wpa81\System.Composition.Runtime.dll</HintPath>
+      <Private>$(ReferencesSystemCompositionCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="System.Composition.TypedParts, Version=$(AssemblyVersionSystemComposition), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>$(PackagesDirectory)\System.Composition.TypedParts.$(NuGetVersionSystemComposition)\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
+      <Private>$(ReferencesSystemCompositionCopyToOutput)</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>
