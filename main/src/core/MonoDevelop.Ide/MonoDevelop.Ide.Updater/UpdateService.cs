@@ -98,8 +98,7 @@ namespace MonoDevelop.Ide.Updater
 				else if (UpdateChannel.Test.Id == updateChannelId)
 					return UpdateChannel.Test;
 				else
-					//idx matters in .Equals() so we can't do `new UpdateChannel (updateChannelId, updateChannelId, "", 0);`
-					throw new NotImplementedException ($"Unknown update channel id:{updateChannelId}");
+					return new UpdateChannel (updateChannelId, updateChannelId, "", 0);
 			}
 			set {
 				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateChannel", value.Id);
