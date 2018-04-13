@@ -54,7 +54,7 @@ namespace MonoDevelop.Core.Setup
 					request.Method = "POST";
 					request.Accept = "application/json;api-version=3.0-preview.1";
 					request.ContentType = "application/json";
-					var clientId = $"VSMac " + Runtime.Version;
+					var clientId = $"VSMac-" + Runtime.Version;
 					request.Headers.Add ("X-Market-User-Id", SystemInformation.InstallationUuid);
 					request.Headers.Add ("X-Market-Client-Id", clientId);
 					request.UserAgent = clientId;
