@@ -72,15 +72,23 @@ namespace MonoDevelop.AspNetCore
 		{
 			var applicationUrl = settings?.GetValue ("applicationUrl")?.Value<string> ();
 			if (applicationUrl != null)
-				return applicationUrl;
+				return GetFirstUrl (applicationUrl);
 
 			if (environmentVariables.TryGetValue ("ASPNETCORE_URLS", out string applicationUrls)) {
-				applicationUrl = applicationUrls.Split (';').FirstOrDefault ();
+				applicationUrl = GetFirstUrl (applicationUrls);
 				if (applicationUrl != null)
 					return applicationUrl;
 			}
 
 			return "http://localhost:5000";
+		}
+
+		static string GetFirstUrl (string url)
+		{
+			if (string.IsNullOrEmpty (url) || !url.Contains (';'))
+				return url;
+
+			return url.Split (';').FirstOrDefault ();
 		}
 
 		protected override void Read (IPropertySet pset)
