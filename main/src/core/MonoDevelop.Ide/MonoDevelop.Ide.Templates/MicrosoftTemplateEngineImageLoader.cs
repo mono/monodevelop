@@ -38,7 +38,7 @@ using Microsoft.TemplateEngine.Edge.Settings;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class MicrosoftTemplateEngineImageLoader : IImageLoader
+	class MicrosoftTemplateEngineImageLoader : IImageLoader
 	{
 		static char[] DirectorySeparators = new [] { Path.DirectorySeparatorChar };
 		readonly SettingsLoader settings;
