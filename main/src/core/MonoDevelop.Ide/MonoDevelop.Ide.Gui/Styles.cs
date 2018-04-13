@@ -434,8 +434,7 @@ namespace MonoDevelop.Ide.Gui
 			Editor.SmartTagMarkerColorDark = Color.FromName ("#ffffff").WithAlpha (.5);
 			Editor.SearchErrorForegroundColor = ErrorForegroundColor;
 			Editor.SearchMarkerFallbackColor = Color.FromName ("#f3da2d");
-			// TODO: FINAL COLOR!
-			Editor.SearchMarkerSelectedFallbackColor = Color.FromName ("#ff00ff");
+			Editor.SearchMarkerSelectedFallbackColor = Color.FromName ("#ffaf45");
 
 			// Key Bindings Preferences
 
