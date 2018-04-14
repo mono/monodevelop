@@ -113,6 +113,13 @@ namespace MonoDevelop.SourceEditor
 					TaggedTextUtil.AppendTaggedText (sb, theme, parts);
 				}
 			}
+
+			if (sections.TryGetValue (SymbolDescriptionGroups.Captures, out parts)) {
+				if (!parts.IsDefaultOrEmpty) {
+					sb.AppendLine ();
+					TaggedTextUtil.AppendTaggedText (sb, theme, parts);
+				}
+			}
 			sb.Append ("</span>");
 
 			tooltipInfo.SignatureMarkup = StringBuilderCache.ReturnAndFree (sb);
