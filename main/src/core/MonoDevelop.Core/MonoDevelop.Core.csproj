@@ -16,6 +16,7 @@
   </PropertyGroup>
   <Import Project="$(ReferencesMonoDoc)" />
   <Import Project="$(ReferencesRoslyn)" />
+  <Import Project="$(ReferencesVSCodingConventions)" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesCecil)" />
   <Import Project="$(ReferencesJson)" />

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ReferencesMonoDocCopyToOutput Condition="'$(ReferencesMonoDocCopyToOutput)' == ''">false</ReferencesMonoDocCopyToOutput>
     <!-- HACK! Force it to false until we get a monodoc compliant with what SharpZipLib we use -->
-    <ReferencesMonoDocCopyToOutput">false</ReferencesMonoDocCopyToOutput>
+    <ReferencesMonoDocCopyToOutput>false</ReferencesMonoDocCopyToOutput>
   </PropertyGroup>
 
   <ItemGroup>
