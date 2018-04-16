@@ -9641,6 +9641,8 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopDocumentTrackingService.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopProjectCacheHostServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopWorkspaceCacheService.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\RoslynSearchCategory.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\RoslynSearchCategory.DeclaredSymbolInfoResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

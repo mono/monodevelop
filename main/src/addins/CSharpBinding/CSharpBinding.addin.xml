@@ -327,10 +327,6 @@
 		</Condition>
 	</Extension>
 
-	<Extension path="/MonoDevelop/Ide/SearchCategories">
-		<Class class="MonoDevelop.CSharp.ProjectSearchCategory" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Refactoring/FindReferencesProvider">
 		<Class class="MonoDevelop.CSharp.Refactoring.CSharpFindReferencesProvider" />
 	</Extension>
