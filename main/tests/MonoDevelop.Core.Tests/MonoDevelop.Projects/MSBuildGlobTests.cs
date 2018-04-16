@@ -1350,6 +1350,38 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Saving project does not add extra MSBuild items for Compile Includes from wildcards that have Link metadata.
+		/// </summary>
+		[Test]
+		public async Task CompileIncludeItemLinks_WildcardUsesPathOutsideProjectDirectory_SaveProject ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				FilePath solutionFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-file-link-test2.sln");
+				FilePath projFile = solutionFile.ParentDirectory.Combine ("glob-file-link", "glob-file-link-test2.csproj");
+				string expectedProjectXml = File.ReadAllText (projFile);
+
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+
+				Assert.AreEqual (3, p.Files.Count);
+
+				var f = p.Files.First (fi => fi.FilePath.FileName == "c1.cs");
+				Assert.IsTrue (f.IsLink);
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
 
 		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
 		{
