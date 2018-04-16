@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.FindSymbols;
+using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.LanguageServices;
 using Microsoft.CodeAnalysis.NavigateTo;
 using Microsoft.CodeAnalysis.Shared.Extensions;
@@ -140,10 +141,12 @@ namespace MonoDevelop.CSharp
 					var aggregatedResults = await Task.WhenAll (TypeSystemService.AllWorkspaces
 										.Select (ws => ws.CurrentSolution)
 										.SelectMany (s => s.Projects)
-										.Select (proj => AbstractNavigateToSearchService.SearchProjectInCurrentProcessAsync (
-												proj,
-												searchPattern.Pattern,
-												token))
+					                    .Select (async proj => {
+											using (proj.Solution.Services.CacheService?.EnableCaching (proj.Id)) {
+												var searchService = proj.LanguageServices.GetService<INavigateToSearchService> ();
+												return await searchService.SearchProjectAsync (proj, searchPattern.Pattern, token);
+											}
+						})
 					).ConfigureAwait (false);
 
 					foreach (var results in aggregatedResults) {
