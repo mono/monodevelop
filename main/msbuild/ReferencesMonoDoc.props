@@ -2,12 +2,16 @@
 
   <PropertyGroup>
     <ReferencesMonoDocCopyToOutput Condition="'$(ReferencesMonoDocCopyToOutput)' == ''">false</ReferencesMonoDocCopyToOutput>
+    <!-- HACK! Force it to false until we get a monodoc compliant with what SharpZipLib we use -->
+    <ReferencesMonoDocCopyToOutput">false</ReferencesMonoDocCopyToOutput>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="monodoc">
+<!-- Disabled until we get a monodoc compliant with what SharpZipLib we use
       <HintPath>$(PackagesDirectory)\mdoc.$(NuGetVersionMonoDoc)\tools\monodoc.dll</HintPath>
       <Private>$(ReferencesMonoDocCopyToOutput)</Private>
+-->
     </Reference>
   </ItemGroup>
 
