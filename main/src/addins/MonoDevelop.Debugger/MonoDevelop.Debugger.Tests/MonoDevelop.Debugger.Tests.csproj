@@ -80,6 +80,7 @@
     <ProjectReference Include="..\..\..\..\external\debugger-libs\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
       <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>
       <Name>Mono.Debugging.Soft</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

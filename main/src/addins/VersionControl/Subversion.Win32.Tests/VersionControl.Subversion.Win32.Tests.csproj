@@ -51,6 +51,7 @@
     <ProjectReference Include="..\Subversion.Win32\VersionControl.Subversion.Win32.csproj">
       <Project>{1038FBD8-750E-4081-BC65-D89FFED3C881}</Project>
       <Name>VersionControl.Subversion.Win32</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
