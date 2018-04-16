@@ -146,9 +146,7 @@ namespace MonoDevelop.Projects.MSBuild
 					pi.Project = new MSBuildProject (EngineManager);
 					pi.NeedsLoad = true;
 				}
-			}
 
-			lock (pi.LockObject) {
 				if (!pi.NeedsLoad)
 					pi.NeedsLoad = pi.LastWriteTime != File.GetLastWriteTimeUtc (fileName);
 
