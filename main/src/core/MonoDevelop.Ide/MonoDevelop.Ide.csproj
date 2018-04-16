@@ -9705,7 +9705,6 @@
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor2" />
     <InternalsVisibleTo Include="MonoDevelop.AssemblyBrowser" />
-    <InternalsVisibleTo Include="MonoDevelop.AspNet" />
     <InternalsVisibleTo Include="Xamarin.Sketches" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.AspNet" />
     <InternalsVisibleTo Include="MonoDevelop.GtkCore" />
