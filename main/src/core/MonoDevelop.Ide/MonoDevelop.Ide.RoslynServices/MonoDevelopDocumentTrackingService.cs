@@ -58,10 +58,12 @@ namespace MonoDevelop.Ide.RoslynServices
 	{
 		public MonoDevelopDocumentTrackingService ()
 		{
-			IdeApp.Workbench.ActiveDocumentChanged += OnActiveDocumentChanged;
+			IdeApp.Initialized += (o, args) => {
+				IdeApp.Workbench.ActiveDocumentChanged += OnActiveDocumentChanged;
 
-			IdeApp.Workbench.DocumentOpened += OnDocumentOpened;
-			IdeApp.Workbench.DocumentClosed += OnDocumentClosed;
+				IdeApp.Workbench.DocumentOpened += OnDocumentOpened;
+				IdeApp.Workbench.DocumentClosed += OnDocumentClosed;
+			};
 		}
 
 		void OnDocumentOpened (object sender, Gui.DocumentEventArgs e)
@@ -91,7 +93,7 @@ namespace MonoDevelop.Ide.RoslynServices
 		/// <returns>The ID of the active document (if any)</returns>
 		public DocumentId GetActiveDocument ()
 		{
-			return IdeApp.Workbench.ActiveDocument?.AnalysisDocument?.Id;
+			return IdeApp.Workbench?.ActiveDocument?.AnalysisDocument?.Id;
 		}
 
 		/// <summary>
@@ -99,7 +101,9 @@ namespace MonoDevelop.Ide.RoslynServices
 		/// </summary>
 		public ImmutableArray<DocumentId> GetVisibleDocuments ()
 		{
-			var docs = IdeApp.Workbench.Documents;
+			var docs = IdeApp.Workbench?.Documents;
+			if (docs == null)
+				return ImmutableArray<DocumentId>.Empty;
 
 			var ids = ArrayBuilder<DocumentId>.GetInstance (docs.Count);
 			foreach (var doc in docs)
