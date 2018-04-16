@@ -173,6 +173,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			Toolkit.Load (ToolkitType.Gtk).Invoke (() => declarationviewwindow = new TooltipInformationWindow ());
 
+			categories.Add (new RoslynSearchCategory ());
 			categories.Add (new FileSearchCategory ());
 			categories.Add (new CommandSearchCategory ());
 			categories.Add (new SearchInSolutionSearchCategory ());

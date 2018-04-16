@@ -40,18 +40,8 @@ namespace MonoDevelop.CSharp
 	// Copied from StockIcons.cs and extended for the c# ast (c# AST shouldn't be in Ide)
 	static class AstStockIcons
 	{
-		static readonly IconId Class = "md-class";
-		static readonly IconId Enum = "md-enum";
-		static readonly IconId Event = "md-event";
-		static readonly IconId Field = "md-field";
-		static readonly IconId Interface = "md-interface";
-		static readonly IconId Method = "md-method";
-		static readonly IconId Property = "md-property";
-		static readonly IconId Struct = "md-struct";
-		static readonly IconId Delegate = "md-delegate";
 		// static readonly IconId Constant = "md-literal";
 		public static readonly IconId Namespace = "md-name-space";
-
 			
 		static void AdjustAccessibility (SyntaxTokenList modifiers, ref Accessibility acc, ref bool isStatic, ref bool result)
 		{
@@ -209,83 +199,6 @@ namespace MonoDevelop.CSharp
 		static string GetAccess (Accessibility acc)
 		{
 			return MonoDevelop.Ide.TypeSystem.Stock.GetAccess (acc);
-		}
-
-		internal static IconId GetStockIconForNavigableItem (this INavigateToSearchResult item)
-		{
-			switch (item.Kind) {
-			case NavigateToItemKind.Class:
-				return Class;
-
-			case NavigateToItemKind.Delegate:
-				return Delegate;
-
-			case NavigateToItemKind.Event:
-				return Event;
-
-			case NavigateToItemKind.Enum:
-				return Enum;
-
-			case NavigateToItemKind.Constant:
-			case NavigateToItemKind.Field:
-			case NavigateToItemKind.EnumItem:
-				return Field;
-
-			case NavigateToItemKind.Interface:
-				return Interface;
-
-			case NavigateToItemKind.Method:
-			case NavigateToItemKind.Module:
-				return Method;
-
-			case NavigateToItemKind.Property:
-				return Property;
-
-			case NavigateToItemKind.Structure:
-				return Struct;
-			default:
-				throw new ArgumentOutOfRangeException ();
-			}
-		}
-
-		internal static string GetDisplayStringForNavigableItem (this INavigateToSearchResult item, string loc)
-		{
-			switch (item.Kind) {
-			case NavigateToItemKind.Class:
-				return GettextCatalog.GetString ("class ({0})", loc);
-
-			case NavigateToItemKind.Delegate:
-				return GettextCatalog.GetString ("delegate ({0})", loc);
-
-			case NavigateToItemKind.Enum:
-				return GettextCatalog.GetString ("enumeration ({0})", loc);
-
-			case NavigateToItemKind.Event:
-				return GettextCatalog.GetString ("event ({0})", loc);
-
-
-			case NavigateToItemKind.Constant:
-			case NavigateToItemKind.Field:
-				return GettextCatalog.GetString ("field ({0})", loc);
-
-			case NavigateToItemKind.EnumItem:
-				return GettextCatalog.GetString ("enum member ({0})", loc);
-
-			case NavigateToItemKind.Interface:
-				return GettextCatalog.GetString ("interface ({0})", loc);
-
-			case NavigateToItemKind.Method:
-			case NavigateToItemKind.Module:
-				return GettextCatalog.GetString ("method ({0})", loc);
-
-			case NavigateToItemKind.Property:
-				return GettextCatalog.GetString ("property ({0})", loc);
-
-			case NavigateToItemKind.Structure:
-				return GettextCatalog.GetString ("struct ({0})", loc);
-			default:
-				return GettextCatalog.GetString ("symbol ({0})", loc);
-			}
 		}
 	}
 }
