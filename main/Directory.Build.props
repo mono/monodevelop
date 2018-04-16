@@ -21,6 +21,7 @@
     <NuGetVersionRoslyn>2.8.0-beta3-62728-05</NuGetVersionRoslyn>
     <NuGetVersionVSCodingConventions>1.1.20180226.4</NuGetVersionVSCodingConventions>
     <NuGetVersionVSEditor>15.7.153-preview-g7d0635149a</NuGetVersionVSEditor>
+    <NuGetVersionVSEditorTextImplementation>15.2.0-pre</NuGetVersionVSEditorTextImplementation>
     <NuGetVersionVSThreading>15.6.46</NuGetVersionVSThreading>
     <NuGetVersionCecil>0.10.0-beta7</NuGetVersionCecil>
     <!-- Also edit the ReferencesSharpZipLib.props file when modifying this to set the right assembly version -->
