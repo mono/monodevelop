@@ -37,18 +37,29 @@ function fetch_variables
 	IGNORE_VERSION=`eval echo \\\$IGNORE_${DEP_NAME[$1]}_VERSION`
 	THE_PATH=${DEP_PATH[$1]}
 	NAME=${DEP[$1]}
-	NEEDED_VERSION=${DEP_NEEDED_VERSION[$1]}
+	CUSTOM_VERSION=`eval echo \\\$DEP_NEEDED_VERSION_${DEP_NAME[$1]}`
+	if [[ "x$CUSTOM_VERSION" == "x" ]]; then
+		NEEDED_VERSION=${DEP_NEEDED_VERSION[$1]}
+	else
+		NEEDED_VERSION=$CUSTOM_VERSION
+	fi
 	if test -d "$THE_PATH"; then
 		cd "$THE_PATH"
 		VERSION=`git log | head -1 | awk '{print $2}' 2>/dev/null`
-		BRANCH=`git status | head -1 | awk '{print $4}' 2>/dev/null`
+		BRANCH=`git rev-parse --abbrev-ref HEAD 2>/dev/null`
 		cd "$top_srcdir"
 	else
 		VERSION=
 		BRANCH=
 	fi
-	BRANCH_AND_REMOTE=${DEP_BRANCH_AND_REMOTE[$1]}
-	NEEDED_BRANCH=`echo "$BRANCH_AND_REMOTE" | sed -e 's, .*,,'`
+	CUSTOM_BRANCH=`eval echo \\\$DEP_BRANCH_${DEP_NAME[$1]}`
+	if [[ "x$CUSTOM_BRANCH" == "x" ]]; then
+		BRANCH_AND_REMOTE=${DEP_BRANCH_AND_REMOTE[$1]}
+		NEEDED_BRANCH=`echo "$BRANCH_AND_REMOTE" | sed -e 's, .*,,'`
+	else
+		BRANCH_AND_REMOTE="$CUSTOM_BRANCH origin/$CUSTOM_BRANCH"
+		NEEDED_BRANCH=$CUSTOM_BRANCH
+	fi
 	MODULE=${DEP_MODULE[$1]}
 }
 
@@ -58,7 +69,7 @@ function reset_version
 
 	if test -d "$THE_PATH"; then
 		cd "$THE_PATH"
-		if ! git show "$NEEDED_VERSION" >/dev/null 2>&1; then
+		if [[ ! git show "$NEEDED_VERSION" >/dev/null 2>&1 || "x$NEEDED_VERSION" == "xHEAD"]]; then
 			echo "*** [$NAME] git fetch $NAME"
 			git fetch
 		fi
@@ -66,6 +77,9 @@ function reset_version
 		echo "*** [$NAME] git clone $MODULE"
 		cd "`dirname $THE_PATH`"
 		git clone $MODULE
+	fi
+	if [[ "x$NEEDED_VERSION" == "xHEAD" ]]; then
+		NEEDED_VERSION=origin/$NEEDED_BRANCH
 	fi
 
 	cd "$THE_PATH"
@@ -86,6 +100,9 @@ function check_version
 			echo "Your $NAME checkout is missing, please run '$script_name --reset $NAME'"
 			FAILURE=1
 		else
+			if [[ "x$NEEDED_VERSION" == "xHEAD" ]]; then
+				NEEDED_VERSION=`cd $THE_PATH && git log -1 --format=format:%H origin/$NEEDED_BRANCH`
+			fi
 			if [[ "x$VERSION" != "x$NEEDED_VERSION" || "x$BRANCH" != "x$NEEDED_BRANCH" ]]; then
 				echo "Your $NAME version is out of date, please run '$script_name --reset $NAME'"
 				FAILURE=1
