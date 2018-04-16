@@ -691,6 +691,30 @@
     <EmbeddedResource Include="icons\catchpoint-new-16~dark~disabled%402x.png">
       <LogicalName>catchpoint-new-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-new-16.png">
+      <LogicalName>logpoint-new-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-new-16%402x.png">
+      <LogicalName>logpoint-new-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-new-16~dark.png">
+      <LogicalName>logpoint-new-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-new-16~dark%402x.png">
+      <LogicalName>logpoint-new-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-new-16~disabled.png">
+      <LogicalName>logpoint-new-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-new-16~disabled%402x.png">
+      <LogicalName>logpoint-new-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-new-16~dark~disabled.png">
+      <LogicalName>logpoint-new-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-new-16~dark~disabled%402x.png">
+      <LogicalName>logpoint-new-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-on-off-16.png">
       <LogicalName>breakpoint-on-off-16.png</LogicalName>
     </EmbeddedResource>
@@ -6486,6 +6510,54 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\catchpoint-disabled-16~dark~disabled%402x.png">
       <LogicalName>catchpoint-disabled-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-16.png">
+      <LogicalName>logpoint-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-16%402x.png">
+      <LogicalName>logpoint-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-16~dark.png">
+      <LogicalName>logpoint-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-16~dark%402x.png">
+      <LogicalName>logpoint-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-16~disabled.png">
+      <LogicalName>logpoint-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-16~disabled%402x.png">
+      <LogicalName>logpoint-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-16~dark~disabled.png">
+      <LogicalName>logpoint-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-16~dark~disabled%402x.png">
+      <LogicalName>logpoint-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-disabled-16.png">
+      <LogicalName>logpoint-disabled-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-disabled-16%402x.png">
+      <LogicalName>logpoint-disabled-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-disabled-16~dark.png">
+      <LogicalName>logpoint-disabled-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-disabled-16~dark%402x.png">
+      <LogicalName>logpoint-disabled-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-disabled-16~disabled.png">
+      <LogicalName>logpoint-disabled-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-disabled-16~disabled%402x.png">
+      <LogicalName>logpoint-disabled-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-disabled-16~dark~disabled.png">
+      <LogicalName>logpoint-disabled-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\logpoint-disabled-16~dark~disabled%402x.png">
+      <LogicalName>logpoint-disabled-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-android-16.png">
       <LogicalName>platform-android-16.png</LogicalName>
