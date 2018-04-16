@@ -248,6 +248,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		static readonly Image breakpoint = Image.FromResource (typeof (BreakpointPad), "gutter-breakpoint-15.png");
 		static readonly Image tracepoint = Image.FromResource (typeof (BreakpointPad), "gutter-tracepoint-15.png");
+		static readonly Image logpoint = Image.FromResource (typeof (BreakpointPad), "gutter-logpoint-15.png"); // TODO: Implement logpoints
 
 		public BreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
 		{
@@ -261,6 +262,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		static readonly Image breakpoint = Image.FromResource (typeof (BreakpointPad), "gutter-breakpoint-disabled-15.png");
 		static readonly Image tracepoint = Image.FromResource (typeof (BreakpointPad), "gutter-tracepoint-disabled-15.png");
+		static readonly Image logpoint = Image.FromResource (typeof (BreakpointPad), "gutter-logpoint-disabled-15.png"); // TODO: Implement logpoints
 
 		public DisabledBreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
 		{
@@ -273,6 +275,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		static readonly Image breakpoint = Image.FromResource (typeof (BreakpointPad), "gutter-breakpoint-invalid-15.png");
 		static readonly Image tracepoint = Image.FromResource (typeof (BreakpointPad), "gutter-tracepoint-invalid-15.png");
+		static readonly Image logpoint = Image.FromResource (typeof (BreakpointPad), "gutter-logpoint-invalid-15.png"); // TODO: Implement logpoints
 
 		public InvalidBreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
 		{
