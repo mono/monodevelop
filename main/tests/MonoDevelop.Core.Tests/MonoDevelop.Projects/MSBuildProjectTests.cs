@@ -57,6 +57,56 @@ namespace MonoDevelop.Projects
 			return p;
 		}
 
+		class CustomLogger : MSBuildEngineLogger
+		{
+			internal Dictionary<string, int> loadTasks = new Dictionary<string, int> ();
+			internal Dictionary<string, int> evalTasks = new Dictionary<string, int> ();
+
+			static void IncValue (Dictionary<string, int> tasks, string project)
+			{
+				tasks.TryGetValue (project, out int count);
+				tasks [project] = ++count;
+			}
+
+			public override void LogMessage (string s)
+			{
+				Dictionary<string, int> tasks;
+
+				if (s.StartsWith ("Load Project:", StringComparison.Ordinal)) {
+					tasks = loadTasks;
+				} else if (s.StartsWith ("Evaluate Project:", StringComparison.Ordinal)) {
+					tasks = evalTasks;
+				} else
+					return;
+				
+				IncValue (tasks, s);
+			}
+		}
+
+		[Test]
+		public void ImportsLoadedAndEvaluatedOnlyOnce ()
+		{
+			try {
+				using (var p = LoadProject ()) {
+					CustomLogger log = null;
+
+					DefaultMSBuildEngine.GetEvaluationContext = proj => {
+						if (proj != p)
+							return null;
+						
+						log = new CustomLogger ();
+						return new MSBuildEvaluationContext { Log = log };
+					};
+
+					p.Evaluate ();
+					Assert.That (log.loadTasks.Values, Is.All.EqualTo (1));
+					Assert.That (log.evalTasks.Values, Is.All.EqualTo (1));
+				}
+			} finally {
+				DefaultMSBuildEngine.GetEvaluationContext = null;
+			}
+		}
+
 		[Test]
 		public void Properties ()
 		{
