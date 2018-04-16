@@ -42,6 +42,9 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		Dictionary<FilePath, LoadedProjectInfo> loadedProjects = new Dictionary<FilePath, LoadedProjectInfo> ();
 
+		// For test purposes.
+		internal static Func<MSBuildProject, MSBuildEvaluationContext> GetEvaluationContext = null;
+
 		class LoadedProjectInfo
 		{
 			public MSBuildProject Project;
@@ -152,9 +155,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 				if (pi.NeedsLoad) {
 					LogBeginProjectFileLoad (context, fileName);
+					pi.LastWriteTime = File.GetLastWriteTimeUtc (fileName);
 					pi.Project.Load (fileName, new MSBuildXmlReader { ForEvaluation = true });
 					pi.NeedsLoad = false;
-					pi.LastWriteTime = File.GetLastWriteTimeUtc (fileName);
 					LogEndProjectFileLoad (context);
 				}
 
@@ -218,7 +221,7 @@ namespace MonoDevelop.Projects.MSBuild
 			pi.ReferencedProjects = new List<MSBuildProject> ();
 
 			try {
-				var context = new MSBuildEvaluationContext ();
+				var context = GetEvaluationContext?.Invoke (pi.Project) ?? new MSBuildEvaluationContext ();
 				foreach (var p in pi.GlobalProperties) {
 					context.SetPropertyValue (p.Key, p.Value);
 					StoreProperty (pi, p.Key, p.Value, p.Value);
