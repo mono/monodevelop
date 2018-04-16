@@ -225,6 +225,9 @@ namespace MonoDevelop.Debugger
 			} else {
 				return bp.Enabled ? "md-breakpoint" : "md-breakpoint-disabled";
 			}
+
+			// TODO: Implement logpoint icons:
+			// return bp.Enabled ? "md-logpoint" : "md-logpoint-disabled";
 		}
 
 		
