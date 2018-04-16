@@ -394,8 +394,14 @@ namespace MonoDevelop.Ide.Gui
 				GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
 				AlertButton.CloseWithoutSave, AlertButton.Cancel, doc.Window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 		}
-		
+
+		[Obsolete("Use CloseAllDocumentsAsync")]
 		public void CloseAllDocuments (bool leaveActiveDocumentOpen)
+		{
+			CloseAllDocumentsAsync (leaveActiveDocumentOpen).Ignore ();
+		}
+
+		public async Task CloseAllDocumentsAsync (bool leaveActiveDocumentOpen)
 		{
 			Document[] docs = new Document [Documents.Count];
 			Documents.CopyTo (docs, 0);
@@ -405,10 +411,10 @@ namespace MonoDevelop.Ide.Gui
 			
 			foreach (Document doc in docs) {
 				if (doc != ActiveDocument)
-					doc.Close ().Ignore();
+					await doc.Close ();
 			}
 			if (!leaveActiveDocumentOpen && ActiveDocument != null)
-				ActiveDocument.Close ().Ignore();
+				await ActiveDocument.Close ();
 		}
 
 		internal Pad ShowPad (PadCodon content)
