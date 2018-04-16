@@ -141,10 +141,12 @@ namespace MonoDevelop.Components.MainToolbar
 					// Maybe use language services instead of AbstractNavigateToSearchService
 					var aggregatedResults = await Task.WhenAll (TypeSystemService.AllWorkspaces
 										.Select (ws => ws.CurrentSolution)
-										.SelectMany (s => s.Projects)
+										.SelectMany (sol => sol.Projects)
 										.Select (async proj => {
 											using (proj.Solution.Services.CacheService?.EnableCaching (proj.Id)) {
 												var searchService = proj.LanguageServices.GetService<INavigateToSearchService> ();
+												if (searchService == null)
+													return ImmutableArray<INavigateToSearchResult>.Empty;
 												return await searchService.SearchProjectAsync (proj, searchPattern.Pattern, token);
 											}
 										})
