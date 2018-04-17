@@ -318,6 +318,7 @@
 		<Class class = "MonoDevelop.Ide.Editor.Extension.BraceMatcherTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.DefaultCommandTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.FoldingTextEditorExtension" />
+		<Class class = "MonoDevelop.Ide.Editor.Extension.BlockStructureFoldingTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.ErrorHandlerTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.AutoInsertBracketTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.HighlightUrlExtension" />
