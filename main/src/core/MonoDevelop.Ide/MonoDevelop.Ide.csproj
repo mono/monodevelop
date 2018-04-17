@@ -8755,7 +8755,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\SelectFileFormatDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\MaintenanceOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\TaskStore.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\AssemblyFoldersPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\BuildMessagePanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\HiddenWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\HiddenTextEditorViewContent.cs" />
@@ -9600,7 +9599,6 @@
     <Compile Include="Gui\MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs" />
-    <Compile Include="Gui\MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs" />
