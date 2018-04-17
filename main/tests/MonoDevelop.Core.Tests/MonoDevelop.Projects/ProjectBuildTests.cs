@@ -800,22 +800,6 @@ namespace MonoDevelop.Projects
 		}
 	}
 
-	[TestFixture]
-	public class ProjectBuildTests_XBuild : ProjectBuildTests
-	{
-		[TestFixtureSetUp]
-		public void SetUp ()
-		{
-			Runtime.Preferences.BuildWithMSBuild.Set (false);
-		}
-
-		[TestFixtureTearDown]
-		public void Teardown ()
-		{
-			Runtime.Preferences.BuildWithMSBuild.Set (true);
-		}
-	}
-
 	class EvalContextCreationTestExtension : ProjectExtension
 	{
 		public static string ControlValue = "First";

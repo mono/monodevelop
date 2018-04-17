@@ -41,12 +41,7 @@ namespace MonoDevelop.DotNetCore
 
 			if (IsNetStandardProject (targetProject) &&
 				CanReferenceNetStandardProject (Project, targetProject)) {
-
-				if (Runtime.Preferences.BuildWithMSBuild)
-					return true;
-
-				reason = GettextCatalog.GetString ("MSBuild must be used instead of xbuild. Please enable MSBuild in preferences - Projects - Build and then re-open the solution.");
-				return false;
+				return true;
 			}
 
 			return false;

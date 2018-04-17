@@ -85,11 +85,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, items.Length);
 			Assert.AreEqual ("bar", items [0].Include);
 			Assert.AreEqual ("Hello", items [0].Metadata.GetValue ("MyMetadata"));
-			if (Runtime.Preferences.BuildWithMSBuild.Value) {
-				// Standard metadata inclusion is only supported via 4.0 API builder
-				Assert.AreEqual ("bar", items [0].Metadata.GetValue ("Filename"));
-				Assert.AreEqual (p.ItemDirectory.Combine ("bar").ToString (), items [0].Metadata.GetValue ("FullPath"));
-			}
+			Assert.AreEqual ("bar", items [0].Metadata.GetValue ("Filename"));
+			Assert.AreEqual (p.ItemDirectory.Combine ("bar").ToString (), items [0].Metadata.GetValue ("FullPath"));
 
 			p.Dispose ();
 		}
@@ -112,22 +109,6 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (foundProperty);
 
 			p.Dispose ();
-		}
-	}
-
-	[TestFixture]
-	public class ProjectTargetEvaluationTests_XBuild : ProjectTargetEvaluationTests
-	{
-		[TestFixtureSetUp]
-		public void SetUp ()
-		{
-			Runtime.Preferences.BuildWithMSBuild.Set (false);
-		}
-
-		[TestFixtureTearDown]
-		public void Teardown ()
-		{
-			Runtime.Preferences.BuildWithMSBuild.Set (true);
 		}
 	}
 }

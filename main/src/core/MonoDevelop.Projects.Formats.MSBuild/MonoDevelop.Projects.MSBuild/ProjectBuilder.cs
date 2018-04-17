@@ -239,5 +239,80 @@ namespace MonoDevelop.Projects.MSBuild
 				results = BuildManager.DefaultBuildManager.BuildRequest (data);
 			}
 		}
+		public void Dispose ()
+		{
+			buildEngine.UnloadProject (file);
+		}
+
+		public void Refresh ()
+		{
+			buildEngine.UnloadProject (file);
+		}
+
+		public void RefreshWithContent (string projectContent)
+		{
+			buildEngine.UnloadProject (file);
+			buildEngine.SetUnsavedProjectContent (file, projectContent);
+		}
+
+		public static LoggerVerbosity GetVerbosity (MSBuildVerbosity verbosity)
+		{
+			switch (verbosity) {
+			case MSBuildVerbosity.Quiet:
+				return LoggerVerbosity.Quiet;
+			case MSBuildVerbosity.Minimal:
+				return LoggerVerbosity.Minimal;
+			default:
+				return LoggerVerbosity.Normal;
+			case MSBuildVerbosity.Detailed:
+				return LoggerVerbosity.Detailed;
+			case MSBuildVerbosity.Diagnostic:
+				return LoggerVerbosity.Diagnostic;
+			}
+		}
+
+		//from MSBuildProjectService
+		static string UnescapeString (string str)
+		{
+			int i = str.IndexOf ('%');
+			while (i != -1 && i < str.Length - 2) {
+				int c;
+				if (int.TryParse (str.Substring (i + 1, 2), System.Globalization.NumberStyles.HexNumber, null, out c))
+					str = str.Substring (0, i) + (char)c + str.Substring (i + 3);
+				i = str.IndexOf ('%', i + 1);
+			}
+			return str;
+		}
+
+		internal static string GenerateSolutionConfigurationContents (ProjectConfigurationInfo [] configurations)
+		{
+			// can't use XDocument because of the 2.0 builder
+			// and don't just build a string because things may need escaping
+
+			var doc = new XmlDocument ();
+			var root = doc.CreateElement ("SolutionConfiguration");
+			doc.AppendChild (root);
+			foreach (var config in configurations) {
+				var el = doc.CreateElement ("ProjectConfiguration");
+				root.AppendChild (el);
+				el.SetAttribute ("Project", config.ProjectGuid);
+				el.SetAttribute ("AbsolutePath", config.ProjectFile);
+				el.SetAttribute ("BuildProjectInSolution", config.Enabled ? "True" : "False");
+				el.InnerText = string.Format (config.Configuration + "|" + config.Platform);
+			}
+
+			//match MSBuild formatting
+			var options = new XmlWriterSettings {
+				Indent = true,
+				IndentChars = "",
+				OmitXmlDeclaration = true,
+			};
+			using (var sw = new StringWriter ())
+			using (var xw = XmlWriter.Create (sw, options)) {
+				doc.WriteTo (xw);
+				xw.Flush ();
+				return sw.ToString ();
+			}
+		}
 	}
 }

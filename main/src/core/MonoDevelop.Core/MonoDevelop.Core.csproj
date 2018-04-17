@@ -706,16 +706,16 @@
     <Compile Include="MonoDevelop.Core\StructEqualityComparer.cs" />
     <Compile Include="MonoDevelop.Projects\SimpleExpressionEvaluator.cs" />
     <Compile Include="MonoDevelop.Projects\PackageDependency.cs" />
-    <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild.Shared\RemoteBuildEngineMessages.cs">
+    <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild\RemoteBuildEngineMessages.cs">
       <Link>MonoDevelop.Projects.MSBuild\RemoteBuildEngineMessages.cs</Link>
     </Compile>
-    <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild.Shared\MSBuildEvaluatedItem.cs">
+    <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild\MSBuildEvaluatedItem.cs">
       <Link>MonoDevelop.Projects.MSBuild\MSBuildEvaluatedItem.cs</Link>
     </Compile>
-    <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild.Shared\MSBuildResult.cs">
+    <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild\MSBuildResult.cs">
       <Link>MonoDevelop.Projects.MSBuild\MSBuildResult.cs</Link>
     </Compile>
-    <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild.Shared\MSBuildTargetResult.cs">
+    <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild\MSBuildTargetResult.cs">
       <Link>MonoDevelop.Projects.MSBuild\MSBuildTargetResult.cs</Link>
     </Compile>
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEvent.cs" />
