@@ -26,6 +26,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Host;
@@ -37,6 +39,31 @@ namespace MonoDevelop.Ide.RoslynServices
 	[TestFixture]
 	public class MonoDevelopProjectCacheHostServiceTests
 	{
+		static class FinalizerHelpers
+		{
+			static unsafe void NoPinActionHelper (Action act)
+			{
+				//
+				// When the action is called, this new thread might have not allocated
+				// anything yet in the nursery. This means that the address of the first
+				// object that would be allocated would be at the start of the tlab and
+				// implicitly the end of the previous tlab (address which can be in use
+				// when allocating on another thread, at checking if an object fits in
+				// this other tlab). We allocate a new dummy object to avoid this type
+				// of false pinning for most common cases.
+				//
+				new object ();
+				act ();
+			}
+
+			public static void PerformNoPinAction (Action act)
+			{
+				Thread thr = new Thread (() => NoPinActionHelper (act));
+				thr.Start ();
+				thr.Join ();
+			}
+		}
+
 		// Copied tests from roslyn
 		void Test (Action<IProjectCacheHostService, ProjectId, ICachedObjectOwner, ObjectReference<object>> action)
 		{
@@ -159,21 +186,25 @@ namespace MonoDevelop.Ide.RoslynServices
 		[Test]
 		public void TestEjectFromImplicitCache ()
 		{
-			var compilations = new List<Compilation> ();
-			for (int i = 0; i < ProjectCacheService.ImplicitCacheSize + 1; i++) {
-				compilations.Add (CSharpCompilation.Create (i.ToString ()));
-			}
+			ProjectCacheService cache = null;
+			ObjectReference<Compilation> weakFirst = null, weakLast = null;
 
-			var weakFirst = ObjectReference.Create (compilations [0]);
-			var weakLast = ObjectReference.Create (compilations [compilations.Count - 1]);
+			FinalizerHelpers.PerformNoPinAction (() => {
+				int total = ProjectCacheService.ImplicitCacheSize + 1;
+				var compilations = new Compilation [total];
+				for (int i = 0; i < total; i++) {
+					compilations [i] = CSharpCompilation.Create (i.ToString ());
+				}
 
-			var workspace = new AdhocWorkspace (MockHostServices.Instance, workspaceKind: WorkspaceKind.Host);
-			var cache = new ProjectCacheService (workspace, int.MaxValue);
-			for (int i = 0; i < ProjectCacheService.ImplicitCacheSize + 1; i++) {
-				cache.CacheObjectIfCachingEnabledForKey (ProjectId.CreateNewId (), (object)null, compilations [i]);
-			}
+				weakFirst = ObjectReference.Create (compilations [0]);
+				weakLast = ObjectReference.Create (compilations [total - 1]);
 
-			compilations = null;
+				var workspace = new AdhocWorkspace (MockHostServices.Instance, workspaceKind: WorkspaceKind.Host);
+				cache = new ProjectCacheService (workspace, int.MaxValue);
+				for (int i = 0; i < total; i++) {
+					cache.CacheObjectIfCachingEnabledForKey (ProjectId.CreateNewId (), (object)null, compilations [i]);
+				}
+			});
 
 			weakFirst.AssertReleased ();
 			weakLast.AssertHeld ();
@@ -184,26 +215,28 @@ namespace MonoDevelop.Ide.RoslynServices
 		[Test]
 		public void TestCacheCompilationTwice ()
 		{
-			var comp1 = CSharpCompilation.Create ("1");
-			var comp2 = CSharpCompilation.Create ("2");
-			var comp3 = CSharpCompilation.Create ("3");
+			ObjectReference<CSharpCompilation> weak1 = null, weak3 = null;
+			ProjectCacheService cache = null;
 
-			var weak3 = ObjectReference.Create (comp3);
-			var weak1 = ObjectReference.Create (comp1);
+			FinalizerHelpers.PerformNoPinAction (() => {
+				var comp1 = CSharpCompilation.Create ("1");
+				var comp2 = CSharpCompilation.Create ("2");
+				var comp3 = CSharpCompilation.Create ("3");
 
-			var workspace = new AdhocWorkspace (MockHostServices.Instance, workspaceKind: WorkspaceKind.Host);
-			var cache = new ProjectCacheService (workspace, int.MaxValue);
-			var key = ProjectId.CreateNewId ();
-			var owner = new object ();
-			cache.CacheObjectIfCachingEnabledForKey (key, owner, comp1);
-			cache.CacheObjectIfCachingEnabledForKey (key, owner, comp2);
-			cache.CacheObjectIfCachingEnabledForKey (key, owner, comp3);
+				weak3 = ObjectReference.Create (comp3);
+				weak1 = ObjectReference.Create (comp1);
 
-			// When we cache 3 again, 1 should stay in the cache
-			cache.CacheObjectIfCachingEnabledForKey (key, owner, comp3);
-			comp1 = null;
-			comp2 = null;
-			comp3 = null;
+				var workspace = new AdhocWorkspace (MockHostServices.Instance, workspaceKind: WorkspaceKind.Host);
+				cache = new ProjectCacheService (workspace, int.MaxValue);
+				var key = ProjectId.CreateNewId ();
+				var owner = new object ();
+				cache.CacheObjectIfCachingEnabledForKey (key, owner, comp1);
+				cache.CacheObjectIfCachingEnabledForKey (key, owner, comp2);
+				cache.CacheObjectIfCachingEnabledForKey (key, owner, comp3);
+
+				// When we cache 3 again, 1 should stay in the cache
+				cache.CacheObjectIfCachingEnabledForKey (key, owner, comp3);
+			});
 
 			weak3.AssertHeld ();
 			weak1.AssertHeld ();
@@ -214,15 +247,6 @@ namespace MonoDevelop.Ide.RoslynServices
 		class Owner : ICachedObjectOwner
 		{
 			object ICachedObjectOwner.CachedObject { get; set; }
-		}
-
-		static void CollectGarbage ()
-		{
-			for (var i = 0; i < 10; i++) {
-				GC.Collect ();
-				GC.WaitForPendingFinalizers ();
-				GC.Collect ();
-			}
 		}
 
 		class MockHostServices : HostServices
