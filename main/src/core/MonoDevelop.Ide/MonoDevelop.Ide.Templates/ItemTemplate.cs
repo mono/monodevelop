@@ -45,17 +45,12 @@ namespace MonoDevelop.Ide.Templates
 
 		public virtual Stream GetStream (string path)
 		{
-			return null;
+			return File.OpenRead (path);
 		}
 
 		public virtual Image GetImage (string path)
 		{
-			var stream = GetStream (path);
-
-			if (stream == null)
-				return null;
-
-			return Image.FromStream (stream);
+			return Image.FromFile (path);
 		}
 	}
 }
