@@ -554,7 +554,6 @@ namespace MonoDevelop.Ide.Gui
 		#endregion
 		
 		#region Bookmarks
-		[CommandUpdateHandler (SearchCommands.ToggleBookmark)]
 		[CommandUpdateHandler (SearchCommands.PrevBookmark)]
 		[CommandUpdateHandler (SearchCommands.NextBookmark)]
 		[CommandUpdateHandler (SearchCommands.ClearBookmarks)]
@@ -562,7 +561,18 @@ namespace MonoDevelop.Ide.Gui
 		{
 			info.Enabled = GetContent <IBookmarkBuffer> () != null;
 		}
-		
+
+		[CommandUpdateHandler (SearchCommands.ToggleBookmark)]
+		protected void UpdateToggleBookmark (CommandInfo info)
+		{
+			info.Enabled = GetContent <IBookmarkBuffer> () != null;
+			var markBuffer = GetContent <IBookmarkBuffer> ();
+			Debug.Assert (markBuffer != null);
+			int position = markBuffer.CursorPosition;
+
+			info.Text = markBuffer.IsBookmarked (position) ? GettextCatalog.GetString ("Remove Bookmark") : GettextCatalog.GetString ("New Bookmark");
+		}
+
 		[CommandHandler (SearchCommands.ToggleBookmark)]
 		public void ToggleBookmark ()
 		{

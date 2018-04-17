@@ -67,7 +67,8 @@ namespace MonoDevelop.Debugger
 		SetNextStatement,
 		ShowNextStatement,
 		NewCatchpoint,
-		NewFunctionBreakpoint
+		NewFunctionBreakpoint,
+		ToggleLogpoint
 	}
 
 	class DebugHandler: CommandHandler
@@ -325,11 +326,27 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
+			var breakpoints = DebuggingService.Breakpoints;
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
-			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
-					IdeApp.Workbench.ActiveDocument.Editor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
-					!DebuggingService.Breakpoints.IsReadOnly;
+			if (IdeApp.Workbench.ActiveDocument != null &&
+			    IdeApp.Workbench.ActiveDocument.Editor != null &&
+			    IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+			    !breakpoints.IsReadOnly) {
+				lock (breakpoints) {
+					var filename = IdeApp.Workbench.ActiveDocument.FileName;
+					var line = IdeApp.Workbench.ActiveDocument.Editor.CaretLine;
+
+					if (breakpoints.Where (bp => bp.GetType () == typeof (Breakpoint)).FirstOrDefault () != null) {
+						info.Text = GettextCatalog.GetString ("Remove Breakpoint");
+					} else {
+						info.Text = GettextCatalog.GetString ("New Breakpoint");
+					}
+				}
+
+				info.Enabled = true;
+			} else {
+				info.Enabled = false;
+			}
 		}
 	}
 
@@ -700,6 +717,59 @@ namespace MonoDevelop.Debugger
 		protected override void Run ()
 		{
 			DebuggingService.ShowNextStatement ();
+		}
+	}
+
+	class ToggleLogpointHandler : CommandHandler
+	{
+		protected override void Update(CommandInfo info)
+		{
+			var breakpoints = DebuggingService.Breakpoints;
+
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
+			if (IdeApp.Workbench.ActiveDocument != null &&
+			    IdeApp.Workbench.ActiveDocument.Editor != null &&
+			    IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+			    !breakpoints.IsReadOnly) {
+				lock (breakpoints) {
+					var filename = IdeApp.Workbench.ActiveDocument.FileName;
+					var line = IdeApp.Workbench.ActiveDocument.Editor.CaretLine;
+					if (breakpoints.ContainsLogpoint (filename, line)) {
+						info.Text = GettextCatalog.GetString ("Remove Logpoint");
+					} else {
+						info.Text = GettextCatalog.GetString ("New Logpoint");
+					}
+					info.Enabled = true;
+				}
+			} else {
+				info.Enabled = false;
+			}
+		}
+
+		protected override void Run()
+		{
+			var activeDoc = IdeApp.Workbench.ActiveDocument;
+			if (activeDoc != null && activeDoc.Editor != null && activeDoc.FileName != FilePath.Null) {
+				var filename = activeDoc.FileName;
+				var line = activeDoc.Editor.CaretLine;
+				var column = activeDoc.Editor.CaretColumn;
+
+				var breakpoints = DebuggingService.Breakpoints;
+
+				lock (breakpoints) {
+					if (breakpoints.ContainsLogpoint (filename, line)) {
+						foreach (var lp in breakpoints.OfType<Logpoint> ()) {
+							if (BreakpointStore.FileNameEquals (lp.FileName, filename) && (lp.OriginalLine == line || lp.Line == line)) {
+								breakpoints.Remove (lp);
+								break;
+							}
+						}
+					} else {
+						var bp = new Logpoint (filename, line, column);
+						breakpoints.Add (bp);
+					}
+				}
+			}
 		}
 	}
 }
