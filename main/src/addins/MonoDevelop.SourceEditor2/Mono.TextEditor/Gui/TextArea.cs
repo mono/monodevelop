@@ -193,7 +193,7 @@ namespace Mono.TextEditor
 					try {
 						textEditorData.HeightTree.SetLineHeight (lineNumber, GetLineHeight (e.Line));
 					} catch (Exception ex) {
-						Console.WriteLine (ex);
+						LoggingService.LogError ("HandleTextEditorDataDocumentMarkerChange error", ex);
 					}
 				}
 			}
@@ -461,7 +461,7 @@ namespace Mono.TextEditor
 			try {
 				action (GetTextEditorData ());
 			} catch (Exception e) {
-				Console.WriteLine ("Error while executing " + action + " :" + e);
+				LoggingService.LogError ("Error while executing " + action, e);
 			}
 		}
 
@@ -2193,7 +2193,7 @@ namespace Mono.TextEditor
 					try {
 						margin.Draw (margin == textViewMargin ? textViewCr : cr, cairoRectangle, line, logicalLineNumber, margin.XOffset, curY, lineHeight);
 					} catch (Exception e) {
-						System.Console.WriteLine (e);
+						LoggingService.LogError ("Error while drawing margin " + margin, e);
 					}
 				}
 				// take the line real render width from the text view margin rendering (a line can consist of more than 
@@ -3176,8 +3176,7 @@ namespace Mono.TextEditor
 					item = await tp.GetItem (editor, nextTipOffset, token);
 				} catch (OperationCanceledException) {
 				} catch (Exception e) {
-					System.Console.WriteLine ("Exception in tooltip provider " + tp + " GetItem:");
-					System.Console.WriteLine (e);
+					LoggingService.LogError ("Exception in tooltip provider " + tp + " GetItem:", e);
 				}
 				if (token.IsCancellationRequested) {
 					return;
@@ -3204,8 +3203,7 @@ namespace Mono.TextEditor
 					if (tw != null)
 						provider.ShowTooltipWindow (editor, tw, nextTipOffset, nextTipModifierState, tipX + (int) TextViewMargin.XOffset, tipY, item);
 				} catch (Exception e) {
-					Console.WriteLine ("-------- Exception while creating tooltip: " + provider);
-					Console.WriteLine (e);
+					LoggingService.LogError ("-------- Exception while creating tooltip: " + provider, e);
 				}
 				if (tw == tipWindow)
 					return;

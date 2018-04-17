@@ -430,7 +430,7 @@ namespace Mono.TextEditor
 				try {
 					result = args.Engine.SearchForward (worker, args, offset);
 				} catch (Exception ex) {
-					Console.WriteLine ("Got exception while search forward:" + ex);
+					LoggingService.LogError ("Got exception while search forward",  ex);
 					break;
 				}
 				if (worker.CancellationPending)
