@@ -1026,13 +1026,13 @@ namespace MonoDevelop.Projects
 
 				var monitor = new ProgressMonitor ();
 
-				var context = new TargetEvaluationContext ();
-				context.ItemsToEvaluate.Add ("ReferencePath");
+				var context = new TargetEvaluationContext (designTime: true);
+				context.ItemsToEvaluate.Add ("_ReferencesFromRAR");
 				context.BuilderQueue = BuilderQueue.ShortOperations;
 				context.LoadReferencedProjects = false;
 				context.LogVerbosity = MSBuildVerbosity.Quiet;
 
-				var result = await RunTarget (monitor, "ResolveAssemblyReferences", configuration, context);
+				var result = await RunTarget (monitor, "ResolveAssemblyReferencesDesignTime", configuration, context);
 
 				refs = result.Items.Select (i => new AssemblyReference (i.Include, i.Metadata)).ToList ();
 
