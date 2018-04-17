@@ -249,9 +249,7 @@ namespace MonoDevelop.Refactoring
 				timer = Counters.FindReferences.BeginTiming (metadata);
 				foreach (var provider in findReferencesProvider) {
 					try {
-						foreach (var result in await provider.FindReferences (documentIdString, hintProject, monitor.CancellationToken)) {
-							monitor.ReportResult (result);
-						}
+						await provider.FindReferences (documentIdString, hintProject, monitor);
 					} catch (OperationCanceledException) {
 						Counters.SetUserCancel (metadata);
 						return;
@@ -282,9 +280,7 @@ namespace MonoDevelop.Refactoring
 				timer = Counters.FindReferences.BeginTiming (metadata);
 				foreach (var provider in findReferencesProvider) {
 					try {
-						foreach (var result in await provider.FindAllReferences (documentIdString, hintProject, monitor.CancellationToken)) {
-							monitor.ReportResult (result);
-						}
+						await provider.FindAllReferences (documentIdString, hintProject, monitor);
 					} catch (OperationCanceledException) {
 						Counters.SetUserCancel (metadata);
 						return;
