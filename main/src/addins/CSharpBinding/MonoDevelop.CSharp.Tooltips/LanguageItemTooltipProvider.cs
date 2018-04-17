@@ -52,10 +52,10 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (ctx == null)
 				return null;
-			var analysisDocument = ctx.ParsedDocument;
+			var analysisDocument = ctx.AnalysisDocument;
 			if (analysisDocument == null)
 				return null;
-			var unit = analysisDocument.GetAst<SemanticModel> ();
+			var unit = await analysisDocument.GetSemanticModelAsync (token);
 			if (unit == null)
 				return null;
 

@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Editor.Util
 				result = SearchMatchingBracketForward (document, offset + 1, closingBrackets [bracket], openBrackets [bracket], cancellationToken);
 			} else {
 				bracket = closingBrackets.IndexOf (ch);
-				if (bracket >= 0) {
+				if (bracket >= 0 && offset > 0) {
 					result = SearchMatchingBracketBackward (document, offset - 1, openBrackets [bracket], closingBrackets [bracket], cancellationToken);
 				} else {
 					result = -1;

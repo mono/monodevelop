@@ -116,7 +116,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			if (doc.ParsedDocument == null || doc.ParsedDocument.GetAst<SemanticModel> () == null) {
+			if (DocumentContext.AnalysisDocument == null) {
 				ci.Enabled = false;
 				return;
 			}

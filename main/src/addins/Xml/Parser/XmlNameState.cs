@@ -45,7 +45,7 @@ namespace MonoDevelop.Xml.Parser
 			if (namedObject == null || namedObject.Name.Prefix != null)
 				throw new InvalidOperationException ("Invalid state");
 			
-			Debug.Assert (context.CurrentStateLength > 1 || IsValidNameStart (c), 
+			Debug.Assert (context.CurrentStateLength > 1 || IsValidNameStart (c) || XmlChar.IsWhitespace (c), 
 				"First character pushed to a XmlTagNameState must be a letter.");
 			Debug.Assert (context.CurrentStateLength > 1 || context.KeywordBuilder.Length == 0,
 				"Keyword builder must be empty when state begins.");
@@ -54,6 +54,7 @@ namespace MonoDevelop.Xml.Parser
 				rollback = string.Empty;
 				if (context.KeywordBuilder.Length == 0) {
 					context.LogError ("Zero-length name.");
+					namedObject.Name = new XName (c.ToString ());
 				} else {
 					string s = context.KeywordBuilder.ToString ();
 					int i = s.IndexOf (':');

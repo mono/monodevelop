@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Mono.TextEditor.Utils;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
@@ -85,7 +86,7 @@ namespace Mono.TextEditor
 					var lineNumber = startLine.LineNumber;
 					lineStates.RemoveRange (lineNumber, endRemoveLine.LineNumber - lineNumber);
 				} catch (Exception ex) {
-					Console.WriteLine ("error while DiffTracker.TrackDocument_TextChanging:" + ex);
+					LoggingService.LogError ("error while DiffTracker.TrackDocument_TextChanging", ex);
 				}
 			}
 		}
@@ -112,7 +113,7 @@ namespace Mono.TextEditor
 					if (trackDocument != null)
 						trackDocument.CommitMultipleLineUpdate (lineNumber, lineNumber + insertedLines);
 				} catch (Exception ex) {
-					Console.WriteLine ("error while DiffTracker.TrackDocument_TextChanged:" + ex);
+					LoggingService.LogError ("error while DiffTracker.TrackDocument_TextChanged", ex);
 				}
 			}
 		}

@@ -1921,7 +1921,7 @@ namespace MonoDevelop.SourceEditor
 
 			// for named arguments invoke(arg:<Expr>);
 			if (completeWord.EndsWith (":", StringComparison.Ordinal)) {
-				if (data.GetCharAt (triggerOffset + length) == ':')
+				if (data.Length > triggerOffset + length && data.GetCharAt (triggerOffset + length) == ':')
 					length++;
 			}
 
@@ -3300,6 +3300,8 @@ namespace MonoDevelop.SourceEditor
 
 			case TextSegmentMarkerEffect.GrayOut:
 				return new GrayOutMarker (new TextSegment (offset, length));
+			case TextSegmentMarkerEffect.Background:
+				return new BackgroundTextMarker (new TextSegment (offset, length), color);
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}

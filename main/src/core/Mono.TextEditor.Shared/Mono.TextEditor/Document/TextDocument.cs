@@ -237,6 +237,7 @@ namespace Mono.TextEditor
 
 		public void Dispose()
 		{
+			(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate -= OnTextBufferChangedImmediate;
 			this.TextBuffer.Changed -= this.OnTextBufferChanged;
 			this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
 			this.TextBuffer.Properties.RemoveProperty(typeof(ITextDocument));
@@ -1786,8 +1787,8 @@ namespace Mono.TextEditor
 			marker.insertId = textSegmentInsertId++;
 			textSegmentMarkerTree.Add (marker);
 			var startLine = OffsetToLineNumber (marker.Offset);
-			var endLine = OffsetToLineNumber (marker.EndOffset);
-			CommitMultipleLineUpdate (startLine, endLine);
+			var endLine = OffsetToLineNumber (Math.Min (marker.EndOffset, Length));
+			CommitMultipleLineUpdate (startLine, endLine, marker is IChunkMarker);
 		}
 
 		/// <summary>
@@ -1798,11 +1799,11 @@ namespace Mono.TextEditor
 		public bool RemoveMarker (TextSegmentMarker marker)
 		{
 			ClearTextMarkerCache ();
+			var startLine = OffsetToLineNumber (marker.Offset);
+			var endLine = OffsetToLineNumber (Math.Min (marker.EndOffset, Length));
 			bool wasRemoved = textSegmentMarkerTree.Remove (marker);
 			if (wasRemoved) {
-				var startLine = OffsetToLineNumber (marker.Offset);
-				var endLine = OffsetToLineNumber (marker.EndOffset);
-				CommitMultipleLineUpdate (startLine, endLine);
+				CommitMultipleLineUpdate (startLine, endLine, marker is IChunkMarker);
 			}
 			return wasRemoved;
 		}
@@ -1884,7 +1885,14 @@ namespace Mono.TextEditor
 			RequestUpdate (new MultipleLineUpdate (start, end));
 			CommitDocumentUpdate ();
 		}
-		
+
+		// TODO: Merge with CommitMultipleLineUpdate (ABI break!
+		public void CommitMultipleLineUpdate (int start, int end, bool removeLineCache)
+		{
+			RequestUpdate (new MultipleLineUpdate (start, end) { RemoveLineCache = removeLineCache});
+			CommitDocumentUpdate ();
+		}
+
 		public event EventHandler DocumentUpdated;
 #endregion
 

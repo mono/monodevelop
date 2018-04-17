@@ -900,15 +900,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void DrawSearchResults (Cairo.Context cr, IndicatorDrawingState state, int i)
 		{
-			var color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.FindHighlight);
-			if (i == state.MainSelection) {
-				// TODO: EditorTheme does that look ok ?
-				if (HslColor.Brightness (color) < 0.5) {
-					color = color.AddLight (0.1);
-				} else {
-					color = color.AddLight (-0.1);
-				}
-			}
+			bool isSelected = i == state.MainSelection;
+			var color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, isSelected ? EditorThemeColors.Selection : EditorThemeColors.FindHighlight);
+			if (Math.Abs (HslColor.Brightness (color) - HslColor.Brightness (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Background))) < 0.1)
+				color = isSelected ? Styles.Editor.SearchMarkerSelectedFallbackColor : Styles.Editor.SearchMarkerFallbackColor;
+			
 			cr.SetSourceColor (color);
 			cr.Rectangle (barPadding, state.SearchResultIndicators[i], Allocation.Width - barPadding * 2, 2);
 			cr.Fill ();

@@ -193,7 +193,7 @@ namespace Mono.TextEditor
 					try {
 						textEditorData.HeightTree.SetLineHeight (lineNumber, GetLineHeight (e.Line));
 					} catch (Exception ex) {
-						Console.WriteLine (ex);
+						LoggingService.LogError ("HandleTextEditorDataDocumentMarkerChange error", ex);
 					}
 				}
 			}
@@ -461,7 +461,7 @@ namespace Mono.TextEditor
 			try {
 				action (GetTextEditorData ());
 			} catch (Exception e) {
-				Console.WriteLine ("Error while executing " + action + " :" + e);
+				LoggingService.LogError ("Error while executing " + action, e);
 			}
 		}
 
@@ -636,6 +636,17 @@ namespace Mono.TextEditor
 			oldSelection = selection;
 			OnSelectionChanged (EventArgs.Empty);
 		}
+
+		internal void CommitPreedit ()
+		{
+			CommitString (preeditString);
+
+			preeditOffset = -1;
+			preeditString = null;
+			preeditAttrs = null;
+			preeditCursorCharIndex = 0;
+			imContextNeedsReset = true;
+		}
 		
 		internal void ResetIMContext ()
 		{
@@ -644,30 +655,29 @@ namespace Mono.TextEditor
 				imContextNeedsReset = false;
 			}
 		}
-		
-		void IMCommit (object sender, Gtk.CommitArgs ca)
+
+		void CommitString (string str)
 		{
 			if (!IsRealized || !IsFocus)
 				return;
-			
-			//this, if anywhere, is where we should handle UCS4 conversions
-			for (int i = 0; i < ca.Str.Length; i++) {
+
+			for (int i = 0; i < str.Length; i++) {
 				int utf32Char;
-				if (char.IsHighSurrogate (ca.Str, i)) {
-					utf32Char = char.ConvertToUtf32 (ca.Str, i);
+				if (char.IsHighSurrogate (str, i)) {
+					utf32Char = char.ConvertToUtf32 (str, i);
 					i++;
 				} else {
-					utf32Char = (int)ca.Str [i];
+					utf32Char = (int)str [i];
 				}
-				
+
 				//include the other pre-IM state *if* the post-IM char matches the pre-IM (key-mapped) one
-				 if (lastIMEventMappedChar == utf32Char && lastIMEventMappedChar == (uint)lastIMEventMappedKey) {
+				if (lastIMEventMappedChar == utf32Char && lastIMEventMappedChar == (uint)lastIMEventMappedKey) {
 					editor.OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastIMEventMappedChar, lastIMEventMappedModifier);
 				} else {
 					editor.OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
 				}
 			}
-			
+
 			//the IME can commit while there's still a pre-edit string
 			//since we cached the pre-edit offset when it started, need to update it
 			if (preeditOffset > -1) {
@@ -675,6 +685,11 @@ namespace Mono.TextEditor
 			}
 		}
 
+		void IMCommit (object sender, Gtk.CommitArgs ca)
+		{
+			CommitString (ca.Str);
+		}
+		
 		enum FocusMargin {
 			None,
 			Icon,
@@ -2178,7 +2193,7 @@ namespace Mono.TextEditor
 					try {
 						margin.Draw (margin == textViewMargin ? textViewCr : cr, cairoRectangle, line, logicalLineNumber, margin.XOffset, curY, lineHeight);
 					} catch (Exception e) {
-						System.Console.WriteLine (e);
+						LoggingService.LogError ("Error while drawing margin " + margin, e);
 					}
 				}
 				// take the line real render width from the text view margin rendering (a line can consist of more than 
@@ -3064,7 +3079,7 @@ namespace Mono.TextEditor
 	
 		#region Tooltips
 		// Tooltip fields
-		const int TooltipTimeout = 650;
+		const int TooltipTimeout = 200;
 		TooltipItem tipItem;
 		
 		int tipX, tipY, tipOffset;
@@ -3161,8 +3176,7 @@ namespace Mono.TextEditor
 					item = await tp.GetItem (editor, nextTipOffset, token);
 				} catch (OperationCanceledException) {
 				} catch (Exception e) {
-					System.Console.WriteLine ("Exception in tooltip provider " + tp + " GetItem:");
-					System.Console.WriteLine (e);
+					LoggingService.LogError ("Exception in tooltip provider " + tp + " GetItem:", e);
 				}
 				if (token.IsCancellationRequested) {
 					return;
@@ -3189,8 +3203,7 @@ namespace Mono.TextEditor
 					if (tw != null)
 						provider.ShowTooltipWindow (editor, tw, nextTipOffset, nextTipModifierState, tipX + (int) TextViewMargin.XOffset, tipY, item);
 				} catch (Exception e) {
-					Console.WriteLine ("-------- Exception while creating tooltip: " + provider);
-					Console.WriteLine (e);
+					LoggingService.LogError ("-------- Exception while creating tooltip: " + provider, e);
 				}
 				if (tw == tipWindow)
 					return;

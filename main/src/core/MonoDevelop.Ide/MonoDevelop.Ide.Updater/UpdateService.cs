@@ -89,7 +89,16 @@ namespace MonoDevelop.Ide.Updater
 				var updateChannelId = PropertyService.Get<string> ("MonoDevelop.Ide.AddinUpdater.UpdateChannel");
 				if (string.IsNullOrEmpty (updateChannelId))
 					return UpdateChannel.FromUpdateLevel (PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", UpdateLevel.Stable));
-				return new UpdateChannel (updateChannelId, updateChannelId, "", 0);
+				if (UpdateChannel.Stable.Id == updateChannelId)
+					return UpdateChannel.Stable;
+				else if (UpdateChannel.Beta.Id == updateChannelId)
+					return UpdateChannel.Beta;
+				else if (UpdateChannel.Alpha.Id == updateChannelId)
+					return UpdateChannel.Alpha;
+				else if (UpdateChannel.Test.Id == updateChannelId)
+					return UpdateChannel.Test;
+				else
+					return new UpdateChannel (updateChannelId, updateChannelId, "", 0);
 			}
 			set {
 				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateChannel", value.Id);

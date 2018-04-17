@@ -739,7 +739,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				workspacesLoading++;
 				if (statusIcon != null)
 					return;
-				statusIcon = IdeApp.Workbench?.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-parser"));
+
+				if (IdeApp.IsInitialized)
+					statusIcon = IdeApp.Workbench?.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-parser"));
 				if (statusIcon != null)
 					statusIcon.ToolTip = GettextCatalog.GetString ("Gathering class information");
 			});
@@ -752,8 +754,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (workspacesLoading == 0 && statusIcon != null) {
 					statusIcon.Dispose ();
 					statusIcon = null;
-					if (callback != null)
-						callback ();
+					callback?.Invoke ();
 				}
 			});
 		}

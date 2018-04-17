@@ -584,7 +584,7 @@ namespace MonoDevelop.Projects
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
-			Assert.AreEqual (MSBuildSupport.Supported, p.MSBuildEngineSupport);
+			Assert.IsTrue (p.MSBuildProject.UseMSBuildEngine);
 			sol.Dispose ();
 		}
 
@@ -592,11 +592,7 @@ namespace MonoDevelop.Projects
 		public void DefaultMSBuildSupportForNewProject ()
 		{
 			var project = Services.ProjectService.CreateDotNetProject ("C#");
-			bool byDefault, require;
-			MSBuildProjectService.CheckHandlerUsesMSBuildEngine (project, out byDefault, out require);
-			Assert.IsTrue (byDefault);
-			Assert.IsFalse (require);
-
+			Assert.IsTrue (project.MSBuildProject.UseMSBuildEngine);
 			project.Dispose ();
 		}
 

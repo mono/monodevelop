@@ -284,8 +284,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 
 			var data = dataList [SelectedItemIndex];
-			if (data != currentData)
+			if (data != currentData) {
 				HideDeclarationView ();
+			} else {
+				if (declarationViewWindow != null && declarationViewWindow.Visible && currentData == data)
+					return; // current data is up to date
+			}
 
 			declarationViewTimer = GLib.Timeout.Add (150, DelayedTooltipShow);
 		}
@@ -760,8 +764,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// If the previously selected item is not visible anymore, select the first item in the view
 			if (SelectedItemIndex == -1 && filteredItems.Count > 0)
 				SelectedItemIndex = filteredItems [0];
-			
-			RepositionDeclarationViewWindow ();
+
+			if (declarationViewWindow == null || !declarationViewWindow.Visible || currentData != SelectedItem)
+				RepositionDeclarationViewWindow ();
 
 			// InCategoryMode can change if the new results include new categories
 			if (view.InCategoryMode != InCategoryMode)

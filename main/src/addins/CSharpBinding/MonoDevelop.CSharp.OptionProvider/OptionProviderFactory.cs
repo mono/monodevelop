@@ -35,7 +35,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 	{
 		public IDocumentOptionsProvider Create (Workspace workspace)
 		{
-			return new CSharpDocumentOptionsProvider (workspace);
+			return new CSharpDocumentOptionsProvider ();
 		}
 	}
 }

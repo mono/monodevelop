@@ -35,6 +35,8 @@ namespace MonoDevelop.Ide.Projects
 	{
 		TestableNewProjectDialogController controller;
 		bool createProjectDirectoryOriginalValue;
+		bool useGitOriginalValue;
+		bool useGitIgnoreOriginalValue;
 
 		[TestFixtureSetUp]
 		public void SetUp ()
@@ -44,6 +46,9 @@ namespace MonoDevelop.Ide.Projects
 			createProjectDirectoryOriginalValue = PropertyService.Get (
 				NewProjectDialogController.CreateProjectSubDirectoryPropertyName,
 				true);
+
+			useGitOriginalValue = PropertyService.Get (NewProjectDialogController.UseGitPropertyName, false);
+			useGitIgnoreOriginalValue = PropertyService.Get (NewProjectDialogController.CreateGitIgnoreFilePropertyName, true);
 		}
 
 		public override void TearDown ()
@@ -52,6 +57,9 @@ namespace MonoDevelop.Ide.Projects
 			PropertyService.Set (
 				NewProjectDialogController.CreateProjectSubDirectoryPropertyName,
 				createProjectDirectoryOriginalValue);
+
+			PropertyService.Set (NewProjectDialogController.UseGitPropertyName, useGitOriginalValue);
+			PropertyService.Set (NewProjectDialogController.CreateGitIgnoreFilePropertyName, useGitIgnoreOriginalValue);
 		}
 
 		void CreateDialog ()
@@ -161,6 +169,143 @@ namespace MonoDevelop.Ide.Projects
 
 			Assert.IsTrue (controller.FinalConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
 			Assert.IsFalse (controller.FinalConfiguration.IsCreateProjectDirectoryInsideSolutionDirectoryEnabled);
+		}
+
+		[Test]
+		public void FinalPage_ProjectNameTests ()
+		{
+			CreateDialog ();
+			CSharpLibraryTemplateSelectedByDefault ();
+			PropertyService.Set (NewProjectDialogController.CreateProjectSubDirectoryPropertyName, true);
+
+			controller.Backend.OnShowDialogCalled = () => {
+				controller.MoveToNextPage ();
+			};
+
+			controller.Show ();
+			controller.FinalConfiguration.UpdateFromParameters ();
+			controller.FinalConfiguration.ProjectName = "Test";
+
+			Assert.IsTrue (controller.FinalConfiguration.IsProjectNameEnabled);
+			Assert.AreEqual ("Test", controller.FinalConfiguration.ProjectName);
+
+			controller.FinalConfiguration.Parameters ["ProjectName"] = "ChangedName";
+			controller.FinalConfiguration.Parameters ["IsProjectNameReadOnly"] = bool.TrueString;
+
+			controller.FinalConfiguration.UpdateFromParameters ();
+
+			Assert.IsFalse (controller.FinalConfiguration.IsProjectNameEnabled);
+			Assert.AreEqual ("ChangedName", controller.FinalConfiguration.ProjectName);
+		}
+
+		[TestCase (true)]
+		[TestCase (false)]
+		public void CreateProjectDirectorySetting_WizardOverridesProperty (bool createProjectSubDirectory)
+		{
+			CreateDialog ();
+			CSharpLibraryTemplateSelectedByDefault ();
+			PropertyService.Set (NewProjectDialogController.CreateProjectSubDirectoryPropertyName, createProjectSubDirectory);
+
+			controller.Backend.OnShowDialogCalled = () => {
+				controller.MoveToNextPage ();
+			};
+
+			controller.Show ();
+
+			controller.FinalConfiguration.Parameters ["CreateProjectDirectoryInsideSolutionDirectory"] = bool.TrueString;
+			controller.FinalConfiguration.Parameters ["IsCreateProjectDirectoryInsideSolutionDirectoryEnabled"] = bool.TrueString;
+			controller.FinalConfiguration.UpdateFromParameters ();
+
+			Assert.IsTrue (controller.FinalConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
+			Assert.IsTrue (controller.FinalConfiguration.IsCreateProjectDirectoryInsideSolutionDirectoryEnabled);
+
+			controller.FinalConfiguration.Parameters ["CreateProjectDirectoryInsideSolutionDirectory"] = bool.FalseString;
+			controller.FinalConfiguration.Parameters ["IsCreateProjectDirectoryInsideSolutionDirectoryEnabled"] = bool.FalseString;
+			controller.FinalConfiguration.UpdateFromParameters ();
+
+			Assert.IsFalse (controller.FinalConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
+			Assert.IsFalse (controller.FinalConfiguration.IsCreateProjectDirectoryInsideSolutionDirectoryEnabled);
+		}
+
+		[TestCase (true, true)]
+		[TestCase (true, false)]
+		[TestCase (false, true)]
+		[TestCase (false, false)]
+		public void Git_NewSolution_FinalConfigurationPage (bool useGit, bool createGitIgnore)
+		{
+			CreateDialog ();
+			CSharpLibraryTemplateSelectedByDefault ();
+			PropertyService.Set (NewProjectDialogController.UseGitPropertyName, useGit);
+			PropertyService.Set (NewProjectDialogController.CreateGitIgnoreFilePropertyName, createGitIgnore);
+
+			controller.Backend.OnShowDialogCalled = () => {
+				controller.MoveToNextPage ();
+			};
+
+			controller.Show ();
+
+			Assert.AreEqual (useGit, controller.FinalConfiguration.UseGit);
+			Assert.AreEqual (createGitIgnore, controller.FinalConfiguration.CreateGitIgnoreFile);
+			Assert.AreEqual (useGit, controller.FinalConfiguration.IsGitIgnoreEnabled);
+			Assert.IsTrue (controller.FinalConfiguration.IsUseGitEnabled);
+		}
+
+		[TestCase (true, true)]
+		[TestCase (true, false)]
+		[TestCase (false, true)]
+		[TestCase (false, false)]
+		public void Git_ExistingSolution_FinalConfigurationPage (bool useGit, bool createGitIgnore)
+		{
+			CreateDialog ();
+			CSharpLibraryTemplateSelectedByDefault ();
+			UseExistingSolution ();
+			PropertyService.Set (NewProjectDialogController.UseGitPropertyName, useGit);
+			PropertyService.Set (NewProjectDialogController.CreateGitIgnoreFilePropertyName, createGitIgnore);
+
+			controller.Backend.OnShowDialogCalled = () => {
+				controller.MoveToNextPage ();
+			};
+
+			controller.Show ();
+
+			Assert.AreEqual (useGit, controller.FinalConfiguration.UseGit);
+			Assert.AreEqual (createGitIgnore, controller.FinalConfiguration.CreateGitIgnoreFile);
+			Assert.IsFalse (controller.FinalConfiguration.IsGitIgnoreEnabled);
+			Assert.IsFalse (controller.FinalConfiguration.IsUseGitEnabled);
+		}
+
+		[TestCase (true, true)]
+		[TestCase (true, false)]
+		[TestCase (false, true)]
+		[TestCase (false, false)]
+		public void Git_NewSolution_OverriddenGitIgnoreSettings_FinalConfigurationPage (bool useGit, bool createGitIgnore)
+		{
+			CreateDialog ();
+			CSharpLibraryTemplateSelectedByDefault ();
+			PropertyService.Set (NewProjectDialogController.UseGitPropertyName, useGit);
+			PropertyService.Set (NewProjectDialogController.CreateGitIgnoreFilePropertyName, createGitIgnore);
+
+			controller.Backend.OnShowDialogCalled = () => {
+				controller.MoveToNextPage ();
+			};
+
+			controller.Show ();
+
+			controller.FinalConfiguration.Parameters ["CreateGitIgnoreFile"] = bool.TrueString;
+			controller.FinalConfiguration.Parameters ["IsGitIgnoreEnabled"] = bool.FalseString;
+			controller.FinalConfiguration.UpdateFromParameters ();
+
+			Assert.IsTrue (controller.FinalConfiguration.CreateGitIgnoreFile);
+			Assert.IsFalse (controller.FinalConfiguration.IsGitIgnoreEnabled);
+			Assert.IsTrue (controller.FinalConfiguration.IsUseGitEnabled);
+
+			controller.FinalConfiguration.Parameters ["CreateGitIgnoreFile"] = bool.FalseString;
+			controller.FinalConfiguration.Parameters ["IsGitIgnoreEnabled"] = bool.FalseString;
+			controller.FinalConfiguration.UpdateFromParameters ();
+
+			Assert.IsFalse (controller.FinalConfiguration.CreateGitIgnoreFile);
+			Assert.IsFalse (controller.FinalConfiguration.IsGitIgnoreEnabled);
+			Assert.IsTrue (controller.FinalConfiguration.IsUseGitEnabled);
 		}
 	}
 }

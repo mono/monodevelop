@@ -84,8 +84,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public void Evaluate ()
 		{
-			if (projectInstance != null)
-				engine.DisposeProjectInstance (projectInstance);
+			object oldProjectInstance = null;
+			if (projectInstance != null) {
+				oldProjectInstance = projectInstance;
+			}
 
 			info = msproject.LoadNativeInstance (!OnlyEvaluateProperties);
 
@@ -110,6 +112,9 @@ namespace MonoDevelop.Projects.MSBuild
 				// If the project can't be evaluated don't crash
 				LoggingService.LogError ("MSBuild project could not be evaluated", ex);
 				throw new ProjectEvaluationException (msproject, ex.Message);
+			} finally {
+				if (oldProjectInstance != null)
+					engine.DisposeProjectInstance (oldProjectInstance);
 			}
 		}
 

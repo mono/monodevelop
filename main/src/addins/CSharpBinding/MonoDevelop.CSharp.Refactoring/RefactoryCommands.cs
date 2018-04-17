@@ -56,18 +56,15 @@ namespace MonoDevelop.CSharp.Refactoring
 				del ();
 		}
 
-		protected override void Update (CommandArrayInfo ainfo)
+		protected override async Task UpdateAsync (CommandArrayInfo ainfo, CancellationToken cancelToken)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null)
+			if (doc == null || doc.FileName == FilePath.Null || doc.AnalysisDocument == null)
 				return;
-			var semanticModel = doc.ParsedDocument.GetAst<SemanticModel> ();
+			var semanticModel = await doc.AnalysisDocument.GetSemanticModelAsync (cancelToken);
 			if (semanticModel == null)
 				return;
-			var task = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
-			if (!task.Wait (2000))
-				return;
-			var info = task.Result;
+			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
 			bool added = false;
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();

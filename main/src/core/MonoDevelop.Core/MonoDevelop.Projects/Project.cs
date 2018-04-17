@@ -45,6 +45,7 @@ using MonoDevelop.Projects.Extensions;
 using System.Collections.Immutable;
 using System.Threading;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.Core.Collections;
 
 namespace MonoDevelop.Projects
 {
@@ -227,7 +228,7 @@ namespace MonoDevelop.Projects
 			if (creationContext != null && creationContext.Project != null)
 				FileName = creationContext.Project.FileName;
 
-			MSBuildEngineSupport = MSBuildProjectService.GetMSBuildSupportForProject (this);
+			sourceProject.UseMSBuildEngine = MSBuildProjectService.UseMSBuildEngineForProject (this);
 			InitFormatProperties ();
 		}
 
@@ -396,6 +397,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Obsolete]
 		public MSBuildSupport MSBuildEngineSupport { get; private set; }
 
 		protected override void OnModified (SolutionItemModifiedEventArgs args)
@@ -418,8 +420,7 @@ namespace MonoDevelop.Projects
 		{
 			if (sourceProject == null || sourceProject.IsNewProject) {
 				sourceProject = await MSBuildProject.LoadAsync (FileName).ConfigureAwait (false);
-				if (MSBuildEngineSupport == MSBuildSupport.NotSupported)
-					sourceProject.UseMSBuildEngine = false;
+				sourceProject.UseMSBuildEngine = MSBuildProjectService.UseMSBuildEngineForProject (this);
 				sourceProject.Evaluate ();
 			}
 
@@ -1241,7 +1242,7 @@ namespace MonoDevelop.Projects
 
 		async Task<TargetEvaluationResult> RunMSBuildTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
-			if (CheckUseMSBuildEngine (configuration)) {
+			if (MSBuildProject.UseMSBuildEngine) {
 				var includeReferencedProjects = context != null ? context.LoadReferencedProjects : false;
 				var configs = GetConfigurations (configuration, includeReferencedProjects);	
 
@@ -1576,25 +1577,6 @@ namespace MonoDevelop.Projects
 
 		#endregion
 
-		/// <summary>Whether to use the MSBuild engine for the specified item.</summary>
-		internal bool CheckUseMSBuildEngine (ConfigurationSelector sel, bool checkReferences = true)
-		{
-			// if the item mandates MSBuild, always use it
-			if (MSBuildEngineSupport.HasFlag (MSBuildSupport.Required))
-				return true;
-			// if the user has set the option, use the setting
-			if (UseMSBuildEngine.HasValue)
-				return UseMSBuildEngine.Value;
-
-			// If the item type defaults to using MSBuild, only use MSBuild if its direct references also use MSBuild.
-			// This prevents a not-uncommon common error referencing non-MSBuild projects from MSBuild projects
-			// NOTE: This adds about 11ms to the load/build/etc times of the MonoDevelop solution. Doing it recursively
-			// adds well over a second.
-			return MSBuildEngineSupport.HasFlag (MSBuildSupport.Supported) && (
-				!checkReferences || GetReferencedItems (sel).OfType<Project>().All (i => i.CheckUseMSBuildEngine (sel, false))
-			);
-		}
-
 		bool requiresMicrosoftBuild;
 
 		internal protected bool RequiresMicrosoftBuild {
@@ -1750,13 +1732,6 @@ namespace MonoDevelop.Projects
 			AddFile (newDir);
 			return newDir;
 		}
-		
-		//HACK: the build code is structured such that support file copying is in here instead of the item handler
-		//so in order to avoid doing them twice when using the msbuild engine, we special-case them
-		bool UsingMSBuildEngine (ConfigurationSelector sel)
-		{
-			return CheckUseMSBuildEngine (sel);
-		}
 
 		protected override async Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
@@ -1775,7 +1750,7 @@ namespace MonoDevelop.Projects
 			
 			StringParserService.Properties["Project"] = Name;
 			
-			if (UsingMSBuildEngine (configuration)) {
+			if (MSBuildProject.UseMSBuildEngine) {
 				// Build is always a long operation. Make sure we build the project in the right builder.
 				context.BuilderQueue = BuilderQueue.LongOperations;
 				var result = await RunMSBuildTarget (monitor, "Build", configuration, context);
@@ -2141,7 +2116,7 @@ namespace MonoDevelop.Projects
 				return new TargetEvaluationResult (BuildResult.CreateSuccess ());
 			}
 			
-			if (UsingMSBuildEngine (configuration)) {
+			if (MSBuildProject.UseMSBuildEngine) {
 				// Clean is considered a long operation. Make sure we build the project in the right builder.
 				context.BuilderQueue = BuilderQueue.LongOperations;
 				return await RunMSBuildTarget (monitor, "Clean", configuration, context);
@@ -2931,15 +2906,15 @@ namespace MonoDevelop.Projects
 				loadedItems.Clear ();
 
 			HashSet<ProjectItem> unusedItems = null;
-			Dictionary<(string Name, string Include), ProjectItem> lookupItems = null;
+			LookupTable<(string Name, string Include), ProjectItem> lookupItems = null;
 			ImmutableList<ProjectItem>.Builder newItems = null;
 			if (IsReevaluating) {
 				unusedItems = new HashSet<ProjectItem> (Items);
-				lookupItems = new Dictionary<(string Name, string Include), ProjectItem> ();
+				lookupItems = new LookupTable<(string Name, string Include), ProjectItem> ();
 				newItems = ImmutableList.CreateBuilder<ProjectItem> ();
 
 				// Improve ReadItem performance by creating a dictionary of items that can be
-				// searched faster than using Items.FirstOrDefault. Building this dictionary takes ~15ms
+				// searched faster than using Items.FirstOrDefault. Building this dictionary takes ~17ms
 				foreach (var it in Items) {
 					if (it.BackingItem != null && it.BackingEvalItem != null) {
 						lookupItems.Add (GetProjectItemLookupKey (it.BackingEvalItem), it);
@@ -3006,12 +2981,14 @@ namespace MonoDevelop.Projects
 				productVersion = FileFormat.DefaultProductVersion;
 		}
 
-		internal (ProjectItem Item, bool IsNew) ReadItem (IMSBuildItemEvaluated buildItem, Dictionary<(string Name, string Include), ProjectItem> lookupItems)
+		internal (ProjectItem Item, bool IsNew) ReadItem (IMSBuildItemEvaluated buildItem, LookupTable<(string Name, string Include), ProjectItem> lookupItems)
 		{
 			if (IsReevaluating) {
 				// If this item already exists in the current collection of items, reuse it
-				if (lookupItems.TryGetValue (GetProjectItemLookupKey (buildItem), out ProjectItem eit)) {
-					if (ItemsAreEqual (buildItem, eit.BackingEvalItem) || CheckProjectReferenceItemsAreEqual (buildItem, eit)) {
+				var key = GetProjectItemLookupKey (buildItem);
+				foreach (var eit in lookupItems.GetItems (key)) {
+					if (ItemsAreEqual (buildItem, eit)) {
+						lookupItems.Remove (key, eit);
 						eit.BackingItem = buildItem.SourceItem;
 						eit.BackingEvalItem = buildItem;
 						return (eit, false);
@@ -3045,6 +3022,11 @@ namespace MonoDevelop.Projects
 			item.BackingItem = buildItem.SourceItem;
 			item.BackingEvalItem = buildItem;
 			return (item, true);
+		}
+
+		bool ItemsAreEqual (IMSBuildItemEvaluated buildItem, ProjectItem item)
+		{
+			return ItemsAreEqual (buildItem, item.BackingEvalItem) || CheckProjectReferenceItemsAreEqual (buildItem, item);
 		}
 
 		/// <summary>
@@ -3772,7 +3754,6 @@ namespace MonoDevelop.Projects
 		{
 			// Compare only metadata, since item name and include can't change
 
-			MSBuildEvaluationContext context = null;
 			var n = 0;
 			foreach (var p in item.Metadata.GetProperties ()) {
 				var p2 = evalItem.Metadata.GetProperty (p.Name);
@@ -3781,12 +3762,7 @@ namespace MonoDevelop.Projects
 				if (!p.ValueType.Equals (p.Value, p2.UnevaluatedValue)) {
 					if (p2.UnevaluatedValue != null && p2.UnevaluatedValue.Contains ('%')) {
 						// Check evaluated value is a match.
-						if (context == null) {
-							context = new MSBuildEvaluationContext ();
-							context.InitEvaluation (MSBuildProject);
-						}
-						string value = context.Evaluate (p.UnevaluatedValue);
-						if (!p.ValueType.Equals (p.Value, value))
+						if (!p.ValueType.Equals (p.Value, p2.Value))
 							return false;
 					} else
 						return false;
@@ -3814,6 +3790,8 @@ namespace MonoDevelop.Projects
 				var p2 = evalItem.Metadata.GetProperty (p.Name);
 				if (p2 == null || !p.ValueType.Equals (p.Value, p2.UnevaluatedValue)) {
 					if (generateNewUpdateItem)
+						continue;
+					if (p2?.UnevaluatedValue != null && p2.UnevaluatedValue.Contains ('%') && p.ValueType.Equals (p.Value, p2.Value))
 						continue;
 					if (updateItem == null) {
 						updateItems = FindUpdateItemsForItem (globItem, item.Include).ToList ();

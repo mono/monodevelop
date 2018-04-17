@@ -32,12 +32,6 @@ namespace MonoDevelop.CSharp.Project
 {
 	class PortableCSharpProjectFlavor: PortableDotNetProjectFlavor
 	{
-		protected override void Initialize ()
-		{
-			base.Initialize ();
-			Project.UseMSBuildEngine = true;
-		}
-
 		protected override void OnGetDefaultImports (System.Collections.Generic.List<string> imports)
 		{
 			imports.Add ("$(MSBuildExtensionsPath32)\\Microsoft\\Portable\\$(TargetFrameworkVersion)\\Microsoft.Portable.CSharp.targets");

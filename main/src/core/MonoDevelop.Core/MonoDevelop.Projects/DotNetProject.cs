@@ -910,7 +910,7 @@ namespace MonoDevelop.Projects
 		internal protected virtual async Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
 			List<AssemblyReference> result = new List<AssemblyReference> ();
-			if (CheckUseMSBuildEngine (configuration)) {
+			if (MSBuildProject.UseMSBuildEngine) {
 				// Get the references list from the msbuild project
 				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
 					result.AddRange (await RunResolveAssemblyReferencesTarget (configuration));
@@ -972,17 +972,31 @@ namespace MonoDevelop.Projects
 			}
 
 			if (addFacadeAssemblies) {
-				var runtime = TargetRuntime ?? MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
-				var facades = runtime.FindFacadeAssembliesForPCL (TargetFramework);
-				foreach (var facade in facades) {
-					if (!File.Exists (facade))
-						continue;
-					var ar = new AssemblyReference (facade);
-					if (!result.Contains (ar))
-						result.Add (ar);
+				var facades = await ProjectExtension.OnGetFacadeAssemblies ();
+				if (facades != null) {
+					foreach (var facade in facades) {
+						if (!result.Contains (facade))
+							result.Add (facade);
+					}
 				}
 			}
 			return result;
+		}
+
+		internal protected virtual Task<List<AssemblyReference>> OnGetFacadeAssemblies ()
+		{
+			List<AssemblyReference> result = null;
+			var runtime = TargetRuntime ?? Runtime.SystemAssemblyService.DefaultRuntime;
+			var facades = runtime.FindFacadeAssembliesForPCL (TargetFramework);
+			foreach (var facade in facades) {
+				if (!File.Exists (facade))
+					continue;
+				if (result == null)
+					result = new List<AssemblyReference> ();
+				var ar = new AssemblyReference (facade);
+				result.Add (ar);
+			}
+			return Task.FromResult (result);
 		}
 
 		AsyncCriticalSection referenceCacheLock = new AsyncCriticalSection ();
@@ -1038,7 +1052,7 @@ namespace MonoDevelop.Projects
 		internal protected virtual async Task<List<PackageDependency>> OnGetPackageDependencies (ConfigurationSelector configuration, CancellationToken cancellationToken)
 		{
 			var result = new List<PackageDependency> ();
-			if (CheckUseMSBuildEngine (configuration)) {
+			if (MSBuildProject.UseMSBuildEngine) {
 				// Get the references list from the msbuild project
 				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
 					return await RunResolvePackageDependenciesTarget (configuration, cancellationToken);
@@ -1300,7 +1314,7 @@ namespace MonoDevelop.Projects
 
 		public FilePath GetAssemblyDebugInfoFile (ConfigurationSelector configuration, FilePath exeFile)
 		{
-			if (CheckUseMSBuildEngine (configuration)) {
+			if (MSBuildProject.UseMSBuildEngine) {
 				var mono = TargetRuntime as MonoTargetRuntime;
 				if (mono != null) {
 					var version = mono.MonoRuntimeInfo?.RuntimeVersion;
@@ -2028,6 +2042,11 @@ namespace MonoDevelop.Projects
 			internal protected override IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
 			{
 				return Project.OnGetReferencedAssemblyProjects (configuration);
+			}
+
+			internal protected override Task<List<AssemblyReference>> OnGetFacadeAssemblies ()
+			{
+				return Project.OnGetFacadeAssemblies ();
 			}
 
 #pragma warning disable 672 // Member overrides obsolete member

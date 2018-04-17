@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
+using MonoDevelop.Core;
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -81,7 +82,7 @@ namespace Mono.TextEditor.Highlighting
 				case XmlNodeType.EndElement:
 					if (endNodes.Contains (reader.LocalName)) 
 						return;
-					Console.WriteLine ("Unknown end node: " + reader.LocalName + " valid end nodes are: " + ConcatString (endNodes));
+					LoggingService.LogWarning ("Unknown end node: " + reader.LocalName + " valid end nodes are: " + ConcatString (endNodes));
 					break;
 				case XmlNodeType.Element:
 					if (!didReadStartNode && endNodes.Contains (reader.LocalName)) {
@@ -90,7 +91,7 @@ namespace Mono.TextEditor.Highlighting
 					}
 					bool validNode = callback (data);
 					if (!validNode) 
-						Console.WriteLine ("Unknown node: " + reader.LocalName);
+						LoggingService.LogWarning ("Unknown node: " + reader.LocalName);
 					if (data.SkipNextRead) 
 						goto skip;
 					break;

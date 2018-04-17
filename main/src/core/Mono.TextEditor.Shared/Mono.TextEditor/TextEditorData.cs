@@ -31,6 +31,7 @@ using System.IO;
 using System.Diagnostics;
 using Mono.TextEditor.Highlighting;
 using Xwt.Drawing;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
@@ -648,11 +649,7 @@ namespace Mono.TextEditor
 		/// </summary>
 		public void FixVirtualIndentation ()
 		{
-			if (!HasIndentationTracker || Options.IndentStyle != IndentStyle.Virtual)
-				return;
-			var line = Document.GetLine (Caret.Line);
-			if (line != null && line.Length > 0 && GetIndentationString (caret.Line - 1, int.MaxValue) == Document.GetTextAt (line.Offset, line.Length))
-				Remove (line.Offset, line.Length);
+			FixVirtualIndentation (Caret.Line);
 		}
 
 		public void FixVirtualIndentation (int lineNumber)
@@ -1422,7 +1419,7 @@ namespace Mono.TextEditor
 				try {
 					newText = TextPasteHandler.FormatPlainText (offset, text, copyData);
 				} catch (Exception e) {
-					Console.WriteLine ("Text paste handler exception:" + e);
+					LoggingService.LogError ("Text paste handler exception", e);
 					newText = text;
 				}
 				if (newText != text) {
