@@ -54,6 +54,7 @@ using ObjCRuntime;
 using System.Diagnostics;
 using Xwt.Mac;
 using MonoDevelop.Components.Mac;
+using System.Reflection;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -234,16 +235,10 @@ namespace MonoDevelop.MacIntegration
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{
 			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
-			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
-			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
+			Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
 
-			// Register all the assemblies that are not loaded at this point manually.
-			// The static registrar initialization tells the runtime that it should
-			// find the assembly in there, thus it would fail to for any addins
-			// that are loaded after the fact and not in the static registrar.
-			AppDomain.CurrentDomain.AssemblyLoad += (o, args) => {
-				ObjCRuntime.Runtime.RegisterAssembly (args.LoadedAssembly);
-			};
+			// Also calls NSApplication.Init();
+			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
 
 			loaded.RegisterBackend<Xwt.Backends.IDialogBackend, ThemedMacDialogBackend> ();
 			loaded.RegisterBackend<Xwt.Backends.IWindowBackend, ThemedMacWindowBackend> ();
@@ -293,6 +288,10 @@ namespace MonoDevelop.MacIntegration
 				Gtk.Rc.ParseString ("style \"default\" { engine \"xamarin\" { focusstyle = 2 } }");
 				Gtk.Rc.ParseString ("style \"radio-or-check-box\" { engine \"xamarin\" { focusstyle = 2 } } ");
 			}
+
+			// Disallow window tabbing globally
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.Sierra)
+				NSWindow.AllowsAutomaticWindowTabbing = false;
 
 			return loaded;
 		}
@@ -454,6 +453,8 @@ namespace MonoDevelop.MacIntegration
 				IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
 					var win = GtkQuartz.GetWindow ((Gtk.Window) sender);
 					win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
+					if (MacSystemInformation.OsVersion >= MacSystemInformation.Sierra)
+						win.TabbingMode = NSWindowTabbingMode.Disallowed;
 				};
 			}
 

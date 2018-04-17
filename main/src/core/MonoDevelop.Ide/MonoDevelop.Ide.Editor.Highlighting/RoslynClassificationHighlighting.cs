@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					continue;
 				}
 				if (start > lastClassifiedOffsetEnd) {
-					scopeStack = userScope;
+					scopeStack = defaultScope;
 					ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - offset, start - lastClassifiedOffsetEnd, scopeStack);
 					coloredSegments.Add (whitespaceSegment);
 				}
@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 
 			if (offset + length > lastClassifiedOffsetEnd) {
-				scopeStack = userScope;
+				scopeStack = defaultScope;
 				ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - offset, offset + length - lastClassifiedOffsetEnd, scopeStack);
 				coloredSegments.Add (whitespaceSegment);
 			}

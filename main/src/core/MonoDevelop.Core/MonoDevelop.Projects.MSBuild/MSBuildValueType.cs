@@ -45,6 +45,7 @@ namespace MonoDevelop.Projects.MSBuild
 	class PathValueType: MSBuildValueType
 	{
 		static readonly char [] pathSep = { '\\' };
+		static string currentDirectoryPrefix = @".\";
 
 		public override bool Equals (string ob1, string ob2)
 		{
@@ -52,6 +53,10 @@ namespace MonoDevelop.Projects.MSBuild
 				return true;
 			if (ob1 == null || ob2 == null)
 				return string.IsNullOrEmpty (ob1) && string.IsNullOrEmpty (ob2);//Empty or null path is same thing
+			if (ob1.StartsWith (currentDirectoryPrefix, StringComparison.OrdinalIgnoreCase))
+				ob1 = ob1.Substring (currentDirectoryPrefix.Length);
+			if (ob2.StartsWith (currentDirectoryPrefix, StringComparison.OrdinalIgnoreCase))
+				ob2 = ob2.Substring (currentDirectoryPrefix.Length);
 			return ob1.TrimEnd (pathSep) == ob2.TrimEnd (pathSep);
 		}
 	}

@@ -127,5 +127,30 @@ namespace MonoDevelop.Ide
 			using (var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), fileName))
 				Assert.AreEqual ("Test-Value-Updated", solution.UserProperties.GetValue<string> ("Test"));
 		}
+
+		[Test]
+		public async Task UserPreferences_SolutionHasCustomBaseDirectory ()
+		{
+			FilePath directory = Util.CreateTmpDir ("MySolution");
+			var customSolutionBaseDirectory = directory.Combine ("Custom");
+			Directory.CreateDirectory (customSolutionBaseDirectory);
+
+			var fileName = directory.Combine ("MySolution.sln");
+			using (var solution = new Solution ()) {
+				solution.FileName = fileName;
+				solution.BaseDirectory = customSolutionBaseDirectory;
+				solution.UserProperties.SetValue ("Test", "Test-Value");
+
+				// Create a user prefs file.
+				await solution.SaveAsync (Util.GetMonitor ());
+
+				Assert.IsTrue (File.Exists (solution.GetPreferencesFileName ()));
+			}
+
+			// Ensure that saved user preference is available when re-loading a solution with a custom base directory
+			using (var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), fileName)) {
+				Assert.AreEqual ("Test-Value", solution.UserProperties.GetValue<string> ("Test"));
+			}
+		}
 	}
 }

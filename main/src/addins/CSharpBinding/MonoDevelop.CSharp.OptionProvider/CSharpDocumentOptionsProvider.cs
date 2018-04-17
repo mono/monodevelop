@@ -43,17 +43,11 @@ namespace MonoDevelop.CSharp.OptionProvider
 {
 	class CSharpDocumentOptionsProvider : IDocumentOptionsProvider
 	{
-		readonly Workspace workspace;
-
-		public CSharpDocumentOptionsProvider (Workspace workspace)
-		{
-			this.workspace = workspace;
-		}
-
 		async Task<IDocumentOptions> IDocumentOptionsProvider.GetOptionsForDocumentAsync (Document document, CancellationToken cancellationToken)
 		{
-			var mdws = (MonoDevelopWorkspace)workspace;
+			var mdws = document.Project.Solution.Workspace as MonoDevelopWorkspace;
 			var project = mdws?.GetMonoProject (document.Project.Id);
+
 			CSharpFormattingPolicy policy;
 			TextStylePolicy textpolicy;
 			if (project == null) {

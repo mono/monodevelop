@@ -88,6 +88,11 @@ namespace MonoDevelop.Projects
 			return next.OnGetReferencedAssemblyProjects (configuration);
 		}
 
+		internal protected virtual Task<List<AssemblyReference>> OnGetFacadeAssemblies ()
+		{
+			return next.OnGetFacadeAssemblies ();
+		}
+
 		[Obsolete("User overload that takes a RunConfiguration")]
 		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
 		{

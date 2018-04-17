@@ -127,7 +127,7 @@ namespace MonoDevelop.Xml.Parser
 					return null;
 				} else if (c == '/') {
 					return this.ClosingTagState;
-				} else if (char.IsLetter (c) || c == '_') {
+				} else if (char.IsLetter (c) || c == '_' || char.IsWhiteSpace (c)) {
 					rollback = string.Empty;
 					return TagState;
 				}

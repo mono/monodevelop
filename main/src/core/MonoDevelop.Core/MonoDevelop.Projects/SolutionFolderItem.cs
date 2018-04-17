@@ -51,6 +51,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("Policies", IsExternal = true, SkipEmpty = true)]
 		PolicyBag policies;
 
+		[Obsolete("This property no longer has any effect")]
 		[ItemProperty ("UseMSBuildEngine", DefaultValue = null)]
 		public bool? UseMSBuildEngine { get; set; }
 		
