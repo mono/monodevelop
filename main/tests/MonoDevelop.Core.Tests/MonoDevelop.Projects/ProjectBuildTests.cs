@@ -352,7 +352,6 @@ namespace MonoDevelop.Projects
 		{
 			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target2.csproj");
 			var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
-			p.RequiresMicrosoftBuild = true;
 
 			var ctx = new ProjectOperationContext ();
 			ctx.GlobalProperties.SetValue ("TestProp", "foo");
@@ -382,7 +381,6 @@ namespace MonoDevelop.Projects
 		{
 			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target3.csproj");
 			var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
-			p.RequiresMicrosoftBuild = true;
 
 			var ctx = new ProjectOperationContext ();
 			ctx.GlobalProperties.SetValue ("BuildingInsideVisualStudio", "false");

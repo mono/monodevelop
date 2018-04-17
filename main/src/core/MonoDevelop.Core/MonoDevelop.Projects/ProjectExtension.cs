@@ -60,12 +60,14 @@ namespace MonoDevelop.Projects
 			return next.SupportsFlavor (guid);
 		}
 
+		[Obsolete ("This property is ignored, msbuild is now always used")]
 		internal bool IsMicrosoftBuildRequired {
 			get {
 				return RequiresMicrosoftBuild || (next != null && next.IsMicrosoftBuildRequired);
 			}
 		}
 
+		[Obsolete ("This property is ignored, msbuild is now always used")]
 		protected bool RequiresMicrosoftBuild {
 			get; set;
 		}

@@ -1577,15 +1577,10 @@ namespace MonoDevelop.Projects
 
 		#endregion
 
-		bool requiresMicrosoftBuild;
-
+		[Obsolete ("This property is ignored, msbuild is now always used")]
 		internal protected bool RequiresMicrosoftBuild {
-			get {
-				return requiresMicrosoftBuild || ProjectExtension.IsMicrosoftBuildRequired;
-			}
-			set {
-				requiresMicrosoftBuild = value;
-			}
+			get { return true; }
+			set { }
 		}
 
 		/// <summary>

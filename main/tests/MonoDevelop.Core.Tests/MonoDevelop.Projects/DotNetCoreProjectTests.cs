@@ -175,7 +175,6 @@ namespace MonoDevelop.Projects
 			try {
 				var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 				var p = (Project)sol.Items [0];
-				p.RequiresMicrosoftBuild = true;
 
 				p.DefaultConfiguration = new DotNetProjectConfiguration ("Debug") {
 					OutputAssembly = p.BaseDirectory.Combine ("bin", "test.dll")
@@ -209,7 +208,6 @@ namespace MonoDevelop.Projects
 			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (Project)sol.Items [0];
 			Assert.AreEqual ("DotNetFrameworkProject", p.Name);
-			p.RequiresMicrosoftBuild = true;
 
 			p.DefaultConfiguration = new DotNetProjectConfiguration ("Debug") {
 				OutputAssembly = p.BaseDirectory.Combine ("bin", "test.dll")
@@ -234,12 +232,10 @@ namespace MonoDevelop.Projects
 			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject)sol.Items [0];
 			Assert.AreEqual ("DotNetFrameworkProject", p.Name);
-			p.RequiresMicrosoftBuild = true;
 
 			FilePath projectFile = sol.BaseDirectory.Combine ("DotNetCoreNetStandardProject", "DotNetCoreNetStandardProject.csproj");
 			var dotNetCoreProject = (Project)await sol.RootFolder.AddItem (Util.GetMonitor (), projectFile);
 			//var dotNetCoreProject = (DotNetProject)sol.Items [0];
-			dotNetCoreProject.RequiresMicrosoftBuild = true;
 			await sol.SaveAsync (Util.GetMonitor ());
 
 			p.DefaultConfiguration = new DotNetProjectConfiguration ("Debug") {

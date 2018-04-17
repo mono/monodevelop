@@ -145,11 +145,9 @@ namespace MonoDevelop.Packaging.Tests
 
 			var project = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.FileName.FileName == "ProjectName.NuGet.nuproj");
 			Assert.IsNotNull (project);
-			Assert.IsTrue (project.GetFlavor<DotNetProjectPackagingExtension> ().GetRequiresMSBuild ());
 
 			var androidProject = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.FileName.FileName == "ProjectName.Android.csproj");
 			Assert.IsNotNull (androidProject);
-			Assert.IsTrue (androidProject.GetFlavor<DotNetProjectPackagingExtension> ().GetRequiresMSBuild ());
 
 			var sharedProject = solution.GetAllProjects ().OfType<SharedAssetsProject> ().FirstOrDefault (p => p.FileName.FileName == "ProjectName.Shared.shproj");
 			Assert.IsNotNull (sharedProject);

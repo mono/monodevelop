@@ -8,7 +8,6 @@ type PortableFSharpProjectFlavor() =
 
     override x.Initialize () =
         base.Initialize ()
-        base.Project.UseMSBuildEngine <- Nullable(true)
 
     override x.OnGetDefaultImports imports =
         imports.Add @"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets"
