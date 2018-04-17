@@ -134,9 +134,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern searchPattern, CancellationToken token)
 		{
+			if (string.IsNullOrEmpty (searchPattern.Pattern))
+				return Task.CompletedTask;
+
+			if (searchPattern.Tag != null && !tags.Contains (searchPattern.Tag) || searchPattern.HasLineNumber)
+				return Task.CompletedTask;
+			
 			return Task.Run (async delegate {
-				if (searchPattern.Tag != null && !tags.Contains (searchPattern.Tag) || searchPattern.HasLineNumber)
-					return;
 				try {
 					// Maybe use language services instead of AbstractNavigateToSearchService
 					var aggregatedResults = await Task.WhenAll (TypeSystemService.AllWorkspaces
@@ -147,7 +151,7 @@ namespace MonoDevelop.Components.MainToolbar
 												var searchService = proj.LanguageServices.GetService<INavigateToSearchService> ();
 												if (searchService == null)
 													return ImmutableArray<INavigateToSearchResult>.Empty;
-												return await searchService.SearchProjectAsync (proj, searchPattern.Pattern, token);
+												return await searchService.SearchProjectAsync (proj, searchPattern.Pattern, token).ConfigureAwait (false);
 											}
 										})
 					).ConfigureAwait (false);
