@@ -155,6 +155,7 @@ namespace MonoDevelop.Ide
 		internal static readonly string DefaultDarkColorScheme = "Dark";
 
 		public readonly ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled_V2", true);
+		public readonly ConfigurationProperty<bool> EnableFullSolutionSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.FullSolutionSourceAnalysis", true);
 		public readonly ConfigurationProperty<bool> EnableUnitTestEditorIntegration = ConfigurationProperty.Create ("Testing.EnableUnitTestEditorIntegration", false);
 
 		public readonly SchemeConfigurationProperty ColorScheme = new SchemeConfigurationProperty ("ColorScheme", DefaultLightColorScheme, DefaultDarkColorScheme);
