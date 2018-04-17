@@ -92,7 +92,7 @@ namespace MonoDevelop.DotNetCore
 
 		public static bool IsNetStandard20OrNetCore20 (this TargetFramework framework)
 		{
-			return framework.IsNetStandard20 () || framework.IsNetCoreApp ();
+			return framework.IsNetStandard20 () || framework.IsNetCoreApp20 ();
 		}
 
 		public static string GetDisplayName (this TargetFramework framework)
