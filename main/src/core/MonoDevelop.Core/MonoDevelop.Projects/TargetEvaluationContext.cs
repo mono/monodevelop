@@ -33,11 +33,19 @@ namespace MonoDevelop.Projects
 	{
 		List<MSBuildLogger> loggers = new List<MSBuildLogger> ();
 
-		public TargetEvaluationContext ()
+		public TargetEvaluationContext () : this (false)
+		{
+		}
+
+		public TargetEvaluationContext (bool designTime)
 		{
 			PropertiesToEvaluate = new HashSet<string> ();
 			ItemsToEvaluate = new HashSet<string> ();
 			LogVerbosity = MSBuildProjectService.DefaultMSBuildVerbosity;
+
+			if (designTime) {
+				GlobalProperties.SetValue ("DesignTimeBuild", "true");
+			}
 		}
 
 		public TargetEvaluationContext (OperationContext other): this ()
