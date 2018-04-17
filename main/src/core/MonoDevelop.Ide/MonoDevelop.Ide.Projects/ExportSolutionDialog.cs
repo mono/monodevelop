@@ -43,11 +43,11 @@ namespace MonoDevelop.Ide.Projects
 		{
 			this.Build();
 			
-			labelNewFormat.Text = GetFormatText (item.FileFormat);
+			labelNewFormat.Text = selectedFormat.ProductDescription;
 			
 			formats = MSBuildFileFormat.GetSupportedFormats (item).ToArray ();
 			foreach (var format in formats) {
-				comboFormat.AppendText (GetFormatText (format));
+				comboFormat.AppendText (format.ProductDescription);
 			}
 
 			int sel = Array.IndexOf (formats, selectedFormat);
@@ -69,13 +69,6 @@ namespace MonoDevelop.Ide.Projects
 			
 			folderEntry.Path = item.ItemDirectory;
 			UpdateControls ();
-		}
-
-		static string GetFormatText (MSBuildFileFormat format)
-		{
-			if (!string.IsNullOrEmpty (format.ProductDescription))
-				return string.Format ("{0} ({1})", format.Name, format.ProductDescription);
-			return format.Name;
 		}
 		
 		public MSBuildFileFormat Format {
