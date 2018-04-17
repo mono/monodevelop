@@ -86,7 +86,7 @@ namespace UnitTests
 			// object is released, once the weak reference goes away, we know we're good. But if we're trying to assert
 			// that the object is held, our only real option is to know to do it "enough" times; but if it goes away then
 			// we are definitely done.
-			for (var i = 0; i < 1000 && _weakReference.IsAlive; i++) {
+			for (var i = 0; i < 10 && _weakReference.IsAlive; i++) {
 				GC.Collect ();
 				GC.WaitForPendingFinalizers ();
 			}
