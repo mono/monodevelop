@@ -183,7 +183,12 @@ namespace MonoDevelop.Projects.MSBuild
 				else {
 					if (!string.IsNullOrEmpty (projectDir) && Directory.Exists (projectDir))
 						Environment.CurrentDirectory = projectDir;
-					var projectRootElement = ProjectRootElement.Create (new XmlTextReader (new StringReader (content)));
+
+					var settings = new XmlReaderSettings {
+						DtdProcessing = DtdProcessing.Ignore,
+						IgnoreWhitespace = true,
+					};
+					var projectRootElement = ProjectRootElement.Create (XmlReader.Create (new StringReader (content), settings), engine);
 					projectRootElement.FullPath = file;
 
 					// Use the engine's default tools version to load the project. We want to build with the latest
