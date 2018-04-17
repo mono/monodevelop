@@ -60,7 +60,7 @@ namespace MonoDevelop.Core.Setup
 				return false;
 			}
 
-			return a.Idx == Idx;
+			return a.Id == Id;
 		}
 
 		public bool Equals (UpdateChannel a)
@@ -68,7 +68,7 @@ namespace MonoDevelop.Core.Setup
 			if ((object)a == null) {
 				return false;
 			}
-			return (a.Idx == Idx);
+			return (a.Id == Id);
 		}
 
 		public static bool operator == (UpdateChannel a, UpdateChannel b)
@@ -79,7 +79,7 @@ namespace MonoDevelop.Core.Setup
 			if (Object.ReferenceEquals (a, null) || Object.ReferenceEquals (b, null)) {
 				return false;
 			}
-			return a.Idx == b.Idx;
+			return a.Id == b.Id;
 		}
 
 		public static bool operator != (UpdateChannel a, UpdateChannel b)
@@ -90,7 +90,7 @@ namespace MonoDevelop.Core.Setup
 			if (Object.ReferenceEquals (a, null) || Object.ReferenceEquals (b, null)) {
 				return true;
 			}
-			return a.Idx != b.Idx;
+			return a.Id != b.Id;
 		}
 
 		public static bool operator <= (UpdateChannel a, UpdateChannel b)

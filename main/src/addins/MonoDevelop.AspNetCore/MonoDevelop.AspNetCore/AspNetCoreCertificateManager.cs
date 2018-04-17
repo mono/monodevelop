@@ -93,12 +93,6 @@ namespace MonoDevelop.AspNetCore
 		public static async Task TrustDevelopmentCertificate (ProgressMonitor monitor)
 		{
 			try {
-				if (!DotNetCoreDevCertsTool.IsInstalled ()) {
-					if (!await DotNetCoreDevCertsTool.Install (monitor.CancellationToken)) {
-						return;
-					}
-				}
-
 				CertificateCheckResult result = await DotNetCoreDevCertsTool.CheckCertificate (monitor.CancellationToken);
 				if (result == CertificateCheckResult.OK) {
 					IsDevelopmentCertificateTrusted = true;

@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Gdk;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Mono.TextEditor
@@ -228,7 +229,7 @@ namespace Mono.TextEditor
 				var sb = new System.Text.StringBuilder ("Error while executing actions ");
 				foreach (var action in actions)
 					sb.AppendFormat (" {0}", action);
-				Console.WriteLine (sb.ToString () + ": " + e);
+				LoggingService.LogError (sb.ToString (), e);
 			}
 		
 		}

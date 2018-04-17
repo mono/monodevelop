@@ -292,7 +292,7 @@ namespace MonoDevelop.SourceEditor
 			try {
 				Font = Pango.FontDescription.FromString (DefaultSourceEditorOptions.Instance.FontName);
 			} catch {
-				Console.WriteLine ("Could not load font: {0}", DefaultSourceEditorOptions.Instance.FontName);
+				LoggingService.LogWarning ("Could not load font: {0}", DefaultSourceEditorOptions.Instance.FontName);
 			}
 			if (Font == null || String.IsNullOrEmpty (Font.Family))
 				Font = Pango.FontDescription.FromString (TextEditorOptions.DEFAULT_FONT);

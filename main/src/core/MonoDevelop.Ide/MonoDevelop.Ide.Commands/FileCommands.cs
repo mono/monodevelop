@@ -148,15 +148,22 @@ namespace MonoDevelop.Ide.Commands
 	// MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles
 	public class CloseAllFilesHandler : CommandHandler
 	{
-		protected override void Run ()
+		static bool isRunning;
+
+		protected override async void Run ()
 		{
-			IdeApp.Workbench.CloseAllDocuments (false);
+			try {
+				isRunning = true;
+				await IdeApp.Workbench.CloseAllDocumentsAsync (false);
+			} finally {
+				isRunning = false;
+			}
 		}
 
 		protected override void Update (CommandInfo info)
 		{
 			// No point in closing all when there are no documents open
-			info.Enabled = IdeApp.Workbench.Documents.Count != 0;
+			info.Enabled = !isRunning && IdeApp.Workbench.Documents.Count != 0;
 		}
 	}
 

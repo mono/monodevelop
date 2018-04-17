@@ -52,6 +52,22 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase (".NETFramework", "2.0", new [] { "2.0.0" }, false, true)] // Allow other non-.NET Core frameworks to be supported.
 		[TestCase (".NETCoreApp", "1.1", new [] { "2.0.0" }, false, true)] // v2.0 SDK can compile v1 projects
 		[TestCase (".NETStandard", "1.6", new [] { "2.0.0" }, false, true)] // v2.0 SDK can compile v1 projects
+		[TestCase (".NETStandard", "2.0", new [] { "2.1.101" }, false, true)] // v2.1.101 supports .NET Standard 2.0
+		[TestCase (".NETStandard", "2.0", new [] { "2.1.4" }, false, true)] // v2.1.4 supports .NET Standard 2.0
+		[TestCase (".NETCoreApp", "2.0", new [] { "2.1.101" }, false, true)] // v2.1.101 supports .NET Core  2.0
+		[TestCase (".NETCoreApp", "2.1", new [] { "2.1.4" }, false, false)] // v2.1.4 does not support .NET Core 2.1
+		[TestCase (".NETCoreApp", "2.1", new [] { "2.1.101" }, false, false)] // v2.1.101 does not support .NET Core 2.1
+		[TestCase (".NETCoreApp", "2.0", new [] { "2.1.299" }, false, true)]
+		[TestCase (".NETCoreApp", "2.1", new [] { "2.1.299" }, false, false)]
+		[TestCase (".NETCoreApp", "1.0", new [] { "2.1.300" }, false, true)]
+		[TestCase (".NETCoreApp", "1.1", new [] { "2.1.300" }, false, true)]
+		[TestCase (".NETCoreApp", "2.0", new [] { "2.1.300" }, false, true)] // v2.1.300 supports .NET Core  2.0
+		[TestCase (".NETCoreApp", "2.1", new [] { "2.1.300" }, false, true)] // v2.1.300 supports .NET Core  2.1
+		[TestCase (".NETCoreApp", "2.1", new [] { "2.1.300" }, false, true)] // v2.1.300 supports .NET Core  2.1
+		[TestCase (".NETStandard", "2.0", new [] { "2.1.300" }, false, true)]
+		[TestCase (".NETCoreApp", "2.1", new [] { "2.1.300-preview2-008530" }, true, true)] // v2.1 preview 2 supports .NET Core  2.1
+		[TestCase (".NETStandard", "2.0", new [] { "2.1.300-preview2-008530" }, true, true)] // v2.1 preview 2 supports .NET Core  2.1
+		[TestCase (".NETCoreApp", "2.1", new [] { "2.1.400" }, false, true)] // v2.1.400 will support .NET Core  2.1
 		public void IsSupportedTargetFramework (
 			string frameworkIdentifier,
 			string frameworkVersion,

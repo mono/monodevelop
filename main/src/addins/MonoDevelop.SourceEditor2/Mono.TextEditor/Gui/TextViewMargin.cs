@@ -430,7 +430,7 @@ namespace Mono.TextEditor
 				try {
 					result = args.Engine.SearchForward (worker, args, offset);
 				} catch (Exception ex) {
-					Console.WriteLine ("Got exception while search forward:" + ex);
+					LoggingService.LogError ("Got exception while search forward",  ex);
 					break;
 				}
 				if (worker.CancellationPending)
@@ -525,7 +525,11 @@ namespace Mono.TextEditor
 		{
 #if MAC
 			var img = OSXEditor.IBeamCursorImage;
-			xtermCursorInverted = new Cursor(xtermCursor.Display, (InvertCursorPixbuf (img.ToPixbuf())), (int)img.Width / 2, (int)img.Height / 2);
+			if (img != null) {
+				xtermCursorInverted = new Cursor(xtermCursor.Display, (InvertCursorPixbuf (img.ToPixbuf())), (int)img.Width / 2, (int)img.Height / 2);
+			} else {
+				xtermCursorInverted = xtermCursor;
+			}
 #else
 			xtermCursorInverted = xtermCursor;
 #endif

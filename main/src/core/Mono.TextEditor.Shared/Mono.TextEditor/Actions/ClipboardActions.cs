@@ -214,7 +214,7 @@ namespace Mono.TextEditor
 							try {
 								copyData = pasteHandler.GetCopyData (segment.Offset, segment.Length);
 							} catch (Exception e) {
-								Console.WriteLine ("Exception while getting copy data:" + e);
+								LoggingService.LogError ("Exception while getting copy data", e);
 							}
 						}
 						break;

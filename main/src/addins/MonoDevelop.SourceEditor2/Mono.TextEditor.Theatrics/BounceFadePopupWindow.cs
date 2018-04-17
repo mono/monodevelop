@@ -27,6 +27,7 @@
 
 using System;
 using Gdk;
+using MonoDevelop.Core;
 
 namespace Mono.TextEditor.Theatrics
 {
@@ -349,7 +350,7 @@ namespace Mono.TextEditor.Theatrics
 					Draw (cr, userspaceArea);
 				}
 			} catch (Exception e) {
-				Console.WriteLine ("Exception in animation:" + e);
+				LoggingService.LogError ("Exception in animation:", e);
 			}
 			return true;
 		}
