@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
-using MonoDevelop.Components.AtkCocoaHelper;
 using System.Linq;
 using MonoDevelop.Ide.Editor.Extension;
 using System.ComponentModel;
@@ -67,16 +66,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public CompletionListWindowGtk (WindowType type = WindowType.Popup) : base (type)
 		{
-			Title = GettextCatalog.GetString ("Completion Suggestions");
-			Accessible.Name = Title;
-
 			vbox = new VBox ();
-			vbox.Accessible.Role = Atk.Role.Filler;
-
 			list = new ListWidget (this);
-			list.Accessible.SetCommonAttributes ("CompletionListWindow.CompletionList",
-			                                     GettextCatalog.GetString ("Suggestion List"),
-			                                     GettextCatalog.GetString ("Select a completion suggestion from the list"));
 			list.ScrollEvent += OnScrolled;
 
 			scrollbar = new MonoDevelop.Components.CompactScrolledWindow ();
@@ -332,7 +323,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void ICompletionView.Show ()
 		{
 			ShowAll ();
-
 			DesktopService.RemoveWindowShadow (this);
 		}
 
