@@ -85,7 +85,6 @@ namespace MonoDevelop.Projects.MSBuild
 							foreach (var p in globalProperties)
 								project.SetGlobalProperty (p.Key, p.Value);
 						}
-						project.ReevaluateIfNecessary ();
 					}
 
 					// Building the project will create items and alter properties, so we use a new instance
@@ -134,7 +133,6 @@ namespace MonoDevelop.Projects.MSBuild
 							project.RemoveGlobalProperty (p.Key);
 						foreach (var p in originalGlobalProperties)
 							project.SetGlobalProperty (p.Key, p.Value);
-						project.ReevaluateIfNecessary ();
 					}
 				}
 			});
@@ -197,15 +195,12 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 
-			bool reevaluate = false;
-
 			if (p.GetPropertyValue ("Configuration") != configuration || (p.GetPropertyValue ("Platform") ?? "") != (platform ?? "")) {
 				p.SetGlobalProperty ("Configuration", configuration);
 				if (!string.IsNullOrEmpty (platform))
 					p.SetGlobalProperty ("Platform", platform);
 				else
 					p.RemoveGlobalProperty ("Platform");
-				reevaluate = true;
 			}
 
 			// The CurrentSolutionConfigurationContents property only needs to be set once
@@ -214,11 +209,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (!buildEngine.BuildOperationStarted && this.file == file && p.GetPropertyValue ("CurrentSolutionConfigurationContents") != slnConfigContents) {
 				p.SetGlobalProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
-				reevaluate = true;
 			}
-
-			if (reevaluate)
-				p.ReevaluateIfNecessary ();
 
 			return p;
 		}
