@@ -350,7 +350,7 @@ namespace Mono.TextEditor.Theatrics
 					Draw (cr, userspaceArea);
 				}
 			} catch (Exception e) {
-				LoggingService.LogError ("Exception in animation:" + e);
+				LoggingService.LogError ("Exception in animation:", e);
 			}
 			return true;
 		}

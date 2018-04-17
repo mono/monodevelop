@@ -396,8 +396,8 @@ namespace Mono.TextEditor
 				if (font == null) {
 					try {
 						font = Pango.FontDescription.FromString (FontName);
-					} catch {
-						LoggingService.LogError ("Could not load font: {0}", FontName);
+					} catch (Exception e) {
+						LoggingService.LogError ("Could not load font: " + FontName, e);
 					}
 					if (font == null || String.IsNullOrEmpty (font.Family))
 						font = Pango.FontDescription.FromString (DEFAULT_FONT);
@@ -427,8 +427,8 @@ namespace Mono.TextEditor
 					try {
 						if (!string.IsNullOrEmpty (GutterFontName))
 							gutterFont = Pango.FontDescription.FromString (GutterFontName);
-					} catch {
-						LoggingService.LogError ("Could not load gutter font: {0}", GutterFontName);
+					} catch (Exception e) {
+						LoggingService.LogError ("Could not load gutter font: " + GutterFontName, e);
 					}
 					if (gutterFont == null || String.IsNullOrEmpty (gutterFont.Family))
 						gutterFont = Gtk.Widget.DefaultStyle.FontDescription.Copy ();

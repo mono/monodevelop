@@ -1419,7 +1419,7 @@ namespace Mono.TextEditor
 				try {
 					newText = TextPasteHandler.FormatPlainText (offset, text, copyData);
 				} catch (Exception e) {
-					LoggingService.LogError ("Text paste handler exception:" + e);
+					LoggingService.LogError ("Text paste handler exception", e);
 					newText = text;
 				}
 				if (newText != text) {

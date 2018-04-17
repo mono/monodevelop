@@ -160,7 +160,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 					SyntaxHighlighting.ReplaceSegment (segments, semanticSegment);
 				}
 			} catch (Exception e) {
-				LoggingService.LogError ("Error in semantic highlighting: " + e);
+				LoggingService.LogError ("Error in semantic highlighting: ", e);
 				return syntaxLine;
 			}
 			return new HighlightedLine (line, segments);

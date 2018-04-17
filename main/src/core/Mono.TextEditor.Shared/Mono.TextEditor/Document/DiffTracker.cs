@@ -86,7 +86,7 @@ namespace Mono.TextEditor
 					var lineNumber = startLine.LineNumber;
 					lineStates.RemoveRange (lineNumber, endRemoveLine.LineNumber - lineNumber);
 				} catch (Exception ex) {
-					LoggingService.LogError ("error while DiffTracker.TrackDocument_TextChanging:" + ex);
+					LoggingService.LogError ("error while DiffTracker.TrackDocument_TextChanging", ex);
 				}
 			}
 		}
@@ -113,7 +113,7 @@ namespace Mono.TextEditor
 					if (trackDocument != null)
 						trackDocument.CommitMultipleLineUpdate (lineNumber, lineNumber + insertedLines);
 				} catch (Exception ex) {
-					LoggingService.LogError ("error while DiffTracker.TrackDocument_TextChanged:" + ex);
+					LoggingService.LogError ("error while DiffTracker.TrackDocument_TextChanged", ex);
 				}
 			}
 		}

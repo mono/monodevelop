@@ -229,7 +229,7 @@ namespace Mono.TextEditor
 				var sb = new System.Text.StringBuilder ("Error while executing actions ");
 				foreach (var action in actions)
 					sb.AppendFormat (" {0}", action);
-				LoggingService.LogError (sb.ToString () + ": " + e);
+				LoggingService.LogError (sb.ToString (), e);
 			}
 		
 		}
