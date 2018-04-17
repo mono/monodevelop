@@ -113,7 +113,7 @@ namespace MonoDevelop.DotNetCore
 
 			var projectFrameworkVersion = Version.Parse (projectFramework.Version);
 
-			if (versions.Any (sdkVersion => IsSupported (projectFrameworkVersion, sdkVersion)))
+			if (versions.Any (sdkVersion => IsSupported (projectFramework, projectFrameworkVersion, sdkVersion)))
 				return true;
 
 			// .NET Core 1.x is supported by the MSBuild .NET Core SDKs if they are installed with Mono.
@@ -130,14 +130,33 @@ namespace MonoDevelop.DotNetCore
 		///
 		/// .NET Core SDK 1.0.4 supports .NET Core 1.0 and 1.1
 		/// .NET Core SDK 1.0.4 supports .NET Standard 1.0 to 1.6
-		/// .NET Core SDK 2.0 supports 1.0, 1.1 and 2.0
+		/// .NET Core SDK 2.0 supports .NET Core 1.0, 1.1 and 2.0
 		/// .NET Core SDK 2.0 supports .NET Standard 1.0 to 1.6 and 2.0
-		/// .NET Core SDK 2.1 supports 1.0, 1.1 and 2.0
-		/// .NET Core SDK 2.1 supports .NET Standard 1.0 to 1.6 and 2.0
+		/// .NET Core SDK 2.1.x (x &lt; 300) supports .NET Core 1.0, 1.1 and 2.0
+		/// .NET Core SDK 2.1.x (x &lt; 300) supports .NET Standard 1.0 to 1.6 and 2.0
+		/// .NET Core 2.1.300 supports .NET Core 1.0, 1.1, 2.0 and 2.1
+		/// .NET Core 2.1.300 supports .NET Standard 1.0 to 1.6, and 2.0, 2.1
 		/// </summary>
-		static bool IsSupported (Version projectFrameworkVersion, DotNetCoreVersion sdkVersion)
+		static bool IsSupported (TargetFrameworkMoniker projectFramework, Version projectFrameworkVersion, DotNetCoreVersion sdkVersion)
 		{
+			// Special case .NET Core 2.1.
+			if (IsNetCore21 (projectFramework, projectFrameworkVersion) && !SupportsNetCore21 (sdkVersion))
+				return false;
+
 			return sdkVersion.Major >= projectFrameworkVersion.Major;
+		}
+
+		static bool IsNetCore21 (TargetFrameworkMoniker framework, Version version)
+		{
+			return framework.IsNetCoreApp () && version.Major == 2 && version.Minor == 1;
+		}
+
+		/// <summary>
+		/// .NET Core 2.1.300 SDK is the lowest version that supports .NET Core App 2.1
+		/// </summary>
+		static bool SupportsNetCore21 (DotNetCoreVersion version)
+		{
+			return version.Major >= 2 && version.Minor >= 1 && version.Patch >= 300;
 		}
 
 		/// <summary>
