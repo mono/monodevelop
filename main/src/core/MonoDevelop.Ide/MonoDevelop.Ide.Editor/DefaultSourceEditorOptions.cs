@@ -596,7 +596,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		ConfigurationProperty<bool> showFoldMargin = ConfigurationProperty.Create ("ShowFoldMargin", false);
+		ConfigurationProperty<bool> showFoldMargin = ConfigurationProperty.Create ("ShowFoldMargin", true);
 		public bool ShowFoldMargin {
 			get {
 				return showFoldMargin;
