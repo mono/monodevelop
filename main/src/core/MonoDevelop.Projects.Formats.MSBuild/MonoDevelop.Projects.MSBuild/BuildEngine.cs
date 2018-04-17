@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		static CultureInfo uiCulture;
 		readonly Dictionary<string, string> unsavedProjects = new Dictionary<string, string> ();
-		readonly ProjectCollection engine = new ProjectCollection { DefaultToolsVersion = MSBuildConsts.Version };
+		readonly ProjectCollection engine = ProjectCollection.GlobalProjectCollection;
 		MSBuildLoggerAdapter loggerAdapter;
 
 		IEngineLogWriter sessionLogWriter;
