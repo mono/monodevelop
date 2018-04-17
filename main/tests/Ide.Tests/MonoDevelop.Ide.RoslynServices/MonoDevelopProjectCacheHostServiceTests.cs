@@ -30,6 +30,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Host;
 using NUnit.Framework;
+using UnitTests;
 
 namespace MonoDevelop.Ide.RoslynServices
 {

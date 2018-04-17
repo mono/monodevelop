@@ -4,7 +4,7 @@ using System;
 using System.Runtime.CompilerServices;
 using NUnit.Framework;
 
-namespace MonoDevelop.Ide.RoslynServices
+namespace UnitTests
 {
 	public static class ObjectReference
 	{
