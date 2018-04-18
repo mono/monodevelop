@@ -1093,6 +1093,9 @@ namespace Mono.TextEditor
 		{
 			if (isDisposed || logicalLine > LineCount || logicalLine < DocumentLocation.MinLine)
 				return;
+
+			textViewMargin.RemoveCachedLine(logicalLine);
+
 			double y = LineToY (logicalLine) - this.textEditorData.VAdjustment.Value;
 			double h = GetLineHeight (logicalLine);
 
