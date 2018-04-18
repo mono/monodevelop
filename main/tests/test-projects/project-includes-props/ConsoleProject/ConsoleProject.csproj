@@ -3,6 +3,8 @@
     <ProjectGuid>{4A9E3523-48F0-4BDF-A0F4-49DAD4431FAB}</ProjectGuid>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FrameworkAlias>Mac</FrameworkAlias>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <Import Project="Common.props" />
 
