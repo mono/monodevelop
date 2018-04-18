@@ -264,7 +264,7 @@ namespace Mono.TextEditor
 
 		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
 		{
-			if (args.Changes == null)
+			if (args.Changes == null || args.Changes.Count == 0)
 				return;
 			var changes = new List<TextChange> ();
 			foreach (var change in args.Changes) {
