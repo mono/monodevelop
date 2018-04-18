@@ -82,9 +82,7 @@ namespace MonoDevelop.Ide.Tasks
 				Task.Run (async () => {
 					try {
 						await tags.UpdateAsync (project, files, token);
-					} catch (TaskCanceledException) {
-					} catch (AggregateException ae) {
-						ae.Flatten ().Handle (x => x is TaskCanceledException);
+					} catch (OperationCanceledException) {
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while updating comment tags.", e);
 					}
@@ -107,7 +105,7 @@ namespace MonoDevelop.Ide.Tasks
 				var token = src.Token;
 
 				Task.Run (delegate {
-					sln.SolutionItemAdded += delegate (object sender, SolutionItemChangeEventArgs e) {
+					sln.SolutionItemAdded += (sender, e) => {
 						var newProject = e.SolutionItem as Project;
 						if (newProject == null)
 							return;
@@ -151,9 +149,7 @@ namespace MonoDevelop.Ide.Tasks
 				Task.Run (async () => {
 					try {
 						tags.UpdateTags (project, file, await pd.GetTagCommentsAsync (token).ConfigureAwait (false));
-					} catch (TaskCanceledException) {
-					} catch (AggregateException ae) {
-						ae.Flatten ().Handle (x => x is TaskCanceledException);
+					} catch (OperationCanceledException) {
 					}
 				});
 			}
