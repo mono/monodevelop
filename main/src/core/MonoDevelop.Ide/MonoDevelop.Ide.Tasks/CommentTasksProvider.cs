@@ -72,7 +72,13 @@ namespace MonoDevelop.Ide.Tasks
 		static Dictionary<object, TodoItemsUpdatedArgs> cachedUntilViewCreated = new Dictionary<object, TodoItemsUpdatedArgs> ();
 		internal static void LoadCachedContents ()
 		{
+			if (cachedUntilViewCreated == null)
+				return;
+
 			lock (lockObject) {
+				if (cachedUntilViewCreated == null)
+					return;
+
 				foreach (var args in cachedUntilViewCreated) {
 					if (!TryGetDocument (args.Value, out var doc, out var project))
 						continue;

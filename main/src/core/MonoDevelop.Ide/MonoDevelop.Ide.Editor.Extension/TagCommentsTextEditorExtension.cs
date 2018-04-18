@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 			if (token.IsCancellationRequested)
 				return;
-			Application.Invoke ((o, args2) => {
+			Runtime.RunInMainThread (() => {
 				if (token.IsCancellationRequested || isDisposed)
 					return;
 				tasks = newTasks.ToImmutable ();

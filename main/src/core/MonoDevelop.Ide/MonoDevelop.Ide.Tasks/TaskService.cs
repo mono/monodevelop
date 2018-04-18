@@ -189,6 +189,9 @@ namespace MonoDevelop.Ide.Tasks
 
 		internal static void InformCommentTasks (CommentTasksChangedEventArgs args)
 		{
+			if (args.Changes.Count == 0)
+				return;
+
 			var handler = CommentTasksChanged;
 			if (handler != null)
 				handler (null, args);
