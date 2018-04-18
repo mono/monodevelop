@@ -20,7 +20,6 @@
 		<Section id = "LoadSave" _label = "Load/Save" class = "MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanel" icon="md-prefs-load-save" />
 		<Section id = "Build" _label = "Build" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildPanel" icon="md-prefs-build">
 			<Panel id = "BuildMessages" _label = "Errors and Warnings" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanel" />
-			<Panel id = "Directories" _label = "Assembly Folders" class = "MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanel" />
 		</Section>
 		<Section id = "MonoRuntime" _label = ".NET Runtimes" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanel" />
 		<Section id = "SdkLocations" _label = "SDK Locations" icon = "md-prefs-sdk-locations" />
