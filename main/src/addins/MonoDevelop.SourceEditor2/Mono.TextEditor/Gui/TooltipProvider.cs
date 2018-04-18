@@ -39,6 +39,10 @@ namespace Mono.TextEditor
 			return false;
 		}
 
+		public virtual void TakeMouseControl (MonoTextEditor editor, Xwt.WindowFrame tipWindow)
+		{
+		}
+
 		protected virtual void GetRequiredPosition (MonoTextEditor editor, Xwt.WindowFrame tipWindow, out int requiredWidth, out double xalign)
 		{
 			requiredWidth = (int)tipWindow.Width;
