@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			CellTextSelectionColor = Ide.Gui.Styles.BaseSelectionTextColor;
 			CellTextSkippedColor = Ide.Gui.Styles.SecondaryTextColor;
 			CellTextSkippedSelectionColor = Ide.Gui.Styles.SecondarySelectionTextColor;
-			LinkForegroundColor = Ide.Gui.Styles.LinkForegroundColor;
+			LinkForegroundColor = Xwt.Drawing.Color.FromName ("#999999");
 			SearchMatchFocusedBackgroundColor = Xwt.Drawing.Color.FromName ("#fcff54");
 			CellTextSelectionColorSecundary = Colors.LightBlue;
 		}
