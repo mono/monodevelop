@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.Platform
             this.textDocument = textView.GetTextEditor();
         }
 
-        public Task<HighlightedLine> GetHighlightedLineAsync(IDocumentLine line, CancellationToken cancellationToken)
+        public async Task<HighlightedLine> GetHighlightedLineAsync(IDocumentLine line, CancellationToken cancellationToken)
         {
             //TODO verify that the snapshot line from this.textBuffer is equivalent to the document line converted to a snapshotline.
             //Possibly take in a TextDataModel as a parameter and verify the buffers are appropriate.
@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.Platform
             ITextSnapshotLine snapshotLine = textBuffer.CurrentSnapshot.GetLineFromLineNumber (line.LineNumber - 1);
             if ((this.classifier == null) || (snapshotLine == null))
             {
-                return Task.FromResult(new HighlightedLine(line, new[] { new ColoredSegment(0, line.Length, ScopeStack.Empty) }));
+                return new HighlightedLine(line, new[] { new ColoredSegment(0, line.Length, ScopeStack.Empty) });
             }
 
             List<ColoredSegment> coloredSegments = new List<ColoredSegment>();
@@ -64,7 +64,8 @@ namespace Microsoft.VisualStudio.Platform
             int lastClassifiedOffsetEnd = snapshotSpan.Start;
             ScopeStack scopeStack;
 
-            IList<ClassificationSpan> classifications = this.classifier.GetClassificationSpans(snapshotSpan);
+            IList<ClassificationSpan> classifications = await MonoDevelop.Core.Runtime.RunInMainThread (() => this.classifier.GetClassificationSpans (snapshotSpan));
+
             foreach (ClassificationSpan curSpan in classifications)
             {
                 if (curSpan.Span.Start > lastClassifiedOffsetEnd)
@@ -90,7 +91,7 @@ namespace Microsoft.VisualStudio.Platform
             }
 
             HighlightedLine result = new HighlightedLine(line, coloredSegments);
-            return Task.FromResult(result);
+            return result;
         }
 
         public Task<ScopeStack> GetScopeStackAsync(int offset, CancellationToken cancellationToken)

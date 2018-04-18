@@ -32,7 +32,6 @@ using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Projects.Extensions;
 using System.Threading.Tasks;
 using System.Linq;
 
@@ -51,17 +50,13 @@ namespace MonoDevelop.Projects.MSBuild
 		public static readonly MSBuildFileFormat VS2008 = new MSBuildFileFormatVS08 ();
 		public static readonly MSBuildFileFormat VS2010 = new MSBuildFileFormatVS10 ();
 		public static readonly MSBuildFileFormat VS2012 = new MSBuildFileFormatVS12 ();
-		public static readonly MSBuildFileFormat VS2017 = new MSBuildFileFormatVS15 ();
+
+		[Obsolete("This is the same as VS2012")]
+		public static readonly MSBuildFileFormat VS2017 = VS2012;
 
 		public static IEnumerable<MSBuildFileFormat> GetSupportedFormats ()
 		{
-			// Return VS2012 format first since this is the default format used.
-			// If VS2017 is returned first then since it uses the same solution file
-			// version it would be used instead. This would cause the tools version for
-			// new projects added to an existing solution to be changed to 15.0 instead
-			// of using 4.0 which is the current default.
 			yield return VS2012;
-			yield return VS2017;
 			yield return VS2010;
 			yield return VS2008;
 			yield return VS2005;
@@ -367,40 +362,12 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		public override string ProductDescription {
-			get { return "Visual Studio 2012"; }
+			get { return "Visual Studio 15"; }
 		}
 
 		protected override bool SupportsToolsVersion (string version)
 		{
-			return version == "4.0" || version == "12.0" || version == "14.0";
-		}
-	}
-
-	class MSBuildFileFormatVS15: MSBuildFileFormat
-	{
-		public override string Id {
-			get { return "MSBuild15"; }
-		}
-
-		public override Version Version {
-			get { return new Version ("2017"); }
-		}
-
-		public override string DefaultToolsVersion {
-			get { return "15.0"; }
-		}
-
-		public override string SlnVersion {
-			get { return "12.00"; }
-		}
-
-		public override string ProductDescription {
-			get { return "Visual Studio 2017"; }
-		}
-
-		protected override bool SupportsToolsVersion (string version)
-		{
-			return version == "15.0";
+			return version == "4.0" || version == "12.0" || version == "14.0" || version == "15.0";
 		}
 	}
 }

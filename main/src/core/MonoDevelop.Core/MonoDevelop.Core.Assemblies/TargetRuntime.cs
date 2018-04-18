@@ -73,7 +73,6 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			assemblyContext = new RuntimeAssemblyContext (this);
 			composedAssemblyContext = new ComposedAssemblyContext ();
-			composedAssemblyContext.Add (Runtime.SystemAssemblyService.UserAssemblyContext);
 			composedAssemblyContext.Add (assemblyContext);
 
 			InternalId = Interlocked.Increment (ref internalIdCounter);

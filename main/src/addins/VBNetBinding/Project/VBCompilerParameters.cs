@@ -104,11 +104,14 @@ namespace MonoDevelop.VBNetBinding
 		[ItemProperty ("AdditionalParameters")]
 		string additionalParameters = String.Empty;
 
+		/// <summary>
+		/// VB.NET compiler does not support ';' as symbol separators so use ','
+		/// </summary>
 		public override void AddDefineSymbol (string symbol)
 		{
 			var symbols = new List<string> (GetDefineSymbols ());
 			symbols.Add (symbol);
-			definesymbols = string.Join (";", symbols) + ";";
+			definesymbols = string.Join (",", symbols) + ",";
 		}
 		
 		public override void RemoveDefineSymbol (string symbol)
@@ -118,14 +121,14 @@ namespace MonoDevelop.VBNetBinding
 			symbols.Remove (symbol);
 			
 			if (symbols.Count > 0)
-				definesymbols = string.Join (";", symbols) + ";";
+				definesymbols = string.Join (",", symbols) + ",";
 			else
 				definesymbols = string.Empty;
 		}
 
 		public override IEnumerable<string> GetDefineSymbols ()
 		{
-			foreach (var s in definesymbols.Split (new [] { ';' }))
+			foreach (var s in definesymbols.Split (new [] { ',' }))
 				if (!string.IsNullOrEmpty (s))
 					yield return s;
 		}
