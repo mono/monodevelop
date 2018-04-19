@@ -495,7 +495,7 @@ namespace MonoDevelop.Ide
 			}
 
 			try {
-				return await OpenWorkspaceItemInternal (file, closeCurrent, loadPreferences, metadata);
+				return await OpenWorkspaceItemInternal (file, closeCurrent, loadPreferences, metadata, null);
 			}
 			finally {
 				lock (loadLock) {
@@ -509,10 +509,10 @@ namespace MonoDevelop.Ide
 
 		public Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences)
 		{
-			return OpenWorkspaceItemInternal (file, closeCurrent, loadPreferences, null);
+			return OpenWorkspaceItemInternal (file, closeCurrent, loadPreferences, null, null);
 		}
 
-		async Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences, IDictionary<string, string> metadata)
+		internal async Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences, IDictionary<string, string> metadata, ProgressMonitor loadMonitor)
 		{
 			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
 			if (item != null) {
@@ -526,7 +526,7 @@ namespace MonoDevelop.Ide
 					return false;
 			}
 
-			var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true);
+			var monitor = loadMonitor ?? IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true);
 			bool reloading = IsReloading;
 
 			monitor = monitor.WithCancellationSource (openingItemCancellationSource);

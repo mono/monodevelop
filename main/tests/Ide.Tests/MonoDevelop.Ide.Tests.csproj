@@ -118,6 +118,8 @@
     <Compile Include="MonoDevelop.Ide\MonoDocDocumentationProviderTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditorConfigTests.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\PclToProjectJsonConversionTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Tasks\CommentTasksProviderTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Tasks\CommentTasksProviderTests.Controller.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -184,6 +186,7 @@
     <Folder Include="MonoDevelop.Components.PropertyGrid\" />
     <Folder Include="MonoDevelop.SourceEditor\" />
     <Folder Include="MonoDevelop.Components\" />
+    <Folder Include="MonoDevelop.Ide.Tasks\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

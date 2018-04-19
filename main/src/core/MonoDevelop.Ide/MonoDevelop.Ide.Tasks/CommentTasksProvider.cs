@@ -32,6 +32,7 @@ using Microsoft.CodeAnalysis.Editor;
 using Microsoft.CodeAnalysis.Editor.Implementation.TodoComments;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -43,7 +44,8 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			todoListProvider = Ide.Composition.CompositionManager.GetExportedValue<ITodoListProvider> ();
 
-			Ide.IdeApp.Workspace.SolutionLoaded += OnSolutionLoaded;
+			IdeApp.Workspace.SolutionLoaded += OnSolutionLoaded;
+			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceItemClosed;
 			CommentTag.SpecialCommentTagsChanged += OnSpecialTagsChanged;
 
 			todoListProvider.TodoListUpdated += OnTodoListUpdated;
@@ -70,47 +72,78 @@ namespace MonoDevelop.Ide.Tasks
 
 		static object lockObject = new object ();
 		static Dictionary<object, TodoItemsUpdatedArgs> cachedUntilViewCreated = new Dictionary<object, TodoItemsUpdatedArgs> ();
+
 		internal static void LoadCachedContents ()
 		{
-			if (cachedUntilViewCreated == null)
-				return;
-
 			lock (lockObject) {
 				if (cachedUntilViewCreated == null)
 					return;
 
-				foreach (var args in cachedUntilViewCreated) {
-					if (!TryGetDocument (args.Value, out var doc, out var project))
-						continue;
-
-					var file = doc.Name;
-					var items = args.Value.TodoItems.SelectAsArray (x => x.ToTag ());
-					TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, items, project));
+				if (triggerLoad == null || triggerLoad.Invoke (cachedUntilViewCreated.Count)) {
+					var changes = cachedUntilViewCreated.Values.Select (x => x.ToCommentTaskChange ()).ToList ();
+					TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (changes));
+					cachedUntilViewCreated = null;
+					triggerLoad = null;
 				}
-				cachedUntilViewCreated = null;
+			}
+		}
+
+		public static CommentTaskChange ToCommentTaskChange (this TodoItemsUpdatedArgs args)
+		{
+			if (!TryGetDocument (args, out var doc, out var project))
+				return null;
+
+			var file = doc.Name;
+			var tags = args.TodoItems.Length == 0 ? (IReadOnlyList<Tag>)null : args.TodoItems.SelectAsArray (x => x.ToTag ());
+			return new CommentTaskChange (file, tags, project);
+		}
+
+		// Test helper utilities so we can test multiple tests for cached
+		#region Test Helpers
+		static Func<int, bool> triggerLoad;
+		internal static void ResetCachedContents (Func<int, bool> shouldTriggerLoad)
+		{
+			lock (lockObject) {
+				cachedUntilViewCreated = new Dictionary<object, TodoItemsUpdatedArgs> ();
+				triggerLoad = shouldTriggerLoad;
+			}
+		}
+
+		internal static int GetCachedContentsCount ()
+		{
+			lock (lockObject) {
+				if (cachedUntilViewCreated == null)
+					return -1;
+				return cachedUntilViewCreated.Count;
+			}
+		}
+
+		#endregion
+
+		static bool TryCache (TodoItemsUpdatedArgs args)
+		{
+			if (cachedUntilViewCreated == null)
+				return false;
+
+			lock (lockObject) {
+				if (cachedUntilViewCreated == null)
+					return false;
+
+				cachedUntilViewCreated [args.Id] = args;
+
+				if (triggerLoad != null)
+					LoadCachedContents ();
+				return true;
 			}
 		}
 
 		static void OnTodoListUpdated (object sender, TodoItemsUpdatedArgs args)
 		{
-			if (!TryGetDocument (args, out var doc, out var project))
+			if (TryCache (args))
 				return;
 
-			var file = doc.Name;
-			if (args.TodoItems.Length == 0)
-				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, null, project));
-			else {
-				if (cachedUntilViewCreated != null) {
-					lock (lockObject) {
-						if (cachedUntilViewCreated != null)
-							cachedUntilViewCreated [args.Id] = args;
-						return;
-					}
-				}
-
-				var items = args.TodoItems.SelectAsArray (x => x.ToTag ());
-				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, items, project));
-			}
+			var change = ToCommentTaskChange (args);
+			TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (new [] { change }));
 		}
 
 		public static void Initialize ()
@@ -119,18 +152,22 @@ namespace MonoDevelop.Ide.Tasks
 
 		static async void OnSolutionLoaded (object sender, SolutionEventArgs args)
 		{
-			var sol = args.Solution;
-
-			var ws = await TypeSystemService.GetWorkspaceAsync (sol);
+			var ws = await TypeSystemService.GetWorkspaceAsync (args.Solution);
 			UpdateWorkspaceOptions (ws);
+		}
 
-			foreach (var ea in todoListProvider.GetTodoItemsUpdatedEventArgs (ws, CancellationToken.None)) {
-				if (!TryGetDocument (ea, out var doc, out var project))
-					return;
+		static async void OnWorkspaceItemClosed (object sender, WorkspaceItemEventArgs args)
+		{
+			if (args.Item is MonoDevelop.Projects.Solution sol) {
+				var ws = await TypeSystemService.GetWorkspaceAsync (sol);
+				var solId = ws.GetSolutionId (sol);
 
-				var file = doc.Name;
-				var tags = todoListProvider.GetTodoItems (ea.Workspace, ea.DocumentId, CancellationToken.None).SelectAsArray (x => x.ToTag ());
-				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (file, tags, project));
+				lock (lockObject) {
+					if (cachedUntilViewCreated == null)
+						return;
+
+					cachedUntilViewCreated = cachedUntilViewCreated.Where (x => x.Value.Solution.Id != solId).ToDictionary (x => x.Key, x => x.Value);
+				}
 			}
 		}
 
