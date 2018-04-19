@@ -41,29 +41,45 @@ namespace MonoDevelop.Ide.Editor.Extension
 	class AutoInsertBracketTextEditorExtension : TextEditorExtension
 	{
 		const string extensionPoint = "/MonoDevelop/Ide/AutoInsertBracketHandler";
+		bool isEnabled;
 		List<AutoInsertBracketHandler> handlers;
 
 		protected override void Initialize ()
 		{
 			base.Initialize ();
 
-			//whenever the mimetype or the extension context has changed, refilter handlers
-			Editor.MimeTypeChanged += ContextChanged;
-			Editor.ExtensionContext.ExtensionChanged += ContextChanged;
+			SetEnabled (DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket);
 		}
 
-		void ContextChanged (object sender, EventArgs e)
+		void SetEnabled (bool enable)
 		{
+			if (isEnabled == enable) {
+				return;
+			}
+			if (enable) {
+				Editor.MimeTypeChanged += UpdateHandlers;
+				Editor.ExtensionContext.ExtensionChanged += UpdateHandlers;
+				UpdateHandlers (null, null);
+			} else {
+				Editor.MimeTypeChanged -= UpdateHandlers;
+				Editor.ExtensionContext.ExtensionChanged -= UpdateHandlers;
+				handlers = null;
+			}
+			isEnabled = enable;
+		}
+
+		void UpdateHandlers (object sender, EventArgs e)
+		{
+			//whenever the mimetype or the extension context has changed, refilter handlers
 			handlers = new List<AutoInsertBracketHandler> (
 				GetEditorExtensions (Editor, extensionPoint)
-				.Select (ext => (AutoInsertBracketHandler) ext.CreateInstance())
+				.Select (ext => (AutoInsertBracketHandler) ext.CreateInstance ())
 			);
 		}
 
 		public override void Dispose ()
 		{
-			Editor.MimeTypeChanged -= ContextChanged;
-			Editor.ExtensionContext.ExtensionChanged -= ContextChanged;
+			SetEnabled (false);
 			base.Dispose ();
 		}
 
@@ -71,11 +87,20 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			var result = base.KeyPress (descriptor);
 
-			if (DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket && !Editor.IsSomethingSelected) {
-				var handler = handlers.FirstOrDefault (h => h.CanHandle (Editor));
-				if (handler != null && handler.Handle (Editor, DocumentContext, descriptor))
-					return false;
+			// if the AutoInsertMatchingBracket option was changed since initialization
+			if (DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket != isEnabled) {
+				SetEnabled (DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket);
 			}
+
+			if (isEnabled && !Editor.IsSomethingSelected) {
+				foreach (var handler in handlers) {
+					if (handler.CanHandle (Editor)) {
+						handler.Handle (Editor, DocumentContext, descriptor);
+						break;
+					}
+				}
+			}
+
 			return result;
 		}
 
