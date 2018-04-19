@@ -96,9 +96,14 @@ namespace MonoDevelop.PackageManagement
 			get { return msbuildProjectPath; }
 		}
 
+		public static bool CanCreate (DotNetProject project)
+		{
+			return project.MSBuildProject.Sdk != null;
+		}
+
 		public static NuGetProject Create (DotNetProject project)
 		{
-			if (project.MSBuildProject.Sdk != null)
+			if (CanCreate (project))
 				return new DotNetCoreNuGetProject (project);
 
 			return null;
