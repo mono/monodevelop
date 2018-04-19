@@ -47,14 +47,13 @@ namespace MonoDevelop.Ide.Gui.Components
 		TextView textEditorControl;
 		TextMark endMark;
 
-		TextTag tag;
+		TextTag normalTag;
 		TextTag bold;
 		TextTag errorTag;
 		TextTag consoleLogTag;
 		TextTag debugTag;
 		int ident = 0;
 		List<TextTag> tags = new List<TextTag> ();
-		Stack<string> indents = new Stack<string> ();
 
 		readonly Queue<QueuedUpdate> updates = new Queue<QueuedUpdate> ();
 		QueuedTextWrite lastTextWrite;
@@ -270,12 +269,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			consoleLogTag = new TextTag ("consoleLog");
 			consoleLogTag.Foreground = Styles.SecondaryTextColor.ToHexString (false);
 			buffer.TagTable.Add (consoleLogTag);
-			
-			tag = new TextTag ("0");
-			tag.LeftMargin = 10;
-			buffer.TagTable.Add (tag);
-			tags.Add (tag);
-			
+
+			normalTag = new TextTag ("0");
+			normalTag.LeftMargin = 10;
+			buffer.TagTable.Add (normalTag);
+			tags.Add (normalTag);
+
 			endMark = buffer.CreateMark ("end-mark", buffer.EndIter, false);
 
 			UpdateCustomFont ();
@@ -553,48 +552,51 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		protected void UnsafeBeginTask (LogViewProgressMonitor monitor, string name, int totalWork)
 		{
-			if (!string.IsNullOrEmpty (name) && monitor != null) {
+			if (monitor != null) {
 				var indent = monitor.Indent;
-				var t = indent.Indent ();
-				buffer.TagTable.Add (t);
-				indents.Push (name);
-			} else
-				indents.Push (null);
+				var t = indent.Indent (name);
+
+				if (buffer.TagTable.Lookup (t.Name) == null) {
+					buffer.TagTable.Add (t);
+				}
+			}
 
 			if (name != null)
-				UnsafeAddText (null, Environment.NewLine + name + Environment.NewLine, bold);
+				UnsafeAddText (null, Environment.NewLine + name + Environment.NewLine, normalTag, bold);
 			else {
-				UnsafeAddText (null, Environment.NewLine, null);
+				UnsafeAddText (null, Environment.NewLine, normalTag, null);
 			}
 
 			var marker = buffer.CreateMark (name, buffer.EndIter, false);
 			if (monitor != null) {
 				monitor.Marker = marker;
 			}
-			UnsafeAddText (null, Environment.NewLine, null);
+			UnsafeAddText (null, Environment.NewLine, normalTag, null);
 
 			// Move the mark to the line before EndIter, so other text inserted at EndIter
 			// doesn't move this mark.
 			buffer.MoveMark (marker, buffer.GetIterAtOffset (buffer.CharCount - 1));
 		}
 
+		[Obsolete ("Use BeginTask (LogviewProgressMonitor, string, int) instead")]
 		public void BeginTask (string name, int totalWork)
 		{
 			BeginTask (null, name, totalWork);
 		}
 
-		internal void BeginTask (LogViewProgressMonitor monitor, string name, int totalWork)
+		public void BeginTask (LogViewProgressMonitor monitor, string name, int totalWork)
 		{
 			var bt = new QueuedBeginTask (monitor, name, totalWork);
 			addQueuedUpdate (bt);
 		}
 
+		[Obsolete ("Use EndTask (LogViewProgressMonitor) instead")]
 		public void EndTask ()
 		{
 			EndTask (null);
 		}
 
-		internal void EndTask (LogViewProgressMonitor monitor)
+		public void EndTask (LogViewProgressMonitor monitor)
 		{
 			var et = new QueuedEndTask (monitor);
 			addQueuedUpdate (et);
@@ -602,14 +604,15 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		protected void UnsafeEndTask (LogViewProgressMonitor monitor)
 		{
-			if (indents.Count > 0 && indents.Pop () != null) {
-				if (monitor != null) {
+			if (monitor != null) {
+				if (buffer.TagTable.Lookup (monitor.Indent.IndentTag.Name) != null) {
 					buffer.TagTable.Remove (monitor.Indent.IndentTag);
-					monitor.Indent.Unindent ();
 				}
+				monitor.Indent.Unindent ();
 			}
 		}
 
+		[Obsolete ("Use WriteText (LogViewProgressMonitor, string) instead")]
 		public void WriteText (string text)
 		{
 			WriteText (null, text);
@@ -631,6 +634,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			addQueuedUpdate (qtw);
 		}
 
+		[Obsolete ("Use WriteConsoleLogText (LogViewProgressMonitor, string) instead")]
 		public void WriteConsoleLogText (string text)
 		{
 			WriteConsoleLogText (null, text);
@@ -649,6 +653,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			addQueuedUpdate (w);
 		}
 
+		[Obsolete ("Use WriteError (LogViewProgressMonitor, string) instead")]
 		public void WriteError (string text)
 		{
 			WriteError (null, text);
@@ -660,6 +665,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			addQueuedUpdate (w);
 		}
 
+		[Obsolete ("Use WriteDebug (LogViewProgressMonitor, int, string, string) instead")]
 		public void WriteDebug (int level, string category, string message)
 		{
 			WriteDebug (null, level, category, message);
@@ -683,7 +689,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return scrollView.Vadjustment.Value + scrollView.Vadjustment.PageSize >= scrollView.Vadjustment.Upper;
 		}
 
-		protected void UnsafeAddText (TextMark mark, string text, TextTag extraTag)
+		protected void UnsafeAddText (TextMark mark, string text, TextTag indentTag, TextTag extraTag)
 		{
 			//don't allow the pad to hold more than MAX_BUFFER_LENGTH chars
 			int overrun = (buffer.CharCount + text.Length) - MAX_BUFFER_LENGTH;
@@ -704,9 +710,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 
 			if (extraTag != null)
-				buffer.InsertWithTags (ref it, text, tag, extraTag);
+				buffer.InsertWithTags (ref it, text, indentTag ?? normalTag, extraTag);
 			else
-				buffer.InsertWithTags (ref it, text, tag);
+				buffer.InsertWithTags (ref it, text, indentTag ?? normalTag);
 			
 			if (scrollToEnd) {
 				it.LineOffset = 0;
@@ -741,7 +747,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public override void Execute (LogView pad)
 			{
-				pad.UnsafeAddText (Monitor?.Marker, Text.ToString (), Tag);
+				pad.UnsafeAddText (Monitor?.Marker, Text.ToString (), Monitor?.Indent.IndentTag, Tag);
 			}
 			
 			public QueuedTextWrite (LogViewProgressMonitor monitor, string text, TextTag tag)
@@ -806,37 +812,39 @@ namespace MonoDevelop.Ide.Gui.Components
 		internal class IndentTracker {
 			static int trackerID = 0;
 
-			List<TextTag> tags = new List<TextTag> ();
+			Stack<TextTag> tags = new Stack<TextTag> ();
 			public TextTag IndentTag;
 
 			int indent = 0;
-			public TextTag Indent ()
+			public TextTag Indent (string name)
 			{
 				TextTag tag;
 
 				indent++;
-				if (indent >= tags.Count) {
-					// create a unique tagname
-					// Fixes VSTS 584931
-					tag = new TextTag ($"{trackerID}-{indent}");
-					System.Console.WriteLine ($"{tag.Name}");
-					trackerID++;
+				// create a unique tagname
+				// Fixes VSTS 584931
+				string tagname = $"{trackerID} - {indent} - {name ?? "(no name)"}";
+				tag = new TextTag (tagname);
+				trackerID++;
 
-					tag.LeftMargin = 10 + 15 * (indent - 1);
-					tags.Add (tag);
-				} else {
-					tag = tags [indent];
-				}
+				tag.LeftMargin = 10 + 15 * (indent - 1);
+				tags.Push (tag);
 
 				IndentTag = tag;
+
 				return tag;
 			}
 
 			public void Unindent ()
 			{
-				if (indent >= 0) {
+				var tag = tags.Pop ();
+				if (tag != null) {
 					indent--;
-					IndentTag = tags [indent];
+					if (tags.Count > 0) {
+						IndentTag = tags.Peek ();
+					} else {
+						IndentTag = null;
+					}
 				}
 			}
 		}
