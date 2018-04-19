@@ -24,9 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Ide;
+using MonoDevelop.PackageManagement.Commands;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -42,6 +40,11 @@ namespace MonoDevelop.PackageManagement
 			if (e.Project.HasPackagesConfig ()) {
 				var runner = new PackageCompatibilityRunner (e.Project);
 				runner.Run ();
+			} else if (DotNetCoreNuGetProject.CanCreate (e.Project.DotNetProject)) {
+				// Ignore - .NET Core project target framework changes are handled
+				// by the DotNetCoreProjectExtension.
+			} else if (PackageReferenceNuGetProject.CanCreate (e.Project.DotNetProject)) {
+				RestorePackagesInProjectHandler.Run (e.Project.DotNetProject);
 			}
 		}
 	}
