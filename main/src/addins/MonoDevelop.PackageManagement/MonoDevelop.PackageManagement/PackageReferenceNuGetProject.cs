@@ -91,9 +91,14 @@ namespace MonoDevelop.PackageManagement
 			get { return msbuildProjectPath; }
 		}
 
+		public static bool CanCreate (DotNetProject project)
+		{
+			return project.HasPackageReferences () || project.HasPackageReferenceRestoreProjectStyle ();
+		}
+
 		public static NuGetProject Create (DotNetProject project)
 		{
-			if (project.HasPackageReferences () || project.HasPackageReferenceRestoreProjectStyle ())
+			if (CanCreate (project))
 				return new PackageReferenceNuGetProject (project);
 
 			return null;
