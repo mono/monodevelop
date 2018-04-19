@@ -76,7 +76,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 			src.Cancel ();
 			src = new CancellationTokenSource ();
 			var token = src.Token;
-			// TODO: If document is null, wait for document changed and query.
 			if (DocumentContext.AnalysisDocument == null || DocumentContext.AnalysisDocument.Id != args.DocumentId)
 				return;
 
@@ -90,18 +89,16 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return;
 
 			var newTasks = ImmutableArray<QuickTask>.Empty.ToBuilder ();
-			foreach (var todoItem in args.TodoItems) {
-				if (token.IsCancellationRequested)
-					return;
-
-				var offset = Editor.LocationToOffset (todoItem.MappedLine, todoItem.MappedColumn);
-				var newTask = new QuickTask (todoItem.Message, offset, DiagnosticSeverity.Info);
-				newTasks.Add (newTask);
-			}
-
-			if (token.IsCancellationRequested)
-				return;
 			Runtime.RunInMainThread (() => {
+				foreach (var todoItem in args.TodoItems) {
+					if (token.IsCancellationRequested)
+						return;
+
+					var offset = Editor.LocationToOffset (todoItem.MappedLine, todoItem.MappedColumn);
+					var newTask = new QuickTask (todoItem.Message, offset, DiagnosticSeverity.Info);
+					newTasks.Add (newTask);
+				}
+
 				if (token.IsCancellationRequested || isDisposed)
 					return;
 				tasks = newTasks.ToImmutable ();
