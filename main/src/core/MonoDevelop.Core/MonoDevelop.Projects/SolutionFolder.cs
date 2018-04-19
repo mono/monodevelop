@@ -668,9 +668,9 @@ namespace MonoDevelop.Projects
 			BuildResult cres = new BuildResult ();
 			cres.BuildCount = 0;
 
-			// Limit the number of concurrent builders to processors / 2
+			// Limit the number of concurrent builders to processors
 
-			var slotScheduler = new TaskSlotScheduler (Environment.ProcessorCount / 2);
+			var slotScheduler = new TaskSlotScheduler (Environment.ProcessorCount);
 
 			// Create a dictionary with the status objects of all items
 
