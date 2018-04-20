@@ -133,10 +133,24 @@ namespace MonoDevelop.Debugger
 								return true;
 							}
 						}
+					if (hash.Length > 0 && hash [0] == 32)
+						using (var sha1 = SHA256.Create ()) {
+							if (sha1.ComputeHash (fs).Take (15).SequenceEqual (hash.Skip (1))) {
+								return true;
+							}
+						}
 					if (hash.Length == 20) {
 						using (var sha1 = SHA1.Create ()) {
 							fs.Position = 0;
 							if (sha1.ComputeHash (fs).SequenceEqual (hash)) {
+								return true;
+							}
+						}
+					}
+					if (hash.Length == 32) {
+						using (var sha256 = SHA256.Create ()) {
+							fs.Position = 0;
+							if (sha256.ComputeHash (fs).SequenceEqual (hash)) {
 								return true;
 							}
 						}
