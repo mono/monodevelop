@@ -266,6 +266,9 @@ namespace MonoDevelop.Core.Assemblies
 		
 		internal protected virtual IEnumerable<string> GetFrameworkFolders (TargetFramework fx)
 		{
+			if (fx.FrameworkAssembliesDirectory != null) {
+				return new string [] { fx.FrameworkAssembliesDirectory };
+			}
 			return GetBackend (fx).GetFrameworkFolders ();
 		}
 
@@ -547,14 +550,12 @@ namespace MonoDevelop.Core.Assemblies
 				// A framework is installed if the assemblies directory exists and the first
 				// assembly of the list exists.
 				if (frameworks.Add (fx.Id) && IsInstalled (fx)) {
-					timer.Trace ("Registering assemblies for framework " + fx.Id);
 					RegisterSystemAssemblies (fx);
 				}
 			}
 			
 			foreach (TargetFramework fx in CustomFrameworks) {
 				if (frameworks.Add (fx.Id) && IsInstalled (fx)) {
-					timer.Trace ("Registering assemblies for framework " + fx.Id);
 					RegisterSystemAssemblies (fx);
 				}
 			}
