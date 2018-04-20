@@ -40,7 +40,6 @@ namespace MonoDevelop.PackageManagement.Commands
 	{
 		protected override void Run ()
 		{
-			ClearUpdatedPackages ();
 			IdeApp.Workspace.SolutionLoaded += SolutionLoaded;
 			IdeApp.Workspace.SolutionUnloaded += SolutionUnloaded;
 			IdeApp.Workspace.ItemUnloading += WorkspaceItemUnloading;
@@ -48,13 +47,18 @@ namespace MonoDevelop.PackageManagement.Commands
 			FileService.FileChanged += FileChanged;
 		}
 
-		async void SolutionLoaded (object sender, SolutionEventArgs e)
+		void SolutionLoaded (object sender, SolutionEventArgs e)
+		{
+			Task.Run (() => OnSolutionLoaded (e.Solution)).Ignore ();
+		}
+
+		async Task OnSolutionLoaded (Solution solution)
 		{
 			try {
 				if (ShouldRestorePackages) {
-					await RestoreAndCheckForUpdates (e.Solution);
-				} else if (ShouldCheckForUpdates && AnyProjectHasPackages (e.Solution)) {
-					CheckForUpdates (e.Solution);
+					await RestoreAndCheckForUpdates (solution);
+				} else if (ShouldCheckForUpdates && AnyProjectHasPackages (solution)) {
+					CheckForUpdates (solution);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("PackageManagementStartupHandler error", ex);
