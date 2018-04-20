@@ -24,7 +24,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.IO;
 using System.Xml;
 using System.Collections.Generic;
 
@@ -33,9 +32,18 @@ namespace MonoDevelop.Core.Assemblies
 	public class SupportedFramework
 	{
 		public static readonly Version NoMaximumVersion = new Version (int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue);
-		public static readonly Version NoMinumumVersion = new Version (0, 0, 0, 0);
+		public static readonly Version NoMinimumVersion = new Version (0, 0, 0, 0);
 
+		[Obsolete("This was misspelled, use NoMinimumVersion")]
+		public static readonly Version NoMinumumVersion = NoMinimumVersion;
+
+		[Obsolete("Use the overload without a TargetFramework parameter")]
 		public SupportedFramework (TargetFramework target, string identifier, string display, string profile, Version minVersion, string minDisplayVersion)
+			: this (identifier, display, profile, minVersion, minDisplayVersion)
+		{
+		}
+
+		public SupportedFramework (string identifier, string display, string profile, Version minVersion, string minDisplayVersion)
 		{
 			MinimumVersionDisplayName = minDisplayVersion;
 			MinimumVersion = minVersion;
@@ -43,20 +51,16 @@ namespace MonoDevelop.Core.Assemblies
 			DisplayName = display;
 			Identifier = identifier;
 			Profile = profile;
-			
-			TargetFramework = target;
 		}
 
-		internal SupportedFramework (TargetFramework target)
+		internal SupportedFramework ()
 		{
 			MinimumVersionDisplayName = string.Empty;
-			MinimumVersion = NoMinumumVersion;
+			MinimumVersion = NoMinimumVersion;
 			MaximumVersion = NoMaximumVersion;
 			DisplayName = string.Empty;
 			Identifier = string.Empty;
 			Profile = string.Empty;
-			
-			TargetFramework = target;
 		}
 		
 		public string DisplayName {
@@ -90,10 +94,10 @@ namespace MonoDevelop.Core.Assemblies
 		public string MonoSpecificVersionDisplayName {
 			get; internal set;
 		}
-		
-		public TargetFramework TargetFramework {
-			get; private set;
-		}
+
+		//this referred to the "parent" rather than framework decsribed by this instance
+		[Obsolete ("This property was misleading and is no longer supported")]
+		public TargetFramework TargetFramework => TargetFramework.Default;
 		
 		static Version ParseVersion (string version, Version wildcard)
 		{
@@ -103,53 +107,83 @@ namespace MonoDevelop.Core.Assemblies
 			return Version.Parse (version);
 		}
 		
-		internal static SupportedFramework Load (TargetFramework target, FilePath path)
+		internal static SupportedFramework Load (FilePath path)
 		{
-			SupportedFramework fx = new SupportedFramework (target);
-
-			fx.DisplayName = path.FileNameWithoutExtension;
-			
 			using (var reader = XmlReader.Create (path)) {
 				if (!reader.ReadToDescendant ("Framework"))
 					throw new Exception ("Missing Framework element");
-				
-				if (!reader.HasAttributes)
-					throw new Exception ("Framework element does not contain any attributes");
-				
-				while (reader.MoveToNextAttribute ()) {
-					switch (reader.Name) {
-					case "MaximumVersion":
-						fx.MaximumVersion = ParseVersion (reader.Value, NoMaximumVersion);
-						break;
-					case "MinimumVersion":
-						fx.MinimumVersion = ParseVersion (reader.Value, NoMinumumVersion);
-						break;
-					case "Profile":
-						fx.Profile = reader.Value;
-						break;
-					case "Identifier":
-						fx.Identifier = reader.Value;
-						break;
-					case "MinimumVersionDisplayName":
-						fx.MinimumVersionDisplayName = reader.Value;
-						break;
-					case "DisplayName":
-						fx.DisplayName = reader.Value;
-						break;
-					case "MonoSpecificVersion":
-						fx.MonoSpecificVersion = reader.Value;
-						break;
-					case "MonoSpecificVersionDisplayName":
-						fx.MonoSpecificVersionDisplayName = reader.Value;
-						break;
-					}
+				var fx = LoadFromAttributes (reader);
+				if (string.IsNullOrEmpty (fx.DisplayName)) {
+					fx.DisplayName = path.FileNameWithoutExtension;
+				}
+				return fx;
+			}
+			
+		}
+		internal static SupportedFramework LoadFromAttributes (XmlReader reader)
+		{
+			var fx = new SupportedFramework ();
+			if (!reader.HasAttributes)
+				throw new Exception ("Framework element does not contain any attributes");
+
+			while (reader.MoveToNextAttribute ()) {
+				switch (reader.Name) {
+				case "MaximumVersion":
+					fx.MaximumVersion = ParseVersion (reader.Value, NoMaximumVersion);
+					break;
+				case "MinimumVersion":
+					fx.MinimumVersion = ParseVersion (reader.Value, NoMinimumVersion);
+					break;
+				case "Profile":
+					fx.Profile = reader.Value;
+					break;
+				case "Identifier":
+					fx.Identifier = reader.Value;
+					break;
+				case "MinimumVersionDisplayName":
+					fx.MinimumVersionDisplayName = reader.Value;
+					break;
+				case "DisplayName":
+					fx.DisplayName = reader.Value;
+					break;
+				case "MonoSpecificVersion":
+					fx.MonoSpecificVersion = reader.Value;
+					break;
+				case "MonoSpecificVersionDisplayName":
+					fx.MonoSpecificVersionDisplayName = reader.Value;
+					break;
 				}
 			}
 
 			if (string.IsNullOrEmpty (fx.Identifier))
 				throw new Exception ("Framework element did not specify an Identifier attribute");
-			
+
 			return fx;
+		}
+
+		internal void SaveAsElement (XmlWriter writer)
+		{
+			writer.WriteStartElement ("SupportedFramework");
+			if (MaximumVersion != NoMaximumVersion) {
+				writer.WriteAttributeString ("MaximumVersion", MaximumVersion.ToString ());
+			}
+			if (MinimumVersion != NoMinimumVersion) {
+				writer.WriteAttributeString ("MinimumVersion", MinimumVersion.ToString ());
+			}
+			WriteNonEmptyAttribute ("Profile", Profile);
+			WriteNonEmptyAttribute ("Identifier", Identifier);
+			WriteNonEmptyAttribute ("MinimumVersionDisplayName", MinimumVersionDisplayName);
+			WriteNonEmptyAttribute ("MonoSpecificVersion", MonoSpecificVersion);
+			WriteNonEmptyAttribute ("MonoSpecificVersionDisplayName", MonoSpecificVersionDisplayName);
+
+			writer.WriteEndElement ();
+
+			void WriteNonEmptyAttribute (string name, string val)
+			{
+				if (!string.IsNullOrEmpty (val)) {
+					writer.WriteAttributeString (name, val);
+				}
+			}
 		}
 
 		public override int GetHashCode ()
