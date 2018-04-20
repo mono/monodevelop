@@ -248,7 +248,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (!string.IsNullOrEmpty (pi.Project.Sdk)) {
 				var rootProject = pi.GetRootMSBuildProject ();
-				var sdkPaths = pi.Project.Sdk.Replace ('/', '\\')
+				var sdkPaths = pi.Project.Sdk
 				                 .Split (sdkPathSeparator, StringSplitOptions.RemoveEmptyEntries)
 				                 .Select (s => s.Trim ())
 				                 .Where (s => s.Length > 0)
