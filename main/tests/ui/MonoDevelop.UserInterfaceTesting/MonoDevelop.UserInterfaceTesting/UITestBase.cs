@@ -55,7 +55,9 @@ namespace MonoDevelop.UserInterfaceTesting
 
 		public string MonoDevelopBinPath { get; set; }
 
-		protected UITestBase () {}
+		protected UITestBase () : this (null)
+		{
+		}
 
 		protected UITestBase (string mdBinPath)
 		{
@@ -71,9 +73,35 @@ namespace MonoDevelop.UserInterfaceTesting
 				MonoDevelopBinPath = installedXS;
 				Console.WriteLine ("[UITEST] Using installed Visual Studio from this location: " + installedXS);
 			}
-			else {
+			else if (!string.IsNullOrEmpty (mdBinPath)){
 				Console.WriteLine ("[UITEST] Installed Visual Studio not found. Falling back to default behavior.");
 				MonoDevelopBinPath = mdBinPath;
+			} else {
+				Console.WriteLine ("[UITEST] Trying to work out where MonoDevelop is installed.");
+
+				var binDir = Path.GetDirectoryName (typeof(AutoTestClientSession).Assembly.Location);
+				Console.WriteLine ($"[UITEST] Starting with {binDir}");
+				var md = Path.Combine (binDir, "MonoDevelop");
+
+				if (!File.Exists (md)) {
+					// Find the main dir
+					var mainIdx = binDir.LastIndexOf ("main");
+					var main = binDir.Substring (0, mainIdx + 4);
+
+					Console.WriteLine ($"[UITEST] Found main at {main}");
+
+					md = Path.Combine (main, "build/bin/MonoDevelop");
+
+					if (!File.Exists (md)) {
+						throw new Exception ("Unable to find MonoDevelop");
+					} else {
+						Console.WriteLine ($"[UITEST] Found MonoDevelop at {md}");
+					}
+				} else {
+					Console.WriteLine ($"[UITEST] Found at {md}");
+				}
+
+				MonoDevelopBinPath = md;
 			}
 
 			currentWorkingDirectory = Directory.GetCurrentDirectory ();
@@ -85,24 +113,33 @@ namespace MonoDevelop.UserInterfaceTesting
 			testResultFolder = Path.Combine (currentWorkingDirectory, "TestResults");
 		}
 
-		[SetUp]
-		public virtual void SetUp ()
+		public void PreStart ()
 		{
 			SetupTestResultFolder ();
 			SetupTestLogger ();
 			SetupScreenshotsFolder ();
 			SetupIdeLogFolder ();
+		}
 
+		[SetUp]
+		public virtual void SetUp ()
+		{
+			PreStart ();
 			var mdProfile = Util.CreateTmpDir ();
-			TestService.StartSession (MonoDevelopBinPath, mdProfile);
-			TestService.Session.DebugObject = new UITestDebug ();
 
+			TestService.Session.DebugObject = new UITestDebug ();
+			StartSession (mdProfile);
 			FoldersToClean.Add (mdProfile);
 
 			Session.WaitForElement (IdeQuery.DefaultWorkbench);
 			TakeScreenShot ("Application-Started");
 			CloseIfXamarinUpdateOpen ();
 			TakeScreenShot ("Application-Ready");
+		}
+
+		public void StartSession (string mdProfile)
+		{
+			TestService.StartSession (MonoDevelopBinPath, mdProfile);
 		}
 
 		[TearDown]

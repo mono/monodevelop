@@ -32,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Test.cs" />
+    <Compile Include="TestStartup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -48,6 +49,10 @@
     <ProjectReference Include="..\..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ui\MonoDevelop.UserInterfaceTesting\MonoDevelop.UserInterfaceTesting.csproj">
+      <Project>{82B9A5C5-5713-49B5-93D1-BE29B00FF35A}</Project>
+      <Name>MonoDevelop.UserInterfaceTesting</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
