@@ -608,7 +608,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						continue;
 					documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 				} else {
-					var id = projectData.GetOrCreateDocumentId (f.Name, projectData);
+					var id = projectData.GetOrCreateDocumentId (f.Name, oldProjectData);
 					if (!duplicates.Add (id))
 						continue;
 					additionalDocuments.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));

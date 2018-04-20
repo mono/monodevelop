@@ -59,7 +59,9 @@ namespace Mono.TextEditor
 	class LineUpdate : DocumentUpdateRequest
 	{
 		int line;
-		
+
+		public bool RemoveLineCache { get; set; }
+
 		public LineUpdate (int line)
 		{
 			this.line = line;
@@ -67,7 +69,7 @@ namespace Mono.TextEditor
 		
 		public override void Update (MonoTextEditor editor)
 		{
-			editor.RedrawLine (line);
+			editor.RedrawLine (line, RemoveLineCache);
 		}
 	}
 	
@@ -86,16 +88,9 @@ namespace Mono.TextEditor
 		public override void Update (MonoTextEditor editor)
 		{
 			if (start == end) {
-				if (RemoveLineCache)
-					editor.TextViewMargin.RemoveCachedLine (start);
-				editor.RedrawLine (start);
+				editor.RedrawLine (start, RemoveLineCache);
 			} else {
-				if (RemoveLineCache) {
-					for (int i = start; i <= end; i++) {
-						editor.TextViewMargin.RemoveCachedLine (i);
-					}
-				}
-				editor.RedrawLines (start, end);
+				editor.RedrawLines (start, end, RemoveLineCache);
 			}
 		}
 	}
