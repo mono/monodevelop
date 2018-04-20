@@ -319,8 +319,20 @@ namespace MonoDevelop.Ide.TypeSystem
 				var project = args.SolutionItem as MonoDevelop.Projects.Project;
 				if (project != null) {
 					var ws = GetWorkspace (args.Solution);
-					var projectInfo = await ws.LoadProject (project, CancellationToken.None, args.ReplacedItem as MonoDevelop.Projects.Project);
-					if (args.Reloading) {
+					var oldProject = args.ReplacedItem as MonoDevelop.Projects.Project;
+
+					// when loading a project that was unloaded manually before
+					// args.ReplacedItem is the UnloadedSolutionItem, which is not useful
+					// we need to find what was the real project previously
+					if (args.Reloading && oldProject == null) {
+						var existingRoslynProject = ws.CurrentSolution.Projects.FirstOrDefault (p => p.FilePath == project.FileName);
+						if (existingRoslynProject != null) {
+							oldProject = ws.GetMonoProject (existingRoslynProject.Id);
+						}
+					}
+
+					var projectInfo = await ws.LoadProject (project, CancellationToken.None, oldProject);
+					if (oldProject != null) {
 						ws.OnProjectReloaded (projectInfo);
 					}
 					else {
