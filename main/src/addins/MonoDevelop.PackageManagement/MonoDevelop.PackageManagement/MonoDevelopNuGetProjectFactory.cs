@@ -66,8 +66,6 @@ namespace MonoDevelop.PackageManagement
 
 		public NuGetProject CreateNuGetProject (DotNetProject project, INuGetProjectContext context)
 		{
-			Runtime.AssertMainThread ();
-
 			var nugetAwareProject = project as INuGetAwareProject;
 			if (nugetAwareProject != null)
 				return nugetAwareProject.CreateNuGetProject ();

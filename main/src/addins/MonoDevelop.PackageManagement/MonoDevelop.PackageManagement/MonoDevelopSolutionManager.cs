@@ -114,9 +114,7 @@ namespace MonoDevelop.PackageManagement
 		public IEnumerable<NuGetProject> GetNuGetProjects ()
 		{
 			if (projects == null) {
-				Runtime.RunInMainThread (() => {
-					projects = GetNuGetProjects (Solution, Settings).ToList ();
-				}).Wait ();
+				projects = GetNuGetProjects (Solution, Settings).ToList ();
 			}
 			return projects;
 		}

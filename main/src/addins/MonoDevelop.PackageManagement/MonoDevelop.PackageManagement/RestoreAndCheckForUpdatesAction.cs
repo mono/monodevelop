@@ -58,8 +58,7 @@ namespace MonoDevelop.PackageManagement
 			this.solution = solution;
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
-			solutionManager = PackageManagementServices.Workspace.GetSolutionManager (solution);
-			solutionManager.ClearProjectCache ();
+			solutionManager = new MonoDevelopSolutionManager (solution);
 			nugetProjects = solutionManager.GetNuGetProjects ().ToList ();
 
 			// Use the same source repository provider for all restores and updates to prevent
