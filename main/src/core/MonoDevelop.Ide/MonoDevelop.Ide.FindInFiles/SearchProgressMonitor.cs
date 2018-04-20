@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			set { Runtime.RunInMainThread (delegate { outputPad.PathMode = value; }); }
 		}
 
-		public virtual void ReportResult (SearchResult result)
+		protected virtual void OnReportResult (SearchResult result)
 		{
 			Runtime.RunInMainThread (delegate {
 				try {
@@ -74,8 +74,13 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 			});
 		}
+
+		public void ReportResult (SearchResult result)
+		{
+			OnReportResult (result);
+		}
 		
-		public virtual void ReportResults (IEnumerable<SearchResult> results)
+		protected virtual void OnReportResults (IEnumerable<SearchResult> results)
 		{
 			Runtime.RunInMainThread (delegate {
 				try {
@@ -84,6 +89,11 @@ namespace MonoDevelop.Ide.FindInFiles
 					LoggingService.LogError ("Error adding search results.", ex.ToString ());
 				}
 			});
+		}
+
+		public void ReportResults (IEnumerable<SearchResult> results)
+		{
+			OnReportResults (results);
 		}
 		
 		public void ReportStatus (string resultMessage)
