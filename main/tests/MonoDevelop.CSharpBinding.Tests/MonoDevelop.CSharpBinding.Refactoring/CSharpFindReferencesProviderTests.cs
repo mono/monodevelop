@@ -89,13 +89,13 @@ namespace MonoDevelop.CSharp.Refactoring
 		class MockSearchProgressMonitor : SearchProgressMonitor
 		{
 			internal ConcurrentBag<SearchResult> Results = new ConcurrentBag<SearchResult> ();
-			public override void ReportResults (IEnumerable<SearchResult> results)
+			protected override void OnReportResults (IEnumerable<SearchResult> results)
 			{
 				foreach (var result in results)
 					ReportResult (result);
 			}
 
-			public override void ReportResult (SearchResult result)
+			protected override void OnReportResult (SearchResult result)
 			{
 				Results.Add (result);
 			}

@@ -247,7 +247,7 @@ namespace MonoDevelop.Refactoring
 			try {
 				var metadata = Counters.CreateFindReferencesMetadata ();
 				timer = Counters.FindReferences.BeginTiming (metadata);
-				var tasks = new List<(Task task, FindReferencesProvider provider)> ();
+				var tasks = new List<(Task task, FindReferencesProvider provider)> (findReferencesProvider.Count);
 				foreach (var provider in findReferencesProvider) {
 					try {
 						tasks.Add ((provider.FindReferences (documentIdString, hintProject, monitor), provider));
@@ -293,7 +293,7 @@ namespace MonoDevelop.Refactoring
 			try {
 				var metadata = Counters.CreateFindReferencesMetadata ();
 				timer = Counters.FindReferences.BeginTiming (metadata);
-				var tasks = new List<(Task task, FindReferencesProvider provider)> ();
+				var tasks = new List<(Task task, FindReferencesProvider provider)> (findReferencesProvider.Count);
 				foreach (var provider in findReferencesProvider) {
 					try {
 						tasks.Add ((provider.FindAllReferences (documentIdString, hintProject, monitor), provider));

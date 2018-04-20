@@ -205,25 +205,24 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override Task FindReferences (string documentationCommentId, Projects.Project hintProject, SearchProgressMonitor monitor)
 		{
 			return Task.Run (async delegate {
-				var result = new List<SearchResult> ();
 				var lookup = await TryLookupSymbol (documentationCommentId, hintProject, monitor.CancellationToken);
 				if (lookup == null || !lookup.Success)
-					return Enumerable.Empty<SearchResult> ();
+					return;
 
 				var workspace = TypeSystemService.AllWorkspaces.FirstOrDefault (w => w.CurrentSolution == lookup.Solution) as MonoDevelopWorkspace;
 				if (workspace == null)
-					return Enumerable.Empty<SearchResult> ();
-				await FindReferencesHandler.FindRefs ((await GatherSymbols (lookup.SymbolAndProjectId, lookup.Solution, monitor.CancellationToken)).ToArray (), lookup.Solution, monitor);
-				return (IEnumerable<SearchResult>)result;
+					return;
+				await FindReferencesHandler.FindRefs (await GatherSymbols (lookup.SymbolAndProjectId, lookup.Solution, monitor.CancellationToken), lookup.Solution, monitor);
 			});
 		}
 
-		public static async Task<IEnumerable<SymbolAndProjectId>> GatherSymbols (SymbolAndProjectId symbol, Microsoft.CodeAnalysis.Solution solution, CancellationToken token)
+		public static async Task<SymbolAndProjectId []> GatherSymbols (SymbolAndProjectId symbol, Microsoft.CodeAnalysis.Solution solution, CancellationToken token)
 		{
 			var implementations = await SymbolFinder.FindImplementationsAsync (symbol, solution, null, token);
-			var result = new List<SymbolAndProjectId> ();
-			result.Add (symbol);
-			result.AddRange (implementations);
+			var result = new SymbolAndProjectId [implementations.Length + 1];
+			result [0] = symbol;
+			for (int i = 0; i < implementations.Length; i++)
+				result [i + 1] = implementations [i];
 			return result;
 		}
 
@@ -250,7 +249,6 @@ namespace MonoDevelop.CSharp.Refactoring
 				} else {
 					await FindReferencesHandler.FindRefs (new [] { lookup.SymbolAndProjectId }, lookup.Solution, monitor);
 				}
-				return;
 			});
 		}
 	}
