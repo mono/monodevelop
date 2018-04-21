@@ -556,7 +556,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 			
 			foreach (TargetFramework fx in CustomFrameworks) {
-				if (frameworks.Add (fx.Id) && IsInstalled (fx)) {
+				if (frameworks.Add (fx.Id)) {
 					RegisterSystemAssemblies (fx);
 				}
 			}
