@@ -569,45 +569,18 @@ namespace MonoDevelop.Core.Assemblies
 
 		void RegisterSystemAssemblies (TargetFramework fx)
 		{
-			Dictionary<string,List<SystemAssembly>> assemblies = new Dictionary<string, List<SystemAssembly>> ();
-			Dictionary<string,SystemPackage> packs = new Dictionary<string, SystemPackage> ();
-			
-			IEnumerable<string> dirs = GetFrameworkFolders (fx);
-
+			var assemblies = new List<SystemAssembly> ();
+			var package = new SystemPackage ();
 			foreach (AssemblyInfo assembly in fx.Assemblies) {
-				foreach (string dir in dirs) {
-					string file = Path.Combine (dir, assembly.Name) + ".dll";
-					if (File.Exists (file)) {
-						if (assembly.Version == null && IsRunning) {
-							try {
-								AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
-								assembly.Update (aname);
-							} catch {
-								// If something goes wrong when getting the name, just ignore the assembly
-							}
-						}
-						string pkg = assembly.Package ?? string.Empty;
-						SystemPackage package;
-						if (!packs.TryGetValue (pkg, out package)) {
-							packs [pkg] = package = new SystemPackage ();
-							assemblies [pkg] = new List<SystemAssembly> ();
-						}
-						List<SystemAssembly> list = assemblies [pkg];
-						list.Add (assemblyContext.AddAssembly (file, assembly, package));
-						break;
-					}
-				}
+				var file = Path.Combine (fx.FrameworkAssembliesDirectory, assembly.Name + ".dll");
+				assemblies.Add (assemblyContext.AddAssembly (file, assembly, package));
 			}
-			
-			foreach (string pkg in packs.Keys) {
-				SystemPackage package = packs [pkg];
-				List<SystemAssembly> list = assemblies [pkg];
-				SystemPackageInfo info = GetFrameworkPackageInfo (fx, pkg);
-				if (!info.IsCorePackage)
-					corePackages.Add (info.Name);
-				package.Initialize (info, list.ToArray (), false);
-				assemblyContext.InternalAddPackage (package);
-			}
+
+			SystemPackageInfo info = GetFrameworkPackageInfo (fx, "");
+			package.Initialize (info, assemblies, false);
+			if (!info.IsCorePackage)
+				corePackages.Add (info.Name);
+			assemblyContext.InternalAddPackage (package);
 		}
 		
 		protected virtual SystemPackageInfo GetFrameworkPackageInfo (TargetFramework fx, string packageName)
