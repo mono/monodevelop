@@ -93,15 +93,14 @@ namespace MonoDevelop.SourceEditor
 				startOffset = ed.SelectionRange.Offset;
 				expression = ed.SelectedText;
 			} else {
-				var doc = ctx;
-				if (doc == null || doc.ParsedDocument == null)
+				if (ctx == null)
 					return null;
 
-				var resolver = doc.GetContent<IDebuggerExpressionResolver> ();
-				var data = doc.GetContent<SourceEditorView> ();
+				var resolver = ctx.GetContent<IDebuggerExpressionResolver> ();
+				var data = ctx.GetContent<SourceEditorView> ();
 
 				if (resolver != null) {
-					var result = await resolver.ResolveExpressionAsync (editor, doc, offset, token);
+					var result = await resolver.ResolveExpressionAsync (editor, ctx, offset, token);
 					expression = result.Text;
 					startOffset = result.Span.Start;
 				} else {
