@@ -161,7 +161,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
-			return null;
+			yield break;
 		}
 		
 		public override bool IsInstalled {
