@@ -238,19 +238,23 @@ namespace MonoDevelop.Core.Assemblies
 		protected virtual void ConvertAssemblyProcessStartInfo (ProcessStartInfo pinfo)
 		{
 		}
-		
+
+		NotSupportedFrameworkBackend NotSupportedBackend = new NotSupportedFrameworkBackend ();
+
 		protected TargetFrameworkBackend GetBackend (TargetFramework fx)
 		{
 			EnsureInitialized ();
-			lock (frameworkBackends) {
-				TargetFrameworkBackend backend;
-				if (frameworkBackends.TryGetValue (fx.Id, out backend))
-					return backend;
-				backend = CreateBackend (fx) ?? new NotSupportedFrameworkBackend ();
-				backend.Initialize (this, fx);
-				frameworkBackends[fx.Id] = backend;
+			if (frameworkBackends.TryGetValue (fx.Id, out TargetFrameworkBackend backend))
 				return backend;
-			}
+			return NotSupportedBackend;
+		}
+
+		TargetFrameworkBackend CreateAndInitializeBackend (TargetFramework fx)
+		{
+			var backend = CreateBackend (fx);
+			backend.Initialize (this, fx);
+			frameworkBackends [fx.Id] = backend;
+			return backend;
 		}
 		
 		protected virtual TargetFrameworkBackend CreateBackend (TargetFramework fx)
@@ -536,22 +540,27 @@ namespace MonoDevelop.Core.Assemblies
 		void CreateFrameworks ()
 		{
 			var frameworks = new HashSet<TargetFrameworkMoniker> ();
-			
-			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetKnownFrameworks ()) {
-				// A framework is installed if the assemblies directory exists and the first
-				// assembly of the list exists.
-				if (frameworks.Add (fx.Id) && IsInstalled (fx)) {
-					RegisterSystemAssemblies (fx);
-				}
-			}
-			
+
+			//register custom frameworks first. they may have been found by another runtime
+			//already, but we want to use this runtime's version so path info is correct
 			foreach (TargetFramework fx in CustomFrameworks) {
 				if (frameworks.Add (fx.Id)) {
 					//if the framework was discovered in this runtime, we know it's installed
-					var backend = GetBackend (fx);
+					var backend = CreateAndInitializeBackend (fx);
 					backend.IsInstalled = true;
 					backend.ReferenceAssembliesFolder = fx.FrameworkAssembliesDirectory;
 					RegisterSystemAssemblies (fx);
+				}
+			}
+
+			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetKnownFrameworks ()) {
+				// A framework is installed if the assemblies directory exists and the first
+				// assembly of the list exists.
+				if (frameworks.Add (fx.Id)) {
+					var backend = CreateAndInitializeBackend (fx);
+					if (backend.IsInstalled) {
+						RegisterSystemAssemblies (fx);
+					}
 				}
 			}
 		}
