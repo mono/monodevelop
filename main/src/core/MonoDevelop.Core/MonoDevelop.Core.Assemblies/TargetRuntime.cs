@@ -36,6 +36,7 @@ using Mono.Addins;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -383,8 +384,18 @@ namespace MonoDevelop.Core.Assemblies
 				}
 			}
 		}
-		
+
+		//runtimes can't get deinitialized, so add an inlinable fast path
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal void EnsureInitialized ()
+		{
+			if (initialized) {
+				return;
+			}
+			EnsureInitializedSlow ();
+		}
+
+		void EnsureInitializedSlow()
 		{
 			lock (initLock) {
 				if (!initialized && !initializing) {
