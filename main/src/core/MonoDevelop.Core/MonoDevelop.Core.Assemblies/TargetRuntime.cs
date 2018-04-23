@@ -27,21 +27,15 @@
 // THE SOFTWARE.
 
 using System;
-using System.Threading;
-using System.IO;
-using System.Xml;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using System.Collections.Specialized;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Serialization;
-using Mono.Addins;
-using Mono.PkgConfig;
-using MonoDevelop.Core.Instrumentation;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using Mono.Addins;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -266,9 +260,6 @@ namespace MonoDevelop.Core.Assemblies
 		
 		internal protected virtual IEnumerable<string> GetFrameworkFolders (TargetFramework fx)
 		{
-			if (fx.FrameworkAssembliesDirectory != null) {
-				return new string [] { fx.FrameworkAssembliesDirectory };
-			}
 			return GetBackend (fx).GetFrameworkFolders ();
 		}
 
@@ -557,7 +548,9 @@ namespace MonoDevelop.Core.Assemblies
 			foreach (TargetFramework fx in CustomFrameworks) {
 				if (frameworks.Add (fx.Id)) {
 					//if the framework was discovered in this runtime, we know it's installed
-					GetBackend (fx).IsInstalled = true;
+					var backend = GetBackend (fx);
+					backend.IsInstalled = true;
+					backend.ReferenceAssembliesFolder = fx.FrameworkAssembliesDirectory;
 					RegisterSystemAssemblies (fx);
 				}
 			}
