@@ -68,6 +68,9 @@ namespace MonoDevelop.Core.Assemblies
 				isInstalled = false;
 				return false;
 			}
+			internal set {
+				isInstalled = value;
+			}
 		}
 		
 		public abstract IEnumerable<string> GetFrameworkFolders ();

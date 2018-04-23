@@ -556,6 +556,8 @@ namespace MonoDevelop.Core.Assemblies
 			
 			foreach (TargetFramework fx in CustomFrameworks) {
 				if (frameworks.Add (fx.Id)) {
+					//if the framework was discovered in this runtime, we know it's installed
+					GetBackend (fx).IsInstalled = true;
 					RegisterSystemAssemblies (fx);
 				}
 			}
