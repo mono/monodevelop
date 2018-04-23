@@ -359,6 +359,9 @@
     <Compile Include="Gui\MonoDevelop.SourceEditor.SearchWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\BackgroundTextMarker.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextViewMargin.SpanUpdateListener.cs" />
+    <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.FoldMarkerMarginDrawer.cs" />
+    <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.VSNetFoldMarkerMarginDrawer.cs" />
+    <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.VSCodeFoldMarkerMarginDrawer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml">
