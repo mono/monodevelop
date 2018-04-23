@@ -3402,6 +3402,11 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.TextArea.SetTooltip (tooltipWindow);
 		}
 
+		void ITextEditorImpl.HideTooltipWindow ()
+		{
+			TextEditor.TextArea.HideTooltip ();
+		}
+
 		Task<ScopeStack> ITextEditorImpl.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
 			return TextEditor.SyntaxHighlighting.GetScopeStackAsync (offset, cancellationToken);
