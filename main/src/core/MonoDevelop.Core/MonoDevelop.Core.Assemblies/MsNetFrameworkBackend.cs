@@ -25,39 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using Microsoft.Win32;
-using System.IO;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Assemblies
 {
 	public class MsNetFrameworkBackend: TargetFrameworkBackend<MsNetTargetRuntime>
 	{
-		string ref_assemblies_folder;
-
-		string GetReferenceAssembliesFolder ()
-		{
-			if (ref_assemblies_folder != null)
-				return ref_assemblies_folder;
-			
-			var fxDir = framework.Id.GetAssemblyDirectoryName ();
-			foreach (var rootDir in runtime.GetReferenceFrameworkDirectories ()) {
-				var dir = rootDir.Combine (fxDir);
-				var frameworkList = dir.Combine ("RedistList", "FrameworkList.xml");
-				if (File.Exists (frameworkList))
-					return ref_assemblies_folder = dir;
-			}
-			return null;
-		}
-		
-		public override IEnumerable<string> GetFrameworkFolders ()
-		{
-			var dir = GetReferenceAssembliesFolder ();
-			if (dir != null) {
-				yield return dir;
-			}
-		}
-		
 		public override Dictionary<string, string> GetToolsEnvironmentVariables ()
 		{
 			var vars = new Dictionary<string, string> ();
