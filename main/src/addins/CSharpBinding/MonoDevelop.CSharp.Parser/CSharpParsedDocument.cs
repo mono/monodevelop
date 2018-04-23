@@ -64,6 +64,7 @@ namespace MonoDevelop.CSharp.Parser
 		public CSharpParsedDocument (Ide.TypeSystem.ParseOptions options,  string fileName) : base (fileName)
 		{
 			isAdHocProject = options.IsAdhocProject;
+			Flags |= ParsedDocumentFlags.SkipFoldings;
 		}
 		
 
