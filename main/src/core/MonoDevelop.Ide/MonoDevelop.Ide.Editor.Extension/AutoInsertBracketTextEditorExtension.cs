@@ -25,47 +25,128 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Mono.Addins;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
 	public abstract class AutoInsertBracketHandler
 	{
-		public abstract bool CanHandle (TextEditor editor);
-
+		public virtual bool CanHandle (TextEditor editor) => true;
 		public abstract bool Handle (TextEditor editor, DocumentContext ctx, KeyDescriptor descriptor);
 	}
 
 	class AutoInsertBracketTextEditorExtension : TextEditorExtension
 	{
-		static List<AutoInsertBracketHandler> allHandlers = new List<AutoInsertBracketHandler> ();
+		const string extensionPoint = "/MonoDevelop/Ide/AutoInsertBracketHandler";
+		bool isEnabled;
+		List<AutoInsertBracketHandler> handlers;
 
-		public AutoInsertBracketTextEditorExtension ()
+		protected override void Initialize ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/AutoInsertBracketHandler", delegate (object sender, ExtensionNodeEventArgs args) {
-				var newHandler = (AutoInsertBracketHandler)args.ExtensionObject;
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					allHandlers.Add (newHandler);
-					break;
-				case ExtensionChange.Remove:
-					allHandlers.Remove (newHandler);
-					break;
-				}
-			});
+			base.Initialize ();
+
+			SetEnabled (DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket);
+		}
+
+		void SetEnabled (bool enable)
+		{
+			if (isEnabled == enable) {
+				return;
+			}
+			if (enable) {
+				Editor.MimeTypeChanged += UpdateHandlers;
+				Editor.ExtensionContext.ExtensionChanged += UpdateHandlers;
+				UpdateHandlers (null, null);
+			} else {
+				Editor.MimeTypeChanged -= UpdateHandlers;
+				Editor.ExtensionContext.ExtensionChanged -= UpdateHandlers;
+				handlers = null;
+			}
+			isEnabled = enable;
+		}
+
+		void UpdateHandlers (object sender, EventArgs e)
+		{
+			//whenever the mimetype or the extension context has changed, refilter handlers
+			handlers = new List<AutoInsertBracketHandler> (
+				GetEditorExtensions (Editor, extensionPoint)
+				.Select (ext => (AutoInsertBracketHandler) ext.CreateInstance ())
+			);
+		}
+
+		public override void Dispose ()
+		{
+			SetEnabled (false);
+			base.Dispose ();
 		}
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			var result = base.KeyPress (descriptor);
 
-			if (DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket && !Editor.IsSomethingSelected) {
-				var handler = allHandlers.FirstOrDefault(h => h.CanHandle (Editor));
-				if (handler != null && handler.Handle (Editor, DocumentContext, descriptor))
-					return false;
+			// if the AutoInsertMatchingBracket option was changed since initialization
+			if (DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket != isEnabled) {
+				SetEnabled (DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket);
 			}
+
+			if (isEnabled && !Editor.IsSomethingSelected) {
+				foreach (var handler in handlers) {
+					if (handler.CanHandle (Editor)) {
+						handler.Handle (Editor, DocumentContext, descriptor);
+						break;
+					}
+				}
+			}
+
 			return result;
+		}
+
+		//returns all valid extensions in order of most to least specific
+		static IEnumerable<TextEditorExtensionNode> GetEditorExtensions (TextEditor editor, string extensionPoint)
+		{
+			var returned = new HashSet<TextEditorExtensionNode> ();
+
+			//get the nodes from the extensioncontext rather than the addinmanager
+			//so that custom conditions supported by the editor are respected
+			var nodes = editor.ExtensionContext.GetExtensionNodes<TextEditorExtensionNode> (extensionPoint);
+
+			//file extensions are cheaper to check than mimetypes, check them first
+			//this means exact file extensions take precedence over mimetypes regardless
+			//of node ordering but it's not a big deal
+			var extension = string.IsNullOrEmpty (editor.FileName) ? null : Path.GetExtension (editor.FileName);
+			foreach (var node in nodes) {
+				if (MatchAny (extension, node.FileExtensions)) {
+					returned.Add (node);
+					yield return node;
+				}
+			}
+
+			//check mimetypes, from most to least specific
+			var mimeChain = DesktopService.GetMimeTypeInheritanceChain (editor.MimeType);
+			foreach (var mime in mimeChain) {
+				foreach (var node in nodes) {
+					if (!returned.Contains (node) && MatchAny (mime, node.MimeTypes)) {
+						returned.Add (node);
+						yield return node;
+					}
+				}
+			}
+
+			//finally, return any remaining nodes that don't have restrictions at all
+			foreach (var node in nodes) {
+				if (!returned.Contains (node) && NullOrEmpty (node.MimeTypes) && NullOrEmpty (node.FileExtensions)) {
+					yield return node;
+				}
+			}
+
+			bool MatchAny (string value, string [] matches) =>
+				matches != null && matches.Length > 0
+					&& matches.Any (m => string.Equals (m, value, StringComparison.OrdinalIgnoreCase));
+
+			bool NullOrEmpty (string [] arr) => arr == null || arr.Length == 0;
 		}
 	}
 }
