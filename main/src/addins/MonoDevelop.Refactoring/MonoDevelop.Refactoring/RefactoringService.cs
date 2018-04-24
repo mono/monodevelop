@@ -247,11 +247,10 @@ namespace MonoDevelop.Refactoring
 			try {
 				var metadata = Counters.CreateFindReferencesMetadata ();
 				timer = Counters.FindReferences.BeginTiming (metadata);
+				var tasks = new List<(Task task, FindReferencesProvider provider)> (findReferencesProvider.Count);
 				foreach (var provider in findReferencesProvider) {
 					try {
-						foreach (var result in await provider.FindReferences (documentIdString, hintProject, monitor.CancellationToken)) {
-							monitor.ReportResult (result);
-						}
+						tasks.Add ((provider.FindReferences (documentIdString, hintProject, monitor), provider));
 					} catch (OperationCanceledException) {
 						Counters.SetUserCancel (metadata);
 						return;
@@ -261,6 +260,20 @@ namespace MonoDevelop.Refactoring
 							monitor.ReportError ("Error finding references", ex);
 						LoggingService.LogError ("Error finding references", ex);
 						findReferencesProvider = findReferencesProvider.Remove (provider);
+					}
+				}
+				foreach (var task in tasks) {
+					try {
+						await task.task;
+					} catch (OperationCanceledException) {
+						Counters.SetUserCancel (metadata);
+						return;
+					} catch (Exception ex) {
+						Counters.SetFailure (metadata);
+						if (monitor != null)
+							monitor.ReportError ("Error finding references", ex);
+						LoggingService.LogError ("Error finding references", ex);
+						findReferencesProvider = findReferencesProvider.Remove (task.provider);
 					}
 				}
 			} finally {
@@ -280,11 +293,10 @@ namespace MonoDevelop.Refactoring
 			try {
 				var metadata = Counters.CreateFindReferencesMetadata ();
 				timer = Counters.FindReferences.BeginTiming (metadata);
+				var tasks = new List<(Task task, FindReferencesProvider provider)> (findReferencesProvider.Count);
 				foreach (var provider in findReferencesProvider) {
 					try {
-						foreach (var result in await provider.FindAllReferences (documentIdString, hintProject, monitor.CancellationToken)) {
-							monitor.ReportResult (result);
-						}
+						tasks.Add ((provider.FindAllReferences (documentIdString, hintProject, monitor), provider));
 					} catch (OperationCanceledException) {
 						Counters.SetUserCancel (metadata);
 						return;
@@ -294,6 +306,20 @@ namespace MonoDevelop.Refactoring
 							monitor.ReportError ("Error finding references", ex);
 						LoggingService.LogError ("Error finding references", ex);
 						findReferencesProvider = findReferencesProvider.Remove (provider);
+					}
+				}
+				foreach (var task in tasks) {
+					try {
+						await task.task;
+					} catch (OperationCanceledException) {
+						Counters.SetUserCancel (metadata);
+						return;
+					} catch (Exception ex) {
+						Counters.SetFailure (metadata);
+						if (monitor != null)
+							monitor.ReportError ("Error finding references", ex);
+						LoggingService.LogError ("Error finding references", ex);
+						findReferencesProvider = findReferencesProvider.Remove (task.provider);
 					}
 				}
 			} finally {
