@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="/Users/iain/Projects/xamarin/md-accessibility/monodevelop/main/build/tests/MonoDevelop.Ide.PerfTests.dll" total="1" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2018-04-24" time="17:27:35">
+  <environment nunit-version="2.6.4.14350" clr-version="4.0.30319.42000" os-version="Unix 16.7.0.0" platform="Unix" cwd="/Users/iain/Projects/xamarin/md-accessibility/monodevelop/main/tests" machine-name="Piscataway-3.local" user="iain" user-domain="Piscataway-3.local" />
+  <culture-info current-culture="en-GB" current-uiculture="en-GB" />
+  <test-suite type="Assembly" name="/Users/iain/Projects/xamarin/md-accessibility/monodevelop/main/build/tests/MonoDevelop.Ide.PerfTests.dll" executed="True" result="Success" success="True" time="7.989" asserts="0">
+    <results>
+      <test-suite type="Namespace" name="MonoDevelop" executed="True" result="Success" success="True" time="7.985" asserts="0">
+        <results>
+          <test-suite type="Namespace" name="Ide" executed="True" result="Success" success="True" time="7.985" asserts="0">
+            <results>
+              <test-suite type="Namespace" name="PerfTests" executed="True" result="Success" success="True" time="7.985" asserts="0">
+                <results>
+                  <test-suite type="TestFixture" name="TestStartup" executed="True" result="Success" success="True" time="7.984" asserts="0">
+                    <results>
+                      <test-case name="MonoDevelop.Ide.PerfTests.TestStartup.TestStartupTime" executed="True" result="Success" success="True" time="7.980" asserts="1">
+                        <properties>
+                          <property name="Time" value="7.631" />
+                          <property name="Tolerance" value="0.1" />
+                        </properties>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
