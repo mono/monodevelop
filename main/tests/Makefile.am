@@ -136,6 +136,9 @@ deploy-tests:
 		fi \
 	done;
 
+performance-tests:
+	($(RUN_TEST) -xml=TestResult_PerfTest.xml -labels $(TEST_DIR)/MonoDevelop.Ide.PerfTests.dll) || exit $?;
+
 include $(top_srcdir)/Makefile.include
 
 EXTRA_DIST = \

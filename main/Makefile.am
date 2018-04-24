@@ -196,6 +196,9 @@ deploy-tests:
 uitest:
 	cd tests && $(MAKE) uitest assembly=$(assembly) categories=$(categories) tests=$(tests)
 
+performance-tests:
+	cd tests && $(MAKE) performance-tests
+
 coverage:
 	cd tests && $(MAKE) coverage
 
