@@ -25,18 +25,26 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Editor.Extension;
-using Microsoft.CodeAnalysis.Text;
-using MonoDevelop.Ide.TypeSystem;
-using Microsoft.CodeAnalysis.Classification;
-using Microsoft.CodeAnalysis;
-using System.Linq;
-using MonoDevelop.Ide.Editor.Highlighting;
-using MonoDevelop.Ide.Editor;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Composition;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Classification;
+using Microsoft.CodeAnalysis.Notification;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.SolutionCrawler;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.TypeSystem;
+using Roslyn.Utilities;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -46,11 +54,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		readonly MonoDevelopWorkspace workspace;
 		readonly ScopeStack defaultScope;
 		readonly ScopeStack userScope;
-
+		readonly ISemanticChangeNotificationService semanticChangeNotificationService;
 		readonly Dictionary<string, ScopeStack> classificationMap;
 
 		public DocumentId DocumentId => documentId;
-
+		VersionStamp lastSemanticVersion;
 		public RoslynClassificationHighlighting (MonoDevelopWorkspace workspace, DocumentId documentId, string defaultScope)
 		{
 			this.workspace = workspace;
@@ -59,7 +67,38 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			this.userScope = this.defaultScope.Push (EditorThemeColors.UserTypes);
 
 			classificationMap = GetClassificationMap (defaultScope);
+
+			semanticChangeNotificationService = Composition.CompositionManager.GetExportedValue<ISemanticChangeNotificationService> ();
+			if (semanticChangeNotificationService != null) {
+				semanticChangeNotificationService.OpenedDocumentSemanticChanged += SemanticChangeNotificationService_OpenedDocumentSemanticChanged;
+			}
+			workspace.WorkspaceChanged += Workspace_WorkspaceChanged;
 		}
+
+		async void Workspace_WorkspaceChanged (object sender, WorkspaceChangeEventArgs e)
+		{
+			await CheckForSemanticChange ();
+		}
+
+		async void SemanticChangeNotificationService_OpenedDocumentSemanticChanged (object sender, Document e)
+		{
+			await CheckForSemanticChange ();
+		}
+
+		async Task CheckForSemanticChange ()
+		{
+			var document = workspace.GetDocument (DocumentId);
+			if (document == null)
+				return;
+			var projectVersion = await document.Project.GetDependentSemanticVersionAsync (CancellationToken.None);
+			if (lastSemanticVersion != projectVersion) {
+				lastSemanticVersion = projectVersion;
+				await Runtime.RunInMainThread (delegate {
+					HighlightingStateChanged?.Invoke (null, LineEventArgs.AllLines);
+				});
+			}
+		}
+
 		static ImmutableDictionary<string, Dictionary<string, ScopeStack>> classificationMapCache = ImmutableDictionary<string, Dictionary<string, ScopeStack>>.Empty;
 
 		public static Dictionary<string, ScopeStack> GetClassificationMap (string scope)
@@ -202,6 +241,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public void Dispose ()
 		{
+			workspace.WorkspaceChanged -= Workspace_WorkspaceChanged;
+			if (semanticChangeNotificationService != null) 
+				semanticChangeNotificationService.OpenedDocumentSemanticChanged -= SemanticChangeNotificationService_OpenedDocumentSemanticChanged;
 		}
 	}
 }
