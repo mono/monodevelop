@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.PerfTests
 
 		[Test]
 		[Benchmark(Tolerance=0.1)]
-		public void TestCase ()
+		public void TestStartupTime ()
 		{
 			var mdProfileDir = Util.CreateTmpDir ();
 			FoldersToClean.Add (mdProfileDir);
