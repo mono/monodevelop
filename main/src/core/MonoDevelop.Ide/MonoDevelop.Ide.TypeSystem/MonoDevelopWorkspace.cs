@@ -1495,6 +1495,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				MetadataReferenceCache.RemoveReferences (id);
 
 				UnloadMonoProject (project);
+
+				OnProjectRemoved (id);
 			}
 		}
 
