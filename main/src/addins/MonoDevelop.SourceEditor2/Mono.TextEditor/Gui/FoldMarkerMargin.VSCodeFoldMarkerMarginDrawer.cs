@@ -30,6 +30,8 @@ using System.Collections.Generic;
 using Cairo;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Highlighting;
+using System.Runtime.InteropServices.ComTypes;
+using Mono.TextEditor.Theatrics;
 
 namespace Mono.TextEditor
 {
@@ -54,16 +56,17 @@ namespace Mono.TextEditor
 				background = SyntaxHighlightingService.GetColor (Editor.EditorTheme, EditorThemeColors.Background);
 				foreground = SyntaxHighlightingService.GetColor (Editor.EditorTheme, EditorThemeColors.Foreground);
 				foldLine = SyntaxHighlightingService.GetColor (Editor.EditorTheme, EditorThemeColors.FoldLine);
-
-				foldSegmentSize = Margin.Width * 4 / 6;
-				foldSegmentSize -= (foldSegmentSize) % 2;
 			}
 
 			public override void Draw (Context cr, Rectangle area, DocumentLine line, int lineNumber, double x, double y, double lineHeight)
 			{
 				base.Draw (cr, area, line, lineNumber, x, y, lineHeight);
-				if (!Editor.Options.ShowFoldMargin || lineNumber > Editor.Document.LineCount || line == null || FoldMarkerOcapitiy <= 0)
+				if (!Editor.Options.ShowFoldMargin || lineNumber > Editor.Document.LineCount || line == null)
 					return;
+
+				foldSegmentSize = Margin.Width * 4 / 6;
+				foldSegmentSize -= (foldSegmentSize) % 2;
+
 				startFoldings.Clear ();
 
 				foreach (var segment in Editor.Document.GetFoldingContaining (line)) {
@@ -73,41 +76,57 @@ namespace Mono.TextEditor
 				if (startFoldings.Count == 0)
 					return;
 
-				bool isVisible = true;
-				bool isStartSelected = Margin.lineHover != null && IsMouseHover (startFoldings);
+				bool isCollapsed = false;
 
-				foreach (FoldSegment foldSegment in startFoldings) {
+				foreach (var foldSegment in startFoldings) {
 					if (foldSegment.IsCollapsed) {
-						isVisible = false;
+						isCollapsed = true;
+						break;
 					} 
 				}
-				DrawFoldSegment (cr, x, y, isVisible, isStartSelected);
+
+				if (!isCollapsed && FoldMarkerOcapitiy <= 0)
+					return;
+				DrawFoldSegment (cr, x, y, isCollapsed);
 			}
 
-			void DrawFoldSegment (Cairo.Context ctx, double x, double y, bool isOpen, bool isSelected)
+			void DrawFoldSegment (Cairo.Context ctx, double x, double y, bool isCollapsed)
 			{
 				var drawArea = new Cairo.Rectangle (System.Math.Floor (x + (Margin.Width - foldSegmentSize) / 2) + 0.5,
 													System.Math.Floor (y + (Editor.LineHeight - foldSegmentSize) / 2) + 0.5, foldSegmentSize, foldSegmentSize);
 				ctx.Rectangle (drawArea);
-				ctx.SetSourceColor (background);
+				var useSolidColor = isCollapsed || FoldMarkerOcapitiy >= 1;
+				var drawColor = background;
+				if (!useSolidColor)
+					drawColor.A = FoldMarkerOcapitiy;
+
+				ctx.SetSourceColor (drawColor);
 				ctx.FillPreserve ();
-				ctx.SetSourceColor (foldLine);
+
+				drawColor = foldLine;
+				if (!useSolidColor)
+					drawColor.A = FoldMarkerOcapitiy;
+
+				ctx.SetSourceColor (drawColor);
 				ctx.Stroke ();
 
-				ctx.DrawLine (foreground,
+				drawColor = foreground;
+				if (!useSolidColor)
+					drawColor.A = FoldMarkerOcapitiy;
+
+				ctx.DrawLine (drawColor,
 							  drawArea.X + drawArea.Width * 2 / 10,
 							  drawArea.Y + drawArea.Height / 2,
 							  drawArea.X + drawArea.Width - drawArea.Width * 2 / 10,
 							  drawArea.Y + drawArea.Height / 2);
 
-				if (!isOpen)
-					ctx.DrawLine (foreground,
+				if (isCollapsed)
+					ctx.DrawLine (drawColor,
 								  drawArea.X + drawArea.Width / 2,
 								  drawArea.Y + drawArea.Height * 2 / 10,
 								  drawArea.X + drawArea.Width / 2,
 								  drawArea.Y + drawArea.Height - drawArea.Height * 2 / 10);
 			}
-
 		}
 
 	}

@@ -68,8 +68,6 @@ namespace Mono.TextEditor
 				foldLineHighlightedGCBg = hslColor;
 				foldToggleMarkerGC = SyntaxHighlightingService.GetColor (Editor.EditorTheme, EditorThemeColors.FoldCross);
 				foldToggleMarkerBackground = SyntaxHighlightingService.GetColor (Editor.EditorTheme, EditorThemeColors.FoldCrossBackground);
-				foldSegmentSize = Margin.Width * 4 / 6;
-				foldSegmentSize -= (foldSegmentSize) % 2;
 			}
 
 			void DrawFoldSegment (Cairo.Context ctx, double x, double y, bool isOpen, bool isSelected)
@@ -101,6 +99,8 @@ namespace Mono.TextEditor
 				base.Draw (cr, area, line, lineNumber, x, y, lineHeight);
 				if (!Editor.Options.ShowFoldMargin || lineNumber > Editor.Document.LineCount || line == null)
 					return;
+				foldSegmentSize = Margin.Width * 4 / 6;
+				foldSegmentSize -= (foldSegmentSize) % 2;
 
 				Cairo.Rectangle drawArea = new Cairo.Rectangle (x, y, Margin.Width, lineHeight);
 

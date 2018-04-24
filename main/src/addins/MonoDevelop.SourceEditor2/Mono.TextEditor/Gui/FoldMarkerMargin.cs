@@ -34,18 +34,21 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core;
+using Mono.TextEditor.Theatrics;
 
 namespace Mono.TextEditor
 {
 	partial class FoldMarkerMargin : Margin
 	{
 		const int HoverTimer = 100;
-		uint hoverTimerId;
+		const int FadeInTimer = 200;
+		const int FadeOutTimer = 300;
 
 		FoldMarkerMarginDrawer drawer;
 		MonoTextEditor editor;
 		DocumentLine lineHover;
 		Pango.Layout layout;
+		Stage<FoldMarkerMargin> animationStage = new Stage<FoldMarkerMargin> (300);
 
 		double marginWidth;
 		public override double Width {
@@ -81,15 +84,14 @@ namespace Mono.TextEditor
 			editor.TextArea.MouseLeft += TextArea_MouseLeft; 
 			drawer = new VSCodeFoldMarkerMarginDrawer (this);
 			UpdateAccessibility ();
+			animationStage.ActorStep += AnimationStage_ActorStep;
 		}
 
 		void TextArea_MouseLeft (object sender, EventArgs e)
 		{
 			if (!drawer.AutoHide)
 				return;
-			StopHoverTimer ();
-			drawer.FoldMarkerOcapitiy = 0;
-			editor.RedrawMargin (this);
+			StartFadeOutAnimation ();
 		}
 
 		void TextArea_MouseHover (object sender, MarginEventArgs e)
@@ -97,28 +99,43 @@ namespace Mono.TextEditor
 			if (!drawer.AutoHide)
 				return;
 			if (e.Margin == editor.TextViewMargin) {
-				StopHoverTimer ();
-				drawer.FoldMarkerOcapitiy = 0;
-				editor.RedrawMargin (this);
+				StartFadeOutAnimation ();
 			} else {
-				if (hoverTimerId != 0)
+				if (drawer.FoldMarkerOcapitiy >= 1)
 					return;
-				hoverTimerId = GLib.Timeout.Add (HoverTimer, delegate {
-					drawer.FoldMarkerOcapitiy = 1.0;
-					editor.RedrawMargin (this);
-					hoverTimerId = 0;
-					return false;
-				});
+				if (animationStage.Contains (this)) {
+					if (fadeIn)
+						return;
+					animationStage.Exeunt ();
+				}
+				fadeIn = true;
+				animationStage.Add (this, FadeInTimer, drawer.FoldMarkerOcapitiy);
+				animationStage.Play ();
 			}
 		}
 
-		private void StopHoverTimer ()
+		private void StartFadeOutAnimation ()
 		{
-			if (hoverTimerId == 0)
-				return;
-			GLib.Source.Remove (hoverTimerId);
-			hoverTimerId = 0;
+			if (animationStage.Contains (this)) {
+				if (!fadeIn)
+					return;
+				animationStage.Exeunt ();
+			}
+			if (drawer.FoldMarkerOcapitiy > 0) {
+				fadeIn = false;
+				animationStage.Add (this, FadeOutTimer, 1 - drawer.FoldMarkerOcapitiy);
+				animationStage.Play ();
+			}
 		}
+
+		bool fadeIn;
+		bool AnimationStage_ActorStep (Actor<FoldMarkerMargin> actor)
+		{
+			drawer.FoldMarkerOcapitiy = fadeIn ? actor.Percent : 1.0 - actor.Percent;
+			editor.RedrawMargin (this);
+			return true;
+		}
+
 
 		void EditorCarethandlePositionChanged (object sender, DocumentLocationEventArgs e)
 		{
@@ -316,6 +333,8 @@ namespace Mono.TextEditor
 		{
 			base.Dispose ();
 			StopTimer ();
+			animationStage.ActorStep -= AnimationStage_ActorStep;
+			animationStage.Exeunt ();
 			editor.TextArea.MouseHover -= TextArea_MouseHover;
 			editor.TextArea.MouseLeft -= TextArea_MouseLeft; 
 			editor.Caret.PositionChanged -= HandleEditorCaretPositionChanged;
