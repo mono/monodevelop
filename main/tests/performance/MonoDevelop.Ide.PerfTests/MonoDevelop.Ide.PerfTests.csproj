@@ -31,7 +31,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Test.cs" />
     <Compile Include="TestStartup.cs" />
   </ItemGroup>
   <ItemGroup>
