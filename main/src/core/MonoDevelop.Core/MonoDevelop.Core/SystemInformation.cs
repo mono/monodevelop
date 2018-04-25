@@ -96,7 +96,7 @@ namespace MonoDevelop.Core
 					.Where (l => !string.IsNullOrEmpty (l))
 					.ToArray ();
 				if (lines.Length > 0) {
-					sb.Append ("Xamarin addins: ");
+					sb.Append ("Xamarin extensions: ");
 					foreach (var line in lines)
 						sb.AppendLine (line);
 				}
@@ -128,7 +128,7 @@ namespace MonoDevelop.Core
 			);
 			if (!string.IsNullOrEmpty (userAddins))
 				yield return new SystemInformationSection () {
-					Title = "Enabled user installed addins",
+					Title = "Enabled user installed extensions",
 					Description = userAddins,
 				};
 		}
