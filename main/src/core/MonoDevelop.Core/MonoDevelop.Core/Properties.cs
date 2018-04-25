@@ -199,11 +199,21 @@ namespace MonoDevelop.Core
 		{
 			Write (writer, true);
 		}
-		
+
+		class StringKeyComparer : IComparer<KeyValuePair<string,object>>
+		{
+			public int Compare (KeyValuePair<string, object> a, KeyValuePair<string, object> b)
+			{
+				return string.CompareOrdinal (a.Key, b.Key);
+			}
+		}
+
 		public void Write (XmlWriter writer, bool createPropertyParent)
 		{
 			if (createPropertyParent)
 				writer.WriteStartElement (Node);
+
+			var toSerialize = new List<KeyValuePair<string, object>> ();
 
 			foreach (KeyValuePair<string, object> property in this.properties) {
 				//don't know how the value could be null but at least we can skip it to avoid breaking completely
@@ -215,6 +225,12 @@ namespace MonoDevelop.Core
 						continue;
 					}
 				}
+				toSerialize.Add (property);
+			}
+
+			toSerialize.Sort (new StringKeyComparer ());
+
+			foreach (var property in toSerialize) {
 				writer.WriteStartElement (PropertyNode);
 				writer.WriteAttributeString (KeyAttribute, property.Key);
 
