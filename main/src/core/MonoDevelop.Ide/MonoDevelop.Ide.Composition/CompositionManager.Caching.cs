@@ -40,20 +40,27 @@ namespace MonoDevelop.Ide.Composition
 {
 	public partial class CompositionManager
 	{
+		internal interface ICachingFaultInjector
+		{
+			void FaultAssemblyInfo (MefControlCacheAssemblyInfo info);
+		}
+
 		internal class Caching
 		{
+			ICachingFaultInjector cachingFaultInjector;
 			Task saveTask;
 			public HashSet<Assembly> Assemblies { get; }
 			internal string MefCacheFile { get; }
 			internal string MefCacheControlFile { get; }
 
-			public Caching (HashSet<Assembly> assemblies, Func<string, string> getCacheFilePath = null)
+			public Caching (HashSet<Assembly> assemblies, Func<string, string> getCacheFilePath = null, ICachingFaultInjector cachingFaultInjector = null)
 			{
-				Assemblies = assemblies;
-
 				getCacheFilePath = getCacheFilePath ?? (file => Path.Combine (AddinManager.CurrentAddin.PrivateDataPath, file));
+
+				Assemblies = assemblies;
 				MefCacheFile = getCacheFilePath ("mef-cache");
 				MefCacheControlFile = getCacheFilePath ("mef-cache-control");
+				this.cachingFaultInjector = cachingFaultInjector;
 			}
 
 			void IdeApp_Exiting (object sender, ExitEventArgs args)
@@ -65,6 +72,19 @@ namespace MonoDevelop.Ide.Composition
 			}
 
 			internal Stream OpenCacheStream () => File.Open (MefCacheFile, FileMode.Open);
+
+			internal void DeleteFiles ()
+			{
+				try {
+					File.Delete (MefCacheFile);
+				} catch {
+				}
+
+				try {
+					File.Delete (MefCacheControlFile);
+				} catch {
+				}
+			}
 
 			internal bool CanUse ()
 			{
@@ -83,7 +103,7 @@ namespace MonoDevelop.Ide.Composition
 						}
 					} catch (Exception ex) {
 						LoggingService.LogError ("Could not deserialize MEF cache control", ex);
-						File.Delete (MefCacheControlFile);
+						DeleteFiles ();
 						return false;
 					}
 
@@ -97,6 +117,7 @@ namespace MonoDevelop.Ide.Composition
 						if (!currentAssemblies.Contains (assemblyInfo.Location))
 							return false;
 
+						cachingFaultInjector?.FaultAssemblyInfo (assemblyInfo);
 						if (File.GetLastWriteTimeUtc (assemblyInfo.Location) != assemblyInfo.LastWriteTimeUtc)
 							return false;
 					}

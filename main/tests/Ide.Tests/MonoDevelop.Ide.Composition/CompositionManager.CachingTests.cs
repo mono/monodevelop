@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -37,7 +38,15 @@ namespace MonoDevelop.Ide.Composition
 	[TestFixture]
 	public class CompositionManagerCachingTests
 	{
-		static CompositionManager.Caching GetCaching (Action<string> onCacheFileRequested = null, [CallerMemberName] string testName = null)
+		internal class CachingFaultInjector : CompositionManager.ICachingFaultInjector
+		{
+			public void FaultAssemblyInfo (CompositionManager.MefControlCacheAssemblyInfo info)
+			{
+				info.LastWriteTimeUtc = DateTime.UtcNow;
+			}
+		}
+
+		static CompositionManager.Caching GetCaching (CompositionManager.ICachingFaultInjector faultInjector = null, Action<string> onCacheFileRequested = null, [CallerMemberName] string testName = null)
 		{
 			var assemblies = CompositionManager.ReadAssembliesFromAddins ();
 			return new CompositionManager.Caching (assemblies, file => {
@@ -49,7 +58,7 @@ namespace MonoDevelop.Ide.Composition
 				}
 				Directory.CreateDirectory (tmpDir);
 				return Path.Combine (tmpDir, file);
-			});
+			}, faultInjector);
 		}
 
 		[Test]
@@ -58,7 +67,7 @@ namespace MonoDevelop.Ide.Composition
 			bool cacheFileRequested = false;
 			bool cacheControlFileRequested = false;
 
-			var caching = GetCaching (fileName => {
+			var caching = GetCaching (onCacheFileRequested: fileName => {
 				cacheFileRequested |= fileName == "mef-cache";
 				cacheControlFileRequested |= fileName == "mef-cache-control";
 			});
@@ -84,17 +93,76 @@ namespace MonoDevelop.Ide.Composition
 			await caching.Write (composition, cacheManager);
 			Assert.AreEqual (true, File.Exists (caching.MefCacheFile), "MEF cache file was not written");
 			Assert.AreEqual (true, File.Exists (caching.MefCacheControlFile), "MEF cache control file was not written");
+			Assert.AreEqual (true, caching.CanUse (), "MEF cache should be usable");
 		}
 
 		[Test]
-		public async Task TestSavedCacheCanBeUsed ()
+		public async Task TestCacheIsSavedAndLoaded ()
 		{
 			var caching = GetCaching ();
 			var composition = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
 			var cacheManager = new CachedComposition ();
 
 			await caching.Write (composition, cacheManager);
-			Assert.AreEqual (true, caching.CanUse (), "MEF cache should be usable");
+			Assert.IsNotNull (await CompositionManager.TryCreateRuntimeCompositionFromCache (caching));
+		}
+
+		[Test]
+		public async Task TestCacheFileCorrupted ()
+		{
+			var caching = GetCaching ();
+			var composition = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
+			var cacheManager = new CachedComposition ();
+
+			await caching.Write (composition, cacheManager);
+
+			File.WriteAllText (caching.MefCacheFile, "corrupted");
+			Assert.IsNull (await CompositionManager.TryCreateRuntimeCompositionFromCache (caching), "Cache was able to be constructed from corrupted cache");
+
+			Assert.IsFalse (File.Exists (caching.MefCacheFile), "Cache was not deleted on corruption");
+			Assert.IsFalse (File.Exists (caching.MefCacheControlFile), "Cache control was not deleted on corruption");
+		}
+
+		[Test]
+		public async Task TestControlCacheFileCorrupted ()
+		{
+			var caching = GetCaching ();
+			var composition = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
+			var cacheManager = new CachedComposition ();
+
+			await caching.Write (composition, cacheManager);
+
+			File.WriteAllText (caching.MefCacheControlFile, "corrupted");
+
+			Assert.AreEqual (false, caching.CanUse ());
+			Assert.IsFalse (File.Exists (caching.MefCacheFile), "Cache was not deleted on corruption");
+			Assert.IsFalse (File.Exists (caching.MefCacheControlFile), "Cache control was not deleted on corruption");
+		}
+
+		[Test]
+		public async Task TestControlCacheFileStaleList ()
+		{
+			var caching = GetCaching ();
+			var composition = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
+			var cacheManager = new CachedComposition ();
+
+			await caching.Write (composition, cacheManager);
+
+			caching.Assemblies.Add (typeof (Console).Assembly);
+
+			Assert.AreEqual (false, caching.CanUse ());
+		}
+
+		[Test]
+		public async Task TestControlCacheFileStamps ()
+		{
+			var caching = GetCaching (faultInjector: new CachingFaultInjector ());
+			var composition = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
+			var cacheManager = new CachedComposition ();
+
+			await caching.Write (composition, cacheManager);
+
+			Assert.AreEqual (false, caching.CanUse ());
 		}
 	}
 }
