@@ -131,14 +131,17 @@ namespace MonoDevelop.Ide.Composition
 				timer.Trace ("Gathered assemblies from extension points");
 
 				// spawn discovery tasks in parallel for each assembly
-				var tasks = new List<Task<DiscoveredParts>> (assemblies.Count);
+				var tasks = new Task<DiscoveredParts> [assemblies.Count];
+				int i = 0;
 				foreach (var assembly in assemblies) {
-					var task = Task.Run (() => Discovery.CreatePartsAsync (assembly));
-					tasks.Add (task);
+					tasks[i++] = Task.Run (() => Discovery.CreatePartsAsync (assembly));
 				}
 
-				foreach (var task in tasks) {
-					catalog = catalog.AddParts (await task);
+				var results = await Task.WhenAll (tasks);
+				timer.Trace ("Catalog parts discovered");
+
+				foreach (var result in results) {
+					catalog = catalog.AddParts (result);
 				}
 
 				timer.Trace ("Catalog parts added");
