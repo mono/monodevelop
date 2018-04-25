@@ -80,6 +80,9 @@ namespace MonoDevelop.Refactoring
 					break;
 				}
 			});
+
+			//legacy option, no longer used
+			PropertyService.Set ("CodeActionUsages", null);
 		}
 		
 		class RenameHandler 
