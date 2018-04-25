@@ -128,16 +128,20 @@ namespace MonoDevelop.Ide.Composition
 
 			internal Task Write (RuntimeComposition runtimeComposition, CachedComposition cacheManager)
 			{
-				IdeApp.Exiting += IdeApp_Exiting;
+				return Runtime.RunInMainThread (async () => {
+					IdeApp.Exiting += IdeApp_Exiting;
 
-				return saveTask = Task.Run (async () => {
-					try {
-						await WriteMefCache (runtimeComposition, cacheManager);
-						IdeApp.Exiting -= IdeApp_Exiting;
-						saveTask = null;
-					} catch (Exception ex) {
-						LoggingService.LogError ("Failed to write MEF cache", ex);
-					}
+					saveTask = Task.Run (async () => {
+						try {
+							await WriteMefCache (runtimeComposition, cacheManager);
+						} catch (Exception ex) {
+							LoggingService.LogError ("Failed to write MEF cache", ex);
+						}
+					});
+					await saveTask;
+
+					IdeApp.Exiting -= IdeApp_Exiting;
+					saveTask = null;
 				});
 			}
 
