@@ -126,11 +126,7 @@ namespace MonoDevelop.Ide.Composition
 
 			// Try to use cached MEF data
 			if (caching.CanUse ()) {
-				try {
-					RuntimeComposition = await CreateRuntimeCompositionFromCache (caching);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Could not deserialize MEF cache", ex);
-				}
+				RuntimeComposition = await TryCreateRuntimeCompositionFromCache (caching);
 			}
 
 			// Otherwise fallback to runtime discovery.
@@ -143,14 +139,20 @@ namespace MonoDevelop.Ide.Composition
 			ExportProviderV1 = NetFxAdapters.AsExportProvider (ExportProvider);
 		}
 
-		static async Task<RuntimeComposition> CreateRuntimeCompositionFromCache (Caching caching)
+		internal static async Task<RuntimeComposition> TryCreateRuntimeCompositionFromCache (Caching caching)
 		{
 			CachedComposition cacheManager = new CachedComposition ();
 
-			using (Counters.CompositionCache.BeginTiming ())
-			using (var cacheStream = caching.OpenCacheStream ()) {
-				return await cacheManager.LoadRuntimeCompositionAsync (cacheStream, StandardResolver);
+			try {
+				using (Counters.CompositionCache.BeginTiming ())
+				using (var cacheStream = caching.OpenCacheStream ()) {
+					return await cacheManager.LoadRuntimeCompositionAsync (cacheStream, StandardResolver);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Could not deserialize MEF cache", ex);
+				caching.DeleteFiles ();
 			}
+			return null;
 		}
 
 		internal static async Task<RuntimeComposition> CreateRuntimeCompositionFromDiscovery (Caching caching)
