@@ -48,6 +48,7 @@ namespace MonoDevelop.Ide.Composition
 	/// </summary>
 	public class CompositionManager
 	{
+		Task saveTask;
 		static Task<CompositionManager> creationTask;
 		static CompositionManager instance;
 
@@ -111,6 +112,7 @@ namespace MonoDevelop.Ide.Composition
 
 		internal CompositionManager ()
 		{
+			IdeApp.Exiting += IdeApp_Exiting;
 		}
 
 		static async Task<CompositionManager> CreateInstanceAsync ()
@@ -194,21 +196,29 @@ namespace MonoDevelop.Ide.Composition
 				timer.Trace ("Composition control file written");
 
 				// Serialize the MEF cache.
-				// TODO: Make this resilient to IDE shutdown/crash/whatever.
 				using (var stream = File.Open (mefCacheFile, FileMode.Create)) {
 					await cacheManager.SaveAsync (runtimeComposition, stream);
 				}
 			}
 		}
 
+		void IdeApp_Exiting (object sender, ExitEventArgs args)
+		{
+			// As of the time this code was written, serializing the cache takes 200ms.
+			// Maybe show a dialog and progress bar here that we're closing after save.
+			// We cannot cancel the save, vs-mef doesn't use the cancellation tokens in the API.
+			saveTask?.Wait ();
+		}
+
+		// FIXME: Don't ship these as public
 		[Serializable]
-		class MefControlCache
+		public class MefControlCache
 		{
 			public MefControlCacheAssemblyInfo [] AssemblyInfos;
 		}
 
 		[Serializable]
-		class MefControlCacheAssemblyInfo
+		public class MefControlCacheAssemblyInfo
 		{
 			public string Location;
 			public DateTime LastWriteTimeUtc;
@@ -260,7 +270,13 @@ namespace MonoDevelop.Ide.Composition
 
 				var runtimeComposition = RuntimeComposition.CreateRuntimeComposition (configuration);
 
-				var saveTask = Task.Run (() => WriteMefCache (assemblies, runtimeComposition, cacheManager));
+				saveTask = Task.Run (() => WriteMefCache (assemblies, runtimeComposition, cacheManager)).ContinueWith (t => {
+					saveTask = null;
+
+					if (t.IsFaulted) {
+						LoggingService.LogError ("Failed to write MEF cached", t.Exception.Flatten ());
+					}
+				});
 				return runtimeComposition;
 			}
 		}
