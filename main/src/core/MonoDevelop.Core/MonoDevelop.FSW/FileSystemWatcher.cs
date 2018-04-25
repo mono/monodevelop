@@ -50,6 +50,7 @@ namespace MonoDevelop.FSW
 					return;
 				}
 			} catch (EntryPointNotFoundException) {
+			} catch (DllNotFoundException) {
 			}
 
 			_platform = Platform.Mono;
