@@ -180,9 +180,6 @@ namespace MonoDevelop.Ide.Gui
 				dock.CurrentLayout = value;
 				
 				DestroyFullViewLayouts (oldLayout);
-				
-				// persist the selected layout
-				PropertyService.Set ("MonoDevelop.Core.Gui.CurrentWorkbenchLayout", value);
 			}
 		}
 		
@@ -284,6 +281,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			AddinManager.ExtensionChanged += OnExtensionChanged;
+
+			// this is no longer used, clear any old values
+			PropertyService.Set ("MonoDevelop.Core.Gui.CurrentWorkbenchLayout", null);
 		}
 		
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
