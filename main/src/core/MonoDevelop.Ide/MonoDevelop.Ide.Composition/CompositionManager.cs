@@ -130,21 +130,22 @@ namespace MonoDevelop.Ide.Composition
 				ReadAssembliesFromAddins (assemblies, "/MonoDevelop/Ide/Composition");
 				timer.Trace ("Gathered assemblies from extension points");
 
+				object lockObject = new object ();
+
 				// spawn discovery tasks in parallel for each assembly
-				var tasks = new Task<DiscoveredParts> [assemblies.Count];
-				int i = 0;
+				var tasks = new List<Task> (assemblies.Count);
 				foreach (var assembly in assemblies) {
-					tasks[i++] = Task.Run (() => Discovery.CreatePartsAsync (assembly));
+					var task = Task.Run (() => Discovery.CreatePartsAsync (assembly)).ContinueWith (t => {
+						lock (lockObject) {
+							catalog = catalog.AddParts (t.Result);
+						}
+						return t;
+					});
+					tasks.Add (task);
 				}
 
-				var results = await Task.WhenAll (tasks);
-				timer.Trace ("Catalog parts discovered");
-
-				foreach (var result in results) {
-					catalog = catalog.AddParts (result);
-				}
-
-				timer.Trace ("Catalog parts added");
+				await Task.WhenAll (tasks);
+				timer.Trace ("Catalog parts discovered and added");
 
 				var discoveryErrors = catalog.DiscoveredParts.DiscoveryErrors;
 				if (!discoveryErrors.IsEmpty) {
