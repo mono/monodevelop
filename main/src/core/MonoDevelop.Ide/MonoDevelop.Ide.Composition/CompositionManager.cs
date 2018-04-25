@@ -37,6 +37,7 @@ using Microsoft.VisualStudio.Composition;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide.Composition
 {
@@ -118,54 +119,59 @@ namespace MonoDevelop.Ide.Composition
 
 		async Task InitializeInstanceAsync ()
 		{
-			ComposableCatalog catalog = ComposableCatalog.Create (StandardResolver)
-				.WithCompositionService ()
-				.WithDesktopSupport ();
+			using (var timer = Counters.Composition.BeginTiming ()) {
+				ComposableCatalog catalog = ComposableCatalog.Create (StandardResolver)
+					.WithCompositionService ()
+					.WithDesktopSupport ();
 
-			var assemblies = new HashSet<Assembly> ();
-			ReadAssembliesFromAddins (assemblies, "/MonoDevelop/Ide/TypeService/PlatformMefHostServices");
-			ReadAssembliesFromAddins (assemblies, "/MonoDevelop/Ide/TypeService/MefHostServices");
-			ReadAssembliesFromAddins (assemblies, "/MonoDevelop/Ide/Composition");
+				var assemblies = new HashSet<Assembly> ();
+				ReadAssembliesFromAddins (assemblies, "/MonoDevelop/Ide/TypeService/PlatformMefHostServices");
+				ReadAssembliesFromAddins (assemblies, "/MonoDevelop/Ide/TypeService/MefHostServices");
+				ReadAssembliesFromAddins (assemblies, "/MonoDevelop/Ide/Composition");
+				timer.Trace ("Gathered assemblies from extension points");
 
-			// spawn discovery tasks in parallel for each assembly
-			var tasks = new List<Task<DiscoveredParts>> (assemblies.Count);
-			foreach (var assembly in assemblies) {
-				var task = Task.Run (() => Discovery.CreatePartsAsync (assembly));
-				tasks.Add (task);
-			}
-
-			foreach (var task in tasks) {
-				catalog = catalog.AddParts (await task);
-			}
-
-			var discoveryErrors = catalog.DiscoveredParts.DiscoveryErrors;
-			if (!discoveryErrors.IsEmpty) {
-				foreach	(var error in discoveryErrors) {
-					LoggingService.LogInfo ("MEF discovery error", error);
-				}
-				
-				// throw new ApplicationException ("MEF discovery errors");
-			}
-
-			CompositionConfiguration configuration = CompositionConfiguration.Create (catalog);
-
-			if (!configuration.CompositionErrors.IsEmpty) {
-				// capture the errors in an array for easier debugging
-				var errors = configuration.CompositionErrors.SelectMany (e => e).ToArray ();
-				foreach	(var error in errors) {
-					LoggingService.LogInfo ("MEF composition error: " + error.Message);
+				// spawn discovery tasks in parallel for each assembly
+				var tasks = new List<Task<DiscoveredParts>> (assemblies.Count);
+				foreach (var assembly in assemblies) {
+					var task = Task.Run (() => Discovery.CreatePartsAsync (assembly));
+					tasks.Add (task);
 				}
 
-				// For now while we're still transitioning to VSMEF it's useful to work
-				// even if the composition has some errors. TODO: re-enable this.
-				//configuration.ThrowOnErrors ();
-			}
+				foreach (var task in tasks) {
+					catalog = catalog.AddParts (await task);
+				}
 
-			RuntimeComposition = RuntimeComposition.CreateRuntimeComposition (configuration);
-			ExportProviderFactory = RuntimeComposition.CreateExportProviderFactory ();
-			ExportProvider = ExportProviderFactory.CreateExportProvider ();
-			HostServices = MefV1HostServices.Create (ExportProvider.AsExportProvider ());
-			ExportProviderV1 = NetFxAdapters.AsExportProvider (ExportProvider);
+				timer.Trace ("Catalog parts added");
+
+				var discoveryErrors = catalog.DiscoveredParts.DiscoveryErrors;
+				if (!discoveryErrors.IsEmpty) {
+					foreach (var error in discoveryErrors) {
+						LoggingService.LogInfo ("MEF discovery error", error);
+					}
+
+					// throw new ApplicationException ("MEF discovery errors");
+				}
+
+				CompositionConfiguration configuration = CompositionConfiguration.Create (catalog);
+
+				if (!configuration.CompositionErrors.IsEmpty) {
+					// capture the errors in an array for easier debugging
+					var errors = configuration.CompositionErrors.SelectMany (e => e).ToArray ();
+					foreach (var error in errors) {
+						LoggingService.LogInfo ("MEF composition error: " + error.Message);
+					}
+
+					// For now while we're still transitioning to VSMEF it's useful to work
+					// even if the composition has some errors. TODO: re-enable this.
+					//configuration.ThrowOnErrors ();
+				}
+
+				RuntimeComposition = RuntimeComposition.CreateRuntimeComposition (configuration);
+				ExportProviderFactory = RuntimeComposition.CreateExportProviderFactory ();
+				ExportProvider = ExportProviderFactory.CreateExportProvider ();
+				HostServices = MefV1HostServices.Create (ExportProvider.AsExportProvider ());
+				ExportProviderV1 = NetFxAdapters.AsExportProvider (ExportProvider);
+			}
 		}
 
 		void ReadAssembliesFromAddins (HashSet<Assembly> assemblies, string extensionPath)
