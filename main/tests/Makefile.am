@@ -5,6 +5,7 @@ SUBDIRS=UnitTests IdeUnitTests MacPlatform.Tests UserInterfaceTests TestRunner I
 MONO=mono$(SGEN_SUFFIX)
 RUN_TEST=$(MDTOOL_RUN) run-md-tests
 TEST_DIR=$(top_builddir)/build/tests
+TEST_SRC_DIR=$(top_srcdir)/tests
 EXTERNAL=$(top_builddir)/external
 MACOS_10_10=$(shell (test `sw_vers -productVersion | cut -f1 -d.` = 10 && test `sw_vers -productVersion | cut -f2 -d.` -ge 10) && echo yes)
 TEST_DEPLOY_DIR=$(top_builddir)/build/test-deploy
@@ -138,6 +139,7 @@ deploy-tests:
 
 performance-tests:
 	($(RUN_TEST) -xml=TestResult_PerfTest.xml -labels $(TEST_DIR)/MonoDevelop.Ide.PerfTests.dll) || exit $?;
+	mono $(TEST_DIR)/PerfTool.exe generate-results $(TEST_SRC_DIR)/performance/baseline/Baseline.xml $(TEST_SRC_DIR)/TestResult_PerfTest.xml $(TEST_DIR)/PerformanceTestReport.xml
 
 include $(top_srcdir)/Makefile.include
 
