@@ -107,7 +107,6 @@ namespace MonoDevelop.Ide.Composition
 		public ExportProvider ExportProvider { get; private set; }
 		public HostServices HostServices { get; private set; }
 		public System.ComponentModel.Composition.Hosting.ExportProvider ExportProviderV1 { get; private set; }
-		CachedComposition cacheManager = new CachedComposition ();
 
 		internal CompositionManager ()
 		{
@@ -125,7 +124,18 @@ namespace MonoDevelop.Ide.Composition
 			var assemblies = ReadAssembliesFromAddins ();
 			var caching = new Caching (assemblies);
 
-			RuntimeComposition = caching.CanUse () ? await CreateRuntimeCompositionFromCache (caching) : await CreateRuntimeCompositionFromDiscovery (caching);
+			// Try to use cached MEF data
+			if (caching.CanUse ()) {
+				try {
+					RuntimeComposition = await CreateRuntimeCompositionFromCache (caching);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not deserialize MEF cache", ex);
+				}
+			}
+
+			// Otherwise fallback to runtime discovery.
+			if (RuntimeComposition == null)
+				RuntimeComposition = await CreateRuntimeCompositionFromDiscovery (caching);
 
 			ExportProviderFactory = RuntimeComposition.CreateExportProviderFactory ();
 			ExportProvider = ExportProviderFactory.CreateExportProvider ();
@@ -133,15 +143,17 @@ namespace MonoDevelop.Ide.Composition
 			ExportProviderV1 = NetFxAdapters.AsExportProvider (ExportProvider);
 		}
 
-		async Task<RuntimeComposition> CreateRuntimeCompositionFromCache (Caching caching)
+		static async Task<RuntimeComposition> CreateRuntimeCompositionFromCache (Caching caching)
 		{
+			CachedComposition cacheManager = new CachedComposition ();
+
 			using (Counters.CompositionCache.BeginTiming ())
 			using (var cacheStream = caching.OpenCacheStream ()) {
 				return await cacheManager.LoadRuntimeCompositionAsync (cacheStream, StandardResolver);
 			}
 		}
 
-		async Task<RuntimeComposition> CreateRuntimeCompositionFromDiscovery (Caching caching)
+		internal static async Task<RuntimeComposition> CreateRuntimeCompositionFromDiscovery (Caching caching)
 		{
 			using (var timer = Counters.CompositionDiscovery.BeginTiming ()) {
 				var parts = await Discovery.CreatePartsAsync (caching.Assemblies);
@@ -178,6 +190,7 @@ namespace MonoDevelop.Ide.Composition
 				timer.Trace ("Composition configured");
 
 				var runtimeComposition = RuntimeComposition.CreateRuntimeComposition (configuration);
+				CachedComposition cacheManager = new CachedComposition ();
 				caching.Write (runtimeComposition, cacheManager).Ignore ();
 				return runtimeComposition;
 			}
