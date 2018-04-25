@@ -38,17 +38,17 @@ namespace MonoDevelop.Ide.Tasks
 {
 	static partial class CommentTasksProvider
 	{
-		static ITodoListProvider todoListProvider;
+		internal static void Initialize ()
+		{
+			var todoListProvider = Composition.CompositionManager.GetExportedValue<ITodoListProvider> ();
+			todoListProvider.TodoListUpdated += OnTodoListUpdated;
+		}
 
 		static CommentTasksProvider()
 		{
-			todoListProvider = Ide.Composition.CompositionManager.GetExportedValue<ITodoListProvider> ();
-
 			IdeApp.Workspace.SolutionLoaded += OnSolutionLoaded;
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceItemClosed;
 			CommentTag.SpecialCommentTagsChanged += OnSpecialTagsChanged;
-
-			todoListProvider.TodoListUpdated += OnTodoListUpdated;
 
 			Legacy.Initialize ();
 		}
@@ -146,10 +146,6 @@ namespace MonoDevelop.Ide.Tasks
 			TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (new [] { change }));
 		}
 
-		public static void Initialize ()
-		{
-		}
-
 		static async void OnSolutionLoaded (object sender, SolutionEventArgs args)
 		{
 			var ws = await TypeSystemService.GetWorkspaceAsync (args.Solution);
@@ -181,11 +177,6 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			foreach (var ws in TypeSystemService.AllWorkspaces)
 				UpdateWorkspaceOptions (ws);
-		}
-
-		public static ImmutableArray<TodoItem> GetTodoItems (Microsoft.CodeAnalysis.Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
-		{
-			return todoListProvider.GetTodoItems (workspace, documentId, cancellationToken);
 		}
 	}
 }
