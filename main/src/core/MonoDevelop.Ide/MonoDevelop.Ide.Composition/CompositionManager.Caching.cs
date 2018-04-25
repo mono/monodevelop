@@ -44,16 +44,16 @@ namespace MonoDevelop.Ide.Composition
 		{
 			Task saveTask;
 			public HashSet<Assembly> Assemblies { get; }
-			readonly string mefCacheFile;
-			readonly string mefCacheControlFile;
+			internal string MefCacheFile { get; }
+			internal string MefCacheControlFile { get; }
 
 			public Caching (HashSet<Assembly> assemblies, Func<string, string> getCacheFilePath = null)
 			{
 				Assemblies = assemblies;
 
 				getCacheFilePath = getCacheFilePath ?? (file => Path.Combine (AddinManager.CurrentAddin.PrivateDataPath, file));
-				mefCacheFile = getCacheFilePath ("mef-cache");
-				mefCacheControlFile = getCacheFilePath ("mef-cache-control");
+				MefCacheFile = getCacheFilePath ("mef-cache");
+				MefCacheControlFile = getCacheFilePath ("mef-cache-control");
 			}
 
 			void IdeApp_Exiting (object sender, ExitEventArgs args)
@@ -64,20 +64,27 @@ namespace MonoDevelop.Ide.Composition
 				saveTask?.Wait ();
 			}
 
-			internal Stream OpenCacheStream () => File.Open (mefCacheFile, FileMode.Open);
+			internal Stream OpenCacheStream () => File.Open (MefCacheFile, FileMode.Open);
 
 			internal bool CanUse ()
 			{
 				// If we don't have a control file, bail early
-				if (!File.Exists (mefCacheControlFile))
+				if (!File.Exists (MefCacheControlFile))
 					return false;
 
 				using (var timer = Counters.CompositionCacheControl.BeginTiming ()) {
 					// Read the cache from disk
 					var serializer = new XmlSerializer (typeof (MefControlCache));
 					MefControlCache controlCache;
-					using (var fs = File.Open (mefCacheControlFile, FileMode.Open)) {
-						controlCache = (MefControlCache)serializer.Deserialize (fs);
+
+					try {
+						using (var fs = File.Open (MefCacheControlFile, FileMode.Open)) {
+							controlCache = (MefControlCache)serializer.Deserialize (fs);
+						}
+					} catch (Exception ex) {
+						LoggingService.LogError ("Could not deserialize MEF cache control", ex);
+						File.Delete (MefCacheControlFile);
+						return false;
 					}
 
 					// Short-circuit on number of assemblies change
@@ -102,23 +109,24 @@ namespace MonoDevelop.Ide.Composition
 			{
 				IdeApp.Exiting += IdeApp_Exiting;
 
-				return saveTask = Task.Run (() => WriteMefCache (runtimeComposition, cacheManager)).ContinueWith (t => {
-					IdeApp.Exiting -= IdeApp_Exiting;
-					saveTask = null;
-
-					if (t.IsFaulted) {
-						LoggingService.LogError ("Failed to write MEF cached", t.Exception.Flatten ());
+				return saveTask = Task.Run (async () => {
+					try {
+						await WriteMefCache (runtimeComposition, cacheManager);
+						IdeApp.Exiting -= IdeApp_Exiting;
+						saveTask = null;
+					} catch (Exception ex) {
+						LoggingService.LogError ("Failed to write MEF cache", ex);
 					}
 				});
 			}
 
-			internal async Task WriteMefCache (RuntimeComposition runtimeComposition, CachedComposition cacheManager)
+			async Task WriteMefCache (RuntimeComposition runtimeComposition, CachedComposition cacheManager)
 			{
 				using (var timer = Counters.CompositionSave.BeginTiming ()) {
 					WriteMefCacheControl (timer);
 
 					// Serialize the MEF cache.
-					using (var stream = File.Open (mefCacheFile, FileMode.Create)) {
+					using (var stream = File.Open (MefCacheFile, FileMode.Create)) {
 						await cacheManager.SaveAsync (runtimeComposition, stream);
 					}
 				}
@@ -136,7 +144,7 @@ namespace MonoDevelop.Ide.Composition
 
 				// Serialize it to disk
 				var serializer = new XmlSerializer (typeof (MefControlCache));
-				using (var fs = File.Open (mefCacheControlFile, FileMode.Create)) {
+				using (var fs = File.Open (MefCacheControlFile, FileMode.Create)) {
 					serializer.Serialize (fs, controlCache);
 				}
 				timer.Trace ("Composition control file written");

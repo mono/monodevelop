@@ -54,6 +54,10 @@
       <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Composition">
+      <HintPath>..\..\build\bin\Microsoft.VisualStudio.Composition.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ProjectTemplateTests.cs" />
@@ -120,6 +124,7 @@
     <Compile Include="MonoDevelop.Ide.Projects\PclToProjectJsonConversionTests.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\CommentTasksProviderTests.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\CommentTasksProviderTests.Controller.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.CachingTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -187,6 +192,7 @@
     <Folder Include="MonoDevelop.SourceEditor\" />
     <Folder Include="MonoDevelop.Components\" />
     <Folder Include="MonoDevelop.Ide.Tasks\" />
+    <Folder Include="MonoDevelop.Ide.Composition\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
