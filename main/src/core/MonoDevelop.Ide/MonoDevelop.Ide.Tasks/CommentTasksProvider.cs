@@ -46,11 +46,14 @@ namespace MonoDevelop.Ide.Tasks
 
 		static CommentTasksProvider()
 		{
-			IdeApp.Workspace.SolutionLoaded += OnSolutionLoaded;
-			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceItemClosed;
-			CommentTag.SpecialCommentTagsChanged += OnSpecialTagsChanged;
+			IdeApp.Initialized += (sender, args) => {
+				IdeApp.Workspace.SolutionLoaded += OnSolutionLoaded;
+				IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceItemClosed;
 
-			Legacy.Initialize ();
+				Legacy.Initialize ();
+			};
+
+			CommentTag.SpecialCommentTagsChanged += OnSpecialTagsChanged;
 		}
 
 		static bool TryGetDocument (Microsoft.CodeAnalysis.Common.UpdatedEventArgs args, out Document doc, out MonoDevelop.Projects.Project project)
