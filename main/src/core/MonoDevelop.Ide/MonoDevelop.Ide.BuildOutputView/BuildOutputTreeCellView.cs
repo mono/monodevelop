@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				} else if (node.IsCommandLine) {
 					return monospaceFont;
 				}
-				return defaultLightFont;
+				return defaultFont;
 			}
 
 			public void Reload ()
@@ -240,7 +240,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public BuildOutputCellSelection GetCurrentSelection () => new BuildOutputCellSelection (selectionRow, selectionStart, selectionEnd);
 
-		static Font defaultLightFont;
+		static Font defaultFont;
 		static Font defaultBoldFont;
 		static Font monospaceFont;
 
@@ -251,7 +251,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var fontName = Font.FromName (Gui.Styles.DefaultFontName)
 			                   .WithSize (FontSize);
 			defaultBoldFont = fontName.WithWeight (FontWeight.Bold);
-			defaultLightFont = fontName.WithWeight (FontWeight.Light);
+			defaultFont = fontName.WithWeight (FontWeight.Normal);
 			monospaceFont = FontService.MonospaceFont.ToXwtFont ().WithSize (FontSize);
 		}
 
@@ -345,7 +345,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				startX += ImageSize + 2;
 				var errors = GettextCatalog.GetString ("{0} errors", buildOutputNode.ErrorCount.ToString ());
-				layout = DrawText (ctx, cellArea, startX, errors, status.LayoutYPadding, defaultLightFont, layoutBounds.Width);
+				layout = DrawText (ctx, cellArea, startX, errors, status.LayoutYPadding, defaultFont, layoutBounds.Width);
 
 				var size = layout.GetSize ();
 				//Our error rectangle includes text + image + margin
@@ -361,7 +361,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				var warnings = GettextCatalog.GetString ("{0} warnings", buildOutputNode.WarningCount.ToString ());
 				startX += ImageSize + 2;
-				layout = DrawText (ctx, cellArea, startX, warnings, status.LayoutYPadding, font: defaultLightFont);
+				layout = DrawText (ctx, cellArea, startX, warnings, status.LayoutYPadding, font: defaultFont);
 
 				size = layout.GetSize ();
 				status.WarningsRectangle.Width = size.Width + ImageSize + 2;
@@ -369,7 +369,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			} else if (buildOutputNode.NodeType == BuildOutputNodeType.Build) {
 				var textStartX = layoutBounds.Right + BuildConfigurationInformationLeftPadding; 
-				DrawText (ctx, cellArea, textStartX, GetInformationMessage (buildOutputNode), status.LayoutYPadding, defaultLightFont, cellArea.Width - textStartX);
+				DrawText (ctx, cellArea, textStartX, GetInformationMessage (buildOutputNode), status.LayoutYPadding, defaultFont, cellArea.Width - textStartX);
 			}
 		}
 
@@ -387,7 +387,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					status.TaskLinkRenderRectangle.X = lastErrorPanelStartX + 5;
 					status.TaskLinkRenderRectangle.Y = cellArea.Y + padding;
 
-					var layout = DrawText (ctx, cellArea, status.TaskLinkRenderRectangle.X, text, padding, font: defaultLightFont, trimming: TextTrimming.Word, underline: true);
+					var layout = DrawText (ctx, cellArea, status.TaskLinkRenderRectangle.X, text, padding, font: defaultFont, trimming: TextTrimming.Word, underline: true);
 					status.TaskLinkRenderRectangle.Size = layout.GetSize ();
 					return;
 				}
@@ -403,7 +403,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			//Duration text
 			var duration = buildOutputNode.GetDurationAsString (contextProvider.IsShowingDiagnostics);
 			if (duration != "") {
-				size = DrawText (ctx, cellArea, textStartX, duration, padding, defaultLightFont, DefaultInformationContainerWidth).GetSize ();
+				size = DrawText (ctx, cellArea, textStartX, duration, padding, defaultFont, DefaultInformationContainerWidth).GetSize ();
 				textStartX += size.Width + 10;
 			}
 
@@ -425,14 +425,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 					textStartX += ImageSize + 2;
 					var errors = buildOutputNode.ErrorCount.ToString ();
 
-					var layout = DrawText (ctx, cellArea, textStartX, errors, padding, defaultLightFont, trimming: TextTrimming.Word);
+					var layout = DrawText (ctx, cellArea, textStartX, errors, padding, defaultFont, trimming: TextTrimming.Word);
 					textStartX += layout.GetSize ().Width;
 				}
 
 				if (buildOutputNode.WarningCount > 0) {
 					DrawImage (ctx, cellArea, Resources.WarningIcon, textStartX, imageSize, isSelected, imagePadding);
 					textStartX += ImageSize + 2;
-					DrawText (ctx, cellArea, textStartX, buildOutputNode.WarningCount.ToString (), padding, defaultLightFont, 10, trimming: TextTrimming.Word);
+					DrawText (ctx, cellArea, textStartX, buildOutputNode.WarningCount.ToString (), padding, defaultFont, 10, trimming: TextTrimming.Word);
 				}
 			}
 		}
