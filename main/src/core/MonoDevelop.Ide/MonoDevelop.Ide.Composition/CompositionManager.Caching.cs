@@ -41,6 +41,9 @@ namespace MonoDevelop.Ide.Composition
 {
 	public partial class CompositionManager
 	{
+		/// <summary>
+		/// Used by tests to inject changes into the cache data in memory so it asserts whether caching can be used.
+		/// </summary>
 		internal interface ICachingFaultInjector
 		{
 			void FaultAssemblyInfo (MefControlCacheAssemblyInfo info);
@@ -119,10 +122,10 @@ namespace MonoDevelop.Ide.Composition
 					// Validate that the assemblies match and we have the same time stamps on them.
 					var currentAssemblies = new HashSet<string> (Assemblies.Select (asm => asm.Location));
 					foreach (var assemblyInfo in controlCache.AssemblyInfos) {
+						cachingFaultInjector?.FaultAssemblyInfo (assemblyInfo);
 						if (!currentAssemblies.Contains (assemblyInfo.Location))
 							return false;
 
-						cachingFaultInjector?.FaultAssemblyInfo (assemblyInfo);
 						if (File.GetLastWriteTimeUtc (assemblyInfo.Location) != assemblyInfo.LastWriteTimeUtc)
 							return false;
 					}
