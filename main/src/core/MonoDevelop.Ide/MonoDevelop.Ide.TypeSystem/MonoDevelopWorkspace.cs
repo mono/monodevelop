@@ -800,7 +800,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (netProject == null) {
 				// create some default references for unsupported project types.
 				foreach (var asm in DefaultAssemblies) {
-					var metadataReference = MetadataReferenceCache.LoadReference (projectId, asm);
+					var metadataReference = MetadataReferenceCache.LoadReference (projectId, asm, MetadataReferenceProperties.Assembly);
 					result.Add (metadataReference);
 				}
 				return result;
@@ -820,10 +820,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					if (!hashSet.Add (fileName))
 						continue;
-					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
+					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName, new MetadataReferenceProperties (aliases: file.EnumerateAliases ().ToImmutableArray ()));
 					if (metadataReference == null)
 						continue;
-					metadataReference = metadataReference.WithAliases (file.EnumerateAliases ());
 					result.Add (metadataReference);
 				}
 			} catch (Exception e) {
@@ -841,7 +840,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						var fileName = referencedProject.GetOutputFileName (configurationSelector);
 						if (!hashSet.Add (fileName))
 							continue;
-						var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
+						var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName, MetadataReferenceProperties.Assembly);
 						if (metadataReference != null)
 							result.Add (metadataReference);
 					}
@@ -1483,7 +1482,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			}
-
+			MetadataReferenceCache.LinkProject (metadataReference, projectId);
 			mdProject.AddReference (path);
 			tryApplyState_changedProjects.Add (mdProject);
 			this.OnMetadataReferenceAdded (projectId, metadataReference);
@@ -1493,7 +1492,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
 			var path = GetMetadataPath (metadataReference);
-			if (mdProject == null || path == null)
+			if (path == null)
+				return;
+			MetadataReferenceCache.RemoveReference (projectId, path);
+			if (mdProject == null)
 				return;
 			var item = mdProject.References.FirstOrDefault (r => r.ReferenceType == MonoDevelop.Projects.ReferenceType.Assembly && r.Reference == path);
 			if (item == null)
