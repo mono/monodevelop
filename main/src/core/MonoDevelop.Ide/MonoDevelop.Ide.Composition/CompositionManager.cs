@@ -130,8 +130,11 @@ namespace MonoDevelop.Ide.Composition
 			}
 
 			// Otherwise fallback to runtime discovery.
-			if (RuntimeComposition == null)
+			if (RuntimeComposition == null) {
 				RuntimeComposition = await CreateRuntimeCompositionFromDiscovery (caching);
+				CachedComposition cacheManager = new CachedComposition ();
+				caching.Write (RuntimeComposition, cacheManager).Ignore ();
+			}
 
 			ExportProviderFactory = RuntimeComposition.CreateExportProviderFactory ();
 			ExportProvider = ExportProviderFactory.CreateExportProvider ();
@@ -192,8 +195,6 @@ namespace MonoDevelop.Ide.Composition
 				timer.Trace ("Composition configured");
 
 				var runtimeComposition = RuntimeComposition.CreateRuntimeComposition (configuration);
-				CachedComposition cacheManager = new CachedComposition ();
-				caching.Write (runtimeComposition, cacheManager).Ignore ();
 				return runtimeComposition;
 			}
 		}
