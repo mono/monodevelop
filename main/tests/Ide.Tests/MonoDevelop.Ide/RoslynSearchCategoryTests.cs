@@ -1,10 +1,10 @@
-﻿//
+//
 // RoslynSearchCategoryTests.cs
 //
 // Author:
-//       Marius <>
+//       Marius <maungu@microsoft.com>
 //
-// Copyright (c) 2018 ${CopyrightHolder}
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
