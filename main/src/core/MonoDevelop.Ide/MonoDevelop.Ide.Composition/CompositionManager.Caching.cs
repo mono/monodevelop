@@ -57,11 +57,11 @@ namespace MonoDevelop.Ide.Composition
 			internal static bool writeCache;
 			ICachingFaultInjector cachingFaultInjector;
 			Task saveTask;
-			public HashSet<Assembly> Assemblies { get; }
+			public HashSet<string> Assemblies { get; }
 			internal string MefCacheFile { get; }
 			internal string MefCacheControlFile { get; }
 
-			public Caching (HashSet<Assembly> assemblies, Func<string, string> getCacheFilePath = null, ICachingFaultInjector cachingFaultInjector = null)
+			public Caching (HashSet<string> assemblies, Func<string, string> getCacheFilePath = null, ICachingFaultInjector cachingFaultInjector = null)
 			{
 				getCacheFilePath = getCacheFilePath ?? (file => Path.Combine (AddinManager.CurrentAddin.PrivateDataPath, file));
 
@@ -120,10 +120,9 @@ namespace MonoDevelop.Ide.Composition
 						return false;
 
 					// Validate that the assemblies match and we have the same time stamps on them.
-					var currentAssemblies = new HashSet<string> (Assemblies.Select (asm => asm.Location));
 					foreach (var assemblyInfo in controlCache.AssemblyInfos) {
 						cachingFaultInjector?.FaultAssemblyInfo (assemblyInfo);
-						if (!currentAssemblies.Contains (assemblyInfo.Location))
+						if (!Assemblies.Contains (assemblyInfo.Location))
 							return false;
 
 						if (File.GetLastWriteTimeUtc (assemblyInfo.Location) != assemblyInfo.LastWriteTimeUtc)
@@ -170,8 +169,8 @@ namespace MonoDevelop.Ide.Composition
 				// Create cache control data.
 				var controlCache = new MefControlCache {
 					AssemblyInfos = Assemblies.Select (asm => new MefControlCacheAssemblyInfo {
-						Location = asm.Location,
-						LastWriteTimeUtc = File.GetLastWriteTimeUtc (asm.Location),
+						Location = asm,
+						LastWriteTimeUtc = File.GetLastWriteTimeUtc (asm),
 					}).ToArray (),
 				};
 

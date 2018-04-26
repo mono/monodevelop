@@ -182,7 +182,7 @@ namespace MonoDevelop.Ide.Composition
 
 			await caching.Write (composition, cacheManager);
 
-			caching.Assemblies.Add (typeof (Console).Assembly);
+			caching.Assemblies.Add (typeof (Console).Assembly.Location);
 
 			Assert.IsFalse (caching.CanUse ());
 		}
@@ -198,7 +198,7 @@ namespace MonoDevelop.Ide.Composition
 
 			await caching.Write (composition, cacheManager);
 
-			caching.Assemblies.Add (typeof (Console).Assembly);
+			caching.Assemblies.Add (typeof (Console).Assembly.Location);
 
 			Assert.IsFalse (caching.CanUse ());
 		}

@@ -124,14 +124,14 @@ namespace MonoDevelop.Ide.Composition
 
 		async Task InitializeInstanceAsync ()
 		{
-			var assemblies = ReadAssembliesFromAddins ();
+			var assemblies = ReadAssembliesFromAddins (false);
 			var caching = new Caching (assemblies);
 
 			// Try to use cached MEF data
 			if (caching.CanUse ()) {
 				RuntimeComposition = await TryCreateRuntimeCompositionFromCache (caching);
 			}
-
+			ReadAssembliesFromAddins (true);
 			// Otherwise fallback to runtime discovery.
 			if (RuntimeComposition == null) {
 				RuntimeComposition = await CreateRuntimeCompositionFromDiscovery (caching);
@@ -205,17 +205,17 @@ namespace MonoDevelop.Ide.Composition
 			}
 		}
 
-		internal static HashSet<Assembly> ReadAssembliesFromAddins ()
+		internal static HashSet<string> ReadAssembliesFromAddins (bool load)
 		{
 			using (var timer = Counters.CompositionAddinLoad.BeginTiming ()) {
-				HashSet<Assembly> assemblies = new HashSet<Assembly> ();
+				var assemblies = new HashSet<string> ();
 				ReadAssemblies (assemblies, "/MonoDevelop/Ide/TypeService/PlatformMefHostServices", timer);
 				ReadAssemblies (assemblies, "/MonoDevelop/Ide/TypeService/MefHostServices", timer);
 				ReadAssemblies (assemblies, "/MonoDevelop/Ide/Composition", timer);
 				return assemblies;
 			}
 
-			void ReadAssemblies (HashSet<Assembly> assemblies, string extensionPath, ITimeTracker timer)
+			void ReadAssemblies (HashSet<string> assemblies, string extensionPath, ITimeTracker timer)
 			{
 				foreach (var node in AddinManager.GetExtensionNodes (extensionPath)) {
 					if (node is AssemblyExtensionNode assemblyNode) {
@@ -224,12 +224,9 @@ namespace MonoDevelop.Ide.Composition
 							timer.Trace ("Start: " + id);
 							// Make sure the add-in that registered the assembly is loaded, since it can bring other
 							// other assemblies required to load this one
-							AddinManager.LoadAddin (null, assemblyNode.Addin.Id);
-
-							var assemblyFilePath = assemblyNode.Addin.GetFilePath (assemblyNode.FileName);
-							var assembly = Runtime.SystemAssemblyService.LoadAssemblyFrom (assemblyFilePath);
-							assemblies.Add (assembly);
-
+							if (load)
+								AddinManager.LoadAddin (null, assemblyNode.Addin.Id);
+							assemblies.Add (assemblyNode.Addin.GetFilePath (assemblyNode.FileName));
 							timer.Trace ("Loaded: " + id);
 						} catch (Exception e) {
 							LoggingService.LogError ("Composition can't load assembly " + assemblyNode.FileName, e);
