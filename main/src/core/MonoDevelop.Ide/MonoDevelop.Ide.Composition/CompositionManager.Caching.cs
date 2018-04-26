@@ -35,6 +35,7 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Instrumentation;
+using Newtonsoft.Json;
 
 namespace MonoDevelop.Ide.Composition
 {
@@ -45,6 +46,9 @@ namespace MonoDevelop.Ide.Composition
 			void FaultAssemblyInfo (MefControlCacheAssemblyInfo info);
 		}
 
+		/// <summary>
+		/// Class used to validate whether a MEF cache is re-usable for a given set of assemblies.
+		/// </summary>
 		internal class Caching
 		{
 			internal static bool writeCache;
@@ -95,12 +99,12 @@ namespace MonoDevelop.Ide.Composition
 
 				using (var timer = Counters.CompositionCacheControl.BeginTiming ()) {
 					// Read the cache from disk
-					var serializer = new XmlSerializer (typeof (MefControlCache));
+					var serializer = new JsonSerializer ();
 					MefControlCache controlCache;
 
 					try {
-						using (var fs = File.Open (MefCacheControlFile, FileMode.Open)) {
-							controlCache = (MefControlCache)serializer.Deserialize (fs);
+						using (var sr = File.OpenText (MefCacheControlFile)) {
+							controlCache = (MefControlCache)serializer.Deserialize (sr, typeof(MefControlCache));
 						}
 					} catch (Exception ex) {
 						LoggingService.LogError ("Could not deserialize MEF cache control", ex);
@@ -168,24 +172,24 @@ namespace MonoDevelop.Ide.Composition
 					}).ToArray (),
 				};
 
-				// Serialize it to disk
-				var serializer = new XmlSerializer (typeof (MefControlCache));
-				using (var fs = File.Open (MefCacheControlFile, FileMode.Create)) {
-					serializer.Serialize (fs, controlCache);
+				var serializer = new JsonSerializer ();
+
+				using (var fs = File.Open (MefCacheControlFile, FileMode.Create))
+				using (var sw = new StreamWriter (fs)) {
+					serializer.Serialize (sw, controlCache);
 				}
 				timer.Trace ("Composition control file written");
 			}
 		}
 
-		// FIXME: Don't ship these as public
 		[Serializable]
-		public class MefControlCache
+		class MefControlCache
 		{
 			public MefControlCacheAssemblyInfo [] AssemblyInfos;
 		}
 
 		[Serializable]
-		public class MefControlCacheAssemblyInfo
+		internal class MefControlCacheAssemblyInfo
 		{
 			public string Location;
 			public DateTime LastWriteTimeUtc;
