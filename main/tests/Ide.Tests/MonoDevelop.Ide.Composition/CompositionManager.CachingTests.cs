@@ -38,11 +38,20 @@ namespace MonoDevelop.Ide.Composition
 	[TestFixture]
 	public class CompositionManagerCachingTests
 	{
-		internal class CachingFaultInjector : CompositionManager.ICachingFaultInjector
+		internal class StampCachingFaultInjector : CompositionManager.ICachingFaultInjector
 		{
 			public void FaultAssemblyInfo (CompositionManager.MefControlCacheAssemblyInfo info)
 			{
 				info.LastWriteTimeUtc = DateTime.UtcNow;
+			}
+		}
+
+		internal class LocationCachingFaultInjector : CompositionManager.ICachingFaultInjector
+		{
+			public void FaultAssemblyInfo (CompositionManager.MefControlCacheAssemblyInfo info)
+			{
+				// Change one of the assemblies' paths
+				info.Location = typeof (StampCachingFaultInjector).Assembly.Location;
 			}
 		}
 
@@ -178,14 +187,18 @@ namespace MonoDevelop.Ide.Composition
 			Assert.IsFalse (caching.CanUse ());
 		}
 
-		[Test]
-		public async Task TestControlCacheFileStamps ()
+		[TestCase (typeof (StampCachingFaultInjector))]
+		[TestCase (typeof (LocationCachingFaultInjector))]
+		public async Task TestControlCacheFaultInjection (Type injectorType)
 		{
-			var caching = GetCaching (faultInjector: new CachingFaultInjector ());
+			var injector = (CompositionManager.ICachingFaultInjector)Activator.CreateInstance (injectorType);
+			var caching = GetCaching (injector);
 			var composition = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
 			var cacheManager = new CachedComposition ();
 
 			await caching.Write (composition, cacheManager);
+
+			caching.Assemblies.Add (typeof (Console).Assembly);
 
 			Assert.IsFalse (caching.CanUse ());
 		}
