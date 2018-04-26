@@ -4,7 +4,7 @@
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2018 
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -85,12 +85,14 @@ namespace MonoDevelop.Ide.Composition
 			{
 				try {
 					File.Delete (MefCacheFile);
-				} catch {
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not delete MEF cache file", ex);
 				}
 
 				try {
 					File.Delete (MefCacheControlFile);
-				} catch {
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not delete MEF cache control file", ex);
 				}
 			}
 
