@@ -1,4 +1,4 @@
-﻿//
+//
 // MetadataReferenceCache.cs
 //
 // Author:
@@ -32,38 +32,59 @@ using MonoDevelop.Core;
 using System.Threading;
 using System.Reflection;
 using System.Globalization;
+using MonoDevelop.Ide.TypeSystem.MetadataReferences;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	//FIXME: this mechanism is not correct, we should be implementing IMetadataService instead
 	static class MetadataReferenceCache
 	{
-		static Dictionary<string, MetadataReferenceCacheItem> cache = new Dictionary<string, MetadataReferenceCacheItem> ();
+		static Dictionary<string, Dictionary<MetadataReferenceProperties, MetadataReferenceCacheItem>> cache = new Dictionary<string, Dictionary<MetadataReferenceProperties, MetadataReferenceCacheItem>> ();
+		static ConditionalWeakTable<MetadataReference, MetadataReferenceCacheItem> referenceToCacheItem = new ConditionalWeakTable<MetadataReference, MetadataReferenceCacheItem> ();
 
-		public static MetadataReference LoadReference (ProjectId projectId, string path)
+		public static PortableExecutableReference LoadReference (ProjectId projectId, string path, MetadataReferenceProperties properties)
 		{
 			lock (cache) {
-				MetadataReferenceCacheItem result;
-				if (!cache.TryGetValue (path, out result)) {
-					result = new MetadataReferenceCacheItem (path);
-					cache.Add (path, result);
+				if (!cache.TryGetValue (path, out var propDic))
+					cache [path] = propDic = new Dictionary<MetadataReferenceProperties, MetadataReferenceCacheItem> ();
+				if (!propDic.TryGetValue (properties, out var cacheItem)) {
+					cacheItem = new MetadataReferenceCacheItem (path, properties);
+					propDic.Add (properties, cacheItem);
 				}
-				result.InUseBy.Add (projectId);
-				return result.Reference;
+				lock (cacheItem.InUseBy)
+					if (projectId != default (ProjectId))
+						cacheItem.InUseBy.Add (projectId);
+				var reference = cacheItem.GetReference (true);
+				referenceToCacheItem.Add (reference, cacheItem);
+				return reference;
 			}
 		}
 
-		//TODO: This should be called when reference is actually removed and not on
-		//project reload because if this is only project that has this reference... Cache will be
-		//invalidated and when reload comes back in few miliseconds it will need to reload reference again
+		/// <summary>
+		/// What this method does... When Roslyn requests new MetadataReference via MonoDevelopMetadataServiceFactory
+		/// we don't know yet for which project this will be used, but later when Roslyn adds it to project via
+		/// Workspace.ApplyMetadataReferenceAdded method we can link that metadata to project, reason we want to do this
+		/// linking is, that we want to update reference when file changes on hard drive...
+		/// </summary>
+		public static void LinkProject (MetadataReference metadataReference, ProjectId projectId)
+		{
+			lock (cache) {
+				if (referenceToCacheItem.TryGetValue (metadataReference, out var cacheItem)) {
+					lock (cacheItem.InUseBy) {
+						cacheItem.InUseBy.Add (projectId);
+					}
+				}
+			}
+		}
+
 		public static void RemoveReference (ProjectId projectId, string path)
 		{
 			lock (cache) {
-				MetadataReferenceCacheItem result;
-				if (cache.TryGetValue (path, out result)) {
-					result.InUseBy.Remove (projectId);
-					if (result.InUseBy.Count == 0) {
-						cache.Remove (path);
+				if (cache.TryGetValue (path, out var propDic)) {
+					foreach (var cacheItem in propDic.Values) {
+						lock (cacheItem.InUseBy)
+							cacheItem.InUseBy.Remove (projectId);
 					}
 				}
 			}
@@ -73,78 +94,80 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			lock (cache) {
 				var toRemove = new List<string> ();
-				foreach (var val in cache) {
-					val.Value.InUseBy.Remove (id);
-					if (val.Value.InUseBy.Count == 0) {
-						toRemove.Add (val.Key);
+				foreach (var propDic in cache.Values) {
+					foreach (var cacheItem in propDic.Values) {
+						lock (cacheItem.InUseBy)
+							cacheItem.InUseBy.Remove (id);
 					}
 				}
-				toRemove.ForEach ((k) => cache.Remove (k));
 			}
 		}
 
 		public static void Clear ()
 		{
 			lock (cache) {
+				foreach (var propDic in cache.Values) {
+					foreach (var cacheItem in propDic.Values) {
+						cacheItem.Dispose ();
+					}
+				}
 				cache.Clear ();
 			}
 		}
 
-		#pragma warning disable 414
-		static Timer timer;
-		#pragma warning restore 414
-
-		static MetadataReferenceCache ()
+		class MetadataReferenceCacheItem : IDisposable
 		{
-			timer = new Timer ((o) => Runtime.RunInMainThread ((Action)CheckForChanges), null, 5000, 5000);
-		}
-
-		//TODO: Call this method when focus returns to MD or even better use FileSystemWatcher
-		public static void CheckForChanges ()
-		{
-			lock (cache) {
-				foreach (var value in cache.Values) {
-					value.CheckForChange ();
-				}
+			public HashSet<ProjectId> InUseBy { get; } = new HashSet<ProjectId> ();
+			WeakReference<PortableExecutableReference> weakReference;
+			public PortableExecutableReference GetReference(bool load)
+			{
+				if (weakReference != null && weakReference.TryGetTarget (out var target))
+					return target;
+				if (load)
+					return CreateNewReference ();
+				else
+					return null;
 			}
-		}
-
-		class MetadataReferenceCacheItem
-		{
-			public HashSet<ProjectId> InUseBy { get; private set; }
-
-			public MetadataReference Reference { get; private set; }
 
 			readonly string path;
+			readonly MetadataReferenceProperties properties;
 
 			DateTime timeStamp;
+			FileChangeTracker fileChangeTracker;
 
-			public MetadataReferenceCacheItem (string path)
+			public MetadataReferenceCacheItem (string path, MetadataReferenceProperties properties)
 			{
 				this.path = path;
-				CreateNewReference ();
-				InUseBy = new HashSet<ProjectId> ();
+				this.properties = properties;
+				fileChangeTracker = new FileChangeTracker (path);
+				fileChangeTracker.UpdatedOnDisk += FileChangeTracker_UpdatedOnDisk;
+			}
+
+			void FileChangeTracker_UpdatedOnDisk (object sender, EventArgs e)
+			{
+				CheckForChange ();
 			}
 
 			public void CheckForChange ()
 			{
-				if (timeStamp != File.GetLastWriteTimeUtc (path)) {
-					if (Reference != null) {
-						foreach (var solution in IdeApp.Workspace.GetAllSolutions ()) {
-							var workspace = TypeSystemService.GetWorkspace (solution);
-							foreach (var projId in InUseBy) {
-								if (workspace.CurrentSolution.ContainsProject (projId))
-									workspace.OnMetadataReferenceRemoved (projId, Reference);
+				lock (InUseBy) {
+					if (timeStamp != File.GetLastWriteTimeUtc (path)) {
+						var oldReference = GetReference (false);
+						if (oldReference != null) {
+							foreach (var solution in IdeApp.Workspace.GetAllSolutions ()) {
+								var workspace = TypeSystemService.GetWorkspace (solution);
+								foreach (var projId in InUseBy)
+									if (workspace.CurrentSolution.ContainsProject (projId))
+										workspace.OnMetadataReferenceRemoved (projId, oldReference);
 							}
 						}
-					}
-					CreateNewReference ();
-					if (Reference != null) {
-						foreach (var solution in IdeApp.Workspace.GetAllSolutions ()) {
-							var workspace = TypeSystemService.GetWorkspace (solution);
-							foreach (var projId in InUseBy) {
-								if (workspace.CurrentSolution.ContainsProject (projId))
-									workspace.OnMetadataReferenceAdded (projId, Reference);
+						var newReference = CreateNewReference ();
+						if (newReference != null) {
+							foreach (var solution in IdeApp.Workspace.GetAllSolutions ()) {
+								var workspace = TypeSystemService.GetWorkspace (solution);
+								foreach (var projId in InUseBy)
+									if (workspace.CurrentSolution.ContainsProject (projId))
+										workspace.OnMetadataReferenceAdded (projId, newReference);
 							}
 						}
 					}
@@ -153,31 +176,44 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			readonly static DateTime NonExistentFile = new DateTime (1601, 1, 1);
 
-			void CreateNewReference ()
+			PortableExecutableReference CreateNewReference ()
 			{
 				timeStamp = File.GetLastWriteTimeUtc (path);
+				PortableExecutableReference newReference;
 				if (timeStamp == NonExistentFile) {
-					Reference = null;
+					newReference = null;
 				} else {
 					try {
 						DocumentationProvider provider = null;
 						try {
 							string xmlName = Path.ChangeExtension (path, ".xml");
 							if (File.Exists (xmlName)) {
-								provider = Microsoft.CodeAnalysis.XmlDocumentationProvider.CreateFromFile (xmlName);
+								provider = XmlDocumentationProvider.CreateFromFile (xmlName);
 							} else {
 								provider = RoslynDocumentationProvider.Instance;
 							}
 						} catch (Exception e) {
 							LoggingService.LogError ("Error while creating xml documentation provider for: " + path, e);
 						}
-						Reference = MetadataReference.CreateFromFile (path, MetadataReferenceProperties.Assembly, provider);
+						newReference = MetadataReference.CreateFromFile (path, properties, provider);
 					} catch (Exception e) {
-						LoggingService.LogError ("Error while loading reference " + path + ": " + e.Message, e); 
+						LoggingService.LogError ("Error while loading reference " + path + ": " + e.Message, e);
+						newReference = null;
 					}
 				}
+				weakReference = new WeakReference<PortableExecutableReference> (newReference);
+				return newReference;
 			}
 
+			public void Dispose ()
+			{
+				if (fileChangeTracker == null)
+					return;
+				fileChangeTracker.UpdatedOnDisk -= FileChangeTracker_UpdatedOnDisk;
+				fileChangeTracker.Dispose ();
+				fileChangeTracker = null;
+				weakReference = null;
+			}
 
 			class RoslynDocumentationProvider : DocumentationProvider
 			{
@@ -200,6 +236,51 @@ namespace MonoDevelop.Ide.TypeSystem
 				protected override string GetDocumentationForSymbol (string documentationMemberID, CultureInfo preferredCulture, CancellationToken cancellationToken = default (CancellationToken))
 				{
 					return MonoDocDocumentationProvider.GetDocumentation (documentationMemberID);
+				}
+			}
+
+			/// <summary>
+			/// Helper class for working with FileSystemWatcher to observe any change on single file.
+			/// </summary>
+			internal class FileChangeTracker : IDisposable
+			{
+				public event EventHandler UpdatedOnDisk;
+
+				FileSystemWatcher watcher;
+
+				public string FilePath { get; }
+
+				public FileChangeTracker (string filePath)
+				{
+					FilePath = filePath;
+					watcher = new FileSystemWatcher (Path.GetDirectoryName (filePath), Path.GetFileName (filePath));
+					watcher.Changed += OnChanged;
+					watcher.Created += OnChanged;
+					watcher.Deleted += OnChanged;
+					watcher.Renamed += OnRenamed;
+					watcher.EnableRaisingEvents = true;
+				}
+
+				private void OnRenamed (object sender, RenamedEventArgs e)
+				{
+					UpdatedOnDisk?.Invoke (this, e);
+				}
+
+				private void OnChanged (object sender, FileSystemEventArgs e)
+				{
+					UpdatedOnDisk?.Invoke (this, e);
+				}
+
+				public void Dispose ()
+				{
+					if (watcher != null) {
+						watcher.Changed -= OnChanged;
+						watcher.Created -= OnChanged;
+						watcher.Deleted -= OnChanged;
+						watcher.Renamed -= OnRenamed;
+						watcher.Dispose ();
+						watcher = null;
+					}
 				}
 			}
 		}

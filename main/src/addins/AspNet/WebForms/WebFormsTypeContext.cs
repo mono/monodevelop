@@ -453,7 +453,7 @@ namespace MonoDevelop.AspNet.WebForms
 		MetadataReference LoadMetadataReference (string path)
 		{
 			var projectId = Microsoft.CodeAnalysis.ProjectId.CreateNewId ("WebFormsTypeContext");
-			var reference = MetadataReferenceCache.LoadReference (projectId, path);
+			var reference = MetadataReferenceCache.LoadReference (projectId, path, MetadataReferenceProperties.Assembly);
 			MetadataReferenceCache.RemoveReferences (projectId);
 
 			return reference;

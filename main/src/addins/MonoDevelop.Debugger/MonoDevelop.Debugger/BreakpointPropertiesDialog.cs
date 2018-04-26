@@ -37,6 +37,7 @@ using Xwt.Drawing;
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
+using MetadataReferenceProperties = Microsoft.CodeAnalysis.MetadataReferenceProperties;
 
 namespace MonoDevelop.Debugger
 {
@@ -627,8 +628,8 @@ namespace MonoDevelop.Debugger
 					//no need to unload this assembly context, it's not cached.
 					dummyProjectId = Microsoft.CodeAnalysis.ProjectId.CreateNewId ("GetExceptionsProject");
 					compilation = Microsoft.CodeAnalysis.CSharp.CSharpCompilation.Create ("GetExceptions")
-											   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof (object)).Location))//corlib
-											   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof (Uri)).Location));//System.dll
+					                       .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof (object)).Location, MetadataReferenceProperties.Assembly))//corlib
+					                       .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof (Uri)).Location, MetadataReferenceProperties.Assembly));//System.dll
 				}
 				var exceptionClass = compilation.GetTypeByMetadataName ("System.Exception");
 				foreach (var t in compilation.GlobalNamespace.GetAllTypes ().Where ((arg) => arg.IsDerivedFromClass (exceptionClass))) {
