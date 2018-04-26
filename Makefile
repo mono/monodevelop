@@ -75,7 +75,10 @@ distclean: distclean-recursive
 remove-stale-tarballs:
 	rm -rf tarballs
 
-dist: update_submodules remove-stale-tarballs dist-recursive
+remove-stale-buildinfo:
+	rm -f main/src/core/MonoDevelop.Core/BuildVariables.cs
+
+dist: update_submodules remove-stale-tarballs remove-stale-buildinfo dist-recursive
 	mkdir -p tarballs
 	for t in $(SUBDIRS); do \
 		if test -e $$t/*.tar.gz; then \
