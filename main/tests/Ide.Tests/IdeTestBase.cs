@@ -31,6 +31,11 @@ namespace MonoDevelop.Ide
 {
 	public class IdeTestBase: TestBase
 	{
+		static IdeTestBase()
+		{
+			Composition.CompositionManager.DisableCacheWrite = true;
+		}
+
 		protected override void InternalSetup(string rootDir)
 		{
 			base.InternalSetup(rootDir);

@@ -51,6 +51,9 @@ namespace MonoDevelop.Ide.Composition
 		static Task<CompositionManager> creationTask;
 		static CompositionManager instance;
 
+		// Test helper so MEF cache does not get corrupted when run for tests.
+		internal static bool DisableCacheWrite;
+
 		static readonly Resolver StandardResolver = Resolver.DefaultInstance;
 		static readonly PartDiscovery Discovery = PartDiscovery.Combine (
 			new AttributedPartDiscoveryV1 (StandardResolver),
@@ -132,8 +135,11 @@ namespace MonoDevelop.Ide.Composition
 			// Otherwise fallback to runtime discovery.
 			if (RuntimeComposition == null) {
 				RuntimeComposition = await CreateRuntimeCompositionFromDiscovery (caching);
-				CachedComposition cacheManager = new CachedComposition ();
-				caching.Write (RuntimeComposition, cacheManager).Ignore ();
+
+				if (!DisableCacheWrite) {
+					CachedComposition cacheManager = new CachedComposition ();
+					caching.Write (RuntimeComposition, cacheManager).Ignore ();
+				}
 			}
 
 			ExportProviderFactory = RuntimeComposition.CreateExportProviderFactory ();

@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide.Composition
 
 		internal class Caching
 		{
+			internal static bool writeCache;
 			ICachingFaultInjector cachingFaultInjector;
 			Task saveTask;
 			public HashSet<Assembly> Assemblies { get; }
@@ -89,7 +90,7 @@ namespace MonoDevelop.Ide.Composition
 			internal bool CanUse ()
 			{
 				// If we don't have a control file, bail early
-				if (!File.Exists (MefCacheControlFile))
+				if (!File.Exists (MefCacheControlFile) || !File.Exists (MefCacheFile))
 					return false;
 
 				using (var timer = Counters.CompositionCacheControl.BeginTiming ()) {

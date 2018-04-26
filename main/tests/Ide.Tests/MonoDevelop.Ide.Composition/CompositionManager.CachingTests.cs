@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Composition
 		static CompositionManager.Caching GetCaching (CompositionManager.ICachingFaultInjector faultInjector = null, Action<string> onCacheFileRequested = null, [CallerMemberName] string testName = null)
 		{
 			var assemblies = CompositionManager.ReadAssembliesFromAddins ();
-			return new CompositionManager.Caching (assemblies, file => {
+			var caching = new CompositionManager.Caching (assemblies, file => {
 				onCacheFileRequested?.Invoke (file);
 
 				var tmpDir = Path.Combine (Util.TmpDir, "mef", testName);
@@ -59,6 +59,16 @@ namespace MonoDevelop.Ide.Composition
 				Directory.CreateDirectory (tmpDir);
 				return Path.Combine (tmpDir, file);
 			}, faultInjector);
+
+			return caching;
+		}
+
+		static async Task CreateAndWrite (CompositionManager.Caching caching)
+		{
+			var composition = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
+			var cacheManager = new CachedComposition ();
+
+			await caching.Write (composition, cacheManager);
 		}
 
 		[Test]
@@ -80,30 +90,29 @@ namespace MonoDevelop.Ide.Composition
 		public void TestNonExistentCache ()
 		{
 			var caching = GetCaching ();
-			Assert.AreEqual (false, caching.CanUse (), "Cache should not be usable when it doesnt exist");
+
+			Assert.IsFalse (caching.CanUse ());
+			Assert.IsFalse (File.Exists (caching.MefCacheFile));
+			Assert.IsFalse (File.Exists (caching.MefCacheControlFile));
 		}
 
 		[Test]
 		public async Task TestCacheIsSaved ()
 		{
 			var caching = GetCaching ();
-			var composition = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
-			var cacheManager = new CachedComposition ();
+			await CreateAndWrite (caching);
 
-			await caching.Write (composition, cacheManager);
-			Assert.AreEqual (true, File.Exists (caching.MefCacheFile), "MEF cache file was not written");
-			Assert.AreEqual (true, File.Exists (caching.MefCacheControlFile), "MEF cache control file was not written");
-			Assert.AreEqual (true, caching.CanUse (), "MEF cache should be usable");
+			Assert.IsTrue (File.Exists (caching.MefCacheFile), "MEF cache file was not written");
+			Assert.IsTrue (File.Exists (caching.MefCacheControlFile), "MEF cache control file was not written");
+			Assert.IsTrue (caching.CanUse (), "MEF cache should be usable");
 		}
 
 		[Test]
 		public async Task TestCacheIsSavedAndLoaded ()
 		{
 			var caching = GetCaching ();
-			var composition = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
-			var cacheManager = new CachedComposition ();
+			await CreateAndWrite (caching);
 
-			await caching.Write (composition, cacheManager);
 			Assert.IsNotNull (await CompositionManager.TryCreateRuntimeCompositionFromCache (caching));
 		}
 
@@ -111,10 +120,7 @@ namespace MonoDevelop.Ide.Composition
 		public async Task TestCacheFileCorrupted ()
 		{
 			var caching = GetCaching ();
-			var composition = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
-			var cacheManager = new CachedComposition ();
-
-			await caching.Write (composition, cacheManager);
+			await CreateAndWrite (caching);
 
 			File.WriteAllText (caching.MefCacheFile, "corrupted");
 			Assert.IsNull (await CompositionManager.TryCreateRuntimeCompositionFromCache (caching), "Cache was able to be constructed from corrupted cache");
@@ -127,16 +133,35 @@ namespace MonoDevelop.Ide.Composition
 		public async Task TestControlCacheFileCorrupted ()
 		{
 			var caching = GetCaching ();
-			var composition = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
-			var cacheManager = new CachedComposition ();
-
-			await caching.Write (composition, cacheManager);
+			await CreateAndWrite (caching);
 
 			File.WriteAllText (caching.MefCacheControlFile, "corrupted");
 
-			Assert.AreEqual (false, caching.CanUse ());
+			Assert.IsFalse (caching.CanUse ());
 			Assert.IsFalse (File.Exists (caching.MefCacheFile), "Cache was not deleted on corruption");
 			Assert.IsFalse (File.Exists (caching.MefCacheControlFile), "Cache control was not deleted on corruption");
+		}
+
+		[Test]
+		public async Task TestCacheFileMissing ()
+		{
+			var caching = GetCaching ();
+			await CreateAndWrite (caching);
+
+			File.Delete (caching.MefCacheFile);
+
+			Assert.IsFalse (caching.CanUse ());
+		}
+
+		[Test]
+		public async Task TestControlCacheFileMissing ()
+		{
+			var caching = GetCaching ();
+			await CreateAndWrite (caching);
+
+			File.Delete (caching.MefCacheControlFile);
+
+			Assert.IsFalse (caching.CanUse ());
 		}
 
 		[Test]
@@ -150,7 +175,7 @@ namespace MonoDevelop.Ide.Composition
 
 			caching.Assemblies.Add (typeof (Console).Assembly);
 
-			Assert.AreEqual (false, caching.CanUse ());
+			Assert.IsFalse (caching.CanUse ());
 		}
 
 		[Test]
@@ -162,7 +187,7 @@ namespace MonoDevelop.Ide.Composition
 
 			await caching.Write (composition, cacheManager);
 
-			Assert.AreEqual (false, caching.CanUse ());
+			Assert.IsFalse (caching.CanUse ());
 		}
 	}
 }
