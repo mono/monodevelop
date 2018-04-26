@@ -56,7 +56,11 @@ namespace MonoDevelop.Ide.Composition
 		public static CompositionManager Instance {
 			get {
 				if (instance == null) {
-					instance = InitializeAsync ().Result;
+					var task = InitializeAsync ();
+					if (!task.IsCompleted && Runtime.IsMainThread) {
+						LoggingService.LogInfo ("UI thread queried MEF while it was still being built:{0}{1}", Environment.NewLine, Environment.StackTrace);
+					}
+					instance = task.Result;
 				}
 
 				return instance;
