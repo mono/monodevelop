@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 {
 	class TagCommentsTextEditorExtension : TextEditorExtension, IQuickTaskProvider
 	{
-		static ITodoListProvider todoListProvider = Ide.Composition.CompositionManager.GetExportedValue<ITodoListProvider> ();
+		ITodoListProvider todoListProvider = Ide.Composition.CompositionManager.GetExportedValue<ITodoListProvider> ();
 		CancellationTokenSource src = new CancellationTokenSource ();
 		bool isDisposed;
 

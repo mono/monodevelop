@@ -115,12 +115,13 @@ namespace MonoDevelop.Ide.Composition
 						return false;
 					}
 
+					var currentAssemblies = new HashSet<string> (Assemblies.Select (asm => asm.Location));
+
 					// Short-circuit on number of assemblies change
-					if (controlCache.AssemblyInfos.Length != Assemblies.Count)
+					if (controlCache.AssemblyInfos.Length != currentAssemblies.Count)
 						return false;
 
 					// Validate that the assemblies match and we have the same time stamps on them.
-					var currentAssemblies = new HashSet<string> (Assemblies.Select (asm => asm.Location));
 					foreach (var assemblyInfo in controlCache.AssemblyInfos) {
 						cachingFaultInjector?.FaultAssemblyInfo (assemblyInfo);
 						if (!currentAssemblies.Contains (assemblyInfo.Location))
