@@ -1,6 +1,7 @@
 <Project>
 
   <PropertyGroup>
+    <Deterministic>true</Deterministic>
     <RootDirectory>$(MSBuildThisFileDirectory)</RootDirectory>
     <PackagesDirectory>$(RootDirectory)packages</PackagesDirectory>
     <ReferencesRoslyn>$(RootDirectory)\msbuild\ReferencesRoslyn.props</ReferencesRoslyn>
