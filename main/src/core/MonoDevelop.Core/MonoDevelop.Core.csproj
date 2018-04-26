@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
@@ -764,6 +764,7 @@
     <Compile Include="MonoDevelop.Core\SharedPools.cs" />
     <Compile Include="MonoDevelop.Core.Collections\LookupTable.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\FrameworkInfo.cs" />
+    <Compile Include="MonoDevelop.Projects\FileWatcherService.cs" />
     <Compile Include="MonoDevelop.Core\SynchronizationContextTaskScheduler.cs" />
     <Compile Include="MonoDevelop.Core\ConfigurationProperty.cs" />
   </ItemGroup>
