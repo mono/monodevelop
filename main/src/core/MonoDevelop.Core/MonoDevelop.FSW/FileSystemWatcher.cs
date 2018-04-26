@@ -100,6 +100,13 @@ namespace MonoDevelop.FSW
 			}
 		}
 
+		/// <summary>
+		/// Used by unit tests to verify the native file watcher is being used.
+		/// </summary>
+		internal static bool IsMac {
+			get { return _platform == Platform.OSX; }
+		}
+
 		public bool EnableRaisingEvents {
 			get {
 				switch (_platform) {
