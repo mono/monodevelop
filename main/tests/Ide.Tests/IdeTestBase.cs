@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using UnitTests;
 
@@ -31,11 +32,6 @@ namespace MonoDevelop.Ide
 {
 	public class IdeTestBase: TestBase
 	{
-		static IdeTestBase()
-		{
-			Composition.CompositionManager.DisableCacheWrite = true;
-		}
-
 		protected override void InternalSetup(string rootDir)
 		{
 			base.InternalSetup(rootDir);

@@ -51,9 +51,6 @@ namespace MonoDevelop.Ide.Composition
 		static Task<CompositionManager> creationTask;
 		static CompositionManager instance;
 
-		// Test helper so MEF cache does not get corrupted when run for tests.
-		internal static bool DisableCacheWrite;
-
 		static readonly Resolver StandardResolver = Resolver.DefaultInstance;
 		static readonly PartDiscovery Discovery = PartDiscovery.Combine (
 			new AttributedPartDiscoveryV1 (StandardResolver),
@@ -136,10 +133,8 @@ namespace MonoDevelop.Ide.Composition
 			if (RuntimeComposition == null) {
 				RuntimeComposition = await CreateRuntimeCompositionFromDiscovery (caching);
 
-				if (!DisableCacheWrite) {
-					CachedComposition cacheManager = new CachedComposition ();
-					caching.Write (RuntimeComposition, cacheManager).Ignore ();
-				}
+				CachedComposition cacheManager = new CachedComposition ();
+				caching.Write (RuntimeComposition, cacheManager).Ignore ();
 			}
 
 			ExportProviderFactory = RuntimeComposition.CreateExportProviderFactory ();
@@ -224,7 +219,7 @@ namespace MonoDevelop.Ide.Composition
 							timer.Trace ("Start: " + id);
 							// Make sure the add-in that registered the assembly is loaded, since it can bring other
 							// other assemblies required to load this one
-							AddinManager.LoadAddin (null, assemblyNode.Addin.Id);
+							AddinManager.LoadAddin (null, id);
 
 							var assemblyFilePath = assemblyNode.Addin.GetFilePath (assemblyNode.FileName);
 							var assembly = Runtime.SystemAssemblyService.LoadAssemblyFrom (assemblyFilePath);

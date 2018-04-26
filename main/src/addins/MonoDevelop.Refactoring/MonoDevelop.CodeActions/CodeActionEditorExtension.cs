@@ -123,8 +123,8 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
-		static ICodeFixService codeFixService = Ide.Composition.CompositionManager.GetExportedValue<ICodeFixService> ();
-		static ICodeRefactoringService codeRefactoringService = Ide.Composition.CompositionManager.GetExportedValue<ICodeRefactoringService> ();
+		ICodeFixService codeFixService = Ide.Composition.CompositionManager.GetExportedValue<ICodeFixService> ();
+		ICodeRefactoringService codeRefactoringService = Ide.Composition.CompositionManager.GetExportedValue<ICodeRefactoringService> ();
 		internal Task<CodeActionContainer> GetCurrentFixesAsync (CancellationToken cancellationToken)
 		{
 			var loc = Editor.CaretOffset;
