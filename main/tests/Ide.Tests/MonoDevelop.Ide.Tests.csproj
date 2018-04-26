@@ -59,6 +59,7 @@
     <Reference Include="Microsoft.VisualStudio.Composition">
       <HintPath>..\..\build\bin\Microsoft.VisualStudio.Composition.dll</HintPath>
       <Private>False</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Features">
       <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
     </Reference>
