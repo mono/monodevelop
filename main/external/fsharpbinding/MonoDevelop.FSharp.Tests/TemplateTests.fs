@@ -105,7 +105,7 @@ type ``Template tests``() =
             cinfo.Parameters.["AppIdentifier"] <- tt
             cinfo.Parameters.["AndroidMinSdkVersionAttribute"] <- "android:minSdkVersion=\"10\""
             cinfo.Parameters.["AndroidThemeAttribute"] <- ""
-            cinfo.Parameters.["TargetFrameworkVersion"] <- "MonoAndroid,Version=v7.0"
+            cinfo.Parameters.["TargetFrameworkVersion"] <- "MonoAndroid,Version=v8.1"
 
             for templateParameter in TemplateParameter.CreateParameters (parameters) do
                 cinfo.Parameters.[templateParameter.Name] <- templateParameter.Value
