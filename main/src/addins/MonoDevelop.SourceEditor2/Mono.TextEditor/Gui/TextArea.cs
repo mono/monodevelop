@@ -1707,9 +1707,10 @@ namespace Mono.TextEditor
 				args.Location = location;
 				margin.MouseHover (args);
 			}
-
+			MouseHover?.Invoke (this, new MarginEventArgs (margin));
 			oldMargin = margin;
 		}
+		internal event EventHandler<MarginEventArgs> MouseHover;
 
 		#region CustomDrag (for getting dnd data from toolbox items for example)
 		string     customText;
@@ -1759,9 +1760,11 @@ namespace Mono.TextEditor
 				SetCursor (null);
 			if (oldMargin != null)
 				oldMargin.MouseLeft ();
-			
+			MouseLeft?.Invoke (this, EventArgs.Empty);
 			return base.OnLeaveNotifyEvent (e); 
 		}
+
+		internal event EventHandler MouseLeft;
 
 		public double LineHeight {
 			get {

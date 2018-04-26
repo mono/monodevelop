@@ -80,14 +80,14 @@ namespace Mono.TextEditor.Theatrics
             }
         }
 
-        public Actor<T> Add (T target, uint duration)
+		public Actor<T> Add (T target, uint duration, double percent = 1.0)
         {
             lock (this) {
                 if (Contains (target)) {
                     throw new InvalidOperationException ("Stage already contains this actor");
                 }
 
-                Actor<T> actor = new Actor<T> (target, duration);
+				Actor<T> actor = new Actor<T> (target, duration, percent);
                 actors.Add (target, actor);
 
                 CheckTimeout ();
@@ -231,7 +231,7 @@ namespace Mono.TextEditor.Theatrics
             }
         }
 
-        public void Exeunt ()
+		public void Exeunt ()
         {
             lock (this) {
                 actors.Clear ();

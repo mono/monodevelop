@@ -40,10 +40,11 @@ namespace Mono.TextEditor.Theatrics
         private double percent;
         private bool can_expire = true;
 
-        public Actor (T target, uint duration)
+        public Actor (T target, uint duration, double percent)
         {
             this.target = target;
             this.duration = duration;
+			this.percent = percent;
             Reset ();
         }
 
