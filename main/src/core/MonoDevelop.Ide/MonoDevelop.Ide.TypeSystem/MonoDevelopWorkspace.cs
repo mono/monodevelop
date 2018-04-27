@@ -320,58 +320,63 @@ namespace MonoDevelop.Ide.TypeSystem
 		Task<SolutionInfo> CreateSolutionInfo (MonoDevelop.Projects.Solution solution, CancellationToken token)
 		{
 			return Task.Run (async delegate {
-				var projects = new ConcurrentBag<ProjectInfo> ();
-				var mdProjects = solution.GetAllProjects ();
-				ImmutableList<ProjectionEntry> toDispose;
-				lock (projectionListUpdateLock) {
-					toDispose = projectionList;
-					projectionList = projectionList.Clear ();
-				}
-				foreach (var p in toDispose)
-					p.Dispose ();
-				
-				solutionData = new SolutionData ();
-				List<Task> allTasks = new List<Task> ();
-				foreach (var proj in mdProjects) {
+				var timer = Counters.AnalysisTimer.BeginTiming ();
+				try {
+					var projects = new ConcurrentBag<ProjectInfo> ();
+					var mdProjects = solution.GetAllProjects ();
+					ImmutableList<ProjectionEntry> toDispose;
+					lock (projectionListUpdateLock) {
+						toDispose = projectionList;
+						projectionList = projectionList.Clear ();
+					}
+					foreach (var p in toDispose)
+						p.Dispose ();
+					
+					solutionData = new SolutionData ();
+					List<Task> allTasks = new List<Task> ();
+					foreach (var proj in mdProjects) {
+						if (token.IsCancellationRequested)
+							return null;
+						var netProj = proj as MonoDevelop.Projects.DotNetProject;
+						if (netProj != null && !netProj.SupportsRoslyn)
+							continue;
+						var tp = LoadProject (proj, token, null).ContinueWith (t => {
+							if (!t.IsCanceled)
+								projects.Add (t.Result);
+						});
+						allTasks.Add (tp);
+					}
+					await Task.WhenAll (allTasks.ToArray ()).ConfigureAwait (false);
 					if (token.IsCancellationRequested)
 						return null;
-					var netProj = proj as MonoDevelop.Projects.DotNetProject;
-					if (netProj != null && !netProj.SupportsRoslyn)
-						continue;
-					var tp = LoadProject (proj, token, null).ContinueWith (t => {
-						if (!t.IsCanceled)
-							projects.Add (t.Result);
-					});
-					allTasks.Add (tp);
-				}
-				await Task.WhenAll (allTasks.ToArray ()).ConfigureAwait (false);
-				if (token.IsCancellationRequested)
-					return null;
-				var modifiedWhileLoading = modifiedProjects;
-				modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
-				var solutionId = GetSolutionId (solution);
-				var solutionInfo = SolutionInfo.Create (solutionId, VersionStamp.Create (), solution.FileName, projects);
-				foreach (var project in modifiedWhileLoading) {
-					if (solution.ContainsItem (project)) {
-						return await CreateSolutionInfo (solution, token).ConfigureAwait (false);
+					var modifiedWhileLoading = modifiedProjects;
+					modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
+					var solutionId = GetSolutionId (solution);
+					var solutionInfo = SolutionInfo.Create (solutionId, VersionStamp.Create (), solution.FileName, projects);
+					foreach (var project in modifiedWhileLoading) {
+						if (solution.ContainsItem (project)) {
+							return await CreateSolutionInfo (solution, token).ConfigureAwait (false);
+						}
 					}
-				}
 
-				lock (addLock) {
-					if (!added) {
-						added = true;
-						solution.Modified += OnSolutionModified;
-						NotifySolutionModified (solution, solutionId, this);
-						OnSolutionAdded (solutionInfo);
-						lock (generatedFiles) {
-							foreach (var generatedFile in generatedFiles) {
-								if (!this.IsDocumentOpen (generatedFile.Key.Id))
-									OnDocumentOpened (generatedFile.Key.Id, generatedFile.Value);
+					lock (addLock) {
+						if (!added) {
+							added = true;
+							solution.Modified += OnSolutionModified;
+							NotifySolutionModified (solution, solutionId, this);
+							OnSolutionAdded (solutionInfo);
+							lock (generatedFiles) {
+								foreach (var generatedFile in generatedFiles) {
+									if (!this.IsDocumentOpen (generatedFile.Key.Id))
+										OnDocumentOpened (generatedFile.Key.Id, generatedFile.Value);
+								}
 							}
 						}
 					}
+					return solutionInfo;
+				} finally {
+					timer.End ();
 				}
-				return solutionInfo;
 			});
 		}
 
