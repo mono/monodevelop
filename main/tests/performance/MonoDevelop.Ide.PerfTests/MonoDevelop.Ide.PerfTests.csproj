@@ -35,6 +35,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Baseline_MonoDevelop.Ide.PerfTests.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.PerformanceTesting\MonoDevelop.PerformanceTesting.csproj">
