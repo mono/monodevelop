@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using NUnit.Framework;
 
+using MonoDevelop.Components.AutoTest;
 using MonoDevelop.UserInterfaceTesting;
 using MonoDevelop.PerformanceTesting;
 using System.IO;
@@ -65,15 +66,20 @@ namespace MonoDevelop.Ide.PerfTests
 			var mdProfileDir = Util.CreateTmpDir ();
 			FoldersToClean.Add (mdProfileDir);
 
-			var mainSln = Path.Combine (MainPath, "Main.sln");
+			var binDir = Path.GetDirectoryName (typeof(AutoTestClientSession).Assembly.Location);
+			var sln = Path.Combine (MainPath, "build/tests/TestSolutions/ExampleFormsSolution/ExampleFormsSolution.sln");
 
+			// Fallback to local for running inside MD
+			if (!File.Exists (sln)) {
+				sln = Path.Combine (MainPath, "Main.sln");
+			}
 			var t = System.Diagnostics.Stopwatch.StartNew ();
 
 			StartSession (mdProfileDir);
 			Session.WaitForElement (IdeQuery.DefaultWorkbench);
 
 			// Load Solution
-			Session.RunAndWaitForTimer (() => Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", (Core.FilePath)mainSln), "Ide.Shell.SolutionOpened", 60000);
+			Session.RunAndWaitForTimer (() => Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", (Core.FilePath)sln), "Ide.Shell.SolutionOpened", 60000);
 
 			// Wait until intellisense has finished
 			Session.RunAndWaitForTimer (() => {}, "Ide.CodeAnalysis", 180000);

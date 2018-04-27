@@ -138,8 +138,10 @@ deploy-tests:
 	done;
 
 performance-tests:
-	($(RUN_TEST) -xml=TestResult_PerfTest.xml -labels $(TEST_DIR)/MonoDevelop.Ide.PerfTests.dll) || exit $?;
-	mono $(TEST_DIR)/PerfTool.exe generate-results $(TEST_SRC_DIR)/performance/baseline/Baseline.xml $(TEST_SRC_DIR)/TestResult_PerfTest.xml $(TEST_DIR)/PerformanceTestReport.xml
+	rm -rf $(TEST_DIR)/TestSolutions/ExampleFormsSolution
+	cd $(TEST_DIR)/TestSolutions; unzip ExampleFormsSolution.zip
+	$(RUN_TEST) -xml=TestResult_PerfTest.xml -labels $(TEST_DIR)/MonoDevelop.Ide.PerfTests.dll || exit $?;
+	mono $(TEST_DIR)/PerfTool.exe generate-results $(TEST_DIR)/Baseline_MonoDevelop.Ide.PerfTests.xml $(TEST_SRC_DIR)/TestResult_PerfTest.xml $(TEST_DIR)/PerformanceTestReport.xml
 
 include $(top_srcdir)/Makefile.include
 

@@ -31,11 +31,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestStartup.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
     <None Include="Baseline_MonoDevelop.Ide.PerfTests.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestSolutions\ExampleFormsSolution.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -56,6 +56,14 @@
       <Project>{82B9A5C5-5713-49B5-93D1-BE29B00FF35A}</Project>
       <Name>MonoDevelop.UserInterfaceTesting</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TestSolutions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="TestStartup.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
