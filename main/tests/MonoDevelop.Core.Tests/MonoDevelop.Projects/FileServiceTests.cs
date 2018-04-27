@@ -110,6 +110,24 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (@"aa/bb", FileService.AbsoluteToRelativePath (@"/aa", @"aa/bb"));
 			Assert.AreEqual (@"aa", FileService.AbsoluteToRelativePath (@"/aa", @"aa"));
 		}
+
+		[Test]
+		public void ThawAfterGeneratingDifferentFileEvents_EventDataShouldMerge_DoesNotThrowInvalidCastException ()
+		{
+			FileService.FreezeEvents ();
+
+			var tmp = System.IO.Path.GetTempFileName ();
+			FileService.NotifyFileChanged (tmp);
+
+			FileService.CopyFile (tmp, tmp + ".tmp");
+			FileService.DeleteFile (tmp);
+			FileService.DeleteFile (tmp + ".tmp");
+
+			FileService.NotifyFileRemoved (tmp);
+			FileService.NotifyFileRemoved (tmp + ".tmp");
+
+			FileService.ThawEvents ();
+		}
 	}
 }
 

@@ -862,7 +862,9 @@ namespace MonoDevelop.Core
 
 			public override bool ShouldMerge (EventData other)
 			{
-				var next = (EventData<TArgs>)other;
+				var next = other as EventData<TArgs>;
+				if (next == null)
+					return false;
 				return (next.Args.GetType () == Args.GetType ()) && next.Delegate == Delegate && next.ThisObject == ThisObject;
 			}
 
