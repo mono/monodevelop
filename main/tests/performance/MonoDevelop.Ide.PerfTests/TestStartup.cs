@@ -59,6 +59,7 @@ namespace MonoDevelop.Ide.PerfTests
 
 		[Test]
 		[Benchmark(Tolerance = 0.1)]
+		[Ignore]
 		public void TestTimeToCode ()
 		{
 			var mdProfileDir = Util.CreateTmpDir ();
