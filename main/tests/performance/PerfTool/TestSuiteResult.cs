@@ -115,7 +115,7 @@ namespace PerfTool
 					if (IsRegression (baselineResult, testResult)) {
 						testResult.Success = false;
 						testResult.Result = "Failed";
-						testResult.Reason = new Reason {
+						testResult.Failure = new Failure {
 							Message = $"Performance regression. Baseline: {baselineResult.Time}, Result: {testResult.Time}"
 						};
 					}

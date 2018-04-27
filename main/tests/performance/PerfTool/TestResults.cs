@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace PerfTool.TestModel
 {
@@ -56,8 +57,51 @@ namespace PerfTool.TestModel
 	[XmlRoot (ElementName = "reason")]
 	public class Reason
 	{
-		[XmlElement (ElementName = "message")]
+		[XmlIgnore]
 		public string Message { get; set; }
+
+		[XmlElement ("message")]
+		public XmlCDataSection CDataMessage {
+			get {
+				XmlDocument doc = new XmlDocument ();
+				return doc.CreateCDataSection (Message);
+			}
+			set {
+				Message = value.Value;
+			}
+		}
+	}
+
+	[XmlRoot (ElementName = "failure")]
+	public class Failure
+	{
+		[XmlIgnore]
+		public string Message { get; set; }
+
+		[XmlElement ("message")]
+		public XmlCDataSection CDataMessage {
+			get {
+				XmlDocument doc = new XmlDocument ();
+				return doc.CreateCDataSection (Message);
+			}
+			set {
+				Message = value.Value;
+			}
+		}
+
+		[XmlIgnore]
+		public string StackTrace { get; set; }
+
+		[XmlElement ("stack-trace")]
+		public XmlCDataSection CDataStackTrace {
+			get {
+				XmlDocument doc = new XmlDocument ();
+				return doc.CreateCDataSection (StackTrace);
+			}
+			set {
+				StackTrace = value.Value;
+			}
+		}
 	}
 
 	[XmlRoot (ElementName = "test-case")]
@@ -100,6 +144,9 @@ namespace PerfTool.TestModel
 
 		[XmlElement (ElementName = "reason")]
 		public Reason Reason { get; set; }
+
+		[XmlElement (ElementName = "failure")]
+		public Failure Failure { get; set; }
 	}
 
 	[XmlRoot (ElementName = "results")]
@@ -155,6 +202,9 @@ namespace PerfTool.TestModel
 
 		[XmlElement (ElementName = "reason")]
 		public Reason Reason { get; set; }
+
+		[XmlElement (ElementName = "failure")]
+		public Failure Failure { get; set; }
 	}
 
 	[XmlRoot (ElementName = "test-results")]
