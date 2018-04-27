@@ -539,7 +539,6 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override void OnSaved (EventArgs e)
 		{
-			IdeApp.Workbench.SaveFileStatus ();
 			base.OnSaved (e);
 		}
 

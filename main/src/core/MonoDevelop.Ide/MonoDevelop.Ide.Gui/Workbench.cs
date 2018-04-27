@@ -73,6 +73,7 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler LayoutChanged;
 		public event EventHandler GuiLocked;
 		public event EventHandler GuiUnlocked;
+		bool fileEventsFrozen;
 		
 		internal void Initialize (ProgressMonitor monitor)
 		{
@@ -97,19 +98,16 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadingWorkspaceUserPreferences;
 				
 				IdeApp.FocusOut += delegate(object o, EventArgs args) {
-					SaveFileStatus ();
+					if (!fileEventsFrozen) {
+						fileEventsFrozen = true;
+						FileService.FreezeEvents ();
+					}
 				};
 				IdeApp.FocusIn += delegate(object o, EventArgs args) {
-					CheckFileStatus ();
-				};
-
-				IdeApp.ProjectOperations.StartBuild += delegate {
-					SaveFileStatus ();
-				};
-
-				IdeApp.ProjectOperations.EndBuild += delegate {
-					// The file status checks outputs as well.
-					CheckFileStatus ();
+					if (fileEventsFrozen) {
+						fileEventsFrozen = false;
+						FileService.ThawEvents ();
+					}
 				};
 
 				pads = null;	// Make sure we get an up to date pad list.
@@ -1279,99 +1277,6 @@ namespace MonoDevelop.Ide.Gui
 			workbench.UnlockActiveWindowChangeEvent ();
 		}
 
-		List<FileData> fileStatus;
-		SemaphoreSlim fileStatusLock = new SemaphoreSlim (1, 1);
-		// http://msdn.microsoft.com/en-us/library/system.io.file.getlastwritetimeutc(v=vs.110).aspx
-		static DateTime NonExistentFile = new DateTime(1601, 1, 1);
-		internal void SaveFileStatus ()
-		{
-//			DateTime t = DateTime.Now;
-			List<FilePath> files = new List<FilePath> (GetKnownFiles ());
-			fileStatus = new List<FileData> (files.Count);
-//			Console.WriteLine ("SaveFileStatus(0) " + (DateTime.Now - t).TotalMilliseconds + "ms " + files.Count);
-			
-			Task.Run (async delegate {
-//				t = DateTime.Now;
-				try {
-					await fileStatusLock.WaitAsync ().ConfigureAwait (false);
-					if (fileStatus == null)
-						return;
-					foreach (FilePath file in files) {
-						try {
-							DateTime ft = File.GetLastWriteTimeUtc (file);
-							FileData fd = new FileData (file, ft != NonExistentFile ? ft : DateTime.MinValue);
-							fileStatus.Add (fd);
-						} catch {
-							// Ignore						}
-					}
-				} finally {
-					fileStatusLock.Release ();
-				}
-//				Console.WriteLine ("SaveFileStatus " + (DateTime.Now - t).TotalMilliseconds + "ms " + fileStatus.Count);
-			});
-		}
-		
-		internal void CheckFileStatus ()
-		{
-			if (fileStatus == null)
-				return;
-			
-			Task.Run (async delegate {
-				try {
-//					DateTime t = DateTime.Now;
-
-					await fileStatusLock.WaitAsync ().ConfigureAwait (false);
-					if (fileStatus == null)
-						return;
-					List<FilePath> modified = new List<FilePath> (fileStatus.Count);
-					foreach (FileData fd in fileStatus) {
-						try {
-							DateTime ft = File.GetLastWriteTimeUtc (fd.File);
-							if (ft != NonExistentFile) {
-								if (ft != fd.TimeUtc)
-									modified.Add (fd.File);
-							} else if (fd.TimeUtc != DateTime.MinValue) {
-								FileService.NotifyFileRemoved (fd.File);
-							}
-						} catch {
-							// Ignore
-						}
-					}
-					if (modified.Count > 0)
-						FileService.NotifyFilesChanged (modified);
-
-//					Console.WriteLine ("CheckFileStatus " + (DateTime.Now - t).TotalMilliseconds + "ms " + fileStatus.Count);
-					fileStatus = null;
-				} finally {
-					fileStatusLock.Release ();
-				}
-			});
-		}
-		
-		IEnumerable<FilePath> GetKnownFiles ()
-		{
-			foreach (WorkspaceItem item in IdeApp.Workspace.Items) {
-				foreach (FilePath file in item.GetItemFiles (true))
-					yield return file;
-			}
-			foreach (Document doc in documents) {
-				if (!doc.HasProject && doc.IsFile)
-					yield return doc.FileName;
-			}
-		}
-		
-		struct FileData
-		{
-			public FileData (FilePath file, DateTime timeUtc)
-			{
-				this.File = file;
-				this.TimeUtc = timeUtc;
-			}
-			
-			public FilePath File;
-			public DateTime TimeUtc;
-		}
-		
 		void OnDocumentOpened (DocumentEventArgs e)
 		{
 			try {
