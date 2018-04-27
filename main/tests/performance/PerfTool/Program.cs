@@ -29,21 +29,19 @@ namespace PerfTool
 {
 	class MainClass
 	{
-		public static void Main (string [] args)
+		public static int Main (string [] args)
 		{
-			if (args.Length == 0) {
-				PrintHelp ();
-				return;
-			}
+			if (args.Length == 0)
+				return PrintHelp ();
 
 			var command = args [0];
 			if (command == "generate-results" && args.Length == 4) {
-				GenerateResults (args [1], args [2], args [3]);
+				return GenerateResults (args [1], args [2], args [3]);
 			} else
-				PrintHelp ();
+				return PrintHelp ();
 		}
 
-		static void GenerateResults (string baseFile, string inputFile, string resultsFile)
+		static int GenerateResults (string baseFile, string inputFile, string resultsFile)
 		{
 			var baseTestSuite = new TestSuiteResult ();
 			baseTestSuite.Read (baseFile);
@@ -51,16 +49,29 @@ namespace PerfTool
 			var inputTestSuite = new TestSuiteResult ();
 			inputTestSuite.Read (inputFile);
 
-			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite);
+			var regressions = inputTestSuite.RegisterPerformanceRegressions (baseTestSuite);
 			inputTestSuite.Write (resultsFile);
+
+			if (regressions.Count > 0) {
+				Console.WriteLine ("Performance Regressions:");
+				for (int n = 0; n < regressions.Count; n++) {
+					var reg = regressions [n];
+					var number = (n+1) + ") ";
+					Console.WriteLine (number + reg.Name);
+					Console.WriteLine (new string (' ', number.Length) + reg.Failure.Message);
+				}
+				Console.WriteLine ();
+			}
+			return inputTestSuite.HasErrors ? 1 : 0;
 		}
 
-		static void PrintHelp ()
+		static int PrintHelp ()
 		{
 			Console.WriteLine ("Usage:");
 			Console.WriteLine ("generate-results <base-file> <input-file> <output-file>");
 			Console.WriteLine ("    Detects regressions in input-file when compared to base-file.");
 			Console.WriteLine ("    It generates an NUnit test results file with test failures.");
+			return 0;
 		}
 	}
 }

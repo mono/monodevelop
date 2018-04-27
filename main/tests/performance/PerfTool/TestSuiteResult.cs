@@ -43,6 +43,10 @@ namespace PerfTool
 		{
 		}
 
+		public bool HasErrors {
+			get { return results.Errors + results.Failures > 0; }
+		}
+
 		public void Read (string file)
 		{
 			var serializer = new XmlSerializer (typeof (TestResults));
@@ -108,19 +112,23 @@ namespace PerfTool
 			return changed;
 		}
 
-		public void RegisterPerformanceRegressions (TestSuiteResult baseline)
+		public List<TestCase> RegisterPerformanceRegressions (TestSuiteResult baseline)
 		{
+			var regressions = new List<TestCase> ();
 			foreach (var testResult in resultsByTestId.Values) {
 				if (testResult.Success && baseline.resultsByTestId.TryGetValue (testResult.Name, out var baselineResult)) {
 					if (IsRegression (baselineResult, testResult)) {
 						testResult.Success = false;
-						testResult.Result = "Failed";
+						testResult.Result = "Error";
 						testResult.Failure = new Failure {
-							Message = $"Performance regression. Baseline: {baselineResult.Time}, Result: {testResult.Time}"
+							Message = $"Performance regression. Baseline: {baselineResult.Time}, Result: {testResult.Time} (+{(testResult.Time/baselineResult.Time) - 1:0.00})"
 						};
+						regressions.Add (testResult);
+						results.Errors++;
 					}
 				}
 			}
+			return regressions;
 		}
 
 		public bool IsRegression (TestCase baselineTestCase, TestCase testCase)
