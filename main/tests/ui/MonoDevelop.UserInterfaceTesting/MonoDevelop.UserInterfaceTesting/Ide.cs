@@ -46,7 +46,7 @@ namespace MonoDevelop.UserInterfaceTesting
 
 		public static void OpenFile (FilePath file)
 		{
-			Session.RunAndWaitForTimer (() => Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.OpenDocument", (string)file, true), "Ide.Shell.DocumentOpened");
+			Session.RunAndWaitForTimer (() => Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.OpenDocument", file, true), "Ide.Shell.DocumentOpened");
 			Assert.AreEqual (file, GetActiveDocumentFilename ());
 		}
 
