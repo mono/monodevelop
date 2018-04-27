@@ -41,15 +41,23 @@ namespace MonoDevelop.Projects
 	{
 		Solution sol;
 		List<FileEventInfo> fileChanges;
+		List<FileEventInfo> filesRemoved;
 		TaskCompletionSource<bool> fileChangesTask;
 		FilePath waitingForFileChangeFileName;
+		TaskCompletionSource<bool> fileRemovedTask;
+		FilePath waitingForFileToBeRemoved;
 
 		[SetUp]
 		public void Init ()
 		{
 			fileChanges = new List<FileEventInfo> ();
 			fileChangesTask = new TaskCompletionSource<bool> ();
+
+			filesRemoved = new List<FileEventInfo> ();
+			fileRemovedTask = new TaskCompletionSource<bool> ();
+
 			FileService.FileChanged += OnFileChanged;
+			FileService.FileRemoved += OnFileRemoved;
 		}
 
 		[TearDown]
@@ -61,11 +69,13 @@ namespace MonoDevelop.Projects
 			}
 
 			FileService.FileChanged -= OnFileChanged;
+			FileService.FileRemoved -= OnFileRemoved;
 		}
 
-		void ClearFileChanges ()
+		void ClearFileEventsCaptured ()
 		{
 			fileChanges.Clear ();
+			filesRemoved.Clear ();
 		}
 
 		void OnFileChanged (object sender, FileEventArgs e)
@@ -79,6 +89,17 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		void OnFileRemoved (object sender, FileEventArgs e)
+		{
+			filesRemoved.AddRange (e);
+
+			if (waitingForFileToBeRemoved.IsNotNull) {
+				if (filesRemoved.Any (file => file.FileName == waitingForFileToBeRemoved)) {
+					fileRemovedTask.SetResult (true);
+				}
+			}
+		}
+
 		void AssertFileChanged (FilePath fileName)
 		{
 			var files = fileChanges.Select (fileChange => fileChange.FileName);
@@ -88,6 +109,17 @@ namespace MonoDevelop.Projects
 		Task WaitForFileChanged (FilePath fileName, int millisecondsTimeout = 2000)
 		{
 			return Task.WhenAny (Task.Delay (millisecondsTimeout), fileChangesTask.Task);
+		}
+
+		void AssertFileRemoved (FilePath fileName)
+		{
+			var files = filesRemoved.Select (fileChange => fileChange.FileName);
+			Assert.That (files, Contains.Item (fileName));
+		}
+
+		Task WaitForFileRemoved (FilePath fileName, int millisecondsTimeout = 2000)
+		{
+			return Task.WhenAny (Task.Delay (millisecondsTimeout), fileRemovedTask.Task);
 		}
 
 		[Test]
@@ -106,7 +138,7 @@ namespace MonoDevelop.Projects
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			p.DefaultNamespace = "Test";
-			ClearFileChanges ();
+			ClearFileEventsCaptured ();
 			FileWatcherService.Add (sol);
 
 			await p.SaveAsync (Util.GetMonitor ());
@@ -122,7 +154,7 @@ namespace MonoDevelop.Projects
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			p.DefaultNamespace = "Test";
-			ClearFileChanges ();
+			ClearFileEventsCaptured ();
 			FileWatcherService.Add (sol);
 
 			string xml = p.MSBuildProject.SaveToString ();
@@ -140,7 +172,7 @@ namespace MonoDevelop.Projects
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
-			ClearFileChanges ();
+			ClearFileEventsCaptured ();
 			FileWatcherService.Add (sol);
 
 			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
@@ -157,7 +189,7 @@ namespace MonoDevelop.Projects
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
-			ClearFileChanges ();
+			ClearFileEventsCaptured ();
 			FileWatcherService.Add (sol);
 			FileWatcherService.Remove (sol);
 
@@ -166,6 +198,40 @@ namespace MonoDevelop.Projects
 			await WaitForFileChanged (file.FilePath);
 
 			Assert.AreEqual (0, fileChanges.Count);
+		}
+
+		[Test]
+		public async Task DeleteProjectFileUsingFileService ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+			ClearFileEventsCaptured ();
+			FileWatcherService.Add (sol);
+			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
+
+			FileService.DeleteFile (file.FilePath);
+
+			await WaitForFileRemoved (file.FilePath);
+
+			AssertFileRemoved (file.FilePath);
+		}
+
+		[Test]
+		public async Task DeleteProjectFileExternally ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+			ClearFileEventsCaptured ();
+			FileWatcherService.Add (sol);
+			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
+
+			File.Delete (file.FilePath);
+
+			await WaitForFileRemoved (file.FilePath);
+
+			AssertFileRemoved (file.FilePath);
 		}
 	}
 }

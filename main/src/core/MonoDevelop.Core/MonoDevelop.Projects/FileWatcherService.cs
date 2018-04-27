@@ -94,6 +94,7 @@ namespace MonoDevelop.Projects
 		void OnFileDeleted (object sender, FileSystemEventArgs e)
 		{
 			System.Console.WriteLine ("OnFileDeleted: {0}", e.FullPath);
+			FileService.NotifyFileRemoved (e.FullPath);
 		}
 
 		void OnFileRenamed (object sender, RenamedEventArgs e)
