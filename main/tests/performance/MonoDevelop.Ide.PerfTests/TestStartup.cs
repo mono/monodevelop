@@ -27,6 +27,8 @@ using NUnit.Framework;
 
 using MonoDevelop.UserInterfaceTesting;
 using MonoDevelop.PerformanceTesting;
+using System.IO;
+using System.Linq;
 
 namespace MonoDevelop.Ide.PerfTests
 {
@@ -50,6 +52,30 @@ namespace MonoDevelop.Ide.PerfTests
 			var t = System.Diagnostics.Stopwatch.StartNew ();
 
 			StartSession (mdProfileDir);
+			Session.WaitForElement (IdeQuery.DefaultWorkbench);
+
+			Benchmark.SetTime ((double)t.ElapsedMilliseconds / 1000d);
+		}
+
+		[Test]
+		[Benchmark(Tolerance = 0.1)]
+		public void TestTimeToCode ()
+		{
+			var mdProfileDir = Util.CreateTmpDir ();
+			FoldersToClean.Add (mdProfileDir);
+
+			var mainSln = Path.Combine (MainPath, "Main.sln");
+
+			var t = System.Diagnostics.Stopwatch.StartNew ();
+
+			StartSession (mdProfileDir);
+			Session.WaitForElement (IdeQuery.DefaultWorkbench);
+
+			// Load Solution
+			Session.RunAndWaitForTimer (() => Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", (Core.FilePath)mainSln), "Ide.Shell.SolutionOpened", 60000);
+
+			// Wait until intellisense has finished
+			Session.RunAndWaitForTimer (() => {}, "Ide.CodeAnalysis", 180000);
 
 			Benchmark.SetTime ((double)t.ElapsedMilliseconds / 1000d);
 		}

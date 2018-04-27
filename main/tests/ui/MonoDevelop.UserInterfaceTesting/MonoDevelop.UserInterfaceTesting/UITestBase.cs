@@ -59,6 +59,21 @@ namespace MonoDevelop.UserInterfaceTesting
 		{
 		}
 
+		string main;
+		protected string MainPath {
+			get {
+				if (main == null) {
+					var binDir = Path.GetDirectoryName (typeof(AutoTestClientSession).Assembly.Location);
+
+					// Find the main dir
+					var mainIdx = binDir.LastIndexOf ("main");
+					main = binDir.Substring (0, mainIdx + 4);
+				}
+
+				return main;
+			}
+		}
+
 		protected UITestBase (string mdBinPath)
 		{
 			var installedXS = Environment.GetEnvironmentVariable ("USE_INSTALLED_XS");
@@ -78,27 +93,12 @@ namespace MonoDevelop.UserInterfaceTesting
 				MonoDevelopBinPath = mdBinPath;
 			} else {
 				Console.WriteLine ("[UITEST] Trying to work out where MonoDevelop is installed.");
-
-				var binDir = Path.GetDirectoryName (typeof(AutoTestClientSession).Assembly.Location);
-				Console.WriteLine ($"[UITEST] Starting with {binDir}");
-				var md = Path.Combine (binDir, "MonoDevelop");
+				string md = Path.Combine (MainPath, "build/bin/MonoDevelop");
 
 				if (!File.Exists (md)) {
-					// Find the main dir
-					var mainIdx = binDir.LastIndexOf ("main");
-					var main = binDir.Substring (0, mainIdx + 4);
-
-					Console.WriteLine ($"[UITEST] Found main at {main}");
-
-					md = Path.Combine (main, "build/bin/MonoDevelop");
-
-					if (!File.Exists (md)) {
-						throw new Exception ("Unable to find MonoDevelop");
-					} else {
-						Console.WriteLine ($"[UITEST] Found MonoDevelop at {md}");
-					}
+					throw new Exception ("Unable to find MonoDevelop");
 				} else {
-					Console.WriteLine ($"[UITEST] Found at {md}");
+					Console.WriteLine ($"[UITEST] Found MonoDevelop at {md}");
 				}
 
 				MonoDevelopBinPath = md;
@@ -137,9 +137,9 @@ namespace MonoDevelop.UserInterfaceTesting
 			TakeScreenShot ("Application-Ready");
 		}
 
-		public void StartSession (string mdProfile)
+		public void StartSession (string mdProfile, string args = null)
 		{
-			TestService.StartSession (MonoDevelopBinPath, mdProfile);
+			TestService.StartSession (MonoDevelopBinPath, mdProfile, args);
 		}
 
 		[TearDown]
