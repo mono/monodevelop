@@ -87,19 +87,23 @@ namespace MonoDevelop.Projects
 
 		void OnFileChanged (object sender, FileSystemEventArgs e)
 		{
+			System.Console.WriteLine ("OnFileChanged: {0}", e.FullPath);
 			FileService.NotifyFileChanged (e.FullPath);
 		}
 
 		void OnFileDeleted (object sender, FileSystemEventArgs e)
 		{
+			System.Console.WriteLine ("OnFileDeleted: {0}", e.FullPath);
 		}
 
-		void OnFileRenamed (object sender, FileSystemEventArgs e)
+		void OnFileRenamed (object sender, RenamedEventArgs e)
 		{
+			System.Console.WriteLine ("OnFileRenamed: {0} -> {1}", e.OldFullPath, e.FullPath);
 		}
 
 		void OnFileCreated (object sender, FileSystemEventArgs e)
 		{
+			System.Console.WriteLine ("OnFileCreated: {0}", e.FullPath);
 		}
 
 		void OnFileWatcherError (object sender, ErrorEventArgs e)
