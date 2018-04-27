@@ -674,7 +674,7 @@ namespace MonoDevelop.Projects
 		{
 			if (IsUnsupportedProject) {
 				var r = new BuildResult ();
-				r.AddError (UnsupportedProjectMessage);
+				r.AddError (UnsupportedProjectMessage, this.FileName);
 				return r;
 			}
 
