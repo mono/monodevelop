@@ -484,7 +484,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                             return Some(result)
                         with
                         | :? System.TimeoutException ->
-                            LoggingService.logDebug "LanguageService: GetTypedParseResultWithTimeout: No stale results - typechecking with timeout - timeout exception occured"
+                            LoggingService.logDebug "LanguageService: GetTypedParseResultWithTimeout: No stale results - typechecking with timeout - timeout exception occurred"
                             return None
                     | None ->
                           LoggingService.logDebug "LanguageService: GetTypedParseResultWithTimeout: No stale results - typechecking without timeout"

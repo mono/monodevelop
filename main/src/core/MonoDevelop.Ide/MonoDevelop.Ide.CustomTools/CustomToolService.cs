@@ -217,7 +217,7 @@ namespace MonoDevelop.Ide.CustomTools
 					errors++;
 				}
 
-				//check that we can process further. If UpdateCompleted returns `true` this means no errors or non-fatal errors occured
+				//check that we can process further. If UpdateCompleted returns `true` this means no errors or non-fatal errors occurred
 				if (UpdateCompleted (monitor, file, genFile, result, true) && fileEnumerator.MoveNext ())
 					await Update (monitor, fileEnumerator, force, succeeded, warnings, errors);
 				else

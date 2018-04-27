@@ -524,7 +524,7 @@ module Completion =
             | :? Threading.Tasks.TaskCanceledException ->
                 return CompletionDataList()
             | e ->
-                LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
+                LoggingService.LogError ("FSharpTextEditorCompletion, An error occurred in CodeCompletionCommandImpl", e)
                 return CompletionDataList()
         }
 

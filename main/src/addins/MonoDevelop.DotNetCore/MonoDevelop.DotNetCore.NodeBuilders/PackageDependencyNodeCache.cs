@@ -97,7 +97,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		{
 			try {
 				if (task.IsFaulted) {
-					// Access task.Exception to avoid 'An unhandled exception has occured'
+					// Access task.Exception to avoid 'An unhandled exception has occurred'
 					// even if the exception is not being logged.
 					Exception ex = task.Exception;
 					if (!tokenSource.IsCancellationRequested) {
