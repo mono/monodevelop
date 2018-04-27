@@ -64,7 +64,6 @@ namespace MonoDevelop.Projects
 		public void TestTearDown ()
 		{
 			if (sol != null) {
-				FileWatcherService.Remove (sol);
 				sol.Dispose ();
 			}
 
@@ -139,7 +138,6 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			p.DefaultNamespace = "Test";
 			ClearFileEventsCaptured ();
-			FileWatcherService.Add (sol);
 
 			await p.SaveAsync (Util.GetMonitor ());
 
@@ -155,7 +153,6 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			p.DefaultNamespace = "Test";
 			ClearFileEventsCaptured ();
-			FileWatcherService.Add (sol);
 
 			string xml = p.MSBuildProject.SaveToString ();
 			File.WriteAllText (p.FileName, xml);
@@ -173,7 +170,6 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 			ClearFileEventsCaptured ();
-			FileWatcherService.Add (sol);
 
 			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
 
@@ -190,7 +186,6 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 			ClearFileEventsCaptured ();
-			FileWatcherService.Add (sol);
 			FileWatcherService.Remove (sol);
 
 			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
@@ -207,7 +202,6 @@ namespace MonoDevelop.Projects
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			ClearFileEventsCaptured ();
-			FileWatcherService.Add (sol);
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 
 			FileService.DeleteFile (file.FilePath);
@@ -224,7 +218,6 @@ namespace MonoDevelop.Projects
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			ClearFileEventsCaptured ();
-			FileWatcherService.Add (sol);
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 
 			File.Delete (file.FilePath);

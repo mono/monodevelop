@@ -306,6 +306,7 @@ namespace MonoDevelop.Projects
 		{
 			Loading = false;
 			fileStatusTracker.ResetLoadTimes ();
+			FileWatcherService.Add (this);
 			return Task.FromResult (true);
 		}
 
@@ -457,6 +458,8 @@ namespace MonoDevelop.Projects
 		
 		protected override void OnDispose ()
 		{
+			FileWatcherService.Remove (this);
+
 			if (userProperties != null)
 				userProperties.Dispose ();
 			base.OnDispose ();
