@@ -407,5 +407,26 @@ namespace MonoDevelop.Projects
 			Assert.That (normalized, Contains.Item (bDirectory));
 			Assert.That (normalized, Contains.Item (dDirectory));
 		}
+
+		[Test]
+		public async Task DeleteProjectFileExternally_TwoSolutionsOpen_OneSolutionDisposed ()
+		{
+			FilePath rootSolFile = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
+			string solFile = rootSolFile.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			ProjectFile file;
+			using (var sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), rootSolFile)) {
+				var p = (DotNetProject) sol.Items [0];
+				ClearFileEventsCaptured ();
+				file = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+			}
+
+			// Delete after disposing the root solution
+			File.Delete (file.FilePath);
+
+			await WaitForFileRemoved (file.FilePath);
+
+			AssertFileRemoved (file.FilePath);
+		}
 	}
 }

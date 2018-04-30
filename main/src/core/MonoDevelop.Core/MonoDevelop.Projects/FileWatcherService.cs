@@ -41,20 +41,7 @@ namespace MonoDevelop.Projects
 		{
 			lock (watchers) {
 				workspaceItems = workspaceItems.Add (item);
-				HashSet<FilePath> watchedDirectories = GetWatchedDirectories ();
-				foreach (FilePath directory in GetRootDirectories ()) {
-					watchedDirectories.Remove (directory);
-					if (!watchers.TryGetValue (directory, out FileWatcherWrapper existingWatcher)) {
-						var watcher = new FileWatcherWrapper (directory);
-						watchers.Add (directory, watcher);
-						watcher.EnableRaisingEvents = true;
-					}
-				}
-
-				// Remove file watchers no longer needed.
-				foreach (FilePath directory in watchedDirectories) {
-					Remove (directory);
-				}
+				UpdateWatchers ();
 			}
 		}
 
@@ -62,9 +49,25 @@ namespace MonoDevelop.Projects
 		{
 			lock (watchers) {
 				workspaceItems = workspaceItems.Remove (item);
-				foreach (FilePath directory in item.GetRootDirectories ()) {
-					Remove (directory);
+				UpdateWatchers ();
+			}
+		}
+
+		static void UpdateWatchers ()
+		{
+			HashSet<FilePath> watchedDirectories = GetWatchedDirectories ();
+			foreach (FilePath directory in GetRootDirectories ()) {
+				watchedDirectories.Remove (directory);
+				if (!watchers.TryGetValue (directory, out FileWatcherWrapper existingWatcher)) {
+					var watcher = new FileWatcherWrapper (directory);
+					watchers.Add (directory, watcher);
+					watcher.EnableRaisingEvents = true;
 				}
+			}
+
+			// Remove file watchers no longer needed.
+			foreach (FilePath directory in watchedDirectories) {
+				Remove (directory);
 			}
 		}
 
