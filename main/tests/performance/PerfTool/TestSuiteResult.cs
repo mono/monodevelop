@@ -112,9 +112,10 @@ namespace PerfTool
 			return changed;
 		}
 
-		public List<TestCase> RegisterPerformanceRegressions (TestSuiteResult baseline)
+		public List<TestCase> RegisterPerformanceRegressions (TestSuiteResult baseline, out List<TestCase> regressions, out List<TestCase> improvements)
 		{
-			var regressions = new List<TestCase> ();
+			regressions = new List<TestCase> ();
+			improvements = new List<TestCase> ();
 			foreach (var testResult in resultsByTestId.Values) {
 				if (testResult.Success && baseline.resultsByTestId.TryGetValue (testResult.Name, out var baselineResult)) {
 					if (IsRegression (baselineResult, testResult)) {
@@ -125,6 +126,13 @@ namespace PerfTool
 						};
 						regressions.Add (testResult);
 						results.Errors++;
+					} else if (IsImprovement (baselineResult, testResult)) {
+						testResult.Improvement = new Improvement {
+							Message = $"Performance improvement. Baseline: {baselineResult.Time}, Result: {testResult.Time}",
+							OldTime = baselineResult.Time,
+							Time = testResult.Time
+						};
+						improvements.Add (testResult);
 					}
 				}
 			}

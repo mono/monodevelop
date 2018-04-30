@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using PerfTool.TestModel;
 
 namespace PerfTool
 {
@@ -49,7 +51,7 @@ namespace PerfTool
 			var inputTestSuite = new TestSuiteResult ();
 			inputTestSuite.Read (inputFile);
 
-			var regressions = inputTestSuite.RegisterPerformanceRegressions (baseTestSuite);
+			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite, out List<TestCase> regressions, out List<TestCase> improvements);
 			inputTestSuite.Write (resultsFile);
 
 			if (regressions.Count > 0) {
@@ -62,6 +64,18 @@ namespace PerfTool
 				}
 				Console.WriteLine ();
 			}
+
+			if (improvements.Count > 0) {
+				Console.WriteLine ("Performance Improvements:");
+				for (int n = 0; n < improvements.Count; n++) {
+					var imp = improvements [n];
+					var number = (n+1) + ") ";
+					Console.WriteLine (number + imp.Name);
+					Console.WriteLine (new string (' ', number.Length) + imp.Improvement.Message);
+				}
+				Console.WriteLine ();
+			}
+
 			return inputTestSuite.HasErrors ? 1 : 0;
 		}
 

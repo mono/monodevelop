@@ -104,6 +104,40 @@ namespace PerfTool.TestModel
 		}
 	}
 
+	[XmlRoot (ElementName = "improvement")]
+	public class Improvement
+	{
+		[XmlIgnore]
+		public string Message { get; set; }
+
+		[XmlElement ("message")]
+		public XmlCDataSection CDataMessage {
+			get {
+				XmlDocument doc = new XmlDocument ();
+				return doc.CreateCDataSection (Message);
+			}
+			set {
+				Message = value.Value;
+			}
+		}
+
+		[XmlAttribute (AttributeName = "time")]
+		public double Time { get; set; }
+
+		[XmlAttribute (AttributeName = "old-time")]
+		public double OldTime { get; set; }
+
+		[XmlAttribute (AttributeName = "delta")]
+		public double Delta {
+			get {
+				return OldTime - Time;
+			}
+			set {
+				// Ignore
+			}
+		}
+	}
+
 	[XmlRoot (ElementName = "test-case")]
 	public class TestCase
 	{
@@ -147,6 +181,9 @@ namespace PerfTool.TestModel
 
 		[XmlElement (ElementName = "failure")]
 		public Failure Failure { get; set; }
+
+		[XmlElement (ElementName = "improvement")]
+		public Improvement Improvement { get; set; }
 	}
 
 	[XmlRoot (ElementName = "results")]
