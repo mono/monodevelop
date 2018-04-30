@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			case BuildOutputNodeType.Build:
 				return Resources.BuildIcon;
 			case BuildOutputNodeType.BuildSummary:
-				return HasErrors ? Resources.ErrorIcon : Resources.TaskIcon;
+				return HasErrors ? Resources.TaskFailedIcon : Resources.TargetIcon;
 			case BuildOutputNodeType.Error:
 				return Resources.ErrorIconSmall;
 			case BuildOutputNodeType.Parameters:
@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			case BuildOutputNodeType.TargetSkipped:
 				return Resources.TargetIcon;
 			case BuildOutputNodeType.Task:
-				return Resources.TaskIcon;
+				return HasErrors ? Resources.TaskFailedIcon : Resources.TaskSuccessIcon;
 			case BuildOutputNodeType.Warning:
 				return Resources.WarningIconSmall;
 			}

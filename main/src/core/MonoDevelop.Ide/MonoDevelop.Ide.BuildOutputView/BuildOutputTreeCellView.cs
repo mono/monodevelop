@@ -81,7 +81,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public static readonly Xwt.Drawing.Image ErrorIconSmall = ImageService.GetIcon (Ide.Gui.Stock.BuildErrorSmall, Gtk.IconSize.Menu);
 		public static readonly Xwt.Drawing.Image ProjectIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildProject, Gtk.IconSize.Menu);
 		public static readonly Xwt.Drawing.Image TargetIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildTarget, Gtk.IconSize.Menu);
-		public static readonly Xwt.Drawing.Image TaskIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildTask, Gtk.IconSize.Menu);
+		public static readonly Xwt.Drawing.Image TaskSuccessIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildTaskSuccess, Gtk.IconSize.Menu);
+		public static readonly Xwt.Drawing.Image TaskFailedIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildTaskFailed, Gtk.IconSize.Menu);
 		public static readonly Xwt.Drawing.Image WarningIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildWarning, Gtk.IconSize.Menu);
 		public static readonly Xwt.Drawing.Image WarningIconSmall = ImageService.GetIcon (Ide.Gui.Stock.BuildWarningSmall, Gtk.IconSize.Menu);
 		public static readonly Xwt.Drawing.Image FolderIcon = ImageService.GetIcon (Ide.Gui.Stock.OpenFolder, Gtk.IconSize.Menu);
@@ -297,7 +298,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			FillCellBackground (ctx, isSelected);
 
 			//Draw the image row
-			DrawImage (ctx, cellArea, GetRowIcon (buildOutputNode), (cellArea.Left - 3), ImageSize, isSelected, ImagePadding);
+			DrawImage (ctx, cellArea, buildOutputNode.GetImage (), (cellArea.Left - 3), ImageSize, isSelected, ImagePadding);
 
 			// If the height required by the text is not the same as what was calculated in OnGetRequiredSize(), it means that
 			// the required height has changed and CalcLayout will return false. In that case call QueueResize(),
@@ -421,7 +422,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			    (buildOutputNode.ErrorCount > 0 || buildOutputNode.WarningCount > 0)) {
 
 				if (buildOutputNode.ErrorCount > 0) {
-					DrawImage (ctx, cellArea, Resources.ErrorIcon, textStartX, imageSize, isSelected, imagePadding);
+					DrawImage (ctx, cellArea, Resources.ErrorIconSmall, textStartX, imageSize, isSelected, imagePadding);
 					textStartX += ImageSize + 2;
 					var errors = buildOutputNode.ErrorCount.ToString ();
 
@@ -430,7 +431,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				}
 
 				if (buildOutputNode.WarningCount > 0) {
-					DrawImage (ctx, cellArea, Resources.WarningIcon, textStartX, imageSize, isSelected, imagePadding);
+					DrawImage (ctx, cellArea, Resources.WarningIconSmall, textStartX, imageSize, isSelected, imagePadding);
 					textStartX += ImageSize + 2;
 					DrawText (ctx, cellArea, textStartX, buildOutputNode.WarningCount.ToString (), padding, defaultFont, 10, trimming: TextTrimming.Word);
 				}
@@ -461,18 +462,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			ctx.DrawTextLayout (descriptionTextLayout, x, cellArea.Y + padding);
 			return descriptionTextLayout;
-		}
-
-		Image GetRowIcon (BuildOutputNode buildOutputNode) 
-		{
-			if ((buildOutputNode.NodeType == BuildOutputNodeType.Task || buildOutputNode.NodeType == BuildOutputNodeType.Target) && !IsRowExpanded (buildOutputNode)) {
-				if (buildOutputNode.HasErrors) {
-					return Resources.ErrorIcon;
-				}  else if (buildOutputNode.HasWarnings) {
-					return Resources.WarningIcon;
-				}
-			}
-			return buildOutputNode.GetImage ();
 		}
 
 		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x, int imageSize, bool isSelected, double topPadding = 0)
@@ -514,7 +503,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			TextLayout layout = status.GetUnconstrainedLayout ();
 			layout.Width = maxLayoutWidth;
 			var textSize = layout.GetSize ();
-			var height = Math.Max (textSize.Height + 2 * status.LayoutYPadding, ImageSize);
+			var height = Math.Max (textSize.Height + 2 * status.LayoutYPadding, 20);
 
 			return new Size (minWidth, height);
 		}
