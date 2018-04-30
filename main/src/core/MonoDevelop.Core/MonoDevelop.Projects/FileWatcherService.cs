@@ -38,9 +38,11 @@ namespace MonoDevelop.Projects
 		{
 			lock (watchers) {
 				foreach (FilePath directory in item.GetRootDirectories ()) {
-					var watcher = new FileWatcherWrapper (directory);
-					watchers.Add (directory, watcher);
-					watcher.EnableRaisingEvents = true;
+					if (!watchers.TryGetValue (directory, out FileWatcherWrapper existingWatcher)) {
+						var watcher = new FileWatcherWrapper (directory);
+						watchers.Add (directory, watcher);
+						watcher.EnableRaisingEvents = true;
+					}
 				}
 			}
 		}

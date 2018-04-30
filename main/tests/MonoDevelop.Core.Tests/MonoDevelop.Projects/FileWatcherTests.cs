@@ -265,5 +265,50 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (file.FilePath.IsChildPathOf (p.BaseDirectory));
 			Assert.IsFalse (file.FilePath.IsChildPathOf (sol.BaseDirectory));
 		}
+
+		[Test]
+		public async Task SaveProjectFileExternally_TwoSolutionsOpened_NoCommonDirectories ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+			var file1 = p.Files.First (f => f.FilePath.FileName == "Program.cs");
+			solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
+			using (var sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p2 = sol2.GetAllProjects ().First (project => project.FileName.FileName == "console-with-libs.csproj");
+				var file2 = p2.Files.First (f => f.FilePath.FileName == "Program.cs");
+				ClearFileEventsCaptured ();
+
+				TextFileUtility.WriteText (file1.FilePath, string.Empty, Encoding.UTF8);
+				TextFileUtility.WriteText (file2.FilePath, string.Empty, Encoding.UTF8);
+				await WaitForFileChanged (file2.FilePath);
+
+				AssertFileChanged (file1.FilePath);
+				AssertFileChanged (file2.FilePath);
+			}
+		}
+
+		[Test]
+		public async Task SaveProjectFileExternally_TwoSolutionsOpen_SolutionsHaveCommonDirectories ()
+		{
+			FilePath placeHolderProject = Util.GetSampleProject ("FileWatcherTest", "PlaceHolder.csproj");
+			string solFile = placeHolderProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p1 = (DotNetProject) sol.Items [0];
+			var file1 = p1.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+			solFile = placeHolderProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest2.sln");
+			using (var sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p2 = (DotNetProject) sol.Items [0];
+				var file2 = p2.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+				ClearFileEventsCaptured ();
+
+				TextFileUtility.WriteText (file1.FilePath, string.Empty, Encoding.UTF8);
+				TextFileUtility.WriteText (file2.FilePath, string.Empty, Encoding.UTF8);
+				await WaitForFileChanged (file2.FilePath);
+
+				AssertFileChanged (file1.FilePath);
+				AssertFileChanged (file2.FilePath);
+			}
+		}
 	}
 }
