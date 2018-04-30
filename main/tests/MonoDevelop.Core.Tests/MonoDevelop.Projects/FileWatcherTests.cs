@@ -231,8 +231,8 @@ namespace MonoDevelop.Projects
 		[Test]
 		public async Task SaveProjectFileExternally_ProjectOutsideSolutionDirectory ()
 		{
-			FilePath placeHolderProject = Util.GetSampleProject ("FileWatcherTest", "PlaceHolder.csproj");
-			string solFile = placeHolderProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
+			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
+			string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p1 = (DotNetProject) sol.Items [0];
 			var p2 = (DotNetProject) sol.Items [1];
@@ -251,8 +251,8 @@ namespace MonoDevelop.Projects
 		[Test]
 		public async Task SaveProjectFileExternally_FileOutsideSolutionDirectory ()
 		{
-			FilePath placeHolderProject = Util.GetSampleProject ("FileWatcherTest", "PlaceHolder.csproj");
-			string solFile = placeHolderProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest2.sln");
+			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
+			string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest2.sln");
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
@@ -291,12 +291,12 @@ namespace MonoDevelop.Projects
 		[Test]
 		public async Task SaveProjectFileExternally_TwoSolutionsOpen_SolutionsHaveCommonDirectories ()
 		{
-			FilePath placeHolderProject = Util.GetSampleProject ("FileWatcherTest", "PlaceHolder.csproj");
-			string solFile = placeHolderProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
+			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
+			string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p1 = (DotNetProject) sol.Items [0];
 			var file1 = p1.Files.First (f => f.FilePath.FileName == "MyClass.cs");
-			solFile = placeHolderProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest2.sln");
+			solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest2.sln");
 			using (var sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var p2 = (DotNetProject) sol.Items [0];
 				var file2 = p2.Files.First (f => f.FilePath.FileName == "MyClass.cs");
@@ -309,6 +309,103 @@ namespace MonoDevelop.Projects
 				AssertFileChanged (file1.FilePath);
 				AssertFileChanged (file2.FilePath);
 			}
+		}
+
+		[Test]
+		public async Task DeleteProjectFileExternally_TwoSolutionsOpen_FileDeletedFromCommonDirectory ()
+		{
+			string solFile = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			solFile = sol.BaseDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
+			using (var sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (DotNetProject) sol2.Items [0];
+				ClearFileEventsCaptured ();
+				var file1 = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+				var file2 = p.Files.First (f => f.FilePath.FileName == "AssemblyInfo.cs");
+
+				File.Delete (file1.FilePath);
+				File.Delete (file2.FilePath);
+
+				// Wait for second file so we can detect multiple delete events for the
+				// first file deleted.
+				await WaitForFileRemoved (file2.FilePath);
+
+				AssertFileRemoved (file1.FilePath);
+				AssertFileRemoved (file2.FilePath);
+				Assert.AreEqual (1, filesRemoved.Count (fileChange => fileChange.FileName == file1.FilePath));
+			}
+		}
+
+		/// <summary>
+		/// Same as previous test but the solutions are added in a different order
+		/// </summary>
+		/// <returns>The project file externally two solutions open file deleted from common directory2.</returns>
+		[Test]
+		public async Task DeleteProjectFileExternally_TwoSolutionsOpen_FileDeletedFromCommonDirectory2 ()
+		{
+			FilePath rootSolFile = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
+			string solFile = rootSolFile.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			using (var sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), rootSolFile)) {
+				var p = (DotNetProject) sol.Items [0];
+				ClearFileEventsCaptured ();
+				var file1 = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+				var file2 = p.Files.First (f => f.FilePath.FileName == "AssemblyInfo.cs");
+
+				File.Delete (file1.FilePath);
+				File.Delete (file2.FilePath);
+
+				// Wait for second file so we can detect multiple delete events for the
+				// first file deleted.
+				await WaitForFileRemoved (file2.FilePath);
+
+				AssertFileRemoved (file1.FilePath);
+				AssertFileRemoved (file2.FilePath);
+				Assert.AreEqual (1, filesRemoved.Count (fileChange => fileChange.FileName == file1.FilePath));
+			}
+		}
+
+		[Test]
+		public void NormalizeDirectories1 ()
+		{
+			FilePath fileName = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
+			FilePath rootDirectory = fileName.ParentDirectory;
+
+			var directories = new [] {
+				rootDirectory.Combine ("a"),
+				rootDirectory,
+				rootDirectory.Combine ("c")
+			};
+
+			var normalized = FileWatcherService.Normalize (directories).ToArray ();
+
+			Assert.AreEqual (1, normalized.Length);
+			Assert.That (normalized, Contains.Item (rootDirectory));
+		}
+
+		[Test]
+		public void NormalizeDirectories2 ()
+		{
+			FilePath fileName = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
+			FilePath rootDirectory = fileName.ParentDirectory;
+
+			var bDirectory = rootDirectory.Combine ("..", "b").FullPath;
+			var dDirectory = rootDirectory.Combine ("..", "d").FullPath;
+
+			var directories = new [] {
+				rootDirectory.Combine ("a"),
+				bDirectory,
+				rootDirectory,
+				rootDirectory.Combine ("c"),
+				dDirectory
+			};
+
+			var normalized = FileWatcherService.Normalize (directories).ToArray ();
+
+			Assert.AreEqual (3, normalized.Length);
+			Assert.That (normalized, Contains.Item (rootDirectory));
+			Assert.That (normalized, Contains.Item (bDirectory));
+			Assert.That (normalized, Contains.Item (dDirectory));
 		}
 	}
 }

@@ -25,7 +25,9 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
@@ -33,16 +35,25 @@ namespace MonoDevelop.Projects
 	static class FileWatcherService
 	{
 		static readonly Dictionary<FilePath, FileWatcherWrapper> watchers = new Dictionary<FilePath, FileWatcherWrapper> ();
+		static ImmutableList<WorkspaceItem> workspaceItems = ImmutableList<WorkspaceItem>.Empty;
 
 		public static void Add (WorkspaceItem item)
 		{
 			lock (watchers) {
-				foreach (FilePath directory in item.GetRootDirectories ()) {
+				workspaceItems = workspaceItems.Add (item);
+				HashSet<FilePath> watchedDirectories = GetWatchedDirectories ();
+				foreach (FilePath directory in GetRootDirectories ()) {
+					watchedDirectories.Remove (directory);
 					if (!watchers.TryGetValue (directory, out FileWatcherWrapper existingWatcher)) {
 						var watcher = new FileWatcherWrapper (directory);
 						watchers.Add (directory, watcher);
 						watcher.EnableRaisingEvents = true;
 					}
+				}
+
+				// Remove file watchers no longer needed.
+				foreach (FilePath directory in watchedDirectories) {
+					Remove (directory);
 				}
 			}
 		}
@@ -50,13 +61,50 @@ namespace MonoDevelop.Projects
 		public static void Remove (WorkspaceItem item)
 		{
 			lock (watchers) {
+				workspaceItems = workspaceItems.Remove (item);
 				foreach (FilePath directory in item.GetRootDirectories ()) {
-					if (watchers.TryGetValue (directory, out FileWatcherWrapper watcher)) {
-						watcher.EnableRaisingEvents = false;
-						watchers.Remove (directory);
-					}
+					Remove (directory);
 				}
 			}
+		}
+
+		static HashSet<FilePath> GetWatchedDirectories ()
+		{
+			var directories = new HashSet<FilePath> ();
+			foreach (FilePath directory in watchers.Keys) {
+				directories.Add (directory);
+			}
+			return directories;
+		}
+
+		static IEnumerable<FilePath> GetRootDirectories ()
+		{
+			var directories = new HashSet<FilePath> ();
+
+			foreach (WorkspaceItem item in workspaceItems) {
+				foreach (FilePath directory in item.GetRootDirectories ()) {
+					directories.Add (directory);
+				}
+			}
+
+			return Normalize (directories);
+		}
+
+		static void Remove (FilePath directory)
+		{
+			if (watchers.TryGetValue (directory, out FileWatcherWrapper watcher)) {
+				watcher.EnableRaisingEvents = false;
+				watchers.Remove (directory);
+			}
+		}
+
+		public static IEnumerable<FilePath> Normalize (IEnumerable<FilePath> directories)
+		{
+			var directorySet = new HashSet<FilePath> (directories);
+
+			return directorySet.Where (d => {
+				return directorySet.All (other => !d.IsChildPathOf (other));
+			});
 		}
 	}
 

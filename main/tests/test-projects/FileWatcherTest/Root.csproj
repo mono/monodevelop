@@ -5,8 +5,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{8E6D9E82-5FF9-4618-9CA9-1BD47C59EEAF}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>PlaceHolder</RootNamespace>
-    <AssemblyName>PlaceHolder</AssemblyName>
+    <RootNamespace>Root</RootNamespace>
+    <AssemblyName>Root</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -28,10 +28,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="MyClass.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
