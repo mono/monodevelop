@@ -158,5 +158,14 @@ namespace PerfTool
 			
 			return testCase.Time * tolerance;
 		}
+
+		public TestCase ResultByTestId (string id)
+		{
+			if (resultsByTestId.TryGetValue (id, out TestCase result)) {
+				return result;
+			}
+
+			return null;
+		}
 	}
 }

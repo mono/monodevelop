@@ -39,6 +39,14 @@ namespace PerfTool
 			var command = args [0];
 			if (command == "generate-results" && args.Length == 4) {
 				return GenerateResults (args [1], args [2], args [3]);
+			} else if (command == "update-baseline") {
+				if (args.Length == 5) {
+					return UpdateBaseLine (args [1], args [2], args [3], args [4]);
+				} else if (args.Length == 4) {
+					return UpdateBaseLine (args [1], args [2], args[3], null);
+				} else {
+					return PrintHelp ();
+				}
 			} else
 				return PrintHelp ();
 		}
@@ -79,12 +87,57 @@ namespace PerfTool
 			return inputTestSuite.HasErrors ? 1 : 0;
 		}
 
+		static int UpdateBaseLine (string baseFile, string inputFile, string outputFile, string resultName)
+		{
+			var baseTestSuite = new TestSuiteResult ();
+			baseTestSuite.Read (baseFile);
+
+			var inputTestSuite = new TestSuiteResult ();
+			inputTestSuite.Read (inputFile);
+
+			inputTestSuite.RegisterPerformanceRegressions (baseTestSuite, out List<TestCase> regressions, out List<TestCase> improvements);
+
+			List<Tuple <TestCase, TestCase>> resultsToUpdate = new List<Tuple<TestCase, TestCase>> ();;
+			if (!string.IsNullOrEmpty (resultName)) {
+				var updateResult = inputTestSuite.ResultByTestId (resultName);
+				if (updateResult.Improvement == null) {
+					return 0;
+				}
+
+				var result = baseTestSuite.ResultByTestId (resultName);
+				if (result == null) {
+					Console.WriteLine ($"Unknown result {resultName}");
+					return 1;
+				}
+
+				resultsToUpdate.Add (new Tuple<TestCase, TestCase> (result, updateResult));
+			} else {
+				foreach (var updateResult in improvements) {
+					var result = baseTestSuite.ResultByTestId (updateResult.Name);
+					resultsToUpdate.Add (new Tuple<TestCase, TestCase> (result, updateResult));
+				}
+			}
+
+			foreach (var r in resultsToUpdate) {
+				var baseline = r.Item1;
+				var update = r.Item2;
+
+				baseline.Time = update.Time;
+				baseline.Result = update.Result;
+			}
+
+			baseTestSuite.Write (outputFile);
+			return 0;
+		}
+
 		static int PrintHelp ()
 		{
 			Console.WriteLine ("Usage:");
 			Console.WriteLine ("generate-results <base-file> <input-file> <output-file>");
 			Console.WriteLine ("    Detects regressions in input-file when compared to base-file.");
 			Console.WriteLine ("    It generates an NUnit test results file with test failures.");
+			Console.WriteLine ("update-baseline <base-file> <input-file> <output-file> [testcase]");
+			Console.WriteLine ("    Updates the results in base-file that have improved in input-file");
 			return 0;
 		}
 	}
