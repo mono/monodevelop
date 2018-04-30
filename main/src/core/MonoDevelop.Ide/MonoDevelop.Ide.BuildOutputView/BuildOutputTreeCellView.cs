@@ -207,7 +207,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		const int LinesDisplayedCount = 1;
 		const int DefaultInformationContainerWidth = 370;
-		const int ImageSize = 20;
+		const int ImageSize = 16;
 		const int ImagePadding = 0;
 		const int FontSize = 11;
 		const int MinLayoutWidth = 30;
