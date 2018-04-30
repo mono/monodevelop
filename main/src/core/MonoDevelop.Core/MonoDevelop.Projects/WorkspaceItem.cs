@@ -194,6 +194,26 @@ namespace MonoDevelop.Projects
 				yield return FileName;
 		}
 
+		HashSet<FilePath> rootDirectories;
+
+		/// <summary>
+		/// Returns the root directories associated that should be watched by the file watcher.
+		/// </summary>
+		internal IEnumerable<FilePath> GetRootDirectories ()
+		{
+			if (rootDirectories != null)
+				return rootDirectories;
+
+			var directories = new HashSet<FilePath> ();
+			foreach (FilePath file in GetItemFiles (true)) {
+				if (!directories.Any (directory => file.IsChildPathOf (directory)))
+					directories.Add (file.ParentDirectory);
+			}
+
+			rootDirectories = directories;
+			return directories;
+		}
+
 		[ThreadSafe]
 		public virtual bool ContainsItem (WorkspaceObject obj)
 		{

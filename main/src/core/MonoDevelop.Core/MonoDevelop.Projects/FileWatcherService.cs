@@ -32,31 +32,29 @@ namespace MonoDevelop.Projects
 {
 	static class FileWatcherService
 	{
-		static readonly Dictionary<WorkspaceItem, FileWatcherWrapper> watchers = new Dictionary<WorkspaceItem, FileWatcherWrapper> ();
+		static readonly Dictionary<FilePath, FileWatcherWrapper> watchers = new Dictionary<FilePath, FileWatcherWrapper> ();
 
 		public static void Add (WorkspaceItem item)
 		{
-			FileWatcherWrapper watcher = null;
-
 			lock (watchers) {
-				watcher = new FileWatcherWrapper (item.BaseDirectory);
-				watchers.Add (item, watcher);
+				foreach (FilePath directory in item.GetRootDirectories ()) {
+					var watcher = new FileWatcherWrapper (directory);
+					watchers.Add (directory, watcher);
+					watcher.EnableRaisingEvents = true;
+				}
 			}
-
-			watcher.EnableRaisingEvents = true;
 		}
 
 		public static void Remove (WorkspaceItem item)
 		{
-			FileWatcherWrapper watcher = null;
-
 			lock (watchers) {
-				if (watchers.TryGetValue (item, out watcher))
-					watchers.Remove (item);
+				foreach (FilePath directory in item.GetRootDirectories ()) {
+					if (watchers.TryGetValue (directory, out FileWatcherWrapper watcher)) {
+						watcher.EnableRaisingEvents = false;
+						watchers.Remove (directory);
+					}
+				}
 			}
-
-			if (watcher != null)
-				watcher.EnableRaisingEvents = false;
 		}
 	}
 

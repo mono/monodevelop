@@ -226,5 +226,43 @@ namespace MonoDevelop.Projects
 
 			AssertFileRemoved (file.FilePath);
 		}
+
+		[Test]
+		public async Task SaveProjectFileExternally_ProjectOutsideSolutionDirectory ()
+		{
+			FilePath placeHolderProject = Util.GetSampleProject ("FileWatcherTest", "PlaceHolder.csproj");
+			string solFile = placeHolderProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p1 = (DotNetProject) sol.Items [0];
+			var p2 = (DotNetProject) sol.Items [1];
+			var file1 = p1.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+			var file2 = p2.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+			ClearFileEventsCaptured ();
+
+			TextFileUtility.WriteText (file1.FilePath, string.Empty, Encoding.UTF8);
+			TextFileUtility.WriteText (file2.FilePath, string.Empty, Encoding.UTF8);
+			await WaitForFileChanged (file2.FilePath);
+
+			AssertFileChanged (file1.FilePath);
+			AssertFileChanged (file2.FilePath);
+		}
+
+		[Test]
+		public async Task SaveProjectFileExternally_FileOutsideSolutionDirectory ()
+		{
+			FilePath placeHolderProject = Util.GetSampleProject ("FileWatcherTest", "PlaceHolder.csproj");
+			string solFile = placeHolderProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest2.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+			var file = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+			ClearFileEventsCaptured ();
+
+			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
+			await WaitForFileChanged (file.FilePath);
+
+			AssertFileChanged (file.FilePath);
+			Assert.IsFalse (file.FilePath.IsChildPathOf (p.BaseDirectory));
+			Assert.IsFalse (file.FilePath.IsChildPathOf (sol.BaseDirectory));
+		}
 	}
 }
