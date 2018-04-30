@@ -466,7 +466,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x, int imageSize, bool isSelected, double topPadding = 0)
 		{
-			ctx.DrawImage (isSelected ? image.WithStyles ("sel") : image, x, cellArea.Top + topPadding, imageSize, imageSize);
+			ctx.DrawImage (isSelected ? image.WithStyles ("sel") : image, x, cellArea.Top + (cellArea.Height / 2 - imageSize / 2), imageSize, imageSize);
 		}
 
 		void UpdateInformationTextColor (Context ctx, bool isSelected)
