@@ -186,7 +186,8 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 			ClearFileEventsCaptured ();
-			FileWatcherService.Remove (sol);
+			sol.Dispose ();
+			sol = null;
 
 			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
 
