@@ -8542,30 +8542,6 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\xml\syntaxes\xaml.json">
       <LogicalName>xaml.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-project-16.png">
-      <LogicalName>build-project-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-project-16%402x.png">
-      <LogicalName>build-project-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-project-16~dark.png">
-      <LogicalName>build-project-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-project-16~dark%402x.png">
-      <LogicalName>build-project-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-solution-16.png">
-      <LogicalName>build-solution-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-solution-16%402x.png">
-      <LogicalName>build-solution-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-solution-16~dark.png">
-      <LogicalName>build-solution-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-solution-16~dark%402x.png">
-      <LogicalName>build-solution-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\build-error-small-16~dark%402x.png">
       <LogicalName>build-error-small-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
@@ -8614,18 +8590,6 @@
     <EmbeddedResource Include="icons\build-warning-16.png">
       <LogicalName>build-warning-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-task-16~dark%402x.png">
-      <LogicalName>build-task-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-task-16~dark.png">
-      <LogicalName>build-task-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-task-16%402x.png">
-      <LogicalName>build-task-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-task-16.png">
-      <LogicalName>build-task-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\build-target-16~dark%402x.png">
       <LogicalName>build-target-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
@@ -8662,18 +8626,6 @@
     <EmbeddedResource Include="icons\build-warning-16~dark~sel.png">
       <LogicalName>build-warning-16~dark~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-task-16~sel%402x.png">
-      <LogicalName>build-task-16~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-task-16~sel.png">
-      <LogicalName>build-task-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-task-16~dark~sel%402x.png">
-      <LogicalName>build-task-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-task-16~dark~sel.png">
-      <LogicalName>build-task-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\build-target-16~sel%402x.png">
       <LogicalName>build-target-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
@@ -8685,30 +8637,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\build-target-16~dark~sel.png">
       <LogicalName>build-target-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-solution-16~sel%402x.png">
-      <LogicalName>build-solution-16~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-solution-16~sel.png">
-      <LogicalName>build-solution-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-solution-16~dark~sel%402x.png">
-      <LogicalName>build-solution-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-solution-16~dark~sel.png">
-      <LogicalName>build-solution-16~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-project-16~sel%402x.png">
-      <LogicalName>build-project-16~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-project-16~sel.png">
-      <LogicalName>build-project-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-project-16~dark~sel%402x.png">
-      <LogicalName>build-project-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build-project-16~dark~sel.png">
-      <LogicalName>build-project-16~dark~sel.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\build-error-small-16~sel%402x.png">
       <LogicalName>build-error-small-16~sel@2x.png</LogicalName>
@@ -8733,6 +8661,54 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\build-error-16~dark~sel.png">
       <LogicalName>build-error-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-failed-16.png">
+      <LogicalName>build-task-failed-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-failed-16%402x.png">
+      <LogicalName>build-task-failed-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-failed-16~dark.png">
+      <LogicalName>build-task-failed-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-failed-16~dark%402x.png">
+      <LogicalName>build-task-failed-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-failed-16~dark~sel.png">
+      <LogicalName>build-task-failed-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-failed-16~dark~sel%402x.png">
+      <LogicalName>build-task-failed-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-failed-16~sel.png">
+      <LogicalName>build-task-failed-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-failed-16~sel%402x.png">
+      <LogicalName>build-task-failed-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-success-16.png">
+      <LogicalName>build-task-success-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-success-16%402x.png">
+      <LogicalName>build-task-success-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-success-16~dark.png">
+      <LogicalName>build-task-success-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-success-16~dark%402x.png">
+      <LogicalName>build-task-success-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-success-16~dark~sel.png">
+      <LogicalName>build-task-success-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-success-16~dark~sel%402x.png">
+      <LogicalName>build-task-success-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-success-16~sel.png">
+      <LogicalName>build-task-success-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-task-success-16~sel%402x.png">
+      <LogicalName>build-task-success-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

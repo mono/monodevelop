@@ -477,12 +477,13 @@
 	<StockIcon stockid="md-static-property" icon="res:element-property-16.png|res:element-static-overlay-16.png" size="Menu" />
 
 	<!-- Build output -->
-	<StockIcon stockid="build-solution" resource="build-solution-16.png" size="Menu" />
-	<StockIcon stockid="build-project" resource="build-project-16.png" size="Menu" />
+	<StockIcon stockid="build-solution" resource="solution-16.png" size="Menu" />
+	<StockIcon stockid="build-project" resource="project-16.png" size="Menu" />
 	<StockIcon stockid="build-error" resource="build-error-16.png" size="Menu" />
 	<StockIcon stockid="build-error-small" resource="build-error-small-16.png" size="Menu" />
 	<StockIcon stockid="build-target" resource="build-target-16.png" size="Menu" />
-	<StockIcon stockid="build-task" resource="build-task-16.png" size="Menu" />
+	<StockIcon stockid="build-task-failed" resource="build-task-failed-16.png" size="Menu" />
+	<StockIcon stockid="build-task-success" resource="build-task-success-16.png" size="Menu" />
 	<StockIcon stockid="build-warning" resource="build-warning-16.png" size="Menu" />
 	<StockIcon stockid="build-warning-small" resource="build-warning-small-16.png" size="Menu" />
 	<StockIcon stockid="build-expand" resource="add-simple-16.png" size="Menu" />
