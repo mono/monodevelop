@@ -35,42 +35,122 @@ using Gdk;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
+using System;
 
 namespace MonoDevelop.Components.Docking
 {
-	class AutoHideBox: DockFrameTopLevel
+	class AutoHideBox : DockFrameTopLevel
 	{
 		const bool ANIMATE = false;
+
+		IAutoHideBoxControl control;
+
+		public AutoHideBox (DockFrame frame, DockItem item, Gtk.PositionType pos, int size): base (frame, new AutoHideBoxControl ())
+		{
+			control = base.Control as IAutoHideBoxControl;
+			if (control == null) {
+				throw new InvalidOperationException ();
+			}
+
+			control.Initialize (this, frame, item, pos, size);
+		}
+
+		bool disposed;
+		public bool Disposed {
+			get { return disposed; }
+			set { disposed = value; }
+		}
+
+		public void AnimateShow ()
+		{
+			control.AnimateShow ();
+		}
 		
+		public void AnimateHide ()
+		{
+			control.AnimateHide ();
+		}
+
+		public int PadSize {
+			get {
+				return control.PadSize;
+			}
+		}
+
+		public string Title {
+			get {
+				return control.Title;
+			}
+			set {
+				control.Title = value;
+			}
+		}
+
+		public event EventHandler<EventArgs> EnteredFrame;
+		public event EventHandler<EventArgs> ExitedFrame;
+
+		internal void OnEnteredFrame ()
+		{
+			EnteredFrame?.Invoke (this, EventArgs.Empty);
+		}
+
+		internal void OnExitedFrame ()
+		{
+			ExitedFrame?.Invoke (this, EventArgs.Empty);
+		}
+	}
+
+	interface IAutoHideBoxControl : IDockFrameTopLevelControl
+	{
+		void Initialize (AutoHideBox ahBox, DockFrame frame, DockItem item, Gtk.PositionType pos, int size);
+		void AnimateShow ();
+		void AnimateHide ();
+
+		int PadSize { get; }
+	}
+
+	class AutoHideBoxControl : DockFrameTopLevelControl, IAutoHideBoxControl
+	{
 		static Gdk.Cursor resizeCursorW = new Gdk.Cursor (Gdk.CursorType.SbHDoubleArrow);
 		static Gdk.Cursor resizeCursorH = new Gdk.Cursor (Gdk.CursorType.SbVDoubleArrow);
-		
+
+		AutoHideBox parentBox;
+		bool horiz;
+		bool startPos;
+		Gtk.PositionType position;
+		DockFrame frame;
+		int targetSize;
+
 		bool resizing;
 		int resizePos;
 		int origSize;
 		int origPos;
-		bool horiz;
-		bool startPos;
-		DockFrame frame;
 		bool animating;
-		int targetSize;
 		int targetPos;
+#if ANIMATE_DOCKING
 		ScrollableContainer scrollable;
-		Gtk.PositionType position;
+#endif
 		bool disposed;
 		bool insideGrip;
-		
+
+
 		int gripSize = 8;
-		
-		public AutoHideBox (DockFrame frame, DockItem item, Gtk.PositionType pos, int size): base (frame)
+
+		public AutoHideBoxControl ()
 		{
+			Events = Events | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
+		}
+
+		public void Initialize (AutoHideBox ahBox, DockFrame frame, DockItem item, Gtk.PositionType pos, int size)
+		{
+			parentBox = ahBox;
+
 			this.position = pos;
 			this.frame = frame;
 			this.targetSize = size;
 			horiz = pos == PositionType.Left || pos == PositionType.Right;
 			startPos = pos == PositionType.Top || pos == PositionType.Left;
-			Events = Events | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
-			
+
 			Box fr;
 			CustomFrame cframe = new CustomFrame ();
 			cframe.Accessible.SetShouldIgnore (true);
@@ -82,7 +162,7 @@ namespace MonoDevelop.Components.Docking
 			case PositionType.Bottom: cframe.SetMargins (1, 1, 0, 0); break;
 			}
 
-			if (frame.UseWindowsForTopLevelFrames) {
+			if (frame.Control.UseWindowsForTopLevelFrames) {
 				// When using a top level window on mac, clicks on the first 4 pixels next to the border
 				// are not detected. To avoid confusing the user (since the resize cursor is shown), 
 				// we make the resize drag area smaller.
@@ -99,7 +179,7 @@ namespace MonoDevelop.Components.Docking
 			sepBox.Accessible.SetLabel (GettextCatalog.GetString ("Pad resize handle"));
 
 			cframe.Add (sepBox);
-			
+
 			if (horiz) {
 				fr = new HBox ();
 				sepBox.Realized += delegate { sepBox.GdkWindow.Cursor = resizeCursorW; };
@@ -112,7 +192,7 @@ namespace MonoDevelop.Components.Docking
 			fr.Accessible.SetShouldIgnore (true);
 
 			sepBox.Events = EventMask.AllEventsMask;
-			
+
 			if (pos == PositionType.Left || pos == PositionType.Top)
 				fr.PackEnd (cframe, false, false, 0);
 			else
@@ -121,7 +201,7 @@ namespace MonoDevelop.Components.Docking
 			Add (fr);
 			ShowAll ();
 			Hide ();
-			
+
 #if ANIMATE_DOCKING
 			scrollable = new ScrollableContainer ();
 			scrollable.ScrollMode = false;
@@ -132,10 +212,15 @@ namespace MonoDevelop.Components.Docking
 
 			itemBox.Show ();
 			item.TitleTab.Active = true;
-			itemBox.PackStart (item.TitleTab, false, false, 0);
+			var tabWidget = item.TitleTab.Control as Widget;
+			if (tabWidget == null) {
+				throw new ToolkitMismatchException ();
+			}
+			itemBox.PackStart (tabWidget, false, false, 0);
 
-			item.Widget.Accessible.SetShouldIgnore (true);
-			itemBox.PackStart (item.Widget, true, true, 0);
+			var controlWidget = (Widget)item.Widget.Control;
+			controlWidget.Accessible.SetShouldIgnore (true);
+			itemBox.PackStart (controlWidget, true, true, 0);
 
 			item.Widget.Show ();
 #if ANIMATE_DOCKING
@@ -144,7 +229,7 @@ namespace MonoDevelop.Components.Docking
 #else
 			fr.PackStart (itemBox, true, true, 0);
 #endif
-			
+
 			sepBox.ButtonPressEvent += OnSizeButtonPress;
 			sepBox.ButtonReleaseEvent += OnSizeButtonRelease;
 			sepBox.MotionNotifyEvent += OnSizeMotion;
@@ -153,9 +238,10 @@ namespace MonoDevelop.Components.Docking
 			sepBox.LeaveNotifyEvent += delegate { insideGrip = false; sepBox.QueueDraw (); };
 		}
 
-		public bool Disposed {
-			get { return disposed; }
-			set { disposed = value; }
+		public int PadSize {
+			get {
+				return horiz ? Width : Height;
+			}
 		}
 
 		public void AnimateShow ()
@@ -187,7 +273,7 @@ namespace MonoDevelop.Components.Docking
 			Show ();
 #endif
 		}
-		
+
 		public void AnimateHide ()
 		{
 #if ANIMATE_DOCKING
@@ -199,7 +285,8 @@ namespace MonoDevelop.Components.Docking
 			Hide ();
 #endif
 		}
-		
+
+#if ANIMATE_DOCKING
 		bool RunAnimateShow ()
 		{
 			if (!animating)
@@ -285,7 +372,85 @@ namespace MonoDevelop.Components.Docking
 			animating = false;
 			return false;
 		}
-		
+#endif
+
+		[GLib.ConnectBefore]
+		void OnSizeButtonPress (object ob, Gtk.ButtonPressEventArgs args)
+		{
+			if (!animating && args.Event.Button == 1 && !args.Event.TriggersContextMenu ()) {
+				int n;
+				var widgetControl = frame.Control as Widget;
+				if (widgetControl == null) {
+					throw new ToolkitMismatchException ();
+				}
+				if (horiz) {
+					widgetControl.Toplevel.GetPointer (out resizePos, out n);
+					origSize = Width;
+					if (!startPos) {
+						origPos = X + origSize;
+					}
+				} else {
+					widgetControl.Toplevel.GetPointer (out n, out resizePos);
+					origSize = Height;
+					if (!startPos) {
+						origPos = Y + origSize;
+					}
+				}
+				resizing = true;
+			}
+		}
+
+		void OnSizeButtonRelease (object ob, Gtk.ButtonReleaseEventArgs args)
+		{
+			resizing = false;
+		}
+
+		void OnSizeMotion (object ob, Gtk.MotionNotifyEventArgs args)
+		{
+			if (resizing) {
+				int newPos, n;
+
+				var widgetControl = frame.Control as Widget;
+				if (widgetControl == null) {
+					throw new ToolkitMismatchException ();
+				}
+
+				if (horiz) {
+					widgetControl.Toplevel.GetPointer (out newPos, out n);
+					int diff = startPos ? (newPos - resizePos) : (resizePos - newPos);
+					int newSize = origSize + diff;
+					if (newSize < Child.SizeRequest ().Width)
+						newSize = Child.SizeRequest ().Width;
+					if (!startPos) {
+						X = origPos - newSize;
+					}
+					Width = newSize;
+				} else {
+					widgetControl.Toplevel.GetPointer (out n, out newPos);
+					int diff = startPos ? (newPos - resizePos) : (resizePos - newPos);
+					int newSize = origSize + diff;
+					if (newSize < Child.SizeRequest ().Height)
+						newSize = Child.SizeRequest ().Height;
+					if (!startPos) {
+						Y = origPos - newSize;
+					}
+					Height = newSize;
+				}
+				widgetControl.QueueResize ();
+			}
+		}
+
+		void OnGripExpose (object sender, Gtk.ExposeEventArgs args)
+		{
+			var w = (EventBox) sender;
+			StateType s = insideGrip ? StateType.Prelight : StateType.Normal;
+
+			using (var ctx = CairoHelper.Create (args.Event.Window)) {
+				ctx.SetSourceColor (w.Style.Background (s).ToCairoColor ());
+				ctx.Paint ();
+			}
+		}
+
 		protected override void OnHidden ()
 		{
 			base.OnHidden ();
@@ -298,81 +463,24 @@ namespace MonoDevelop.Components.Docking
 			// since it has a handler that hides all visible autohide pads
 			return true;
 		}
-		
-		public int PadSize {
-			get {
-				return horiz ? Width : Height;
-			}
+
+		protected override bool OnEnterNotifyEvent(EventCrossing evnt)
+		{
+			parentBox.OnEnteredFrame ();
+			return base.OnEnterNotifyEvent(evnt);
 		}
 
-		[GLib.ConnectBefore]
-		void OnSizeButtonPress (object ob, Gtk.ButtonPressEventArgs args)
+		protected override bool OnLeaveNotifyEvent(EventCrossing evnt)
 		{
-			if (!animating && args.Event.Button == 1 && !args.Event.TriggersContextMenu ()) {
-				int n;
-				if (horiz) {
-					frame.Toplevel.GetPointer (out resizePos, out n);
-					origSize = Width;
-					if (!startPos) {
-						origPos = X + origSize;
-					}
-				} else {
-					frame.Toplevel.GetPointer (out n, out resizePos);
-					origSize = Height;
-					if (!startPos) {
-						origPos = Y + origSize;
-					}
-				}
-				resizing = true;
+			if (evnt.Detail != Gdk.NotifyType.Inferior) {
+				parentBox.OnExitedFrame ();
 			}
-		}
-		
-		void OnSizeButtonRelease (object ob, Gtk.ButtonReleaseEventArgs args)
-		{
-			resizing = false;
-		}
-		
-		void OnSizeMotion (object ob, Gtk.MotionNotifyEventArgs args)
-		{
-			if (resizing) {
-				int newPos, n;
-				if (horiz) {
-					frame.Toplevel.GetPointer (out newPos, out n);
-					int diff = startPos ? (newPos - resizePos) : (resizePos - newPos);
-					int newSize = origSize + diff;
-					if (newSize < Child.SizeRequest ().Width)
-						newSize = Child.SizeRequest ().Width;
-					if (!startPos) {
-						X = origPos - newSize;
-					}
-					Width = newSize;
-				} else {
-					frame.Toplevel.GetPointer (out n, out newPos);
-					int diff = startPos ? (newPos - resizePos) : (resizePos - newPos);
-					int newSize = origSize + diff;
-					if (newSize < Child.SizeRequest ().Height)
-						newSize = Child.SizeRequest ().Height;
-					if (!startPos) {
-						Y = origPos - newSize;
-					}
-					Height = newSize;
-				}
-				frame.QueueResize ();
-			}
-		}
-		
-		void OnGripExpose (object sender, Gtk.ExposeEventArgs args)
-		{
-			var w = (EventBox) sender;
-			StateType s = insideGrip ? StateType.Prelight : StateType.Normal;
-			
-			using (var ctx = CairoHelper.Create (args.Event.Window)) {
-				ctx.SetSourceColor (w.Style.Background (s).ToCairoColor ());
-				ctx.Paint ();
-			}
+
+			return base.OnLeaveNotifyEvent(evnt);
 		}
 	}
-	
+
+#if ANIMATE_DOCKING
 	class ScrollableContainer: EventBox
 	{
 		PositionType expandPos;
@@ -428,5 +536,6 @@ namespace MonoDevelop.Components.Docking
 			base.OnSizeAllocated (alloc);
 		}
 	}
+#endif
 
 }

@@ -34,21 +34,126 @@ namespace MonoDevelop.Components.Docking
 {
 	public class DockItemToolbar
 	{
+		IDockItemToolbarControl toolbar;
 		DockItem parentItem;
-		Gtk.Widget frame;
-		Box box;
 		DockPositionType position;
 		bool empty = true;
-		CustomFrame topFrame;
 		
 		internal DockItemToolbar (DockItem parentItem, DockPositionType position)
 		{
 			this.parentItem = parentItem;
+			this.position = position;
 
-			topFrame = new CustomFrame ();
-			topFrame.SetPadding (3,3,3,3);
+			toolbar = new DockItemToolbarControl ();
+			toolbar.Initialize (this);
+		}
 
-/*			switch (position) {
+		internal IDockItemToolbarControl Toolbar {
+			get => toolbar;
+		}
+
+		internal void SetStyle (DockVisualStyle style)
+		{
+			toolbar.BackgroundColor = style.PadBackgroundColor.Value;
+		}
+
+		internal void SetAccessibilityDetails (string name, string label, string description)
+		{
+			toolbar.SetAccessibilityDetails (name, label, description);
+		}
+
+		public DockItem DockItem {
+			get { return parentItem; }
+		}
+
+		public DockPositionType Position {
+			get { return this.position; }
+		}
+
+		public void Add (Control widget)
+		{
+			Add (widget, false);
+		}
+
+		public void Add (Control widget, bool fill)
+		{
+			Add (widget, fill, -1);
+		}
+
+		public void Add (Control widget, bool fill, int padding)
+		{
+			toolbar.Add (widget, fill, padding, -1);
+		}
+
+		public void Insert (Control w, int index)
+		{
+			toolbar.Add (w, false, 0, index);
+		}
+
+		public void Remove (Control widget)
+		{
+			toolbar.Remove (widget);
+		}
+
+		public void RemoveAllChildren ()
+		{
+			foreach (var c in toolbar.ToolbarItems) {
+				toolbar.Remove (c);
+			}
+		}
+
+		public bool Visible {
+			get {
+				return empty || toolbar.Visible;
+			}
+			set {
+				toolbar.Visible = value;
+			}
+		}
+
+		public bool Sensitive {
+			get { return toolbar.Sensitive; }
+			set { toolbar.Sensitive = value; }
+		}
+
+		public void ShowAll ()
+		{
+			toolbar.ShowAll ();
+		}
+
+		internal void UpdateAccessibilityLabel ()
+		{
+			toolbar.UpdateAccessibilityLabel (this);
+		}
+	}
+
+	interface IDockItemToolbarControl
+	{
+		void Initialize (DockItemToolbar toolbar);
+		bool Visible { get; set; }
+		bool Sensitive { get; set; }
+		Control[] ToolbarItems { get; }
+		Xwt.Drawing.Color BackgroundColor { get; set; }
+
+		void Add (Control widget, bool fill, int padding, int index);
+		void Remove (Control widget);
+		void ShowAll ();
+		void SetAccessibilityDetails (string name, string label, string description);
+		void UpdateAccessibilityLabel (DockItemToolbar toolbar);
+	}
+
+	class DockItemToolbarControl : CustomFrame, IDockItemToolbarControl
+	{
+		Box box;
+		bool empty = true;
+
+		public void Initialize (DockItemToolbar toolbar)
+		{
+			Accessible.SetRole ("AXToolbar", "Pad toolbar");
+
+			SetPadding (3,3,3,3);
+
+			/*			switch (position) {
 				case PositionType.Top:
 					frame.SetMargins (0, 0, 1, 1); 
 					frame.SetPadding (0, 2, 2, 0); 
@@ -67,26 +172,25 @@ namespace MonoDevelop.Components.Docking
 					break;
 			}*/
 
-			this.position = position;
-			if (position == DockPositionType.Top || position == DockPositionType.Bottom)
+			if (toolbar.Position == DockPositionType.Top || toolbar.Position == DockPositionType.Bottom)
 				box = new HBox (false, 3);
 			else
 				box = new VBox (false, 3);
 			box.Show ();
-//			frame = box;
-			frame = topFrame;
-			topFrame.Add (box);
-
-//			topFrame.GradientBackround = true;
 
 			box.Accessible.SetShouldIgnore (false);
 			box.Accessible.Role = Atk.Role.ToolBar;
 
-			UpdateAccessibilityLabel ();
+			UpdateAccessibilityLabel (toolbar);
+
+			Add (box);
 		}
 
-		internal void UpdateAccessibilityLabel ()
+		public void UpdateAccessibilityLabel (DockItemToolbar toolbar)
 		{
+			var position = toolbar.Position;
+			var parentItem = toolbar.DockItem;
+
 			string name = "";
 			switch (position) {
 			case DockPositionType.Bottom:
@@ -109,45 +213,19 @@ namespace MonoDevelop.Components.Docking
 			box.Accessible.SetCommonAttributes ("padtoolbar", name, "");
 		}
 
-		internal void SetStyle (DockVisualStyle style)
-		{
-			topFrame.BackgroundColor = style.PadBackgroundColor.Value.ToGdkColor ();
-		}
-
-		internal Atk.Object Accessible {
+		Xwt.Drawing.Color backgroundColor;
+		new public Xwt.Drawing.Color BackgroundColor {
 			get {
-				return box.Accessible;
+				return backgroundColor;
+			}
+
+			set {
+				backgroundColor = value;
+				base.BackgroundColor = value.ToGdkColor ();
 			}
 		}
 
-		public DockItem DockItem {
-			get { return parentItem; }
-		}
-		
-		internal Widget Container {
-			get { return frame; }
-		}
-		
-		public DockPositionType Position {
-			get { return this.position; }
-		}
-		
-		public void Add (Control widget)
-		{
-			Add (widget, false);
-		}
-		
-		public void Add (Control widget, bool fill)
-		{
-			Add (widget, fill, -1);
-		}
-		
-		public void Add (Control widget, bool fill, int padding)
-		{
-			Add (widget, fill, padding, -1);
-		}
-		
-		void Add (Control control, bool fill, int padding, int index)
+		public void Add (Control control, bool fill, int padding, int index)
 		{
 			int defaultPadding = 3;
 
@@ -165,78 +243,59 @@ namespace MonoDevelop.Components.Docking
 			}
 			else if (widget is VSeparator)
 				((VSeparator)widget).HeightRequest = 10;
-			
+
 			if (padding == -1)
 				padding = defaultPadding;
-			
+
 			box.PackStart (widget, fill, fill, (uint)padding);
 			if (empty) {
 				empty = false;
-				frame.Show ();
+				Show ();
 			}
 			if (index != -1) {
 				Box.BoxChild bc = (Box.BoxChild) box [widget];
 				bc.Position = index;
 			}
 		}
-		
-		public void Insert (Control w, int index)
-		{
-			Add (w, false, 0, index);
-		}
-		
+
 		public void Remove (Control widget)
 		{
 			box.Remove (widget);
 		}
-		
-		public bool Visible {
-			get {
-				return empty || frame.Visible;
-			}
-			set {
-				frame.Visible = value;
-			}
+
+		public Control[] ToolbarItems {
+			get { return box.Children.Cast<Control> ().ToArray (); }
 		}
-		
-		public bool Sensitive {
-			get { return frame.Sensitive; }
-			set { frame.Sensitive = value; }
-		}
-		
-		public void ShowAll ()
+
+		public void SetAccessibilityDetails (string name, string label, string description)
 		{
-			frame.ShowAll ();
-		}
-		
-		public Control[] Children {
-			get { return box.Children.Select (child => (Control)child).ToArray (); }
+			Accessible.SetCommonAttributes (name, label, description);
 		}
 	}
-	
+
 	public class DockToolButton : Control
 	{
-		public ImageView Image {
-			get { return (ImageView)button.Image; }
-			set { button.Image = value; }
+		public Control Image {
+			get { return buttonControl.Image; }
+			set { buttonControl.Image = value; }
 		}
 
 		public string TooltipText {
-			get { return button.TooltipText; }
-			set { button.TooltipText = value; }
+			get { return buttonControl.TooltipText; }
+			set { buttonControl.TooltipText = value; }
 		}
 
 		public string Label {
-			get { return button.Label; }
-			set { button.Label = value; }
+			get { return buttonControl.Label; }
+			set { buttonControl.Label = value; }
 		}
 
 		public bool Sensitive {
-			get { return button.Sensitive; }
-			set { button.Sensitive = value; }
+			get { return buttonControl.Sensitive; }
+			set { buttonControl.Sensitive = value; }
 		}
 
-		Gtk.Button button;
+		IDockToolButtonControl buttonControl;
 
 		public DockToolButton (string stockId) : this (stockId, null)
 		{
@@ -244,48 +303,52 @@ namespace MonoDevelop.Components.Docking
 		
 		public DockToolButton (string stockId, string label)
 		{
-			button = new Button ();
-			Label = label;
-
-			Image = new ImageView (stockId, IconSize.Menu);
-			Image.Show ();
+			buttonControl = new DockToolButtonControl ();
+			buttonControl.Initialize (stockId, label);
 		}
 
 		protected override object CreateNativeWidget<T> ()
 		{
-			return button;
+			return (T)buttonControl;
 		}
 
 		public event EventHandler Clicked {
 			add {
-				button.Clicked += value;
+				buttonControl.Clicked += value;
 			}
 			remove {
-				button.Clicked -= value;
+				buttonControl.Clicked -= value;
 			}
 		}
+	}
 
-		public class DockToolButtonImage : Control
+	interface IDockToolButtonControl
+	{
+		void Initialize (string stockId, string label);
+		Control Image { get; set; }
+		string TooltipText { get; set; }
+		string Label { get; set; }
+		bool Sensitive { get; set; }
+
+		event EventHandler Clicked;
+	}
+
+	class DockToolButtonControl : Button, IDockToolButtonControl
+	{
+		public void Initialize (string stockId, string label)
 		{
-			ImageView image;
-			internal DockToolButtonImage (ImageView image)
-			{
-				this.image = image;
+			Label = label;
+			base.Image = new ImageView (stockId, IconSize.Menu);
+			base.Image.Show ();
+		}
+
+		public new Control Image {
+			get {
+				return base.Image;
 			}
 
-			protected override object CreateNativeWidget<T> ()
-			{
-				return image;
-			}
-
-			public static implicit operator Gtk.Widget (DockToolButtonImage d)
-			{
-				return d.GetNativeWidget<Gtk.Widget> ();
-			}
-
-			public static implicit operator DockToolButtonImage (ImageView d)
-			{
-				return new DockToolButtonImage (d);
+			set {
+				base.Image = value;
 			}
 		}
 	}

@@ -142,6 +142,7 @@
     <Compile Include="MainToolbar\NSFocusButton.cs" />
     <Compile Include="Dialogs\MDAccessoryViewBox.cs" />
     <Compile Include="Dialogs\MacCommonFileDialogHandler.cs" />
+    <Compile Include="Docking\DockFrameControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -244,6 +245,7 @@
     <Folder Include="MacInterop\AppleEvents\" />
     <Folder Include="icons\" />
     <Folder Include="MainToolbar\" />
+    <Folder Include="Docking\" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MacPlatform.Tests" />

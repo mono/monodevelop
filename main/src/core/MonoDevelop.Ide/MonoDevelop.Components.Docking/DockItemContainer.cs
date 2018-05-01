@@ -36,18 +36,191 @@ using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components.Docking
 {
-	class DockItemContainer: EventBox
+	class DockItemContainer
+	{
+		IDockItemContainerControl containerControl;
+		DockItem item;
+
+		public DockItemContainer (DockFrame frame, DockItem item)
+		{
+			containerControl = new DockItemContainerControl ();
+			this.item = item;
+
+			containerControl.Initialize(this, frame, item);
+		}
+
+		public DockVisualStyle VisualStyle {
+			get { return containerControl.VisualStyle; }
+			set { containerControl.VisualStyle = value; }
+		}
+
+		 internal IDockItemContainerControl ContainerControl {
+		 	get {
+		 		return containerControl;
+		 	}
+		 }
+
+		public Gtk.Requisition SizeRequest ()
+		{
+			return containerControl.SizeRequest();
+		}
+
+		public void SizeAllocate (Gdk.Rectangle rect)
+		{
+			containerControl.SizeAllocate(rect);
+		}
+
+		public void QueueResize ()
+		{
+			containerControl.QueueResize();
+		}
+
+		public void UpdateContent ()
+		{
+			containerControl.UpdateContent ();
+		}
+		/*
+		public void GetOriginInWindow (out int x, out int y)
+		{
+			containerControl.GetOriginInWindow(out x, out y);
+		}
+*/
+		public void Show ()
+		{
+			containerControl.Show();
+		}
+
+		public void Hide ()
+		{
+			containerControl.Hide ();
+		}
+
+		public bool Visible {
+			get {
+				return containerControl.Visible;
+			}
+
+			set {
+				containerControl.Visible = value;
+			}
+		}
+
+		public Control Control {
+			get {
+				return containerControl.AsControl;
+			}
+		}
+
+		public Gdk.Rectangle FloatRect {
+			get {
+				return containerControl.FloatRect;
+			}
+		}
+
+		public void RemoveFromParent ()
+		{
+			containerControl.RemoveFromParent();
+		}
+
+		public bool ContainsPointer {
+			get {
+				return containerControl.ContainsPointer;
+			}
+		}
+
+		public bool HasFocusChild {
+			get {
+				return containerControl.HasFocusChild;
+			}
+		}
+
+		public void ClearFocus ()
+		{
+			containerControl.ClearFocus();
+		}
+
+		public bool ContentVisible {
+			get {
+				return containerControl.ContentVisible;
+			}
+		}
+
+		public void FocusContent ()
+		{
+			containerControl.FocusContent();
+		}
+
+		public bool GetContentHasFocus (DockItemStatus status)
+		{
+			return containerControl.GetContentHasFocus(status);
+		}
+
+		public event EventHandler<EventArgs> Shown;
+		public event EventHandler<EventArgs> Hidden;
+		public event EventHandler<EventArgs> ParentSet;
+
+		internal void OnShown ()
+		{
+			Shown?.Invoke (this, EventArgs.Empty);
+		}
+
+		internal void OnHidden ()
+		{
+			Hidden?.Invoke (this, EventArgs.Empty);
+		}
+
+		internal void OnParentSet ()
+		{
+			ParentSet?.Invoke (this, EventArgs.Empty);
+		}
+	}
+
+	internal interface IDockItemContainerControl {
+		void Initialize (DockItemContainer parentContainer, DockFrame frame, DockItem item);
+		DockVisualStyle VisualStyle { get; set; }
+		bool Visible { get; set; }
+		Gdk.Rectangle FloatRect { get; }
+
+		void UpdateContent ();
+
+		Gtk.Requisition SizeRequest ();
+		void SizeAllocate (Gdk.Rectangle rect);
+		void QueueResize ();
+		//void GetOriginInWindow (out int x, out int y);
+		void Show ();
+		void Hide ();
+		void RemoveFromParent ();
+
+		bool ContainsPointer { get; }
+		bool HasFocusChild { get; }
+		void ClearFocus ();
+		void FocusContent ();
+		bool ContentVisible { get; }
+		bool GetContentHasFocus (DockItemStatus status);
+
+		Control AsControl { get; }
+	}
+
+	class DockItemContainerControl : EventBox, IDockItemContainerControl
 	{
 		DockItem item;
 		Widget widget;
 		Container borderFrame;
 		Box contentBox;
 		VBox mainBox;
+		DockItemContainer parentContainer;
 
-		public DockItemContainer (DockFrame frame, DockItem item)
+		public DockItemContainerControl ()
+		{
+			
+		}
+
+		public void Initialize (DockItemContainer parentContainer, DockFrame frame, DockItem item)
 		{
 			this.item = item;
 			item.LabelChanged += UpdateAccessibilityLabel;
+
+			this.parentContainer = parentContainer;
 
 			mainBox = new VBox ();
 			mainBox.Accessible.SetShouldIgnore (false);
@@ -56,26 +229,58 @@ namespace MonoDevelop.Components.Docking
 
 			mainBox.ResizeMode = Gtk.ResizeMode.Queue;
 			mainBox.Spacing = 0;
-			
+
 			ShowAll ();
 
-			mainBox.PackStart (item.GetToolbar (DockPositionType.Top).Container, false, false, 0);
-			
+			IDockItemToolbarControl toolbar;
+			toolbar = item.GetToolbar (DockPositionType.Top).Toolbar;
+			Widget tbWidget = toolbar as Widget;
+
+			if (tbWidget == null) {
+				throw new ToolkitMismatchException ();
+			}
+			mainBox.PackStart (tbWidget, false, false, 0);
+
 			HBox hbox = new HBox ();
 			hbox.Accessible.SetTitle ("Hbox");
 			hbox.Show ();
-			hbox.PackStart (item.GetToolbar (DockPositionType.Left).Container, false, false, 0);
-			
+
+			toolbar = item.GetToolbar (DockPositionType.Left).Toolbar;
+			tbWidget = toolbar as Widget;
+
+			if (tbWidget == null) {
+				throw new ToolkitMismatchException ();
+			}
+			hbox.PackStart (tbWidget, false, false, 0);
+
 			contentBox = new HBox ();
 			hbox.Accessible.SetTitle ("Content");
 			contentBox.Show ();
 			hbox.PackStart (contentBox, true, true, 0);
-			
-			hbox.PackStart (item.GetToolbar (DockPositionType.Right).Container, false, false, 0);
-			
+
+			toolbar = item.GetToolbar (DockPositionType.Right).Toolbar;
+			tbWidget = toolbar as Widget;
+
+			if (tbWidget == null) {
+				throw new ToolkitMismatchException ();
+			}
+			hbox.PackStart (tbWidget, false, false, 0);
+
 			mainBox.PackStart (hbox, true, true, 0);
-			
-			mainBox.PackStart (item.GetToolbar (DockPositionType.Bottom).Container, false, false, 0);
+
+			toolbar = item.GetToolbar (DockPositionType.Bottom).Toolbar;
+			tbWidget = toolbar as Widget;
+
+			if (tbWidget == null) {
+				throw new ToolkitMismatchException ();
+			}
+			mainBox.PackStart (tbWidget, false, false, 0);
+		}
+
+		public Control AsControl {
+			get {
+				return (Widget)this;
+			}
 		}
 
 		void UpdateAccessibilityLabel (object sender, EventArgs args)
@@ -84,18 +289,14 @@ namespace MonoDevelop.Components.Docking
 		}
 
 		DockVisualStyle visualStyle;
-
 		public DockVisualStyle VisualStyle {
-			get { return visualStyle; }
-			set { visualStyle = value; UpdateVisualStyle (); }
-		}
-
-		void OnClickDock (object s, EventArgs a)
-		{
-			if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating)
-				item.Status = DockItemStatus.Dockable;
-			else
-				item.Status = DockItemStatus.AutoHide;
+			get {
+				return visualStyle;
+			}
+			set {
+				visualStyle = value;
+				UpdateVisualStyle();
+			}
 		}
 
         protected override void OnDestroyed()
@@ -107,7 +308,7 @@ namespace MonoDevelop.Components.Docking
         public void UpdateContent ()
 		{
 			if (widget != null)
-				((Gtk.Container)widget.Parent).Remove (widget);
+				contentBox.Remove (widget);
 			widget = item.Content;
 
 			if (item.DrawFrame) {
@@ -150,6 +351,66 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
+		public bool ContainsPointer {
+			get {
+				int px, py;
+				GetPointer (out px, out py);
+				if (Visible && IsRealized && Allocation.Contains (px + Allocation.X, py + Allocation.Y))
+					return true;
+				return false;
+			}
+		}
+
+		public bool HasFocusChild {
+			get {
+				return FocusChild != null;
+			}
+		}
+
+		public void ClearFocus ()
+		{
+			FocusChild = null;
+		}
+
+		public void FocusContent ()
+		{
+			GtkUtil.SetFocus (widget);
+		}
+
+		public bool ContentVisible {
+			get {
+				// FIXME: Should this just check the mapped status?
+				// this check will say the content is visible if the parent is not visible.
+				return Parent != null && Visible;
+			}
+		}
+
+		public bool GetContentHasFocus (DockItemStatus status)
+		{
+			if (widget.HasFocus || HasFocus)
+				return true;
+
+			Gtk.Window win = widget.Toplevel as Gtk.Window;
+			if (win != null) {
+				if (status == DockItemStatus.AutoHide)
+					return win.HasToplevelFocus;
+				return (win.HasToplevelFocus && win.Focus?.IsChildOf (widget) == true);
+			}
+
+			return false;
+		}
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			if (VisualStyle.TabStyle == DockTabStyle.Normal) {
+				Gdk.GC gc = new Gdk.GC (GdkWindow);
+				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value.ToGdkColor ();
+				evnt.Window.DrawRectangle (gc, true, Allocation);
+				gc.Dispose ();
+			}
+			return base.OnExposeEvent (evnt);
+		}
+
 		void SetTreeStyle (Gtk.Widget w)
 		{
 			if (w is Gtk.TreeView) {
@@ -178,16 +439,62 @@ namespace MonoDevelop.Components.Docking
 				w.ModifyBase (StateType.Insensitive, Parent.Style.Base (StateType.Insensitive));
 			}
 		}
-		
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+
+		void OnClickDock (object s, EventArgs a)
 		{
-			if (VisualStyle.TabStyle == DockTabStyle.Normal) {
-				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value.ToGdkColor ();
-				evnt.Window.DrawRectangle (gc, true, Allocation);
-				gc.Dispose ();
+			if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating)
+				item.Status = DockItemStatus.Dockable;
+			else
+				item.Status = DockItemStatus.AutoHide;
+		}
+
+		/*
+		public void GetOriginInWindow (out int x, out int y)
+		{
+			TranslateCoordinates(Toplevel, 0, 0, out x, out y);
+		}
+*/
+		public Gdk.Rectangle FloatRect {
+			get {
+				int x, y;
+				TranslateCoordinates(Toplevel, 0, 0, out x, out y);
+
+				Gtk.Window win = Toplevel as Gtk.Window;
+				if (win != null) {
+					int wx, wy;
+					win.GetPosition (out wx, out wy);
+					return new Gdk.Rectangle (wx + x, wy + y, Allocation.Width, Allocation.Height);
+				}
+
+				return Gdk.Rectangle.Zero;
 			}
-			return base.OnExposeEvent (evnt);
+		}
+
+		public void RemoveFromParent ()
+		{
+			if (Parent == null) {
+				return;
+			}
+
+			((Gtk.Container)Parent).Remove (this);
+		}
+
+		protected override void OnShown ()
+		{
+			parentContainer.OnShown ();
+			base.OnShown ();
+		}
+
+		protected override void OnHidden ()
+		{
+			parentContainer.OnHidden ();
+			base.OnHidden ();
+		}
+
+		protected override void OnParentSet (Widget previous_parent)
+		{
+			parentContainer.OnParentSet ();
+			base.OnParentSet (previous_parent);
 		}
 	}
 

@@ -144,8 +144,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		void SetToolbarWidgets (IEnumerable<Widget> toolbarWidgets)
 		{
-			foreach (var old in toolbar.Children)
-				toolbar.Remove (old);
+			toolbar.RemoveAllChildren ();
 			bool any = false;
 			if (toolbarWidgets != null) {
 				foreach (var w in toolbarWidgets) {

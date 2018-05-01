@@ -145,10 +145,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			window.Title = GettextCatalog.GetString ("Errors");
 
 			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Top);
-			toolbar.Accessible.Name = "ErrorPad.Toolbar";
-			toolbar.Accessible.SetLabel ("Error Pad Toolbar");
-			toolbar.Accessible.SetRole ("AXToolbar", "Pad toolbar");
-			toolbar.Accessible.Description = GettextCatalog.GetString ("The Error pad toolbar");
+			toolbar.SetAccessibilityDetails ("ErrorPad.Toolbar", GettextCatalog.GetString ("Error Pad Toolbar"), GettextCatalog.GetString ("The Error pad toolbar"));
 
 			errorBtn = MakeButton (Stock.Error, "toggleErrors", ShowErrors, out errorBtnLbl);
 			errorBtn.Accessible.Name = "ErrorPad.ErrorButton";

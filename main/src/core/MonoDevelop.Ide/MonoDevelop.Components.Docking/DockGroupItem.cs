@@ -31,6 +31,7 @@
 using System;
 using System.Xml;
 using Gtk;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -80,7 +81,7 @@ namespace MonoDevelop.Components.Docking
 			var req = item.Widget.SizeRequest ();
 
 			if (ParentGroup.Type != DockGroupType.Tabbed || ParentGroup.VisibleObjects.Count == 1) {
-				var tr = item.TitleTab.SizeRequest ();
+				var tr = item.TitleTab.Control.Size;
 				req.Height += tr.Height;
 				req.Width = Math.Max (req.Width, tr.Width);
 				return req;
@@ -92,8 +93,8 @@ namespace MonoDevelop.Components.Docking
 		{
 			if ((ParentGroup.Type != DockGroupType.Tabbed || ParentGroup.VisibleObjects.Count == 1) && (item.Behavior & DockItemBehavior.NoGrip) == 0) {
 				var tr = newAlloc;
-				tr.Height = item.TitleTab.SizeRequest ().Height;
-				item.TitleTab.SizeAllocate (tr);
+				tr.Height = item.TitleTab.Control.Size.Height;
+				item.TitleTab.Control.Size = tr;
 				var wr = newAlloc;
 				wr.Y += tr.Height;
 				wr.Height -= tr.Height;
@@ -259,14 +260,7 @@ namespace MonoDevelop.Components.Docking
 				
 				if (status == DockItemStatus.Floating) {
 					if (floatRect.Equals (Gdk.Rectangle.Zero)) {
-						int x, y;
-						item.Widget.TranslateCoordinates (item.Widget.Toplevel, 0, 0, out x, out y);
-						Gtk.Window win = Frame.Toplevel as Gtk.Window;
-						if (win != null) {
-							int wx, wy;
-							win.GetPosition (out wx, out wy);
-							floatRect = new Gdk.Rectangle (wx + x, wy + y, Allocation.Width, Allocation.Height);
-						}
+						floatRect = item.Widget.FloatRect;
 					}
 					item.SetFloatMode (floatRect);
 				}
@@ -368,15 +362,16 @@ namespace MonoDevelop.Components.Docking
 		
 		PositionType CalcBarDocPosition ()
 		{
+			var controlAllocation = Frame.Allocation;
 			if (Allocation.Width < Allocation.Height) {
 				int mid = Allocation.Left + Allocation.Width / 2;
-				if (mid > Frame.Allocation.Left + Frame.Allocation.Width / 2)
+				if (mid > controlAllocation.Left + controlAllocation.Width / 2)
 					return PositionType.Right;
 				else
 					return PositionType.Left;
 			} else {
 				int mid = Allocation.Top + Allocation.Height / 2;
-				if (mid > Frame.Allocation.Top + Frame.Allocation.Height / 2)
+				if (mid > controlAllocation.Top + controlAllocation.Height / 2)
 					return PositionType.Bottom;
 				else
 					return PositionType.Top;

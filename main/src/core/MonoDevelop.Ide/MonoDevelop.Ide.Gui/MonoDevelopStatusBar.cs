@@ -126,8 +126,10 @@ namespace MonoDevelop.Ide
 			var dockBar = wb.DockFrame.ExtractDockBar (PositionType.Bottom);
 			dockBar.AlignToEnd = true;
 			dockBar.ShowBorder = false;
-			dockBar.NoShowAll = true;
-			dfr.Add (dockBar);
+
+			var dbw = (Widget)dockBar.Control;
+			dbw.NoShowAll = true;
+			dfr.Add (dbw);
 			mainBox.PackStart (dfr, false, false, 0);
 
 			// Resize grip

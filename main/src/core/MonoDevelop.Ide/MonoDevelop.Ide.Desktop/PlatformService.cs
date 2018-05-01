@@ -585,5 +585,4 @@ namespace MonoDevelop.Ide.Desktop
 			return null;
 		}
 	}
-
 }

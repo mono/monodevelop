@@ -37,6 +37,7 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using System.Runtime.InteropServices;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -404,7 +405,11 @@ namespace MonoDevelop.Components.DockNotebook
 			{
 				SkipTaskbarHint = true;
 				Decorated = false;
-				TransientFor = (Gtk.Window)frame.Toplevel;
+				var controlWidget = frame.Control as Widget;
+				if (controlWidget == null) {
+					LoggingService.LogWarning ("Toolkit mismatch");
+				}
+				TransientFor = (Gtk.Window)controlWidget.Toplevel;
 				TypeHint = WindowTypeHint.Utility;
 
 				var mainBox = new VBox ();

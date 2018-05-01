@@ -31,14 +31,14 @@
 using System;
 using Gdk;
 using Gtk;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Docking
 {
-	internal class PlaceholderWindow: Gtk.Window
+	internal class PlaceholderWindow : IDisposable
 	{
-		Gdk.GC redgc;
-		uint anim;
-		int rx, ry, rw, rh;
+		IPlaceholderWindowControl control;
+
 		bool allowDocking;
 		
 		public bool AllowDocking {
@@ -50,18 +50,100 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		public PlaceholderWindow (DockFrame frame): base (Gtk.WindowType.Popup)
+		public PlaceholderWindow (DockFrame frame)
 		{
+			control = new PlaceholderWindowControl ();
+			control.Initialize (frame);
+		}
+
+		public void Dispose ()
+		{
+			control.Destroy ();
+		}
+
+		public DockDelegate DockDelegate { get; private set; }
+		public Gdk.Rectangle DockRect { get; private set; }
+
+		public void SetDockInfo (DockDelegate dockDelegate, Gdk.Rectangle rect)
+		{
+			DockDelegate = dockDelegate;
+			DockRect = rect;
+		}
+
+		public void Relocate (int x, int y, int width, int height, bool animate)
+		{
+			control.Relocate (x, y, width, height, animate);
+		}
+
+		public void Show ()
+		{
+			control.Show ();
+		}
+
+		public bool Visible {
+			get {
+				return control.Visible;
+			}
+
+			set {
+				control.Visible = value;
+			}
+		}
+
+		public void GetPosition (out int x, out int y)
+		{
+			var f = control.Frame;
+			x = f.X;
+			y = f.Y;
+		}
+
+		public void GetSize (out int width, out int height)
+		{
+			var f = control.Frame;
+			width = f.Width;
+			height = f.Height;
+		}
+	}
+
+	interface IPlaceholderWindowControl
+	{
+		void Initialize (DockFrame frame);
+		void Relocate (int x, int y, int width, int height, bool animate);
+		void Show ();
+		void Destroy ();
+		Gdk.Rectangle Frame { get; }
+
+		bool Visible { get; set; }
+	}
+
+	class PlaceholderWindowControl : Gtk.Window, IPlaceholderWindowControl
+	{
+		Gdk.GC redgc;
+		uint anim;
+		int rx, ry, rw, rh;
+
+		public PlaceholderWindowControl () : base (Gtk.WindowType.Popup)
+		{
+		}
+
+		public void Initialize (DockFrame frame)
+		{
+			var widgetControl = frame.Control as Widget;
+			if (widgetControl == null) {
+				throw new ToolkitMismatchException ();
+			}
 			SkipTaskbarHint = true;
 			Decorated = false;
-			TransientFor = (Gtk.Window) frame.Toplevel;
+			TransientFor = (Gtk.Window) widgetControl?.Toplevel;
 			TypeHint = WindowTypeHint.Utility;
-			
+
 			// Create the mask for the arrow
-			
+
 			Realize ();
 			redgc = new Gdk.GC (GdkWindow);
-	   		redgc.RgbFgColor = frame.Style.Background (StateType.Selected);
+			if (widgetControl != null) {
+				redgc.RgbFgColor = widgetControl.Style.Background (StateType.Selected);
+			}
 		}
 
 		protected override void OnDestroyed ()
@@ -78,7 +160,7 @@ namespace MonoDevelop.Components.Docking
 			base.OnRealized ();
 			GdkWindow.Opacity = 0.6;
 		}
-		
+
 		void CreateShape (int width, int height)
 		{
 			Gdk.Color black, white;
@@ -100,14 +182,14 @@ namespace MonoDevelop.Components.Docking
 				this.ShapeCombineMask (pm, 0, 0);
 			}
 		}
-		
+
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
 			CreateShape (allocation.Width, allocation.Height);
 		}
 
-		
+
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			//base.OnExposeEvent (args);
@@ -115,9 +197,9 @@ namespace MonoDevelop.Components.Docking
 			this.GetSize (out w, out h);
 			this.GdkWindow.DrawRectangle (redgc, false, 0, 0, w-1, h-1);
 			this.GdkWindow.DrawRectangle (redgc, false, 1, 1, w-3, h-3);
-	  		return true;
+			return true;
 		}
-		
+
 		public void Relocate (int x, int y, int w, int h, bool animate)
 		{
 			Gdk.Rectangle geometry = GtkWorkarounds.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
@@ -135,7 +217,7 @@ namespace MonoDevelop.Components.Docking
 				Move (x, y);
 
 				rx = x; ry = y; rw = w; rh = h;
-				
+
 				if (anim != 0) {
 					GLib.Source.Remove (anim);
 					anim = 0;
@@ -148,13 +230,13 @@ namespace MonoDevelop.Components.Docking
 				}
 			}
 		}
-		
+
 		bool RunAnimation ()
 		{
 			int cx, cy, ch, cw;
 			GetSize (out cw, out ch);
 			GetPosition	(out cx, out cy);
-			
+
 			if (cx != rx) {
 				cx++; cy++;
 				ch-=2; cw-=2;
@@ -166,23 +248,61 @@ namespace MonoDevelop.Components.Docking
 			return false;
 		}
 
-		public DockDelegate DockDelegate { get; private set; }
-		public Gdk.Rectangle DockRect { get; private set; }
-
-		public void SetDockInfo (DockDelegate dockDelegate, Gdk.Rectangle rect)
-		{
-			DockDelegate = dockDelegate;
-			DockRect = rect;
+		public Gdk.Rectangle Frame {
+			get {
+				return Allocation;
+			}
 		}
 	}
 
-	class PadTitleWindow: Gtk.Window
+	class PadTitleWindow : IDisposable
 	{
-		public PadTitleWindow (DockFrame frame, DockItem draggedItem): base (Gtk.WindowType.Popup)
+		IPadTitleWindowControl control;
+
+		public PadTitleWindow (DockFrame frame, DockItem draggedItem)
+		{
+			control = new PadTitleWindowControl ();
+			control.Initialize (frame, draggedItem);
+		}
+
+		public void Dispose ()
+		{
+			control.Destroy ();
+		}
+
+		internal void GetSize (out int width, out int height)
+		{
+			control.GetSize (out width, out height);
+		}
+
+		internal void Move (int x, int y)
+		{
+			control.Move (x, y);
+		}
+	}
+
+	interface IPadTitleWindowControl
+	{
+		void Initialize (DockFrame frame, DockItem draggedItem);
+		void GetSize (out int width, out int height);
+		void Move (int x, int y);
+		void Destroy ();
+	}
+
+	class PadTitleWindowControl : Gtk.Window, IPadTitleWindowControl
+	{
+		public PadTitleWindowControl () : base (Gtk.WindowType.Popup)
+		{
+		}
+
+		public void Initialize (DockFrame frame, DockItem draggedItem)
 		{
 			SkipTaskbarHint = true;
 			Decorated = false;
-			TransientFor = (Gtk.Window) frame.Toplevel;
+			var widgetControl = frame.Control as Widget;
+			if (widgetControl == null) {
+			}
+			TransientFor = (Gtk.Window)widgetControl.Toplevel;
 			TypeHint = WindowTypeHint.Utility;
 
 			VBox mainBox = new VBox ();
@@ -198,7 +318,7 @@ namespace MonoDevelop.Components.Docking
 
 			mainBox.PackStart (box, false, false, 0);
 
-/*			if (draggedItem.Widget.IsRealized) {
+			/*			if (draggedItem.Widget.IsRealized) {
 				var win = draggedItem.Widget.GdkWindow;
 				var alloc = draggedItem.Widget.Allocation;
 				Gdk.Pixbuf img = Gdk.Pixbuf.FromDrawable (win, win.Colormap, alloc.X, alloc.Y, 0, 0, alloc.Width, alloc.Height);
@@ -222,5 +342,11 @@ namespace MonoDevelop.Components.Docking
 			Add (f);
 			ShowAll ();
 		}
-	}
+
+        protected override void OnRealized()
+        {
+			base.OnRealized();
+			GdkWindow.KeepAbove = true;
+        }
+    }
 }
