@@ -140,6 +140,7 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			p.DefaultNamespace = "Test";
 			ClearFileEventsCaptured ();
+			FileWatcherService.Add (sol);
 
 			await p.SaveAsync (Util.GetMonitor ());
 
@@ -155,6 +156,7 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			p.DefaultNamespace = "Test";
 			ClearFileEventsCaptured ();
+			FileWatcherService.Add (sol);
 
 			string xml = p.MSBuildProject.SaveToString ();
 			File.WriteAllText (p.FileName, xml);
@@ -172,6 +174,7 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 			ClearFileEventsCaptured ();
+			FileWatcherService.Add (sol);
 
 			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
 
@@ -188,6 +191,7 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 			ClearFileEventsCaptured ();
+			FileWatcherService.Add (sol);
 			sol.Dispose ();
 			sol = null;
 
@@ -205,6 +209,7 @@ namespace MonoDevelop.Projects
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			ClearFileEventsCaptured ();
+			FileWatcherService.Add (sol);
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 
 			FileService.DeleteFile (file.FilePath);
@@ -221,6 +226,7 @@ namespace MonoDevelop.Projects
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.Items [0];
 			ClearFileEventsCaptured ();
+			FileWatcherService.Add (sol);
 			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
 
 			File.Delete (file.FilePath);
@@ -240,6 +246,7 @@ namespace MonoDevelop.Projects
 			var p2 = (DotNetProject) sol.Items [1];
 			var file1 = p1.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 			var file2 = p2.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+			FileWatcherService.Add (sol);
 			ClearFileEventsCaptured ();
 
 			TextFileUtility.WriteText (file1.FilePath, string.Empty, Encoding.UTF8);
@@ -259,6 +266,7 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			var file = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 			ClearFileEventsCaptured ();
+			FileWatcherService.Add (sol);
 
 			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
 			await WaitForFileChanged (file.FilePath);
@@ -280,6 +288,8 @@ namespace MonoDevelop.Projects
 				var p2 = sol2.GetAllProjects ().First (project => project.FileName.FileName == "console-with-libs.csproj");
 				var file2 = p2.Files.First (f => f.FilePath.FileName == "Program.cs");
 				ClearFileEventsCaptured ();
+				FileWatcherService.Add (sol);
+				FileWatcherService.Add (sol2);
 
 				TextFileUtility.WriteText (file1.FilePath, string.Empty, Encoding.UTF8);
 				TextFileUtility.WriteText (file2.FilePath, string.Empty, Encoding.UTF8);
@@ -303,6 +313,8 @@ namespace MonoDevelop.Projects
 				var p2 = (DotNetProject) sol.Items [0];
 				var file2 = p2.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 				ClearFileEventsCaptured ();
+				FileWatcherService.Add (sol);
+				FileWatcherService.Add (sol2);
 
 				TextFileUtility.WriteText (file1.FilePath, string.Empty, Encoding.UTF8);
 				TextFileUtility.WriteText (file2.FilePath, string.Empty, Encoding.UTF8);
@@ -322,6 +334,8 @@ namespace MonoDevelop.Projects
 			using (var sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var p = (DotNetProject) sol2.Items [0];
 				ClearFileEventsCaptured ();
+				FileWatcherService.Add (sol);
+				FileWatcherService.Add (sol2);
 				var file1 = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 				var file2 = p.Files.First (f => f.FilePath.FileName == "AssemblyInfo.cs");
 
@@ -351,6 +365,8 @@ namespace MonoDevelop.Projects
 			using (var sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), rootSolFile)) {
 				var p = (DotNetProject) sol.Items [0];
 				ClearFileEventsCaptured ();
+				FileWatcherService.Add (sol);
+				FileWatcherService.Add (sol2);
 				var file1 = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 				var file2 = p.Files.First (f => f.FilePath.FileName == "AssemblyInfo.cs");
 
@@ -420,6 +436,8 @@ namespace MonoDevelop.Projects
 			using (var sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), rootSolFile)) {
 				var p = (DotNetProject) sol.Items [0];
 				ClearFileEventsCaptured ();
+				FileWatcherService.Add (sol);
+				FileWatcherService.Add (sol2);
 				file = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 			}
 
@@ -480,6 +498,7 @@ namespace MonoDevelop.Projects
 			};
 			FileWatcherService.WatchDirectories (directories);
 			ClearFileEventsCaptured ();
+			FileWatcherService.Add (sol);
 
 			File.Delete (file1);
 			File.Delete (file2);

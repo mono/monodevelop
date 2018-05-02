@@ -326,7 +326,6 @@ namespace MonoDevelop.Projects
 		{
 			Loading = false;
 			fileStatusTracker.ResetLoadTimes ();
-			FileWatcherService.Add (this);
 			return Task.FromResult (true);
 		}
 

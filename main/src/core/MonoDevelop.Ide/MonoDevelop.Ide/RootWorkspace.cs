@@ -624,6 +624,7 @@ namespace MonoDevelop.Ide
 
 					item.SetShared ();
 					Items.Add (item);
+					FileWatcherService.Add (item);
 				}
 				else {
 					item.Dispose ();
