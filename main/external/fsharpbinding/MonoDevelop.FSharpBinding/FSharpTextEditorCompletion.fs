@@ -72,11 +72,6 @@ type FSharpMemberCompletionData(name, namespaceToOpen: string option, icon, symb
     /// This behaviour roughly matches both VS on Windows and VS Code
     override x.IsCommitCharacter (_keyChar, _partialWord) = false
 
-        //Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
-        //Task.FromResult( TooltipInformation())
-
-
-
     type SimpleCategory(text) =
         inherit CompletionCategory(text, null)
         override x.CompareTo other =
@@ -936,7 +931,6 @@ type FSharpTextEditorCompletion() =
 
 
     override x.GetCurrentParameterIndex (startOffset: int, token) =
-        Fil
         async {
                 return ParameterHinting.getParameterIndex(x.Editor, startOffset)
         }
