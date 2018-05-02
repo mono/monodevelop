@@ -69,6 +69,8 @@ namespace MonoDevelop.Projects
 
 			FileService.FileChanged -= OnFileChanged;
 			FileService.FileRemoved -= OnFileRemoved;
+
+			FileWatcherService.WatchDirectories (Enumerable.Empty<FilePath> ());
 		}
 
 		void ClearFileEventsCaptured ()
@@ -427,6 +429,69 @@ namespace MonoDevelop.Projects
 			await WaitForFileRemoved (file.FilePath);
 
 			AssertFileRemoved (file.FilePath);
+		}
+
+		[Test]
+		public async Task WatchDirectories_TwoFilesChanged_OneClosed ()
+		{
+			FilePath rootSolFile = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
+			var file1 = rootSolFile.ParentDirectory.Combine ("FileWatcherTest", "MyClass.cs");
+			var file2 = rootSolFile.ParentDirectory.Combine ("Library", "Properties", "AssemblyInfo.cs");
+			var directories = new [] {
+				file1.ParentDirectory,
+				file2.ParentDirectory
+			};
+			FileWatcherService.WatchDirectories (directories);
+
+			TextFileUtility.WriteText (file1, string.Empty, Encoding.UTF8);
+			TextFileUtility.WriteText (file2, string.Empty, Encoding.UTF8);
+			await WaitForFileChanged (file2);
+
+			AssertFileChanged (file1);
+			AssertFileChanged (file2);
+
+			// Unwatch one directory.
+			directories = new [] {
+				file1.ParentDirectory
+			};
+			FileWatcherService.WatchDirectories (directories);
+			ClearFileEventsCaptured ();
+			fileChangesTask = new TaskCompletionSource<bool> ();
+
+			TextFileUtility.WriteText (file2, string.Empty, Encoding.UTF8);
+			TextFileUtility.WriteText (file1, string.Empty, Encoding.UTF8);
+			await WaitForFileChanged (file1);
+
+			AssertFileChanged (file1);
+			Assert.IsFalse (fileChanges.Any (f => f.FileName == file2));
+		}
+
+		[Test]
+		public async Task WatchDirectories_SolutionOpen_TwoFilesDeleted ()
+		{
+			FilePath rootSolFile = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
+			string solFile = rootSolFile.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var file1 = rootSolFile.ParentDirectory.Combine ("FileWatcherTest", "MyClass.cs");
+			var file2 = rootSolFile.ParentDirectory.Combine ("Library", "Properties", "AssemblyInfo.cs");
+			var directories = new [] {
+				file1.ParentDirectory,
+				file2.ParentDirectory
+			};
+			FileWatcherService.WatchDirectories (directories);
+			ClearFileEventsCaptured ();
+
+			File.Delete (file1);
+			File.Delete (file2);
+
+			// Wait for second file so we can detect multiple delete events for the
+			// first file deleted.
+			await WaitForFileRemoved (file2);
+
+			AssertFileRemoved (file1);
+			AssertFileRemoved (file2);
+			Assert.AreEqual (1, filesRemoved.Count (fileChange => fileChange.FileName == file1));
+			Assert.AreEqual (1, filesRemoved.Count (fileChange => fileChange.FileName == file2));
 		}
 	}
 }

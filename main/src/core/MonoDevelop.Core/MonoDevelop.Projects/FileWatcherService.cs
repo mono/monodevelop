@@ -36,6 +36,7 @@ namespace MonoDevelop.Projects
 	{
 		static readonly Dictionary<FilePath, FileWatcherWrapper> watchers = new Dictionary<FilePath, FileWatcherWrapper> ();
 		static ImmutableList<WorkspaceItem> workspaceItems = ImmutableList<WorkspaceItem>.Empty;
+		static ImmutableList<FilePath> monitoredDirectories = ImmutableList<FilePath>.Empty;
 
 		public static void Add (WorkspaceItem item)
 		{
@@ -90,6 +91,10 @@ namespace MonoDevelop.Projects
 				}
 			}
 
+			foreach (FilePath directory in monitoredDirectories) {
+				directories.Add (directory);
+			}
+
 			return Normalize (directories);
 		}
 
@@ -108,6 +113,14 @@ namespace MonoDevelop.Projects
 			return directorySet.Where (d => {
 				return directorySet.All (other => !d.IsChildPathOf (other));
 			});
+		}
+
+		public static void WatchDirectories (IEnumerable<FilePath> directories)
+		{
+			lock (watchers) {
+				monitoredDirectories = ImmutableList<FilePath>.Empty.AddRange (directories);
+				UpdateWatchers ();
+			}
 		}
 	}
 
