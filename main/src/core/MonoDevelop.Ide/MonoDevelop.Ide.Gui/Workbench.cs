@@ -854,7 +854,7 @@ namespace MonoDevelop.Ide.Gui
 			window.Closing += OnWindowClosing;
 			window.Closed += OnWindowClosed;
 			documents = documents.Add (doc);
-			WatchDirectories ();
+			WatchDocument (doc);
 
 			doc.OnDocumentAttached ();
 			OnDocumentOpened (new DocumentEventArgs (doc));
@@ -927,10 +927,34 @@ namespace MonoDevelop.Ide.Gui
 			window.Closing -= OnWindowClosing;
 			window.Closed -= OnWindowClosed;
 			documents = documents.Remove (doc);
-			WatchDirectories ();
+			UnwatchDocument (doc);
 
 			OnDocumentClosed (doc);
 			doc.DisposeDocument ();
+		}
+
+		void WatchDocument (Document doc)
+		{
+			if (doc.IsFile) {
+				if (doc.Window.ViewContent != null)
+					doc.Window.ViewContent.ContentNameChanged += OnContentNameChanged;
+				WatchDirectories ();
+			}
+		}
+
+		void UnwatchDocument (Document doc)
+		{
+			if (doc.IsFile) {
+				if (doc.Window.ViewContent != null)
+					doc.Window.ViewContent.ContentNameChanged -= OnContentNameChanged;
+				WatchDirectories ();
+			}
+		}
+
+		void OnContentNameChanged (object sender, EventArgs e)
+		{
+			// Refresh file watcher.
+			WatchDirectories ();
 		}
 
 		void WatchDirectories ()
