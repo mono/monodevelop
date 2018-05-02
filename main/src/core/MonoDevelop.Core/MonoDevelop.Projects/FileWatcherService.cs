@@ -32,13 +32,13 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	static class FileWatcherService
+	public static class FileWatcherService
 	{
 		static readonly Dictionary<FilePath, FileWatcherWrapper> watchers = new Dictionary<FilePath, FileWatcherWrapper> ();
 		static ImmutableList<WorkspaceItem> workspaceItems = ImmutableList<WorkspaceItem>.Empty;
 		static ImmutableList<FilePath> monitoredDirectories = ImmutableList<FilePath>.Empty;
 
-		public static void Add (WorkspaceItem item)
+		internal static void Add (WorkspaceItem item)
 		{
 			lock (watchers) {
 				workspaceItems = workspaceItems.Add (item);
@@ -46,7 +46,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public static void Remove (WorkspaceItem item)
+		internal static void Remove (WorkspaceItem item)
 		{
 			lock (watchers) {
 				workspaceItems = workspaceItems.Remove (item);
@@ -106,7 +106,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public static IEnumerable<FilePath> Normalize (IEnumerable<FilePath> directories)
+		internal static IEnumerable<FilePath> Normalize (IEnumerable<FilePath> directories)
 		{
 			var directorySet = new HashSet<FilePath> (directories);
 

@@ -854,6 +854,7 @@ namespace MonoDevelop.Ide.Gui
 			window.Closing += OnWindowClosing;
 			window.Closed += OnWindowClosed;
 			documents = documents.Add (doc);
+			WatchDirectories ();
 
 			doc.OnDocumentAttached ();
 			OnDocumentOpened (new DocumentEventArgs (doc));
@@ -926,9 +927,27 @@ namespace MonoDevelop.Ide.Gui
 			window.Closing -= OnWindowClosing;
 			window.Closed -= OnWindowClosed;
 			documents = documents.Remove (doc);
+			WatchDirectories ();
 
 			OnDocumentClosed (doc);
 			doc.DisposeDocument ();
+		}
+
+		void WatchDirectories ()
+		{
+			HashSet<FilePath> directories = null;
+			foreach (Document doc in documents) {
+				if (doc.IsFile) {
+					if (directories == null)
+						directories = new HashSet<FilePath> ();
+					directories.Add (doc.FileName.ParentDirectory);
+				}
+			}
+
+			if (directories != null)
+				FileWatcherService.WatchDirectories (directories);
+			else
+				FileWatcherService.WatchDirectories (Enumerable.Empty<FilePath> ());
 		}
 		
 		// When looking for the project to which the file belongs, look first
