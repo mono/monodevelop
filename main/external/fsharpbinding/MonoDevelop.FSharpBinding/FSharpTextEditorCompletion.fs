@@ -461,8 +461,6 @@ module Completion =
         [for keyValuePair in KeywordList.modifiers do
             yield CompletionData(keyValuePair.Key, IconId("md-keyword"),keyValuePair.Value) ]
 
-    let parseLock = obj()
-
     let filterResults (data: seq<CompletionData>) residue =
         data |> Seq.filter(fun c -> residue = "" || (Char.ToLowerInvariant c.DisplayText.[0]) = (Char.ToLowerInvariant residue.[0]))
 
@@ -938,6 +936,7 @@ type FSharpTextEditorCompletion() =
 
 
     override x.GetCurrentParameterIndex (startOffset: int, token) =
+        Fil
         async {
                 return ParameterHinting.getParameterIndex(x.Editor, startOffset)
         }

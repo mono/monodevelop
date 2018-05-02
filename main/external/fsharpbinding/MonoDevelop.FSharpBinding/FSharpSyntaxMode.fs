@@ -1,4 +1,11 @@
-﻿namespace MonoDevelop.FSharp
+﻿namespace Test.Namespace
+module Test = ()
+open Test
+namespace Test.Namespace
+open System.IO
+open Test.Namespace
+
+namespace MonoDevelop.FSharp
 
 open System
 open System.Collections.Generic
@@ -326,7 +333,7 @@ module Patterns =
                     makeSeg EditorThemeColors.UserTypesInterfaces
                 | ValueType _ ->
                     makeSeg EditorThemeColors.UserTypesValueTypes
-                //| Keyword ts -> makeSeg (Keywords.getType style ts)
+                //| Keyword ts -> makeSeg EditorThemeColors.
                 //| Comment -> makeSeg style.CommentsSingleLine
                 //| StringLiteral -> makeSeg style.String
                 //| NumberLiteral -> makeSeg style.Number
