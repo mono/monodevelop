@@ -49,8 +49,11 @@ namespace MonoDevelop.Projects
 		public static void Remove (WorkspaceItem item)
 		{
 			lock (watchers) {
+				int count = workspaceItems.Count;
 				workspaceItems = workspaceItems.Remove (item);
-				UpdateWatchers ();
+				if (workspaceItems.Count != count) {
+					UpdateWatchers ();
+				}
 			}
 		}
 
