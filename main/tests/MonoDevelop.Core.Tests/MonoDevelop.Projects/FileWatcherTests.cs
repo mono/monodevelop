@@ -544,5 +544,38 @@ namespace MonoDevelop.Projects
 			await WaitForFileChanged (otherFile.FilePath);
 			Assert.IsFalse (fileChanges.Any (f => f.FileName == file.FilePath));
 		}
+
+		[Test]
+		public async Task AddSolutionToWorkspace_ChangeFileInAddedSolution ()
+		{
+			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
+			string workspaceFile = rootProject.ParentDirectory.Combine ("Workspace", "FileWatcherTest.mdw");
+			using (var workspace = (Workspace) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), workspaceFile)) {
+				FileWatcherService.Add (workspace);
+				string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest3.sln");
+				sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var p = (DotNetProject)sol.Items [0];
+				var file = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+				workspace.Items.Add (sol);
+				await workspace.SaveAsync (Util.GetMonitor ());
+				var otherFile = workspace.FileName.ParentDirectory.Combine ("test.txt");
+				ClearFileEventsCaptured ();
+
+				TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
+				await WaitForFileChanged (file.FilePath);
+
+				AssertFileChanged (file.FilePath);
+				Assert.IsFalse (file.FilePath.IsChildPathOf (workspace.BaseDirectory));
+
+				workspace.Items.Remove (sol);
+				await workspace.SaveAsync (Util.GetMonitor ());
+				ClearFileEventsCaptured ();
+
+				TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
+				TextFileUtility.WriteText (otherFile, string.Empty, Encoding.UTF8);
+				await WaitForFileChanged (otherFile);
+				Assert.IsFalse (fileChanges.Any (f => f.FileName == file.FilePath));
+			}
+		}
 	}
 }

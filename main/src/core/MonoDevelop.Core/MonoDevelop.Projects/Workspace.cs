@@ -217,6 +217,7 @@ namespace MonoDevelop.Projects
 			AssertMainThread ();
 			OnItemAdded (args);
 			OnConfigurationsChanged ();
+			OnRootDirectoriesChanged ();
 		}
 		
 		internal void NotifyItemRemoved (WorkspaceItemChangeEventArgs args)
@@ -224,6 +225,7 @@ namespace MonoDevelop.Projects
 			AssertMainThread ();
 			OnItemRemoved (args);
 			OnConfigurationsChanged ();
+			OnRootDirectoriesChanged ();
 		}
 		
 		/*protected virtual*/ void OnItemAdded (WorkspaceItemChangeEventArgs args)
