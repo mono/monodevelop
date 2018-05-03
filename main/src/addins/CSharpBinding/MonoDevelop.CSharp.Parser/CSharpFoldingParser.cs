@@ -100,6 +100,7 @@ namespace MonoDevelop.CSharp.Parser
 			bool inChar = false;
 			bool inLineStart = true, hasStartedAtLine = false;
 			int line = 1, column = 1;
+			int bracketDepth = 0;
 			var startLoc = DocumentLocation.Empty;
 			
 			fixed (char* startPtr = content) {
@@ -108,6 +109,16 @@ namespace MonoDevelop.CSharp.Parser
 				char* beginPtr = ptr;
 				while (ptr < endPtr) {
 					switch (*ptr) {
+					case '{':
+						if (inString || inChar || inVerbatimString || inMultiLineComment || inSingleComment) 
+							break;
+						bracketDepth++;
+						break;
+					case '}':
+						if (inString || inChar || inVerbatimString || inMultiLineComment || inSingleComment) 
+							break;
+						bracketDepth--;
+						break;
 					case '#':
 						if (!inLineStart)
 							break;
@@ -199,15 +210,18 @@ namespace MonoDevelop.CSharp.Parser
 							bool isDocumentation = *beginPtr == '/';
 							if (isDocumentation)
 								beginPtr++;
-							
-							result.Add (new MonoDevelop.Ide.TypeSystem.Comment () { 
-								Region = new DocumentRegion (startLoc, new DocumentLocation (line, column)),
-								CommentType = MonoDevelop.Ide.TypeSystem.CommentType.SingleLine, 
-								OpenTag = "//",
-								Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
-								CommentStartsLine = hasStartedAtLine,
-								IsDocumentation = isDocumentation
-							});
+							if (isDocumentation || bracketDepth <= 1) {
+								// Doesn't matter much that some comments are not correctly recognized - they'll get added later
+								// It's important that header comments are in.
+								result.Add (new MonoDevelop.Ide.TypeSystem.Comment () { 
+									Region = new DocumentRegion (startLoc, new DocumentLocation (line, column)),
+									CommentType = MonoDevelop.Ide.TypeSystem.CommentType.SingleLine, 
+									OpenTag = "//",
+									Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
+									CommentStartsLine = hasStartedAtLine,
+									IsDocumentation = isDocumentation
+								});
+							}
 							inSingleComment = false;
 						}
 						inString = false;

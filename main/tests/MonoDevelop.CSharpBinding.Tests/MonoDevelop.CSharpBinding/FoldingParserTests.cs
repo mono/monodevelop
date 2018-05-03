@@ -354,6 +354,32 @@ using System;");
 			Assert.AreEqual (1, foldings.Count ());
 			Assert.AreEqual ("///  ...", foldings [0].Name);
 		}
+
+		[Test]
+		public void TestIssue4693 ()
+		{
+			Test (@"
+[// fold1
+// fold1]
+
+namespace Foo
+{
+	[// fold2
+	// fold2]
+
+	class Test
+	{
+		public static void Main ()
+		{
+			// nofold
+			// nofold
+			// nofold
+		}
+	}
+}
+		 ");
+
+		}
 	}
 }
 
