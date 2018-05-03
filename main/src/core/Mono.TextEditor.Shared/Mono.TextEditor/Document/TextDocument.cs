@@ -229,7 +229,6 @@ namespace Mono.TextEditor
 			this.currentSnapshot = this.TextBuffer.CurrentSnapshot;
 
 			this.TextBuffer.Properties.AddProperty(typeof(ITextDocument), this);
-			this.TextBuffer.Changed += this.OnTextBufferChanged;
 			(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate += OnTextBufferChangedImmediate;
 			this.TextBuffer.ContentTypeChanged += this.OnTextBufferContentTypeChanged;
 
@@ -242,7 +241,6 @@ namespace Mono.TextEditor
 		public void Dispose()
 		{
 			(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate -= OnTextBufferChangedImmediate;
-			this.TextBuffer.Changed -= this.OnTextBufferChanged;
 			this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
 			this.TextBuffer.Properties.RemoveProperty(typeof(ITextDocument));
 			this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccured;
@@ -253,6 +251,10 @@ namespace Mono.TextEditor
 		{
 			if (args.Changes == null)
 				return;
+			if (args.Changes.Count == 0) {
+				this.currentSnapshot = args.After;
+				return;
+			}
 			var changes = new List<TextChange> ();
 			foreach (var change in args.Changes) {
 				changes.Add (new TextChange (change.OldPosition, change.NewPosition, change.OldText, change.NewText));
@@ -264,19 +266,8 @@ namespace Mono.TextEditor
 			TextChanging?.Invoke(this, textChange);           
 			// After TextChanging notification has been sent, we can update the cached snapshot
 			this.currentSnapshot = args.After;
-		}
-
-		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
-		{
-			if (args.Changes == null || args.Changes.Count == 0)
-				return;
-			var changes = new List<TextChange> ();
-			foreach (var change in args.Changes) {
-				changes.Add (new TextChange (change.OldPosition, change.NewPosition, change.OldText, change.NewText));
-			}
 			bool endUndo = false;
 			UndoOperation operation = null;
-			var textChange = new TextChangeEventArgs(changes);
 
 			if (!isInUndo) {
 				operation = new UndoOperation(args);
