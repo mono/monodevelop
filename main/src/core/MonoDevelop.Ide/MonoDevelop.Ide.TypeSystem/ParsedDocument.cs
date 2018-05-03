@@ -221,7 +221,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			return region.BeginLine <= 0 || region.EndLine <= region.BeginLine;
 		}
-		
+
+		[Obsolete("Language backends need to implement a custom version.")]
 		public static IEnumerable<FoldingRegion> ToFolds (this IReadOnlyList<Comment> comments)
 		{
 			for (int i = 0; i < comments.Count; i++) {
