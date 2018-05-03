@@ -577,5 +577,40 @@ namespace MonoDevelop.Projects
 				Assert.IsFalse (fileChanges.Any (f => f.FileName == file.FilePath));
 			}
 		}
+
+		[Test]
+		public async Task AddFile_FileOutsideSolutionDirectory ()
+		{
+			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
+			string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest3.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+			var file2 = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+			ClearFileEventsCaptured ();
+			FileWatcherService.Add (sol);
+			var newFile = rootProject.ParentDirectory.Combine ("Library", "MyClass.cs");
+			var file = new ProjectFile (newFile);
+			file.Link = "LinkedMyClass.cs";
+			p.AddFile (file);
+			ClearFileEventsCaptured ();
+
+			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
+			await WaitForFileChanged (file.FilePath);
+
+			AssertFileChanged (file.FilePath);
+			Assert.IsFalse (file.FilePath.IsChildPathOf (p.BaseDirectory));
+			Assert.IsFalse (file.FilePath.IsChildPathOf (sol.BaseDirectory));
+
+			// After removing the file no events should be generated for the file.
+			p.Files.Remove (file);
+			ClearFileEventsCaptured ();
+
+			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
+			TextFileUtility.WriteText (file2.FilePath, string.Empty, Encoding.UTF8);
+			await WaitForFileChanged (file2.FilePath);
+
+			AssertFileChanged (file2.FilePath);
+			Assert.IsFalse (fileChanges.Any (f => f.FileName == file.FilePath));
+		}
 	}
 }
