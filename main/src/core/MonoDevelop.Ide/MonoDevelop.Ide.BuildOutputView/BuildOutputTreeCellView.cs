@@ -205,6 +205,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		const int RowContentPadding = 3;
 		const int BuildConfigurationInformationLeftPadding = 32;
 
+		const int DefaultRowHeight = 20;
 		const int LinesDisplayedCount = 1;
 		const int DefaultInformationContainerWidth = 370;
 		const int ImageSize = 16;
@@ -503,7 +504,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			TextLayout layout = status.GetUnconstrainedLayout ();
 			layout.Width = maxLayoutWidth;
 			var textSize = layout.GetSize ();
-			var height = Math.Max (textSize.Height + 2 * status.LayoutYPadding, 20);
+			var height = Math.Max (textSize.Height + 2 * status.LayoutYPadding, DefaultRowHeight);
 
 			return new Size (minWidth, height);
 		}
