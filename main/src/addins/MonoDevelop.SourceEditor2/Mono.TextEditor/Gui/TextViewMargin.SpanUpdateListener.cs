@@ -47,6 +47,7 @@ using System.Collections.Immutable;
 using System.Threading;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text;
 
 namespace Mono.TextEditor
 {
@@ -61,36 +62,37 @@ namespace Mono.TextEditor
 			public SpanUpdateListener (MonoTextEditor textEditor)
 			{
 				this.textEditor = textEditor;
-				textEditor.Document.TextChanged += Document_TextChanged;
-				textEditor.Document.TextChanging += Document_TextChanging;
+				textEditor.Document.TextBuffer.Changing += OnTextBufferChanging;
+				textEditor.Document.TextBuffer.ChangedLowPriority += OnTextBufferChangedLowPriority;
 			}
 
 			public void Dispose()
 			{
-				textEditor.Document.TextChanged -= Document_TextChanged;
-				textEditor.Document.TextChanging -= Document_TextChanging;
+				textEditor.Document.TextBuffer.Changing -= OnTextBufferChanging;
+				textEditor.Document.TextBuffer.ChangedLowPriority -= OnTextBufferChangedLowPriority;
 			}
 
-			List<HighlightedLine> lines = new List<HighlightedLine> ();
+			Dictionary<int, HighlightedLine> lines = new Dictionary<int, HighlightedLine> ();
 
-			void Document_TextChanging (object sender, TextChangeEventArgs e)
+			void OnTextBufferChanging (object sender, TextContentChangingEventArgs e)
 			{
 				HasUpdatedMultilineSpan = false;
-				foreach (var change in e.TextChanges) {
-					var layout = textEditor.TextViewMargin.GetLayout (textEditor.GetLineByOffset (change.Offset));
-					lines.Add (layout.HighlightedLine);
+
+				int startLine = this.textEditor.TextViewLines.FirstVisibleLine.Start.GetContainingLine ().LineNumber + 1;
+				int endLine = this.textEditor.TextViewLines.LastVisibleLine.Start.GetContainingLine ().LineNumber + 1;
+
+				for (int curLine = startLine; curLine <= endLine; curLine++) {
+					var layout = textEditor.TextViewMargin.GetLayout (textEditor.GetLine (curLine));
+					lines[curLine] = layout.HighlightedLine;
 				}
 			}
 
-			void Document_TextChanged (object sender, TextChangeEventArgs e)
+			void OnTextBufferChangedLowPriority (object sender, TextContentChangedEventArgs e)
 			{
-				int i = 0;
-
-				foreach (var change in e.TextChanges) {
-					if (i >= lines.Count)
-						break; // should never happen
-					var oldHighlightedLine = lines [i++];
-					var curLine = textEditor.GetLineByOffset (change.Offset);
+				foreach (var change in e.Changes) {
+					var oldLineNumber = e.Before.GetLineNumberFromPosition (change.OldPosition) + 1;
+					lines.TryGetValue(oldLineNumber, out var oldHighlightedLine);
+					var curLine = textEditor.GetLineByOffset (change.NewPosition);
 					var curLayout = textEditor.TextViewMargin.GetLayout (curLine);
 					if (!UpdateLineHighlight (curLine.LineNumber, oldHighlightedLine, curLayout.HighlightedLine))
 						break;
@@ -100,7 +102,7 @@ namespace Mono.TextEditor
 
 			bool UpdateLineHighlight (int lineNumber, HighlightedLine oldLine, HighlightedLine newLine)
 			{
-				if (oldLine != null && ShouldUpdateSpan (oldLine, newLine)) {
+				if (oldLine == null || ShouldUpdateSpan (oldLine, newLine)) {
 					textEditor.TextViewMargin.PurgeLayoutCacheAfter (lineNumber);
 					textEditor.QueueDraw ();
 					HasUpdatedMultilineSpan = true;
