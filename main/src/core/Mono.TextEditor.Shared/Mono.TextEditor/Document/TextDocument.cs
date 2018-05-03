@@ -259,7 +259,6 @@ namespace Mono.TextEditor
 			TextChanging?.Invoke(this, textChange);           
 			// After TextChanging notification has been sent, we can update the cached snapshot
 			this.currentSnapshot = args.After;
-			TextChangedHighPriority?.Invoke (this, textChange);
 		}
 
 		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
@@ -629,12 +628,6 @@ namespace Mono.TextEditor
 
 		public event EventHandler<TextChangeEventArgs> TextChanged;
 		public event EventHandler<TextChangeEventArgs> TextChanging;
-
-		// Temporary fix for https://github.com/mono/monodevelop/issues/4702
-		// Some listeners of TextChanging assume that the currentSnapshot is the new snapshot.
-		// Switch them to use this event, which happens immediately after the currentSnapshot 
-		// has been updated to the new snapshot.
-		internal event EventHandler<TextChangeEventArgs> TextChangedHighPriority;
 
 		#endregion
 

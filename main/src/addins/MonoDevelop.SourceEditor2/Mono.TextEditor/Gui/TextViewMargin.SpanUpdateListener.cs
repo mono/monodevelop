@@ -62,13 +62,13 @@ namespace Mono.TextEditor
 			{
 				this.textEditor = textEditor;
 				textEditor.Document.TextChanged += Document_TextChanged;
-				textEditor.Document.TextChangedHighPriority += Document_TextChanging;
+				textEditor.Document.TextChanging += Document_TextChanging;
 			}
 
 			public void Dispose()
 			{
 				textEditor.Document.TextChanged -= Document_TextChanged;
-				textEditor.Document.TextChangedHighPriority -= Document_TextChanging;
+				textEditor.Document.TextChanging -= Document_TextChanging;
 			}
 
 			List<HighlightedLine> lines = new List<HighlightedLine> ();
