@@ -138,7 +138,7 @@ namespace MonoDevelop.Deployment.Targets
 		public override string DefaultName {
 			get {
 				if (FileFormat != null)
-					return GettextCatalog.GetString ("{0} Sources", FileFormat.Name);
+					return GettextCatalog.GetString ("MSBuild Sources");
 				else
 					return base.DefaultName;
 			}

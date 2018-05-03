@@ -113,9 +113,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 			sln.FormatVersion = format.SlnVersion;
 
-			// Don't modify the product description if it already has a value
+			// Don't modify the product description comment if it already has a value
 			if (string.IsNullOrEmpty (sln.ProductDescription))
-				sln.ProductDescription = format.ProductDescription;
+				sln.ProductDescription = format.ProductDescriptionComment;
 
 			solution.WriteSolution (monitor, sln);
 

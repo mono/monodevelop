@@ -34,8 +34,8 @@ namespace MonoDevelop.Deployment.Gui
 			
 			int sel = 0;
 			for (int n=0; n<formats.Length; n++) {
-				comboFormat.AppendText (formats[n].Name);
-				if (formats[n].Name == selectedFormat.Name)
+				comboFormat.AppendText (formats[n].ProductDescription);
+				if (formats[n].ProductDescription == selectedFormat.ProductDescription)
 					sel = n;
 			}
 
