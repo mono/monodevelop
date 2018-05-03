@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -42,6 +43,7 @@ namespace MonoDevelop.Projects
 		{
 			lock (watchers) {
 				workspaceItems = workspaceItems.Add (item);
+				item.RootDirectoriesChanged += OnRootDirectoriesChanged;
 				UpdateWatchers ();
 			}
 		}
@@ -52,9 +54,15 @@ namespace MonoDevelop.Projects
 				int count = workspaceItems.Count;
 				workspaceItems = workspaceItems.Remove (item);
 				if (workspaceItems.Count != count) {
+					item.RootDirectoriesChanged -= OnRootDirectoriesChanged;
 					UpdateWatchers ();
 				}
 			}
+		}
+
+		static void OnRootDirectoriesChanged (object sender, EventArgs e)
+		{
+			UpdateWatchers ();
 		}
 
 		static void UpdateWatchers ()

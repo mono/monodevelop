@@ -214,6 +214,14 @@ namespace MonoDevelop.Projects
 			return directories;
 		}
 
+		internal event EventHandler RootDirectoriesChanged;
+
+		internal void OnRootDirectoriesChanged ()
+		{
+			rootDirectories = null;
+			RootDirectoriesChanged?.Invoke (this, EventArgs.Empty);
+		}
+
 		[ThreadSafe]
 		public virtual bool ContainsItem (WorkspaceObject obj)
 		{

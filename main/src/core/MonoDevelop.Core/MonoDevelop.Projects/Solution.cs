@@ -996,6 +996,8 @@ namespace MonoDevelop.Projects
 			else {
 				SetupNewItem (args.SolutionItem, args.ReplacedItem);
 			}
+
+			OnRootDirectoriesChanged ();
 			
 			if (SolutionItemAdded != null)
 				SolutionItemAdded (this, args);
@@ -1044,6 +1046,8 @@ namespace MonoDevelop.Projects
 				if (item != null)
 					DetachItem (item, args.Reloading);
 			}
+
+			OnRootDirectoriesChanged ();
 			
 			if (SolutionItemRemoved != null)
 				SolutionItemRemoved (this, args);

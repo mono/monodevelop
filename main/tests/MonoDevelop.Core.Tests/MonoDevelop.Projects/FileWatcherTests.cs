@@ -512,5 +512,37 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, filesRemoved.Count (fileChange => fileChange.FileName == file1));
 			Assert.AreEqual (1, filesRemoved.Count (fileChange => fileChange.FileName == file2));
 		}
+
+		[Test]
+		public async Task AddNewProjectToSolution_ChangeFileInNewProject ()
+		{
+			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
+			string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest3.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject)sol.Items [0];
+			var otherFile = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+			FileWatcherService.Add (sol);
+			var libraryProjectFile = rootProject.ParentDirectory.Combine ("Library", "Library.csproj");
+			var p2 = (DotNetProject) await sol.RootFolder.AddItem (Util.GetMonitor (), libraryProjectFile);
+			await sol.SaveAsync (Util.GetMonitor ());
+			var file = p2.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+			ClearFileEventsCaptured ();
+
+			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
+			await WaitForFileChanged (file.FilePath);
+
+			AssertFileChanged (file.FilePath);
+			Assert.IsFalse (file.FilePath.IsChildPathOf (sol.BaseDirectory));
+
+			sol.RootFolder.Items.Remove (p2);
+			p2.Dispose ();
+			await sol.SaveAsync (Util.GetMonitor ());
+			ClearFileEventsCaptured ();
+
+			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
+			TextFileUtility.WriteText (otherFile.FilePath, string.Empty, Encoding.UTF8);
+			await WaitForFileChanged (otherFile.FilePath);
+			Assert.IsFalse (fileChanges.Any (f => f.FileName == file.FilePath));
+		}
 	}
 }
