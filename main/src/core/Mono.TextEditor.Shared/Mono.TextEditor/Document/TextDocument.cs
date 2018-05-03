@@ -249,8 +249,12 @@ namespace Mono.TextEditor
 
 		private void OnTextBufferChangedImmediate (object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
 		{
-			if (args.Changes == null || args.Changes.Count == 0)
+			if (args.Changes == null)
 				return;
+			if (args.Changes.Count == 0) {
+				this.currentSnapshot = args.After;
+				return;
+			}
 			var changes = new List<TextChange> ();
 			foreach (var change in args.Changes) {
 				changes.Add (new TextChange (change.OldPosition, change.NewPosition, change.OldText, change.NewText));
