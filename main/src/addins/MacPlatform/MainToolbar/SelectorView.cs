@@ -476,8 +476,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						url += Cells [ids [n]].Title + "/";
 
 					// we need to encode the url, to ensure that NSUrl.FromString doesn't fail for certain configuration names
-					var uri = new Uri ("md://configuration/" + url).GetComponents (UriComponents.HttpRequestUrl, UriFormat.UriEscaped);
-					Url = NSUrl.FromString (uri);
+					// NOTE: we must use NSString encoding with percent escapes here, System.Uri encoding is different and does not work
+					// in some corner cases.
+					var escapedUri = new NSString ("md://configuration/" + url).CreateStringByAddingPercentEscapes (NSStringEncoding.UTF8);
+					Url = NSUrl.FromString (escapedUri);
 
 					// path items must match the cells, including images
 					for (int n = 0; n < ids.Length; n++)
