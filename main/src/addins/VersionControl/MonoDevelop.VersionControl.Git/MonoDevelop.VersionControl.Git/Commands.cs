@@ -151,7 +151,7 @@ namespace MonoDevelop.VersionControl.Git
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					string comment = dlg.Comment;
 					var monitor = new MessageDialogProgressMonitor (true, false, false, true);
-					var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
+					FileService.FreezeEvents ();
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
 							Stash stash;
@@ -173,7 +173,9 @@ namespace MonoDevelop.VersionControl.Git
 						}
 						finally {
 							monitor.Dispose ();
-							statusTracker.Dispose ();
+							Runtime.RunInMainThread (delegate {
+								FileService.ThawEvents ();
+							});
 						}
 					});
 				}
@@ -196,7 +198,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void Run ()
 		{
 			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
-			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
+			FileService.FreezeEvents ();
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
 					GitService.ReportStashResult (Repository.PopStash (monitor, 0));
@@ -205,7 +207,9 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				finally {
 					monitor.Dispose ();
-					statusTracker.Dispose ();
+					Runtime.RunInMainThread (delegate {
+						FileService.ThawEvents ();
+					});
 				}
 			});
 		}
