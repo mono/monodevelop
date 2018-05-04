@@ -169,7 +169,12 @@ namespace MonoDevelop.Projects
 		void OnFileDeleted (object sender, FileSystemEventArgs e)
 		{
 			System.Console.WriteLine ("OnFileDeleted: {0}", e.FullPath);
-			FileService.NotifyFileRemoved (e.FullPath);
+
+			// The native file watcher sometimes generates a Changed, Created and Deleted event in
+			// that order from a single native file event. So check the file has been deleted before raising
+			// a FileRemoved event.
+			if (!File.Exists (e.FullPath))
+				FileService.NotifyFileRemoved (e.FullPath);
 		}
 
 		void OnFileRenamed (object sender, RenamedEventArgs e)

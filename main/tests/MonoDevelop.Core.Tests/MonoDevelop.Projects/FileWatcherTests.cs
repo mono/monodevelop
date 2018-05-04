@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -636,6 +637,34 @@ namespace MonoDevelop.Projects
 			await WaitForFileChanged (file.FilePath);
 
 			AssertFileChanged (file.FilePath);
+		}
+
+		/// <summary>
+		/// The native file watcher sometimes has one event (Changed|Created|Deleted) which it turns into three
+		/// events in the order Changed, Created and Deleted. This test checks that the final Delete event is
+		/// ignored if the file exists. File.WriteAllText when the file does not exist seems to be a way
+		/// to trigger this behaviour on the Mac. Note that this does sometimes works - File.WriteAllText does
+		/// not always cause the native file watcher to generate the delete event.
+		/// </summary>
+		[Test]
+		public async Task WriteAllText_FileDoesNotExist_NativeFileWatcherGeneratesChangedCreatedDeletedEvents ()
+		{
+			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
+			var testFile = rootProject.ParentDirectory.Combine ("test1.txt");
+			ClearFileEventsCaptured ();
+			FileWatcherService.WatchDirectories (new [] { rootProject.ParentDirectory });
+
+			File.WriteAllText (testFile, DateTime.Now.ToString ());
+			File.WriteAllText (testFile, "test1");
+			File.WriteAllText (rootProject, "test2");
+
+			// Wait for second file to be changed to allow first file events to be processed.
+			await WaitForFileChanged (rootProject);
+
+			AssertFileChanged (rootProject);
+
+			// Check the delete event is not generated for the file being created and written to.
+			Assert.IsFalse (filesRemoved.Any (file => file.FileName == testFile));
 		}
 	}
 }
