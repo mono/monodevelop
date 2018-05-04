@@ -925,7 +925,7 @@ namespace MonoDevelop.Core
 					if (ev.IsChainArgs ()) {
 						EventData next = n < pendingEvents.Count - 1 ? pendingEvents [n + 1] : null;
 						if (next != null && ev.ShouldMerge (next)) {
-							next.MergeArgs (ev);
+							ev.MergeArgs (next);
 							continue;
 						}
 					}
