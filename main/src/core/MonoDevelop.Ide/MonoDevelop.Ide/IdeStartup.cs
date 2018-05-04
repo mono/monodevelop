@@ -565,7 +565,7 @@ namespace MonoDevelop.Ide
 		
 		static void HandleException (Exception ex, bool willShutdown)
 		{
-			var msg = String.Format ("An unhandled exception has occured. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
+			var msg = String.Format ("An unhandled exception has occurred. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
 			var aggregateException = ex as AggregateException;
 			if (aggregateException != null) {
 				aggregateException.Flatten ().Handle (innerEx => {

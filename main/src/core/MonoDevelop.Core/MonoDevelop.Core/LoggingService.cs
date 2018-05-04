@@ -60,7 +60,10 @@ namespace MonoDevelop.Core
 		// First parameter is the current value of 'ReportCrashes
 		// Second parameter is the exception
 		// Thirdparameter shows if the exception is fatal or not
+		[Obsolete("Use UnhandledErrorOccurred.")]
 		public static Func<bool?, Exception, bool, bool?> UnhandledErrorOccured;
+
+		public static Func<bool?, Exception, bool, bool?> UnhandledErrorOccurred { get => UnhandledErrorOccured; set => UnhandledErrorOccured = value; }
 
 		static List<CrashReporter> customCrashReporters = new List<CrashReporter> ();
 
@@ -224,8 +227,8 @@ namespace MonoDevelop.Core
 
 				var oldReportCrashes = ReportCrashes;
 
-				if (UnhandledErrorOccured != null && !silently)
-					ReportCrashes = UnhandledErrorOccured (ReportCrashes, ex, willShutDown);
+				if (UnhandledErrorOccurred != null && !silently)
+					ReportCrashes = UnhandledErrorOccurred (ReportCrashes, ex, willShutDown);
 
 				// If crash reporting has been explicitly disabled, disregard this crash
 				if (ReportCrashes.HasValue && !ReportCrashes.Value)

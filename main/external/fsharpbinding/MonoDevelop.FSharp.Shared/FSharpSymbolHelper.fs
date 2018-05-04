@@ -669,7 +669,7 @@ module SymbolTooltips =
                 let signature = getEntitySignature symbol.DisplayContext fse
                 Some(signature, getSummaryFromSymbol fse, footerForType symbol)
             with exn ->
-                //MonoDevelop.Core.LoggingService.LogWarning (sprintf "getTooltipFromSymbolUse: Error occured processing %A" fse)
+                //MonoDevelop.Core.LoggingService.LogWarning (sprintf "getTooltipFromSymbolUse: Error occurred processing %A" fse)
                 None
 
         | Constructor func ->

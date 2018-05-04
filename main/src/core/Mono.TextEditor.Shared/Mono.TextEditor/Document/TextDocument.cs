@@ -233,7 +233,7 @@ namespace Mono.TextEditor
 			(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate += OnTextBufferChangedImmediate;
 			this.TextBuffer.ContentTypeChanged += this.OnTextBufferContentTypeChanged;
 
-			this.VsTextDocument.FileActionOccurred += this.OnTextDocumentFileActionOccured;
+			this.VsTextDocument.FileActionOccurred += this.OnTextDocumentFileActionOccurred;
 
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved;
 			this.diffTracker.SetTrackDocument(this);
@@ -245,7 +245,7 @@ namespace Mono.TextEditor
 			this.TextBuffer.Changed -= this.OnTextBufferChanged;
 			this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
 			this.TextBuffer.Properties.RemoveProperty(typeof(ITextDocument));
-			this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccured;
+			this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccurred;
 			SyntaxMode = null;
 		}
 
@@ -307,7 +307,7 @@ namespace Mono.TextEditor
 			this.MimeTypeChanged?.Invoke(this, EventArgs.Empty);
 		}
 
-		void OnTextDocumentFileActionOccured(object sender, Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs args)
+		void OnTextDocumentFileActionOccurred(object sender, Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs args)
 		{
 			if (args.FileActionType == Microsoft.VisualStudio.Text.FileActionTypes.DocumentRenamed)
 			{

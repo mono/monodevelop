@@ -144,8 +144,8 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Informs the margin marker of a mouse press event.
 		/// </summary>
-		/// <param name="editor">The text editor in which the event press occured.</param>
-		/// <param name="margin">The margin in which the event occured.</param>
+		/// <param name="editor">The text editor in which the event press occurred.</param>
+		/// <param name="margin">The margin in which the event occurred.</param>
 		/// <param name="args">The event arguments.</param>
 		public virtual void InformMousePress (MonoTextEditor editor, Margin margin, MarginMouseEventArgs args)
 		{
@@ -154,8 +154,8 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Informs the margin marker of a mouse release event.
 		/// </summary>
-		/// <param name="editor">The text editor in which the event press occured.</param>
-		/// <param name="margin">The margin in which the event occured.</param>
+		/// <param name="editor">The text editor in which the event press occurred.</param>
+		/// <param name="margin">The margin in which the event occurred.</param>
 		/// <param name="args">The event arguments.</param>
 		public virtual void InformMouseRelease (MonoTextEditor editor, Margin margin, MarginMouseEventArgs args)
 		{
@@ -164,8 +164,8 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Informs the margin marker of a mouse hover event.
 		/// </summary>
-		/// <param name="editor">The text editor in which the event press occured.</param>
-		/// <param name="margin">The margin in which the event occured.</param>
+		/// <param name="editor">The text editor in which the event press occurred.</param>
+		/// <param name="margin">The margin in which the event occurred.</param>
 		/// <param name="args">The event arguments.</param>
 		public virtual void InformMouseHover (MonoTextEditor editor, Margin margin, MarginMouseEventArgs args)
 		{
