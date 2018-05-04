@@ -771,7 +771,8 @@ namespace MonoDevelop.Ide
 			
 			return item.SaveUserProperties ();
 		}
-		
+
+		[Obsolete ("FileService will generate events for all workspace files.")]
 		public FileStatusTracker GetFileStatusTracker ()
 		{
 			FileStatusTracker fs = new FileStatusTracker ();
