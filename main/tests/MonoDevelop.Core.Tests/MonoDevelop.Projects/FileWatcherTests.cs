@@ -612,5 +612,30 @@ namespace MonoDevelop.Projects
 			AssertFileChanged (file2.FilePath);
 			Assert.IsFalse (fileChanges.Any (f => f.FileName == file.FilePath));
 		}
+
+		/// <summary>
+		/// TextEdit.app will sometimes make a backup copy of a file and then rename it to
+		/// the original file if it was changed whilst it was open. This results in the document
+		/// not being reloaded in the text editor. So we handle this by treating the rename
+		/// as a file change for the target file.
+		/// </summary>
+		[Test]
+		public async Task ExternalRenameTemporaryFileToFileInProject ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
+			var tempFile = file.FilePath.ChangeExtension (".cs-temp");
+			File.WriteAllText (tempFile, "test");
+			ClearFileEventsCaptured ();
+			FileWatcherService.Add (sol);
+
+			FileService.SystemRename (tempFile, file.FilePath);
+
+			await WaitForFileChanged (file.FilePath);
+
+			AssertFileChanged (file.FilePath);
+		}
 	}
 }
