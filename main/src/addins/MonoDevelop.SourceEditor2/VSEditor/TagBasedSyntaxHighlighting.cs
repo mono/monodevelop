@@ -49,8 +49,11 @@ namespace Microsoft.VisualStudio.Platform
 
         public async Task<HighlightedLine> GetHighlightedLineAsync(IDocumentLine line, CancellationToken cancellationToken)
         {
-            ITextSnapshotLine snapshotLine = (line as Mono.TextEditor.TextDocument.DocumentLineFromTextSnapshotLine)?.Line;
-            if (this.classifier == null || snapshotLine == null || snapshotLine.Snapshot != snapshotLine.Snapshot.TextBuffer.CurrentSnapshot)
+            //TODO verify that the snapshot line from this.textBuffer is equivalent to the document line converted to a snapshotline.
+            //Possibly take in a TextDataModel as a parameter and verify the buffers are appropriate.
+            //ITextSnapshotLine snapshotLine = (line as Mono.TextEditor.TextDocument.DocumentLineFromTextSnapshotLine)?.Line;
+            ITextSnapshotLine snapshotLine = textBuffer.CurrentSnapshot.GetLineFromLineNumber (line.LineNumber - 1);
+            if ((this.classifier == null) || (snapshotLine == null))
             {
                 return new HighlightedLine(line, new[] { new ColoredSegment(0, line.Length, ScopeStack.Empty) });
             }
