@@ -339,7 +339,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				DrawNodeInformation (ctx, cellArea, buildOutputNode, status.LayoutYPadding, isSelected, ImageSize, ImagePadding, status);
 			} else if (buildOutputNode.NodeType == BuildOutputNodeType.BuildSummary) {
 				// For build summary, display error/warning summary
-				var startX = layoutBounds.Right + 25;
+				var startX = layoutBounds.X + layout.GetSize ().Width + 24;
 
 				status.ErrorsRectangle.X = startX;
 				status.ErrorsRectangle.Y = cellArea.Y;
@@ -354,7 +354,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				status.ErrorsRectangle.Width = size.Width + ImageSize + 2;
 				status.ErrorsRectangle.Height = size.Height;
 
-				startX += size.Width;
+				startX += size.Width + 24;
 
 				status.WarningsRectangle.X = startX;
 				status.WarningsRectangle.Y = cellArea.Y;
@@ -370,7 +370,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				status.WarningsRectangle.Height = size.Height;
 
 			} else if (buildOutputNode.NodeType == BuildOutputNodeType.Build) {
-				var textStartX = layoutBounds.Right + BuildConfigurationInformationLeftPadding; 
+				var textStartX = layoutBounds.X + layout.GetSize ().Width + 24;
 				DrawText (ctx, cellArea, textStartX, GetInformationMessage (buildOutputNode), status.LayoutYPadding, defaultFont, cellArea.Width - textStartX);
 			}
 		}
