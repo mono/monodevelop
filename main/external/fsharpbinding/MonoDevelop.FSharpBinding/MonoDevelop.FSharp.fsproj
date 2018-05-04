@@ -33,7 +33,7 @@
     <OtherFlags>--publicsign --warnon:1182</OtherFlags>
     <StartAction>Program</StartAction>
     <StartProgram>$(MSBuildProjectDirectory)\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
-    <StartWorkingDirectory>$(MSBuildProjectDirectory)\..\..\..\build</StartWorkingDirectory>
+    <StartWorkingDirectory>$(MSBuildProjectDirectory)\..\..\..\build\bin</StartWorkingDirectory>
   </PropertyGroup>
   <Target Name="Clean">
     <RemoveDir Directories="..\bin\" />
