@@ -6,9 +6,6 @@ open MonoDevelop.FSharp.MonoDevelop
 open MonoDevelop.FSharp
 [<TestFixture>]
 type TestTooltipProvider() =
-    let stripHtml html =
-        Regex.Replace(html, "<.*?>", "")
-
     let htmlDecode (s: string) =
         s.Replace("&lt;", "<")
          .Replace("&gt;", ">")
@@ -39,7 +36,7 @@ type TestTooltipProvider() =
             | Some(_,_,footer) -> footer
             | _ ->  ""
 
-        footer |> stripHtml |> htmlDecode
+        footer |> TestHelpers.stripHtml |> htmlDecode
         
     let getTooltipSummary (source: string) =
         match getTooltip source with

@@ -36,25 +36,74 @@ module ServiceSettings =
     let blockingTimeout = getEnvInteger "FSharpBinding_BlockingTimeout" 1000
     let maximumTimeout = getEnvInteger "FSharpBinding_MaxTimeout" 10000
     let idleBackgroundCheckTime = getEnvInteger "FSharpBinding_IdleBackgroundCheckTime" 2000
- 
+
+module entityCache = 
+    let cache = EntityCache()
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
 /// various IntelliSense functions (such as completion & tool tips).
 /// Provides default empty/negative results if information is missing.
 type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults : FSharpParseFileResults option) =
+    let getAllSymbols (checkResults: FSharpCheckFileResults) =
+        LoggingService.logDebug "GetDeclarations: getAllSymbols"
+
+        try
+            [
+                let ctx = checkResults.ProjectContext
+                let assembliesByFileName =
+                    ctx.GetReferencedAssemblies()
+                    |> Seq.groupBy (fun asm -> asm.FileName)
+                    |> Seq.map (fun (fileName, asms) -> fileName, List.ofSeq asms)
+                    |> Seq.toList
+                    |> List.rev // if mscorlib.dll is the first then FCS raises exception when we try to
+                                // get Content.Entities from it.
+
+                for fileName, signatures in assembliesByFileName do
+                    let contentType = AssemblyContentType.Public
+                    let content = AssemblyContentProvider.getAssemblyContent entityCache.cache.Locking contentType fileName signatures
+                    let content =
+                      content 
+                      |> List.filter(fun s -> match s.Symbol with
+                                              | :? FSharpEntity -> true
+                                              | _ -> false)
+                    yield! content
+            ]
+        with
+        | _ -> []
+
+    /// Get declarations at the current location in the specified document and the long ident residue
+    /// e.g. The incomplete ident One.Two.Th will return Th
+    member x.GetDeclarations(line, col, lineStr) =
+        match infoOpt, parseResults with
+        | Some (checkResults), parseResults ->
+            let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
+            LoggingService.logDebug "GetDeclarations: '%A', '%s'" longName residue
+            // Get items & generate output
+            try
+                let partialName = QuickParse.GetPartialLongNameEx(lineStr, col-1)
+
+                let results =
+                    Async.RunSynchronously(checkResults.GetDeclarationListInfo(parseResults, line, lineStr, partialName, fun() -> getAllSymbols checkResults), timeout = ServiceSettings.maximumTimeout)
+                Some (results, residue)
+            with :? TimeoutException ->
+                LoggingService.logError "GetDeclarations - Time out: '%A', '%s'" longName residue 
+                None
+        | None, _ -> None
 
     /// Get the symbols for declarations at the current location in the specified document and the long ident residue
     /// e.g. The incomplete ident One.Two.Th will return Th
-    member x.GetDeclarationSymbols(line, col, lineStr) =
+    member x.GetDeclarationSymbols(line, col, lineStr, autoImport) =
         async {
             match infoOpt, parseResults with
             | Some checkResults, parseResults ->
                   // Get items & generate output
                   let partialName = QuickParse.GetPartialLongNameEx(lineStr, col-1)
-
                   try
-                      let! results = checkResults.GetDeclarationListSymbols(parseResults, line, lineStr, partialName)
-
+                      let allEntitiesFunction = 
+                          match autoImport with
+                          | true -> fun() -> getAllSymbols checkResults
+                          | false -> fun() -> []
+                      let! results = checkResults.GetDeclarationListSymbols(parseResults, line, lineStr, partialName, allEntitiesFunction)
                       return Some (results, partialName.PartialIdent)
                   with :? TimeoutException -> return None
             | None, _ -> return None

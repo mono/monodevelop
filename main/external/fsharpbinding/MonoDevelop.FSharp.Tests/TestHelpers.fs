@@ -1,5 +1,6 @@
 ﻿namespace MonoDevelopTests
 open System
+open System.Text.RegularExpressions
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.FSharp
 open MonoDevelop.Ide.Editor
@@ -73,3 +74,6 @@ module TestHelpers =
           let! results = parseAndCheckFile source
           return! results.GetAllUsesOfAllSymbolsInFile()
         } |> Async.RunSynchronously
+
+    let stripHtml html =
+        Regex.Replace(html, "<.*?>", "")
