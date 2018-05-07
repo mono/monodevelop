@@ -40,7 +40,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
-	public class RoslynClassificationHighlighting : ISyntaxHighlighting
+	public partial class RoslynClassificationHighlighting : ISyntaxHighlighting, IDisposable
 	{
 		readonly DocumentId documentId;
 		readonly MonoDevelopWorkspace workspace;
@@ -48,18 +48,30 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		readonly ScopeStack userScope;
 
 		readonly Dictionary<string, ScopeStack> classificationMap;
-
+		readonly TextEditor editor;
+		SpanUpdateListener spanUpdateListener;
 		public DocumentId DocumentId => documentId;
 
-		public RoslynClassificationHighlighting (MonoDevelopWorkspace workspace, DocumentId documentId, string defaultScope)
+		public RoslynClassificationHighlighting (TextEditor editor, MonoDevelopWorkspace workspace, DocumentId documentId, string defaultScope)
 		{
+			this.editor = editor;
 			this.workspace = workspace;
 			this.documentId = documentId;
 			this.defaultScope = new ScopeStack (defaultScope);
 			this.userScope = this.defaultScope.Push (EditorThemeColors.UserTypes);
 
 			classificationMap = GetClassificationMap (defaultScope);
+			spanUpdateListener = new SpanUpdateListener (editor);
 		}
+
+		void IDisposable.Dispose()
+		{
+			if (spanUpdateListener != null) {
+				spanUpdateListener.Dispose ();
+				spanUpdateListener = null;
+			}
+		}
+
 		static ImmutableDictionary<string, Dictionary<string, ScopeStack>> classificationMapCache = ImmutableDictionary<string, Dictionary<string, ScopeStack>>.Empty;
 
 		public static Dictionary<string, ScopeStack> GetClassificationMap (string scope)

@@ -3415,5 +3415,20 @@ namespace MonoDevelop.SourceEditor
 				return this.TextEditor.HasFocus;
 			}
 		}
+
+		public void PurgeLayoutCacheAfter (int lineNumber)
+		{
+			TextEditor.TextViewMargin.PurgeLayoutCacheAfter (lineNumber);
+		}
+
+		public void QueueDraw ()
+		{
+			TextEditor.QueueDraw ();
+		}
+
+		public HighlightedLine GetHighlightedLine (IDocumentLine line)
+		{
+			return TextEditor.TextViewMargin.GetLayout ((DocumentLine)line).HighlightedLine;
+		}
 	}
 } 

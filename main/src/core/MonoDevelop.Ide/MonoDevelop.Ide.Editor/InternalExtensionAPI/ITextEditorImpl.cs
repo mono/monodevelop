@@ -208,6 +208,12 @@ namespace MonoDevelop.Ide.Editor
 		void SetUsageTaskProviders (IEnumerable<UsageProviderEditorExtension> providers);
 
 		void SetQuickTaskProviders (IEnumerable<IQuickTaskProvider> providers);
+
+		void PurgeLayoutCacheAfter (int lineNumber);
+
+		void QueueDraw ();
+
+		HighlightedLine GetHighlightedLine (IDocumentLine line);
 		#endregion
 
 		double ZoomLevel { get; set; }
