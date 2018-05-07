@@ -807,7 +807,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
+		Dictionary<DocumentId, SourceTextContainer> openDocuments = new Dictionary<DocumentId, SourceTextContainer> ();
 		internal void InformDocumentOpen (DocumentId documentId, TextEditor editor)
 		{
 			var document = InternalInformDocumentOpen (documentId, editor);
@@ -824,12 +824,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (project == null)
 				return null;
 			TextDocument document = project.GetDocument (documentId) ?? project.GetAdditionalDocument (documentId);
-			if (document == null || openDocuments.Any (d => d.Id == documentId)) {
+			if (document == null || openDocuments.ContainsKey(documentId)) {
 				return document;
 			}
-			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (this, documentId, editor);
+			var monoDevelopSourceTextContainer = editor.TextView.TextBuffer.AsTextContainer ();
 			lock (openDocuments) {
-				openDocuments.Add (monoDevelopSourceTextContainer);
+				openDocuments.Add (documentId, monoDevelopSourceTextContainer);
 			}
 			if (document is Document) {
 				OnDocumentOpened (documentId, monoDevelopSourceTextContainer);
@@ -850,11 +850,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			base.OnDocumentClosing (documentId);
 			lock (openDocuments) {
-				var openDoc = openDocuments.FirstOrDefault (d => d.Id == documentId);
-				if (openDoc != null) {
-					openDoc.Dispose ();
-					openDocuments.Remove (openDoc);
-				}
+				openDocuments.Remove (documentId);
 			}
 		}
 
@@ -868,10 +864,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			try {
 				lock (openDocuments) {
-					var openDoc = openDocuments.FirstOrDefault (d => d.Id == analysisDocument);
-					if (openDoc != null) {
-						openDoc.Dispose ();
-						openDocuments.Remove (openDoc);
+					if (openDocuments.ContainsKey(analysisDocument)) {
+						openDocuments.Remove (analysisDocument);
 					} else {
 						//Apparently something else opened this file via AddAndOpenDocumentInternal(e.g. .cshtml)
 						//it's job of whatever opened to also call CloseAndRemoveDocumentInternal
@@ -882,11 +876,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				var loader = new MonoDevelopTextLoader (filePath);
 				var document = this.GetDocument (analysisDocument);
-				var openDocument = this.openDocuments.FirstOrDefault (w => w.Id == analysisDocument);
-				if (openDocument != null) {
-					openDocument.Dispose ();
-					openDocuments.Remove (openDocument);
-				}
+				openDocuments.Remove (analysisDocument);
 
 				if (document == null) {
 					var ad = this.GetAdditionalDocument (analysisDocument);
