@@ -64,7 +64,10 @@ namespace Microsoft.VisualStudio.Platform
         internal IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService { get; private set; }
 
         [Import]
-        internal IClassifierAggregatorService ClassifierAggregatorService { get; private set; }
+		internal IClassifierAggregatorService ClassifierAggregatorService { get; private set; }
+
+		[Import]
+		internal IViewClassifierAggregatorService ViewClassifierAggregatorService { get; private set; }
     }
 
     public interface IMimeToContentTypeRegistryService

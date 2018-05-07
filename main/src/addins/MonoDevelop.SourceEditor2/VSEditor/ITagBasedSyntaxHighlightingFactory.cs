@@ -18,7 +18,8 @@ namespace Microsoft.VisualStudio.Platform
     /// ITagBasedSyntaxHighlightingFactory factory = null;
     /// </remarks>
     public interface ITagBasedSyntaxHighlightingFactory
-    {
-        ISyntaxHighlighting CreateSyntaxHighlighting (ITextView textView);
+	{
+		ISyntaxHighlighting CreateSyntaxHighlighting (ITextView textView);
+		ISyntaxHighlighting CreateSyntaxHighlighting (ITextView textView, string defaultScope);
     }
 }
