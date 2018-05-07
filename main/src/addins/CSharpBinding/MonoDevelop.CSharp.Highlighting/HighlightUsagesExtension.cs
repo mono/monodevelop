@@ -50,6 +50,8 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Ide.Editor.Highlighting;
 using Microsoft.CodeAnalysis.DocumentHighlighting;
+using Microsoft.VisualStudio.Platform;
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -83,10 +85,9 @@ namespace MonoDevelop.CSharp.Highlighting
 					Editor.SyntaxHighlighting = fallbackHighlighting;
 				return;
 			}
-			var old = Editor.SyntaxHighlighting as RoslynClassificationHighlighting;
-			if (old == null || old.DocumentId != DocumentContext.AnalysisDocument.Id) {
-				Editor.SyntaxHighlighting = new RoslynClassificationHighlighting ((MonoDevelopWorkspace)DocumentContext.RoslynWorkspace,
-																				  DocumentContext.AnalysisDocument.Id, "source.cs");
+			var old = Editor.SyntaxHighlighting as TagBasedSyntaxHighlighting;
+			if (old == null) {
+				Editor.SyntaxHighlighting = CompositionManager.GetExportedValue<ITagBasedSyntaxHighlightingFactory> ().CreateSyntaxHighlighting (Editor.TextView, "source.cs");
 			}
 		}
 
