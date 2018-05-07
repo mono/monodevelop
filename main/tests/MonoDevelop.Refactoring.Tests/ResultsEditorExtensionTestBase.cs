@@ -30,6 +30,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.AnalysisCore.Gui;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.TypeSystem;
@@ -64,14 +65,19 @@ namespace MonoDevelop.Refactoring.Tests
 			registerCallback (ext);
 		}
 
-		protected async Task<Tuple<T, Projects.Solution>> GatherDiagnosticsNoDispose<T> (string input, Func<Ide.Gui.Document, TaskCompletionSource<T>, Task> callback)
+		protected async Task<Tuple<T, Ide.Gui.Document>> GatherDiagnosticsNoDispose<T> (string input, Func<Ide.Gui.Document, TaskCompletionSource<T>, Task> callback)
 		{
-			var doc = await Setup (input);
+			var doc = await SetupDocument (input);
 
 			var tcs = new TaskCompletionSource<T> ();
-			RegisterExtensionCallback<ResultsEditorExtension> (doc, ext => {
-				ext.TasksUpdated += async (o, args) => await callback (doc, tcs);
-			});
+			var resultsExt = doc.GetContent<ResultsEditorExtension> ();
+			resultsExt.TasksUpdated += async (o, args) => {
+				try {
+					await callback (doc, tcs);
+				} catch (Exception ex) {
+					tcs.TrySetException (ex);
+				}
+			};
 
 			var cts = new CancellationTokenSource ();
 			cts.Token.Register (() => tcs.TrySetCanceled ());
@@ -79,13 +85,20 @@ namespace MonoDevelop.Refactoring.Tests
 
 			await doc.UpdateParseDocument ();
 
-			return Tuple.Create (await Task.Run (() => tcs.Task), doc.Project.ParentSolution);
+			var result = await Task.Run (() => tcs.Task).ConfigureAwait (false);
+
+			return Tuple.Create (result, doc);
 		}
 
 		protected async Task<T> GatherDiagnostics<T> (string input, Func<Ide.Gui.Document, TaskCompletionSource<T>, Task> callback)
 		{
 			var tuple = await GatherDiagnosticsNoDispose (input, callback);
-			TypeSystemService.Unload (tuple.Item2);
+
+			var doc = tuple.Item2;
+			using (var solution = doc.Project.ParentSolution) {
+				TypeSystemService.Unload (solution);
+			}
+
 			return tuple.Item1;
 		}
 

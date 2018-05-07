@@ -35,10 +35,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 	[TestFixture]
 	public class CSharpResultsEditorExtensionTests : ResultsEditorExtensionTestBase
 	{
-		protected override ViewContentData GetContentData ()
-		{
-			return ViewContentData.CSharp;
-		}
+		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharp;
 
 		const string OneFromEach = @"
 // Roslyn will say accesibility modifiers are required here.

@@ -34,10 +34,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 	[TestFixture]
 	public class CSharpCodeActionEditorExtensionTests : CodeActionEditorExtensionTestBase
 	{
-		protected override ViewContentData GetContentData ()
-		{
-			return ViewContentData.CSharp;
-		}
+		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharp;
 
 		const string SimpleClass = @"class MyClass
 {

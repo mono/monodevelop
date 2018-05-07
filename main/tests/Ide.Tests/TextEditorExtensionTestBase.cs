@@ -34,55 +34,91 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide
 {
-	public class ViewContentData
+	public class EditorExtensionTestData
 	{
-		public string FileName;
-		public string MimeType;
-		public string Language;
-		public string ProjectFileName;
+		public string FileName { get; }
+		public string MimeType { get; }
+		public string Language { get; }
+		public string ProjectFileName { get; }
+		public string [] References { get; private set; }
 
-		public static ViewContentData CSharp = new ViewContentData {
-			FileName = "/a.cs",
-			Language = "C#",
-			MimeType = "text/x-csharp",
-			ProjectFileName = "test.csproj",
-		};
+		public EditorExtensionTestData (string fileName, string language, string mimeType, string projectFileName, string[] references = null)
+		{
+			FileName = fileName;
+			Language = language;
+			MimeType = mimeType;
+			ProjectFileName = projectFileName;
+			References = references ?? new string [0];
+		}
+
+		EditorExtensionTestData (EditorExtensionTestData other) :
+			this (other.FileName, other.Language, other.MimeType, other.ProjectFileName, other.References)
+		{
+		}
+
+		public static EditorExtensionTestData CSharp = new EditorExtensionTestData (
+			fileName: "/a.cs",
+			language: "C#",
+			mimeType: "text/x-csharp",
+			projectFileName: "test.csproj"
+		);
+
+		public static EditorExtensionTestData CSharpWithReferences = CSharp.WithReferences(new string[] {
+				"mscorlib",
+				"System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+				"System.Core",
+			}
+		);
+
+		public EditorExtensionTestData WithReferences (string[] references)
+		{
+			return new EditorExtensionTestData (this) {
+				References = references
+			};
+		}
 	}
 
 	public abstract class TextEditorExtensionTestBase : IdeTestBase
 	{
-		protected abstract ViewContentData GetContentData ();
+		protected abstract EditorExtensionTestData GetContentData ();
 
 		protected virtual IEnumerable<TextEditorExtension> GetEditorExtensions ()
 		{
 			yield break;
 		}
 
-		protected async Task<Document> Setup (string input)
+		protected async Task<Document> SetupDocument (string input, int cursorPosition = -1)
 		{
 			await Composition.CompositionManager.InitializeAsync ();
 
 			var data = GetContentData ();
 
-			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
-			TestViewContent content = new TestViewContent ();
-			tww.ViewContent = content;
-			content.ContentName = data.FileName;
+			var content = new TestViewContent {
+				ContentName = data.FileName,
+				Text = input,
+			};
 			content.Data.MimeType = data.MimeType;
+			if (cursorPosition != -1)
+				content.CursorPosition = cursorPosition;
 
-			var doc = new Document (tww);
+			var tww = new TestWorkbenchWindow {
+				ViewContent = content,
+			};
 
-			var text = input;
-			content.Text = text;
-
-			var project = Services.ProjectService.CreateProject (data.Language);
+			var project = Services.ProjectService.CreateDotNetProject (data.Language);
 			project.Name = Path.GetFileNameWithoutExtension (data.ProjectFileName);
 			project.FileName = data.ProjectFileName;
 			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile));
+			foreach (var reference in data.References)
+				project.References.Add (ProjectReference.CreateAssemblyReference (reference));
+
 			var solution = new Solution ();
 			solution.AddConfiguration ("", true);
 			solution.DefaultSolutionFolder.AddItem (project);
+
 			content.Project = project;
+			var doc = new Document (tww);
+
 			doc.SetProject (project);
 
 			using (var monitor = new ProgressMonitor ())
