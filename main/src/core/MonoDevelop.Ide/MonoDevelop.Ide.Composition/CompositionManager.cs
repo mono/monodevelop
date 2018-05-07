@@ -205,7 +205,7 @@ namespace MonoDevelop.Ide.Composition
 		internal static HashSet<Assembly> ReadAssembliesFromAddins ()
 		{
 			using (var timer = Counters.CompositionAddinLoad.BeginTiming ()) {
-				HashSet<Assembly> assemblies = new HashSet<Assembly> ();
+				var assemblies = new HashSet<Assembly> ();
 				ReadAssemblies (assemblies, "/MonoDevelop/Ide/TypeService/PlatformMefHostServices", timer);
 				ReadAssemblies (assemblies, "/MonoDevelop/Ide/TypeService/MefHostServices", timer);
 				ReadAssemblies (assemblies, "/MonoDevelop/Ide/Composition", timer);
@@ -218,7 +218,8 @@ namespace MonoDevelop.Ide.Composition
 					if (node is AssemblyExtensionNode assemblyNode) {
 						try {
 							string id = assemblyNode.Addin.Id;
-							timer.Trace ("Start: " + id);
+							string assemblyName = assemblyNode.FileName;
+							timer.Trace ("Start: " + assemblyName);
 							// Make sure the add-in that registered the assembly is loaded, since it can bring other
 							// other assemblies required to load this one
 							AddinManager.LoadAddin (null, id);
@@ -227,9 +228,9 @@ namespace MonoDevelop.Ide.Composition
 							var assembly = Runtime.SystemAssemblyService.LoadAssemblyFrom (assemblyFilePath);
 							assemblies.Add (assembly);
 
-							timer.Trace ("Loaded: " + id);
+							timer.Trace ("Loaded: " + assemblyName);
 						} catch (Exception e) {
-							LoggingService.LogError ("Composition can't load assembly " + assemblyNode.FileName, e);
+							LoggingService.LogError ("Composition can't load assembly: " + assemblyNode.FileName, e);
 						}
 					}
 				}
