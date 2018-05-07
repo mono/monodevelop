@@ -171,9 +171,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (progress == 0 && tp.ReceivedObjects == 0) {
 				progress = 1;
-				Runtime.RunInMainThread (() => {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Receiving and indexing objects"), 2 * tp.TotalObjects);
-				});
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Receiving and indexing objects"), 2 * tp.TotalObjects);
 				throttleWatch.Restart ();
 			}
 
@@ -196,9 +194,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (progress == 0 && completedSteps == 0) {
 				progress = 1;
-				Runtime.RunInMainThread (() => {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Checking out files"), 2 * totalSteps);
-				});
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Checking out files"), 2 * totalSteps);
 				throttleWatch.Restart ();
 			}
 
