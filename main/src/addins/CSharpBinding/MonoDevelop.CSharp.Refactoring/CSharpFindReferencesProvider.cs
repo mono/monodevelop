@@ -212,7 +212,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				var workspace = TypeSystemService.AllWorkspaces.FirstOrDefault (w => w.CurrentSolution == lookup.Solution) as MonoDevelopWorkspace;
 				if (workspace == null)
 					return;
-				await FindReferencesHandler.FindRefs (await GatherSymbols (lookup.SymbolAndProjectId, lookup.Solution, monitor.CancellationToken), lookup.Solution, monitor);
+
+				await FindReferencesHandler.FindRefs (new[] { lookup.SymbolAndProjectId }, lookup.Solution, monitor);
 			});
 		}
 
@@ -247,7 +248,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 					await FindReferencesHandler.FindRefs (symbolsToLookup.ToArray (), lookup.Solution, monitor);
 				} else {
-					await FindReferencesHandler.FindRefs (new [] { lookup.SymbolAndProjectId }, lookup.Solution, monitor);
+					await FindReferencesHandler.FindRefs (await GatherSymbols (lookup.SymbolAndProjectId, lookup.Solution, monitor.CancellationToken), lookup.Solution, monitor);
 				}
 			});
 		}
