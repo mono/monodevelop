@@ -602,6 +602,22 @@ AAAAAAAA$
 			data.Document.UpdateFoldSegments (segments);
 			Assert.AreEqual (3, data.Document.FoldSegments.Count ());
 
-		}	
+		}
+
+		/// <summary>
+		/// FeedbackTicket 610190: Collapsed Regions Auto Expand
+		/// </summary>
+		[Test]
+		public void TestVSTS610190 ()
+		{
+			var data = Create (@"01+[234]5");
+			var segments = GetFoldSegments (data.Document);
+			data.Document.UpdateFoldSegments (segments);
+
+			Assert.AreEqual (true, data.Document.FoldSegments.First ().IsCollapsed);
+			data.Document.InsertText (segments.First().EndOffset, "test");
+			Assert.AreEqual (true, data.Document.FoldSegments.First ().IsCollapsed);
+		}
+
 	}
 }
