@@ -119,15 +119,13 @@ namespace MonoDevelop.Ide.Composition
 			return compositionManager;
 		}
 
-		const string cacheEnabledVar = "MONODEVELOP_ENABLE_MEF_CACHE";
-		static bool cacheEnabled = !string.IsNullOrEmpty (Environment.GetEnvironmentVariable (cacheEnabledVar));
 		async Task InitializeInstanceAsync ()
 		{
 			var assemblies = ReadAssembliesFromAddins ();
 			var caching = new Caching (assemblies);
 
 			// Try to use cached MEF data
-			if (cacheEnabled && caching.CanUse ()) {
+			if (caching.CanUse ()) {
 				RuntimeComposition = await TryCreateRuntimeCompositionFromCache (caching);
 			}
 
