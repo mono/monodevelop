@@ -72,12 +72,13 @@ namespace MonoDevelop.Ide.Composition
 			return caching;
 		}
 
-		static async Task CreateAndWrite (CompositionManager.Caching caching)
+		static async Task<RuntimeComposition> CreateAndWrite (CompositionManager.Caching caching)
 		{
 			var composition = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
 			var cacheManager = new CachedComposition ();
 
 			await caching.Write (composition, cacheManager);
+			return composition;
 		}
 
 		[Test]
@@ -120,9 +121,12 @@ namespace MonoDevelop.Ide.Composition
 		public async Task TestCacheIsSavedAndLoaded ()
 		{
 			var caching = GetCaching ();
-			await CreateAndWrite (caching);
+			var currentRuntimeComposition = await CreateAndWrite (caching);
 
-			Assert.IsNotNull (await CompositionManager.TryCreateRuntimeCompositionFromCache (caching));
+			Assert.IsNotNull (currentRuntimeComposition);
+			var cachedRuntimeComposition = await CompositionManager.TryCreateRuntimeCompositionFromCache (caching);
+
+			Assert.AreEqual (currentRuntimeComposition, cachedRuntimeComposition);
 		}
 
 		[Test]
@@ -197,8 +201,6 @@ namespace MonoDevelop.Ide.Composition
 			var cacheManager = new CachedComposition ();
 
 			await caching.Write (composition, cacheManager);
-
-			caching.Assemblies.Add (typeof (Console).Assembly);
 
 			Assert.IsFalse (caching.CanUse ());
 		}
