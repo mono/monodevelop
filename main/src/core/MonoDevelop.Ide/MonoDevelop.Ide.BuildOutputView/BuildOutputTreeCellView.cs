@@ -104,13 +104,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputTreeCellView : CanvasCellView
 	{
-		static readonly Xwt.Drawing.Image BuildExpandIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildExpand, Gtk.IconSize.Menu).WithSize (16);
-		static readonly Xwt.Drawing.Image BuildExpandDisabledIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildExpandDisabled, Gtk.IconSize.Menu).WithSize (16);
-		static readonly Xwt.Drawing.Image BuildCollapseIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildCollapse, Gtk.IconSize.Menu).WithSize (16);
-		static readonly Xwt.Drawing.Image BuildCollapseDisabledIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildCollapseDisabled, Gtk.IconSize.Menu).WithSize (16);
+		static readonly Image BuildExpandIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildExpand, Gtk.IconSize.Menu).WithSize (16);
+		static readonly Image BuildCollapseIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildCollapse, Gtk.IconSize.Menu).WithSize (16);
+		static readonly Image BuildExpandIconSel = BuildExpandIcon.WithStyles ("sel");
+		static readonly Image BuildCollapseIconSel = BuildCollapseIcon.WithStyles ("sel");
 
 		public EventHandler<BuildOutputNode> GoToTask;
-
 		public EventHandler<BuildOutputNode> ExpandErrors;
 		public EventHandler<BuildOutputNode> ExpandWarnings;
 
@@ -328,9 +327,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 				// Draw the image
 				Image icon;
 				if (status.Expanded)
-					icon = ExpanderHovered ? BuildCollapseIcon : BuildCollapseDisabledIcon;
+					icon = isSelected ? BuildCollapseIconSel : BuildCollapseIcon;
 				else
-					icon = ExpanderHovered ? BuildExpandIcon : BuildExpandDisabledIcon;
+					icon = isSelected ? BuildExpandIconSel : BuildExpandIcon;
 				ctx.DrawImage (icon, expanderRect.X, expanderRect.Y);
 			}
 
@@ -562,17 +561,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		#region Mouse Events
 
-		bool expanderHovered;
-		bool ExpanderHovered {
-			get { return expanderHovered; }
-			set {
-				if (value != expanderHovered) {
-					expanderHovered = value;
-					QueueDraw ();
-				}
-			}
-		}
-
 		protected override void OnMouseMoved (MouseMovedEventArgs args)
 		{
 			var node = GetValue (BuildOutputNodeField);
@@ -585,12 +573,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			CalcLayout (status, Bounds, out var layout, out var layoutBounds, out var expanderRect);
-
-			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
-				ExpanderHovered = true;
-			} else {
-				ExpanderHovered = false;
-			}
 
 			var insideText = layoutBounds.Contains (args.Position);
 			if (clicking && insideText && selectionRow == node) {
@@ -712,7 +694,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		protected override void OnMouseExited ()
 		{
-			ExpanderHovered = false;
 			ParentWidget.Cursor = CursorType.Arrow;
 			base.OnMouseExited ();
 		}
