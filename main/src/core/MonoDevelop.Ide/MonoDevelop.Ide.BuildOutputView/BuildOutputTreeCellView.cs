@@ -633,8 +633,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			//HACK: to avoid automatic scroll behaviour in Gtk (we handle the behaviour)
-			args.Handled = true;
-			((TreeView)ParentWidget).SelectRow (node);
+			//we only want break the normal click behaviour of treeview, in cases when label size is bigger than tree height
+			var treeView = ((TreeView)ParentWidget);
+			if (status.Expanded && status.LastRenderBounds.Height > treeView.Size.Height) {
+				args.Handled = true;
+				treeView.SelectRow (node);
+			}
 			base.OnButtonPressed (args);
 		}
 
