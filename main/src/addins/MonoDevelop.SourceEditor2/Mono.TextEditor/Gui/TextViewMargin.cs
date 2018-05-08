@@ -62,9 +62,6 @@ namespace Mono.TextEditor
 
 		internal double charWidth;
 		bool isMonospacedFont;
-		SpanUpdateListener spanUpdateListener;
-
-		internal SpanUpdateListener SpanUpdater { get => spanUpdateListener; }
 
 		double LineHeight {
 			get {
@@ -298,7 +295,6 @@ namespace Mono.TextEditor
 			}
 
 			this.textEditor = textEditor;
-			spanUpdateListener = new SpanUpdateListener (textEditor);
 			textEditor.Document.TextChanged += HandleTextReplaced;
 			textEditor.HighlightSearchPatternChanged += TextEditor_HighlightSearchPatternChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
@@ -727,10 +723,6 @@ namespace Mono.TextEditor
 				foreach (var marker in eolMarkerLayout)
 					marker.Dispose ();
 				eolMarkerLayout = null;
-			}
-			if (spanUpdateListener != null) {
-				spanUpdateListener.Dispose ();
-				spanUpdateListener = null;
 			}
 			DisposeLayoutDict ();
 			if (tabArray != null)
