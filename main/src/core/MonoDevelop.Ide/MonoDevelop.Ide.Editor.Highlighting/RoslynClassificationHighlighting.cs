@@ -48,7 +48,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
-	public class RoslynClassificationHighlighting : ISyntaxHighlighting
+	public partial class RoslynClassificationHighlighting : ISyntaxHighlighting, IDisposable
 	{
 		readonly DocumentId documentId;
 		readonly MonoDevelopWorkspace workspace;
@@ -56,11 +56,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		readonly ScopeStack userScope;
 		readonly ISemanticChangeNotificationService semanticChangeNotificationService;
 		readonly Dictionary<string, ScopeStack> classificationMap;
-
+		readonly TextEditor editor;
+		SpanUpdateListener spanUpdateListener;
 		public DocumentId DocumentId => documentId;
 		VersionStamp lastSemanticVersion;
-		public RoslynClassificationHighlighting (MonoDevelopWorkspace workspace, DocumentId documentId, string defaultScope)
+
+		public RoslynClassificationHighlighting (TextEditor editor, MonoDevelopWorkspace workspace, DocumentId documentId, string defaultScope)
 		{
+			this.editor = editor;
 			this.workspace = workspace;
 			this.documentId = documentId;
 			this.defaultScope = new ScopeStack (defaultScope);
@@ -73,7 +76,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				semanticChangeNotificationService.OpenedDocumentSemanticChanged += SemanticChangeNotificationService_OpenedDocumentSemanticChanged;
 			}
 			workspace.WorkspaceChanged += Workspace_WorkspaceChanged;
+			spanUpdateListener = new SpanUpdateListener (editor);
 		}
+
+		void IDisposable.Dispose()
+		{
+			if (spanUpdateListener != null) {
+				spanUpdateListener.Dispose ();
+				spanUpdateListener = null;
+			}
+		}
+
 
 		async void Workspace_WorkspaceChanged (object sender, WorkspaceChangeEventArgs e)
 		{
