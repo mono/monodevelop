@@ -110,7 +110,7 @@ namespace MonoDevelop.VBNet
 			);
 			workspace.OpenSolutionInfo (sInfo);
 
-			Editor.SyntaxHighlighting = new RoslynClassificationHighlighting (workspace, documentId, "source.vb");
+			Editor.SyntaxHighlighting = new RoslynClassificationHighlighting (Editor, workspace, documentId, "source.vb");
 			workspace.InformDocumentOpen (documentId, Editor);
 		}
 

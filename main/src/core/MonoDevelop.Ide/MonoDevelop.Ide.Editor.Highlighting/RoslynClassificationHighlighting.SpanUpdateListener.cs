@@ -25,68 +25,70 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
-using System.Runtime.InteropServices;
-
-using Mono.TextEditor.Highlighting;
-
-using MonoDevelop.Components.AtkCocoaHelper;
-
-using Gdk;
-using Gtk;
-using System.Timers;
-using System.Diagnostics;
-using MonoDevelop.Components;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Text;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide.Editor.Highlighting;
 using System.Collections.Immutable;
+using System.Composition;
+using System.Linq;
 using System.Threading;
-using MonoDevelop.Ide;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Classification;
+using Microsoft.CodeAnalysis.Notification;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.SolutionCrawler;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.TypeSystem;
+using Roslyn.Utilities;
+using MonoDevelop.Core;
 
-namespace Mono.TextEditor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
-	partial class TextViewMargin
+	partial class RoslynClassificationHighlighting
 	{
 		internal class SpanUpdateListener : IDisposable
 		{
-			readonly MonoTextEditor textEditor;
+			readonly TextEditor textEditor;
 
 			public bool HasUpdatedMultilineSpan { get; set; }
 
-			public SpanUpdateListener (MonoTextEditor textEditor)
+			public SpanUpdateListener (TextEditor textEditor)
 			{
 				this.textEditor = textEditor;
-				textEditor.Document.TextChanged += Document_TextChanged;
-				textEditor.Document.TextChanging += Document_TextChanging;
+				textEditor.TextChanged += Document_TextChanged;
+				textEditor.TextChanging += Document_TextChanging;
 			}
 
 			public void Dispose()
 			{
-				textEditor.Document.TextChanged -= Document_TextChanged;
-				textEditor.Document.TextChanging -= Document_TextChanging;
+				textEditor.TextChanged -= Document_TextChanged;
+				textEditor.TextChanging -= Document_TextChanging;
 			}
 
 			List<HighlightedLine> lines = new List<HighlightedLine> ();
 
-			void Document_TextChanging (object sender, TextChangeEventArgs e)
+			void Document_TextChanging (object sender, Core.Text.TextChangeEventArgs e)
 			{
 				try {
 					HasUpdatedMultilineSpan = false;
 					foreach (var change in e.TextChanges) {
-						var layout = textEditor.TextViewMargin.GetLayout (textEditor.GetLineByOffset (change.Offset));
-						lines.Add (layout.HighlightedLine);
+						if (change.Offset == 0 && change.RemovalLength == textEditor.Length) {
+							lines.Clear ();
+							return;
+						}
+						// only the last line state is needed
+						var highlightedLastLine = textEditor.Implementation.GetHighlightedLine (textEditor.GetLineByOffset (change.Offset + change.RemovalLength));
+						lines.Add (highlightedLastLine);
 					}
-				}
-				catch {
+				} catch {
 				}
 			}
 
-			void Document_TextChanged (object sender, TextChangeEventArgs e)
+			void Document_TextChanged (object sender, Core.Text.TextChangeEventArgs e)
 			{
 				int i = 0;
 
@@ -94,10 +96,12 @@ namespace Mono.TextEditor
 					foreach (var change in e.TextChanges) {
 						if (i >= lines.Count)
 							break; // should never happen
-						var oldHighlightedLine = lines[i++];
-						var curLine = textEditor.GetLineByOffset (change.Offset);
-						var curLayout = textEditor.TextViewMargin.GetLayout (curLine);
-						if (!UpdateLineHighlight (curLine.LineNumber, oldHighlightedLine, curLayout.HighlightedLine))
+						var oldHighlightedLine = lines [i++];
+
+						// compare last line states
+						var curLine = textEditor.GetLineByOffset (change.NewOffset + change.InsertionLength);
+						var highlightedLastLine = textEditor.Implementation.GetHighlightedLine (curLine);
+						if (!UpdateLineHighlight (curLine.LineNumber, oldHighlightedLine, highlightedLastLine))
 							break;
 					}
 				}
@@ -110,8 +114,8 @@ namespace Mono.TextEditor
 			bool UpdateLineHighlight (int lineNumber, HighlightedLine oldLine, HighlightedLine newLine)
 			{
 				if (oldLine != null && ShouldUpdateSpan (oldLine, newLine)) {
-					textEditor.TextViewMargin.PurgeLayoutCacheAfter (lineNumber);
-					textEditor.QueueDraw ();
+					textEditor.Implementation.PurgeLayoutCacheAfter (lineNumber);
+					textEditor.Implementation.QueueDraw ();
 					HasUpdatedMultilineSpan = true;
 					return false;
 				}

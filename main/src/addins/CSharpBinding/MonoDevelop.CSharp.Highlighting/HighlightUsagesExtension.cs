@@ -85,7 +85,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 			var old = Editor.SyntaxHighlighting as RoslynClassificationHighlighting;
 			if (old == null || old.DocumentId != DocumentContext.AnalysisDocument.Id) {
-				Editor.SyntaxHighlighting = new RoslynClassificationHighlighting ((MonoDevelopWorkspace)DocumentContext.RoslynWorkspace,
+				Editor.SyntaxHighlighting = new RoslynClassificationHighlighting (Editor,
+				                                                                  (MonoDevelopWorkspace)DocumentContext.RoslynWorkspace,
 																				  DocumentContext.AnalysisDocument.Id, "source.cs");
 			}
 		}
