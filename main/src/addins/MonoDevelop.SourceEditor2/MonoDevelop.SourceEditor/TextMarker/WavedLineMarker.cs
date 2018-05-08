@@ -56,7 +56,7 @@ namespace MonoDevelop.SourceEditor
 			int markerEnd = Segment.EndOffset;
 			if (markerEnd < startOffset || markerStart > endOffset) 
 				return;
-			
+
 			double drawFrom;
 			double drawTo;
 			double y = layout.LineYRenderStartPosition;
@@ -84,7 +84,7 @@ namespace MonoDevelop.SourceEditor
 				drawFrom = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 				x_pos = layout.Layout.IndexToPos (end - startOffset).X;
 	
-				drawTo = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+				drawTo = startXPos + (int)(x_pos * editor.Options.Zoom / Pango.Scale.PangoScale);
 			}
 			
 			drawFrom = Math.Max (drawFrom, editor.TextViewMargin.XOffset);
@@ -102,10 +102,10 @@ namespace MonoDevelop.SourceEditor
 				Pango.CairoHelper.ShowErrorUnderline (cr, drawFrom, y + editor.LineHeight - height, drawTo - drawFrom, height);
 			} else if (effect == MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.DottedLine) {
 				cr.Save ();
-				cr.LineWidth = 1;
-				cr.MoveTo (drawFrom + 1, y + editor.LineHeight - 1 + 0.5);
-				cr.RelLineTo (Math.Min (drawTo - drawFrom, 4 * 3), 0);
-				cr.SetDash (new double[] { 2, 2 }, 0);
+				cr.LineWidth = editor.Options.Zoom;
+				cr.MoveTo (drawFrom + 1, y + editor.LineHeight - editor.Options.Zoom + 0.5);
+				cr.RelLineTo (editor.TextViewMargin.charWidth, 0);
+				cr.SetDash (new double[] { 2 * editor.Options.Zoom, 2 * editor.Options.Zoom}, 0);
 				cr.Stroke ();
 				cr.Restore ();
 			} else {
