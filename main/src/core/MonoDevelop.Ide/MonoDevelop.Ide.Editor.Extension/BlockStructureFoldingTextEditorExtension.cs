@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			UpdateFoldings (Editor, blockStructure.Spans, caretLocation, token);
 		}
 
-		static void UpdateFoldings (TextEditor Editor, ImmutableArray<BlockSpan> spans, int caretOffset, CancellationToken token = default (CancellationToken))
+		static void UpdateFoldings (TextEditor editor, ImmutableArray<BlockSpan> spans, int caretOffset, CancellationToken token = default (CancellationToken))
 		{
 			try {
 				var foldSegments = new List<IFoldSegment> ();
@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				foreach (var blockSpan in spans) {
 					if (token.IsCancellationRequested)
 						return;
-					if (!blockSpan.IsCollapsible)
+					if (!blockSpan.IsCollapsible || IsSingleLine (editor, blockSpan))
 						continue;
 					var type = FoldingType.Unknown;
 					switch (blockSpan.Type) {
@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 					}
 					var start = blockSpan.TextSpan.Start;
 					var end = blockSpan.TextSpan.End;
-					var marker = Editor.CreateFoldSegment (start, end - start);
+					var marker = editor.CreateFoldSegment (start, end - start);
 					if (marker == null)
 						continue;
 					foldSegments.Add (marker);
@@ -119,12 +119,18 @@ namespace MonoDevelop.Ide.Editor.Extension
 				}
 				Application.Invoke ((o, args) => {
 					if (!token.IsCancellationRequested)
-						Editor.SetFoldings (foldSegments);
+						editor.SetFoldings (foldSegments);
 				});
 			} catch (OperationCanceledException) {
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}
 		}
+
+		static bool IsSingleLine (TextEditor editor, BlockSpan blockSpan)
+		{
+			var startLine = editor.GetLineByOffset (blockSpan.TextSpan.Start);
+			return blockSpan.TextSpan.End <= startLine.EndOffsetIncludingDelimiter;
+		} 
 	}
 }
