@@ -136,7 +136,15 @@ namespace MonoDevelop.Core.ProgressMonitoring
 				foreach (TextWriter cw in chainedWriters)
 					cw.Write (value);
 		}
-		
+
+		public override void Flush ()
+		{
+			if (context != null)
+				context.Post ((o) => base.Flush (), null);
+			else
+				base.Flush ();
+		}
+
 		public event LogTextEventHandler TextWritten;
 		public event EventHandler Closed;
 	}
