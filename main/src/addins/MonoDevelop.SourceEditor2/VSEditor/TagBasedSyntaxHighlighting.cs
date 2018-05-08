@@ -45,7 +45,6 @@ namespace Microsoft.VisualStudio.Platform
 
 	internal sealed class TagBasedSyntaxHighlighting : ISyntaxHighlighting
 	{
-		private static string [] delimiters = new string [] { " - " };
 		private ITextView textView { get; }
 		private IAccurateClassifier classifier { get; set; }
 		readonly Dictionary<string, ScopeStack> classificationMap;
@@ -69,7 +68,7 @@ namespace Microsoft.VisualStudio.Platform
 
 			SnapshotSpan snapshotSpan = snapshotLine.Extent;
 
-			IList<ClassificationSpan> classifications = this.classifier.GetAllClassificationSpans (snapshotSpan, cancellationToken);
+			IList<ClassificationSpan> classifications = this.classifier.GetClassificationSpans (snapshotSpan);
 
 			int lastClassifiedOffsetEnd = snapshotSpan.Start;
 			ScopeStack scopeStack;
@@ -80,7 +79,7 @@ namespace Microsoft.VisualStudio.Platform
 					coloredSegments.Add (whitespaceSegment);
 				}
 
-				scopeStack = GetScopeNameFromClassificationType (curSpan.ClassificationType);
+				scopeStack = GetScopeStackFromClassificationType (curSpan.ClassificationType);
 				ColoredSegment curColoredSegment = new ColoredSegment (curSpan.Span.Start - snapshotLine.Start, curSpan.Span.Length, scopeStack);
 				coloredSegments.Add (curColoredSegment);
 
@@ -133,46 +132,57 @@ namespace Microsoft.VisualStudio.Platform
 		{
 			var handler = _highlightingStateChanged;
 			if (handler != null) {
-				if (args.ChangeSpan.Start == 0 && args.ChangeSpan.Length == args.ChangeSpan.Snapshot.Length) {
-					//TODO: HACK: Lets not update if whole file update is requiered
-					//it's causing performance issues
-					//handler (this, MonoDevelop.Ide.Editor.LineEventArgs.AllLines);
-				} else {
-					int startLineIndex = this.textDocument.OffsetToLineNumber (args.ChangeSpan.Start);
-					int endLineIndex = this.textDocument.OffsetToLineNumber (args.ChangeSpan.End);
-
-					for (int curLineIndex = startLineIndex; curLineIndex <= endLineIndex; curLineIndex++) {
-						IDocumentLine documentLine = this.textDocument.GetLine (curLineIndex);
-						handler (this, new LineEventArgs (documentLine));
+				foreach (Mono.TextEditor.MdTextViewLineCollection.MdTextViewLine line in textView.TextViewLines) {
+					if (line.Start.Position > args.ChangeSpan.End.Position || line.End.Position < args.ChangeSpan.Start)
+						continue;
+					var oldSegments = line.layoutWrapper.HighlightedLine.Segments;
+					var newSegments = GetHighlightedLineAsync (line.line, CancellationToken.None).Result.Segments;
+					if (oldSegments.Count != newSegments.Count) {
+						handler (this, new LineEventArgs (line.line));
+						continue;
+					}
+					for (int i = 0; i < oldSegments.Count; i++) {
+						if (newSegments [i].ColorStyleKey != oldSegments [i].ColorStyleKey) {
+							handler (this, new LineEventArgs (line.line));
+							break;
+						}
 					}
 				}
 			}
 		}
 
 		Dictionary<IClassificationType, ScopeStack> classificationTypeToScopeCache = new Dictionary<IClassificationType, ScopeStack> ();
+		static ScopeStack defaultScopeStack = new ScopeStack (EditorThemeColors.Foreground);
 
-		private ScopeStack GetScopeNameFromClassificationType (IClassificationType classificationType)
+		private ScopeStack GetScopeStackFromClassificationType (IClassificationType classificationType)
 		{
 			if (classificationTypeToScopeCache.TryGetValue (classificationType, out var cachedScope))
 				return cachedScope;
 			ScopeStack scope = null;
-			foreach (var baseType in classificationType.BaseTypes.Concat (classificationType)) {
+			void ProcessClassificationType(IClassificationType classification)
+			{
+				foreach (var baseType in classification.BaseTypes) {
+					ProcessClassificationType (baseType);
+				}
 				//This comparision with Identifier and Keyword is very hacky
 				//what we are doing here is, making sure anything has greater priorty over
 				//this two Identifer/Keyword, I came to this two from 
 				//https://github.com/dotnet/roslyn/blob/88d1bd1/src/EditorFeatures/Core.Wpf/Classification/ClassificationTypeFormatDefinitions.cs
 				//Which orders different classifications by priority...
 				//This is needed so Semantical classification for Interface or Class is greater then Identifier from Syntactical classifeer
-				if (scope != null && (baseType.Classification == PredefinedClassificationTypeNames.Identifier || baseType.Classification == PredefinedClassificationTypeNames.Keyword))
-					continue;
-				if (classificationMap != null && classificationMap.TryGetValue (baseType.Classification, out var mappedScope))
+				if (scope != null && (classification.Classification == PredefinedClassificationTypeNames.Identifier || classification.Classification == PredefinedClassificationTypeNames.Keyword))
+					return;
+				if (classificationMap != null && classificationMap.TryGetValue (classification.Classification, out var mappedScope)) {
 					scope = mappedScope;
-				var styleName = GetStyleNameFromClassificationName (baseType.Classification);
+					return;
+				}
+				var styleName = GetStyleNameFromClassificationName (classification.Classification);
 				if (styleName == null)
-					continue;
+					return;
 				scope = new ScopeStack (styleName);
 			}
-			return classificationTypeToScopeCache [classificationType] = scope ?? new ScopeStack (EditorThemeColors.Foreground);
+			ProcessClassificationType (classificationType);
+			return classificationTypeToScopeCache [classificationType] = scope ?? defaultScopeStack;
 		}
 
 		private string GetStyleNameFromClassificationName (string classificationName)

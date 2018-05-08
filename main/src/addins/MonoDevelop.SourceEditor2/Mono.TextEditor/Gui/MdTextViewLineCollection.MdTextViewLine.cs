@@ -35,10 +35,10 @@ namespace Mono.TextEditor
 {
 	partial class MdTextViewLineCollection
 	{
-		sealed class MdTextViewLine : ITextViewLine
+		internal sealed class MdTextViewLine : ITextViewLine
 		{
-			readonly DocumentLine line;
-			readonly TextViewMargin.LayoutWrapper layoutWrapper;
+			internal readonly DocumentLine line;
+			internal readonly TextViewMargin.LayoutWrapper layoutWrapper;
 			readonly MdTextViewLineCollection collection; 
 			MonoTextEditor textEditor;
 			SnapshotSpan lineSpan;

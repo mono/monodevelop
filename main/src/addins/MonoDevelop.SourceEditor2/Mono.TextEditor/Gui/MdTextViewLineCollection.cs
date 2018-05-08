@@ -94,7 +94,7 @@ namespace Mono.TextEditor
 				if (this.Count == 0)
 					return new SnapshotSpan (textEditor.TextSnapshot, 0, 0);
 				var start = this [0].Start;
-				var end = this.Last ().EndIncludingLineBreak;
+				var end = this [Count - 1].EndIncludingLineBreak;
 				if (start.Snapshot.Version.VersionNumber == end.Snapshot.Version.VersionNumber) {
 					return new SnapshotSpan (start, end);
 				} else if (start.Snapshot.Version.VersionNumber > end.Snapshot.Version.VersionNumber) {
