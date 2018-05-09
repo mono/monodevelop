@@ -802,21 +802,12 @@ namespace MonoDevelop.Projects
 		[Test]
 		public async Task RecoverFromBuilderCrash ()
 		{
-			using (var sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild")) {
-				await sol.SaveAsync (Util.GetMonitor ());
-
-				// This property will cause the builder process to crash.
-				// The process crash should cause the build operation to
-				// fail gracefully, instead of crashing the main process (VSTS bug #580790)
-
-				var ctx = new TargetEvaluationContext ();
-				ctx.GlobalProperties.SetValue ("__CRASH_ME__", "yes");
-
-				var result = await sol.Build (Util.GetMonitor (), "Debug", ctx);
+			string projFile = Util.GetSampleProject ("builder-manager-tests", "crasher", "ConsoleProject.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var result = await p.Build (Util.GetMonitor (), ConfigurationSelector.Default);
 				Assert.AreEqual (1, result.ErrorCount, "#1");
 			}
 		}
-
 	}
 
 	[TestFixture]
