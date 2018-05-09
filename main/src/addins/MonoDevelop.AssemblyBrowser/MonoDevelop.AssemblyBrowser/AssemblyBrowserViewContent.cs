@@ -164,6 +164,7 @@ namespace MonoDevelop.AssemblyBrowser
 					Widget.AddReferenceByAssemblyName (assembly); 
 				}
 			} else {
+				var alreadyAdded = new HashSet<string> ();
 				foreach (var project in Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
 					Widget.AddProject (project, false);
 
@@ -172,6 +173,8 @@ namespace MonoDevelop.AssemblyBrowser
 						continue;
 					foreach (var file in await netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
 						if (!System.IO.File.Exists (file.FilePath))
+							continue;
+						if (!alreadyAdded.Add (file.FilePath))
 							continue;
 						Widget.AddReferenceByFileName (file.FilePath); 
 					}

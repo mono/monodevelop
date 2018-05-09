@@ -631,9 +631,14 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		public ITreeBuilder AddChild (object nodeObject)
 		{
+			return AddChild (nodeObject, true);
+		}
+
+		public ITreeBuilder AddChild (object nodeObject, bool expanded)
+		{
 			TreeBuilder builder = new TreeBuilder (this);
 			builder.AddChild (nodeObject, true);
-			builder.Expanded = true;
+			builder.Expanded = expanded;
 			InitialSelection ();
 			return builder;
 		}
