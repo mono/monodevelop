@@ -38,11 +38,19 @@ namespace MonoDevelop.Ide.Composition
 	[TestFixture]
 	public class CompositionManagerCachingTests
 	{
-		internal class StampCachingFaultInjector : CompositionManager.ICachingFaultInjector
+		internal class NewerStampCachingFaultInjector : CompositionManager.ICachingFaultInjector
 		{
 			public void FaultAssemblyInfo (CompositionManager.MefControlCacheAssemblyInfo info)
 			{
-				info.LastWriteTimeUtc = DateTime.UtcNow;
+				info.LastWriteTimeUtc = info.LastWriteTimeUtc.Subtract (TimeSpan.FromSeconds (1));
+			}
+		}
+
+		internal class OlderStampCachingFaultInjector : CompositionManager.ICachingFaultInjector
+		{
+			public void FaultAssemblyInfo (CompositionManager.MefControlCacheAssemblyInfo info)
+			{
+				info.LastWriteTimeUtc = info.LastWriteTimeUtc.Add (TimeSpan.FromSeconds (1));
 			}
 		}
 
@@ -51,7 +59,7 @@ namespace MonoDevelop.Ide.Composition
 			public void FaultAssemblyInfo (CompositionManager.MefControlCacheAssemblyInfo info)
 			{
 				// Change one of the assemblies' paths
-				info.Location = typeof (StampCachingFaultInjector).Assembly.Location;
+				info.Location = typeof (LocationCachingFaultInjector).Assembly.Location;
 			}
 		}
 
@@ -191,7 +199,8 @@ namespace MonoDevelop.Ide.Composition
 			Assert.IsFalse (caching.CanUse ());
 		}
 
-		[TestCase (typeof (StampCachingFaultInjector))]
+		[TestCase (typeof (OlderStampCachingFaultInjector))]
+		[TestCase (typeof (NewerStampCachingFaultInjector))]
 		[TestCase (typeof (LocationCachingFaultInjector))]
 		public async Task TestControlCacheFaultInjection (Type injectorType)
 		{
