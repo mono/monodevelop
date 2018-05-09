@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 
 			var cri = (CellRendererImage)cell;
 			if (template == null) {
-				cri.Image = ImageService.GetIcon (((TreeView)column.TreeView).GetRowExpanded (model.GetPath (iter)) ? MonoDevelop.Ide.Gui.Stock.OpenFolder : MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
+				cri.Image = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Folder, IconSize.Menu);
 			} else {
 				cri.Image = ImageService.GetIcon (template.Icon, IconSize.Menu);
 			}

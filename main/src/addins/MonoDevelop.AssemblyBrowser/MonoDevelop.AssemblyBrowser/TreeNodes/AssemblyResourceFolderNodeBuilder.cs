@@ -47,8 +47,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			nodeInfo.Label = MonoDevelop.Core.GettextCatalog.GetString ("Resources");
-			nodeInfo.Icon       = Context.GetIcon (Stock.OpenResourceFolder);
-			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedResourceFolder);
+			nodeInfo.Icon = Context.GetIcon (Stock.ResourceFolder);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)

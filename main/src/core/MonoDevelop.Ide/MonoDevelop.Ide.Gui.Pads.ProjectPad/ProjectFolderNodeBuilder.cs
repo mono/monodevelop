@@ -44,9 +44,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	class ProjectFolderNodeBuilder: FolderNodeBuilder
 	{
-		Xwt.Drawing.Image folderOpenIcon;
-		Xwt.Drawing.Image folderClosedIcon;
-		
+		Xwt.Drawing.Image folderIcon;
+
 		public override Type NodeDataType {
 			get { return typeof(ProjectFolder); }
 		}
@@ -69,8 +68,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			base.Initialize ();
 
-			folderOpenIcon = Context.GetIcon (Stock.OpenFolder);
-			folderClosedIcon = Context.GetIcon (Stock.ClosedFolder);
+			folderIcon = Context.GetIcon (Stock.Folder);
 		}
 		
 		public override void OnNodeAdded (object dataObject)
@@ -126,8 +124,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFolder folder = (ProjectFolder) dataObject;
 
 			nodeInfo.Label = GLib.Markup.EscapeText (folder.Name);
-			nodeInfo.Icon = folderOpenIcon;
-			nodeInfo.ClosedIcon = folderClosedIcon;
+			nodeInfo.Icon = folderIcon;
 		}
 		
 		public override object GetParentObject (object dataObject)

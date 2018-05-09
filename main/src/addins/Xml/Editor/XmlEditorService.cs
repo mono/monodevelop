@@ -106,7 +106,7 @@ namespace MonoDevelop.Xml.Editor
 		
 		public static ProgressMonitor GetMonitor ()
 		{
-			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("XML", "md-xml-file-icon", true, true);
+			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("XML", "md-xml-file", true, true);
 		}
 		
 		#region Formatting utilities

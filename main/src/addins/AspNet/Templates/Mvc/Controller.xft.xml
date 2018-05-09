@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>ASP.NET MVC Controller</_Name>
-		<Icon>md-html-file-icon</Icon>
+		<Icon>md-html-file</Icon>
 		<_Category>ASP.NET MVC</_Category>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>AspNetApp</ProjectType>

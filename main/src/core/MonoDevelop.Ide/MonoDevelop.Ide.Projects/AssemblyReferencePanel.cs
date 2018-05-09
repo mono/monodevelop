@@ -278,7 +278,7 @@ namespace MonoDevelop.Ide.Projects
 					asm, 
 					asm.Selected, 
 					asm.File.ToString (), 
-					MonoDevelop.Ide.Gui.Stock.OpenFolder,
+					MonoDevelop.Ide.Gui.Stock.Folder,
 					matchRank);
 			}
 		}

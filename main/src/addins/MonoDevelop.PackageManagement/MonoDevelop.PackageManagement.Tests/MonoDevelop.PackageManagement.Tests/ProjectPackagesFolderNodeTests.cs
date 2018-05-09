@@ -127,7 +127,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			IconId icon = packagesFolderNode.Icon;
 
-			Assert.AreEqual (Stock.OpenReferenceFolder, icon);
+			Assert.AreEqual (Stock.ReferenceFolder, icon);
 		}
 
 		[Test]
@@ -138,7 +138,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			IconId icon = packagesFolderNode.ClosedIcon;
 
-			Assert.AreEqual (Stock.ClosedReferenceFolder, icon);
+			Assert.AreEqual (Stock.ReferenceFolder, icon);
 		}
 
 		[Test]

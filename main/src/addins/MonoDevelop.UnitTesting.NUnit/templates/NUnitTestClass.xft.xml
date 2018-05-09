@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>Test Fixture</_Name>
-		<Icon>md-file-unit-test</Icon>
+		<Icon>md-unit-test-file</Icon>
 		<_Category>NUnit</_Category>
 		<LanguageName>C#,VBNet</LanguageName>
 		<_Description>Creates a Test Fixture.</_Description>

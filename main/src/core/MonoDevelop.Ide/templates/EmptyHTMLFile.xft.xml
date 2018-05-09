@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>Empty HTML File</_Name>
-		<Icon>md-html-file-icon</Icon>
+		<Icon>md-html-file</Icon>
 		<_Category>Web</_Category>
 		<_Description>Creates an empty HTML file.</_Description>
 		<DefaultFilename>EmptyHtmlFile</DefaultFilename>

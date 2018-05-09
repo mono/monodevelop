@@ -55,11 +55,11 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		}
 
 		public IconId Icon {
-			get { return Stock.OpenReferenceFolder; }
+			get { return Stock.ReferenceFolder; }
 		}
 
 		public IconId ClosedIcon {
-			get { return Stock.ClosedReferenceFolder; }
+			get { return Stock.ReferenceFolder; }
 		}
 
 		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes (bool sdkDependencies)

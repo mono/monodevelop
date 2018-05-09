@@ -54,8 +54,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			SolutionFolder folder = dataObject as SolutionFolder;
 			nodeInfo.Label = folder.Name;
-			nodeInfo.Icon = Context.GetIcon (Stock.SolutionFolderOpen);
-			nodeInfo.ClosedIcon = Context.GetIcon (Stock.SolutionFolderClosed);
+			nodeInfo.Icon = Context.GetIcon (Stock.SolutionFolder);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

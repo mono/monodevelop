@@ -33,15 +33,13 @@ using MonoDevelop.Core;
 using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Ide.Gui;
 using System.ComponentModel;
+using MDStock = MonoDevelop.Ide.Gui.Stock;
 
 namespace MonoDevelop.Ide.Projects
 {
 	[System.ComponentModel.ToolboxItem (true)]
 	partial class GtkProjectFolderPreviewWidget : Gtk.Bin
 	{
-		const string FolderIconId = "md-open-folder";
-		const string FileIconId = "md-empty-file-icon";
-
 		const int TextColumn = 1;
 		const int ImageColumn = 2;
 		TreeStore folderTreeStore;
@@ -159,15 +157,15 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddProjectWithSolutionDirectoryToTree ()
 		{
-			locationNode = folderTreeStore.AppendValues (FolderIconId, string.Empty);
+			locationNode = folderTreeStore.AppendValues (MDStock.Folder, string.Empty);
 
-			solutionFolderNode = folderTreeStore.AppendValues (locationNode, FolderIconId, projectConfiguration.DefaultPreviewSolutionName);
-			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, FileIconId, projectConfiguration.DefaultPreviewSolutionFileName);
+			solutionFolderNode = folderTreeStore.AppendValues (locationNode, MDStock.Folder, projectConfiguration.DefaultPreviewSolutionName);
+			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, MDStock.EmptyFile, projectConfiguration.DefaultPreviewSolutionFileName);
 
-			projectFolderNode = folderTreeStore.AppendValues (solutionFolderNode, FolderIconId, projectConfiguration.DefaultPreviewProjectName);
+			projectFolderNode = folderTreeStore.AppendValues (solutionFolderNode, MDStock.Folder, projectConfiguration.DefaultPreviewProjectName);
 			gitFolderNode = AddGitFolderToTree ();
 			gitIgnoreNode = AddGitIgnoreToTree ();
-			projectNode = folderTreeStore.AppendValues (projectFolderNode, FileIconId, projectConfiguration.DefaultPreviewProjectFileName);
+			projectNode = folderTreeStore.AppendValues (projectFolderNode, MDStock.EmptyFile, projectConfiguration.DefaultPreviewProjectFileName);
 		}
 
 		void UpdateTreeValues ()
@@ -181,15 +179,15 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddProjectWithNoSolutionDirectoryToTree ()
 		{
-			locationNode = folderTreeStore.AppendValues (FolderIconId, string.Empty);
+			locationNode = folderTreeStore.AppendValues (MDStock.Folder, string.Empty);
 
-			projectFolderNode = folderTreeStore.AppendValues (locationNode, FolderIconId, projectConfiguration.DefaultPreviewProjectName);
-			projectNode = folderTreeStore.AppendValues (projectFolderNode, FileIconId, projectConfiguration.DefaultPreviewProjectFileName);
+			projectFolderNode = folderTreeStore.AppendValues (locationNode, MDStock.Folder, projectConfiguration.DefaultPreviewProjectName);
+			projectNode = folderTreeStore.AppendValues (projectFolderNode, MDStock.EmptyFile, projectConfiguration.DefaultPreviewProjectFileName);
 
 			solutionFolderNode = TreeIter.Zero;
 			solutionNode = TreeIter.Zero;
 			if (projectConfiguration.IsNewSolution) {
-				solutionNode = folderTreeStore.AppendValues (projectFolderNode, FileIconId, projectConfiguration.DefaultPreviewSolutionFileName);
+				solutionNode = folderTreeStore.AppendValues (projectFolderNode, MDStock.EmptyFile, projectConfiguration.DefaultPreviewSolutionFileName);
 			}
 
 			gitFolderNode = AddGitFolderToTree ();
@@ -198,10 +196,10 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddProjectWithNoProjectDirectoryToTree ()
 		{
-			locationNode = folderTreeStore.AppendValues (FolderIconId, string.Empty);
+			locationNode = folderTreeStore.AppendValues (MDStock.Folder, string.Empty);
 
 			projectFolderNode = TreeIter.Zero;
-			projectNode = folderTreeStore.AppendValues (locationNode, FileIconId, projectConfiguration.DefaultPreviewProjectFileName);
+			projectNode = folderTreeStore.AppendValues (locationNode, MDStock.EmptyFile, projectConfiguration.DefaultPreviewProjectFileName);
 
 			solutionFolderNode = TreeIter.Zero;
 			solutionNode = TreeIter.Zero;
@@ -209,10 +207,10 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddSolutionToTree ()
 		{
-			locationNode = folderTreeStore.AppendValues (FolderIconId, string.Empty);
+			locationNode = folderTreeStore.AppendValues (MDStock.Folder, string.Empty);
 
-			solutionFolderNode = folderTreeStore.AppendValues (locationNode, FolderIconId, projectConfiguration.DefaultPreviewSolutionName);
-			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, FileIconId, projectConfiguration.DefaultPreviewSolutionFileName);
+			solutionFolderNode = folderTreeStore.AppendValues (locationNode, MDStock.Folder, projectConfiguration.DefaultPreviewSolutionName);
+			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, MDStock.EmptyFile, projectConfiguration.DefaultPreviewSolutionFileName);
 
 			projectFolderNode = TreeIter.Zero;
 			gitFolderNode = TreeIter.Zero;
@@ -226,7 +224,7 @@ namespace MonoDevelop.Ide.Projects
 			if (parent.Equals (TreeIter.Zero)) {
 				parent = projectFolderNode;
 			}
-			return folderTreeStore.InsertWithValues (parent, 0, null, GetLightTextMarkup (".git"), GetTransparentIcon (FolderIconId));
+			return folderTreeStore.InsertWithValues (parent, 0, null, GetLightTextMarkup (".git"), GetTransparentIcon (MDStock.Folder));
 		}
 
 		static Xwt.Drawing.Image GetTransparentIcon (IconId iconId)
@@ -240,7 +238,7 @@ namespace MonoDevelop.Ide.Projects
 			if (parent.Equals (TreeIter.Zero)) {
 				parent = projectFolderNode;
 			}
-			return folderTreeStore.InsertWithValues (parent, 1, null, GetLightTextMarkup (".gitignore"), GetTransparentIcon (FileIconId));
+			return folderTreeStore.InsertWithValues (parent, 1, null, GetLightTextMarkup (".gitignore"), GetTransparentIcon (MDStock.EmptyFile));
 		}
 
 		static string GetLightTextMarkup (string text)

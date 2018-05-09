@@ -7,7 +7,7 @@
 
 	<TemplateConfiguration>
 		<_Name>Empty CSS File</_Name>
-		<Icon>md-file-css</Icon>
+		<Icon>md-css-file</Icon>
 		<_Category>Web</_Category>
 		<_Description>Creates an empty CSS file.</_Description>
 		<DefaultFilename>EmptyCSSFile</DefaultFilename>

@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>Resource File</_Name>
-		<Icon>md-resource-file-icon</Icon>
+		<Icon>md-resource-file</Icon>
 		<_Category>Misc</_Category>
 		<ProjectType>DotNet</ProjectType>
 		<_Description>Creates a resx resource file.</_Description>

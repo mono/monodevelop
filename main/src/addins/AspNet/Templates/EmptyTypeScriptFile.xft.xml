@@ -7,7 +7,7 @@
 
 	<TemplateConfiguration>
 		<_Name>TypeScript file</_Name>
-		<Icon>md-file-ts</Icon>
+		<Icon>md-ts-file</Icon>
 		<_Category>Web</_Category>
 		<_Description>A blank TypeScript source file.</_Description>
 		<DefaultFilename>EmptyTSFile</DefaultFilename>

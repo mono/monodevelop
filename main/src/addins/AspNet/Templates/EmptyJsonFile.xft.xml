@@ -7,7 +7,7 @@
 
 	<TemplateConfiguration>
 		<_Name>Empty JSON File</_Name>
-		<Icon>md-file-source</Icon>
+		<Icon>md-source-file</Icon>
 		<_Category>Web</_Category>
 		<_Description>Creates an empty JSON file.</_Description>
 		<DefaultFilename>EmptyJSONFile</DefaultFilename>

@@ -186,8 +186,8 @@ namespace MonoDevelop.Ide.Projects
 		
 		object[] GetFolderValues (string name)
 		{
-			return new object[] { ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.OpenFolder, IconSize.Menu),
-				ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu), name, null, false };
+			return new object[] { ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Folder, IconSize.Menu),
+				ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Folder, IconSize.Menu), name, null, false };
 		}
 
 		TreeIter GetPath (string fullPath)

@@ -741,7 +741,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var pixbufCellRenderer = (CellRendererImage)cell;
 			if (model.IterHasChild (iter)) {
-				pixbufCellRenderer.Image = ImageService.GetIcon (((TreeView)col.TreeView).GetRowExpanded (model.GetPath (iter)) ? MonoDevelop.Ide.Gui.Stock.OpenFolder : MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
+				pixbufCellRenderer.Image = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Folder, IconSize.Menu);
 			} else {
 				pixbufCellRenderer.Image = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Property, IconSize.Menu);
 			}

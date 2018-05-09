@@ -288,53 +288,53 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="application/x-aspx" _description="ASP.NET page" icon="md-html-file-icon" isText="true">
+		<MimeType id="application/x-aspx" _description="ASP.NET page" icon="md-html-file" isText="true">
 			<File pattern="*.aspx" />
 		</MimeType>
-		<MimeType id="application/x-ascx" _description="ASP.NET user control" icon="md-html-file-icon" isText="true">
+		<MimeType id="application/x-ascx" _description="ASP.NET user control" icon="md-html-file" isText="true">
 			<File pattern="*.ascx" />
 		</MimeType>
-		<MimeType id="application/x-asax" _description="ASP.NET global application class" icon="md-html-file-icon" isText="true">
+		<MimeType id="application/x-asax" _description="ASP.NET global application class" icon="md-html-file" isText="true">
 			<File pattern="*.asax" />
 		</MimeType>
-		<MimeType id="application/x-ashx" _description="ASP.NET handler" icon="md-html-file-icon" isText="true">
+		<MimeType id="application/x-ashx" _description="ASP.NET handler" icon="md-html-file" isText="true">
 			<File pattern="*.ashx" />
 		</MimeType>
-		<MimeType id="application/x-asmx" _description="ASP.NET web service" icon="md-html-file-icon" isText="true">
+		<MimeType id="application/x-asmx" _description="ASP.NET web service" icon="md-html-file" isText="true">
 			<File pattern="*.asmx" />
 		</MimeType>
-		<MimeType id="application/x-asix" _description="ASP.NET image generator" icon="md-html-file-icon" isText="true">
+		<MimeType id="application/x-asix" _description="ASP.NET image generator" icon="md-html-file" isText="true">
 			<File pattern="*.asix" />
 		</MimeType>
-		<MimeType id="application/x-master-page" _description="ASP.NET master page" icon="md-html-file-icon" isText="true">
+		<MimeType id="application/x-master-page" _description="ASP.NET master page" icon="md-html-file" isText="true">
 			<File pattern="*.master|*.Master" />
 		</MimeType>
-		<MimeType id="application/javascript" _description="Javascript source code" icon="md-file-js" isText="true">
+		<MimeType id="application/javascript" _description="Javascript source code" icon="md-js-file" isText="true">
 			<File pattern="*.js" />
 		</MimeType>
-		<MimeType id="text/css" _description="CSS document" icon="md-file-css" isText="true">
+		<MimeType id="text/css" _description="CSS document" icon="md-css-file" isText="true">
 			<File pattern="*.css" />
 		</MimeType>
-		<MimeType id="text/x-less" _description="LESS, CSS document" icon="md-file-less" isText="true">
+		<MimeType id="text/x-less" _description="LESS, CSS document" icon="md-less-file" isText="true">
 			<File pattern="*.less" />
 		</MimeType>
-		<MimeType id="text/x-sass" _description="SASS, CSS document" icon="md-file-scss" isText="true">
+		<MimeType id="text/x-sass" _description="SASS, CSS document" icon="md-scss-file" isText="true">
 			<File pattern="*.sass" />
 		</MimeType>
-		<MimeType id="text/x-scss" _description="SCSS, CSS document" icon="md-file-scss" isText="true">
+		<MimeType id="text/x-scss" _description="SCSS, CSS document" icon="md-scss-file" isText="true">
 			<File pattern="*.scss" />
 		</MimeType>
-		<MimeType id="text/html" _description="HTML document" icon="md-html-file-icon" isText="true">
+		<MimeType id="text/html" _description="HTML document" icon="md-html-file" isText="true">
 			<File pattern="*.html|*.htm" />
 		</MimeType>
-		<MimeType id="application/x-spark" _description="Spark View template" icon="md-html-file-icon" isText="true"
+		<MimeType id="application/x-spark" _description="Spark View template" icon="md-html-file" isText="true"
 			baseType="text/html">
 			<File pattern="*.spark" />
 		</MimeType>
-		<MimeType id="application/typescript" _description="Typescript source code" icon="md-file-ts" isText="true">
+		<MimeType id="application/typescript" _description="Typescript source code" icon="md-ts-file" isText="true">
 			<File pattern="*.ts" />
 		</MimeType>
-		<MimeType id="text/x-cshtml" _description="Razor template" icon="md-html-file-icon" isText="true">
+		<MimeType id="text/x-cshtml" _description="Razor template" icon="md-html-file" isText="true">
 			<File pattern="*.cshtml" />
 		</MimeType>
 	</Extension>

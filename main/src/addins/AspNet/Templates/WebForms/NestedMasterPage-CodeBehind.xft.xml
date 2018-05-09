@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Nested Master Page with CodeBehind</_Name>
-		<Icon>md-html-file-icon</Icon>
+		<Icon>md-html-file</Icon>
 		<_Category>ASP.NET Web Forms</_Category>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an ASP.NET Nested Master Page with a CodeBehind class.</_Description>

@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
 			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (System.IO.Path.GetFullPath (refInfo.HintPath)) + "</small></span>";
-			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, ImageService.GetIcon ("md-empty-file-icon", IconSize.Dnd));
+			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.EmptyFile, IconSize.Dnd));
 		}
 
 		TreeIter AddProjectReference (ProjectReference refInfo)

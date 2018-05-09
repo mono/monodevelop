@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>Empty File</_Name>
-		<Icon>md-text-file-icon</Icon>
+		<Icon>md-text-file</Icon>
 		<_Category>General</_Category>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an empty C# file.</_Description>

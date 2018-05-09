@@ -93,8 +93,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			nodeInfo.Label      = MonoDevelop.Core.GettextCatalog.GetString ("Base Types");
-			nodeInfo.Icon       = Context.GetIcon (Stock.OpenFolder);
-			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedFolder);
+			nodeInfo.Icon       = Context.GetIcon (Stock.Folder);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

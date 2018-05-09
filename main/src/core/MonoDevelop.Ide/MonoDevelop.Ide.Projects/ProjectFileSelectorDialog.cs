@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		// NOTE: these should not be disposed, since they come from the icon scheme, and must instead be unref'd
 		// and the only way to unref is to let the finalizer handle it.
-		Xwt.Drawing.Image projBuf, dirOpenBuf, dirClosedBuf;
+		Xwt.Drawing.Image projBuf, dirBuf;
 		
 		public ProjectFileSelectorDialog (Project project)
 			: this (project, GettextCatalog.GetString ("All files"), "*")
@@ -68,9 +68,8 @@ namespace MonoDevelop.Ide.Projects
 			this.Build();
 			
 			projBuf = ImageService.GetIcon (project.StockIcon, IconSize.Menu);
-			dirClosedBuf = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
-			dirOpenBuf = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.OpenFolder, IconSize.Menu);
-			
+			dirBuf = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Folder, IconSize.Menu);
+
 			TreeViewColumn projectCol = new TreeViewColumn ();
 			projectCol.Title = GettextCatalog.GetString ("Project Folders");
 			var pixRenderer = new CellRendererImage ();
@@ -196,9 +195,9 @@ namespace MonoDevelop.Ide.Projects
 				pixRenderer.Image = projBuf;
 				return;
 			}
-			pixRenderer.ImageExpanderOpen = dirOpenBuf;
-			pixRenderer.ImageExpanderClosed = dirClosedBuf;
-			pixRenderer.Image = dirClosedBuf;
+			pixRenderer.ImageExpanderOpen = dirBuf;
+			pixRenderer.ImageExpanderClosed = dirBuf;
+			pixRenderer.Image = dirBuf;
 		}
 		
 		void TxtDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)

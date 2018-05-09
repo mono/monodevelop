@@ -7,7 +7,7 @@
 
 	<TemplateConfiguration>
 		<_Name>LESS Style Sheet</_Name>
-		<Icon>md-file-less</Icon>
+		<Icon>md-less-file</Icon>
 		<_Category>Web</_Category>
 		<_Description>LESS is a language that compiles into CSS.</_Description>
 		<DefaultFilename>EmptyLESSFile</DefaultFilename>

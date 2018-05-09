@@ -2,7 +2,7 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>App Manifest</_Name>
-		<Icon>md-xml-file-icon</Icon>
+		<Icon>md-xml-file</Icon>
 		<_Category>General</_Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates a Windows app manifest.</_Description>

@@ -7,7 +7,7 @@
 
 	<TemplateConfiguration>
 		<_Name>SCSS Style Sheet (SASS)</_Name>
-		<Icon>md-file-scss</Icon>
+		<Icon>md-scss-file</Icon>
 		<_Category>Web</_Category>
 		<_Description>SCSS is a language that compiles into CSS.</_Description>
 		<DefaultFilename>EmptySCSSFile</DefaultFilename>
