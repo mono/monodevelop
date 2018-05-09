@@ -694,7 +694,7 @@ namespace MonoDevelop.AssemblyBrowser
 			case SearchMode.Type:
 				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching type..."));
 				break;
-				case SearchMode.TypeAndMembers:
+			case SearchMode.TypeAndMembers:
 		       	IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching types and members..."));
 				break;
 			}
@@ -756,13 +756,16 @@ namespace MonoDevelop.AssemblyBrowser
 			var result = new List<IUnresolvedEntity> ();
 			int types = 0, curType = 0;
 			foreach (var unit in definitions) {
+				if (unit.UnresolvedAssembly == null)
+					continue;
 				types += unit.UnresolvedAssembly.TopLevelTypeDefinitions.Count ();
 			}
 			var matcher = StringMatcher.GetMatcher (pattern, true);
-
 			switch (searchMode) {
 			case SearchMode.Member:
 				foreach (var unit in definitions) {
+					if (unit.UnresolvedAssembly == null)
+						continue;
 					foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 						if (cancellationToken.IsCancellationRequested)
 							return null;
@@ -784,6 +787,8 @@ namespace MonoDevelop.AssemblyBrowser
 				break;
 			case SearchMode.Type:
 				foreach (var unit in definitions) {
+					if (unit.UnresolvedAssembly == null)
+						continue;
 					var typeList = new List<IUnresolvedTypeDefinition> ();
 					foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 						if (cancellationToken.IsCancellationRequested)
@@ -797,6 +802,8 @@ namespace MonoDevelop.AssemblyBrowser
 				break;
 			case SearchMode.TypeAndMembers:
 				foreach (var unit in definitions) {
+					if (unit.UnresolvedAssembly == null)
+						continue;
 					foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 						if (cancellationToken.IsCancellationRequested)
 							return null;
@@ -1215,7 +1222,7 @@ namespace MonoDevelop.AssemblyBrowser
 						loadNext ();
 					return;
 				}
-				var result = AddReferenceByFileName (fileName);
+				var result = AddReferenceByFileName (fileName, expandNode);
 				if (result == null)
 					return;
 				result.LoadingTask.ContinueWith (t2 => {
@@ -1385,12 +1392,12 @@ namespace MonoDevelop.AssemblyBrowser
 		List<AssemblyLoader> definitions = new List<AssemblyLoader> ();
 		List<Project> projects = new List<Project> ();
 		
-		internal AssemblyLoader AddReferenceByAssemblyName (AssemblyNameReference reference)
+		internal AssemblyLoader AddReferenceByAssemblyName (AssemblyNameReference reference, bool expand = false)
 		{
-			return AddReferenceByAssemblyName (reference.Name);
+			return AddReferenceByAssemblyName (reference.Name, expand);
 		}
 		
-		internal AssemblyLoader AddReferenceByAssemblyName (string assemblyFullName)
+		internal AssemblyLoader AddReferenceByAssemblyName (string assemblyFullName, bool expand = false)
 		{
 			string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyFullName, null);
 			if (assemblyFile == null || !System.IO.File.Exists (assemblyFile)) {
@@ -1403,51 +1410,42 @@ namespace MonoDevelop.AssemblyBrowser
 			if (assemblyFile == null || !System.IO.File.Exists (assemblyFile))
 				return null;
 			
-			return AddReferenceByFileName (assemblyFile);
+			return AddReferenceByFileName (assemblyFile, expand);
 		}
-		
-		internal AssemblyLoader AddReferenceByFileName (string fileName)
+		object assemblyLoadingLock = new object ();
+		internal AssemblyLoader AddReferenceByFileName (string fileName, bool expand = false)
 		{
-			var result = definitions.FirstOrDefault (d => d.FileName == fileName);
-			if (result != null) {
-//				// Select the result.
-//				if (selectReference) {
-//					ITreeNavigator navigator = TreeView.GetNodeAtObject (result);
-//					if (navigator != null) {
-//						navigator.Selected = true;
-//					} else {
-//						LoggingService.LogWarning (result + " could not be found.");
-//					}
-//				}
-
+			lock (assemblyLoadingLock) {
+				foreach (var def in definitions) {
+					if (FilePath.PathComparer.Equals (fileName, def.FileName))
+						return def;
+				}
+				if (!File.Exists (fileName))
+					return null;
+				var result = new AssemblyLoader (this, fileName);
+				definitions.Add (result);
+				result.LoadingTask = result.LoadingTask.ContinueWith (task => {
+					Application.Invoke ((o, args) => {
+						if (definitions == null)
+							return;
+						try {
+							ITreeBuilder builder;
+							if (definitions.Count + projects.Count == 1) {
+								builder = TreeView.LoadTree (result);
+							} else {
+								builder = TreeView.AddChild (result, false);
+							}
+							if (TreeView.GetSelectedNode () == null)
+								builder.Selected = builder.Expanded = expand;
+						} catch (Exception e) {
+							LoggingService.LogError ("Error while adding assembly to the assembly list", e);
+						}
+					});
+					return task.Result;
+				}
+				);
 				return result;
 			}
-			if (!File.Exists (fileName))
-				return null;
-			result = new AssemblyLoader (this, fileName);
-			
-			definitions.Add (result);
-			result.LoadingTask = result.LoadingTask.ContinueWith (task => {
-				Application.Invoke ((o, args) => {
-					if (definitions == null)
-						return;
-					try {
-						ITreeBuilder builder;
-						if (definitions.Count + projects.Count == 1) {
-							builder = TreeView.LoadTree (result);
-						} else {
-							builder = TreeView.AddChild (result);
-						}
-						if (TreeView.GetSelectedNode () == null)
-							builder.Selected = builder.Expanded = true;
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while adding assembly to the assembly list", e);
-					}
-				});
-				return task.Result;
-			}
-			                                                     );
-			return result;
 		}
 		
 		public void AddProject (Project project, bool selectReference = true)
