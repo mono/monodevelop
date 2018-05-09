@@ -61,7 +61,6 @@ namespace MonoDevelop.Projects.MSBuild
 				throw new ArgumentException ("runTargets is empty");
 
 			MSBuildResult result = null;
-			CheckProperties (globalProperties);
 
 			BuildEngine.RunSTA (taskId, delegate {
 				Project project = null;
@@ -239,13 +238,6 @@ namespace MonoDevelop.Projects.MSBuild
 				BuildRequestData data = new BuildRequestData (pi, targets);
 				results = BuildManager.DefaultBuildManager.BuildRequest (data);
 			}
-		}
-
-		void CheckProperties (Dictionary<string, string> globalProperties)
-		{
-			// Used for unit testing
-			if (globalProperties != null && globalProperties.Any (prop => prop.Key == "__CRASH_ME__"))
-				System.Diagnostics.Process.GetCurrentProcess ().Kill ();
 		}
 	}
 }
