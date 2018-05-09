@@ -40,7 +40,7 @@ namespace MonoDevelop.AssemblyBrowser
 	class NamespaceBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(Namespace); }
+			get { return typeof(NamespaceData); }
 		}
 		
 		public NamespaceBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -53,8 +53,8 @@ namespace MonoDevelop.AssemblyBrowser
 			try {
 				if (thisNode == null || otherNode == null)
 					return -1;
-				var e1 = thisNode.DataItem as Namespace;
-				var e2 = otherNode.DataItem as Namespace;
+				var e1 = thisNode.DataItem as NamespaceData;
+				var e2 = otherNode.DataItem as NamespaceData;
 				
 				if (e1 == null && e2 == null)
 					return 0;
@@ -72,23 +72,26 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			Namespace ns = (Namespace)dataObject;
+			NamespaceData ns = (NamespaceData)dataObject;
 			return ns.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			Namespace ns = (Namespace)dataObject;
+			NamespaceData ns = (NamespaceData)dataObject;
 			nodeInfo.Label = GLib.Markup.EscapeText (ns.Name);
 			nodeInfo.Icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.NameSpace);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			Namespace ns = (Namespace)dataObject;
+			NamespaceData ns = (NamespaceData)dataObject;
 			bool publicOnly = Widget.PublicApiOnly;
-			if (ns.Types != null) 
-				ctx.AddChildren (publicOnly ? ns.Types.Where (t => t.IsPublic) : ns.Types);
+			foreach (var type in ns.Types) {
+				if (publicOnly && !type.isPublic)
+					continue;
+				ctx.AddChild (type.typeObject);
+			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -101,7 +104,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
 		//	bool publicOnly = Widget.PublicApiOnly;
-			Namespace ns = (Namespace)navigator.DataItem;
+			NamespaceData ns = (NamespaceData)navigator.DataItem;
 			
 			data.Text = "// " + ns.Name;
 			return null;
