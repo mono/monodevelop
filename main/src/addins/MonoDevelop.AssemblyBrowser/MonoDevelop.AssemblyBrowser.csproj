@@ -87,6 +87,10 @@
       <HintPath>..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.5.0-rc1\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -124,7 +128,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\DisplayBinding.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserWidget.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\Namespace.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\NamespaceData.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\Error.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\BaseTypeFolder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\IAssemblyBrowserNodeBuilder.cs" />
@@ -161,6 +165,12 @@
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserNavigationPoint.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\UnresolvedIdStringProvider.cs" />
     <Compile Include="Gui\MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\RoslynEventNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\RoslynMemberNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\RoslynFieldNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\RoslynMethodNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\RoslynPropertyNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\RoslynTypeNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.AssemblyBrowser.addin.xml">

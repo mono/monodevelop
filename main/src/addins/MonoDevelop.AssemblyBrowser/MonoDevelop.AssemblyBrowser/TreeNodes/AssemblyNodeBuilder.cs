@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Gui.Components;
 using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Ide.Editor;
+using ICSharpCode.Decompiler.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -78,22 +79,22 @@ namespace MonoDevelop.AssemblyBrowser
 			if (resources.Resources.Any ())
 				treeBuilder.AddChild (resources);
 			
-			var namespaces = new Dictionary<string, Namespace> ();
+			var namespaces = new Dictionary<string, NamespaceData> ();
 			bool publicOnly = Widget.PublicApiOnly;
 			
 			foreach (var type in compilationUnit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "" : type.Namespace;
 				if (!namespaces.ContainsKey (namespaceName))
-					namespaces [namespaceName] = new Namespace (namespaceName);
+					namespaces [namespaceName] = new NamespaceData (namespaceName);
 				
 				var ns = namespaces [namespaceName];
-				ns.Types.Add (type);
+				ns.Types.Add ((type.IsPublic,  type));
 			}
 
-			treeBuilder.AddChildren (namespaces.Where (ns => ns.Key != "" && (!publicOnly || ns.Value.Types.Any (t => t.IsPublic))).Select (n => n.Value));
+			treeBuilder.AddChildren (namespaces.Where (ns => ns.Key != "" && (!publicOnly || ns.Value.Types.Any (t => t.isPublic))).Select (n => n.Value));
 			if (namespaces.ContainsKey ("")) {
 				foreach (var child in namespaces [""].Types) {
-					if (child.Name == "<Module>")
+					if (((IUnresolvedTypeDefinition)child.typeObject).Name == "<Module>")
 						continue;
 					treeBuilder.AddChild (child);
 				}

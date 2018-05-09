@@ -38,25 +38,26 @@ using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class ProjectNodeBuilder : TypeNodeBuilder
 	{
 		internal AssemblyBrowserWidget Widget {
-			get; 
-			private set; 
+			get;
+			private set;
 		}
-		
+
 		public override Type NodeDataType {
 			get { return typeof(Project); }
 		}
-		
+
 		public ProjectNodeBuilder (AssemblyBrowserWidget widget)
 		{
 			Widget = widget;
 		}
-		
+
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			var project = (Project)dataObject;
@@ -73,36 +74,38 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			//var project = (Project)dataObject;
-			// TODO: Roslyn port.
-//			var ctx = TypeSystemService.GetProjectContext (project);
-//			if (ctx == null)
-//				return;
-//			
-//			var namespaces = new Dictionary<string, Namespace> ();
-//
-//			foreach (var type in ctx.TopLevelTypeDefinitions) {
-//				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "-" : type.Namespace;
-//				if (!namespaces.ContainsKey (namespaceName))
-//					namespaces [namespaceName] = new Namespace (namespaceName);
-//				
-//				var ns = namespaces [namespaceName];
-//				ns.Types.Add (type);
-//			}
-//			
-//			foreach (var ns in namespaces.Values) {
-//				builder.AddChild (ns);
-//			}
+			Project project = (Project)dataObject;
+			bool publicOnly = Widget.PublicApiOnly;
+			var dom = TypeSystemService.GetCompilationAsync (project).Result;
+			if (dom == null)
+				return;
+			bool nestedNamespaces = builder.Options ["NestedNamespaces"];
+			HashSet<string> addedNames = new HashSet<string> ();
+			foreach (var ns in dom.Assembly.GlobalNamespace.GetNamespaceMembers ()) {
+				FillNamespaces (builder, project, ns);
+			}
+			builder.AddChildren (dom.Assembly.GlobalNamespace.GetTypeMembers ()
+								 .Where (type => !publicOnly || type.DeclaredAccessibility == Accessibility.Public));
 		}
-		
+
+		public static void FillNamespaces (ITreeBuilder builder, Project project, INamespaceSymbol ns)
+		{
+			var members = ns.GetTypeMembers ();
+			//IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
+			if (members.Any ()) {
+				var data = new NamespaceData (ns.Name);
+				foreach (var member in members)
+					data.Types.Add ((member.DeclaredAccessibility == Accessibility.Public, member));
+				builder.AddChild (data);
+			}
+			foreach (var nSpace in ns.GetNamespaceMembers ()) {
+				FillNamespaces (builder, project, nSpace);
+			}
+		}
+
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			//var project = (Project)dataObject;
-			// TODO: Roslyn port.
-			//var ctx = TypeSystemService.GetProjectContext (project);
-			//if (ctx == null)
-				return false;
-			// return ctx.TopLevelTypeDefinitions.Any ();
+			return true;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

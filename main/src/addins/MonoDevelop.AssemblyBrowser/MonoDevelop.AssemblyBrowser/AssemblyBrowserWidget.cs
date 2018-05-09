@@ -246,7 +246,12 @@ namespace MonoDevelop.AssemblyBrowser
 				new DomEventNodeBuilder (this),
 				new DomPropertyNodeBuilder (this),
 				new BaseTypeFolderNodeBuilder (this),
-				new BaseTypeNodeBuilder (this)
+				new BaseTypeNodeBuilder (this),
+				new RoslynTypeNodeBuilder (this),
+				new RoslynEventNodeBuilder (),
+				new RoslynFieldNodeBuilder (),
+				new RoslynMethodNodeBuilder (),
+				new RoslynPropertyNodeBuilder (),
 				}, new TreePadOption [0]);
 			TreeView.PublicApiOnly = comboboxVisibilty.Active == 0;
 			TreeView.AllowsMultipleSelection = false;
@@ -516,7 +521,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var type = nav.DataItem as IUnresolvedTypeDefinition;
 			if (type != null && helpUrl.IndexOf (type.FullName, startIndex, Math.Min (endIndex - startIndex, type.FullName.Length), StringComparison.Ordinal) == -1)
 				return true;
-			var @namespace = nav.DataItem as Namespace;
+			var @namespace = nav.DataItem as NamespaceData;
 			if (@namespace != null && helpUrl.IndexOf (@namespace.Name, startIndex, Math.Min (endIndex - startIndex, @namespace.Name.Length), StringComparison.Ordinal) == -1)
 				return true;
 			return false;

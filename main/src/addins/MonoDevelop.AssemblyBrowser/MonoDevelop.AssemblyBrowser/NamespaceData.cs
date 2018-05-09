@@ -33,22 +33,22 @@ using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class Namespace : IDisposable
+	class NamespaceData : IDisposable
 	{
-		List<IUnresolvedTypeDefinition> types = new List<IUnresolvedTypeDefinition> ();
+		List<(bool, object)> types = new List<(bool, object)> ();
 		
 		public string Name {
 			get;
 			private set;
 		}
 
-		public List<IUnresolvedTypeDefinition> Types {
+		public List<(bool isPublic, object typeObject)> Types {
 			get {
 				return types;
 			}
 		}
 		
-		public Namespace (string name)
+		public NamespaceData (string name)
 		{
 			this.Name = name;
 		}
