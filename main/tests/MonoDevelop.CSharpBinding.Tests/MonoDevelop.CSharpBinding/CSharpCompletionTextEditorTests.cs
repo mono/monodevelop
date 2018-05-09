@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public async Task TestBug58473 ()
 		{
-			await TestCompletion (@"$", list => Assert.IsNotNull (list));
+			await TestCompletion (@"$", (doc, list) => Assert.IsNotNull (list));
 		}
 
 		[Test]
@@ -79,7 +79,7 @@ namespace console61
 		}
 	}
 }
-", list => Assert.IsFalse (list.AutoSelect), new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, '_'));
+", (doc, list) => Assert.IsFalse (list.AutoSelect), new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, '_'));
 
 		}
 
@@ -100,7 +100,7 @@ namespace console61
 
 	}
 }
-", list => Assert.IsTrue (list.Any (d => d.CompletionText == "Any")));
+", (doc, list) => Assert.IsTrue (list.Any (d => d.CompletionText == "Any")));
 
 		}
 
@@ -120,7 +120,7 @@ namespace console61
 
 	}
 }
-", list => {
+", (doc, list) => {
 				Assert.IsTrue (list.Any (d => d.CompletionText == "Console"));
 
 				// The display text should not include the namespace
@@ -145,16 +145,16 @@ namespace console61
 
 	}
 }
-", list => Assert.IsFalse (list.Any (d => d.CompletionText == "Console")));
+", (doc, list) => Assert.IsFalse (list.Any (d => d.CompletionText == "Console")));
 
 		}
 
-		Task TestCompletion (string text, Action<ICompletionDataList> action)
+		Task TestCompletion (string text, Action<Document, ICompletionDataList> action)
 		{
 			return TestCompletion (text, action, CompletionTriggerInfo.CodeCompletionCommand);
 		}
 
-		async Task TestCompletion (string text, Action<ICompletionDataList> action, CompletionTriggerInfo triggerInfo)
+		async Task TestCompletion (string text, Action<Document, ICompletionDataList> action, CompletionTriggerInfo triggerInfo)
 		{
 			DesktopService.Initialize ();
 
@@ -163,7 +163,6 @@ namespace console61
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
 			var doc = await SetupDocument (text, cursorPosition: Math.Max (0, endPos));
-
 			var compExt = doc.GetContent<CSharpCompletionTextEditorExtension> ();
 			compExt.CurrentCompletionContext = new CodeCompletionContext {
 				TriggerOffset = doc.Editor.CaretOffset,
@@ -176,7 +175,7 @@ namespace console61
 			IdeApp.Preferences.EnableAutoCodeCompletion.Set (false);
 			var list = await compExt.HandleCodeCompletionAsync (compExt.CurrentCompletionContext, triggerInfo);
 			try {
-				action (list);
+				action (doc, list);
 			} finally {
 				IdeApp.Preferences.EnableAutoCodeCompletion.Set (tmp);
 			}
@@ -189,7 +188,7 @@ namespace console61
 		public async Task TestVSTSBug568065 ()
 		{
 			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = true;
-			await TestCompletion (@"$", list => Assert.AreEqual (1, list.Where (d => d.CompletionText == "Tuple").Count ()));
+			await TestCompletion (@"$", (doc, list) => Assert.AreEqual (1, list.Where (d => d.CompletionText == "Tuple").Count ()));
 		}
 
 
@@ -200,7 +199,7 @@ namespace console61
 		public async Task TestVSTSBug567937 ()
 		{
 			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = true;
-			await TestCompletion (@"using S$", list => Assert.AreEqual (0, list.OfType<ImportSymbolCompletionData> ().Count ()));
+			await TestCompletion (@"using S$", (doc, list) => Assert.AreEqual (0, list.OfType<ImportSymbolCompletionData> ().Count ()));
 		}
 
 		/// <summary>
@@ -247,7 +246,21 @@ class FooBar : ProtocolClass
 }
 
 
-", list => Assert.AreEqual (1, list.Where (d => d.CompletionText == "FooBar").Count ()));
-		}
+", (doc, list) => Assert.AreEqual (1, list.Where (d => d.CompletionText == "FooBar").Count ()));
+		} 
+
+		/// <summary>
+		/// Bug 611923: Unable to add declarations to an empty C# file which is added to existing .net console project.
+		/// </summary>
+		[Test]
+		public async Task TestVSTS611923 ()
+		{
+			await TestCompletion (@"using $", (doc, list) => {
+				var item = (RoslynCompletionData)list.FirstOrDefault (d => d.CompletionText == "System");
+				KeyActions actions = KeyActions.Complete;
+				item.InsertCompletionText (doc.Editor, doc, ref actions, KeyDescriptor.Return);
+				Assert.AreEqual ("using System", doc.Editor.Text);
+			});
+		} 
 	}
 }
