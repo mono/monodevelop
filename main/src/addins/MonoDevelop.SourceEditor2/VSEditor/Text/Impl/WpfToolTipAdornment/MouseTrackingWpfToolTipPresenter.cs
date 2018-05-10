@@ -1,3 +1,4 @@
+using Xwt.Backends;
 namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 {
     using System;
@@ -6,11 +7,12 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Formatting;
-	using UIElement = Xwt.Widget;
+	using UIElement = Gtk.Widget;
 	using MouseEventArgs = Xwt.MouseMovedEventArgs;
 	using Xwt;
 	using Rect = Xwt.Rectangle;
 	using System.Windows.Input;
+	using MonoDevelop.Components;
 
 	internal sealed class MouseTrackingWpfToolTipPresenter : BaseWpfToolTipPresenter
     {
@@ -33,8 +35,8 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
         {
             if (this.mouseContainer != null)
             {
-                this.mouseContainer.MouseExited -= this.OnMouseLeaveContainer;
-                this.mouseContainer.MouseMoved -= this.OnMouseMoveContainer;
+				this.mouseContainer.LeaveNotifyEvent -= this.OnMouseLeaveContainer;
+				this.mouseContainer.MotionNotifyEvent -= this.OnMouseMoveContainer;
                 this.mouseContainer = null;
             }
 
@@ -76,9 +78,13 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 			if (!this.isDismissed
 				&& (this.mouseContainer == null)
 				&& (((IMdTextView)textView).VisualElement.IsMouseOver () || (popup.IsMouseOver () && popup.Content != null))) {
-				mouseContainer = popup.IsMouseOver () ? popup.Content : Xwt.Toolkit.CurrentEngine.WrapWidget (((IMdTextView)textView).VisualElement);
-				mouseContainer.MouseExited += this.OnMouseLeaveContainer;
-				mouseContainer.MouseMoved += this.OnMouseMoveContainer;
+				if (popup.IsMouseOver ()) {
+					mouseContainer = popup.Content.ToGtkWidget ();
+				} else {
+					mouseContainer = ((IMdTextView)textView).VisualElement;
+				}
+				mouseContainer.LeaveNotifyEvent += this.OnMouseLeaveContainer;
+				mouseContainer.MotionNotifyEvent += this.OnMouseMoveContainer;
 			}
         }
 
@@ -86,8 +92,8 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
         {
             if (this.mouseContainer != null)
             {
-                this.mouseContainer.MouseExited -= this.OnMouseLeaveContainer;
-                this.mouseContainer.MouseMoved -= this.OnMouseMoveContainer;
+				this.mouseContainer.LeaveNotifyEvent -= this.OnMouseLeaveContainer;
+				this.mouseContainer.MotionNotifyEvent -= this.OnMouseMoveContainer;
                 this.mouseContainer = null;
             }
         }

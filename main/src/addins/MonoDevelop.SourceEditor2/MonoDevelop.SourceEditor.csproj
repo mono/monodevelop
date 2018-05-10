@@ -346,6 +346,7 @@
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.FoldMarkerMarginDrawer.cs" />
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.VSNetFoldMarkerMarginDrawer.cs" />
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.VSCodeFoldMarkerMarginDrawer.cs" />
+    <Compile Include="VSEditor\Text\Impl\WpfToolTipAdornment\ViewElementFactories\WpfObjectViewElementFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml">

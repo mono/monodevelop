@@ -127,6 +127,11 @@
                     .Where(item => item != null);
 
             var vbox = new Xwt.VBox ();
+			// This dummy delegate and registration/unregistration is just so it forces
+			//xwt to create EventBox for VBox.
+			EventHandler<MouseMovedEventArgs> dummyDelegate = (o, e) => { };
+			vbox.MouseMoved += dummyDelegate;
+			vbox.MouseMoved -= dummyDelegate;
             foreach (var view in contentViewElements)
             {
                 vbox.PackStart (view);
