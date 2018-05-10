@@ -7,8 +7,6 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Formatting;
-	using UIElement = Gtk.Widget;
-	using MouseEventArgs = Xwt.MouseMovedEventArgs;
 	using Xwt;
 	using Rect = Xwt.Rectangle;
 	using System.Windows.Input;
@@ -19,7 +17,7 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
         // The tooltip can cause flickering issues if shown on the pixel row immediately below text. This
         // offset is used to move all tooltips down in order to eliminate the flicker.
         private const int ToolTipVerticalOffset = 1;
-        private UIElement mouseContainer;
+		private object mouseContainer;
 
         public MouseTrackingWpfToolTipPresenter(
             IViewElementFactoryService viewElementFactoryService,
@@ -35,8 +33,13 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
         {
             if (this.mouseContainer != null)
             {
-				this.mouseContainer.LeaveNotifyEvent -= this.OnMouseLeaveContainer;
-				this.mouseContainer.MotionNotifyEvent -= this.OnMouseMoveContainer;
+				if (this.mouseContainer is Xwt.Widget xwtWidget) {
+					xwtWidget.MouseExited -= this.OnMouseLeaveContainer;
+					xwtWidget.MouseMoved -= this.OnMouseMoveContainer;
+				} else if (this.mouseContainer is Gtk.Widget gtkWidget) {
+					gtkWidget.LeaveNotifyEvent -= this.OnMouseLeaveContainer;
+					gtkWidget.MotionNotifyEvent -= this.OnMouseMoveContainer;
+				}
                 this.mouseContainer = null;
             }
 
@@ -79,12 +82,17 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 				&& (this.mouseContainer == null)
 				&& (((IMdTextView)textView).VisualElement.IsMouseOver () || (popup.IsMouseOver () && popup.Content != null))) {
 				if (popup.IsMouseOver ()) {
-					mouseContainer = popup.Content.ToGtkWidget ();
+					mouseContainer = popup.Content;
 				} else {
 					mouseContainer = ((IMdTextView)textView).VisualElement;
 				}
-				mouseContainer.LeaveNotifyEvent += this.OnMouseLeaveContainer;
-				mouseContainer.MotionNotifyEvent += this.OnMouseMoveContainer;
+				if (this.mouseContainer is Xwt.Widget xwtWidget) {
+					xwtWidget.MouseExited += this.OnMouseLeaveContainer;
+					xwtWidget.MouseMoved += this.OnMouseMoveContainer;
+				} else if (this.mouseContainer is Gtk.Widget gtkWidget) {
+					gtkWidget.LeaveNotifyEvent += this.OnMouseLeaveContainer;
+					gtkWidget.MotionNotifyEvent += this.OnMouseMoveContainer;
+				}
 			}
         }
 
@@ -92,8 +100,13 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
         {
             if (this.mouseContainer != null)
             {
-				this.mouseContainer.LeaveNotifyEvent -= this.OnMouseLeaveContainer;
-				this.mouseContainer.MotionNotifyEvent -= this.OnMouseMoveContainer;
+				if (this.mouseContainer is Xwt.Widget xwtWidget) {
+					xwtWidget.MouseExited -= this.OnMouseLeaveContainer;
+					xwtWidget.MouseMoved -= this.OnMouseMoveContainer;
+				} else if (this.mouseContainer is Gtk.Widget gtkWidget) {
+					gtkWidget.LeaveNotifyEvent -= this.OnMouseLeaveContainer;
+					gtkWidget.MotionNotifyEvent -= this.OnMouseMoveContainer;
+				}
                 this.mouseContainer = null;
             }
         }
