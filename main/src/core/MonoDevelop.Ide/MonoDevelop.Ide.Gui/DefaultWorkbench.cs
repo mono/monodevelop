@@ -219,6 +219,8 @@ namespace MonoDevelop.Ide.Gui
 			IdeApp.CommandService.SetRootWindow (this);
 			DockNotebook.NotebookChanged += NotebookPagesChanged;
 
+			Drag.DestSet (this, DestDefaults.All, targetEntryTypes, Gdk.DragAction.Copy);
+
 			Accessible.SetIsMainWindow (true);
 		}
 
@@ -1507,6 +1509,50 @@ namespace MonoDevelop.Ide.Gui
 		object ICommandRouter.GetNextCommandTarget ()
 		{
 			return toolbar;
+		}
+
+		#endregion
+
+		#region DnD
+
+		enum TargetList
+		{
+			UriList = 100
+		}
+
+		static TargetEntry [] targetEntryTypes = { new TargetEntry ("text/uri-list", 0, (uint)TargetList.UriList) };
+
+
+		protected override bool OnDragMotion (Gdk.DragContext context, int x, int y, uint time_)
+		{
+			// Bring this window to the front. Otherwise, the drop may end being done in another window that overlaps this one
+			if (!Platform.IsWindows)
+				Present ();
+			return base.OnDragMotion (context, x, y, time_);
+		}
+
+		protected override void OnDragDataReceived (Gdk.DragContext context, int x, int y, SelectionData selection_data, uint info, uint time_)
+		{
+			if (info != (uint)TargetList.UriList)
+				return;
+			string fullData = System.Text.Encoding.UTF8.GetString (selection_data.Data);
+
+			foreach (string individualFile in fullData.Split ('\n')) {
+				string file = individualFile.Trim ();
+				if (file.StartsWith ("file://", StringComparison.Ordinal)) {
+					var filePath = new FilePath (file);
+
+					try {
+						if (Services.ProjectService.IsWorkspaceItemFile (filePath))
+							IdeApp.Workspace.OpenWorkspaceItem (filePath);
+						else
+							IdeApp.Workbench.OpenDocument (filePath, null);
+					} catch (Exception e) {
+						LoggingService.LogError ($"unable to open file {filePath}", e);
+					}
+				}
+			}
+			base.OnDragDataReceived (context, x, y, selection_data, info, time_);
 		}
 
 		#endregion
