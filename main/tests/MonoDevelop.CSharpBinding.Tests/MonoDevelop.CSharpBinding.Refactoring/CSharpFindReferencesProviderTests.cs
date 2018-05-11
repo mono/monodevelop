@@ -44,6 +44,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
 using NUnit.Framework;
+using System.Collections.Concurrent;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -85,12 +86,29 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}
 
+		class MockSearchProgressMonitor : SearchProgressMonitor
+		{
+			internal ConcurrentBag<SearchResult> Results = new ConcurrentBag<SearchResult> ();
+			protected override void OnReportResults (IEnumerable<SearchResult> results)
+			{
+				foreach (var result in results)
+					ReportResult (result);
+			}
+
+			protected override void OnReportResult (SearchResult result)
+			{
+				Results.Add (result);
+			}
+		}
+
 		[Test]
 		public async Task TestFindReferences ()
 		{
-			var refs = await GatherReferences (@"class FooBar {}", project => {
+			var refs = await GatherReferences (@"class FooBar {}", async project => {
 				var provider = new CSharpFindReferencesProvider ();
-				return provider.FindReferences ("T:FooBar", project, default (CancellationToken));
+				var monitor = new MockSearchProgressMonitor ();
+				await provider.FindReferences ("T:FooBar", project, monitor);
+				return monitor.Results;
 			});
 			Assert.AreEqual (1, refs.Count);
 		}
@@ -103,9 +121,11 @@ public void Foo() {}
 public void Foo(int i) {}
 public void Foo(string s) {}
 public void Foo(int i, int j) {}
- }", project => {
+ }", async project => {
 				var provider = new CSharpFindReferencesProvider ();
-				return provider.FindAllReferences ("M:FooBar.Foo", project, default (CancellationToken));
+				var monitor = new MockSearchProgressMonitor ();
+				await provider.FindAllReferences ("M:FooBar.Foo", project, monitor);
+				return monitor.Results;
 			});
 			Assert.AreEqual (4, refs.Count);
 		}
@@ -116,9 +136,11 @@ public void Foo(int i, int j) {}
 		[Test]
 		public async Task TestBug58060 ()
 		{
-			var refs = await GatherReferences (@"class FooBar { FooBar fb; }", project => {
+			var refs = await GatherReferences (@"class FooBar { FooBar fb; }", async project => {
 				var provider = new CSharpFindReferencesProvider ();
-				return  provider.FindAllReferences ("T:FooBar", project, default (CancellationToken));
+				var monitor = new MockSearchProgressMonitor ();
+				await provider.FindAllReferences ("T:FooBar", project, monitor);
+				return monitor.Results;
 			});
 			Assert.AreEqual (2, refs.Count);
 		}
@@ -141,9 +163,11 @@ public class RefBug2
     public void Meth() { xxx++; }
 }
 
-", project => {
+", async project => {
 				var provider = new CSharpFindReferencesProvider ();
-				return provider.FindAllReferences ("F:RefBug2.xxx", project, default (CancellationToken));
+				var monitor = new MockSearchProgressMonitor ();
+				await provider.FindAllReferences ("F:RefBug2.xxx", project, monitor);
+				return monitor.Results;
 			});
 			Assert.AreEqual (2, refs.Count);
 		}

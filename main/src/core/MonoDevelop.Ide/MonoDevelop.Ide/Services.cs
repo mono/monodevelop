@@ -58,7 +58,11 @@ namespace MonoDevelop.Ide
 		internal static TimerCounter SaveAllTimer = InstrumentationService.CreateTimerCounter ("Save all documents", "IDE", id:"Ide.Shell.SaveAll");
 		internal static TimerCounter CloseWorkspaceTimer = InstrumentationService.CreateTimerCounter ("Workspace closed", "IDE", id:"Ide.Shell.CloseWorkspace");
 		internal static Counter Startup = InstrumentationService.CreateTimerCounter ("IDE Startup", "IDE", id:"Ide.Startup");
-
+		internal static TimerCounter CompositionAddinLoad = InstrumentationService.CreateTimerCounter ("MEF Composition Addin Load", "IDE", id: "Ide.Startup.Composition.ExtensionLoad");
+		internal static TimerCounter CompositionDiscovery = InstrumentationService.CreateTimerCounter ("MEF Composition From Discovery", "IDE", id:"Ide.Startup.Composition.Discovery");
+		internal static TimerCounter CompositionCacheControl = InstrumentationService.CreateTimerCounter ("MEF Composition Control Cache", "IDE", id: "Ide.Startup.Composition.ControlCache");
+		internal static TimerCounter CompositionCache = InstrumentationService.CreateTimerCounter ("MEF Composition From Cache", "IDE", id: "Ide.Startup.Composition.Cache");
+		internal static TimerCounter CompositionSave = InstrumentationService.CreateTimerCounter ("MEF Composition Save", "IDE", id: "Ide.CompositionSave");
 		internal static TimerCounter ProcessCodeCompletion = InstrumentationService.CreateTimerCounter ("Process Code Completion", "IDE", id: "Ide.ProcessCodeCompletion", logMessages:false);
 
 		internal static class ParserService {

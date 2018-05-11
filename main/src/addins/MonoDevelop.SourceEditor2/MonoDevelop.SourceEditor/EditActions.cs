@@ -55,9 +55,6 @@ namespace MonoDevelop.SourceEditor
 			//DeleteActions.Backspace (data, RemoveCharBeforCaret);
 		}
 		
-		const string open    = "'\"([{<";
-		const string closing = "'\")]}>";
-		
 		static int GetNextNonWsCharOffset (TextEditorData data, int offset)
 		{
 			int result = offset;
@@ -81,14 +78,6 @@ namespace MonoDevelop.SourceEditor
 						var stack = await data.Document.SyntaxMode.GetScopeStackAsync (data.Caret.Offset - 1, CancellationToken.None);
 						if (stack.Any (s => s.Contains ("string") || s.Contains ("comment"))) {
 							return;
-						}
-					}
-
-					int idx = open.IndexOf (ch);
-					if (idx >= 0) {
-						int nextCharOffset = GetNextNonWsCharOffset (data, data.Caret.Offset);
-						if (nextCharOffset >= 0 && closing[idx] == data.Document.GetCharAt (nextCharOffset)) {
-							data.Remove (data.Caret.Offset, nextCharOffset - data.Caret.Offset + 1);
 						}
 					}
 					return;

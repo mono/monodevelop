@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using UnitTests;
@@ -813,6 +814,43 @@ namespace MonoDevelop.Projects
 			string result = project.GetDefaultNamespace (null);
 
 			Assert.AreEqual (expectedDefaultNamespace, result);
+		}
+
+		[Test]
+		public async Task ProjectExtensionOnModifiedCalledWhenProjectModified ()
+		{
+			var fn = new CustomItemNode<TestModifiedProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+				Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+				var p = (DotNetProject) sol.Items [0];
+
+				TestModifiedProjectExtension.ModifiedEventArgs.Clear ();
+
+				p.NotifyModified ("Files");
+
+				var args = TestModifiedProjectExtension.ModifiedEventArgs.Single ();
+				var eventInfo = args.Single ();
+				Assert.AreEqual ("Files", eventInfo.Hint);
+				Assert.AreEqual (p, eventInfo.SolutionItem);
+				Assert.AreEqual (sol, eventInfo.Solution);
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		class TestModifiedProjectExtension : DotNetProjectExtension
+		{
+			public static List<SolutionItemModifiedEventArgs> ModifiedEventArgs = new List<SolutionItemModifiedEventArgs> ();
+
+			protected internal override void OnModified (SolutionItemModifiedEventArgs args)
+			{
+				base.OnModified (args);
+				ModifiedEventArgs.Add (args);
+			}
 		}
 	}
 }

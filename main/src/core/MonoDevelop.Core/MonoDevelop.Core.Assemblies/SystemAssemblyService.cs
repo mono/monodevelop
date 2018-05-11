@@ -29,16 +29,14 @@
 //
 
 using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Diagnostics;
-using MonoDevelop.Core.AddIns;
-using Mono.Addins;
-using System.Reflection;
+using System.IO;
 using System.Linq;
-using System.Collections.Immutable;
+using System.Reflection;
 using System.Threading;
+using Mono.Addins;
 using Mono.Cecil;
+using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -48,7 +46,6 @@ namespace MonoDevelop.Core.Assemblies
 		Dictionary<TargetFrameworkMoniker,TargetFramework> frameworks = new Dictionary<TargetFrameworkMoniker, TargetFramework> ();
 		List<TargetRuntime> runtimes;
 		TargetRuntime defaultRuntime;
-		DirectoryAssemblyContext userAssemblyContext = new DirectoryAssemblyContext ();
 
 		public TargetRuntime CurrentRuntime { get; private set; }
 
@@ -76,11 +73,6 @@ namespace MonoDevelop.Core.Assemblies
 				LoggingService.LogFatalError ("Could not create runtime info for current runtime");
 
 			CurrentRuntime.StartInitialization ();
-
-			LoadUserAssemblyContext ();
-			userAssemblyContext.Changed += delegate {
-				SaveUserAssemblyContext ();
-			};
 		}
 
 		void HandleRuntimeInitialized (object sender, EventArgs e)
@@ -123,9 +115,8 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 
-		public DirectoryAssemblyContext UserAssemblyContext {
-			get { return userAssemblyContext; }
-		}
+		[Obsolete ("Assembly folders are no longer supported")]
+		public DirectoryAssemblyContext UserAssemblyContext => new DirectoryAssemblyContext ();
 
 		public IAssemblyContext DefaultAssemblyContext {
 			get { return DefaultRuntime.AssemblyContext; }
@@ -416,20 +407,6 @@ namespace MonoDevelop.Core.Assemblies
 			}
 			LoggingService.LogError ("Failed to determine target framework for assembly {0}", file);
 			return TargetFrameworkMoniker.UNKNOWN;
-		}
-
-		void SaveUserAssemblyContext ()
-		{
-			List<string> list = new List<string> (userAssemblyContext.Directories);
-			PropertyService.Set ("MonoDevelop.Core.Assemblies.UserAssemblyContext", list);
-			PropertyService.SaveProperties ();
-		}
-
-		void LoadUserAssemblyContext ()
-		{
-			List<string> dirs = PropertyService.Get<List<string>> ("MonoDevelop.Core.Assemblies.UserAssemblyContext");
-			if (dirs != null)
-				userAssemblyContext.Directories = dirs;
 		}
 
 		/// <summary>

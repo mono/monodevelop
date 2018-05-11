@@ -195,6 +195,18 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Notifies the extensions that this solution item has been modified
+		/// </summary>
+		/// <param name="args">Arguments.</param>
+		internal override void OnNotifyModified (SolutionItemModifiedEventArgs args)
+		{
+			if (IsExtensionChainCreated)
+				ItemExtension.OnModified (args);
+			else
+				base.OnModified (args);
+		}
+
+		/// <summary>
 		/// Called when a load operation for this solution item has finished
 		/// </summary>
 		protected virtual void OnEndLoad ()
@@ -662,7 +674,7 @@ namespace MonoDevelop.Projects
 		{
 			if (IsUnsupportedProject) {
 				var r = new BuildResult ();
-				r.AddError (UnsupportedProjectMessage);
+				r.AddError (UnsupportedProjectMessage, this.FileName);
 				return r;
 			}
 

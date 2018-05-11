@@ -62,18 +62,18 @@ namespace MonoDevelop.Projects
 			
 			string projectFile = null;
 			string destPath = null;
-			string formatName = null;
+			string formatId = null;
 			bool formatList = false;
 			List<string> projects = new List<string> ();
 			string[] itemsToExport = null;
 			
 			foreach (string s in arguments)
 			{
-				if (s.StartsWith ("-d:"))
+				if (s.StartsWith ("-d:", StringComparison.Ordinal))
 					destPath = s.Substring (3);
-				else if (s.StartsWith ("-f:"))
-					formatName = s.Substring (3);
-				else if (s.StartsWith ("-p:"))
+				else if (s.StartsWith ("-f:", StringComparison.Ordinal))
+					formatId = s.Substring (3);
+				else if (s.StartsWith ("-p:", StringComparison.Ordinal))
 					projects.Add (s.Substring (3));
 				else if (s == "-l")
 					formatList = true;
@@ -142,11 +142,11 @@ namespace MonoDevelop.Projects
 			
 			MSBuildFileFormat format = null;
 			
-			if (formatName == null || formatList) {
+			if (formatId == null || formatList) {
 				Console.WriteLine ();
 				Console.WriteLine ("Target formats:");
 				for (int n=0; n<formats.Length; n++)
-					Console.WriteLine ("  {0}. {1}", n + 1, formats [n].Name);
+					Console.WriteLine ("  {0}. {1} ({2})", n + 1, formats [n].Id, formats [n].ProductDescription);
 				Console.WriteLine ();
 				if (formatList)
 					return 0;
@@ -167,11 +167,11 @@ namespace MonoDevelop.Projects
 			}
 			else {
 				foreach (var f in formats) {
-					if (f.Name == formatName)
+					if (f.Id == formatId)
 						format = f;
 				}
 				if (format == null) {
-					Console.WriteLine ("Unknown file format: " + formatName);
+					Console.WriteLine ("Unknown file format: " + formatId);
 					return 1;
 				}
 			}

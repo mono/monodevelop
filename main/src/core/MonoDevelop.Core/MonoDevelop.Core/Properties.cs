@@ -28,16 +28,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-
-using MonoDevelop.Core;
-using System.Collections.Immutable;
 
 namespace MonoDevelop.Core
 {
@@ -54,18 +50,8 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		public Properties ()
-		{
-		}
-		
 		T Convert<T> (object o)
 		{
-			if (o is T) 
-				return (T)o;
-			
-			if ((object)o == null)
-				return (T) o;
-			
 			TypeConverter converter = GetConverter (typeof(T));
 			
 			if (o is string) {
@@ -103,46 +89,66 @@ namespace MonoDevelop.Core
 		
 		public T Get<T> (string property, T defaultValue)
 		{
-			if (!defaultValues.Contains (new KeyValuePair<string, object> (property, defaultValue)))
+			if (!defaultValues.ContainsKey (property))
 				defaultValues = defaultValues.SetItem (property, defaultValue);
-			object val;
-			if (GetPropertyValue<T> (property, out val))
-				return Convert<T> (val);
+			if (GetPropertyValue (property, out T value))
+				return value;
 			properties = properties.SetItem (property, defaultValue);
 			return defaultValue;
 		}
 		
 		public T Get<T> (string property)
 		{
-			object val;
-			if (GetPropertyValue<T> (property, out val))
-				return Convert<T> (val);
-			if (defaultValues.TryGetValue (property, out val))
-				return Convert<T> (val);
-			return default(T);
+			if (GetPropertyValue (property, out T value))
+				return value;
+			if (defaultValues.TryGetValue (property, out object defaultValue))
+				return (T) defaultValue;
+			return default (T);
 		}
-		
-		bool GetPropertyValue<T> (string property, out object val)
+
+		bool GetPropertyValue<T> (string property, out T val)
 		{
-			if (properties.TryGetValue (property, out val)) {
-				if (val is LazyXmlDeserializer) {
-					// Deserialize the data and store it in the dictionary, so
-					// following calls return the same object
-					val = ((LazyXmlDeserializer)val).Deserialize<T> ();
-					properties = properties.SetItem (property, val);
-				}
-				return true;
-			} else {
-				val = null;
+			if (!properties.TryGetValue (property, out object o)) {
+				val = default (T);
 				return false;
 			}
+
+			if (o is T t) {
+				val = t;
+				return true;
+			}
+
+			if (o == null) {
+				val = default (T);
+				return true;
+			}
+
+			if (o is LazyXmlDeserializer ser) {
+				// Deserialize the data and store it in the dictionary, so
+				// following calls return the same object
+				val = ser.Deserialize<T> ();
+				properties = properties.SetItem (property, val);
+				return true;
+			}
+
+			val = Convert<T> (o);
+			properties = properties.SetItem (property, val);
+			return true;
 		}
 		
 		public bool HasValue (string key)
 		{
 			return properties.ContainsKey (key);
 		}
-		
+
+		//used for deserialization
+		void SetFast (string key, object val)
+		{
+			if (val != null) {
+				properties = properties.SetItem (key, val);
+			}
+		}
+
 		public void Set (string key, object val)
 		{
 			object old = Get<object> (key);
@@ -193,19 +199,41 @@ namespace MonoDevelop.Core
 		{
 			Write (writer, true);
 		}
-		
+
+		class StringKeyComparer : IComparer<KeyValuePair<string,object>>
+		{
+			public int Compare (KeyValuePair<string, object> a, KeyValuePair<string, object> b)
+			{
+				return string.CompareOrdinal (a.Key, b.Key);
+			}
+		}
+
 		public void Write (XmlWriter writer, bool createPropertyParent)
 		{
 			if (createPropertyParent)
 				writer.WriteStartElement (Node);
 
+			var toSerialize = new List<KeyValuePair<string, object>> ();
+
 			foreach (KeyValuePair<string, object> property in this.properties) {
 				//don't know how the value could be null but at least we can skip it to avoid breaking completely
 				if (property.Value == null)
 					continue;
+				//don't serialize default values
+				if (defaultValues.TryGetValue (property.Key, out object defaultValue)) {
+					if (property.Value.Equals (defaultValue)) {
+						continue;
+					}
+				}
+				toSerialize.Add (property);
+			}
+
+			toSerialize.Sort (new StringKeyComparer ());
+
+			foreach (var property in toSerialize) {
 				writer.WriteStartElement (PropertyNode);
 				writer.WriteAttributeString (KeyAttribute, property.Key);
-				
+
 				if (property.Value is LazyXmlDeserializer deserializer) {
 					writer.WriteRaw (deserializer.Xml);
 				} else if (property.Value is ICustomXmlSerializer customXmlSerializer) {
@@ -301,15 +329,15 @@ namespace MonoDevelop.Core
 		
 		public static Properties Read (XmlReader reader)
 		{
-			Properties result = new Properties ();
+			var result = new Properties ();
 			XmlReadHelper.ReadList (reader, new string [] { Node, SerializedNode, PropertiesRootNode }, delegate() {
 				switch (reader.LocalName) {
 				case PropertyNode:
 					string key = reader.GetAttribute (KeyAttribute);
 					if (!reader.IsEmptyElement) {
-						result.Set (key, new LazyXmlDeserializer (reader.ReadInnerXml ()));
+						result.SetFast (key, new LazyXmlDeserializer (reader.ReadInnerXml ()));
 					} else {
-						result.Set (key, reader.GetAttribute (ValueAttribute));
+						result.SetFast (key, reader.GetAttribute (ValueAttribute));
 					}
 					return true;
 				}			
@@ -322,8 +350,7 @@ namespace MonoDevelop.Core
 		{
 			if (!File.Exists (fileName))
 				return null;
-			XmlReader reader = XmlTextReader.Create (fileName);
-			try {	
+			using (var reader = XmlReader.Create (fileName)) {
 				while (reader.Read ()) {
 					if (reader.IsStartElement ()) {
 						switch (reader.LocalName) {
@@ -334,9 +361,6 @@ namespace MonoDevelop.Core
 						}
 					}
 				}
-				
-			} finally {
-				reader.Close ();
 			}
 			return null;
 		}
@@ -358,9 +382,7 @@ namespace MonoDevelop.Core
 			
 		public Properties Clone ()
 		{
-			Properties result = new Properties ();
-			result.properties = properties;
-			return result;
+			return new Properties { properties = this.properties };
 		}
 		
 		public void AddPropertyHandler (string propertyName, EventHandler<PropertyChangedEventArgs> handler)
@@ -389,14 +411,12 @@ namespace MonoDevelop.Core
 		
 		protected virtual void OnPropertyChanged (PropertyChangedEventArgs args)
 		{
-			if (PropertyChanged != null)
-				PropertyChanged (this, args);
+			PropertyChanged?.Invoke (this, args);
 			
 			if (propertyListeners != null) {
 				EventHandler<PropertyChangedEventArgs> handlers = null;
 				propertyListeners.TryGetValue (args.Key, out handlers);
-				if (handlers != null)
-					handlers (this, args);
+				handlers?.Invoke (this, args);
 			}
 		}
 		

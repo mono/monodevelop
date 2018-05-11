@@ -140,7 +140,7 @@ namespace MonoDevelop.Projects.MSBuild
 			});
 			return result;
 		}
-		
+
 		Project SetupProject (ProjectConfigurationInfo[] configurations)
 		{
 			Project project = null;

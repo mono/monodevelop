@@ -678,9 +678,9 @@ type FSharpJumpToDeclarationHandler () =
 type FSharpFindReferencesProvider () =
     inherit FindReferencesProvider ()
 
-    override x.FindReferences(documentationCommentId, _hintProject, token) =
+    override x.FindReferences(documentationCommentId, _hintProject, monitor) =
         async {
-            return
+            monitor.ReportResults(
                 Search.getAllSymbolsInAllProjects()
                 |> AsyncSeq.toSeq
                 |> Seq.toArray
@@ -688,13 +688,13 @@ type FSharpFindReferencesProvider () =
                 |> Array.filter (fun symbol -> symbol.Symbol.XmlDocSig = documentationCommentId)
                 |> Array.map (fun symbol -> let (filename, startOffset, endOffset) = Symbols.getOffsetsTrimmed symbol.Symbol.DisplayName symbol
                                             SearchResult (FileProvider (filename), startOffset, endOffset-startOffset))
-                |> Array.toSeq
+                |> Array.toSeq)
         }
-        |> StartAsyncAsTask token
+        |> StartAsyncAsTask monitor.CancellationToken :> Task
 
-    override x.FindAllReferences(_documentationCommentId, _hintProject, _token) =
+    override x.FindAllReferences(_documentationCommentId, _hintProject, monitor) =
         //TODO:
-        Task.FromResult Seq.empty
+        Task.CompletedTask
 
 type FSharpCommandsTextEditorExtension () =
     inherit Editor.Extension.TextEditorExtension ()

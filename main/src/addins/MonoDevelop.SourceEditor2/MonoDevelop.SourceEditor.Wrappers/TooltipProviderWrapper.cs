@@ -100,6 +100,22 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return provider.IsInteractive (wrappedEditor, tipWindow);
 		}
 
+		static bool IsMouseOver (Xwt.WindowFrame tipWidget)
+		{
+			var mousePosition = Xwt.Desktop.MouseLocation;
+			return tipWidget.ScreenBounds.Contains (mousePosition);
+		}
+
+		public override void TakeMouseControl (MonoTextEditor editor, Xwt.WindowFrame tipWindow)
+		{
+			if (!IsMouseOver (tipWindow))
+				editor.TextArea.HideTooltip ();
+			var wrappedEditor = WrapEditor (editor);
+			if (wrappedEditor == null)
+				return;
+			provider.TakeMouseControl (wrappedEditor, tipWindow);
+		}
+
 		public override Xwt.WindowFrame CreateTooltipWindow (MonoTextEditor editor, int offset, Gdk.ModifierType modifierState, Ide.Editor.TooltipItem item)
 		{
 			var wrappedEditor = WrapEditor (editor);

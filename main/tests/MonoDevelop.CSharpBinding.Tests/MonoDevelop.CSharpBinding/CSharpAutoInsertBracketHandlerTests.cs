@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Completion;
@@ -32,6 +33,7 @@ using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
@@ -40,8 +42,16 @@ using NUnit.Framework;
 namespace MonoDevelop.CSharpBinding
 {
 	[TestFixture]
-	class CSharpAutoInsertBracketHandlerTests : MonoDevelop.Ide.IdeTestBase
+	class CSharpAutoInsertBracketHandlerTests : TextEditorExtensionTestBase
 	{
+		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharpWithReferences;
+		protected override IEnumerable<TextEditorExtension> GetEditorExtensions ()
+		{
+			foreach (var ext in base.GetEditorExtensions ())
+				yield return ext;
+			yield return new CSharpCompletionTextEditorExtension ();
+		}
+
 		[Test]
 		public async Task TestBug59627 ()
 		{
@@ -63,8 +73,7 @@ namespace MonoDevelop.CSharpBinding
 			await CheckAutoBracket (@"'", "''");
 		}
 
-
-		private static async Task CheckAutoBracket (string mid, string expected)
+		private async Task CheckAutoBracket (string mid, string expected)
 		{
 			var prefix = @"
 class FooBar
@@ -82,38 +91,7 @@ class FooBar
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
-			var project = Ide.Services.ProjectService.CreateDotNetProject ("C#");
-			project.Name = "test";
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("mscorlib"));
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System.Core"));
-
-			project.FileName = "test.csproj";
-			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile));
-
-			var solution = new MonoDevelop.Projects.Solution ();
-			solution.AddConfiguration ("", true);
-			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
-
-			var tww = new TestWorkbenchWindow ();
-			var content = new TestViewContent ();
-			tww.ViewContent = content;
-			content.ContentName = "/a.cs";
-			content.Data.MimeType = "text/x-csharp";
-			content.Project = project;
-
-
-			content.Text = text;
-			content.CursorPosition = Math.Max (0, endPos);
-			var doc = new MonoDevelop.Ide.Gui.Document (tww);
-			doc.SetProject (project);
-
-			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc.Editor, doc);
-			content.Contents.Add (compExt);
-
+			var doc = await SetupDocument (text, cursorPosition: Math.Max (0, endPos));
 			await doc.UpdateParseDocument ();
 
 			var ctx = new CodeCompletionContext ();
@@ -124,7 +102,7 @@ class FooBar
 			var newText = doc.Editor.GetTextAt (prefix.Length, doc.Editor.Length - prefix.Length - suffix.Length);
 			Assert.AreEqual (expected, newText);
 
-			project.Dispose ();
+			TypeSystemService.Unload (doc.Project.ParentSolution);
 		}
 	}
 }

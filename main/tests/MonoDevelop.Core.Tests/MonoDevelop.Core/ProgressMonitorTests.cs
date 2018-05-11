@@ -28,6 +28,10 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using MonoDevelop.Core.ProgressMonitoring;
+using System.Threading;
+using System.Text;
+using System.Collections.Concurrent;
+using UnitTests;
 
 namespace MonoDevelop.Core
 {
@@ -104,6 +108,87 @@ namespace MonoDevelop.Core
 			Assert.AreEqual ("one", m.LoggedObjects [0]);
 			Assert.AreSame (foo, m.LoggedObjects [1]);
 			Assert.AreEqual ("two", m.LoggedObjects [2]);
+		}
+
+		[Test]
+		public void TestLogSynchronizationContextThroughWrites ()
+		{
+			using (var ctx = new TestSingleThreadSynchronizationContext ()) {
+				using (var mon = new ChainedProgressMonitor (ctx)) {
+					// These call once into Write.
+					mon.Log.Write ("a");
+					mon.Log.Write ('a');
+					mon.Log.Write (new [] { 'a' }, 0, 1);
+					mon.Log.WriteLine ("a");
+
+					// These 2 call twice into Write.
+					mon.Log.WriteLine ('a');
+					mon.Log.WriteLine (new [] { 'a' }, 0, 1);
+
+					Assert.AreEqual (8, ctx.CallCount);
+
+					mon.Log.Flush ();
+					Assert.AreEqual (9, ctx.CallCount);
+				}
+				// Once for completed, Dispose needs API break to be done on the right context.
+				Assert.AreEqual (10, ctx.CallCount);
+			}
+		}
+	}
+
+	class ChainedProgressMonitor : ProgressMonitor
+	{
+		readonly CustomWriter underlyingLog;
+		public ChainedProgressMonitor (TestSingleThreadSynchronizationContext ctx) : base (ctx)
+		{
+			Log = underlyingLog = new CustomWriter (ctx);
+		}
+
+		public override void Dispose ()
+		{
+			underlyingLog.Dispose ();
+			base.Dispose ();
+		}
+
+		class CustomWriter : System.IO.TextWriter
+		{
+			TestSingleThreadSynchronizationContext ctx;
+			public CustomWriter (TestSingleThreadSynchronizationContext ctx)
+			{
+				this.ctx = ctx;
+			}
+
+			public override void Flush ()
+			{
+				Assert.AreEqual (ctx.Thread, Thread.CurrentThread);
+				base.Flush ();
+			}
+
+			public override void Write (char value)
+			{
+				Assert.AreEqual (ctx.Thread, Thread.CurrentThread);
+				base.Write (value);
+			}
+
+			public override void Close ()
+			{
+				Assert.AreEqual (ctx.Thread, Thread.CurrentThread);
+				base.Close ();
+			}
+
+			public override void Write (string value)
+			{
+				Assert.AreEqual (ctx.Thread, Thread.CurrentThread);
+				base.Write (value);
+			}
+
+			public override void Write (char [] buffer, int index, int count)
+			{
+				Assert.AreEqual (ctx.Thread, Thread.CurrentThread);
+				base.Write (buffer, index, count);
+			}
+
+			public override Encoding Encoding => Encoding.Default;
 		}
 	}
 

@@ -47,10 +47,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			labelWarnings.Text = warning;
 			labelMessage.Text = string.Format (labelMessage.Text, item.Name);
-			labelCurrentFormat.Text = item.FileFormat.Name;
+			labelCurrentFormat.Text = item.FileFormat.ProductDescription;
 			
 			foreach (MSBuildFileFormat format in MSBuildFileFormat.GetSupportedFormats (item)) {
-				comboNewFormat.AppendText (format.Name);
+				comboNewFormat.AppendText (format.ProductDescription);
 				formats.Add (format);
 			}
 			comboNewFormat.Active = 0;

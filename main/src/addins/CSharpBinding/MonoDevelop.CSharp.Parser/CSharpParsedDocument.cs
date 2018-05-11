@@ -64,6 +64,7 @@ namespace MonoDevelop.CSharp.Parser
 		public CSharpParsedDocument (Ide.TypeSystem.ParseOptions options,  string fileName) : base (fileName)
 		{
 			isAdHocProject = options.IsAdhocProject;
+			Flags |= ParsedDocumentFlags.SkipFoldings;
 		}
 		
 
@@ -226,28 +227,10 @@ namespace MonoDevelop.CSharp.Parser
 			}
 		}
 
-		IReadOnlyList<Tag> tags;
-		object tagLock = new object ();
+		// Tags are done via Ide.Tasks.CommentTasksProvider.
 		public override Task<IReadOnlyList<Tag>> GetTagCommentsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (tags == null) {
-				return Task.Run (delegate {
-					lock (tagLock) {
-						if (tags == null) {
-							var visitor = new SemanticTagVisitor (cancellationToken);
-							if (Unit != null) {
-								try {
-									visitor.Visit (Unit.GetRoot (cancellationToken));
-								} catch {
-								}
-							}
-							tags = visitor.Tags;
-						}
-						return tags;
-					}
-				});
-			}
-			return Task.FromResult (tags);
+			return Task.FromResult<IReadOnlyList<Tag>> (null);
 		}
 
 		sealed class SemanticTagVisitor : CSharpSyntaxWalker

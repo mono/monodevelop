@@ -33,12 +33,6 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 {
 	class CSharpAutoInsertBracketHandler : AutoInsertBracketHandler
 	{
-		public override bool CanHandle (TextEditor editor)
-		{
-
-			return editor.MimeType == CSharpFormatter.MimeType;
-		}
-
 		public override bool Handle (TextEditor editor, DocumentContext ctx, KeyDescriptor descriptor)
 		{
 			if (ctx.AnalysisDocument == null)

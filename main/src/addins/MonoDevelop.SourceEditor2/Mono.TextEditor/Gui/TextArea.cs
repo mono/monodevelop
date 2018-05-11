@@ -1089,12 +1089,18 @@ namespace Mono.TextEditor
 			return (int)margin.Width;
 		}
 		
-		internal void RedrawLine (int logicalLine)
+		internal void RedrawLine (int logicalLine, bool removeLineCache = true)
 		{
 			if (isDisposed || logicalLine > LineCount || logicalLine < DocumentLocation.MinLine)
 				return;
+
+			textViewMargin.RemoveCachedLine(logicalLine);
+
 			double y = LineToY (logicalLine) - this.textEditorData.VAdjustment.Value;
 			double h = GetLineHeight (logicalLine);
+
+			if (removeLineCache)
+				textViewMargin.RemoveCachedLine (logicalLine);
 
 			if (y + h > 0)
 				QueueDrawArea (0, (int)y, this.Allocation.Width, (int)h);
@@ -1123,7 +1129,7 @@ namespace Mono.TextEditor
 			if (isDisposed)
 				return;
 //				Console.WriteLine ("Redraw position: logicalLine={0}, logicalColumn={1}", logicalLine, logicalColumn);
-			RedrawLine (logicalLine);
+			RedrawLine (logicalLine, false);
 		}
 		
 		public void RedrawMarginLines (Margin margin, int start, int end)
@@ -1139,7 +1145,7 @@ namespace Mono.TextEditor
 			QueueDrawArea ((int)margin.XOffset, (int)visualStart, GetMarginWidth (margin), (int)(visualEnd - visualStart));
 		}
 			
-		internal void RedrawLines (int start, int end)
+		internal void RedrawLines (int start, int end, bool removeLineCache = true)
 		{
 //			Console.WriteLine ("redraw lines: start={0}, end={1}", start, end);
 			if (isDisposed)
@@ -1149,6 +1155,11 @@ namespace Mono.TextEditor
 			double visualStart = -this.textEditorData.VAdjustment.Value +  LineToY (start);
 			if (end < 0)
 				end = Document.LineCount;
+			if (removeLineCache) {
+				for (int i = start; i <= end; i++) {
+					editor.TextViewMargin.RemoveCachedLine (i);
+				}
+			}
 			double visualEnd   = -this.textEditorData.VAdjustment.Value + LineToY (end) + GetLineHeight (end);
 			QueueDrawArea (0, (int)visualStart, this.Allocation.Width, (int)(visualEnd - visualStart));
 		}
@@ -1536,9 +1547,9 @@ namespace Mono.TextEditor
 				Gdk.Drag.Status (context, (context.Actions & DragAction.Move) == DragAction.Move ? DragAction.Move : DragAction.Copy, time);
 				Caret.Location = dragCaretPos; 
 			}
-			this.RedrawLine (oldLocation.Line);
+			this.RedrawLine (oldLocation.Line, false);
 			if (oldLocation.Line != Caret.Line)
-				this.RedrawLine (Caret.Line);
+				this.RedrawLine (Caret.Line, false);
 			Caret.PreserveSelection = false;
 			return base.OnDragMotion (context, x, y, time);
 		}
@@ -1696,9 +1707,10 @@ namespace Mono.TextEditor
 				args.Location = location;
 				margin.MouseHover (args);
 			}
-
+			MouseHover?.Invoke (this, new MarginEventArgs (margin));
 			oldMargin = margin;
 		}
+		internal event EventHandler<MarginEventArgs> MouseHover;
 
 		#region CustomDrag (for getting dnd data from toolbox items for example)
 		string     customText;
@@ -1734,8 +1746,11 @@ namespace Mono.TextEditor
 		{
 			IsMouseTrapped = false;
 			if (tipWindow != null && currentTooltipProvider != null) {
-				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
+				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow)) {
 					DelayedHideTooltip ();
+				} else {
+					currentTooltipProvider.TakeMouseControl (textEditorData.Parent, tipWindow);
+				}
 			} else {
 				HideTooltip ();
 			}
@@ -1745,9 +1760,11 @@ namespace Mono.TextEditor
 				SetCursor (null);
 			if (oldMargin != null)
 				oldMargin.MouseLeft ();
-			
+			MouseLeft?.Invoke (this, EventArgs.Empty);
 			return base.OnLeaveNotifyEvent (e); 
 		}
+
+		internal event EventHandler MouseLeft;
 
 		public double LineHeight {
 			get {

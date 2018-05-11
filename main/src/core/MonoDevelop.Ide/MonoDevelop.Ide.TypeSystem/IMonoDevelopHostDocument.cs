@@ -34,8 +34,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			IMonoDevelopHostDocument containedDocument = null;
 			if (document.TryGetText (out SourceText sourceText)) {
 				ITextBuffer textBuffer = sourceText.Container.TryGetTextBuffer ();
-
-				containedDocument = textBuffer?.Properties.GetProperty<IMonoDevelopHostDocument> (typeof (IMonoDevelopHostDocument));
+				var properties = textBuffer?.Properties;
+				if (properties == null)
+					return null;
+				if (properties.ContainsProperty (typeof (IMonoDevelopHostDocument)))
+					containedDocument = properties.GetProperty<IMonoDevelopHostDocument> (typeof (IMonoDevelopHostDocument));
 			}
 
 			return containedDocument;

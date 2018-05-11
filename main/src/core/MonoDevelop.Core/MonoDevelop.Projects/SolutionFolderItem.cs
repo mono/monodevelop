@@ -437,7 +437,16 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public void NotifyModified (string hint)
 		{
-			OnModified (new SolutionItemModifiedEventArgs (this, hint));
+			OnNotifyModified (new SolutionItemModifiedEventArgs (this, hint));
+		}
+
+		/// <summary>
+		/// Notifies that this solution folder item has been modified
+		/// </summary>
+		/// <param name="args">Arguments.</param>
+		internal virtual void OnNotifyModified (SolutionItemModifiedEventArgs args)
+		{
+			OnModified (args);
 		}
 		
 		/// <summary>

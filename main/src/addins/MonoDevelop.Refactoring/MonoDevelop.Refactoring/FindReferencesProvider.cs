@@ -35,8 +35,8 @@ namespace MonoDevelop.Refactoring
 {
 	abstract class FindReferencesProvider
 	{
-		public abstract Task<IEnumerable<SearchResult>> FindReferences (string documentationCommentId, Project hintProject, CancellationToken token = default(CancellationToken));
-		public abstract Task<IEnumerable<SearchResult>> FindAllReferences (string documentationCommentId, Project hintProject, CancellationToken token = default(CancellationToken));
+		public abstract Task FindReferences (string documentationCommentId, Project hintProject, SearchProgressMonitor monitor);
+		public abstract Task FindAllReferences (string documentationCommentId, Project hintProject, SearchProgressMonitor monitor);
 	}
 }
 

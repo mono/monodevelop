@@ -66,7 +66,8 @@ namespace MonoDevelop.Projects.MSBuild
 							return result.Path;
 						}
 
-						results.Add (result);
+						if (result != null)
+							results.Add (result);
 					} catch (Exception e) {
 						logger.LogFatalBuildError (buildEventContext, e, projectFile);
 					}

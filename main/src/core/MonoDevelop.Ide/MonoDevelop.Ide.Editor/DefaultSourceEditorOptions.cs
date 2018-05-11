@@ -595,14 +595,14 @@ namespace MonoDevelop.Ide.Editor
 					OnChanged (EventArgs.Empty);
 			}
 		}
-		
-		ConfigurationProperty<bool> showFoldMargin = ConfigurationProperty.Create ("ShowFoldMargin", false);
+
+		ConfigurationProperty<bool> hideFoldMargin = ConfigurationProperty.Create ("HideFoldMargin", false);
 		public bool ShowFoldMargin {
 			get {
-				return showFoldMargin;
+				return !hideFoldMargin;
 			}
 			set {
-				if (showFoldMargin.Set (value))
+				if (hideFoldMargin.Set (!value))
 					OnChanged (EventArgs.Empty);
 			}
 		}

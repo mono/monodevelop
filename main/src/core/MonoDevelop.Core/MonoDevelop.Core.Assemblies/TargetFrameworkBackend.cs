@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -46,31 +47,40 @@ namespace MonoDevelop.Core.Assemblies
 		bool? isInstalled;
 		public virtual bool IsInstalled {
 			get {
-				if (isInstalled != null)
-					return isInstalled.Value;
-				
-				foreach (string dir in GetFrameworkFolders ()) {
-					if (Directory.Exists (dir)) {
-						string manifest = Path.Combine (dir, "RedistList", "FrameworkList.xml");
-						if (File.Exists (manifest)) {
-							isInstalled = true;
-							return true;
-						}
-						if (framework.Assemblies.Length > 0) {
-							string firstAsm = Path.Combine (dir, framework.Assemblies [0].Name) + ".dll";
-							if (File.Exists (firstAsm)) {
-								isInstalled = true;
-								return true;
-							}
-						}
-					}
-				}
-				isInstalled = false;
-				return false;
+				if (isInstalled == null)
+					isInstalled = GetFrameworkFolders ().Any ();
+				return isInstalled.Value;
+			}
+			internal set {
+				isInstalled = value;
 			}
 		}
-		
-		public abstract IEnumerable<string> GetFrameworkFolders ();
+
+		internal string ReferenceAssembliesFolder { get; set; }
+
+		protected virtual string OnGetReferenceAssembliesFolder ()
+		{
+			var fxDir = framework.Id.GetAssemblyDirectoryName ();
+			foreach (var rootDir in runtime.GetReferenceFrameworkDirectories ()) {
+				var dir = rootDir.Combine (fxDir);
+				var frameworkList = dir.Combine ("RedistList", "FrameworkList.xml");
+				if (File.Exists (frameworkList))
+					return dir;
+			}
+			return null;
+		}
+
+		public virtual IEnumerable<string> GetFrameworkFolders ()
+		{
+			if (!string.IsNullOrEmpty (ReferenceAssembliesFolder)) {
+				yield return ReferenceAssembliesFolder;
+			} else {
+				ReferenceAssembliesFolder = OnGetReferenceAssembliesFolder () ?? "";
+				if (!string.IsNullOrEmpty (ReferenceAssembliesFolder)) {
+					yield return ReferenceAssembliesFolder;
+				}
+			}
+		}
 		
 		public virtual Dictionary<string, string> GetToolsEnvironmentVariables ()
 		{
@@ -151,7 +161,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
-			return null;
+			yield break;
 		}
 		
 		public override bool IsInstalled {

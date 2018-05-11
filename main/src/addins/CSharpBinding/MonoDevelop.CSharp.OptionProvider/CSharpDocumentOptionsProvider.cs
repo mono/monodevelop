@@ -48,15 +48,17 @@ namespace MonoDevelop.CSharp.OptionProvider
 			var mdws = document.Project.Solution.Workspace as MonoDevelopWorkspace;
 			var project = mdws?.GetMonoProject (document.Project.Id);
 
+			var types = Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+
 			CSharpFormattingPolicy policy;
 			TextStylePolicy textpolicy;
 			if (project == null) {
-				textpolicy = PolicyService.InvariantPolicies.Get<TextStylePolicy> (CSharpFormatter.MimeType);
-				policy = PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (CSharpFormatter.MimeType);
+				textpolicy = PolicyService.InvariantPolicies.Get<TextStylePolicy> (types);
+				policy = PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (types);
 			} else {
 				var policyParent = project.Policies;
-				policy = policyParent.Get<CSharpFormattingPolicy> (CSharpFormatter.MimeType);
-				textpolicy = policyParent.Get<TextStylePolicy> (CSharpFormatter.MimeType);
+				policy = policyParent.Get<CSharpFormattingPolicy> (types);
+				textpolicy = policyParent.Get<TextStylePolicy> (types);
 			}
 			var path = GetPath (document);
 			ICodingConventionContext conventions = null;

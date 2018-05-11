@@ -81,6 +81,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static MonoDevelopWorkspace ()
 		{
+			Tasks.CommentTasksProvider.Initialize ();
 			Logger.SetLogger (AggregateLogger.Create (
 				new RoslynLogger (),
 				Logger.GetLogger ()
@@ -110,13 +111,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true)
 			// Always use persistent storage regardless of solution size, at least until a consensus is reached
 			// https://github.com/mono/monodevelop/issues/4149 https://github.com/dotnet/roslyn/issues/25453
-				.WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, 0);
+				.WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, MonoDevelop.Core.Platform.IsLinux ? int.MaxValue : 0)
+				.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, IdeApp.Preferences.EnableFullSolutionSourceAnalysis);
 
 			if (IdeApp.Preferences.EnableSourceAnalysis) {
 				solutionCrawler.Register (this);
 			}
 
 			IdeApp.Preferences.EnableSourceAnalysis.Changed += OnEnableSourceAnalysisChanged;
+			IdeApp.Preferences.EnableFullSolutionSourceAnalysis.Changed += OnEnableFullSourceAnalysisChanged;
 
 			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
 				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
@@ -132,6 +135,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				solutionCrawler.Unregister (this);
 		}
 
+		void OnEnableFullSourceAnalysisChanged (object sender, EventArgs args)
+		{
+			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, IdeApp.Preferences.EnableFullSolutionSourceAnalysis);
+		}
+
 		protected override void Dispose (bool finalize)
 		{
 			base.Dispose (finalize);
@@ -143,6 +151,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 			solutionCrawler.Unregister (this);
 			IdeApp.Preferences.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
+			IdeApp.Preferences.EnableFullSolutionSourceAnalysis.Changed -= OnEnableFullSourceAnalysisChanged;
 
 			CancelLoad ();
 			if (IdeApp.Workspace != null) {
@@ -608,7 +617,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						continue;
 					documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 				} else {
-					var id = projectData.GetOrCreateDocumentId (f.Name, projectData);
+					var id = projectData.GetOrCreateDocumentId (f.Name, oldProjectData);
 					if (!duplicates.Add (id))
 						continue;
 					additionalDocuments.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
@@ -806,7 +815,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
+		Dictionary<DocumentId, SourceTextContainer> openDocuments = new Dictionary<DocumentId, SourceTextContainer> ();
 		internal void InformDocumentOpen (DocumentId documentId, TextEditor editor)
 		{
 			var document = InternalInformDocumentOpen (documentId, editor);
@@ -823,12 +832,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (project == null)
 				return null;
 			TextDocument document = project.GetDocument (documentId) ?? project.GetAdditionalDocument (documentId);
-			if (document == null || openDocuments.Any (d => d.Id == documentId)) {
+			if (document == null || openDocuments.ContainsKey(documentId)) {
 				return document;
 			}
-			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (this, documentId, editor);
+			var monoDevelopSourceTextContainer = editor.TextView.TextBuffer.AsTextContainer ();
 			lock (openDocuments) {
-				openDocuments.Add (monoDevelopSourceTextContainer);
+				openDocuments.Add (documentId, monoDevelopSourceTextContainer);
 			}
 			if (document is Document) {
 				OnDocumentOpened (documentId, monoDevelopSourceTextContainer);
@@ -849,11 +858,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			base.OnDocumentClosing (documentId);
 			lock (openDocuments) {
-				var openDoc = openDocuments.FirstOrDefault (d => d.Id == documentId);
-				if (openDoc != null) {
-					openDoc.Dispose ();
-					openDocuments.Remove (openDoc);
-				}
+				openDocuments.Remove (documentId);
 			}
 		}
 
@@ -867,10 +872,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			try {
 				lock (openDocuments) {
-					var openDoc = openDocuments.FirstOrDefault (d => d.Id == analysisDocument);
-					if (openDoc != null) {
-						openDoc.Dispose ();
-						openDocuments.Remove (openDoc);
+					if (openDocuments.ContainsKey(analysisDocument)) {
+						openDocuments.Remove (analysisDocument);
 					} else {
 						//Apparently something else opened this file via AddAndOpenDocumentInternal(e.g. .cshtml)
 						//it's job of whatever opened to also call CloseAndRemoveDocumentInternal
@@ -881,11 +884,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				var loader = new MonoDevelopTextLoader (filePath);
 				var document = this.GetDocument (analysisDocument);
-				var openDocument = this.openDocuments.FirstOrDefault (w => w.Id == analysisDocument);
-				if (openDocument != null) {
-					openDocument.Dispose ();
-					openDocuments.Remove (openDocument);
-				}
+				openDocuments.Remove (analysisDocument);
 
 				if (document == null) {
 					var ad = this.GetAdditionalDocument (analysisDocument);
@@ -1495,6 +1494,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				MetadataReferenceCache.RemoveReferences (id);
 
 				UnloadMonoProject (project);
+
+				OnProjectRemoved (id);
 			}
 		}
 

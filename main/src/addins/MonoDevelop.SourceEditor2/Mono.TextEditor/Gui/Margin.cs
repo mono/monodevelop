@@ -200,7 +200,17 @@ namespace Mono.TextEditor
 		public event EventHandler<MarginMouseEventArgs> MouseMoved;
 		public event EventHandler MouseLeave;
 	}
-	
+
+	class MarginEventArgs : EventArgs
+	{
+		public Margin Margin { get; private set; }
+
+		public MarginEventArgs (Margin margin)
+		{
+			Margin = margin;
+		}
+	}
+
 	class MarginMouseEventArgs : EventArgs
 	{
 		public double X {

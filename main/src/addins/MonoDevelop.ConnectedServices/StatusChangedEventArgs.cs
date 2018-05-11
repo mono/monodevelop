@@ -28,7 +28,7 @@ namespace MonoDevelop.ConnectedServices
 		public Status OldStatus { get; private set; }
 
 		/// <summary>
-		/// Gets the exception that occured in the event of failures
+		/// Gets the exception that occurred in the event of failures
 		/// </summary>
 		public Exception Error { get; private set; }
 

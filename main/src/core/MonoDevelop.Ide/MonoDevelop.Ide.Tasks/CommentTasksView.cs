@@ -89,11 +89,9 @@ namespace MonoDevelop.Ide.Tasks
 			TaskService.CommentTasksChanged += OnCommentTasksChanged;
 			CommentTag.SpecialCommentTagsChanged += OnCommentTagsChanged;
 
+			IdeApp.Workspace.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
 			MonoDevelopWorkspace.LoadingFinished += OnWorkspaceItemLoaded;
 			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
-			IdeApp.Workspace.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
-			IdeApp.Workbench.DocumentOpened += WorkbenchDocumentOpened;
-			IdeApp.Workbench.DocumentClosed += WorkbenchDocumentClosed;
 
 			highPrioColor = StringToColor (IdeApp.Preferences.UserTasksHighPrioColor);
 			normalPrioColor = StringToColor (IdeApp.Preferences.UserTasksNormalPrioColor);
@@ -162,38 +160,6 @@ namespace MonoDevelop.Ide.Tasks
 			};
 		}
 
-		void WorkbenchDocumentClosed (object sender, DocumentEventArgs e)
-		{
-			e.Document.DocumentParsed -= HandleDocumentParsed;
-		}
-
-		void WorkbenchDocumentOpened (object sender, DocumentEventArgs e)
-		{
-			e.Document.DocumentParsed += HandleDocumentParsed;
-		}
-
-		void HandleDocumentParsed (object sender, EventArgs e)
-		{
-			var doc = (Document)sender;
-			var pd = doc.ParsedDocument;
-			var project = doc.Project;
-			if (pd == null || project == null)
-				return;
-			ProjectCommentTags tags;
-			if (!projectTags.TryGetValue (project, out tags))
-				return;
-			var token = src.Token;
-			var file = doc.FileName;
-			Task.Run (async () => {
-				try {
-					tags.UpdateTags (project, file, await pd.GetTagCommentsAsync (token).ConfigureAwait (false));
-				} catch (TaskCanceledException) {
-				} catch (AggregateException ae) {
-					ae.Flatten ().Handle (x => x is TaskCanceledException);
-				}
-			});
-		}
-
 		void LoadColumnsVisibility ()
 		{
 			string columns = (string)PropertyService.Get (restoreID, "TRUE;TRUE;TRUE;TRUE");
@@ -213,78 +179,29 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			comments.BeginTaskUpdates ();
 			try {
-				foreach (var sln in IdeApp.Workspace.GetAllSolutions ())
-					LoadSolutionContents (sln);
+				CommentTasksProvider.LoadCachedContents ();
+				foreach (var sln in IdeApp.Workspace.GetAllSolutions ()) {
+					CommentTasksProvider.Legacy.LoadSolutionContents (sln);
+					loadedSlns.Add (sln);
+				}
 			}
 			finally {
 				comments.EndTaskUpdates ();
 			}
 		}
 
-		Dictionary<Project, ProjectCommentTags> projectTags = new Dictionary<Project, ProjectCommentTags> ();
-		CancellationTokenSource src = new CancellationTokenSource ();
-		void UpdateCommentTagsForProject (Solution solution, Project project, CancellationToken token)
-		{
-			if (token.IsCancellationRequested)
-				return;
-			ProjectCommentTags tags;
-			if (!projectTags.TryGetValue (project, out tags)) {
-				tags = new ProjectCommentTags ();
-				projectTags [project] = tags;
-			}
-			var files = project.Files.ToArray ();
-			Task.Run (async () => {
-				try {
-					await tags.UpdateAsync (project, files, token);
-				} catch (TaskCanceledException) {
-				} catch (AggregateException ae) {
-					ae.Flatten ().Handle (x => x is TaskCanceledException);
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while updating comment tags.", e); 
-				}
-			});
-		}
-		
-		void LoadSolutionContents (Solution sln)
-		{
-			src.Cancel ();
-			src = new CancellationTokenSource ();
-			var token = src.Token;
-
-			loadedSlns.Add (sln);
-			Task.Run (delegate {
-				sln.SolutionItemAdded += delegate(object sender, SolutionItemChangeEventArgs e) {
-					var newProject = e.SolutionItem as Project;
-					if (newProject == null)
-						return;
-					UpdateCommentTagsForProject (sln, newProject, token);
-				};
-
-				// Load all tags that are stored in pidb files
-				foreach (Project p in sln.GetAllProjects ()) {
-					UpdateCommentTagsForProject (sln, p, token);
-				}
-			});
-		}
-		
 		void OnWorkspaceItemUnloaded (object sender, WorkspaceItemEventArgs e)
 		{
 			comments.RemoveItemTasks (e.Item, true);
 
-			var solution = e.Item as Solution;
-			if (solution != null) {
+			if (e.Item is Solution solution) {
 				loadedSlns.Remove (solution);
-
-				foreach (Project p in solution.GetAllProjects ()) {
-					projectTags.Remove (p);
-				}
 			}
 		}
 		
 		void LastWorkspaceItemClosed (object sender, EventArgs e)
 		{
 			loadedSlns.Clear ();
-			projectTags.Clear ();
 		}
 
 		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs args)

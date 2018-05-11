@@ -74,7 +74,7 @@ namespace MonoDevelop.CodeIssues
 					if (DataHasTag (data, WellKnownDiagnosticTags.EditAndContinue))
 						continue;
 
-					if (options.TryGetDiagnosticDescriptor (data.Id, out var desc) && !desc.GetIsEnabled (data.Id))
+					if (options.TryGetDiagnosticDescriptor (data.Id, out var desc) && !desc.GetIsEnabled (data.Id, data.IsEnabledByDefault))
 						continue;
 
 					var diagnostic = await data.ToDiagnosticAsync (analysisDocument, cancellationToken, desc);
@@ -128,7 +128,7 @@ namespace MonoDevelop.CodeIssues
 			var location = await data.DataLocation.ConvertLocationAsync (project, cancellationToken).ConfigureAwait (false);
 			var additionalLocations = await data.AdditionalLocations.ConvertLocationsAsync (project, cancellationToken).ConfigureAwait (false);
 
-			DiagnosticSeverity severity = desc != null ? desc.GetSeverity (data.Id, data.Severity) : data.Severity;
+			DiagnosticSeverity severity = desc != null ? desc.GetSeverity (data.Id, data.DefaultSeverity) : data.Severity;
 			
 			return Diagnostic.Create (
 				data.Id, data.Category, data.Message, severity, data.DefaultSeverity,

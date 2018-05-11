@@ -763,6 +763,7 @@
     <Compile Include="MonoDevelop.Core\ObjectPool.cs" />
     <Compile Include="MonoDevelop.Core\SharedPools.cs" />
     <Compile Include="MonoDevelop.Core.Collections\LookupTable.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\FrameworkInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -810,9 +811,9 @@
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs" Condition="Exists('$(MSBuildProjectDirectory)\..\..\..\..\version.config')">
     <MakeDir Directories="$(FullBuildInfo)" />
     <Csc Sources="$(ConfigureScript)" OutputAssembly="$(ConfigureScriptExe)" ToolExe="$(CscToolExe)" ToolPath="$(CscToolPath)" Condition="!Exists('$(ConfigureScriptExe)')" />
-    <Exec Command="$(MonoLauncher)$(ConfigureScriptExe) gen-buildinfo $(FullBuildInfo)" WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <Exec Command="$(MonoLauncher)&quot;$(ConfigureScriptExe)&quot; gen-buildinfo $(FullBuildInfo)" WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" ToolExe="$(CscToolExe)" ToolPath="$(CscToolPath)" />
-    <Exec Command="$(MonoLauncher)$(MSBuildProjectDirectory)\BuildVariables.gen.exe ." WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <Exec Command="$(MonoLauncher)&quot;$(MSBuildProjectDirectory)\BuildVariables.gen.exe&quot; ." WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Delete Files="BuildVariables.gen.exe" />
     <MakeDir Directories="$(OutputPath)" />
     <Exec Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(BuildInfo)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />

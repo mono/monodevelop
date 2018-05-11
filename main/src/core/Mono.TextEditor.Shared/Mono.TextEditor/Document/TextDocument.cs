@@ -160,7 +160,11 @@ namespace Mono.TextEditor
 
 		void SyntaxMode_HighlightingStateChanged (object sender, MonoDevelop.Ide.Editor.LineEventArgs e)
 		{
-			CommitMultipleLineUpdate (e.Line.LineNumber, e.Line.LineNumber);
+			if (e == MonoDevelop.Ide.Editor.LineEventArgs.AllLines) {
+				CommitUpdateAll (true);
+			} else { 
+				CommitMultipleLineUpdate (e.Line.LineNumber, e.Line.LineNumber, true);
+			}
 		}
 
 		void OnSyntaxModeChanged (SyntaxModeChangeEventArgs e)
@@ -229,7 +233,7 @@ namespace Mono.TextEditor
 			(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate += OnTextBufferChangedImmediate;
 			this.TextBuffer.ContentTypeChanged += this.OnTextBufferContentTypeChanged;
 
-			this.VsTextDocument.FileActionOccurred += this.OnTextDocumentFileActionOccured;
+			this.VsTextDocument.FileActionOccurred += this.OnTextDocumentFileActionOccurred;
 
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved;
 			this.diffTracker.SetTrackDocument(this);
@@ -241,7 +245,7 @@ namespace Mono.TextEditor
 			this.TextBuffer.Changed -= this.OnTextBufferChanged;
 			this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
 			this.TextBuffer.Properties.RemoveProperty(typeof(ITextDocument));
-			this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccured;
+			this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccurred;
 			SyntaxMode = null;
 		}
 
@@ -264,7 +268,7 @@ namespace Mono.TextEditor
 
 		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
 		{
-			if (args.Changes == null)
+			if (args.Changes == null || args.Changes.Count == 0)
 				return;
 			var changes = new List<TextChange> ();
 			foreach (var change in args.Changes) {
@@ -303,7 +307,7 @@ namespace Mono.TextEditor
 			this.MimeTypeChanged?.Invoke(this, EventArgs.Empty);
 		}
 
-		void OnTextDocumentFileActionOccured(object sender, Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs args)
+		void OnTextDocumentFileActionOccurred(object sender, Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs args)
 		{
 			if (args.FileActionType == Microsoft.VisualStudio.Text.FileActionTypes.DocumentRenamed)
 			{
@@ -1352,7 +1356,6 @@ namespace Mono.TextEditor
 					RemoveFolding (oldSegments [oldIndex]);
 					oldIndex++;
 				}
-
 				if (oldIndex < oldSegments.Count && offset == oldSegments [oldIndex].Offset) {
 					FoldSegment curSegment = oldSegments [oldIndex];
 					if (curSegment.IsCollapsed && newFoldSegment.Length != curSegment.Length)
@@ -1362,16 +1365,16 @@ namespace Mono.TextEditor
 
 					if (newFoldSegment.IsCollapsed) {
 						foldedSegmentAdded |= !curSegment.IsCollapsed;
-						curSegment.isFolded = true;
+						curSegment.IsCollapsed = true;
 					}
-					if (curSegment.isFolded)
+					if (curSegment.IsCollapsed)
 						newFoldedSegments.Add (curSegment);
 					oldIndex++;
 				} else {
 					newFoldSegment.isAttached = true;
 					foldedSegmentAdded |= newFoldSegment.IsCollapsed;
 					if (oldIndex < oldSegments.Count && newFoldSegment.Length == oldSegments [oldIndex].Length) {
-						newFoldSegment.isFolded = oldSegments [oldIndex].IsCollapsed;
+						newFoldSegment.IsCollapsed = oldSegments [oldIndex].IsCollapsed;
 					}
 					if (newFoldSegment.IsCollapsed)
 						newFoldedSegments.Add (newFoldSegment);
@@ -1501,7 +1504,9 @@ namespace Mono.TextEditor
 
 		public void EnsureSegmentIsUnfolded (int offset, int length)
 		{
-			foreach (var fold in GetFoldingContaining (offset, length).Where (f => f.IsCollapsed)) {
+			foreach (var fold in GetFoldingContaining (offset, length)) {
+				if (!fold.IsCollapsed || fold.EndOffset <= offset)
+					continue;
 				fold.IsCollapsed = false;
 				InformFoldChanged(new FoldSegmentEventArgs(fold));
 			}
@@ -1877,6 +1882,13 @@ namespace Mono.TextEditor
 		public void CommitUpdateAll ()
 		{
 			RequestUpdate (new UpdateAll ());
+			CommitDocumentUpdate ();
+		}
+
+		// TODO: Merge with CommitUpdateAll (ABI break!)
+		public void CommitUpdateAll (bool removeLineCache)
+		{
+			RequestUpdate (new UpdateAll () { RemoveLineCache = removeLineCache});
 			CommitDocumentUpdate ();
 		}
 

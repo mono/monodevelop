@@ -164,8 +164,6 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Initializing Runtime");
 			Runtime.Initialize (true);
 
-			Composition.CompositionManager.InitializeAsync ().Ignore ();
-
 			IdeApp.Customizer.OnCoreInitialized ();
 
 			Counters.Initialization.Trace ("Initializing theme");
@@ -301,6 +299,7 @@ namespace MonoDevelop.Ide
 			startupTimer.Stop ();
 			Counters.Startup.Inc (GetStartupMetadata (startupInfo));
 
+			GLib.Idle.Add (OnIdle);
 			IdeApp.Run ();
 
 			IdeApp.Customizer.OnIdeShutdown ();
@@ -318,6 +317,12 @@ namespace MonoDevelop.Ide
 			MonoDevelop.Components.GtkWorkarounds.Terminate ();
 			
 			return 0;
+		}
+
+		static bool OnIdle ()
+		{
+			Composition.CompositionManager.InitializeAsync ().Ignore ();
+			return false;
 		}
 
 		static DateTime lastIdle;
@@ -560,7 +565,7 @@ namespace MonoDevelop.Ide
 		
 		static void HandleException (Exception ex, bool willShutdown)
 		{
-			var msg = String.Format ("An unhandled exception has occured. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
+			var msg = String.Format ("An unhandled exception has occurred. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
 			var aggregateException = ex as AggregateException;
 			if (aggregateException != null) {
 				aggregateException.Flatten ().Handle (innerEx => {

@@ -32,7 +32,6 @@ using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Projects.Extensions;
 using System.Threading.Tasks;
 using System.Linq;
 
@@ -51,17 +50,13 @@ namespace MonoDevelop.Projects.MSBuild
 		public static readonly MSBuildFileFormat VS2008 = new MSBuildFileFormatVS08 ();
 		public static readonly MSBuildFileFormat VS2010 = new MSBuildFileFormatVS10 ();
 		public static readonly MSBuildFileFormat VS2012 = new MSBuildFileFormatVS12 ();
-		public static readonly MSBuildFileFormat VS2017 = new MSBuildFileFormatVS15 ();
+
+		[Obsolete("This is the same as VS2012")]
+		public static readonly MSBuildFileFormat VS2017 = VS2012;
 
 		public static IEnumerable<MSBuildFileFormat> GetSupportedFormats ()
 		{
-			// Return VS2012 format first since this is the default format used.
-			// If VS2017 is returned first then since it uses the same solution file
-			// version it would be used instead. This would cause the tools version for
-			// new projects added to an existing solution to be changed to 15.0 instead
-			// of using 4.0 which is the current default.
 			yield return VS2012;
-			yield return VS2017;
 			yield return VS2010;
 			yield return VS2008;
 			yield return VS2005;
@@ -72,21 +67,19 @@ namespace MonoDevelop.Projects.MSBuild
 			return GetSupportedFormats ().Where (f => f.CanWriteFile (targetItem));
 		}
 
-		public static MSBuildFileFormat DefaultFormat {
-			get { return VS2012; }
-		}
+		public static MSBuildFileFormat DefaultFormat => VS2012;
 		
-		public string Name {
-			get { return "MSBuild"; }
-		}
+		[Obsolete ("Use ProductDescription or ID")]
+		public string Name => "MSBuild";
 
+		[Obsolete]
 		public abstract Version Version { get; }
 
 		internal SlnFileFormat SlnFileFormat {
 			get { return slnFileFormat; }
 		}
 		
-		public bool SupportsMonikers { get { return SupportedFrameworks == null; } }
+		public bool SupportsMonikers => SupportedFrameworks == null;
 
 		public static bool ToolsSupportMonikers (string toolsVersion)
 		{
@@ -203,7 +196,15 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public virtual string DefaultSchemaVersion { get { return null; } }
 
+		/// <summary>
+		/// Product description for display in UI
+		/// </summary>
 		public abstract string ProductDescription { get; }
+
+		/// <summary>
+		/// Product description for comment in new sln files
+		/// </summary>
+		public virtual string ProductDescriptionComment => ProductDescription;
 
 		public virtual TargetFrameworkMoniker[] SupportedFrameworks {
 			get { return null; }
@@ -231,49 +232,39 @@ namespace MonoDevelop.Projects.MSBuild
 		
 		public abstract string Id { get; }
 	}
-	
-	class MSBuildFileFormatVS05: MSBuildFileFormat
+
+	class MSBuildFileFormatVS05 : MSBuildFileFormat
 	{
-		static readonly TargetFrameworkMoniker[] supportedFrameworks = {
+		public override string Id => "MSBuild05";
+
+		[Obsolete("Unused")]
+		public override Version Version => new Version ("2005");
+
+		public override string DefaultProductVersion => "8.0.50727";
+		public override string DefaultToolsVersion => "2.0";
+		public override string DefaultSchemaVersion => "2.0";
+		public override string SlnVersion => "9.00";
+		public override string ProductDescription => "Visual Studio 2005";
+
+		public override TargetFrameworkMoniker [] SupportedFrameworks { get; } = {
 			TargetFrameworkMoniker.NET_2_0,
 		};
-
-		public override string Id {
-			get { return "MSBuild05"; }
-		}
-
-		public override Version Version {
-			get { return new Version ("2005"); }
-		}
-
-		public override string DefaultProductVersion {
-			get { return "8.0.50727"; }
-		}
-
-		public override string DefaultToolsVersion {
-			get { return "2.0"; }
-		}
-
-		public override string DefaultSchemaVersion {
-			get { return "2.0"; }
-		}
-
-		public override string SlnVersion {
-			get { return "9.00"; }
-		}
-
-		public override string ProductDescription {
-			get { return "Visual Studio 2005"; }
-		}
-
-		public override TargetFrameworkMoniker[] SupportedFrameworks {
-			get { return supportedFrameworks; }
-		}
 	}
 	
 	class MSBuildFileFormatVS08: MSBuildFileFormat
 	{
-		static readonly TargetFrameworkMoniker[] supportedFrameworks = {
+		public override string Id => "MSBuild08";
+
+		[Obsolete ("Unused")]
+		public override Version Version => new Version ("2008");
+
+		public override string DefaultProductVersion => "9.0.21022";
+		public override string DefaultToolsVersion => "3.5";
+		public override string DefaultSchemaVersion => "2.0";
+		public override string SlnVersion => "10.00";
+		public override string ProductDescription => "Visual Studio 2008";
+
+		public override TargetFrameworkMoniker [] SupportedFrameworks { get; } = {
 			TargetFrameworkMoniker.NET_2_0,
 			TargetFrameworkMoniker.NET_3_0,
 			TargetFrameworkMoniker.NET_3_5,
@@ -282,125 +273,45 @@ namespace MonoDevelop.Projects.MSBuild
 			TargetFrameworkMoniker.MONOTOUCH_1_0,
 		};
 
-		public override string Id {
-			get { return "MSBuild08"; }
-		}
-
-		public override Version Version {
-			get { return new Version ("2008"); }
-		}
-
-		public override string DefaultProductVersion {
-			get { return "9.0.21022"; }
-		}
-
-		public override string DefaultToolsVersion {
-			get { return "3.5"; }
-		}
-
-		public override string DefaultSchemaVersion {
-			get { return "2.0"; }
-		}
-
-		public override string SlnVersion {
-			get { return "10.00"; }
-		}
-
-		public override string ProductDescription {
-			get { return "Visual Studio 2008"; }
-		}
-
-		public override TargetFrameworkMoniker[] SupportedFrameworks {
-			get { return supportedFrameworks; }
-		}
 	}
 	
 	class MSBuildFileFormatVS10: MSBuildFileFormat
 	{
-		public override string Id {
-			get { return "MSBuild10"; }
-		}
+		public override string Id => "MSBuild10";
 
-		public override Version Version {
-			get { return new Version ("2010"); }
-		}
+		[Obsolete ("Unused")]
+		public override Version Version => new Version ("2010");
 
-		//WTF VS
-		public override string DefaultProductVersion {
-			get { return "8.0.30703"; }
-		}
-
-		public override string DefaultSchemaVersion {
-			get { return "2.0"; }
-		}
-
-		public override string DefaultToolsVersion {
-			get { return "4.0"; }
-		}
-
-		public override string SlnVersion {
-			get { return "11.00"; }
-		}
-
-		public override string ProductDescription {
-			get { return "Visual Studio 2010"; }
-		}
+		public override string DefaultProductVersion => "8.0.30703";
+		public override string DefaultSchemaVersion => "2.0";
+		public override string DefaultToolsVersion => "4.0";
+		public override string SlnVersion => "11.00";
+		public override string ProductDescription => "Visual Studio 2010";
 	}
 
 	// this is actually VS2010 SP1 and later
 	class MSBuildFileFormatVS12: MSBuildFileFormat
 	{
-		public override string Id {
-			get { return "MSBuild12"; }
-		}
+		public override string Id => "MSBuild12";
 
-		public override Version Version {
-			get { return new Version ("2012"); }
-		}
+		[Obsolete ("Unused")]
+		public override Version Version => new Version ("2012");
 
-		public override string DefaultToolsVersion {
-			get { return "4.0"; }
-		}
+		// This is mostly irrelevant, the builder always uses the latest
+		// tools version. It's only used for new projects created with
+		// the old project template engine.
+		public override string DefaultToolsVersion => "4.0";
 
-		public override string SlnVersion {
-			get { return "12.00"; }
-		}
+		public override string SlnVersion => "12.00";
 
-		public override string ProductDescription {
-			get { return "Visual Studio 2012"; }
-		}
+		public override string ProductDescription => "Visual Studio 2012+";
+
+		// This matches the value used by VS 2017
+		public override string ProductDescriptionComment => "Visual Studio 15";
 
 		protected override bool SupportsToolsVersion (string version)
 		{
-			return version == "4.0" || version == "12.0" || version == "14.0";
-		}
-	}
-
-	class MSBuildFileFormatVS15: MSBuildFileFormat
-	{
-		public override string Id {
-			get { return "MSBuild15"; }
-		}
-
-		public override Version Version {
-			get { return new Version ("2017"); }
-		}
-
-		public override string DefaultToolsVersion {
-			get { return "15.0"; }
-		}
-
-		public override string SlnVersion {
-			get { return "12.00"; }
-		}
-
-		public override string ProductDescription {
-			get { return "Visual Studio 2017"; }
-		}
-
-		protected override bool SupportsToolsVersion (string version)
-		{
-			return version == "15.0";
+			return Version.TryParse (version, out Version v) && v <= new Version (15, 0);
 		}
 	}
 }

@@ -1348,12 +1348,12 @@ namespace MonoDevelop.Xml.Formatting
 			WriteStartDocumentCore (false, false);
 		}
 
-		void ShiftStateTopLevel (string occured, bool allowAttribute, bool dontCheckXmlDecl, bool isCharacter)
+		void ShiftStateTopLevel (string occurred, bool allowAttribute, bool dontCheckXmlDecl, bool isCharacter)
 		{
 			switch (state) {
 			case WriteState.Error:
 			case WriteState.Closed:
-				throw StateError (occured);
+				throw StateError (occurred);
 			case WriteState.Start:
 				if (isCharacter)
 					CheckMixedContentState ();
@@ -1387,12 +1387,12 @@ namespace MonoDevelop.Xml.Formatting
 				elements [open_count - 1].HasSimple = true;
 		}
 
-		void ShiftStateContent (string occured, bool allowAttribute)
+		void ShiftStateContent (string occurred, bool allowAttribute)
 		{
 			switch (state) {
 			case WriteState.Error:
 			case WriteState.Closed:
-					throw StateError (occured);
+					throw StateError (occurred);
 			case WriteState.Prolog:
 			case WriteState.Start:
 				if (!allow_doc_fragment || is_document_entity)
@@ -1547,9 +1547,9 @@ namespace MonoDevelop.Xml.Formatting
 			return new InvalidOperationException (msg);
 		}
 
-		Exception StateError (string occured)
+		Exception StateError (string occurred)
 		{
-			return InvalidOperation (String.Format ("This XmlWriter does not accept {0} at this state {1}.", occured, state));
+			return InvalidOperation (String.Format ("This XmlWriter does not accept {0} at this state {1}.", occurred, state));
 		}
 	}
 

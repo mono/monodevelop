@@ -275,26 +275,29 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 		static void AddProtocolMembers (SemanticModel semanticModel, HashSet<ISymbol> result, INamedTypeSymbol type, CancellationToken cancellationToken)
 		{
-			if (!HasProtocolAttribute (type, out string name))
-				return;
-			var protocolType = semanticModel.Compilation.GlobalNamespace.GetAllTypesMD (cancellationToken).FirstOrDefault (t => string.Equals (t.Name, name, StringComparison.OrdinalIgnoreCase));
-			if (protocolType == null)
-				return;
+			try {
+				if (!HasProtocolAttribute (type, out string name))
+					return;
+				var protocolType = semanticModel.Compilation.GlobalNamespace.GetAllTypesMD (cancellationToken).FirstOrDefault (t => string.Equals (t.Name, name, StringComparison.OrdinalIgnoreCase));
+				if (protocolType == null)
+					return;
 
-			foreach (var member in protocolType.GetMembers ().OfType<IMethodSymbol> ()) {
-				if (member.ExplicitInterfaceImplementations.Length > 0 || member.IsAbstract || !member.IsVirtual)
-					continue;
-				if (member.GetAttributes ().Any (a => a.AttributeClass.Name == "ExportAttribute" && IsFoundationNamespace (a.AttributeClass.ContainingNamespace.GetFullName ()))) {
-					result.Add (member);
+				foreach (var member in protocolType.GetMembers ().OfType<IMethodSymbol> ()) {
+					if (member.ExplicitInterfaceImplementations.Length > 0 || member.IsAbstract || !member.IsVirtual)
+						continue;
+					if (member.GetAttributes ().Any (a => a.AttributeClass.Name == "ExportAttribute" && IsFoundationNamespace (a.AttributeClass.ContainingNamespace.GetFullName ()))) {
+						result.Add (member);
+					}
+
 				}
-
-			}
-			foreach (var member in protocolType.GetMembers ().OfType<IPropertySymbol> ()) {
-				if (member.ExplicitInterfaceImplementations.Length > 0 || member.IsAbstract || !member.IsVirtual)
-					continue;
-				if (member.GetMethod != null && member.GetMethod.GetAttributes ().Any (a => a.AttributeClass.Name == "ExportAttribute" && IsFoundationNamespace (a.AttributeClass.ContainingNamespace.GetFullName ())) ||
-					member.SetMethod != null && member.SetMethod.GetAttributes ().Any (a => a.AttributeClass.Name == "ExportAttribute" && IsFoundationNamespace (a.AttributeClass.ContainingNamespace.GetFullName ())))
-					result.Add (member);
+				foreach (var member in protocolType.GetMembers ().OfType<IPropertySymbol> ()) {
+					if (member.ExplicitInterfaceImplementations.Length > 0 || member.IsAbstract || !member.IsVirtual)
+						continue;
+					if (member.GetMethod != null && member.GetMethod.GetAttributes ().Any (a => a.AttributeClass.Name == "ExportAttribute" && IsFoundationNamespace (a.AttributeClass.ContainingNamespace.GetFullName ())) ||
+						member.SetMethod != null && member.SetMethod.GetAttributes ().Any (a => a.AttributeClass.Name == "ExportAttribute" && IsFoundationNamespace (a.AttributeClass.ContainingNamespace.GetFullName ())))
+						result.Add (member);
+				}
+			} catch (OperationCanceledException) {
 			}
 		}
 		internal static bool IsFoundationNamespace (string ns)

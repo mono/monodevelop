@@ -54,8 +54,7 @@ namespace MonoDevelop.Projects.MSBuild
 		public const string GenericItemGuid = "{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}";
 		public const string FolderTypeGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
 
-		//NOTE: default toolsversion should match the default format.
-		// remember to update the builder process' app.config too
+		[Obsolete ("This no longer has any purpose")]
 		public const string DefaultFormat = "MSBuild12";
 
 		internal const string ToolsVersion = "15.0";

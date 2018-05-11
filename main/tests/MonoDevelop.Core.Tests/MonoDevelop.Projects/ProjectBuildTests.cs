@@ -796,6 +796,16 @@ namespace MonoDevelop.Projects
 
 			sol.Dispose ();
 		}
+
+		[Test]
+		public async Task RecoverFromBuilderCrash ()
+		{
+			string projFile = Util.GetSampleProject ("builder-manager-tests", "crasher", "ConsoleProject.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var result = await p.Build (Util.GetMonitor (), ConfigurationSelector.Default);
+				Assert.AreEqual (1, result.ErrorCount, "#1");
+			}
+		}
 	}
 
 	class EvalContextCreationTestExtension : ProjectExtension

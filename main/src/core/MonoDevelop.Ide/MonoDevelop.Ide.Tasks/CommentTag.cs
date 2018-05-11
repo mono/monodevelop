@@ -59,11 +59,10 @@ namespace MonoDevelop.Ide.Tasks
 				if (!SpecialCommentTags.Equals (value)) {
 					specialCommentTags = value;
 					PropertyService.Set ("Monodevelop.TaskListTokens", ToString (specialCommentTags));
-					if (SpecialCommentTagsChanged != null)
-						SpecialCommentTagsChanged (null, EventArgs.Empty);
+					SpecialCommentTagsChanged?.Invoke (null, EventArgs.Empty);
 				}
 			}
-		}		
+		}
 		
 
 		static List<CommentTag> CreateCommentTags (string tagListString)
@@ -84,12 +83,12 @@ namespace MonoDevelop.Ide.Tasks
 			return list;
 		}
 		
-		static string ToString (List<CommentTag> list)
+		internal static string ToString (List<CommentTag> list, string separator = ";")
 		{
 			string res = "";
 			for (int n=0; n<list.Count; n++) {
 				if (n > 0)
-					res += ";";
+					res += separator;
 				res += list [n].Tag + ":" + list [n].Priority;
 			}
 			return res;

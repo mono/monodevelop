@@ -94,10 +94,10 @@ namespace MonoDevelop.Core
 		{
 			this.cancellationTokenSource = cancellationTokenSource;
 			this.context = context;
-			logWriter = new LogTextWriter ();
+			logWriter = new LogTextWriter (context);
 			logWriter.TextWritten += DoWriteLog;
 
-			errorLogWriter = new LogTextWriter ();
+			errorLogWriter = new LogTextWriter (context);
 			errorLogWriter.TextWritten += DoWriteErrorLog;
 		}
 
