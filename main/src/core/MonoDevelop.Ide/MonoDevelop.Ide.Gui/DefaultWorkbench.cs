@@ -1537,21 +1537,47 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			string fullData = System.Text.Encoding.UTF8.GetString (selection_data.Data);
 
+			var workspaceItems = new List<FilePath> ();
+			var files = new List<FilePath> ();
+
 			foreach (string individualFile in fullData.Split ('\n')) {
 				string file = individualFile.Trim ();
-				if (file.StartsWith ("file://", StringComparison.Ordinal)) {
-					var filePath = new FilePath (file);
+				if (!file.StartsWith ("file://", StringComparison.Ordinal))
+					continue;
 
-					try {
-						if (Services.ProjectService.IsWorkspaceItemFile (filePath))
-							IdeApp.Workspace.OpenWorkspaceItem (filePath);
-						else
-							IdeApp.Workbench.OpenDocument (filePath, options: OpenDocumentOptions.DefaultInternal, project: null);
-					} catch (Exception e) {
-						LoggingService.LogError ($"unable to open file {filePath}", e);
-					}
+				var filePath = new FilePath (file);
+				if (filePath.IsDirectory)
+					filePath = Directory.EnumerateFiles (filePath).FirstOrDefault (p => Services.ProjectService.IsWorkspaceItemFile (p));
+				if (!filePath.IsNullOrEmpty) {
+					if (Services.ProjectService.IsWorkspaceItemFile (filePath))
+						workspaceItems.Add (filePath);
+					else
+						files.Add (filePath);
 				}
 			}
+
+			Gdk.ModifierType mtype = GtkWorkarounds.GetCurrentKeyModifiers ();
+			bool inWorkspace = (mtype & Gdk.ModifierType.ControlMask) != 0;
+			if (Platform.IsMac && !inWorkspace)
+				inWorkspace = (mtype & Gdk.ModifierType.Mod2Mask) != 0;
+
+			// open solutions first
+			for (int i = 0; i < workspaceItems.Count; i++) {
+				try {
+					IdeApp.Workspace.OpenWorkspaceItem (workspaceItems [i], i == 0 ? !inWorkspace : false);
+				} catch (Exception e) {
+					LoggingService.LogError ($"unable to open file {workspaceItems [i]}", e);
+				}
+			}
+
+			foreach (var file in files) {
+				try {
+					IdeApp.Workbench.OpenDocument (file, options: OpenDocumentOptions.DefaultInternal, project: null);
+				} catch (Exception e) {
+					LoggingService.LogError ($"unable to open file {file}", e);
+				}
+			}
+
 			base.OnDragDataReceived (context, x, y, selection_data, info, time_);
 		}
 
