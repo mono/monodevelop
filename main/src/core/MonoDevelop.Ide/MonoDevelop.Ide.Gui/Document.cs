@@ -868,7 +868,7 @@ namespace MonoDevelop.Ide.Gui
 					SubscribeRoslynWorkspace ();
 					analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
 					if (analysisDocument != null && !RoslynWorkspace.IsDocumentOpen(analysisDocument)) {
-						TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
+						TypeSystemService.InformDocumentOpen (analysisDocument, Editor, this);
 						OnAnalysisDocumentChanged (EventArgs.Empty);
 					}
 					return Task.CompletedTask;
@@ -912,7 +912,7 @@ namespace MonoDevelop.Ide.Gui
 							RoslynWorkspace = task.Result.FirstOrDefault (); // 1 solution loaded ->1 workspace as result
 							SubscribeRoslynWorkspace ();
 							analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
-							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
+							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor, this);
 							OnAnalysisDocumentChanged (EventArgs.Empty);
 						});
 					}
@@ -1169,6 +1169,12 @@ namespace MonoDevelop.Ide.Gui
 			} catch (NotSupportedException) {
 				return null;
 			}
+		}
+
+		internal override void UpdateDocumentId (Microsoft.CodeAnalysis.DocumentId newId)
+		{
+			this.analysisDocument = newId;
+			OnAnalysisDocumentChanged (EventArgs.Empty);
 		}
 	}
 	

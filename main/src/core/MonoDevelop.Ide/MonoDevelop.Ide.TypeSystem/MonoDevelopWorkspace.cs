@@ -806,34 +806,35 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
-		internal void InformDocumentOpen (DocumentId documentId, TextEditor editor)
+
+		Dictionary<DocumentId, (SourceTextContainer Container, TextEditor Editor, DocumentContext Context)> openDocuments = new Dictionary<DocumentId, (SourceTextContainer, TextEditor, DocumentContext)> ();
+		internal void InformDocumentOpen (DocumentId documentId, TextEditor editor, DocumentContext context)
 		{
-			var document = InternalInformDocumentOpen (documentId, editor);
+			var document = InternalInformDocumentOpen (documentId, editor, context);
 			if (document as Document != null) {
 				foreach (var linkedDoc in ((Document)document).GetLinkedDocumentIds ()) {
-					InternalInformDocumentOpen (linkedDoc, editor);
+					InternalInformDocumentOpen (linkedDoc, editor, context);
 				}
 			}
 		}
 
-		TextDocument InternalInformDocumentOpen (DocumentId documentId, TextEditor editor)
+		TextDocument InternalInformDocumentOpen (DocumentId documentId, TextEditor editor, DocumentContext context)
 		{
 			var project = this.CurrentSolution.GetProject (documentId.ProjectId);
 			if (project == null)
 				return null;
 			TextDocument document = project.GetDocument (documentId) ?? project.GetAdditionalDocument (documentId);
-			if (document == null || openDocuments.Any (d => d.Id == documentId)) {
+			if (document == null || openDocuments.ContainsKey (documentId)) {
 				return document;
 			}
-			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (this, documentId, editor);
+			var textContainer = new MonoDevelopSourceTextContainer (this, documentId, editor);
 			lock (openDocuments) {
-				openDocuments.Add (monoDevelopSourceTextContainer);
+				openDocuments.Add (documentId, (textContainer, editor, context));
 			}
 			if (document is Document) {
-				OnDocumentOpened (documentId, monoDevelopSourceTextContainer);
+				OnDocumentOpened (documentId, textContainer);
 			} else {
-				OnAdditionalDocumentOpened (documentId, monoDevelopSourceTextContainer);
+				OnAdditionalDocumentOpened (documentId, textContainer);
 			}
 			return document;
 		}
@@ -849,10 +850,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			base.OnDocumentClosing (documentId);
 			lock (openDocuments) {
-				var openDoc = openDocuments.FirstOrDefault (d => d.Id == documentId);
-				if (openDoc != null) {
-					openDoc.Dispose ();
-					openDocuments.Remove (openDoc);
+				if (openDocuments.TryGetValue (documentId, out (SourceTextContainer Container, TextEditor Editor, DocumentContext Context) result)) {
+					((IDisposable)result.Container).Dispose ();
+					openDocuments.Remove (documentId);
 				}
 			}
 		}
@@ -867,10 +867,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			try {
 				lock (openDocuments) {
-					var openDoc = openDocuments.FirstOrDefault (d => d.Id == analysisDocument);
-					if (openDoc != null) {
-						openDoc.Dispose ();
-						openDocuments.Remove (openDoc);
+					if (openDocuments.TryGetValue (analysisDocument, out (SourceTextContainer Container, TextEditor Editor, DocumentContext Context) result)) {
+						((IDisposable)result.Container).Dispose ();
+						openDocuments.Remove (analysisDocument);
 					} else {
 						//Apparently something else opened this file via AddAndOpenDocumentInternal(e.g. .cshtml)
 						//it's job of whatever opened to also call CloseAndRemoveDocumentInternal
@@ -881,10 +880,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				var loader = new MonoDevelopTextLoader (filePath);
 				var document = this.GetDocument (analysisDocument);
-				var openDocument = this.openDocuments.FirstOrDefault (w => w.Id == analysisDocument);
-				if (openDocument != null) {
-					openDocument.Dispose ();
-					openDocuments.Remove (openDocument);
+				lock (openDocuments) {
+					if (openDocuments.TryGetValue (analysisDocument, out (SourceTextContainer Container, TextEditor Editor, DocumentContext Context) result)) {
+						((IDisposable)result.Container).Dispose ();
+						openDocuments.Remove (analysisDocument);
+					}
 				}
 
 				if (document == null) {
@@ -1530,7 +1530,25 @@ namespace MonoDevelop.Ide.TypeSystem
 								LoggingService.LogError ("Failed to reload project", t.Exception);
 								return;
 							}
-							OnProjectReloaded (t.Result);
+							try {
+								lock (projectModifyLock) {
+									// correct openDocument ids - they may change due to project reload.
+									foreach (var openDoc in openDocuments) {
+										if (openDoc.Value.Context.Project == project) {
+											var doc = openDoc.Value.Context.AnalysisDocument;
+											if (doc == null)
+												continue;
+											var newDocument = t.Result.Documents.FirstOrDefault (d => d.FilePath == doc.FilePath);
+											if (newDocument == null || newDocument.Id == doc.Id)
+												continue;
+											openDoc.Value.Context.UpdateDocumentId (newDocument.Id);
+										}
+									}
+									OnProjectReloaded (t.Result);
+								}
+							} catch (Exception e) {
+								LoggingService.LogError ("Error while reloading project " + project.Name, e);
+							}
 						}, cts.Token);
 					} else {
 						modifiedProjects.Add (project);
