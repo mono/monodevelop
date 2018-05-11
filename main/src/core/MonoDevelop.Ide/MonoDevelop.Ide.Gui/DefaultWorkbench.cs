@@ -1546,7 +1546,7 @@ namespace MonoDevelop.Ide.Gui
 						if (Services.ProjectService.IsWorkspaceItemFile (filePath))
 							IdeApp.Workspace.OpenWorkspaceItem (filePath);
 						else
-							IdeApp.Workbench.OpenDocument (filePath, null);
+							IdeApp.Workbench.OpenDocument (filePath, options: OpenDocumentOptions.DefaultInternal, project: null);
 					} catch (Exception e) {
 						LoggingService.LogError ($"unable to open file {filePath}", e);
 					}

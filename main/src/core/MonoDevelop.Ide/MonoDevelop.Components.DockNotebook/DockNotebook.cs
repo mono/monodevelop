@@ -254,7 +254,7 @@ namespace MonoDevelop.Components.DockNotebook
 						if (Services.ProjectService.IsWorkspaceItemFile (filePath))
 							IdeApp.Workspace.OpenWorkspaceItem(filePath);
 						else
-							IdeApp.Workbench.OpenDocument (filePath, null, -1, -1, MonoDevelop.Ide.Gui.OpenDocumentOptions.Default, null, null, this);
+							IdeApp.Workbench.OpenDocument (filePath, null, -1, -1, MonoDevelop.Ide.Gui.OpenDocumentOptions.DefaultInternal, null, null, this);
 					} catch (Exception e) {
 						MonoDevelop.Core.LoggingService.LogError ("unable to open file {0} exception was :\n{1}", file, e.ToString());
 					}
