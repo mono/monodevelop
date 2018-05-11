@@ -87,10 +87,10 @@
       <HintPath>..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.5.0-rc1\lib\net461\System.ValueTuple.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\build\bin\System.ValueTuple.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
