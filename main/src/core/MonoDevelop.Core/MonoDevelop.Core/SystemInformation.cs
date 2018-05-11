@@ -66,13 +66,9 @@ namespace MonoDevelop.Core
 		}
 		
 		internal abstract void AppendOperatingSystem (StringBuilder sb);
-		
-		IEnumerable<ISystemInformationProvider> InternalGetDescription ()
-		{
-			foreach (var info in AddinManager.GetExtensionObjects<ISystemInformationProvider> ("/MonoDevelop/Core/SystemInformation", false)) {
-				yield return info;
-			}
 
+		public static string GetBuildInformation ()
+		{
 			var sb = new StringBuilder ();
 			// First append the MonoDevelop build information
 			var biFile = ((FilePath)Assembly.GetEntryAssembly ().Location).ParentDirectory.Combine ("buildinfo");
@@ -89,7 +85,7 @@ namespace MonoDevelop.Core
 			}
 
 			// Then append the Xamarin Addins information if it exists
-			biFile = ((FilePath) Assembly.GetEntryAssembly ().Location).ParentDirectory.Combine ("buildinfo_xamarin");
+			biFile = ((FilePath)Assembly.GetEntryAssembly ().Location).ParentDirectory.Combine ("buildinfo_xamarin");
 			if (File.Exists (biFile)) {
 				var lines = File.ReadAllLines (biFile)
 					.Select (l => l.Trim ())
@@ -101,6 +97,18 @@ namespace MonoDevelop.Core
 						sb.AppendLine (line);
 				}
 			}
+
+			return sb.ToString ();
+		}
+		
+		IEnumerable<ISystemInformationProvider> InternalGetDescription ()
+		{
+			foreach (var info in AddinManager.GetExtensionObjects<ISystemInformationProvider> ("/MonoDevelop/Core/SystemInformation", false)) {
+				yield return info;
+			}
+
+			var sb = new StringBuilder ();
+			sb.Append (GetBuildInformation ());
 
 			if (!string.IsNullOrEmpty (MonoDevelop.BuildInfo.BuildLane))
 				sb.Append ("Build lane: ").AppendLine (MonoDevelop.BuildInfo.BuildLane);

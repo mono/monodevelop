@@ -692,7 +692,7 @@ type FSharpFindReferencesProvider () =
         }
         |> StartAsyncAsTask monitor.CancellationToken :> Task
 
-    override x.FindAllReferences(_documentationCommentId, _hintProject, monitor) =
+    override x.FindAllReferences(_documentationCommentId, _hintProject, _monitor) =
         //TODO:
         Task.CompletedTask
 

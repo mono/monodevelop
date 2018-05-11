@@ -3283,18 +3283,11 @@ namespace MonoDevelop.SourceEditor
 			switch (effect) {
 			case TextSegmentMarkerEffect.DottedLine:
 			case TextSegmentMarkerEffect.WavedLine:
-				{
-					var result = new GenericUnderlineMarker (new TextSegment (offset, length), effect);
-					if (color.HasValue)
-						result.Color = color.Value;
-					return result;
-				}
 			case TextSegmentMarkerEffect.Underline:
 				{
 					var result = new GenericUnderlineMarker (new TextSegment (offset, length), effect);
 					if (color.HasValue)
 						result.Color = color.Value;
-					result.Wave = false;
 					return result;
 				}
 
