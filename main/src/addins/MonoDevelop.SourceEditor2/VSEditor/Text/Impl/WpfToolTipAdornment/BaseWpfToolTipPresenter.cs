@@ -112,7 +112,6 @@
             this.Update(content);
 
             this.popup.Closed += this.OnPopupClosed;
-            this.popup.Padding = 4.0;
             this.popup.Visible = true;
            //todo this.popup.BringIntoView();
             this.obscuringTipManager.PushTip(this.textView, this);
@@ -129,9 +128,8 @@
             var vbox = new Xwt.VBox ();
             foreach (var view in contentViewElements)
             {
-                vbox.PackStart (view);
+				vbox.PackStart (view, margin: 4);
             }
-            vbox.Margin = 4.0;
             this.popup.Content = vbox;
         }
 
