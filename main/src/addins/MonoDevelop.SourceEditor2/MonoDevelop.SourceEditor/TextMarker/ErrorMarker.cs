@@ -38,10 +38,9 @@ namespace MonoDevelop.SourceEditor
 
 		readonly Error info;
 
-		public ErrorMarker (Error info, int offset, int length) : base (defaultColor, new TextSegment (offset, length))
+		public ErrorMarker (Error info, int offset, int length) : base (defaultColor, new TextSegment (offset, length), TextSegmentMarkerEffect.WavedLine)
 		{
 			this.info = info;
-			this.Wave = true;
 		}
 
 		public override void Draw (Mono.TextEditor.MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
