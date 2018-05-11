@@ -171,5 +171,41 @@ public class RefBug2
 			});
 			Assert.AreEqual (2, refs.Count);
 		}
+
+		/// <summary>
+		/// Right-click -> FindReferences when used in an interface, returns too many useless results #4709
+		/// </summary>
+		[Test]
+		public async Task TestIssue4709 ()
+		{
+			string testCode = @"
+public interface ITest {
+}
+
+public class Test : ITest
+{
+	public static void Main (string[] args)
+	{
+		Test test;
+	}
+}
+
+";
+			var refs = await GatherReferences (testCode, async project => {
+				var provider = new CSharpFindReferencesProvider ();
+				var monitor = new MockSearchProgressMonitor ();
+				await provider.FindReferences ("T:ITest", project, monitor);
+				return monitor.Results;
+			});
+			Assert.AreEqual (2, refs.Count);
+
+			refs = await GatherReferences (testCode, async project => {
+				var provider = new CSharpFindReferencesProvider ();
+				var monitor = new MockSearchProgressMonitor ();
+				await provider.FindAllReferences ("T:ITest", project, monitor);
+				return monitor.Results;
+			});
+			Assert.AreEqual (4, refs.Count);
+		}
 	}
 }
