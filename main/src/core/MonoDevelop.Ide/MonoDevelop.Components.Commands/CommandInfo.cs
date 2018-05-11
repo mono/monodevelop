@@ -159,6 +159,7 @@ namespace MonoDevelop.Components.Commands
 
 		internal void NotifyChanged ()
 		{
+			Runtime.AssertMainThread ();
 			Changed?.Invoke (this, EventArgs.Empty);
 		}
 
