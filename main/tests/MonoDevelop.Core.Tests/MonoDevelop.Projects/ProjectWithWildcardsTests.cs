@@ -576,7 +576,6 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		//[Ignore ("xbuild bug: RecursiveDir metadata returns the wrong value")]
 		public async Task LoadProjectWithWildcardLinks ()
 		{
 			string solFile = Util.GetSampleProject ("project-with-wildcard-links", "PortableTest.sln");

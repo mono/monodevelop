@@ -398,10 +398,6 @@ namespace MonoDevelop.Packaging.Tests
 			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.iOS", "MyProject.iOS.csproj"), iosProject.FileName);
 			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.NuGet", "MyProject.NuGet.nuproj"), nugetProject.FileName);
 			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.Shared", "MyProject.Shared.shproj"), sharedProject.FileName);
-
-			Assert.IsTrue (androidProject.GetFlavor<DotNetProjectPackagingExtension> ().GetRequiresMSBuild ());
-			Assert.IsTrue (nugetProject.GetFlavor<DotNetProjectPackagingExtension> ().GetRequiresMSBuild ());
-			Assert.IsTrue (iosProject.GetFlavor<DotNetProjectPackagingExtension> ().GetRequiresMSBuild ());
 		}
 	}
 }

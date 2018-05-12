@@ -13,8 +13,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		private global::Gtk.CheckButton buildBeforeTestCheckBox;
 
-		private global::Gtk.CheckButton buildWithMSBuildCheckBox;
-
 		private global::Gtk.CheckButton skipBuildingUnmodifiedProjectsCheckbox;
 
 		private global::Gtk.Alignment alignment1;
@@ -97,18 +95,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w4.Position = 3;
 			w4.Expand = false;
 			w4.Fill = false;
-			// Container child vbox66.Gtk.Box+BoxChild
-			this.buildWithMSBuildCheckBox = new global::Gtk.CheckButton();
-			this.buildWithMSBuildCheckBox.CanFocus = true;
-			this.buildWithMSBuildCheckBox.Name = "buildWithMSBuildCheckBox";
-			this.buildWithMSBuildCheckBox.Label = global::Mono.Unix.Catalog.GetString("Build with MSBuild instead of xbuild");
-			this.buildWithMSBuildCheckBox.DrawIndicator = true;
-			this.buildWithMSBuildCheckBox.UseUnderline = true;
-			this.vbox66.Add(this.buildWithMSBuildCheckBox);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox66[this.buildWithMSBuildCheckBox]));
-			w5.Position = 4;
-			w5.Expand = false;
-			w5.Fill = false;
 			// Container child vbox66.Gtk.Box+BoxChild
 			this.skipBuildingUnmodifiedProjectsCheckbox = new global::Gtk.CheckButton();
 			this.skipBuildingUnmodifiedProjectsCheckbox.CanFocus = true;

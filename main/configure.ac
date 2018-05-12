@@ -298,7 +298,6 @@ src/core/Mono.TextEditor.Platform/Makefile
 src/core/Mono.TextEditor.Shared/Makefile
 src/core/MonoDevelop.Core/Makefile
 src/core/MonoDevelop.Projects.Formats.MSBuild/Makefile
-src/core/MonoDevelop.Projects.Formats.MSBuild/MonoDevelop.Projects.MSBuild.Shared/Makefile
 src/core/MonoDevelop.Ide/Makefile
 src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor.Highlighting/Makefile
 src/core/MonoDevelop.Startup/Makefile

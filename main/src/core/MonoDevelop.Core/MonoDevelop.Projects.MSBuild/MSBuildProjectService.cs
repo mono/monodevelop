@@ -26,25 +26,19 @@
 //
 
 using System;
-using System.Linq;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.IO;
 using System.Globalization;
-using System.Runtime.Serialization.Formatters.Binary;
-using Mono.Addins;
-using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Extensions;
-using MonoDevelop.Core.Serialization;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Assemblies;
-using Cecil = Mono.Cecil;
-using System.Threading;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
-using MonoDevelop.Core.Execution;
 using System.Xml.Linq;
+using Mono.Addins;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -62,6 +56,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		[Obsolete ("This no longer has any purpose")]
 		public const string DefaultFormat = "MSBuild12";
+
+		internal const string ToolsVersion = "15.0";
 
 		static DataContext dataContext;
 
@@ -270,9 +266,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal static string GetDefaultSdksPath (TargetRuntime runtime)
 		{
-			string binDir;
-			GetNewestInstalledToolsVersion (runtime, true, out binDir);
-			return Path.Combine (binDir, "Sdks");
+			return Path.Combine (GetMSBuildBinPath (runtime), "Sdks");
 		}
 
 		internal static IEnumerable<SdkInfo> FindRegisteredSdks ()
@@ -299,8 +293,7 @@ namespace MonoDevelop.Projects.MSBuild
 				list = new List<ImportSearchPathExtensionNode> ();
 				defaultImportSearchPaths [runtime] = list;
 
-				string binDir;
-				GetNewestInstalledToolsVersion (runtime, true, out binDir);
+				string binDir = GetMSBuildBinPath (runtime);
 
 				var configFileName = Platform.IsWindows ? "MSBuild.exe.config" : "MSBuild.dll.config";
 				var configFile = Path.Combine (binDir, configFileName);
@@ -1071,21 +1064,10 @@ namespace MonoDevelop.Projects.MSBuild
 			return true;
 		}
 
-		internal static string GetNewestInstalledToolsVersion (TargetRuntime runtime, bool requiresMicrosoftBuild, out string binDir)
+		internal static string GetMSBuildBinPath (TargetRuntime runtime)
 		{
-			string [] supportedToolsVersions;
-			if (requiresMicrosoftBuild || Runtime.Preferences.BuildWithMSBuild || Platform.IsWindows)
-				supportedToolsVersions = new [] { "15.0"};
-			else
-				supportedToolsVersions = new [] { "14.0", "12.0", "4.0" };
-
-			foreach (var toolsVersion in supportedToolsVersions) {
-				binDir = runtime.GetMSBuildBinPath (toolsVersion);
-				if (binDir != null) {
-					return toolsVersion;
-				}
-			}
-			throw new Exception ("Did not find MSBuild for runtime " + runtime.Id);
+			return runtime.GetMSBuildBinPath (ToolsVersion)
+				?? throw new Exception ("Did not find MSBuild for runtime " + runtime.Id);
 		}
 
 		static Dictionary<string, string> cultureNamesTable;

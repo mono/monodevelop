@@ -295,7 +295,6 @@ namespace MonoDevelop.Projects
 			sol.Dispose ();
 		}
 
-		//[Ignore ("xbuild bug. It is not returning correct values for evaluated-items-without-condition list")]
 		[Test]
 		public async Task EvaluatePropertiesWithConditionalGroup ()
 		{

@@ -99,8 +99,6 @@ namespace MonoDevelop.Core.Assemblies
 #pragma warning restore CS0618 // Type or member is obsolete
 					toolName = "resgen2";
 			}
-			else if (toolName == "msbuild")
-				toolName = "xbuild";
 			
 			return base.GetToolPath (toolName);
 		}

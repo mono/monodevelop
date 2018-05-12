@@ -63,12 +63,6 @@ namespace MonoDevelop.DotNetCore
 			return base.SupportsObject (item) && IsSdkProject ((DotNetProject)item);
 		}
 
-		protected override void Initialize ()
-		{
-			RequiresMicrosoftBuild = true;
-			base.Initialize ();
-		}
-
 		protected override bool OnGetSupportsFramework (TargetFramework framework)
 		{
 			// Allow all SDK style projects to be loaded even if the framework is unknown.

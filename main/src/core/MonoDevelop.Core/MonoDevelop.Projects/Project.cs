@@ -1524,7 +1524,7 @@ namespace MonoDevelop.Projects
 			if (context != null)
 				context.SessionData.TryGetValue (MSBuildSolutionExtension.MSBuildProjectOperationId, out buildSessionId);
 
-			var builder = await RemoteBuildEngineManager.GetRemoteProjectBuilder (FileName, slnFile, runtime, ToolsVersion, RequiresMicrosoftBuild, buildSessionId, setBusy, allowBusy);
+			var builder = await RemoteBuildEngineManager.GetRemoteProjectBuilder (FileName, slnFile, runtime, ToolsVersion, buildSessionId, setBusy, allowBusy);
 
 			if (modifiedInMemory) {
 				modifiedInMemory = false;
@@ -1577,15 +1577,10 @@ namespace MonoDevelop.Projects
 
 		#endregion
 
-		bool requiresMicrosoftBuild;
-
+		[Obsolete ("This property is ignored, msbuild is now always used")]
 		internal protected bool RequiresMicrosoftBuild {
-			get {
-				return requiresMicrosoftBuild || ProjectExtension.IsMicrosoftBuildRequired;
-			}
-			set {
-				requiresMicrosoftBuild = value;
-			}
+			get { return true; }
+			set { }
 		}
 
 		/// <summary>

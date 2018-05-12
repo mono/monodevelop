@@ -112,11 +112,36 @@ namespace MonoDevelop.Core
 		}
 	}
 
+	class ObsoleteConfigurationProperty<T> : ConfigurationProperty<T>
+	{
+		T value;
+
+		public ObsoleteConfigurationProperty (T value)
+		{
+			this.value = value;
+		}
+
+		protected override T OnGetValue ()
+		{
+			return value;
+		}
+
+		protected override bool OnSetValue (T value)
+		{
+			return false;
+		}
+	}
+
 	public abstract class ConfigurationProperty
 	{
 		public static ConfigurationProperty<T> Create<T> (string propertyName, T defaultValue, string oldName = null)
 		{
 			return new CoreConfigurationProperty<T> (propertyName, defaultValue, oldName);
+		}
+
+		public static ConfigurationProperty<T> CreateObsolete<T> (T value)
+		{
+			return new ObsoleteConfigurationProperty<T> (value);
 		}
 	}
 
