@@ -126,7 +126,9 @@ module CompletionServer =
                                 do! writeOutput "SERVER-PROMPT>"
                             return ""
                         else
-                           return currentInput + "\n" + input
+                            match currentInput with
+                            | "" -> return input
+                            | _ -> return currentInput + "\n" + input
                     | Tooltip filter ->
                         let! tooltip = Completion.getCompletionTooltip filter
                         do! writeData "tooltip" tooltip

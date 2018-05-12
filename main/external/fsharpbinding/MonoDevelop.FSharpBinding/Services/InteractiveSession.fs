@@ -1,7 +1,6 @@
 ﻿namespace MonoDevelop.FSharp
 
 open System
-open System.Reflection
 open System.IO
 open System.Diagnostics
 open MonoDevelop.Core
@@ -141,7 +140,7 @@ type InteractiveSession(pathToExe) =
 
     member x.Kill() =
         if not fsiProcess.HasExited then
-            x.SendInput "#q;;"
+            x.SendInput "#q;;" None
             for i in 0 .. 10 do
                 if not fsiProcess.HasExited then
                     LoggingService.logDebug "Interactive: waiting for process exit after #q... %d" (i*200)
@@ -156,10 +155,14 @@ type InteractiveSession(pathToExe) =
 
     member x.KillNow() = fsiProcess.Kill()
 
-    member x.SendInput input =
+    member x.SendInput input documentName =
+        documentName
+        |> Option.iter(fun fileName ->
+            sendCommand (sprintf "input # 0 @\"%s\"" fileName))
+
         for line in String.getLines input do
             sendCommand ("input " + line)
-    
+
     member x.SendCompletionRequest input column =
         sendCommand (sprintf "completion %d %s" column input)
 
@@ -170,8 +173,3 @@ type InteractiveSession(pathToExe) =
         sendCommand (sprintf "tooltip %s" input)
 
     member x.Exited = fsiProcess.Exited
-
-    member x.SetSourceDirectory directory =
-        x.SendInput ("#silentCd @\"" + directory + "\";;")
-        x.SendInput ("System.IO.Directory.SetCurrentDirectory @\"" + directory + "\";;")
-
