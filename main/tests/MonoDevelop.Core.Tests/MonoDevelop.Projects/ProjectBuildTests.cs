@@ -470,6 +470,8 @@ namespace MonoDevelop.Projects
 
 			res = await p.Build (Util.GetMonitor (), p.Configurations [0].Selector);
 			Assert.AreEqual (0, res.ErrorCount);
+
+			sol.Dispose ();
 		}
 
 		[Test ()]
@@ -664,6 +666,8 @@ namespace MonoDevelop.Projects
 			// Build the project. It should work.
 			var res = await sol.Build (Util.GetMonitor (false), "Debug|x86");
 			Assert.IsFalse (res.HasErrors);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -689,6 +693,8 @@ namespace MonoDevelop.Projects
 			await app.Build (Util.GetMonitor (), sol.Configurations ["Release|x86"].Selector, true);
 			Assert.IsTrue (File.Exists (app.ItemDirectory.Combine ("bin", "Release", "lib.dll")));
 			Assert.IsTrue (File.Exists (lib.ItemDirectory.Combine ("bin", "Release", "lib2.dll")));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -712,6 +718,8 @@ namespace MonoDevelop.Projects
 			// Build the app in Debug mode. It should still pick the Extra dependency
 			await app.Build (Util.GetMonitor (false), sol.Configurations ["Debug|x86"].Selector, false);
 			Assert.IsTrue (File.Exists (app.ItemDirectory.Combine ("bin", "Debug", "libextra.dll")));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -738,6 +746,8 @@ namespace MonoDevelop.Projects
 			// Build the app in Debug mode. It should still pick the Extra dependency
 			await app.Build (Util.GetMonitor (false), sol.Configurations ["Debug|x86"].Selector, false);
 			Assert.IsTrue (File.Exists (app.ItemDirectory.Combine ("bin", "Debug", "libextra.dll")));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -757,6 +767,8 @@ namespace MonoDevelop.Projects
 
 			var res = await sol.Build (Util.GetMonitor (), "Debug|x86");
 			Assert.IsFalse (res.HasErrors);
+
+			sol.Dispose ();
 		}
 
 		[Test]
