@@ -666,5 +666,17 @@ namespace MonoDevelop.Projects
 			// Check the delete event is not generated for the file being created and written to.
 			Assert.IsFalse (filesRemoved.Any (file => file.FileName == testFile));
 		}
+
+		[Test]
+		public void WatchDirectories_EmptyDirectory_NoExceptionThrown ()
+		{
+			var directories = new [] {
+				FilePath.Empty
+			};
+
+			Assert.DoesNotThrow (() => {
+				FileWatcherService.WatchDirectories (directories);
+			});
+		}
 	}
 }

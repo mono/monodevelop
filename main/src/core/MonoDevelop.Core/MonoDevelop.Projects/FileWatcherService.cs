@@ -129,6 +129,7 @@ namespace MonoDevelop.Projects
 		public static void WatchDirectories (IEnumerable<FilePath> directories)
 		{
 			lock (watchers) {
+				directories = directories.Where (directory => !directory.IsNullOrEmpty);
 				monitoredDirectories = ImmutableList<FilePath>.Empty.AddRange (directories);
 				UpdateWatchers ();
 			}
