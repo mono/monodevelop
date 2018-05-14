@@ -30,6 +30,8 @@ using Gtk;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.IO;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
@@ -245,21 +247,45 @@ namespace MonoDevelop.Components.DockNotebook
 				return;
 			string fullData = System.Text.Encoding.UTF8.GetString (args.SelectionData.Data);
 
+			var workspaceItems = new List<FilePath> ();
+			var files = new List<FilePath> ();
+
 			foreach (string individualFile in fullData.Split ('\n')) {
 				string file = individualFile.Trim ();
 				if (file.StartsWith ("file://")) {
 					var filePath = new FilePath (file);
-					if (filePath.IsNullOrEmpty || filePath.IsDirectory) // skip directories and empty paths
-						continue;
-					try {
+					if (filePath.IsDirectory)
+						filePath = Directory.EnumerateFiles (filePath).FirstOrDefault (p => Services.ProjectService.IsWorkspaceItemFile (p));
+
+					if (!filePath.IsNullOrEmpty) { // skip empty paths
 						// load solution, when dropped into the content area (not into the tab strip)
 						if (!IsInsideTabStrip (args.X, args.Y) && Services.ProjectService.IsWorkspaceItemFile (filePath))
-							IdeApp.Workspace.OpenWorkspaceItem(filePath);
+							workspaceItems.Add (filePath);
 						else
-							IdeApp.Workbench.OpenDocument (filePath, null, -1, -1, MonoDevelop.Ide.Gui.OpenDocumentOptions.DefaultInternal, null, null, this);
-					} catch (Exception e) {
-						MonoDevelop.Core.LoggingService.LogError ("unable to open file {0} exception was :\n{1}", file, e.ToString());
+							files.Add (filePath);
 					}
+				}
+			}
+
+			Gdk.ModifierType mtype = GtkWorkarounds.GetCurrentKeyModifiers ();
+			bool inWorkspace = (mtype & Gdk.ModifierType.ControlMask) != 0;
+			if (Platform.IsMac && !inWorkspace)
+				inWorkspace = (mtype & Gdk.ModifierType.Mod2Mask) != 0;
+
+			// open solutions first
+			for (int i = 0; i < workspaceItems.Count; i++) {
+				try {
+					IdeApp.Workspace.OpenWorkspaceItem (workspaceItems [i], i == 0 ? !inWorkspace : false);
+				} catch (Exception e) {
+					LoggingService.LogError ($"unable to open file {workspaceItems [i]}", e);
+				}
+			}
+
+			foreach (var file in files) {
+				try {
+					IdeApp.Workbench.OpenDocument (file, null, -1, -1, Ide.Gui.OpenDocumentOptions.DefaultInternal, null, null, this);
+				} catch (Exception e) {
+					LoggingService.LogError ($"unable to open file {file}", e);
 				}
 			}
 		}
