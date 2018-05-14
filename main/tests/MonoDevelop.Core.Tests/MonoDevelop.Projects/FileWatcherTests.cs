@@ -678,5 +678,28 @@ namespace MonoDevelop.Projects
 				FileWatcherService.WatchDirectories (directories);
 			});
 		}
+
+		/// <summary>
+		/// Deleting a file using Finder on the Mac will move the file to the ~/.Trash folder.
+		/// This used to be detected checking the file existed on switching back to the IDE.
+		/// To handle this the rename event is treated as a delete of the source file.
+		/// </summary>
+		[Test]
+		public async Task MoveFileToTrash_RenamesFile ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
+			var tempFile = file.FilePath.ChangeExtension (".cs-temp");
+			ClearFileEventsCaptured ();
+			FileWatcherService.Add (sol);
+
+			FileService.SystemRename (file.FilePath, tempFile);
+
+			await WaitForFileRemoved (file.FilePath);
+
+			AssertFileRemoved (file.FilePath);
+		}
 	}
 }
