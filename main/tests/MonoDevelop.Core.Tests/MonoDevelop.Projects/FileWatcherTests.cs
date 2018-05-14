@@ -44,9 +44,9 @@ namespace MonoDevelop.Projects
 		List<FileEventInfo> fileChanges;
 		List<FileEventInfo> filesRemoved;
 		TaskCompletionSource<bool> fileChangesTask;
-		FilePath waitingForFileChangeFileName;
+		List<FilePath> waitingForFileChangeFileNames;
 		TaskCompletionSource<bool> fileRemovedTask;
-		FilePath waitingForFileToBeRemoved;
+		List<FilePath> waitingForFilesToBeRemoved;
 
 		[SetUp]
 		public void Init ()
@@ -78,15 +78,26 @@ namespace MonoDevelop.Projects
 		{
 			fileChanges.Clear ();
 			filesRemoved.Clear ();
+
+			waitingForFilesToBeRemoved = null;
+			waitingForFileChangeFileNames = null;
+
+			fileChangesTask = new TaskCompletionSource<bool> ();
+			fileRemovedTask = new TaskCompletionSource<bool> ();
 		}
 
 		void OnFileChanged (object sender, FileEventArgs e)
 		{
 			fileChanges.AddRange (e);
 
-			if (waitingForFileChangeFileName.IsNotNull) {
-				if (fileChanges.Any (file => file.FileName == waitingForFileChangeFileName)) {
-					fileChangesTask.SetResult (true);
+			if (waitingForFileChangeFileNames != null) {
+				lock (fileChangesTask) {
+					int removedCount = waitingForFileChangeFileNames.RemoveAll (file => {
+						return fileChanges.Any (fileChange => fileChange.FileName == file);
+					});
+					if (removedCount > 0 && !waitingForFileChangeFileNames.Any ()) {
+						fileChangesTask.TrySetResult (true);
+					}
 				}
 			}
 		}
@@ -95,9 +106,14 @@ namespace MonoDevelop.Projects
 		{
 			filesRemoved.AddRange (e);
 
-			if (waitingForFileToBeRemoved.IsNotNull) {
-				if (filesRemoved.Any (file => file.FileName == waitingForFileToBeRemoved)) {
-					fileRemovedTask.SetResult (true);
+			if (waitingForFilesToBeRemoved != null) {
+				lock (fileRemovedTask) {
+					int removedCount = waitingForFilesToBeRemoved.RemoveAll (file => {
+						return filesRemoved.Any (fileChange => fileChange.FileName == file);
+					});
+					if (removedCount > 0 && !waitingForFilesToBeRemoved.Any ()) {
+						fileRemovedTask.TrySetResult (true);
+					}
 				}
 			}
 		}
@@ -110,6 +126,16 @@ namespace MonoDevelop.Projects
 
 		Task WaitForFileChanged (FilePath fileName, int millisecondsTimeout = 2000)
 		{
+			return WaitForFilesChanged (new [] { fileName }, millisecondsTimeout);
+		}
+
+		/// <summary>
+		/// File change events seem to happen out of order sometimes so allow the tests to
+		/// specify a set of files.
+		/// </summary>
+		Task WaitForFilesChanged (FilePath[] fileNames, int millisecondsTimeout = 2000)
+		{
+			waitingForFileChangeFileNames = new List<FilePath> (fileNames);
 			return Task.WhenAny (Task.Delay (millisecondsTimeout), fileChangesTask.Task);
 		}
 
@@ -121,6 +147,16 @@ namespace MonoDevelop.Projects
 
 		Task WaitForFileRemoved (FilePath fileName, int millisecondsTimeout = 2000)
 		{
+			return WaitForFilesRemoved (new [] { fileName }, millisecondsTimeout);
+		}
+
+		/// <summary>
+		/// File remove events seem to happen out of order sometimes so allow the tests to
+		/// specify a set of files.
+		/// </summary>
+		Task WaitForFilesRemoved (FilePath[] fileNames, int millisecondsTimeout = 2000)
+		{
+			waitingForFilesToBeRemoved = new List<FilePath> (fileNames);
 			return Task.WhenAny (Task.Delay (millisecondsTimeout), fileRemovedTask.Task);
 		}
 
@@ -252,7 +288,7 @@ namespace MonoDevelop.Projects
 
 			TextFileUtility.WriteText (file1.FilePath, string.Empty, Encoding.UTF8);
 			TextFileUtility.WriteText (file2.FilePath, string.Empty, Encoding.UTF8);
-			await WaitForFileChanged (file2.FilePath);
+			await WaitForFilesChanged (new [] { file1.FilePath, file2.FilePath});
 
 			AssertFileChanged (file1.FilePath);
 			AssertFileChanged (file2.FilePath);
@@ -294,7 +330,7 @@ namespace MonoDevelop.Projects
 
 				TextFileUtility.WriteText (file1.FilePath, string.Empty, Encoding.UTF8);
 				TextFileUtility.WriteText (file2.FilePath, string.Empty, Encoding.UTF8);
-				await WaitForFileChanged (file2.FilePath);
+				await WaitForFilesChanged (new [] { file1.FilePath, file2.FilePath });
 
 				AssertFileChanged (file1.FilePath);
 				AssertFileChanged (file2.FilePath);
@@ -319,7 +355,7 @@ namespace MonoDevelop.Projects
 
 				TextFileUtility.WriteText (file1.FilePath, string.Empty, Encoding.UTF8);
 				TextFileUtility.WriteText (file2.FilePath, string.Empty, Encoding.UTF8);
-				await WaitForFileChanged (file2.FilePath);
+				await WaitForFilesChanged (new [] { file1.FilePath, file2.FilePath });
 
 				AssertFileChanged (file1.FilePath);
 				AssertFileChanged (file2.FilePath);
@@ -464,7 +500,7 @@ namespace MonoDevelop.Projects
 
 			TextFileUtility.WriteText (file1, string.Empty, Encoding.UTF8);
 			TextFileUtility.WriteText (file2, string.Empty, Encoding.UTF8);
-			await WaitForFileChanged (file2);
+			await WaitForFilesChanged (new [] { file1, file2 });
 
 			AssertFileChanged (file1);
 			AssertFileChanged (file2);
@@ -479,7 +515,7 @@ namespace MonoDevelop.Projects
 
 			TextFileUtility.WriteText (file2, string.Empty, Encoding.UTF8);
 			TextFileUtility.WriteText (file1, string.Empty, Encoding.UTF8);
-			await WaitForFileChanged (file1);
+			await WaitForFilesChanged (new [] { file1, file2 });
 
 			AssertFileChanged (file1);
 			Assert.IsFalse (fileChanges.Any (f => f.FileName == file2));
@@ -504,9 +540,7 @@ namespace MonoDevelop.Projects
 			File.Delete (file1);
 			File.Delete (file2);
 
-			// Wait for second file so we can detect multiple delete events for the
-			// first file deleted.
-			await WaitForFileRemoved (file2);
+			await WaitForFilesRemoved (new [] { file1, file2 });
 
 			AssertFileRemoved (file1);
 			AssertFileRemoved (file2);
@@ -542,7 +576,7 @@ namespace MonoDevelop.Projects
 
 			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
 			TextFileUtility.WriteText (otherFile.FilePath, string.Empty, Encoding.UTF8);
-			await WaitForFileChanged (otherFile.FilePath);
+			await WaitForFilesChanged (new [] { file.FilePath, otherFile.FilePath });
 			Assert.IsFalse (fileChanges.Any (f => f.FileName == file.FilePath));
 		}
 
@@ -574,7 +608,7 @@ namespace MonoDevelop.Projects
 
 				TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
 				TextFileUtility.WriteText (otherFile, string.Empty, Encoding.UTF8);
-				await WaitForFileChanged (otherFile);
+				await WaitForFilesChanged (new [] { file.FilePath, otherFile });
 				Assert.IsFalse (fileChanges.Any (f => f.FileName == file.FilePath));
 			}
 		}
@@ -608,7 +642,7 @@ namespace MonoDevelop.Projects
 
 			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
 			TextFileUtility.WriteText (file2.FilePath, string.Empty, Encoding.UTF8);
-			await WaitForFileChanged (file2.FilePath);
+			await WaitForFilesChanged (new [] { file.FilePath, file2.FilePath });
 
 			AssertFileChanged (file2.FilePath);
 			Assert.IsFalse (fileChanges.Any (f => f.FileName == file.FilePath));
@@ -658,8 +692,7 @@ namespace MonoDevelop.Projects
 			File.WriteAllText (testFile, "test1");
 			File.WriteAllText (rootProject, "test2");
 
-			// Wait for second file to be changed to allow first file events to be processed.
-			await WaitForFileChanged (rootProject);
+			await WaitForFilesChanged (new [] { rootProject, testFile });
 
 			AssertFileChanged (rootProject);
 
