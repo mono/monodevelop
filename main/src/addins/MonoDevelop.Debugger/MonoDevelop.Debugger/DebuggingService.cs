@@ -1328,6 +1328,25 @@ namespace MonoDevelop.Debugger
 
 			return info != null ? info.Evaluator : null;
 		}
+
+		static Task<CompletionData> GetExpressionCompletionData (string exp, StackFrame frame, CancellationToken token)
+		{
+			Document doc = IdeApp.Workbench.GetDocument (frame.SourceLocation.FileName);
+			if (doc == null)
+				return null;
+			var completionProvider = doc.GetContent<IDebuggerCompletionProvider> ();
+			if (completionProvider == null)
+				return null;
+			return completionProvider.GetExpressionCompletionData (exp, frame, token);
+		}
+
+		public static async Task<CompletionData> GetCompletionDataAsync (StackFrame frame, string exp, CancellationToken token = default (CancellationToken))
+		{
+			var result = await GetExpressionCompletionData (exp, frame, token);
+			if (result != null)
+				return result;
+			return frame.GetExpressionCompletionData (exp);
+		}
 	}
 
 	class FeatureCheckerHandlerFactory : IExecutionHandler

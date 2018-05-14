@@ -201,6 +201,7 @@
     <Compile Include="Gui\MonoDevelop.Debugger.DebugApplicationDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs" />
+    <Compile Include="MonoDevelop.Debugger\IDebuggerCompletionProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

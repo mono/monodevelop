@@ -29,6 +29,7 @@ using System;
 using MonoDevelop.Ide.CodeCompletion;
 using Gtk;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Threading;
 
 namespace MonoDevelop.Debugger
 {
@@ -97,20 +98,25 @@ namespace MonoDevelop.Debugger
 		{
 			return char.IsLetter (c) || c == '_' || c == '.';
 		}
-
-		void PopupCompletion (Entry entry)
+		CancellationTokenSource cts = new CancellationTokenSource ();
+		async void PopupCompletion (Entry entry)
 		{
-			char c = (char)Gdk.Keyval.ToUnicode (keyValue);
-			if (currentCompletionData == null && IsCompletionChar (c)) {
-				string expr = entry.Text.Substring (0, entry.CursorPosition);
-				currentCompletionData = GetCompletionData (expr);
-				if (currentCompletionData != null) {
-					DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
-					ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (expr.Length - currentCompletionData.ExpressionLength);
-					CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
-				} else {
-					currentCompletionData = null;
+			try {
+				char c = (char)Gdk.Keyval.ToUnicode (keyValue);
+				if (currentCompletionData == null && IsCompletionChar (c)) {
+					string expr = entry.Text.Substring (0, entry.CursorPosition);
+					cts.Cancel ();
+					cts = new CancellationTokenSource ();
+					if (valueTree.Frame == null)
+						return;
+					currentCompletionData = await DebuggingService.GetCompletionDataAsync (valueTree.Frame, expr, cts.Token);
+					if (currentCompletionData != null) {
+						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
+						ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (expr.Length - currentCompletionData.ExpressionLength);
+						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
+					}
 				}
+			} catch (OperationCanceledException) {
 			}
 		}
 
@@ -144,14 +150,6 @@ namespace MonoDevelop.Debugger
 		void OnEditFocusOut (object sender, FocusOutEventArgs args)
 		{
 			CompletionWindowManager.HideWindow ();
-		}
-
-		Mono.Debugging.Client.CompletionData GetCompletionData (string exp)
-		{
-			if (valueTree.Frame != null)
-				return valueTree.Frame.GetExpressionCompletionData (exp);
-
-			return null;
 		}
 
 		#region ICompletionWidget implementation 
