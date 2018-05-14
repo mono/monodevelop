@@ -241,51 +241,44 @@ namespace MonoDevelop.Components.DockNotebook
 			tabStrip.InitSize ();
 		}
 
-		void OnDragDataReceived (object o, Gtk.DragDataReceivedArgs args)
+		async void OnDragDataReceived (object o, Gtk.DragDataReceivedArgs args)
 		{
 			if (args.Info != (uint) TargetList.UriList)
 				return;
 			string fullData = System.Text.Encoding.UTF8.GetString (args.SelectionData.Data);
 
-			var workspaceItems = new List<FilePath> ();
-			var files = new List<FilePath> ();
+			var loadWorkspaceItems = !IsInsideTabStrip (args.X, args.Y);
+			var files = new List<Ide.Gui.FileOpenInformation> ();
 
 			foreach (string individualFile in fullData.Split ('\n')) {
 				string file = individualFile.Trim ();
 				if (file.StartsWith ("file://")) {
 					var filePath = new FilePath (file);
-					if (filePath.IsDirectory)
+					if (filePath.IsDirectory) {
+						if (!loadWorkspaceItems) // skip directories when not loading solutions
+							continue;
 						filePath = Directory.EnumerateFiles (filePath).FirstOrDefault (p => Services.ProjectService.IsWorkspaceItemFile (p));
-
-					if (!filePath.IsNullOrEmpty) { // skip empty paths
-						// load solution, when dropped into the content area (not into the tab strip)
-						if (!IsInsideTabStrip (args.X, args.Y) && Services.ProjectService.IsWorkspaceItemFile (filePath))
-							workspaceItems.Add (filePath);
-						else
-							files.Add (filePath);
 					}
+					if (!filePath.IsNullOrEmpty) // skip empty paths
+						files.Add (new Ide.Gui.FileOpenInformation (filePath, null, 0, 0, Ide.Gui.OpenDocumentOptions.DefaultInternal) { DockNotebook = this });
 				}
 			}
 
-			Gdk.ModifierType mtype = GtkWorkarounds.GetCurrentKeyModifiers ();
-			bool inWorkspace = (mtype & Gdk.ModifierType.ControlMask) != 0;
-			if (Platform.IsMac && !inWorkspace)
-				inWorkspace = (mtype & Gdk.ModifierType.Mod2Mask) != 0;
-
-			// open solutions first
-			for (int i = 0; i < workspaceItems.Count; i++) {
-				try {
-					IdeApp.Workspace.OpenWorkspaceItem (workspaceItems [i], i == 0 ? !inWorkspace : false);
-				} catch (Exception e) {
-					LoggingService.LogError ($"unable to open file {workspaceItems [i]}", e);
-				}
-			}
-
-			foreach (var file in files) {
-				try {
-					IdeApp.Workbench.OpenDocument (file, null, -1, -1, Ide.Gui.OpenDocumentOptions.DefaultInternal, null, null, this);
-				} catch (Exception e) {
-					LoggingService.LogError ($"unable to open file {file}", e);
+			if (files.Count > 0) {
+				if (loadWorkspaceItems) {
+					try {
+						IdeApp.OpenFiles (files);
+					} catch (Exception e) {
+						LoggingService.LogError ($"Failed to open dropped files", e);
+					}
+				} else { // open workspace items as files
+					foreach (var file in files) {
+						try {
+							await IdeApp.Workbench.OpenDocument (file).ConfigureAwait (false);
+						} catch (Exception e) {
+							LoggingService.LogError ($"unable to open file {file}", e);
+						}
+					}
 				}
 			}
 		}

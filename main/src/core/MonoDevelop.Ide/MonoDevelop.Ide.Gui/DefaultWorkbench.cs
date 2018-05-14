@@ -1537,8 +1537,7 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			string fullData = System.Text.Encoding.UTF8.GetString (selection_data.Data);
 
-			var workspaceItems = new List<FilePath> ();
-			var files = new List<FilePath> ();
+			var files = new List<FileOpenInformation> ();
 
 			foreach (string individualFile in fullData.Split ('\n')) {
 				string file = individualFile.Trim ();
@@ -1548,33 +1547,15 @@ namespace MonoDevelop.Ide.Gui
 				var filePath = new FilePath (file);
 				if (filePath.IsDirectory)
 					filePath = Directory.EnumerateFiles (filePath).FirstOrDefault (p => Services.ProjectService.IsWorkspaceItemFile (p));
-				if (!filePath.IsNullOrEmpty) {
-					if (Services.ProjectService.IsWorkspaceItemFile (filePath))
-						workspaceItems.Add (filePath);
-					else
-						files.Add (filePath);
-				}
+				if (!filePath.IsNullOrEmpty)
+					files.Add (new FileOpenInformation (filePath, null, 0, 0, OpenDocumentOptions.DefaultInternal));
 			}
 
-			Gdk.ModifierType mtype = GtkWorkarounds.GetCurrentKeyModifiers ();
-			bool inWorkspace = (mtype & Gdk.ModifierType.ControlMask) != 0;
-			if (Platform.IsMac && !inWorkspace)
-				inWorkspace = (mtype & Gdk.ModifierType.Mod2Mask) != 0;
-
-			// open solutions first
-			for (int i = 0; i < workspaceItems.Count; i++) {
+			if (files.Count > 0) {
 				try {
-					IdeApp.Workspace.OpenWorkspaceItem (workspaceItems [i], i == 0 ? !inWorkspace : false);
+					IdeApp.OpenFiles (files);
 				} catch (Exception e) {
-					LoggingService.LogError ($"unable to open file {workspaceItems [i]}", e);
-				}
-			}
-
-			foreach (var file in files) {
-				try {
-					IdeApp.Workbench.OpenDocument (file, options: OpenDocumentOptions.DefaultInternal, project: null);
-				} catch (Exception e) {
-					LoggingService.LogError ($"unable to open file {file}", e);
+					LoggingService.LogError ($"Failed to open dropped files", e);
 				}
 			}
 
