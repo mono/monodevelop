@@ -339,7 +339,11 @@ namespace MonoDevelop.Ide
 			}
 			
 			var filteredFiles = new List<FileOpenInformation> ();
-			bool closeCurrent = true;
+
+			Gdk.ModifierType mtype = Components.GtkWorkarounds.GetCurrentKeyModifiers ();
+			bool closeCurrent = !mtype.HasFlag (Gdk.ModifierType.ControlMask);
+			if (Platform.IsMac && closeCurrent)
+				closeCurrent = !mtype.HasFlag (Gdk.ModifierType.Mod2Mask);
 
 			foreach (var file in files) {
 				if (Services.ProjectService.IsWorkspaceItemFile (file.FileName) ||
