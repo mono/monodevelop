@@ -279,6 +279,11 @@
 		<string>tr</string>
 		<string>zh_TW</string>
 		<string>zh_CN</string>
-	</array>
+  </array>
+  <key>NSAppTransportSecurity</key>
+  <dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+  </dict>
 </dict>
 </plist>
