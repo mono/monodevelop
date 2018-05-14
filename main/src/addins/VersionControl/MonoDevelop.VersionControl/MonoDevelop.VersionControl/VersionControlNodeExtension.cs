@@ -11,6 +11,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.VersionControl.Views;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl
 {
@@ -237,7 +238,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Update)]
-		protected async Task UpdateUpdate(CommandInfo item) {
+		protected async Task UpdateUpdate(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Update, item);
 		}
 		
@@ -248,7 +249,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Diff)]
-		protected async Task UpdateDiff(CommandInfo item) {
+		protected async Task UpdateDiff(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Diff, item);
 		}
 		
@@ -259,7 +260,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Log)]
-		protected async Task UpdateLog(CommandInfo item) {
+		protected async Task UpdateLog(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Log, item);
 		}
 		
@@ -270,7 +271,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Status)]
-		protected async Task UpdateStatus(CommandInfo item) {
+		protected async Task UpdateStatus(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Status, item);
 		}
 		
@@ -281,7 +282,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Add)]
-		protected async Task UpdateAdd(CommandInfo item) {
+		protected async Task UpdateAdd(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Add, item);
 		}
 		
@@ -292,7 +293,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Remove)]
-		protected async Task UpdateRemove(CommandInfo item) {
+		protected async Task UpdateRemove(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Remove, item);
 		}
 		
@@ -303,7 +304,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Publish)]
-		protected async Task UpdatePublish(CommandInfo item) {
+		protected async Task UpdatePublish(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Publish, item);
 		}
 		
@@ -314,7 +315,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Revert)]
-		protected async Task UpdateRevert(CommandInfo item) {
+		protected async Task UpdateRevert(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Revert, item, false);
 		}
 		
@@ -325,7 +326,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Lock)]
-		protected async Task UpdateLock(CommandInfo item) {
+		protected async Task UpdateLock(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Lock, item);
 		}
 		
@@ -336,7 +337,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Unlock)]
-		protected async Task UpdateUnlock(CommandInfo item) {
+		protected async Task UpdateUnlock(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Unlock, item);
 		}
 		
@@ -347,7 +348,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.Annotate)]
-		protected async Task UpdateAnnotate(CommandInfo item) {
+		protected async Task UpdateAnnotate(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Annotate, item);
 		}
 		
@@ -358,7 +359,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		[CommandUpdateHandler (Commands.CreatePatch)]
-		protected async Task UpdateCreatePatch(CommandInfo item) {
+		protected async Task UpdateCreatePatch(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.CreatePatch, item);
 		}
 
@@ -370,7 +371,7 @@ namespace MonoDevelop.VersionControl
 		}
 
 		[CommandUpdateHandler (Commands.Ignore)]
-		protected async Task UpdateIgnore (CommandInfo item)
+		protected async Task UpdateIgnore (CommandInfo item, CancellationToken token)
 		{
 			await TestCommand(Commands.Ignore, item);
 		}
@@ -383,7 +384,7 @@ namespace MonoDevelop.VersionControl
 		}
 
 		[CommandUpdateHandler (Commands.Unignore)]
-		protected async Task UpdateUnignore (CommandInfo item)
+		protected async Task UpdateUnignore (CommandInfo item, CancellationToken token)
 		{
 			await TestCommand(Commands.Unignore, item);
 		}
@@ -395,7 +396,7 @@ namespace MonoDevelop.VersionControl
 		}
 
 		[CommandUpdateHandler (Commands.ResolveConflicts)]
-		protected async Task UpdateResolveConflicts (CommandInfo item)
+		protected async Task UpdateResolveConflicts (CommandInfo item, CancellationToken token)
 		{
 			await TestCommand (Commands.ResolveConflicts, item, false);
 		}

@@ -141,7 +141,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				};
 			}
 			Activated += (sender, e) => {
-				foreach (var item in indexMap)
+				foreach (var item in indexMap.ToArray ())
 					if (item.Value == SelectedSegment)
 						item.Key.NotifyPushed ();
 			};
