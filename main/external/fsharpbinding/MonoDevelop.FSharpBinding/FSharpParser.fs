@@ -36,7 +36,7 @@ module ParsedDocument =
             doc.Tokens <- Tokens.tryGetTokens parseOptions.Content defines fileName
 
             //Get all the symboluses now rather than in semantic highlighting
-            LoggingService.LogDebug ("FSharpParser: Processing symbol uses on {0}", shortFilename)
+            LoggingService.logDebug "FSharpParser: Processing symbol uses on %s" shortFilename
             let errors = parseResults.GetErrors() |> List.ofSeq
             errors
             |> List.groupBy(fun error -> error.ErrorNumber = 1182) //"The value '%s' is unused"
@@ -58,7 +58,7 @@ module ParsedDocument =
                                    doc.AllSymbolsKeyed <- dict newSymbolKeys )
             
             //Set code folding regions, GetNavigationItems may throw in some situations
-            LoggingService.LogDebug ("FSharpParser: processing regions on {0}", shortFilename)
+            LoggingService.logDebug "FSharpParser: processing regions on %s" shortFilename
             try
                 let regions =
                     let processDecl (decl : SourceCodeServices.FSharpNavigationDeclarationItem) =
@@ -72,7 +72,7 @@ module ParsedDocument =
                                   if next.Range |> isMoreThanNLines 1
                                   then yield processDecl next }
                 regions |> doc.AddRange
-            with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
+            with ex -> LoggingService.logWarning "FSharpParser: Couldn't update navigation items. %s" (ex.ToString())
             //Store the AST of active results
             doc.Ast <- parseResults
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
@@ -110,16 +110,16 @@ type FSharpParser() =
                         if newVersion.BelongsToSameDocumentAs(version) && newVersion.CompareAge(version) = 0 then
                             false
                         else
-                            LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled, file has changed", shortFilename)
+                            LoggingService.logDebug "FSharpParser: Parse %s is obsolete type check cancelled, file has changed" shortFilename
                             true
                     | None ->
-                        LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled, file no longer visible", shortFilename)
+                        LoggingService.logDebug "FSharpParser: Parse %s is obsolete type check cancelled, file no longer visible" shortFilename
                         true
                 else
-                    LoggingService.LogDebug ("FSharpParser: Parse {0} is obsolete type check cancelled by cancellationToken", shortFilename)
+                    LoggingService.logDebug "FSharpParser: Parse %s is obsolete type check cancelled by cancellationToken" shortFilename
                     true
             with ex ->
-                LoggingService.LogDebug ("FSharpParser: Parse {0} unable to determine cancellation due to exception", shortFilename, ex)
+                LoggingService.logDebug "FSharpParser: Parse %s unable to determine cancellation due to exception \n%s" shortFilename (ex.ToString())
                 false )
                 
     override x.Parse(parseOptions, cancellationToken) =
@@ -133,7 +133,7 @@ type FSharpParser() =
         if doc.IsNone || not (FileService.supportedFileName (fileName)) then null else
         
         let shortFilename = Path.GetFileName fileName
-        LoggingService.LogDebug ("FSharpParser: Parse starting on {0}", shortFilename)
+        LoggingService.logDebug "FSharpParser: Parse starting on %s" shortFilename
         let location = doc.Value.Editor.CaretLocation
         async {
                     match tryGetFilePath fileName proj with

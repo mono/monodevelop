@@ -39,7 +39,7 @@ module Tokens =
                 
     let tryGetTokens source defines fileName =
         try
-            LoggingService.LogDebug ("FSharpParser: Processing tokens for {0}", Path.GetFileName fileName)
+            LoggingService.logDebug "FSharpParser: Processing tokens for %s" (Path.GetFileName fileName)
             let readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (source, fileName)
             let lines = readOnlyDoc.GetLines() |> Seq.map readOnlyDoc.GetLineText
             let tokens = Lexer.getTokensWithInitialState 0L lines (Some fileName) defines
