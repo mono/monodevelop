@@ -3836,7 +3836,7 @@
     <Compile Include="MonoDevelop.Ide.Editor\MessageBubbles\MessageBubbleCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\LineEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\Error.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\MetadataReferenceCache.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\IFoldingParser.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemService_WorkspaceHandling.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Projection\ProjectedSegment.cs" />
@@ -4171,6 +4171,11 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopDocumentSupportsFeatureService.cs" />
     <Compile Include="MonoDevelop.Ide.BuildOutputView\Counters.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataServiceFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReference.Snapshot.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReference.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.MetadataCache.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.RecoverableMetadataValueSource.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.MetadataReferenceCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />
