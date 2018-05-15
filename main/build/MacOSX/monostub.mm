@@ -255,17 +255,16 @@ run_md_bundle (NSString *appDir, NSArray *arguments)
 static void
 correct_locale(void)
 {
-	NSString *preferredLanguage;
+	NSString *preferredLanguage = [[[NSBundle mainBundle] preferredLocalizations] firstObject];
 
-	preferredLanguage = [[NSLocale preferredLanguages] objectAtIndex: 0];
 	// Apply fixups such as zh_HANS/HANT -> zh_CN/TW
 	// Strip other languages of remainder so we choose a generic culture.
-	if ([preferredLanguage caseInsensitiveCompare:@"zh-hans"] == NSOrderedSame)
+	if ([preferredLanguage hasPrefix:@"zh-Hans"])
 		preferredLanguage = @"zh_CN";
-	else if ([preferredLanguage caseInsensitiveCompare:@"zh-hant"] == NSOrderedSame)
+	else if ([preferredLanguage hasPrefix:@"zh-Hant"])
 		preferredLanguage = @"zh_TW";
-	else
-		preferredLanguage = [[preferredLanguage componentsSeparatedByString:@"-"] objectAtIndex:0];
+
+	preferredLanguage = [preferredLanguage stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
 
 	setenv("MONODEVELOP_STUB_LANGUAGE", [preferredLanguage UTF8String], 1);
 	setenv("LANGUAGE", [preferredLanguage UTF8String], 1);
