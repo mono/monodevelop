@@ -84,6 +84,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	
 	class SystemFileNodeCommandHandler: NodeCommandHandler
 	{
+		public override void OnRenameStarting (ref int selectionStart, ref int selectionLength)
+		{
+			string name = CurrentNode.NodeName;
+			selectionStart = 0;
+			selectionLength = Path.GetFileNameWithoutExtension (name).Length;
+		}
+
 		public override void RenameItem (string newName)
 		{
 			SystemFile file = CurrentNode.DataItem as SystemFile;
