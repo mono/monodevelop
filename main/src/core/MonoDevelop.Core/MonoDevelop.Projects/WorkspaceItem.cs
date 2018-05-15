@@ -549,6 +549,24 @@ namespace MonoDevelop.Projects
 				return Item.OnSave (monitor);
 			}
 		}
+
+		/// <summary>
+		/// Ensure FileService.FileChanged event is registered before the RootWorkspace so the
+		/// NeedsReload flag on the FileStatusTracker is set early enough to trigger a reload.
+		/// Need a better way of doing this - maybe with the ReloadRequired event being used by
+		/// the RootWorkspace.
+		/// </summary>
+		internal static void Init ()
+		{
+			FileService.FileChanged += OnFileChanged;
+		}
+
+		static void OnFileChanged (object sender, FileEventArgs e)
+		{
+			FileChanged?.Invoke (sender, e);
+		}
+
+		internal static event EventHandler<FileEventArgs> FileChanged;
 	}
 	
 	class FileStatusTracker<TEventArgs> : IDisposable where TEventArgs:EventArgs
@@ -570,7 +588,7 @@ namespace MonoDevelop.Projects
 			lastSaveTime = new Dictionary<string,DateTime> ();
 			savingFlag = false;
 			reloadRequired = null;
-			FileService.FileChanged += HandleFileChanged;
+			WorkspaceItem.FileChanged += HandleFileChanged;
 		}
 		
 		public void BeginSave ()
@@ -674,7 +692,7 @@ namespace MonoDevelop.Projects
 
 		public void Dispose ()
 		{
-			FileService.FileChanged -= HandleFileChanged;
+			WorkspaceItem.FileChanged -= HandleFileChanged;
 		}
 	}
 
