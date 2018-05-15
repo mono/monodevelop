@@ -350,22 +350,38 @@ namespace MonoDevelop.UnitTesting
 			return false;
 		}
 
-		static void RebuildTests ()
+
+		static CancellationTokenSource rebuildTestsCts = new CancellationTokenSource ();
+		async static void RebuildTests ()
 		{
-			if (rootTests != null) {
-				foreach (IDisposable t in rootTests)
-					t.Dispose ();
+			try {
+				if (rootTests != null) {
+					foreach (IDisposable t in rootTests)
+						t.Dispose ();
+				}
+				rootTests = Array.Empty<UnitTest> ();
+				List<UnitTest> list = new List<UnitTest> ();
+				rebuildTestsCts.Cancel ();
+				rebuildTestsCts = new CancellationTokenSource ();
+				var token = rebuildTestsCts.Token;
+				var items = IdeApp.Workspace.Items.ToArray ();
+				await Task.Run (() => {
+					foreach (WorkspaceItem it in items) {
+						if (token.IsCancellationRequested)
+							return;
+						UnitTest t = BuildTest (it);
+						if (t != null)
+							list.Add (t);
+					}
+				}, token);
+				if (token.IsCancellationRequested)
+					return;
+				rootTests = list.ToArray ();
+				NotifyTestSuiteChanged ();
+			} catch (OperationCanceledException) {
+			} catch (Exception ex) {
+				LoggingService.LogError ("Exception gathering unit tests.", ex);
 			}
-
-			List<UnitTest> list = new List<UnitTest> ();
-			foreach (WorkspaceItem it in IdeApp.Workspace.Items) {
-				UnitTest t = BuildTest (it);
-				if (t != null)
-					list.Add (t);
-			}
-
-			rootTests = list.ToArray ();
-			NotifyTestSuiteChanged ();
 		}
 		
 		public static UnitTest BuildTest (WorkspaceObject entry)
