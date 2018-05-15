@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Gdk;
 using GLib;
 using Gtk;
@@ -81,13 +82,13 @@ namespace MonoDevelop.CodeIssues
 		readonly Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> severities = new Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> ();
 		readonly Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, bool> enableState = new Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, bool> ();
 
-		static MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable options =
-			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).Options; 
+		static Task<MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable> optionsTask =
+			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync(); 
 		
 		void GetAllSeverities ()
 		{
 			var language = CodeRefactoringService.MimeTypeToLanguage (mimeType);
-			foreach (var node in options.AllDiagnostics) {
+			foreach (var node in optionsTask.Result.AllDiagnostics) {
 				if (!node.Languages.Contains (language))
 					continue;
 				
