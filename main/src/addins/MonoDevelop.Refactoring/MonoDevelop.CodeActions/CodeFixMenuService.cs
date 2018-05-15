@@ -54,8 +54,8 @@ namespace MonoDevelop.CodeActions
 {
 	internal static class CodeFixMenuService
 	{
-		static MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable options =
-			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).Options;
+		static Task<MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable> optionsTask =
+			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync();
 
 		public static CodeFixMenu CreateFixMenu (TextEditor editor, CodeActionContainer fixes, CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -86,7 +86,7 @@ namespace MonoDevelop.CodeActions
 				foreach (var fix in cfa.Fixes) {
 					var diag = fix.PrimaryDiagnostic;
 
-					if (options.TryGetDiagnosticDescriptor (diag.Id, out var descriptor) && !descriptor.GetIsEnabled (diag.Descriptor))
+					if (optionsTask.Result.TryGetDiagnosticDescriptor (diag.Id, out var descriptor) && !descriptor.GetIsEnabled (diag.Descriptor))
 						continue;
 					
 					bool isSuppress = fix.Action is TopLevelSuppressionCodeAction;
@@ -108,7 +108,7 @@ namespace MonoDevelop.CodeActions
 
 			bool first = true;
 			foreach (var refactoring in fixes.CodeRefactoringActions) {
-				if (options.TryGetRefactoringDescriptor (refactoring.GetType (), out var descriptor) && !descriptor.IsEnabled)
+				if (optionsTask.Result.TryGetRefactoringDescriptor (refactoring.GetType (), out var descriptor) && !descriptor.IsEnabled)
 					continue;
 
 				if (first) {
