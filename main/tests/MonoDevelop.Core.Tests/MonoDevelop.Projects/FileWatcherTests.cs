@@ -160,6 +160,15 @@ namespace MonoDevelop.Projects
 			return Task.WhenAny (Task.Delay (millisecondsTimeout), fileRemovedTask.Task);
 		}
 
+		// Ensures the FileService.FileChanged event fires for the project's FileStatusTracker
+		// first so the WaitForFileChanged method finishes after the project has updated its
+		// NeedsReload property.
+		void ResetFileServiceChangedEventHandler ()
+		{
+			FileService.FileChanged -= OnFileChanged;
+			FileService.FileChanged += OnFileChanged;
+		}
+
 		[Test]
 		public void IsNativeMacFileWatcher ()
 		{
@@ -177,6 +186,7 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			p.DefaultNamespace = "Test";
 			ClearFileEventsCaptured ();
+			ResetFileServiceChangedEventHandler ();
 			FileWatcherService.Add (sol);
 
 			await p.SaveAsync (Util.GetMonitor ());
@@ -193,6 +203,8 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			p.DefaultNamespace = "Test";
 			ClearFileEventsCaptured ();
+			// Ensure FileService.FileChanged event is handled after the project handles it.
+			ResetFileServiceChangedEventHandler ();
 			FileWatcherService.Add (sol);
 
 			string xml = p.MSBuildProject.SaveToString ();
@@ -201,6 +213,7 @@ namespace MonoDevelop.Projects
 			await WaitForFileChanged (p.FileName);
 
 			AssertFileChanged (p.FileName);
+			Assert.IsTrue (p.NeedsReload);
 		}
 
 		[Test]

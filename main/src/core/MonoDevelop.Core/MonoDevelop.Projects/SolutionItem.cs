@@ -119,7 +119,8 @@ namespace MonoDevelop.Projects
 		{
 			if (Disposing != null)
 				Disposing (this, EventArgs.Empty);
-			
+
+			fileStatusTracker.Dispose ();
 			base.OnDispose ();
 			Counters.ItemsLoaded--;
 
