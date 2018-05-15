@@ -1361,27 +1361,31 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			node.ExpandToNode (); //make sure the parent of the node that is being edited is expanded
 
-			string nodeName = node.NodeName;
-
-			GetNodeInfo (iter).Label = GLib.Markup.EscapeText (nodeName);
-			store.EmitRowChanged (store.GetPath (iter), iter);
+			string editText = node.NodeName;
 
 			// Get and validate the initial text selection
-			int nameLength = nodeName != null ? nodeName.Length : 0,
-				selectionStart = 0, selectionLength = nameLength;
+			int editTextLength = editText != null ? editText.Length : 0,
+				selectionStart = 0, selectionLength = editTextLength;
+
 			foreach (NodeBuilder b in node.NodeBuilderChain) {
 				try {
 					NodeCommandHandler handler = b.CommandHandler;
 					handler.SetCurrentNode(node);
-					handler.OnRenameStarting(ref selectionStart, ref selectionLength);
+					handler.OnRenameStarting(ref editText, ref selectionStart, ref selectionLength);
 				} catch (Exception ex) {
 					LoggingService.LogError (ex.ToString ());
 				}
 			}
-			if (selectionStart < 0 || selectionStart >= nameLength)
+
+			editTextLength = editText != null ? editText.Length : 0;
+
+			GetNodeInfo (iter).Label = GLib.Markup.EscapeText (editText);
+			store.EmitRowChanged (store.GetPath (iter), iter);
+
+			if (selectionStart < 0 || selectionStart >= editTextLength)
 				selectionStart = 0;
-			if (selectionStart + selectionLength > nameLength)
-				selectionLength = nameLength - selectionStart;
+			if (selectionStart + selectionLength > editTextLength)
+				selectionLength = editTextLength - selectionStart;
 			// This will apply the selection as soon as possible
 			GLib.Idle.Add (() => {
 				var editable = currentLabelEditable;

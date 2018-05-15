@@ -85,7 +85,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		protected ExtensibleTreeView Tree {
 			get { return tree; }
 		}
-		
+
+		public virtual void OnRenameStarting (ref string startingText, ref int selectionStart, ref int selectionLength)
+		{
+			OnRenameStarting (ref selectionStart, ref selectionLength);
+		}
+
 		public virtual void OnRenameStarting (ref int selectionStart, ref int selectionLength)
 		{
 		}
