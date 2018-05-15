@@ -48,14 +48,12 @@ namespace MonoDevelop.Refactoring
 {
 	class AnalyzeWholeSolutionHandler : CommandHandler
 	{
-		static Task<MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable> optionsTask =
-			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync(); 
-		
 		internal static async Task<List<DiagnosticAnalyzer>> GetProviders (Project project)
 		{
 			var providers = new List<DiagnosticAnalyzer> ();
 			var alreadyAdded = new HashSet<Type> ();
-			var diagnostics = (await optionsTask).AllDiagnostics.Where (x => x.Languages.Contains (LanguageNames.CSharp));
+			var options = await ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ();
+			var diagnostics = options.AllDiagnostics.Where (x => x.Languages.Contains (LanguageNames.CSharp));
 			var diagnosticTable = new Dictionary<string, CodeDiagnosticDescriptor> ();
 			foreach (var diagnostic in diagnostics) {
 				if (!diagnostic.IsEnabled)

@@ -62,13 +62,11 @@ namespace MonoDevelop.CodeActions
 		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(bool), typeof(CodeRefactoringDescriptor));
 		readonly Dictionary<CodeRefactoringDescriptor, bool> providerStates = new Dictionary<CodeRefactoringDescriptor, bool> ();
 
-		static Task<MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable> optionsTask =
-			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync(); 
-		
 		void GetAllProviderStates ()
 		{
 			var language = CodeRefactoringService.MimeTypeToLanguage (mimeType);
-			foreach (var node in optionsTask.Result.AllRefactorings.Where (x => x.Language.Contains (language))) {
+			var options = ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ().Result;
+			foreach (var node in options.AllRefactorings.Where (x => x.Language.Contains (language))) {
 				providerStates [node] = node.IsEnabled;
 			}
 		}

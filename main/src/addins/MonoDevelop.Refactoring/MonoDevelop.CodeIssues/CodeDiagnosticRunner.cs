@@ -48,9 +48,6 @@ namespace MonoDevelop.CodeIssues
 {
 	static class CodeDiagnosticRunner
 	{
-		static Task<MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable> optionsTask =
-			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync(); 
-		
 		static TraceListener consoleTraceListener = new ConsoleTraceListener ();
 
 		public static async Task<IEnumerable<Result>> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken, ImmutableArray<DiagnosticData> results)
@@ -73,8 +70,8 @@ namespace MonoDevelop.CodeIssues
 
 					if (DataHasTag (data, WellKnownDiagnosticTags.EditAndContinue))
 						continue;
-
-					if ((await optionsTask).TryGetDiagnosticDescriptor (data.Id, out var desc) && !desc.GetIsEnabled (data.Id, data.IsEnabledByDefault))
+					var options = await ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ();
+					if (options.TryGetDiagnosticDescriptor (data.Id, out var desc) && !desc.GetIsEnabled (data.Id, data.IsEnabledByDefault))
 						continue;
 
 					var diagnostic = await data.ToDiagnosticAsync (analysisDocument, cancellationToken, desc);
