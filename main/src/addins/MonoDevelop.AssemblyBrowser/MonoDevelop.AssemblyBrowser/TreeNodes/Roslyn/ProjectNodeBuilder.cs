@@ -38,7 +38,6 @@ using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
-using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -85,17 +84,17 @@ namespace MonoDevelop.AssemblyBrowser
 				FillNamespaces (builder, project, ns);
 			}
 			builder.AddChildren (dom.Assembly.GlobalNamespace.GetTypeMembers ()
-								 .Where (type => !publicOnly || type.DeclaredAccessibility == Accessibility.Public));
+			                     .Where (type => !publicOnly || type.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public));
 		}
 
-		public static void FillNamespaces (ITreeBuilder builder, Project project, INamespaceSymbol ns)
+		public static void FillNamespaces (ITreeBuilder builder, Project project, Microsoft.CodeAnalysis.INamespaceSymbol ns)
 		{
 			var members = ns.GetTypeMembers ();
 			//IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			if (members.Any ()) {
 				var data = new NamespaceData (ns.Name);
 				foreach (var member in members)
-					data.Types.Add ((member.DeclaredAccessibility == Accessibility.Public, member));
+					data.Types.Add ((member.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public, member));
 				builder.AddChild (data);
 			}
 			foreach (var nSpace in ns.GetNamespaceMembers ()) {

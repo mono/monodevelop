@@ -101,6 +101,10 @@
     <Reference Include="System.ValueTuple">
       <HintPath>..\..\..\build\bin\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -138,7 +142,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\DisplayBinding.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserWidget.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\NamespaceData.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\Error.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\BaseTypeFolder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\IAssemblyBrowserNodeBuilder.cs" />
@@ -146,13 +149,7 @@
     <Compile Include="gtk-gui\MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\DocumentationPanel.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\ColoredCSharpFormatter.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\DomEventNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\DomFieldNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\DomMethodNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\DomPropertyNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\DomTypeNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyBrowserTypeNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\BaseTypeFolderNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\MethodBodyRemoveVisitor.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\NamespaceBuilder.cs" />
@@ -162,26 +159,35 @@
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyReferenceFolderNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyResourceFolderNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserHandler.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyResourceFolder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserViewContent.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyReferenceFolder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyLoader.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\ProjectNodeBuilder.cs" />
     <Compile Include="XmlDocIdLib\CompatibilityType.cs" />
     <Compile Include="XmlDocIdLib\OperatorType.cs" />
     <Compile Include="XmlDocIdLib\XmlDocIdGenerator.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\NRefactoryStock.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\HelpExtensions.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserNavigationPoint.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\UnresolvedIdStringProvider.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\RoslynEventNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\RoslynMemberNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\RoslynFieldNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\RoslynMethodNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\RoslynPropertyNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\RoslynTypeNodeBuilder.cs" />
+    <Compile Include="Util\CSharpLanguage.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Cecil\EventDefinitionNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Cecil\FieldDefinitionNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Cecil\MethodDefinitionNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Cecil\PropertyDefinitionNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Cecil\TypeDefinitionNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Roslyn\ProjectNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Roslyn\RoslynEventNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Roslyn\RoslynFieldNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Roslyn\RoslynMemberNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Roslyn\RoslynMethodNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Roslyn\RoslynPropertyNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Roslyn\RoslynTypeNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\NamespaceData.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Cecil\AssemblyNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserHandler.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserWidget.AssemblyBrowserTreeView.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserWidget.SearchIdleRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

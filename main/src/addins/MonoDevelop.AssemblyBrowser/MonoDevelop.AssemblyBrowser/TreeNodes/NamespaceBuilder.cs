@@ -114,11 +114,6 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return Disassemble (data, navigator);
 		}
-
-		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
-		{
-			return null;
-		}
 		#endregion
 	}
 }
