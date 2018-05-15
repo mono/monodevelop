@@ -198,8 +198,12 @@ namespace MonoDevelop.Projects
 
 			// Deleting a file with Finder will move the file to the ~/.Trashes
 			// folder. To handle this a remove event is fired for the source
-			// file being renamed.
-			FileService.NotifyFileRemoved (e.OldFullPath);
+			// file being renamed. Also handle file events being received out of
+			// order on saving a file in TextEdit.app - with a rename event of
+			// the original file to the temp file being the last event even though
+			// the original file still exists.
+			if (!File.Exists (e.OldFullPath))
+				FileService.NotifyFileRemoved (e.OldFullPath);
 		}
 
 		void OnFileCreated (object sender, FileSystemEventArgs e)
