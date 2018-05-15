@@ -340,7 +340,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/AutoInsertBracketHandler">
-		<Handler class="MonoDevelop.CSharp.Features.AutoInsertBracket.CSharpAutoInsertBracketHandler" mimeType = "text/x-csharp" />
+		<Handler class="MonoDevelop.CSharp.Features.AutoInsertBracket.CSharpAutoInsertBracketHandler" mimeTypes = "text/x-csharp" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/TypeService/MefHostServices">
