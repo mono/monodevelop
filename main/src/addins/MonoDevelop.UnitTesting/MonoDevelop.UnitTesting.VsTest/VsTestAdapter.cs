@@ -68,7 +68,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 				ResultsDirectory = project.BaseIntermediateOutputPath.Combine (Constants.ResultsDirectoryName),
 				ShouldCollectSourceInformation = false,
 				TestAdaptersPaths = GetTestAdapters (project),
-				TestSessionTimeout = 60000,
+				TestSessionTimeout = int.MaxValue
 			}.ToXml ().OuterXml + "</RunSettings>";
 		}
 
