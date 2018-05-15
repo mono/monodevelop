@@ -71,9 +71,11 @@ namespace MonoDevelop.Projects
 			foreach (FilePath directory in GetRootDirectories ()) {
 				watchedDirectories.Remove (directory);
 				if (!watchers.TryGetValue (directory, out FileWatcherWrapper existingWatcher)) {
-					var watcher = new FileWatcherWrapper (directory);
-					watchers.Add (directory, watcher);
-					watcher.EnableRaisingEvents = true;
+					if (Directory.Exists (directory)) {
+						var watcher = new FileWatcherWrapper (directory);
+						watchers.Add (directory, watcher);
+						watcher.EnableRaisingEvents = true;
+					}
 				}
 			}
 

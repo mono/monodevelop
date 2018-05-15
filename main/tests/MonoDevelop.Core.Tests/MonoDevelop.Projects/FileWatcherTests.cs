@@ -726,6 +726,24 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Native file watcher will throw an ArgumentException if the Directory does not exist.
+		/// </summary>
+		[Test]
+		public void WatchDirectories_DirectoryDoesNotExist_NoExceptionThrown ()
+		{
+			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
+			var invalidDirectory = rootProject.Combine ("Invalid");
+			var directories = new [] {
+				invalidDirectory
+			};
+
+			Assert.DoesNotThrow (() => {
+				FileWatcherService.WatchDirectories (directories);
+			});
+			Assert.IsFalse (Directory.Exists (invalidDirectory));
+		}
+
+		/// <summary>
 		/// Deleting a file using Finder on the Mac will move the file to the ~/.Trash folder.
 		/// This used to be detected checking the file existed on switching back to the IDE.
 		/// To handle this the rename event is treated as a delete of the source file.
