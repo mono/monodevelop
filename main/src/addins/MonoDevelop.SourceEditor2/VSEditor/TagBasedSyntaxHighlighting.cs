@@ -66,29 +66,31 @@ namespace Microsoft.VisualStudio.Platform
 			}
 			List<ColoredSegment> coloredSegments = new List<ColoredSegment> ();
 
-			SnapshotSpan snapshotSpan = snapshotLine.Extent;
+			SnapshotSpan snapshotSpan = new SnapshotSpan(textView.TextBuffer.CurrentSnapshot, snapshotLine.Extent.Span);
+			int start = snapshotSpan.Start.Position;
+			int end = snapshotSpan.End.Position;
 
 			IList<ClassificationSpan> classifications = this.classifier.GetClassificationSpans (snapshotSpan);
 
-			int lastClassifiedOffsetEnd = snapshotSpan.Start;
+			int lastClassifiedOffsetEnd = start;
 			ScopeStack scopeStack;
 			foreach (ClassificationSpan curSpan in classifications) {
 				if (curSpan.Span.Start > lastClassifiedOffsetEnd) {
 					scopeStack = new ScopeStack (EditorThemeColors.Foreground);
-					ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - snapshotLine.Start, curSpan.Span.Start - lastClassifiedOffsetEnd, scopeStack);
+					ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - start, curSpan.Span.Start - lastClassifiedOffsetEnd, scopeStack);
 					coloredSegments.Add (whitespaceSegment);
 				}
 
 				scopeStack = GetScopeStackFromClassificationType (curSpan.ClassificationType);
-				ColoredSegment curColoredSegment = new ColoredSegment (curSpan.Span.Start - snapshotLine.Start, curSpan.Span.Length, scopeStack);
+				ColoredSegment curColoredSegment = new ColoredSegment (curSpan.Span.Start - start, curSpan.Span.Length, scopeStack);
 				coloredSegments.Add (curColoredSegment);
 
 				lastClassifiedOffsetEnd = curSpan.Span.End;
 			}
 
-			if (snapshotLine.End.Position > lastClassifiedOffsetEnd) {
+			if (end > lastClassifiedOffsetEnd) {
 				scopeStack = new ScopeStack (EditorThemeColors.Foreground);
-				ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - snapshotLine.Start, snapshotLine.End.Position - lastClassifiedOffsetEnd, scopeStack);
+				ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - start, end - lastClassifiedOffsetEnd, scopeStack);
 				coloredSegments.Add (whitespaceSegment);
 			}
 
