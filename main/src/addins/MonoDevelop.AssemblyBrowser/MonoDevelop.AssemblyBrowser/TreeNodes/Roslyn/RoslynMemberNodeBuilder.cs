@@ -79,11 +79,6 @@ namespace MonoDevelop.AssemblyBrowser
 			return 4;
 		}
 
-		public string GetDocumentationMarkup (ITreeNavigator navigator)
-		{
-			return "";
-		}
-
 		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			return Disassemble (data, navigator);
