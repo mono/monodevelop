@@ -113,6 +113,7 @@ namespace MonoDevelop.Projects
 		{
 			if (watchers.TryGetValue (directory, out FileWatcherWrapper watcher)) {
 				watcher.EnableRaisingEvents = false;
+				watcher.Dispose ();
 				watchers.Remove (directory);
 			}
 		}
@@ -136,7 +137,7 @@ namespace MonoDevelop.Projects
 		}
 	}
 
-	class FileWatcherWrapper
+	class FileWatcherWrapper : IDisposable
 	{
 		FSW.FileSystemWatcher watcher;
 
@@ -159,6 +160,11 @@ namespace MonoDevelop.Projects
 		public bool EnableRaisingEvents {
 			get { return watcher.EnableRaisingEvents; }
 			set { watcher.EnableRaisingEvents = value; }
+		}
+
+		public void Dispose ()
+		{
+			watcher.Dispose ();
 		}
 
 		void OnFileChanged (object sender, FileSystemEventArgs e)
