@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Core;
@@ -50,6 +51,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			return ((SolutionFolderFileNode)dataObject).FileName;
+		}
+
+		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
+		{
+			attributes |= NodeAttributes.AllowRename;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
@@ -133,6 +139,25 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFileNodeCommandHandler.PopulateOpenWithViewers (info, null, pf.FileName);
 		}
 
+		public override void OnRenameStarting (ref string startingText, ref int selectionStart, ref int selectionLength)
+		{
+			var file = (SolutionFolderFileNode)CurrentNode.DataItem;
+			startingText = file.FileName.FileName;
+			selectionStart = 0;
+			selectionLength = Path.GetFileNameWithoutExtension (startingText).Length;
+		}
+
+		public async override void RenameItem (string newName)
+		{
+			var file = (SolutionFolderFileNode)CurrentNode.DataItem;
+			var oldPath = file.FileName;
+			if (SystemFileNodeCommandHandler.RenameFileWithConflictCheck (oldPath, newName, out string newPath)) {
+				//FIXME: implement this as a rename rather than an add/remove
+				file.Parent.Files.Remove (oldPath);
+				file.Parent.Files.Add (newPath);
+				await IdeApp.ProjectOperations.SaveAsync (file.Parent.ParentSolution);
+			}
+		}
 	}
 	
 	class SolutionFolderFileNode: IFileItem
@@ -145,7 +170,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			this.file = file;
 			this.parent = parent;
 		}
-		
+
+		/// <summary>
+		/// This is actually a filepath, not a filename
+		/// </summary>
 		public FilePath FileName {
 			get { return this.file; }
 			set { this.file = value; }
