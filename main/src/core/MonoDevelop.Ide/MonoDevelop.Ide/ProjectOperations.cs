@@ -880,7 +880,16 @@ namespace MonoDevelop.Ide
 		
 		public bool CreateProjectFile (Project parentProject, string basePath, string selectedTemplateId)
 		{
-			using (NewFileDialog nfd = new NewFileDialog (parentProject, basePath)) {
+			using (var nfd = new NewFileDialog (parentProject, basePath)) {
+				if (selectedTemplateId != null)
+					nfd.SelectTemplate (selectedTemplateId);
+				return MessageService.ShowCustomDialog (nfd) == (int)Gtk.ResponseType.Ok;
+			}
+		}
+
+		public bool CreateSolutionFolderFile (SolutionFolder parentSolutionFolder,string selectedTemplateId = null)
+		{
+			using (var nfd = new NewFileDialog (null, parentSolutionFolder.BaseDirectory, parentSolutionFolder)) {
 				if (selectedTemplateId != null)
 					nfd.SelectTemplate (selectedTemplateId);
 				return MessageService.ShowCustomDialog (nfd) == (int)Gtk.ResponseType.Ok;
