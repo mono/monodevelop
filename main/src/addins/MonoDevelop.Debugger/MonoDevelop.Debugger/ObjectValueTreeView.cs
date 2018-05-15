@@ -1608,20 +1608,24 @@ namespace MonoDevelop.Debugger
 		{
 			return char.IsLetter (c) || c == '_' || c == '.';
 		}
-
-		void PopupCompletion (Entry entry)
+		CancellationTokenSource cts = new CancellationTokenSource ();
+		async void PopupCompletion (Entry entry)
 		{
-			char c = (char)Gdk.Keyval.ToUnicode (keyValue);
-			if (currentCompletionData == null && IsCompletionChar (c)) {
-				string expr = entry.Text.Substring (0, entry.CursorPosition);
-				currentCompletionData = GetCompletionData (expr);
-				if (currentCompletionData != null) {
-					DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
-					ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (expr.Length - currentCompletionData.ExpressionLength);
-					CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
-				} else {
-					currentCompletionData = null;
+			try {
+				char c = (char)Gdk.Keyval.ToUnicode (keyValue);
+				if (currentCompletionData == null && IsCompletionChar (c)) {
+					string expr = entry.Text.Substring (0, entry.CursorPosition);
+					cts.Cancel ();
+					cts = new CancellationTokenSource ();
+					currentCompletionData = await GetCompletionData (expr, cts.Token);
+					if (currentCompletionData != null) {
+						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
+						ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (expr.Length - currentCompletionData.ExpressionLength);
+						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
+					}
 				}
+
+			} catch (OperationCanceledException) {
 			}
 		}
 
@@ -2438,10 +2442,10 @@ namespace MonoDevelop.Debugger
 			return values;
 		}
 		
-		Mono.Debugging.Client.CompletionData GetCompletionData (string exp)
+		async Task<Mono.Debugging.Client.CompletionData> GetCompletionData (string exp, CancellationToken token)
 		{
 			if (CanQueryDebugger && frame != null)
-				return frame.GetExpressionCompletionData (exp);
+				return await DebuggingService.GetCompletionDataAsync (frame, exp, token);
 
 			return null;
 		}
