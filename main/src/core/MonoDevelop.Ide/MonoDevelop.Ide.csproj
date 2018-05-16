@@ -9643,6 +9643,7 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopWorkspaceCacheService.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\RoslynSearchCategory.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\RoslynSearchCategory.DeclaredSymbolInfoResult.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9691,6 +9692,7 @@
     <Folder Include="MonoDevelop.Ide.EditorConfig\" />
     <Folder Include="Gui\" />
     <Folder Include="MonoDevelop.Ide.RoslynServices\" />
+    <Folder Include="MonoDevelop.Ide.RoslynServices.OptionPersistence\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">
