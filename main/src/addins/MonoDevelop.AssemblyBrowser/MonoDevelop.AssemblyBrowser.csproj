@@ -100,6 +100,7 @@
     <Reference Include="mscorlib" />
     <Reference Include="System.ValueTuple">
       <HintPath>..\..\..\build\bin\System.ValueTuple.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
