@@ -157,7 +157,8 @@ namespace MonoDevelop.CodeActions
 							var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
 							if (panel == null)
 								return;
-							panel.Widget.SelectCodeIssue (fix.PrimaryDiagnostic.Descriptor.Id);
+							var title = GettextCatalog.GetString ("{0} ({1})", fix.PrimaryDiagnostic.Descriptor.Title, fix.PrimaryDiagnostic.Descriptor.Id);
+							panel.Widget.SelectCodeIssue (title);
 						});
 					});
 				configureMenu.Add (optionsMenuItem);

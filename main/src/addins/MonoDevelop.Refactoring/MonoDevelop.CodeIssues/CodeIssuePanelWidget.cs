@@ -111,10 +111,7 @@ namespace MonoDevelop.CodeIssues
 
 		public void SelectCodeIssue (string idString)
 		{
-			TreeIter iter;
-			if (!treeStore.GetIterFirst (out iter))
-				return;
-			SelectCodeIssue (idString, iter);
+			searchentryFilter.Entry.Text = idString;
 		}
 
 		bool SelectCodeIssue (string idString, TreeIter iter)
@@ -203,9 +200,16 @@ namespace MonoDevelop.CodeIssues
 			if (!string.IsNullOrEmpty (filter)) {
 				var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
 				if (idx >= 0) {
+					string color;
+					if (IdeTheme.UserInterfaceTheme == Theme.Light) {
+						color = "yellow";
+					}else  {
+						color = "#666600";
+					}
+
 					title =
 						Markup.EscapeText (title.Substring (0, idx)) +
-						"<span bgcolor=\"yellow\">" +
+						"<span bgcolor=\"" + color + "\">" +
 						Markup.EscapeText (title.Substring (idx, filter.Length)) +
 						"</span>" +
 						Markup.EscapeText (title.Substring (idx + filter.Length));
