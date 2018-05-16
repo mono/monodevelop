@@ -582,9 +582,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 					QueueDraw ();
 				}
 			} else {
-				ParentWidget.Cursor = insideText ? CursorType.IBeam : CursorType.Arrow;
+				if (insideText) {
+					ParentWidget.Cursor = CursorType.IBeam;
+				}
 			}
-
 		}
 
 		protected override void OnButtonPressed (ButtonEventArgs args)
