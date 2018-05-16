@@ -113,7 +113,7 @@ namespace MonoDevelop.VBNet
 			workspace.OpenSolutionInfo (sInfo);
 
 			Editor.SyntaxHighlighting = CompositionManager.GetExportedValue<ITagBasedSyntaxHighlightingFactory> ().CreateSyntaxHighlighting (Editor.TextView, "source.vb");
-			workspace.InformDocumentOpen (documentId, Editor);
+			workspace.InformDocumentOpen (documentId, Editor, DocumentContext);
 		}
 
 		public override void Dispose ()
