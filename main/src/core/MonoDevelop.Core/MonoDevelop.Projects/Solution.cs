@@ -1229,7 +1229,7 @@ namespace MonoDevelop.Projects
 				EntrySaved (this, args);
 		}
 		
-		/*protected virtual*/ void OnItemReloadRequired (SolutionItemEventArgs args)
+		internal /*protected virtual*/ void OnItemReloadRequired (SolutionItemEventArgs args)
 		{
 			if (ItemReloadRequired != null)
 				ItemReloadRequired (this, args);

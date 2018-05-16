@@ -528,14 +528,14 @@ namespace MonoDevelop.Projects
 		public event EventHandler<WorkspaceItemEventArgs> Modified;
 		public event EventHandler<WorkspaceItemEventArgs> Saved;
 		
-/*		public event EventHandler<WorkspaceItemEventArgs> ReloadRequired {
+		public event EventHandler<WorkspaceItemEventArgs> ReloadRequired {
 			add {
 				fileStatusTracker.ReloadRequired += value;
 			}
 			remove {
 				fileStatusTracker.ReloadRequired -= value;
 			}
-		}*/
+		}
 
 		internal class DefaultWorkspaceItemExtension: WorkspaceItemExtension
 		{
@@ -549,24 +549,6 @@ namespace MonoDevelop.Projects
 				return Item.OnSave (monitor);
 			}
 		}
-
-		/// <summary>
-		/// Ensure FileService.FileChanged event is registered before the RootWorkspace so the
-		/// NeedsReload flag on the FileStatusTracker is set early enough to trigger a reload.
-		/// Need a better way of doing this - maybe with the ReloadRequired event being used by
-		/// the RootWorkspace.
-		/// </summary>
-		internal static void Init ()
-		{
-			FileService.FileChanged += OnFileChanged;
-		}
-
-		static void OnFileChanged (object sender, FileEventArgs e)
-		{
-			FileChanged?.Invoke (sender, e);
-		}
-
-		internal static event EventHandler<FileEventArgs> FileChanged;
 	}
 	
 	class FileStatusTracker<TEventArgs> : IDisposable where TEventArgs:EventArgs
@@ -574,7 +556,7 @@ namespace MonoDevelop.Projects
 		Dictionary<string,DateTime> lastSaveTime;
 		bool savingFlag;
 		bool needsReload;
-//		Action<TEventArgs> onReloadRequired;
+		Action<TEventArgs> onReloadRequired;
 		TEventArgs eventArgs;
 		EventHandler<TEventArgs> reloadRequired;
 		
@@ -584,11 +566,11 @@ namespace MonoDevelop.Projects
 		{
 			this.item = item;
 			this.eventArgs = eventArgs;
-//			this.onReloadRequired = onReloadRequired;
+			this.onReloadRequired = onReloadRequired;
 			lastSaveTime = new Dictionary<string,DateTime> ();
 			savingFlag = false;
 			reloadRequired = null;
-			WorkspaceItem.FileChanged += HandleFileChanged;
+			FileService.FileChanged += HandleFileChanged;
 		}
 		
 		public void BeginSave ()
@@ -646,7 +628,7 @@ namespace MonoDevelop.Projects
 					if (file == info.FileName) {
 						if (GetLastSaveTime (file) != GetLastWriteTime (file)) {
 							needsReload = true;
-							//onReloadRequired (eventArgs);
+							onReloadRequired (eventArgs);
 							return;
 						}
 					}
@@ -692,7 +674,7 @@ namespace MonoDevelop.Projects
 
 		public void Dispose ()
 		{
-			WorkspaceItem.FileChanged -= HandleFileChanged;
+			FileService.FileChanged -= HandleFileChanged;
 		}
 	}
 

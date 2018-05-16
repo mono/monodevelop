@@ -1460,6 +1460,15 @@ namespace MonoDevelop.Projects
 				ConfigurationRemoved (this, args);
 		}
 
+		internal event EventHandler<SolutionItemEventArgs> ReloadRequired {
+			add {
+				fileStatusTracker.ReloadRequired += value;
+			}
+			remove {
+				fileStatusTracker.ReloadRequired -= value;
+			}
+		}
+
 		protected virtual void OnReloadRequired (SolutionItemEventArgs args)
 		{
 			ItemExtension.OnReloadRequired (args);

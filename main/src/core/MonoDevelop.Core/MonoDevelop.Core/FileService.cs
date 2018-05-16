@@ -35,7 +35,6 @@ using System.Text;
 using Mono.Addins;
 using Mono.Unix.Native;
 using MonoDevelop.Core.FileSystem;
-using MonoDevelop.Projects;
 using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
@@ -75,7 +74,6 @@ namespace MonoDevelop.Core
 					UpdateExtensions ();
 			};
 			UpdateExtensions ();
-			WorkspaceItem.Init ();
 		}
 
 		static void UpdateExtensions ()

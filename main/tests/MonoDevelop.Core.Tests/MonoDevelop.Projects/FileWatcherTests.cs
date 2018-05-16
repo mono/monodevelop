@@ -206,6 +206,10 @@ namespace MonoDevelop.Projects
 			// Ensure FileService.FileChanged event is handled after the project handles it.
 			ResetFileServiceChangedEventHandler ();
 			FileWatcherService.Add (sol);
+			SolutionFolderItem reloadRequiredEventFiredProject = null;
+			sol.ItemReloadRequired += (sender, e) => {
+				reloadRequiredEventFiredProject = e.SolutionItem;
+			};
 
 			string xml = p.MSBuildProject.SaveToString ();
 			File.WriteAllText (p.FileName, xml);
@@ -214,6 +218,30 @@ namespace MonoDevelop.Projects
 
 			AssertFileChanged (p.FileName);
 			Assert.IsTrue (p.NeedsReload);
+			Assert.AreEqual (p, reloadRequiredEventFiredProject);
+		}
+
+		[Test]
+		public async Task SaveSolutionFileExternally ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			ClearFileEventsCaptured ();
+			// Ensure FileService.FileChanged event is handled after the solution handles it.
+			ResetFileServiceChangedEventHandler ();
+			FileWatcherService.Add (sol);
+			WorkspaceItem reloadRequiredEventFiredSolution = null;
+			sol.ReloadRequired += (sender, e) => {
+				reloadRequiredEventFiredSolution = e.Item;
+			};
+
+			File.WriteAllText (sol.FileName, "test");
+
+			await WaitForFileChanged (sol.FileName);
+
+			AssertFileChanged (sol.FileName);
+			Assert.IsTrue (sol.NeedsReload);
+			Assert.AreEqual (sol, reloadRequiredEventFiredSolution);
 		}
 
 		[Test]
