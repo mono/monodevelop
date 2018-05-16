@@ -1,10 +1,10 @@
 ﻿//
-// IdeTestBase.cs
+// RoslynService.cs
 //
 // Author:
-//       Lluis Sanchez <llsan@microsoft.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2017 Microsoft
+// Copyright (c) 2018 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,22 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
+using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
+using Microsoft.CodeAnalysis.Utilities;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using UnitTests;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.Ide.RoslynServices
 {
-	public class IdeTestBase: TestBase
+	public static class RoslynService
 	{
-		protected override void InternalSetup(string rootDir)
+		public static void Initialize ()
 		{
-			base.InternalSetup(rootDir);
-
-			RoslynServices.RoslynService.Initialize ();
-			Xwt.Application.Initialize(Xwt.ToolkitType.Gtk);
-			Gtk.Application.Init();
-			DesktopService.Initialize();
+			// Initialize Roslyn foreground thread data.
+			ForegroundThreadAffinitizedObject.CurrentForegroundThreadData = new ForegroundThreadData (
+				Thread.CurrentThread,
+				Runtime.MainTaskScheduler,
+				ForegroundThreadDataInfo.CreateDefault (ForegroundThreadDataKind.ForcedByPackageInitialize)
+			);
 		}
 	}
 }

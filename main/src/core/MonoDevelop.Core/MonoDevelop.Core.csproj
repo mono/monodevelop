@@ -764,6 +764,7 @@
     <Compile Include="MonoDevelop.Core\SharedPools.cs" />
     <Compile Include="MonoDevelop.Core.Collections\LookupTable.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\FrameworkInfo.cs" />
+    <Compile Include="MonoDevelop.Core\SynchronizationContextTaskScheduler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
