@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Editor
 		public int FirstSelectedInsertionPoint {
 			get;
 			set;
-		}
+		} = -1;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.Ide.Editor.InsertionModeOptions"/> class.
