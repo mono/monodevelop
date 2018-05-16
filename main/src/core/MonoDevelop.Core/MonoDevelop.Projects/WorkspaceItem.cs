@@ -486,7 +486,7 @@ namespace MonoDevelop.Projects
 		protected override void OnDispose ()
 		{
 			fileStatusTracker.Dispose ();
-			FileWatcherService.Remove (this);
+			FileWatcherService.Remove (this).Ignore ();
 
 			if (userProperties != null)
 				userProperties.Dispose ();

@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
@@ -38,73 +40,130 @@ namespace MonoDevelop.Projects
 		static readonly Dictionary<FilePath, FileWatcherWrapper> watchers = new Dictionary<FilePath, FileWatcherWrapper> ();
 		static ImmutableList<WorkspaceItem> workspaceItems = ImmutableList<WorkspaceItem>.Empty;
 		static ImmutableList<FilePath> monitoredDirectories = ImmutableList<FilePath>.Empty;
+		static CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
 
-		public static void Add (WorkspaceItem item)
+		public static Task Add (WorkspaceItem item)
 		{
 			lock (watchers) {
 				workspaceItems = workspaceItems.Add (item);
 				item.RootDirectoriesChanged += OnRootDirectoriesChanged;
-				UpdateWatchers ();
+				CancelUpdate ();
+				return UpdateWatchersAsync ();
 			}
 		}
 
-		public static void Remove (WorkspaceItem item)
+		static void CancelUpdate ()
+		{
+			cancellationTokenSource.Cancel ();
+			cancellationTokenSource = new CancellationTokenSource ();
+		}
+
+		public static Task Remove (WorkspaceItem item)
 		{
 			lock (watchers) {
 				int count = workspaceItems.Count;
 				workspaceItems = workspaceItems.Remove (item);
 				if (workspaceItems.Count != count) {
 					item.RootDirectoriesChanged -= OnRootDirectoriesChanged;
-					UpdateWatchers ();
+					CancelUpdate ();
+					return UpdateWatchersAsync ();
 				}
 			}
+			return Task.CompletedTask;
 		}
 
 		static void OnRootDirectoriesChanged (object sender, EventArgs e)
 		{
-			UpdateWatchers ();
+			lock (watchers) {
+				CancelUpdate ();
+				UpdateWatchersAsync ().Ignore ();
+			}
 		}
 
-		static void UpdateWatchers ()
+		static Task UpdateWatchersAsync ()
 		{
+			CancellationToken token = cancellationTokenSource.Token;
+			return Task.Run (() => {
+				UpdateWatchers (workspaceItems, monitoredDirectories, token);
+			});
+		}
+
+		static void UpdateWatchers (
+			ImmutableList<WorkspaceItem> currentWorkspaceItems,
+			ImmutableList<FilePath> currentMonitoredDirectories,
+			CancellationToken token)
+		{
+			List<FileWatcherWrapper> newWatchers = null;
+
 			HashSet<FilePath> watchedDirectories = GetWatchedDirectories ();
-			foreach (FilePath directory in GetRootDirectories ()) {
-				watchedDirectories.Remove (directory);
-				if (!watchers.TryGetValue (directory, out FileWatcherWrapper existingWatcher)) {
+
+			if (token.IsCancellationRequested)
+				return;
+
+			foreach (FilePath directory in GetRootDirectories (currentWorkspaceItems, currentMonitoredDirectories)) {
+				if (!watchedDirectories.Remove (directory)) {
 					if (Directory.Exists (directory)) {
+						if (newWatchers == null)
+							newWatchers = new List<FileWatcherWrapper> ();
 						var watcher = new FileWatcherWrapper (directory);
-						watchers.Add (directory, watcher);
-						watcher.EnableRaisingEvents = true;
+						newWatchers.Add (watcher);
 					}
 				}
 			}
 
-			// Remove file watchers no longer needed.
-			foreach (FilePath directory in watchedDirectories) {
-				Remove (directory);
+			if (newWatchers == null && !watchedDirectories.Any ()) {
+				// Unchanged.
+				return;
+			}
+
+			lock (watchers) {
+				if (token.IsCancellationRequested) {
+					if (newWatchers != null) {
+						foreach (FileWatcherWrapper watcher in newWatchers) {
+							watcher.Dispose ();
+						}
+					}
+					return;
+				}
+
+				// Remove file watchers no longer needed.
+				foreach (FilePath directory in watchedDirectories) {
+					Remove (directory);
+				}
+
+				if (newWatchers != null) {
+					foreach (FileWatcherWrapper watcher in newWatchers) {
+						watchers.Add (watcher.Path, watcher);
+						watcher.EnableRaisingEvents = true;
+					}
+				}
 			}
 		}
 
 		static HashSet<FilePath> GetWatchedDirectories ()
 		{
-			var directories = new HashSet<FilePath> ();
-			foreach (FilePath directory in watchers.Keys) {
-				directories.Add (directory);
+			lock (watchers) {
+				var directories = new HashSet<FilePath> ();
+				foreach (FilePath directory in watchers.Keys) {
+					directories.Add (directory);
+				}
+				return directories;
 			}
-			return directories;
 		}
 
-		static IEnumerable<FilePath> GetRootDirectories ()
+		static IEnumerable<FilePath> GetRootDirectories (
+			ImmutableList<WorkspaceItem> currentWorkspaceItems,
+			ImmutableList<FilePath> currentMonitoredDirectories)
 		{
 			var directories = new HashSet<FilePath> ();
 
-			foreach (WorkspaceItem item in workspaceItems) {
+			foreach (WorkspaceItem item in currentWorkspaceItems) {
 				foreach (FilePath directory in item.GetRootDirectories ()) {
 					directories.Add (directory);
 				}
 			}
 
-			foreach (FilePath directory in monitoredDirectories) {
+			foreach (FilePath directory in currentMonitoredDirectories) {
 				directories.Add (directory);
 			}
 
@@ -129,12 +188,24 @@ namespace MonoDevelop.Projects
 			});
 		}
 
-		public static void WatchDirectories (IEnumerable<FilePath> directories)
+		public static Task WatchDirectories (IEnumerable<FilePath> directories)
 		{
 			lock (watchers) {
 				directories = directories.Where (directory => !directory.IsNullOrEmpty);
 				monitoredDirectories = ImmutableList<FilePath>.Empty.AddRange (directories);
-				UpdateWatchers ();
+				CancelUpdate ();
+				return UpdateWatchersAsync ();
+			}
+		}
+
+		/// <summary>
+		/// Used by unit tests to ensure the file watcher is up to date.
+		/// </summary>
+		internal static Task Update ()
+		{
+			lock (watchers) {
+				CancelUpdate ();
+				return UpdateWatchersAsync ();
 			}
 		}
 	}
@@ -145,6 +216,7 @@ namespace MonoDevelop.Projects
 
 		public FileWatcherWrapper (FilePath path)
 		{
+			Path = path;
 			watcher = new FSW.FileSystemWatcher (path);
 
 			// Need LastWrite otherwise no file change events are generated by the native file watcher.
@@ -158,6 +230,8 @@ namespace MonoDevelop.Projects
 			watcher.Created += OnFileCreated;
 			watcher.Error += OnFileWatcherError;
 		}
+
+		public FilePath Path { get; }
 
 		public bool EnableRaisingEvents {
 			get { return watcher.EnableRaisingEvents; }

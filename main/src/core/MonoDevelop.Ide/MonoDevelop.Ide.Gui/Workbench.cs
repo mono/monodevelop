@@ -969,9 +969,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			if (directories != null)
-				FileWatcherService.WatchDirectories (directories);
+				FileWatcherService.WatchDirectories (directories).Ignore ();
 			else
-				FileWatcherService.WatchDirectories (Enumerable.Empty<FilePath> ());
+				FileWatcherService.WatchDirectories (Enumerable.Empty<FilePath> ()).Ignore ();
 		}
 		
 		// When looking for the project to which the file belongs, look first

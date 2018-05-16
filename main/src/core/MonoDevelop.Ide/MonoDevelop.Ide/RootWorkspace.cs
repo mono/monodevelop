@@ -622,7 +622,7 @@ namespace MonoDevelop.Ide
 
 					item.SetShared ();
 					Items.Add (item);
-					FileWatcherService.Add (item);
+					await FileWatcherService.Add (item);
 				}
 				else {
 					item.Dispose ();
