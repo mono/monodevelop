@@ -563,9 +563,6 @@ namespace MonoDevelop.Components.DockNotebook
 				if (evnt.IsContextMenuButton ()) {
 					DockNotebook.ActiveNotebook = notebook;
 					notebook.CurrentTab = t;
-					// always tab content to ensure that it's the initial target in the command route
-					if (!t.Content.HasFocus)
-						t.Content.GrabFocus ();
 					notebook.DoPopupMenu (notebook, t.Index, evnt);
 					return true;
 				}
