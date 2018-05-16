@@ -29,9 +29,15 @@
 
         public void TextViewCreated(ITextView textView)
         {
-            // No need to do anything further, this type hooks up events to the
-            // text view and tracks its own life cycle.
-            new QuickInfoController(
+			// TODO: remove this as described in
+			// https://devdiv.visualstudio.com/DevDiv/Xamarin%20VS%20for%20Mac/_workitems/edit/617427
+			if (textView.TextBuffer.ContentType.IsOfType ("CSharp")) {
+				return;
+			}
+
+			// No need to do anything further, this type hooks up events to the
+			// text view and tracks its own life cycle.
+			new QuickInfoController(
                 this.quickInfoBroker,
                 this.joinableTaskContext,
                 textView);
