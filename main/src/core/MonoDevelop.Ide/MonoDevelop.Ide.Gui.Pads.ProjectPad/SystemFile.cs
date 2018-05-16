@@ -53,6 +53,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public FilePath Path {
 			get { return absolutePath; }
+			internal set { absolutePath = value; }
 		}
 		
 		FilePath IFileItem.FileName {

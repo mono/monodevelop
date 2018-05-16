@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Core;
@@ -49,16 +50,21 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((SolutionFolderFileNode)dataObject).FileName;
+			return ((SolutionFolderFileNode)dataObject).Path;
+		}
+
+		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
+		{
+			attributes |= NodeAttributes.AllowRename;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			SolutionFolderFileNode file = (SolutionFolderFileNode) dataObject;
-			nodeInfo.Label = file.FileName.FileName;
-			if (!System.IO.File.Exists (file.FileName))
+			nodeInfo.Label = file.Name;
+			if (!System.IO.File.Exists (file.Path))
 				nodeInfo.Label = "<span foreground='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + nodeInfo.Label + "</span>";
-			nodeInfo.Icon = DesktopService.GetIconForFile (file.FileName, Gtk.IconSize.Menu);
+			nodeInfo.Icon = DesktopService.GetIconForFile (file.Path, Gtk.IconSize.Menu);
 		}
 		
 		public override object GetParentObject (object dataObject)
@@ -87,17 +93,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (ITreeNavigator nav in CurrentNodes) {
 				SolutionFolderFileNode file = (SolutionFolderFileNode) nav.DataItem;
 				if (file.Parent.IsRoot)
-					msg.Text = GettextCatalog.GetString ("Are you sure you want to remove the file {0} from the solution folder {1}?", file.FileName.FileName, file.Parent.Name);
+					msg.Text = GettextCatalog.GetString ("Are you sure you want to remove the file {0} from the solution folder {1}?", file.Name, file.Parent.Name);
 				else
-					msg.Text = GettextCatalog.GetString ("Are you sure you want to remove the file {0} from the solution {1}?", file.FileName.FileName, file.Parent.ParentSolution.Name);
+					msg.Text = GettextCatalog.GetString ("Are you sure you want to remove the file {0} from the solution {1}?", file.Name, file.Parent.ParentSolution.Name);
 				AlertButton result = MessageService.AskQuestion (msg);
 				if (result == AlertButton.Cancel)
 					return;
 				
-				file.Parent.Files.Remove (file.FileName);
+				file.Parent.Files.Remove (file.Path);
 				
 				if (result == AlertButton.Delete) {
-					FileService.DeleteFile (file.FileName);
+					FileService.DeleteFile (file.Path);
 				}
 
 				if (file.Parent != null && file.Parent.ParentSolution != null) {
@@ -111,7 +117,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void ActivateItem ()
 		{
 			SolutionFolderFileNode file = (SolutionFolderFileNode) CurrentNode.DataItem;
-			IdeApp.Workbench.OpenDocument (file.FileName, project: null);
+			IdeApp.Workbench.OpenDocument (file.Path, project: null);
 		}
 		
 		public override DragOperation CanDragNode ()
@@ -123,32 +129,60 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnOpenWith (object ob)
 		{
 			var finfo = (SolutionFolderFileNode)CurrentNode.DataItem;
-			((FileViewer)ob).OpenFile (finfo.FileName);
+			((FileViewer)ob).OpenFile (finfo.Path);
 		}
 
 		[CommandUpdateHandler (ViewCommands.OpenWithList)]
 		public void OnOpenWithUpdate (CommandArrayInfo info)
 		{
 			var pf = (SolutionFolderFileNode)CurrentNode.DataItem;
-			ProjectFileNodeCommandHandler.PopulateOpenWithViewers (info, null, pf.FileName);
+			ProjectFileNodeCommandHandler.PopulateOpenWithViewers (info, null, pf.Path);
 		}
 
+		public override void OnRenameStarting (ref string startingText, ref int selectionStart, ref int selectionLength)
+		{
+			var file = (SolutionFolderFileNode)CurrentNode.DataItem;
+			startingText = file.Name;
+			selectionStart = 0;
+			selectionLength = Path.GetFileNameWithoutExtension (startingText).Length;
+		}
+
+		public async override void RenameItem (string newName)
+		{
+			var file = (SolutionFolderFileNode)CurrentNode.DataItem;
+			var oldPath = file.Path;
+			if (SystemFileNodeCommandHandler.RenameFileWithConflictCheck (oldPath, newName, out string newPath)) {
+				//FIXME: implement this as a rename rather than an add/remove
+				file.Parent.Files.Remove (oldPath);
+				file.Parent.Files.Add (newPath);
+				await IdeApp.ProjectOperations.SaveAsync (file.Parent.ParentSolution);
+			}
+		}
 	}
-	
+
 	class SolutionFolderFileNode: IFileItem
 	{
-		FilePath file;
+		FilePath path;
 		SolutionFolder parent;
 		
-		public SolutionFolderFileNode (FilePath file, SolutionFolder parent)
+		public SolutionFolderFileNode (FilePath path, SolutionFolder parent)
 		{
-			this.file = file;
+			this.Path = path;
 			this.parent = parent;
 		}
-		
-		public FilePath FileName {
-			get { return this.file; }
-			set { this.file = value; }
+
+		public FilePath Path {
+			get { return path; }
+			set { path = value; }
+		}
+
+		public string Name {
+			get { return path.FileName; }
+		}
+
+		//this is named misleadingly, so hide it away
+		FilePath IFileItem.FileName {
+			get { return path; }
 		}
 
 		public SolutionFolder Parent {
@@ -158,16 +192,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override bool Equals (object obj)
 		{
-			SolutionFolderFileNode other = obj as SolutionFolderFileNode;
+			var other = obj as SolutionFolderFileNode;
 			if (other == null)
 				return false;
-			return file == other.file && parent == other.parent;
+			return path == other.path && parent == other.parent;
 		}
 
 		public override int GetHashCode ()
 		{
 			unchecked { 
-				return file.GetHashCode () + parent.GetHashCode ();
+				return path.GetHashCode () | parent.GetHashCode ();
 			}
 		}
 	}

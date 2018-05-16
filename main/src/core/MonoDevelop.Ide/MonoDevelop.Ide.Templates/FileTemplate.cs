@@ -44,6 +44,7 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -245,13 +246,13 @@ namespace MonoDevelop.Ide.Templates
 			return node == null ? null : LoadTemplate (node);
 		}
 
-		public virtual async Task<bool> Create (SolutionFolderItem policyParent, Project project, string directory, string language, string name)
+		public virtual async Task<bool> Create (SolutionFolderItem policyParent, Project project, SolutionFolder solutionFolder, string directory, string language, string name)
 		{
 			if (!String.IsNullOrEmpty (WizardPath)) {
 				return false;
 			} else {
 				foreach (FileDescriptionTemplate newfile in Files)
-					if (!await CreateFile (newfile, policyParent, project, directory, language, name))
+					if (!await CreateFile (newfile, policyParent, project, solutionFolder, directory, language, name))
 						return false;
 				return true;
 			}
@@ -304,20 +305,23 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
-		protected virtual async Task<bool> CreateFile (FileDescriptionTemplate newfile, SolutionFolderItem policyParent, Project project, string directory, string language, string name)
+		protected virtual async Task<bool> CreateFile (FileDescriptionTemplate newfile, SolutionFolderItem policyParent, Project project, SolutionFolder solutionFolder, string directory, string language, string name)
 		{
-			if (project != null) {
-				var model = project.GetStringTagModel (new DefaultConfigurationSelector ());
+			var tagModelProvider = (WorkspaceObject)project ?? (WorkspaceObject)solutionFolder;
+			if (tagModelProvider != null) {
+				var model = tagModelProvider.GetStringTagModel (new DefaultConfigurationSelector ());
 				newfile.SetProjectTagModel (model);
-				try {
+			}
+
+			try {
+				if (project != null) {
 					if (await newfile.AddToProjectAsync (policyParent, project, language, directory, name)) {
 						newfile.Show ();
 						return true;
 					}
-				} finally {
-					newfile.SetProjectTagModel (null);
+					return false;
 				}
-			} else {
+
 				var singleFile = newfile as SingleFileDescriptionTemplate;
 				if (singleFile == null)
 					throw new InvalidOperationException ("Single file template expected");
@@ -325,19 +329,30 @@ namespace MonoDevelop.Ide.Templates
 				if (directory != null) {
 					string fileName = await singleFile.SaveFileAsync (policyParent, project, language, directory, name);
 					if (fileName != null) {
-						IdeApp.Workbench.OpenDocument (fileName, project);
+						if (solutionFolder != null) {
+							if (solutionFolder.IsRoot) {
+								// Don't allow adding files to the root folder. VS doesn't allow it
+								// If there is no existing folder, create one
+								solutionFolder = solutionFolder.ParentSolution.DefaultSolutionFolder;
+							}
+							solutionFolder.Files.Add (fileName);
+						}
+						IdeApp.Workbench.OpenDocument (fileName, project: null);
 						return true;
 					}
-				} else {
-					string fileName = singleFile.GetFileName (policyParent, project, language, directory, name);
-					Stream stream = singleFile.CreateFileContent (policyParent, project, language, fileName, name) ?? await singleFile.CreateFileContentAsync (policyParent, project, language, fileName, name);
-
-					string mimeType = GuessMimeType (fileName);
-					IdeApp.Workbench.NewDocument (fileName, mimeType, stream);
-					return true;
+					return false;
 				}
+
+				string unsavedFilename = singleFile.GetFileName (policyParent, project, language, directory, name);
+				Stream stream = singleFile.CreateFileContent (policyParent, project, language, unsavedFilename, name)
+					?? await singleFile.CreateFileContentAsync (policyParent, project, language, unsavedFilename, name);
+
+				string mimeType = GuessMimeType (unsavedFilename);
+				IdeApp.Workbench.NewDocument (unsavedFilename, mimeType, stream);
+				return true;
+			} finally {
+				newfile.SetProjectTagModel(null);
 			}
-			return false;
 		}
 
 		protected virtual bool IsValidForProject (Project project, string projectPath)

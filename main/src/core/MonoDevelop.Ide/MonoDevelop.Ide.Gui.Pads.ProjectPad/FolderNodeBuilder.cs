@@ -272,10 +272,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 			else if (dataObject is SolutionFolderFileNode) {
 				var sff = (SolutionFolderFileNode)dataObject;
-				sff.Parent.Files.Remove (sff.FileName);
+				sff.Parent.Files.Remove (sff.Path);
 
 				await IdeApp.ProjectOperations.SaveAsync (sff.Parent.ParentSolution);
-				source = ((SolutionFolderFileNode)dataObject).FileName;
+				source = ((SolutionFolderFileNode)dataObject).Path;
 				sourceProject = null;
 				what = null;
 			} else
@@ -433,7 +433,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			CurrentNode.Expanded = true;
 			if (IdeApp.Workbench.ActiveDocument != null)
 				IdeApp.Workbench.ActiveDocument.Window.SelectWindow ();
-			await IdeApp.ProjectOperations.SaveAsync (project);
 		}
 		
 		void OnFileInserted (ITreeNavigator nav)
