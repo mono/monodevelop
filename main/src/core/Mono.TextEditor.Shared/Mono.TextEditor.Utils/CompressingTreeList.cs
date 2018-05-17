@@ -115,7 +115,7 @@ namespace Mono.TextEditor.Utils
 
 		}
 
-		internal RedBlackTree<CompressingNode> tree = new RedBlackTree<CompressingNode> ();
+		internal readonly RedBlackTree<CompressingNode> tree = new RedBlackTree<CompressingNode> ();
 
 		/// <summary>
 		/// Creates a new CompressingTreeList instance.
