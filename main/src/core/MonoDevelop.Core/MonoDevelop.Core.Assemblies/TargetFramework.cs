@@ -29,9 +29,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-using Mono.Addins;
 using Mono.PkgConfig;
-using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Serialization;
 using System.Reflection;
 
@@ -46,7 +44,7 @@ namespace MonoDevelop.Core.Assemblies
 		List<SupportedFramework> supportedFrameworks = new List<SupportedFramework> ();
 
 		internal bool RelationsBuilt;
-		
+
 		string corlibVersion;
 
 		public static TargetFramework Default {
@@ -63,9 +61,9 @@ namespace MonoDevelop.Core.Assemblies
 			this.name = id.Profile == null
 				? string.Format ("{0} {1}", id.Identifier, id.Version)
 				: string.Format ("{0} {1} {2} Profile", id.Identifier, id.Version, id.Profile);
-			Assemblies = new AssemblyInfo[0];
+			Assemblies = new AssemblyInfo [0];
 		}
-		
+
 		public string Name {
 			get {
 				if (string.IsNullOrEmpty (name)) {
@@ -76,19 +74,19 @@ namespace MonoDevelop.Core.Assemblies
 				return name;
 			}
 		}
-		
+
 		public TargetFrameworkMoniker Id {
 			get {
 				return id;
 			}
 		}
 
-		[Obsolete("It is no longer possible to define a hidden framework")]
+		[Obsolete ("It is no longer possible to define a hidden framework")]
 		public bool Hidden { get; } = false;
-		
-		[Obsolete("This value is no longer meaningful")]
+
+		[Obsolete ("This value is no longer meaningful")]
 		public ClrVersion ClrVersion { get; } = ClrVersion.Net_4_0;
-		
+
 		static bool ProfileMatchesPattern (string profile, string pattern)
 		{
 			if (string.IsNullOrEmpty (pattern))
@@ -163,12 +161,12 @@ namespace MonoDevelop.Core.Assemblies
 
 			return fx.Id.Identifier == id.Identifier && new Version (fx.Id.Version).CompareTo (new Version (id.Version)) <= 0;
 		}
-		
+
 		internal string GetCorlibVersion ()
 		{
 			if (corlibVersion != null)
 				return corlibVersion;
-			
+
 			foreach (AssemblyInfo asm in Assemblies) {
 				if (asm.Name == "mscorlib")
 					return corlibVersion = asm.Version;
@@ -185,121 +183,102 @@ namespace MonoDevelop.Core.Assemblies
 			get { return includedFrameworks; }
 		}
 
-		#pragma warning disable 649
+#pragma warning disable 649
 		string includesFramework;
-		#pragma warning restore 649
+#pragma warning restore 649
 
 		internal TargetFrameworkMoniker GetIncludesFramework ()
 		{
 			if (string.IsNullOrEmpty (includesFramework))
 				return null;
-			string version = includesFramework[0] == 'v'?
+			string version = includesFramework [0] == 'v' ?
 				includesFramework.Substring (1) : includesFramework;
 			if (version.Length == 0)
 				throw new InvalidOperationException ("Invalid include version in framework " + id);
-			
-			return new TargetFrameworkMoniker (id.Identifier, version);	
+
+			return new TargetFrameworkMoniker (id.Identifier, version);
 		}
-		
+
 		public List<SupportedFramework> SupportedFrameworks {
 			get { return supportedFrameworks; }
 		}
-		
-		internal AssemblyInfo[] Assemblies {
+
+		internal AssemblyInfo [] Assemblies {
 			get;
 			set;
 		}
-		
+
+		internal string FrameworkAssembliesDirectory { get; set; }
+
 		public override string ToString ()
 		{
 			return $"[TargetFramework: Name={Name}, Id={Id}]";
 		}
-		
+
 		public static TargetFramework FromFrameworkDirectory (TargetFrameworkMoniker moniker, FilePath dir)
 		{
-			var fxList = dir.Combine ("RedistList", "FrameworkList.xml");
-			if (!File.Exists (fxList))
+			var fxListFile = dir.Combine ("RedistList", "FrameworkList.xml");
+			var fxListInfo = new FileInfo (fxListFile);
+			if (!fxListInfo.Exists)
 				return null;
-			
-			var fx = new TargetFramework (moniker);
-			
-			using (var reader = System.Xml.XmlReader.Create (fxList)) {
-				if (!reader.ReadToDescendant ("FileList"))
-					throw new Exception ("Missing FileList element");
-				
-				//not sure what this is for
-				//if (reader.MoveToAttribute ("Redist") && reader.ReadAttributeValue ())
-				//	redist = reader.ReadContentAsString ();
-				
-				if (reader.MoveToAttribute ("Name") && reader.ReadAttributeValue ())
-					fx.name = reader.ReadContentAsString ();
-				
-				if (reader.MoveToAttribute ("IncludeFramework") && reader.ReadAttributeValue ()) {
-					string include = reader.ReadContentAsString ();
-					if (!string.IsNullOrEmpty (include))
-						fx.includesFramework = include;
-				}
-				
-				//this is a Mono-specific extension
-				if (reader.MoveToAttribute ("TargetFrameworkDirectory") && reader.ReadAttributeValue ()) {
-					string targetDir = reader.ReadContentAsString ();
-					if (!string.IsNullOrEmpty (targetDir)) {
-						targetDir = targetDir.Replace ('\\', System.IO.Path.DirectorySeparatorChar);
-						dir = fxList.ParentDirectory.Combine (targetDir).FullPath;
-					}
-				}
-				
-				var assemblies = new List<AssemblyInfo> ();
-				if (reader.ReadToFollowing ("File")) {
-					do {
-						var ainfo = new AssemblyInfo ();
-						assemblies.Add (ainfo);
-						if (reader.MoveToAttribute ("AssemblyName") && reader.ReadAttributeValue ())
-							ainfo.Name = reader.ReadContentAsString ();
-						if (string.IsNullOrEmpty (ainfo.Name))
-							throw new Exception ("Missing AssemblyName attribute");
-						if (reader.MoveToAttribute ("Version") && reader.ReadAttributeValue ())
-							ainfo.Version = reader.ReadContentAsString ();
-						if (reader.MoveToAttribute ("PublicKeyToken") && reader.ReadAttributeValue ())
-							ainfo.PublicKeyToken = reader.ReadContentAsString ();
-						if (reader.MoveToAttribute ("Culture") && reader.ReadAttributeValue ())
-							ainfo.Culture = reader.ReadContentAsString ();
-						if (reader.MoveToAttribute ("ProcessorArchitecture") && reader.ReadAttributeValue ())
-							ainfo.ProcessorArchitecture = (ProcessorArchitecture)
-								Enum.Parse (typeof (ProcessorArchitecture), reader.ReadContentAsString (), true);
-						if (reader.MoveToAttribute ("InGac") && reader.ReadAttributeValue ())
-							ainfo.InGac = reader.ReadContentAsBoolean ();
-					} while (reader.ReadToFollowing ("File"));
-				} else if (Directory.Exists (dir)) {
-					
-					foreach (var f in Directory.EnumerateFiles (dir, "*.dll")) {
-						try {
-							var an = SystemAssemblyService.GetAssemblyNameObj (dir.Combine (f));
-							var ainfo = new AssemblyInfo ();
-							ainfo.Update (an);
-							assemblies.Add (ainfo);
-						} catch (BadImageFormatException ex) {
-							LoggingService.LogError ("Invalid assembly in framework '{0}': {1}{2}{3}", fx.Id, f, Environment.NewLine, ex.ToString ());
-						} catch (Exception ex) {
-							LoggingService.LogError ("Error reading assembly '{0}' in framework '{1}':{2}{3}",
-								f, fx.Id, Environment.NewLine, ex.ToString ());
-						}
-					}
-				}
-				
-				fx.Assemblies = assemblies.ToArray ();
+
+			var fxCacheDir = UserProfile.Current.CacheDir.Combine ("FrameworkInfo");
+
+			var cacheKey = moniker.Identifier + "_" + moniker.Version;
+			if (!string.IsNullOrEmpty (moniker.Profile)) {
+				cacheKey += "_" + moniker.Profile;
 			}
-			
-			var supportedFrameworksDir = dir.Combine ("SupportedFrameworks");
-			if (Directory.Exists (supportedFrameworksDir)) {
-				foreach (var sfx in Directory.GetFiles (supportedFrameworksDir))
-					fx.SupportedFrameworks.Add (SupportedFramework.Load (fx, sfx));
+
+			FrameworkInfo fxInfo;
+
+			var cachedListFile = fxCacheDir.Combine (cacheKey + ".xml");
+			var cachedListInfo = new FileInfo (cachedListFile);
+			if (cachedListInfo.Exists && cachedListInfo.LastWriteTime == fxListInfo.LastWriteTime) {
+				fxInfo = FrameworkInfo.Load (moniker, cachedListFile);
+			} else {
+				fxInfo = FrameworkInfo.Load (moniker, fxListFile);
+				var supportedFrameworksDir = dir.Combine ("SupportedFrameworks");
+				if (Directory.Exists (supportedFrameworksDir)) {
+					foreach (var sfx in Directory.EnumerateFiles (supportedFrameworksDir))
+						fxInfo.SupportedFrameworks.Add (SupportedFramework.Load (sfx));
+				}
+				if (fxInfo.Assemblies.Count == 0) {
+					fxInfo.Assemblies = ScanAssemblyDirectory (moniker, fxInfo.TargetFrameworkDirectory);
+				}
+				Directory.CreateDirectory (fxCacheDir);
+				fxInfo.Save (cachedListFile);
+				File.SetLastWriteTime (cachedListFile, fxListInfo.LastWriteTime);
 			}
-			
-			return fx;
+
+			return new TargetFramework (moniker) {
+				name = fxInfo.Name,
+				includesFramework = fxInfo.IncludeFramework,
+				Assemblies = fxInfo.Assemblies.ToArray (),
+				supportedFrameworks = fxInfo.SupportedFrameworks,
+				FrameworkAssembliesDirectory = fxInfo.TargetFrameworkDirectory
+			};
+		}
+
+		static List<AssemblyInfo> ScanAssemblyDirectory (TargetFrameworkMoniker tfm, FilePath dir)
+		{
+			var assemblies = new List<AssemblyInfo> ();
+			foreach (var f in Directory.EnumerateFiles (dir, "*.dll")) {
+				try {
+					var an = SystemAssemblyService.GetAssemblyNameObj (dir.Combine (f));
+					var ainfo = new AssemblyInfo ();
+					ainfo.Update (an);
+					assemblies.Add (ainfo);
+				} catch (BadImageFormatException ex) {
+					LoggingService.LogError ("Invalid assembly in framework '{0}': {1}{2}{3}", tfm, f, Environment.NewLine, ex.ToString ());
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error reading assembly '{0}' in framework '{1}':{2}{3}",
+						f, tfm, Environment.NewLine, ex.ToString ());
+				}
+			}
+			return assemblies;
 		}
 	}
-	
+
 	class AssemblyInfo
 	{
 		[ItemProperty ("name")]
