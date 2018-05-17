@@ -98,6 +98,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 
 			public bool TryGetDocumentOption (Document document, OptionKey option, OptionSet underlyingOptions, out object value)
 			{
+
 				if (codingConventionsSnapshot != null) {
 					var editorConfigPersistence = option.Option.StorageLocations.OfType<IEditorConfigStorageLocation> ().SingleOrDefault ();
 					if (editorConfigPersistence != null) {
@@ -111,6 +112,17 @@ namespace MonoDevelop.CSharp.OptionProvider
 						}
 					}
 				}
+
+				if (option.Option == Microsoft.CodeAnalysis.Editing.GenerationOptions.PlaceSystemNamespaceFirst) {
+					value = PropertyService.Get (LanguageNames.CSharp + ".PlaceSystemNamespaceFirst", true);
+					return true;
+				}
+
+				if (option.Option == Microsoft.CodeAnalysis.Editing.GenerationOptions.SeparateImportDirectiveGroups) {
+					value = PropertyService.Get (LanguageNames.CSharp + ".SeparateImportDirectiveGroups", false);
+					return true;
+				}
+
 				var result = optionSet.GetOption (option);
 
 				if (result == underlyingOptions.GetOption (option)) {

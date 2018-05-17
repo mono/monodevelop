@@ -189,6 +189,7 @@
     <Compile Include="Gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Refactoring.SignatureChange.SignatureChangeDialog.cs" />
+    <Compile Include="MonoDevelop.Refactoring\CodeGenerationPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
