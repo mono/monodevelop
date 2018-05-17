@@ -212,7 +212,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 		const int FontSize = 11;
 		const int MinLayoutWidth = 30;
 
-		public Color BackgroundColor { get; set; }
 		public Color StrongSelectionColor { get; set; }
 		public Color SelectionColor { get; set; }
 
@@ -258,7 +257,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public BuildOutputTreeCellView (IBuildOutputContextProvider context)
 		{
-			BackgroundColor = Styles.CellBackgroundColor;
 			StrongSelectionColor = Styles.CellStrongSelectionColor;
 			SelectionColor = Styles.CellSelectionColor;
 			UseStrongSelectionColor = true;
@@ -293,9 +291,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var isSelected = Selected;
 
 			var status = GetViewStatus (buildOutputNode);
-
-			//Draw the node background
-			FillCellBackground (ctx, isSelected);
 
 			//Draw the image row
 			DrawImage (ctx, cellArea, buildOutputNode.GetImage (), (cellArea.Left - 3), ImageSize, isSelected, ImagePadding);
@@ -508,33 +503,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return new Size (minWidth, height);
 		}
 
-		Color GetSelectedColor ()
-		{
-			if (UseStrongSelectionColor) {
-				return StrongSelectionColor;
-			}
-			return SelectionColor;
-		}
-
 		bool IsBackgroundColorFieldSet ()
 		{
 			return GetValue (HasBackgroundColorField, false);
-		}
-
-		void FillCellBackground (Context ctx, bool isSelected)
-		{
-			if (isSelected) {
-				FillCellBackground (ctx, GetSelectedColor ());
-			} else if (IsBackgroundColorFieldSet ()) {
-				FillCellBackground (ctx, BackgroundColor);
-			}
-		}
-
-		void FillCellBackground (Context ctx, Color color)
-		{
-			ctx.Rectangle (BackgroundBounds);
-			ctx.SetColor (color);
-			ctx.Fill ();
 		}
 
 		ViewStatus GetViewStatus (BuildOutputNode node)
