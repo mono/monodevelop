@@ -166,7 +166,11 @@ namespace MonoDevelop.Ide.Editor
 		public override void BeforeBackspace (out bool handledCommand)
 		{
 			base.BeforeBackspace (out handledCommand);
-			if (Editor.CaretOffset <= StartOffset + 1 || Editor.CaretOffset > EndOffset) {
+			if (Editor.CaretOffset > EndOffset) {
+				Editor.EndSession ();
+				return;
+			}
+			if (Editor.CaretOffset <= StartOffset + 1) {
 				if (HasNoForwardTyping ())
 					Editor.RemoveText (StartOffset + 1, EndOffset - StartOffset);
 				Editor.EndSession ();
