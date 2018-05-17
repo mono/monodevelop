@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							ws.InformDocumentClose (Id, ed.FileName);
 							Dispose (); // 100% ensure that this object is disposed
 							if (ws.GetDocument (Id) != null)
-								TypeSystemService.InformDocumentOpen (Id, ed);
+								TypeSystemService.InformDocumentOpen (Id, ed, IdeApp.Workbench.Documents.FirstOrDefault(d => d.Editor == ed));
 						} catch (Exception ex) {
 							LoggingService.LogError ("Error while text replacing", ex);
 						}
