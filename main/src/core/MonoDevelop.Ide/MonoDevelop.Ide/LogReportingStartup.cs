@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide
 		protected override void Run ()
 		{
 			// Attach a handler for when exceptions need to be processed
-			LoggingService.UnhandledErrorOccured = (enabled, ex, willShutdown) => {
+			LoggingService.UnhandledErrorOccurred = (enabled, ex, willShutdown) => {
 				var doNotSend = new AlertButton (GettextCatalog.GetString ("Do _Not Send"));
 				var sendOnce = new AlertButton (GettextCatalog.GetString ("_Send This Time"));
 				var alwaysSend = new AlertButton (GettextCatalog.GetString ("_Always Send"));

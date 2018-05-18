@@ -182,5 +182,9 @@ namespace MonoDevelop.Ide.Editor
 		{
 			return null;
 		}
+
+		internal virtual void UpdateDocumentId (Microsoft.CodeAnalysis.DocumentId newId)
+		{
+		}
 	}
 }

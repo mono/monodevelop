@@ -42,7 +42,7 @@ namespace MonoDevelop.CSharp.Formatting
 	{
 		readonly TextEditor texteditor = TextEditorFactory.CreateNewEditor ();
 		readonly CSharpFormattingPolicy profile;
-		TreeStore indentationOptions, newLineOptions, spacingOptions, styleOptions, wrappingOptions;
+		TreeStore indentationOptions, newLineOptions, spacingOptions, wrappingOptions;
 		static readonly Dictionary<Microsoft.CodeAnalysis.CSharp.Formatting.LabelPositionOptions, string> labelPositionOptionsTranslationDictionary = new Dictionary<Microsoft.CodeAnalysis.CSharp.Formatting.LabelPositionOptions, string> ();
 		static readonly Dictionary<Microsoft.CodeAnalysis.CSharp.Formatting.BinaryOperatorSpacingOptions, string> binaryOperatorSpacingOptionsDictionary = new Dictionary<Microsoft.CodeAnalysis.CSharp.Formatting.BinaryOperatorSpacingOptions, string> ();
 
@@ -547,56 +547,6 @@ namespace MonoDevelop.CSharp.Formatting
 }");
 
 			treeviewSpacing.ExpandAll ();
-			#endregion
-
-			#region Style options
-			styleOptions = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(bool), typeof(bool));
-
-			column = new TreeViewColumn ();
-			// pixbuf column
-			column.PackStart (pixbufCellRenderer, false);
-			column.SetCellDataFunc (pixbufCellRenderer, RenderIcon);
-
-			// text column
-			cellRendererText.Ypad = 1;
-			column.PackStart (cellRendererText, true);
-			column.SetAttributes (cellRendererText, "text", 1);
-
-
-			treeviewStyle.Model = styleOptions;
-			treeviewStyle.SearchColumn = -1; // disable the interactive search
-			treeviewStyle.HeadersVisible = false;
-			treeviewStyle.Selection.Changed += TreeSelectionChanged;
-
-			cellRendererCombo = new CellRendererCombo ();
-			cellRendererCombo.Ypad = 1;
-			cellRendererCombo.Mode = CellRendererMode.Editable;
-			cellRendererCombo.TextColumn = 1;
-			cellRendererCombo.Model = ComboBoxStore;
-			cellRendererCombo.HasEntry = false;
-			cellRendererCombo.Editable = !profile.IsBuiltIn;
-			cellRendererCombo.Edited += new ComboboxEditedHandler (this, styleOptions).ComboboxEdited;
-
-			column.PackStart (cellRendererCombo, false);
-			column.SetAttributes (cellRendererCombo, "visible", comboVisibleColumn);
-			column.SetCellDataFunc (cellRendererCombo, ComboboxDataFunc);
-
-			cellRendererToggle = new CellRendererToggle ();
-			cellRendererToggle.Activatable = !profile.IsBuiltIn;
-			cellRendererToggle.Ypad = 1;
-			cellRendererToggle.Toggled += new CellRendererToggledHandler (this, treeviewSpacing, styleOptions).Toggled;
-			column.PackStart (cellRendererToggle, false);
-			column.SetAttributes (cellRendererToggle, "visible", toggleVisibleColumn);
-			column.SetCellDataFunc (cellRendererToggle, ToggleDataFunc);
-
-			treeviewStyle.AppendColumn (column);
-
-			AddOption (styleOptions, "PlaceSystemDirectiveFirst", GettextCatalog.GetString ("Place System directives first when sorting usings"), "");
-
-			// AddOption (styleOptions, category, null, GettextCatalog.GetString ("Qualify member access with 'this'"), null);
-			// AddOption (styleOptions, category, null, GettextCatalog.GetString ("Use 'var' when generating locals"), null);
-
-			treeviewStyle.ExpandAll ();
 			#endregion
 
 			#region Wrapping options

@@ -31,6 +31,7 @@ using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.Text;
+using System;
 
 namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 {
@@ -96,7 +97,13 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 		public override void BeforeBackspace (out bool handledCommand)
 		{
 			base.BeforeBackspace (out handledCommand);
-			if (Editor.CaretOffset <= StartOffset + 1 || Editor.CaretOffset > EndOffset) {
+			if (Editor.CaretOffset > EndOffset) {
+				Editor.EndSession ();
+				return;
+			}
+			if (Editor.CaretOffset <= StartOffset + 1) {
+				if (HasNoForwardTyping ())
+					Editor.RemoveText (StartOffset + 1, EndOffset - StartOffset);
 				Editor.EndSession ();
 			}
 		}
@@ -107,6 +114,17 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 			if (Editor.CaretOffset <= StartOffset || Editor.CaretOffset >= EndOffset) {
 				Editor.EndSession ();
 			}
+		}
+
+		bool HasNoForwardTyping ()
+		{
+			for (int i = StartOffset + 1; i < EndOffset - 1; i++) {
+				char ch = Editor.GetCharAt (i);
+				if (ch != ' ' && ch != '\t') {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		protected bool IsValidToken (SyntaxToken token)

@@ -78,10 +78,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return;
 			var token = src.Token;
 			var blockStructure = await outliningService.GetBlockStructureAsync (analysisDocument, token).ConfigureAwait (false);
-			UpdateFoldings (Editor, blockStructure.Spans, caretLocation, false, token);
+			UpdateFoldings (Editor, blockStructure.Spans, caretLocation, token);
 		}
 
-		static void UpdateFoldings (TextEditor Editor, ImmutableArray<BlockSpan> spans, int caretOffset, bool firstTime = false, CancellationToken token = default (CancellationToken))
+		static void UpdateFoldings (TextEditor editor, ImmutableArray<BlockSpan> spans, int caretOffset, CancellationToken token = default (CancellationToken))
 		{
 			try {
 				var foldSegments = new List<IFoldSegment> ();
@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				foreach (var blockSpan in spans) {
 					if (token.IsCancellationRequested)
 						return;
-					if (!blockSpan.IsCollapsible)
+					if (!blockSpan.IsCollapsible || IsSingleLine (editor, blockSpan))
 						continue;
 					var type = FoldingType.Unknown;
 					switch (blockSpan.Type) {
@@ -108,33 +108,29 @@ namespace MonoDevelop.Ide.Editor.Extension
 					}
 					var start = blockSpan.TextSpan.Start;
 					var end = blockSpan.TextSpan.End;
-					var marker = Editor.CreateFoldSegment (start, end - start);
+					var marker = editor.CreateFoldSegment (start, end - start);
 					if (marker == null)
 						continue;
 					foldSegments.Add (marker);
 					marker.CollapsedText = blockSpan.BannerText;
 					marker.FoldingType = type;
-					//and, if necessary, set its fold state
-					if (firstTime) {
-						// only fold on document open, later added folds are NOT folded by default.
-						marker.IsCollapsed = blockSpan.IsDefaultCollapsed;
-						continue;
-					}
 					if (blockSpan.TextSpan.Contains (caretOffset))
 						marker.IsCollapsed = false;
 				}
-				if (firstTime) {
-					Editor.SetFoldings (foldSegments);
-				} else {
-					Application.Invoke ((o, args) => {
-						if (!token.IsCancellationRequested)
-							Editor.SetFoldings (foldSegments);
-					});
-				}
+				Application.Invoke ((o, args) => {
+					if (!token.IsCancellationRequested)
+						editor.SetFoldings (foldSegments);
+				});
 			} catch (OperationCanceledException) {
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}
 		}
+
+		static bool IsSingleLine (TextEditor editor, BlockSpan blockSpan)
+		{
+			var startLine = editor.GetLineByOffset (blockSpan.TextSpan.Start);
+			return blockSpan.TextSpan.End <= startLine.EndOffsetIncludingDelimiter;
+		} 
 	}
 }

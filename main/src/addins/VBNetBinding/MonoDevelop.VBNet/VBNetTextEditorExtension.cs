@@ -37,6 +37,8 @@ using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Composition;
+using Microsoft.VisualStudio.Platform;
 
 namespace MonoDevelop.VBNet
 {
@@ -110,8 +112,8 @@ namespace MonoDevelop.VBNet
 			);
 			workspace.OpenSolutionInfo (sInfo);
 
-			Editor.SyntaxHighlighting = new RoslynClassificationHighlighting (workspace, documentId, "source.vb");
-			workspace.InformDocumentOpen (documentId, Editor);
+			Editor.SyntaxHighlighting = CompositionManager.GetExportedValue<ITagBasedSyntaxHighlightingFactory> ().CreateSyntaxHighlighting (Editor.TextView, "source.vb");
+			workspace.InformDocumentOpen (documentId, Editor, DocumentContext);
 		}
 
 		public override void Dispose ()

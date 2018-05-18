@@ -57,6 +57,7 @@ namespace MonoDevelop.Ide.Tasks
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
 				IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+				CommentTasksProvider.Legacy.Initialize ();
 			}
 			errors.ItemName = GettextCatalog.GetString ("Warning/Error");
 			userTasks.ItemName = GettextCatalog.GetString ("User Task");
@@ -188,6 +189,9 @@ namespace MonoDevelop.Ide.Tasks
 
 		internal static void InformCommentTasks (CommentTasksChangedEventArgs args)
 		{
+			if (args.Changes.Count == 0)
+				return;
+
 			var handler = CommentTasksChanged;
 			if (handler != null)
 				handler (null, args);

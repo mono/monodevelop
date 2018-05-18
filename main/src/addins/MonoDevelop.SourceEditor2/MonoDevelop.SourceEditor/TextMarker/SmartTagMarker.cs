@@ -51,7 +51,7 @@ namespace MonoDevelop.SourceEditor
 				return;
 			var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition;
 
-			cr.Rectangle (Math.Floor (x), Math.Floor (metrics.LineYRenderStartPosition) + (line == editor.GetLineByOffset (startOffset) ? editor.LineHeight - tagMarkerHeight : 0), tagMarkerWidth, tagMarkerHeight);
+			cr.Rectangle (Math.Floor (x), Math.Floor (metrics.LineYRenderStartPosition) + editor.LineHeight - tagMarkerHeight * editor.Options.Zoom, tagMarkerWidth * editor.Options.Zoom, tagMarkerHeight * editor.Options.Zoom);
 			cr.SetSourceColor ((HslColor.Brightness (SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Background)) < 0.5 ? Ide.Gui.Styles.Editor.SmartTagMarkerColorDark : Ide.Gui.Styles.Editor.SmartTagMarkerColorLight).ToCairoColor ());
 			cr.Fill ();
 		}

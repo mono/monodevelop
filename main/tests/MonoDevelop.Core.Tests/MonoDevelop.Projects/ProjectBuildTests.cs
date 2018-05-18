@@ -352,7 +352,6 @@ namespace MonoDevelop.Projects
 		{
 			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target2.csproj");
 			var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
-			p.RequiresMicrosoftBuild = true;
 
 			var ctx = new ProjectOperationContext ();
 			ctx.GlobalProperties.SetValue ("TestProp", "foo");
@@ -382,7 +381,6 @@ namespace MonoDevelop.Projects
 		{
 			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target3.csproj");
 			var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
-			p.RequiresMicrosoftBuild = true;
 
 			var ctx = new ProjectOperationContext ();
 			ctx.GlobalProperties.SetValue ("BuildingInsideVisualStudio", "false");
@@ -798,21 +796,17 @@ namespace MonoDevelop.Projects
 
 			sol.Dispose ();
 		}
-	}
 
-	[TestFixture]
-	public class ProjectBuildTests_XBuild : ProjectBuildTests
-	{
-		[TestFixtureSetUp]
-		public void SetUp ()
+		[Test]
+		[Ignore ("It seems to be causing a hang in the unit tests")]
+		public async Task RecoverFromBuilderCrash ()
 		{
-			Runtime.Preferences.BuildWithMSBuild.Set (false);
-		}
-
-		[TestFixtureTearDown]
-		public void Teardown ()
-		{
-			Runtime.Preferences.BuildWithMSBuild.Set (true);
+			await RemoteBuildEngineManager.RecycleAllBuilders ();
+			string projFile = Util.GetSampleProject ("builder-manager-tests", "crasher", "ConsoleProject.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var result = await p.Build (Util.GetMonitor (), ConfigurationSelector.Default);
+				Assert.AreEqual (1, result.ErrorCount, "#1");
+			}
 		}
 	}
 

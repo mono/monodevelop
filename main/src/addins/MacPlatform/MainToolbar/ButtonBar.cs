@@ -140,7 +140,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					SetLabel (_button.Title, indexMap [_button]);
 				};
 			}
-			Activated += (sender, e) => indexMap.First (b => b.Value == SelectedSegment).Key.NotifyPushed ();
+			Activated += (sender, e) => {
+				foreach (var item in indexMap.ToArray ())
+					if (item.Value == SelectedSegment)
+						item.Key.NotifyPushed ();
+			};
 
 			RebuildSegments ();
 			SegmentStyle = NSSegmentStyle.TexturedRounded;

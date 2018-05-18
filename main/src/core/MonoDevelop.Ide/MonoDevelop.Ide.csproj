@@ -102,18 +102,11 @@
     <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\packages\JetBrains.SharpZipLib.Stripped.0.87.20170615.10\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
@@ -152,9 +145,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="PresentationCore" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="PresentationFramework" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
@@ -8917,7 +8907,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\SelectFileFormatDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\MaintenanceOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\TaskStore.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\AssemblyFoldersPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\BuildMessagePanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\HiddenWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\HiddenTextEditorViewContent.cs" />
@@ -9368,7 +9357,6 @@
     <Compile Include="MonoDevelop.Ide.Templates\PackageReferencesForCreatedProject.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageInstaller.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopTextLoader.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopSourceTextContainer.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterHintingData.cs" />
@@ -9708,7 +9696,6 @@
     <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineProcessedTemplateResult.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\TemplateExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\HasReferenceFileTemplateCondition.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\RoslynClassificationHighlighting.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\LanguageCellRenderer.cs" />
     <Compile Include="MonoDevelop.Components\RestartPanel.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopSourceText.cs" />
@@ -9771,7 +9758,6 @@
     <Compile Include="Gui\MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs" />
-    <Compile Include="Gui\MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs" />
@@ -9817,7 +9803,17 @@
     <Compile Include="Gui\MonoDevelop.Ide.Projects.SelectReferenceDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.SelectEncodingsDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineImageLoader.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\BlockStructureFoldingTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Tasks\CommentTasksProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Tasks\CommentTasksProvider.Legacy.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\TagCommentsTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.Caching.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopDocumentTrackingService.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopProjectCacheHostServiceFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopWorkspaceCacheService.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\RoslynSearchCategory.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\RoslynSearchCategory.DeclaredSymbolInfoResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9866,6 +9862,7 @@
     <Folder Include="MonoDevelop.Ide.BuildOutputView\" />
     <Folder Include="MonoDevelop.Ide.EditorConfig\" />
     <Folder Include="Gui\" />
+    <Folder Include="MonoDevelop.Ide.RoslynServices\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">
@@ -9901,7 +9898,6 @@
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor2" />
     <InternalsVisibleTo Include="MonoDevelop.AssemblyBrowser" />
-    <InternalsVisibleTo Include="MonoDevelop.AspNet" />
     <InternalsVisibleTo Include="Xamarin.Sketches" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.AspNet" />
     <InternalsVisibleTo Include="MonoDevelop.GtkCore" />

@@ -321,16 +321,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 		
-/*		[CommandHandler (ProjectCommands.AddNewFiles)]
-		protected void OnAddNewFiles ()
+		[CommandHandler (ProjectCommands.AddNewFiles)]
+		protected async void OnAddNewFiles ()
 		{
-			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
-			if (IdeApp.ProjectOperations.CreateProjectFile (null, folder.BaseDirectory)) {
-				IdeApp.ProjectOperations.Save (folder.ParentSolution);
-				CurrentNode.Expanded = true;
+			var folder = (SolutionFolder) CurrentNode.DataItem;
+			if (!IdeApp.ProjectOperations.CreateSolutionFolderFile (folder)) {
+				return;
 			}
-		}*/
-		
+			CurrentNode.Expanded = true;
+			if (IdeApp.Workbench.ActiveDocument != null)
+				IdeApp.Workbench.ActiveDocument.Window.SelectWindow ();
+		}
+
 		[CommandHandler (ProjectCommands.AddFiles)]
 		protected async void OnAddFiles ()
 		{

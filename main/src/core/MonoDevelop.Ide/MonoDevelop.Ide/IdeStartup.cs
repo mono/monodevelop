@@ -77,6 +77,7 @@ namespace MonoDevelop.Ide
 		int Run (MonoDevelopOptions options)
 		{
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationLongName, IdeVersionInfo.MonoDevelopVersion);
+			LoggingService.LogInfo ("Build Information{0}{1}", Environment.NewLine, SystemInformation.GetBuildInformation ());
 			LoggingService.LogInfo ("Running on {0}", IdeVersionInfo.GetRuntimeInfo ());
 
 			//ensure native libs initialized before we hit anything that p/invokes
@@ -172,8 +173,6 @@ namespace MonoDevelop.Ide
 			
 			Counters.Initialization.Trace ("Initializing Runtime");
 			Runtime.Initialize (true);
-
-			Composition.CompositionManager.InitializeAsync ().Ignore ();
 
 			IdeApp.Customizer.OnCoreInitialized ();
 
@@ -310,6 +309,7 @@ namespace MonoDevelop.Ide
 			startupTimer.Stop ();
 			Counters.Startup.Inc (GetStartupMetadata (startupInfo));
 
+			GLib.Idle.Add (OnIdle);
 			IdeApp.Run ();
 
 			IdeApp.Customizer.OnIdeShutdown ();
@@ -365,6 +365,12 @@ namespace MonoDevelop.Ide
 			}
 
 			return null;
+		}
+
+		static bool OnIdle ()
+		{
+			Composition.CompositionManager.InitializeAsync ().Ignore ();
+			return false;
 		}
 
 		static DateTime lastIdle;
@@ -607,7 +613,7 @@ namespace MonoDevelop.Ide
 		
 		static void HandleException (Exception ex, bool willShutdown)
 		{
-			var msg = String.Format ("An unhandled exception has occured. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
+			var msg = String.Format ("An unhandled exception has occurred. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
 			var aggregateException = ex as AggregateException;
 			if (aggregateException != null) {
 				aggregateException.Flatten ().Handle (innerEx => {

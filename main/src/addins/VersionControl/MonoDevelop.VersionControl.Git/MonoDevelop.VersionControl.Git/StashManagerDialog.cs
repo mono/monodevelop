@@ -77,6 +77,8 @@ namespace MonoDevelop.VersionControl.Git
 					else
 						name = GettextCatalog.GetString ("Local changes of branch '{0}'", branch);
 				}
+				if (!string.IsNullOrEmpty (s.Message))
+					name += ": " + s.Message.Trim ();
 				store.AppendValues (s, s.Index.Author.When.LocalDateTime.ToString (), name);
 			}
 			tvs.Load ();

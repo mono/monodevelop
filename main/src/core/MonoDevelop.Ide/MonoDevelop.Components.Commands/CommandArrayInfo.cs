@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -164,9 +165,9 @@ namespace MonoDevelop.Components.Commands
 
 		internal void NotifyChanged ()
 		{
+			Runtime.AssertMainThread ();
 			Changed?.Invoke (this, EventArgs.Empty);
-			if (ParentCommandInfo != null)
-				ParentCommandInfo.NotifyChanged ();
+			ParentCommandInfo?.NotifyChanged ();
 		}
 
 		public event EventHandler Changed;

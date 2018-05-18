@@ -59,7 +59,12 @@ namespace Mono.TextEditor
 					return;
 				}
 			}
-			Add (newLine);
+			int index = 0;
+			for (; index < Count; index++) {
+				if (this [index].Start.Position > newLine.Start.Position)
+					break;
+			}
+			Insert (index, newLine);
 		}
 
 		internal void RemoveLinesBefore (int lineNumber)
@@ -84,7 +89,21 @@ namespace Mono.TextEditor
 
 		public ITextViewLine LastVisibleLine => this.LastOrDefault ();
 
-		public SnapshotSpan FormattedSpan => new SnapshotSpan (this [0].Start, this.Last ().EndIncludingLineBreak);
+		public SnapshotSpan FormattedSpan {
+			get {
+				if (this.Count == 0)
+					return new SnapshotSpan (textEditor.TextSnapshot, 0, 0);
+				var start = this [0].Start;
+				var end = this [Count - 1].EndIncludingLineBreak;
+				if (start.Snapshot.Version.VersionNumber == end.Snapshot.Version.VersionNumber) {
+					return new SnapshotSpan (start, end);
+				} else if (start.Snapshot.Version.VersionNumber > end.Snapshot.Version.VersionNumber) {
+					return new SnapshotSpan (start, end.TranslateTo (start.Snapshot, PointTrackingMode.Positive));
+				} else {
+					return new SnapshotSpan (start.TranslateTo (end.Snapshot, PointTrackingMode.Negative), end);
+				}
+			}
+		}
 
 		public bool IsValid => version.CompareAge (textEditor.Document.Version) == 0;
 

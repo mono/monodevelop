@@ -84,27 +84,42 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	
 	class SystemFileNodeCommandHandler: NodeCommandHandler
 	{
+		public override void OnRenameStarting (ref int selectionStart, ref int selectionLength)
+		{
+			string name = CurrentNode.NodeName;
+			selectionStart = 0;
+			selectionLength = Path.GetFileNameWithoutExtension (name).Length;
+		}
+
 		public override void RenameItem (string newName)
 		{
-			SystemFile file = CurrentNode.DataItem as SystemFile;
-			string oldname = file.Path;
-
-			string newname = Path.Combine (Path.GetDirectoryName (oldname), newName);
-			if (newname != oldname) {
-				try {
-					if (!FileService.IsValidPath (newname) || ProjectFolderCommandHandler.ContainsDirectorySeparator (newName)) {
-						MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
-					} else if (File.Exists (newname) || Directory.Exists (newname)) {
-						MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
-					} else {
-						FileService.RenameFile (oldname, newname);
-					}
-				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
-					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
-				} catch (System.IO.IOException ex) { 
-					MessageService.ShowError (GettextCatalog.GetString ("There was an error renaming the file."), ex);
-				}
+			var file = (SystemFile)CurrentNode.DataItem;
+			if (RenameFileWithConflictCheck (file.Path, newName, out string newPath)) {
+				file.Path = newPath;
 			}
+		}
+
+		public static bool RenameFileWithConflictCheck (FilePath oldPath, string newName, out string newPath)
+		{
+			newPath = oldPath.ParentDirectory.Combine (newName);
+			if (oldPath == newPath) {
+				return false;
+			}
+			try {
+				if (!FileService.IsValidPath (newPath) || ProjectFolderCommandHandler.ContainsDirectorySeparator (newName)) {
+					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
+				} else if (File.Exists (newPath) || Directory.Exists (newPath)) {
+					MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
+				} else {
+					FileService.RenameFile (oldPath, newPath);
+					return true;
+				}
+			} catch (ArgumentException) { // new file name with wildcard (*, ?) characters in it
+				MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
+			} catch (IOException ex) {
+				MessageService.ShowError (GettextCatalog.GetString ("There was an error renaming the file."), ex);
+			}
+			return false;
 		}
 		
 		public override void ActivateItem ()

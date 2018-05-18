@@ -87,11 +87,20 @@ namespace MonoDevelop.Ide.Editor
 	// TODO: Improve tooltip API - that really looks messy
 	public abstract class TooltipProvider : IDisposable
 	{
-		public abstract Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken));
+		public abstract Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default (CancellationToken));
 
 		public virtual bool IsInteractive (TextEditor editor, Window tipWindow)
 		{
 			return false;
+		}
+
+		/// <summary>
+		/// Mouse left the text area and is on top of the tip window. 
+		/// Interactive tooltip providers should take the mouse control here because the cursor can leave the text area space.
+		/// </summary>
+		public virtual void TakeMouseControl (TextEditor editor, Window tipWindow)
+		{
+			// Default : nothing
 		}
 
 		public virtual void GetRequiredPosition (TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)

@@ -69,7 +69,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 	public class ResultsEditorExtension : TextEditorExtension, IQuickTaskProvider
 	{
 		bool disposed;
-		static IDiagnosticService diagService = Ide.Composition.CompositionManager.GetExportedValue<IDiagnosticService> ();
+		IDiagnosticService diagService = Ide.Composition.CompositionManager.GetExportedValue<IDiagnosticService> ();
 		
 		protected override void Initialize ()
 		{
@@ -143,7 +143,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (!AnalysisOptions.EnableFancyFeatures)
 				return;
 
-			var doc = DocumentContext.ParsedDocument;
+			var doc = DocumentContext.AnalysisDocument;
 			if (doc == null || DocumentContext.IsAdHocProject)
 				return;
 
@@ -151,18 +151,21 @@ namespace MonoDevelop.AnalysisCore.Gui
 
 			Task.Run (() => {
 				var ws = DocumentContext.RoslynWorkspace;
-				var project = DocumentContext.AnalysisDocument.Project.Id;
-				var document = DocumentContext.AnalysisDocument.Id;
+				var analysisDocument = DocumentContext.AnalysisDocument;
+				if (analysisDocument == null)
+					return;
+				var project = analysisDocument.Project.Id;
+				var document = analysisDocument.Id;
 
 				// Force an initial diagnostic update from the engine.
 				foreach (var updateArgs in diagService.GetDiagnosticsUpdatedEventArgs (ws, project, document, src.Token)) {
-					var diagnostics = AdjustInitialDiagnostics (DocumentContext.AnalysisDocument.Project.Solution, updateArgs, src.Token);
+					var diagnostics = AdjustInitialDiagnostics (analysisDocument.Project.Solution, updateArgs, src.Token);
 					if (diagnostics.Length == 0) {
 						continue;
 					}
 
 					var e = DiagnosticsUpdatedArgs.DiagnosticsCreated (
-						updateArgs.Id, updateArgs.Workspace, DocumentContext.AnalysisDocument.Project.Solution, updateArgs.ProjectId, updateArgs.DocumentId, diagnostics);
+						updateArgs.Id, updateArgs.Workspace, analysisDocument.Project.Solution, updateArgs.ProjectId, updateArgs.DocumentId, diagnostics);
 
 					OnDiagnosticsUpdated (this, e);
 				}

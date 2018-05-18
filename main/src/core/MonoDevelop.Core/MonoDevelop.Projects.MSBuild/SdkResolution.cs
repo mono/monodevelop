@@ -66,7 +66,8 @@ namespace MonoDevelop.Projects.MSBuild
 							return result.Path;
 						}
 
-						results.Add (result);
+						if (result != null)
+							results.Add (result);
 					} catch (Exception e) {
 						logger.LogFatalBuildError (buildEventContext, e, projectFile);
 					}
@@ -104,7 +105,7 @@ namespace MonoDevelop.Projects.MSBuild
 			// Also add the default resolver.
 
 			var resolvers = new List<SdkResolver> { new MonoDevelop.Projects.MSBuild.Resolver (MSBuildProjectService.FindRegisteredSdks), new DefaultSdkResolver { TargetRuntime = runtime } };
-			MSBuildProjectService.GetNewestInstalledToolsVersion (runtime, true, out var binDir);
+			var binDir = MSBuildProjectService.GetMSBuildBinPath (runtime);
 			var potentialResolvers = FindPotentialSdkResolvers (Path.Combine (binDir, "SdkResolvers"));
 
 			if (potentialResolvers.Count == 0) return resolvers;

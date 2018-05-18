@@ -247,11 +247,11 @@ namespace Foo {
 		{
 			Solution sol = new Solution ();
 			sol.ConvertToFormat (format);
-			string dir = Util.CreateTmpDir ("generic-item-" + format.Name);
+			string dir = Util.CreateTmpDir ("generic-item");
 			sol.FileName = Path.Combine (dir, "TestGenericItem");
 			sol.Name = "TheItem";
 
-			MonoDevelop.Projects.MSBuild.MSBuildProjectService.RegisterGenericProjectType ("GenericItem", typeof(GenericItem));
+			MSBuildProjectService.RegisterGenericProjectType ("GenericItem", typeof(GenericItem));
 			
 			GenericItem it = new GenericItem ();
 			it.SomeValue = "hi";
@@ -278,7 +278,7 @@ namespace Foo {
 			
 			Solution sol = new Solution ();
 			sol.ConvertToFormat (fileFormat);
-			string dir = Util.CreateTmpDir ("solution-folders-" + fileFormat.Name);
+			string dir = Util.CreateTmpDir ("solution-folders");
 			sol.FileName = Path.Combine (dir, "TestSolutionFolders");
 			sol.Name = "TheSolution";
 			

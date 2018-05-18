@@ -45,6 +45,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
+		// Used for unit testing
+		internal SearchProgressMonitor() { }
+
 		internal SearchProgressMonitor (Pad pad, CancellationTokenSource cancellationTokenSource = null) : base (Runtime.MainSynchronizationContext, cancellationTokenSource)
 		{
 			var stMon = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), Stock.StatusSearch, false, true, false, pad, true);
@@ -60,7 +63,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			set { Runtime.RunInMainThread (delegate { outputPad.PathMode = value; }); }
 		}
 
-		public void ReportResult (SearchResult result)
+		protected virtual void OnReportResult (SearchResult result)
 		{
 			Runtime.RunInMainThread (delegate {
 				try {
@@ -71,8 +74,13 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 			});
 		}
+
+		public void ReportResult (SearchResult result)
+		{
+			OnReportResult (result);
+		}
 		
-		public void ReportResults (IEnumerable<SearchResult> results)
+		protected virtual void OnReportResults (IEnumerable<SearchResult> results)
 		{
 			Runtime.RunInMainThread (delegate {
 				try {
@@ -81,6 +89,11 @@ namespace MonoDevelop.Ide.FindInFiles
 					LoggingService.LogError ("Error adding search results.", ex.ToString ());
 				}
 			});
+		}
+
+		public void ReportResults (IEnumerable<SearchResult> results)
+		{
+			OnReportResults (results);
 		}
 		
 		public void ReportStatus (string resultMessage)

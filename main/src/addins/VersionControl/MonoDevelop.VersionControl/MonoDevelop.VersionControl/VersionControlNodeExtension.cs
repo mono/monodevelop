@@ -11,6 +11,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.VersionControl.Views;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl
 {
@@ -232,170 +233,170 @@ namespace MonoDevelop.VersionControl
 	{
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Update)]
-		protected async void OnUpdate() {
+		protected async Task OnUpdate() {
 			await RunCommand(Commands.Update, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Update)]
-		protected async void UpdateUpdate(CommandInfo item) {
+		protected async Task UpdateUpdate(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Update, item);
 		}
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Diff)]
-		protected async void OnDiff() {
+		protected async Task OnDiff() {
 			await RunCommand(Commands.Diff, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Diff)]
-		protected async void UpdateDiff(CommandInfo item) {
+		protected async Task UpdateDiff(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Diff, item);
 		}
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Log)]
-		protected async void OnLog() {
+		protected async Task OnLog() {
 			await RunCommand(Commands.Log, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Log)]
-		protected async void UpdateLog(CommandInfo item) {
+		protected async Task UpdateLog(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Log, item);
 		}
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Status)]
-		protected async void OnStatus() {
+		protected async Task OnStatus() {
 			await RunCommand(Commands.Status, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Status)]
-		protected async void UpdateStatus(CommandInfo item) {
+		protected async Task UpdateStatus(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Status, item);
 		}
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Add)]
-		protected async void OnAdd() {
+		protected async Task OnAdd() {
 			await RunCommand(Commands.Add, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Add)]
-		protected async void UpdateAdd(CommandInfo item) {
+		protected async Task UpdateAdd(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Add, item);
 		}
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Remove)]
-		protected async void OnRemove() {
+		protected async Task OnRemove() {
 			await RunCommand(Commands.Remove, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Remove)]
-		protected async void UpdateRemove(CommandInfo item) {
+		protected async Task UpdateRemove(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Remove, item);
 		}
 		
 		[CommandHandler (Commands.Publish)]
-		protected async void OnPublish() 
+		protected async Task OnPublish() 
 		{
 			await RunCommand(Commands.Publish, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Publish)]
-		protected async void UpdatePublish(CommandInfo item) {
+		protected async Task UpdatePublish(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Publish, item);
 		}
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Revert)]
-		protected async void OnRevert() {
+		protected async Task OnRevert() {
 			await RunCommand(Commands.Revert, false, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Revert)]
-		protected async void UpdateRevert(CommandInfo item) {
+		protected async Task UpdateRevert(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Revert, item, false);
 		}
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Lock)]
-		protected async void OnLock() {
+		protected async Task OnLock() {
 			await RunCommand(Commands.Lock, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Lock)]
-		protected async void UpdateLock(CommandInfo item) {
+		protected async Task UpdateLock(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Lock, item);
 		}
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Unlock)]
-		protected async void OnUnlock() {
+		protected async Task OnUnlock() {
 			await RunCommand(Commands.Unlock, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Unlock)]
-		protected async void UpdateUnlock(CommandInfo item) {
+		protected async Task UpdateUnlock(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Unlock, item);
 		}
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Annotate)]
-		protected async void OnAnnotate() {
+		protected async Task OnAnnotate() {
 			await RunCommand(Commands.Annotate, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Annotate)]
-		protected async void UpdateAnnotate(CommandInfo item) {
+		protected async Task UpdateAnnotate(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.Annotate, item);
 		}
 		
 		[AllowMultiSelection]
 		[CommandHandler (Commands.CreatePatch)]
-		protected async void OnCreatePatch() {
+		protected async Task OnCreatePatch() {
 			await RunCommand(Commands.CreatePatch, false);
 		}
 		
 		[CommandUpdateHandler (Commands.CreatePatch)]
-		protected async void UpdateCreatePatch(CommandInfo item) {
+		protected async Task UpdateCreatePatch(CommandInfo item, CancellationToken token) {
 			await TestCommand(Commands.CreatePatch, item);
 		}
 
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Ignore)]
-		protected async void OnIgnore ()
+		protected async Task OnIgnore ()
 		{
 			await RunCommand(Commands.Ignore, false);
 		}
 
 		[CommandUpdateHandler (Commands.Ignore)]
-		protected async void UpdateIgnore (CommandInfo item)
+		protected async Task UpdateIgnore (CommandInfo item, CancellationToken token)
 		{
 			await TestCommand(Commands.Ignore, item);
 		}
 
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Unignore)]
-		protected async void OnUnignore ()
+		protected async Task OnUnignore ()
 		{
 			await RunCommand(Commands.Unignore, false);
 		}
 
 		[CommandUpdateHandler (Commands.Unignore)]
-		protected async void UpdateUnignore (CommandInfo item)
+		protected async Task UpdateUnignore (CommandInfo item, CancellationToken token)
 		{
 			await TestCommand(Commands.Unignore, item);
 		}
 
 		[CommandHandler (Commands.ResolveConflicts)]
-		protected async void OnResolveConflicts ()
+		protected async Task OnResolveConflicts ()
 		{
 			await RunCommand (Commands.ResolveConflicts, false, false);
 		}
 
 		[CommandUpdateHandler (Commands.ResolveConflicts)]
-		protected async void UpdateResolveConflicts (CommandInfo item)
+		protected async Task UpdateResolveConflicts (CommandInfo item, CancellationToken token)
 		{
 			await TestCommand (Commands.ResolveConflicts, item, false);
 		}

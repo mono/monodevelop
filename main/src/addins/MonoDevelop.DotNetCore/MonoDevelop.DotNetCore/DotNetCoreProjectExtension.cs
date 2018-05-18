@@ -63,12 +63,6 @@ namespace MonoDevelop.DotNetCore
 			return base.SupportsObject (item) && IsSdkProject ((DotNetProject)item);
 		}
 
-		protected override void Initialize ()
-		{
-			RequiresMicrosoftBuild = true;
-			base.Initialize ();
-		}
-
 		protected override bool OnGetSupportsFramework (TargetFramework framework)
 		{
 			// Allow all SDK style projects to be loaded even if the framework is unknown.
@@ -233,6 +227,7 @@ namespace MonoDevelop.DotNetCore
 
 				using (var dialog = new DotNetCoreNotInstalledDialog ()) {
 					dialog.IsUnsupportedVersion = unsupportedSdkVersion;
+					dialog.RequiresDotNetCore21 = Project.TargetFramework.IsNetCoreApp21 ();
 					dialog.RequiresDotNetCore20 = Project.TargetFramework.IsNetStandard20OrNetCore20 ();
 					dialog.Show ();
 				}
@@ -335,7 +330,7 @@ namespace MonoDevelop.DotNetCore
 			if (ProjectNeedsRestore ()) {
 				return CreateNuGetRestoreRequiredBuildResult ();
 			} else if (HasSdk && !IsDotNetCoreSdkInstalled ()) {
-				return CreateDotNetCoreSdkRequiredBuildResult (sdkPaths.IsUnsupportedSdkVersion);
+				return CreateDotNetCoreSdkRequiredBuildResult ();
 			}
 			return null;
 		}
@@ -363,25 +358,26 @@ namespace MonoDevelop.DotNetCore
 			return result;
 		}
 
-		BuildResult CreateDotNetCoreSdkRequiredBuildResult (bool isUnsupportedVersion)
+		BuildResult CreateDotNetCoreSdkRequiredBuildResult ()
 		{
-			bool requiresDotNetCoreSdk20 = Project.TargetFramework.IsNetStandard20OrNetCore20 ();
-			return CreateBuildError (GetDotNetCoreSdkRequiredBuildErrorMessage (isUnsupportedVersion, requiresDotNetCoreSdk20));
+			return CreateBuildError (GetDotNetCoreSdkRequiredMessage ());
 		}
 
 		internal string GetDotNetCoreSdkRequiredMessage ()
 		{
 			return GetDotNetCoreSdkRequiredBuildErrorMessage (
 				IsUnsupportedDotNetCoreSdkInstalled (),
-				Project.TargetFramework.IsNetStandard20OrNetCore20 ());
+				Project.TargetFramework);
 		}
 
-		static string GetDotNetCoreSdkRequiredBuildErrorMessage (bool isUnsupportedVersion, bool requiresDotNetCoreSdk20)
+		static string GetDotNetCoreSdkRequiredBuildErrorMessage (bool isUnsupportedVersion, TargetFramework targetFramework)
 		{
 			if (isUnsupportedVersion)
 				return GettextCatalog.GetString ("The .NET Core SDK installed is not supported. Please install a more recent version. {0}", DotNetCoreNotInstalledDialog.DotNetCoreDownloadUrl);
-			else if (requiresDotNetCoreSdk20)
+			else if (targetFramework.IsNetStandard20OrNetCore20 ())
 				return GettextCatalog.GetString (".NET Core 2.0 SDK is not installed. This is required to build .NET Core 2.0 projects. {0}", DotNetCoreNotInstalledDialog.DotNetCore20DownloadUrl);
+			else if (targetFramework.IsNetCoreApp21 ())
+				return GettextCatalog.GetString (".NET Core 2.1 SDK is not installed. This is required to build .NET Core 2.1 projects. {0}", DotNetCoreNotInstalledDialog.DotNetCore21DownloadUrl);
 
 			return GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build .NET Core projects. {0}", DotNetCoreNotInstalledDialog.DotNetCoreDownloadUrl);
 		}

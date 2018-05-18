@@ -1,5 +1,4 @@
 ﻿namespace MonoDevelopTests
-open System
 open System.IO
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -57,11 +56,14 @@ module Interactive =
             results |> should equal [| [|"value"|] |]
         } |> toTask
 
+    let sendInput (session:InteractiveSession) input =
+        session.SendInput input None
+
     [<Test;AsyncStateMachine(typeof<Task>)>]
     let ``Interactive evaluates 1+1``() =
         async {
             let! session = createSession()
-            session.SendInput "1+1;;"
+            sendInput session "1+1;;"
             let! results = session.TextReceived |> Async.AwaitEvent
             session.KillNow()
             results |> should equal "val it : int = 2\n"
@@ -71,10 +73,10 @@ module Interactive =
     let ``Interactive evaluates multiline expression``() =
         async {
             let! session = createSession()
-            session.SendInput "let myfun x="
-            session.SendInput "    if (x > 0) then 'a'"
-            session.SendInput "    else 'b'"
-            session.SendInput ";;"    
+            sendInput session "let myfun x="
+            sendInput session "    if (x > 0) then 'a'"
+            sendInput session "    else 'b'"
+            sendInput session ";;"
 
             let! results = session.TextReceived |> Async.AwaitEvent
             session.KillNow()
@@ -85,7 +87,7 @@ module Interactive =
     let ``Interactive evaluates complex type``() =
         async {
             let! session = createSession()
-            session.SendInput "type CmdResult = ErrorLevel of string * int;;"
+            sendInput session "type CmdResult = ErrorLevel of string * int;;"
             let! results = session.TextReceived |> Async.AwaitEvent
             session.KillNow()
             results |> should equal "type CmdResult = | ErrorLevel of string * int\n"
@@ -95,8 +97,8 @@ module Interactive =
     let ``Bug 56611``() =
         async {
             let! session = createSession()
-            session.SendInput "type O = { X:string };;"
-            session.SendInput "[| {X=\"\"} |];;"
+            sendInput session "type O = { X:string };;"
+            sendInput session "[| {X=\"\"} |];;"
             do! session.TextReceived |> Async.AwaitEvent |> Async.Ignore
             do! session.TextReceived |> Async.AwaitEvent |> Async.Ignore
             let! results = session.TextReceived |> Async.AwaitEvent
@@ -114,7 +116,7 @@ module Interactive =
             use! sol = Services.ProjectService.ReadWorkspaceItem (monitor, sln |> FilePath) |> Async.AwaitTask
             use project = sol.GetAllItems<FSharpProject> () |> Seq.head
             project.GetOrderedReferences()
-            |> List.iter (fun a -> session.SendInput (sprintf  @"#r ""%s"";;" a.Path))
+            |> List.iter (fun a -> sendInput session (sprintf  @"#r ""%s"";;" a.Path))
             let finished = new AutoResetEvent(false)
             let input =
                 """
@@ -127,7 +129,7 @@ module Interactive =
                 ]
                 let jsonObj = Newtonsoft.Json.JsonConvert.SerializeObject(movies);;
                 """
-            session.SendInput input
+            sendInput session input
 
             let rec getOutput() =
                 async {
@@ -172,14 +174,17 @@ module Interactive =
         doc.GetMarkers line2 |> Seq.length |> should equal 1
 
     [<Test;AsyncStateMachine(typeof<Task>)>]
-    let ``Interactive gets source directory``() =
+    let ``Interactive gets source file and directory``() =
         async {
-            let mutable results = String.empty
+            let sourceFile = Some "/SomeFolder/SomeFile.fsx"
             let! session = createSession()
-            session.SetSourceDirectory "/"
+            session.SendInput "printfn __SOURCE_FILE__;;" sourceFile
             let! output = session.TextReceived |> Async.AwaitEvent
-            session.SendInput "printfn __SOURCE_DIRECTORY__;;"
-            let! results = session.TextReceived |> Async.AwaitEvent
+            output |> should equal ("SomeFile.fsx\n")
+            // ignore `val it: unit = ()`
+            let! ignore = session.TextReceived |> Async.AwaitEvent
+            session.SendInput "printfn __SOURCE_DIRECTORY__;;" sourceFile
+            let! output = session.TextReceived |> Async.AwaitEvent
             session.KillNow()
-            results |> should equal "/\n"
+            output |> should equal "/SomeFolder\n"
         } |> toTask

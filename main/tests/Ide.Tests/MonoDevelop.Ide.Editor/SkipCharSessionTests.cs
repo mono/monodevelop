@@ -73,5 +73,30 @@ namespace MonoDevelop.Ide.Editor
 				}
 			return default (T);
 		}
+		/// <summary>
+		/// Bug 615849: Automatic matching brace completion deletes `{` when `}` is deleted
+		/// </summary>
+		[TestCase]
+		public void TestVSTS615849 ()
+		{
+			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
+			var tww = new TestWorkbenchWindow ();
+			var content = new TestViewContent ();
+			tww.ViewContent = content;
+
+			var document = new Document (tww);
+
+			var editor = TextEditorFactory.CreateNewEditor (document);
+			editor.MimeType = "text/xml";
+			const string originalText = @"";
+			editor.Text = originalText;
+
+			var extensibleEditor = FindChild<ExtensibleTextEditor> (editor.GetNativeWidget<Container> ());
+			extensibleEditor.OnIMProcessedKeyPressEvent ((Gdk.Key)'"', '"', Gdk.ModifierType.None);
+			extensibleEditor.OnIMProcessedKeyPressEvent (Gdk.Key.Right, '\0', Gdk.ModifierType.None);
+			extensibleEditor.OnIMProcessedKeyPressEvent (Gdk.Key.BackSpace, '\0', Gdk.ModifierType.None);
+			Assert.AreEqual ("\"", editor.Text);
+		}
+
 	}
 }

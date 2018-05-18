@@ -44,11 +44,10 @@ namespace MonoDevelop.SourceEditor
 		}
 
 
-		public LinkMarker (int offset, int length, Action<LinkRequest> activateLink) : base (null, new TextSegment (offset, length))
+		public LinkMarker (int offset, int length, Action<LinkRequest> activateLink) : base (null, new TextSegment (offset, length), TextSegmentMarkerEffect.Underline)
 		{
 			this.Color = SyntaxHighlightingService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), EditorThemeColors.Link);
 			this.activateLink = activateLink;
-			this.Wave = false;
 		}
 
 		public event EventHandler<TextMarkerMouseEventArgs> MousePressed;

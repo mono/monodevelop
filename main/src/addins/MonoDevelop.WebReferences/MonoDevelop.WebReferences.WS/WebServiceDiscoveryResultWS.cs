@@ -86,14 +86,14 @@ namespace MonoDevelop.WebReferences.WS
 				dotNetProject.Items.Add (met);
 			}
 
-			DiscoveryClientResultCollection files = await Task.Run (() => {
-				WebReferenceUrl wru = dotNetProject.Items.GetAll<WebReferenceUrl> ().FirstOrDefault (m => m.RelPath.CanonicalPath == basePath);
-				if (wru == null) {
-					wru = new WebReferenceUrl (protocol.Url);
-					wru.RelPath = basePath;
-					dotNetProject.Items.Add (wru);
-				}
+			WebReferenceUrl wru = dotNetProject.Items.GetAll<WebReferenceUrl> ().FirstOrDefault (m => m.RelPath.CanonicalPath == basePath);
+			if (wru == null) {
+				wru = new WebReferenceUrl (protocol.Url);
+				wru.RelPath = basePath;
+				dotNetProject.Items.Add (wru);
+			}
 
+			DiscoveryClientResultCollection files = await Task.Run (() => {
 				protocol.ResolveAll ();
 				return protocol.WriteAll (basePath, "Reference.map");
 			});

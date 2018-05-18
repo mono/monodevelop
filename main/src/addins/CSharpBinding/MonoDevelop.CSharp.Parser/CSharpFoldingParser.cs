@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Parser
 {
@@ -99,6 +100,7 @@ namespace MonoDevelop.CSharp.Parser
 			bool inChar = false;
 			bool inLineStart = true, hasStartedAtLine = false;
 			int line = 1, column = 1;
+			int bracketDepth = 0;
 			var startLoc = DocumentLocation.Empty;
 			
 			fixed (char* startPtr = content) {
@@ -107,6 +109,16 @@ namespace MonoDevelop.CSharp.Parser
 				char* beginPtr = ptr;
 				while (ptr < endPtr) {
 					switch (*ptr) {
+					case '{':
+						if (inString || inChar || inVerbatimString || inMultiLineComment || inSingleComment) 
+							break;
+						bracketDepth++;
+						break;
+					case '}':
+						if (inString || inChar || inVerbatimString || inMultiLineComment || inSingleComment) 
+							break;
+						bracketDepth--;
+						break;
 					case '#':
 						if (!inLineStart)
 							break;
@@ -198,15 +210,18 @@ namespace MonoDevelop.CSharp.Parser
 							bool isDocumentation = *beginPtr == '/';
 							if (isDocumentation)
 								beginPtr++;
-							
-							result.Add (new MonoDevelop.Ide.TypeSystem.Comment () { 
-								Region = new DocumentRegion (startLoc, new DocumentLocation (line, column)),
-								CommentType = MonoDevelop.Ide.TypeSystem.CommentType.SingleLine, 
-								OpenTag = "//",
-								Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
-								CommentStartsLine = hasStartedAtLine,
-								IsDocumentation = isDocumentation
-							});
+							if (isDocumentation || bracketDepth <= 1) {
+								// Doesn't matter much that some comments are not correctly recognized - they'll get added later
+								// It's important that header comments are in.
+								result.Add (new MonoDevelop.Ide.TypeSystem.Comment () { 
+									Region = new DocumentRegion (startLoc, new DocumentLocation (line, column)),
+									CommentType = MonoDevelop.Ide.TypeSystem.CommentType.SingleLine, 
+									OpenTag = "//",
+									Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
+									CommentStartsLine = hasStartedAtLine,
+									IsDocumentation = isDocumentation
+								});
+							}
 							inSingleComment = false;
 						}
 						inString = false;
@@ -252,12 +267,126 @@ namespace MonoDevelop.CSharp.Parser
 					ptr++;
 				}
 			}
-			foreach (var fold in result.GetCommentsAsync().Result.ToFolds ()) {
+			foreach (var fold in ToFolds (result.GetCommentsAsync().Result)) {
 				result.Add (fold);
 			}
 			return result;
 		}
 		#endregion
+
+		static IEnumerable<FoldingRegion> ToFolds (IReadOnlyList<Comment> comments)
+		{
+			for (int i = 0; i < comments.Count; i++) {
+				Comment comment = comments [i];
+
+				if (comment.CommentType == CommentType.Block) {
+					int startOffset = 0;
+					if (comment.Region.BeginLine == comment.Region.EndLine)
+						continue;
+					while (startOffset < comment.Text.Length) {
+						char ch = comment.Text [startOffset];
+						if (!char.IsWhiteSpace (ch) && ch != '*')
+							break;
+						startOffset++;
+					}
+					int endOffset = startOffset;
+					while (endOffset < comment.Text.Length) {
+						char ch = comment.Text [endOffset];
+						if (ch == '\r' || ch == '\n' || ch == '*')
+							break;
+						endOffset++;
+					}
+
+					string txt;
+					if (endOffset > startOffset) {
+						txt = "/* " + GetFirstLine (comment.Text) + " ...";
+					} else {
+						txt = "/* */";
+					}
+					yield return new FoldingRegion (txt, comment.Region, FoldType.Comment);
+					continue;
+				}
+
+				if (!comment.CommentStartsLine)
+					continue;
+				int j = i;
+				int curLine = comment.Region.BeginLine - 1;
+				var end = comment.Region.End;
+				var commentText = StringBuilderCache.Allocate ();
+				for (; j < comments.Count; j++) {
+					Comment curComment = comments [j];
+					if (curComment == null || !curComment.CommentStartsLine
+						|| curComment.CommentType != comment.CommentType
+						|| curLine + 1 != curComment.Region.BeginLine)
+						break;
+					commentText.Append (curComment.Text);
+					end = curComment.Region.End;
+					curLine = curComment.Region.BeginLine;
+				}
+
+				if (j - i > 1 || (comment.IsDocumentation && comment.Region.BeginLine < comment.Region.EndLine)) {
+					string txt = null;
+					if (comment.IsDocumentation) {
+						string cmtText = commentText.ToString ();
+						int idx = cmtText.IndexOf ("<summary>", StringComparison.Ordinal);
+						if (idx >= 0) {
+							int maxOffset = cmtText.IndexOf ("</summary>", StringComparison.Ordinal);
+							while (maxOffset > 0 && cmtText [maxOffset - 1] == ' ')
+								maxOffset--;
+							if (maxOffset < 0)
+								maxOffset = cmtText.Length;
+							int startOffset = idx + "<summary>".Length;
+							while (startOffset < maxOffset) {
+								char ch = cmtText [startOffset];
+								if (!char.IsWhiteSpace (ch) && ch != '/')
+									break;
+								startOffset++;
+							}
+							int endOffset = startOffset;
+							while (endOffset < maxOffset) {
+								char ch = cmtText [endOffset];
+								if (ch == '\r' || ch == '\n')
+									break;
+								endOffset++;
+							}
+							if (endOffset > startOffset)
+								txt = "/// <summary> " + cmtText.Substring (startOffset, endOffset - startOffset).Trim () + " ...";
+						}
+						if (txt == null)
+							txt = "/// " + comment.Text.Trim () + " ...";
+					} else {
+						txt = "// " + comment.Text.Trim () + " ...";
+					}
+					StringBuilderCache.Free (commentText);
+					yield return new FoldingRegion (txt,
+						new DocumentRegion (comment.Region.Begin, end),
+						FoldType.Comment);
+					i = j - 1;
+				}
+			}
+		}
+
+		static string GetFirstLine (string text)
+		{
+			int start = 0;
+			while (start < text.Length) {
+				char ch = text [start];
+				if (ch != ' ' && ch != '\t')
+					break;
+				start++;
+			}
+			int end = start;
+
+			while (end < text.Length) {
+				char ch = text [end];
+				if (MonoDevelop.Core.Text.NewLine.IsNewLine (ch))
+					break;
+				end++;
+			}
+			if (end <= start)
+				return "";
+			return text.Substring (start, end - start);
+		}
 	}
 }
 

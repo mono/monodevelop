@@ -80,12 +80,53 @@ namespace MonoDevelop.PackageManagement
 			IEnumerable<BuildIntegratedNuGetProject> projects,
 			CancellationToken cancellationToken)
 		{
+			var spec = await DependencyGraphRestoreUtility.GetSolutionRestoreSpec (solutionManager, context);
+
+			var now = DateTime.UtcNow;
+			Action<SourceCacheContext> cacheContextModifier = c => c.MaxAge = now;
+			bool forceRestore = false;
+
+			var restoreSummaries = await DependencyGraphRestoreUtility.RestoreAsync (
+				solutionManager,
+				context,
+				new RestoreCommandProvidersCache (),
+				cacheContextModifier,
+				sourceRepositories,
+				forceRestore,
+				spec,
+				context.Logger,
+				cancellationToken);
+
+			bool restoreFailed = false;
+			int noOpRestoreCount = 0;
+			foreach (RestoreSummary restoreSummary in restoreSummaries) {
+				if (restoreSummary.Success && restoreSummary.NoOpRestore) {
+					noOpRestoreCount++;
+				} else if (!restoreSummary.Success) {
+					restoreFailed = true;
+				}
+			}
+
+			if (noOpRestoreCount == projects.Count ()) {
+				// Nothing to do.
+				return;
+			}
+
+			if (restoreFailed) {
+				throw new ApplicationException (GettextCatalog.GetString ("Restore failed."));
+			}
+
+			await OnProjectsRestored (projects);
+		}
+
+		async Task OnProjectsRestored (IEnumerable<BuildIntegratedNuGetProject> projects)
+		{
 			var changedLocks = new List<FilePath> ();
 			var affectedProjects = new List<BuildIntegratedNuGetProject> ();
 
 			foreach (BuildIntegratedNuGetProject project in projects) {
 				DotNetProject projectToReload = GetProjectToReloadAfterRestore (project);
-				var changedLock = await RestorePackagesInternal (project, cancellationToken);
+				string changedLock = await project.GetAssetsFilePathAsync ();
 				if (projectToReload != null) {
 					await ReloadProject (projectToReload, changedLock);
 				} else if (changedLock != null) {

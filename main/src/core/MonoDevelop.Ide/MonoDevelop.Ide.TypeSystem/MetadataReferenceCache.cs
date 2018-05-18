@@ -133,13 +133,8 @@ namespace MonoDevelop.Ide.TypeSystem
 						foreach (var solution in IdeApp.Workspace.GetAllSolutions ()) {
 							var workspace = TypeSystemService.GetWorkspace (solution);
 							foreach (var projId in InUseBy) {
-								while (true) {
-									var project = workspace.CurrentSolution.GetProject (projId);
-									if (project == null)
-										break;
-									if (workspace.TryApplyChanges (project.RemoveMetadataReference (Reference).Solution))
-										break;
-								}
+								if (workspace.CurrentSolution.ContainsProject (projId))
+									workspace.OnMetadataReferenceRemoved (projId, Reference);
 							}
 						}
 					}
@@ -148,13 +143,8 @@ namespace MonoDevelop.Ide.TypeSystem
 						foreach (var solution in IdeApp.Workspace.GetAllSolutions ()) {
 							var workspace = TypeSystemService.GetWorkspace (solution);
 							foreach (var projId in InUseBy) {
-								while (true) {
-									var project = workspace.CurrentSolution.GetProject (projId);
-									if (project == null)
-										break;
-									if (workspace.TryApplyChanges (project.AddMetadataReference (Reference).Solution))
-										break;
-								}
+								if (workspace.CurrentSolution.ContainsProject (projId))
+									workspace.OnMetadataReferenceAdded (projId, Reference);
 							}
 						}
 					}

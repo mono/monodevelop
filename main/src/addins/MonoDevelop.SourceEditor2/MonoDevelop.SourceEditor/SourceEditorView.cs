@@ -2680,7 +2680,23 @@ namespace MonoDevelop.SourceEditor
 			var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
 			helpWindow.TitleText = insertionModeOptions.Operation;
 			mode.HelpWindow = helpWindow;
-			mode.CurIndex = insertionModeOptions.FirstSelectedInsertionPoint;
+			if (insertionModeOptions.FirstSelectedInsertionPoint >= 0) {
+				mode.CurIndex = insertionModeOptions.FirstSelectedInsertionPoint;
+			} else {
+				// no first point given - place the default insertion point at the first location below the caret
+				// or at the last top of it.
+				var caretLocation = this.GetTextEditorData ().Caret.Location;
+				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
+					var point = mode.InsertionPoints [i];
+					if (point.Location < caretLocation) {
+						mode.CurIndex = i;
+					} else {
+						mode.CurIndex = i;
+						break;
+					}
+ 				}
+
+			}
 			mode.StartMode ();
 			mode.Exited += delegate(object s, Mono.TextEditor.InsertionCursorEventArgs iCArgs) {
 				if (insertionModeOptions.ModeExitedAction != null) {
@@ -3283,18 +3299,11 @@ namespace MonoDevelop.SourceEditor
 			switch (effect) {
 			case TextSegmentMarkerEffect.DottedLine:
 			case TextSegmentMarkerEffect.WavedLine:
-				{
-					var result = new GenericUnderlineMarker (new TextSegment (offset, length), effect);
-					if (color.HasValue)
-						result.Color = color.Value;
-					return result;
-				}
 			case TextSegmentMarkerEffect.Underline:
 				{
 					var result = new GenericUnderlineMarker (new TextSegment (offset, length), effect);
 					if (color.HasValue)
 						result.Color = color.Value;
-					result.Wave = false;
 					return result;
 				}
 
@@ -3400,6 +3409,11 @@ namespace MonoDevelop.SourceEditor
 			var p = TextEditor.LocationToPoint (caret.Location);
 			Mono.TextEditor.TooltipProvider.ShowAndPositionTooltip (TextEditor, tooltipWindow, p.X, p.Y, (int)tooltipWindow.Width, 0.5);
 			TextEditor.TextArea.SetTooltip (tooltipWindow);
+		}
+
+		void ITextEditorImpl.HideTooltipWindow ()
+		{
+			TextEditor.TextArea.HideTooltip ();
 		}
 
 		Task<ScopeStack> ITextEditorImpl.GetScopeStackAsync (int offset, CancellationToken cancellationToken)

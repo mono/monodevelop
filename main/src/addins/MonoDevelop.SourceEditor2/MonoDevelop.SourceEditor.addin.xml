@@ -172,7 +172,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/AutoInsertBracketHandler">
-		<Class id = "Default" class="MonoDevelop.SourceEditor.DefaultAutoInsertBracketHandler" />
+		<Handler id = "Default" class="MonoDevelop.SourceEditor.DefaultAutoInsertBracketHandler" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">

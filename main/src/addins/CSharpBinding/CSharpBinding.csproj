@@ -120,21 +120,11 @@
       <HintPath>..\..\..\packages\ICSharpCode.Decompiler.3.0.0.3403-beta4\lib\net46\ICSharpCode.Decompiler.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Composition.AttributedModel">
@@ -295,8 +285,6 @@
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\CSharpEditorFormattingService.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\FormattingOptionsFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\Indent.cs" />
-    <Compile Include="MonoDevelop.CSharp\DeclaredSymbolInfo.cs" />
-    <Compile Include="MonoDevelop.CSharp\ProjectSearchCategory.cs" />
     <Compile Include="Util\7BitEncodedInts.cs" />
     <Compile Include="Util\ArgumentSyntaxExtensions.cs" />
     <Compile Include="Util\CloneableStack.cs" />
@@ -377,6 +365,7 @@
     <Compile Include="Gui\MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.cs" />
     <Compile Include="Gui\MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs" />
     <Compile Include="Gui\MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.IDebuggerCompletionProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -248,9 +248,11 @@ namespace MonoDevelop.Ide.Templates
 			if (!suppressAutoOpen)
 				IdeApp.Workbench.OpenDocument (generatedFile, project: null);
 		}
-		
-		// Creates a file and saves it to disk. Returns the path to the new file
-		// All parameters are optional (can be null)
+
+		/// <summary>
+		/// Creates a file and saves it to disk. All parameters are optional (can be null)
+		/// </summary>
+		/// <returns>The path to the new file.</returns>
 		public async Task<string> SaveFileAsync (SolutionFolderItem policyParent, Project project, string language, string baseDirectory, string entryName)
 		{
 			string file = GetFileName (policyParent, project, language, baseDirectory, entryName);

@@ -31,8 +31,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Xml;
 
 namespace MonoDevelop.Core
 {
@@ -71,9 +69,7 @@ namespace MonoDevelop.Core
 
 		protected void OnChanged ()
 		{
-			var handler = this.Changed;
-			if (handler != null)
-				handler (this, EventArgs.Empty);
+			Changed?.Invoke (this, EventArgs.Empty);
 		}
 
 		public event EventHandler Changed;
@@ -82,22 +78,21 @@ namespace MonoDevelop.Core
 	class CoreConfigurationProperty<T>: ConfigurationProperty<T>
 	{
 		T value;
-		string propertyName;
+		readonly string propertyName;
 
 		public CoreConfigurationProperty (string name, T defaultValue, string oldName = null)
 		{
-			this.propertyName = name;
-			if (PropertyService.HasValue (name)) {
-				value = PropertyService.Get<T> (name);
-				return;
-			} else if (!string.IsNullOrEmpty (oldName)) {
-				if (PropertyService.HasValue (oldName)) {
+			propertyName = name;
+
+			if (!string.IsNullOrEmpty (oldName) && PropertyService.HasValue (oldName)) {
+				if (!PropertyService.HasValue (name)) {
 					value = PropertyService.Get<T> (oldName);
 					PropertyService.Set (name, value);
-					return;
 				}
+				PropertyService.Set (oldName, null);
 			}
-			value = defaultValue;
+
+			value = PropertyService.Get (name, defaultValue);
 		}
 
 		protected override T OnGetValue ()
@@ -107,7 +102,7 @@ namespace MonoDevelop.Core
 
 		protected override bool OnSetValue (T value)
 		{
-			if (!object.Equals (this.value, value)) {
+			if (!EqualityComparer<T>.Default.Equals (this.value, value)) {
 				this.value = value;
 				PropertyService.Set (propertyName, value);
 				OnChanged ();
@@ -117,11 +112,36 @@ namespace MonoDevelop.Core
 		}
 	}
 
+	class ObsoleteConfigurationProperty<T> : ConfigurationProperty<T>
+	{
+		T value;
+
+		public ObsoleteConfigurationProperty (T value)
+		{
+			this.value = value;
+		}
+
+		protected override T OnGetValue ()
+		{
+			return value;
+		}
+
+		protected override bool OnSetValue (T value)
+		{
+			return false;
+		}
+	}
+
 	public abstract class ConfigurationProperty
 	{
 		public static ConfigurationProperty<T> Create<T> (string propertyName, T defaultValue, string oldName = null)
 		{
 			return new CoreConfigurationProperty<T> (propertyName, defaultValue, oldName);
+		}
+
+		public static ConfigurationProperty<T> CreateObsolete<T> (T value)
+		{
+			return new ObsoleteConfigurationProperty<T> (value);
 		}
 	}
 
@@ -201,8 +221,7 @@ namespace MonoDevelop.Core
 			
 			properties.PropertyChanged += delegate(object sender, PropertyChangedEventArgs args) {
 				Runtime.RunInMainThread (() => {
-					if (PropertyChanged != null)
-						PropertyChanged (sender, args);
+					PropertyChanged?.Invoke (sender, args);
 				});
 			};
 			

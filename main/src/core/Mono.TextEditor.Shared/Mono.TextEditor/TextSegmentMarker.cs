@@ -79,22 +79,28 @@ namespace Mono.TextEditor
 
 	class UnderlineTextSegmentMarker : TextSegmentMarker
 	{
-		public UnderlineTextSegmentMarker (Cairo.Color color, ISegment textSegment) : base (textSegment)
+		public UnderlineTextSegmentMarker (Cairo.Color color, ISegment textSegment, MonoDevelop.Ide.Editor.TextSegmentMarkerEffect effect = MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.WavedLine) : base (textSegment)
 		{
 			this.Color = color;
-			this.Wave = true;
+			this.effect = effect;
 		}
 
-		public UnderlineTextSegmentMarker (string colorName, ISegment textSegment) : base (textSegment)
+		public UnderlineTextSegmentMarker (string colorName, ISegment textSegment, MonoDevelop.Ide.Editor.TextSegmentMarkerEffect effect = MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.WavedLine) : base (textSegment)
 		{
 			this.ColorName = colorName;
-			this.Wave = true;
+			this.effect = effect;
 		}
 
 		public string ColorName { get; set; }
 		public Cairo.Color Color { get; set; }
-		public bool Wave { get; set; }
-		
+
+		MonoDevelop.Ide.Editor.TextSegmentMarkerEffect effect;
+		public MonoDevelop.Ide.Editor.TextSegmentMarkerEffect Effect {
+			get {
+				return effect;
+			}
+		}
+
 		public override void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
 			int markerStart = Segment.Offset;
@@ -166,31 +172,43 @@ namespace Mono.TextEditor
 			}
 			@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = System.Math.Max (to, editor.TextViewMargin.XOffset);
+			if (Length == 0)
+				to += editor.TextViewMargin.charWidth;
+
 			if (@from >= to) {
 				return;
 			}
 			double height = editor.LineHeight / 5;
-			// TODO : EditorTheme does that look ok ?
 
-			// if (selected) {
-			//	cr.SetSourceColor (editor.EditorTheme.SelectedText.Foreground);
-			// } else 
-
-			if (ColorName == null) {
+			if (string.IsNullOrEmpty (ColorName)) {
 				cr.SetSourceColor (Color);
 			} else {
 				HslColor color;
 				editor.EditorTheme.TryGetColor (ColorName, out color);
 				cr.SetSourceColor (color);
 			}
-			// }
-			if (Wave) {	
-				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
-			} else {
-				cr.LineWidth = 1;
-				cr.MoveTo (@from, y + editor.LineHeight - 1.5);
-				cr.LineTo (to, y + editor.LineHeight - 1.5);
+			cr.LineWidth = editor.Options.Zoom;
+
+			switch (Effect) {
+			case MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.WavedLine:
+				cr.Rectangle (@from, 0, to - @from, editor.Allocation.Height);
+				cr.Clip ();
+				Pango.CairoHelper.ShowErrorUnderline (cr, metrics.TextRenderStartPosition, y + editor.LineHeight - height, editor.Allocation.Width, height);
+				cr.ResetClip ();
+				break;
+			case MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.DottedLine:
+				cr.MoveTo (@from, y + editor.LineHeight - editor.Options.Zoom - 0.5);
+				cr.LineTo (to, y + editor.LineHeight - editor.Options.Zoom - 0.5);
+				cr.SetDash (new double [] { 2 * editor.Options.Zoom, 2 * editor.Options.Zoom }, 0);
 				cr.Stroke ();
+				break;
+			case MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.Underline:
+				cr.MoveTo (@from, y + editor.LineHeight - editor.Options.Zoom - 0.5);
+				cr.LineTo (to, y + editor.LineHeight - editor.Options.Zoom - 0.5);
+				cr.Stroke ();
+				break;
+			default:
+				throw new InvalidOperationException ("Invalid text segment marker effect " + Effect + " not supported by this marker.");
 			}
 		}
 	}

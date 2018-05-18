@@ -89,7 +89,7 @@ type FSharpFormatter()  =
                         editor.SetCaretLocation (line, col, false))
                     StringTextSource result
                 with exn ->
-                    LoggingService.LogError("**Fantomas**: Error occured: {0}", exn.Message)
+                    LoggingService.LogError("**Fantomas**: Error occurred: {0}", exn.Message)
                     StringTextSource input
             output :> ITextSource
 
@@ -121,7 +121,7 @@ type FSharpFormatter()  =
                                 None
                             | None -> Some(result)
                          with exn ->
-                             LoggingService.LogError("**Fantomas Error occured: {0}", exn.Message)
+                             LoggingService.LogError("**Fantomas Error occurred: {0}", exn.Message)
                              None
                     return result }
 

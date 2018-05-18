@@ -62,7 +62,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			runWithWarningsCheckBox.Active = IdeApp.Preferences.RunWithWarnings;
 			buildBeforeRunCheckBox.Active = IdeApp.Preferences.BuildBeforeExecuting;
 			buildBeforeTestCheckBox.Active = IdeApp.Preferences.BuildBeforeRunningTests;
-			buildWithMSBuildCheckBox.Active = Runtime.Preferences.BuildWithMSBuild;
 			skipBuildingUnmodifiedProjectsCheckbox.Active = Runtime.Preferences.SkipBuildingUnmodifiedProjects;
 			parallelBuildCheckbox.Active = MonoDevelop.Core.Runtime.Preferences.ParallelBuild.Value;
 
@@ -77,8 +76,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			                                                          GettextCatalog.GetString ("Check to run the solution even if the build had warnings"));
 			buildBeforeTestCheckBox.SetCommonAccessibilityAttributes ("BuildPanel.buildBeforeTest", "",
 			                                                          GettextCatalog.GetString ("Check to build the solution before running tests"));
-			buildWithMSBuildCheckBox.SetCommonAccessibilityAttributes ("BuildPanel.buildWithMSBuild", "",
-			                                                           GettextCatalog.GetString ("Check to use MSBuild to build the solution"));
 			skipBuildingUnmodifiedProjectsCheckbox.SetCommonAccessibilityAttributes ("BuildPanel.skipUnmodifiedProject", "",
 																					 GettextCatalog.GetString ("Check to skip building unmodified projects"));
 			parallelBuildCheckbox.SetCommonAccessibilityAttributes ("BuildPanel.parallelBuild", "",
@@ -97,7 +94,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			IdeApp.Preferences.RunWithWarnings.Value = runWithWarningsCheckBox.Active;
 			IdeApp.Preferences.BuildBeforeExecuting.Value = buildBeforeRunCheckBox.Active;
 			IdeApp.Preferences.BuildBeforeRunningTests.Value = buildBeforeTestCheckBox.Active;
-			Runtime.Preferences.BuildWithMSBuild.Value = buildWithMSBuildCheckBox.Active;
 			Runtime.Preferences.SkipBuildingUnmodifiedProjects.Value = skipBuildingUnmodifiedProjectsCheckbox.Active;
 			MonoDevelop.Core.Runtime.Preferences.ParallelBuild.Value = parallelBuildCheckbox.Active;
 			if (saveChangesRadioButton.Active)

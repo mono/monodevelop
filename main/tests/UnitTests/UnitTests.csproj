@@ -90,6 +90,8 @@
   <ItemGroup>
     <Compile Include="Util.cs" />
     <Compile Include="TestBase.cs" />
+    <Compile Include="TestSingleThreadSynchronizationContext.cs" />
+    <Compile Include="ObjectReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

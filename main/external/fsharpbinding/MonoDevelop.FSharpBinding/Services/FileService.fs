@@ -1,5 +1,4 @@
-﻿
-namespace MonoDevelop.FSharp
+﻿namespace MonoDevelop.FSharp
 open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library
 open System.IO
 open MonoDevelop.Ide
@@ -59,7 +58,7 @@ type FileSystem (defaultFileSystem : IFileSystem, openDocuments: unit -> Documen
         member x.FileDelete fileName = defaultFileSystem.FileDelete fileName
         member x.AssemblyLoadFrom fileName = defaultFileSystem.AssemblyLoadFrom fileName
         member x.AssemblyLoad(assemblyName) = defaultFileSystem.AssemblyLoad assemblyName
-        member x.IsStableFileHeuristic fileName = true
+        member x.IsStableFileHeuristic _fileName = true
 
 module FileService =
     let supportedFileExtensions =

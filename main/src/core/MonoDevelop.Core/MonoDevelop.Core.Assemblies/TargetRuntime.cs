@@ -27,21 +27,16 @@
 // THE SOFTWARE.
 
 using System;
-using System.Threading;
-using System.IO;
-using System.Xml;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using System.Collections.Specialized;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Serialization;
-using Mono.Addins;
-using Mono.PkgConfig;
-using MonoDevelop.Core.Instrumentation;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using Mono.Addins;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Instrumentation;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -73,7 +68,6 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			assemblyContext = new RuntimeAssemblyContext (this);
 			composedAssemblyContext = new ComposedAssemblyContext ();
-			composedAssemblyContext.Add (Runtime.SystemAssemblyService.UserAssemblyContext);
 			composedAssemblyContext.Add (assemblyContext);
 
 			InternalId = Interlocked.Increment (ref internalIdCounter);
@@ -245,19 +239,23 @@ namespace MonoDevelop.Core.Assemblies
 		protected virtual void ConvertAssemblyProcessStartInfo (ProcessStartInfo pinfo)
 		{
 		}
-		
+
+		NotSupportedFrameworkBackend NotSupportedBackend = new NotSupportedFrameworkBackend ();
+
 		protected TargetFrameworkBackend GetBackend (TargetFramework fx)
 		{
 			EnsureInitialized ();
-			lock (frameworkBackends) {
-				TargetFrameworkBackend backend;
-				if (frameworkBackends.TryGetValue (fx.Id, out backend))
-					return backend;
-				backend = CreateBackend (fx) ?? new NotSupportedFrameworkBackend ();
-				backend.Initialize (this, fx);
-				frameworkBackends[fx.Id] = backend;
+			if (frameworkBackends.TryGetValue (fx.Id, out TargetFrameworkBackend backend))
 				return backend;
-			}
+			return NotSupportedBackend;
+		}
+
+		TargetFrameworkBackend CreateAndInitializeBackend (TargetFramework fx)
+		{
+			var backend = CreateBackend (fx);
+			backend.Initialize (this, fx);
+			frameworkBackends [fx.Id] = backend;
+			return backend;
 		}
 		
 		protected virtual TargetFrameworkBackend CreateBackend (TargetFramework fx)
@@ -386,8 +384,18 @@ namespace MonoDevelop.Core.Assemblies
 				}
 			}
 		}
-		
+
+		//runtimes can't get deinitialized, so add an inlinable fast path
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal void EnsureInitialized ()
+		{
+			if (initialized) {
+				return;
+			}
+			EnsureInitializedSlow ();
+		}
+
+		void EnsureInitializedSlow()
 		{
 			lock (initLock) {
 				if (!initialized && !initializing) {
@@ -543,20 +551,27 @@ namespace MonoDevelop.Core.Assemblies
 		void CreateFrameworks ()
 		{
 			var frameworks = new HashSet<TargetFrameworkMoniker> ();
-			
-			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetKnownFrameworks ()) {
-				// A framework is installed if the assemblies directory exists and the first
-				// assembly of the list exists.
-				if (frameworks.Add (fx.Id) && IsInstalled (fx)) {
-					timer.Trace ("Registering assemblies for framework " + fx.Id);
+
+			//register custom frameworks first. they may have been found by another runtime
+			//already, but we want to use this runtime's version so path info is correct
+			foreach (TargetFramework fx in CustomFrameworks) {
+				if (frameworks.Add (fx.Id)) {
+					//if the framework was discovered in this runtime, we know it's installed
+					var backend = CreateAndInitializeBackend (fx);
+					backend.IsInstalled = true;
+					backend.ReferenceAssembliesFolder = fx.FrameworkAssembliesDirectory;
 					RegisterSystemAssemblies (fx);
 				}
 			}
-			
-			foreach (TargetFramework fx in CustomFrameworks) {
-				if (frameworks.Add (fx.Id) && IsInstalled (fx)) {
-					timer.Trace ("Registering assemblies for framework " + fx.Id);
-					RegisterSystemAssemblies (fx);
+
+			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetKnownFrameworks ()) {
+				// A framework is installed if the assemblies directory exists and the first
+				// assembly of the list exists.
+				if (frameworks.Add (fx.Id)) {
+					var backend = CreateAndInitializeBackend (fx);
+					if (backend.IsInstalled) {
+						RegisterSystemAssemblies (fx);
+					}
 				}
 			}
 		}
@@ -568,45 +583,18 @@ namespace MonoDevelop.Core.Assemblies
 
 		void RegisterSystemAssemblies (TargetFramework fx)
 		{
-			Dictionary<string,List<SystemAssembly>> assemblies = new Dictionary<string, List<SystemAssembly>> ();
-			Dictionary<string,SystemPackage> packs = new Dictionary<string, SystemPackage> ();
-			
-			IEnumerable<string> dirs = GetFrameworkFolders (fx);
-
+			var assemblies = new List<SystemAssembly> ();
+			var package = new SystemPackage ();
 			foreach (AssemblyInfo assembly in fx.Assemblies) {
-				foreach (string dir in dirs) {
-					string file = Path.Combine (dir, assembly.Name) + ".dll";
-					if (File.Exists (file)) {
-						if (assembly.Version == null && IsRunning) {
-							try {
-								AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
-								assembly.Update (aname);
-							} catch {
-								// If something goes wrong when getting the name, just ignore the assembly
-							}
-						}
-						string pkg = assembly.Package ?? string.Empty;
-						SystemPackage package;
-						if (!packs.TryGetValue (pkg, out package)) {
-							packs [pkg] = package = new SystemPackage ();
-							assemblies [pkg] = new List<SystemAssembly> ();
-						}
-						List<SystemAssembly> list = assemblies [pkg];
-						list.Add (assemblyContext.AddAssembly (file, assembly, package));
-						break;
-					}
-				}
+				var file = Path.Combine (fx.FrameworkAssembliesDirectory, assembly.Name + ".dll");
+				assemblies.Add (assemblyContext.AddAssembly (file, assembly, package));
 			}
-			
-			foreach (string pkg in packs.Keys) {
-				SystemPackage package = packs [pkg];
-				List<SystemAssembly> list = assemblies [pkg];
-				SystemPackageInfo info = GetFrameworkPackageInfo (fx, pkg);
-				if (!info.IsCorePackage)
-					corePackages.Add (info.Name);
-				package.Initialize (info, list.ToArray (), false);
-				assemblyContext.InternalAddPackage (package);
-			}
+
+			SystemPackageInfo info = GetFrameworkPackageInfo (fx, "");
+			package.Initialize (info, assemblies, false);
+			if (!info.IsCorePackage)
+				corePackages.Add (info.Name);
+			assemblyContext.InternalAddPackage (package);
 		}
 		
 		protected virtual SystemPackageInfo GetFrameworkPackageInfo (TargetFramework fx, string packageName)

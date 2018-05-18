@@ -31,6 +31,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Threading;
 
 namespace MonoDevelop.Debugger
 {
@@ -75,14 +76,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		static Mono.Debugging.Client.CompletionData GetCompletionData (string exp)
-		{
-			if (DebuggingService.CurrentFrame != null)
-				return DebuggingService.CurrentFrame.GetExpressionCompletionData (exp);
-
-			return null;
-		}
-
 		void OnCompletionWindowClosed (object sender, EventArgs e)
 		{
 			currentCompletionData = null;
@@ -93,19 +86,25 @@ namespace MonoDevelop.Debugger
 			return char.IsLetter (c) || c == '_' || c == '.';
 		}
 
-		void PopupCompletion ()
+		CancellationTokenSource cts = new CancellationTokenSource ();
+		async void PopupCompletion ()
 		{
-			char c = (char)Gdk.Keyval.ToUnicode (keyValue);
-			if (currentCompletionData == null && IsCompletionChar (c)) {
-				string expr = Buffer.GetText (TokenBegin, Cursor, false);
-				currentCompletionData = GetCompletionData (expr);
-				if (currentCompletionData != null) {
-					DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
-					ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (expr.Length - currentCompletionData.ExpressionLength);
-					CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
-				} else {
-					currentCompletionData = null;
+			try {
+				char c = (char)Gdk.Keyval.ToUnicode (keyValue);
+				if (currentCompletionData == null && IsCompletionChar (c)) {
+					string expr = Buffer.GetText (TokenBegin, Cursor, false);
+					cts.Cancel ();
+					cts = new CancellationTokenSource ();
+					if (DebuggingService.CurrentFrame == null)
+						return;
+					currentCompletionData = await DebuggingService.GetCompletionDataAsync (DebuggingService.CurrentFrame, expr, cts.Token);
+					if (currentCompletionData != null) {
+						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
+						ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (expr.Length - currentCompletionData.ExpressionLength);
+						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
+					}
 				}
+			} catch (OperationCanceledException) {
 			}
 		}
 

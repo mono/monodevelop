@@ -333,16 +333,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			var solution = (Solution) CurrentNode.DataItem;
 			info.Visible = info.Enabled = !string.IsNullOrEmpty (solution.FileName) && File.Exists (solution.FileName);
 		}
-		
-/*		[CommandHandler (ProjectCommands.AddNewFiles)]
-		protected void OnAddNewFiles ()
+
+		[CommandHandler (ProjectCommands.AddNewFiles)]
+		protected async void OnAddNewFiles ()
 		{
-			Solution sol = (Solution) CurrentNode.DataItem;
-			if (IdeApp.ProjectOperations.CreateProjectFile (null, sol.BaseDirectory)) {
-				IdeApp.ProjectOperations.Save (sol);
-				CurrentNode.Expanded = true;
+			var sln = (Solution)CurrentNode.DataItem;
+			if (!IdeApp.ProjectOperations.CreateSolutionFolderFile (sln.RootFolder)) {
+				return;
 			}
-		}*/
+			CurrentNode.Expanded = true;
+			if (IdeApp.Workbench.ActiveDocument != null)
+				IdeApp.Workbench.ActiveDocument.Window.SelectWindow ();
+		}
 		
 		[CommandHandler (ProjectCommands.AddFiles)]
 		protected void OnAddFiles ()

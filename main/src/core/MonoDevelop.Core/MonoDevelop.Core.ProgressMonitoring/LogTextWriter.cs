@@ -31,6 +31,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace MonoDevelop.Core.ProgressMonitoring
 {
@@ -39,6 +40,17 @@ namespace MonoDevelop.Core.ProgressMonitoring
 	public class LogTextWriter: TextWriter
 	{
 		List<TextWriter> chainedWriters;
+		SynchronizationContext context;
+
+		public LogTextWriter () : this (null)
+		{
+
+		}
+
+		internal LogTextWriter (SynchronizationContext context)
+		{
+			this.context = context;
+		}
 		
 		public void ChainWriter (TextWriter writer)
 		{
@@ -63,15 +75,29 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public override void Close ()
 		{
-			if (Closed != null)
-				Closed (this, null);
+			if (context != null)
+				context.Post ((o) => ((LogTextWriter)o).OnClosed (), this);
+			else
+				OnClosed ();
+		}
+
+		void OnClosed ()
+		{
+			Closed?.Invoke (this, null);
 		}
 
 		public override void Write (char[] buffer, int index, int count)
 		{
-			if (TextWritten != null)
-				TextWritten (new string (buffer, index, count));
-			
+			if (context != null)
+				context.Post ((o) => ((LogTextWriter)o).OnWrite (buffer, index, count), this);
+			else
+				OnWrite (buffer, index, count);
+		}
+
+		void OnWrite (char[] buffer, int index, int count)
+		{
+			TextWritten?.Invoke (new string (buffer, index, count));
+
 			if (chainedWriters != null)
 				foreach (TextWriter cw in chainedWriters)
 					cw.Write (buffer, index, count);
@@ -79,9 +105,16 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public override void Write (char value)
 		{
-			if (TextWritten != null)
-				TextWritten (value.ToString ());
-			
+			if (context != null)
+				context.Post ((o) => ((LogTextWriter)o).OnWrite (value), this);
+			else
+				OnWrite (value);
+		}
+
+		void OnWrite (char value)
+		{
+			TextWritten?.Invoke (value.ToString ());
+
 			if (chainedWriters != null)
 				foreach (TextWriter cw in chainedWriters)
 					cw.Write (value);
@@ -89,14 +122,29 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public override void Write (string value)
 		{
-			if (TextWritten != null)
-				TextWritten (value);
-			
+			if (context != null)
+				context.Post ((o) => ((LogTextWriter)o).OnWrite (value), this);
+			else
+				OnWrite (value);
+		}
+
+		void OnWrite (string value)
+		{
+			TextWritten?.Invoke (value);
+
 			if (chainedWriters != null)
 				foreach (TextWriter cw in chainedWriters)
 					cw.Write (value);
 		}
-		
+
+		public override void Flush ()
+		{
+			if (context != null)
+				context.Post ((o) => base.Flush (), null);
+			else
+				base.Flush ();
+		}
+
 		public event LogTextEventHandler TextWritten;
 		public event EventHandler Closed;
 	}

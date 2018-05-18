@@ -249,6 +249,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 				base.InsertCompletionText (window, ref ka, descriptor);
 				return;
 			}
+			InsertCompletionText (editor, document, ref ka, descriptor);
+		}
+
+		internal void InsertCompletionText (TextEditor editor, DocumentContext context, ref KeyActions ka, KeyDescriptor descriptor)
+		{
 			var completionChange = Provider.GetChangeAsync (doc, CompletionItem, null, default (CancellationToken)).WaitAndGetResult (default (CancellationToken));
 
 			var currentBuffer = editor.GetPlatformTextBuffer ();
@@ -257,7 +262,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var mappedSpan = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
 			using (var undo = editor.OpenUndoGroup ()) {
 				// Work around for https://github.com/dotnet/roslyn/issues/22885
-				if (editor.GetCharAt (mappedSpan.Start) == '@') {
+				if (mappedSpan.Start < editor.Length && editor.GetCharAt (mappedSpan.Start) == '@') {
 					editor.ReplaceText (mappedSpan.Start + 1, mappedSpan.Length - 1, completionChange.TextChange.NewText);
 				} else
 					editor.ReplaceText (mappedSpan.Start, mappedSpan.Length, completionChange.TextChange.NewText);
@@ -268,12 +273,25 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 				if (CompletionItem.Rules.FormatOnCommit) {
 					var endOffset = mappedSpan.Start.Position + completionChange.TextChange.NewText.Length;
-					Format (editor, document, mappedSpan.Start, endOffset);
+					// TODO: Remove Format (TextEditor editor, Gui.Document document, int start, int end)
+					// Note it's always Gui.Document in IDE case - only in the unit tests other DocumentContext implementations can happen.
+					if (context is Gui.Document) {
+						Format (editor, (Gui.Document)context, mappedSpan.Start, endOffset);
+					} else {
+						Format (editor, context, mappedSpan.Start, endOffset);
+					}
 				}
 			}
 		}
 
-		protected abstract void Format (TextEditor editor, Gui.Document document, int start, int end);
+		protected virtual void Format (TextEditor editor, DocumentContext document, int start, int end)
+		{}
+
+		[Obsolete("Use Format (TextEditor editor, DocumentContext document, int start, int end)")]
+		protected virtual void Format (TextEditor editor, Gui.Document document, int start, int end)
+		{
+			Format (editor, (DocumentContext)document, start, end);
+		}
 
 		public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{

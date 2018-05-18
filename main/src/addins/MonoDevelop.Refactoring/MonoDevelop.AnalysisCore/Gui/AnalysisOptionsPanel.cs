@@ -41,7 +41,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			return widget = new AnalysisOptionsWidget () {
 				AnalysisEnabled = AnalysisOptions.AnalysisEnabled,
-				UnitTestIntegrationEnabled = AnalysisOptions.EnableUnitTestEditorIntegration
+				UnitTestIntegrationEnabled = AnalysisOptions.EnableUnitTestEditorIntegration,
+				FullAnalysisEnabled = AnalysisOptions.FullSolutionAnalysisEnabled,
 			};
 		}
 		
@@ -49,27 +50,43 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			AnalysisOptions.AnalysisEnabled.Set (widget.AnalysisEnabled);
 			AnalysisOptions.EnableUnitTestEditorIntegration.Set (widget.UnitTestIntegrationEnabled);
+			AnalysisOptions.FullSolutionAnalysisEnabled.Set (widget.FullAnalysisEnabled);
 		}
 	}
 	
 	class AnalysisOptionsWidget : VBox
 	{
 		CheckButton enabledCheck;
+		CheckButton enabledFullCheck;
 		CheckButton enabledTest;
 
 		public AnalysisOptionsWidget ()
 		{
 			enabledCheck = new CheckButton (GettextCatalog.GetString ("Enable source analysis of open files"));
 			PackStart (enabledCheck, false, false, 0);
+			enabledFullCheck = new CheckButton (GettextCatalog.GetString ("Enable source analysis of whole solution"));
+			PackStart (enabledFullCheck, false, false, 0);
 			enabledTest = new CheckButton (GettextCatalog.GetString ("Enable text editor unit test integration"));
 			PackStart (enabledTest, false, false, 0);
 
 			ShowAll ();
 		}
-		
+
 		public bool AnalysisEnabled {
 			get { return enabledCheck.Active; }
-			set { enabledCheck.Active = value; }
+			set {
+				enabledCheck.Active = value;
+
+				enabledFullCheck.Sensitive = value;
+				if (!value) {
+					enabledFullCheck.Active = false;
+				}
+			}
+		}
+
+		public bool FullAnalysisEnabled {
+			get { return enabledFullCheck.Active; }
+			set { enabledFullCheck.Active = value; }
 		}
 
 		public bool UnitTestIntegrationEnabled {

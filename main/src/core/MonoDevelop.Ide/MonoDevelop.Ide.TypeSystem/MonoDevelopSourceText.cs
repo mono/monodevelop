@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		#endregion
 
-		public static SourceText Create (TextEditor editor, MonoDevelopSourceTextContainer container)
+		public static SourceText Create (TextEditor editor, SourceTextContainer container)
 		{
 			return new ChangedSourceText (editor.GetPlatformTextBuffer ().CurrentSnapshot, editor.Encoding, container);
 		}
@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		class ChangedSourceText : SnapshotSourceText
 		{
 			ITextSnapshot buffer;
-			readonly MonoDevelopSourceTextContainer container;
+			readonly SourceTextContainer container;
 
 			protected override ITextSnapshot Snapshot {
 				get {
@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			public ChangedSourceText (ITextSnapshot  buffer, Encoding encoding, MonoDevelopSourceTextContainer container)
+			public ChangedSourceText (ITextSnapshot  buffer, Encoding encoding, SourceTextContainer container)
 			{
 				this.buffer = buffer;
 				this.encoding = encoding;

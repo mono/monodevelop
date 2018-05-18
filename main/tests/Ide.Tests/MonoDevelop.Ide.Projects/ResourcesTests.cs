@@ -53,7 +53,6 @@ namespace MonoDevelop.Ide.Projects
 
 			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var p = (DotNetProject)sol.Items.FirstOrDefault (item => item.Name == projectName);
-				p.RequiresMicrosoftBuild = true;
 
 				var resourceFile = p.Files.FirstOrDefault (f => f.FilePath.FileName == "Resources.resx");
 

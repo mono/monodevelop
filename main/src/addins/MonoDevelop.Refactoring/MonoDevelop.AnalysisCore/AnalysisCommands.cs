@@ -34,6 +34,7 @@ using MonoDevelop.CodeIssues;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -44,10 +45,7 @@ namespace MonoDevelop.AnalysisCore
 
 	class ExportRulesHandler : CommandHandler
 	{
-		static MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable options =
-			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).Options; 
-
-		protected override void Run ()
+		protected override async void Run ()
 		{
 			var lang = "text/x-csharp";
 
@@ -57,7 +55,7 @@ namespace MonoDevelop.AnalysisCore
 				return;
 
 			Dictionary<CodeDiagnosticDescriptor, DiagnosticSeverity?> severities = new Dictionary<CodeDiagnosticDescriptor, DiagnosticSeverity?> ();
-
+			var options = await ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ();
 			var language = CodeRefactoringService.MimeTypeToLanguage (lang);
 			foreach (var node in options.AllDiagnostics.Where (x => x.Languages.Contains (language))) {
 				severities [node] = node.DiagnosticSeverity;

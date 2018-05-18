@@ -360,34 +360,35 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 		public override async Task<CompletionChange> GetChangeAsync (Document doc, CompletionItem item, char? commitKey = default (char?), CancellationToken cancellationToken = default (CancellationToken))
 		{
-			GetInsertText (item.Properties, out string beforeText, out string afterText, out string newMethod);
+			(string beforeText, string afterText, string newMethod) = await GetInsertText (item.Properties);
 
 			TextChange change;
 			if (newMethod != null) {
 				change = new TextChange (new TextSpan (item.Span.Start, item.Span.Length), item.Properties ["MethodName"] + ";");
-				var document = IdeApp.Workbench.ActiveDocument;
-				var editor = document.Editor;
-				var parsedDocument = document.ParsedDocument;
 				var semanticModel = await doc.GetSemanticModelAsync (cancellationToken);
-				var declaringType = semanticModel.GetEnclosingSymbolMD<INamedTypeSymbol> (item.Span.Start, default (CancellationToken));
-				var insertionPoints = InsertionPointService.GetInsertionPoints (
-					document.Editor,
-					parsedDocument,
-					declaringType,
-					editor.CaretOffset
-				);
-				var options = new InsertionModeOptions (
-					GettextCatalog.GetString ("Create new method"),
-					insertionPoints,
-					point => {
-						if (!point.Success)
-							return;
-						point.InsertionPoint.Insert (document.Editor, document, newMethod);
-					}
-				);
 
-				editor.StartInsertionMode (options);
-
+				await Runtime.RunInMainThread (delegate {
+					var document = IdeApp.Workbench.ActiveDocument;
+					var editor = document.Editor;
+					var parsedDocument = document.ParsedDocument;
+					var declaringType = semanticModel.GetEnclosingSymbolMD<INamedTypeSymbol> (item.Span.Start, default (CancellationToken));
+					var insertionPoints = InsertionPointService.GetInsertionPoints (
+						document.Editor,
+						parsedDocument,
+						declaringType,
+						editor.CaretOffset
+					);
+					var options = new InsertionModeOptions (
+						GettextCatalog.GetString ("Create new method"),
+						insertionPoints,
+						point => {
+							if (!point.Success)
+								return;
+							point.InsertionPoint.Insert (document.Editor, document, newMethod);
+						}
+					);
+					editor.StartInsertionMode (options);
+				});
 				return CompletionChange.Create (change);
 			}
 			change = new TextChange (new TextSpan (item.Span.Start, item.Span.Length), beforeText + afterText);
@@ -395,33 +396,35 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			return CompletionChange.Create (change, item.Span.Start + beforeText.Length);
 		}
 
-		protected override Task<TextChange?> GetTextChangeAsync (CompletionItem selectedItem, char? ch, CancellationToken cancellationToken)
+		protected override async Task<TextChange?> GetTextChangeAsync (CompletionItem selectedItem, char? ch, CancellationToken cancellationToken)
 		{
-			GetInsertText (selectedItem.Properties, out string beforeText, out string afterText, out string newMethod);
-			var change = new TextChange (new TextSpan (selectedItem.Span.Start, selectedItem.Span.Length), beforeText + afterText);
-			return Task.FromResult<TextChange?> (change);
+			(string beforeText, string afterText, string newMethod) = await GetInsertText (selectedItem.Properties);
+			return new TextChange (new TextSpan (selectedItem.Span.Start, selectedItem.Span.Length), beforeText + afterText);
 		}
 
-		void GetInsertText (ImmutableDictionary<string, string> properties, out string beforeText, out string afterText, out string newMethod)
+		async Task<(string beforeText, string afterText, string newMethod)> GetInsertText (ImmutableDictionary<string, string> properties)
 		{
-			string thisLineIndent;
-			string oneIndent;
+			string thisLineIndent = null;
+			string oneIndent = null;
 			var editor = IdeApp.Workbench?.ActiveDocument?.Editor;
 			if (editor != null) {
-				thisLineIndent = editor.IndentationTracker.GetIndentationString (editor.OffsetToLineNumber (int.Parse (properties ["Position"])));
-				oneIndent = editor.Options.TabsToSpaces ? new string (' ', editor.Options.TabSize) : "\t";
+				await Runtime.RunInMainThread (delegate {
+					thisLineIndent = editor.IndentationTracker.GetIndentationString (editor.OffsetToLineNumber (int.Parse (properties ["Position"])));
+					oneIndent = editor.Options.TabsToSpaces ? new string (' ', editor.Options.TabSize) : "\t";
+				});
 			} else {
 				thisLineIndent = oneIndent = "\t";
 			}
+
 			var eol = editor?.EolMarker ?? "\n";
 
-			properties.TryGetValue ("InsertBefore", out beforeText);
-			properties.TryGetValue ("InsertAfter", out afterText);
-			properties.TryGetValue ("NewMethod", out newMethod);
+			properties.TryGetValue ("InsertBefore", out string beforeText);
+			properties.TryGetValue ("InsertAfter", out string afterText);
+			properties.TryGetValue ("NewMethod", out string newMethod);
 
-			beforeText = beforeText?.Replace ("\n", eol).Replace ("$thisLineIndent$", thisLineIndent).Replace ("$oneIndent$", oneIndent);
-			afterText = afterText?.Replace ("\n", eol).Replace ("$thisLineIndent$", thisLineIndent).Replace ("$oneIndent$", oneIndent);
-			newMethod = newMethod?.Replace ("\n", eol).Replace ("$thisLineIndent$", thisLineIndent).Replace ("$oneIndent$", oneIndent);
+			return (beforeText?.Replace ("\n", eol).Replace ("$thisLineIndent$", thisLineIndent).Replace ("$oneIndent$", oneIndent),
+			        afterText?.Replace ("\n", eol).Replace ("$thisLineIndent$", thisLineIndent).Replace ("$oneIndent$", oneIndent),
+			        newMethod?.Replace ("\n", eol).Replace ("$thisLineIndent$", thisLineIndent).Replace ("$oneIndent$", oneIndent));
 		}
 	}
 }

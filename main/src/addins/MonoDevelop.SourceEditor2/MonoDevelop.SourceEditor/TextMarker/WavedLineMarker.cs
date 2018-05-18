@@ -43,76 +43,8 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public GenericUnderlineMarker (ISegment segment, MonoDevelop.Ide.Editor.TextSegmentMarkerEffect effect) : base ("", segment)
+		public GenericUnderlineMarker (ISegment segment, MonoDevelop.Ide.Editor.TextSegmentMarkerEffect effect) : base (null, segment, effect)
 		{
-			this.effect = effect;
-		}
-
-		public override void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics layout, int startOffset, int endOffset)
-		{
-			if (DebuggingService.IsDebugging)
-				return;
-			int markerStart = Segment.Offset;
-			int markerEnd = Segment.EndOffset;
-			if (markerEnd < startOffset || markerStart > endOffset) 
-				return;
-			
-			double drawFrom;
-			double drawTo;
-			double y = layout.LineYRenderStartPosition;
-			double startXPos = layout.TextRenderStartPosition;
-			double endXPos = layout.TextRenderEndPosition;
-
-			if (markerStart < startOffset && endOffset < markerEnd) {
-				drawTo = endXPos;
-				var line = editor.GetLineByOffset (startOffset);
-				int offset = line.GetIndentation (editor.Document).Length;
-				drawFrom = startXPos + (layout.Layout.IndexToPos (offset).X  / Pango.Scale.PangoScale);
-			} else {
-				int start;
-				if (startOffset < markerStart) {
-					start = markerStart;
-				} else {
-					var line = editor.GetLineByOffset (startOffset);
-					int offset = line.GetIndentation (editor.Document).Length;
-					start = startOffset + offset;
-				}
-				int end = endOffset < markerEnd ? endOffset : markerEnd;
-				int x_pos;
-
-				x_pos = layout.Layout.IndexToPos (start - startOffset).X;
-				drawFrom = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
-				x_pos = layout.Layout.IndexToPos (end - startOffset).X;
-	
-				drawTo = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
-			}
-			
-			drawFrom = Math.Max (drawFrom, editor.TextViewMargin.XOffset);
-			drawTo = Math.Max (drawTo, editor.TextViewMargin.XOffset);
-
-			if (drawFrom > drawTo)
-				return;
-
-			if (drawFrom == drawTo)
-				drawTo += editor.TextViewMargin.charWidth;
-			
-			double height = editor.LineHeight / 5;
-			cr.SetSourceColor (Color);
-			if (effect == MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.WavedLine) {	
-				Pango.CairoHelper.ShowErrorUnderline (cr, drawFrom, y + editor.LineHeight - height, drawTo - drawFrom, height);
-			} else if (effect == MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.DottedLine) {
-				cr.Save ();
-				cr.LineWidth = 1;
-				cr.MoveTo (drawFrom + 1, y + editor.LineHeight - 1 + 0.5);
-				cr.RelLineTo (Math.Min (drawTo - drawFrom, 4 * 3), 0);
-				cr.SetDash (new double[] { 2, 2 }, 0);
-				cr.Stroke ();
-				cr.Restore ();
-			} else {
-				cr.MoveTo (drawFrom, y + editor.LineHeight - 1);
-				cr.LineTo (drawTo, y + editor.LineHeight - 1);
-				cr.Stroke ();
-			}
 		}
 
 		#pragma warning disable 0067
@@ -126,12 +58,6 @@ namespace MonoDevelop.SourceEditor
 			set;
 		}
 
-		MonoDevelop.Ide.Editor.TextSegmentMarkerEffect effect;
-		MonoDevelop.Ide.Editor.TextSegmentMarkerEffect MonoDevelop.Ide.Editor.IGenericTextSegmentMarker.Effect {
-			get {
-				return effect;
-			}
-		}
 
 	}
 }

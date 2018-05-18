@@ -48,9 +48,6 @@ namespace MonoDevelop.CodeIssues
 {
 	static class CodeDiagnosticRunner
 	{
-		static MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable options =
-			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).Options; 
-		
 		static TraceListener consoleTraceListener = new ConsoleTraceListener ();
 
 		public static async Task<IEnumerable<Result>> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken, ImmutableArray<DiagnosticData> results)
@@ -73,8 +70,8 @@ namespace MonoDevelop.CodeIssues
 
 					if (DataHasTag (data, WellKnownDiagnosticTags.EditAndContinue))
 						continue;
-
-					if (options.TryGetDiagnosticDescriptor (data.Id, out var desc) && !desc.GetIsEnabled (data.Id))
+					var options = await ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ();
+					if (options.TryGetDiagnosticDescriptor (data.Id, out var desc) && !desc.GetIsEnabled (data.Id, data.IsEnabledByDefault))
 						continue;
 
 					var diagnostic = await data.ToDiagnosticAsync (analysisDocument, cancellationToken, desc);
@@ -128,7 +125,7 @@ namespace MonoDevelop.CodeIssues
 			var location = await data.DataLocation.ConvertLocationAsync (project, cancellationToken).ConfigureAwait (false);
 			var additionalLocations = await data.AdditionalLocations.ConvertLocationsAsync (project, cancellationToken).ConfigureAwait (false);
 
-			DiagnosticSeverity severity = desc != null ? desc.GetSeverity (data.Id, data.Severity) : data.Severity;
+			DiagnosticSeverity severity = desc != null ? desc.GetSeverity (data.Id, data.DefaultSeverity) : data.Severity;
 			
 			return Diagnostic.Create (
 				data.Id, data.Category, data.Message, severity, data.DefaultSeverity,
