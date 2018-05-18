@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 	class BuildOutputWidget : VBox, IPathedDocument, IBuildOutputContextProvider
 	{
 		const string binLogExtension = "binlog";
+		const int PathBarTopPadding = 5;
 
 		TreeView treeView;
 		CheckBox showDiagnosticsButton;
@@ -105,7 +106,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			BuildOutput.OutputChanged += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 			ProcessLogs (false);
 
-			pathBar = new PathBar (this.CreatePathWidget) {
+			pathBar = new PathBar (this.CreatePathWidget, PathBarTopPadding) {
 				DrawBottomBorder = false
 			};
 			var entries = new PathEntry [] {
