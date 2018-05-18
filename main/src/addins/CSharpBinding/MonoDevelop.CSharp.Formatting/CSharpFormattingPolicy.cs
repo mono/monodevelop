@@ -586,6 +586,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		#region Code Style options
 		bool placeSystemDirectiveFirst = true;
+		[Obsolete("Not used anymore.")]
 		[ItemProperty]
 		public bool PlaceSystemDirectiveFirst {
 			get {
