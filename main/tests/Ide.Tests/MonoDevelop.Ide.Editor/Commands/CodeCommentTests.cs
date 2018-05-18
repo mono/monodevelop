@@ -27,6 +27,8 @@ using System.Text;
 using NUnit.Framework;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Gui;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -169,6 +171,33 @@ namespace MonoDevelop.Ide.Editor
 
 	}->
 }");
+		}
+
+		[Test]
+		public async Task TestToggle_Visible ()
+		{
+			IdeApp.Initialize (new Core.ProgressMonitor ());
+			//This dummyEditor is just so we can reuse CreateTextEditor code
+			//to resolve offset for us
+			var dummyEditor = CreateTextEditor (@"class Foo
+{
+	void Bar ()
+	{
+		//$test
+	}
+}");
+			//We need to create full document and not just editor
+			//so extensions are initialized which set custom C#
+			//tagger based syntax highligthing
+			var document = IdeApp.Workbench.NewDocument ("a.cs", "text/x-csharp", dummyEditor.Text);
+			document.Editor.CaretOffset = dummyEditor.CaretOffset;
+			//Call UpdateParseDocument so AdHock Roslyn Workspace is created for file
+			await document.UpdateParseDocument ();
+			var info = new Components.Commands.CommandInfo ();
+			//Finnaly call command Update so it sets values which we assert
+			GetExtension (document.Editor).OnUpdateToggleComment (info);
+			Assert.AreEqual (true, info.Visible);
+			Assert.AreEqual (true, info.Enabled);
 		}
 
 		[Test]
