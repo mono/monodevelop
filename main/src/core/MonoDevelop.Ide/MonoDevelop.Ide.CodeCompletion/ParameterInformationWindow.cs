@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var lastH = (int)Height;
 
 			int X, Y;
-			var pos = cmg.CompletionContext.GetCoordinatesAsync ().WaitAndGetResult (default (CancellationToken));
+			var pos = await cmg.CompletionContext.GetCoordinatesAsync ();
 			X = pos.x;
 			if (isCompletionWindowVisible) {
 				// place above
