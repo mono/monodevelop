@@ -566,6 +566,14 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		void OnMSBuildProjectImportChanged (object sender, EventArgs args)
 		{
+			// Unload the remote build engine so new MSBuild task assemblies can be used.
+			// This prevents the old MSBuild task assemblies from being used at build time
+			// after a NuGet package has been updated.
+			RemoteBuildEngineManager.UnloadProject (FileName).Ignore ();
+			string solutionFileName = ParentSolution?.FileName;
+			if (solutionFileName != null)
+				RemoteBuildEngineManager.UnloadSolution (solutionFileName).Ignore ();
+
 			lock (evaluatedCompileItemsLock) {
 				// Do not re-evaluate if the compile items have never been evaluated.
 				if (evaluatedCompileItemsTask != null)
