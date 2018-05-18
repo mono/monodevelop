@@ -22,6 +22,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public static Xwt.Drawing.Color SearchMatchUnfocusedBackgroundColor { get; internal set; }
 		public static Xwt.Drawing.Color CellTextSelectionColorSecundary { get; internal set; }
 
+
+		public static Color CellErrorBackgroundColor { get; set; }
+		public static Color CellErrorLineBackgroundColor { get; set; }
+
+		public static Color CellWarningBackgroundColor { get; set; } 
+		public static Color CellWarningLineBackgroundColor { get; set; }
+
 		static Styles ()
 		{
 			LoadStyles ();
@@ -33,9 +40,20 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				CellBackgroundColor = Ide.Gui.Styles.PadBackground;
 				SearchMatchUnfocusedBackgroundColor = Xwt.Drawing.Color.FromName ("#fdffa9");
+
+				CellErrorBackgroundColor = Color.FromBytes (245, 109, 79, 20);
+				CellErrorLineBackgroundColor = Color.FromBytes (245, 109, 79, 100);
+				CellWarningBackgroundColor = Color.FromBytes (241, 196, 15, 20);
+				CellWarningLineBackgroundColor = Color.FromBytes (241, 196, 15, 100);
+
 			} else {
 				CellBackgroundColor = Xwt.Drawing.Color.FromName ("#3c3c3c");
 				SearchMatchUnfocusedBackgroundColor = Xwt.Drawing.Color.FromName ("#a2a53f");
+
+				CellErrorBackgroundColor = Color.FromBytes (255, 113, 82, 30); ;
+				CellErrorLineBackgroundColor = Color.FromBytes (255, 113, 82, 175);
+				CellWarningBackgroundColor = Color.FromBytes (255, 207, 15, 30);
+				CellWarningLineBackgroundColor = Color.FromBytes (255, 207, 15, 175);
 			}
 
 			// Shared
@@ -132,6 +150,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			public Rectangle Task = Rectangle.Zero;
 
+			public bool DrawsTopLine { get; set; }
+			public bool DrawsBottomLine { get; set; }
+
 			public bool Expanded {
 				get { return expanded; }
 				set {
@@ -197,6 +218,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			{
 				layout.Width = layout.Height = -1;
 				return layout;
+			}
+
+			internal void Initialize ()
+			{
+				DrawsBottomLine = Node.Next == null || !(Node.Next.NodeType == BuildOutputNodeType.Error || Node.Next.NodeType == BuildOutputNodeType.Warning);
+				DrawsTopLine = Node.Previous == null || !(Node.Previous.NodeType == BuildOutputNodeType.Error || Node.Previous.NodeType == BuildOutputNodeType.Warning);
+
+				Reload ();
 			}
 		}
 
@@ -285,12 +314,64 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
+
+		void FillCellBackground (Context ctx, BuildOutputNode buildOutputNode, ViewStatus status)
+		{
+			if (!buildOutputNode.HasChildren) {
+				if (buildOutputNode.NodeType == BuildOutputNodeType.Error) {
+					FillCellBackground (ctx, Styles.CellErrorBackgroundColor);
+
+					if (status.DrawsTopLine) {
+						DrawTopLine (ctx, Styles.CellErrorLineBackgroundColor);
+					}
+
+					if (status.DrawsBottomLine) {
+						DrawBottomLine (ctx, Styles.CellErrorLineBackgroundColor);
+					}
+
+				} else if (buildOutputNode.NodeType == BuildOutputNodeType.Warning) {
+					FillCellBackground (ctx, Styles.CellWarningBackgroundColor);
+
+					if (status.DrawsTopLine) {
+						DrawTopLine (ctx, Styles.CellWarningLineBackgroundColor);
+					}
+
+					if (status.DrawsBottomLine) {
+						DrawBottomLine (ctx, Styles.CellWarningLineBackgroundColor);
+					}
+				}
+			}
+		}
+
+		void DrawBottomLine (Context ctx, Color color) => DrawLine (ctx, color, BackgroundBounds.BottomLeft, BackgroundBounds.BottomRight);
+
+		void DrawTopLine (Context ctx, Color color) => DrawLine (ctx, color, BackgroundBounds.TopLeft, BackgroundBounds.TopRight);
+
+		void DrawLine (Context ctx, Color color, Point init, Point end)
+		{
+			ctx.SetColor (color);
+			ctx.SetLineWidth (2);
+			ctx.MoveTo (init);
+			ctx.LineTo (end);
+			ctx.Stroke ();
+		}
+
+		void FillCellBackground (Context ctx, Color color)
+		{
+			ctx.Rectangle(BackgroundBounds);
+			ctx.SetColor(color);
+			ctx.Fill();
+		}
+
 		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
 		{
 			var buildOutputNode = GetValue (BuildOutputNodeField);
 			var isSelected = Selected;
 
 			var status = GetViewStatus (buildOutputNode);
+
+			//Draw the node background
+			FillCellBackground (ctx, buildOutputNode, status);
 
 			//Draw the image row
 			DrawImage (ctx, cellArea, buildOutputNode.GetImage (), (cellArea.Left - 3), ImageSize, isSelected, ImagePadding);
@@ -521,7 +602,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var node = GetValue (BuildOutputNodeField);
 			if (node != null) {
 				var status = GetViewStatus (node);
-				status.Reload ();
+				status.Initialize ();
 			}
 		}
 

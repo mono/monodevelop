@@ -73,6 +73,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public virtual int ErrorCount { get; set; }
 		public virtual int WarningCount { get; set; }
 
+		public virtual BuildOutputNode Previous { get; set; }
+		public virtual BuildOutputNode Next { get; set; }
+
 		static string [] KnownTools = new string[] {
 			"AL",
 			"Csc",
@@ -94,6 +97,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (child.NodeType == BuildOutputNodeType.Message && NodeType == BuildOutputNodeType.Task && KnownTools.Contains (Message)) {
 				child.IsCommandLine = true;
 			}
+
+			var parent = children.LastOrDefault ();
+			if (parent != null) {
+				parent.Next = child;
+				child.Previous = parent;
+			}
+
 			children.Add (child);
 
 			child.Parent = this;
@@ -274,9 +284,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public override bool HasWarnings { get => masterNode.HasWarnings; set => masterNode.HasWarnings = value; }
 		public override bool HasData { get => masterNode.HasData; set => masterNode.HasData = value; }
 
+		public override BuildOutputNode Next { get => masterNode.Next; set => masterNode.Next = value; }
+		public override BuildOutputNode Previous { get => masterNode.Previous; set => masterNode.Previous = value; }
+
 		public override string Configuration { get => masterNode.Configuration; set => masterNode.Configuration = value; }
 		public override string Platform { get => masterNode.Platform; set => masterNode.Platform = value; }
-
 
 		public override string File { get => masterNode.File; set => masterNode.File = value; }
 		public override string Project { get => masterNode.Project; set => masterNode.Project = value; }
