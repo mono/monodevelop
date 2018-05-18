@@ -29,6 +29,8 @@ namespace MonoDevelop.Ide.Editor
 {
 	public class LineEventArgs : System.EventArgs
 	{
+		public readonly static LineEventArgs AllLines = new LineEventArgs ();
+
 		readonly IDocumentLine line;
 
 		public IDocumentLine Line {
@@ -37,11 +39,13 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		LineEventArgs () 
+		{
+		}
+
 		public LineEventArgs (IDocumentLine line)
 		{
-			if (line == null)
-				throw new ArgumentNullException ("line");
-			this.line = line;
+			this.line = line ?? throw new ArgumentNullException (nameof (line));
 		}
 	}
 }

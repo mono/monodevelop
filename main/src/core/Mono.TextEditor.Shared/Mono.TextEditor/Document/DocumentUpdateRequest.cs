@@ -50,8 +50,12 @@ namespace Mono.TextEditor
 	
 	class UpdateAll : DocumentUpdateRequest
 	{
+		public bool RemoveLineCache { get; set; }
+
 		public override void Update (MonoTextEditor editor)
 		{
+			if (RemoveLineCache)
+				editor.TextViewMargin.PurgeLayoutCache ();
 			editor.QueueDraw ();
 		}
 	}
