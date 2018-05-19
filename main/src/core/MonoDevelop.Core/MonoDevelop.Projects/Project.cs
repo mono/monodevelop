@@ -566,6 +566,9 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		void OnMSBuildProjectImportChanged (object sender, EventArgs args)
 		{
+			// Ensure MSBuild tasks used when building are up to date after imports changed.
+			ShutdownProjectBuilder ();
+
 			lock (evaluatedCompileItemsLock) {
 				// Do not re-evaluate if the compile items have never been evaluated.
 				if (evaluatedCompileItemsTask != null)
@@ -1573,6 +1576,17 @@ namespace MonoDevelop.Projects
 		public void ReloadProjectBuilder ()
 		{
 			RemoteBuildEngineManager.RefreshProject (FileName).Ignore ();
+		}
+
+		public void ShutdownProjectBuilder ()
+		{
+			// Unload the remote build engine so new MSBuild task assemblies can be used.
+			// This prevents the old MSBuild task assemblies from being used at build time
+			// after a NuGet package has been updated.
+			RemoteBuildEngineManager.UnloadProject (FileName).Ignore ();
+			string solutionFileName = ParentSolution?.FileName;
+			if (solutionFileName != null)
+				RemoteBuildEngineManager.UnloadSolution (solutionFileName).Ignore ();
 		}
 
 		#endregion

@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PclProject", "PclProject\PclProject.csproj", "{66D551D6-3229-4962-A01B-287808894542}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryProject", "LibraryProject\LibraryProject.csproj", "{045544D3-9A09-4903-9A6D-0FB3064D4FF7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{66D551D6-3229-4962-A01B-287808894542}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66D551D6-3229-4962-A01B-287808894542}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66D551D6-3229-4962-A01B-287808894542}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66D551D6-3229-4962-A01B-287808894542}.Release|Any CPU.Build.0 = Release|Any CPU
+		{045544D3-9A09-4903-9A6D-0FB3064D4FF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{045544D3-9A09-4903-9A6D-0FB3064D4FF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{045544D3-9A09-4903-9A6D-0FB3064D4FF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{045544D3-9A09-4903-9A6D-0FB3064D4FF7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
