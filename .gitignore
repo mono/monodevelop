@@ -233,6 +233,7 @@ Thumbs.db
 /main/src/core/MonoDevelop.Projects.Formats.MSBuild/MonoDevelop.Projects.MSBuild.Shared/Makefile
 /main/tests/MonoDevelop.Core.Tests/Makefile
 /main/tests/WindowsPlatform.Tests/Makefile
+/main/tests/IdeUnitTests/Makefile
 
 # extras configure junk
 /extras/MonoDevelop.Database/INSTALL
