@@ -765,6 +765,7 @@
     <Compile Include="MonoDevelop.Core.Collections\LookupTable.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\FrameworkInfo.cs" />
     <Compile Include="MonoDevelop.Core\SynchronizationContextTaskScheduler.cs" />
+    <Compile Include="MonoDevelop.Core\ConfigurationProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
