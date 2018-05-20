@@ -44,37 +44,11 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
-      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
