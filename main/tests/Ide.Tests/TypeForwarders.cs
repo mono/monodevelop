@@ -1,10 +1,10 @@
 ﻿//
-// IdeTestBase.cs
+// AssemblyInfo.cs
 //
 // Author:
-//       Lluis Sanchez <llsan@microsoft.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2017 Microsoft
+// Copyright (c) 2018 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using UnitTests;
+using System.Runtime.CompilerServices;
 
-namespace MonoDevelop.Ide
-{
-	public class IdeTestBase: RoslynTestBase
-	{
-		protected override void InternalSetup(string rootDir)
-		{
-			base.InternalSetup(rootDir);
+[assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.IdeTestBase))]
+[assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.TextEditorExtensionTestBase))]
+[assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.TypeSystemServiceTestExtensions))]
 
-			Xwt.Application.Initialize(Xwt.ToolkitType.Gtk);
-			Gtk.Application.Init();
-			DesktopService.Initialize();
-		}
-	}
-}
+[assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.Gui.TestDocument))]
+[assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.Gui.TestViewContent))]
+[assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.Gui.TestWorkbenchWindow))]

@@ -13,7 +13,7 @@ TEST_PROJECTS_MAC = \
 	MacPlatform.Tests/MacPlatform.Tests.csproj
 
 TEST_PROJECTS_COMMON = \
-	IDeUnitTests/IdeUnitTests.csproj \
+	IdeUnitTests/IdeUnitTests.csproj \
 	UnitTests/UnitTests.csproj \
 	$(top_srcdir)/src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.Tests/MonoDevelop.Debugger.Tests.csproj
 
