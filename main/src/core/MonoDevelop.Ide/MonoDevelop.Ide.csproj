@@ -9527,7 +9527,6 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionTriggerReason.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionSelectionStatus.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\EditorNotificationServiceFactory.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\GlobalOptionPersister.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TextPolicyDocumentOptionsProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineProjectTemplatingProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineSolutionTemplate.cs" />
@@ -9644,6 +9643,10 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\RoslynSearchCategory.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\RoslynSearchCategory.DeclaredSymbolInfoResult.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynService.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices.Options\MonoDevelopGlobalOptionPersister.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices.Options\RoslynPreferences.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices.Options\OptionsExtensions.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices.Options\RoslynPreferences.Properties.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9692,7 +9695,7 @@
     <Folder Include="MonoDevelop.Ide.EditorConfig\" />
     <Folder Include="Gui\" />
     <Folder Include="MonoDevelop.Ide.RoslynServices\" />
-    <Folder Include="MonoDevelop.Ide.RoslynServices.OptionPersistence\" />
+    <Folder Include="MonoDevelop.Ide.RoslynServices.Options\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

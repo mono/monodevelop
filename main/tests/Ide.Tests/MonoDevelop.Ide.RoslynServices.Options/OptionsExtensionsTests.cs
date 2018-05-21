@@ -1,10 +1,10 @@
 ﻿//
-// IdeTestBase.cs
+// OptionsExtensionsTests.cs
 //
 // Author:
-//       Lluis Sanchez <llsan@microsoft.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2017 Microsoft
+// Copyright (c) 2018 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,22 +23,20 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using UnitTests;
+using NUnit.Framework;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.Ide.RoslynServices.Options
 {
-	public class IdeTestBase: RoslynTestBase
+	public class OptionsExtensionsTests : OptionsTestBase
 	{
-		protected override void InternalSetup(string rootDir)
+		[TestCaseSource (nameof(allKinds))]
+		public void TestToPropertyNameOption (StorageLocationKind kind)
 		{
-			base.InternalSetup(rootDir);
-
-			Xwt.Application.Initialize(Xwt.ToolkitType.Gtk);
-			Gtk.Application.Init();
-			DesktopService.Initialize();
+			var optionKeys = GetOptionKeys<bool> (kind);
+			foreach (var option in optionKeys) {
+				string expected = GetExpectedPropertyName (kind, option.Language);
+				Assert.AreEqual (expected, option.GetPropertyName ());
+			}
 		}
 	}
 }

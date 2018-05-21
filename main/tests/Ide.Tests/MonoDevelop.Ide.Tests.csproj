@@ -69,6 +69,11 @@
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\build\bin\System.Collections.Immutable.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.EditorFeatures">
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.EditorFeatures.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ProjectTemplateTests.cs" />
@@ -140,6 +145,14 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopProjectCacheHostServiceTests.cs" />
     <Compile Include="MonoDevelop.Ide\RoslynSearchCategoryTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\CodeSnippetTests.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynServiceTests.cs" />
+    <Compile Include="RoslynTestBase.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices.Options\OptionsExtensionsTests.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices.Options\RoslynPreferencesTests.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices.Options\OptionsTestBase.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices.Options\MonoDevelopOptionPersisterIntegrationTests.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices.Options\MockOptionService.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices.Options\MonoDevelopOptionPersisterTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -209,6 +222,7 @@
     <Folder Include="MonoDevelop.Ide.Tasks\" />
     <Folder Include="MonoDevelop.Ide.Composition\" />
     <Folder Include="MonoDevelop.Ide.RoslynServices\" />
+    <Folder Include="MonoDevelop.Ide.RoslynServices.Options\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -24,42 +24,57 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Threading;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
+using NUnit.Framework;
 using Microsoft.CodeAnalysis.Utilities;
+using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.RoslynServices.Options;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
-	class RoslynService
+	[TestFixture]
+	public class RoslynServiceTests : IdeTestBase
 	{
-		internal RoslynService ()
+		[TestCase (false, false)]
+		[TestCase (true, false)]
+		[TestCase (true, true)]
+		public async Task TestForegroundThread (bool initAgain, bool inBg)
 		{
-			// Initialize Option Persisters
-		}
-
-		internal static IEnumerable<string> AllLanguages {
-			get {
-				yield return LanguageNames.CSharp;
-				yield return LanguageNames.FSharp;
-				yield return LanguageNames.VisualBasic;
+			if (initAgain) {
+				if (inBg) {
+					await Task.Run (() => {
+						Assert.Throws<InvalidOperationException> (() => RoslynService.Initialize ());
+					});
+				}
+				RoslynService.Initialize ();
 			}
-		}
 
-		internal static void Initialize ()
-		{
-			Runtime.AssertMainThread ();
+			var obj = new ForegroundThreadAffinitizedObject (false);
 
-			// Initialize Roslyn foreground thread data.
-			ForegroundThreadAffinitizedObject.CurrentForegroundThreadData = new ForegroundThreadData (
-				Thread.CurrentThread,
-				Runtime.MainTaskScheduler,
-				ForegroundThreadDataInfo.CreateDefault (ForegroundThreadDataKind.ForcedByPackageInitialize)
-			);
+			// FIXME: Roslyn does not about Xwt Synchronization context.
+			//Assert.AreEqual (ForegroundThreadDataKind.MonoDevelopGtk, obj.ForegroundKind);
+			Assert.AreEqual (Runtime.MainTaskScheduler, obj.ForegroundTaskScheduler);
+			Assert.IsTrue (obj.IsForeground ());
+
+			await Task.Run (() => {
+				Assert.IsFalse (obj.IsForeground ());
+			});
+
+			int x = 0;
+			await obj.InvokeBelowInputPriority (() => {
+				Assert.IsTrue (obj.IsForeground ());
+				x++;
+			});
+
+			Assert.AreEqual (1, x);
+
+			await Task.Run (() => obj.InvokeBelowInputPriority (() => {
+				Assert.IsTrue (obj.IsForeground ());
+				x++;
+			}));
+
+			Assert.AreEqual (2, x);
 		}
 	}
 }

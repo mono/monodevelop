@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Editing;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -53,9 +54,16 @@ namespace MonoDevelop.Refactoring
 			CheckBox placeSystemNamespaceFirst;
 			CheckBox separateImportDirectiveGroups;
 
+			ConfigurationProperty<bool> placeSystemNamespaceFirstProp;
+			ConfigurationProperty<bool> separateImportDirectiveGroupsProp;
+
 			public CodeGenerationPanelWidget (string languageName)
 			{
 				this.languageName = languageName;
+
+				placeSystemNamespaceFirstProp = Ide.IdeApp.Preferences.Roslyn.For (languageName).PlaceSystemNamespaceFirst;
+				separateImportDirectiveGroupsProp = Ide.IdeApp.Preferences.Roslyn.For (languageName).PlaceSystemNamespaceFirst;
+
 				var hBox = new HBox ();
 				hBox.PackStart (new Label { Markup = GettextCatalog.GetString ("Organize Usings") });
 				hBox.PackStart (new HSeparator (), true, true);
@@ -63,14 +71,14 @@ namespace MonoDevelop.Refactoring
 				this.PackStart (hBox);
 				this.PackStart (placeSystemNamespaceFirst = new CheckBox (GettextCatalog.GetString ("Place 'System' directives first when sorting usings")));
 				this.PackStart (separateImportDirectiveGroups = new CheckBox (GettextCatalog.GetString ("Separate using groups when sorting")));
-				placeSystemNamespaceFirst.Active = PropertyService.Get (languageName + ".PlaceSystemNamespaceFirst", true);
-				separateImportDirectiveGroups.Active = PropertyService.Get (languageName + ".SeparateImportDirectiveGroups", false);
+				placeSystemNamespaceFirst.Active = placeSystemNamespaceFirstProp.Value;
+				separateImportDirectiveGroups.Active = separateImportDirectiveGroupsProp.Value;
 			}
 
 			public void ApplyChanges ()
 			{
-				PropertyService.Set (languageName + ".PlaceSystemNamespaceFirst", placeSystemNamespaceFirst.Active);
-				PropertyService.Set (languageName + ".SeparateImportDirectiveGroups", separateImportDirectiveGroups.Active);
+				placeSystemNamespaceFirstProp.Value = placeSystemNamespaceFirst.Active;
+				separateImportDirectiveGroupsProp.Value = separateImportDirectiveGroups.Active;
 			}
 		}
 	}

@@ -1,10 +1,10 @@
 ﻿//
-// IdeTestBase.cs
+// OptionsExtensions.cs
 //
 // Author:
-//       Lluis Sanchez <llsan@microsoft.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2017 Microsoft
+// Copyright (c) 2018 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using UnitTests;
+using System.Linq;
+using Microsoft.CodeAnalysis.Options;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.Policies;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.Ide.RoslynServices.Options
 {
-	public class IdeTestBase: RoslynTestBase
+	static class OptionsExtensions
 	{
-		protected override void InternalSetup(string rootDir)
+		public static string GetPropertyName (this OptionKey optionKey)
 		{
-			base.InternalSetup(rootDir);
+			foreach (var storageLocation in optionKey.Option.StorageLocations) {
+				if (storageLocation is RoamingProfileStorageLocation roamingLocation)
+					return roamingLocation.GetKeyNameForLanguage (optionKey.Language);
+				if (storageLocation is LocalUserProfileStorageLocation userLocation)
+					return userLocation.KeyName;
+			}
+			return null;
+		}
 
-			Xwt.Application.Initialize(Xwt.ToolkitType.Gtk);
-			Gtk.Application.Init();
-			DesktopService.Initialize();
+		public static TextStylePolicy GetTextStylePolicy (this OptionKey optionKey)
+		{
+			var mimeChain = DesktopService.GetMimeTypeInheritanceChainForRoslynLanguage (optionKey.Language);
+			if (mimeChain == null) {
+				throw new Exception ($"Unknown Roslyn language {optionKey.Language}");
+			}
+			return PolicyService.GetDefaultPolicy<TextStylePolicy> (mimeChain);
 		}
 	}
 }
