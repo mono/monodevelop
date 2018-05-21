@@ -306,6 +306,8 @@ namespace MonoDevelop.Ide
 			startupTimer.Stop ();
 			Counters.Startup.Inc (GetStartupMetadata (startupInfo));
 
+			IdeApp.OnStartupCompleted ();
+
 			GLib.Idle.Add (OnIdle);
 			IdeApp.Run ();
 
@@ -684,6 +686,9 @@ namespace MonoDevelop.Ide
 
 			metadata ["AssetTypeId"] = assetType.Id.ToString ();
 			metadata ["AssetTypeName"] = assetType.Name;
+
+			var platform = DesktopService.PlatformTelemetry ();
+			metadata ["TimeSinceMachineStart"] = platform.TimeSinceMachineStart.Milliseconds.ToString ();
 
 			return metadata;
 		}

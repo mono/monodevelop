@@ -584,6 +584,11 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			return null;
 		}
+
+		internal virtual IPlatformTelemetryDetails PlatformTelemetryDetails ()
+		{
+			return null;
+		}
 	}
 
 }

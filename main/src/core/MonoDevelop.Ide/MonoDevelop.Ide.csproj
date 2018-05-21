@@ -9647,6 +9647,7 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\RoslynPreferences.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\OptionsExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\RoslynPreferences.Properties.cs" />
+    <Compile Include="MonoDevelop.Ide.Desktop\IPlatformTelemetryDetails.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
