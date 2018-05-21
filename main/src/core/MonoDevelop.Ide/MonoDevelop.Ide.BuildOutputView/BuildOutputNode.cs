@@ -365,19 +365,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var duration = node.EndTime.Subtract (node.StartTime);
 			if (includeDiagnostics) {
 				if (duration.TotalHours >= 1) {
-					return String.Format ("{0,12}", duration.ToString (@"hh\:mm\:ss\.fff"));
-				} else {
-					return String.Format ("{0,12}", duration.ToString (@"mm\:ss\.fff"));
-				}
-			} else {
-				if (duration.TotalHours >= 1) {
-					return String.Format ("{0,7}", GettextCatalog.GetString ("{0}h {1}m", duration.Hours.ToString(), duration.Minutes.ToString()));
-				} else if (duration.TotalMinutes >= 1) {
-					return String.Format ("{0,7}", GettextCatalog.GetString ("{0}m {1}s", duration.Minutes.ToString(), duration.Seconds.ToString()));
-				} else {
-					return String.Format ("{0,7}", GettextCatalog.GetString ("{0}s", duration.Seconds.ToString()));
-				}
-			}
+					return string.Format ("{0,12}", duration.ToString (@"hh\:mm\:ss\.fff"));
+				} 
+				return string.Format ("{0,12}", duration.ToString (@"mm\:ss\.fff"));
+			} 
+
+			if (duration.TotalHours >= 1) {
+				return string.Format ("{0,7}", GettextCatalog.GetString ("{0}h {1}m", duration.Hours.ToString(), duration.Minutes.ToString ("00")));
+			} 
+
+			if (duration.TotalMinutes >= 1) {
+				return string.Format ("{0,7}", GettextCatalog.GetString ("{0}m {1}s", duration.Minutes.ToString(), duration.Seconds.ToString ("00")));
+			} 
+			return string.Format ("{0,7}", GettextCatalog.GetString ("{0}s", duration.Seconds.ToString ()));
 		}
 
 		static void ToString (this BuildOutputNode node, bool includeChildren, StringBuilder result, string margin)
