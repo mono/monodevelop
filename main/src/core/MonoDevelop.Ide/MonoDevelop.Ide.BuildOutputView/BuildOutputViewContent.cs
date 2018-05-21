@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public BuildOutputViewContent (BuildOutput buildOutput)
 		{
 			this.buildOutput = buildOutput;
-			this.ContentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("hh:mm:ss")}.binlog";
+			ContentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog";
 		}
 
 		void FileNameChanged (object sender, FilePath file)
