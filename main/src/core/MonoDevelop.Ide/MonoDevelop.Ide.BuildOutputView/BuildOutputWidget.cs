@@ -339,7 +339,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			if (e.IsContextMenuTrigger) {
+			if (e.Button == PointerButton.Right && e.IsContextMenuTrigger) {
 				CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/BuildOutput/ContextMenu");
 				IdeApp.CommandService.ShowContextMenu (treeView, (int)e.X, (int)e.Y, cset, this);
 			}
