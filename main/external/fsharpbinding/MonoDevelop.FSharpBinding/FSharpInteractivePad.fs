@@ -139,6 +139,35 @@ type FsiPrompt(icon: Xwt.Drawing.Image) =
         let deltaY = size / 2.0 - icon.Height / 2.0 + 0.5
         cairoContext.DrawImage (editor, icon, Math.Round (x + deltaX), Math.Round (y + deltaY));
 
+type ShellHistory() =
+    let history = ResizeArray<string>()
+    let mutable nextUp = 0
+    let mutable nextDown = 0
+
+    member x.Push command =
+        history.Add command
+        nextUp <- history.Count - 1
+        nextDown <- history.Count - 1
+
+    member x.Up() =
+        match nextUp with
+        | -1 -> None
+        | index ->
+            nextDown <- nextUp
+            nextUp <- nextUp - 1
+            Some history.[index]
+
+    member x.Down() =
+        if nextDown = history.Count then
+            None
+        else
+            nextUp <- nextDown
+            nextDown <- nextDown + 1
+            if nextDown = history.Count then
+                None
+            else
+                Some history.[nextDown]
+
 type FSharpInteractivePad(editor:TextEditor) as this =
     inherit MonoDevelop.Ide.Gui.PadContent()
    
@@ -158,8 +187,6 @@ type FSharpInteractivePad(editor:TextEditor) as this =
     let mutable promptReceived = false
     let mutable activeDoc : IDisposable option = None
     let mutable lastLineOutput = None
-    let commandHistoryPast = new Stack<string> ()
-    let commandHistoryFuture = new Stack<string> ()
 
     let promptIcon = ImageService.GetIcon("md-breadcrumb-next")
     let newLineIcon = ImageService.GetIcon("md-template")
@@ -253,6 +280,7 @@ type FSharpInteractivePad(editor:TextEditor) as this =
             session |> Option.iter (fun (ses: InteractiveSession) -> ses.Kill())
             if intent = Restart then session <- setupSession()
 
+    let history = ShellHistory()
     new() =
         let ctx = FsiDocumentContext()
         let doc = TextEditorFactory.CreateNewDocument()
@@ -290,9 +318,9 @@ type FSharpInteractivePad(editor:TextEditor) as this =
     member x.SendCommandAndStore command =
         let fileName = getActiveDocumentFileName()
         input.Add command
-        session 
+        session
         |> Option.iter(fun ses ->
-            commandHistoryPast.Push command
+            history.Push command
             ses.SendInput (command + "\n") fileName)
 
     member x.SendCommand command =
@@ -318,21 +346,12 @@ type FSharpInteractivePad(editor:TextEditor) as this =
             ses.SendParameterHintRequest lineStr (column + 1))
 
     member x.ProcessCommandHistoryUp () =
-        if commandHistoryPast.Count > 0 then
-            if commandHistoryFuture.Count = 0 then
-                commandHistoryFuture.Push (getCaretLine())
-            else
-                if commandHistoryPast.Count = 0 then ()
-                else commandHistoryFuture.Push (commandHistoryPast.Pop ())
-            setCaretLine (commandHistoryPast.Peek ())
+        history.Up()
+        |> Option.iter setCaretLine
 
     member x.ProcessCommandHistoryDown () =
-        if commandHistoryFuture.Count > 0 then
-            if commandHistoryFuture.Count = 0 then
-                setCaretLine (commandHistoryFuture.Pop ())
-            else
-                commandHistoryPast.Push (commandHistoryFuture.Pop ())
-                setCaretLine (commandHistoryPast.Peek ())
+        history.Down()
+        |> function Some c -> setCaretLine c | None -> setCaretLine ""
 
     override x.Dispose() =
         LoggingService.LogDebug ("Interactive: disposing pad...")
