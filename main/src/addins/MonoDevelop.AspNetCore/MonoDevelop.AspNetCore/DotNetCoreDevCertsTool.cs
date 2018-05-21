@@ -113,10 +113,11 @@ namespace MonoDevelop.AspNetCore
 
 					var monoRuntime = Runtime.SystemAssemblyService.DefaultRuntime as MonoTargetRuntime;
 					string monoPath = monoRuntime.GetMonoExecutableForAssembly (installerPath);
+					string message = GettextCatalog.GetString ("dotnet-dev-certs wants to make changes.");
 
 					var process = Runtime.ProcessService.StartConsoleProcess (
 						monoPath,
-						$"\"{installerPath}\" \"{DotNetCoreRuntime.FileName}\" \"{monoPath}\"",
+						$"\"{installerPath}\" \"{DotNetCoreRuntime.FileName}\" \"{monoPath}\" \"{message}\"",
 						null,
 						progressMonitor.Console
 					);
