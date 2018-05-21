@@ -1,10 +1,10 @@
 ﻿//
-// IdeTestBase.cs
+// RoslynPreferencesTests.cs
 //
 // Author:
-//       Lluis Sanchez <llsan@microsoft.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2017 Microsoft
+// Copyright (c) 2018 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using UnitTests;
+using NUnit.Framework;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.Ide.RoslynServices.Options
 {
-	public class IdeTestBase: RoslynTestBase
+	[TestFixture]
+	public class RoslynPreferencesTests : OptionsTestBase
 	{
-		protected override void InternalSetup(string rootDir)
+		[Test]
+		public void TestRoslynPropertyMigration ()
 		{
-			base.InternalSetup(rootDir);
+			var preferences = new RoslynPreferences ();
 
-			Xwt.Application.Initialize(Xwt.ToolkitType.Gtk);
-			Gtk.Application.Init();
-			DesktopService.Initialize();
+			const string mdKey = "TEST_ROSLYN_MIGRATION_KEY";
+
+			foreach (var option in GetOptionKeys<bool> ()) {
+				PropertyService.Set (mdKey, true);
+				var prop = preferences.Wrap (option, default(bool), mdKey);
+
+				Assert.AreEqual (true, PropertyService.Get<bool> (option.GetPropertyName ()));
+				Assert.AreEqual (true, prop.Value);
+
+				Assert.AreEqual (false, PropertyService.HasValue (mdKey));
+
+				prop.Value = false;
+				Assert.AreEqual (false, PropertyService.Get<bool> (option.GetPropertyName ()));
+				Assert.AreEqual (false, prop.Value);
+			}
 		}
 	}
 }

@@ -49,6 +49,8 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Templates;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.RoslynServices.Options;
+using MonoDevelop.Ide.RoslynServices;
 
 namespace MonoDevelop.Ide
 {
@@ -61,7 +63,7 @@ namespace MonoDevelop.Ide
 		static CommandManager commandService;
 		static IdeServices ideServices;
 		static RootWorkspace workspace;
-		static IdePreferences preferences;
+		readonly static IdePreferences preferences;
 
 		public const int CurrentRevision = 5;
 
@@ -142,9 +144,7 @@ namespace MonoDevelop.Ide
 			get { return ideServices; }
 		}
 
-		public static IdePreferences Preferences {
-			get { return preferences; }
-		}
+		public static IdePreferences Preferences => preferences;
 
 		public static bool IsInitialized {
 			get {
@@ -631,5 +631,7 @@ namespace MonoDevelop.Ide
 		public TemplatingService TemplatingService {
 			get { return templatingService.Value; }
 		}
+
+		internal RoslynService RoslynService { get; } = new RoslynService ();
 	}
 }

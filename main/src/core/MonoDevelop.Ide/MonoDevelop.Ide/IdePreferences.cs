@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Linq;
+using MonoDevelop.Ide.RoslynServices.Options;
 
 namespace MonoDevelop.Ide
 {
@@ -66,8 +67,10 @@ namespace MonoDevelop.Ide
 	
 	public class IdePreferences
 	{
+		internal RoslynPreferences Roslyn { get; }
 		internal IdePreferences ()
 		{
+			Roslyn = new RoslynPreferences ();
 		}
 
 		public readonly ConfigurationProperty<bool> EnableInstrumentation = Runtime.Preferences.EnableInstrumentation;
