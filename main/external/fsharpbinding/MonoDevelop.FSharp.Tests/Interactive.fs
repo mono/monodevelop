@@ -188,3 +188,68 @@ module Interactive =
             session.KillNow()
             output |> should equal "/SomeFolder\n"
         } |> toTask
+
+module ``Shell history`` =
+    [<Test>]
+    let ``Can go back``() =
+        let hist = ShellHistory()
+        hist.Push "1"
+        hist.Up() |> should equal (Some "1")
+
+    [<Test>]
+    let ``Can go back twice``() =
+        let hist = ShellHistory()
+        hist.Push "1"
+        hist.Push "2"
+        hist.Up() |> should equal (Some "2")
+        hist.Up() |> should equal (Some "1")
+            
+    [<Test>]
+    let ``Can't go back three times``() =
+        let hist = ShellHistory()
+        hist.Push "1"
+        hist.Push "2"
+        hist.Up() |> should equal (Some "2")
+        hist.Up() |> should equal (Some "1")
+        hist.Up() |> should equal None
+
+    [<Test>]
+    let ``Down on empty list returns none``() =
+        let hist = ShellHistory()
+        hist.Down() |> should equal None
+
+    [<Test>]
+    let ``Up then down returns empty``() =
+        let hist = ShellHistory()
+        hist.Push "1"
+        hist.Push "2"
+        hist.Up() |> should equal (Some "2")
+        hist.Down() |> should equal None
+
+    [<Test>]
+    let ``Up up down returns 2``() =
+        let hist = ShellHistory()
+        hist.Push "1"
+        hist.Push "2"
+        hist.Up() |> should equal (Some "2")
+        hist.Up() |> should equal (Some "1")
+        hist.Down() |> should equal (Some "2")
+        hist.Down() |> should equal None
+
+    [<Test>]
+    let ``Up down up``() =
+        let hist = ShellHistory()
+        hist.Push "1"
+        hist.Up() |> should equal (Some "1")
+        hist.Down() |> should equal None
+        hist.Up() |> should equal (Some "1")
+      
+    [<Test>]
+    let ``Up down down down up``() =
+        let hist = ShellHistory()
+        hist.Push "1"
+        hist.Up() |> should equal (Some "1")
+        hist.Down() |> should equal None
+        hist.Down() |> should equal None
+        hist.Down() |> should equal None
+        hist.Up() |> should equal (Some "1")
