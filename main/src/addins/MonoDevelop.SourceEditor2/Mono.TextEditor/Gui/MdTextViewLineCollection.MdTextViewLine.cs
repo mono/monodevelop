@@ -155,10 +155,15 @@ namespace Mono.TextEditor
 
 			public SnapshotPoint? GetBufferPositionFromXCoordinate(double xCoordinate, bool textOnly)
 			{
+				var snapshot = Snapshot;
 				var y = textEditor.LocationToPoint(textEditor.OffsetToLocation(lineSpan.Start)).Y;
 				var loc = textEditor.PointToLocation(xCoordinate, y);
-				var pos = textEditor.LocationToOffset(loc);
-				return new SnapshotPoint(Snapshot, pos);
+
+				var snapshotLine = snapshot.GetLineFromLineNumber (loc.Line);
+				if (snapshotLine == null)
+					return null;
+				var pos = snapshotLine.Start.Position + Math.Min (snapshotLine.Length, loc.Column - 1);
+				return new SnapshotPoint(snapshot, pos);
 			}
 
 			public SnapshotPoint? GetBufferPositionFromXCoordinate(double xCoordinate)
