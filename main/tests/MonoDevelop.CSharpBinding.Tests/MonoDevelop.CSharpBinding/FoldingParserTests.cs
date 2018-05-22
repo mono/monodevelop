@@ -378,6 +378,31 @@ namespace Foo
 	}
 }
 		 ");
+		}
+
+		[Test]
+		public void TestIssue4868 ()
+		{
+			Test (@"
+[/* fold1
+ fold1 */]
+
+namespace Foo
+{
+	[/* fold2
+	 fold2 */]
+
+	class Test
+	{
+		public static void Main ()
+		{
+			/* nofold
+			   nofold
+			   nofold */
+		}
+	}
+}
+		 ");
 
 		}
 	}
