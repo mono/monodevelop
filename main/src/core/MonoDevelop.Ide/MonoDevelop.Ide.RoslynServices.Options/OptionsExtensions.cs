@@ -35,6 +35,10 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 	{
 		public static string GetPropertyName (this OptionKey optionKey)
 		{
+			// Prevent NRE being thrown on iteration.
+			if (optionKey.Option.StorageLocations.IsDefaultOrEmpty)
+				return null;
+
 			foreach (var storageLocation in optionKey.Option.StorageLocations) {
 				if (storageLocation is RoamingProfileStorageLocation roamingLocation)
 					return roamingLocation.GetKeyNameForLanguage (optionKey.Language);
