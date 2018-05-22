@@ -118,6 +118,7 @@
     <Compile Include="MonoDevelop.Ide\MonoDocDocumentationProviderTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditorConfigTests.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\PclToProjectJsonConversionTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\CodeSnippetTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
