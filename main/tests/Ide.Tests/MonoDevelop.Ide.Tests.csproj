@@ -139,6 +139,7 @@
     <Compile Include="TextEditorExtensionTestBase.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopProjectCacheHostServiceTests.cs" />
     <Compile Include="MonoDevelop.Ide\RoslynSearchCategoryTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\CodeSnippetTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
