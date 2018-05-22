@@ -347,6 +347,12 @@ namespace MonoDevelop.AnalysisCore.Gui
 					if (!enumerator.MoveNext ()) {
 						ext.tasks [id] = builder.ToImmutable ();
 						ext.OnTasksUpdated (EventArgs.Empty);
+						// remove remaining old markers
+						while (oldMarkers > 0) {
+							editor.RemoveMarker (ext.markers [id].Dequeue ());
+							oldMarkers--;
+						}
+
 						return false;
 					}
 					if (cancellationToken.IsCancellationRequested)
