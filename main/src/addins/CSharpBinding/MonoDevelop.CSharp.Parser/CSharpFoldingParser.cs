@@ -184,13 +184,15 @@ namespace MonoDevelop.CSharp.Parser
 								ptr += 2;
 								column += 2;
 								inMultiLineComment = false;
-								result.Add (new MonoDevelop.Ide.TypeSystem.Comment () {
-									Region = new DocumentRegion (startLoc, new DocumentLocation (line, column)),
-									OpenTag = "/*",
-									CommentType = MonoDevelop.Ide.TypeSystem.CommentType.Block,
-									Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
-									CommentStartsLine = hasStartedAtLine
-								});
+								if (bracketDepth <= 1) {
+									result.Add (new MonoDevelop.Ide.TypeSystem.Comment () {
+										Region = new DocumentRegion (startLoc, new DocumentLocation (line, column)),
+										OpenTag = "/*",
+										CommentType = MonoDevelop.Ide.TypeSystem.CommentType.Block,
+										Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
+										CommentStartsLine = hasStartedAtLine
+									});
+								}
 								continue;
 							}
 						}
@@ -389,4 +391,3 @@ namespace MonoDevelop.CSharp.Parser
 		}
 	}
 }
-
