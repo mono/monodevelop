@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Microsoft.VisualStudio.Language.Intellisense.Implementation;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Implementation;
@@ -157,15 +158,9 @@ namespace Mono.TextEditor
 
 			public SnapshotPoint? GetBufferPositionFromXCoordinate(double xCoordinate, bool textOnly)
 			{
-				var snapshot = Snapshot;
 				var y = textEditor.LocationToPoint(textEditor.OffsetToLocation(lineSpan.Start)).Y;
 				var loc = textEditor.PointToLocation(xCoordinate, y);
-
-				var snapshotLine = snapshot.GetLineFromLineNumber (loc.Line);
-				if (snapshotLine == null)
-					return null;
-				var pos = snapshotLine.Start.Position + Math.Min (snapshotLine.Length, loc.Column - 1);
-				return new SnapshotPoint(snapshot, pos);
+				return Snapshot.GetSnapshotPoint (loc.Line, loc.Column);
 			}
 
 			public SnapshotPoint? GetBufferPositionFromXCoordinate(double xCoordinate)
