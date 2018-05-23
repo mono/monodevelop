@@ -457,55 +457,9 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Runs the generator target and sends file change notifications if any files were modified, returns the build result
 		/// </summary>
-		public async Task<TargetEvaluationResult> PerformGeneratorAsync (ProgressMonitor monitor, ConfigurationSelector configuration, string generatorTarget)
+		public Task<TargetEvaluationResult> PerformGeneratorAsync (ProgressMonitor monitor, ConfigurationSelector configuration, string generatorTarget)
 		{
-			var fileInfo = await GetProjectFileTimestamps (monitor, configuration);
-			var evalResult = await this.RunTarget (monitor, generatorTarget, configuration);
-			SendFileChangeNotifications (monitor, configuration, fileInfo);
-
-			return evalResult;
-		}
-
-		/// <summary>
-		/// Returns a list containing FileInfo for all the source files in the project
-		/// </summary>
-		async Task<List<FileInfo>> GetProjectFileTimestamps (ProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			var infoList = new List<FileInfo> ();
-			var projectFiles = await this.GetSourceFilesAsync (monitor, configuration);
-
-			foreach (var projectFile in projectFiles) {
-				var info = new FileInfo (projectFile.FilePath);
-				infoList.Add (info);
-				info.Refresh ();
-			}
-
-			return infoList;
-		}
-
-		/// <summary>
-		/// Sends a file change notification via FileService for any file that has changed since the timestamps in beforeFileInfo
-		/// </summary>
-		void SendFileChangeNotifications (ProgressMonitor monitor, ConfigurationSelector configuration, List<FileInfo> beforeFileInfo)
-		{
-			var changedFiles = new List<FileInfo> ();
-
-			foreach (var file in beforeFileInfo) {
-				var info = new FileInfo (file.FullName);
-
-				if (file.Exists && info.Exists) {
-					if (file.LastWriteTime != info.LastWriteTime) {
-						changedFiles.Add (info);
-					}
-				} else if (info.Exists) {
-					changedFiles.Add (info);
-				} else if (file.Exists) {
-					// not sure if this should or could happen, it doesn't really make much sense
-					FileService.NotifyFileRemoved (file.FullName);
-				}
-			}
-
-			FileService.NotifyFilesChanged (changedFiles.Select (cf => new FilePath (cf.FullName)));
+			return this.RunTarget (monitor, generatorTarget, configuration);
 		}
 
 		/// <summary>
