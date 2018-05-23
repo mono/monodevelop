@@ -44,7 +44,11 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			// Check for roaming/profile properties
 			propertyKey = key.GetPropertyName ();
 			if (propertyKey != null) {
-				value = PropertyService.Get (propertyKey, key.Option.DefaultValue);
+				var defaultValue = key.Option.DefaultValue;
+				if (TryGetSerializationMethods<object> (key, out var serializer, out var deserializer))
+					defaultValue = serializer (defaultValue);
+
+				value = PropertyService.Get (propertyKey, defaultValue);
 				return true;
 			}
 
@@ -54,9 +58,9 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 
 		internal bool TryGetUpdater (OptionKey key, out string propertyKey, out Action<object> updater) {
 			propertyKey = key.GetPropertyName ();
-			if (propertyKey != null) {
+			if (propertyKey != null)
 				return wrapMap.TryGetValue (propertyKey, out updater);
-			}
+
 			updater = null;
 			return false;
 		}
@@ -90,21 +94,8 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			ConfigurationProperty<T> result;
 
 			// It is unfortunate, but roslyn has a special serialization mechanism, so use that.
-			if (IsOfGenericType (optionKey.Option.Type, typeof (CodeStyleOption<>))) {
-				var fromXElement = optionKey.Option.Type.GetMethod ("FromXElement", BindingFlags.Public | BindingFlags.Static);
-				var defaultValueGetter = optionKey.Option.Type.GetProperty ("Default", BindingFlags.Public | BindingFlags.Static);
-
-				Func<T, string> serializer = value => ((ICodeStyleOption)value).ToXElement ().ToString ();
-				Func<string, T> deserializer = serializedValue => (T)fromXElement.Invoke (null, new object [] { XElement.Parse (serializedValue) });
-
-				var prop = new WrappedConfigurationProperty<T> (name, monodevelopPropertyName, (T)defaultValueGetter.GetValue (null), serializer, deserializer);
-				wrapMap.Add (name, value => prop.SetSerializedValue ((string)value));
-				result = prop;
-			} else if (typeof (NamingStylePreferences) == optionKey.Option.Type) {
-				Func<T, string> serializer = value => ((NamingStylePreferences)(object)value).CreateXElement ().ToString ();
-				Func<string, T> deserializer = serializedValue => (T)(object)NamingStylePreferences.FromXElement (XElement.Parse (serializedValue));
-
-				var prop = new WrappedConfigurationProperty<T> (name, monodevelopPropertyName, (T)(object)NamingStylePreferences.Default, serializer, deserializer);
+			if (TryGetSerializationMethods<T> (optionKey, out var serializer, out var deserializer)) {
+				var prop = new WrappedConfigurationProperty<T> (name, monodevelopPropertyName, defaultValue, serializer, deserializer);
 				wrapMap.Add (name, value => prop.SetSerializedValue ((string)value));
 				result = prop;
 			} else {
@@ -113,6 +104,28 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			}
 
 			return result;
+		}
+
+		static bool TryGetSerializationMethods<T> (OptionKey optionKey, out Func<T, string> serializer, out Func<string, T> deserializer)
+		{
+			// It is unfortunate, but roslyn has a special serialization mechanism, so use that.
+			if (IsOfGenericType (optionKey.Option.Type, typeof (CodeStyleOption<>))) {
+				var fromXElement = optionKey.Option.Type.GetMethod ("FromXElement", BindingFlags.Public | BindingFlags.Static);
+
+				serializer = value => ((ICodeStyleOption)value)?.ToXElement ().ToString ();
+				deserializer = serializedValue => serializedValue != null ? (T)fromXElement.Invoke (null, new object [] { XElement.Parse (serializedValue) }) : default(T);
+				return true;
+			}
+
+			if (typeof (NamingStylePreferences) == optionKey.Option.Type) {
+				serializer = value => ((NamingStylePreferences)(object)value)?.CreateXElement ().ToString ();
+				deserializer = serializedValue => serializedValue != null ? (T)(object)NamingStylePreferences.FromXElement (XElement.Parse (serializedValue)) : default(T);
+				return true;
+			}
+
+			serializer = null;
+			deserializer = null;
+			return false;
 		}
 
 		static bool IsOfGenericType (Type type, Type genericType)

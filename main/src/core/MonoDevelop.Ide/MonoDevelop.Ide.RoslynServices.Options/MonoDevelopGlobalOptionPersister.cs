@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 	/// Handles options persisting and bridging between roslyn and MonoDevelop.
 	/// </summary>
 	[Export (typeof (IOptionPersister))]
-	sealed class MonoDevelopGlobalOptionPersister : IOptionPersister
+	sealed class MonoDevelopGlobalOptionPersister : IOptionPersister, IDisposable
 	{
 		readonly IGlobalOptionService globalOptionService;
 		readonly RoslynPreferences preferences;
@@ -74,9 +74,17 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 
 			this.preferences = preferences ?? IdeApp.Preferences.Roslyn;
 
-			PropertyService.PropertyChanged += (o, args) => {
-				Refresh (args.Key, args.NewValue);
-			};
+			PropertyService.PropertyChanged += OnPropertyChanged;
+		}
+
+		void OnPropertyChanged (object sender, Core.PropertyChangedEventArgs args)
+		{
+			Refresh (args.Key, args.NewValue);
+		}
+
+		void IDisposable.Dispose ()
+		{
+			PropertyService.PropertyChanged -= OnPropertyChanged;
 		}
 
 		public bool TryFetch (OptionKey optionKey, out object value)
