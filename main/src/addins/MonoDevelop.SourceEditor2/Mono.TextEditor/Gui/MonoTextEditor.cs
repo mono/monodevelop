@@ -82,6 +82,7 @@ namespace Mono.TextEditor
 
 		internal MonoTextEditor (TextDocument doc, ITextEditorOptions options, EditMode initialMode) 
 		{
+			this.Direction = TextDirection.Ltr;
 			uiThread = Thread.CurrentThread;
 			GtkWorkarounds.FixContainerLeak (this);
 			WidgetFlags |= WidgetFlags.NoWindow;
