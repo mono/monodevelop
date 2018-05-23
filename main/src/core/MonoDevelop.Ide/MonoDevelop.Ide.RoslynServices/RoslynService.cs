@@ -29,6 +29,7 @@ using System.Diagnostics.Contracts;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
+using Microsoft.CodeAnalysis.Internal.Log;
 using Microsoft.CodeAnalysis.Utilities;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.RoslynServices.Options;
@@ -60,6 +61,11 @@ namespace MonoDevelop.Ide.RoslynServices
 				Runtime.MainTaskScheduler,
 				ForegroundThreadDataInfo.CreateDefault (ForegroundThreadDataKind.ForcedByPackageInitialize)
 			);
+
+			Logger.SetLogger (AggregateLogger.Create (
+				new RoslynLogger (),
+				Logger.GetLogger ()
+			));
 		}
 	}
 }
