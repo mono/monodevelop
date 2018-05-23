@@ -26,6 +26,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
+[assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.RoslynTestBase))]
 [assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.IdeTestBase))]
 [assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.TextEditorExtensionTestBase))]
 [assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.TypeSystemServiceTestExtensions))]

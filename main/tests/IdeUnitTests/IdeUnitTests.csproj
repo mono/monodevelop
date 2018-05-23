@@ -41,6 +41,7 @@
     <Compile Include="TestDocument.cs" />
     <Compile Include="TestViewContent.cs" />
     <Compile Include="TestWorkbenchWindow.cs" />
+    <Compile Include="RoslynTestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
