@@ -1,5 +1,5 @@
 //
-// DomFieldNodeBuilder.cs
+// DomEventNodeBuilder.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -32,84 +32,88 @@ using System.Text;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using ICSharpCode.Decompiler;
-using System.Text;
 using System.Threading;
 using System.Collections.Generic;
 using Mono.Cecil;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.Decompiler.TypeSystem;
 using MonoDevelop.Ide.Editor;
+using ICSharpCode.Decompiler.CSharp;
+using ICSharpCode.ILSpy;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class DomFieldNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
+	class EventDefinitionNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(IUnresolvedField); }
+			get { return typeof(EventDefinition); }
 		}
 		
-		public DomFieldNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
+		public EventDefinitionNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
 		{
-			
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var field = (IUnresolvedField)dataObject;
-			return field.Name;
+			var evt = (EventDefinition)dataObject;
+			return evt.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var field = (IUnresolvedField)dataObject;
-			try {
-				var resolved = Resolve (treeBuilder, field);
-				nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertSymbol (resolved));
-			} catch (Exception) {
-				nodeInfo.Label = field.Name;
-			}
+			var evt = (EventDefinition)dataObject;
+			nodeInfo.Label = evt.Name + " : " + CSharpLanguage.Instance.TypeToString (evt.EventType, false, evt);
+			var accessor = evt.AddMethod ?? evt.RemoveMethod;
 
-			if (field.IsPrivate || field.IsInternal)
-				nodeInfo.Label = DomMethodNodeBuilder.FormatPrivate (nodeInfo.Label);
-			nodeInfo.Icon = Context.GetIcon (field.GetStockIcon ());
+			if (((MethodAttributes.Private | MethodAttributes.Assembly) & accessor.Attributes) != 0)
+				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
+
+			nodeInfo.Icon = Context.GetIcon (GetStockIcon (evt));
+		}
+
+		public static IconId GetStockIcon (EventDefinition evt)
+		{
+			var accessor = evt.AddMethod ?? evt.RemoveMethod;
+			return MethodDefinitionNodeBuilder.GetStockIcon (accessor);
+		}
+
+		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
+		{
+			var evt = (EventDefinition)dataObject;
+			if (evt.AddMethod != null)
+				ctx.AddChild (evt.AddMethod);
+			if (evt.RemoveMethod != null)
+				ctx.AddChild (evt.RemoveMethod);
+			if (evt.InvokeMethod != null)
+				ctx.AddChild (evt.InvokeMethod);
+		}
+		
+		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
+		{
+			return false;
 		}
 		
 		#region IAssemblyBrowserNodeBuilder
-
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
-			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
+			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var field = GetCecilLoader (navigator).GetCecilObject <FieldDefinition>((IUnresolvedField)navigator.DataItem);
-			if (field == null)
-				return null;
-			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleField (field));
+			var evt = (EventDefinition)navigator.DataItem;
+			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.DisassembleEvent (evt));
 		}
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
-			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
+			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var field = GetCecilLoader (navigator).GetCecilObject <FieldDefinition>((IUnresolvedField)navigator.DataItem);
-			if (field == null)
+			var evt = navigator.DataItem as EventDefinition;
+			if (evt == null)
 				return null;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (field), flags: flags);
+			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (evt), flags: flags);
 		}
 
-		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
-		{
-			var field = (IUnresolvedField)navigator.DataItem;
-			var resolved = Resolve (navigator, field);
-			StringBuilder result = new StringBuilder ();
-			result.Append ("<big>");
-			result.Append (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertSymbol (resolved)));
-			result.Append ("</big>");
-			result.AppendLine ();
-
-			//result.Append (AmbienceService.GetDocumentationMarkup (resolved, AmbienceService.GetDocumentation (resolved), options));
-			
-			return result.ToString ();
-		}
 		#endregion
+		
 	}
 }

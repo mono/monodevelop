@@ -39,44 +39,79 @@ using Mono.Cecil;
 using ICSharpCode.Decompiler.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor;
+using ICSharpCode.ILSpy;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class DomPropertyNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
+	class PropertyDefinitionNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(IUnresolvedProperty); }
+			get { return typeof(PropertyDefinition); }
 		}
 		
-		public DomPropertyNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
+		public PropertyDefinitionNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
 		{
 			
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var property = (IUnresolvedProperty)dataObject;
+			var property = (PropertyDefinition)dataObject;
 			return property.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var property = (IUnresolvedProperty)dataObject;
-			try {
-				var resolved = Resolve (treeBuilder, property);
-				nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertSymbol (resolved));
-			} catch (Exception) {
-				nodeInfo.Label = property.Name;
-			}
-			if (property.IsPrivate || property.IsInternal)
-				nodeInfo.Label = DomMethodNodeBuilder.FormatPrivate (nodeInfo.Label);
-			nodeInfo.Icon = Context.GetIcon (property.GetStockIcon ());
+			var property = (PropertyDefinition)dataObject;
+			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (GetText (property, property.IsIndexer ()));
+
+			var accessor = property.GetMethod ?? property.SetMethod;
+
+			if (((MethodAttributes.Private | MethodAttributes.Assembly) & accessor.Attributes) != 0)
+				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
+
+			nodeInfo.Icon = Context.GetIcon (GetStockIcon (property));
 		}
+
+		public static IconId GetStockIcon (PropertyDefinition property)
+		{
+			var accessor = property.GetMethod ?? property.SetMethod;
+			return MethodDefinitionNodeBuilder.GetStockIcon (accessor);
+		}
+
+		static string GetText (PropertyDefinition property, bool? isIndexer = null)
+		{
+			string name = CSharpLanguage.Instance.FormatPropertyName (property, isIndexer);
+
+			var b = new System.Text.StringBuilder ();
+			if (property.HasParameters) {
+				b.Append ('(');
+				for (int i = 0; i < property.Parameters.Count; i++) {
+					if (i > 0)
+						b.Append (", ");
+					b.Append (CSharpLanguage.Instance.TypeToString (property.Parameters [i].ParameterType, false, property.Parameters [i]));
+				}
+				var method = property.GetMethod ?? property.SetMethod;
+				if (method.CallingConvention == MethodCallingConvention.VarArg) {
+					if (property.HasParameters)
+						b.Append (", ");
+					b.Append ("...");
+				}
+				b.Append (") : ");
+			} else {
+				b.Append (" : ");
+			}
+			b.Append (CSharpLanguage.Instance.TypeToString (property.PropertyType, false, property));
+
+			return name + b;
+		}
+
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 		}
-		
+
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			return false;
@@ -87,10 +122,10 @@ namespace MonoDevelop.AssemblyBrowser
 
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
-			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
+			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var property = GetCecilLoader (navigator).GetCecilObject<PropertyDefinition> ((IUnresolvedProperty)navigator.DataItem);
-			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleProperty (property));
+			var property = (PropertyDefinition)navigator.DataItem;
+			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.DisassembleProperty (property));
 		}
 		
 		static string GetBody (string text)
@@ -107,27 +142,12 @@ namespace MonoDevelop.AssemblyBrowser
 
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
-			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
+			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var property = GetCecilLoader (navigator).GetCecilObject<PropertyDefinition> ((IUnresolvedProperty)navigator.DataItem);
+			var property = navigator.DataItem as PropertyDefinition;
 			if (property == null)
 				return null;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (property), flags: flags);
-		}
-		
-		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
-		{
-			var property = (IUnresolvedProperty)navigator.DataItem;
-			var resolved = Resolve (navigator, property);
-			StringBuilder result = new StringBuilder ();
-			result.Append ("<big>");
-			result.Append (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertSymbol (resolved)));
-			result.Append ("</big>");
-			result.AppendLine ();
-
-			//result.Append (AmbienceService.GetDocumentationMarkup (resolved, AmbienceService.GetDocumentation (resolved), options));
-			
-			return result.ToString ();
+			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (property), flags: flags);
 		}
 		#endregion
 

@@ -60,8 +60,8 @@ namespace MonoDevelop.AssemblyBrowser
 			try {
 				if (thisNode == null || otherNode == null)
 					return -1;
-				var e1 = thisNode.DataItem as IUnresolvedEntity;
-				var e2 = otherNode.DataItem as IUnresolvedEntity;
+				var e1 = thisNode.DataItem as IMemberDefinition;
+				var e2 = otherNode.DataItem as IMemberDefinition;
 				
 				if (e1 == null && e2 == null)
 					return 0;
@@ -69,9 +69,6 @@ namespace MonoDevelop.AssemblyBrowser
 					return -1;
 				if (e2 == null)
 					return 1;
-				
-				if (e1.SymbolKind != e2.SymbolKind)
-					return e2.SymbolKind.CompareTo (e1.SymbolKind);
 				
 				return e1.Name.CompareTo (e2.Name);
 			} catch (Exception e) {
@@ -90,46 +87,5 @@ namespace MonoDevelop.AssemblyBrowser
 			return treeBuilder.GetParentDataItem (typeof(AssemblyLoader), true) != null;
 		}
 
-		protected IUnresolvedAssembly GetMainAssembly (ITreeNavigator treeBuilder)
-		{
-			var loader = (AssemblyLoader)treeBuilder.GetParentDataItem (typeof(AssemblyLoader), true);
-			if (loader != null)
-				return loader.UnresolvedAssembly;
-			return null;
-		}
-
-		protected ITypeResolveContext GetContext (ITreeNavigator treeBuilder)
-		{
-			var mainAssembly = GetMainAssembly (treeBuilder);
-			if (mainAssembly != null) {
-				var simpleCompilation = new SimpleCompilation (mainAssembly);
-				return new SimpleTypeResolveContext (simpleCompilation.MainAssembly);
-			}
-			// TODO: roslyn port ?
-			// var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
-			// var compilation = TypeSystemService.GetCompilation (project);
-			// return new SimpleTypeResolveContext (compilation.MainAssembly);
-			return null;
-		}
-		
-		protected IMember Resolve (ITreeNavigator treeBuilder, IUnresolvedMember member, ITypeDefinition currentType = null)
-		{
-			var ctx = GetContext (treeBuilder);
-			return member.CreateResolved (currentType != null ? ctx.WithCurrentTypeDefinition (currentType) : ctx);
-		}
-		
-		protected IType Resolve (ITreeNavigator treeBuilder, IUnresolvedTypeDefinition type)
-		{
-			var mainAssembly = GetMainAssembly (treeBuilder);
-			if (mainAssembly != null) {
-				var simpleCompilation = new SimpleCompilation (mainAssembly);
-				return type.Resolve (new SimpleTypeResolveContext (simpleCompilation.MainAssembly));
-			}
-			// TODO: roslyn port ?
-			// var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
-			// var ctx = TypeSystemService.GetCompilation (project);
-			// return ctx.MainAssembly.GetTypeDefinition (type.Namespace, type.Name, type.TypeParameters.Count);
-			return null;
-		}
 	}
 }
