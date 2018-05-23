@@ -75,11 +75,27 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			throw new NotImplementedException ();
 		}
 
-		protected Option<T> GetOption<T> (StorageLocationKind kind = StorageLocationKind.Roaming) =>
-			new Option<T> ("feature", "name", default (T), GetLocation (kind));
+		protected Option<T> GetOption<T> (StorageLocationKind kind = StorageLocationKind.Roaming, T defaultValue = default (T))
+		{
+			var option = new Option<T> ("feature option", "name", defaultValue, GetLocation (kind));
+			// We need a way to mock property service in tests
+			var propName = new OptionKey (option).GetPropertyName ();
+			if (propName != null)
+				PropertyService.Set (propName, null);
 
-		protected PerLanguageOption<T> GetPerLanguageOption<T> (StorageLocationKind kind = StorageLocationKind.Roaming) =>
-			new PerLanguageOption<T> ("feature", "name", default (T), GetLocation (kind, true));
+			return option;
+		}
+
+		protected PerLanguageOption<T> GetPerLanguageOption<T> (StorageLocationKind kind = StorageLocationKind.Roaming, T defaultValue = default (T), string language = null)
+		{
+			var option = new PerLanguageOption<T> ("feature language option", "name", defaultValue, GetLocation (kind, true));
+
+			var propName = new OptionKey (option, language).GetPropertyName ();
+			if (propName != null)
+				PropertyService.Set (propName, null);
+
+			return option;
+		}
 
 		protected string GetExpectedPropertyName (StorageLocationKind kind, string language = null)
 		{
@@ -102,23 +118,12 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			throw new NotImplementedException ();
 		}
 
-		protected IEnumerable<OptionKey> GetOptionKeys<T> (StorageLocationKind kind = StorageLocationKind.Roaming)
+		protected IEnumerable<OptionKey> GetOptionKeys<T> (StorageLocationKind kind = StorageLocationKind.Roaming, T defaultValue = default(T))
 		{
-			foreach (var option in GetOptionKeysInternal<T> (kind)) {
-				// We need a way to mock property service in tests
-				var propName = option.GetPropertyName ();
-				if (propName != null)
-					PropertyService.Set (option.GetPropertyName (), null);
-				yield return option;
-			}
-		}
-
-		IEnumerable<OptionKey> GetOptionKeysInternal<T> (StorageLocationKind kind)
-		{
-			yield return GetOption<T> (kind);
+			yield return GetOption (kind, defaultValue);
 
 			if (kind != StorageLocationKind.UserProfile)
-				yield return new OptionKey (GetPerLanguageOption<T> (kind), LanguageNames.CSharp);
+				yield return new OptionKey (GetPerLanguageOption (kind, defaultValue, LanguageNames.CSharp), LanguageNames.CSharp);
 		}
 
 		internal (RoslynPreferences, MonoDevelopGlobalOptionPersister) Setup ()

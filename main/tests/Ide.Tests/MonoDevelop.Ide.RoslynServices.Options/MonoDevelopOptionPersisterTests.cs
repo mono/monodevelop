@@ -34,6 +34,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeStyle;
 using Microsoft.CodeAnalysis.Diagnostics.Analyzers.NamingStyles;
 using System.Collections.Immutable;
+using System.Threading;
 
 namespace MonoDevelop.Ide.RoslynServices.Options
 {
@@ -108,21 +109,23 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 		{
 			var (preferences, persister) = Setup ();
 
-			var optionKey = testCase.Wrap (preferences);
-			
-			var property = optionKey.GetPropertyName ();
+			using (persister) {
+				var optionKey = testCase.Wrap (preferences);
 
-			// Try persisting it.
-			Assert.AreEqual (testCase.Success, persister.TryPersist (optionKey, testCase.Value));
-			if (!testCase.Success) {
-				Assert.IsFalse (PropertyService.HasValue (property));
-				return;
+				var property = optionKey.GetPropertyName ();
+
+				// Try persisting it.
+				Assert.AreEqual (testCase.Success, persister.TryPersist (optionKey, testCase.Value));
+				if (!testCase.Success) {
+					Assert.IsFalse (PropertyService.HasValue (property));
+					return;
+				}
+
+				// See if we can deserialize it back as-is
+				Assert.AreEqual (testCase.SerializedValue, PropertyService.Get<object> (property));
+				Assert.AreEqual (testCase.Success, persister.TryFetch (optionKey, out var deserializedValue));
+				Assert.AreEqual (testCase.Value, deserializedValue);
 			}
-
-			// See if we can deserialize it back as-is
-			Assert.AreEqual (testCase.SerializedValue, PropertyService.Get<object> (property));
-			Assert.AreEqual (testCase.Success, persister.TryFetch (optionKey, out var deserializedValue));
-			Assert.AreEqual (testCase.Value, deserializedValue);
 		}
 
 		SerializationTestCase [] DeserializationTestCases = {
@@ -145,50 +148,86 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 		{
 			var (preferences, persister) = Setup ();
 
-			var optionKey = testCase.Wrap (preferences);
-			var property = optionKey.GetPropertyName ();
+			using (persister) {
+				var optionKey = testCase.Wrap (preferences);
+				var property = optionKey.GetPropertyName ();
 
-			// Set the value and deserialize it
-			PropertyService.Set (property, testCase.SerializedValue);
-			Assert.AreEqual (testCase.Success, persister.TryFetch (optionKey, out var deserialized));
-			if (!testCase.Success) {
-				Assert.IsNull (deserialized);
-				return;
+				// Set the value and deserialize it
+				PropertyService.Set (property, testCase.SerializedValue);
+				Assert.AreEqual (testCase.Success, persister.TryFetch (optionKey, out var deserialized));
+				if (!testCase.Success) {
+					Assert.IsNull (deserialized);
+					return;
+				}
+
+				Assert.AreEqual (testCase.Value, deserialized);
 			}
+		}
 
-			Assert.AreEqual (testCase.Value, deserialized);
+		[TestCaseSource (nameof(allKinds))]
+		public void TestFetchPersistString (StorageLocationKind kind)
+		{
+			TestFetchPersist (kind, "a", "b");
 		}
 
 		[TestCaseSource (nameof (allKinds))]
-		public void TestFetchPersist (StorageLocationKind kind)
+		public void TestFetchPersistCodeOption (StorageLocationKind kind)
+		{
+			var value1 = new CodeStyleOption<bool> (true, NotificationOption.Suggestion);
+			var value2 = new CodeStyleOption<bool> (false, NotificationOption.Error);
+			TestFetchPersist (kind, value1, value2, CodeStyleOption<bool>.Default);
+		}
+
+		[TestCaseSource (nameof (allKinds))]
+		public void TestFetchPersistNamingStyle (StorageLocationKind kind)
+		{
+			var defaultValue = NamingStylePreferences.Default;
+			var value1 = new NamingStylePreferences (
+				defaultValue.SymbolSpecifications,
+				defaultValue.NamingStyles.WhereAsArray (x => x.Prefix == "I"),
+				defaultValue.NamingRules
+			);
+			var value2 = new NamingStylePreferences (
+				defaultValue.SymbolSpecifications,
+				defaultValue.NamingStyles.WhereAsArray (x => x.Prefix != "I"),
+				defaultValue.NamingRules
+			);
+
+			TestFetchPersist (kind, value1, value2, defaultValue);
+		}
+
+		void TestFetchPersist<T> (StorageLocationKind kind, T value1, T value2, T defaultValue = default(T))
 		{
 			var (preferences, persister) = Setup ();
 			bool shouldPersist = kind != StorageLocationKind.None;
 
-			foreach (var optionKey in GetOptionKeys<string> (kind)) {
-				string propertyName = optionKey.GetPropertyName ();
-				shouldPersist = propertyName != null;
-				if (propertyName != null)
-					preferences.Wrap<string> (optionKey);
+			using (persister) {
+				foreach (var optionKey in GetOptionKeys (kind, defaultValue)) {
+					string propertyName = optionKey.GetPropertyName ();
+					shouldPersist = propertyName != null;
+					ConfigurationProperty<T> wrap = null;
+					if (propertyName != null)
+						wrap = preferences.Wrap<T> (optionKey);
 
-				// Fetch, no items.
-				AssertFetch (optionKey, optionKey.Option.DefaultValue);
+					// Fetch, no items.
+					AssertFetch (optionKey, optionKey.Option.DefaultValue);
 
-				// Persist with no item set
-				AssertPersist (optionKey, "a");
-				if (!shouldPersist)
-					continue;
+					// Persist with no item set
+					AssertPersist (optionKey, value1, wrap);
+					if (!shouldPersist)
+						continue;
 
-				// Fetch after persist
-				AssertFetch (optionKey, "a");
+					// Fetch after persist
+					AssertFetch (optionKey, value1);
 
-				// Persist
-				PropertyService.Set (propertyName, "b");
-				AssertFetch (optionKey, "b");
+					// Check if setting config property persists.
+					wrap.Value = value2;
+					AssertFetch (optionKey, value2);
 
-				// Set null.
-				AssertPersist (optionKey, null);
-				AssertFetch (optionKey, null);
+					// Set null.
+					AssertPersist (optionKey, null, wrap);
+					AssertFetch (optionKey, defaultValue);
+				}
 			}
 
 			void AssertFetch (OptionKey optionKey, object expectedValue)
@@ -198,13 +237,13 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 				Assert.AreEqual (shouldPersist ? expectedValue : null, value);
 			}
 
-			void AssertPersist (OptionKey optionKey, object value)
+			void AssertPersist (OptionKey optionKey, object value, ConfigurationProperty<T> wrap)
 			{
 				// Check that it either got persisted, on an option with a roaming profile
 				// or that it got discarded
 				Assert.AreEqual (shouldPersist, persister.TryPersist (optionKey, value));
 				if (shouldPersist)
-					Assert.AreEqual (value, PropertyService.Get<object> (optionKey.GetPropertyName ()));
+					Assert.AreEqual (value, wrap.Value);
 			}
 		}
 
@@ -213,26 +252,28 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 		{
 			var (preferences, persister, optionService) = SetupOptions ();
 
-			int optionChangedCount = 0;
-			optionService.OptionChanged += (o, e) => optionChangedCount++;
+			using (persister) {
+				int optionChangedCount = 0;
+				optionService.OptionChanged += (o, e) => optionChangedCount++;
 
-			var option = GetOption<string> ();
-			PropertyService.Set (new OptionKey (option).GetPropertyName (), "a");
+				var option = GetOption (defaultValue: "c");
+				var propName = new OptionKey (option).GetPropertyName ();
+				PropertyService.Set (propName, "a");
 
-			Assert.AreEqual (0, optionChangedCount);
+				Assert.AreEqual (0, optionChangedCount);
 
-			// Notifications happen after the option is first queried.
-			Assert.AreEqual ("a", optionService.GetOption (option));
+				// Notifications happen after the option is first queried.
+				Assert.AreEqual ("a", optionService.GetOption (option));
+				bool changed = false;
+				optionService.OptionChanged += (o, e) => {
+					Assert.AreEqual ("b", e.Value);
+					Assert.AreEqual (option, e.Option);
+					changed = true;
+				};
 
-			bool bChanged = false;
-			optionService.OptionChanged += (o, e) => {
-				Assert.AreEqual ("b", e.Value);
-				Assert.AreEqual (option, e.Option);
-				bChanged = true;
-			};
-
-			PropertyService.Set (new OptionKey (option).GetPropertyName (), "b");
-			Assert.IsTrue (bChanged);
+				PropertyService.Set (propName, "b");
+				Assert.AreEqual (true, changed);
+			}
 		}
 
 		[Test]
@@ -240,30 +281,32 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 		{
 			var (preferences, persister, optionService) = SetupOptions ();
 
-			foreach (var option in GetOptionKeys<string> ()) {
-				var prop = preferences.Wrap (option, default (string));
+			using (persister) {
+				foreach (var option in GetOptionKeys<string> ()) {
+					var prop = preferences.Wrap (option, default (string));
 
-				// Initial values
-				Assert.AreEqual (null, prop.Value);
-				Assert.AreEqual (false, optionService.GetOptionInternal (option, out var tempValue));
-				Assert.AreEqual (null, tempValue);
+					// Initial values
+					Assert.AreEqual (null, prop.Value);
+					Assert.AreEqual (false, optionService.GetOptionInternal (option, out var tempValue));
+					Assert.AreEqual (null, tempValue);
 
-				// Check without monitor.
-				prop.Value = "a";
-				Assert.AreEqual ("a", prop.Value);
-				Assert.AreEqual (false, optionService.GetOptionInternal (option, out tempValue));
-				Assert.AreEqual (null, tempValue);
+					// Check without monitor.
+					prop.Value = "a";
+					Assert.AreEqual ("a", prop.Value);
+					Assert.AreEqual (false, optionService.GetOptionInternal (option, out tempValue));
+					Assert.AreEqual (null, tempValue);
 
-				// Check when monitoring.
-				persister.MonitorChanges (option.GetPropertyName (), option);
-				prop.Value = "b";
-				Assert.AreEqual ("b", prop.Value);
-				Assert.AreEqual ("b", optionService.GetOption (option));
+					// Check when monitoring.
+					persister.MonitorChanges (option.GetPropertyName (), option);
+					prop.Value = "b";
+					Assert.AreEqual ("b", prop.Value);
+					Assert.AreEqual ("b", optionService.GetOption (option));
 
-				// Check option changes reflect in property
-				optionService.SetOptions (optionService.GetOptions ().WithChangedOption (option, "c"));
-				Assert.AreEqual ("c", prop.Value);
-				Assert.AreEqual ("c", optionService.GetOption (option));
+					// Check option changes reflect in property
+					optionService.SetOptions (optionService.GetOptions ().WithChangedOption (option, "c"));
+					Assert.AreEqual ("c", prop.Value);
+					Assert.AreEqual ("c", optionService.GetOption (option));
+				}
 			}
 		}
 	}
