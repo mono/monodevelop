@@ -162,6 +162,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious, true));
 				buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
 				buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
+				buttonSearchBackward.Sensitive = buttonSearchForward.Sensitive = false;
 			});
 
 			box = new Gtk.VBox ();
@@ -536,8 +537,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 			resultInformLabel.Show ();
 
-			buttonSearchForward.Sensitive = currentSearch?.MatchesCount > 0;
-			buttonSearchBackward.Sensitive = currentSearch?.MatchesCount > 0; 
+			buttonSearchForward.Sensitive = buttonSearchBackward.Sensitive = currentSearch?.MatchesCount > 0; 
 		}
 
 		static string GetShortcut (object commandId, bool includeParen)
