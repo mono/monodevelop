@@ -88,10 +88,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		static MonoDevelopWorkspace ()
 		{
 			Tasks.CommentTasksProvider.Initialize ();
-			Logger.SetLogger (AggregateLogger.Create (
-				new RoslynLogger (),
-				Logger.GetLogger ()
-			));
 		}
 
 		/// <summary>
