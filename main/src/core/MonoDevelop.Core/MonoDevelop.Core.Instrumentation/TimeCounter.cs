@@ -34,6 +34,7 @@ namespace MonoDevelop.Core.Instrumentation
 	{
 		void Trace (string message);
 		void End ();
+		TimeSpan Duration { get; }
 	}
 	
 	class DummyTimerCounter: ITimeTracker
@@ -49,6 +50,8 @@ namespace MonoDevelop.Core.Instrumentation
 		public void Dispose ()
 		{
 		}
+
+		public TimeSpan Duration { get; }
 	}
 	
 	class TimeCounter: ITimeTracker
@@ -117,6 +120,7 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 
 			stopWatch.Stop ();
+			Duration = stopWatch.Elapsed;
 
 			if (counter.LogMessages) {
 				var time = stopWatch.ElapsedMilliseconds;
@@ -145,6 +149,8 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 			End ();
 		}
+
+		public TimeSpan Duration { get; private set; }
 	}
 	
 	[Serializable]
