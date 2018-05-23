@@ -555,19 +555,19 @@ namespace MonoDevelop.Projects
 
 		object evaluatedSourceFilesLock = new object ();
 		string evaluatedSourceFilesConfiguration;
-		TaskCompletionSource<ImmutableList<ProjectFile>.Builder> evaluatedSourceFilesTask;
+		TaskCompletionSource<ImmutableArray<ProjectFile>> evaluatedSourceFilesTask;
 
-		async Task<ImmutableList<ProjectFile>.Builder> GetEvaluatedSourceFiles (ConfigurationSelector configuration)
+		async Task<ImmutableArray<ProjectFile>> GetEvaluatedSourceFiles (ConfigurationSelector configuration)
 		{
 			bool startTask = false;
-			TaskCompletionSource<ImmutableList<ProjectFile>.Builder> currentTask = null;
+			TaskCompletionSource<ImmutableArray<ProjectFile>> currentTask = null;
 			var config = configuration != null ? GetConfiguration (configuration) : null;
 
 			lock (evaluatedSourceFilesLock) {
 				if (evaluatedSourceFilesTask == null || evaluatedSourceFilesConfiguration != config?.Id) {
 					// The configuration changed or query not yet done
 					evaluatedSourceFilesConfiguration = config?.Id;
-					evaluatedSourceFilesTask = new TaskCompletionSource<ImmutableList<ProjectFile>.Builder> ();
+					evaluatedSourceFilesTask = new TaskCompletionSource<ImmutableArray<ProjectFile>> ();
 					startTask = true;
 				}
 				currentTask = evaluatedSourceFilesTask;
@@ -575,13 +575,13 @@ namespace MonoDevelop.Projects
 
 			if (startTask) {
 				var buildActions = GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
-				var results = ImmutableList.CreateBuilder<ProjectFile> ();
+				var results = ImmutableArray.CreateBuilder<ProjectFile> ();
 
 				var pri = await CreateProjectInstaceForConfigurationAsync (config?.Name, config?.Platform, false);
 				foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
 					results.Add (CreateProjectFile (it));
 
-				currentTask.SetResult (results);
+				currentTask.SetResult (results.ToImmutable ());
 			}
 
 			return await currentTask.Task;
