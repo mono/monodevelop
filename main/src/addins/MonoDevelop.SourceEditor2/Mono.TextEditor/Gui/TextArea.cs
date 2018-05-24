@@ -658,7 +658,7 @@ namespace Mono.TextEditor
 
 		void CommitString (string str)
 		{
-			if (!IsRealized || !IsFocus)
+			if (!IsRealized || !IsFocus || String.IsNullOrEmpty (str))
 				return;
 
 			for (int i = 0; i < str.Length; i++) {
