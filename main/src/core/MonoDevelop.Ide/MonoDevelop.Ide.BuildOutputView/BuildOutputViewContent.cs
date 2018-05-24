@@ -53,12 +53,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			this.filename = filename;
 			this.ContentName = filename;
+			Counters.BuildOutputTimesOpened++;
 		}
 
 		public BuildOutputViewContent (BuildOutput buildOutput)
 		{
 			this.buildOutput = buildOutput;
 			ContentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog";
+			Counters.BuildOutputTimesOpened++;
 		}
 
 		void FileNameChanged (object sender, string file)
