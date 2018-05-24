@@ -63,14 +63,21 @@ namespace MacPlatform
 
 			result.osType = GetMediaType ("/");
 
-			result.sinceLogin = GetLoginTime ();
+			var login = GetLoginTime ();
+			if (login != DateTime.MinValue) {
+				var epoch = new DateTime (1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+
+				var timeSinceEpoch = DateTime.UtcNow - epoch;
+				var loginSinceEpoch = login - epoch;
+				result.sinceLogin = timeSinceEpoch - loginSinceEpoch;
+			}
 
 			return result;
 		}
 
 		public TimeSpan TimeSinceMachineStart => TimeSpan.FromSeconds (NSProcessInfo.ProcessInfo.SystemUptime);
 
-		public TimeSpan TimeSinceLogin => TimeSpan.Zero;
+		public TimeSpan TimeSinceLogin => sinceLogin;
 
 		public TimeSpan KernelAndUserTime => TimeSpan.Zero;
 
@@ -208,19 +215,17 @@ namespace MacPlatform
 		 * It appears that getlastlogxbyname only works if you have elevated permissions
 		 * but it also doesn't distinguish between user login into the system and user opening a new login terminal
 		 */
-		static TimeSpan GetLoginTime ()
+		static DateTimeOffset GetLoginTime ()
 		{
-			var llHandle = getlastlogxbyname (Environment.UserName, IntPtr.Zero);
-			if (llHandle == IntPtr.Zero) {
+			LastLogX ll = new LastLogX ();
+			if (IntPtr.Zero == getlastlogxbyname (Environment.UserName, ref ll)) {
 				// getlastlogxbyname doesn't work if SIP is disabled
-				return TimeSpan.Zero;
+				return DateTime.MinValue;
 			}
 
-			var ll = Marshal.PtrToStructure<LastLogX> (llHandle);
+			var dt = DateTimeOffset.FromUnixTimeSeconds (ll.ll_tv_tv_sec);
 
-			var result = new TimeSpan (((ll.ll_tv_tv_sec * 100000) + ll.ll_tv_tv_usec) * 10);
-
-			return TimeSpan.Zero;
+			return dt;
 		}
 
 		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
@@ -262,6 +267,6 @@ namespace MacPlatform
 		}
 
 		[DllImport ("libc")]
-		extern static IntPtr getlastlogxbyname (string name, IntPtr ll);
+		extern static IntPtr getlastlogxbyname (string name, ref LastLogX ll);
 	}
 }
