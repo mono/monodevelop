@@ -529,16 +529,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (dataSource == null)
 				return;
 
-			// Cleanup previous search
-			if (currentSearch != null) {
+			using (Counters.SearchBuildLog.BeginTiming ()) {
+				// Cleanup previous search
+				if (currentSearch != null) {
+					RefreshSearchMatches (dataSource, currentSearch);
+				}
+
+				currentSearch = new BuildOutputDataSearch (dataSource.RootNodes);
+				var firstMatch = await currentSearch.FirstMatch (searchEntry.Entry.Text);
 				RefreshSearchMatches (dataSource, currentSearch);
+
+				Find (firstMatch);
 			}
-
-			currentSearch = new BuildOutputDataSearch (dataSource.RootNodes);
-			var firstMatch = await currentSearch.FirstMatch (searchEntry.Entry.Text);
-			RefreshSearchMatches (dataSource, currentSearch);
-
-			Find (firstMatch);
 		}
 
 		public void FindNext (object sender, EventArgs args)
