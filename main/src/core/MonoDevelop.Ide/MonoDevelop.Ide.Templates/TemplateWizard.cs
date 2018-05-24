@@ -47,6 +47,13 @@ namespace MonoDevelop.Ide.Templates
 			get { return 1; }
 		}
 
+		public event EventHandler TotalPagesChanged;
+
+		protected void OnTotalPagesChanged ()
+		{
+			TotalPagesChanged?.Invoke (this, EventArgs.Empty);
+		}
+
 		ProjectCreateParameters parameters;
 
 		public ProjectCreateParameters Parameters {
