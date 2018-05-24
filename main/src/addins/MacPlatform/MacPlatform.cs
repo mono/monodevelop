@@ -1148,7 +1148,7 @@ namespace MonoDevelop.MacIntegration
 		internal override IPlatformTelemetryDetails PlatformTelemetryDetails ()
 		{
 			if (details == null) {
-				details = new MacTelemetryDetails ();
+				details = MacTelemetryDetails.CreateTelemetryDetails ();
 			}
 
 			return details;

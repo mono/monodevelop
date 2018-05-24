@@ -30,6 +30,7 @@ using Foundation;
 using System.Runtime.InteropServices;
 using CoreFoundation;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MacPlatform
 {
@@ -42,21 +43,32 @@ namespace MacPlatform
 		ulong freeSize;
 
 		PlatformHardDriveMediaType osType;
+		TimeSpan sinceLogin;
 
 		internal MacTelemetryDetails ()
 		{
-			SysCtl ("hw.machine", out arch);
-			SysCtl ("hw.cpufamily", out family);
-			SysCtl ("hw.cpufrequency", out freq);
-
-			var attrs = NSFileManager.DefaultManager.GetFileSystemAttributes ("/");
-			size = attrs.Size;
-			freeSize = attrs.FreeSize;
-
-			osType = GetMediaType ("/");
 		}
 
-		public TimeSpan TimeSinceMachineStart => TimeSpan.FromMilliseconds (NSProcessInfo.ProcessInfo.SystemUptime);
+		internal static MacTelemetryDetails CreateTelemetryDetails ()
+		{
+			var result = new MacTelemetryDetails ();
+
+			SysCtl ("hw.machine", out result.arch);
+			SysCtl ("hw.cpufamily", out result.family);
+			SysCtl ("hw.cpufrequency", out result.freq);
+
+			var attrs = NSFileManager.DefaultManager.GetFileSystemAttributes ("/");
+			result.size = attrs.Size;
+			result.freeSize = attrs.FreeSize;
+
+			result.osType = GetMediaType ("/");
+
+			result.sinceLogin = GetLoginTime ();
+
+			return result;
+		}
+
+		public TimeSpan TimeSinceMachineStart => TimeSpan.FromSeconds (NSProcessInfo.ProcessInfo.SystemUptime);
 
 		public TimeSpan TimeSinceLogin => TimeSpan.Zero;
 
@@ -195,22 +207,21 @@ namespace MacPlatform
 		/*
 		 * It appears that getlastlogxbyname only works if you have elevated permissions
 		 * but it also doesn't distinguish between user login into the system and user opening a new login terminal
+		 */
 		static TimeSpan GetLoginTime ()
 		{
-			unsafe {
-				byte* llP = stackalloc byte[304];
-				var llHandle = new IntPtr (llP);
-				getlastlogxbyname (Environment.UserName, llHandle);
-
-				var ll = Marshal.PtrToStructure<LastLogX> (llHandle);
-
-				Console.WriteLine ($"{ll.ll_tv_tv_sec} - {ll.ll_tv_tv_usec}");
-				var result = new TimeSpan (((ll.ll_tv_tv_sec * 100000) + ll.ll_tv_tv_usec) * 10);
+			var llHandle = getlastlogxbyname (Environment.UserName, IntPtr.Zero);
+			if (llHandle == IntPtr.Zero) {
+				// getlastlogxbyname doesn't work if SIP is disabled
+				return TimeSpan.Zero;
 			}
+
+			var ll = Marshal.PtrToStructure<LastLogX> (llHandle);
+
+			var result = new TimeSpan (((ll.ll_tv_tv_sec * 100000) + ll.ll_tv_tv_usec) * 10);
 
 			return TimeSpan.Zero;
 		}
-		*/
 
 		[DllImport ("/System/Library/Frameworks/IOKit.framework/IOKit")]
 		extern static IntPtr IORegistryEntrySearchCFProperty(uint service, string plane, IntPtr key, IntPtr allocator, int options);
@@ -233,7 +244,6 @@ namespace MacPlatform
 		[DllImport ("libc")]
 		extern static int sysctlbyname (string name, IntPtr oldP, ref nint oldLen, IntPtr newP, nint newlen);
 
-		/*
 		[StructLayout(LayoutKind.Explicit, Size = 304)]
 		struct LastLogX {
 
@@ -253,6 +263,5 @@ namespace MacPlatform
 
 		[DllImport ("libc")]
 		extern static IntPtr getlastlogxbyname (string name, IntPtr ll);
-		*/
 	}
 }

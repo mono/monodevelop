@@ -45,6 +45,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Ide.Composition;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Desktop
 {
