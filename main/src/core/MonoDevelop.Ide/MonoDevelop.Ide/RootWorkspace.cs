@@ -616,6 +616,12 @@ namespace MonoDevelop.Ide
 			using (monitor) {
 				// Add the item in the GUI thread. It is not safe to do it in the background thread.
 				if (!monitor.CancellationToken.IsCancellationRequested) {
+
+					// Set the active configuration before adding the solution to the workspace, in this way
+					// roslyn data will be loaded using the stored configuration instead of the default.
+					if (Items.Count == 0)
+						ActiveConfigurationId = GetStoredActiveConfiguration (item, loadPreferences);
+
 					item.SetShared ();
 					Items.Add (item);
 				}
@@ -625,6 +631,7 @@ namespace MonoDevelop.Ide
 				}
 				if (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem == null)
 					IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = GetAllSolutions ().FirstOrDefault ();
+
 				Document.IsInProjectSettingLoadingProcess = true;
 				try {
 					if (Items.Count == 1 && loadPreferences) {
@@ -669,6 +676,16 @@ namespace MonoDevelop.Ide
 			metadata ["TotalProjectCount"] = item.GetAllItems<Project> ().Count ().ToString ();
 		}
 
+		string GetStoredActiveConfiguration (WorkspaceItem item, bool loadPreferences)
+		{
+			WorkspaceUserData data = loadPreferences ? item.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace") : null;
+			if (data != null) {
+				if (item.GetConfigurations ().Contains (data.ActiveConfiguration))
+					return data.ActiveConfiguration;
+			}
+			return GetBestDefaultConfiguration (item);
+		}
+
 		async Task RestoreWorkspacePreferences (WorkspaceItem item)
 		{
 			// Restore local configuration data
@@ -677,11 +694,6 @@ namespace MonoDevelop.Ide
 				WorkspaceUserData data = item.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
 				if (data != null) {
 					ActiveExecutionTarget = null;
-
-					if (GetConfigurations ().Contains (data.ActiveConfiguration))
-						activeConfiguration = data.ActiveConfiguration;
-					else
-						activeConfiguration = GetBestDefaultConfiguration ();
 
 					if (string.IsNullOrEmpty (data.ActiveRuntime))
 						UseDefaultRuntime = true;
@@ -692,10 +704,6 @@ namespace MonoDevelop.Ide
 						else
 							UseDefaultRuntime = true;
 					}
-					OnActiveConfigurationChanged ();
-				}
-				else {
-					ActiveConfigurationId = GetBestDefaultConfiguration ();
 				}
 			}
 			catch (Exception ex) {
@@ -715,13 +723,13 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		string GetBestDefaultConfiguration ()
+		string GetBestDefaultConfiguration (WorkspaceItem item)
 		{
 			// 'Debug' is always the best candidate. If there is no debug, pick
 			// the configuration with the highest number of built projects.
 			int nbuilds = 0;
 			string bestConfig = null;
-			foreach (Solution sol in GetAllSolutions ()) {
+			foreach (Solution sol in item.GetAllItems<Solution> ()) {
 				foreach (string conf in sol.GetConfigurations ()) {
 					if (conf == "Debug")
 						return conf;
