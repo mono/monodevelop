@@ -23,8 +23,6 @@ obj/
 /main/build/MacOSX/monostub
 /main/build/MacOSX/monostub-nogui
 /main/build/MacOSx/monostub-test
-/main/contrib/bin/
-/main/contrib/*/*/bin/
 /local-libs
 /main/build/tests
 /main/monodevelop_version
@@ -104,11 +102,6 @@ Thumbs.db
 /main/build/MacOSX/Makefile
 /main/build/Makefile
 /main/external/Makefile
-/main/contrib/Makefile
-/main/contrib/Mono.Cecil/Makefile
-/main/contrib/ICSharpCode.NRefactory.CSharp/Makefile
-/main/contrib/GitSharp/Makefile
-/main/contrib/Mono.Debugger.Soft/Makefile
 /main/po/Makefile
 /main/src/Makefile
 /main/src/addins/AspNet/Makefile
@@ -190,11 +183,6 @@ Thumbs.db
 /main/tests/UnitTests/Makefile
 /main/tests/UserInterfaceTests/Makefile
 /main/theme-icons/Makefile
-/main/contrib/NGit/Makefile
-/main/contrib/NSch/Makefile
-/main/contrib/Sharpen/Makefile
-/main/contrib/ICSharpCode.Decompiler/Makefile
-/main/contrib/ICSharpCode.NRefactory/Makefile
 /main/src/addins/TextTemplating/Mono.TextTemplating.Tests/Makefile
 /main/tests/MacPlatform.Tests/Makefile
 /main/tests/MonoDevelop.Core.Tests.Addin/Makefile
