@@ -31,6 +31,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	internal static class Counters
 	{
-		public static Counter BuildOutputTimesOpened = InstrumentationService.CreateCounter ("Times opened", "Build Output");
+		public static Counter BuildOutputTimesOpened = InstrumentationService.CreateCounter ("Times opened", "Build Output", id: "BuildOutput.TimesOpened");
 	}
 }
