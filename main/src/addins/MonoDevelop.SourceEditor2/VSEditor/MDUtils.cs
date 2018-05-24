@@ -239,7 +239,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 		/// <param name="snapshotPoint">The snapshot point if return == true.</param>
 		public static bool TryGetSnapshotPoint (this ITextSnapshot snapshot, int line, int column, out SnapshotPoint snapshotPoint)
 		{
-			if (line < 1 || line >= snapshot.LineCount) {
+			if (line < 1 || line > snapshot.LineCount) {
 				snapshotPoint = default (SnapshotPoint);
 				return false;
 			}
