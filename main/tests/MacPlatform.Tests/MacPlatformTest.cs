@@ -55,6 +55,12 @@ namespace MacPlatform.Tests
 			// Verify no exception is thrown
 			DesktopService.GetMimeTypeForUri (null);
 		}
+
+		[Test]
+		public void MacHasProperMonitor ()
+		{
+			Assert.That (DesktopService.MemoryMonitor, Is.TypeOf<MacPlatformService.MacMemoryMonitor> ());
+		}
 	}
 }
 
