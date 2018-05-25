@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Desktop
 		internal abstract PlatformMemoryStatus PlatformMemoryStatus { get; }
 
 		/// <summary>
-		/// Ocurrs then the OS signals that the memory status has changed.
+		/// Occurs then the OS signals that the memory status has changed.
 		/// </summary>
 		public event EventHandler<PlatformMemoryStatusEventArgs> StatusChanged;
 	}
