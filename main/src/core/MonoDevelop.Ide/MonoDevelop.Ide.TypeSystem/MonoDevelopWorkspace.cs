@@ -58,6 +58,12 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		public const string ServiceLayer = nameof(MonoDevelopWorkspace);
 
+		// Background compiler is used to trigger compilations in the background for the solution and hold onto them
+		// so in case nothing references the solution in current stacks, they're not collected.
+		// We previously used to experience pathological GC times on large solutions, and this was caused
+		// by the compilations being freed out of memory due to only being weakly referenced, and recomputing them on
+		// a case by case basis.
+		BackgroundCompiler backgroundCompiler;
 		internal readonly WorkspaceId Id;
 
 		CancellationTokenSource src = new CancellationTokenSource ();
@@ -104,7 +110,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.Workspace != null && solution != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
-			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+			backgroundCompiler = new BackgroundCompiler (this);
+
+			var cacheService = Services.GetService<IWorkspaceCacheService> ();
+			if (cacheService != null)
+				cacheService.CacheFlushRequested += OnCacheFlushRequested;
 
 			// Trigger running compiler syntax and semantic errors via the diagnostic analyzer engine
 			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
@@ -115,6 +125,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, IdeApp.Preferences.EnableFullSolutionSourceAnalysis);
 
 			if (IdeApp.Preferences.EnableSourceAnalysis) {
+				var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 				solutionCrawler.Register (this);
 			}
 
@@ -124,6 +135,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
 				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
 
+		}
+
+		void OnCacheFlushRequested (object sender, EventArgs args)
+		{
+			if (backgroundCompiler != null) {
+				backgroundCompiler.Dispose ();
+				backgroundCompiler = null; // PartialSemanticsEnabled will now return false
+			}
+
+			// No longer need cache notifications
+			var cacheService = Services.GetService<IWorkspaceCacheService> ();
+			if (cacheService != null)
+				cacheService.CacheFlushRequested -= OnCacheFlushRequested;
 		}
 
 		void OnEnableSourceAnalysisChanged(object sender, EventArgs args)
@@ -139,6 +163,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, IdeApp.Preferences.EnableFullSolutionSourceAnalysis);
 		}
+
+		protected internal override bool PartialSemanticsEnabled => backgroundCompiler != null;
 
 		protected override void Dispose (bool finalize)
 		{
