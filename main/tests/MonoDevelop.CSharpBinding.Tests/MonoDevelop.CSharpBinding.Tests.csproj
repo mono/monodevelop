@@ -207,8 +207,8 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
-    <None Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
     <None Include="packages.config" />
+    <None Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.CSharpBinding.Parser\" />
