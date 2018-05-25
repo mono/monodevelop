@@ -29,15 +29,12 @@ namespace MonoDevelop.Ide.Desktop
 	public abstract class MemoryMonitor
 	{
 		/// <summary>
-		/// Notify that the PlatformMemoryStatus value has changed.
+		/// Notify that the platform memory status has changed.
 		/// </summary>
-		internal void NotifyStatusChanged () => StatusChanged?.Invoke (this, new PlatformMemoryStatusEventArgs (PlatformMemoryStatus));
-
-		/// <summary>
-		/// Guaranteed to be called inside NotifyStatusChanged.
-		/// </summary>
-		/// <value>The platform memory status.</value>
-		internal abstract PlatformMemoryStatus PlatformMemoryStatus { get; }
+		protected virtual void OnStatusChanged (PlatformMemoryStatusEventArgs args)
+		{
+			StatusChanged?.Invoke (this, args);
+		}
 
 		/// <summary>
 		/// Occurs then the OS signals that the memory status has changed.
