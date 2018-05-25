@@ -1,5 +1,5 @@
 ﻿//
-// RoamingMonoDevelopProfileOptionPersister.cs
+// ExportedServicesAndWorkspaceServicesTests.cs
 //
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>
@@ -26,25 +26,39 @@
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Microsoft.CodeAnalysis.Notification;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Ide.Composition;
+using Microsoft.CodeAnalysis.Host;
 
 namespace MonoDevelop.Ide.RoslynServices.Options
 {
 	[TestFixture]
-	public class MonoDevelopOptionPersisterIntegrationTests : IdeTestBase
+	public class ExportedServicesAndWorkspaceServicesTests : TextEditorExtensionTestBase
 	{
+		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharp;
+
 		[Test]
 		public async Task ServiceIsRegistered ()
 		{
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new Core.ProgressMonitor ());
-
+			// Initialize MEF
 			await CompositionManager.InitializeAsync ();
 
-			var values = CompositionManager.GetExportedValues<IOptionPersister> ();
+			CompositionManager.Instance.AssertExportsContains<IOptionPersister, MonoDevelopGlobalOptionPersister> ();
+		}
 
-			var service = values.OfType<MonoDevelopGlobalOptionPersister> ().Single ();
+		[Test]
+		public async Task WorkspaceServiceIsRegistered ()
+		{
+			var doc = await SetupDocument ("class MyClass {}");
+
+			AssertWorkspaceService<INotificationService, MonoDevelopNotificationServiceFactory.MonoDevelopNotificationService> ();
+
+			void AssertWorkspaceService<TExport, TActual> () where TExport:IWorkspaceService
+			{
+				var actual = doc.RoslynWorkspace.Services.GetService<TExport> ();
+				Assert.That (actual, Is.TypeOf<TActual> ());
+			}
 		}
 	}
 }

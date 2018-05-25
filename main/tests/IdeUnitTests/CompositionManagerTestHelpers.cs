@@ -1,5 +1,5 @@
 ﻿//
-// MonoDevelopNotificationServiceTests.cs
+// CompositionManagerTestHelpers.cs
 //
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>
@@ -24,24 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Threading.Tasks;
+using System.Linq;
 using NUnit.Framework;
-using Microsoft.CodeAnalysis.Notification;
 
-namespace MonoDevelop.Ide.RoslynServices
+namespace MonoDevelop.Ide.Composition
 {
-	[TestFixture]
-	public class MonoDevelopNotificationServiceIntegrationTests : TextEditorExtensionTestBase
+	public static class CompositionManagerTestHelpers
 	{
-		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharp;
-
-		[Test]
-		public async Task ServiceIsRegistered ()
+		public static void AssertExport<TExport, TActual> (this CompositionManager manager)
 		{
-			var doc = await SetupDocument ("class MyClass {}");
+			var export = manager.ExportProvider.GetExportedValue<TExport> ();
+			Assert.That (export, Is.TypeOf<TActual> ());
+		}
 
-			var notificationService = doc.RoslynWorkspace.Services.GetService<INotificationService> ();
-			Assert.That (notificationService, Is.TypeOf<MonoDevelopNotificationServiceFactory.MonoDevelopNotificationService> ());
+		public static void AssertExportsContains<TExport, TActual> (this CompositionManager manager)
+		{
+			var export = manager.ExportProvider.GetExportedValues<TExport> ().Single ();
+			Assert.That (export, Is.TypeOf<TActual> ());
 		}
 	}
 }
