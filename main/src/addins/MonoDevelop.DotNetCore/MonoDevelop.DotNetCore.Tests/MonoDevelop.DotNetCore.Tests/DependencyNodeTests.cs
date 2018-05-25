@@ -1,0 +1,169 @@
+﻿//
+// DependencyNodeTests.cs
+//
+// Author:
+//       Matt Ward <matt.ward@microsoft.com>
+//
+// Copyright (c) 2018 Microsoft
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.DotNetCore.NodeBuilders;
+using MonoDevelop.Projects;
+using NuGet.Versioning;
+using NUnit.Framework;
+using UnitTests;
+
+namespace MonoDevelop.DotNetCore.Tests
+{
+	[TestFixture]
+	class DependencyNodeTests : DotNetCoreTestBase
+	{
+		DotNetProject project;
+		DependenciesNode dependenciesNode;
+		SdkDependenciesNode sdkFolderNode;
+		PackageDependenciesNode nugetFolderNode;
+		TaskCompletionSource<bool> packageDependenciesChanged;
+		// Ensure NuGet.Versioning assembly is loaded by the tests otherwise they fail
+		// when run from the command line with mdtool.
+		NuGetVersion nuGetVersion = new NuGetVersion ("1.0"); 
+
+		[TearDown]
+		public override void TearDown ()
+		{
+			project?.Dispose ();
+			project = null;
+
+			base.TearDown ();
+		}
+
+		void Restore (FilePath fileName)
+		{
+			CreateNuGetConfigFile (fileName.ParentDirectory);
+
+			var process = Process.Start ("msbuild", $"/t:Restore /p:RestoreDisableParallel=true \"{fileName}\"");
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+			Assert.AreEqual (0, process.ExitCode);
+		}
+
+		async Task CreateDependenciesNode ()
+		{
+			dependenciesNode = new DependenciesNode (project);
+			dependenciesNode.PackageDependencyCache.PackageDependenciesChanged += PackageDependenciesChanged;
+			packageDependenciesChanged = new TaskCompletionSource<bool> ();
+
+			dependenciesNode.PackageDependencyCache.Refresh ();
+
+			await WaitForPackageDependenciesChanged ();
+
+			nugetFolderNode = new PackageDependenciesNode (dependenciesNode);
+			sdkFolderNode = new SdkDependenciesNode (dependenciesNode);
+		}
+
+		void PackageDependenciesChanged (object sender, EventArgs e)
+		{
+			packageDependenciesChanged.TrySetResult (true);
+		}
+
+		async Task WaitForPackageDependenciesChanged (int millisecondsTimeout = 60000)
+		{
+			var timeoutTask = Task.Delay (millisecondsTimeout);
+			var result = await Task.WhenAny (timeoutTask, packageDependenciesChanged.Task);
+			if (result == timeoutTask)
+				Assert.Fail ("Timed out waiting for package dependencies to be updated.");
+		}
+
+		List<PackageDependencyNode> GetSdkFolderChildDependencies ()
+		{
+			var frameworkNode = sdkFolderNode.GetTargetFrameworkNodes ().Single ();
+			return frameworkNode.GetDependencyNodes ().ToList ();
+		}
+
+		List<PackageDependencyNode> GetNuGetFolderChildDependencies ()
+		{
+			var frameworkNode = nugetFolderNode.GetTargetFrameworkNodes ().Single ();
+			return frameworkNode.GetDependencyNodes ().ToList ();
+		}
+
+		[Test]
+		public async Task NetStandardLibrary_NewtonsoftJsonNuGetPackageReference ()
+		{
+			FilePath projectFileName = Util.GetSampleProject ("DotNetCoreDependenciesFolder", "NetStandardJsonNet.csproj");
+			Restore (projectFileName);
+			project = (DotNetProject) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName);
+			await CreateDependenciesNode ();
+
+			var sdkNode = GetSdkFolderChildDependencies ().Single ();
+			Assert.AreEqual ("NETStandard.Library", sdkNode.Name);
+			Assert.AreEqual ("NETStandard.Library", sdkNode.GetLabel ());
+			Assert.IsTrue (sdkNode.IsReadOnly);
+			Assert.IsFalse (sdkNode.CanBeRemoved);
+			Assert.IsTrue (sdkNode.IsTopLevel);
+
+			var childNodes = sdkNode.GetDependencyNodes ().ToList ();
+			var systemThreadingNode = childNodes.FirstOrDefault (node => node.Name == "System.Threading");
+			Assert.IsFalse (systemThreadingNode.CanBeRemoved);
+			Assert.IsFalse (systemThreadingNode.IsTopLevel);
+
+			var defaultNode = sdkFolderNode.GetDefaultNodes ().Single ();
+			Assert.AreEqual ("NETStandard.Library", defaultNode.Name);
+			Assert.AreEqual ("NETStandard.Library", defaultNode.GetLabel ());
+
+			var newtonsoftNode = GetNuGetFolderChildDependencies ().Single ();
+			Assert.AreEqual ("Newtonsoft.Json", newtonsoftNode.Name);
+			Assert.AreEqual ("Newtonsoft.Json", newtonsoftNode.GetLabel ());
+			Assert.AreEqual ("(10.0.3)", newtonsoftNode.GetSecondaryLabel ());
+			Assert.IsTrue (newtonsoftNode.CanBeRemoved);
+			Assert.IsFalse (newtonsoftNode.IsReadOnly);
+			Assert.IsTrue (newtonsoftNode.IsTopLevel);
+			Assert.IsTrue (newtonsoftNode.IsReleaseVersion ());
+			Assert.IsTrue (newtonsoftNode.HasDependencies ());
+
+			childNodes = newtonsoftNode.GetDependencyNodes ().ToList ();
+			var microsoftCSharpNode = childNodes.FirstOrDefault (node => node.Name == "Microsoft.CSharp");
+			Assert.IsFalse (microsoftCSharpNode.CanBeRemoved);
+			Assert.IsFalse (microsoftCSharpNode.IsTopLevel);
+
+			var packageReferenceNode = nugetFolderNode.GetProjectPackageReferencesAsDependencyNodes ().Single ();
+			Assert.AreEqual ("Newtonsoft.Json", packageReferenceNode.Name);
+			Assert.AreEqual ("Newtonsoft.Json", packageReferenceNode.GetLabel ());
+			Assert.AreEqual ("(10.0.3)", packageReferenceNode.GetSecondaryLabel ());
+			Assert.IsTrue (packageReferenceNode.CanBeRemoved);
+			Assert.IsFalse (packageReferenceNode.IsReadOnly);
+			Assert.IsTrue (packageReferenceNode.IsTopLevel);
+			Assert.IsTrue (packageReferenceNode.IsReleaseVersion ());
+			Assert.IsFalse (packageReferenceNode.HasDependencies ());
+
+			// Check default sdk if project converted from .NET Standard to .NET Core 1.1.
+			var moniker = TargetFrameworkMoniker.Parse (".NETCoreApp,Version=v1.1");
+			project.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (moniker);
+
+			defaultNode = sdkFolderNode.GetDefaultNodes ().Single ();
+			Assert.AreEqual ("Microsoft.NETCore.App", defaultNode.Name);
+			Assert.AreEqual ("Microsoft.NETCore.App", defaultNode.GetLabel ());
+		}
+	}
+}
