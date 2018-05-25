@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide
 		internal static Counter PadShown = InstrumentationService.CreateCounter ("Pad focused", "IDE", id:"Ide.Shell.PadShown");
 		internal static TimerCounter SaveAllTimer = InstrumentationService.CreateTimerCounter ("Save all documents", "IDE", id:"Ide.Shell.SaveAll");
 		internal static TimerCounter CloseWorkspaceTimer = InstrumentationService.CreateTimerCounter ("Workspace closed", "IDE", id:"Ide.Shell.CloseWorkspace");
-		internal static Counter Startup = InstrumentationService.CreateTimerCounter ("IDE Startup", "IDE", id:"Ide.Startup");
+		internal static Counter<StartupMetadata> Startup = InstrumentationService.CreateCounter<StartupMetadata> ("IDE Startup", "IDE", id:"Ide.Startup");
 		internal static TimerCounter CompositionAddinLoad = InstrumentationService.CreateTimerCounter ("MEF Composition Addin Load", "IDE", id: "Ide.Startup.Composition.ExtensionLoad");
 		internal static TimerCounter CompositionDiscovery = InstrumentationService.CreateTimerCounter ("MEF Composition From Discovery", "IDE", id:"Ide.Startup.Composition.Discovery");
 		internal static TimerCounter CompositionCacheControl = InstrumentationService.CreateTimerCounter ("MEF Composition Control Cache", "IDE", id: "Ide.Startup.Composition.ControlCache");
@@ -95,6 +95,38 @@ namespace MonoDevelop.Ide
 			reports [15] = Startup.ToString ();
 
 			return reports;
+		}
+	}
+
+	class AssetMetadata : CounterMetadata
+	{
+		public string AssetTypeId {
+			get => GetProperty ("AssetTypeId");
+			set => SetProperty ("AssetTypeId", value);
+		}
+		public string AssetTypeName {
+			get => GetProperty ("AssetTypeName");
+			set => SetProperty ("AssetTypeName", value);
+		}
+	}
+
+	class StartupMetadata: AssetMetadata
+	{
+		public long CorrectedStartupTime {
+			get => GetProperty<long> ("CorrectedStartupTime");
+			set => SetProperty ("CorrectedStartupTime", value);
+		}
+		public long StartupType {
+			get => GetProperty<long> ("StartupType");
+			set => SetProperty ("StartupType", value);
+		}
+		public bool IsInitialRun {
+			get => GetProperty<bool> ("IsInitialRun");
+			set => SetProperty ("IsInitialRun", value);
+		}
+		public bool IsInitialRunAfterUpgrade {
+			get => GetProperty<bool> ("IsInitialRunAfterUpgrade");
+			set => SetProperty ("IsInitialRunAfterUpgrade", value);
 		}
 	}
 }

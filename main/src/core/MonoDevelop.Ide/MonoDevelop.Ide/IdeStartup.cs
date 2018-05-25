@@ -673,19 +673,18 @@ namespace MonoDevelop.Ide
 			return null;
 		}
 
-		static Dictionary<string, string> GetStartupMetadata (StartupInfo startupInfo)
+		static StartupMetadata GetStartupMetadata (StartupInfo startupInfo)
 		{
-			var metadata = new Dictionary<string, string> ();
-
-			metadata ["CorrectedStartupTime"] = startupTimer.ElapsedMilliseconds.ToString ();
-			metadata ["StartupType"] = "0";
-
 			var assetType = StartupAssetType.FromStartupInfo (startupInfo);
 
-			metadata ["AssetTypeId"] = assetType.Id.ToString ();
-			metadata ["AssetTypeName"] = assetType.Name;
-
-			return metadata;
+			return new StartupMetadata {
+				CorrectedStartupTime = startupTimer.ElapsedMilliseconds,
+				StartupType = 0,
+				AssetTypeId = assetType.Id.ToString (),
+				AssetTypeName = assetType.Name,
+				IsInitialRun = IdeApp.IsInitialRun,
+				IsInitialRunAfterUpgrade = IdeApp.IsInitialRunAfterUpgrade
+			};
 		}
 
 		internal static IDictionary<string, string> GetOpenWorkspaceOnStartupMetadata ()
