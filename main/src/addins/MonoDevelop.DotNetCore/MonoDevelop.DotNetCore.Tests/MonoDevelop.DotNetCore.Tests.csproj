@@ -15,6 +15,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="NuGet.Versioning">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Versioning.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -32,6 +35,7 @@
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectSupportedTargetFrameworksTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTemplateWizardTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTemplateStringTagProviderTests.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\DependencyNodeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
