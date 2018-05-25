@@ -60,6 +60,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			public readonly ConfigurationProperty<bool> PlaceSystemNamespaceFirst;
 			public readonly ConfigurationProperty<bool> SeparateImportDirectiveGroups;
 			public readonly ConfigurationProperty<bool> SuggestForTypesInNuGetPackages;
+			public readonly ConfigurationProperty<bool?> SolutionCrawlerClosedFileDiagnostic;
 
 			internal PerLanguagePreferences (string language, RoslynPreferences preferences)
 			{
@@ -76,6 +77,10 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 				SuggestForTypesInNuGetPackages = preferences.Wrap (
 					new OptionKey (Microsoft.CodeAnalysis.SymbolSearch.SymbolSearchOptions.SuggestForTypesInNuGetPackages, language),
 					true
+				);
+
+				SolutionCrawlerClosedFileDiagnostic = preferences.Wrap<bool?> (
+					new OptionKey (ServiceFeatureOnOffOptions.ClosedFileDiagnostic, language)
 				);
 			}
 		}

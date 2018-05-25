@@ -37,7 +37,6 @@ namespace MonoDevelop.AnalysisCore
 		public static ConfigurationProperty<bool> AnalysisEnabled {
 			get { return EnableFancyFeatures; }
 		}
-		public static ConfigurationProperty<bool> FullSolutionAnalysisEnabled = IdeApp.Preferences.EnableFullSolutionSourceAnalysis;
 
 		public readonly static ConfigurationProperty<bool> EnableUnitTestEditorIntegration = IdeApp.Preferences.EnableUnitTestEditorIntegration;
 
