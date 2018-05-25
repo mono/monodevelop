@@ -117,8 +117,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true)
 			// Always use persistent storage regardless of solution size, at least until a consensus is reached
 			// https://github.com/mono/monodevelop/issues/4149 https://github.com/dotnet/roslyn/issues/25453
-				.WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, MonoDevelop.Core.Platform.IsLinux ? int.MaxValue : 0)
-				.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, IdeApp.Preferences.EnableFullSolutionSourceAnalysis);
+			    .WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, MonoDevelop.Core.Platform.IsLinux ? int.MaxValue : 0);
 
 			if (IdeApp.Preferences.EnableSourceAnalysis) {
 				var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
@@ -126,11 +125,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			IdeApp.Preferences.EnableSourceAnalysis.Changed += OnEnableSourceAnalysisChanged;
-			IdeApp.Preferences.EnableFullSolutionSourceAnalysis.Changed += OnEnableFullSourceAnalysisChanged;
+
+			// TODO: Unhack C# here when monodevelop workspace supports more than C#
+			IdeApp.Preferences.Roslyn.CSharp.SolutionCrawlerClosedFileDiagnostic.Changed += OnEnableFullSourceAnalysisChanged;
 
 			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
 				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
 
+			DesktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
+		}
+
+		void OnMemoryStatusChanged(object sender, PlatformMemoryStatusEventArgs args)
+		{
+			// Disable full solution analysis when the OS triggers a warning about memory pressure.
+			if (args.MemoryStatus != PlatformMemoryStatus.Normal)
+				Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, false);
 		}
 
 		void OnCacheFlushRequested (object sender, EventArgs args)
@@ -148,7 +157,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void OnEnableSourceAnalysisChanged(object sender, EventArgs args)
 		{
-			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 			if (IdeApp.Preferences.EnableSourceAnalysis)
 				solutionCrawler.Register (this);
 			else
@@ -157,7 +166,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void OnEnableFullSourceAnalysisChanged (object sender, EventArgs args)
 		{
-			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, IdeApp.Preferences.EnableFullSolutionSourceAnalysis);
+			if (IdeApp.Preferences.Roslyn.CSharp.SolutionCrawlerClosedFileDiagnostic.Value == true)
+				Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, true);
 		}
 
 		protected internal override bool PartialSemanticsEnabled => backgroundCompiler != null;
@@ -171,7 +181,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			disposed = true;
 
 			IdeApp.Preferences.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
-			IdeApp.Preferences.EnableFullSolutionSourceAnalysis.Changed -= OnEnableFullSourceAnalysisChanged;
+			IdeApp.Preferences.Roslyn.CSharp.SolutionCrawlerClosedFileDiagnostic.Changed -= OnEnableFullSourceAnalysisChanged;
+			DesktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
 
 			CancelLoad ();
 			if (IdeApp.Workspace != null) {
@@ -181,7 +192,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				UnloadMonoProject (prj);
 			}
 
-			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 			solutionCrawler.Unregister (this);
 
 			if (backgroundCompiler != null) {
