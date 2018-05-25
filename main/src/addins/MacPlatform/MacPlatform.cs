@@ -1165,11 +1165,13 @@ namespace MonoDevelop.MacIntegration
 			public MacMemoryMonitor ()
 			{
 				DispatchSource = new DispatchSource.MemoryPressure (notificationFlags, DispatchQueue.DefaultGlobalQueue);
-				DispatchSource.SetEventHandler (() => NotifyStatusChanged ());
+				DispatchSource.SetEventHandler (() => {
+					var platformMemoryStatus = GetPlatformMemoryStatus (DispatchSource.PressureFlags);
+					var args = new PlatformMemoryStatusEventArgs (platformMemoryStatus);
+					OnStatusChanged (args);
+				});
 				DispatchSource.Resume ();
 			}
-
-			internal override PlatformMemoryStatus PlatformMemoryStatus => GetPlatformMemoryStatus (DispatchSource.PressureFlags);
 
 			static PlatformMemoryStatus GetPlatformMemoryStatus (MemoryPressureFlags flags)
 			{

@@ -595,7 +595,6 @@ namespace MonoDevelop.Ide.Desktop
 
 		internal class NullMemoryMonitor : MemoryMonitor
 		{
-			internal override PlatformMemoryStatus PlatformMemoryStatus { get => PlatformMemoryStatus.Normal; }
 		}
 	}
 
