@@ -31,13 +31,13 @@ namespace MonoDevelop.Ide.Desktop
 		/// <summary>
 		/// Notify that the PlatformMemoryStatus value has changed.
 		/// </summary>
-		protected void NotifyStatusChanged () => StatusChanged?.Invoke (this, new PlatformMemoryStatusEventArgs (PlatformMemoryStatus));
+		internal void NotifyStatusChanged () => StatusChanged?.Invoke (this, new PlatformMemoryStatusEventArgs (PlatformMemoryStatus));
 
 		/// <summary>
 		/// Guaranteed to be called inside NotifyStatusChanged.
 		/// </summary>
 		/// <value>The platform memory status.</value>
-		protected abstract PlatformMemoryStatus PlatformMemoryStatus { get; }
+		internal abstract PlatformMemoryStatus PlatformMemoryStatus { get; }
 
 		/// <summary>
 		/// Ocurrs then the OS signals that the memory status has changed.

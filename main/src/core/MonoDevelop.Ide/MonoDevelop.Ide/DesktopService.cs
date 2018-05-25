@@ -406,12 +406,6 @@ namespace MonoDevelop.Ide
 
 		public static IPlatformTelemetryDetails PlatformTelemetry () => PlatformService.PlatformTelemetryDetails ();
 
-		// Internal for now, until we definitize API
-		internal static MemoryMonitor MemoryMonitor => memoryMonitor.Value;
-
-		internal static event EventHandler<PlatformMemoryStatusEventArgs> MemoryStatusChanged {
-			add { MemoryMonitor.StatusChanged += value; }
-			remove { MemoryMonitor.StatusChanged -= value; }
-		}
+		public static MemoryMonitor MemoryMonitor => memoryMonitor.Value;
 	}
 }

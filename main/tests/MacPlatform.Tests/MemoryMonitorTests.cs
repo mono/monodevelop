@@ -41,75 +41,33 @@ namespace MacPlatform.Tests
 	[TestFixture]
 	public class MemoryMonitorTests : IdeTestBase
 	{
-		[DllImport ("libc.dylib")]
-		static extern IntPtr calloc (UIntPtr count, UIntPtr size);
-
-		[DllImport ("libc.dylib")]
-		static extern IntPtr valloc (UIntPtr size);
-
-		[DllImport ("libc.dylib")]
-		static extern void free (IntPtr ptr);
-
-		[DllImport ("libc.dylib")]
-		static extern void bzero (IntPtr ptr, UIntPtr size);
-
-		// We just increase virtual memory here, need to figure out what's going wrong and why pagse don't get paged in
-		[Test, Ignore]
+		[Test]
+		[Ignore (@"We either need administrative privileges or to keep the system at high memory allocation pressure for a long time.
+The main problem with writing a manual test is that it's hard to not get the memory into compressed memory.'")]
 		public async Task TestMemoryMonitorWithSimulatedValues ()
 		{
-			const uint allocSize = 1024 * 1024 * 1; // Allocate virtual memory in 1mb chunks.
+			using (var monitor = new MacPlatformService.MacMemoryMonitor ()) {
+				var tcs = new TaskCompletionSource<bool> ();
+				int statusChangedCount = 0;
 
-			var totalMem = NSProcessInfo.ProcessInfo.PhysicalMemory;
-			ulong pageCount = 0;
-			ulong maxPageCount = totalMem / allocSize;
-			IntPtr pages = calloc ((UIntPtr)maxPageCount, (UIntPtr)IntPtr.Size);
+				monitor.StatusChanged += (o, args) => {
+					if (statusChangedCount == 0)
+						Assert.AreEqual (PlatformMemoryStatus.Low, args.MemoryStatus);
+					else if (statusChangedCount == 1) {
+						Assert.AreEqual (PlatformMemoryStatus.Critical, args.MemoryStatus);
+					} else if (statusChangedCount == 2) {
+						Assert.AreEqual (PlatformMemoryStatus.Normal, args.MemoryStatus);
+						tcs.SetResult (true);
+					} else
+						throw new Exception ("Should not be reached");
+					statusChangedCount++;
+				};
 
-			try {
-				using (var monitor = new MacPlatformService.MacMemoryMonitor ()) {
-					var tcs = new TaskCompletionSource<bool> ();
-					int count = 0;
+				await SimulateMemoryPressure ("warn");
+				await SimulateMemoryPressure ("critical");
+				await SimulateMemoryPressure ("normal");
 
-					monitor.StatusChanged += (o, args) => {
-						if (pageCount == 0)
-							Assert.Ignore ("The system is already pressured at the time of the start of the test.");
-
-						if (count == 0)
-							Assert.AreEqual (PlatformMemoryStatus.Low, args.MemoryStatus);
-						else if (count == 1) {
-							Assert.AreEqual (PlatformMemoryStatus.Critical, args.MemoryStatus);
-							Cleanup ();
-						} else if (count == 2) {
-							Assert.AreEqual (PlatformMemoryStatus.Normal, args.MemoryStatus);
-							tcs.SetResult (true);
-						} else
-							throw new Exception ("Should not be reached");
-						count++;
-					};
-
-					while (count < 2 && pageCount < maxPageCount) {
-						IntPtr ptr = valloc ((UIntPtr)allocSize);
-						if (ptr == IntPtr.Zero)
-							break;
-
-						bzero (ptr, (UIntPtr)allocSize);
-						Marshal.WriteIntPtr (pages + (int)(pageCount * (ulong)IntPtr.Size), ptr);
-					}
-
-					await tcs.Task;
-				}
-			} finally {
-				Cleanup ();
-			}
-
-			void Cleanup ()
-			{
-				IntPtr tempPage = pages;
-				for (ulong i = 0; i < maxPageCount; ++i, tempPage += IntPtr.Size) {
-					if (Marshal.ReadIntPtr (tempPage) == IntPtr.Zero)
-						continue;
-					Marshal.FreeHGlobal (tempPage);
-				}
-				Marshal.FreeHGlobal (pages);
+				await tcs.Task;
 			}
 		}
 

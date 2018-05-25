@@ -1155,6 +1155,8 @@ namespace MonoDevelop.MacIntegration
 			return details;
 		}
 
+		internal override MemoryMonitor CreateMemoryMonitor () => new MacMemoryMonitor ();
+
 		internal class MacMemoryMonitor : MemoryMonitor, IDisposable
 		{
 			const MemoryPressureFlags notificationFlags = MemoryPressureFlags.Critical | MemoryPressureFlags.Warn | MemoryPressureFlags.Normal;
@@ -1167,7 +1169,7 @@ namespace MonoDevelop.MacIntegration
 				DispatchSource.Resume ();
 			}
 
-			protected override PlatformMemoryStatus PlatformMemoryStatus => GetPlatformMemoryStatus (DispatchSource.PressureFlags);
+			internal override PlatformMemoryStatus PlatformMemoryStatus => GetPlatformMemoryStatus (DispatchSource.PressureFlags);
 
 			static PlatformMemoryStatus GetPlatformMemoryStatus (MemoryPressureFlags flags)
 			{
