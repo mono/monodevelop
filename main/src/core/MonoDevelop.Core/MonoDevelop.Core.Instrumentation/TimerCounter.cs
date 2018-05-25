@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Globalization;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -125,7 +126,7 @@ namespace MonoDevelop.Core.Instrumentation
 			return BeginTiming (message, metadata != null ? new CounterMetadata (metadata) : null, CancellationToken.None);
 		}
 
-		internal ITimeTracker<T> BeginTiming<T> (string message, T metadata, CancellationToken cancellationToken) where T : CounterMetadata
+		internal ITimeTracker<T> BeginTiming<T> (string message, T metadata, CancellationToken cancellationToken) where T : CounterMetadata, new()
 		{
 			ITimeTracker<T> timer;
 			if (!Enabled && !LogMessages) {
@@ -170,12 +171,12 @@ namespace MonoDevelop.Core.Instrumentation
 
 		new public ITimeTracker<T> BeginTiming ()
 		{
-			return base.BeginTiming<T> (null, new T (), CancellationToken.None);
+			return base.BeginTiming<T> (null, null, CancellationToken.None);
 		}
 
 		public ITimeTracker<T> BeginTiming (CancellationToken cancellationToken)
 		{
-			return base.BeginTiming<T> (null, new T (), cancellationToken);
+			return base.BeginTiming<T> (null, null, cancellationToken);
 		}
 
 		public ITimeTracker<T> BeginTiming (T metadata)
@@ -190,12 +191,12 @@ namespace MonoDevelop.Core.Instrumentation
 
 		new public ITimeTracker<T> BeginTiming (string message)
 		{
-			return base.BeginTiming<T> (message, new T (), CancellationToken.None);
+			return base.BeginTiming<T> (message, null, CancellationToken.None);
 		}
 
 		public ITimeTracker<T> BeginTiming (string message, CancellationToken cancellationToken)
 		{
-			return base.BeginTiming<T> (message, new T (), cancellationToken);
+			return base.BeginTiming<T> (message, null, cancellationToken);
 		}
 
 		public ITimeTracker<T> BeginTiming (string message, T metadata)
@@ -241,7 +242,44 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public void SetUserFault ()
 		{
-			properties ["Result"] = "UserFault";
+			Result = CounterResult.UserFault;
+		}
+
+		public void SetFailure ()
+		{
+			Result = CounterResult.Failure;
+		}
+
+		public void SetSuccess ()
+		{
+			Result = CounterResult.Success;
+		}
+
+		public void SetUserCancel ()
+		{
+			Result = CounterResult.UserCancel;
+		}
+
+		protected void SetProperty (string name, string value)
+		{
+			properties [name] = value;
+		}
+
+		protected void SetProperty (string name, object value)
+		{
+			properties [name] = Convert.ToString (value, CultureInfo.InvariantCulture);
+		}
+
+		protected string GetProperty (string name)
+		{
+			properties.TryGetValue (name, out var result);
+			return result;
+		}
+
+		protected T GetProperty<T> (string name)
+		{
+			properties.TryGetValue (name, out var result);
+			return (T) Convert.ChangeType (result, typeof (T), CultureInfo.InvariantCulture);
 		}
 	}
 

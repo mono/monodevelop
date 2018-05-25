@@ -73,7 +73,7 @@ namespace MonoDevelop.Core.Instrumentation
 		public TimeSpan Duration { get; }
 	}
 	
-	class TimeCounter<T>: ITimeTracker<T>, ITimeCounter where T:CounterMetadata
+	class TimeCounter<T>: ITimeTracker<T>, ITimeCounter where T:CounterMetadata, new()
 	{
 		Stopwatch stopWatch = new Stopwatch ();
 		TimerTraceList traceList;
@@ -87,14 +87,28 @@ namespace MonoDevelop.Core.Instrumentation
 		internal TimeCounter (TimerCounter counter, T metadata, CancellationToken cancellationToken)
 		{
 			this.counter = counter;
-			if (counter.Enabled)
-				traceList = new TimerTraceList ();
 			this.metadata = metadata;
+			if (counter.Enabled || metadata != null) {
+				// Store metadata in the traces list. The corresponding CounterValue will get whatever
+				// metadata is assigned there
+				traceList = new TimerTraceList ();
+				traceList.Metadata = metadata?.Properties;
+			}
 			this.cancellationToken = cancellationToken;
 			Begin ();
 		}
 
-		public T Metadata => metadata;
+		public T Metadata {
+			get {
+				if (metadata == null) {
+					metadata = new T ();
+					if (traceList == null)
+						traceList = new TimerTraceList ();
+					traceList.Metadata = metadata.Properties;
+				}
+				return metadata;
+			}
+		}
 
 		public void AddHandlerTracker (IDisposable t)
 		{
@@ -139,9 +153,6 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public void End ()
 		{
-			if (metadata != null && cancellationToken != CancellationToken.None && cancellationToken.IsCancellationRequested)
-				metadata.Result = CounterResult.UserCancel;
-			
 			if (!stopWatch.IsRunning) {
 				Console.WriteLine ("Timer already finished");
 				return;
@@ -149,6 +160,9 @@ namespace MonoDevelop.Core.Instrumentation
 
 			stopWatch.Stop ();
 			Duration = stopWatch.Elapsed;
+
+			if (metadata != null && cancellationToken != CancellationToken.None && cancellationToken.IsCancellationRequested)
+				metadata.Result = CounterResult.UserCancel;
 
 			if (counter.LogMessages) {
 				var time = stopWatch.ElapsedMilliseconds;
@@ -187,6 +201,10 @@ namespace MonoDevelop.Core.Instrumentation
 		public TimerTrace FirstTrace;
 		public TimeSpan TotalTime;
 		public int ValueIndex;
+
+		// Timer metadata is stored here, since it may change while the timer is alive.
+		// CounterValue will take the metadata from here.
+		public IDictionary<string, string> Metadata;
 	}
 	
 	[Serializable]
