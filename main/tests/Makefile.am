@@ -1,6 +1,6 @@
 include $(top_srcdir)/xbuild.include
 
-SUBDIRS=UnitTests MacPlatform.Tests UserInterfaceTests TestRunner Ide.Tests MonoDevelop.CSharpBinding.Tests WindowsPlatform.Tests MonoDevelop.Core.Tests MonoDevelop.Core.Tests.Addin MonoDevelop.Refactoring.Tests
+SUBDIRS=UnitTests IdeUnitTests MacPlatform.Tests UserInterfaceTests TestRunner Ide.Tests MonoDevelop.CSharpBinding.Tests WindowsPlatform.Tests MonoDevelop.Core.Tests MonoDevelop.Core.Tests.Addin MonoDevelop.Refactoring.Tests
 
 MONO=mono$(SGEN_SUFFIX)
 RUN_TEST=$(MDTOOL_RUN) run-md-tests
@@ -13,6 +13,7 @@ TEST_PROJECTS_MAC = \
 	MacPlatform.Tests/MacPlatform.Tests.csproj
 
 TEST_PROJECTS_COMMON = \
+	IdeUnitTests/IdeUnitTests.csproj \
 	UnitTests/UnitTests.csproj \
 	$(top_srcdir)/src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.Tests/MonoDevelop.Debugger.Tests.csproj
 
@@ -193,4 +194,4 @@ EXTRA_DIST = \
 	test-projects/console-project/ConsoleProject/Properties/AssemblyInfo.cs \
 	test-projects/console-project/ConsoleProject/Program.cs \
 	test-projects/console-project/ConsoleProject.sln
-    
+

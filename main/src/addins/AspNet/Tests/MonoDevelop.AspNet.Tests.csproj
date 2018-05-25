@@ -130,9 +130,9 @@
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\tests\Ide.Tests\MonoDevelop.Ide.Tests.csproj">
-      <Project>{73D4CC8B-BAB9-4A29-841B-F25C6311F067}</Project>
-      <Name>MonoDevelop.Ide.Tests</Name>
+    <ProjectReference Include="..\..\..\..\tests\IdeUnitTests\IdeUnitTests.csproj">
+      <Project>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</Project>
+      <Name>IdeUnitTests</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

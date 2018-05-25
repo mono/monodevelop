@@ -202,7 +202,7 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 		}
 		
-		internal int StoreValue (string message, TimeCounter timer, IDictionary<string, string> metadata)
+		internal int StoreValue (string message, ITimeCounter timer, IDictionary<string, string> metadata)
 		{
 			DateTime now = DateTime.Now;
 			if (resolution.Ticks != 0) {
@@ -371,6 +371,53 @@ namespace MonoDevelop.Core.Instrumentation
 		}
 
 	}
+
+	public class Counter<T>: Counter where T : CounterMetadata, new()
+	{
+		internal Counter (string name, CounterCategory category): base (name, category)
+		{
+		}
+
+		public void Inc (string message, T metadata)
+		{
+			Inc (1, message, metadata.Properties);
+		}
+
+		public void Inc (T metadata)
+		{
+			Inc (1, null, metadata.Properties);
+		}
+
+		public void Inc (int n, string message, T metadata)
+		{
+			Inc (n, message, metadata.Properties);
+		}
+
+		public void Dec (string message, T metadata)
+		{
+			Dec (1, message, metadata.Properties);
+		}
+
+		public void Dec (T metadata)
+		{
+			Dec (1, null, metadata.Properties);
+		}
+
+		public void Dec (int n, string message, T metadata)
+		{
+			Dec (n, message, metadata.Properties);
+		}
+
+		public void SetValue (int value, T metadata)
+		{
+			SetValue (value, null, metadata.Properties);
+		}
+
+		public void SetValue (int value, string message, T metadata)
+		{
+			SetValue (value, message, metadata.Properties);
+		}
+	}
 	
 	[Serializable]
 	public struct CounterValue
@@ -437,7 +484,12 @@ namespace MonoDevelop.Core.Instrumentation
 		}
 
 		public IDictionary<string, string> Metadata {
-			get { return metadata; }
+			get {
+				// If the value is for a timer, metadata will be stored in the traces list.
+				// That's because metadata may be allocated after CounterValue has been
+				// created (timer metadata can be set while timing is in progress).
+				return metadata ?? traces?.Metadata;
+			}
 		}
 		
 		public TimeSpan Duration {

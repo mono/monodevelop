@@ -39,16 +39,16 @@ namespace MonoDevelop.AssemblyBrowser
 	{
 		readonly CancellationTokenSource src = new CancellationTokenSource ();
 		readonly AssemblyBrowserWidget widget;
-		
+
 		public string FileName {
 			get;
 			private set;
 		}
-		
-		Task<Tuple<AssemblyDefinition, IUnresolvedAssembly>> assemblyLoaderTask;
+
+		Task<AssemblyDefinition> assemblyLoaderTask;
 		TaskCompletionSource<AssemblyDefinition> assemblyDefinitionTaskSource;
 
-		public Task<Tuple<AssemblyDefinition, IUnresolvedAssembly>> LoadingTask {
+		public Task<AssemblyDefinition> LoadingTask {
 			get {
 				return assemblyLoaderTask;
 			}
@@ -60,35 +60,33 @@ namespace MonoDevelop.AssemblyBrowser
 		public AssemblyDefinition Assembly => AssemblyTask.Result;
 		public Task<AssemblyDefinition> AssemblyTask => assemblyDefinitionTaskSource.Task;
 
-		public IUnresolvedAssembly UnresolvedAssembly {
+		public ModuleDefinition ModuleDefinition {
 			get {
-				return assemblyLoaderTask.Result.Item2;
+				return assemblyLoaderTask.Result.MainModule;
 			}
 		}
 
 		CSharpDecompiler csharpDecompiler;
-		public CSharpDecompiler CSharpDecompiler
-		{
+
+		public CSharpDecompiler CSharpDecompiler {
 			get {
 				if (csharpDecompiler == null) {
-					csharpDecompiler = new CSharpDecompiler(DecompilerTypeSystem, new ICSharpCode.Decompiler.DecompilerSettings());
+					csharpDecompiler = new CSharpDecompiler (DecompilerTypeSystem, new ICSharpCode.Decompiler.DecompilerSettings ());
 				}
 
 				return csharpDecompiler;
 			}
 		}
 
-		public DecompilerTypeSystem DecompilerTypeSystem { get; private set; }
+		DecompilerTypeSystem decompilerTypeSystem;
+		public DecompilerTypeSystem DecompilerTypeSystem { 
+			get { 
+				if (decompilerTypeSystem == null) {
+					decompilerTypeSystem = new DecompilerTypeSystem (Assembly.MainModule);
 
-		internal T GetCecilObject<T>(IUnresolvedEntity unresolvedEntity)
-			where T : IMemberDefinition
-		{
-			// this method has been made public in 3.0.0.3447 (see https://github.com/icsharpcode/ILSpy/issues/1028)
-			// TODO: get rid of reflection here once we migrate to that version
-			var getCecil = DecompilerTypeSystem.GetType().GetMethod("GetCecil", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-			var cecilObject = getCecil.Invoke(DecompilerTypeSystem, new object[] { unresolvedEntity }) as MemberReference;
-			var resolved = (T)cecilObject.Resolve();
-			return resolved;
+				}
+				return decompilerTypeSystem; 
+			}
 		}
 
 		public AssemblyLoader (AssemblyBrowserWidget widget, string fileName)
@@ -102,19 +100,16 @@ namespace MonoDevelop.AssemblyBrowser
 			if (!File.Exists (fileName))
 				throw new ArgumentException ("File doesn't exist.", nameof (fileName));
 
-			assemblyDefinitionTaskSource = new TaskCompletionSource<AssemblyDefinition>();
+			assemblyDefinitionTaskSource = new TaskCompletionSource<AssemblyDefinition> ();
 
-			assemblyLoaderTask = Task.Run ( () => {
+			assemblyLoaderTask = Task.Run (() => {
 				try {
 					var assemblyDefinition = AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters {
 						AssemblyResolver = this
 					});
-					assemblyDefinitionTaskSource.SetResult(assemblyDefinition);
-					DecompilerTypeSystem = new DecompilerTypeSystem(assemblyDefinition.MainModule);
-					var loadedAssembly = DecompilerTypeSystem.MainAssembly.UnresolvedAssembly;
-					return Tuple.Create(assemblyDefinition, loadedAssembly);
-				}
-				catch (Exception e) {
+					assemblyDefinitionTaskSource.SetResult (assemblyDefinition);
+					return assemblyDefinition;
+				} catch (Exception e) {
 					LoggingService.LogError ("Error while reading assembly " + FileName, e);
 					return null;
 				}
@@ -159,23 +154,23 @@ namespace MonoDevelop.AssemblyBrowser
 			var loader = widget.AddReferenceByAssemblyName (name);
 			return loader != null ? loader.Assembly : null;
 		}
-		
+
 		AssemblyDefinition IAssemblyResolver.Resolve (AssemblyNameReference name, ReaderParameters parameters)
 		{
 			var loader = widget.AddReferenceByAssemblyName (name);
 			return loader != null ? loader.Assembly : null;
 		}
 		#endregion
-		
+
 		public string LookupAssembly (string fullAssemblyName)
 		{
 			var assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (fullAssemblyName, null);
 			if (assemblyFile != null && File.Exists (assemblyFile))
 				return assemblyFile;
-			
+
 			var name = AssemblyNameReference.Parse (fullAssemblyName);
 			var path = Path.GetDirectoryName (FileName);
-			
+
 			var dll = Path.Combine (path, name.Name + ".dll");
 			if (File.Exists (dll))
 				return dll;

@@ -30,6 +30,8 @@ using Gtk;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.IO;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
@@ -239,28 +241,57 @@ namespace MonoDevelop.Components.DockNotebook
 			tabStrip.InitSize ();
 		}
 
-		void OnDragDataReceived (object o, Gtk.DragDataReceivedArgs args)
+		async void OnDragDataReceived (object o, Gtk.DragDataReceivedArgs args)
 		{
 			if (args.Info != (uint) TargetList.UriList)
 				return;
 			string fullData = System.Text.Encoding.UTF8.GetString (args.SelectionData.Data);
 
+			var loadWorkspaceItems = !IsInsideTabStrip (args.X, args.Y);
+			var files = new List<Ide.Gui.FileOpenInformation> ();
+
 			foreach (string individualFile in fullData.Split ('\n')) {
 				string file = individualFile.Trim ();
 				if (file.StartsWith ("file://")) {
 					var filePath = new FilePath (file);
+					if (filePath.IsDirectory) {
+						if (!loadWorkspaceItems) // skip directories when not loading solutions
+							continue;
+						filePath = Directory.EnumerateFiles (filePath).FirstOrDefault (p => Services.ProjectService.IsWorkspaceItemFile (p));
+					}
+					if (!filePath.IsNullOrEmpty) // skip empty paths
+						files.Add (new Ide.Gui.FileOpenInformation (filePath, null, 0, 0, Ide.Gui.OpenDocumentOptions.DefaultInternal) { DockNotebook = this });
+				}
+			}
 
+			if (files.Count > 0) {
+				if (loadWorkspaceItems) {
 					try {
-						if (Services.ProjectService.IsWorkspaceItemFile (filePath))
-							IdeApp.Workspace.OpenWorkspaceItem(filePath);
-						else
-							IdeApp.Workbench.OpenDocument (filePath, null, -1, -1, MonoDevelop.Ide.Gui.OpenDocumentOptions.Default, null, null, this);
+						IdeApp.OpenFiles (files);
 					} catch (Exception e) {
-						MonoDevelop.Core.LoggingService.LogError ("unable to open file {0} exception was :\n{1}", file, e.ToString());
+						LoggingService.LogError ($"Failed to open dropped files", e);
+					}
+				} else { // open workspace items as files
+					foreach (var file in files) {
+						try {
+							await IdeApp.Workbench.OpenDocument (file).ConfigureAwait (false);
+						} catch (Exception e) {
+							LoggingService.LogError ($"unable to open file {file}", e);
+						}
 					}
 				}
 			}
 		}
+
+		bool IsInsideTabStrip (int pointerX, int pointerY)
+		{
+			if (tabStrip?.IsRealized != true)
+				return false;
+			int tabX, tabY;
+			TranslateCoordinates (tabStrip, pointerX, pointerY, out tabX, out tabY);
+			return tabStrip.Allocation.Contains (new Point (tabX, tabY));
+		}
+
 		public DockNotebookContainer Container {
 			get {
 				var container = (DockNotebookContainer)Parent;

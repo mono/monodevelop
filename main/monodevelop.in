@@ -9,6 +9,9 @@ export LIBOVERLAY_SCROLLBAR=0
 # The Oxygen GTK theme crashes unless this is set
 export OXYGEN_DISABLE_INNER_SHADOWS_HACK=1
 
+# Add our bin/ to LD_LIBRARY_PATH so we can override system libs with bundles
+export LD_LIBRARY_PATH="${0%%/bin/monodevelop}/lib/monodevelop/bin/:${LD_LIBRARY_PATH}"
+
 #this script should be in $PREFIX/bin
 MONO_EXEC="exec -a monodevelop mono-sgen"
 EXE_PATH="${0%%/bin/monodevelop}/lib/monodevelop/bin/MonoDevelop.exe"

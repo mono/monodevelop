@@ -117,11 +117,6 @@
       <Name>MonoDevelop.Debugger</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\Ide.Tests\MonoDevelop.Ide.Tests.csproj">
-      <Project>{73D4CC8B-BAB9-4A29-841B-F25C6311F067}</Project>
-      <Name>MonoDevelop.Ide.Tests</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\UnitTests\UnitTests.csproj">
       <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
       <Name>UnitTests</Name>
@@ -145,6 +140,11 @@
     <ProjectReference Include="..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
       <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
       <Name>RefactoringEssentials</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\IdeUnitTests\IdeUnitTests.csproj">
+      <Project>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</Project>
+      <Name>IdeUnitTests</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

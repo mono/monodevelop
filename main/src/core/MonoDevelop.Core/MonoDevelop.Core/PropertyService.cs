@@ -27,130 +27,15 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
 namespace MonoDevelop.Core
 {
-	/// <summary>
-	/// The Property wrapper wraps a global property service value as an easy to use object.
-	/// </summary>
-	public abstract class ConfigurationProperty<T>
-	{
-		public T Value {
-			get { return OnGetValue (); }
-			set { OnSetValue (value); }
-		}
-
-		/// <summary>
-		/// Set the property to the specified value.
-		/// </summary>
-		/// <param name='newValue'>
-		/// The new value.
-		/// </param>
-		/// <returns>
-		/// true, if the property has changed, false otherwise.
-		/// </returns>
-		public bool Set (T newValue)
-		{
-			return OnSetValue (newValue);
-		}
-
-		public static implicit operator T (ConfigurationProperty<T> watch)
-		{
-			return watch.Value;
-		}
-
-		protected abstract T OnGetValue ();
-
-		protected abstract bool OnSetValue (T value);
-
-		protected void OnChanged ()
-		{
-			Changed?.Invoke (this, EventArgs.Empty);
-		}
-
-		public event EventHandler Changed;
-	}
-
-	class CoreConfigurationProperty<T>: ConfigurationProperty<T>
-	{
-		T value;
-		readonly string propertyName;
-
-		public CoreConfigurationProperty (string name, T defaultValue, string oldName = null)
-		{
-			propertyName = name;
-
-			if (!string.IsNullOrEmpty (oldName) && PropertyService.HasValue (oldName)) {
-				if (!PropertyService.HasValue (name)) {
-					value = PropertyService.Get<T> (oldName);
-					PropertyService.Set (name, value);
-				}
-				PropertyService.Set (oldName, null);
-			}
-
-			value = PropertyService.Get (name, defaultValue);
-		}
-
-		protected override T OnGetValue ()
-		{
-			return value;
-		}
-
-		protected override bool OnSetValue (T value)
-		{
-			if (!EqualityComparer<T>.Default.Equals (this.value, value)) {
-				this.value = value;
-				PropertyService.Set (propertyName, value);
-				OnChanged ();
-				return true;
-			}
-			return false;
-		}
-	}
-
-	class ObsoleteConfigurationProperty<T> : ConfigurationProperty<T>
-	{
-		T value;
-
-		public ObsoleteConfigurationProperty (T value)
-		{
-			this.value = value;
-		}
-
-		protected override T OnGetValue ()
-		{
-			return value;
-		}
-
-		protected override bool OnSetValue (T value)
-		{
-			return false;
-		}
-	}
-
-	public abstract class ConfigurationProperty
-	{
-		public static ConfigurationProperty<T> Create<T> (string propertyName, T defaultValue, string oldName = null)
-		{
-			return new CoreConfigurationProperty<T> (propertyName, defaultValue, oldName);
-		}
-
-		public static ConfigurationProperty<T> CreateObsolete<T> (T value)
-		{
-			return new ObsoleteConfigurationProperty<T> (value);
-		}
-	}
-
 	public static class PropertyService
 	{
-		public static ConfigurationProperty<T> Wrap<T> (string property, T defaultValue)
-		{
-			return new CoreConfigurationProperty<T> (property, defaultValue);
-		}
+		public static ConfigurationProperty<T> Wrap<T> (string property, T defaultValue) => new CoreConfigurationProperty<T> (property, defaultValue);
 
 		//force the static class to intialize
 		internal static void Initialize ()

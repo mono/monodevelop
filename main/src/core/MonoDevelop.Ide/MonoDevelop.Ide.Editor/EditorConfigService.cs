@@ -39,33 +39,38 @@ namespace MonoDevelop.Ide.Editor
 		public readonly static string MaxLineLengthConvention = "max_line_length";
 		readonly static object contextCacheLock = new object ();
 		readonly static ICodingConventionsManager codingConventionsManager = CodingConventionsManagerFactory.CreateCodingConventionsManager (new ConventionsFileManager());
-		static ImmutableDictionary<string, ICodingConventionContext> contextCache = ImmutableDictionary<string, ICodingConventionContext>.Empty;
+		static ImmutableDictionary<string, Task<ICodingConventionContext>> contextCache = ImmutableDictionary<string, Task<ICodingConventionContext>>.Empty;
 
-		public async static Task<ICodingConventionContext> GetEditorConfigContext (string fileName, CancellationToken token = default (CancellationToken))
+		public static Task<ICodingConventionContext> GetEditorConfigContext (string fileName, CancellationToken token = default (CancellationToken))
 		{
 			if (!File.Exists (fileName))
-				return null;
-			if (contextCache.TryGetValue (fileName, out ICodingConventionContext result))
-				return result;
-			try {
-				result = await codingConventionsManager.GetConventionContextAsync (fileName, token);
-			} catch (OperationCanceledException) {
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while getting coding conventions,", e);
-			}
-			if (result == null)
-				return null;
+				return TaskUtil.Default<ICodingConventionContext> ();
 			lock (contextCacheLock) {
+				if (contextCache.TryGetValue (fileName, out Task<ICodingConventionContext> result))
+					return result;
+				try {
+					result = codingConventionsManager.GetConventionContextAsync (fileName, token);
+				} catch (OperationCanceledException) {
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while getting coding conventions,", e);
+				}
+				if (result == null)
+					return TaskUtil.Default<ICodingConventionContext> ();
 				contextCache = contextCache.SetItem (fileName, result);
 				return result;
-			}
+			} 
 		}
 
-		public static void RemoveEditConfigContext (string fileName)
+		public static async Task RemoveEditConfigContext (string fileName)
 		{
+			Task<ICodingConventionContext> ctx;
 			lock (contextCacheLock) {
-				contextCache = contextCache.Remove (fileName);
+				if (!contextCache.TryGetValue (fileName, out ctx))
+					return;
+				contextCache = contextCache.Remove(fileName);
 			}
+			if (ctx != null)
+				(await ctx).Dispose ();
 		}
 
 		class ConventionsFileManager : IFileWatcher
@@ -75,8 +80,54 @@ namespace MonoDevelop.Ide.Editor
 			public event ConventionsFileChangedAsyncEventHandler ConventionFileChanged;
 			public event ContextFileMovedAsyncEventHandler ContextFileMoved;
 
+			public ConventionsFileManager ()
+			{
+				FileService.FileChanged += FileService_FileChanged;
+				FileService.FileRemoved += FileService_FileRemoved;
+				FileService.FileMoved += FileService_FileMoved;
+				FileService.FileRenamed += FileService_FileMoved;
+			}
+
+			void FileService_FileMoved (object sender, FileCopyEventArgs e)
+			{
+				foreach (var file in e) {
+					if (watchers.TryGetValue (file.SourceFile, out FileSystemWatcher watcher)) {
+						ContextFileMoved?.Invoke (this, new ContextFileMovedEventArgs (file.SourceFile, file.TargetFile));
+						watcher.Dispose ();
+						watchers.Remove (file.SourceFile);
+						StartWatching (file.TargetFile.FileName, file.TargetFile.ParentDirectory);
+					}
+				}
+			}
+
+			void FileService_FileChanged (object sender, FileEventArgs e)
+			{
+				foreach (var file in e) {
+					if (watchers.TryGetValue (file.FileName, out FileSystemWatcher watcher)) {
+						ConventionFileChanged?.Invoke (this, new ConventionsFileChangeEventArgs (watcher.Filter, watcher.Path, ChangeType.FileModified));
+					}
+				}
+			}
+
+			void FileService_FileRemoved (object sender, FileEventArgs e)
+			{
+				lock (watchers) {
+					foreach (var file in e) {
+						if (watchers.TryGetValue (file.FileName, out FileSystemWatcher watcher)) {
+							ConventionFileChanged?.Invoke (this, new ConventionsFileChangeEventArgs (watcher.Filter, watcher.Path, ChangeType.FileDeleted));
+							watcher.Dispose ();
+							watchers.Remove (file.FileName);
+						}
+					}
+				}
+			}
+
 			public void Dispose ()
 			{
+				FileService.FileMoved -= FileService_FileMoved;
+				FileService.FileRenamed -= FileService_FileMoved;
+				FileService.FileRemoved -= FileService_FileRemoved;
+				FileService.FileChanged -= FileService_FileChanged;
 				lock (watchers) {
 					foreach (var kv in watchers)
 						kv.Value.Dispose ();
