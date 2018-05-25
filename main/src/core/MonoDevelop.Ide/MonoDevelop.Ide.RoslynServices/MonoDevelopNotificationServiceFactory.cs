@@ -42,8 +42,8 @@ namespace MonoDevelop.Ide.RoslynServices
 		internal class MonoDevelopNotificationService : INotificationService, INotificationServiceCallback
 		{
 			/// <summary>
-            /// For testing purposes only.  If non-null, this callback will be invoked instead of showing a dialog.
-            /// </summary>
+			/// For testing purposes only.  If non-null, this callback will be invoked instead of showing a dialog.
+			/// </summary>
 			public Action<string, string, NotificationSeverity> NotificationCallback { get; set; }
 
 			public bool ConfirmMessageBox (string message, string title = null, NotificationSeverity severity = NotificationSeverity.Warning)
