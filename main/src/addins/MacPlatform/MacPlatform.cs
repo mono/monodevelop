@@ -1183,7 +1183,7 @@ namespace MonoDevelop.MacIntegration
 				case MemoryPressureFlags.Normal:
 					return PlatformMemoryStatus.Normal;
 				default:
-					LoggingService.LogError ("Found a different platform memory status value {0}", flags.ToString ());
+					LoggingService.LogError ("Unknown MemoryPressureFlags value {0}", flags.ToString ());
 					return PlatformMemoryStatus.Normal;
 				}
 			}
