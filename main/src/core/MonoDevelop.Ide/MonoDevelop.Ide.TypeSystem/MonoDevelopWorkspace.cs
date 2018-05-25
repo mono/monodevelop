@@ -186,6 +186,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var prj in monoDevelopSolution.GetAllProjects ()) {
 				UnloadMonoProject (prj);
 			}
+
+			if (backgroundCompiler != null) {
+				backgroundCompiler.Dispose ();
+				backgroundCompiler = null; // PartialSemanticsEnabled will now return false
+			}
 		}
 
 		internal void InformDocumentTextChange (DocumentId id, SourceText text)
