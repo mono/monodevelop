@@ -143,11 +143,10 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\OptionsExtensionsTests.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\RoslynPreferencesTests.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\OptionsTestBase.cs" />
-    <Compile Include="MonoDevelop.Ide.RoslynServices.Options\MonoDevelopOptionPersisterIntegrationTests.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\MockOptionService.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\MonoDevelopOptionPersisterTests.cs" />
     <Compile Include="TypeForwarders.cs" />
-    <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopNotificationServiceIntegrationTests.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\ExportedServicesAndWorkspaceServicesTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
