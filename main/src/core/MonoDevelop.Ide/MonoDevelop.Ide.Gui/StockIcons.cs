@@ -87,6 +87,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId OpenResourceFolder = "md-open-resource-folder";
 		public static readonly IconId Options = "md-preferences";
 		public static readonly IconId OutputIcon = "md-output-icon";
+		internal static readonly IconId Parser = "md-parser";
 		public static readonly IconId PasteIcon = Gtk.Stock.Paste;
 		public static readonly IconId PreView = Gtk.Stock.PrintPreview;
 		public static readonly IconId PrevWindowIcon = Gtk.Stock.GoBack;
