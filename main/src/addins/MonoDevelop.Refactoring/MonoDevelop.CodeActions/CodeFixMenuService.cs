@@ -54,9 +54,6 @@ namespace MonoDevelop.CodeActions
 {
 	internal static class CodeFixMenuService
 	{
-		static MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable options =
-			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).Options;
-
 		public static CodeFixMenu CreateFixMenu (TextEditor editor, CodeActionContainer fixes, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var menu = new CodeFixMenu ();
@@ -65,6 +62,7 @@ namespace MonoDevelop.CodeActions
 				return menu;
 			}
 
+			var options = ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ().Result;
 			int mnemonic = 1;
 
 			var suppressLabel = GettextCatalog.GetString ("_Suppress");
@@ -85,7 +83,6 @@ namespace MonoDevelop.CodeActions
 
 				foreach (var fix in cfa.Fixes) {
 					var diag = fix.PrimaryDiagnostic;
-
 					if (options.TryGetDiagnosticDescriptor (diag.Id, out var descriptor) && !descriptor.GetIsEnabled (diag.Descriptor))
 						continue;
 					
@@ -157,7 +154,8 @@ namespace MonoDevelop.CodeActions
 							var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
 							if (panel == null)
 								return;
-							panel.Widget.SelectCodeIssue (fix.PrimaryDiagnostic.Descriptor.Id);
+							var title = GettextCatalog.GetString ("{0} ({1})", fix.PrimaryDiagnostic.Descriptor.Title, fix.PrimaryDiagnostic.Descriptor.Id);
+							panel.Widget.SelectCodeIssue (title);
 						});
 					});
 				configureMenu.Add (optionsMenuItem);

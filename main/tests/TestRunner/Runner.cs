@@ -32,6 +32,7 @@ using Mono.Addins;
 using System.Linq;
 using Mono.Addins.Description;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.Tests.TestRunner
@@ -70,9 +71,9 @@ namespace MonoDevelop.Tests.TestRunner
 
 			if (guiUnitAsm != null) {
 				Xwt.XwtSynchronizationContext.AutoInstall = false;
-				var sc = new Xwt.XwtSynchronizationContext ();
-				System.Threading.SynchronizationContext.SetSynchronizationContext (sc);
-				Runtime.MainSynchronizationContext = sc;
+				SynchronizationContext.SetSynchronizationContext (new Xwt.XwtSynchronizationContext ());
+				Runtime.MainSynchronizationContext = SynchronizationContext.Current;
+
 				var method = guiUnitAsm.EntryPoint;
 				return Task.FromResult ((int)method.Invoke (null, new [] { args.ToArray () }));
 			}

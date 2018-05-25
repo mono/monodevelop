@@ -35,6 +35,7 @@ namespace MonoDevelop.Ide.Templates
 {
 	class TemplateWizardProvider
 	{
+		TemplateWizard currentWizard;
 		WizardPage currentWizardPage;
 
 		List<WizardPage> cachedWizardPages = new List<WizardPage> ();
@@ -43,7 +44,19 @@ namespace MonoDevelop.Ide.Templates
 		public bool IsFirstPage { get; private set; }
 		public bool IsLastPage { get; private set; }
 		public int CurrentPageNumber { get; private set; }
-		public TemplateWizard CurrentWizard { get; private set; }
+
+		public TemplateWizard CurrentWizard {
+			get { return currentWizard; }
+			private set {
+				if (currentWizard != null) {
+					currentWizard.TotalPagesChanged -= OnTotalPagesChanged;
+				}
+				currentWizard = value;
+				if (currentWizard != null) {
+					currentWizard.TotalPagesChanged += OnTotalPagesChanged;
+				}
+			}
+		}
 
 		public WizardPage CurrentWizardPage {
 			get { return currentWizardPage; }
@@ -79,6 +92,19 @@ namespace MonoDevelop.Ide.Templates
 			if (handler != null) {
 				handler (sender, e);
 			}
+		}
+
+		void OnTotalPagesChanged (object sender, EventArgs e)
+		{
+			// Note: if the user goes back and changes values in a previous page,
+			// it's possible for the number of wizard pages to change. Remove any
+			// pages beyond the current page from the cache.
+			for (int i = cachedWizardPages.Count; i > CurrentPageNumber; i--) {
+				cachedWizardPages[i - 1].Dispose ();
+				cachedWizardPages.RemoveAt (i - 1);
+			}
+
+			IsLastPage = (CurrentPageNumber == CurrentWizard.TotalPages);
 		}
 
 		public bool MoveToFirstPage (SolutionTemplate template, ProjectCreateParameters parameters)

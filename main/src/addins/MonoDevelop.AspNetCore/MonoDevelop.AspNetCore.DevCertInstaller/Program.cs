@@ -37,7 +37,7 @@ namespace MonoDevelop.AspNetCore.DevCertInstaller
 		public static int Main (string[] args)
 		{
 			try {
-				if (args.Length < 2) {
+				if (ArgumentsMissing (args)) {
 					Console.WriteLine ("Arguments missing.");
 					return -4;
 				}
@@ -45,13 +45,24 @@ namespace MonoDevelop.AspNetCore.DevCertInstaller
 				if (args [0] == "--setuid") {
 					return RunDotNetDevCerts (args [1]);
 				} else {
-					return Run (args [0], args [1]);
+					return Run (args [0], args [1], args [2]);
 				}
 
 			} catch (Exception ex) {
 				Console.WriteLine (ex.Message);
 				return -2;
 			}
+		}
+
+		static bool ArgumentsMissing (string[] args)
+		{
+			if (args.Length < 2)
+				return true;
+
+			if ((args [0] != "--setuid") && (args.Length < 3))
+				return true;
+
+			return false;
 		}
 
 		/// <summary>
@@ -62,16 +73,21 @@ namespace MonoDevelop.AspNetCore.DevCertInstaller
 		/// console application is run which calls setuid to change the user id to 0
 		/// and then runs the dotnet dev-certs.
 		/// </summary>
-		static int Run (string dotNetCorePath, string monoPath)
+		static int Run (string dotNetCorePath, string monoPath, string prompt)
 		{
 			var fileName = typeof (MainClass).Assembly.Location;
 			var args = new [] { fileName, "--setuid", dotNetCorePath };
+
+			var parameters = new AuthorizationParameters {
+				Prompt = prompt,
+				PathToSystemPrivilegeTool = "" // Cannot be null otherwise the prompt is not displayed.
+			};
 
 			var flags = AuthorizationFlags.ExtendRights |
 				AuthorizationFlags.InteractionAllowed |
 				AuthorizationFlags.PreAuthorize;
 
-			using (var auth = Authorization.Create (null, null, flags)) {
+			using (var auth = Authorization.Create (parameters, null, flags)) {
 				int result = auth.ExecuteWithPrivileges (
 					monoPath,
 					AuthorizationFlags.Defaults,

@@ -378,6 +378,7 @@ src/addins/MonoDevelop.PackageManagement/Makefile
 src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Tests/Makefile
 tests/Makefile
 tests/UnitTests/Makefile
+tests/IdeUnitTests/Makefile
 tests/UserInterfaceTests/Makefile
 tests/TestRunner/Makefile
 tests/Ide.Tests/Makefile

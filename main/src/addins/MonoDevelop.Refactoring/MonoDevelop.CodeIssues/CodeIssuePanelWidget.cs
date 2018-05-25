@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Gdk;
 using GLib;
 using Gtk;
@@ -81,12 +82,10 @@ namespace MonoDevelop.CodeIssues
 		readonly Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> severities = new Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> ();
 		readonly Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, bool> enableState = new Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, bool> ();
 
-		static MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable options =
-			((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).Options; 
-		
 		void GetAllSeverities ()
 		{
 			var language = CodeRefactoringService.MimeTypeToLanguage (mimeType);
+			var options = ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ().Result;
 			foreach (var node in options.AllDiagnostics) {
 				if (!node.Languages.Contains (language))
 					continue;
@@ -111,10 +110,7 @@ namespace MonoDevelop.CodeIssues
 
 		public void SelectCodeIssue (string idString)
 		{
-			TreeIter iter;
-			if (!treeStore.GetIterFirst (out iter))
-				return;
-			SelectCodeIssue (idString, iter);
+			searchentryFilter.Entry.Text = idString;
 		}
 
 		bool SelectCodeIssue (string idString, TreeIter iter)
@@ -203,9 +199,16 @@ namespace MonoDevelop.CodeIssues
 			if (!string.IsNullOrEmpty (filter)) {
 				var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
 				if (idx >= 0) {
+					string color;
+					if (IdeTheme.UserInterfaceTheme == Theme.Light) {
+						color = "yellow";
+					}else  {
+						color = "#666600";
+					}
+
 					title =
 						Markup.EscapeText (title.Substring (0, idx)) +
-						"<span bgcolor=\"yellow\">" +
+						"<span bgcolor=\"" + color + "\">" +
 						Markup.EscapeText (title.Substring (idx, filter.Length)) +
 						"</span>" +
 						Markup.EscapeText (title.Substring (idx + filter.Length));

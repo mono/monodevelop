@@ -307,6 +307,9 @@ namespace MonoDevelop.PackageManagement
 				await restoreTask;
 			}
 
+			// Ensure MSBuild tasks are up to date when the next build is run.
+			project.ShutdownProjectBuilder ();
+
 			if (!packageRestorer.LockFileChanged) {
 				// Need to refresh the references since the restore did not.
 				await Runtime.RunInMainThread (() => {

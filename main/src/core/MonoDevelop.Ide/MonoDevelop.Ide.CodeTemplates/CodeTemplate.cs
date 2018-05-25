@@ -504,7 +504,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				newoffset = offset + template.Code.Length; 
 			}
 
-			editor.CaretLocation = editor.OffsetToLocation (newoffset) ;
+			editor.CaretLocation = editor.OffsetToLocation (newoffset);
+			editor.FixVirtualIndentation ();
 
 			var prettyPrinter = CodeFormatterService.GetFormatter (data.MimeType);
 			if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting) {

@@ -35,6 +35,7 @@ namespace MonoDevelop.Core.Instrumentation
 	{
 		void Trace (string message);
 		void End ();
+		TimeSpan Duration { get; }
 	}
 	
 	public interface ITimeTracker<T>: IDisposable, ITimeTracker where T : CounterMetadata
@@ -68,6 +69,8 @@ namespace MonoDevelop.Core.Instrumentation
 		}
 
 		public T Metadata { get; private set; }
+
+		public TimeSpan Duration { get; }
 	}
 	
 	class TimeCounter<T>: ITimeTracker<T>, ITimeCounter where T:CounterMetadata
@@ -145,6 +148,7 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 
 			stopWatch.Stop ();
+			Duration = stopWatch.Elapsed;
 
 			if (counter.LogMessages) {
 				var time = stopWatch.ElapsedMilliseconds;
@@ -173,6 +177,8 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 			End ();
 		}
+
+		public TimeSpan Duration { get; private set; }
 	}
 	
 	[Serializable]
