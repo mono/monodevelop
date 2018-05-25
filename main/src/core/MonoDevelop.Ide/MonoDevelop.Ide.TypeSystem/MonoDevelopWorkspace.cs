@@ -48,6 +48,7 @@ using System.ComponentModel;
 using Mono.Addins;
 using MonoDevelop.Core.AddIns;
 using Microsoft.CodeAnalysis.Internal.Log;
+using Microsoft.CodeAnalysis.Shared.Options;
 using Microsoft.CodeAnalysis.Shared.Utilities;
 using Microsoft.CodeAnalysis.SolutionCrawler;
 using MonoDevelop.Ide.Composition;
@@ -140,10 +141,22 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			// Disable full solution analysis when the OS triggers a warning about memory pressure.
 			if (args.MemoryStatus != PlatformMemoryStatus.Normal) {
-				Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, false);
+				Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, false);
 
 				var cacheService = Services.GetService<IWorkspaceCacheService> () as MonoDevelopWorkspaceCacheService;
 				cacheService?.FlushCaches ();
+
+				// TODO: Replace this with INotificationService or IErrorReportingService when implemented
+				var alreadyShown = Options.GetOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown);
+				if (alreadyShown || !IdeApp.IsInitialized || IdeApp.Workbench == null)
+					return;
+
+				string message = GettextCatalog.GetString ("{0} has suspended some advanced features to improve performance.", BrandingService.ApplicationName);
+
+				Runtime.RunInMainThread (() => {
+					IdeApp.Workbench.StatusBar.ShowMessage (message, isMarkup: true);
+					// VSWin has a nice notification bar UX, with re-enable button and learn more buttons.
+				});
 			}
 		}
 
