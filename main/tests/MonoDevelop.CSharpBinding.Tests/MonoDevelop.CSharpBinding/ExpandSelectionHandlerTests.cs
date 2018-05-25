@@ -37,12 +37,20 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using MonoDevelop.CSharp;
+using MonoDevelop.Ide.Editor.Extension;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharpBinding
 {
 	[TestFixture]
-	class ExpandSelectionHandlerTests : MonoDevelop.Ide.IdeTestBase
+	class ExpandSelectionHandlerTests : TextEditorExtensionTestBase
 	{
+		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharpWithReferences;
+		protected override IEnumerable<TextEditorExtension> GetEditorExtensions ()
+		{
+			yield return new CSharpCompletionTextEditorExtension ();
+		}
+
 		[Test]
 		public async Task TestExpandSelection ()
 		{
@@ -58,7 +66,7 @@ class FooBar
 				ExpandSelectionHandler.Run (doc);
 				Assert.AreEqual (74, doc.Editor.SelectionRange.Offset);
 				Assert.AreEqual (5, doc.Editor.SelectionRange.Length);
-
+				return Task.CompletedTask;
 			});
 		}
 
@@ -103,51 +111,21 @@ class FooBar
 
 			});
 		}
-		static async Task CheckAutoBracket (string text, Action<Document> action)
+
+		async Task CheckAutoBracket (string text, Func<Document, Task> action)
 		{
 			int endPos = text.IndexOf ('@');
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
-			var project = Ide.Services.ProjectService.CreateDotNetProject ("C#");
-			project.Name = "test";
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("mscorlib"));
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System.Core"));
+			using (var testCase = await SetupTestCase (text, Math.Max (0, endPos))) {
+				var doc = testCase.Document;
+				await doc.UpdateParseDocument ();
 
-			project.FileName = "test.csproj";
-			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile));
+				var ctx = new CodeCompletionContext ();
 
-			var solution = new MonoDevelop.Projects.Solution ();
-			solution.AddConfiguration ("", true);
-			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
-
-			var tww = new TestWorkbenchWindow ();
-			var content = new TestViewContent ();
-			tww.ViewContent = content;
-			content.ContentName = "/a.cs";
-			content.Data.MimeType = "text/x-csharp";
-			content.Project = project;
-
-
-			content.Text = text;
-			content.CursorPosition = Math.Max (0, endPos);
-			var doc = new MonoDevelop.Ide.Gui.Document (tww);
-			doc.SetProject (project);
-
-			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc.Editor, doc);
-			content.Contents.Add (compExt);
-
-			await doc.UpdateParseDocument ();
-
-			var ctx = new CodeCompletionContext ();
-
-			action (doc);
-
-			project.Dispose ();
+				await action (doc);
+			}
 		}
 	}
 }
