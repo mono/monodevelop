@@ -239,11 +239,10 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (lookup.Symbol.Kind == SymbolKind.Method) {
 					var symbolsToLookup = new List<SymbolAndProjectId> ();
 					foreach (var curSymbol in lookup.Symbol.ContainingType.GetMembers ().Where (m => m.Kind == lookup.Symbol.Kind && m.Name == lookup.Symbol.Name)) {
-						foreach (var sym in SymbolFinder.FindSimilarSymbols (curSymbol, lookup.Compilation)) {
+						foreach (var sym in SymbolFinder.FindSimilarSymbols (curSymbol, lookup.Compilation, monitor.CancellationToken)) {
 							//assumption here is, that FindSimilarSymbols returns symbols inside same project
-							foreach (var simSym in await GatherSymbols (SymbolAndProjectId.Create (sym, lookup.Project.Id), lookup.Solution, monitor.CancellationToken)) {
-								symbolsToLookup.Add (simSym);
-							}
+							var symbolsToAdd = await GatherSymbols (SymbolAndProjectId.Create (sym, lookup.Project.Id), lookup.Solution, monitor.CancellationToken);
+							symbolsToLookup.AddRange (symbolsToAdd);
 						}
 					}
 					await FindReferencesHandler.FindRefs (symbolsToLookup.ToArray (), lookup.Solution, monitor);
