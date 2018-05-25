@@ -174,8 +174,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			disposed = true;
 
-			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
-			solutionCrawler.Unregister (this);
 			IdeApp.Preferences.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
 			IdeApp.Preferences.EnableFullSolutionSourceAnalysis.Changed -= OnEnableFullSourceAnalysisChanged;
 
@@ -186,6 +184,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var prj in monoDevelopSolution.GetAllProjects ()) {
 				UnloadMonoProject (prj);
 			}
+
+			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+			solutionCrawler.Unregister (this);
 
 			if (backgroundCompiler != null) {
 				backgroundCompiler.Dispose ();
