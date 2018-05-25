@@ -50,14 +50,16 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 		[Test]
 		public async Task WorkspaceServiceIsRegistered ()
 		{
-			var doc = await SetupDocument ("class MyClass {}");
+			using (var testCase = await SetupTestCase ("class MyClass {}")) {
+				var doc = testCase.Document;
 
-			AssertWorkspaceService<INotificationService, MonoDevelopNotificationServiceFactory.MonoDevelopNotificationService> ();
+				AssertWorkspaceService<INotificationService, MonoDevelopNotificationServiceFactory.MonoDevelopNotificationService> ();
 
-			void AssertWorkspaceService<TExport, TActual> () where TExport:IWorkspaceService
-			{
-				var actual = doc.RoslynWorkspace.Services.GetService<TExport> ();
-				Assert.That (actual, Is.TypeOf<TActual> ());
+				void AssertWorkspaceService<TExport, TActual> () where TExport : IWorkspaceService
+				{
+					var actual = doc.RoslynWorkspace.Services.GetService<TExport> ();
+					Assert.That (actual, Is.TypeOf<TActual> ());
+				}
 			}
 		}
 	}

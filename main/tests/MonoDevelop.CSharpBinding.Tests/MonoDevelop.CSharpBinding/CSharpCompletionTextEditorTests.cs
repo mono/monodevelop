@@ -159,28 +159,29 @@ namespace console61
 
 		async Task TestCompletion (string text, Action<Document, ICompletionDataList> action, CompletionTriggerInfo triggerInfo)
 		{
-			DesktopService.Initialize ();
-
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
-			var doc = await SetupDocument (text, cursorPosition: Math.Max (0, endPos));
-			var compExt = doc.GetContent<CSharpCompletionTextEditorExtension> ();
-			compExt.CurrentCompletionContext = new CodeCompletionContext {
-				TriggerOffset = doc.Editor.CaretOffset,
-				TriggerWordLength = 1,
-			};
+			using (var testCase = await SetupTestCase (text, cursorPosition: Math.Max (0, endPos))) {
+				var doc = testCase.Document;
 
-			await doc.UpdateParseDocument ();
+				var compExt = doc.GetContent<CSharpCompletionTextEditorExtension> ();
+				compExt.CurrentCompletionContext = new CodeCompletionContext {
+					TriggerOffset = doc.Editor.CaretOffset,
+					TriggerWordLength = 1,
+				};
 
-			var tmp = IdeApp.Preferences.EnableAutoCodeCompletion;
-			IdeApp.Preferences.EnableAutoCodeCompletion.Set (false);
-			var list = await compExt.HandleCodeCompletionAsync (compExt.CurrentCompletionContext, triggerInfo);
-			try {
-				action (doc, list);
-			} finally {
-				IdeApp.Preferences.EnableAutoCodeCompletion.Set (tmp);
+				await doc.UpdateParseDocument ();
+
+				var tmp = IdeApp.Preferences.EnableAutoCodeCompletion;
+				IdeApp.Preferences.EnableAutoCodeCompletion.Set (false);
+				var list = await compExt.HandleCodeCompletionAsync (compExt.CurrentCompletionContext, triggerInfo);
+				try {
+					action (doc, list);
+				} finally {
+					IdeApp.Preferences.EnableAutoCodeCompletion.Set (tmp);
+				}
 			}
 		}
 
@@ -269,8 +270,6 @@ class FooBar : ProtocolClass
 		[Test]
 		public async Task TestDebuggerCompletionProvider ()
 		{
-			DesktopService.Initialize ();
-
 			var text = @"
 namespace console61
 	{
@@ -295,23 +294,24 @@ namespace console61
 			if (endOfStatement >= 0)
 				text = text.Substring (0, endOfStatement) + text.Substring (endOfStatement + 1);
 
-			var doc = await SetupDocument (text, cursorPosition: Math.Max (0, startOfStatement));
+			using (var testCase = await SetupTestCase (text, cursorPosition: Math.Max (0, startOfStatement))) {
+				var doc = testCase.Document;
+				var compExt = doc.GetContent<IDebuggerCompletionProvider> ();
 
-			var compExt = doc.GetContent<IDebuggerCompletionProvider> ();
+				await doc.UpdateParseDocument ();
+				var startLine = doc.Editor.GetLineByOffset (startOfStatement);
+				var startColumn = startOfStatement - startLine.Offset;
+				var endLine = doc.Editor.GetLineByOffset (endOfStatement);
+				var endColumn = endOfStatement - endLine.Offset;
 
-			await doc.UpdateParseDocument ();
-			var startLine = doc.Editor.GetLineByOffset (startOfStatement);
-			var startColumn = startOfStatement - startLine.Offset;
-			var endLine = doc.Editor.GetLineByOffset (endOfStatement);
-			var endColumn = endOfStatement - endLine.Offset;
-
-			var completionResult = await compExt.GetExpressionCompletionData ("a", new StackFrame (0, new SourceLocation ("", "", startLine.LineNumber, startColumn, endLine.LineNumber, endColumn), "C#"), default (CancellationToken));
-			Assert.IsNotNull (completionResult);
-			Assert.Less (10, completionResult.Items.Count);//Just randomly high number
-			Assert.IsTrue (completionResult.Items.Any (i => i.Name == "args"));
-			Assert.IsTrue (completionResult.Items.Any (i => i.Name == "System"));
-			Assert.IsTrue (completionResult.Items.Any (i => i.Name == "Method2"));
-			Assert.AreEqual (1, completionResult.ExpressionLength);
+				var completionResult = await compExt.GetExpressionCompletionData ("a", new StackFrame (0, new SourceLocation ("", "", startLine.LineNumber, startColumn, endLine.LineNumber, endColumn), "C#"), default (CancellationToken));
+				Assert.IsNotNull (completionResult);
+				Assert.Less (10, completionResult.Items.Count);//Just randomly high number
+				Assert.IsTrue (completionResult.Items.Any (i => i.Name == "args"));
+				Assert.IsTrue (completionResult.Items.Any (i => i.Name == "System"));
+				Assert.IsTrue (completionResult.Items.Any (i => i.Name == "Method2"));
+				Assert.AreEqual (1, completionResult.ExpressionLength);
+			}
 		}
 	}
 }

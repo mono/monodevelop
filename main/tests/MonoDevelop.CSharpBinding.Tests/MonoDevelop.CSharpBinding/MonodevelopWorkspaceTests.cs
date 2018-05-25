@@ -25,9 +25,9 @@
 // THE SOFTWARE.
 using System;
 using System.Threading.Tasks;
-using MonoDevelop.Projects;
 using NUnit.Framework;
 using UnitTests;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -41,19 +41,24 @@ namespace MonoDevelop.CSharpBinding
 		public async Task TestLoadingSolution()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			var sol = (Projects.Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			await TypeSystemServiceTestExtensions.LoadSolution (sol);
-			var compilation = await TypeSystemService.GetCompilationAsync (sol.GetAllProjects ().First());
-			var programType = compilation.GetTypeByMetadataName ("ConsoleProject.Program");
-			Assert.IsNotNull (programType);
+			using (var sol = (Projects.Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				await TypeSystemServiceTestExtensions.LoadSolution (sol);
+				var compilation = await TypeSystemService.GetCompilationAsync (sol.GetAllProjects ().First ());
+				var programType = compilation.GetTypeByMetadataName ("ConsoleProject.Program");
+				Assert.IsNotNull (programType);
+
+				TypeSystemServiceTestExtensions.UnloadSolution (sol);
+			}
 		}
 
 		[Test]
 		public async Task TestLoadingSolutionWithUnsupportedType()
 		{
 			string solFile = Util.GetSampleProject ("unsupported-project-roundtrip", "TestApp.WinPhone.sln");
-			var sol = (Projects.Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			await TypeSystemServiceTestExtensions.LoadSolution (sol);
+			using (var sol = (Projects.Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				await TypeSystemServiceTestExtensions.LoadSolution (sol);
+				TypeSystemServiceTestExtensions.UnloadSolution (sol);
+			}
 		}
 	}
 }

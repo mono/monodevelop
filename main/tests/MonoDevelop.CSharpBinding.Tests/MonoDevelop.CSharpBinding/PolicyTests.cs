@@ -47,25 +47,25 @@ namespace MonoDevelop.CSharpBinding
 			var pset = PolicyService.GetPolicySet ("Mono");
 			var monoFormattingPolicy = pset.Get<CSharpFormattingPolicy> ("text/x-csharp");
 			var formattingPolicy = monoFormattingPolicy.Clone ();
-			var solution = new Solution ();
-			solution.Policies.Set (formattingPolicy);
+			using (var solution = new Solution ()) {
+				solution.Policies.Set (formattingPolicy);
 
-			bool expectedSetting = !formattingPolicy.IndentSwitchCaseSection;
-			string fileName = Path.Combine (dir, "IndentSwitchCaseSectionChangedMultipleTimes.sln");
+				bool expectedSetting = !formattingPolicy.IndentSwitchCaseSection;
+				string fileName = Path.Combine (dir, "IndentSwitchCaseSectionChangedMultipleTimes.sln");
 
-			for (int i = 0; i < 3; ++i) {
-				formattingPolicy.IndentSwitchCaseSection = expectedSetting;
+				for (int i = 0; i < 3; ++i) {
+					formattingPolicy.IndentSwitchCaseSection = expectedSetting;
 
-				await solution.SaveAsync (fileName, Util.GetMonitor ());
+					await solution.SaveAsync (fileName, Util.GetMonitor ());
 
-				var savedSolution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), fileName);
-				var savedFormattingPolicy = savedSolution.Policies.Get<CSharpFormattingPolicy> ();
-				Assert.AreEqual (expectedSetting, savedFormattingPolicy.IndentSwitchCaseSection);
+					using (var savedSolution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), fileName)) {
+						var savedFormattingPolicy = savedSolution.Policies.Get<CSharpFormattingPolicy> ();
+						Assert.AreEqual (expectedSetting, savedFormattingPolicy.IndentSwitchCaseSection);
+					}
 
-				expectedSetting = !expectedSetting;
+					expectedSetting = !expectedSetting;
+				}
 			}
-
-			solution.Dispose ();
 		}
 
 		/// <summary>
@@ -78,26 +78,25 @@ namespace MonoDevelop.CSharpBinding
 		{
 			string dir = Util.CreateTmpDir ("FormattingPolicyChangedOnce");
 			var formattingPolicy = new CSharpFormattingPolicy ();
-			var solution = new Solution ();
-			solution.Policies.Set (formattingPolicy);
+			using (var solution = new Solution ()) {
+				solution.Policies.Set (formattingPolicy);
 
-			bool expectedSetting = !formattingPolicy.IndentSwitchCaseSection;
-			formattingPolicy.IndentSwitchCaseSection = expectedSetting;
-			string fileName = Path.Combine (dir, "FormattingPolicyChangedOnce.sln");
+				bool expectedSetting = !formattingPolicy.IndentSwitchCaseSection;
+				formattingPolicy.IndentSwitchCaseSection = expectedSetting;
+				string fileName = Path.Combine (dir, "FormattingPolicyChangedOnce.sln");
 
-			await solution.SaveAsync (fileName, Util.GetMonitor ());
+				await solution.SaveAsync (fileName, Util.GetMonitor ());
 
-			var file = new SlnFile ();
-			file.Read (fileName);
-			var s = file.Sections.GetSection ("MonoDevelopProperties", SlnSectionType.PreProcess);
-			var missingItem = default(KeyValuePair<string, string>);
-			Assert.AreEqual (expectedSetting.ToString (), s.Properties.SingleOrDefault (p => p.Key.Contains ("IndentSwitchCaseSection")).Value);
-			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("IndentSwitchSection")));
-			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("IndentBlock")));
-			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("SpaceBeforeDot")));
-			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("NewLineForElse")));
-
-			solution.Dispose ();
+				var file = new SlnFile ();
+				file.Read (fileName);
+				var s = file.Sections.GetSection ("MonoDevelopProperties", SlnSectionType.PreProcess);
+				var missingItem = default (KeyValuePair<string, string>);
+				Assert.AreEqual (expectedSetting.ToString (), s.Properties.SingleOrDefault (p => p.Key.Contains ("IndentSwitchCaseSection")).Value);
+				Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("IndentSwitchSection")));
+				Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("IndentBlock")));
+				Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("SpaceBeforeDot")));
+				Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("NewLineForElse")));
+			}
 		}
 	}
 }

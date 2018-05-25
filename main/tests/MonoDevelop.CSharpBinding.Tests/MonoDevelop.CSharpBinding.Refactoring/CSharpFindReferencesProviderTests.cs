@@ -45,44 +45,22 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
 using NUnit.Framework;
 using System.Collections.Concurrent;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
 	[TestFixture]
-	class CSharpFindReferencesProviderTests : TestBase
+	class CSharpFindReferencesProviderTests : TextEditorExtensionTestBase
 	{
+		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharp;
 
-		static async Task<List<SearchResult>> GatherReferences (string input, Func<MonoDevelop.Projects.Project, Task<IEnumerable<SearchResult>>> findRefsCallback)
+		async Task<List<SearchResult>> GatherReferences (string input, Func<MonoDevelop.Projects.Project, Task<IEnumerable<SearchResult>>> findRefsCallback)
 		{
-			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
-			TestViewContent content = new TestViewContent ();
-			tww.ViewContent = content;
-			content.ContentName = "/a.cs";
-			content.Data.MimeType = "text/x-csharp";
+			using (var testCase = await SetupTestCase (input)) {
+				var doc = testCase.Document;
 
-			var doc = new MonoDevelop.Ide.Gui.Document (tww);
-
-			var text = input;
-			content.Text = text;
-
-			var project = Services.ProjectService.CreateProject ("C#");
-			project.Name = "test";
-			project.FileName = "test.csproj";
-			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile));
-			project.Policies.Set (PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (), CSharpFormatter.MimeType);
-			var solution = new MonoDevelop.Projects.Solution ();
-			solution.AddConfiguration ("", true);
-			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
-			content.Project = project;
-			doc.SetProject (project);
-
-			await doc.UpdateParseDocument ();
-			try {
-				return (await findRefsCallback (project)).ToList ();
-			} finally {
-				TypeSystemService.Unload (solution);
+				await doc.UpdateParseDocument ();
+				return (await findRefsCallback (testCase.Project)).ToList ();
 			}
 		}
 

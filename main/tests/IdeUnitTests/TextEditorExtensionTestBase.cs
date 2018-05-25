@@ -78,6 +78,24 @@ namespace MonoDevelop.Ide
 		}
 	}
 
+	public class TextEditorExtensionTestCase : IDisposable
+	{
+		public Document Document { get; }
+		public Project Project => Document.Project;
+		public Solution Solution => Document.Project.ParentSolution;
+
+		public TextEditorExtensionTestCase (Document doc)
+		{
+			Document = doc;
+		}
+
+		public void Dispose ()
+		{
+			using (var solution = Document.Project.ParentSolution)
+				TypeSystemService.Unload (solution);
+		}
+	}
+
 	public abstract class TextEditorExtensionTestBase : IdeTestBase
 	{
 		protected abstract EditorExtensionTestData GetContentData ();
@@ -87,7 +105,7 @@ namespace MonoDevelop.Ide
 			yield break;
 		}
 
-		protected async Task<Document> SetupDocument (string input, int cursorPosition = -1)
+		protected async Task<TextEditorExtensionTestCase> SetupTestCase (string input, int cursorPosition = -1)
 		{
 			await Composition.CompositionManager.InitializeAsync ();
 
@@ -129,7 +147,7 @@ namespace MonoDevelop.Ide
 				content.Contents.Add (ext);
 			}
 
-			return doc;
+			return new TextEditorExtensionTestCase (doc, content);
 		}
 	}
 }
