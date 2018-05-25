@@ -32,7 +32,7 @@ namespace MonoDevelop.CSharp.Navigation
 {
 	internal static class Counters
 	{
-		public static TimerCounter NavigateTo = InstrumentationService.CreateTimerCounter ("Navigate to", "Code Navigation", id: "CodeNavigation.NavigateTo");
+		public static TimerCounter<NavigationMetadata> NavigateTo = InstrumentationService.CreateTimerCounter<NavigationMetadata> ("Navigate to", "Code Navigation", id: "CodeNavigation.NavigateTo");
 
 		public static IDictionary<string, string> CreateNavigateToMetadata (string navigationType)
 		{
@@ -64,6 +64,35 @@ namespace MonoDevelop.CSharp.Navigation
 		public static void UpdateUserFault (IDictionary<string, string> metadata)
 		{
 			metadata ["Result"] = "UserFault";
+		}
+
+		public class NavigationMetadata: CounterMetadata
+		{
+			public NavigationMetadata ()
+			{
+			}
+
+			public NavigationMetadata (string type)
+			{
+				Properties["Type"] = type;
+				Result = CounterResult.Failure; // Will be updated when navigation finishes.
+			}
+
+			public string Type {
+				get { return Properties.TryGetValue ("Type", out var type) ? type : null; }
+				set { Properties ["Type"] = value; }
+			}
+
+			public void SetResult (bool result)
+			{
+				Properties ["Result"] = result ? "Success" : "Failure";
+			}
+
+			public void UpdateUserCancellation (CancellationToken cancellationToken)
+			{
+				if (cancellationToken.IsCancellationRequested)
+					Properties ["Result"] = "UserCancel";
+			}
 		}
 	}
 }
