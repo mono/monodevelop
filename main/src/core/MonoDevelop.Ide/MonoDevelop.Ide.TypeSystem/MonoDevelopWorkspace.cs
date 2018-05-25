@@ -51,6 +51,7 @@ using Microsoft.CodeAnalysis.Internal.Log;
 using Microsoft.CodeAnalysis.Shared.Utilities;
 using Microsoft.CodeAnalysis.SolutionCrawler;
 using MonoDevelop.Ide.Composition;
+using MonoDevelop.Ide.RoslynServices;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -138,8 +139,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		void OnMemoryStatusChanged(object sender, PlatformMemoryStatusEventArgs args)
 		{
 			// Disable full solution analysis when the OS triggers a warning about memory pressure.
-			if (args.MemoryStatus != PlatformMemoryStatus.Normal)
+			if (args.MemoryStatus != PlatformMemoryStatus.Normal) {
 				Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, false);
+
+				var cacheService = Services.GetService<IWorkspaceCacheService> () as MonoDevelopWorkspaceCacheService;
+				cacheService?.FlushCaches ();
+			}
 		}
 
 		void OnCacheFlushRequested (object sender, EventArgs args)
