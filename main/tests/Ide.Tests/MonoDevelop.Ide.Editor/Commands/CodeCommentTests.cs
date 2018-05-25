@@ -196,6 +196,7 @@ namespace MonoDevelop.Ide.Editor
 			var info = new Components.Commands.CommandInfo ();
 			//Finnaly call command Update so it sets values which we assert
 			GetExtension (document.Editor).OnUpdateToggleComment (info);
+			await document.Close ();
 			Assert.AreEqual (true, info.Visible);
 			Assert.AreEqual (true, info.Enabled);
 		}
