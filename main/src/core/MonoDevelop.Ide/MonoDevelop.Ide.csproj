@@ -9649,6 +9649,7 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\RoslynPreferences.Properties.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\CompletionStatistics.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopNotificationServiceFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopTaskSchedulerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
