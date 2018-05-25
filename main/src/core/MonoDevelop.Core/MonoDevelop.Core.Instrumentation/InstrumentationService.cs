@@ -244,7 +244,17 @@ namespace MonoDevelop.Core.Instrumentation
 			return CreateCounter (name, category, logMessages, id, false);
 		}
 
+		public static Counter<T> CreateCounter<T> (string name, string category = null, bool logMessages = false, string id = null) where T : CounterMetadata, new()
+		{
+			return (Counter<T>) CreateCounter<T> (name, category, logMessages, id, false);
+		}
+
 		static Counter CreateCounter (string name, string category, bool logMessages, string id, bool isTimer)
+		{
+			return CreateCounter<CounterMetadata> (name, category, logMessages, id, isTimer);
+		}
+
+		static Counter CreateCounter<T> (string name, string category, bool logMessages, string id, bool isTimer) where T:CounterMetadata, new()
 		{
 			if (name == null)
 				throw new ArgumentNullException ("name", "Counters must have a Name");
@@ -261,7 +271,7 @@ namespace MonoDevelop.Core.Instrumentation
 					categories.Add (cat);
 				}
 				
-				Counter c = isTimer ? new TimerCounter (name, cat) : new Counter (name, cat);
+				var c = isTimer ? new TimerCounter<T> (name, cat) : (Counter) new Counter<T> (name, cat);
 				c.Id = id;
 				c.LogMessages = logMessages;
 				cat.AddCounter (c);
@@ -320,6 +330,15 @@ namespace MonoDevelop.Core.Instrumentation
 		public static TimerCounter CreateTimerCounter (string name, string category = null, double minSeconds = 0, bool logMessages = false, string id = null)
 		{
 			TimerCounter c = (TimerCounter) CreateCounter (name, category, logMessages, id, true);
+			c.DisplayMode = CounterDisplayMode.Line;
+			c.LogMessages = logMessages;
+			c.MinSeconds = minSeconds;
+			return c;
+		}
+		
+		public static TimerCounter<T> CreateTimerCounter<T> (string name, string category = null, double minSeconds = 0, bool logMessages = false, string id = null) where T:CounterMetadata, new()
+		{
+			var c = (TimerCounter<T>) CreateCounter<T> (name, category, logMessages, id, true);
 			c.DisplayMode = CounterDisplayMode.Line;
 			c.LogMessages = logMessages;
 			c.MinSeconds = minSeconds;

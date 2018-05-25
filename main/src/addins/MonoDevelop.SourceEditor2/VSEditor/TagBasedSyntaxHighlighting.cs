@@ -26,6 +26,8 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
 using static Microsoft.VisualStudio.Language.Intellisense.Implementation.MDUtils;
 using Microsoft.VisualStudio.Language.StandardClassification;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Tasks;
 
 namespace Microsoft.VisualStudio.Platform
 {
@@ -82,8 +84,12 @@ namespace Microsoft.VisualStudio.Platform
 				}
 
 				scopeStack = GetScopeStackFromClassificationType (curSpan.ClassificationType);
-				ColoredSegment curColoredSegment = new ColoredSegment (curSpan.Span.Start - start, curSpan.Span.Length, scopeStack);
-				coloredSegments.Add (curColoredSegment);
+				if (scopeStack.Peek ().StartsWith ("comment", StringComparison.Ordinal)) {
+					ScanAndAddComment (coloredSegments, start, scopeStack, curSpan);
+				} else {
+					var curColoredSegment = new ColoredSegment (curSpan.Span.Start - start, curSpan.Span.Length, scopeStack);
+					coloredSegments.Add (curColoredSegment);
+				}
 
 				lastClassifiedOffsetEnd = curSpan.Span.End;
 			}
@@ -96,10 +102,67 @@ namespace Microsoft.VisualStudio.Platform
 
 			return Task.FromResult(new HighlightedLine (line, coloredSegments));
 		}
+		#region Tag Comment Scanning
 
-		public Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
+		void ScanAndAddComment (List<ColoredSegment> coloredSegments, int startOffset, ScopeStack commentScopeStack, ClassificationSpan classificationSpan)
 		{
-			return Task.FromResult (ScopeStack.Empty);
+			int lastClassifiedOffset = classificationSpan.Span.Start;
+			try {
+				// Scan comments for tag highlighting
+				var text = textView.TextSnapshot.GetText (classificationSpan.Span);
+				int idx = 0, oldIdx = 0;
+
+				while ((idx = FindNextCommentTagIndex (text, idx, out string commentTag)) >= 0) {
+					var headSpanLength = idx - oldIdx;
+					if (headSpanLength > 0) {
+						var headSegment = new ColoredSegment (lastClassifiedOffset - startOffset, headSpanLength, commentScopeStack);
+						lastClassifiedOffset += headSpanLength;
+						coloredSegments.Add (headSegment);
+					}
+					var highlightSegment = new ColoredSegment (lastClassifiedOffset - startOffset, commentTag.Length, commentScopeStack.Push ("markup.other"));
+					coloredSegments.Add (highlightSegment);
+					idx += commentTag.Length;
+					lastClassifiedOffset += commentTag.Length;
+					oldIdx = idx;
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while scanning comment tags.", e);
+			}
+			int tailSpanLength = classificationSpan.Span.End - lastClassifiedOffset;
+			if (tailSpanLength > 0) {
+				var tailSpan = new ColoredSegment (lastClassifiedOffset - startOffset, tailSpanLength, commentScopeStack);
+				coloredSegments.Add (tailSpan);
+			}
+		}
+
+		static int FindNextCommentTagIndex (string text, int startIndex, out string commentTag)
+		{
+			var foundIndex = -1;
+			commentTag = null;
+			foreach (var tag in CommentTag.SpecialCommentTags) {
+				var i = text.IndexOf (tag.Tag, startIndex, StringComparison.OrdinalIgnoreCase);
+				if (i < 0)
+					continue;
+				if (i < foundIndex || foundIndex < 0) {
+					foundIndex = i;
+					commentTag = tag.Tag;
+				}
+			}
+			return foundIndex;
+		}
+
+		#endregion
+
+		public async Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
+		{
+			var line = textDocument.GetLineByOffset (offset);
+			var highligthedLine = await GetHighlightedLineAsync (line, cancellationToken).ConfigureAwait (false);
+			offset -= line.Offset;
+			foreach (var segment in highligthedLine.Segments) {
+				if (segment.Offset <= offset && segment.EndOffset >= offset)
+					return segment.ScopeStack;
+			}
+			return ScopeStack.Empty;
 		}
 
 		private EventHandler<LineEventArgs> _highlightingStateChanged;

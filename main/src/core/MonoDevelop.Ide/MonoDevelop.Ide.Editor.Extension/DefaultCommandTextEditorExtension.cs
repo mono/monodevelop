@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandUpdateHandler (EditCommands.AddCodeComment)]
 		[CommandUpdateHandler (EditCommands.RemoveCodeComment)]
 		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
-		void OnUpdateToggleComment (CommandInfo info)
+		internal void OnUpdateToggleComment (CommandInfo info)
 		{
 			var scope = Editor.SyntaxHighlighting.GetScopeStackAsync (Editor.CaretOffset, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 			var lang = TextMateLanguage.Create (scope);

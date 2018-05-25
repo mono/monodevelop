@@ -46,11 +46,6 @@ namespace MonoDevelop.Ide
 	{
 		Solution solution;
 
-		public ProjectTemplateTests ()
-		{
-			Simulate ();
-		}
-
 		IEnumerable<string> Templates {
 			get {
 				return ProjectTemplate.ProjectTemplates.Select (t => t.Id);
