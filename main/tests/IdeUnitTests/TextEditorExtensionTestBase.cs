@@ -23,10 +23,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
@@ -83,10 +85,12 @@ namespace MonoDevelop.Ide
 		public Document Document { get; }
 		public Project Project => Document.Project;
 		public Solution Solution => Document.Project.ParentSolution;
+		public TestViewContent Content { get; }
 
-		public TextEditorExtensionTestCase (Document doc)
+		public TextEditorExtensionTestCase (Document doc, TestViewContent content)
 		{
 			Document = doc;
+			Content = content;
 		}
 
 		public void Dispose ()

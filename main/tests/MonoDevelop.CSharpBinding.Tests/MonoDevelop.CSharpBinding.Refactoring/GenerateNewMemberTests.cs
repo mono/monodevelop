@@ -38,110 +38,94 @@ using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharpBinding.Refactoring
 {
 	[TestFixture()]
 	[Ignore]
-	public class GenerateNewMemberTests : UnitTests.TestBase
+	public class GenerateNewMemberTests : TextEditorExtensionTestBase
 	{
-		static async Task TestInsertionPoints (string text)
+		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharp;
+
+		async Task TestInsertionPoints (string text)
 		{
-			var tww = new TestWorkbenchWindow ();
-			var content = new TestViewContent ();
-			tww.ViewContent = content;
-			content.ContentName = "/a.cs";
-			content.Data.MimeType = "text/x-csharp";
 			MonoDevelop.AnalysisCore.AnalysisOptions.EnableUnitTestEditorIntegration.Set (true);
-			var doc = new MonoDevelop.Ide.Gui.Document (tww);
+			using (var testCase = await SetupTestCase ("")) {
+				var doc = testCase.Document;
+				var data = doc.Editor;
 
-			var data = doc.Editor;
-			List<InsertionPoint> loc = new List<InsertionPoint> ();
-			for (int i = 0; i < text.Length; i++) {
-				char ch = text [i];
-				if (ch == '@') {
-					i++;
-					ch = text [i];
-					NewLineInsertion insertBefore = NewLineInsertion.None;
-					NewLineInsertion insertAfter = NewLineInsertion.None;
+				List<InsertionPoint> loc = new List<InsertionPoint> ();
+				for (int i = 0; i < text.Length; i++) {
+					char ch = text [i];
+					if (ch == '@') {
+						i++;
+						ch = text [i];
+						NewLineInsertion insertBefore = NewLineInsertion.None;
+						NewLineInsertion insertAfter = NewLineInsertion.None;
 
-					switch (ch) {
-					case 'n':
-						break;
-					case 'd':
-						insertAfter = NewLineInsertion.Eol;
-						break;
-					case 'D':
-						insertAfter = NewLineInsertion.BlankLine;
-						break;
-					case 'u':
-						insertBefore = NewLineInsertion.Eol;
-						break;
-					case 'U':
-						insertBefore = NewLineInsertion.BlankLine;
-						break;
-					case 's':
-						insertBefore = insertAfter = NewLineInsertion.Eol;
-						break;
-					case 'S':
-						insertBefore = insertAfter = NewLineInsertion.BlankLine;
-						break;
+						switch (ch) {
+						case 'n':
+							break;
+						case 'd':
+							insertAfter = NewLineInsertion.Eol;
+							break;
+						case 'D':
+							insertAfter = NewLineInsertion.BlankLine;
+							break;
+						case 'u':
+							insertBefore = NewLineInsertion.Eol;
+							break;
+						case 'U':
+							insertBefore = NewLineInsertion.BlankLine;
+							break;
+						case 's':
+							insertBefore = insertAfter = NewLineInsertion.Eol;
+							break;
+						case 'S':
+							insertBefore = insertAfter = NewLineInsertion.BlankLine;
+							break;
 
-					case 't':
-						insertBefore = NewLineInsertion.Eol;
-						insertAfter = NewLineInsertion.BlankLine;
-						break;
-					case 'T':
-						insertBefore = NewLineInsertion.None;
-						insertAfter = NewLineInsertion.BlankLine;
-						break;
-					case 'v':
-						insertBefore = NewLineInsertion.BlankLine;
-						insertAfter = NewLineInsertion.Eol;
-						break;
-					case 'V':
-						insertBefore = NewLineInsertion.None;
-						insertAfter = NewLineInsertion.Eol;
-						break;
-					default:
-						Assert.Fail ("unknown insertion point:" + ch);
-						break;
+						case 't':
+							insertBefore = NewLineInsertion.Eol;
+							insertAfter = NewLineInsertion.BlankLine;
+							break;
+						case 'T':
+							insertBefore = NewLineInsertion.None;
+							insertAfter = NewLineInsertion.BlankLine;
+							break;
+						case 'v':
+							insertBefore = NewLineInsertion.BlankLine;
+							insertAfter = NewLineInsertion.Eol;
+							break;
+						case 'V':
+							insertBefore = NewLineInsertion.None;
+							insertAfter = NewLineInsertion.Eol;
+							break;
+						default:
+							Assert.Fail ("unknown insertion point:" + ch);
+							break;
+						}
+						var vv = data.OffsetToLocation (data.Length);
+						loc.Add (new InsertionPoint (new DocumentLocation (vv.Line, vv.Column), insertBefore, insertAfter));
+					} else {
+						data.InsertText (data.Length, ch.ToString ());
 					}
-					var vv = data.OffsetToLocation (data.Length);
-					loc.Add (new InsertionPoint (new DocumentLocation (vv.Line, vv.Column), insertBefore, insertAfter));
-				} else {
-					data.InsertText (data.Length, ch.ToString ());
+				}
+				var parsedFile = await doc.UpdateParseDocument ();
+				var model = await doc.AnalysisDocument.GetSemanticModelAsync ();
+				var sym = model?.GetEnclosingSymbol (data.Text.IndexOf ('{'));
+				var type = sym as INamedTypeSymbol ?? sym?.ContainingType;
+				if (type != null) {
+					var foundPoints = InsertionPointService.GetInsertionPoints (doc.Editor, parsedFile, type, type.Locations.First ());
+					Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
+					for (int i = 0; i < loc.Count; i++) {
+						Assert.AreEqual (loc [i].Location, foundPoints [i].Location, "point " + i + " doesn't match");
+						Assert.AreEqual (loc [i].LineAfter, foundPoints [i].LineAfter, "point " + i + " ShouldInsertNewLineAfter doesn't match");
+						Assert.AreEqual (loc [i].LineBefore, foundPoints [i].LineBefore, "point " + i + " ShouldInsertNewLineBefore doesn't match");
+					}
 				}
 			}
-
-
-			var project = Services.ProjectService.CreateProject ("C#");
-			project.Name = "test";
-			project.FileName = "test.csproj";
-			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
-
-			var solution = new MonoDevelop.Projects.Solution ();
-			solution.AddConfiguration ("", true); 
-			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
-			content.Project = project;
-			doc.SetProject (project);
-			var parsedFile = await doc.UpdateParseDocument ();
-			var model = await doc.AnalysisDocument.GetSemanticModelAsync ();
-			var sym = model?.GetEnclosingSymbol (data.Text.IndexOf ('{'));
-			var type = sym as INamedTypeSymbol ?? sym?.ContainingType;
-			if (type != null) {
-				var foundPoints = InsertionPointService.GetInsertionPoints (doc.Editor, parsedFile, type, type.Locations.First ());
-				Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
-				for (int i = 0; i < loc.Count; i++) {
-					Assert.AreEqual (loc [i].Location, foundPoints [i].Location, "point " + i + " doesn't match");
-					Assert.AreEqual (loc [i].LineAfter, foundPoints [i].LineAfter, "point " + i + " ShouldInsertNewLineAfter doesn't match");
-					Assert.AreEqual (loc [i].LineBefore, foundPoints [i].LineBefore, "point " + i + " ShouldInsertNewLineBefore doesn't match");
-				}
-			}
-
-			TypeSystemService.Unload (solution);
 
 		}
 		

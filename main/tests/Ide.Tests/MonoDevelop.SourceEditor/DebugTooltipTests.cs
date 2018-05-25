@@ -32,71 +32,35 @@ using MonoDevelop.Core;
 using System.Threading.Tasks;
 using MonoDevelop.Debugger;
 using MonoDevelop.CSharp.Completion;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor.Extension;
+using System.Collections.Generic;
 
 namespace MonoDevelop.SourceEditor
 {
 	[TestFixture]
-	public class DebugTooltipTests : MonoDevelop.Ide.IdeTestBase
+	public class DebugTooltipTests : TextEditorExtensionTestBase
 	{
-		Document document;
-		string content;
-		MonoDevelop.Projects.Solution solution;
-
-		async Task<Document> CreateDocument (string input)
+		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharpWithReferences;
+		protected override IEnumerable<TextEditorExtension> GetEditorExtensions ()
 		{
-			var text = input;
+			yield return new CSharpCompletionTextEditorExtension ();
+		}
+
+		async Task<TextEditorExtensionTestCase> CreateDocument ()
+		{
+			var text = content;
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
-			if (solution != null) {
-				TypeSystemService.Unload (solution);
-				solution.Dispose ();
-			}
-			
-			var project = Services.ProjectService.CreateDotNetProject ("C#");
-			project.Name = "test";
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("mscorlib"));
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System.Core"));
+			var testCase = await SetupTestCase (text, Math.Max (0, endPos));
+			await testCase.Document.UpdateParseDocument ();
 
-			project.FileName = "test.csproj";
-			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
-
-			solution = new MonoDevelop.Projects.Solution ();
-			solution.AddConfiguration ("", true); 
-			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
-
-			var tww = new TestWorkbenchWindow ();
-			var content = new TestViewContent ();
-			tww.ViewContent = content;
-			content.ContentName = "/a.cs";
-			content.Data.MimeType = "text/x-csharp";
-			content.Project = project;
-
-
-			content.Text = text;
-			content.CursorPosition = Math.Max (0, endPos);
-			var doc = new Document (tww);
-			doc.SetProject (project);
-
-			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc.Editor, doc);
-			content.Contents.Add (compExt);
-
-			await doc.UpdateParseDocument ();
-
-			return doc;
+			return testCase;
 		}
 
-		public async Task Init ()
-		{
-			if (document != null)
-				return;
-			
-			content = @"using System;
+		const string content = @"using System;
 
 namespace DebuggerTooltipTests
 {
@@ -196,20 +160,9 @@ namespace DebuggerTooltipTests
 }
 ";
 
-			document = await CreateDocument (content);
-		}
-
-		public override void TearDown()
+		static string ResolveExpression (TextEditorExtensionTestCase testCase, int offset)
 		{
-			if (solution != null) {
-				TypeSystemService.Unload (solution);
-				solution.Dispose ();
-			}
-			base.TearDown ();
-		}
-
-		static string ResolveExpression (Document doc, string content, int offset)
-		{
+			var doc = testCase.Document;
 			var editor = doc.Editor;
 			var loc = editor.OffsetToLocation (offset);
 			var resolver = doc.GetContent<IDebuggerExpressionResolver> ();
@@ -264,108 +217,121 @@ namespace DebuggerTooltipTests
 		[Test]
 		public async Task TestBasicLocalVariable ()
 		{
-			await Init ();
-			Assert.AreEqual ("basicLocalVariable", ResolveExpression (document, content, GetBasicOffset ("basicLocalVariable")));
+			using (var testCase = await CreateDocument ()) {
+				Assert.AreEqual ("basicLocalVariable", ResolveExpression (testCase, GetBasicOffset ("basicLocalVariable")));
+			}
 		}
 
 		[Test]
 		public async Task TestConstructorInvocation ()
 		{
-			await Init ();
-			Assert.AreEqual ("DebuggerTooltipTests.Abc", ResolveExpression (document, content, GetCtorOffset ("new Abc ()")));
+			using (var testCase = await CreateDocument ()) {
+				Assert.AreEqual ("DebuggerTooltipTests.Abc", ResolveExpression (testCase, GetCtorOffset ("new Abc ()")));
+			}
 		}
 
 		[Test]
 		public async Task TestCastExpression ()
 		{
-			await Init ();
-			Assert.AreEqual ("((Abc) instanceVariable).Text", ResolveExpression (document, content, GetPropertyOffset ("((Abc) instanceVariable).Text")));
-			Assert.AreEqual ("((Abc) instanceVariable).Text.Length", ResolveExpression (document, content, GetPropertyOffset ("((Abc) instanceVariable).Text.Length")));
+			using (var testCase = await CreateDocument ()) {
+				Assert.AreEqual ("((Abc) instanceVariable).Text", ResolveExpression (testCase, GetPropertyOffset ("((Abc) instanceVariable).Text")));
+				Assert.AreEqual ("((Abc) instanceVariable).Text.Length", ResolveExpression (testCase, GetPropertyOffset ("((Abc) instanceVariable).Text.Length")));
+			}
 		}
 
 		[Test]
 		public async Task TestPropertyOfMethodInvocation ()
 		{
-			await Init ();
-			Assert.AreEqual ("instanceVariable.GetType ().Name", ResolveExpression (document, content, GetPropertyOffset ("instanceVariable.GetType ().Name")));
+			using (var testCase = await CreateDocument ()) {
+				Assert.AreEqual ("instanceVariable.GetType ().Name", ResolveExpression (testCase, GetPropertyOffset ("instanceVariable.GetType ().Name")));
+			}
 		}
 
 		[Test]
 		public async Task TestFieldDeclarations ()
 		{
-			await Init ();
-			Assert.AreEqual ("DebuggerTooltipTests.Abc.StaticField", ResolveExpression (document, content, GetBasicOffset ("StaticField")));
-			Assert.AreEqual ("@double", ResolveExpression (document, content, GetBasicOffset ("@double")));
-			Assert.AreEqual ("field", ResolveExpression (document, content, GetBasicOffset ("field")));
+			using (var testCase = await CreateDocument ()) {
+				Assert.AreEqual ("DebuggerTooltipTests.Abc.StaticField", ResolveExpression (testCase, GetBasicOffset ("StaticField")));
+				Assert.AreEqual ("@double", ResolveExpression (testCase, GetBasicOffset ("@double")));
+				Assert.AreEqual ("field", ResolveExpression (testCase, GetBasicOffset ("field")));
+			}
 		}
 
 		[Test]
 		public async Task TestPropertyDeclarations ()
 		{
-			await Init ();
-			Assert.AreEqual ("DebuggerTooltipTests.Abc.StaticProperty", ResolveExpression (document, content, GetBasicOffset ("StaticProperty")));
-			Assert.AreEqual ("Text", ResolveExpression (document, content, GetBasicOffset ("Text")));
+			using (var testCase = await CreateDocument ()) {
+				Assert.AreEqual ("DebuggerTooltipTests.Abc.StaticProperty", ResolveExpression (testCase, GetBasicOffset ("StaticProperty")));
+				Assert.AreEqual ("Text", ResolveExpression (testCase, GetBasicOffset ("Text")));
+			}
 		}
 
 		[Test]
 		public async Task TestPropertySetter ()
 		{
-			await Init ();
-			Assert.AreEqual ("value", ResolveExpression (document, content, GetBasicOffset ("value")));
+			using (var testCase = await CreateDocument ()) {
+				Assert.AreEqual ("value", ResolveExpression (testCase, GetBasicOffset ("value")));
+			}
 		}
 
 		[Test]
 		public async Task TestMethodParameters ()
 		{
-			await Init ();
-			Assert.AreEqual ("this", ResolveExpression (document, content, GetBasicOffset ("this")));
-			Assert.AreEqual ("this.Text", ResolveExpression (document, content, GetPropertyOffset ("this.Text")));
-			Assert.AreEqual ("this.Text.Length", ResolveExpression (document, content, GetPropertyOffset ("this.Text.Length")));
-			Assert.AreEqual ("abc", ResolveExpression (document, content, GetBasicOffset ("abc")));
-			Assert.AreEqual ("abc.Text", ResolveExpression (document, content, GetPropertyOffset ("abc.Text")));
-			Assert.AreEqual ("abc.Text.Length", ResolveExpression (document, content, GetPropertyOffset ("abc.Text.Length")));
+			using (var testCase = await CreateDocument ()) {
+				Assert.AreEqual ("this", ResolveExpression (testCase, GetBasicOffset ("this")));
+				Assert.AreEqual ("this.Text", ResolveExpression (testCase, GetPropertyOffset ("this.Text")));
+				Assert.AreEqual ("this.Text.Length", ResolveExpression (testCase, GetPropertyOffset ("this.Text.Length")));
+				Assert.AreEqual ("abc", ResolveExpression (testCase, GetBasicOffset ("abc")));
+				Assert.AreEqual ("abc.Text", ResolveExpression (testCase, GetPropertyOffset ("abc.Text")));
+				Assert.AreEqual ("abc.Text.Length", ResolveExpression (testCase, GetPropertyOffset ("abc.Text.Length")));
+			}
 		}
 
 		[Test]
 		public async Task TestBaseExpressions ()
 		{
-			await Init ();
-			Assert.AreEqual ("base.BaseProperty", ResolveExpression (document, content, GetPropertyOffset ("base.BaseProperty")));
+			using (var testCase = await CreateDocument ()) {
+				Assert.AreEqual ("base.BaseProperty", ResolveExpression (testCase, GetPropertyOffset ("base.BaseProperty")));
+			}
 		}
 
 		[Test]
 		public async Task TestEscapedVariables ()
 		{
-			await Init ();
+			using (var testCase = await CreateDocument ()) {
 
-			// Inside class Abc
-			Assert.AreEqual ("@class", ResolveExpression (document, content, GetBasicOffset ("@class")));
-			Assert.AreEqual ("@class.Length", ResolveExpression (document, content, GetPropertyOffset ("@class.Length")));
-			Assert.AreEqual ("@double.Length", ResolveExpression (document, content, GetPropertyOffset ("@double.Length")));
-			Assert.AreEqual ("this.@double.Length", ResolveExpression (document, content, GetPropertyOffset ("this.@double.Length")));
-			Assert.AreEqual ("abc.@double.Length", ResolveExpression (document, content, GetPropertyOffset ("abc.@double.Length")));
+				// Inside class Abc
+				Assert.AreEqual ("@class", ResolveExpression (testCase, GetBasicOffset ("@class")));
+				Assert.AreEqual ("@class.Length", ResolveExpression (testCase, GetPropertyOffset ("@class.Length")));
+				Assert.AreEqual ("@double.Length", ResolveExpression (testCase, GetPropertyOffset ("@double.Length")));
+				Assert.AreEqual ("this.@double.Length", ResolveExpression (testCase, GetPropertyOffset ("this.@double.Length")));
+				Assert.AreEqual ("abc.@double.Length", ResolveExpression (testCase, GetPropertyOffset ("abc.@double.Length")));
+			}
 		}
 
 		[Test]
 		public async Task TestPropertyInitializers ()
 		{
-			await Init ();
-			Assert.AreEqual ("propertyInitializer.Property", ResolveExpression (document, content, GetAssignmentOffset ("Property = string.Empty")));
+			using (var testCase = await CreateDocument ()) {
+				Assert.AreEqual ("propertyInitializer.Property", ResolveExpression (testCase, GetAssignmentOffset ("Property = string.Empty")));
+			}
 		}
 
 		[Test]
 		public async Task TestDefaultValueParameters ()
 		{
-			await Init ();
-			Assert.AreEqual ("defaultValue", ResolveExpression (document, content, GetAssignmentOffset ("defaultValue = 5")));
+			using (var testCase = await CreateDocument ()) {
+				Assert.AreEqual ("defaultValue", ResolveExpression (testCase, GetAssignmentOffset ("defaultValue = 5")));
+			}
 		}
 
 		[Test]
 		public async Task TestMethodInvocations ()
 		{
-			await Init ();
-			Assert.AreEqual (null, ResolveExpression (document, content, GetPropertyOffset ("instanceVariable.Method")));
-			Assert.AreEqual (null, ResolveExpression (document, content, GetBasicOffset ("Method")));
+			using (var testCase = await CreateDocument ()) {
+				Assert.AreEqual (null, ResolveExpression (testCase, GetPropertyOffset ("instanceVariable.Method")));
+				Assert.AreEqual (null, ResolveExpression (testCase, GetBasicOffset ("Method")));
+			}
 		}
 	}
 }
