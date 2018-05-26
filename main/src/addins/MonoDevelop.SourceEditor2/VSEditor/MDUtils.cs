@@ -255,7 +255,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 			}
 
 			var lineSegment = snapshot.GetLineFromLineNumber (line - 1);
-			if (column < 1 || column > lineSegment.Length) {
+			if (column < 1 || column > lineSegment.LengthIncludingLineBreak) {
 				snapshotPoint = default (SnapshotPoint);
 				return false;
 			}
