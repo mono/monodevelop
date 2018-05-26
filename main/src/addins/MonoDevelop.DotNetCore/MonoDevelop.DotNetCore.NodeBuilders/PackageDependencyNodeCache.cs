@@ -124,6 +124,9 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 				} else if (dependency.IsPackage) {
 					string key = dependency.Name + "/" + dependency.Version;
 					packageDependencies[key] = dependency;
+				} else if (dependency.IsDiagnostic) {
+					string key = dependency.FrameworkName + "/" + dependency.Name + "/" + dependency.Version + "/" + dependency.DiagnosticCode;
+					packageDependencies[key] = dependency;
 				}
 			}
 		}
