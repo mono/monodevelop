@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <AssetTargetFallback>net46</AssetTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ComponentModel.EventBasedAsync" Version="4.0.1" />
+  </ItemGroup>
+</Project>

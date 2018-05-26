@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.DotNetCore.NodeBuilders;
+using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects;
 using NuGet.Versioning;
 using NUnit.Framework;
@@ -164,6 +165,82 @@ namespace MonoDevelop.DotNetCore.Tests
 			defaultNode = sdkFolderNode.GetDefaultNodes ().Single ();
 			Assert.AreEqual ("Microsoft.NETCore.App", defaultNode.Name);
 			Assert.AreEqual ("Microsoft.NETCore.App", defaultNode.GetLabel ());
+		}
+
+		[Test]
+		public async Task NetStandardLibrary_OneNuGetDiagnosticWarningsForSystemComponentModelEventBasedAsync ()
+		{
+			FilePath projectFileName = Util.GetSampleProject ("DotNetCoreDependenciesFolder", "NetStandardOneNuGetWarning.csproj");
+			Restore (projectFileName);
+			project = (DotNetProject) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName);
+			await CreateDependenciesNode ();
+
+			var sdkNode = GetSdkFolderChildDependencies ().Single ();
+			Assert.AreEqual ("NETStandard.Library", sdkNode.Name);
+			Assert.AreEqual ("NETStandard.Library", sdkNode.GetLabel ());
+			Assert.IsTrue (sdkNode.IsReadOnly);
+			Assert.IsFalse (sdkNode.CanBeRemoved);
+			Assert.IsTrue (sdkNode.IsTopLevel);
+
+			var componentModelNode = GetNuGetFolderChildDependencies ().Single ();
+			Assert.AreEqual ("System.ComponentModel.EventBasedAsync", componentModelNode.Name);
+			Assert.AreEqual ("System.ComponentModel.EventBasedAsync", componentModelNode.GetLabel ());
+			Assert.AreEqual ("(4.0.10)", componentModelNode.GetSecondaryLabel ());
+			Assert.IsTrue (componentModelNode.CanBeRemoved);
+			Assert.IsFalse (componentModelNode.IsReadOnly);
+			Assert.IsTrue (componentModelNode.IsTopLevel);
+			Assert.IsTrue (componentModelNode.HasDependencies ());
+			Assert.AreEqual (TaskSeverity.Warning, componentModelNode.GetStatusSeverity ());
+			string diagnosticMessage = "Package 'System.ComponentModel.EventBasedAsync 4.0.10' was restored using '.NETFramework,Version=v4.6' instead of the project target framework '.NETStandard,Version=v1.6'. This package may not be fully compatible with your project.";
+			Assert.AreEqual (componentModelNode.GetStatusMessage (), diagnosticMessage);
+
+			// Diagnostic child node should be added to the componentModelNode.
+			var diagnosticNode = componentModelNode.GetDependencyNodes ().Single ();
+			Assert.AreEqual ("NU1701", diagnosticNode.Name);
+			Assert.IsFalse (diagnosticNode.CanBeRemoved);
+			Assert.AreEqual (TaskSeverity.Warning, diagnosticNode.GetStatusSeverity ());
+			Assert.AreEqual (diagnosticNode.GetStatusMessage (), diagnosticMessage);
+		}
+
+		[Test]
+		public async Task NetStandardLibrary_TwoNuGetDiagnosticWarningsForSystemComponentModelEventBasedAsync ()
+		{
+			FilePath projectFileName = Util.GetSampleProject ("DotNetCoreDependenciesFolder", "NetStandardTwoNuGetWarnings.csproj");
+			Restore (projectFileName);
+			project = (DotNetProject) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName);
+			await CreateDependenciesNode ();
+
+			var sdkNode = GetSdkFolderChildDependencies ().Single ();
+			Assert.AreEqual ("NETStandard.Library", sdkNode.Name);
+			Assert.AreEqual ("NETStandard.Library", sdkNode.GetLabel ());
+			Assert.IsTrue (sdkNode.IsReadOnly);
+			Assert.IsFalse (sdkNode.CanBeRemoved);
+			Assert.IsTrue (sdkNode.IsTopLevel);
+
+			var componentModelNode = GetNuGetFolderChildDependencies ().Single ();
+			Assert.AreEqual ("System.ComponentModel.EventBasedAsync", componentModelNode.Name);
+			Assert.AreEqual ("System.ComponentModel.EventBasedAsync", componentModelNode.GetLabel ());
+			Assert.AreEqual ("(4.0.10)", componentModelNode.GetSecondaryLabel ());
+			Assert.IsTrue (componentModelNode.CanBeRemoved);
+			Assert.IsFalse (componentModelNode.IsReadOnly);
+			Assert.IsTrue (componentModelNode.IsTopLevel);
+			Assert.IsTrue (componentModelNode.HasDependencies ());
+			Assert.AreEqual (TaskSeverity.Warning, componentModelNode.GetStatusSeverity ());
+			Assert.AreEqual (componentModelNode.GetStatusMessage (), GettextCatalog.GetString ("Package restored with warnings. Expand the package to see the warnings."));
+
+			// Diagnostic child nodes should be added to the componentModelNode.
+			var childNodes = componentModelNode.GetDependencyNodes ().ToList ();
+			Assert.AreEqual (2, childNodes.Count);
+
+			var diagnosticNode1 = childNodes.FirstOrDefault (node => node.Name == "NU1603");
+			Assert.IsFalse (diagnosticNode1.CanBeRemoved);
+			Assert.AreEqual (TaskSeverity.Warning, diagnosticNode1.GetStatusSeverity ());
+			Assert.AreEqual (diagnosticNode1.GetStatusMessage (), "NetStandardTwoNuGetWarnings depends on System.ComponentModel.EventBasedAsync (>= 4.0.1) but System.ComponentModel.EventBasedAsync 4.0.1 was not found. An approximate best match of System.ComponentModel.EventBasedAsync 4.0.10 was resolved.");
+
+			var diagnosticNode2 = childNodes.FirstOrDefault (node => node.Name == "NU1701");
+			Assert.IsFalse (diagnosticNode2.CanBeRemoved);
+			Assert.AreEqual (TaskSeverity.Warning, diagnosticNode2.GetStatusSeverity ());
+			Assert.AreEqual (diagnosticNode2.GetStatusMessage (), "Package 'System.ComponentModel.EventBasedAsync 4.0.10' was restored using '.NETFramework,Version=v4.6' instead of the project target framework '.NETStandard,Version=v1.6'. This package may not be fully compatible with your project.");
 		}
 	}
 }
