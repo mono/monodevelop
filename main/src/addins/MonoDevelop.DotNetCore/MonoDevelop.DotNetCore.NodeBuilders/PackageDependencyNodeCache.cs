@@ -38,7 +38,6 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 	class PackageDependencyNodeCache
 	{
 		List<PackageDependencyInfo> frameworks = new List<PackageDependencyInfo> ();
-		Dictionary<string, PackageDependencyInfo> packageDependencies = new Dictionary<string, PackageDependencyInfo> ();
 		CancellationTokenSource cancellationTokenSource;
 
 		public PackageDependencyNodeCache (DotNetProject project)
@@ -87,13 +86,21 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 				.ContinueWith (task => OnPackageDependenciesRead (task, tokenSource), TaskScheduler.FromCurrentSynchronizationContext ());
 		}
 
-		Task<IEnumerable<PackageDependency>> GetPackageDependenciesAsync (CancellationTokenSource tokenSource)
+		Task<List<PackageDependencyInfo>> GetPackageDependenciesAsync (CancellationTokenSource tokenSource)
 		{
 			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? ConfigurationSelector.Default;
-			return Task.Run (() => Project.GetPackageDependencies (configurationSelector, tokenSource.Token));
+			return Task.Run (async () => {
+				var dependencies = await Project.GetPackageDependencies (configurationSelector, tokenSource.Token)
+					.ConfigureAwait (false);
+
+				if (!tokenSource.IsCancellationRequested)
+					return LoadPackageDependencies (dependencies);
+
+				return null;
+			});
 		}
 
-		void OnPackageDependenciesRead (Task<IEnumerable<PackageDependency>> task, CancellationTokenSource tokenSource)
+		void OnPackageDependenciesRead (Task<List<PackageDependencyInfo>> task, CancellationTokenSource tokenSource)
 		{
 			try {
 				if (task.IsFaulted) {
@@ -104,7 +111,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 						LoggingService.LogError ("OnPackageDependenciesRead error.", ex);
 					}
 				} else if (!tokenSource.IsCancellationRequested) {
-					LoadPackageDependencies (task.Result);
+					frameworks = task.Result;
 					LoadedDependencies = true;
 					OnPackageDependenciesChanged ();
 				}
@@ -113,10 +120,10 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			}
 		}
 
-		void LoadPackageDependencies (IEnumerable<PackageDependency> dependencies)
+		static List<PackageDependencyInfo> LoadPackageDependencies (IEnumerable<PackageDependency> dependencies)
 		{
-			frameworks.Clear ();
-			packageDependencies.Clear ();
+			var frameworks = new List<PackageDependencyInfo> ();
+			var packageDependencies = new Dictionary<string, PackageDependencyInfo> ();
 
 			foreach (PackageDependency dependency in dependencies) {
 				if (dependency.IsTargetFramework) {
@@ -130,7 +137,11 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 				}
 			}
 
-			BuildPackageDependencyHierarchy ();
+			foreach (PackageDependencyInfo framework in frameworks) {
+				BuildChildDependencies (packageDependencies, framework);
+			}
+
+			return frameworks;
 		}
 
 		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes (
@@ -140,35 +151,18 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			return frameworks.Select (dependency => new TargetFrameworkNode (dependenciesNode, dependency, sdkDependencies));
 		}
 
-		PackageDependencyInfo GetDependency (string dependency)
-		{
-			PackageDependencyInfo matchedDependency = null;
-			if (packageDependencies.TryGetValue (dependency, out matchedDependency))
-				return matchedDependency;
-
-			return null;
-		}
-
 		public IEnumerable<PackageDependencyNode> GetProjectPackageReferencesAsDependencyNodes (DependenciesNode dependenciesNode)
 		{
 			return Project.Items.OfType<ProjectPackageReference> ()
 				.Select (reference => PackageDependencyNode.Create (dependenciesNode, reference));
 		}
 
-		void BuildPackageDependencyHierarchy ()
-		{
-			foreach (PackageDependencyInfo framework in frameworks) {
-				BuildChildDependencies (framework);
-			}
-		}
-
-		void BuildChildDependencies (PackageDependencyInfo dependency)
+		static void BuildChildDependencies (Dictionary<string, PackageDependencyInfo> packageDependencies, PackageDependencyInfo dependency)
 		{
 			foreach (string childDependencyName in dependency.DependencyNames) {
-				var childDependency = GetDependency (childDependencyName);
-				if (childDependency != null) {
+				if (packageDependencies.TryGetValue (childDependencyName, out PackageDependencyInfo childDependency)) {
 					if (!childDependency.IsBuilt) {
-						BuildChildDependencies (childDependency);
+						BuildChildDependencies (packageDependencies, childDependency);
 					}
 					dependency.AddChild (childDependency);
 				}
