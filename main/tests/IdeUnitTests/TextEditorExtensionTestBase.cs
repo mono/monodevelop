@@ -97,9 +97,9 @@ namespace MonoDevelop.Ide
 
 		public void Dispose ()
 		{
-			Window.CloseWindowSync ();
 			using (var solution = Document.Project.ParentSolution)
 				TypeSystemService.Unload (solution);
+			Window.CloseWindowSync ();
 		}
 	}
 
