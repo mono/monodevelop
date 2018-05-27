@@ -87,12 +87,14 @@ namespace MonoDevelop.Ide
 		public Solution Solution => Document.Project.ParentSolution;
 		public TestViewContent Content { get; }
 		public TestWorkbenchWindow Window { get; }
+		public EditorExtensionTestData TestData { get; }
 
-		public TextEditorExtensionTestCase (Document doc, TestViewContent content, TestWorkbenchWindow window)
+		public TextEditorExtensionTestCase (Document doc, TestViewContent content, TestWorkbenchWindow window, EditorExtensionTestData data)
 		{
 			Document = doc;
 			Content = content;
 			Window = window;
+			TestData = data;
 		}
 
 		public void Dispose ()
@@ -154,7 +156,7 @@ namespace MonoDevelop.Ide
 				content.Contents.Add (ext);
 			}
 
-			return new TextEditorExtensionTestCase (doc, content, tww);
+			return new TextEditorExtensionTestCase (doc, content, tww, data);
 		}
 	}
 }
