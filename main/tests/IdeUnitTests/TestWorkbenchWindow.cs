@@ -79,6 +79,13 @@ namespace MonoDevelop.Ide.Gui
 			get { return ViewContent;}
 			set {}
 		}
+
+		public bool CloseWindowSync ()
+		{
+			Closing?.Invoke (this, new WorkbenchWindowEventArgs (true, true));
+			Closed?.Invoke (this, new WorkbenchWindowEventArgs (true, true));
+			return true;
+		}
 		
 		public Task<bool> CloseWindow (bool force)
 		{
