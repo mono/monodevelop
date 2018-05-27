@@ -39,45 +39,7 @@ using MonoDevelop.Core.Assemblies;
 
 namespace ICSharpCode.NRefactory6
 {
-	class TestBase
+	class TestBase : IdeTestBase
 	{
-		static bool firstRun = true;
-
-		[TestFixtureSetUp]
-		public void Simulate ()
-		{
-			if (firstRun) {
-				string rootDir = Path.Combine (Util.TestsRootDir, "config");
-				try {
-					firstRun = false;
-					InternalSetup (rootDir);
-				} catch (Exception) {
-					// if we encounter an error, try to re create the configuration directory
-					// (This takes much time, therfore it's only done when initialization fails)
-					try {
-						if (Directory.Exists (rootDir))
-							Directory.Delete (rootDir, true);
-						InternalSetup (rootDir);
-					} catch (Exception e) {
-						Console.WriteLine (e);
-					}
-				}
-			}
-		}
-
-		protected virtual void InternalSetup (string rootDir)
-		{
-			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
-			Util.ClearTmpDir ();
-			Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir);
-			Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir);
-			Runtime.Initialize (true);
-			DesktopService.Initialize ();
-
-			global::MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
-				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_0);
-		}
-
 	}
-	
 }
