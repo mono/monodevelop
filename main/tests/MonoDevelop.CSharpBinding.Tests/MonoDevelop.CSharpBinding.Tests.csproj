@@ -96,7 +96,6 @@
     <Compile Include="Features\IndentationTests\StringTests.cs" />
     <Compile Include="Features\IndentationTests\TextPasteIndentEngineTests.cs" />
     <Compile Include="Features\TestBase.cs" />
-    <Compile Include="Features\Util.cs" />
     <Compile Include="Features\Completion\CastCompletionProviderTests.cs" />
     <Compile Include="Features\Completion\EnumMemberCompletionProviderTests.cs" />
     <Compile Include="Features\Completion\DelegateCompletionProviderTests.cs" />
