@@ -593,6 +593,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 						// Expand root nodes and nodes with errors
 						ExpandErrorOrWarningsNodes (treeView, buildOutputDataSource, false);
 						processingCompletion.TrySetResult (null);
+
+						if (showDiagnostics) {
+							Counters.DiagnosticsViewSelected++;
+						} else {
+							Counters.NormalViewSelected++;
+						}
 					});
 				} catch (Exception ex) {
 					processingCompletion.TrySetException (ex);
