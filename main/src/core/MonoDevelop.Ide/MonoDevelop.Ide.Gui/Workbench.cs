@@ -851,7 +851,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (window == null) return null;
 			Document doc = FindDocument (window);
-			if (doc != null) return doc;
+			if (doc != null)
+				return doc;
 			doc = new Document (window);
 			window.Closing += OnWindowClosing;
 			window.Closed += OnWindowClosed;

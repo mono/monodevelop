@@ -72,13 +72,14 @@ namespace MonoDevelop.Refactoring.Tests
 
 			var tcs = new TaskCompletionSource<T> ();
 			var resultsExt = doc.GetContent<ResultsEditorExtension> ();
-			resultsExt.TasksUpdated += async (o, args) => {
+			EventHandler handler = async (object o, EventArgs args) => {
 				try {
 					await callback (doc, tcs);
 				} catch (Exception ex) {
 					tcs.TrySetException (ex);
 				}
 			};
+			resultsExt.TasksUpdated += handler;
 
 			var cts = new CancellationTokenSource ();
 			cts.Token.Register (() => tcs.TrySetCanceled ());
@@ -87,6 +88,7 @@ namespace MonoDevelop.Refactoring.Tests
 			await doc.UpdateParseDocument ();
 
 			var result = await Task.Run (() => tcs.Task).ConfigureAwait (false);
+			resultsExt.TasksUpdated -= handler;
 
 			return Tuple.Create (result, testCase);
 		}

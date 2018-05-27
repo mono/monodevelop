@@ -88,13 +88,15 @@ namespace MonoDevelop.Ide
 		public TestViewContent Content { get; }
 		public TestWorkbenchWindow Window { get; }
 		public EditorExtensionTestData TestData { get; }
+		bool Wrap { get; }
 
-		public TextEditorExtensionTestCase (Document doc, TestViewContent content, TestWorkbenchWindow window, EditorExtensionTestData data)
+		public TextEditorExtensionTestCase (Document doc, TestViewContent content, TestWorkbenchWindow window, EditorExtensionTestData data, bool wrap)
 		{
 			Document = doc;
 			Content = content;
 			Window = window;
 			TestData = data;
+			Wrap = wrap;
 		}
 
 		public void Dispose ()
@@ -102,6 +104,8 @@ namespace MonoDevelop.Ide
 			using (var solution = Document.Project.ParentSolution)
 				TypeSystemService.Unload (solution);
 			Window.CloseWindowSync ();
+			if (!Wrap)
+				Document.DisposeDocument ();
 		}
 	}
 
@@ -144,7 +148,9 @@ namespace MonoDevelop.Ide
 			solution.DefaultSolutionFolder.AddItem (project);
 
 			content.Project = project;
-			Document doc = IdeApp.IsInitialized ? IdeApp.Workbench.WrapDocument (tww) : new Document (tww);
+
+			bool wrap = IdeApp.IsInitialized;
+			Document doc = wrap ? IdeApp.Workbench.WrapDocument (tww) : new Document (tww);
 
 			doc.SetProject (project);
 
@@ -156,7 +162,7 @@ namespace MonoDevelop.Ide
 				content.Contents.Add (ext);
 			}
 
-			return new TextEditorExtensionTestCase (doc, content, tww, data);
+			return new TextEditorExtensionTestCase (doc, content, tww, data, wrap);
 		}
 	}
 }

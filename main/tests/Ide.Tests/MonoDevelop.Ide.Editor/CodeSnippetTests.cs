@@ -64,11 +64,11 @@ namespace MonoDevelop.Ide.Editor
 		{
 			using (var testCase = await SetupTestCase ("")) {
 				var doc = testCase.Document;
-				doc.Editor.IndentationTracker = new TestIndentTracker ("    ");
 				doc.Editor.Options = new CustomEditorOptions (doc.Editor.Options) {
 					IndentStyle = IndentStyle.Smart,
 					RemoveTrailingWhitespaces = true
 				};
+				doc.Editor.IndentationTracker = new TestIndentTracker ("    ");
 				await doc.UpdateParseDocument ();
 				snippet.Insert (doc);
 				return doc.Editor;
