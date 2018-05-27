@@ -242,5 +242,49 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual (TaskSeverity.Warning, diagnosticNode2.GetStatusSeverity ());
 			Assert.AreEqual (diagnosticNode2.GetStatusMessage (), "Package 'System.ComponentModel.EventBasedAsync 4.0.10' was restored using '.NETFramework,Version=v4.6' instead of the project target framework '.NETStandard,Version=v1.6'. This package may not be fully compatible with your project.");
 		}
+
+		/// <summary>
+		/// Diagnostic is for a child dependency and not the top level NuGet package referenced by the project.
+		/// </summary>
+		[Test]
+		public async Task NetStandardLibrary_OneIndirectNuGetDiagnosticWarningsForSystemNetHttp ()
+		{
+			FilePath projectFileName = Util.GetSampleProject ("DotNetCoreDependenciesFolder", "NetStandardOneIndirectNuGetWarning.csproj");
+			Restore (projectFileName);
+			project = (DotNetProject) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName);
+			await CreateDependenciesNode ();
+
+			var sdkNode = GetSdkFolderChildDependencies ().Single ();
+			Assert.AreEqual ("NETStandard.Library", sdkNode.Name);
+			Assert.AreEqual ("NETStandard.Library", sdkNode.GetLabel ());
+			Assert.IsTrue (sdkNode.IsReadOnly);
+			Assert.IsFalse (sdkNode.CanBeRemoved);
+			Assert.IsTrue (sdkNode.IsTopLevel);
+
+			var activeDirectoryNode = GetNuGetFolderChildDependencies ().Single ();
+			Assert.AreEqual ("Microsoft.IdentityModel.Clients.ActiveDirectory", activeDirectoryNode.Name);
+			Assert.AreEqual ("Microsoft.IdentityModel.Clients.ActiveDirectory", activeDirectoryNode.GetLabel ());
+			Assert.AreEqual ("(3.13.5)", activeDirectoryNode.GetSecondaryLabel ());
+			Assert.IsTrue (activeDirectoryNode.CanBeRemoved);
+			Assert.IsFalse (activeDirectoryNode.IsReadOnly);
+			Assert.IsTrue (activeDirectoryNode.IsTopLevel);
+			Assert.IsTrue (activeDirectoryNode.HasDependencies ());
+			Assert.AreEqual (TaskSeverity.Warning, activeDirectoryNode.GetStatusSeverity ());
+			Assert.AreEqual (activeDirectoryNode.GetStatusMessage (), GettextCatalog.GetString ("Package restored with warnings. Expand the package to see the warnings."));
+
+			var systemNetHttpNode = activeDirectoryNode.GetDependencyNodes ().FirstOrDefault (node => node.Name == "System.Net.Http");
+			Assert.IsFalse (systemNetHttpNode.CanBeRemoved);
+			Assert.IsFalse (systemNetHttpNode.IsTopLevel);
+			Assert.AreEqual (TaskSeverity.Warning, systemNetHttpNode.GetStatusSeverity ());
+			string diagnosticMessage = "Microsoft.IdentityModel.Clients.ActiveDirectory 3.13.5 depends on System.Net.Http (>= 4.0.1) but System.Net.Http 4.0.1 was not found. An approximate best match of System.Net.Http 4.1.0 was resolved.";
+			Assert.AreEqual (systemNetHttpNode.GetStatusMessage (), diagnosticMessage);
+
+			// Diagnostic child node should be added to the systemNetHttpNode.
+			var diagnosticNode = systemNetHttpNode.GetDependencyNodes ().FirstOrDefault (node => node.Name == "NU1603");
+			Assert.AreEqual ("NU1603", diagnosticNode.Name);
+			Assert.IsFalse (diagnosticNode.CanBeRemoved);
+			Assert.AreEqual (TaskSeverity.Warning, diagnosticNode.GetStatusSeverity ());
+			Assert.AreEqual (diagnosticNode.GetStatusMessage (), diagnosticMessage);
+		}
 	}
 }

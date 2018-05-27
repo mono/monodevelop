@@ -39,14 +39,13 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 	class PackageDependencyNode
 	{
 		DependenciesNode dependenciesNode;
-		PackageDependency dependency;
-		ImmutableArray<PackageDependencyNode> childNodes;
+		PackageDependencyInfo dependency;
 		string name;
 		string version;
 
 		PackageDependencyNode (
 			DependenciesNode dependenciesNode,
-			PackageDependency dependency,
+			PackageDependencyInfo dependency,
 			bool topLevel)
 		{
 			this.dependenciesNode = dependenciesNode;
@@ -61,20 +60,8 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 				if (IsTopLevel) {
 					IsReadOnly = !PackageReferenceExistsInProject ();
-					GetChildDependencies ();
 				}
 			}
-		}
-
-		/// <summary>
-		/// Gets the child dependencies of this node. The results are cached.
-		/// This is done for top level nodes so diagnostics can be captured.
-		/// Does not handle diagnostics that occur far down the child hierarchy.
-		/// </summary>
-		void GetChildDependencies ()
-		{
-			var dependencyNodes = GetDependencyNodes ();
-			childNodes = ImmutableArray<PackageDependencyNode>.Empty.AddRange (dependencyNodes);
 		}
 
 		PackageDependencyNode (DependenciesNode dependenciesNode, ProjectPackageReference packageReference)
@@ -100,16 +87,13 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public static PackageDependencyNode Create (
 			DependenciesNode dependenciesNode,
-			string dependencyName,
+			PackageDependencyInfo dependency,
 			bool sdkDependencies,
 			bool topLevel)
 		{
-			PackageDependency dependency = dependenciesNode.PackageDependencyCache.GetDependency (dependencyName);
-			if (dependency != null) {
-				var node = new PackageDependencyNode (dependenciesNode, dependency, topLevel);
-				if (node.IsSupported (sdkDependencies)) {
-					return node;
-				}
+			var node = new PackageDependencyNode (dependenciesNode, dependency, topLevel);
+			if (node.IsSupported (sdkDependencies)) {
+				return node;
 			}
 
 			return null;
@@ -156,7 +140,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public TaskSeverity? GetStatusSeverity ()
 		{
-			if (IsDiagnostic || HasChildDiagnostic ())
+			if (IsDiagnostic || HasChildDiagnostic)
 				return TaskSeverity.Warning;
 			return null;
 		}
@@ -166,7 +150,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			if (IsDiagnostic)
 				return dependency.DiagnosticMessage;
 
-			if (HasChildDiagnostic ())
+			if (HasChildDiagnostic)
 				return GetChildDiagnosticStatusMessage ();
 
 			return null;
@@ -185,6 +169,10 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public bool IsDiagnostic {
 			get { return dependency?.IsDiagnostic == true; }
+		}
+
+		public bool HasChildDiagnostic {
+			get { return dependency?.HasChildDiagnostic == true; }
 		}
 
 		public bool IsReleaseVersion ()
@@ -208,9 +196,6 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public IEnumerable<PackageDependencyNode> GetDependencyNodes ()
 		{
-			if (!childNodes.IsDefault)
-				return childNodes;
-
 			if (dependency != null)
 				return GetDependencyNodes (dependenciesNode, dependency);
 
@@ -219,7 +204,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public static IEnumerable<PackageDependencyNode> GetDependencyNodes (
 			DependenciesNode dependenciesNode,
-			PackageDependency dependency,
+			PackageDependencyInfo dependency,
 			bool sdkDependencies = false,
 			bool topLevel = false)
 		{
@@ -238,30 +223,20 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			return StringComparer.OrdinalIgnoreCase.Equals (packageReference.Include, name);
 		}
 
-		bool HasChildDiagnostic ()
-		{
-			if (childNodes.IsDefault)
-				return false;
-
-			return childNodes.Any (node => node.IsDiagnostic);
-		}
-
 		/// <summary>
-		/// Use the diagnostic message if there is only one diagnostic. Otherwise
+		/// Use the diagnostic message if there is only one direct diagnostic child. Otherwise
 		/// return a message indicating the diagnostic message can be seen by expanding
 		/// the package.
 		/// </summary>
 		string GetChildDiagnosticStatusMessage ()
 		{
 			string message = null;
-			foreach (PackageDependencyNode node in childNodes) {
-				if (node.IsDiagnostic) {
-					if (message == null) {
-						message = node.dependency.DiagnosticMessage;
-					} else {
-						// Multiple diagnostics so change the status message.
-						return GettextCatalog.GetString ("Package restored with warnings. Expand the package to see the warnings.");
-					}
+			foreach (PackageDependencyInfo childDependency in dependency.Dependencies) {
+				if (childDependency.IsDiagnostic && message == null) {
+					message = childDependency.DiagnosticMessage;
+				} else if (childDependency.HasChildDiagnostic || childDependency.IsDiagnostic) {
+					// Multiple diagnostics or child diagnostic so change the status message.
+					return GettextCatalog.GetString ("Package restored with warnings. Expand the package to see the warnings.");
 				}
 			}
 			return message;
