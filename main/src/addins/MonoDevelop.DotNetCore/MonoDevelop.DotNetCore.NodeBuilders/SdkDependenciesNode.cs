@@ -74,11 +74,6 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			return ParentNode.GetTargetFrameworkNodes (sdkDependencies: true);
 		}
 
-		public PackageDependency GetDependency (string dependency)
-		{
-			return ParentNode.PackageDependencyCache.GetDependency (dependency);
-		}
-
 		/// <summary>
 		/// Returns a SDK node for the project whilst the package dependencies are still loading.
 		/// </summary>

@@ -76,11 +76,6 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			return ParentNode.GetTargetFrameworkNodes (sdkDependencies: false);
 		}
 
-		public PackageDependency GetDependency (string dependency)
-		{
-			return ParentNode.PackageDependencyCache.GetDependency (dependency);
-		}
-
 		public IEnumerable<PackageDependencyNode> GetProjectPackageReferencesAsDependencyNodes ()
 		{
 			return ParentNode.GetProjectPackageReferencesAsDependencyNodes ();

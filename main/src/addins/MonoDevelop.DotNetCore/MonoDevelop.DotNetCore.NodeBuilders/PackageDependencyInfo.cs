@@ -1,10 +1,10 @@
 ﻿//
-// TargetFrameworkNode.cs
+// PackageDependencyInfo.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,59 +25,48 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using System.Linq;
-using MonoDevelop.Core;
+using System.Collections.Immutable;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class TargetFrameworkNode
+	class PackageDependencyInfo
 	{
-		DependenciesNode dependenciesNode;
-		PackageDependencyInfo dependency;
-		bool sdkDependencies;
+		ImmutableArray<PackageDependencyInfo> dependencies = ImmutableArray<PackageDependencyInfo>.Empty;
+		PackageDependency dependency;
 
-		public TargetFrameworkNode (
-			DependenciesNode dependenciesNode,
-			PackageDependencyInfo dependency,
-			bool sdkDependencies)
+		public PackageDependencyInfo (PackageDependency dependency)
 		{
-			this.dependenciesNode = dependenciesNode;
 			this.dependency = dependency;
-			this.sdkDependencies = sdkDependencies;
 		}
 
-		public string Name {
-			get { return dependency.Name; }
+		public bool HasChildDiagnostic { get; set; }
+		public bool IsBuilt { get; set; }
+
+		public string Name => dependency.Name;
+		public string Version => dependency.Version;
+
+		public string DiagnosticCode => dependency.DiagnosticCode;
+		public string DiagnosticMessage => dependency.DiagnosticMessage;
+		public bool IsDiagnostic => dependency.IsDiagnostic;
+
+		public IEnumerable<string> DependencyNames => dependency.Dependencies;
+
+		public IEnumerable<PackageDependencyInfo> Dependencies {
+			get { return dependencies; }
 		}
 
-		public string GetLabel ()
+		public void AddChild (PackageDependencyInfo dependency)
 		{
-			return GLib.Markup.EscapeText (Name);
+			dependencies = dependencies.Add (dependency);
+
+			if (dependency.HasChildDiagnostic || dependency.IsDiagnostic)
+				HasChildDiagnostic = true;
 		}
 
-		public string GetSecondaryLabel ()
+		public override string ToString ()
 		{
-			return string.Format ("({0})", dependency.Version);
-		}
-
-		public IconId GetIconId ()
-		{
-			return new IconId ("md-framework-dependency");
-		}
-
-		public bool HasDependencies ()
-		{
-			return dependency.Dependencies.Any ();
-		}
-
-		public IEnumerable<PackageDependencyNode> GetDependencyNodes ()
-		{
-			return PackageDependencyNode.GetDependencyNodes (
-				dependenciesNode,
-				dependency,
-				sdkDependencies,
-				topLevel: true);
+			return Name;
 		}
 	}
 }

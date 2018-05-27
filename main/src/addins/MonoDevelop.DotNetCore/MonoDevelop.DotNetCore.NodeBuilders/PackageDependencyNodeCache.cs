@@ -37,8 +37,8 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 {
 	class PackageDependencyNodeCache
 	{
-		List<PackageDependency> frameworks = new List<PackageDependency> ();
-		Dictionary<string, PackageDependency> packageDependencies = new Dictionary<string, PackageDependency> ();
+		List<PackageDependencyInfo> frameworks = new List<PackageDependencyInfo> ();
+		Dictionary<string, PackageDependencyInfo> packageDependencies = new Dictionary<string, PackageDependencyInfo> ();
 		CancellationTokenSource cancellationTokenSource;
 
 		public PackageDependencyNodeCache (DotNetProject project)
@@ -120,15 +120,17 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 			foreach (PackageDependency dependency in dependencies) {
 				if (dependency.IsTargetFramework) {
-					frameworks.Add (dependency);
+					frameworks.Add (new PackageDependencyInfo (dependency));
 				} else if (dependency.IsPackage) {
 					string key = dependency.Name + "/" + dependency.Version;
-					packageDependencies[key] = dependency;
+					packageDependencies [key] = new PackageDependencyInfo (dependency);
 				} else if (dependency.IsDiagnostic) {
 					string key = dependency.FrameworkName + "/" + dependency.Name + "/" + dependency.Version + "/" + dependency.DiagnosticCode;
-					packageDependencies[key] = dependency;
+					packageDependencies [key] = new PackageDependencyInfo (dependency);
 				}
 			}
+
+			BuildPackageDependencyHierarchy ();
 		}
 
 		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes (
@@ -138,9 +140,9 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			return frameworks.Select (dependency => new TargetFrameworkNode (dependenciesNode, dependency, sdkDependencies));
 		}
 
-		public PackageDependency GetDependency (string dependency)
+		PackageDependencyInfo GetDependency (string dependency)
 		{
-			PackageDependency matchedDependency = null;
+			PackageDependencyInfo matchedDependency = null;
 			if (packageDependencies.TryGetValue (dependency, out matchedDependency))
 				return matchedDependency;
 
@@ -151,6 +153,27 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		{
 			return Project.Items.OfType<ProjectPackageReference> ()
 				.Select (reference => PackageDependencyNode.Create (dependenciesNode, reference));
+		}
+
+		void BuildPackageDependencyHierarchy ()
+		{
+			foreach (PackageDependencyInfo framework in frameworks) {
+				BuildChildDependencies (framework);
+			}
+		}
+
+		void BuildChildDependencies (PackageDependencyInfo dependency)
+		{
+			foreach (string childDependencyName in dependency.DependencyNames) {
+				var childDependency = GetDependency (childDependencyName);
+				if (childDependency != null) {
+					if (!childDependency.IsBuilt) {
+						BuildChildDependencies (childDependency);
+					}
+					dependency.AddChild (childDependency);
+				}
+			}
+			dependency.IsBuilt = true;
 		}
 	}
 }
