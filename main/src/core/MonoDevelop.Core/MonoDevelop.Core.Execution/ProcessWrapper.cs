@@ -102,11 +102,9 @@ namespace MonoDevelop.Core.Execution
 					// Ignore
 				}
 
-				lock (lockObj) {
-					//call this AFTER the exit event, or the ProcessWrapper may get disposed and abort this thread
-					if (endEventOut != null)
-						endEventOut.Set ();
-				}
+				//call this AFTER the exit event, or the ProcessWrapper may get disposed and abort this thread
+				if (endEventOut != null)
+					endEventOut.Set ();
 				taskCompletionSource.SetResult (operation.ExitCode);
             }
 		}
@@ -120,10 +118,8 @@ namespace MonoDevelop.Core.Execution
 					ErrorStreamChanged?.Invoke (this, new string (buffer, 0, nr));
 				}					
 			} finally {
-				lock (lockObj) {
-					if (endEventErr != null)
-						endEventErr.Set ();
-				}
+				if (endEventErr != null)
+					endEventErr.Set ();
 			}
 		}
 		
