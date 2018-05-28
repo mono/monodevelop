@@ -93,11 +93,15 @@ namespace Mono.TextEditor
 				var change = e.TextChanges[i];
 				if (change.RemovalLength == 0) {
 					var length = change.InsertionLength;
-					foreach (var segment in GetSegmentsAt (change.Offset).Where (s => s.Offset < change.Offset && change.Offset < s.EndOffset)) {
+					foreach (var segment in GetSegmentsAt (change.Offset)) {
+						if (segment.Offset >= change.Offset || change.Offset >= segment.EndOffset)
+							continue;
 						segment.Length += length;
 						segment.UpdateAugmentedData ();
 					}
-					var node = SearchFirstSegmentWithStartAfter (change.Offset + 1);
+					var node = SearchFirstSegmentWithStartAfter (change.Offset);
+					while (node != null && node.Length == 0)
+						node = node.GetNextNode ();
 					if (node != null) {
 						node.DistanceToPrevNode += length;
 						node.UpdateAugmentedData ();
