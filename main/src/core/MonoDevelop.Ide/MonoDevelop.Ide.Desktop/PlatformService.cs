@@ -45,6 +45,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Ide.Composition;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Desktop
 {
@@ -581,6 +582,11 @@ namespace MonoDevelop.Ide.Desktop
 		public static bool AccessibilityInUse { get; protected set; }
 
 		internal virtual string GetNativeRuntimeDescription ()
+		{
+			return null;
+		}
+
+		internal virtual IPlatformTelemetryDetails PlatformTelemetryDetails ()
 		{
 			return null;
 		}

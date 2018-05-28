@@ -304,7 +304,8 @@ namespace MonoDevelop.Ide
 			StartLockupTracker ();
 
 			startupTimer.Stop ();
-			Counters.Startup.Inc (GetStartupMetadata (startupInfo));
+
+			CreateStartupMetadata (startupInfo);
 
 			GLib.Idle.Add (OnIdle);
 			IdeApp.Run ();
@@ -330,6 +331,13 @@ namespace MonoDevelop.Ide
 		{
 			Composition.CompositionManager.InitializeAsync ().Ignore ();
 			return false;
+		}
+
+		async void CreateStartupMetadata (StartupInfo startupInfo)
+		{
+			var result = await Task.Run (() => DesktopService.PlatformTelemetry ());
+			Counters.Startup.Inc (GetStartupMetadata (startupInfo, result));
+			IdeApp.OnStartupCompleted ();
 		}
 
 		static DateTime lastIdle;
@@ -673,7 +681,7 @@ namespace MonoDevelop.Ide
 			return null;
 		}
 
-		static StartupMetadata GetStartupMetadata (StartupInfo startupInfo)
+		static StartupMetadata GetStartupMetadata (StartupInfo startupInfo, IPlatformTelemetryDetails platformDetails)
 		{
 			var assetType = StartupAssetType.FromStartupInfo (startupInfo);
 
@@ -683,7 +691,9 @@ namespace MonoDevelop.Ide
 				AssetTypeId = assetType.Id.ToString (),
 				AssetTypeName = assetType.Name,
 				IsInitialRun = IdeApp.IsInitialRun,
-				IsInitialRunAfterUpgrade = IdeApp.IsInitialRunAfterUpgrade
+				IsInitialRunAfterUpgrade = IdeApp.IsInitialRunAfterUpgrade,
+				TimeSinceMachineStart = platformDetails.TimeSinceMachineStart.Seconds,
+				TimeSinceLogin = platformDetails.TimeSinceLogin.Seconds
 			};
 		}
 

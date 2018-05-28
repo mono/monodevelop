@@ -38,10 +38,9 @@ namespace MonoDevelop.Ide.Projects
 		bool useGitOriginalValue;
 		bool useGitIgnoreOriginalValue;
 
-		[TestFixtureSetUp]
-		public void SetUp ()
+		protected override void InternalSetup (string rootDir)
 		{
-			Simulate ();
+			base.InternalSetup (rootDir);
 
 			createProjectDirectoryOriginalValue = PropertyService.Get (
 				NewProjectDialogController.CreateProjectSubDirectoryPropertyName,

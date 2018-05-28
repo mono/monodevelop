@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 					value = Deserialize (serializedValue, optionKey.Option.Type);
 					return true;
 				} catch (Exception ex) {
-					LoggingService.LogError ($"Failed to deserialize type: {optionKey.Option.Type} value: {serializedValue}", ex);
+					LoggingService.LogError ($"Failed to deserialize key: {storageKey} type: {optionKey.Option.Type} value: {serializedValue}", ex);
 				}
 			}
 
@@ -120,9 +120,13 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			// Property bindings
 			if (preferences.TryGetUpdater (optionKey, out string storageKey, out var updater)) {
 				MonitorChanges (storageKey, optionKey);
-				var serializedValue = Serialize (value, optionKey.Option.Type);
-				updater (serializedValue);
-				return true;
+				try {
+					var serializedValue = Serialize (value, optionKey.Option.Type);
+					updater (serializedValue);
+					return true;
+				} catch (Exception ex) {
+					LoggingService.LogError ($"Failed to serialize key: {storageKey} type: {optionKey.Option.Type}", ex);
+				}
 			}
 
 			return false;
@@ -206,16 +210,11 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 		{
 			if (optionType.IsEnum && value != null && optionType.IsEnumDefined (value))
 				return Enum.ToObject (optionType, value);
+
+			if (RoslynPreferences.TryGetSerializationMethods<object> (optionType, out var serializer, out var deserializer) && value is string serializedValue) {
+				return deserializer (serializedValue);
+			}
 				
-			if (optionType == typeof (CodeStyleOption<bool>))
-				return DeserializeCodeStyleOption (value, x => CodeStyleOption<bool>.FromXElement (x));
-
-			if (optionType == typeof (CodeStyleOption<ExpressionBodyPreference>))
-				return DeserializeCodeStyleOption (value, x => CodeStyleOption<ExpressionBodyPreference>.FromXElement (x));
-
-			if (optionType == typeof (NamingStylePreferences))
-				return DeserializeCodeStyleOption (value, x => NamingStylePreferences.FromXElement (x));
-
 			if (optionType == typeof (bool)) {
 				// TypeScript used to store some booleans as integers. We now handle them properly for legacy sync scenarios.
 				if (value is int intValue)
@@ -236,8 +235,6 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			}
 
 			return value;
-
-			object DeserializeCodeStyleOption<T> (object v, Func<XElement, T> transform) => transform (XElement.Parse ((string)v));
 		}
 		#endregion
 	}

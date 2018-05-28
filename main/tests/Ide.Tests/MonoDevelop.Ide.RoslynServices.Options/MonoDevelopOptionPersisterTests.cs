@@ -88,10 +88,16 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			}
 		}
 
+		class MyCustomClass { public int X; }
+
 		static CodeStyleOption<bool> boolOption =
 			new CodeStyleOption<bool> (true, NotificationOption.Suggestion);
 		static CodeStyleOption<ExpressionBodyPreference> enumOption =
 			new CodeStyleOption<ExpressionBodyPreference> (ExpressionBodyPreference.WhenOnSingleLine, NotificationOption.Suggestion);
+		static CodeStyleOption<string> stringOption =
+			new CodeStyleOption<string> ("testString", NotificationOption.Error);
+		static CodeStyleOption<MyCustomClass> classOption =
+			new CodeStyleOption<MyCustomClass> (new MyCustomClass { X = 1 }, NotificationOption.Error);
 		static NamingStylePreferences namingOption = NamingStylePreferences.Default;
 
 		SerializationTestCase [] SerializationTestCases = {
@@ -100,8 +106,10 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			SerializationTestCase.Ok (PlatformID.Unix),
 			SerializationTestCase.Ok (boolOption, boolOption.ToXElement ().ToString ()),
 			SerializationTestCase.Ok (enumOption, enumOption.ToXElement ().ToString ()),
+			SerializationTestCase.Ok (stringOption, stringOption.ToXElement ().ToString ()),
 			SerializationTestCase.Ok (namingOption, namingOption.CreateXElement ().ToString ()),
 			SerializationTestCase.Ok ("string"),
+			SerializationTestCase.Fail<CodeStyleOption<MyCustomClass>> (classOption, stringOption.ToXElement ().ToString ()),
 		};
 
 		[TestCaseSource (nameof (SerializationTestCases))]
@@ -113,6 +121,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 				var optionKey = testCase.Wrap (preferences);
 
 				var property = optionKey.GetPropertyName ();
+				PropertyService.Set (property, null);
 
 				// Try persisting it.
 				Assert.AreEqual (testCase.Success, persister.TryPersist (optionKey, testCase.Value));
@@ -136,11 +145,12 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			SerializationTestCase.Ok<bool?>(true, true),
 			SerializationTestCase.Ok<bool?>(false, false),
 			SerializationTestCase.Ok<bool?>(null, null),
-			SerializationTestCase.Fail<PlatformID>(-1, 1.0),
+			SerializationTestCase.Fail<PlatformID> (-1, 1.0),
 			SerializationTestCase.Fail<PlatformID> (-1, ulong.MaxValue),
 			SerializationTestCase.Ok(namingOption, namingOption.CreateXElement ().ToString()),
 			SerializationTestCase.Ok(boolOption, boolOption.ToXElement ().ToString()),
 			SerializationTestCase.Ok(enumOption, enumOption.ToXElement ().ToString()),
+			SerializationTestCase.Fail<CodeStyleOption<MyCustomClass>>(classOption, stringOption.ToXElement ().ToString()),
 		};
 
 		[TestCaseSource (nameof (DeserializationTestCases))]

@@ -38,9 +38,9 @@ namespace MonoDevelop.Packaging.Tests
 	[TestFixture]
 	public class AddPlatformImplementationTests : TestBase
 	{
-		public AddPlatformImplementationTests ()
+		protected override void InternalSetup (string rootDir)
 		{
-			Simulate ();
+			base.InternalSetup (rootDir);
 
 			#pragma warning disable 219
 			// Ensure MSBuildSdksPath is registered otherwise the project builders are recycled

@@ -26,6 +26,7 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
 using static Microsoft.VisualStudio.Language.Intellisense.Implementation.MDUtils;
 using Microsoft.VisualStudio.Language.StandardClassification;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Tasks;
 
 namespace Microsoft.VisualStudio.Platform
@@ -152,9 +153,16 @@ namespace Microsoft.VisualStudio.Platform
 
 		#endregion
 
-		public Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
+		public async Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
-			return Task.FromResult (ScopeStack.Empty);
+			var line = textDocument.GetLineByOffset (offset);
+			var highligthedLine = await GetHighlightedLineAsync (line, cancellationToken).ConfigureAwait (false);
+			offset -= line.Offset;
+			foreach (var segment in highligthedLine.Segments) {
+				if (segment.Offset <= offset && segment.EndOffset >= offset)
+					return segment.ScopeStack;
+			}
+			return ScopeStack.Empty;
 		}
 
 		private EventHandler<LineEventArgs> _highlightingStateChanged;

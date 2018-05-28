@@ -147,6 +147,7 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\MockOptionService.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\MonoDevelopOptionPersisterTests.cs" />
     <Compile Include="TypeForwarders.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopNotificationServiceIntegrationTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

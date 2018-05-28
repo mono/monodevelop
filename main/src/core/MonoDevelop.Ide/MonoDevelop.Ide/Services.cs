@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide
 	}
 
 	class StartupMetadata: AssetMetadata
-	{
+	{	
 		public long CorrectedStartupTime {
 			get => GetProperty<long> ("CorrectedStartupTime");
 			set => SetProperty ("CorrectedStartupTime", value);
@@ -127,6 +127,14 @@ namespace MonoDevelop.Ide
 		public bool IsInitialRunAfterUpgrade {
 			get => GetProperty<bool> ("IsInitialRunAfterUpgrade");
 			set => SetProperty ("IsInitialRunAfterUpgrade", value);
+		}
+		public long TimeSinceMachineStart {
+			get => GetProperty<long> ("TimeSinceMachineStart");
+			set => SetProperty ("TimeSinceMachineStart", value);
+		}
+		public long TimeSinceLogin {
+			get => GetProperty<long> ("TimeSinceLogin");
+			set => SetProperty ("TimeSinceLogin", value);
 		}
 	}
 }
