@@ -512,7 +512,7 @@ namespace MonoDevelop.Components.Commands
 
 				if (cinfo.Enabled && cinfo.Visible) {
 					if (!dispatched)
-						dispatched = DispatchCommand (commands [i].Id, null, null, CommandSource.Keybinding, ev.Time);
+						dispatched = DispatchCommand (commands [i].Id, null, null, CommandSource.Keybinding, ev.Time, cinfo);
 					conflict.Add (commands [i]);
 				} else
 					bypass = true; // allow Gtk to handle the event if the command is disabled
