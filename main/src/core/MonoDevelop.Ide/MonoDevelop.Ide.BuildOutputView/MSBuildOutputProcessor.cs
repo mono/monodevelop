@@ -60,15 +60,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			using (Counters.ProcessBuildLog.BeginTiming ()) {
-				Clear ();
-				base.Process ();
+			Clear ();
+			base.Process ();
 
-				try {
-					binlogReader.Replay (FileName);
-				} catch (Exception ex) {
-					LoggingService.LogError ($"Can't process {FileName}: {ex.ToString ()}");
-				}
+			try {
+				binlogReader.Replay (FileName);
+			} catch (Exception ex) {
+				LoggingService.LogError ($"Can't process {FileName}: {ex.ToString ()}");
 			}
 		}
 
