@@ -681,22 +681,20 @@ namespace MonoDevelop.Ide
 			return null;
 		}
 
-		static Dictionary<string, string> GetStartupMetadata (StartupInfo startupInfo, IPlatformTelemetryDetails platformDetails)
+		static StartupMetadata GetStartupMetadata (StartupInfo startupInfo, IPlatformTelemetryDetails platformDetails)
 		{
-			var metadata = new Dictionary<string, string> ();
-
-			metadata ["CorrectedStartupTime"] = startupTimer.ElapsedMilliseconds.ToString ();
-			metadata ["StartupType"] = "0";
-
 			var assetType = StartupAssetType.FromStartupInfo (startupInfo);
 
-			metadata ["AssetTypeId"] = assetType.Id.ToString ();
-			metadata ["AssetTypeName"] = assetType.Name;
-
-			metadata ["TimeSinceMachineStart"] = platformDetails.TimeSinceMachineStart.Seconds.ToString ();
-			metadata ["TimeSinceLogin"] = platformDetails.TimeSinceLogin.Seconds.ToString ();
-
-			return metadata;
+			return new StartupMetadata {
+				CorrectedStartupTime = startupTimer.ElapsedMilliseconds,
+				StartupType = 0,
+				AssetTypeId = assetType.Id.ToString (),
+				AssetTypeName = assetType.Name,
+				IsInitialRun = IdeApp.IsInitialRun,
+				IsInitialRunAfterUpgrade = IdeApp.IsInitialRunAfterUpgrade,
+				TimeSinceMachineStart = platformDetails.TimeSinceMachineStart.Seconds,
+				TimeSinceLogin = platformDetails.TimeSinceLogin.Seconds
+			};
 		}
 
 		internal static IDictionary<string, string> GetOpenWorkspaceOnStartupMetadata ()
