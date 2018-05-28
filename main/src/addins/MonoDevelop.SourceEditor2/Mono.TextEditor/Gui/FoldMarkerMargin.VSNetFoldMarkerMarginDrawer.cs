@@ -44,7 +44,7 @@ namespace Mono.TextEditor
 			List<FoldSegment> containingFoldings = new List<FoldSegment> ();
 			List<FoldSegment> endFoldings        = new List<FoldSegment> ();
 
-			public override bool AutoHide { get => true; }
+			public override bool AutoHide { get => false; }
 
 			internal VSNetFoldMarkerMarginDrawer (FoldMarkerMargin margin) : base (margin)
 			{

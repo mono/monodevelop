@@ -35,6 +35,7 @@ using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core;
 using Mono.TextEditor.Theatrics;
+using MonoDevelop.Ide.Desktop;
 
 namespace Mono.TextEditor
 {
@@ -81,41 +82,50 @@ namespace Mono.TextEditor
 			editor.Document.FoldTreeUpdated += HandleEditorDocumentFoldTreeUpdated;
 			editor.Caret.PositionChanged += EditorCarethandlePositionChanged;
 			editor.TextArea.MouseHover += TextArea_MouseHover;
-			editor.TextArea.MouseLeft += TextArea_MouseLeft; 
-			drawer = new VSCodeFoldMarkerMarginDrawer (this);
+			editor.TextArea.MouseLeft += TextArea_MouseLeft;
+			if (PlatformService.AccessibilityInUse) {
+				drawer = new VSNetFoldMarkerMarginDrawer (this);
+			} else {
+				drawer = new VSCodeFoldMarkerMarginDrawer (this);
+			}
 			UpdateAccessibility ();
 			animationStage.ActorStep += AnimationStage_ActorStep;
 		}
 
 		void TextArea_MouseLeft (object sender, EventArgs e)
 		{
-			if (!drawer.AutoHide)
-				return;
 			StartFadeOutAnimation ();
 		}
 
 		void TextArea_MouseHover (object sender, MarginEventArgs e)
 		{
-			if (!drawer.AutoHide)
-				return;
 			if (e.Margin == editor.TextViewMargin) {
 				StartFadeOutAnimation ();
 			} else {
-				if (drawer.FoldMarkerOcapitiy >= 1)
-					return;
-				if (animationStage.Contains (this)) {
-					if (fadeIn)
-						return;
-					animationStage.Exeunt ();
-				}
-				fadeIn = true;
-				animationStage.Add (this, FadeInTimer, drawer.FoldMarkerOcapitiy);
-				animationStage.Play ();
+				StartFadeInAnimation ();
 			}
 		}
 
-		private void StartFadeOutAnimation ()
+		void StartFadeInAnimation ()
 		{
+			if (!drawer.AutoHide)
+				return;
+			if (drawer.FoldMarkerOcapitiy >= 1)
+				return;
+			if (animationStage.Contains (this)) {
+				if (fadeIn)
+					return;
+				animationStage.Exeunt ();
+			}
+			fadeIn = true;
+			animationStage.Add (this, FadeInTimer, drawer.FoldMarkerOcapitiy);
+			animationStage.Play ();
+		}
+
+		void StartFadeOutAnimation ()
+		{
+			if (!drawer.AutoHide)
+				return;
 			if (animationStage.Contains (this)) {
 				if (!fadeIn)
 					return;
@@ -409,6 +419,7 @@ namespace Mono.TextEditor
 			if (focusSegments.Length > 0) {
 				HighlightFold (focusSegments[0]);
 			}
+			StartFadeInAnimation ();
 		}
 
 		protected internal override void FocusOut()
@@ -421,6 +432,7 @@ namespace Mono.TextEditor
 			base.FocusOut();
 
 			editor.RedrawMargin (this);
+			StartFadeOutAnimation ();
 		}
 
 		void ActivateFold (FoldSegment segment)
