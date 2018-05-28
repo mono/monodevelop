@@ -638,7 +638,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 				await SetSpinnerVisibility (true);
 
 				try {
-					BuildOutput.ProcessProjects ();
+					var metadata = new Dictionary<string, string> ();
+					var timer = Counters.ProcessBuildLog.BeginTiming (metadata);
+
+					BuildOutput.ProcessProjects (showDiagnostics, metadata);
 
 					await InvokeAsync (() => {
 						currentSearch = null;
@@ -665,6 +668,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 							Counters.NormalViewSelected++;
 						}
 					});
+
+					timer.End ();
 				} catch (Exception ex) {
 					processingCompletion.TrySetException (ex);
 				}
