@@ -304,7 +304,8 @@ namespace MonoDevelop.Ide
 			StartLockupTracker ();
 
 			startupTimer.Stop ();
-			Counters.Startup.Inc (GetStartupMetadata (startupInfo));
+
+			CreateStartupMetadata (startupInfo);
 
 			GLib.Idle.Add (OnIdle);
 			IdeApp.Run ();
@@ -330,6 +331,13 @@ namespace MonoDevelop.Ide
 		{
 			Composition.CompositionManager.InitializeAsync ().Ignore ();
 			return false;
+		}
+
+		async void CreateStartupMetadata (StartupInfo startupInfo)
+		{
+			var result = await Task.Run (() => DesktopService.PlatformTelemetry ());
+			Counters.Startup.Inc (GetStartupMetadata (startupInfo, result));
+			IdeApp.OnStartupCompleted ();
 		}
 
 		static DateTime lastIdle;
@@ -673,7 +681,7 @@ namespace MonoDevelop.Ide
 			return null;
 		}
 
-		static Dictionary<string, string> GetStartupMetadata (StartupInfo startupInfo)
+		static Dictionary<string, string> GetStartupMetadata (StartupInfo startupInfo, IPlatformTelemetryDetails platformDetails)
 		{
 			var metadata = new Dictionary<string, string> ();
 
@@ -684,6 +692,9 @@ namespace MonoDevelop.Ide
 
 			metadata ["AssetTypeId"] = assetType.Id.ToString ();
 			metadata ["AssetTypeName"] = assetType.Name;
+
+			metadata ["TimeSinceMachineStart"] = platformDetails.TimeSinceMachineStart.Seconds.ToString ();
+			metadata ["TimeSinceLogin"] = platformDetails.TimeSinceLogin.Seconds.ToString ();
 
 			return metadata;
 		}

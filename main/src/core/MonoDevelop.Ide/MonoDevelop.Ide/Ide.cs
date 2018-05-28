@@ -90,6 +90,24 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		static EventHandler startupCompleted;
+		public static event EventHandler StartupCompleted {
+			add {
+				Runtime.RunInMainThread (() => {
+					startupCompleted += value;
+				});
+			}
+			remove {
+				Runtime.RunInMainThread (() => {
+					startupCompleted -= value;
+				});
+			}
+		}
+		internal static void OnStartupCompleted ()
+		{
+			startupCompleted?.Invoke (null, EventArgs.Empty);
+		}
+
 		internal static IdeCustomizer Customizer { get; set; }
 
 		/// <summary>
