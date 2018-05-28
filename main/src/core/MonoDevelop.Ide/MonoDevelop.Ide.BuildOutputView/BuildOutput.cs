@@ -185,11 +185,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return result.Values;
 		}
 
-		public void ProcessProjects () 
+		public void ProcessProjects (bool showDiagnostics, IDictionary<string, string> metadata) 
 		{
 			foreach (var p in projects) {
 				p.Process ();
 			}
+
+			metadata ["Verbosity"] = showDiagnostics ? "Diagnostics" : "Normal";
+			metadata ["BuildCount"] = projects.Count.ToString ();
+			metadata ["OnDiskSize"] = projects.Sum (x => new FileInfo (x.FileName).Length).ToString ();
+			metadata ["RootNodesCount"] = projects.Sum (x => x.RootNodes.Count).ToString ();
 		}
 
 		bool disposed = false;

@@ -65,8 +65,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			try {
 				binlogReader.Replay (FileName);
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				LoggingService.LogError ($"Can't process {FileName}: {ex.ToString ()}");
 			}
 		}
