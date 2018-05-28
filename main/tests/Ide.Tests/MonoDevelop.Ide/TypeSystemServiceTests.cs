@@ -37,6 +37,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.SolutionCrawler;
 using Microsoft.CodeAnalysis.SolutionSize;
+using System.IO;
 
 namespace MonoDevelop.Ide
 {
@@ -168,6 +169,56 @@ namespace MonoDevelop.Ide
 			} finally {
 				await IdeApp.Workspace.Close (false);
 			}
+		}
+
+		[Test]
+		public async Task TestSolutionLoadedOnce ()
+		{
+			// Fix for VSTS 603762 - LoadProject is called twice on solution load due to configuration change.
+
+			if (!IdeApp.IsInitialized)
+				IdeApp.Initialize (new ProgressMonitor ());
+
+			MonoDevelopWorkspace workspace;
+			bool reloaded = false;
+			bool solutionLoaded = false;
+			bool workspaceLoaded = false;
+
+			IdeApp.Workspace.SolutionLoaded += (s, e) => {
+				workspace = TypeSystemService.GetWorkspace (e.Solution);
+				workspace.WorkspaceChanged += (sender, ea) => {
+					// If SolutionReloaded event is raised while opening the solution, we are doing something wrong
+					if (ea.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.SolutionReloaded)
+						reloaded = true;
+				};
+				workspace.WorkspaceLoaded += (sender, ev) => workspaceLoaded = true;
+				solutionLoaded = true;
+			};
+
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			// Generate a user prefs file
+
+			string prefsPath = Path.Combine (Path.GetDirectoryName (solFile), ".vs", "ConsoleProject", "xs");
+			Directory.CreateDirectory (prefsPath);
+			File.WriteAllText (Path.Combine (prefsPath, "UserPrefs.xml"), "<Properties><MonoDevelop.Ide.Workspace ActiveConfiguration='Release' /></Properties>");
+
+			try {
+				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
+
+				// Check that the user prefs file has been loaded
+				Assert.AreEqual ("Release", IdeApp.Workspace.ActiveConfiguration.ToString ());
+
+				// Wait for the roslyn workspace to be loaded
+				while (!workspaceLoaded)
+					await Task.Delay (100);
+
+			} finally {
+				await IdeApp.Workspace.Close (false);
+			}
+
+			Assert.IsTrue (solutionLoaded);
+			Assert.IsFalse (reloaded);
 		}
 	}
 }
