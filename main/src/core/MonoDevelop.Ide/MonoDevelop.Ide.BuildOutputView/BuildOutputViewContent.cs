@@ -53,14 +53,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			this.filename = filename;
 			this.ContentName = filename;
-			Counters.BuildOutputTimesOpened++;
+			Counters.OpenedFromFile++;
 		}
 
 		public BuildOutputViewContent (BuildOutput buildOutput)
 		{
 			this.buildOutput = buildOutput;
 			ContentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog";
-			Counters.BuildOutputTimesOpened++;
+			Counters.OpenedFromIDE++;
 		}
 
 		void FileNameChanged (object sender, string file)
@@ -210,6 +210,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		[CommandHandler (FileCommands.Save)]
 		public override Task Save ()
 		{
+			Counters.SavedToFile++;
 			return control.SaveAs ();
 		}
 
