@@ -328,6 +328,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			if (e.Button == PointerButton.Left && e.MultiplePress == 2) {
+				if (!cellView.IsViewClickable (selectedNode, e.Position)) {
+					return;
+				}
 				if (selectedNode.NodeType == BuildOutputNodeType.Warning || selectedNode.NodeType == BuildOutputNodeType.Error) {
 					GoToTask (selectedNode);
 					return;
