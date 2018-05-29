@@ -5,7 +5,7 @@
 		<Import file="schemas/readme.txt" />
 		<Import file="schemas/XMLSchema.xsd" />
 		<Import file="schemas/W3C-License.html" />
-		<Import file="schemas/xslt.xsd" />
+		<Import file="schemas/schema-for-xslt20.xsd" />
 		<Import file="schemas/manifest.xsd" />
 	</Runtime>
 
@@ -30,7 +30,7 @@
 	<Extension path = "/MonoDevelop/Xml/Editor/XmlSchemas">
 		<Schema file="schemas/appconfig.xsd" />
 		<Schema file="schemas/XMLSchema.xsd" />
-		<Schema file="schemas/xslt.xsd" />
+		<Schema file="schemas/schema-for-xslt20.xsd" />
 		<Schema file="schemas/manifest.xsd" />
 	</Extension>
 

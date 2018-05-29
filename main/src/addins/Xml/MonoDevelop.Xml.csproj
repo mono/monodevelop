@@ -223,7 +223,7 @@
     <Content Include="schemas\XMLSchema.xsd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="schemas\xslt.xsd">
+    <Content Include="schemas\schema-for-xslt20.xsd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
