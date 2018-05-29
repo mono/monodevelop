@@ -318,6 +318,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public BuildOutputCellSelection GetCurrentSelection () => new BuildOutputCellSelection (selectionRow, selectionStart, selectionEnd);
 
+		internal bool IsViewClickable (BuildOutputNode node, Point position)
+		{
+			var view = GetViewStatus (node);
+			return !view.LastRenderExpanderBounds.Contains (position) && view.LastRenderBounds.Contains (position);
+		}
+
 		static Font defaultFont;
 		static Font defaultBoldFont;
 		static Font monospaceFont;
