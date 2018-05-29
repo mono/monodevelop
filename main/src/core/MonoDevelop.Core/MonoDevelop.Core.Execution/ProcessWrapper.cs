@@ -122,8 +122,14 @@ namespace MonoDevelop.Core.Execution
 		
 		protected override void Dispose (bool disposing)
 		{
-			if (Volatile.Read (ref endEventOut) == null)
+			var tempOut = Interlocked.CompareExchange (ref endEventOut, null, endEventOut);
+			if (tempOut == null)
 				return;
+
+			var tempErr = Interlocked.Exchange (ref endEventErr, null);
+
+			tempOut.Close ();
+			tempErr.Close ();
 
 			lock (lockObj) {
 				if (!done)
@@ -131,11 +137,6 @@ namespace MonoDevelop.Core.Execution
 
 				captureOutputTask = captureErrorTask = null;
 			}
-			var tempOut = Interlocked.Exchange (ref endEventOut, null);
-			var tempErr = Interlocked.Exchange (ref endEventErr, null);
-
-			tempOut.Close ();
-			tempErr.Close ();
 
 			// HACK: try/catch is a workaround for broken Process.Dispose implementation in Mono < 3.2.7
 			// https://bugzilla.xamarin.com/show_bug.cgi?id=10883
