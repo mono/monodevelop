@@ -152,12 +152,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 
 				Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown, true);
-				string message = GettextCatalog.GetString ("{0} has suspended some advanced features to improve performance.", BrandingService.ApplicationName);
-
-				Runtime.RunInMainThread (() => {
-					IdeApp.Workbench.StatusBar.ShowMessage (message, isMarkup: true);
-					// VSWin has a nice notification bar UX, with re-enable button and learn more buttons.
-				});
+				NotifyFullSolutionAnalysisDisabled (args.MemoryStatus);
 			}
 		}
 
@@ -172,6 +167,24 @@ namespace MonoDevelop.Ide.TypeSystem
 			var cacheService = Services.GetService<IWorkspaceCacheService> ();
 			if (cacheService != null)
 				cacheService.CacheFlushRequested -= OnCacheFlushRequested;
+		}
+
+		void NotifyFullSolutionAnalysisDisabled (PlatformMemoryStatus status)
+		{
+			// record that we had hit critical memory barrier
+			Logger.Log (FunctionId.VirtualMemory_MemoryLow, KeyValueLogMessage.Create (m =>
+				{
+				// which message we are logging and memory left in bytes when this is called.
+				m ["MSG"] = status;
+//				m ["MemoryLeft"] = (long)wParam;
+			}));
+
+			string message = GettextCatalog.GetString ("{0} has suspended some advanced features to improve performance.", BrandingService.ApplicationName);
+
+			Runtime.RunInMainThread (() => {
+				IdeApp.Workbench.StatusBar.ShowMessage (message, isMarkup: true);
+				// VSWin has a nice notification bar UX, with re-enable button and learn more buttons.
+			});
 		}
 
 		void OnEnableSourceAnalysisChanged(object sender, EventArgs args)
