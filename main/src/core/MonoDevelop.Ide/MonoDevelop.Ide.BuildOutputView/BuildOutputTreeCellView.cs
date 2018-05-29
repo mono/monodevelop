@@ -287,6 +287,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 		const int FontSize = 11;
 		const int MinLayoutWidth = 30;
 
+		const int DefaultExpandClickDelay = 250;
+		DateTime lastExpanderClick = DateTime.Now;
+
 		public Color StrongSelectionColor { get; set; }
 		public Color SelectionColor { get; set; }
 
@@ -713,7 +716,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			status.CalculateLayout (status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect);
 
 			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
+				if (DateTime.Now.Subtract (lastExpanderClick).TotalMilliseconds < DefaultExpandClickDelay) {
+					return;
+				}
 				status.Expanded = !status.Expanded;
+				lastExpanderClick = DateTime.Now;
 				QueueResize ();
 				return;
 			}
