@@ -129,7 +129,6 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.Implementation">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -276,7 +275,6 @@
     <Compile Include="VSEditor\TextSelection.cs" />
     <Compile Include="VSEditor\TextViewRoleSet.cs" />
     <Compile Include="VSEditor\VacuousTextDataModel.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\TextEditorKeyPressTimings.cs" />
     <Compile Include="VSEditor\FakeWpf\Geometry.cs" />
     <Compile Include="VSEditor\FakeWpf\Mouse.cs" />
     <Compile Include="VSEditor\FakeWpf\SimulatingExtensions.cs" />
@@ -347,6 +345,7 @@
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.VSNetFoldMarkerMarginDrawer.cs" />
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.VSCodeFoldMarkerMarginDrawer.cs" />
     <Compile Include="VSEditor\Text\Impl\WpfToolTipAdornment\ViewElementFactories\WpfObjectViewElementFactory.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TextEditorKeyPressTimings.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml">

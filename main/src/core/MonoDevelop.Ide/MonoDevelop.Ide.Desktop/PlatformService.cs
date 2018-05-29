@@ -586,7 +586,7 @@ namespace MonoDevelop.Ide.Desktop
 			return null;
 		}
 
-		internal virtual IPlatformTelemetryDetails PlatformTelemetryDetails ()
+		internal virtual IPlatformTelemetryDetails CreatePlatformTelemetryDetails ()
 		{
 			return null;
 		}
@@ -597,5 +597,4 @@ namespace MonoDevelop.Ide.Desktop
 		{
 		}
 	}
-
 }
