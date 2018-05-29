@@ -127,7 +127,6 @@ namespace MonoDevelop.PackageManagement
 		void MarkPackagesForReinstallation (PackageCompatibilityChecker checker)
 		{
 			checker.MarkPackagesForReinstallation ();
-			packageManagementEvents.OnFileChanged (checker.PackageReferenceFileName);
 		}
 
 		void ReportPackageReinstallationWarning (PackageCompatibilityChecker checker)

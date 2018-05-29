@@ -278,8 +278,6 @@ namespace MonoDevelop.PackageManagement
 				DotNetProject.NotifyModified ("References");
 			});
 
-			packageManagementEvents.OnFileChanged (project.GetNuGetAssetsFilePath ());
-
 			return base.PostProcessAsync (nuGetProjectContext, token);
 		}
 

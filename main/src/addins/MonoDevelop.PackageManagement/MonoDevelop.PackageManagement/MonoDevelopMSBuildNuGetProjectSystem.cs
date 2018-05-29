@@ -157,18 +157,12 @@ namespace MonoDevelop.PackageManagement
 			if (ShouldAddFileToProject (path)) {
 				await AddFileProjectItemToProject (path);
 			}
-			OnFileChanged (path);
 			LogAddedFileToProject (path);
 		}
 
 		bool ShouldAddFileToProject (string path)
 		{
 			return !IsBinDirectory (path) && !FileExistsInProject (path);
-		}
-
-		void OnFileChanged (string path)
-		{
-			GuiSyncDispatch (() => fileService.OnFileChanged (GetFullPath (path)));
 		}
 
 		bool IsBinDirectory(string path)

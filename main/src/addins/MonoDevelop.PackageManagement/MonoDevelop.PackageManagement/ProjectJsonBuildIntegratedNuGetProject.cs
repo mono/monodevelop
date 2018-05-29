@@ -72,8 +72,6 @@ namespace MonoDevelop.PackageManagement
 				dotNetProject.DotNetProject.NotifyModified ("References");
 			});
 
-			packageManagementEvents.OnFileChanged (JsonConfigPath);
-
 			return base.PostProcessAsync (nuGetProjectContext, token);
 		}
 
