@@ -199,6 +199,11 @@
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\IdeUnitTests\IdeUnitTests.csproj">
+      <Project>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</Project>
+      <Name>IdeUnitTests</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

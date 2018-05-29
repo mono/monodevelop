@@ -28,94 +28,111 @@ using System;
 using System.Text;
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.Decompiler.TypeSystem.Implementation;
+using Mono.Cecil;
+using Mono.Cecil.Rocks;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	static class UnresolvedIdStringProvider
 	{
-		public static string GetIdString (IUnresolvedEntity entity)
+		public static string GetIdString (IMemberDefinition member)
 		{
 			var sb = new StringBuilder ();
-			switch (entity.SymbolKind) {
-			case SymbolKind.TypeDefinition:
+			switch (member) {
+			case TypeDefinition type:
 				sb.Append ("T:");
-				AppendTypeName (sb, (IUnresolvedTypeDefinition)entity, false, 0);
+				AppendTypeName (sb, type, false, 0);
 				return sb.ToString ();
-			case SymbolKind.Field:
+			case FieldDefinition field:
 				sb.Append ("F:");
 				break;
-			case SymbolKind.Property:
-			case SymbolKind.Indexer:
+			case PropertyDefinition property:
 				sb.Append ("P:");
 				break;
-			case SymbolKind.Event:
+			case EventDefinition evt:
 				sb.Append ("E:");
 				break;
 			default:
 				sb.Append ("M:");
 				break;
 			}
-			var member = (IUnresolvedMember)entity;
-			if (member.DeclaringTypeDefinition != null) {
-				AppendTypeName (sb, member.DeclaringTypeReference, false, 0);
+			if (member.DeclaringType != null) {
+				AppendTypeName (sb, member.DeclaringType, false, 0);
 				sb.Append ('.');
 			}
-			if (member.IsExplicitInterfaceImplementation && member.Name.IndexOf ('.') < 0 && member.ExplicitInterfaceImplementations.Count == 1) {
+
+			/*if (member.IsExplicitInterfaceImplementation && member.Name.IndexOf ('.') < 0 && member.ExplicitInterfaceImplementations.Count == 1) {
 				AppendTypeName (sb, member.ExplicitInterfaceImplementations [0].DeclaringTypeReference, true, 0);
 				sb.Append ('#');
-			}
+			}*/
 			sb.Append (member.Name.Replace ('.', '#'));
-			var method = member as IUnresolvedMethod;
-			if (method != null && method.TypeParameters.Count > 0) {
+			var method = member as MethodDefinition;
+			if (method != null && method.GenericParameters.Count > 0) {
 				sb.Append ("``");
-				sb.Append (method.TypeParameters.Count);
+				sb.Append (method.GenericParameters.Count);
 			}
+			var parameters = method?.Parameters ?? (member as PropertyDefinition)?.Parameters;
 
-			var parameterizedMember = member as IUnresolvedParameterizedMember;
-			if (parameterizedMember != null && parameterizedMember.Parameters.Count > 0) {
-				var parameters = parameterizedMember.Parameters;
+			if (parameters != null) {
 				int start = 0;
-				if (method is DefaultUnresolvedMethod unresolved && unresolved.IsExtensionMethod)
+				if (method != null && method.ExplicitThis)
 					start = 1;
 				if (start < parameters.Count) {
 					sb.Append ('(');
 					for (int i = start; i < parameters.Count; i++){
 						if (i > start)
 							sb.Append (',');
-						AppendTypeName (sb, parameters[i].Type, false, GetTypeParameterCount(entity));
+						AppendTypeName (sb, parameters[i].ParameterType, false, GetTypeParameterCount(member));
 					}
 					sb.Append (')');
 				}
 			}
-			if (member.SymbolKind == SymbolKind.Operator && (member.Name == "op_Implicit" || member.Name == "op_Explicit")) {
+			if (method != null && method.IsSpecialName && (method.Name == "op_Implicit" || method.Name == "op_Explicit")) {
 				sb.Append ('~');
-				AppendTypeName (sb, member.ReturnType, false, 0);
+				AppendTypeName (sb, method.ReturnType, false, 0);
 			}
 			return sb.ToString ();
 		}
 
-		static int GetTypeParameterCount(IUnresolvedEntity entity)
+		static int GetTypeParameterCount(IMemberDefinition entity)
 		{
 			switch (entity) {
-				case IUnresolvedTypeDefinition td:
-					return td.TypeParameters.Count;
-				case IUnresolvedMethod method:
-					return method.TypeParameters.Count;
+			case TypeDefinition td:
+				return td.GenericParameters.Count;
+			case MethodDefinition method:
+				return method.GenericParameters.Count;
 			}
 			return 0;
 		}
 
-		static void AppendTypeName (StringBuilder sb, ITypeReference type, bool explicitInterfaceImpl, int outerTypeParameterCount)
+		static void AppendTypeName (StringBuilder sb, TypeReference type, bool explicitInterfaceImpl, int outerTypeParameterCount)
 		{
-			switch  (type) {
-			case TypeParameterReference tp:
-				sb.Append (tp.ToString());
-				break;
-			case ArrayTypeReference array:
-				AppendTypeName (sb, array.ElementType, explicitInterfaceImpl, outerTypeParameterCount);
+			if (type is TypeDefinition td) {
+				if (td.DeclaringType != null) {
+					AppendTypeName (sb, td.DeclaringType, explicitInterfaceImpl, outerTypeParameterCount);
+					sb.Append (explicitInterfaceImpl ? '#' : '.');
+					sb.Append (td.Name);
+				} else {
+					if (explicitInterfaceImpl)
+						sb.Append (td.FullName.Replace ('.', '#'));
+					else
+						sb.Append (td.FullName);
+				}
+				return;
+			}
+			if (type.IsGenericParameter) {
+				var gp = type as GenericParameter;
+				sb.Append ('`');
+				sb.Append (gp.Position);
+				return;
+			}
+			if (type.IsArray) {
+				AppendTypeName (sb, type.GetElementType (), explicitInterfaceImpl, outerTypeParameterCount);
 				sb.Append ('[');
-				if (array.Dimensions > 1) {
-					for (int i = 0; i < array.Dimensions; i++) {
+				var array = type.MakeArrayType ();
+				if (array.Rank > 1) {
+					for (int i = 0; i < array.Rank; i++) {
 						if (i > 0)
 							sb.Append (explicitInterfaceImpl ? '@' : ',');
 						if (!explicitInterfaceImpl)
@@ -123,72 +140,48 @@ namespace MonoDevelop.AssemblyBrowser
 					}
 				}
 				sb.Append (']');
-				break;
-			case PointerTypeReference ptrtr:
-				AppendTypeName (sb, ptrtr.ElementType, explicitInterfaceImpl, outerTypeParameterCount);
+				return;
+			}
+			if (type.IsPointer) {
+				AppendTypeName (sb, type.GetElementType (), explicitInterfaceImpl, outerTypeParameterCount);
 				sb.Append ('*');
-				break;
-			case ByReferenceTypeReference brtr:
-				AppendTypeName (sb, brtr.ElementType, explicitInterfaceImpl, outerTypeParameterCount);
+				return;
+			}
+			if (type.IsByReference) {
+				AppendTypeName (sb, type.GetElementType (), explicitInterfaceImpl, outerTypeParameterCount);
 				sb.Append ('@');
-				break;
-			case GetClassTypeReference gctr:
-				AppendClassTypeReference (sb, gctr.FullTypeName, outerTypeParameterCount);
-				break;
-			case IUnresolvedTypeDefinition td:
-				if (td.DeclaringTypeDefinition != null) {
-					AppendTypeName (sb, td.DeclaringTypeDefinition, explicitInterfaceImpl, outerTypeParameterCount);
-					sb.Append (explicitInterfaceImpl ? '#' : '.');
-					sb.Append (td.Name);
-					AppendTypeParameters (sb, td.TypeParameters.Count, outerTypeParameterCount + td.DeclaringTypeDefinition.TypeParameters.Count, explicitInterfaceImpl);
-				} else {
-					if (explicitInterfaceImpl)
-						sb.Append (td.FullName.Replace ('.', '#'));
-					else
-						sb.Append (td.FullName);
-					AppendTypeParameters (sb, td.TypeParameters.Count, outerTypeParameterCount, explicitInterfaceImpl);
-				}
-				break;
-			case ParameterizedTypeReference ptr:
-				AppendTypeName (sb, ptr.GenericType, explicitInterfaceImpl, int.MaxValue); // type parameter counrt should be omitted because it's determined by the type argument list given
-				sb.Append ('{');
-				for (int i = 0; i < ptr.TypeArguments.Count; i++) {
-					if (i > 0)
-						sb.Append(',');
-					AppendTypeName (sb, ptr.TypeArguments[i], explicitInterfaceImpl, outerTypeParameterCount);
-				}
-				sb.Append ('}');
-				break;
+				return;
 			}
+			if (type.IsByReference) {
+				AppendClassTypeReference (sb, type, outerTypeParameterCount);
+				return;
+			}
+			if (type.IsGenericInstance) {
+				try {
+					var genericInstance = type.MakeGenericInstanceType ();
+					AppendTypeName (sb, genericInstance.ElementType, explicitInterfaceImpl, int.MaxValue); // type parameter count should be omitted because it's determined by the type argument list given
+					sb.Append ('{');
+					for (int i = 0; i < genericInstance.GenericArguments.Count; i++) {
+						if (i > 0)
+							sb.Append (',');
+						AppendTypeName (sb, genericInstance.GenericArguments [i], explicitInterfaceImpl, outerTypeParameterCount);
+					}
+					sb.Append ('}');
+					return;
+				} catch (Exception e) {
+					LoggingService.LogError ("Exception while creating generic instance type id string " + type.FullName, e);
+				}
+			}
+
+			sb.Append (type.FullName);
 		}
 
-		static void AppendClassTypeReference (StringBuilder sb, FullTypeName name, int outerTypeParameterCount)
+		static void AppendClassTypeReference (StringBuilder sb, TypeReference name, int outerTypeParameterCount)
 		{
-			if (name.IsNested) {
-				for (int i = 0; i < name.NestingLevel; i++) {
-					if (i > 0)
-						sb.Append ('.');
-					sb.Append (name.GetNestedTypeName (i));
-				}
-			} else {
-				if (!string.IsNullOrEmpty (name.TopLevelTypeName.Namespace)) {
-					sb.Append (name.TopLevelTypeName.Namespace);
-					sb.Append ('.');
-				}
-				sb.Append (name.TopLevelTypeName.Name);
-			}
-			if (name.TypeParameterCount - outerTypeParameterCount > 0) {
+			sb.Append (name.FullName);
+			if (name.GenericParameters.Count - outerTypeParameterCount > 0) {
 				sb.Append ('`');
-				sb.Append (name.TypeParameterCount - outerTypeParameterCount);
-			}
-		}
-
-		static void AppendTypeParameters (StringBuilder sb,  int typeParameterCount, int outerTypeParameterCount, bool explicitInterfaceImpl)
-		{
-			int tpc = typeParameterCount - outerTypeParameterCount;
-			if (tpc > 0) {
-				sb.Append ('`');
-				sb.Append (tpc);
+				sb.Append (name.GenericParameters.Count- outerTypeParameterCount);
 			}
 		}
 	}

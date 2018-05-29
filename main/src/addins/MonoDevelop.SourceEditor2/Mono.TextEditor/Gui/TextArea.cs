@@ -2232,7 +2232,7 @@ namespace Mono.TextEditor
 				foreach (var drawer in margin.MarginDrawer)
 					drawer.Draw (cr, cairoRectangle);
 			}
-			
+			LayoutChanged?.Invoke (this, EventArgs.Empty);
 			if (setLongestLine) 
 				SetHAdjustment ();
 		}
@@ -2284,9 +2284,7 @@ namespace Mono.TextEditor
 				
 				cr.LineWidth = Options.Zoom;
 				textViewCr.LineWidth = Options.Zoom;
-				textViewCr.Rectangle (textViewMargin.XOffset, 0, Allocation.Width - textViewMargin.XOffset, Allocation.Height);
-				textViewCr.Clip ();
-				
+
 				RenderMargins (cr, textViewCr, cairoArea);
 			
 #if DEBUG_EXPOSE
@@ -3578,6 +3576,7 @@ namespace Mono.TextEditor
 		}
 		
 		internal List<MonoTextEditor.EditorContainerChild> containerChildren = new List<MonoTextEditor.EditorContainerChild> ();
+		internal event EventHandler LayoutChanged;
 
 		public void AddTopLevelWidget (Gtk.Widget widget, int x, int y)
 		{

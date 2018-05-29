@@ -35,7 +35,7 @@ using System;
 
 namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 {
-	abstract class AbstractTokenBraceCompletionSession : EditSession, ICheckPointEditSession
+	abstract class AbstractTokenBraceCompletionSession : PairInsertEditSession, ICheckPointEditSession
 	{
 		DocumentContext ctx;
 
@@ -74,12 +74,6 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 			return token.RawKind == OpeningTokenKind && token.SpanStart == position;
 		}
 
-		protected override void OnEditorSet ()
-		{
-			this.startOffset = Editor.CaretOffset - 1;
-			this.endOffset = startOffset + 1;
-		}
-
 		public override void BeforeType (char ch, out bool handledCommand)
 		{
 			handledCommand = false;
@@ -92,39 +86,6 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 				handledCommand = true;
 				Editor.EndSession ();
 			}
-		}
-
-		public override void BeforeBackspace (out bool handledCommand)
-		{
-			base.BeforeBackspace (out handledCommand);
-			if (Editor.CaretOffset > EndOffset) {
-				Editor.EndSession ();
-				return;
-			}
-			if (Editor.CaretOffset <= StartOffset + 1) {
-				if (HasNoForwardTyping ())
-					Editor.RemoveText (StartOffset + 1, EndOffset - StartOffset);
-				Editor.EndSession ();
-			}
-		}
-
-		public override void BeforeDelete (out bool handledCommand)
-		{
-			base.BeforeDelete (out handledCommand);
-			if (Editor.CaretOffset <= StartOffset || Editor.CaretOffset >= EndOffset) {
-				Editor.EndSession ();
-			}
-		}
-
-		bool HasNoForwardTyping ()
-		{
-			for (int i = StartOffset + 1; i < EndOffset - 1; i++) {
-				char ch = Editor.GetCharAt (i);
-				if (ch != ' ' && ch != '\t') {
-					return false;
-				}
-			}
-			return true;
 		}
 
 		protected bool IsValidToken (SyntaxToken token)

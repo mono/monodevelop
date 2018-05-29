@@ -24,13 +24,6 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		internal ITextBuffer _languageBuffer;
 		internal ITextView _textView;
 
-		static RoslynCommandTarget ()
-		{
-			var defaultForegroundThreadData = ForegroundThreadData.CreateDefault (
-				defaultKind: ForegroundThreadDataKind.ForcedByPackageInitialize);
-			ForegroundThreadAffinitizedObject.CurrentForegroundThreadData = defaultForegroundThreadData;
-		}
-
 		private RoslynCommandTarget (ITextView textView, ITextBuffer languageBuffer)
 		{
 			var commandHandlerServiceFactory = CompositionManager.GetExportedValue<ICommandHandlerServiceFactory> ();

@@ -123,5 +123,21 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (10, seg.Offset);
 		}
 
+
+		[Test ()]
+		public void TestLenth1InsertionMove ()
+		{
+			// use case:
+			//  {|_}
+			// marked } with markerlength == 1 - typing the caret should move the marker according to } before it stayed in place and got overtyped.
+			var collection = new SegmentTree<TreeSegment> ();
+
+			collection.Add (new TreeSegment (216, 1));
+
+			collection.UpdateOnTextReplace (this, new TextChangeEventArgs (216, 10, null, "\n"));
+			var seg = collection.Segments.First ();
+			Assert.AreEqual (217, seg.Offset);
+			Assert.AreEqual (1, seg.Length);
+		}
 	}
 }

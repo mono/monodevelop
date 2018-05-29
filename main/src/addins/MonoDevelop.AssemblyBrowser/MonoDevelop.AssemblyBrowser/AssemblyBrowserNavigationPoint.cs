@@ -30,15 +30,16 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Navigation;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class AssemblyBrowserNavigationPoint : DocumentNavigationPoint
 	{
-		List<AssemblyLoader> definitions;
+		ImmutableList<AssemblyLoader> definitions;
 		string idString;
 
-		public AssemblyBrowserNavigationPoint (List<AssemblyLoader> definitions, AssemblyLoader assembly, string idString) : base (assembly?.FileName)
+		public AssemblyBrowserNavigationPoint (ImmutableList<AssemblyLoader> definitions, AssemblyLoader assembly, string idString) : base (assembly?.FileName)
 		{
 			this.definitions = definitions;
 			this.idString = idString;

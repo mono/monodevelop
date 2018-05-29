@@ -36,6 +36,9 @@ using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
+using MonoDevelop.Ide;
+using Microsoft.CodeAnalysis.CodeRefactorings;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -84,7 +87,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return Task.FromResult (true);
 		}
 
-		internal void EnsureDefinitionsLoaded (List<AssemblyLoader> definitions)
+		internal void EnsureDefinitionsLoaded (ImmutableList<AssemblyLoader> definitions)
 		{
 			widget.EnsureDefinitionsLoaded (definitions);
 		}
@@ -104,6 +107,9 @@ namespace MonoDevelop.AssemblyBrowser
 		{ 
 			IsDisposed = true;
 			base.Dispose ();
+			if (currentWs != null) 
+				currentWs.WorkspaceLoaded -= Handle_WorkspaceLoaded;
+
 			widget = null;
 			if (Disposed != null)
 				Disposed (this, EventArgs.Empty);
@@ -157,6 +163,16 @@ namespace MonoDevelop.AssemblyBrowser
 			//FindDerivedClassesHandler.FindDerivedClasses (type);
 		}
 
+		void Handle_WorkspaceLoaded (object sender, EventArgs e)
+		{
+			foreach (var project in Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
+				var nav = Widget.TreeView.GetNodeAtObject (project);
+				if (nav != null)
+					Widget.TreeView.RefreshNode (nav);
+			}
+		}
+
+		Ide.TypeSystem.MonoDevelopWorkspace currentWs;
 		public async void FillWidget ()
 		{
 			if (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution == null) {
@@ -164,21 +180,35 @@ namespace MonoDevelop.AssemblyBrowser
 					Widget.AddReferenceByAssemblyName (assembly); 
 				}
 			} else {
+				var alreadyAdded = new HashSet<string> ();
+				currentWs = MonoDevelop.Ide.TypeSystem.TypeSystemService.GetWorkspace (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution);
+				if (currentWs != null)
+					currentWs.WorkspaceLoaded += Handle_WorkspaceLoaded;
+				var allTasks = new List<Task> ();
 				foreach (var project in Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
-					Widget.AddProject (project, false);
-
-					var netProject = project as DotNetProject;
-					if (netProject == null)
-						continue;
-					foreach (var file in await netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-						if (!System.IO.File.Exists (file.FilePath))
+					try {
+						Widget.AddProject (project, false);
+						var netProject = project as DotNetProject;
+						if (netProject == null)
 							continue;
-						Widget.AddReferenceByFileName (file.FilePath); 
+						foreach (var file in await netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+							if (!System.IO.File.Exists (file.FilePath))
+								continue;
+							if (!alreadyAdded.Add (file.FilePath))
+								continue;
+							var loader = Widget.AddReferenceByFileName (file.FilePath);
+							allTasks.Add (loader.LoadingTask);
+						}
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while adding project " + project.Name + " to the tree.", e);
 					}
 				}
+				await Task.WhenAll (allTasks).ContinueWith (delegate {
+					Runtime.RunInMainThread (delegate {
+						widget.StartSearch ();
+					});
+				});
 			}
 		}
 	}
-
-
 }

@@ -85,7 +85,8 @@ namespace MonoDevelop.Core
 
 			Platform.Initialize ();
 
-			mainThread = Thread.CurrentThread;
+			mainThread = mainThread ?? Thread.CurrentThread;
+
 			// Set a default sync context
 			if (SynchronizationContext.Current == null) {
 				defaultSynchronizationContext = new SynchronizationContext ();
@@ -298,24 +299,15 @@ namespace MonoDevelop.Core
 			set {
 				if (mainSynchronizationContext != null && value != null)
 					throw new InvalidOperationException ("The main synchronization context has already been set");
+
+				mainThread = Thread.CurrentThread;
 				mainSynchronizationContext = value;
-				taskScheduler = null;
+				taskScheduler = new SynchronizationContextTaskScheduler (value);
 			}
 		}
-
 
 		static TaskScheduler taskScheduler;
-		public static TaskScheduler MainTaskScheduler {
-			get {
-				if (taskScheduler == null)
-					RunInMainThread (() => {
-						if (taskScheduler == null)
-							taskScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
-					}).Wait ();
-
-				return taskScheduler;
-			}
-		}
+		public static TaskScheduler MainTaskScheduler => taskScheduler;
 
 		/// <summary>
 		/// Runs an action in the main thread (usually the UI thread). The method returns a task, so it can be awaited.

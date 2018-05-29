@@ -84,20 +84,19 @@ namespace MonoDevelop.CSharp.Navigation
 
 		protected override async void Run ()
 		{
-			var metadata = Counters.CreateNavigateToMetadata ("BaseSymbols");
-			using (var timer = Counters.NavigateTo.BeginTiming (metadata)) {
+			using (var timer = Counters.NavigateTo.BeginTiming (new Counters.NavigationMetadata ("BaseSymbols"))) {
 				var sym = await GetSymbolAtCaret (IdeApp.Workbench.ActiveDocument);
 				if (sym == null) {
-					Counters.UpdateUserFault (metadata);
+					timer.Metadata.SetUserFault ();
 					return;
 				}
 
 				using (var source = new CancellationTokenSource ()) {
 					try {
 						await FindSymbols (sym, source);
-						Counters.UpdateNavigateResult (metadata, true);
+						timer.Metadata.SetResult (true);
 					} finally {
-						Counters.UpdateUserCancellation (metadata, source.Token);
+						timer.Metadata.UpdateUserCancellation (source.Token);
 					}
 				}
 			}

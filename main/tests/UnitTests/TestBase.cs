@@ -45,13 +45,17 @@ namespace UnitTests
 
 		static string LocateTopLevel ()
 		{
-			var cwd = typeof (TestBase).Assembly.Location;
-			if (Path.GetDirectoryName (cwd) == Util.TestsRootDir)
-				return Util.TestsRootDir;
-			
-			while (!string.IsNullOrEmpty (cwd) && !File.Exists (Path.Combine (cwd, "top_level_monodevelop")))
-				cwd = Path.GetDirectoryName (cwd);
-			return cwd;
+			var initialCwd = Path.GetDirectoryName (typeof (TestBase).Assembly.Location);
+			if (initialCwd != Util.TestsRootDir) {
+				var cwd = initialCwd;
+				while (!string.IsNullOrEmpty (cwd)) {
+					if (File.Exists (Path.Combine (cwd, "top_level_monodevelop")))
+						return cwd;
+					cwd = Path.GetDirectoryName (cwd);
+				}
+			}
+
+			return initialCwd;
 		}
 
 		[TestFixtureSetUp]

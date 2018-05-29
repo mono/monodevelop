@@ -542,12 +542,8 @@ namespace MonoDevelop.Projects
 			// pre-load the results with the current list of files in the project
 			var results = new List<ProjectFile> ();
 
-			var buildActions = GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
-
-			var config = configuration != null ? GetConfiguration (configuration) : null;
-			var pri = await CreateProjectInstaceForConfigurationAsync (config?.Name, config?.Platform, false);
-			foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
-				results.Add (CreateProjectFile (it));
+			var evaluatedItems = await GetEvaluatedSourceFiles (configuration);
+			results.AddRange (evaluatedItems);
 
 			// add in any compile items that we discover from running the CoreCompile dependencies
 			var evaluatedCompileItems = await GetCompileItemsFromCoreCompileDependenciesAsync (monitor, configuration);
@@ -555,6 +551,49 @@ namespace MonoDevelop.Projects
 			results.AddRange (addedItems);
 
 			return results.ToArray ();
+		}
+
+		object evaluatedSourceFilesLock = new object ();
+		string evaluatedSourceFilesConfiguration;
+		TaskCompletionSource<ImmutableArray<ProjectFile>> evaluatedSourceFilesTask;
+
+		async Task<ImmutableArray<ProjectFile>> GetEvaluatedSourceFiles (ConfigurationSelector configuration)
+		{
+			bool startTask = false;
+			TaskCompletionSource<ImmutableArray<ProjectFile>> currentTask = null;
+			var config = configuration != null ? GetConfiguration (configuration) : null;
+
+			lock (evaluatedSourceFilesLock) {
+				if (evaluatedSourceFilesTask == null || evaluatedSourceFilesConfiguration != config?.Id) {
+					// The configuration changed or query not yet done
+					evaluatedSourceFilesConfiguration = config?.Id;
+					evaluatedSourceFilesTask = new TaskCompletionSource<ImmutableArray<ProjectFile>> ();
+					startTask = true;
+				}
+				currentTask = evaluatedSourceFilesTask;
+			}
+
+			if (startTask) {
+				var buildActions = GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
+				var results = ImmutableArray.CreateBuilder<ProjectFile> ();
+
+				var pri = await CreateProjectInstaceForConfigurationAsync (config?.Name, config?.Platform, false);
+				foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
+					results.Add (CreateProjectFile (it));
+
+				currentTask.SetResult (results.ToImmutable ());
+			}
+
+			return await currentTask.Task;
+		}
+
+		protected override Task OnClearCachedData ()
+		{
+			lock (evaluatedSourceFilesLock) {
+				evaluatedSourceFilesConfiguration = null;
+				evaluatedSourceFilesTask = null;
+			}
+			return base.OnClearCachedData ();
 		}
 
 		/// <summary>
@@ -566,6 +605,9 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		void OnMSBuildProjectImportChanged (object sender, EventArgs args)
 		{
+			// Ensure MSBuild tasks used when building are up to date after imports changed.
+			ShutdownProjectBuilder ();
+
 			lock (evaluatedCompileItemsLock) {
 				// Do not re-evaluate if the compile items have never been evaluated.
 				if (evaluatedCompileItemsTask != null)
@@ -1573,6 +1615,17 @@ namespace MonoDevelop.Projects
 		public void ReloadProjectBuilder ()
 		{
 			RemoteBuildEngineManager.RefreshProject (FileName).Ignore ();
+		}
+
+		public void ShutdownProjectBuilder ()
+		{
+			// Unload the remote build engine so new MSBuild task assemblies can be used.
+			// This prevents the old MSBuild task assemblies from being used at build time
+			// after a NuGet package has been updated.
+			RemoteBuildEngineManager.UnloadProject (FileName).Ignore ();
+			string solutionFileName = ParentSolution?.FileName;
+			if (solutionFileName != null)
+				RemoteBuildEngineManager.UnloadSolution (solutionFileName).Ignore ();
 		}
 
 		#endregion

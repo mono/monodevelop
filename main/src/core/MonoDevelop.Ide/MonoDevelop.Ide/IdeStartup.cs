@@ -39,6 +39,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
 
+using Microsoft.CodeAnalysis.Utilities;
+using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
+
 using Mono.Unix;
 
 using Mono.Addins;
@@ -153,7 +156,10 @@ namespace MonoDevelop.Ide
 			// Set a synchronization context for the main gtk thread
 			SynchronizationContext.SetSynchronizationContext (DispatchService.SynchronizationContext);
 			Runtime.MainSynchronizationContext = SynchronizationContext.Current;
-			
+
+			// Initialize Roslyn's synchronization context
+			RoslynServices.RoslynService.Initialize ();
+
 			AddinManager.AddinLoadError += OnAddinError;
 			
 			var startupInfo = new StartupInfo (args);
@@ -307,7 +313,8 @@ namespace MonoDevelop.Ide
 			StartLockupTracker ();
 
 			startupTimer.Stop ();
-			Counters.Startup.Inc (GetStartupMetadata (startupInfo));
+
+			CreateStartupMetadata (startupInfo);
 
 			GLib.Idle.Add (OnIdle);
 			IdeApp.Run ();
@@ -371,6 +378,13 @@ namespace MonoDevelop.Ide
 		{
 			Composition.CompositionManager.InitializeAsync ().Ignore ();
 			return false;
+		}
+
+		async void CreateStartupMetadata (StartupInfo startupInfo)
+		{
+			var result = await Task.Run (() => DesktopService.PlatformTelemetry ());
+			Counters.Startup.Inc (GetStartupMetadata (startupInfo, result));
+			IdeApp.OnStartupCompleted ();
 		}
 
 		static DateTime lastIdle;
@@ -714,19 +728,20 @@ namespace MonoDevelop.Ide
 			return null;
 		}
 
-		static Dictionary<string, string> GetStartupMetadata (StartupInfo startupInfo)
+		static StartupMetadata GetStartupMetadata (StartupInfo startupInfo, IPlatformTelemetryDetails platformDetails)
 		{
-			var metadata = new Dictionary<string, string> ();
-
-			metadata ["CorrectedStartupTime"] = startupTimer.ElapsedMilliseconds.ToString ();
-			metadata ["StartupType"] = "0";
-
 			var assetType = StartupAssetType.FromStartupInfo (startupInfo);
 
-			metadata ["AssetTypeId"] = assetType.Id.ToString ();
-			metadata ["AssetTypeName"] = assetType.Name;
-
-			return metadata;
+			return new StartupMetadata {
+				CorrectedStartupTime = startupTimer.ElapsedMilliseconds,
+				StartupType = 0,
+				AssetTypeId = assetType.Id.ToString (),
+				AssetTypeName = assetType.Name,
+				IsInitialRun = IdeApp.IsInitialRun,
+				IsInitialRunAfterUpgrade = IdeApp.IsInitialRunAfterUpgrade,
+				TimeSinceMachineStart = platformDetails.TimeSinceMachineStart.Seconds,
+				TimeSinceLogin = platformDetails.TimeSinceLogin.Seconds
+			};
 		}
 
 		internal static IDictionary<string, string> GetOpenWorkspaceOnStartupMetadata ()
