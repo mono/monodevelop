@@ -260,6 +260,13 @@ namespace MonoDevelop.Projects
 				FileService.NotifyFileRemoved (e.FullPath);
 		}
 
+		/// <summary>
+		/// File rename events have various problems.
+		/// 1. They are sometimes raised out of order.
+		/// 2. Sometimes the rename information is incorrect with the wrong file names being used.
+		/// 3. Some applications use a rename to update the original file so these are turned into
+		/// a change event and a remote event.
+		/// </summary>
 		void OnFileRenamed (object sender, RenamedEventArgs e)
 		{
 			System.Console.WriteLine ("OnFileRenamed: {0} -> {1}", e.OldFullPath, e.FullPath);
@@ -276,7 +283,9 @@ namespace MonoDevelop.Projects
 			// order on saving a file in TextEdit.app - with a rename event of
 			// the original file to the temp file being the last event even though
 			// the original file still exists.
-			if (!File.Exists (e.OldFullPath))
+			if (File.Exists (e.OldFullPath))
+				FileService.NotifyFileChanged (e.OldFullPath);
+			else
 				FileService.NotifyFileRemoved (e.OldFullPath);
 		}
 
