@@ -158,13 +158,59 @@ namespace MonoDevelop.Ide.BuildOutputView
 				set {
 					if (expanded != value) {
 						expanded = value;
-						Reload ();
-						LastRenderBounds = Rectangle.Zero;
-						LastRenderLayoutBounds = Rectangle.Zero;
-						LastRenderExpanderBounds = Rectangle.Zero;
+
 						layout.Width = layout.Height = -1;
+						Reload ();
+						CalculateLayout (LastRenderBounds, out var outLayout, out var outLayoutBounds, out var outexpanderRect);
+						LastRenderLayoutBounds = outLayoutBounds;
+						LastRenderExpanderBounds = outexpanderRect;
 					}
 				}
+			}
+
+			internal bool CalculateLayout (Rectangle cellArea, out TextLayout textLayout, out Rectangle layoutBounds, out Rectangle expanderRect)
+			{
+				// Relayouting is expensive and not required if the size didn't change. Just update the locations in that case.
+				if (!LastRenderBounds.IsEmpty && LastRenderBounds.Contains (LastRenderLayoutBounds) && cellArea.Size == LastRenderBounds.Size) {
+					expanderRect = LastRenderExpanderBounds.Offset (-LastRenderBounds.X, -LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
+					layoutBounds = LastRenderLayoutBounds.Offset (-LastRenderBounds.X, -LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
+					textLayout = GetUnconstrainedLayout ();
+					textLayout.Width = layoutBounds.Width;
+					return true; // no resize is required
+				}
+
+				expanderRect = Rectangle.Zero;
+				layoutBounds = cellArea;
+				layoutBounds.X += ImageSize - 3;
+				layoutBounds.Width -= (ImageSize - 3) + DefaultInformationContainerWidth;
+
+				textLayout = GetUnconstrainedLayout ();
+				var textSize = textLayout.GetSize ();
+
+				if (textSize.Width > layoutBounds.Width || NewLineCharIndex > -1) {
+					layoutBounds.Width -= (ImageSize + ImagePadding);
+					layoutBounds.Width = Math.Max (MinLayoutWidth, layoutBounds.Width);
+					textLayout.Width = layoutBounds.Width;
+					textLayout.Height = Expanded ? -1 : cellArea.Height;
+
+					textSize = textLayout.GetSize ();
+
+					var expanderX = layoutBounds.Right + ImagePadding;
+					if (expanderX > 0)
+						expanderRect = new Rectangle (expanderX, cellArea.Y + ((CollapsedLayoutHeight - BuildExpandIcon.Height) * .5), BuildExpandIcon.Width, BuildExpandIcon.Height);
+				}
+
+				layoutBounds.Height = textSize.Height;
+				layoutBounds.Y += LayoutYPadding;
+				expanderRect.Y += LayoutYPadding;
+
+				// check that the text still fits into the cell
+				if (!cellArea.Contains (layoutBounds))
+					return false; // resize required
+								  // if the cell is too large, we need to resize it
+				else if (Expanded && Math.Abs (layoutBounds.Height - LayoutYPadding - cellArea.Height) > 1)
+					return false; // resize required
+				return true;
 			}
 
 			public BuildOutputNode Node { get; private set; }
@@ -379,7 +425,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			// If the height required by the text is not the same as what was calculated in OnGetRequiredSize(), it means that
 			// the required height has changed and CalcLayout will return false. In that case call QueueResize(),
 			// so that OnGetRequiredSize() is called again and the row is properly resized.
-			if (!CalcLayout (status, cellArea, out var layout, out var layoutBounds, out var expanderRect))
+			if (!status.CalculateLayout (cellArea, out var layout, out var layoutBounds, out var expanderRect))
 				QueueResize ();
 
 			status.LastRenderBounds = cellArea;
@@ -576,7 +622,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			else
 				maxLayoutWidth = status.LastRenderLayoutBounds.Width;
 
-			TextLayout layout = status.GetUnconstrainedLayout ();
+			var layout = status.GetUnconstrainedLayout ();
 			layout.Width = maxLayoutWidth;
 			var textSize = layout.GetSize ();
 			var height = Math.Max (textSize.Height + 2 * status.LayoutYPadding, DefaultRowHeight);
@@ -624,7 +670,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				ParentWidget.Cursor = CursorType.Arrow;
 			}
 
-			CalcLayout (status, status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect);
+			status.CalculateLayout (status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect);
 
 			var insideText = layoutBounds.Contains (args.Position);
 			if (clicking && insideText && selectionRow == node) {
@@ -664,7 +710,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			}
 
-			CalcLayout (status, status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect);
+			status.CalculateLayout (status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect);
 
 			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
 				status.Expanded = !status.Expanded;
@@ -702,51 +748,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 				QueueDraw ();
 			}
 			base.OnButtonReleased (args);
-		}
-
-		bool CalcLayout (ViewStatus status, Rectangle cellArea, out TextLayout layout, out Rectangle layoutBounds, out Rectangle expanderRect)
-		{
-			// Relayouting is expensive and not required if the size didn't change. Just update the locations in that case.
-			if (!status.LastRenderBounds.IsEmpty && status.LastRenderBounds.Contains (status.LastRenderLayoutBounds) && cellArea.Size == status.LastRenderBounds.Size) {
-				expanderRect = status.LastRenderExpanderBounds.Offset (-status.LastRenderBounds.X, -status.LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
-				layoutBounds = status.LastRenderLayoutBounds.Offset (-status.LastRenderBounds.X, -status.LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
-				layout = status.GetUnconstrainedLayout ();
-				layout.Width = layoutBounds.Width;
-				return true; // no resize is required
-			}
-
-			expanderRect = Rectangle.Zero;
-			layoutBounds = cellArea;
-			layoutBounds.X += ImageSize - 3;
-			layoutBounds.Width -= (ImageSize - 3) + DefaultInformationContainerWidth;
-
-			layout = status.GetUnconstrainedLayout ();
-			var textSize = layout.GetSize ();
-
-			if (textSize.Width > layoutBounds.Width || status.NewLineCharIndex > -1) {
-				layoutBounds.Width -= (ImageSize + ImagePadding);
-				layoutBounds.Width = Math.Max (MinLayoutWidth, layoutBounds.Width);
-				layout.Width = layoutBounds.Width;
-				layout.Height = status.Expanded ? -1 : cellArea.Height;
-				
-				textSize = layout.GetSize ();
-
-				var expanderX = layoutBounds.Right + ImagePadding;
-				if (expanderX > 0)
-					expanderRect = new Rectangle (expanderX, cellArea.Y + ((status.CollapsedLayoutHeight - BuildExpandIcon.Height) * .5), BuildExpandIcon.Width, BuildExpandIcon.Height);
-			}
-
-			layoutBounds.Height = textSize.Height;
-			layoutBounds.Y += status.LayoutYPadding;
-			expanderRect.Y += status.LayoutYPadding;
-
-			// check that the text still fits into the cell
-			if (!cellArea.Contains (layoutBounds))
-				return false; // resize required
-			// if the cell is too large, we need to resize it
-			else if (status.Expanded && Math.Abs (layoutBounds.Height - status.LayoutYPadding - cellArea.Height) > 1)
-				return false; // resize required
-			return true;
 		}
 
 		protected override void OnMouseExited ()
