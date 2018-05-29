@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -134,10 +136,71 @@ namespace MonoDevelop.Ide.Editor
 
 	}
 
+	abstract class PairInsertEditSession : EditSession
+	{
+		IGenericTextSegmentMarker marker;
+
+		protected override void OnEditorSet ()
+		{
+			startOffset = Editor.CaretOffset - 1;
+			endOffset = startOffset + 1;
+		}
+
+		public override void SessionStarted ()
+		{
+			var theme = Editor.Options.GetEditorTheme ();
+			var color = SyntaxHighlightingService.GetColor (theme, EditorThemeColors.Selection);
+			marker = TextMarkerFactory.CreateGenericTextSegmentMarker (Editor, TextSegmentMarkerEffect.Underline, color, endOffset, 1);
+			Editor.AddMarker (marker);
+		}
+
+		public override void BeforeBackspace (out bool handledCommand)
+		{
+			base.BeforeBackspace (out handledCommand);
+			if (Editor.CaretOffset > EndOffset) {
+				Editor.EndSession ();
+				return;
+			}
+			if (Editor.CaretOffset <= StartOffset + 1) {
+				if (HasNoForwardTyping ())
+					Editor.RemoveText (StartOffset + 1, EndOffset - StartOffset);
+				Editor.EndSession ();
+			}
+		}
+
+		public override void BeforeDelete (out bool handledCommand)
+		{
+			base.BeforeDelete (out handledCommand);
+			if (Editor.CaretOffset <= StartOffset || Editor.CaretOffset >= EndOffset) {
+				Editor.EndSession ();
+			}
+		}
+
+		bool HasNoForwardTyping ()
+		{
+			for (int i = StartOffset + 1; i < EndOffset - 1; i++) {
+				char ch = Editor.GetCharAt (i);
+				if (ch != ' ' && ch != '\t') {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		public override void Dispose ()
+		{
+			if (marker != null) {
+				Editor.RemoveMarker (marker);
+				marker = null;
+			}
+			base.Dispose ();
+		}
+	}
+
 	/// <summary>
 	/// Reassembles the old skip char system - shouldn't be used by new features anymore.
 	/// </summary>
-	class SkipCharSession : EditSession
+	class SkipCharSession : PairInsertEditSession
 	{
 		readonly char ch;
 
@@ -155,45 +218,6 @@ namespace MonoDevelop.Ide.Editor
 				return;
 			}
 			handledCommand = false;
-		}	
-
-		protected override void OnEditorSet ()
-		{
-			startOffset = Editor.CaretOffset - 1;
-			endOffset = startOffset + 1;
-		}
-
-		public override void BeforeBackspace (out bool handledCommand)
-		{
-			base.BeforeBackspace (out handledCommand);
-			if (Editor.CaretOffset > EndOffset) {
-				Editor.EndSession ();
-				return;
-			}
-			if (Editor.CaretOffset <= StartOffset + 1) {
-				if (HasNoForwardTyping ())
-					Editor.RemoveText (StartOffset + 1, EndOffset - StartOffset);
-				Editor.EndSession ();
-			}	
-		}
-
-		bool HasNoForwardTyping ()
-		{
-			for (int i = StartOffset + 1; i < EndOffset - 1; i++) {
-				char ch = Editor.GetCharAt (i);
-				if (ch != ' ' && ch != '\t') {
-					return false;
-				}
-			}
-			return true;
-		}
-
-		public override void BeforeDelete (out bool handledCommand)
-		{
-			base.BeforeDelete (out handledCommand);
-			if (Editor.CaretOffset <= StartOffset || Editor.CaretOffset >= EndOffset) {
-				Editor.EndSession ();
-			}
 		}
 	}
 }
