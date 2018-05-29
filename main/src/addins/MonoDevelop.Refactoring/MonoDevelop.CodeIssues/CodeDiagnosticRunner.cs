@@ -48,8 +48,6 @@ namespace MonoDevelop.CodeIssues
 {
 	static class CodeDiagnosticRunner
 	{
-		static TraceListener consoleTraceListener = new ConsoleTraceListener ();
-
 		public static async Task<IEnumerable<Result>> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken, ImmutableArray<DiagnosticData> results)
 		{
 			var input = analysisDocument.DocumentContext;
