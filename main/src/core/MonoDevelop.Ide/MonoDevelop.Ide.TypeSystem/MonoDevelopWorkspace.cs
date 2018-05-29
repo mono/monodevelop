@@ -151,6 +151,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (alreadyShown || !IdeApp.IsInitialized || IdeApp.Workbench == null)
 					return;
 
+				Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown, true);
 				string message = GettextCatalog.GetString ("{0} has suspended some advanced features to improve performance.", BrandingService.ApplicationName);
 
 				Runtime.RunInMainThread (() => {
