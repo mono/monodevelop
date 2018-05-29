@@ -48,7 +48,7 @@ namespace MonoDevelop.Core.Execution
 			if (ErrorStreamChanged != null) {
 				captureErrorTask = Task.Run (CaptureError);
 			} else {
-				endEventErr.Set ();
+				Volatile.Read (ref endEventErr)?.Set ();
 			}
 			operation.ProcessId = Id;
 		}
@@ -62,7 +62,7 @@ namespace MonoDevelop.Core.Execution
 		{
 			CheckDisposed ();
 			WaitForExit (milliseconds);
-			endEventOut.WaitOne ();
+			Volatile.Read (ref endEventOut)?.WaitOne ();
 		}
 		
 		public void WaitForOutput ()
@@ -86,8 +86,7 @@ namespace MonoDevelop.Core.Execution
 			} finally {
 				// WORKAROUND for "Bug 410743 - wapi leak in System.Diagnostic.Process"
 				// Process leaks when an exit event is registered
-				if (endEventErr != null)
-					endEventErr.WaitOne ();
+				Volatile.Read (ref endEventErr)?.WaitOne ();
 
 				try {
 					if (HasExited)
@@ -103,8 +102,7 @@ namespace MonoDevelop.Core.Execution
 				}
 
 				//call this AFTER the exit event, or the ProcessWrapper may get disposed and abort this thread
-				if (endEventOut != null)
-					endEventOut.Set ();
+				Volatile.Read (ref endEventOut)?.Set ();
 				taskCompletionSource.SetResult (operation.ExitCode);
             }
 		}
@@ -118,25 +116,26 @@ namespace MonoDevelop.Core.Execution
 					ErrorStreamChanged?.Invoke (this, new string (buffer, 0, nr));
 				}					
 			} finally {
-				if (endEventErr != null)
-					endEventErr.Set ();
+				Volatile.Read (ref endEventErr)?.Set ();
 			}
 		}
 		
 		protected override void Dispose (bool disposing)
 		{
+			if (Volatile.Read (ref endEventOut) == null)
+				return;
+
 			lock (lockObj) {
-				if (endEventOut == null)
-					return;
-				
 				if (!done)
 					Cancel ();
 
 				captureOutputTask = captureErrorTask = null;
-				endEventOut.Close ();
-				endEventErr.Close ();
-				endEventOut = endEventErr = null;
 			}
+			var tempOut = Interlocked.Exchange (ref endEventOut, null);
+			var tempErr = Interlocked.Exchange (ref endEventErr, null);
+
+			tempOut.Close ();
+			tempErr.Close ();
 
 			// HACK: try/catch is a workaround for broken Process.Dispose implementation in Mono < 3.2.7
 			// https://bugzilla.xamarin.com/show_bug.cgi?id=10883
@@ -150,7 +149,7 @@ namespace MonoDevelop.Core.Execution
 		
 		void CheckDisposed ()
 		{
-			if (endEventOut == null)
+			if (Volatile.Read (ref endEventOut) == null)
 				throw new ObjectDisposedException ("ProcessWrapper");
 		}
 		
