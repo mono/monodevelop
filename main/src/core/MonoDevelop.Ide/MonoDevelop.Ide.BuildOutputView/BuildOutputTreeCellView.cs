@@ -666,32 +666,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			CalcLayout (status, Bounds, out var layout, out var layoutBounds, out var expanderRect);
 
-			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
-				status.Expanded = !status.Expanded;
-				QueueResize ();
-				return;
+			if (args.Button == PointerButton.Left) {
+				if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
+					status.Expanded = !status.Expanded;
+					QueueResize ();
+					return;
+				}
+
+				if (layoutBounds.Contains (args.Position)) {
+					var pos = layout.GetIndexFromCoordinates (args.Position.X - layoutBounds.X, args.Position.Y - layoutBounds.Y);
+					if (pos != -1) {
+						selectionStart = selectionEnd = pos;
+						selectionRow = node;
+						clicking = true;
+					} else {
+						selectionRow = null;
+					}
+					QueueDraw ();
+				}
 			}
 
-			if (args.Button == PointerButton.Left && layoutBounds.Contains (args.Position)) {
-
-				var pos = layout.GetIndexFromCoordinates (args.Position.X - layoutBounds.X, args.Position.Y - layoutBounds.Y);
-				if (pos != -1) {
-					selectionStart = selectionEnd = pos;
-					selectionRow = node;
-					clicking = true;
-				} else
-					selectionRow = null;
-
-				QueueDraw ();
-			}
-
-			//HACK: to avoid automatic scroll behaviour in Gtk (we handle the behaviour)
-			//we only want break the normal click behaviour of treeview, in cases when label size is bigger than tree height
-			var treeView = ((TreeView)ParentWidget);
-			if (status.Expanded && status.LastRenderBounds.Height > treeView.Size.Height) {
-				args.Handled = true;
-				treeView.SelectRow (node);
-			}
 			base.OnButtonPressed (args);
 		}
 
