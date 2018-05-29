@@ -624,7 +624,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				ParentWidget.Cursor = CursorType.Arrow;
 			}
 
-			CalcLayout (status, Bounds, out var layout, out var layoutBounds, out var expanderRect);
+			CalcLayout (status, status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect);
 
 			var insideText = layoutBounds.Contains (args.Position);
 			if (clicking && insideText && selectionRow == node) {
@@ -664,7 +664,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			}
 
-			CalcLayout (status, Bounds, out var layout, out var layoutBounds, out var expanderRect);
+			CalcLayout (status, status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect);
 
 			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
 				status.Expanded = !status.Expanded;
