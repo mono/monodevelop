@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public SyntaxHighlighting (SyntaxHighlightingDefinition definition, IReadonlyTextDocument document)
 		{
-			this.definition = definition;
+			this.definition = definition ?? throw new ArgumentNullException (nameof (definition));
 			Document = document;
 			if (document is ITextDocument)
 				((ITextDocument)document).TextChanged += Handle_TextChanged;
@@ -128,9 +128,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			public static HighlightState CreateNewState (SyntaxHighlighting highlighting)
 			{
+				if (highlighting == null)
+					throw new ArgumentNullException (nameof (highlighting));
+				var definition = highlighting.definition;
+				if (definition == null)
+					throw new NullReferenceException ("HighlightState.CreateNewState null reference exception highlighting.definition == null.");
 				return new HighlightState {
-					ContextStack = ImmutableStack<SyntaxContext>.Empty.Push (highlighting.definition.MainContext),
-					ScopeStack = new ScopeStack (highlighting.definition.Scope),
+					ContextStack = ImmutableStack<SyntaxContext>.Empty.Push (definition.MainContext),
+					ScopeStack = new ScopeStack (definition.Scope),
 					MatchStack = ImmutableStack<SyntaxMatch>.Empty
 				};
 			}
