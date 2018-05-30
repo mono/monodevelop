@@ -193,9 +193,7 @@ namespace MonoDevelop.Xml.Editor
 				list.Add (data);
 				
 			} catch (Exception ex) {
-				LoggingService.LogWarning (
-				    "XmlSchemaManager is unable to read schema '{0}', because of the following error: {1}",
-				    fileName, ex.Message);
+				LoggingService.LogError ($"XmlSchemaManager is unable to read schema '{fileName}'.", ex);
 			}
 		}
 		
@@ -205,9 +203,7 @@ namespace MonoDevelop.Xml.Editor
 			try {
 				return new XmlSchemaCompletionData (uri.ToString (), uri.LocalPath);
 			} catch (Exception ex) {
-				LoggingService.LogWarning (
-				    "XmlSchemaManager is unable to read schema '{0}', because of the following error: {1}",
-				    uri, ex.Message);
+				LoggingService.LogError ($"XmlSchemaManager is unable to read schema '{uri}'", ex);
 				return null;
 			}
 		}
