@@ -109,7 +109,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.Workspace != null && solution != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
-<<<<<<< HEAD
 			backgroundCompiler = new BackgroundCompiler (this);
 
 			var cacheService = Services.GetService<IWorkspaceCacheService> ();
@@ -117,11 +116,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				cacheService.CacheFlushRequested += OnCacheFlushRequested;
 
 			// Trigger running compiler syntax and semantic errors via the diagnostic analyzer engine
-=======
-			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
-
-			// Trigger running compiler syntax and semantic errors via the diagnostic analyzer engine
->>>>>>> [Ide] Fix roslyn FSA notification.
 			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
 				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true)
             // Turn on FSA on a new workspace addition
