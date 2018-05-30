@@ -47,6 +47,7 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using Mono.Addins;
 using MonoDevelop.Core.AddIns;
+using Microsoft.CodeAnalysis.Extensions;
 using Microsoft.CodeAnalysis.Internal.Log;
 using Microsoft.CodeAnalysis.Shared.Options;
 using Microsoft.CodeAnalysis.Shared.Utilities;
@@ -108,6 +109,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.Workspace != null && solution != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
+<<<<<<< HEAD
 			backgroundCompiler = new BackgroundCompiler (this);
 
 			var cacheService = Services.GetService<IWorkspaceCacheService> ();
@@ -115,8 +117,17 @@ namespace MonoDevelop.Ide.TypeSystem
 				cacheService.CacheFlushRequested += OnCacheFlushRequested;
 
 			// Trigger running compiler syntax and semantic errors via the diagnostic analyzer engine
+=======
+			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+
+			// Trigger running compiler syntax and semantic errors via the diagnostic analyzer engine
+>>>>>>> [Ide] Fix roslyn FSA notification.
 			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
 				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true)
+            // Turn on FSA on a new workspace addition
+				.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, true)
+				.WithChangedOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown, false)
+
 			// Always use persistent storage regardless of solution size, at least until a consensus is reached
 			// https://github.com/mono/monodevelop/issues/4149 https://github.com/dotnet/roslyn/issues/25453
 			    .WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, MonoDevelop.Core.Platform.IsLinux ? int.MaxValue : 0);
@@ -134,25 +145,44 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
 				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
 
-			DesktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
+			if (solution != null)
+				DesktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
 		}
 
-		void OnMemoryStatusChanged(object sender, PlatformMemoryStatusEventArgs args)
+		bool lowMemoryLogged;
+		void OnMemoryStatusChanged (object sender, PlatformMemoryStatusEventArgs args)
 		{
 			// Disable full solution analysis when the OS triggers a warning about memory pressure.
-			if (args.MemoryStatus != PlatformMemoryStatus.Normal) {
-				Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, false);
+			if (args.MemoryStatus == PlatformMemoryStatus.Normal)
+				return;
 
-				var cacheService = Services.GetService<IWorkspaceCacheService> () as MonoDevelopWorkspaceCacheService;
-				cacheService?.FlushCaches ();
+			// record that we had hit critical memory barrier
+			if (!lowMemoryLogged) {
+				lowMemoryLogged = true;
+				Logger.Log (FunctionId.VirtualMemory_MemoryLow, KeyValueLogMessage.Create (m => {
+					// which message we are logging and memory left in bytes when this is called.
+					m ["MSG"] = args.MemoryStatus;
+					//m ["MemoryLeft"] = (long)wParam;
+				}));
+			}
 
-				// TODO: Replace this with INotificationService or IErrorReportingService when implemented
-				var alreadyShown = Options.GetOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown);
-				if (alreadyShown || !IdeApp.IsInitialized || IdeApp.Workbench == null)
-					return;
+			var cacheService = Services.GetService<IWorkspaceCacheService> () as MonoDevelopWorkspaceCacheService;
+			cacheService?.FlushCaches ();
 
+			if (!ShouldTurnOffFullSolutionAnalysis ())
+				return;
+
+			Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, false);
+			if (IsUserOptionOn ()) {
+				// let user know full analysis is turned off due to memory concern.
+				// make sure we show info bar only once for the same solution.
 				Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown, true);
-				NotifyFullSolutionAnalysisDisabled (args.MemoryStatus);
+
+				const string LowVMMoreInfoLink = "http://go.microsoft.com/fwlink/?LinkID=799402&clcid=0x409";
+				Services.GetService<IErrorReportingService> ().ShowGlobalErrorInfo (
+					GettextCatalog.GetString ("{0} has suspended some advanced features to improve performance", BrandingService.ApplicationName),
+					new InfoBarUI ("Restore", InfoBarUI.UIKind.Button, () => Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, true)),
+					new InfoBarUI ("Learn more", InfoBarUI.UIKind.HyperLink, () => DesktopService.ShowUrl (LowVMMoreInfoLink), closeAfterAction: false));
 			}
 		}
 
@@ -169,22 +199,25 @@ namespace MonoDevelop.Ide.TypeSystem
 				cacheService.CacheFlushRequested -= OnCacheFlushRequested;
 		}
 
-		void NotifyFullSolutionAnalysisDisabled (PlatformMemoryStatus status)
+		bool ShouldTurnOffFullSolutionAnalysis ()
 		{
-			// record that we had hit critical memory barrier
-			Logger.Log (FunctionId.VirtualMemory_MemoryLow, KeyValueLogMessage.Create (m =>
-				{
-				// which message we are logging and memory left in bytes when this is called.
-				m ["MSG"] = status;
-//				m ["MemoryLeft"] = (long)wParam;
-			}));
+			// conditions
+			// 1. if our full solution analysis option is on (not user full solution analysis option, but our internal one) and
+			// 2. if infobar is never shown to users for this solution
+			return Options.GetOption (RuntimeOptions.FullSolutionAnalysis) && !Options.GetOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown);
+		}
 
-			string message = GettextCatalog.GetString ("{0} has suspended some advanced features to improve performance.", BrandingService.ApplicationName);
+		bool IsUserOptionOn ()
+		{
+			// check languages currently on solution. since we only show info bar once, we don't need to track solution changes.
+			var languages = CurrentSolution.Projects.Select (p => p.Language).Distinct ();
+			foreach (var language in languages) {
+				if (ServiceFeatureOnOffOptions.IsClosedFileDiagnosticsEnabled (Options, language)) {
+					return true;
+				}
+			}
 
-			Runtime.RunInMainThread (() => {
-				IdeApp.Workbench.StatusBar.ShowMessage (message, isMarkup: true);
-				// VSWin has a nice notification bar UX, with re-enable button and learn more buttons.
-			});
+			return false;
 		}
 
 		void OnEnableSourceAnalysisChanged(object sender, EventArgs args)

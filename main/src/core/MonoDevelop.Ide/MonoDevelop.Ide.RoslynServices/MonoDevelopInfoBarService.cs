@@ -69,7 +69,9 @@ namespace MonoDevelop.Ide.RoslynServices
             // We can be called from any thread since errors can occur anywhere, however we can only construct and InfoBar from the UI thread.
             _foregroundNotificationService.RegisterNotification(() =>
             {
-				IdeApp.Workbench.ShowInfoBar (activeView, message, ToUIItems (items));
+				if (TryGetInfoBarHost (activeView, out var infoBarHost)) {
+					infoBarHost.AddInfoBar (message, ToUIItems (items));
+				}
             }, _listener.BeginAsyncOperation(nameof(ShowInfoBar)));
         }
 
@@ -100,6 +102,9 @@ namespace MonoDevelop.Ide.RoslynServices
             AssertIsForeground();
 
 			infoBarHost = null;
+			if (!IdeApp.IsInitialized || IdeApp.Workbench == null)
+				return false;
+
             if (activeView) {
 				// Maybe for pads also? Not sure if we should.
 				infoBarHost = IdeApp.Workbench.ActiveDocument as IInfoBarHost;
