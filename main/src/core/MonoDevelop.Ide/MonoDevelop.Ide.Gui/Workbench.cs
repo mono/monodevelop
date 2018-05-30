@@ -56,6 +56,7 @@ using MonoDevelop.Components;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -130,6 +131,12 @@ namespace MonoDevelop.Ide.Gui
 			Counters.Initialization.Trace ("Making Visible");
 			RootWindow.Visible = true;
 			workbench.CurrentLayout = "Solution";
+
+			workbench.AddInfoBar (
+				"Visual Studio has suspended some advanced features to improve performance",
+				new InfoBarItem ("Learn more", InfoBarItem.InfoBarItemKind.Hyperlink, () => DesktopService.ShowUrl ("https://google.com"), false),
+				new InfoBarItem ("Re-enable", InfoBarItem.InfoBarItemKind.Button, () => { }, true)
+			);
 			
 			// now we have an layout set notify it
 			Counters.Initialization.Trace ("Setting layout");
@@ -303,6 +310,20 @@ namespace MonoDevelop.Ide.Gui
 		public void HideCommandBar (string barId)
 		{
 			workbench.Toolbar.HideCommandBar (barId);
+		}
+
+		internal void ShowInfoBar (bool inActiveView, string description, params InfoBarItem[] items)
+		{
+			IInfoBarHost infoBarHost = null;
+			if (inActiveView) {
+				// Maybe for pads also? Not sure if we should.
+				infoBarHost = IdeApp.Workbench.ActiveDocument as IInfoBarHost;
+			}
+
+			if (infoBarHost == null)
+				infoBarHost = IdeApp.Workbench.RootWindow as IInfoBarHost;
+
+			infoBarHost?.AddInfoBar (description, items);
 		}
 
 		internal MonoDevelop.Components.MainToolbar.MainToolbarController Toolbar {
