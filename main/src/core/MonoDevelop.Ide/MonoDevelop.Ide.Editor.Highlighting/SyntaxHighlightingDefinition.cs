@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
-	public class SyntaxHighlightingDefinition
+	public class SyntaxHighlightingDefinition : ISyntaxHighlightingDefinitionProvider
 	{
 		public string Name { get; internal set; }
 
@@ -76,6 +76,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				ctx.PrepareMatches ();
 			}
 		}
+
+		SyntaxHighlightingDefinition ISyntaxHighlightingDefinitionProvider.GetSyntaxHighlightingDefinition () => this;
 	}
 
 
@@ -183,7 +185,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (splittedNames.Length == 0)
 					return null;
 				foreach (var bundle in SyntaxHighlightingService.AllBundles) {
-					foreach (var highlighting in bundle.Highlightings) {
+					foreach (var provider in bundle.Highlightings) {
+						var highlighting = provider as SyntaxHighlightingDefinition;
+						if (highlighting == null)
+							continue;
 						if (highlighting.Scope == splittedNames [0]) {
 							var searchName = splittedNames.Length == 1 ? "main" : splittedNames [1];
 							foreach (var ctx in highlighting.Contexts) {
@@ -384,7 +389,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 
 			foreach (var bundle in SyntaxHighlightingService.AllBundles) {
-				foreach (var highlighting in bundle.Highlightings) {
+				foreach (var def in bundle.Highlightings) {
+					var highlighting = def as SyntaxHighlightingDefinition;
+					if (highlighting == null)
+						continue;
 					if (highlighting.Name == Name) {
 						yield return highlighting.MainContext;
 					}
