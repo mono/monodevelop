@@ -29,7 +29,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Xml.Editor;
 
 namespace MonoDevelop.Xml.Completion
 {
@@ -70,9 +69,10 @@ namespace MonoDevelop.Xml.Completion
 		/// Creates completion data from the schema passed in 
 		/// via the reader object.
 		/// </summary>
+		[Obsolete ("Please pass in a TextReader instead")]
 		public XmlSchemaCompletionData(XmlTextReader reader)
 		{
-			reader.XmlResolver = null;
+			reader.XmlResolver = new LocalOnlyXmlResolver ();
 			ReadSchema(reader);
 		}
 		
@@ -98,7 +98,7 @@ namespace MonoDevelop.Xml.Completion
 			this.baseUri = baseUri;
 			
 			if (!lazyLoadFile)
-				using (StreamReader reader = new StreamReader (fileName, true))
+				using (var reader = new StreamReader (fileName, true))
 					ReadSchema (baseUri, reader);
 		}
 		
@@ -163,7 +163,7 @@ namespace MonoDevelop.Xml.Completion
 
 			return Task.Run (() => {
 				if (schema == null)
-					using (StreamReader reader = new StreamReader (fileName, true))
+					using (var reader = new StreamReader (fileName, true))
 						ReadSchema (baseUri, reader);
 
 				//TODO: should we evaluate unresolved imports against other registered schemas?
@@ -473,7 +473,7 @@ namespace MonoDevelop.Xml.Completion
 		void ReadSchema (XmlReader reader)
 		{
 			try {
-				schema = XmlSchema.Read (reader, new ValidationEventHandler(SchemaValidation));			
+				schema = XmlSchema.Read (reader, SchemaValidation);
 				namespaceUri = schema.TargetNamespace;
 			} finally {
 				reader.Close ();
@@ -482,13 +482,20 @@ namespace MonoDevelop.Xml.Completion
 		
 		void ReadSchema (string baseUri, TextReader reader)
 		{
-			XmlTextReader xmlReader = new XmlTextReader(baseUri, reader);
-			
-			// The default resolve can cause exceptions loading 
+			// The default resolve can cause exceptions loading
 			// xhtml1-strict.xsd because of the referenced dtds. It also has the
 			// possibility of blocking on referenced remote URIs.
 			// Instead we only resolve local xsds.
-			xmlReader.XmlResolver = new LocalOnlyXmlResolver ();
+
+			var xmlReader = XmlReader.Create (
+				reader,
+				new XmlReaderSettings {
+					XmlResolver = new LocalOnlyXmlResolver (),
+					DtdProcessing = DtdProcessing.Ignore,
+					ValidationType = ValidationType.None
+				},
+				baseUri
+			);
 			ReadSchema (xmlReader);
 		}			
 			
@@ -523,13 +530,11 @@ namespace MonoDevelop.Xml.Completion
 		
 		void GetChildElementCompletionData (XmlCompletionDataList data, XmlSchemaComplexType complexType, string prefix)
 		{
-			var sequence = complexType.Particle as XmlSchemaSequence;
-			if (sequence != null) {
+			if (complexType.Particle is XmlSchemaSequence sequence) {
 				GetChildElementCompletionData (data, sequence.Items, prefix);
 				return;
 			}
-			var choice = complexType.Particle as XmlSchemaChoice;
-			if (choice != null) {
+			if (complexType.Particle is XmlSchemaChoice choice) {
 				GetChildElementCompletionData (data, choice.Items, prefix);
 				return;
 			}
