@@ -211,22 +211,52 @@ namespace MonoDevelop.UnitTesting.NUnit
 
 		protected override async Task<IEnumerable<string>> GetSupportAssembliesAsync ()
 		{
-			DotNetProject project = base.OwnerSolutionItem as DotNetProject;
-
 			if (project != null) {
 				var references = await project.GetReferences (IdeApp.Workspace.ActiveConfiguration).ConfigureAwait (false);
 				// Referenced assemblies which are not in the gac and which are not localy copied have to be preloaded
-				var supportAssemblies = references.Where (r => !r.IsCopyLocal && (!r.IsProjectReference || r.ReferenceOutputAssembly) && !r.IsFrameworkFile && !r.IsImplicit && !IsGacReference (r))
-				                                  .Select (r => r.FilePath.FullPath.ToString ())
-				                                  .Where (File.Exists)
-				                                  .Distinct ();
+				var supportAssemblies = new HashSet<string> ();
+				foreach (var r in references) {
+					if (IsSupportAssembly (r)) {
+						string path = r.FilePath.FullPath;
+						if (File.Exists (path)) {
+							supportAssemblies.Add (path);
+						}
+					}
+				}
+
 				return supportAssemblies;
 			}
 
 			return Enumerable.Empty<string> ();
 		}
 
-		bool IsGacReference (AssemblyReference r) => string.Equals (r.Metadata.GetValue ("ResolvedFrom"), "{GAC}", StringComparison.OrdinalIgnoreCase);
+		static bool IsSupportAssembly (AssemblyReference r)
+		{
+			// already local copied, no need to preload
+			if (r.IsCopyLocal) {
+				return false;
+			}
+
+			// non-referenced project dependency
+			if (r.IsProjectReference && !r.ReferenceOutputAssembly) {
+				return false;
+			}
+
+			// don't need to explicitly load framework files
+			if (r.IsFrameworkFile || r.IsImplicit || r.IsFacade || IsGacReference ()) {
+				return false;
+			}
+
+			// reference assemblies from NuGet are not usable
+			var parent = r.FilePath.FullPath.ParentDirectory;
+			if (parent.FileName == "ref" || parent.ParentDirectory.FileName == "ref") {
+				return false;
+			}
+
+			return true;
+
+			bool IsGacReference () => string.Equals (r.Metadata.GetValue ("ResolvedFrom"), "{GAC}", StringComparison.OrdinalIgnoreCase);
+		}
 	}
 }
 
