@@ -47,6 +47,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	public static class SyntaxHighlightingService
 	{
 		static LanguageBundle builtInBundle = new LanguageBundle ("default", null);
+		static LanguageBundle extensionBundle = new LanguageBundle ("extensions", null);
+		internal static LanguageBundle userThemeBundle = new LanguageBundle ("userThemes", null);
 		static List<LanguageBundle> languageBundles = new List<LanguageBundle> ();
 
 		internal static IEnumerable<LanguageBundle> AllBundles {
@@ -187,7 +189,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal static void Remove (EditorTheme style)
 		{
-			builtInBundle.Remove (style);
+			userThemeBundle.Remove (style);
 		}
 
 		internal static void Remove (LanguageBundle style)
@@ -207,7 +209,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			foreach (string file in Directory.GetFiles (path)) {
 				try {
-					LoadStyleOrMode (file);
+					LoadStyleOrMode (userThemeBundle, file);
 				} catch (Exception ex) {
 					LoggingService.LogError ($"Could not load file '{file}'", ex);
 				}
@@ -222,9 +224,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		internal static object LoadStyleOrMode (string file)
+		internal static object LoadStyleOrMode (LanguageBundle bundle, string file)
 		{
-			return LoadFile (builtInBundle, file, () => File.OpenRead (file), () => new UrlStreamProvider (file));
+			return LoadFile (bundle, file, () => File.OpenRead (file), () => new UrlStreamProvider (file));
 		}
 
 		internal static bool IsValidTheme (string file)
@@ -467,6 +469,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static SyntaxHighlightingService ()
 		{
+			languageBundles.Add (userThemeBundle);
+			languageBundles.Add (extensionBundle);
 			languageBundles.Add (builtInBundle);
 
 			LoadStylesAndModes (typeof (SyntaxHighlightingService).Assembly);
@@ -489,7 +493,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (success) {
 				foreach (string file in Directory.GetFiles (LanguageBundlePath)) {
 					if (file.EndsWith (".sublime-package", StringComparison.OrdinalIgnoreCase) || file.EndsWith (".tmbundle", StringComparison.OrdinalIgnoreCase)) {
-						LoadStyleOrMode (file); 
+						LoadStyleOrMode (userThemeBundle, file); 
 					}
 				}
 			}
@@ -503,7 +507,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			if (args.Change == ExtensionChange.Add) {
 				try {
-					var o = LoadFile (builtInBundle, codon.Name, () => codon.Open (), () => codon);
+					var o = LoadFile (extensionBundle, codon.Name, () => codon.Open (), () => codon);
 					if (o is SyntaxHighlightingDefinition)
 						((SyntaxHighlightingDefinition)o).PrepareMatches ();
 					var bundle = o as LanguageBundle;
