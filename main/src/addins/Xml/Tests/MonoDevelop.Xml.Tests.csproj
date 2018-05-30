@@ -136,13 +136,16 @@
     <Folder Include="Schema\" />
     <Folder Include="Utils\" />
     <Folder Include="CompletionData\" />
+    <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\xhtml1-strict-modified.xsd">
-      <LogicalName>xhtml1-strict-modified.xsd</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\XMLSchema.xsd">
+    <EmbeddedResource Include="..\schemas\XMLSchema.xsd">
+      <Link>Resources\XMLSchema.xsd</Link>
       <LogicalName>XMLSchema.xsd</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\AspNet\Html\Schemas\xhtml1-strict.xsd">
+      <Link>Resources\xhtml1-strict.xsd</Link>
+      <LogicalName>xhtml1-strict.xsd</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

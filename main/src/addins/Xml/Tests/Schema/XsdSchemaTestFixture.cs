@@ -5,6 +5,7 @@ using System.Xml;
 using MonoDevelop.Xml.Tests.Utils;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -41,8 +42,9 @@ namespace MonoDevelop.Xml.Tests.Schema
 			if (schemaCompletionData != null)
 				return;
 			
-			XmlTextReader reader = ResourceManager.GetXsdSchema();
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
+			using (var reader = new StreamReader (ResourceManager.GetXsdSchema(), true)) {
+				schemaCompletionData = new XmlSchemaCompletionData(reader);
+			}
 			
 			// Set up choice element's path.
 			choicePath = new XmlElementPath();
