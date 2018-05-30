@@ -80,7 +80,8 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 				);
 
 				SolutionCrawlerClosedFileDiagnostic = preferences.Wrap<bool?> (
-					new OptionKey (ServiceFeatureOnOffOptions.ClosedFileDiagnostic, language)
+					new OptionKey (ServiceFeatureOnOffOptions.ClosedFileDiagnostic, language),
+					true
 				);
 			}
 		}

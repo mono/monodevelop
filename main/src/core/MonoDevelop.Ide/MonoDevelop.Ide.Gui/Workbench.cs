@@ -131,12 +131,6 @@ namespace MonoDevelop.Ide.Gui
 			Counters.Initialization.Trace ("Making Visible");
 			RootWindow.Visible = true;
 			workbench.CurrentLayout = "Solution";
-
-			workbench.AddInfoBar (
-				"Visual Studio has suspended some advanced features to improve performance",
-				new InfoBarItem ("Learn more", InfoBarItem.InfoBarItemKind.Hyperlink, () => DesktopService.ShowUrl ("https://google.com"), false),
-				new InfoBarItem ("Re-enable", InfoBarItem.InfoBarItemKind.Button, () => { }, true)
-			);
 			
 			// now we have an layout set notify it
 			Counters.Initialization.Trace ("Setting layout");
