@@ -285,7 +285,6 @@ namespace MonoDevelop.Refactoring
 			using (var sw = new StreamWriter (fileName)) {
 				sw.WriteLine (ns.ToString ());
 			}
-			FileService.NotifyFileChanged (fileName);
 			var roslynProject = MonoDevelop.Ide.TypeSystem.TypeSystemService.GetCodeAnalysisProject (project);
 			var id = MonoDevelop.Ide.TypeSystem.TypeSystemService.GetDocumentId (roslynProject.Id, fileName);
 			if (id == null)
