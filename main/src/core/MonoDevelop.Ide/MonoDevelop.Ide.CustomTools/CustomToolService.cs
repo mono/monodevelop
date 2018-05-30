@@ -443,9 +443,6 @@ namespace MonoDevelop.Ide.CustomTools
 			if (result.GeneratedFilePath.IsNullOrEmpty || !File.Exists (result.GeneratedFilePath))
 				return true;
 
-			// broadcast a change event so text editors etc reload the file
-			FileService.NotifyFileChanged (result.GeneratedFilePath);
-
 			// add file to project, update file properties, etc
 			Gtk.Application.Invoke (async (o, args) => {
 				bool projectChanged = false;

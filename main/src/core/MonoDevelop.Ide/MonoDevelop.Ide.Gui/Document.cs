@@ -428,7 +428,6 @@ namespace MonoDevelop.Ide.Gui
 						// save backup first						
 						if (IdeApp.Preferences.CreateFileBackupCopies) {
                             await Window.ViewContent.Save (fileName + "~");
-							FileService.NotifyFileChanged (fileName + "~");
 						}
 						DocumentRegistry.SkipNextChange (fileName);
 						await Window.ViewContent.Save (fileName);
