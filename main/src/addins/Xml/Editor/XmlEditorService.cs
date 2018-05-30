@@ -213,7 +213,8 @@ namespace MonoDevelop.Xml.Editor
 				doc.LoadXml (xml);
 			} catch (XmlException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
+				var location = GetLocation (ex.SourceUri, fileName);
+				AddTask (location, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 				error = true;
 			}
 			
@@ -247,11 +248,12 @@ namespace MonoDevelop.Xml.Editor
 			settings.DtdProcessing = DtdProcessing.Parse;
 			
 			ValidationEventHandler validationHandler = delegate (object sender, System.Xml.Schema.ValidationEventArgs args) {
+				var location = GetLocation (args.Exception.SourceUri, fileName);
 				if (args.Severity == XmlSeverityType.Warning) {
 					monitor.Log.WriteLine (args.Message);
-					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber, TaskSeverity.Warning, workspaceObject);
+					AddTask (location, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber, TaskSeverity.Warning, workspaceObject);
 				} else {
-					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber, TaskSeverity.Error, workspaceObject);
+					AddTask (location, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber, TaskSeverity.Error, workspaceObject);
 					monitor.Log.WriteLine (args.Message);
 					error = true;
 				}	
@@ -269,12 +271,14 @@ namespace MonoDevelop.Xml.Editor
 				
 			} catch (XmlSchemaException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
+				var location = GetLocation (ex.SourceUri, fileName);
+				AddTask (location, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 				error = true;
 			}
 			catch (XmlException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
+				var location = GetLocation (ex.SourceUri, fileName);
+				AddTask (location, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 				error = true;
 			}
 			finally {
@@ -292,6 +296,14 @@ namespace MonoDevelop.Xml.Editor
 			
 			monitor.EndTask ();
 			return error? null: doc;
+		}
+
+		static string GetLocation (string reportedUri, string fallbackFilename)
+		{
+			if (!string.IsNullOrEmpty (reportedUri)) {
+				return new System.Uri (reportedUri).LocalPath;
+			}
+			return fallbackFilename;
 		}
 		
 		/// <summary>
@@ -314,7 +326,8 @@ namespace MonoDevelop.Xml.Editor
 						monitor.ReportError (args.Message, args.Exception);
 						error = true;
 					}
-					AddTask (fileName, args.Message, args.Exception.LinePosition, args.Exception.LineNumber,
+					var location = GetLocation (args.Exception.SourceUri, fileName);
+					AddTask (location, args.Message, args.Exception.LinePosition, args.Exception.LineNumber,
 					    (args.Severity == XmlSeverityType.Warning)? TaskSeverity.Warning : TaskSeverity.Error, workspaceObject);
 				};
 				schema = XmlSchema.Read (xmlReader, callback);
@@ -325,12 +338,14 @@ namespace MonoDevelop.Xml.Editor
 			} 
 			catch (XmlSchemaException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
+				var location = GetLocation (ex.SourceUri, fileName);
+				AddTask (location, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 				error = true;
 			}
 			catch (XmlException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
+				var location = GetLocation (ex.SourceUri, fileName);
+				AddTask (location, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 				error = true;
 			}
 			
@@ -357,17 +372,16 @@ namespace MonoDevelop.Xml.Editor
 				xslt = new XslCompiledTransform ();
 				xslt.Load (doc, null, new XmlUrlResolver ());
 				error = false;
-			} catch (XsltCompileException ex) {
-				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 			}
 			catch (XsltException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
+				var location = GetLocation (ex.SourceUri, fileName);
+				AddTask (location, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 			}
 			catch (XmlException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
+				var location = GetLocation (ex.SourceUri, fileName);
+				AddTask (location, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 			}
 			
 			if (error) {

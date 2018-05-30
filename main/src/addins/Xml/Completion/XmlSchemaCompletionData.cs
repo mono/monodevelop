@@ -134,15 +134,7 @@ namespace MonoDevelop.Xml.Completion
 		/// </summary>
 		public static string GetUri(string fileName)
 		{
-			string uri = String.Empty;
-			
-			if (fileName != null) {
-				if (fileName.Length > 0) {
-					uri = String.Concat("file:///", fileName.Replace('\\', '/'));
-				}
-			}
-			
-			return uri;
+			return string.IsNullOrEmpty (fileName) ? "" : new Uri (fileName).AbsoluteUri;
 		}
 		
 		#region ILazilyLoadedProvider implementation
