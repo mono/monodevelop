@@ -336,6 +336,9 @@ namespace MonoDevelop.Ide
 		async void CreateStartupMetadata (StartupInfo startupInfo)
 		{
 			var result = await Task.Run (() => DesktopService.PlatformTelemetry ());
+			if (result == null) {
+				return;
+			}
 			Counters.Startup.Inc (GetStartupMetadata (startupInfo, result));
 			IdeApp.OnStartupCompleted ();
 		}
