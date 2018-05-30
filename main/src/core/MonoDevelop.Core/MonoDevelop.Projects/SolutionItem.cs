@@ -478,7 +478,6 @@ namespace MonoDevelop.Projects
 			} finally {
 				fileStatusTracker.EndSave ();
 			}
-			FileService.NotifyFileChanged (FileName);
 		}
 
 		internal bool IsSaved {

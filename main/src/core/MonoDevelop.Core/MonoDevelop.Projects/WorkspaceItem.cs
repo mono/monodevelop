@@ -279,7 +279,6 @@ namespace MonoDevelop.Projects
 						fileStatusTracker.EndSave ();
 					}
 				}
-				FileService.NotifyFileChanged (FileName);
 			});
 		}
 

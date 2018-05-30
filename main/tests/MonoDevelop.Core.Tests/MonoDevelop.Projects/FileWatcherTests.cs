@@ -191,6 +191,8 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
+			await WaitForFileChanged (p.FileName);
+
 			AssertFileChanged (p.FileName);
 			Assert.IsFalse (p.NeedsReload);
 		}
