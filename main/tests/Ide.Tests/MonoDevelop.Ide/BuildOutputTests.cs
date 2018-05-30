@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide
 			var dataSource = new BuildOutputDataSource (nodes);
 			var child = dataSource.GetChild (dataSource.GetChild (null, 0), 0);
 
-			Assert.That (dataSource.GetChildrenCount (null), Is.EqualTo (1));
+			Assert.That (dataSource.GetChildrenCount (null), Is.EqualTo (2));
 			Assert.That (child, Is.TypeOf (typeof (BuildOutputNode)));
 			Assert.That ((child as BuildOutputNode).Message, Is.EqualTo ("Custom project built"));
 		}
