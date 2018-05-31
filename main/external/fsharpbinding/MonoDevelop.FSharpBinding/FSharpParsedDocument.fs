@@ -11,7 +11,7 @@ open MonoDevelop.Ide.TypeSystem
 open System.Collections.Generic
 open System.IO
 
-type FSharpParsedDocument(fileName, location: DocumentLocation option) =
+type FSharpParsedDocument(fileName, location: DocumentLocation option, parsedLine: string option) =
     inherit DefaultParsedDocument(fileName,Flags = ParsedDocumentFlags.NonSerializable)
     let specialCommentTags = 
         CommentTag.SpecialCommentTags
@@ -20,7 +20,10 @@ type FSharpParsedDocument(fileName, location: DocumentLocation option) =
 
     member val Tokens : (FSharpTokenInfo list * string) list option = None with get,set
     member val AllSymbolsKeyed = Dictionary<Range.pos, FSharpSymbolUse>() :> IDictionary<_,_> with get, set
-    member x.ParsedLocation = location
+    member val ParsedLocation = location with get, set
+    /// The text of the line where the caret is located at the point that the document was parsed
+    /// Used for intellisense cache.
+    member val ParsedLine = parsedLine with get, set
 
     member val UnusedCodeRanges : Range.range list option = None with get, set
     member val HasErrors = false with get, set
