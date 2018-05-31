@@ -766,7 +766,7 @@ namespace MonoDevelop.Projects
 		{
 			base.OnEndLoad ();
 
-			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata (null));
+			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata (null), null);
 
 			if (sourceProject != null)
 				sourceProject.ImportChanged += OnMSBuildProjectImportChanged;

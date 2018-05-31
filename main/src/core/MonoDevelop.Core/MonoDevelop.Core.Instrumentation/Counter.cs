@@ -180,7 +180,7 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 			lock (values) {
 				if (values.Count == 0 || time < values[0].TimeStamp)
-					return new CounterValue (0, 0, time, null);
+					return new CounterValue (0, 0, time, null, null);
 				if (time >= values[values.Count - 1].TimeStamp)
 					return values[values.Count - 1];
 				for (int n=0; n<values.Count; n++) {
@@ -188,7 +188,7 @@ namespace MonoDevelop.Core.Instrumentation
 						return values [n - 1];
 				}
 			}
-			return new CounterValue (0, 0, time, null);
+			return new CounterValue (0, 0, time, null, null);
 		}
 		
 		public CounterValue LastValue {
@@ -197,19 +197,19 @@ namespace MonoDevelop.Core.Instrumentation
 					if (values.Count > 0)
 						return values [values.Count - 1];
 					else
-						return new CounterValue (0, 0, DateTime.MinValue, null);
+						return new CounterValue (0, 0, DateTime.MinValue, null, null);
 				}
 			}
 		}
 		
-		internal int StoreValue (string message, ITimeCounter timer, IDictionary<string, string> metadata)
+		internal int StoreValue (string message, ITimeCounter timer, IDictionary<string, string> metadata, IDictionary<string, object> measurements)
 		{
 			DateTime now = DateTime.Now;
 			if (resolution.Ticks != 0) {
 				if (now - lastValueTime < resolution)
 					return -1;
 			}
-			var val = new CounterValue (count, totalCount, count - lastStoredCount, now, message, timer != null ? timer.TraceList : null, metadata);
+			var val = new CounterValue (count, totalCount, count - lastStoredCount, now, message, timer != null ? timer.TraceList : null, metadata, measurements);
 			lastStoredCount = count;
 
 			if (storeValues)
@@ -257,26 +257,26 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public void Inc (int n, string message)
 		{
-			Inc (n, message, null);
+			Inc (n, message, null, null);
 		}
 
 		public void Inc (string message, IDictionary<string, string> metadata)
 		{
-			Inc (1, message, metadata);
+			Inc (1, message, metadata, null);
 		}
 
 		public void Inc (IDictionary<string, string> metadata)
 		{
-			Inc (1, null, metadata);
+			Inc (1, null, metadata, null);
 		}
 
-		public void Inc (int n, string message, IDictionary<string, string> metadata)
+		public void Inc (int n, string message, IDictionary<string, string> metadata, IDictionary<string, object> measurements)
 		{
 			if (enabled) {
 				lock (values) {
 					count += n;
 					totalCount += n;
-					StoreValue (message, null, metadata);
+					StoreValue (message, null, metadata, measurements);
 				}
 			}
 			if (logMessages && message != null)
@@ -305,10 +305,15 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public void Dec (int n, string message, IDictionary<string, string> metadata)
 		{
+			Dec (n, message, metadata, null);
+		}
+
+		public void Dec (int n, string message, IDictionary<string, string> metadata, IDictionary<string, object> measurements)
+		{
 			if (enabled) {
 				lock (values) {
 					count -= n;
-					StoreValue (message, null, metadata);
+					StoreValue (message, null, metadata, measurements);
 				}
 			}
 			if (logMessages && message != null)
@@ -330,7 +335,7 @@ namespace MonoDevelop.Core.Instrumentation
 			if (enabled) {
 				lock (values) {
 					count = value;
-					StoreValue (message, null, metadata);
+					StoreValue (message, null, metadata, null);
 				}
 			}
 			if (logMessages && message != null)
@@ -358,7 +363,7 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 			if (enabled) {
 				lock (values) {
-					StoreValue (message, null, null);
+					StoreValue (message, null, null, null);
 				}
 			}
 			if (logMessages && message != null)
@@ -380,17 +385,17 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public void Inc (string message, T metadata)
 		{
-			Inc (1, message, metadata.Properties);
+			Inc (1, message, metadata.Properties, metadata.Measurements);
 		}
 
 		public void Inc (T metadata)
 		{
-			Inc (1, null, metadata.Properties);
+			Inc (1, null, metadata.Properties, metadata.Measurements);
 		}
 
 		public void Inc (int n, string message, T metadata)
 		{
-			Inc (n, message, metadata.Properties);
+			Inc (n, message, metadata.Properties, metadata.Measurements);
 		}
 
 		public void Dec (string message, T metadata)
@@ -430,8 +435,9 @@ namespace MonoDevelop.Core.Instrumentation
 		TimerTraceList traces;
 		int threadId;
 		IDictionary<string, string> metadata;
+		IDictionary<string, object> measurements;
 
-		internal CounterValue (int value, int totalCount, DateTime timestamp, IDictionary<string, string> metadata)
+		internal CounterValue (int value, int totalCount, DateTime timestamp, IDictionary<string, string> metadata, IDictionary<string, object> measurements)
 		{
 			this.value = value;
 			this.timestamp = timestamp;
@@ -441,9 +447,10 @@ namespace MonoDevelop.Core.Instrumentation
 			threadId = 0;
 			change = 0;
 			this.metadata = metadata;
+			this.measurements = measurements;
 		}
 
-		internal CounterValue (int value, int totalCount, int change, DateTime timestamp, string message, TimerTraceList traces, IDictionary<string, string> metadata)
+		internal CounterValue (int value, int totalCount, int change, DateTime timestamp, string message, TimerTraceList traces, IDictionary<string, string> metadata, IDictionary<string, object> measurements)
 		{
 			this.value = value;
 			this.timestamp = timestamp;
@@ -453,6 +460,7 @@ namespace MonoDevelop.Core.Instrumentation
 			this.change = change;
 			this.threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 			this.metadata = metadata;
+			this.measurements = measurements;
 		}
 
 		public DateTime TimeStamp {
@@ -489,6 +497,12 @@ namespace MonoDevelop.Core.Instrumentation
 				// That's because metadata may be allocated after CounterValue has been
 				// created (timer metadata can be set while timing is in progress).
 				return metadata ?? traces?.Metadata;
+			}
+		}
+
+		public IDictionary<string, object> Measurements {
+			get {
+				return measurements;
 			}
 		}
 		

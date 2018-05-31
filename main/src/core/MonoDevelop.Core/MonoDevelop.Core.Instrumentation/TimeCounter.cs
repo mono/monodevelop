@@ -93,6 +93,7 @@ namespace MonoDevelop.Core.Instrumentation
 				// metadata is assigned there
 				traceList = new TimerTraceList ();
 				traceList.Metadata = metadata?.Properties;
+				traceList.Measurements = metadata?.Measurements;
 			}
 			this.cancellationToken = cancellationToken;
 			Begin ();
@@ -105,6 +106,7 @@ namespace MonoDevelop.Core.Instrumentation
 					if (traceList == null)
 						traceList = new TimerTraceList ();
 					traceList.Metadata = metadata.Properties;
+					traceList.Measurements = metadata.Measurements;
 				}
 				return metadata;
 			}
@@ -205,6 +207,7 @@ namespace MonoDevelop.Core.Instrumentation
 		// Timer metadata is stored here, since it may change while the timer is alive.
 		// CounterValue will take the metadata from here.
 		public IDictionary<string, string> Metadata;
+		public IDictionary<string, object> Measurements;
 	}
 	
 	[Serializable]

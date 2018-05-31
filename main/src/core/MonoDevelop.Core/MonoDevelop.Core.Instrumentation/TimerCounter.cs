@@ -95,7 +95,7 @@ namespace MonoDevelop.Core.Instrumentation
 					lastTimer.Trace (message);
 				else {
 					lock (values) {
-						StoreValue (message, null, null);
+						StoreValue (message, null, null, null);
 					}
 				}
 			} else if (LogMessages) {
@@ -123,7 +123,12 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public ITimeTracker BeginTiming (string message, IDictionary<string, string> metadata)
 		{
-			return BeginTiming (message, metadata != null ? new CounterMetadata (metadata) : null, CancellationToken.None);
+			return BeginTiming (message, metadata, null);
+		}
+
+		public ITimeTracker BeginTiming (string message, IDictionary<string, string> metadata, IDictionary<string, object> measurements)
+		{
+			return BeginTiming (message, metadata != null ? new CounterMetadata (metadata, measurements) : null, CancellationToken.None);
 		}
 
 		internal ITimeTracker<T> BeginTiming<T> (string message, T metadata, CancellationToken cancellationToken) where T : CounterMetadata, new()
@@ -139,7 +144,7 @@ namespace MonoDevelop.Core.Instrumentation
 						timer = c;
 						count++;
 						totalCount++;
-						int i = StoreValue (message, lastTimer, metadata?.Properties);
+						int i = StoreValue (message, lastTimer, metadata?.Properties, metadata?.Measurements);
 						lastTimer.TraceList.ValueIndex = i;
 					}
 				} else {
@@ -213,17 +218,21 @@ namespace MonoDevelop.Core.Instrumentation
 	public class CounterMetadata
 	{
 		IDictionary<string, string> properties;
+		IDictionary<string, object> measurements;
 
 		internal protected IDictionary<string, string> Properties => properties;
+		internal protected IDictionary<string, object> Measurements => measurements;
 
 		public CounterMetadata ()
 		{
 			properties = new Dictionary<string, string> ();
+			measurements = new Dictionary<string, object> ();
 		}
 
-		public CounterMetadata (IDictionary<string, string> properties)
+		public CounterMetadata (IDictionary<string, string> properties, IDictionary<string, object> measurements)
 		{
 			this.properties = properties;
+			this.measurements = measurements;
 		}
 
 		public CounterResult Result {
@@ -280,6 +289,17 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 			properties.TryGetValue (name, out var result);
 			return (T) Convert.ChangeType (result, typeof (T), CultureInfo.InvariantCulture);
+		}
+
+		protected void SetMeasurement (string name, object value)
+		{
+			measurements [name] = value;
+		}
+
+		protected T GetMeasurement<T> (string name)
+		{
+			measurements.TryGetValue (name, out var result);
+			return (T)result;
 		}
 	}
 
