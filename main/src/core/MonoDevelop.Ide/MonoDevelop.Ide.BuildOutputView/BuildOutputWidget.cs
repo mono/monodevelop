@@ -533,6 +533,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				// Cleanup previous search
 				if (currentSearch != null) {
 					RefreshSearchMatches (dataSource, currentSearch);
+					Counters.SearchBuildLog.Trace ("Cleared previous search matches");
 				}
 
 				currentSearch = new BuildOutputDataSearch (dataSource.RootNodes);
