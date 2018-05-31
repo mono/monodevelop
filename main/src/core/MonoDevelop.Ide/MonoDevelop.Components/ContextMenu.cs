@@ -89,8 +89,27 @@ namespace MonoDevelop.Components
 			ContextMenuExtensionsGtk.ShowContextMenu (parent, x, y, this, closeHandler, selectFirstItem);
 		}
 
+		internal void Show (Xwt.Widget parent, int x, int y, Action closeHandler, bool selectFirstItem = false)
+		{
+			if (parent.Surface.NativeWidget is Gtk.Widget widget) {
+				Show (widget, x, y, closeHandler, selectFirstItem);
+				return;
+			}
+			#if MAC
+			if (parent.Surface.NativeWidget is AppKit.NSView view) {
+				ContextMenuExtensionsMac.ShowContextMenu ((AppKit.NSView)view, x, y, this, closeHandler, selectFirstItem);
+				return;
+			}
+			#endif
+			throw new NotSupportedException ();
+		}
 
 		public void Show (Gtk.Widget parent, int x, int y)
+		{
+			Show (parent, x, y, null);
+		}
+
+		internal void Show (Xwt.Widget parent, int x, int y)
 		{
 			Show (parent, x, y, null);
 		}

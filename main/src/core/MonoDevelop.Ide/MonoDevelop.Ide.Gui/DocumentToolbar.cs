@@ -27,6 +27,7 @@ using System;
 using System.Linq;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -106,11 +107,25 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		public void AddSpace ()
+		{
+			var spacer = new HBox ();
+			spacer.Accessible.SetShouldIgnore (true);
+			Add (spacer, true); 
+		}
+
 		void ChangeColor (Gtk.Widget w)
 		{
 			w.Realized += delegate {
-				w.ModifyText (StateType.Normal, Styles.BreadcrumbTextColor.ToGdkColor ());
-				w.ModifyFg (StateType.Normal, Styles.BreadcrumbTextColor.ToGdkColor ());
+				var textColor = Styles.BreadcrumbTextColor.ToGdkColor ();
+				if (Core.Platform.IsMac && w is CheckButton) {
+					// the Gtk.CheckButton Text color is the color of the check mark
+					// and the Fg color is used for the label.
+					w.ModifyFg (StateType.Prelight, textColor);
+					w.ModifyFg (StateType.Active, textColor);
+				} else
+					w.ModifyText (StateType.Normal, textColor);
+				w.ModifyFg (StateType.Normal, textColor);
 			};
 			if (w is Gtk.Container) {
 				foreach (var c in ((Gtk.Container)w).Children)
