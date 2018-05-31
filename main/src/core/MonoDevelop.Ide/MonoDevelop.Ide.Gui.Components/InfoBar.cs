@@ -42,34 +42,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		static Image closeImage = Image.FromResource ("pad-close-9.png");
 		static Image closeImageInactive = Image.FromResource ("pad-close-9.png").WithAlpha (0.5);
 
-		class Styles
-		{
-			public Color BarBackgroundColor;
-			public Color ButtonLabelColor;
-
-			public static Styles Instance = new Styles ();
-
-			public Styles ()
-			{
-				if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceTheme == Theme.Light)
-					LoadLightStyle ();
-				else
-					LoadDarkStyle ();
-			}
-
-			void LoadLightStyle ()
-			{
-				BarBackgroundColor = Color.FromName ("#F3F3F3");
-				ButtonLabelColor = Color.FromName ("#444444");
-			}
-
-			void LoadDarkStyle ()
-			{
-				BarBackgroundColor = Color.FromName ("#222222");
-				ButtonLabelColor = Color.FromName ("#BEBEBE");
-			}
-		}
-
 		public XwtInfoBar (string description, params InfoBarItem[] items)
 		{
 			Build (description, items);
@@ -78,7 +50,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		void Build (string description, params InfoBarItem[] items)
 		{
 			var mainBox = new HBox {
-				BackgroundColor = Styles.Instance.BarBackgroundColor,
+				BackgroundColor = Styles.NotificationBar.BarBackgroundColor,
 			};
 
 			mainBox.PackStart (new ImageView (ImageService.GetIcon (Stock.Information, Gtk.IconSize.Menu)), marginLeft: 11);
@@ -102,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				case InfoBarItem.InfoBarItemKind.Button:
 					var btn = new InfoBarButton {
 						Label = item.Title,
-						LabelColor = Styles.Instance.ButtonLabelColor,
+						LabelColor = Styles.NotificationBar.ButtonLabelColor,
 						Style = ButtonStyle.Normal,
 
 						MinWidth = 77,
@@ -138,7 +110,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				Content = new FrameBox (mainBox) {
 					BorderWidthBottom = 1,
-					BorderColor = Color.FromName ("#000000").WithAlpha (0.1),
+					BorderColor = Styles.NotificationBar.BarBorderColor,
 				};
 			} else {
 				Content = mainBox;
@@ -150,7 +122,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			public InfoBarCloseButton ()
 			{
 				Style = ButtonStyle.Borderless;
-				BackgroundColor = Styles.Instance.BarBackgroundColor;
+				BackgroundColor = Styles.NotificationBar.BarBackgroundColor;
 				ImagePosition = ContentPosition.Center;
 				Opacity = 0.5;
 
