@@ -462,10 +462,8 @@ module Completion =
                         let! parsedLine = document.ParsedLine |> async.Return
                         let col = min parsedLocation.Column (parsedLine.Length - 1)
 
-                        let trimmedLine = lineToCaret.TrimEnd()
-
                         let shouldReparse() =
-                            trimmedLine.Contains "=" || trimmedLine.Contains "->"
+                            lineToCaret.Contains "=" || lineToCaret.Contains "->"
 
                         let isContiguousIdentifierCharSeq() =
                             let l = lineToCaret.LastIndexOf " "
