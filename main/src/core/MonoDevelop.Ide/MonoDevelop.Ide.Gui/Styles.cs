@@ -285,6 +285,14 @@ namespace MonoDevelop.Ide.Gui
 			public static Color KeyConflictForegroundColor { get; internal set; }
 		}
 
+		// Notification bar
+		internal static class NotificationBar
+		{
+			public static Color BarBackgroundColor { get; internal set; }
+			public static Color ButtonLabelColor { get; internal set; }
+			public static Color BarBorderColor { get; } = Color.FromName ("#000000").WithAlpha (0.1);
+		}
+
 		// Helper methods
 
 		internal static Color Shift (Color color, double factor)
@@ -570,6 +578,11 @@ namespace MonoDevelop.Ide.Gui
 			Wizard.PageSeparatorColor = ThinSplitterColor;
 			Wizard.ContentSeparatorColor = Color.FromName ("#d2d5d9");
 			Wizard.ContentShadowColor = ThinSplitterColor;
+
+			// Notification Bar
+
+			NotificationBar.BarBackgroundColor = Color.FromName ("#f3f3f3");
+			NotificationBar.ButtonLabelColor = Color.FromName ("#444444");
 		}
 
 		internal static void LoadDarkStyle ()
@@ -686,6 +699,12 @@ namespace MonoDevelop.Ide.Gui
 			Wizard.PageSeparatorColor = ThinSplitterColor;
 			Wizard.ContentSeparatorColor = Color.FromName ("#6e6e6e");
 			Wizard.ContentShadowColor = ThinSplitterColor;
+
+			// Notification Bar
+
+			NotificationBar.BarBackgroundColor = Color.FromName ("#222222");
+			NotificationBar.ButtonLabelColor = Color.FromName ("#BEBEBE");
+
 		}
 
 		static StylesStringTagModel tagModel;
