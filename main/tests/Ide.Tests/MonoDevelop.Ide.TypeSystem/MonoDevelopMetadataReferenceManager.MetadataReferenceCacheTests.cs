@@ -8,7 +8,7 @@ using UnitTests;
 namespace MonoDevelop.Ide.TypeSystem
 {
 	[TestFixture]
-	public class MonoDevelopMetadataReferenceManagerMetadataReferenceCacheTests
+	public class MonoDevelopMetadataReferenceManagerMetadataReferenceCacheTests : IdeTestBase
 	{
 		[Test]
 		public async Task ReferenceCacheWorks ()

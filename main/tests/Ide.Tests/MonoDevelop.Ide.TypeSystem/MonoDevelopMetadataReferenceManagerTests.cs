@@ -32,7 +32,7 @@ using UnitTests;
 namespace MonoDevelop.Ide.TypeSystem
 {
 	[TestFixture]
-	public class MonoDevelopMetadataReferenceManagerTests
+	public class MonoDevelopMetadataReferenceManagerTests : IdeTestBase
 	{
 		[Test]
 		public async Task WorkspaceHasService ()

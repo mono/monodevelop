@@ -114,6 +114,7 @@
     <Compile Include="MonoDevelop.Projects\ExtensionChainTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MonoDevelop.FSW\FileChangeTrackerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
