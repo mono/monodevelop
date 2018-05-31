@@ -65,7 +65,7 @@ namespace MonoDevelop.Core.Setup
 			else
 				platform = "Linux";
 			
-			return "http://addins.monodevelop.com/" + level + "/" + platform + "/" + AddinManager.CurrentAddin.Version + "/main.mrep";
+			return "https://addins.monodevelop.com/" + level + "/" + platform + "/" + AddinManager.CurrentAddin.Version + "/main.mrep";
 		}
 	}
 }
