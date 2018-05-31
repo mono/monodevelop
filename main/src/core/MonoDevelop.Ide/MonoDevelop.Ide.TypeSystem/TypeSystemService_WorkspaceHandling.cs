@@ -42,7 +42,16 @@ namespace MonoDevelop.Ide.TypeSystem
 	public static partial class TypeSystemService
 	{
 		//Internal for unit test
-		internal static readonly MonoDevelopWorkspace emptyWorkspace;
+		static readonly Task<MonoDevelopWorkspace> emptyWorkspaceTask = Runtime.RunInMainThread (() => {
+			try {
+				RoslynServices.RoslynService.Initialize ();
+				return new MonoDevelopWorkspace (null);
+			} catch (Exception e) {
+				LoggingService.LogFatalError ("Can't create roslyn workspace", e);
+			}
+			return null;
+		});
+		internal static MonoDevelopWorkspace emptyWorkspace => emptyWorkspaceTask.Result;
 
 		static object workspaceLock = new object();
 		static ImmutableList<MonoDevelopWorkspace> workspaces = ImmutableList<MonoDevelopWorkspace>.Empty;
