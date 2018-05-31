@@ -83,6 +83,7 @@ type ``Completion Tests``() =
                         
         results |> should contain "completeme"
 
+    [<TestCase("let $")>]
     [<TestCase("let x$")>]
     [<TestCase("let (x$")>]
     [<TestCase("let! x$")>]
@@ -159,7 +160,6 @@ type ``Completion Tests``() =
         let results = getCompletions @"let add first second = z$" NoParse
         results |> shouldnot contain "z"
 
-     
     [<Test>]
     member x.``Completes lambda``() =
         let results = getCompletions @"let x = ""string"" |> Seq.map (fun c -> c.$" Parse
