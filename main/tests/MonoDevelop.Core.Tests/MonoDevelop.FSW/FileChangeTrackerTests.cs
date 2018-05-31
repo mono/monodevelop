@@ -29,17 +29,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
-namespace MonoDevelop.Ide.TypeSystem
+namespace MonoDevelop.FSW
 {
 	[TestFixture]
 	public class FileChangeTrackerTests
 	{
 		[Test]
-		public void TestContructedProperly()
+		public void TestContructedProperly ()
 		{
 			var asm = typeof (FileChangeTrackerTests).Assembly.Location;
 
-			using (var tracker = new MonoDevelopMetadataReference.FileChangeTracker (asm)) {
+			using (var tracker = new FileChangeTracker (asm)) {
 				Assert.AreEqual (asm, tracker.FilePath);
 			}
 		}
@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var tmpFile = Path.Combine (tmpDir, "file.dll");
 			var tmpFileMoved = Path.Combine (tmpDir, "file2.dll");
 
-			var tracker = new MonoDevelopMetadataReference.FileChangeTracker (tmpFile);
+			var tracker = new FileChangeTracker (tmpFile);
 			using (tracker) {
 				// Create the file
 				Assert.AreEqual (true, await ListenToOnUpdate (tracker, () => File.WriteAllText (tmpFile, "test")));
@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			Assert.AreEqual (false, await ListenToOnUpdate (tracker, () => File.WriteAllText (tmpFile, "test")));
 		}
 
-		static Task<bool> ListenToOnUpdate (MonoDevelopMetadataReference.FileChangeTracker tracker, Action callback)
+		static Task<bool> ListenToOnUpdate (FileChangeTracker tracker, Action callback)
 		{
 			var tcs = new TaskCompletionSource<bool> ();
 			tracker.UpdatedOnDisk += (o, e) => tcs.TrySetResult (true);
