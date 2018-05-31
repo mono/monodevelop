@@ -39,51 +39,49 @@ using Roslyn.Utilities;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
-	[ExportWorkspaceService(typeof(IInfoBarService), layer: ServiceLayer.Host), Shared]
-    sealed class MonoDevelopInfoBarService : ForegroundThreadAffinitizedObject, IInfoBarService
-    {
-        readonly IForegroundNotificationService _foregroundNotificationService;
-        readonly IAsynchronousOperationListener _listener;
+	[ExportWorkspaceService (typeof (IInfoBarService), layer: ServiceLayer.Host), Shared]
+	sealed class MonoDevelopInfoBarService : ForegroundThreadAffinitizedObject, IInfoBarService
+	{
+		readonly IForegroundNotificationService _foregroundNotificationService;
+		readonly IAsynchronousOperationListener _listener;
 
-        [ImportingConstructor]
-        public MonoDevelopInfoBarService(IForegroundNotificationService foregroundNotificationService, IAsynchronousOperationListenerProvider listenerProvider)
-        {
-            _foregroundNotificationService = foregroundNotificationService;
-            _listener = listenerProvider.GetListener(FeatureAttribute.InfoBar);
-        }
+		[ImportingConstructor]
+		public MonoDevelopInfoBarService (IForegroundNotificationService foregroundNotificationService, IAsynchronousOperationListenerProvider listenerProvider)
+		{
+			_foregroundNotificationService = foregroundNotificationService;
+			_listener = listenerProvider.GetListener (FeatureAttribute.InfoBar);
+		}
 
-        public void ShowInfoBarInActiveView(string message, params InfoBarUI[] items)
-        {
-            ThisCanBeCalledOnAnyThread();
-            ShowInfoBar(activeView: true, message: message, items: items);
-        }
+		public void ShowInfoBarInActiveView (string message, params InfoBarUI [] items)
+		{
+			ThisCanBeCalledOnAnyThread ();
+			ShowInfoBar (activeView: true, message: message, items: items);
+		}
 
-        public void ShowInfoBarInGlobalView(string message, params InfoBarUI[] items)
-        {
-            ThisCanBeCalledOnAnyThread();
-            ShowInfoBar(activeView: false, message: message, items: items);
-        }
+		public void ShowInfoBarInGlobalView (string message, params InfoBarUI [] items)
+		{
+			ThisCanBeCalledOnAnyThread ();
+			ShowInfoBar (activeView: false, message: message, items: items);
+		}
 
-        void ShowInfoBar(bool activeView, string message, params InfoBarUI[] items)
-        {
-            // We can be called from any thread since errors can occur anywhere, however we can only construct and InfoBar from the UI thread.
-            _foregroundNotificationService.RegisterNotification(() =>
-            {
+		void ShowInfoBar (bool activeView, string message, params InfoBarUI [] items)
+		{
+			// We can be called from any thread since errors can occur anywhere, however we can only construct and InfoBar from the UI thread.
+			_foregroundNotificationService.RegisterNotification (() => {
 				if (TryGetInfoBarHost (activeView, out var infoBarHost)) {
 					infoBarHost.AddInfoBar (message, ToUIItems (items));
 				}
-            }, _listener.BeginAsyncOperation(nameof(ShowInfoBar)));
-        }
+			}, _listener.BeginAsyncOperation (nameof (ShowInfoBar)));
+		}
 
-		static InfoBarItem[] ToUIItems (InfoBarUI[] items)
+		static InfoBarItem [] ToUIItems (InfoBarUI [] items)
 		{
 			return items.Select (x => new InfoBarItem (x.Title, ToUIKind (x.Kind), x.Action, x.CloseAfterAction)).ToArray ();
 		}
 
 		static InfoBarItem.InfoBarItemKind ToUIKind (InfoBarUI.UIKind kind)
 		{
-			switch (kind)
-			{
+			switch (kind) {
 			case InfoBarUI.UIKind.Button:
 				return InfoBarItem.InfoBarItemKind.Button;
 			case InfoBarUI.UIKind.Close:
@@ -97,23 +95,23 @@ namespace MonoDevelop.Ide.RoslynServices
 
 		}
 
-        bool TryGetInfoBarHost(bool activeView, out IInfoBarHost infoBarHost)
-        {
-            AssertIsForeground();
+		bool TryGetInfoBarHost (bool activeView, out IInfoBarHost infoBarHost)
+		{
+			AssertIsForeground ();
 
 			infoBarHost = null;
 			if (!IdeApp.IsInitialized || IdeApp.Workbench == null)
 				return false;
 
-            if (activeView) {
+			if (activeView) {
 				// Maybe for pads also? Not sure if we should.
 				infoBarHost = IdeApp.Workbench.ActiveDocument as IInfoBarHost;
-            }
+			}
 
 			if (infoBarHost == null)
 				infoBarHost = IdeApp.Workbench.RootWindow as IInfoBarHost;
 
 			return infoBarHost != null;
-        }
-    }
+		}
+	}
 }
