@@ -65,6 +65,7 @@ namespace MonoDevelop.Ide.RoslynServices
 						manager.Clear ();
 					}
 				};
+				return projectCacheService;
 			}
 
 			// TODO: Handle miscellaneous files workspace later on.
