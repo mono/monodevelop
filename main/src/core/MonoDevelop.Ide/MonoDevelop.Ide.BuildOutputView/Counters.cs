@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -35,7 +36,30 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public static Counter OpenedFromFile = InstrumentationService.CreateCounter ("Times opened from file", "Build Ouptut", id: "BuildOutput.OpenedFromFile");
 		public static Counter SavedToFile = InstrumentationService.CreateCounter ("Times saved to file", "Build Output", id: "BuildOutput.SavedToFile");
 
-		public static TimerCounter ProcessBuildLog = InstrumentationService.CreateTimerCounter ("Process binlog file", "Build Output", id: "BuildOutput.ProcessBuildLog");
+		public static TimerCounter<BuildOutputCounterMetadata> ProcessBuildLog = InstrumentationService.CreateTimerCounter<BuildOutputCounterMetadata> ("Process binlog file", "Build Output", id: "BuildOutput.ProcessBuildLog");
 		public static TimerCounter SearchBuildLog = InstrumentationService.CreateTimerCounter ("Search binlog", "Build Output", id: "BuildOutput.SearchBuildLog");
+	}
+
+	internal class BuildOutputCounterMetadata : CounterMetadata
+	{
+		public MSBuildVerbosity Verbosity {
+			get => GetProperty<MSBuildVerbosity> ("Verbosity");
+			set => SetProperty ("Verbosity", value);
+		}
+
+		public int BuildCount {
+			get => GetProperty<int> ("BuildCount");
+			set => SetProperty ("BuildCount", value);
+		}
+
+		public int RootNodesCount {
+			get => GetProperty<int> ("RootNodesCount");
+			set => SetProperty ("RootNodesCount", value);
+		}
+
+		public long OnDiskSize {
+			get => GetProperty<long> ("OnDiskSize");
+			set => SetProperty ("OnDiskSize", value);
+		}
 	}
 }
