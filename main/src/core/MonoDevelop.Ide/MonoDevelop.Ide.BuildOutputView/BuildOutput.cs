@@ -38,6 +38,7 @@ using Gtk;
 using Xwt;
 using System.Linq;
 using System.Collections.Immutable;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -209,16 +210,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return result.Values;
 		}
 
-		public void ProcessProjects (bool showDiagnostics, IDictionary<string, string> metadata) 
+		public void ProcessProjects (bool showDiagnostics, BuildOutputCounterMetadata metadata) 
 		{
 			foreach (var p in projects) {
 				p.Process ();
 			}
 
-			metadata ["Verbosity"] = showDiagnostics ? "Diagnostics" : "Normal";
-			metadata ["BuildCount"] = projects.Count.ToString ();
-			metadata ["OnDiskSize"] = projects.Sum (x => new FileInfo (x.FileName).Length).ToString ();
-			metadata ["RootNodesCount"] = projects.Sum (x => x.RootNodes.Count).ToString ();
+			metadata.Verbosity = showDiagnostics ? MSBuildVerbosity.Diagnostic : MSBuildVerbosity.Normal;
+			metadata.BuildCount = projects.Count;
+			metadata.OnDiskSize = projects.Sum (x => new FileInfo (x.FileName).Length);
+			metadata.RootNodesCount = projects.Sum (x => x.RootNodes.Count);
 		}
 
 		bool disposed = false;

@@ -639,7 +639,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				await SetSpinnerVisibility (true);
 
 				try {
-					var metadata = new Dictionary<string, string> ();
+					var metadata = new BuildOutputCounterMetadata ();
 					using (Counters.ProcessBuildLog.BeginTiming (metadata)) {
 						BuildOutput.ProcessProjects (showDiagnostics, metadata);
 
