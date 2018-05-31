@@ -37,11 +37,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		void AddInfoBar (string description, params InfoBarItem [] items);
 	}
 
-	interface IInfoBarFactory
-	{
-
-	}
-
 	class XwtInfoBar : Widget
 	{
 		static Image closeImage = Image.FromResource ("pad-close-9.png");
