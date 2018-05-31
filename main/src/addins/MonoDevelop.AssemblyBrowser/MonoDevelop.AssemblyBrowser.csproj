@@ -158,7 +158,6 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\HelpExtensions.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserNavigationPoint.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\UnresolvedIdStringProvider.cs" />
     <Compile Include="Gui\MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs" />
     <Compile Include="Util\CSharpLanguage.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\Cecil\EventDefinitionNodeBuilder.cs" />
