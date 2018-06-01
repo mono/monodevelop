@@ -210,21 +210,18 @@ namespace MonoDevelop.Core.Instrumentation
 
 		string DebuggingText {
 			get {
-				if (FirstTrace == null)
-					return string.Empty;
 				var stringBuilder = new StringBuilder ();
-				ToString (stringBuilder, FirstTrace, null);
+				var current = FirstTrace;
+				TimerTrace previous = null;
+				while (current != null) {
+					stringBuilder.Append (previous == null ? "N/A" : (current.Timestamp - previous.Timestamp).ToString (@"ss\.fff"));
+					stringBuilder.Append (" : ");
+					stringBuilder.AppendLine (current.Message);
+					previous = current;
+					current = current.Next;
+				}
 				return stringBuilder.ToString ();
 			}
-		}
-
-		void ToString (StringBuilder stringBuilder, TimerTrace current, TimerTrace previous)
-		{
-			stringBuilder.Append (previous == null ? "N/A" : (current.Timestamp - previous.Timestamp).ToString (@"ss\.fff"));
-			stringBuilder.Append (" : ");
-			stringBuilder.AppendLine (current.Message);
-			if (current.Next != null)
-				ToString (stringBuilder, current.Next, current);
 		}
 	}
 	
