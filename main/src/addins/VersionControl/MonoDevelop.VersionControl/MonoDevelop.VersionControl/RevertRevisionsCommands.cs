@@ -117,12 +117,7 @@ namespace MonoDevelop.VersionControl
 				
 				Gtk.Application.Invoke ((o, args) => {
 					if (!isDir) {
-						// Reload reverted files
-						Document doc = IdeApp.Workbench.GetDocument (path);
-						if (doc != null)
-							doc.Reload ();
 						VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, false));
-						FileService.NotifyFileChanged (path);
 					} else {
 						VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
 					}

@@ -60,15 +60,6 @@ namespace MonoDevelop.VersionControl
 					list[0].Repository.Revert (list.Paths, true, Monitor);
 				
 				Gtk.Application.Invoke ((o, args) => {
-					foreach (VersionControlItem item in items) {
-						if (!item.IsDirectory) {
-							FileService.NotifyFileChanged (item.Path);
-							// Reload reverted files
-							Document doc = IdeApp.Workbench.GetDocument (item.Path);
-							if (doc != null && System.IO.File.Exists (item.Path))
-								doc.Reload ();
-						}
-					}
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
