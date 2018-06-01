@@ -6,8 +6,10 @@
     using Microsoft.VisualStudio.Threading;
     using Microsoft.VisualStudio.Utilities;
 
-    [Export(typeof(ITextViewCreationListener))]
-    [ContentType("any")]
+	// TODO: re-enable this as part of
+	// https://devdiv.visualstudio.com/DevDiv/Xamarin%20VS%20for%20Mac/_workitems/edit/617427
+	// [Export(typeof(ITextViewCreationListener))]
+	[ContentType ("any")]
     [TextViewRole(PredefinedTextViewRoles.Editable)]
     [TextViewRole(PredefinedTextViewRoles.EmbeddedPeekTextView)]
     [TextViewRole(PredefinedTextViewRoles.CodeDefinitionView)]
@@ -29,12 +31,6 @@
 
         public void TextViewCreated(ITextView textView)
         {
-			// TODO: remove this as described in
-			// https://devdiv.visualstudio.com/DevDiv/Xamarin%20VS%20for%20Mac/_workitems/edit/617427
-			if (textView.TextBuffer.ContentType.IsOfType ("CSharp")) {
-				return;
-			}
-
 			// No need to do anything further, this type hooks up events to the
 			// text view and tracks its own life cycle.
 			new QuickInfoController(
