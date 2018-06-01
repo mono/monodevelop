@@ -32,6 +32,7 @@ using MonoDevelop.Refactoring;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
+using System.Threading;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -128,9 +129,10 @@ namespace MonoDevelop.CodeGeneration
 			messageArea.Add (vbox1);
 			this.Add (messageArea);
 			this.ShowAll ();
-			
-			int x = completionContext.TriggerXCoord;
-			int y = completionContext.TriggerYCoord;
+
+			var pos = completionContext.GetCoordinatesAsync().WaitAndGetResult (default (CancellationToken));
+			int x = pos.x;
+			int y = pos.y;
 
 			int w, h;
 			GetSize (out w, out h);
@@ -142,7 +144,7 @@ namespace MonoDevelop.CodeGeneration
 				x = (int)geometry.Right - w;
 
 			if (y + h > geometry.Bottom)
-				y = y - completionContext.TriggerTextHeight - h;
+				y = y - pos.textHeight - h;
 			
 			Move (x, y);
 		}

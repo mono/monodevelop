@@ -174,8 +174,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				HideWindow ();
 				return false;
 			}
-
-			view.Reposition (CodeCompletionContext.TriggerXCoord, CodeCompletionContext.TriggerYCoord, CodeCompletionContext.TriggerTextHeight, true);
+			var position = CodeCompletionContext.GetCoordinatesAsync ().WaitAndGetResult (default(CancellationToken));
+			view.Reposition (position.x, position.y, position.textHeight, true);
 
 			// Initialize the completion window behavior options
 			AutoSelect = list.AutoSelect;

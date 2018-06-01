@@ -173,15 +173,12 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var savedCtx = realDocumentContext.GetContent<ICompletionWidget> ().CreateCodeCompletionContext (
 				realEditor.CaretOffset + triggerOffset - docInfo.CaretPosition);
-			var result = new CodeCompletionContext ();
+			
+			var result = new MonoDevelop.Ide.Editor.Projection.ProjectedCompletionExtension.ProjectedContext (savedCtx);
 			result.TriggerOffset = triggerOffset;
 			var loc = docInfo.UnderlyingDocument.Editor.OffsetToLocation (triggerOffset);
 			result.TriggerLine = loc.Line;
 			result.TriggerLineOffset = loc.Column - 1;
-
-			result.TriggerXCoord = savedCtx.TriggerXCoord;
-			result.TriggerYCoord = savedCtx.TriggerYCoord;
-			result.TriggerTextHeight = savedCtx.TriggerTextHeight;
 
 			return result;
 		}
