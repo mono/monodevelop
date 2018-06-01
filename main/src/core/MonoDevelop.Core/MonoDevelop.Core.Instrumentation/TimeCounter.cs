@@ -139,7 +139,8 @@ namespace MonoDevelop.Core.Instrumentation
 					lastTrace = t;
 				}
 				traceList.TotalTime = t.Timestamp - traceList.FirstTrace.Timestamp;
-			} else {
+			}
+			if (counter.LogMessages) {
 				var time = stopWatch.ElapsedMilliseconds;
 				InstrumentationService.LogMessage (string.Format ("[{0} (+{1})] {2}", time, (time - lastTraceTime), message));
 				lastTraceTime = time;
