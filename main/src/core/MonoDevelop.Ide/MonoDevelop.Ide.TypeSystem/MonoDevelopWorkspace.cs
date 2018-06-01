@@ -633,6 +633,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		Tuple<List<DocumentInfo>, List<DocumentInfo>> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile [] sourceFiles, ProjectData oldProjectData)
 		{
 			var documents = new List<DocumentInfo> ();
+			// We don' add additionalDocuments anymore because they were causing slowdown of compilation generation
+			// and no upside to setting additionalDocuments, keeping this around in case this changes in future.
 			var additionalDocuments = new List<DocumentInfo> ();
 			var duplicates = new HashSet<DocumentId> ();
 			// use given source files instead of project.Files because there may be additional files added by msbuild targets
@@ -649,11 +651,6 @@ namespace MonoDevelop.Ide.TypeSystem
 						continue;
 					documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 				} else {
-					var id = projectData.GetOrCreateDocumentId (f.Name, oldProjectData);
-					if (!duplicates.Add (id))
-						continue;
-					additionalDocuments.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
-
 					foreach (var projectedDocument in GenerateProjections (f, projectData, p, oldProjectData)) {
 						var projectedId = projectData.GetOrCreateDocumentId (projectedDocument.FilePath, oldProjectData);
 						if (!duplicates.Add (projectedId))
