@@ -30,10 +30,14 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Text;
+using MonoDevelop.Core;
+using System.Linq;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.SourceEditor
 {
-	class CompileErrorTooltipProvider: TooltipProvider
+	class CompileErrorTooltipProvider: TooltipInformationTooltipProvider
 	{
 		internal static ExtensibleTextEditor GetExtensibleTextEditor (TextEditor editor)
 		{
@@ -50,27 +54,48 @@ namespace MonoDevelop.SourceEditor
 			if (ed == null)
 				return Task.FromResult<TooltipItem> (null);
 
-			string errorInformation = ed.GetErrorInformationAt (offset);
-			if (string.IsNullOrEmpty (errorInformation))
+			var errorInformation = GetErrorInformationAt (ed, offset);
+			if (string.IsNullOrEmpty (errorInformation.info))
 				return Task.FromResult<TooltipItem> (null);
+			var sb = StringBuilderCache.Allocate ();
+			sb.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+			sb.Append (errorInformation.info);
+			sb.Append ("</span>");
 
-			return Task.FromResult (new TooltipItem (errorInformation, editor.GetLineByOffset (offset)));
-		}
-
-		public override Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
-		{
-			var result = new LanguageItemWindow (GetExtensibleTextEditor (editor), modifierState, null, (string)item.Item, null);
-			if (result.IsEmpty)
-				return null;
-			return result;
-		}
-		
-		public override void GetRequiredPosition (TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
-		{
-			var win = (LanguageItemWindow) tipWindow;
-			requiredWidth = win.SetMaxWidth (win.Screen.Width / 4);
-			xalign = 0.5;
+			return Task.FromResult (new TooltipItem (StringBuilderCache.ReturnAndFree (sb), editor.GetLineByOffset (offset)));
 		}
 		#endregion 
+
+		internal static (string info, int start, int end) GetErrorInformationAt (ExtensibleTextEditor editor,  int offset)
+		{
+			var location = editor.OffsetToLocation (offset);
+			var line = editor.Document.GetLine (location.Line);
+			if (line == null)
+				return (null, -1, -1);
+
+			StringBuilder sb = null;
+			int start = -1;
+			int end = int.MaxValue;
+			foreach (var e in editor.Document.GetTextSegmentMarkersAt (offset)) {
+				var error = e as ErrorMarker;
+				if (error == null)
+					continue;
+				if (sb != null)
+					sb.AppendLine ();
+				else
+					sb = StringBuilderCache.Allocate ();
+				start = Math.Max (start, error.Offset);
+				end = Math.Min (end, error.EndOffset);
+				if (error.Error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Warning)
+					sb.Append (GettextCatalog.GetString ("<b>Warning</b>: {0}",
+						GLib.Markup.EscapeText (error.Error.Message)));
+				else
+					sb.Append (GettextCatalog.GetString ("<b>Error</b>: {0}",
+						GLib.Markup.EscapeText (error.Error.Message)));
+			}
+
+			return (sb != null ? StringBuilderCache.ReturnAndFree (sb) : null, start, end - start);
+		}
+
 	}
 }

@@ -176,7 +176,6 @@
     <Compile Include="Mono.TextEditor\Gui\MonoTextEditor.ITextView.MouseHover.cs" />
     <Compile Include="MonoDevelop.SourceEditor\EditActions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ExtensibleTextEditor.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\LanguageItemWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorView.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\BehaviorPanel.cs" />
