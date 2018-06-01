@@ -1,10 +1,10 @@
-//
-// TooltipProvider.cs
+﻿//
+// TooltipUtility.cs
 //
 // Author:
-//       Lluis Sanchez <lluis@xamarin.com>
+//       Mike Krüger <mikkrg@microsoft.com>
 //
-// Copyright (c) 2012 Xamarin Inc
+// Copyright (c) 2018 Microsoft Corporation. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,46 +23,62 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
+using System.IO;
+
+using Gtk;
+
+using Mono.TextEditor;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Text;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Debugger;
+using Mono.Debugging.Client;
+using MonoDevelop.DesignerSupport.Toolbox;
+using MonoDevelop.Ide.CodeTemplates;
+using Services = MonoDevelop.Projects.Services;
+using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.SourceEditor.QuickTasks;
+using MonoDevelop.Ide.TextEditing;
+using System.Text;
+using Mono.Addins;
 using MonoDevelop.Components;
+using Mono.TextEditor.Utils;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Projects.Policies;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.SourceEditor.Wrappers;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor.Highlighting;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Collections.Immutable;
 
 namespace Mono.TextEditor
 {
-	abstract class TooltipProvider
+	static class TooltipUtility
 	{
-		public abstract Task<MonoDevelop.Ide.Editor.TooltipItem> GetItem (MonoTextEditor editor, int offset, CancellationToken token = default(CancellationToken));
-
-		public virtual bool IsInteractive (MonoTextEditor editor, Xwt.WindowFrame tipWindow)
+		internal static Document GetDocument (MonoTextEditor editor)
 		{
-			return false;
-		}
-
-		public virtual void TakeMouseControl (MonoTextEditor editor, Xwt.WindowFrame tipWindow)
-		{
-		}
-
-		protected virtual void GetRequiredPosition (MonoTextEditor editor, Xwt.WindowFrame tipWindow, out int requiredWidth, out double xalign)
-		{
-			requiredWidth = (int)tipWindow.Width;
-			xalign = 0.5;
-		}
-
-		public virtual Xwt.WindowFrame CreateTooltipWindow (MonoTextEditor editor, int offset, Gdk.ModifierType modifierState, MonoDevelop.Ide.Editor.TooltipItem item)
-		{
+			foreach (var doc in IdeApp.Workbench.Documents) {
+				var textEditor = doc.Editor;
+				if (textEditor == null)
+					continue;
+				if (textEditor.FileName == editor.FileName)
+					return doc;
+			}
 			return null;
-		}
-
-		public virtual Xwt.WindowFrame ShowTooltipWindow (MonoTextEditor editor, Xwt.WindowFrame tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, MonoDevelop.Ide.Editor.TooltipItem item)
-		{
-			int w;
-			double xalign;
-			GetRequiredPosition (editor, tipWindow, out w, out xalign);
-
-			ShowAndPositionTooltip (editor, tipWindow, mouseX, mouseY, w, xalign);
-
-			return tipWindow;
 		}
 
 		internal static void ShowAndPositionTooltip (MonoTextEditor editor, Xwt.WindowFrame tipWindow, int mouseX, int mouseY, int width, double xalign)

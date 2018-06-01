@@ -199,6 +199,11 @@ namespace MonoDevelop.Ide.Editor
 		{
 			IsDisposed = true;
 		}
+
+		public virtual void DestroyTooltip (Window tipWindow)
+		{
+			(tipWindow.nativeWidget as IDisposable)?.Dispose ();
+		}
 	}
 
 	abstract class TooltipInformationTooltipProvider : TooltipProvider, IDisposable

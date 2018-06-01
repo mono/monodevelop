@@ -155,7 +155,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			return DebuggingService.IsDebugging;
 		}
-		
+
+		public override void DestroyTooltip (Window tipWindow)
+		{
+			(tipWindow.nativeWidget as DebugValueWindow)?.Destroy ();
+		}
+
 		#endregion 
 		
 		public override void Dispose ()
