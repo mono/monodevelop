@@ -273,9 +273,8 @@ namespace MonoDevelop.MacIntegration
 
 			var nc = NSNotificationCenter.DefaultCenter;
 			nc.AddObserver ((NSString)"AtkCocoaAccessibilityEnabled", (NSNotification) => {
-				Console.WriteLine ($"VoiceOver on {IdeTheme.AccessibilityEnabled}");
+				LoggingService.LogInfo ($"VoiceOver on {IdeTheme.AccessibilityEnabled}");
 				if (!IdeTheme.AccessibilityEnabled) {
-					Console.WriteLine ("Showing notice");
 					ShowVoiceOverNotice ();
 				}
 			}, NSApplication.SharedApplication);
