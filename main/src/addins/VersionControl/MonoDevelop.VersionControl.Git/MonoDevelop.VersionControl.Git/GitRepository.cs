@@ -1403,7 +1403,9 @@ namespace MonoDevelop.VersionControl.Git
 			// Notify file changes
 			NotifyFileChanges (monitor, statusList);
 
-			BranchSelectionChanged?.Invoke (this, EventArgs.Empty);
+			Runtime.RunInMainThread (() => {
+				BranchSelectionChanged?.Invoke (this, EventArgs.Empty);
+			}).Ignore ();
 
 			monitor.EndTask ();
 			return true;
