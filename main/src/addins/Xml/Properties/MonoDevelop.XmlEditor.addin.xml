@@ -7,6 +7,7 @@
 		<Import file="schemas/W3C-License.html" />
 		<Import file="schemas/schema-for-xslt20.xsd" />
 		<Import file="schemas/manifest.xsd" />
+		<Import file="schemas/xml.xsd" />
 	</Runtime>
 
 	<ExtensionPoint path = "/MonoDevelop/Xml/Editor/XmlFileAssociations">
@@ -28,9 +29,10 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Xml/Editor/XmlSchemas">
-		<Schema file="schemas/appconfig.xsd" />
+		<Schema file="schemas/xml.xsd" />
 		<Schema file="schemas/XMLSchema.xsd" />
 		<Schema file="schemas/schema-for-xslt20.xsd" />
+		<Schema file="schemas/appconfig.xsd" />
 		<Schema file="schemas/manifest.xsd" />
 	</Extension>
 
