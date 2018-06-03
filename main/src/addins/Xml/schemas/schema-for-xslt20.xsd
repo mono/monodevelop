@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+XSLT 2.0 Schema: https://www.w3.org/2007/schema-for-xslt20.xsd
+
+Copyright (c) 2007 World Wide Web Consortium, (Massachusetts Institute of Technology,
+European Research Consortium for Informatics and Mathematics, Keio University, Beihang).
+All Rights Reserved. This work is distributed under the W3C® Software License [1] in the hope
+that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+[1] http://www.w3.org/Consortium/Legal/copyright-software
+-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" targetNamespace="http://www.w3.org/1999/XSL/Transform" elementFormDefault="qualified">
 
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->

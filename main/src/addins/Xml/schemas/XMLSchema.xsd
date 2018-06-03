@@ -1,5 +1,14 @@
 <?xml version='1.0'?>
+<!--
+XSD Schema: http://www.w3.org/2012/04/XMLSchema.xsd
 
+Copyright (c) 2012 World Wide Web Consortium, (Massachusetts Institute of Technology,
+European Research Consortium for Informatics and Mathematics, Keio University, Beihang).
+All Rights Reserved. This work is distributed under the W3C® Software License [1] in the hope
+that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+[1] http://www.w3.org/Consortium/Legal/copyright-software
+-->
 <!DOCTYPE xs:schema PUBLIC "-//W3C//DTD XSD 1.1//EN" "XMLSchema.dtd" [
 
 <!-- provide ID type information even for parsers which only read the
