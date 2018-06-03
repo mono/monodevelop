@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Text;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -197,6 +198,7 @@ namespace MonoDevelop.Core.Instrumentation
 	}
 	
 	[Serializable]
+	[DebuggerDisplay ("{DebuggingText}")]
 	class TimerTraceList
 	{
 		public TimerTrace FirstTrace;
@@ -206,6 +208,22 @@ namespace MonoDevelop.Core.Instrumentation
 		// Timer metadata is stored here, since it may change while the timer is alive.
 		// CounterValue will take the metadata from here.
 		public IDictionary<string, string> Metadata;
+
+		string DebuggingText {
+			get {
+				var stringBuilder = new StringBuilder ();
+				var current = FirstTrace;
+				TimerTrace previous = null;
+				while (current != null) {
+					stringBuilder.Append (previous == null ? "N/A" : (current.Timestamp - previous.Timestamp).ToString (@"ss\.fff"));
+					stringBuilder.Append (" : ");
+					stringBuilder.AppendLine (current.Message);
+					previous = current;
+					current = current.Next;
+				}
+				return stringBuilder.ToString ();
+			}
+		}
 	}
 	
 	[Serializable]
