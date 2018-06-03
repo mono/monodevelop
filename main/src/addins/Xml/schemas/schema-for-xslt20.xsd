@@ -8,6 +8,10 @@ All Rights Reserved. This work is distributed under the W3C® Software License [
 that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 [1] http://www.w3.org/Consortium/Legal/copyright-software
+
+Changes for MonoDevelop:
+  2018-06-03
+    Remove schemaLocation from import as we only use local copies.
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" targetNamespace="http://www.w3.org/1999/XSL/Transform" elementFormDefault="qualified">
 
@@ -64,14 +68,14 @@ The declaration of xml:space and xml:lang may need to be commented out because
 of problems processing the schema using various tools
 -->
       
-<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+<xs:import namespace="http://www.w3.org/XML/1998/namespace" />
 
 <!-- 
     An XSLT stylesheet may contain an in-line schema within an xsl:import-schema element,
     so the Schema for schemas needs to be imported
 -->
   
-<xs:import namespace="http://www.w3.org/2001/XMLSchema" schemaLocation="http://www.w3.org/2001/XMLSchema.xsd"/>
+<xs:import namespace="http://www.w3.org/2001/XMLSchema" />
 
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <xs:annotation>
