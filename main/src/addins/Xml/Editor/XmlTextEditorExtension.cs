@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -774,12 +775,15 @@ namespace MonoDevelop.Xml.Editor
 					string newFileName = XmlEditorService.GenerateFileName (FileName, "-transformed{0}.xml");
 					
 					monitor.BeginTask (GettextCatalog.GetString ("Executing transform..."), 1);
+
+					var output = new EncodedStringWriter (Encoding.UTF8);
 					using (XmlReader input = XmlReader.Create (new StringReader (Editor.Text), null, FileName)) {
-						using (XmlTextWriter output = XmlEditorService.CreateXmlTextWriter (Editor)) {
-							xslt.Transform (input, output);
-							IdeApp.Workbench.NewDocument (newFileName, "application/xml", output.ToString ());
+						using (XmlTextWriter writer = XmlEditorService.CreateXmlTextWriter (Editor, output)) {
+							xslt.Transform (input, writer);
 						}
 					}
+					IdeApp.Workbench.NewDocument (newFileName, "application/xml", output.ToString ());
+
 					monitor.ReportSuccess (GettextCatalog.GetString ("Transform completed."));
 					monitor.EndTask ();
 				} catch (Exception ex) {
