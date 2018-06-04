@@ -58,7 +58,7 @@ namespace MonoDevelop.SourceEditor
 			if (string.IsNullOrEmpty (errorInformation.info))
 				return Task.FromResult<TooltipItem> (null);
 			var sb = StringBuilderCache.Allocate ();
-			sb.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+			FontService.AppendSmallSansFontMarkup (sb);
 			sb.Append (errorInformation.info);
 			sb.Append ("</span>");
 

@@ -63,7 +63,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			}
 			if (results.Count > 0) {
 				var sb = StringBuilderCache.Allocate ();
-				sb.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+				FontService.AppendSmallSansFontMarkup (sb);
 				for (int i = 0; i < results.Count; i++) {
 					var r = results [i];
 					var escapedMessage = Ambience.EscapeText (r.Message);

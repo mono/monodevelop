@@ -194,6 +194,13 @@ namespace MonoDevelop.Ide.Fonts
 			foreach (var list in fontChangeCallbacks.Values.ToList ())
 				list.Remove (callback);
 		}
+
+		internal static void AppendSmallSansFontMarkup (System.Text.StringBuilder sb)
+		{
+			sb.Append ("<span font='");
+			sb.Append (SansFontName);
+			sb.Append ("' size='small'>");
+		}
 	}
 
 	class FontConfigurationProperty: ConfigurationProperty<FontDescription>
