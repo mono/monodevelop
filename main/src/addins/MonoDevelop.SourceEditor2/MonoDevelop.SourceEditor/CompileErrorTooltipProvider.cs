@@ -86,12 +86,14 @@ namespace MonoDevelop.SourceEditor
 					sb = StringBuilderCache.Allocate ();
 				start = Math.Max (start, error.Offset);
 				end = Math.Min (end, error.EndOffset);
+
+				sb.Append ("<b>");
 				if (error.Error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Warning)
-					sb.Append (GettextCatalog.GetString ("<b>Warning</b>: {0}",
-						GLib.Markup.EscapeText (error.Error.Message)));
+					sb.Append (GettextCatalog.GetString ("Warning"));
 				else
-					sb.Append (GettextCatalog.GetString ("<b>Error</b>: {0}",
-						GLib.Markup.EscapeText (error.Error.Message)));
+					sb.Append (GettextCatalog.GetString ("Error"));
+				sb.Append ("</b>: ");
+				sb.Append (GLib.Markup.EscapeText (error.Error.Message));
 			}
 
 			return (sb != null ? StringBuilderCache.ReturnAndFree (sb) : null, start, end - start);
