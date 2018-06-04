@@ -151,7 +151,7 @@ namespace MonoDevelop.Xml.Completion
 		public Task EnsureLoadedAsync ()
 		{
 			if (loaded)
-				return Task.FromResult (0);
+				return Task.CompletedTask;
 
 			return Task.Run (() => {
 				if (schema == null)
@@ -161,8 +161,9 @@ namespace MonoDevelop.Xml.Completion
 				//TODO: should we evaluate unresolved imports against other registered schemas?
 				//will be messy because we'll have to re-evaluate if any schema is added, removed or changes
 				//maybe we should just force users to use schemaLocation in their includes
-				var sset = new XmlSchemaSet ();
-				sset.XmlResolver = new LocalOnlyXmlResolver ();
+				var sset = new XmlSchemaSet {
+					XmlResolver = new LocalOnlyXmlResolver ()
+				};
 				sset.Add (schema);
 				sset.ValidationEventHandler += SchemaValidation;
 				sset.Compile ();

@@ -63,6 +63,9 @@
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -206,6 +209,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="schemas\appconfig.xsd">
