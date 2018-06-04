@@ -70,6 +70,9 @@
       <HintPath>..\..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Parser\ActiveElementStartPathTestFixture.cs" />
@@ -130,6 +133,7 @@
     <Compile Include="Schema\Includes\TwoElementSchemaIncludeTestFixture.cs" />
     <Compile Include="Formatting\XmlFormatterTests.cs" />
     <Compile Include="Schema\SchemaValidationTests.cs" />
+    <Compile Include="Utils\XsltTransformTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Parser\" />
@@ -148,6 +152,9 @@
       <Link>Resources\xhtml1-strict.xsd</Link>
       <LogicalName>xhtml1-strict.xsd</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

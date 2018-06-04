@@ -66,11 +66,6 @@ namespace MonoDevelop.Xml.Editor
 			return xmlWriter;
 		}
 		
-		public static XmlTextWriter CreateXmlTextWriter (TextEditor doc)
-		{
-			return CreateXmlTextWriter (doc, new EncodedStringWriter (Encoding.UTF8));
-		}
-		
 		public static string CreateSchema (TextEditor doc, string xml)
 		{
 			using (var dataSet = new System.Data.DataSet()) {
@@ -268,22 +263,6 @@ namespace MonoDevelop.Xml.Editor
 		}
 		
 		#endregion
-
-		class EncodedStringWriter : StringWriter
-		{
-			readonly Encoding encoding;
-
-			public EncodedStringWriter(Encoding encoding)
-			{
-				this.encoding = encoding;
-			}
-
-			public override Encoding Encoding {
-				get {
-					return encoding;
-				}
-			}
-		}
 
 		static BuildError CreateBuildError (XmlException ex, string filename)
 		{

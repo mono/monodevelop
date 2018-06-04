@@ -207,6 +207,7 @@
     <Compile Include="Completion\QualifiedName.cs" />
     <Compile Include="Completion\XmlElementPath.cs" />
     <Compile Include="Editor\XmlCommands.cs" />
+    <Compile Include="Editor\EncodedStringWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
