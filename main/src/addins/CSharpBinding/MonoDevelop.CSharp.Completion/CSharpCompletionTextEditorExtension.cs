@@ -512,8 +512,10 @@ namespace MonoDevelop.CSharp.Completion
 			if (completionList.SuggestionModeItem != null) {
 				if (completionList.Items.Contains (completionList.SuggestionModeItem)) {
 					result.DefaultCompletionString = completionList.SuggestionModeItem.DisplayText;
-					result.AutoSelect = false;
 				}
+				// if a suggestion mode item is present autoselection is disabled
+				// for example in the lambda case the suggestion mode item is '<lambda expression>' which is not part of the completion item list but taggs the completion list as auto select == false.
+				result.AutoSelect = false;
 			}
 			if (triggerInfo.TriggerCharacter == '_' && triggerWordLength == 1)
 				result.AutoSelect = false;
