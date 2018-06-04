@@ -739,7 +739,7 @@ namespace MonoDevelop.Xml.Editor
 		public void AssignStylesheetCommand ()
 		{
 			string fileName = XmlEditorService.BrowseForStylesheetFile ();
-			if (!string.IsNullOrEmpty (stylesheetFileName)) {
+			if (!string.IsNullOrEmpty (fileName)) {
 				stylesheetFileName = fileName;
 			}
 		}
