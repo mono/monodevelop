@@ -129,6 +129,7 @@
     <Compile Include="Schema\Includes\AttributeGroupRefSchemaIncludeTestFixture.cs" />
     <Compile Include="Schema\Includes\TwoElementSchemaIncludeTestFixture.cs" />
     <Compile Include="Formatting\XmlFormatterTests.cs" />
+    <Compile Include="Schema\SchemaValidationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Parser\" />

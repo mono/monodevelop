@@ -44,6 +44,7 @@
     <DocumentationFile>..\..\..\build\AddIns\Xml\MonoDevelop.Xml.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.Xml.Tests" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Data" />
