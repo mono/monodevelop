@@ -330,8 +330,12 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			if (Ide.IdeApp.Preferences.EnableSourceAnalysis)
 				return emptyErrors;
-			
+
+			// FIXME: remove this fallback, error squiggles should always be handled via the source analysis mechanism
+			#pragma warning disable 618
 			var model = GetAst<SemanticModel> ();
+			#pragma warning disable 618
+
 			if (model == null)
 				return emptyErrors;
 
