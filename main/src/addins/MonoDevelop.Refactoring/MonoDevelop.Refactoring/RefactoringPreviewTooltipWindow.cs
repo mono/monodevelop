@@ -344,7 +344,10 @@ namespace MonoDevelop.Refactoring
 				drawingLayout.FontDescription = fontDescription;
 				var line = editor.GetLine (lineNumber);
 				var correctedIndentLength = CorrectIndent (editor, line, indentLength);
-				drawingLayout.SetMarkup (editor.GetPangoMarkup (line.Offset + Math.Min (correctedIndentLength, line.Length), Math.Max (0, line.Length - correctedIndentLength)));
+				var offset = line.Offset + Math.Min (correctedIndentLength, line.Length);
+				var length = Math.Max (0, line.Length - correctedIndentLength);
+				var markup = editor.GetMarkup (offset, length, new MarkupOptions (MarkupFormat.Pango, false));
+				drawingLayout.SetMarkup (markup);
 				g.Save ();
 				g.Translate (textBorder, y);
 				g.ShowLayout (drawingLayout);
