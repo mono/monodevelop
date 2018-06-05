@@ -53,13 +53,11 @@ namespace MonoDevelop.Ide.CodeFormatting
 			this.formatter = formatter;
 		}
 
-		[Obsolete ("Use roslyn instead")]
 		public ITextSource Format (PolicyContainer policyParent, ITextSource input, int fromOffset, int toOffset)
 		{
 			return formatter.Format (policyParent, mimeType, input, fromOffset, toOffset);
 		}
 
-		[Obsolete ("Use roslyn instead")]
 		public ITextSource Format (PolicyContainer policyParent, ITextSource input, ISegment segment = null)
 		{
 			try {
@@ -74,13 +72,11 @@ namespace MonoDevelop.Ide.CodeFormatting
 			}
 		}
 
-		[Obsolete ("Use roslyn instead")]
 		public string FormatText (PolicyContainer policyParent, string input, int fromOffset, int toOffset)
 		{
 			return formatter.FormatText (policyParent, mimeType, input, fromOffset, toOffset);
 		}
 
-		[Obsolete ("Use roslyn instead")]
 		public string FormatText (PolicyContainer policyParent, string input, ISegment segment = null)
 		{
 			try {
@@ -124,13 +120,11 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 		public bool SupportsCorrectingIndent { get { return formatter.SupportsCorrectingIndent; } }
 
-		[Obsolete ("Use roslyn instead")]
 		public void CorrectIndenting (PolicyContainer policyParent, TextEditor editor, int line)
 		{
 			formatter.CorrectIndenting (policyParent, editor, line);
 		}
 
-		[Obsolete ("Use roslyn instead")]
 		public void CorrectIndenting (PolicyContainer policyParent, TextEditor editor, IDocumentLine line)
 		{
 			try {
