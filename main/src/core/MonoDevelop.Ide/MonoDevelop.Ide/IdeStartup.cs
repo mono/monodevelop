@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide
 
 			// XWT initialization
 			FilePath p = typeof(IdeStartup).Assembly.Location;
-			Platform.AssemblyLoad(p.ParentDirectory.Combine("Xwt.Gtk.dll"));
+			Runtime.LoadAssemblyFrom (p.ParentDirectory.Combine("Xwt.Gtk.dll"));
 			Xwt.Application.InitializeAsGuest (Xwt.ToolkitType.Gtk);
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,GtkExtendedTitleBarWindowBackend> ();
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend,GtkExtendedTitleBarDialogBackend> ();
@@ -719,7 +719,7 @@ namespace MonoDevelop.Ide
 				foreach (var path in paths) {
 					var file = BrandingService.GetFile (path.Replace ('/',Path.DirectorySeparatorChar));
 					if (File.Exists (file)) {
-						Assembly asm = Platform.AssemblyLoad(file);
+						Assembly asm = Runtime.LoadAssemblyFrom (file);
 						var t = asm.GetType (type, true);
 						var c = Activator.CreateInstance (t) as IdeCustomizer;
 						if (c == null)

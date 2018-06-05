@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Editor
 			if (ContentName != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
 			if (textEditorImpl.ContentName != null && textEditorImpl.ContentName != this.ContentName) {
-				EditorConfigService.RemoveEditConfigContext (textEditorImpl.ContentName);
+				EditorConfigService.RemoveEditConfigContext (textEditorImpl.ContentName).Ignore ();
 				var context = await EditorConfigService.GetEditorConfigContext (textEditor.FileName, default (CancellationToken));
 				if (context != null) 
 					((DefaultSourceEditorOptions)textEditor.Options).SetContext (context);
@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void UpdateTextEditorOptions (object sender, EventArgs e)
 		{
-			UpdateStyleParent (Project, textEditor.MimeType);
+			UpdateStyleParent (Project, textEditor.MimeType).Ignore ();
 		}
 
 		uint autoSaveTimer = 0;
@@ -348,7 +348,7 @@ namespace MonoDevelop.Ide.Editor
 			base.Dispose ();
 
 			isDisposed = true;
-			EditorConfigService.RemoveEditConfigContext (textEditor.FileName);
+			EditorConfigService.RemoveEditConfigContext (textEditor.FileName).Ignore ();
 			CancelDocumentParsedUpdate ();
 			textEditorImpl.ViewContent.DirtyChanged -= HandleDirtyChanged;
 			textEditor.MimeTypeChanged -= UpdateTextEditorOptions;

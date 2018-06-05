@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public override string ToString ()
 		{
-			return string.Format ("[CodeCompletionContext: TriggerOffset={0}, TriggerLine={1}, TriggerLineOffset={2}, TriggerXCoord={3}, TriggerYCoord={4}, TriggerTextHeight={5}, TriggerWordLength={6}]", TriggerOffset, TriggerLine, TriggerLineOffset, TriggerXCoord, TriggerYCoord, TriggerTextHeight, TriggerWordLength);
+			return string.Format ("[CodeCompletionContext: TriggerOffset={0}, TriggerLine={1}, TriggerLineOffset={2}, TriggerXCoord={3}, TriggerYCoord={4}, TriggerTextHeight={5}, TriggerWordLength={6}]", TriggerOffset, TriggerLine, TriggerLineOffset, triggerXCoord, triggerYCoord, triggerTextHeight, TriggerWordLength);
 		}
 
 		void EnsureCoordinatesCalculated ()

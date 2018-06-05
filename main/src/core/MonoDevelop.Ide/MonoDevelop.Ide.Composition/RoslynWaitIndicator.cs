@@ -32,6 +32,7 @@ namespace MonoDevelop.Ide.Composition
 
 		public IWaitContext StartWait (string title, string message, bool allowCancel)
 		{
+			//FIXME: get IGlobalOperationNotificationService working
 			//var service = MonoDevelopWorkspace.HostServices.GetService<IGlobalOperationNotificationService> ();
 			return new WaitContext (null, title, message, allowCancel);
 		}
@@ -44,7 +45,7 @@ namespace MonoDevelop.Ide.Composition
 
 		private sealed class WaitContext : IWaitContext
 		{
-			private readonly GlobalOperationRegistration registration;
+			//private readonly GlobalOperationRegistration registration;
 
 			public WaitContext (IGlobalOperationNotificationService service, string title, string message, bool allowCancel)
 			{

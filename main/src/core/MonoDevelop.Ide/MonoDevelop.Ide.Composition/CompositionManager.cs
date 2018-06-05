@@ -167,7 +167,6 @@ namespace MonoDevelop.Ide.Composition
 
 				ComposableCatalog catalog = ComposableCatalog.Create (StandardResolver)
 					.WithCompositionService ()
-					.WithDesktopSupport ()
 					.AddParts (parts);
 
 				var discoveryErrors = catalog.DiscoveredParts.DiscoveryErrors;
@@ -223,7 +222,7 @@ namespace MonoDevelop.Ide.Composition
 							AddinManager.LoadAddin (null, id);
 
 							var assemblyFilePath = assemblyNode.Addin.GetFilePath (assemblyNode.FileName);
-							var assembly = Runtime.SystemAssemblyService.LoadAssemblyFrom (assemblyFilePath);
+							var assembly = Runtime.LoadAssemblyFrom (assemblyFilePath);
 							assemblies.Add (assembly);
 
 							timer.Trace ("Loaded: " + assemblyName);
