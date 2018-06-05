@@ -186,17 +186,13 @@ namespace MonoDevelop.Debugger
 
 		public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
 		{
-			CodeCompletionContext c = new CodeCompletionContext ();
-			c.TriggerLine = 0;
-			c.TriggerOffset = triggerOffset;
-			c.TriggerLineOffset = c.TriggerOffset;
-			c.TriggerTextHeight = gtkEntry.SizeRequest ().Height;
-			c.TriggerWordLength = CaretOffset;
+			var height = gtkEntry.SizeRequest ().Height;
+			var location = ConvertToScreenCoordinates (new Point (0, height));
 
-			var location = this.ConvertToScreenCoordinates (new Point (0, c.TriggerTextHeight));
-			c.TriggerXCoord = (int)location.X;
-			c.TriggerYCoord = (int)location.Y;
-			return c;
+			return new CodeCompletionContext (
+				(int)location.X, (int)location.Y, height,
+				triggerOffset, 0, triggerOffset, CaretOffset
+			);
 		}
 
 		public string GetCompletionText (CodeCompletionContext ctx)
