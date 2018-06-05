@@ -26,12 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.Dom;
-using MonoDevelop.Ide.Editor;
-using System.Linq;
 
 namespace MonoDevelop.Xml.Editor
 {
@@ -43,49 +43,41 @@ namespace MonoDevelop.Xml.Editor
 		
 		public XDocument XDocument { get; set; }
 
-		public override System.Threading.Tasks.Task<IReadOnlyList<FoldingRegion>> GetFoldingsAsync (System.Threading.CancellationToken cancellationToken)
+		public override Task<IReadOnlyList<FoldingRegion>> GetFoldingsAsync (System.Threading.CancellationToken cancellationToken)
 		{
-			return System.Threading.Tasks.Task.FromResult((IReadOnlyList<FoldingRegion>)Foldings.ToList ());
+			return Task.FromResult((IReadOnlyList<FoldingRegion>)Foldings.ToList ());
 		}
 
 		public IEnumerable<FoldingRegion> Foldings {
 			get {
 				if (XDocument == null)
 					yield break;
-				foreach (var region in GetCommentsAsync().Result.ToFolds ()) 
-					yield return region;
 				foreach (XNode node in XDocument.AllDescendentNodes) {
-					if (node is XCData)
-					{
+					if (node is XCData) {
 						if (node.Region.EndLine - node.Region.BeginLine > 2)
 							yield return new FoldingRegion ("<![CDATA[ ]]>", node.Region);
 					} 
-					else if (node is XComment)
-					{
+					else if (node is XComment) {
 						if (node.Region.EndLine - node.Region.BeginLine > 2)
 							yield return new FoldingRegion ("<!-- -->", node.Region);
 					}
-					else if (node is XElement)
-					{
-						XElement el = (XElement) node;
+					else if (node is XElement el) {
 						if (el.IsClosed && el.ClosingTag.Region.EndLine - el.Region.BeginLine > 2) {
-							yield return new FoldingRegion
-								(string.Format ("<{0}...>", el.Name.FullName),
-								 new DocumentRegion (el.Region.Begin, el.ClosingTag.Region.End));
+							yield return new FoldingRegion (
+								$"<{el.Name.FullName}...>",
+								new DocumentRegion (el.Region.Begin, el.ClosingTag.Region.End));
 						}
-					}
-					else if (node is XDocType)
-					{
-						XDocType dt = (XDocType) node;
-						string id = !String.IsNullOrEmpty (dt.PublicFpi) ? dt.PublicFpi
-							: !String.IsNullOrEmpty (dt.Uri) ? dt.Uri : null;
-						
+					} else if (node is XDocType dt) {
+						string id = !string.IsNullOrEmpty (dt.PublicFpi) ? dt.PublicFpi
+							: !string.IsNullOrEmpty (dt.Uri) ? dt.Uri : null;
+
 						if (id != null && dt.Region.EndLine - dt.Region.BeginLine > 2) {
 							if (id.Length > 50)
 								id = id.Substring (0, 47) + "...";
-							
-							FoldingRegion fr = new FoldingRegion (string.Format ("<!DOCTYPE {0}>", id), dt.Region);
-							fr.IsFoldedByDefault = true;
+
+							var fr = new FoldingRegion ($"<!DOCTYPE {id}>", dt.Region) {
+								IsFoldedByDefault = true
+							};
 							yield return fr;
 						}
 					}
