@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.policy = policy;
 			}
 
-			public bool TryGetDocumentOption (Document document, OptionKey option, out object value)
+			public bool TryGetDocumentOption (OptionKey option, OptionSet underlyingOptions, out object value)
 			{
 				if (option.Option == FormattingOptions.UseTabs) {
 					value = !policy.TabsToSpaces;
@@ -92,11 +92,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				value = null;
 				return false;
-			}
-
-			public bool TryGetDocumentOption (Document document, OptionKey option, OptionSet underlyingOptions, out object value)
-			{
-				return TryGetDocumentOption (document, option, out value);
 			}
 		}
 	}
