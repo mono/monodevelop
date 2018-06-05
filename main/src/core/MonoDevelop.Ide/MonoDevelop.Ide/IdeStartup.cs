@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide
 	public class IdeStartup: IApplication
 	{
 		Socket listen_socket   = null;
-		ArrayList errorsList = new ArrayList ();
+		List<AddinError> errorsList = new List<AddinError> ();
 		bool initialized;
 		static readonly int ipcBasePort = 40000;
 		static Stopwatch startupTimer = new Stopwatch ();
@@ -242,7 +242,7 @@ namespace MonoDevelop.Ide
 				IdeApp.Initialize (monitor);
 
 				if (errorsList.Count > 0) {
-					using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), false)) {
+					using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog (errorsList.ToArray (), false)) {
 						if (!dlg.Run ())
 							return 1;
 					}
@@ -285,7 +285,7 @@ namespace MonoDevelop.Ide
 			}
 
 			if (errorsList.Count > reportedFailures) {
-				using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), true))
+				using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog (errorsList.ToArray (), true))
 					dlg.Run ();
 			}
 			
