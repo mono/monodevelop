@@ -22,22 +22,19 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
-using System.Xml.XPath;
 using System.Xml.Xsl;
-using MonoDevelop.Components;
-using Gtk;
-using MonoDevelop.Components.Extensions;
-using MonoDevelop.Ide.Editor;
 
+using MonoDevelop.Components;
+using MonoDevelop.Components.Extensions;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Projects;
 using MonoDevelop.Xml.Completion;
 
@@ -45,71 +42,10 @@ namespace MonoDevelop.Xml.Editor
 {
 	static class XmlEditorService
 	{
-		#region Task management
-		public static void AddTask (string fileName, string message, int column, int line, TaskSeverity taskType, WorkspaceObject workspaceObject)
-		{
-			// HACK: Use a compiler error since we cannot add an error
-			// task otherwise (task type property is read-only and
-			// no constructors usable).
-			BuildError error = new BuildError ();
-			error.Column = column;
-			error.Line = line;
-			error.ErrorText = message;
-			error.FileName = fileName;
-			error.IsWarning = false;
-			
-			//Task task = new Task(fileName, message, column, line);
-			TaskListEntry task = new TaskListEntry (error);
-			task.WorkspaceObject = workspaceObject;
-			task.Owner = ActiveEditor;
-			TaskService.Errors.Add(task);
-		}
-		#endregion
-		
-		#region View tracking
-		
-		public static XmlTextEditorExtension ActiveEditor {
-			get {
-				Document doc = IdeApp.Workbench.ActiveDocument;
-				if (doc != null)
-					return doc.GetContent<XmlTextEditorExtension>();
-				return null;
-			}
-		}
-		
-		public static ReadOnlyCollection<XmlTextEditorExtension> OpenXmlEditorViews {
-			get {
-				List<XmlTextEditorExtension> views = new List<XmlTextEditorExtension> ();				
-				foreach (Document doc in IdeApp.Workbench.Documents) {
-					XmlTextEditorExtension view = doc.GetContent<XmlTextEditorExtension>();
-					if (view != null)
-						views.Add (view);
-				}
-				return views.AsReadOnly();
-			}
-		}
-		
-		public static bool IsXmlEditorViewContentActive {
-			get {
-				return ActiveEditor != null;
-			}
-		}
-		#endregion
-		
-		/*
-		public static bool IsXslOutputViewContentActive {
-			get {
-				XmlEditorViewContent view = GetActiveView();
-				return (view as XslOutputViewContent) != null;
-			}
-		}*/
-		
 		public static ProgressMonitor GetMonitor ()
 		{
-			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("XML", "md-xml-file-icon", true, true);
+			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("XML", "md-xml-file-icon", false, true);
 		}
-		
-		#region Formatting utilities
 		
 		/// <summary>
 		/// Creates a XmlTextWriter using the current text editor
@@ -117,8 +53,9 @@ namespace MonoDevelop.Xml.Editor
 		/// </summary>
 		public static XmlTextWriter CreateXmlTextWriter (TextEditor doc, TextWriter textWriter)
 		{
-			XmlTextWriter xmlWriter = new XmlTextWriter(textWriter);
-			xmlWriter.Formatting = System.Xml.Formatting.Indented;
+			var xmlWriter = new XmlTextWriter (textWriter) {
+				Formatting = System.Xml.Formatting.Indented
+			};
 			if (doc.Options.TabsToSpaces) {
 				xmlWriter.Indentation = doc.Options.TabSize;
 				xmlWriter.IndentChar = ' ';
@@ -129,46 +66,12 @@ namespace MonoDevelop.Xml.Editor
 			return xmlWriter;
 		}
 		
-		public static XmlTextWriter CreateXmlTextWriter (TextEditor doc)
-		{
-			return CreateXmlTextWriter (doc, new EncodedStringWriter (Encoding.UTF8));
-		}
-		
-		#endregion
-		
-		/// <summary>
-		/// Runs an XSL transform on the input xml.
-		/// </summary>
-		/// <param name="input">The input xml to transform.</param>
-		/// <param name="transform">The transform xml.</param>
-		/// <returns>The output of the transform.</returns>
-		public static string Transform (string input, string transform)
-		{
-			StringReader inputString = new StringReader (input);
-			XPathDocument sourceDocument = new XPathDocument (inputString);
-
-			StringReader transformString = new StringReader (transform);
-			XPathDocument transformDocument = new XPathDocument (transformString);
-
-			XslCompiledTransform xslTransform = new XslCompiledTransform ();
-			xslTransform.Load (transformDocument, null, new XmlUrlResolver ());
-
-			MemoryStream outputStream = new MemoryStream ();
-			XmlTextWriter writer = new XmlTextWriter (outputStream, Encoding.UTF8);
-
-			xslTransform.Transform (sourceDocument, writer);
-
-			int preambleLength = Encoding.UTF8.GetPreamble ().Length;
-			byte[] outputBytes = outputStream.ToArray ();
-			return UTF8Encoding.UTF8.GetString (outputBytes, preambleLength, outputBytes.Length - preambleLength);
-		}
-		
 		public static string CreateSchema (TextEditor doc, string xml)
 		{
-			using (System.Data.DataSet dataSet = new System.Data.DataSet()) {
+			using (var dataSet = new System.Data.DataSet()) {
 				dataSet.ReadXml(new StringReader (xml), System.Data.XmlReadMode.InferSchema);
-				using (EncodedStringWriter writer = new EncodedStringWriter (Encoding.UTF8)) {
-					using (XmlTextWriter xmlWriter = XmlEditorService.CreateXmlTextWriter (doc, writer)) {
+				using (var writer = new EncodedStringWriter (Encoding.UTF8)) {
+					using (var xmlWriter = CreateXmlTextWriter (doc, writer)) {
 						dataSet.WriteXmlSchema(xmlWriter);
 						return writer.ToString();
 					}
@@ -196,187 +99,122 @@ namespace MonoDevelop.Xml.Editor
 			}
 			return generatedFilename;
 		}
-		
+
 		#region Validation
-		
-		/// <summary>
-		/// Checks that the xml in this view is well-formed.
-		/// </summary>
-		public static XmlDocument ValidateWellFormedness (ProgressMonitor monitor, string xml, string fileName, WorkspaceObject workspaceObject)
+
+		public static Task<List<BuildError>> Validate (string xml, string fileName, CancellationToken token)
 		{
-			monitor.BeginTask (GettextCatalog.GetString ("Validating XML..."), 1);
-			bool error = false;
-			XmlDocument doc = null;
-			
-			try {
-				doc = new XmlDocument ();
-				doc.LoadXml (xml);
-			} catch (XmlException ex) {
-				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
-				error = true;
+			switch (Path.GetExtension (fileName).ToUpperInvariant ()) {
+			case ".XSD":
+				return ValidateSchema (xml, fileName, token);
+			default:
+				return ValidateXml (xml, fileName, token);
 			}
-			
-			if (error) {
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
-				TaskService.ShowErrors ();
-			} else {
-				monitor.Log.WriteLine (GettextCatalog.GetString ("XML is valid."));
+		}
+
+		static XmlReaderSettings CreateValidationSettings (List<BuildError> errors, string filename)
+		{
+			void validationCallback (object _, ValidationEventArgs args)
+			{
+				errors.Add (CreateBuildError (args, filename));
 			}
-			
-			monitor.EndTask ();
-			return error? null: doc;
+
+			var settings = new XmlReaderSettings {
+				ValidationFlags =
+					XmlSchemaValidationFlags.ProcessIdentityConstraints
+					| XmlSchemaValidationFlags.ProcessInlineSchema
+					| XmlSchemaValidationFlags.ProcessSchemaLocation
+					| XmlSchemaValidationFlags.ReportValidationWarnings,
+				ValidationType = ValidationType.Schema,
+				DtdProcessing = DtdProcessing.Parse,
+				XmlResolver = new LocalOnlyXmlResolver ()
+			};
+
+			settings.ValidationEventHandler += validationCallback;
+
+			return settings;
 		}
 		
 		/// <summary>
 		/// Validates the xml against known schemas.
 		/// </summary>		
-		public static XmlDocument ValidateXml (ProgressMonitor monitor, string xml, string fileName, WorkspaceObject workspaceObject)
+		public static async Task<List<BuildError>> ValidateXml (string xml, string filename, CancellationToken token)
 		{
-			monitor.BeginTask (GettextCatalog.GetString ("Validating XML..."), 1);
-			bool error = false;
-			XmlDocument doc = null;
-			StringReader stringReader = new StringReader (xml);
-			
-			XmlReaderSettings settings = new XmlReaderSettings ();
-			settings.ValidationFlags = XmlSchemaValidationFlags.ProcessIdentityConstraints
-					| XmlSchemaValidationFlags.ProcessInlineSchema
-					| XmlSchemaValidationFlags.ProcessSchemaLocation
-					| XmlSchemaValidationFlags.ReportValidationWarnings;
-			settings.ValidationType = ValidationType.Schema;
-			settings.DtdProcessing = DtdProcessing.Parse;
-			
-			ValidationEventHandler validationHandler = delegate (object sender, System.Xml.Schema.ValidationEventArgs args) {
-				if (args.Severity == XmlSeverityType.Warning) {
-					monitor.Log.WriteLine (args.Message);
-					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber, TaskSeverity.Warning, workspaceObject);
-				} else {
-					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber, TaskSeverity.Error, workspaceObject);
-					monitor.Log.WriteLine (args.Message);
-					error = true;
-				}	
-			};
-			settings.ValidationEventHandler += validationHandler;
-			
+			var errors = new List<BuildError> ();
+			var settings = CreateValidationSettings (errors, filename);
+
 			try {
-				foreach (XmlSchemaCompletionData sd in XmlSchemaManager.SchemaCompletionDataItems)
-					settings.Schemas.Add (sd.Schema);
-				settings.Schemas.Compile ();
-				
-				XmlReader reader = XmlReader.Create (stringReader, settings);
-				doc = new XmlDocument();
-				doc.Load (reader);
-				
+				settings.Schemas = await XmlSchemaManager.GetSchemaSet (token);
+				using (var reader = XmlReader.Create (new StringReader (xml), settings)) {
+					while (!reader.EOF)
+						reader.Read ();
+				}
 			} catch (XmlSchemaException ex) {
-				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
-				error = true;
+				errors.Add (CreateBuildError (ex, filename));
 			}
 			catch (XmlException ex) {
-				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
-				error = true;
+				errors.Add (CreateBuildError (ex, filename));
 			}
-			finally {
-				if (stringReader != null)
-					stringReader.Dispose ();
-				settings.ValidationEventHandler -= validationHandler;
-			}
-			
-			if (error) {
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
-				TaskService.ShowErrors ();
-			} else {
-				monitor.Log.WriteLine  (GettextCatalog.GetString ("XML is valid."));
-			}
-			
-			monitor.EndTask ();
-			return error? null: doc;
+
+			return errors;
 		}
 		
 		/// <summary>
 		/// Validates the schema.
 		/// </summary>		
-		public static XmlSchema ValidateSchema (ProgressMonitor monitor, string xml, string fileName, WorkspaceObject workspaceObject)
+		public static async Task<List<BuildError>> ValidateSchema (string xml, string filename, CancellationToken token)
 		{
-			monitor.BeginTask (GettextCatalog.GetString ("Validating schema..."), 1);
-			bool error = false;
-			XmlSchema schema = null;
+			var errors = new List<BuildError> ();
+			var settings = new XmlReaderSettings {
+				XmlResolver = new LocalOnlyXmlResolver ()
+			};
+
+			void validationCallback (object _, ValidationEventArgs args)
+			{
+				errors.Add (CreateBuildError (args, filename));
+			}
+
 			try {
-				StringReader stringReader = new StringReader (xml);
-				XmlTextReader xmlReader = new XmlTextReader (stringReader);
-				xmlReader.XmlResolver = null;
-				
-				ValidationEventHandler callback = delegate (object source, ValidationEventArgs args) {
-					if (args.Severity == XmlSeverityType.Warning) {
-						monitor.ReportWarning (args.Message);
-					} else {
-						monitor.ReportError (args.Message, args.Exception);
-						error = true;
+				XmlSchema schema;
+				using (var xmlReader = XmlReader.Create (new StringReader (xml))) {
+					schema = XmlSchema.Read (xmlReader, validationCallback);
+				}
+
+				var sset = new XmlSchemaSet ();
+				sset.ValidationEventHandler += validationCallback;
+
+				foreach (XmlSchema s in (await XmlSchemaManager.GetSchemaSet (token)).Schemas ()) {
+					if (s.TargetNamespace != schema.TargetNamespace) {
+						sset.Add (schema);
 					}
-					AddTask (fileName, args.Message, args.Exception.LinePosition, args.Exception.LineNumber,
-					    (args.Severity == XmlSeverityType.Warning)? TaskSeverity.Warning : TaskSeverity.Error, workspaceObject);
-				};
-				schema = XmlSchema.Read (xmlReader, callback);
-				XmlSchemaSet sset = new XmlSchemaSet ();
-				sset.Add (schema);
-				sset.ValidationEventHandler += callback;
+				}
 				sset.Compile ();
 			} 
 			catch (XmlSchemaException ex) {
-				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
-				error = true;
+				errors.Add (CreateBuildError (ex, filename));
 			}
 			catch (XmlException ex) {
-				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
-				error = true;
+				errors.Add (CreateBuildError (ex, filename));
 			}
-			
-			if (error) {
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
-				TaskService.ShowErrors ();
-			} else {
-				monitor.Log.WriteLine  (GettextCatalog.GetString ("Schema is valid."));
-			}
-			
-			monitor.EndTask ();
-			return error? null: schema;
+
+			return errors;
 		}
 		
-		public static XslCompiledTransform ValidateStylesheet (ProgressMonitor monitor, string xml, string fileName, WorkspaceObject workspaceObject)
+		public static (XslCompiledTransform transform, BuildError error) CompileStylesheet (string xml, string fileName)
 		{
-			monitor.BeginTask (GettextCatalog.GetString ("Validating stylesheet..."), 1);
-			bool error = true;
-			XslCompiledTransform xslt = null;
-			
 			try {
-				StringReader reader = new StringReader (xml);
-				XPathDocument doc = new XPathDocument (reader);
-				xslt = new XslCompiledTransform ();
-				xslt.Load (doc, null, new XmlUrlResolver ());
-				error = false;
-			} catch (XsltCompileException ex) {
-				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
+				using (var reader = XmlReader.Create (new StringReader (xml))) {
+					var xslt = new XslCompiledTransform ();
+					xslt.Load (reader, null, new LocalOnlyXmlResolver ());
+					return (xslt, null);
+				}
 			}
 			catch (XsltException ex) {
-				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
+				return (null, CreateBuildError (ex, fileName));
 			}
 			catch (XmlException ex) {
-				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
+				return (null, CreateBuildError (ex, fileName));
 			}
-			
-			if (error) {
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
-				TaskService.ShowErrors ();
-			} else {
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Stylesheet is valid."));
-			}
-			return error? null: xslt;
 		}
 		
 		#endregion
@@ -426,20 +264,53 @@ namespace MonoDevelop.Xml.Editor
 		
 		#endregion
 
-		class EncodedStringWriter : StringWriter
+		static BuildError CreateBuildError (XmlException ex, string filename)
 		{
-			readonly Encoding encoding;
+			return new BuildError {
+				Column = ex.LinePosition,
+				Line = ex.LineNumber,
+				ErrorText = ex.Message,
+				FileName = GetLocation (ex.SourceUri, filename)
+			};
+		}
 
-			public EncodedStringWriter(Encoding encoding)
-			{
-				this.encoding = encoding;
-			}
+		static BuildError CreateBuildError (XsltException ex, string filename)
+		{
+			return new BuildError {
+				Column = ex.LinePosition,
+				Line = ex.LineNumber,
+				ErrorText = ex.Message,
+				FileName = GetLocation (ex.SourceUri, filename)
+			};
+		}
 
-			public override Encoding Encoding {
-				get {
-					return encoding;
-				}
+		static BuildError CreateBuildError (XmlSchemaException ex, string filename)
+		{
+			return new BuildError {
+				Column = ex.LinePosition,
+				Line = ex.LineNumber,
+				ErrorText = ex.Message,
+				FileName = GetLocation (ex.SourceUri, filename)
+			};
+		}
+
+		static BuildError CreateBuildError (ValidationEventArgs args, string filename)
+		{
+			return new BuildError {
+				Column = args.Exception.LinePosition,
+				Line = args.Exception.LineNumber,
+				ErrorText = args.Message,
+				FileName = GetLocation (args.Exception.SourceUri, filename),
+				IsWarning = args.Severity == XmlSeverityType.Warning
+			};
+		}
+
+		static string GetLocation (string reportedUri, string fallbackFilename)
+		{
+			if (!string.IsNullOrEmpty (reportedUri)) {
+				return new System.Uri (reportedUri).LocalPath;
 			}
+			return fallbackFilename;
 		}
 	}
 }

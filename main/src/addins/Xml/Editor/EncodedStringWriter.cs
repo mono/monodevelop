@@ -1,11 +1,7 @@
-// 
-// LocalOnlyResolver.cs
-//  
-// Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
-// 
-// Copyright (c) 2011 Novell, Inc.
-// 
+﻿//
+// Copyright (C) 2006-2007 Matthew Ward
+// Copyright (C) Microsoft Corp
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -23,19 +19,25 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Xml;
 
-namespace MonoDevelop.Xml.Completion
+using System.IO;
+using System.Text;
+
+namespace MonoDevelop.Xml.Editor
 {
-	public class LocalOnlyXmlResolver : XmlUrlResolver
+	class EncodedStringWriter : StringWriter
 	{
-		public override Uri ResolveUri (Uri baseUri, string relativeUri)
+		readonly Encoding encoding;
+
+		public EncodedStringWriter (Encoding encoding)
 		{
-			var absoluteUri = base.ResolveUri (baseUri, relativeUri);
-			if (absoluteUri.IsFile && absoluteUri.LocalPath.EndsWith (".xsd", StringComparison.OrdinalIgnoreCase))
-				return absoluteUri;
-			throw new NotSupportedException ($"URI '{absoluteUri}' not supported");
+			this.encoding = encoding;
+		}
+
+		public override Encoding Encoding {
+			get {
+				return encoding;
+			}
 		}
 	}
 }

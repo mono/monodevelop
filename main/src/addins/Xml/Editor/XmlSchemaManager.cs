@@ -24,6 +24,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Xml.Schema;
 using MonoDevelop.Core;
 using MonoDevelop.Xml.Completion;
 
@@ -41,6 +44,8 @@ namespace MonoDevelop.Xml.Editor
 		static XmlSchemaCompletionDataCollection builtinSchemas;
 		static IXmlSchemaCompletionDataCollection mergedSchemas;
 	
+		static Task<XmlSchemaSet> schemaSetTask;
+
 		// Gets the schemas that MonoDevelop knows about.
 		public static IXmlSchemaCompletionDataCollection SchemaCompletionDataItems {
 			get {
@@ -72,7 +77,29 @@ namespace MonoDevelop.Xml.Editor
 				return builtinSchemas;
 			}
 		}
-		
+
+		internal static Task<XmlSchemaSet> GetSchemaSet (CancellationToken token)
+		{
+			return schemaSetTask ?? CreateSchemaSet (token);
+		}
+
+		static async Task<XmlSchemaSet> CreateSchemaSet (CancellationToken token)
+		{
+			var schemaSet = new XmlSchemaSet {
+				XmlResolver = new LocalOnlyXmlResolver ()
+			};
+			// we could parallelize this, but we should probably rate limit if we do so
+			//to give the UI thread some breathing space
+			foreach (var schema in SchemaCompletionDataItems) {
+				await schema.EnsureLoadedAsync ();
+				token.ThrowIfCancellationRequested ();
+				schemaSet.Add (schema.Schema);
+			}
+			schemaSet.Compile ();
+			schemaSetTask = Task.FromResult (schemaSet);
+			return schemaSet;
+		}
+
 		public static XmlSchemaCompletionData GetSchemaCompletionDataForFileName (string filename)
 		{
 			var association = XmlFileAssociationManager.GetAssociationForFileName (filename);
@@ -111,6 +138,7 @@ namespace MonoDevelop.Xml.Editor
 					File.Delete(schemaData.FileName);
 				}
 				UserSchemas.Remove (schemaData);
+				schemaSetTask = null;
 				OnUserSchemaRemoved ();
 			}
 		}
@@ -132,6 +160,7 @@ namespace MonoDevelop.Xml.Editor
 				File.Copy (schemaData.FileName, destinationFileName);
 				schemaData.FileName = destinationFileName;
 				UserSchemas.Add (schemaData);
+				schemaSetTask = null;
 				OnUserSchemaAdded ();
 			} else {
 				LoggingService.LogWarning ("XmlSchemaManager cannot register two schemas with the same namespace '{0}'.", schemaData.NamespaceUri);
@@ -193,9 +222,7 @@ namespace MonoDevelop.Xml.Editor
 				list.Add (data);
 				
 			} catch (Exception ex) {
-				LoggingService.LogWarning (
-				    "XmlSchemaManager is unable to read schema '{0}', because of the following error: {1}",
-				    fileName, ex.Message);
+				LoggingService.LogError ($"XmlSchemaManager is unable to read schema '{fileName}'.", ex);
 			}
 		}
 		
@@ -205,9 +232,7 @@ namespace MonoDevelop.Xml.Editor
 			try {
 				return new XmlSchemaCompletionData (uri.ToString (), uri.LocalPath);
 			} catch (Exception ex) {
-				LoggingService.LogWarning (
-				    "XmlSchemaManager is unable to read schema '{0}', because of the following error: {1}",
-				    uri, ex.Message);
+				LoggingService.LogError ($"XmlSchemaManager is unable to read schema '{uri}'", ex);
 				return null;
 			}
 		}
@@ -216,19 +241,17 @@ namespace MonoDevelop.Xml.Editor
 		static string UserSchemaFolder {
 			get { return UserProfile.Current.UserDataRoot.Combine ("XmlSchemas"); }
 		}
-		
+
 		// FIXME: Should really pass schema info with the event.
-		static void OnUserSchemaAdded()
+		static void OnUserSchemaAdded ()
 		{
-			if (UserSchemaAdded != null)
-				UserSchemaAdded (null, EventArgs.Empty);
+			UserSchemaAdded?.Invoke (null, EventArgs.Empty);
 		}
-		
+
 		// FIXME: Should really pass schema info with the event.
-		static void OnUserSchemaRemoved()
+		static void OnUserSchemaRemoved ()
 		{
-			if (UserSchemaRemoved != null)
-				UserSchemaRemoved (null, EventArgs.Empty);
+			UserSchemaRemoved?.Invoke (null, EventArgs.Empty);
 		}
 	}
 }

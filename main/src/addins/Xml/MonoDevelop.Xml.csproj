@@ -44,6 +44,7 @@
     <DocumentationFile>..\..\..\build\AddIns\Xml\MonoDevelop.Xml.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.Xml.Tests" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Data" />
@@ -61,6 +62,10 @@
     </Reference>
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -203,21 +208,17 @@
     <Compile Include="Completion\QualifiedName.cs" />
     <Compile Include="Completion\XmlElementPath.cs" />
     <Compile Include="Editor\XmlCommands.cs" />
+    <Compile Include="Editor\EncodedStringWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="schemas\appconfig.xsd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="schemas\MonoDevelopAddIn.xsd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="schemas\manifest.xsd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="schemas\nant.xsd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="schemas\readme.txt">
@@ -229,7 +230,10 @@
     <Content Include="schemas\XMLSchema.xsd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="schemas\xslt.xsd">
+    <Content Include="schemas\schema-for-xslt20.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="schemas\xml.xsd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
