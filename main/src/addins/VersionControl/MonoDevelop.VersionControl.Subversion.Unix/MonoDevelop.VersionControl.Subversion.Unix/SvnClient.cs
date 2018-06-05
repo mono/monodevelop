@@ -1309,8 +1309,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			};
 			progressData.LogTimer.Start ();
 		}
-		
+
 		struct notify_baton {
+			#pragma warning disable 649 // never assigned
 			public bool received_some_change;
 			public bool is_checkout;
 			public bool is_export;
@@ -1318,6 +1319,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			public bool sent_first_txdelta;
 			public bool in_external;
 			public bool had_print_error;
+			#pragma warning restore 649
 		}
 		notify_baton nb;
 		void svn_wc_notify_func_t_impl (IntPtr baton, ref LibSvnClient.svn_wc_notify_t data, IntPtr pool)
