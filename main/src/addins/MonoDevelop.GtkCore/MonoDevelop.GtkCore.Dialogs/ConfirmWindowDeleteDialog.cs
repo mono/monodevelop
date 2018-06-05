@@ -36,10 +36,12 @@ namespace MonoDevelop.GtkCore.Dialogs
 {
 	class ConfirmWindowDeleteDialog: IDisposable
 	{
+		#pragma warning disable 649 // never assigned
 		[Glade.Widget ("ConfirmWindowDeleteDialog")] protected Gtk.Dialog dialog;
 		[Glade.Widget] protected Gtk.Label label;
 		[Glade.Widget] protected Gtk.CheckButton checkbox;
-		
+		#pragma warning restore 649
+
 		public ConfirmWindowDeleteDialog (string windowName, string fileName, Stetic.ProjectItemInfo obj)
 		{
 			XML glade = new XML (null, "gui.glade", "ConfirmWindowDeleteDialog", null);
