@@ -13,7 +13,9 @@
         private ToolTipPresenterStyle style;
 
         [ImportMany]
+        #pragma warning disable 649 // unassigned
         private List<Lazy<ToolTipPresenterStyle, IOrderable>> unorderedPresenterStyles;
+        #pragma warning restore 649
 
         public ToolTipPresenterStyle Style
         {
