@@ -1280,73 +1280,83 @@ namespace MonoDevelop.Ide.Gui
 			workbench.UnlockActiveWindowChangeEvent ();
 		}
 
-		List<FileData> fileStatus;
-		SemaphoreSlim fileStatusLock = new SemaphoreSlim (1, 1);
-		// http://msdn.microsoft.com/en-us/library/system.io.file.getlastwritetimeutc(v=vs.110).aspx
-		static DateTime NonExistentFile = new DateTime(1601, 1, 1);
+		List <FileSystemWatcher> watchers;
+		// The FileSystemWatcher will report all files changed in the WorkspaceItem's base directory
+		// but we only care about the files returned from GetKnownFiles
+		HashSet<string> filesWeCareAbout;
+
 		internal void SaveFileStatus ()
 		{
-//			DateTime t = DateTime.Now;
-			List<FilePath> files = new List<FilePath> (GetKnownFiles ());
-			fileStatus = new List<FileData> (files.Count);
-//			Console.WriteLine ("SaveFileStatus(0) " + (DateTime.Now - t).TotalMilliseconds + "ms " + files.Count);
-			
-			Task.Run (async delegate {
-//				t = DateTime.Now;
-				try {
-					await fileStatusLock.WaitAsync ().ConfigureAwait (false);
-					if (fileStatus == null)
-						return;
-					foreach (FilePath file in files) {
-						try {
-							DateTime ft = File.GetLastWriteTimeUtc (file);
-							FileData fd = new FileData (file, ft != NonExistentFile ? ft : DateTime.MinValue);
-							fileStatus.Add (fd);
-						} catch {
-							// Ignore						}
-					}
-				} finally {
-					fileStatusLock.Release ();
-				}
-//				Console.WriteLine ("SaveFileStatus " + (DateTime.Now - t).TotalMilliseconds + "ms " + fileStatus.Count);
-			});
+			watchers = new List<FileSystemWatcher> ();
+
+			// Take each workspace item and watch its base directory for any file changes
+			foreach (WorkspaceItem item in IdeApp.Workspace.Items) {
+				var watcher = new FileSystemWatcher (item.BaseDirectory);
+				watcher.EnableRaisingEvents = true;
+				watcher.IncludeSubdirectories = true;
+
+				watcher.Changed += ItemFileChanged;
+				watcher.Deleted += ItemFileDeleted;
+			}
+
+			filesWeCareAbout = new HashSet<string> (GetKnownFiles ().Select (f => f.FullPath.ToString ()));
 		}
-		
+
+		HashSet<string> changedFiles = null, deletedFiles = null;
+		void ItemFileChanged (object sender, FileSystemEventArgs args)
+		{
+			if (changedFiles == null) {
+				changedFiles = new HashSet<string> ();
+			}
+
+			// If the file is changed after it's in deleted files
+			// then it's been resurrected.
+			if (deletedFiles != null) {
+				deletedFiles.Remove (args.FullPath);
+			}
+
+			if (filesWeCareAbout.Contains (args.FullPath)) {
+				changedFiles.Add (args.FullPath);
+			}
+		}
+
+		void ItemFileDeleted (object sender, FileSystemEventArgs args)
+		{
+			if (deletedFiles == null) {
+				deletedFiles = new HashSet<string> ();
+			}
+
+			// If the file is deleted but also in changed, then it was subsequently deleted
+			// and so we only want it in deletedFiles
+			if (changedFiles != null) {
+				changedFiles.Remove (args.FullPath);
+			}
+
+			if (filesWeCareAbout.Contains (args.FullPath)) {
+				deletedFiles.Add (args.FullPath);
+			}
+		}
+
 		internal void CheckFileStatus ()
 		{
-			if (fileStatus == null)
-				return;
-			
-			Task.Run (async delegate {
-				try {
-//					DateTime t = DateTime.Now;
+			if (deletedFiles != null) {
+				FileService.NotifyFilesRemoved (deletedFiles.Select (s => new FilePath (s)));
+			}
 
-					await fileStatusLock.WaitAsync ().ConfigureAwait (false);
-					if (fileStatus == null)
-						return;
-					List<FilePath> modified = new List<FilePath> (fileStatus.Count);
-					foreach (FileData fd in fileStatus) {
-						try {
-							DateTime ft = File.GetLastWriteTimeUtc (fd.File);
-							if (ft != NonExistentFile) {
-								if (ft != fd.TimeUtc)
-									modified.Add (fd.File);
-							} else if (fd.TimeUtc != DateTime.MinValue) {
-								FileService.NotifyFileRemoved (fd.File);
-							}
-						} catch {
-							// Ignore
-						}
-					}
-					if (modified.Count > 0)
-						FileService.NotifyFilesChanged (modified);
+			if (changedFiles != null) {
+				FileService.NotifyFilesChanged (changedFiles.Select (s => new FilePath (s)));
+			}
 
-//					Console.WriteLine ("CheckFileStatus " + (DateTime.Now - t).TotalMilliseconds + "ms " + fileStatus.Count);
-					fileStatus = null;
-				} finally {
-					fileStatusLock.Release ();
+			if (watchers != null) {
+				foreach (var w in watchers) {
+					w.Dispose ();
 				}
-			});
+			}
+			watchers = null;
+
+			changedFiles = null;
+			deletedFiles = null;
+			filesWeCareAbout = null;
 		}
 		
 		IEnumerable<FilePath> GetKnownFiles ()
