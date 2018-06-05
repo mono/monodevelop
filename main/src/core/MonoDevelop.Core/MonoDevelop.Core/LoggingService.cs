@@ -61,9 +61,9 @@ namespace MonoDevelop.Core
 		// Second parameter is the exception
 		// Thirdparameter shows if the exception is fatal or not
 		[Obsolete("Use UnhandledErrorOccurred.")]
-		public static Func<bool?, Exception, bool, bool?> UnhandledErrorOccured;
+		public static Func<bool?, Exception, bool, bool?> UnhandledErrorOccured { get => UnhandledErrorOccurred; set => UnhandledErrorOccurred = value; }
 
-		public static Func<bool?, Exception, bool, bool?> UnhandledErrorOccurred { get => UnhandledErrorOccured; set => UnhandledErrorOccured = value; }
+		public static Func<bool?, Exception, bool, bool?> UnhandledErrorOccurred;
 
 		static List<CrashReporter> customCrashReporters = new List<CrashReporter> ();
 
