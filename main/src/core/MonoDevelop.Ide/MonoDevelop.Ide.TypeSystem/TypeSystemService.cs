@@ -82,11 +82,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			});
 			initialLoad = false;
 
-			try {
-				emptyWorkspace = new MonoDevelopWorkspace (null);
-			} catch (Exception e) {
-				LoggingService.LogFatalError ("Can't create roslyn workspace", e); 
-			}
+			var _ = emptyWorkspaceTask.Result;
 
 			FileService.FileChanged += delegate(object sender, FileEventArgs e) {
 				//				if (!TrackFileChanges)

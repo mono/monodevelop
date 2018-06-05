@@ -54,6 +54,9 @@ namespace MonoDevelop.Ide.RoslynServices
 		{
 			Runtime.AssertMainThread ();
 
+			if (ForegroundThreadAffinitizedObject.CurrentForegroundThreadData.Kind != ForegroundThreadDataKind.Unknown)
+				return;
+
 			// Initialize Roslyn foreground thread data.
 			ForegroundThreadAffinitizedObject.CurrentForegroundThreadData = new ForegroundThreadData (
 				Thread.CurrentThread,
