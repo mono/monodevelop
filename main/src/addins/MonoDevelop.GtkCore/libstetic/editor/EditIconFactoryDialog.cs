@@ -9,9 +9,11 @@ namespace Stetic.Editor
 {
 	public class EditIconFactoryDialog: IDisposable
 	{
+		#pragma warning disable 649 // never assigned
 		[Glade.Widget] Gtk.ScrolledWindow iconListScrolledwindow;
 		[Glade.Widget ("EditIconFactoryDialog")] Gtk.Dialog dialog;
-		
+		#pragma warning restore 649
+
 		ProjectIconList customIconList;
 		
 		Gtk.Window parent;
