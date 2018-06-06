@@ -44,22 +44,22 @@ namespace MonoDevelop.Ide.BuildOutputView
 	{
 		public MSBuildVerbosity Verbosity {
 			get => GetProperty<MSBuildVerbosity> ("Verbosity");
-			set => SetProperty ("Verbosity", value);
+			set => SetProperty (value);
 		}
 
 		public int BuildCount {
 			get => GetProperty<int> ("BuildCount");
-			set => SetProperty ("BuildCount", value);
+			set => SetProperty (value);
 		}
 
 		public int RootNodesCount {
 			get => GetProperty<int> ("RootNodesCount");
-			set => SetProperty ("RootNodesCount", value);
+			set => SetProperty (value);
 		}
 
 		public long OnDiskSize {
 			get => GetProperty<long> ("OnDiskSize");
-			set => SetProperty ("OnDiskSize", value);
+			set => SetProperty (value);
 		}
 	}
 }
