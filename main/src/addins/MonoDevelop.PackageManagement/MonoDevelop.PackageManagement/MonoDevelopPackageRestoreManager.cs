@@ -48,6 +48,7 @@ namespace MonoDevelop.PackageManagement
 				solutionManager);
 		}
 
+		[Obsolete]
 		public bool IsCurrentSolutionEnabledForRestore {
 			get {
 				return restoreManager.IsCurrentSolutionEnabledForRestore;
@@ -68,6 +69,7 @@ namespace MonoDevelop.PackageManagement
 			remove { restoreManager.PackagesMissingStatusChanged -= value; }
 		}
 
+		[Obsolete]
 		public void EnableCurrentSolutionForRestore (bool fromActivation)
 		{
 			restoreManager.EnableCurrentSolutionForRestore (fromActivation);

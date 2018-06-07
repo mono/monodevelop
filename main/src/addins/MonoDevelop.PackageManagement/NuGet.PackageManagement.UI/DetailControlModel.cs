@@ -52,11 +52,12 @@ namespace NuGet.PackageManagement.UI
 		{
 		}
 
+		/*
 		/// <summary>
 		/// Returns the list of projects that are selected for the given action
 		/// </summary>
-		//public abstract IEnumerable<NuGetProject> GetSelectedProjects(UserAction action);
-
+		public abstract IEnumerable<NuGetProject> GetSelectedProjects(UserAction action);
+		*/
 		/// <summary>
 		/// Sets the package to be displayed in the detail control.
 		/// </summary>
