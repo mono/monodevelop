@@ -3284,7 +3284,6 @@ namespace Mono.TextEditor
 			DrawScrollShadow (cr, x, y, _lineHeight);
 			if (wrapper != null && wrapper.IsUncached)
 				wrapper.Dispose ();
-			cr.ResetClip ();
 		}
 
 		void DrawScrollShadow (Cairo.Context cr, double x, double y, double _lineHeight)
