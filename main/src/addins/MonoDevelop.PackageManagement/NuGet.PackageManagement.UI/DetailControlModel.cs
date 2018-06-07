@@ -62,7 +62,7 @@ namespace NuGet.PackageManagement.UI
 		/// Sets the package to be displayed in the detail control.
 		/// </summary>
 		/// <param name="searchResultPackage">The package to be displayed.</param>
-		/// <param name="filter">The current filter. This will used to select the default action.</param>
+		// <param name="filter">The current filter. This will used to select the default action.</param>
 		public async virtual Task SetCurrentPackage(
 			PackageItemListViewModel searchResultPackage)//,
 		//	ItemFilter filter)
