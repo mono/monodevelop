@@ -58,7 +58,7 @@ namespace MonoDevelop.AspNet.WebForms
 			return System.Threading.Tasks.Task.FromResult((IReadOnlyList<FoldingRegion>)Foldings.ToList ());
 		}
 
-		public IEnumerable<FoldingRegion> Foldings {
+		public new IEnumerable<FoldingRegion> Foldings {
 			get {				
 				if (XDocument == null)
 					yield break;
