@@ -36,7 +36,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public string PathPassedToPhysicalFileSystemAddFile;
 		public Stream StreamPassedToPhysicalFileSystemAddFile;
 		public FakeFileService FakeFileService;
-		public FakePackageManagementProjectService FakeProjectService;
+		//public FakePackageManagementProjectService FakeProjectService;
 		public PackageManagementEvents PackageManagementEvents;
 		public string FileNamePassedToLogDeletedFile;
 		public FileNameAndDirectory FileNameAndDirectoryPassedToLogDeletedFileFromDirectory;
