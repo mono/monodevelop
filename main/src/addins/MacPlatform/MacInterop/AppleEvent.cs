@@ -221,6 +221,8 @@ namespace MonoDevelop.MacInterop
 
 	struct DescType
 	{
+		#pragma warning disable 649
 		public OSType Value;
+		#pragma warning disable 649
 	}
 }
