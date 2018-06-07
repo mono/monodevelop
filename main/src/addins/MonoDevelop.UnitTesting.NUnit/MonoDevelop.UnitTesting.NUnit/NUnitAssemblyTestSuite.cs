@@ -430,8 +430,9 @@ namespace MonoDevelop.UnitTesting.NUnit
 				GetCustomTestRunner (out testRunnerAssembly, out testRunnerType);
 
 				testContext.Monitor.CancellationToken.ThrowIfCancellationRequested ();
-					
-				result = runner.Run (localMonitor, filter, AssemblyPath, "", new List<string> (SupportAssemblies), testRunnerType, testRunnerAssembly, crashLogFile).Result;
+
+				var supportAssemblies = new List<string> (GetSupportAssembliesAsync ().Result);
+				result = runner.Run (localMonitor, filter, AssemblyPath, "", supportAssemblies, testRunnerType, testRunnerAssembly, crashLogFile).Result;
 				if (testName != null)
 					result = localMonitor.SingleTestResult;
 				
