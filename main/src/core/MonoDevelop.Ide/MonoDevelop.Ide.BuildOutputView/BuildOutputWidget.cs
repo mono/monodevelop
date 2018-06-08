@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public event EventHandler<FilePath> FileSaved;
+		public event EventHandler<string> FileNameChanged;
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 
 		public BuildOutputWidget (BuildOutput output, string viewContentName, DocumentToolbar toolbar)
@@ -278,7 +278,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					outputFile = outputFile.ChangeExtension (binLogExtension);
 
 				await BuildOutput.Save (outputFile);
-				FileSaved?.Invoke (this, outputFile);
+				FileNameChanged?.Invoke (this, outputFile);
 				filePathLocation = outputFile;
 				IsDirty = false;
 			}
@@ -594,6 +594,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 						// Expand root nodes and nodes with errors
 						ExpandErrorOrWarningsNodes (treeView, buildOutputDataSource, false);
 						processingCompletion.TrySetResult (null);
+
+						FileNameChanged?.Invoke (this, filePathLocation.IsEmpty ?
+													$"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog" :
+													(string) filePathLocation);
 					});
 				} catch (Exception ex) {
 					processingCompletion.TrySetException (ex);
