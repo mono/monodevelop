@@ -40,6 +40,7 @@ type HighlightUsagesExtension() =
             |> StartAsyncAsTask token
 
     override x.GetReferencesAsync(resolveResult, token) =
+        let snapshot = x.Editor.CreateDocumentSnapshot()
         async {
             let references =
                 if token.IsCancellationRequested then Seq.empty else
@@ -53,8 +54,8 @@ type HighlightUsagesExtension() =
                             references
                             |> Seq.map (fun symbolUse ->
                                             let start, finish = Symbol.trimSymbolRegion symbolUse fsSymbolName
-                                            let startOffset = x.Editor.LocationToOffset (start.Line, start.Column+1)
-                                            let endOffset = x.Editor.LocationToOffset (finish.Line, finish.Column+1)
+                                            let startOffset = snapshot.LocationToOffset (start.Line, start.Column+1)
+                                            let endOffset = snapshot.LocationToOffset (finish.Line, finish.Column+1)
                                             let referenceType =
                                                 if symbolUse.IsFromDefinition then
                                                     ReferenceUsageType.Declaration
