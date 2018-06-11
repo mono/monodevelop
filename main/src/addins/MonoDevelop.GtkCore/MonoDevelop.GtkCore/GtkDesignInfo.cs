@@ -293,7 +293,6 @@ namespace MonoDevelop.GtkCore
 				StreamWriter sw = new StreamWriter (SteticFile);
 				sw.WriteLine ("<stetic-interface />");
 				sw.Close ();
-				FileService.NotifyFileChanged (SteticFile);
 			}
 				
 			if (!project.IsFileInProject (SteticFile)) {
