@@ -134,7 +134,10 @@ namespace MonoDevelop.CSharpBinding
 			try {
 				act (content, ext);
 			} finally {
-				TypeSystemService.Unload (solution);
+				using (solution)
+					TypeSystemService.Unload (solution);
+				tww.CloseWindowSync ();
+				doc.DisposeDocument ();
 			}
 		}
 
