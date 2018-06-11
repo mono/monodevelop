@@ -103,9 +103,11 @@ namespace MonoDevelop.AspNet.Razor
 			if (string.IsNullOrEmpty (code))
 				return Task.FromResult ((IReadOnlyList<Projection>)new Projection[0]);
 
+			string filename = razorDocument.PageInfo.ParsedDocument.FileName;
+			var currentMappings = razorDocument.PageInfo.GeneratorResults.DesignTimeLineMappings;
+
 			return Task.Run (() => {
-				var doc = TextEditorFactory.CreateNewDocument (new StringTextSource (code), razorDocument.PageInfo.ParsedDocument.FileName, "text/x-csharp");
-				var currentMappings = razorDocument.PageInfo.GeneratorResults.DesignTimeLineMappings;
+				var doc = TextEditorFactory.CreateNewDocument (new StringTextSource (code), filename, "text/x-csharp");
 				var segments = new List<ProjectedSegment> ();
 
 				foreach (var map in currentMappings) {
