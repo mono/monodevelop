@@ -271,7 +271,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		readonly IntPtr ctx;
 
 		ProgressMonitor updatemonitor;
-		ArrayList updateFileList;
 		string commitmessage;
 
 		ArrayList lockFileList;
@@ -749,8 +748,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			if (path == FilePath.Null || monitor == null)
 				throw new ArgumentNullException();
-
-			updateFileList = new ArrayList ();
 			
 			LibSvnClient.Rev rev = LibSvnClient.Rev.Head;
 			IntPtr localpool = IntPtr.Zero;
@@ -762,11 +759,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				Marshal.FreeHGlobal (result);
 			} finally {
 				TryEndOperation (localpool);
-
-				foreach (string file in updateFileList)
-					FileService.NotifyFileChanged (file, true);
-
-				updateFileList = null;
 			}
 		}
 
@@ -1324,7 +1316,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			string actiondesc;
 			string file = Marshal.PtrToStringAnsi (data.path);
-			bool notifyChange = false;
 			bool skipEol = false;
 //			System.Console.WriteLine(data.action);
 			switch (data.action) {
@@ -1408,7 +1399,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				actiondesc += " '{0}'"; 
 				actiondesc = string.Format (actiondesc, file); */
 				actiondesc = string.Format (GettextCatalog.GetString ("Update '{0}'"), file);
-				notifyChange = true;
 				break;
 			case LibSvnClient.NotifyAction.UpdateExternal: 
 				actiondesc = string.Format (GettextCatalog.GetString ("Fetching external item into '{0}'"), file); 
@@ -1428,7 +1418,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				break;
 			case LibSvnClient.NotifyAction.CommitModified: 
 				actiondesc = string.Format (GettextCatalog.GetString ("Sending        {0}"), file);
-				notifyChange = true; 
 				break;
 			case LibSvnClient.NotifyAction.CommitAdded: 
 				if (MimeTypeIsBinary (Marshal.PtrToStringAuto (data.mime_type))) {
@@ -1439,7 +1428,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				break;
 			case LibSvnClient.NotifyAction.CommitReplaced: 
 				actiondesc = string.Format (GettextCatalog.GetString ("Replacing      {0}"), file);
-				notifyChange = true; 
 				break;
 			case LibSvnClient.NotifyAction.CommitPostfixTxDelta: 
 				if (!nb.sent_first_txdelta) {
@@ -1486,8 +1474,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					}
 				});
 			}
-			if (updateFileList != null && notifyChange && File.Exists (file))
-				updateFileList.Add (file);
 			
 			if (lockFileList != null && data.lock_state == requiredLockState)
 				lockFileList.Add (file);
