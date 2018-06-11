@@ -30,6 +30,7 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -39,10 +40,10 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		public override Control CreatePanelWidget ()
 		{
-			return widget = new AnalysisOptionsWidget () {
+			return widget = new AnalysisOptionsWidget (LanguageNames.CSharp) {
 				AnalysisEnabled = AnalysisOptions.AnalysisEnabled,
 				UnitTestIntegrationEnabled = AnalysisOptions.EnableUnitTestEditorIntegration,
-				FullAnalysisEnabled = AnalysisOptions.FullSolutionAnalysisEnabled,
+				FullAnalysisEnabled = (IdeApp.Preferences.Roslyn.For (LanguageNames.CSharp).SolutionCrawlerClosedFileDiagnostic.Value ?? true),
 			};
 		}
 		
@@ -50,7 +51,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			AnalysisOptions.AnalysisEnabled.Set (widget.AnalysisEnabled);
 			AnalysisOptions.EnableUnitTestEditorIntegration.Set (widget.UnitTestIntegrationEnabled);
-			AnalysisOptions.FullSolutionAnalysisEnabled.Set (widget.FullAnalysisEnabled);
+			IdeApp.Preferences.Roslyn.For (LanguageNames.CSharp).SolutionCrawlerClosedFileDiagnostic.Set (widget.FullAnalysisEnabled);
 		}
 	}
 	
@@ -60,7 +61,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		CheckButton enabledFullCheck;
 		CheckButton enabledTest;
 
-		public AnalysisOptionsWidget ()
+		public AnalysisOptionsWidget (string languageName)
 		{
 			enabledCheck = new CheckButton (GettextCatalog.GetString ("Enable source analysis of open files"));
 			PackStart (enabledCheck, false, false, 0);

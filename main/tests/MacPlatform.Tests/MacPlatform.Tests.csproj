@@ -50,6 +50,7 @@
     <Compile Include="AppleScriptTests.cs" />
     <Compile Include="CarbonTests.cs" />
     <Compile Include="MimeMapLoaderTests.cs" />
+    <Compile Include="MemoryMonitorTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

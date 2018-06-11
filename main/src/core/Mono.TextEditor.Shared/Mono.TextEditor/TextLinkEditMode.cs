@@ -143,9 +143,11 @@ namespace Mono.TextEditor
 	{
 		List<TextLink> links;
 		int baseOffset;
-		int endOffset;
+
 		int undoDepth = -1;
 		bool resetCaret = true;
+		readonly int caretOffset;
+		readonly ITextSourceVersion caretOffsetVersion;
 
 		public EditMode OldMode {
 			get;
@@ -191,8 +193,10 @@ namespace Mono.TextEditor
 			this.editor = editor;
 			this.links = links;
 			this.baseOffset = baseOffset;
-			this.endOffset = editor.Caret.Offset;
 			this.SetCaretPosition = true;
+			this.caretOffset = editor.Caret.Offset;
+			this.caretOffsetVersion = editor.Document.Version;
+
 			this.SelectPrimaryLink = true;
 		}
 
@@ -309,16 +313,21 @@ namespace Mono.TextEditor
 
 		public void ExitTextLinkMode ()
 		{
-			editor.Document.BeforeUndoOperation -= HandleEditorDocumentBeginUndo;
-			DestroyHelpWindow ();
+			if (isExited)
+				return;
 			isExited = true;
+
+			Editor.Document.BeforeUndoOperation -= HandleEditorDocumentBeginUndo;
+			Editor.Document.TextBuffer.Changed -= UpdateLinksOnTextReplace;
+			Editor.Caret.PositionChanged -= HandlePositionChanged;
+			DestroyHelpWindow ();
 			textLinkMarkers.ForEach (m => Editor.Document.RemoveMarker (m));
 			textLinkMarkers.Clear ();
-			if (SetCaretPosition && resetCaret)
-				Editor.Caret.Offset = endOffset;
-			
-			Editor.Document.TextBuffer.Changed -= UpdateLinksOnTextReplace;
-			this.Editor.Caret.PositionChanged -= HandlePositionChanged;
+			if (SetCaretPosition && resetCaret) {
+				Editor.Caret.Offset = caretOffsetVersion.MoveOffsetTo (Editor.Document.Version, caretOffset);
+				Editor.GetTextEditorData ().FixVirtualIndentation ();
+			}
+
 			if (undoDepth >= 0)
 				Editor.Document.StackUndoToDepth (undoDepth);
 			Editor.CurrentMode = OldMode;
@@ -361,9 +370,6 @@ namespace Mono.TextEditor
 				}
 
 				link.Links = newLinks;
-				endOffset = Microsoft.VisualStudio.Text.Tracking.TrackPositionForwardInTime(Microsoft.VisualStudio.Text.PointTrackingMode.Negative,
-																							endOffset,
-																							e.BeforeVersion, e.AfterVersion);
 			}
 
 			// If this is the final edit of a compund edit (e.g. no one has modified the buffer in an event handler before this one).

@@ -77,7 +77,8 @@ namespace Mono.TextEditor
 			set {
 				var oldMode = currentMode;
 				currentMode = value;
-				currentMode.AddedToEditor (this);
+				if (currentMode != null)
+					currentMode.AddedToEditor (this);
 				if (oldMode != null)
 					oldMode.RemovedFromEditor (this);
 				OnEditModeChanged (new EditModeChangedEventArgs (oldMode, currentMode));

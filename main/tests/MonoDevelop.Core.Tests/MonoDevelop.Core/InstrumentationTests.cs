@@ -40,8 +40,8 @@ namespace MonoDevelop.Core
 		class CustomCounterMetadata: CounterMetadata
 		{
 			public int SomeMeasure {
-				get => GetProperty<int> ("SomeMeasure");
-				set => SetProperty ("SomeMeasure", value);
+				get => GetProperty<int> ();
+				set => SetProperty (value);
 			}
 		}
 
@@ -103,9 +103,9 @@ namespace MonoDevelop.Core
 			var value = counterValues [0];
 
 			Assert.IsNotNull (value.Metadata);
-			Assert.IsTrue (value.Metadata.TryGetValue ("SomeMeasure", out var measure));
+			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CustomCounterMetadata.SomeMeasure), out var measure));
 			Assert.AreEqual ("4", measure);
-			Assert.IsFalse (value.Metadata.TryGetValue ("Result", out var result));
+			Assert.IsFalse (value.Metadata.TryGetValue (nameof (CounterMetadata.Result), out var result));
 		}
 
 		[Test]
@@ -134,9 +134,9 @@ namespace MonoDevelop.Core
 			var value = counterValues [0];
 
 			Assert.IsNotNull (value.Metadata);
-			Assert.IsTrue (value.Metadata.TryGetValue ("SomeMeasure", out var measure));
+			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CustomCounterMetadata.SomeMeasure), out var measure));
 			Assert.AreEqual ("5", measure);
-			Assert.IsTrue (value.Metadata.TryGetValue ("Result", out var result));
+			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CounterMetadata.Result), out var result));
 			Assert.AreEqual ("Success", result);
 		}
 
@@ -156,7 +156,7 @@ namespace MonoDevelop.Core
 			var value = counterValues [0];
 
 			Assert.IsNotNull (value.Metadata);
-			Assert.IsTrue (value.Metadata.TryGetValue ("Result", out var result));
+			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CounterMetadata.Result), out var result));
 			Assert.AreEqual (testResult.ToString(), result);
 		}
 
@@ -173,9 +173,9 @@ namespace MonoDevelop.Core
 			var value = counterValues [0];
 
 			Assert.IsNotNull (value.Metadata);
-			Assert.IsTrue (value.Metadata.TryGetValue ("SomeMeasure", out var measure));
+			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CustomCounterMetadata.SomeMeasure), out var measure));
 			Assert.AreEqual ("4", measure);
-			Assert.IsTrue (value.Metadata.TryGetValue ("Result", out var result));
+			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CounterMetadata.Result), out var result));
 			Assert.AreEqual ("UserCancel", result);
 		}
 
@@ -193,9 +193,9 @@ namespace MonoDevelop.Core
 			var value = counterValues [0];
 
 			Assert.IsNotNull (value.Metadata);
-			Assert.IsTrue (value.Metadata.TryGetValue ("SomeMeasure", out var measure));
+			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CustomCounterMetadata.SomeMeasure), out var measure));
 			Assert.AreEqual ("5", measure);
-			Assert.IsTrue (value.Metadata.TryGetValue ("Result", out var result));
+			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CounterMetadata.Result), out var result));
 			Assert.AreEqual ("Success", result);
 		}
 
