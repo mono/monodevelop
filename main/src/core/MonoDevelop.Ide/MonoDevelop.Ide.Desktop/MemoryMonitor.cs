@@ -1,10 +1,10 @@
-//
-// MonoDevelopWorkspaceCacheService.cs
+﻿//
+// MemoryMonitor.cs
 //
 // Author:
-//       Marius <maungu@microsoft.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2018 Microsoft
+// Copyright (c) 2018 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Composition;
-using Microsoft.CodeAnalysis.Host;
-using Microsoft.CodeAnalysis.Host.Mef;
-
-namespace MonoDevelop.Ide.RoslynServices
+namespace MonoDevelop.Ide.Desktop
 {
-	[ExportWorkspaceService (typeof (IWorkspaceCacheService), ServiceLayer.Host), Shared]
-	sealed class MonoDevelopWorkspaceCacheService : IWorkspaceCacheService
+	public abstract class MemoryMonitor
 	{
 		/// <summary>
-		/// Called by the host to try and reduce memory occupied by caches.
+		/// Notify that the platform memory status has changed.
 		/// </summary>
-		public void FlushCaches ()
+		protected virtual void OnStatusChanged (PlatformMemoryStatusEventArgs args)
 		{
-			CacheFlushRequested?.Invoke (this, EventArgs.Empty);
+			StatusChanged?.Invoke (this, args);
 		}
 
 		/// <summary>
-		/// Raised by the host when available memory is getting low in order to request that caches be flushed.
+		/// Occurs then the OS signals that the memory status has changed.
 		/// </summary>
-		public event EventHandler CacheFlushRequested;
+		public event EventHandler<PlatformMemoryStatusEventArgs> StatusChanged;
 	}
 }

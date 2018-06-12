@@ -1,10 +1,10 @@
-//
-// MonoDevelopWorkspaceCacheService.cs
+﻿//
+// PlatformMemoryStatus.cs
 //
 // Author:
-//       Marius <maungu@microsoft.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2018 Microsoft
+// Copyright (c) 2018 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Composition;
-using Microsoft.CodeAnalysis.Host;
-using Microsoft.CodeAnalysis.Host.Mef;
-
-namespace MonoDevelop.Ide.RoslynServices
+namespace MonoDevelop.Ide
 {
-	[ExportWorkspaceService (typeof (IWorkspaceCacheService), ServiceLayer.Host), Shared]
-	sealed class MonoDevelopWorkspaceCacheService : IWorkspaceCacheService
+	public enum PlatformMemoryStatus
 	{
-		/// <summary>
-		/// Called by the host to try and reduce memory occupied by caches.
-		/// </summary>
-		public void FlushCaches ()
-		{
-			CacheFlushRequested?.Invoke (this, EventArgs.Empty);
-		}
+		Normal,
+		Low,
+		Critical
+	}
 
-		/// <summary>
-		/// Raised by the host when available memory is getting low in order to request that caches be flushed.
-		/// </summary>
-		public event EventHandler CacheFlushRequested;
+	public class PlatformMemoryStatusEventArgs : EventArgs
+	{
+		public PlatformMemoryStatus MemoryStatus { get; }
+
+		public PlatformMemoryStatusEventArgs (PlatformMemoryStatus status)
+		{
+			MemoryStatus = status;
+		}
 	}
 }

@@ -27,18 +27,12 @@ using System;
 using MonoDevelop.MacInterop;
 using MonoDevelop.MacIntegration;
 using NUnit.Framework;
+using MonoDevelop.Ide;
 
 namespace MacPlatform.Tests
 {
-	public class LaunchServicesTests
+	public class LaunchServicesTests : IdeTestBase
 	{
-		MacPlatformService platformService;
-
-		public LaunchServicesTests ()
-		{
-			platformService = new MacPlatformService ();
-		}
-
 		[Ignore ("Requires to be running as a Cocoa application")]
 		[Test]
 		public void TestLaunchProcess ()

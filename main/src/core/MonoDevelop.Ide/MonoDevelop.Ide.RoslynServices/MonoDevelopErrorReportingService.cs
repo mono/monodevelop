@@ -1,5 +1,5 @@
 ﻿//
-// RoslynService.cs
+// MonoDevelopErrorReportingService.cs
 //
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>
@@ -24,49 +24,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Threading;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
-using Microsoft.CodeAnalysis.Internal.Log;
+using System.Composition;
+using Microsoft.CodeAnalysis.Extensions;
 using Microsoft.CodeAnalysis.Host;
-using Microsoft.CodeAnalysis.Utilities;
+using Microsoft.CodeAnalysis.Host.Mef;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.RoslynServices.Options;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
-	class RoslynService
+	[ExportWorkspaceServiceFactory (typeof (IErrorReportingService), ServiceLayer.Host), Shared]
+	sealed class VisualStudioErrorReportingServiceFactory : IWorkspaceServiceFactory
 	{
-		internal RoslynService ()
+		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
 		{
-			// Initialize Option Persisters
+			return new MonoDevelopErrorReportingService (workspaceServices.GetRequiredService<IInfoBarService> ());
 		}
 
-		internal static IEnumerable<string> AllLanguages {
-			get {
-				yield return LanguageNames.CSharp;
-				yield return LanguageNames.FSharp;
-				yield return LanguageNames.VisualBasic;
+		sealed class MonoDevelopErrorReportingService : IErrorReportingService
+		{
+			readonly IInfoBarService _infoBarService;
+
+			public MonoDevelopErrorReportingService (IInfoBarService infoBarService)
+			{
+				_infoBarService = infoBarService;
 			}
-		}
 
-		internal static void Initialize ()
-		{
-			Runtime.AssertMainThread ();
+			public void ShowErrorInfoInActiveView (string message, params InfoBarUI [] items) =>
+				_infoBarService.ShowInfoBarInActiveView (message, items);
 
-			// Initialize Roslyn foreground thread data.
-			ForegroundThreadAffinitizedObject.CurrentForegroundThreadData = new ForegroundThreadData (
-				Thread.CurrentThread,
-				Runtime.MainTaskScheduler,
-				ForegroundThreadDataInfo.CreateDefault (ForegroundThreadDataKind.ForcedByPackageInitialize)
-			);
+			public void ShowGlobalErrorInfo (string message, params InfoBarUI [] items) =>
+				_infoBarService.ShowInfoBarInGlobalView (message, items);
 
-			Logger.SetLogger (AggregateLogger.Create (
-				new RoslynLogger (),
-				Logger.GetLogger ()
-			));
+			// These are usually analyzers which would crash the process.
+			public void ShowDetailedErrorInfo (Exception exception) =>
+				LoggingService.LogError ("Roslyn wanted to display an exception to user", exception);
 		}
 	}
 }

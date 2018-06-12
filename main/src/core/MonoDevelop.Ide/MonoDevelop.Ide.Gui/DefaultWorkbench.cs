@@ -47,13 +47,14 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Components.DockNotebook;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
 	/// <summary>
 	/// This is the a Workspace with a multiple document interface.
 	/// </summary>
-	internal class DefaultWorkbench : WorkbenchWindow, ICommandRouter
+	internal partial class DefaultWorkbench : WorkbenchWindow, ICommandRouter, IInfoBarHost
 	{
 		readonly static string mainMenuPath    = "/MonoDevelop/Ide/MainMenu";
 		readonly static string appMenuPath    = "/MonoDevelop/Ide/AppMenu";
@@ -84,6 +85,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		Gtk.Container rootWidget;
 		CommandFrame toolbarFrame;
+		Gtk.VBox infoBarFrame;
 		DockFrame dock;
 		SdiDragNotebook tabControl;
 		Gtk.MenuBar topMenu;
@@ -310,24 +312,41 @@ namespace MonoDevelop.Ide.Gui
 				topMenu.Insert (item, 0);
 			}
 		}
-		
+
 		void InstallMenuBar ()
 		{
 			if (topMenu != null) {
 				((VBox)rootWidget).PackStart (topMenu, false, false, 0);
-				((Gtk.Box.BoxChild) rootWidget [topMenu]).Position = 0;
+				((Gtk.Box.BoxChild)rootWidget [topMenu]).Position = 0;
 				topMenu.ShowAll ();
 			}
 		}
-				
+
 		void UninstallMenuBar ()
 		{
 			if (topMenu == null)
 				return;
-			
+
 			rootWidget.Remove (topMenu);
 			topMenu.Destroy ();
 			topMenu = null;
+		}
+
+		public void AddInfoBar (string description, params InfoBarItem [] items)
+		{
+#if NATIVE_INFO_BAR
+			// disabled for now, needs a patch in gtk.
+			Xwt.Widget infoBar = null;
+			Xwt.Toolkit.NativeEngine.Invoke (() => {
+				infoBar = new XwtInfoBar (description, items);
+			});
+			var widget = Xwt.Toolkit.CurrentEngine.WrapWidget (infoBar);
+			var gtkWidget = widget.ToGtkWidget ();
+			infoBarFrame.Add (gtkWidget);
+#else
+			var infoBar = new XwtInfoBar (description, items);
+			infoBarFrame.Add (infoBar.ToGtkWidget ());
+#endif
 		}
 		
 		public void CloseContent (ViewContent content)
@@ -893,6 +912,15 @@ namespace MonoDevelop.Ide.Gui
 			toolbar = DesktopService.CreateMainToolbar (this);
 			DesktopService.SetMainWindowDecorations (this);
 			DesktopService.AttachMainToolbar (fullViewVBox, toolbar);
+
+
+			infoBarFrame = new VBox (false, 0);
+			infoBarFrame.Accessible.Name = "MainWindow.InfoBars";
+			infoBarFrame.Accessible.SetLabel ("Label");
+			infoBarFrame.Accessible.SetShouldIgnore (true);
+
+			fullViewVBox.PackStart (infoBarFrame, false, false, 0);
+
 			toolbarFrame = new CommandFrame (IdeApp.CommandService);
 			toolbarFrame.Accessible.Name = "MainWindow.Root.ToolbarFrame";
 			toolbarFrame.Accessible.SetShouldIgnore (true);
