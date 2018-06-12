@@ -30,18 +30,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	class LanguageBundle
 	{
-		List<SyntaxHighlightingDefinition> highlightings = new List<SyntaxHighlightingDefinition> ();
+		List<ISyntaxHighlightingDefinitionProvider> highlightings = new List<ISyntaxHighlightingDefinitionProvider> ();
 		List<TmSetting> settings = new List<TmSetting> ();
 		List<TmSnippet> snippets = new List<TmSnippet> ();
-		List<EditorTheme> editorThemes = new List<EditorTheme> ();
+		List<IEditorThemeProvider> editorThemes = new List<IEditorThemeProvider> ();
 
-		public IReadOnlyList<EditorTheme> EditorThemes {
+		public IReadOnlyList<IEditorThemeProvider> EditorThemes {
 			get {
 				return editorThemes;
 			}
 		}
 
-		public IReadOnlyList<SyntaxHighlightingDefinition> Highlightings {
+		public IReadOnlyList<ISyntaxHighlightingDefinitionProvider> Highlightings {
 			get {
 				return highlightings;
 			}
@@ -69,14 +69,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			FileName = fileName;
 		}
 
-		public void Add (EditorTheme theme)
+		public void Add (IEditorThemeProvider theme)
 		{
 			editorThemes.Add (theme);
 		}
 
 		public void Remove (EditorTheme style)
 		{
-			editorThemes.Remove (style);
+			for (int i = 0; i < editorThemes.Count; i++) {
+				if (style == editorThemes [i]) {
+					editorThemes.RemoveAt (i);
+					break;
+				}
+			}
 		}
 
 		public void Add (TmSetting setting)
@@ -89,7 +94,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			snippets.Add (snippet);
 		}
 
-		public void Add (SyntaxHighlightingDefinition highlighting)
+		public void Add (ISyntaxHighlightingDefinitionProvider highlighting)
 		{
 			highlightings.Add (highlighting);
 		}
