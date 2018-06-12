@@ -53,7 +53,6 @@ namespace MonoDevelop.FSW
 			watcher.Renamed += OnRenamed;
 			watcher.EnableRaisingEvents = true;
 
-			// Currently fails on mono due to https://github.com/mono/mono/issues/8712
 			Debug.Assert (watcher.EnableRaisingEvents);
 		}
 
