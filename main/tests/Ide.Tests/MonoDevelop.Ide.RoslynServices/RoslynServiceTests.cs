@@ -42,12 +42,12 @@ namespace MonoDevelop.Ide.RoslynServices
 		public async Task TestForegroundThread (bool initAgain, bool inBg)
 		{
 			if (initAgain) {
+				var current = ForegroundThreadAffinitizedObject.CurrentForegroundThreadData;
 				if (inBg) {
-					await Task.Run (() => {
-						Assert.Throws<InvalidOperationException> (() => RoslynService.Initialize ());
-					});
-				}
-				RoslynService.Initialize ();
+					await Task.Run (() => { RoslynService.Initialize (); });
+				} else
+					RoslynService.Initialize ();
+				Assert.AreSame (current, ForegroundThreadAffinitizedObject.CurrentForegroundThreadData);
 			}
 
 			var obj = new ForegroundThreadAffinitizedObject (false);

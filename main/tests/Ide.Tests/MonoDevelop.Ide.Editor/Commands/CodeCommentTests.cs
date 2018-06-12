@@ -48,6 +48,8 @@ namespace MonoDevelop.Ide.Editor
 
 		internal static void SetupInput (TextEditor editor, string input)
 		{
+			editor.Options = new CustomEditorOptions ();
+
 			var sb = new StringBuilder ();
 			int cursorPosition = 0, selectionStart = -1, selectionEnd = -1;
 
