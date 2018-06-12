@@ -52,13 +52,15 @@ namespace MonoDevelop.Ide.RoslynServices
 			}
 		}
 
+		static int initialized;
 		internal static void Initialize ()
 		{
-			Runtime.AssertMainThread ();
+			if (Interlocked.CompareExchange (ref initialized, 1, 0) == 1)
+				return;
 
 			// Initialize Roslyn foreground thread data.
 			ForegroundThreadAffinitizedObject.CurrentForegroundThreadData = new ForegroundThreadData (
-				Thread.CurrentThread,
+				Runtime.MainThread,
 				Runtime.MainTaskScheduler,
 				ForegroundThreadDataInfo.CreateDefault (ForegroundThreadDataKind.ForcedByPackageInitialize)
 			);
