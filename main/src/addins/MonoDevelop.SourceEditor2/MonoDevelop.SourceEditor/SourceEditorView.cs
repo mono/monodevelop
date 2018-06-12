@@ -3446,5 +3446,8 @@ namespace MonoDevelop.SourceEditor
 				return this.TextEditor.HasFocus;
 			}
 		}
+
+		bool ITextEditorImpl.LockFixIndentation { get => TextEditor.GetTextEditorData ().LockFixIndentation; set => TextEditor.GetTextEditorData ().LockFixIndentation = value; }
+
 	}
 } 
