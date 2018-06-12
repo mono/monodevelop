@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide
 
 		public void Dispose ()
 		{
-			using (var solution = Document.Project.ParentSolution)
+			using (var solution = Document.Project?.ParentSolution)
 				TypeSystemService.Unload (solution);
 			Window.CloseWindowSync ();
 			if (!Wrap)
