@@ -1080,13 +1080,13 @@ namespace MonoDevelop.CSharp
 						break;
 					} else if (node.Parent is SwitchStatementSyntax) {
 						result.AddCategory (GettextCatalog.GetString ("Form"),
-						                    GettextCatalog.GetString ("{0} (expression) { \n  {1} constant-expression:\n    statement\n    jump-statement\n  [{2}:\n    statement\n    jump-statement]\n}",
+						                    GettextCatalog.GetString ("{0} (expression) {{ \n  {1} constant-expression:\n    statement\n    jump-statement\n  [{2}:\n    statement\n    jump-statement]\n}}",
 						                    Highlight ("switch", GetThemeColor (keywordOther)), Highlight ("case", GetThemeColor (keywordOther)), Highlight ("default", GetThemeColor (keywordOther))));
 						break;
 					}
 				}
 				result.AddCategory (GettextCatalog.GetString ("Form"),
-						            GettextCatalog.GetString ("{0} (Type)\n\nor\n\n{1} (expression) { \n  {2} constant-expression:\n    statement\n    jump-statement\n  [{3}:\n    statement\n    jump-statement]\n}", 
+						            GettextCatalog.GetString ("{0} (Type)\n\nor\n\n{1} (expression) {{ \n  {2} constant-expression:\n    statement\n    jump-statement\n  [{3}:\n    statement\n    jump-statement]\n}}", 
 						                                      Highlight ("default", GetThemeColor (keywordOther)), Highlight ("switch", GetThemeColor (keywordOther)), Highlight ("case", GetThemeColor (keywordOther)), Highlight ("default", GetThemeColor (keywordOther)))
 						           );
 				break;
