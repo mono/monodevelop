@@ -224,6 +224,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public void HideWindow ()
 		{
+			if (CompletionWidget is ITextEditorImpl impl)
+				impl.FixVirtualIndentation ();
 			HideDeclarationView ();
 			view.Hide ();
 			ReleaseObjects ();

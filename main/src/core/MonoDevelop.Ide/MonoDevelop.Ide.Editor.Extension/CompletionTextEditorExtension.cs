@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (!IsActiveExtension ())
 				return base.KeyPress (descriptor);
 			bool res;
-			if (CurrentCompletionContext != null) {
+			if (CurrentCompletionContext != null && CompletionWindowManager.Wnd != null) {
 				if (CompletionWindowManager.PreProcessKeyEvent (descriptor)) {
 					CompletionWindowManager.PostProcessKeyEvent (descriptor);
 					autoHideCompletionWindow = true;
@@ -163,8 +163,14 @@ namespace MonoDevelop.Ide.Editor.Extension
 				deleteOrBackspaceTriggerChar = Editor.GetCharAt (Editor.CaretOffset);
 			if (descriptor.SpecialKey == SpecialKey.BackSpace && Editor.CaretOffset > 0)
 				deleteOrBackspaceTriggerChar = Editor.GetCharAt (Editor.CaretOffset - 1);
-			
-			res = base.KeyPress (descriptor);
+			var impl = Editor.GetContent<ITextEditorImpl> ();
+			if (CompletionWindowManager.IsVisible)
+				impl.LockFixIndentation = true;
+			try {
+				res = base.KeyPress (descriptor);
+			} finally {
+				impl.LockFixIndentation = false;
+			}
 			if (Editor.EditMode == EditMode.TextLink && Editor.TextLinkPurpose == TextLinkPurpose.Rename) {
 				return res;
 			}
