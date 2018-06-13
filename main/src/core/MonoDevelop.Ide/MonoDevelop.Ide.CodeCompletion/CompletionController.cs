@@ -224,6 +224,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public void HideWindow ()
 		{
+			if (CompletionWidget is ICompletionWidget2 widget2)
+				widget2.NotifyCompletionWindowClosed ();
 			HideDeclarationView ();
 			view.Hide ();
 			ReleaseObjects ();
