@@ -66,7 +66,7 @@ using System.Collections.Immutable;
 namespace MonoDevelop.SourceEditor
 {	
 	partial class SourceEditorView : ViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
-		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider,
+		ICompletionWidget2,  ISplittable, IFoldable, IToolboxDynamicProvider,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, IPrintable,
 	ITextEditorImpl, ITextMarkerFactory, IUndoHandler
@@ -2010,6 +2010,12 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public event EventHandler CompletionContextChanged;
+
+		void ICompletionWidget2.NotifyCompletionWindowClosed ()
+		{
+			GetTextEditorData ().FixVirtualIndentation ();
+		}
+
 		#endregion
 		
 		#region commenting and indentation
