@@ -40,25 +40,28 @@ namespace MonoDevelop.Ide.Editor
 
 			var document = new Document (tww);
 
-			var editor = TextEditorFactory.CreateNewEditor (document);
-			editor.MimeType = "text/xml";
-			const string originalText = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+			using (var testCase = new TextEditorExtensionTestCase (document, content, tww, null, false)) {
+
+				var editor = TextEditorFactory.CreateNewEditor (document);
+				editor.MimeType = "text/xml";
+				const string originalText = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
              xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
              x:Class=""XamlSamples.HelloXamlPage"">
              <Grid HeightRequest=
 </ContentPage>";
-			editor.Text = originalText;
-			var offset = editor.Text.IndexOf ("HeightRequest=", StringComparison.Ordinal) + "HeightRequest=".Length;
-			editor.GetContent<ITextEditorImpl> ().CaretOffset = offset;
-			//Reason why we use GetNativeWidget, and navigate to ExtensibleTextEditor child
-			//and execute KeyPress on it instead something more abstract is...
-			//EditSession key processing is done inside ExtensibleTextEditor.
-			var extensibleEditor = FindChild<ExtensibleTextEditor> (editor.GetNativeWidget<Container> ());
-			extensibleEditor.OnIMProcessedKeyPressEvent ((Gdk.Key)'"', '"', Gdk.ModifierType.None);
-			extensibleEditor.OnIMProcessedKeyPressEvent (Gdk.Key.BackSpace, '\0', Gdk.ModifierType.None);
-			extensibleEditor.OnIMProcessedKeyPressEvent ((Gdk.Key)'"', '"', Gdk.ModifierType.None);
-			Assert.AreEqual (originalText.Insert (offset, "\"\""), editor.Text);
+				editor.Text = originalText;
+				var offset = editor.Text.IndexOf ("HeightRequest=", StringComparison.Ordinal) + "HeightRequest=".Length;
+				editor.GetContent<ITextEditorImpl> ().CaretOffset = offset;
+				//Reason why we use GetNativeWidget, and navigate to ExtensibleTextEditor child
+				//and execute KeyPress on it instead something more abstract is...
+				//EditSession key processing is done inside ExtensibleTextEditor.
+				var extensibleEditor = FindChild<ExtensibleTextEditor> (editor.GetNativeWidget<Container> ());
+				extensibleEditor.OnIMProcessedKeyPressEvent ((Gdk.Key)'"', '"', Gdk.ModifierType.None);
+				extensibleEditor.OnIMProcessedKeyPressEvent (Gdk.Key.BackSpace, '\0', Gdk.ModifierType.None);
+				extensibleEditor.OnIMProcessedKeyPressEvent ((Gdk.Key)'"', '"', Gdk.ModifierType.None);
+				Assert.AreEqual (originalText.Insert (offset, "\"\""), editor.Text);
+			}
 		}
 
 		private T FindChild<T> (Container container) where T : Widget
@@ -80,22 +83,25 @@ namespace MonoDevelop.Ide.Editor
 		public void TestVSTS615849 ()
 		{
 			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
+
 			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
 			tww.ViewContent = content;
 
 			var document = new Document (tww);
 
-			var editor = TextEditorFactory.CreateNewEditor (document);
-			editor.MimeType = "text/xml";
-			const string originalText = @"";
-			editor.Text = originalText;
+			using (var testCase = new TextEditorExtensionTestCase (document, content, tww, null, false)) {
+				var editor = TextEditorFactory.CreateNewEditor (document);
+				editor.MimeType = "text/xml";
+				const string originalText = @"";
+				editor.Text = originalText;
 
-			var extensibleEditor = FindChild<ExtensibleTextEditor> (editor.GetNativeWidget<Container> ());
-			extensibleEditor.OnIMProcessedKeyPressEvent ((Gdk.Key)'"', '"', Gdk.ModifierType.None);
-			extensibleEditor.OnIMProcessedKeyPressEvent (Gdk.Key.Right, '\0', Gdk.ModifierType.None);
-			extensibleEditor.OnIMProcessedKeyPressEvent (Gdk.Key.BackSpace, '\0', Gdk.ModifierType.None);
-			Assert.AreEqual ("\"", editor.Text);
+				var extensibleEditor = FindChild<ExtensibleTextEditor> (editor.GetNativeWidget<Container> ());
+				extensibleEditor.OnIMProcessedKeyPressEvent ((Gdk.Key)'"', '"', Gdk.ModifierType.None);
+				extensibleEditor.OnIMProcessedKeyPressEvent (Gdk.Key.Right, '\0', Gdk.ModifierType.None);
+				extensibleEditor.OnIMProcessedKeyPressEvent (Gdk.Key.BackSpace, '\0', Gdk.ModifierType.None);
+				Assert.AreEqual ("\"", editor.Text);
+			}
 		}
 
 	}

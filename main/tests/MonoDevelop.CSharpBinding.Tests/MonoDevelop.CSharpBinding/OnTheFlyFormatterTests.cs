@@ -131,10 +131,9 @@ namespace MonoDevelop.CSharpBinding
 			await doc.UpdateParseDocument ();
 			if (selectionStart >= 0 && selectionEnd >= 0)
 				content.GetTextEditorData ().SetSelection (selectionStart, selectionEnd);
-			try {
+
+			using (var testCase = new Ide.TextEditorExtensionTestCase (doc, content, tww, null, false)) {
 				act (content, ext);
-			} finally {
-				TypeSystemService.Unload (solution);
 			}
 		}
 

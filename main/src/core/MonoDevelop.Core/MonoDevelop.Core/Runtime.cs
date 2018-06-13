@@ -235,6 +235,7 @@ namespace MonoDevelop.Core
 				ShuttingDown (null, EventArgs.Empty);
 			
 			PropertyService.SaveProperties ();
+			FSW.OSX.FileSystemWatcher.DisposeAll ();
 			
 			if (processService != null) {
 				processService.Dispose ();

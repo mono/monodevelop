@@ -51,13 +51,6 @@ namespace MonoDevelop.CSharpBinding.Tests
 			yield return new UnitTestTextEditorExtension ();
 		}
 
-		protected override void InternalSetup (string rootDir)
-		{
-			base.InternalSetup (rootDir);
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
-		}
-
 		class UnitTestMarkers: IUnitTestMarkers
 		{
 			public string TestMethodAttributeMarker { get; set; }
