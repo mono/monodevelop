@@ -32,12 +32,18 @@ using MonoDevelop.Ide.Commands;
 namespace MonoDevelop.Ide.Editor
 {
 	[TestFixture]
-	public class SortSelectedLinesTests : IdeTestBase
+	public class SortSelectedLinesTests : TextEditorExtensionTestBase
 	{
+		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharp;
+
 		[Test]
 		public void SortSimpleTest ()
 		{
-			var editor = CodeCommentTests.CreateTextEditor (@"
+			var editor = TextEditorFactory.CreateNewEditor ();
+			editor.FileName = "a.cs";
+			editor.MimeType = "text/x-csharp";
+
+			CodeCommentTests.SetupInput (editor, @"
 9
 <-8
 7

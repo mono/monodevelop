@@ -29,6 +29,7 @@ using MonoDevelop.MacIntegration;
 using MonoDevelop.MacInterop;
 using MonoDevelop.Ide;
 using UnitTests;
+using System.Threading.Tasks;
 
 namespace MacPlatform.Tests
 {
@@ -54,6 +55,25 @@ namespace MacPlatform.Tests
 		{
 			// Verify no exception is thrown
 			DesktopService.GetMimeTypeForUri (null);
+		}
+
+		[Test]
+		public void MacHasProperMonitor ()
+		{
+			Assert.That (DesktopService.MemoryMonitor, Is.TypeOf<MacPlatformService.MacMemoryMonitor> ());
+		}
+
+		[Test, Timeout(20000)]
+		public async Task TestMacMemoryMonitorLifetime ()
+		{
+			var tcs = new TaskCompletionSource<bool> ();
+
+			using (var macMonitor = new MacPlatformService.MacMemoryMonitor ()) {
+				// Cancellation is async.
+				macMonitor.DispatchSource.SetCancelHandler (() => tcs.SetResult (true));
+			}
+
+			Assert.AreEqual (true, await tcs.Task, "Expected cancel handler to be called");
 		}
 	}
 }

@@ -53,6 +53,8 @@ using MonoDevelop.Components.AtkCocoaHelper;
 using System.Linq;
 using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
+using MonoDevelop.Ide.BuildOutputView;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -61,11 +63,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		HPaned control;
 		ScrolledWindow sw;
 		PadTreeView view;
-		LogView outputView;
+		BuildOutputViewContent buildOutputViewContent;
+		BuildOutput buildOutput;
 		TreeStore store;
 		TreeModelFilter filter;
 		TreeModelSort sort;
-		ToggleButton errorBtn, warnBtn, msgBtn, logBtn;
+		ToggleButton errorBtn, warnBtn, msgBtn;
+		Button logBtn;
 		Label errorBtnLbl, warnBtnLbl, msgBtnLbl, logBtnLbl;
 		SearchEntry searchEntry;
 		string currentSearchPattern = null;
@@ -73,7 +77,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		int errorCount;
 		int warningCount;
 		int infoCount;
-		bool initialLogShow = true;
 
 		Clipboard clipboard;
 
@@ -86,8 +89,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public readonly ConfigurationProperty<bool> ShowErrors = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowErrors", true);
 		public readonly ConfigurationProperty<bool> ShowWarnings = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowWarnings", true);
 		public readonly ConfigurationProperty<bool> ShowMessages = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowMessages", true);
-		public readonly ConfigurationProperty<double> LogSeparatorPosition = ConfigurationProperty.Create ("SharpDevelop.TaskList.LogSeparatorPosition", 0.5d);
-		public readonly ConfigurationProperty<bool> OutputViewVisible = ConfigurationProperty.Create ("SharpDevelop.TaskList.OutputViewVisible", false);
 
 		static class DataColumns
 		{
@@ -123,6 +124,26 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		ToggleButton MakeButton (string image, string name, bool active, out Label label)
 		{
+			var btnBox = MakeHBox (image, out label);
+
+			var btn = new ToggleButton { Name = name, Active = active };
+			btn.Child = btnBox;
+
+			return btn;
+		} 
+
+		Button MakeButton (string image, string name, out Label label) 
+		{
+			var btnBox = MakeHBox (image, out label);
+
+			var btn = new Button { Name = name };
+			btn.Child = btnBox;
+
+			return btn;
+		}
+
+		HBox MakeHBox (string image, out Label label)
+		{
 			var btnBox = new HBox (false, 2);
 			btnBox.Accessible.SetShouldIgnore (true);
 			var imageView = new ImageView (image, Gtk.IconSize.Menu);
@@ -133,11 +154,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			label.Accessible.SetShouldIgnore (true);
 			btnBox.PackStart (label);
 
-			var btn = new ToggleButton { Name = name };
-			btn.Active = active;
-			btn.Child = btnBox;
-
-			return btn;
+			return btnBox;
 		}
 
 		protected override void Initialize (IPadWindow window)
@@ -179,7 +196,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sep.Accessible.SetShouldIgnore (true);
 			toolbar.Add (sep);
 
-			logBtn = MakeButton ("md-message-log", "toggleBuildOutput", false, out logBtnLbl);
+			logBtn = MakeButton ("md-message-log", "toggleBuildOutput", out logBtnLbl);
 			logBtn.Accessible.Name = "ErrorPad.LogButton";
 			logBtn.TooltipText = GettextCatalog.GetString ("Show build output");
 			logBtn.Accessible.Description = GettextCatalog.GetString ("Show build output");
@@ -187,8 +204,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logBtnLbl.Text = GettextCatalog.GetString ("Build Output");
 			logBtn.Accessible.SetTitle (logBtnLbl.Text);
 
-			logBtn.Toggled += HandleLogBtnToggled;
+			logBtn.Clicked += HandleLogBtnClicked;
 			toolbar.Add (logBtn);
+
+			buildOutput = new BuildOutput ();
 
 			//Dummy widget to take all space between "Build Output" button and SearchEntry
 			var spacer = new HBox ();
@@ -207,6 +226,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toolbar.ShowAll ();
 
 			UpdatePadIcon ();
+
+			IdeApp.ProjectOperations.StartBuild += OnBuildStarted;
 		}
 
 		void searchPatternChanged (object sender, EventArgs e)
@@ -270,35 +291,23 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			control.Add1 (sw);
 
-			outputView = new LogView { Name = "buildOutput" };
-			control.Add2 (outputView);
-
 			control.ShowAll ();
-
-			control.SizeAllocated += HandleControlSizeAllocated;
-
-			bool outputVisible = OutputViewVisible;
-			if (outputVisible) {
-				outputView.Visible = true;
-				logBtn.Active = true;
-			} else {
-				outputView.Hide ();
-			}
-
-			sw.SizeAllocated += HandleSwSizeAllocated;
 
 			// Load existing tasks
 			foreach (TaskListEntry t in TaskService.Errors) {
 				AddTask (t);
 			}
-
-			control.FocusChain = new Gtk.Widget [] { outputView, sw };
 		}
 
 		public override void Dispose ()
 		{
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
+			IdeApp.ProjectOperations.StartBuild -= OnBuildStarted;
+
+			buildOutput?.Dispose ();
+			buildOutputViewContent?.Dispose ();
+			buildOutputDoc?.Close ();
 
 			// Set the model to null as it makes Gtk clean up faster
 			if (view != null) {
@@ -308,28 +317,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			base.Dispose ();
 		}
 
-		void HandleSwSizeAllocated (object o, SizeAllocatedArgs args)
-		{
-			if (!initialLogShow && outputView.Visible) {
-				var val = (double)((double)control.Position / (double)control.Allocation.Width);
-				LogSeparatorPosition.Value = val;
-			}
-		}
-
-		[GLib.ConnectBefore]
-		void HandleControlSizeAllocated (object o, SizeAllocatedArgs args)
-		{
-			if (initialLogShow && outputView.Visible) {
-				SetInitialOutputViewSize (args.Allocation.Width);
-				initialLogShow = false;
-			}
-		}
-
 		public ProgressMonitor GetBuildProgressMonitor ()
-		{
+		{ 
 			if (control == null)
 				CreateControl ();
-			return outputView.GetProgressMonitor ();
+			
+			return buildOutput.GetProgressMonitor ();
 		}
 
 		void HandleTaskServiceErrorsCurrentLocationTaskChanged (object sender, EventArgs e)
@@ -385,13 +378,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			var menu = new ContextMenu ();
 
-			var help = new ContextMenuItem (GettextCatalog.GetString ("Show Error Reference"));
+			var help = new ContextMenuItem (GettextCatalog.GetString ("Go to _Reference"));
 			help.Clicked += OnShowReference;
 			menu.Add (help);
 
-			var copy = new ContextMenuItem (GettextCatalog.GetString ("_Copy"));
-			copy.Clicked += OnTaskCopied;
-			menu.Add (copy);
+			var goBuild = new ContextMenuItem (GettextCatalog.GetString ("Go to _Log"));
+			goBuild.Clicked += async (s, e) => await OnGoToLog (s, e);
+			menu.Add (goBuild);
 
 			var jump = new ContextMenuItem (GettextCatalog.GetString ("_Go to Task"));
 			jump.Clicked += OnTaskJumpto;
@@ -401,6 +394,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 			                                          restoreID,
 			                                          GettextCatalog.GetString ("Type"),
 			                                          GettextCatalog.GetString ("Validity"));
+
+			menu.Add (new SeparatorContextMenuItem ());
+
+			var copy = new ContextMenuItem (GettextCatalog.GetString ("_Copy"));
+			copy.Clicked += OnTaskCopied;
+			menu.Add (copy);
+
+
+			menu.Add (new SeparatorContextMenuItem ());
 
 			var columns = new ContextMenuItem (GettextCatalog.GetString ("Columns"));
 			columns.SubMenu = columnsMenu;
@@ -421,6 +423,32 @@ namespace MonoDevelop.Ide.Gui.Pads
 			help.Sensitive &= GetSelectedErrorReference (out dummyString);
 
 			menu.Show (view, evt);
+		}
+
+		async Task OnGoToLog (object o, EventArgs args)
+		{
+			var rows = view.Selection.GetSelectedRows ();
+			if (!rows.Any ())
+				return;
+
+			TreeIter iter, sortedIter;
+			if (view.Model.GetIter (out sortedIter, rows [0])) {
+				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (sortedIter));
+
+				store.SetValue (iter, DataColumns.Read, true);
+
+				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
+				if (task != null) {
+					OpenBuildOutputViewDocument ();
+					if (task.Severity == TaskSeverity.Error) {
+						await buildOutputViewContent.GoToError (task.Message, task.GetProjectWithExtension ());
+					} else if (task.Severity == TaskSeverity.Warning) {
+						await buildOutputViewContent.GoToWarning (task.Message, task.GetProjectWithExtension ());
+					} else if (task.Severity == TaskSeverity.Information) {
+						await buildOutputViewContent.GoToMessage (task.Message, task.GetProjectWithExtension ());
+					}
+				}
+			}
 		}
 
 		TaskListEntry SelectedTask {
@@ -633,25 +661,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 				textRenderer.Text = "";
 				return;
 			}
-			
-			string tmpPath = "";
-			string fileName = "";
-			try {
-				tmpPath = GetPath (task);
-				fileName = Path.GetFileName (tmpPath);
-			} catch (Exception) { 
-				fileName =  tmpPath;
-			}
-			
-			SetText (textRenderer, model, iter, task, fileName);
-		}
-		
-		static string GetPath (TaskListEntry task)
-		{
-			if (task.WorkspaceObject != null)
-				return FileService.AbsoluteToRelativePath (task.WorkspaceObject.BaseDirectory, task.FileName);
-			
-			return task.FileName;
+
+			SetText (textRenderer, model, iter, task, task.GetFile ());
 		}
 		
 		static void ProjectDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -662,12 +673,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				textRenderer.Text = "";
 				return;
 			}
-			SetText (textRenderer, model, iter, task, GetProject(task));
-		}
-		
-		static string GetProject (TaskListEntry task)
-		{
-			return (task != null && task.WorkspaceObject is SolutionFolderItem)? task.WorkspaceObject.Name: string.Empty;
+			SetText (textRenderer, model, iter, task, task.GetProject ());
 		}
 		
 		static void PathDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -678,7 +684,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				textRenderer.Text = "";
 				return;
 			}
-			SetText (textRenderer, model, iter, task, GetPath (task));
+			SetText (textRenderer, model, iter, task, task.GetPath ());
 		}
 
 		static void CategoryDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -707,6 +713,21 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void OnCombineClosed(object sender, EventArgs e)
 		{
 			Clear();
+
+			buildOutput.Dispose ();
+			if (buildOutputViewContent != null) {
+				buildOutputViewContent.Dispose ();
+				buildOutputViewContent = null;
+			}
+
+			buildOutputDoc?.Close ();
+
+			buildOutput = new BuildOutput ();
+		}
+
+		void OnBuildStarted (object sender, EventArgs e)
+		{
+			buildOutput.Clear ();
 		}
 		
 		void OnRowActivated (object o, RowActivatedArgs args)
@@ -903,7 +924,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			     zTask = model.GetValue (z, DataColumns.Task) as TaskListEntry;
 			     
 			return (aTask != null && zTask != null) ?
-			       string.Compare (GetProject (aTask), GetProject (zTask), StringComparison.Ordinal) :
+			       string.Compare (aTask.GetProject (), zTask.GetProject (), StringComparison.Ordinal) :
 			       0;
 		}
 		
@@ -929,28 +950,31 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		internal void FocusOutputView ()
 		{
-			logBtn.Active = true;
-			HandleLogBtnToggled (this, EventArgs.Empty);
+			HandleLogBtnClicked (this, EventArgs.Empty);
 		}
-		
-		void HandleLogBtnToggled (object sender, EventArgs e)
+
+		Document buildOutputDoc;
+		void HandleLogBtnClicked (object sender, EventArgs e)
 		{
-			var visible = logBtn.Active;
-			OutputViewVisible.Value = visible;
-			outputView.Visible = visible;
-			
-			if (initialLogShow && visible && control.IsRealized) {
-				initialLogShow = false;
-				SetInitialOutputViewSize (control.Allocation.Width);
+			OpenBuildOutputViewDocument ();
+		}
+
+		void OpenBuildOutputViewDocument () 
+		{
+			if (buildOutputViewContent == null) {
+				buildOutputViewContent = new BuildOutputViewContent (buildOutput);
+				buildOutputDoc = IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
+				buildOutputDoc.Closed += BuildOutputDocClosed;
+			} else if (buildOutputDoc != null) {
+				buildOutputDoc.Select ();
 			}
 		}
-		
-		void SetInitialOutputViewSize (int controlWidth)
+
+		void BuildOutputDocClosed (object sender, EventArgs e)
 		{
-			double relPos = LogSeparatorPosition;
-			int pos = (int) (controlWidth * relPos);
-			pos = Math.Max (30, Math.Min (pos, controlWidth - 30));
-			control.Position = pos;
+			buildOutputViewContent.Dispose ();
+			buildOutputViewContent = null;
+			buildOutputDoc = null;
 		}
 
 		class DescriptionCellRendererText : CellRendererText
@@ -974,6 +998,40 @@ namespace MonoDevelop.Ide.Gui.Pads
 				}
 				width = Math.Min (oneLineWidth, PreferedMaxWidth);
 			}
+		}
+	}
+
+	internal static class TaskListEntryExtensions
+	{
+		public static string GetPath (this TaskListEntry task)
+		{
+			if (task.WorkspaceObject != null)
+				return FileService.AbsoluteToRelativePath (task.WorkspaceObject.BaseDirectory, task.FileName);
+
+			return task.FileName;
+		}
+
+		public static string GetProject (this TaskListEntry task)
+		{
+			return (task != null && task.WorkspaceObject is SolutionFolderItem) ? task.WorkspaceObject.Name : string.Empty;
+		}
+
+		public static string GetProjectWithExtension (this TaskListEntry task)
+		{
+			return (task != null && task.WorkspaceObject is SolutionItem) ? Path.GetFileName (((SolutionItem)task.WorkspaceObject).FileName) : string.Empty;
+		}
+
+		public static string GetFile (this TaskListEntry task)
+		{
+			string tmpPath = "";
+			string fileName = "";
+			try {
+				tmpPath = GetPath (task);
+				fileName = Path.GetFileName (tmpPath);
+			} catch (Exception) {
+				fileName = tmpPath;
+			}
+			return fileName;
 		}
 	}
 }

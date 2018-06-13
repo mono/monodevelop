@@ -29,6 +29,8 @@ using System.Diagnostics.Contracts;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
+using Microsoft.CodeAnalysis.Internal.Log;
+using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.Utilities;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.RoslynServices.Options;
@@ -50,16 +52,23 @@ namespace MonoDevelop.Ide.RoslynServices
 			}
 		}
 
+		static int initialized;
 		internal static void Initialize ()
 		{
-			Runtime.AssertMainThread ();
+			if (Interlocked.CompareExchange (ref initialized, 1, 0) == 1)
+				return;
 
 			// Initialize Roslyn foreground thread data.
 			ForegroundThreadAffinitizedObject.CurrentForegroundThreadData = new ForegroundThreadData (
-				Thread.CurrentThread,
+				Runtime.MainThread,
 				Runtime.MainTaskScheduler,
 				ForegroundThreadDataInfo.CreateDefault (ForegroundThreadDataKind.ForcedByPackageInitialize)
 			);
+
+			Logger.SetLogger (AggregateLogger.Create (
+				new RoslynLogger (),
+				Logger.GetLogger ()
+			));
 		}
 	}
 }

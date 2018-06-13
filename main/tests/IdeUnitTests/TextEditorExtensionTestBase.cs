@@ -23,10 +23,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
@@ -78,6 +80,37 @@ namespace MonoDevelop.Ide
 		}
 	}
 
+	public class TextEditorExtensionTestCase : IDisposable
+	{
+		public Document Document { get; }
+		public Project Project => Document.Project;
+		public Solution Solution => Document.Project.ParentSolution;
+		public TestViewContent Content { get; }
+		public TestWorkbenchWindow Window { get; }
+		public EditorExtensionTestData TestData { get; }
+		bool Wrap { get; }
+
+		public TextEditorExtensionTestCase (Document doc, TestViewContent content, TestWorkbenchWindow window, EditorExtensionTestData data, bool wrap)
+		{
+			Document = doc;
+			Content = content;
+			Window = window;
+			TestData = data;
+			Wrap = wrap;
+		}
+
+		public void Dispose ()
+		{
+			using (var solution = Document.Project?.ParentSolution)
+				TypeSystemService.Unload (solution);
+			Window.CloseWindowSync ();
+			if (!Wrap)
+				Document.DisposeDocument ();
+		}
+
+		public T GetContent<T> () where T:class => Content.GetContent<T> ();
+	}
+
 	public abstract class TextEditorExtensionTestBase : IdeTestBase
 	{
 		protected abstract EditorExtensionTestData GetContentData ();
@@ -87,7 +120,7 @@ namespace MonoDevelop.Ide
 			yield break;
 		}
 
-		protected async Task<Document> SetupDocument (string input, int cursorPosition = -1)
+		protected async Task<TextEditorExtensionTestCase> SetupTestCase (string input, int cursorPosition = -1, bool wrap = false)
 		{
 			await Composition.CompositionManager.InitializeAsync ();
 
@@ -117,7 +150,10 @@ namespace MonoDevelop.Ide
 			solution.DefaultSolutionFolder.AddItem (project);
 
 			content.Project = project;
-			var doc = new Document (tww);
+
+			if (wrap && !IdeApp.IsInitialized)
+				IdeApp.Initialize (new ProgressMonitor ());
+			Document doc = wrap ? IdeApp.Workbench.WrapDocument (tww) : new Document (tww);
 
 			doc.SetProject (project);
 
@@ -129,7 +165,7 @@ namespace MonoDevelop.Ide
 				content.Contents.Add (ext);
 			}
 
-			return doc;
+			return new TextEditorExtensionTestCase (doc, content, tww, data, wrap);
 		}
 	}
 }

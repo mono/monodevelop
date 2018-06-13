@@ -91,18 +91,18 @@ class FooBar
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
-			var doc = await SetupDocument (text, cursorPosition: Math.Max (0, endPos));
-			await doc.UpdateParseDocument ();
+			using (var testCase = await SetupTestCase (text, cursorPosition: Math.Max (0, endPos))) {
+				var doc = testCase.Document;
+				await doc.UpdateParseDocument ();
 
-			var ctx = new CodeCompletionContext ();
+				var ctx = new CodeCompletionContext ();
 
-			var handler = new CSharpAutoInsertBracketHandler ();
-			char ch = mid [mid.Length - 1];
-			handler.Handle (doc.Editor, doc, Ide.Editor.Extension.KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
-			var newText = doc.Editor.GetTextAt (prefix.Length, doc.Editor.Length - prefix.Length - suffix.Length);
-			Assert.AreEqual (expected, newText);
-
-			TypeSystemService.Unload (doc.Project.ParentSolution);
+				var handler = new CSharpAutoInsertBracketHandler ();
+				char ch = mid [mid.Length - 1];
+				handler.Handle (doc.Editor, doc, KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
+				var newText = doc.Editor.GetTextAt (prefix.Length, doc.Editor.Length - prefix.Length - suffix.Length);
+				Assert.AreEqual (expected, newText);
+			}
 		}
 	}
 }

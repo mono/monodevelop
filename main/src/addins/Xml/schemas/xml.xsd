@@ -1,0 +1,72 @@
+<?xml version='1.0'?>
+<!--
+XML Schema: https://www.w3.org/2009/01/xml.xsd
+
+Copyright (c) 2009 World Wide Web Consortium, (Massachusetts Institute of Technology,
+European Research Consortium for Informatics and Mathematics, Keio University, Beihang).
+All Rights Reserved. This work is distributed under the W3C® Software License [1] in the hope
+that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+[1] http://www.w3.org/Consortium/Legal/copyright-software
+
+Changes for MonoDevelop:
+  2018-06-03
+    Remove unused docs. Reword remaining docs to be more intellisense-friendly.
+-->
+<xs:schema targetNamespace="http://www.w3.org/XML/1998/namespace" 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+  xmlns   ="http://www.w3.org/1999/xhtml"
+  xml:lang="en">
+ <xs:attribute name="lang">
+  <xs:annotation>
+   <xs:documentation>
+     Language code for the natural language of the content of any element. Its value is inherited.
+   </xs:documentation>
+  </xs:annotation>
+  <xs:simpleType>
+   <xs:union memberTypes="xs:language">
+    <xs:simpleType>    
+     <xs:restriction base="xs:string">
+      <xs:enumeration value=""/>
+     </xs:restriction>
+    </xs:simpleType>
+   </xs:union>
+  </xs:simpleType>
+ </xs:attribute>
+
+ <xs:attribute name="space">
+  <xs:annotation>
+   <xs:documentation>
+     Indicates what whitespace processing discipline is intended for the content of the element. Its value is inherited.
+   </xs:documentation>
+  </xs:annotation>
+  <xs:simpleType>
+   <xs:restriction base="xs:NCName">
+    <xs:enumeration value="default"/>
+    <xs:enumeration value="preserve"/>
+   </xs:restriction>
+  </xs:simpleType>
+ </xs:attribute>
+ 
+ <xs:attribute name="base" type="xs:anyURI"> <xs:annotation>
+   <xs:documentation>
+     Base URI for interpreting relative URIs in the scope of the element on which it appears. Its value is inherited.
+   </xs:documentation>
+  </xs:annotation>
+ </xs:attribute>
+ 
+ <xs:attribute name="id" type="xs:ID">
+  <xs:annotation>
+   <xs:documentation>
+     Assigns an ID to the element.
+   </xs:documentation>
+  </xs:annotation>
+ </xs:attribute>
+
+ <xs:attributeGroup name="specialAttrs">
+  <xs:attribute ref="xml:base"/>
+  <xs:attribute ref="xml:lang"/>
+  <xs:attribute ref="xml:space"/>
+  <xs:attribute ref="xml:id"/>
+ </xs:attributeGroup>
+</xs:schema>

@@ -96,14 +96,15 @@ namespace Mono.TextEditor
 		internal void Initialize (ITextViewModel textViewModel, ITextViewRoleSet roles, IEditorOptions parentOptions, TextEditorFactoryService factoryService, bool initialize = true)
 		{
 			this.roles = roles;
-			this.textArea.TextViewLines = new MdTextViewLineCollection (this);
-			textArea.LayoutChanged += TextAreaLayoutChanged;
 			this.factoryService = factoryService;
             GuardedOperations = this.factoryService.GuardedOperations;
             _spaceReservationStack = new SpaceReservationStack(this.factoryService.OrderedSpaceReservationManagerDefinitions, this);
 
 			this.TextDataModel = textViewModel.DataModel;
 			this.TextViewModel = textViewModel;
+
+			this.textArea.TextViewLines = new MdTextViewLineCollection (this);
+			textArea.LayoutChanged += TextAreaLayoutChanged;
 
 			textBuffer = textViewModel.EditBuffer;
             //			_visualBuffer = textViewModel.VisualBuffer;

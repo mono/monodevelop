@@ -38,12 +38,19 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using MonoDevelop.UnitTesting;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture]
-	class UnitTesteditorIntegrationTests : ICSharpCode.NRefactory6.TestBase
+	class UnitTesteditorIntegrationTests : Ide.TextEditorExtensionTestBase
 	{
+		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharpWithReferences;
+		protected override IEnumerable<TextEditorExtension> GetEditorExtensions ()
+		{
+			yield return new UnitTestTextEditorExtension ();
+		}
+
 		class UnitTestMarkers: IUnitTestMarkers
 		{
 			public string TestMethodAttributeMarker { get; set; }
@@ -61,52 +68,25 @@ namespace MonoDevelop.CSharpBinding.Tests
 			}
 		};
 
-		static async Task Setup (string input, Action<UnitTestTextEditorExtension> test)
+		async Task Setup (string input, Func<UnitTestTextEditorExtension, Task> test)
 		{
-			var tww = new TestWorkbenchWindow ();
-			var content = new TestViewContent ();
-			tww.ViewContent = content;
-			content.ContentName = "/a.cs";
-			content.Data.MimeType = "text/x-csharp";
-			MonoDevelop.AnalysisCore.AnalysisOptions.EnableUnitTestEditorIntegration.Set (true);
-			var doc = new Document (tww);
-
 			var text = @"namespace NUnit.Framework {
 	public class TestFixtureAttribute : System.Attribute {} 
 	public class TestAttribute : System.Attribute {} 
-} namespace TestNs { " + input +"}";
+} namespace TestNs { " + input + "}";
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
-			content.Text = text;
-			content.CursorPosition = System.Math.Max (0, endPos);
+			AnalysisCore.AnalysisOptions.EnableUnitTestEditorIntegration.Set (true);
 
-			var project = MonoDevelop.Ide.Services.ProjectService.CreateDotNetProject ("C#");
-			project.Name = "test";
-			project.FileName = "test.csproj";
-			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
+			using (var testCase = await SetupTestCase (text, Math.Max (0, endPos))) {
+				var doc = testCase.Document;
+				await doc.UpdateParseDocument ();
 
-			var solution = new Solution ();
-			solution.AddConfiguration ("", true); 
-			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
-			content.Project = project;
-			doc.SetProject (project);
-
-			var compExt = new UnitTestTextEditorExtension ();
-			compExt.Initialize (doc.Editor, doc);
-			content.Contents.Add (compExt);
-			await doc.UpdateParseDocument ();
-			test (compExt);
-			TypeSystemService.Unload (solution);
-		}
-
-		protected override void InternalSetup (string rootDir)
-		{
-			base.InternalSetup (rootDir);
-			IdeApp.Initialize (new ProgressMonitor ()); 
+				var compExt = doc.GetContent<UnitTestTextEditorExtension> ();
+				await test (compExt);
+			}
 		}
 
 		[Test]
@@ -189,7 +169,6 @@ class TestClass
 				Assert.AreEqual (2, tests.Count);
 			});
 		}
-
 	}
 }
 

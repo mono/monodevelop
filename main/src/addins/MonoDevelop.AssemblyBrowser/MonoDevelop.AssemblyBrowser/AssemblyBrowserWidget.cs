@@ -367,7 +367,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		ITreeNavigator SearchMember (IMemberDefinition member, bool expandNode = true)
 		{
-			return SearchMember (GetIdString (member), expandNode);
+			return SearchMember (Mono.Cecil.Rocks.DocCommentId.GetDocCommentId (member), expandNode);
 		}
 			
 		ITreeNavigator SearchMember (string helpUrl, bool expandNode = true)
@@ -383,19 +383,12 @@ namespace MonoDevelop.AssemblyBrowser
 			return null;
 		}
 
-		internal string GetIdString (IMemberDefinition member)
-		{
-			var result = UnresolvedIdStringProvider.GetIdString (member);
-			// Console.WriteLine (result);
-			return result;
-		}
-
 		bool IsMatch (ITreeNavigator nav, string helpUrl, bool searchType)
 		{
 			var member = nav.DataItem as IMemberDefinition;
 			if (member == null)
 				return false;
-			return GetIdString (member) == helpUrl;
+			return Mono.Cecil.Rocks.DocCommentId.GetDocCommentId (member) == helpUrl;
 		}
 			
 		static bool SkipChildren (ITreeNavigator nav, string helpUrl, bool searchType)
@@ -1264,7 +1257,7 @@ namespace MonoDevelop.AssemblyBrowser
 			AssemblyLoader loader = null;
 			if (selectedEntity != null) {
 				loader = (AssemblyLoader)this.TreeView.GetSelectedNode ().GetParentDataItem (typeof (AssemblyLoader), true);
-				return new AssemblyBrowserNavigationPoint (definitions, loader, GetIdString (selectedEntity));
+				return new AssemblyBrowserNavigationPoint (definitions, loader, Mono.Cecil.Rocks.DocCommentId.GetDocCommentId (selectedEntity));
 			}
 			loader = node?.DataItem as AssemblyLoader;
 			if (loader != null)

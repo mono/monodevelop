@@ -62,6 +62,15 @@ namespace Mono.TextEditor
 
 			public ITextSnapshot Snapshot => lineSpan.Snapshot;
 
+			public void TranslateToSnapshot(ITextSnapshot newSnapshot)
+			{
+				if (Snapshot == newSnapshot) {
+					return;
+				}
+
+				lineSpan = lineSpan.TranslateTo (newSnapshot, SpanTrackingMode.EdgeExclusive);
+			}
+
 			public bool IsFirstTextViewLineForSnapshotLine => collection[0] == this;
 
 			public bool IsLastTextViewLineForSnapshotLine => collection[collection.Count - 1] == this;

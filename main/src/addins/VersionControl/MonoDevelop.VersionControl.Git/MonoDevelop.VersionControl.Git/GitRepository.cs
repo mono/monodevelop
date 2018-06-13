@@ -1385,7 +1385,9 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			}
 
-			BranchSelectionChanged?.Invoke (this, EventArgs.Empty);
+			Runtime.RunInMainThread (() => {
+				BranchSelectionChanged?.Invoke (this, EventArgs.Empty);
+			}).Ignore ();
 
 			monitor.EndTask ();
 			return true;

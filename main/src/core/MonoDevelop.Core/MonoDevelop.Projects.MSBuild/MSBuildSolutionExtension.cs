@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var logger = targetContext != null ? new ProxyLogger (null, targetContext.Loggers) : null;
 
 			// Start the build session
-			object sessionId = RemoteBuildEngineManager.StartBuildSession (monitor.Log, logger, verbosity, GetSolutionConfigurations (configuration));
+			object sessionId = RemoteBuildEngineManager.StartBuildSession (monitor, logger, verbosity, GetSolutionConfigurations (configuration));
 
 			// Store the session handle in the context, so that it can be later used to
 			// add builds to the session.

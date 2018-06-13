@@ -72,6 +72,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static TypeSystemService ()
 		{
+			RoslynServices.RoslynService.Initialize ();
 			CleanupCache ();
 			parsers = AddinManager.GetExtensionNodes<TypeSystemParserNode> ("/MonoDevelop/TypeSystem/Parser");
 			bool initialLoad = true;
@@ -741,7 +742,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 
 				if (IdeApp.IsInitialized)
-					statusIcon = IdeApp.Workbench?.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-parser"));
+					statusIcon = IdeApp.Workbench?.StatusBar.ShowStatusIcon (ImageService.GetIcon (Gui.Stock.Parser));
 				if (statusIcon != null)
 					statusIcon.ToolTip = GettextCatalog.GetString ("Gathering class information");
 			});

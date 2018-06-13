@@ -82,6 +82,7 @@
     <Compile Include="MonoDevelop.TextEditor.Extension\NavigationExtensionTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\DiffTrackerTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextViewTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\TextLinkModeTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

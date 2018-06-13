@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 using Mono.Addins;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -78,6 +79,21 @@ namespace MonoDevelop.Ide.Gui
 		public BaseViewContent ActiveViewContent {
 			get { return ViewContent;}
 			set {}
+		}
+
+		public bool CloseWindowSync ()
+		{
+			var e = new WorkbenchWindowEventArgs (true, true);
+			if (Closing != null) {
+				foreach (var handler in Closing.GetInvocationList ().Cast<WorkbenchWindowAsyncEventHandler> ()) {
+					handler (this, e).Wait ();
+					if (e.Cancel)
+						break;
+				}
+			}
+
+			Closed?.Invoke (this, e);;
+			return true;
 		}
 		
 		public Task<bool> CloseWindow (bool force)

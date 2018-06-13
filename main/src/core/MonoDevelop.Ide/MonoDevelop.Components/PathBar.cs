@@ -148,6 +148,8 @@ namespace MonoDevelop.Components
 	
 	class PathBar : Gtk.DrawingArea
 	{
+		const int DefaultTopPadding = 2;
+
 		PathEntry[] leftPath  = new PathEntry[0];
 		PathEntry[] rightPath = new PathEntry[0];
 		Pango.Layout layout;
@@ -162,6 +164,7 @@ namespace MonoDevelop.Components
 
 		int height;
 		int textHeight;
+		int topPadding;
 
 		bool pressed, hovering, menuVisible;
 		int hoverIndex = -1;
@@ -169,7 +172,6 @@ namespace MonoDevelop.Components
 
 		const int leftPadding = 6;
 		const int rightPadding = 6;
-		const int topPadding = 2;
 		const int bottomPadding = 4;
 		const int iconSpacing = 4;
 		const int padding = 3;
@@ -187,7 +189,7 @@ namespace MonoDevelop.Components
 		int menuIndex;
 		uint hideTimeout;
 
-		public PathBar (Func<int, Control> createMenuForItem)
+		public PathBar (Func<int, Control> createMenuForItem, int topPadding = DefaultTopPadding)
 		{
 			Accessible.Name = "PathBar";
 			Accessible.SetLabel (GettextCatalog.GetString ("Breadcrumb Bar"));
@@ -197,6 +199,7 @@ namespace MonoDevelop.Components
 
 			CanFocus = true;
 
+			this.topPadding = topPadding;
 			this.Events =  EventMask.ExposureMask | 
 				           EventMask.EnterNotifyMask |
 				           EventMask.LeaveNotifyMask |
@@ -219,6 +222,7 @@ namespace MonoDevelop.Components
 		
 		public new PathEntry[] Path { get; private set; }
 		public int ActiveIndex { get { return activeIndex; } }
+		public bool DrawBottomBorder { get; set; } = true;
 
 		void UpdatePathAccessibility ()
 		{
@@ -475,12 +479,13 @@ namespace MonoDevelop.Components
 					ctx.Restore ();
 				}
 
-				ctx.MoveTo (0, Allocation.Height - 0.5);
-				ctx.RelLineTo (Allocation.Width, 0);
-				ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor.ToCairoColor ());
-				ctx.LineWidth = 1;
-				ctx.Stroke ();
-
+				if (DrawBottomBorder) {
+					ctx.MoveTo (0, Allocation.Height - 0.5);
+					ctx.RelLineTo (Allocation.Width, 0);
+					ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor.ToCairoColor ());
+					ctx.LineWidth = 1;
+					ctx.Stroke ();
+				}
 				if (HasFocus) {
 					int focusY = topPadding - buttonPadding;
 					int focusHeight = Allocation.Height - topPadding - bottomPadding + buttonPadding * 2;

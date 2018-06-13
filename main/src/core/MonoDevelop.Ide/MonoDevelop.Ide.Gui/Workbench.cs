@@ -56,6 +56,7 @@ using MonoDevelop.Components;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -301,6 +302,20 @@ namespace MonoDevelop.Ide.Gui
 		public void HideCommandBar (string barId)
 		{
 			workbench.Toolbar.HideCommandBar (barId);
+		}
+
+		internal void ShowInfoBar (bool inActiveView, string description, params InfoBarItem[] items)
+		{
+			IInfoBarHost infoBarHost = null;
+			if (inActiveView) {
+				// Maybe for pads also? Not sure if we should.
+				infoBarHost = IdeApp.Workbench.ActiveDocument as IInfoBarHost;
+			}
+
+			if (infoBarHost == null)
+				infoBarHost = IdeApp.Workbench.RootWindow as IInfoBarHost;
+
+			infoBarHost?.AddInfoBar (description, items);
 		}
 
 		internal MonoDevelop.Components.MainToolbar.MainToolbarController Toolbar {
@@ -849,7 +864,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (window == null) return null;
 			Document doc = FindDocument (window);
-			if (doc != null) return doc;
+			if (doc != null)
+				return doc;
 			doc = new Document (window);
 			window.Closing += OnWindowClosing;
 			window.Closed += OnWindowClosed;

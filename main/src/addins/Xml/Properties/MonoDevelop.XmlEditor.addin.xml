@@ -2,13 +2,12 @@
 
 	<Runtime>
 		<Import file="schemas/appconfig.xsd" />
-		<Import file="schemas/MonoDevelopAddIn.xsd" />
 		<Import file="schemas/readme.txt" />
 		<Import file="schemas/XMLSchema.xsd" />
 		<Import file="schemas/W3C-License.html" />
-		<Import file="schemas/xslt.xsd" />
+		<Import file="schemas/schema-for-xslt20.xsd" />
 		<Import file="schemas/manifest.xsd" />
-		<Import file="schemas/nant.xsd" />
+		<Import file="schemas/xml.xsd" />
 	</Runtime>
 
 	<ExtensionPoint path = "/MonoDevelop/Xml/Editor/XmlFileAssociations">
@@ -21,7 +20,6 @@
 
 	<!-- Additional file extensions that will be opened in the XML editor -->
 	<Extension path = "/MonoDevelop/Xml/Editor/XmlFileAssociations">
-		<Association extension = ".build"  namespaceUri="http://nant.sf.net/release/0.85-rc3/nant.xsd" />
 		<Association extension = ".config" namespaceUri="urn:app-config" />
 		<Association extension = ".manifest" namespaceUri="schemas-microsoft-com:asm.v1" />
 		<Association extension = ".xsd"    namespaceUri="http://www.w3.org/2001/XMLSchema" namespacePrefix="xs" />
@@ -31,12 +29,11 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Xml/Editor/XmlSchemas">
-		<Schema file="schemas/appconfig.xsd" />
-		<Schema file="schemas/MonoDevelopAddIn.xsd" />
+		<Schema file="schemas/xml.xsd" />
 		<Schema file="schemas/XMLSchema.xsd" />
-		<Schema file="schemas/xslt.xsd" />
+		<Schema file="schemas/schema-for-xslt20.xsd" />
+		<Schema file="schemas/appconfig.xsd" />
 		<Schema file="schemas/manifest.xsd" />
-		<Schema file="schemas/nant.xsd" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">

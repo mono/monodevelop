@@ -34,20 +34,19 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
-    [ExportWorkspaceServiceFactory(typeof(IProjectCacheHostService), ServiceLayer.Host)]
-    [Shared]
+	[ExportWorkspaceServiceFactory (typeof (IProjectCacheHostService), ServiceLayer.Host)]
+	[Shared]
 	class MonoDevelopProjectCacheHostServiceFactory : IWorkspaceServiceFactory
-    {
+	{
 		// Same as VSWin.
-        const int ImplicitCacheTimeoutInMS = 10000;
+		const int ImplicitCacheTimeoutInMS = 10000;
 
-        public IWorkspaceService CreateService(HostWorkspaceServices workspaceServices)
-        {
-            // we support active document tracking only for visual studio workspace host.
-			if (workspaceServices.Workspace is MonoDevelopWorkspace)
-			{
+		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
+		{
+			// we support active document tracking only for visual studio workspace host.
+			if (workspaceServices.Workspace is MonoDevelopWorkspace) {
 				// We will finish setting this up in VisualStudioWorkspaceImpl.DeferredInitializationState
-				var projectCacheService =  new ProjectCacheService (workspaceServices.Workspace, ImplicitCacheTimeoutInMS);
+				var projectCacheService = new ProjectCacheService (workspaceServices.Workspace, ImplicitCacheTimeoutInMS);
 				var documentTrackingService = workspaceServices.GetService<IDocumentTrackingService> ();
 
 				// Subscribe to events so that we can cache items from the active document's project
@@ -65,68 +64,64 @@ namespace MonoDevelop.Ide.RoslynServices
 						manager.Clear ();
 					}
 				};
+				return projectCacheService;
 			}
 
 			// TODO: Handle miscellaneous files workspace later on.
 			return new ProjectCacheService (workspaceServices.Workspace);
-        }
+		}
 
-        class ActiveProjectCacheManager
-        {
-            readonly IDocumentTrackingService _documentTrackingService;
-            readonly ProjectCacheService _projectCacheService;
-			readonly object lockObject = new object();
+		class ActiveProjectCacheManager
+		{
+			readonly IDocumentTrackingService _documentTrackingService;
+			readonly ProjectCacheService _projectCacheService;
+			readonly object lockObject = new object ();
 
-            ProjectId _mostRecentActiveProjectId;
-            IDisposable _mostRecentCache;
+			ProjectId _mostRecentActiveProjectId;
+			IDisposable _mostRecentCache;
 
-            public ActiveProjectCacheManager(IDocumentTrackingService documentTrackingService, ProjectCacheService projectCacheService)
-            {
-                _documentTrackingService = documentTrackingService;
-                _projectCacheService = projectCacheService;
+			public ActiveProjectCacheManager (IDocumentTrackingService documentTrackingService, ProjectCacheService projectCacheService)
+			{
+				_documentTrackingService = documentTrackingService;
+				_projectCacheService = projectCacheService;
 
-                if (documentTrackingService != null)
-                {
-                    documentTrackingService.ActiveDocumentChanged += UpdateCache;
-                    UpdateCache(null, documentTrackingService.GetActiveDocument());
-                }
-            }
+				if (documentTrackingService != null) {
+					documentTrackingService.ActiveDocumentChanged += UpdateCache;
+					UpdateCache (null, documentTrackingService.GetActiveDocument ());
+				}
+			}
 
-            void UpdateCache(object sender, DocumentId activeDocument)
-            {
-                lock (lockObject)
-                {
-                    if (activeDocument != null && activeDocument.ProjectId != _mostRecentActiveProjectId)
-                    {
-                        ClearMostRecentCache_NoLock();
-                        _mostRecentCache = _projectCacheService.EnableCaching(activeDocument.ProjectId);
-                        _mostRecentActiveProjectId = activeDocument.ProjectId;
-                    }
-                }
-            }
+			void UpdateCache (object sender, DocumentId activeDocument)
+			{
+				lock (lockObject) {
+					if (activeDocument != null && activeDocument.ProjectId != _mostRecentActiveProjectId) {
+						ClearMostRecentCache_NoLock ();
+						_mostRecentCache = _projectCacheService.EnableCaching (activeDocument.ProjectId);
+						_mostRecentActiveProjectId = activeDocument.ProjectId;
+					}
+				}
+			}
 
-            public void Clear()
-            {
-                lock (lockObject)
-                {
-                    // clear most recent cache
-                    ClearMostRecentCache_NoLock();
+			public void Clear ()
+			{
+				lock (lockObject) {
+					// clear most recent cache
+					ClearMostRecentCache_NoLock ();
 
-                    // clear implicit cache
-                    _projectCacheService.ClearImplicitCache();
-                }
-            }
+					// clear implicit cache
+					_projectCacheService.ClearImplicitCache ();
+				}
+			}
 
-            void ClearMostRecentCache_NoLock()
-            {
-                if (_mostRecentCache != null)
-                {
-                    _mostRecentCache.Dispose();
-                    _mostRecentCache = null;
-                }
+			void ClearMostRecentCache_NoLock ()
+			{
+				if (_mostRecentCache != null) {
+					_mostRecentCache.Dispose ();
+					_mostRecentCache = null;
+				}
 
-                _mostRecentActiveProjectId = null;
-            }
-        }
-    }
+				_mostRecentActiveProjectId = null;
+			}
+		}
+	}
 }

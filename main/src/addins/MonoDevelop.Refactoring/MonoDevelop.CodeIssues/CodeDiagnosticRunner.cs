@@ -48,18 +48,12 @@ namespace MonoDevelop.CodeIssues
 {
 	static class CodeDiagnosticRunner
 	{
-		static TraceListener consoleTraceListener = new ConsoleTraceListener ();
-
 		public static async Task<IEnumerable<Result>> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken, ImmutableArray<DiagnosticData> results)
 		{
 			var input = analysisDocument.DocumentContext;
 			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
 				return Enumerable.Empty<Result> ();
 			try {
-#if DEBUG
-				Debug.Listeners.Add (consoleTraceListener);
-#endif
-
 				var resultList = new List<Result> (results.Length);
 				foreach (var data in results) {
 					if (input.IsAdHocProject && SkipError (data.Id))

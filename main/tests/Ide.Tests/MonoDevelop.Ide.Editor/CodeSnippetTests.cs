@@ -43,8 +43,10 @@ using MonoDevelop.Projects;
 namespace MonoDevelop.Ide.Editor
 {
 	[TestFixture]
-	public class CodeSnippetTests : IdeTestBase
+	public class CodeSnippetTests : TextEditorExtensionTestBase
 	{
+		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharp;
+
 		//Bug 620177: [Feedback] VS for Mac: code snippet problem
 		[Test]
 		public async Task TestBug620177 ()
@@ -58,44 +60,19 @@ namespace MonoDevelop.Ide.Editor
 			Assert.AreEqual ("class Foo : Test\n{\n".Length, editor.CaretOffset);
 		}
 
-		static async Task<TextEditor> RunSnippet (CodeTemplate snippet)
+		async Task<TextEditor> RunSnippet (CodeTemplate snippet)
 		{
-			var project = Services.ProjectService.CreateDotNetProject ("C#");
-			project.Name = "test";
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("mscorlib"));
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System.Core"));
-
-			project.FileName = "test.csproj";
-			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile));
-
-			var solution = new MonoDevelop.Projects.Solution ();
-			solution.AddConfiguration ("", true);
-			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
-
-			var content = new TestViewContent ();
-			content.Project = project;
-			content.ContentName = "/a.cs";
-			content.Data.MimeType = "text/x-csharp";
-			content.Text = "";
-
-			var tww = new TestWorkbenchWindow ();
-			tww.ViewContent = content;
-
-			var doc = new TestDocument (tww);
-			doc.SetProject (project);
-
-			doc.Editor.IndentationTracker = new TestIndentTracker ("    ");
-			doc.Editor.Options = new CustomEditorOptions (doc.Editor.Options) {
-				IndentStyle = IndentStyle.Smart,
-				RemoveTrailingWhitespaces = true
-			};
-			await doc.UpdateParseDocument ();
-			snippet.Insert (doc);
-			TypeSystemService.Unload (solution);
-			return doc.Editor;
+			using (var testCase = await SetupTestCase ("")) {
+				var doc = testCase.Document;
+				doc.Editor.Options = new CustomEditorOptions (doc.Editor.Options) {
+					IndentStyle = IndentStyle.Smart,
+					RemoveTrailingWhitespaces = true
+				};
+				doc.Editor.IndentationTracker = new TestIndentTracker ("    ");
+				await doc.UpdateParseDocument ();
+				snippet.Insert (doc);
+				return doc.Editor;
+			}
 		}
 
 		class TestIndentTracker : IndentationTracker

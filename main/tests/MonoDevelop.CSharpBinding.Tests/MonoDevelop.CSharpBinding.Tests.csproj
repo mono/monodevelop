@@ -96,7 +96,6 @@
     <Compile Include="Features\IndentationTests\StringTests.cs" />
     <Compile Include="Features\IndentationTests\TextPasteIndentEngineTests.cs" />
     <Compile Include="Features\TestBase.cs" />
-    <Compile Include="Features\Util.cs" />
     <Compile Include="Features\Completion\CastCompletionProviderTests.cs" />
     <Compile Include="Features\Completion\EnumMemberCompletionProviderTests.cs" />
     <Compile Include="Features\Completion\DelegateCompletionProviderTests.cs" />
@@ -113,7 +112,6 @@
     <Compile Include="MonoDevelop.CSharpBinding\MonodevelopWorkspaceTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\NamedArgumentCompletionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\OnTheFlyFormatterTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TypeSystemServiceTestExtensions.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\UnitTesteditorIntegrationTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpFindReferencesProviderTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
@@ -208,8 +206,8 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
-    <None Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
     <None Include="packages.config" />
+    <None Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.CSharpBinding.Parser\" />

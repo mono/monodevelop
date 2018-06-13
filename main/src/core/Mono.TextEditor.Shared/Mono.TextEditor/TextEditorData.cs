@@ -80,7 +80,8 @@ namespace Mono.TextEditor
 			set {
 				var oldMode = currentMode;
 				currentMode = value;
-				currentMode.AddedToEditor (this);
+				if (currentMode != null)
+					currentMode.AddedToEditor (this);
 				if (oldMode != null)
 					oldMode.RemovedFromEditor (this);
 				OnEditModeChanged (new EditModeChangedEventArgs (oldMode, currentMode));
@@ -652,13 +653,21 @@ namespace Mono.TextEditor
 			FixVirtualIndentation (Caret.Line);
 		}
 
+		public bool LockFixIndentation { get; set; }
+
 		public void FixVirtualIndentation (int lineNumber)
 		{
-			if (!HasIndentationTracker || Options.IndentStyle != IndentStyle.Virtual)
+			if (!HasIndentationTracker || Options.IndentStyle != IndentStyle.Virtual || LockFixIndentation)
 				return;
 			var line = Document.GetLine (lineNumber);
-			if (line != null && line.Length > 0 && GetIndentationString (lineNumber, line.Length + 1) == Document.GetTextAt (line.Offset, line.Length))
+			if (line == null || line.Length == 0)
+				return;
+			var indentString = GetIndentationString (lineNumber, line.Length + 1);
+			if (indentString.Length != line.Length)
+				return;
+			if (indentString == Document.GetTextAt (line.Offset, line.Length)) {
 				Remove (line.Offset, line.Length);
+			}
 		}
 
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args)

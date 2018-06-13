@@ -25,6 +25,7 @@ clean:
 	$(MAKE) -C monomac/src clean
 	rm -f Xamarin.Mac.Registrar.full.a
 	rm -f Xamarin.Mac.dll*
+	rm -f Xamarin.Mac.pdb
 	rm -f libxammac.dylib
 
 else

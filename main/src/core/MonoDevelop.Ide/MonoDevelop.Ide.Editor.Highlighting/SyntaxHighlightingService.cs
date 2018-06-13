@@ -40,6 +40,7 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Components;
 using System.Collections.Immutable;
 using ICSharpCode.NRefactory.MonoCSharp;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -47,6 +48,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	public static class SyntaxHighlightingService
 	{
 		static LanguageBundle builtInBundle = new LanguageBundle ("default", null);
+		static LanguageBundle extensionBundle = new LanguageBundle ("extensions", null);
+		internal static LanguageBundle userThemeBundle = new LanguageBundle ("userThemes", null);
 		static List<LanguageBundle> languageBundles = new List<LanguageBundle> ();
 
 		internal static IEnumerable<LanguageBundle> AllBundles {
@@ -174,7 +177,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				for (int i = 0; i < bundle.EditorThemes.Count; ++i) {
 					var style = bundle.EditorThemes[i];
 					if (style.Name == name)
-						return style;
+						return style.GetEditorTheme ();
 				}
 			}
 			LoggingService.LogWarning ("Color style " + name + " not found, switching to default.");
@@ -187,7 +190,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal static void Remove (EditorTheme style)
 		{
-			builtInBundle.Remove (style);
+			userThemeBundle.Remove (style);
 		}
 
 		internal static void Remove (LanguageBundle style)
@@ -195,19 +198,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			languageBundles.Remove (style);
 		}
 
-
 		static List<ValidationEventArgs> ValidateStyleFile (string fileName)
 		{
 			List<ValidationEventArgs> result = new List<ValidationEventArgs> ();
 			return result;
 		}
 
-
 		internal static void LoadStylesAndModesInPath (string path)
 		{
 			foreach (string file in Directory.GetFiles (path)) {
 				try {
-					LoadStyleOrMode (file);
+					LoadStyleOrMode (userThemeBundle, file);
 				} catch (Exception ex) {
 					LoggingService.LogError ($"Could not load file '{file}'", ex);
 				}
@@ -218,13 +219,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			foreach (var bundle in languageBundles) {
 				foreach (var h in bundle.Highlightings)
-					h.PrepareMatches ();
+					if (h is SyntaxHighlightingDefinition def)
+						def.PrepareMatches ();
 			}
 		}
 
-		internal static object LoadStyleOrMode (string file)
+		internal static object LoadStyleOrMode (LanguageBundle bundle, string file)
 		{
-			return LoadFile (builtInBundle, file, () => File.OpenRead (file), () => new UrlStreamProvider (file));
+			return LoadFile (bundle, file, () => File.OpenRead (file), () => new UrlStreamProvider (file));
 		}
 
 		internal static bool IsValidTheme (string file)
@@ -239,17 +241,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return false;
 		}
 
-			/*
-			 * 				if (provider.Name.EndsWith (".vssettings", StringComparison.Ordinal)) {
-					styles [name] = OldFormat.ImportVsSetting (provider.Name, stream);
-				} else if (provider.Name.EndsWith (".json", StringComparison.Ordinal)) {
-					styles [name] = OldFormat.ImportColorScheme (stream);
-				} else {
-					styles [name] = TextMateFormat.LoadEditorTheme (stream);
-				}
-				styles [name].FileName = provider.Name;
-
-			 * */
 
 		static object LoadFile (LanguageBundle bundle, string file, Func<Stream> openStream, Func<IStreamProvider> getStreamProvider)
 		{
@@ -257,18 +248,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				using (var stream = openStream ()) {
 					string styleName;
 					JSonFormat format;
-					if (TryScanJSonStyle (stream, out styleName, out format)) {
+					if (TryScanJSonStyle (stream, out styleName, out format, out List<string> fileTypes, out string scopeName)) {
 						switch (format) {
 						case JSonFormat.OldSyntaxTheme:
-							var theme = OldFormat.ImportColorScheme (getStreamProvider ().Open ());
-							if (theme != null)
-								bundle.Add (theme);
-							return theme;
+							var oldThemeProvider = AbstractThemeProvider.CreateProvider (EditorThemeFormat.XamarinStudio, styleName, getStreamProvider);
+							bundle.Add (oldThemeProvider);
+							return oldThemeProvider;
 						case JSonFormat.TextMateJsonSyntax:
-							SyntaxHighlightingDefinition highlighting = TextMateFormat.ReadHighlightingFromJson (getStreamProvider().Open ());
-							if (highlighting != null)
-								bundle.Add (highlighting);
-							return highlighting;
+							var syntaxProvider = AbstractSyntaxHighlightingDefinitionProvider.CreateProvider (SyntaxHighlightingDefinitionFormat.TextMateJson, styleName, scopeName, fileTypes, getStreamProvider);
+							bundle.Add (syntaxProvider);
+							return syntaxProvider;
 						}
 					}
 				}
@@ -276,9 +265,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				using (var stream = openStream ()) {
 					string styleName = ScanTextMateStyle (stream);
 					if (!string.IsNullOrEmpty (styleName)) {
-						var theme = TextMateFormat.LoadEditorTheme (getStreamProvider ().Open ());
-						if (theme != null)
-							bundle.Add (theme);
+						var theme = AbstractThemeProvider.CreateProvider (EditorThemeFormat.TextMate, styleName, getStreamProvider);
+						bundle.Add (theme);
 						return theme;
 					} else {
 						LoggingService.LogError ("Invalid .tmTheme theme file : " + file);
@@ -286,41 +274,29 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 			} else if (file.EndsWith (".vssettings", StringComparison.OrdinalIgnoreCase)) {
 				using (var stream = openStream ()) {
-					string styleName = Path.GetFileNameWithoutExtension (file);
-					EditorTheme theme;
-					try {
-						theme = OldFormat.ImportVsSetting (styleName, getStreamProvider ().Open ());
-					} catch (StyleImportException e) {
-						switch (e.Reason) {
-						case StyleImportException.ImportFailReason.Unknown:
-							LoggingService.LogWarning ("Unknown error in theme file : " + file, e);
-							break;
-						case StyleImportException.ImportFailReason.NoValidColorsFound:
-							LoggingService.LogWarning ("No colors defined in vssettings : " + file, e);
-							break;
-						}
-						return null;
-					} catch (Exception e) {
-						LoggingService.LogWarning ("Invalid theme : " + file, e);
-						return null;
-					}
-					if (theme != null)
-						bundle.Add (theme);
+					var theme = AbstractThemeProvider.CreateProvider (EditorThemeFormat.VisualStudio, file, getStreamProvider);
+					bundle.Add (theme);
 					return theme;
 				}
 			} else if (file.EndsWith (".tmLanguage", StringComparison.OrdinalIgnoreCase)) {
 				using (var stream = openStream ()) {
-					var highlighting = TextMateFormat.ReadHighlighting (stream);
-					if (highlighting != null)
-						bundle.Add (highlighting);
-					return highlighting;
+					if (TryScanTextMateSyntax (stream, out List<string> fileTypes, out string styleName, out string scopeName)) {
+						var syntaxProvider = AbstractSyntaxHighlightingDefinitionProvider.CreateProvider (SyntaxHighlightingDefinitionFormat.TextMate, styleName, scopeName, fileTypes, getStreamProvider);
+						bundle.Add (syntaxProvider);
+						return syntaxProvider;
+					} else {
+						LoggingService.LogError ("Invalid .tmLanguage file : " + file);
+					}
 				}
 			} else if (file.EndsWith (".sublime-syntax", StringComparison.OrdinalIgnoreCase)) {
-				using (var stream = new StreamReader (openStream ())) {
-					var highlighting = Sublime3Format.ReadHighlighting (stream);
-					if (highlighting != null)
-						bundle.Add (highlighting);
-					return highlighting;
+				using (var stream = openStream ()) {
+					if (TryScanSublimeSyntax (stream, out List<string> fileTypes, out string styleName, out string scopeName)) {
+						var syntaxProvider = AbstractSyntaxHighlightingDefinitionProvider.CreateProvider (SyntaxHighlightingDefinitionFormat.Sublime3, styleName, scopeName, fileTypes, getStreamProvider);
+						bundle.Add (syntaxProvider);
+						return syntaxProvider;
+					} else {
+						LoggingService.LogError ("Invalid .sublime-syntax file : " + file);
+					}
 				}
 			} else if (file.EndsWith (".sublime-package", StringComparison.OrdinalIgnoreCase) || file.EndsWith (".tmbundle", StringComparison.OrdinalIgnoreCase)) {
 				try {
@@ -375,22 +351,28 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		static System.Text.RegularExpressions.Regex jsonNameRegex = new System.Text.RegularExpressions.Regex ("\\s*\"name\"\\s*:\\s*\"(.*)\"\\s*,");
-		static System.Text.RegularExpressions.Regex jsonVersionRegex = new System.Text.RegularExpressions.Regex ("\\s*\"version\"\\s*:\\s*\"(.*)\"\\s*,");
+		static System.Text.RegularExpressions.Regex jsonNameRegex = new System.Text.RegularExpressions.Regex ("\\s*\"name\"\\s*:\\s*\"(.*)\"");
+		static System.Text.RegularExpressions.Regex jsonScopeNameRegex = new System.Text.RegularExpressions.Regex ("\\s*\"scopeName\"\\s*:\\s*\"(.*)\"");
+		static System.Text.RegularExpressions.Regex jsonVersionRegex = new System.Text.RegularExpressions.Regex ("\\s*\"version\"\\s*:\\s*\"(.*)\"");
+		static System.Text.RegularExpressions.Regex fileTypesRegex = new System.Text.RegularExpressions.Regex ("\\s*\"fileTypes\"");
+		static System.Text.RegularExpressions.Regex fileTypesEndRegex = new System.Text.RegularExpressions.Regex ("\\],");
 
 		enum JSonFormat { Unknown, OldSyntaxTheme, TextMateJsonSyntax }
 
-		static bool TryScanJSonStyle (Stream stream, out string name, out JSonFormat format)
+		static bool TryScanJSonStyle (Stream stream, out string name, out JSonFormat format, out List<string> fileTypes, out string scopeName)
 		{
 			name = null;
+			scopeName = null;
+
+			fileTypes = null;
 			format = JSonFormat.Unknown;
+			StreamReader file = null; 
 
 			try {
-				var file = TextFileUtility.OpenStream (stream);
+				file = TextFileUtility.OpenStream (stream);
 				file.ReadLine ();
 				var nameLine = file.ReadLine ();
 				var versionLine = file.ReadLine ();
-				file.Close ();
 				var match = jsonNameRegex.Match (nameLine);
 				if (match.Success) {
 					if (jsonVersionRegex.Match (versionLine).Success) {
@@ -399,17 +381,164 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						return true;
 					}
 				}
+				string line;
+				bool readFileTypes = false;
 
+				while ((line = file.ReadLine ()) != null) {
+					if (fileTypesRegex.Match (line).Success) {
+						readFileTypes = true;
+						fileTypes = new List<string> ();
+						continue;
+					}
+					if (name == null) {
+						match = jsonNameRegex.Match (line);
+						if (match.Success) {
+							name = match.Groups [1].Value;
+						}
+					}
+					if (scopeName == null) {
+						match = jsonScopeNameRegex.Match (line);
+						if (match.Success) {
+							scopeName = match.Groups [1].Value;
+						}
+					}
+					if (readFileTypes && fileTypesEndRegex.Match (line).Success)
+						break;
+					if (readFileTypes) {
+						line = line.Trim ();
+						if (line.Length > 3) {
+							var fileType = line.Substring (1, line.Length - 3);
+							fileTypes.Add (fileType);
+						}
+					}
+				}
+				if (fileTypes == null)
+					return false;
 				format = JSonFormat.TextMateJsonSyntax;
-				return true;
+				return name != null && scopeName != null;
 			} catch (Exception e) {
 				Console.WriteLine ("Error while scanning json:");
 				Console.WriteLine (e);
+			} finally {
+				file?.Close();
 			}
 			return false;
-			
 		}
 
+		static bool TryScanTextMateSyntax (Stream stream, out List<string> fileTypes, out string name, out string scopeName)
+		{
+			fileTypes = null;
+			System.Text.RegularExpressions.Match match;
+			name = scopeName = null;
+			try {
+				var file = TextFileUtility.OpenStream (stream);
+				bool readName = false, readScopeName = false, readFileTypes = false;
+				while (true) {
+					var line = file.ReadLine ();
+					if (line == null)
+						return name != null && scopeName != null && fileTypes != null;
+					if (name == null) {
+						if (readName) { // usually this is the line with the name
+							line = line.Trim ();
+							if (line.StartsWith ("<string>", StringComparison.Ordinal) && line.EndsWith ("</string>", StringComparison.Ordinal)) {
+								name = line.Substring ("<string>".Length, line.Length - "<string>".Length - "</string>".Length);
+							}
+						}
+						if (line.IndexOf ("<key>name</key>", StringComparison.Ordinal) >= 0) {
+							readName = true;
+							continue;
+						}
+						if (name != null && scopeName != null && fileTypes != null)
+							return true;
+					}
+					if (scopeName == null) {
+						if (readScopeName) { // usually this is the line with the name
+							line = line.Trim ();
+							if (line.StartsWith ("<string>", StringComparison.Ordinal) && line.EndsWith ("</string>", StringComparison.Ordinal)) {
+								scopeName = line.Substring ("<string>".Length, line.Length - "<string>".Length - "</string>".Length);
+							}
+						}
+						if (line.IndexOf ("<key>scopeName</key>", StringComparison.Ordinal) >= 0) {
+							readScopeName = true;
+							continue;
+						}
+						if (name != null && scopeName != null && fileTypes != null)
+							return true;
+					}
+
+					if (line.IndexOf ("<key>fileTypes</key>", StringComparison.Ordinal) >= 0) {
+						fileTypes = new List<string> ();
+						readFileTypes = true;
+						continue;
+					}
+					if (readFileTypes) {
+						if (line.IndexOf ("</array>", StringComparison.Ordinal) >= 0 || line.IndexOf ("<array/>", StringComparison.Ordinal) >= 0) {
+							readFileTypes = false;
+							if (name != null && scopeName != null)
+								return true;
+							continue;
+						}
+						match = textMateNameRegex.Match (line);
+						if (match.Success)
+							fileTypes.Add (match.Groups [1].Value);
+					}
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while sublime 3 json", e);
+				return false;
+			}
+		}
+
+		static System.Text.RegularExpressions.Regex sublime3NameRegex = new System.Text.RegularExpressions.Regex ("^\\s*name:\\s*(.*)\\s*$");
+		static System.Text.RegularExpressions.Regex sublime3ScopeNameRegex = new System.Text.RegularExpressions.Regex ("^\\s*scope:\\s*(.*)\\s*$");
+		static bool TryScanSublimeSyntax (Stream stream, out List<string> fileTypes, out string name, out string scopeName)
+		{
+			fileTypes = null;
+			name = scopeName = null;
+			System.Text.RegularExpressions.Match match;
+
+			try {
+				var file = TextFileUtility.OpenStream (stream);
+				bool readExtensions = false;
+				while (true) {
+					var line = file.ReadLine ();
+					if (line == null)
+						return name != null && scopeName != null && fileTypes != null;
+					if (name == null) {
+						match = sublime3NameRegex.Match (line);
+						if (match.Success) {
+							name = match.Groups [1].Value.Trim ('"');
+							continue;
+						}
+					}
+					if (scopeName == null) {
+						match = sublime3ScopeNameRegex.Match (line);
+						if (match.Success) {
+							scopeName = match.Groups [1].Value.Trim ('"');
+							continue;
+						}
+					}
+					if (fileTypes == null && line.Trim () == "file_extensions:") {
+						fileTypes = new List<string> ();
+						readExtensions = true;
+						continue;
+					}
+					if (readExtensions) {
+						line = line.Trim ();
+						if (line [0] != '-') {
+							if (name != null && scopeName != null)
+								return true;
+							readExtensions = false;
+							continue;
+						}
+						fileTypes.Add (line.Substring (1).Trim ());
+					}
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while sublime 3 json", e);
+				return false;
+			}
+		}
 
 		static System.Text.RegularExpressions.Regex textMateNameRegex = new System.Text.RegularExpressions.Regex ("\\<string\\>(.*)\\<\\/string\\>");
 
@@ -431,10 +560,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				var match = textMateNameRegex.Match (nameLine);
 				if (!match.Success)
 					return null;
-				return match.Groups[1].Value;
+				return match.Groups [1].Value;
 			} catch (Exception e) {
-				Console.WriteLine ("Error while scanning json:");
-				Console.WriteLine (e);
+				LoggingService.LogError ("Error while scanning json", e);
 				return null;
 			}
 		}
@@ -444,17 +572,15 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			string styleName;
 			JSonFormat format;
 			using (var stream = provider.Open ()) {
-				if (TryScanJSonStyle (stream, out styleName, out format)) {
+				if (TryScanJSonStyle (stream, out styleName, out format, out List<string> fileTypes, out string scopeName)) {
 					switch (format) {
 					case JSonFormat.OldSyntaxTheme:
-						var theme = OldFormat.ImportColorScheme (provider.Open ());
-						if (theme != null)
-							builtInBundle.Add (theme);
+						var oldThemeProvider = AbstractThemeProvider.CreateProvider (EditorThemeFormat.XamarinStudio, styleName, () => provider);
+						builtInBundle.Add (oldThemeProvider);
 						break;
 					case JSonFormat.TextMateJsonSyntax:
-						SyntaxHighlightingDefinition highlighting = TextMateFormat.ReadHighlightingFromJson (provider.Open ());
-						if (highlighting != null)
-							builtInBundle.Add (highlighting);
+						var syntaxProvider = AbstractSyntaxHighlightingDefinitionProvider.CreateProvider (SyntaxHighlightingDefinitionFormat.TextMateJson, styleName, scopeName, fileTypes, () => provider);
+						builtInBundle.Add (syntaxProvider);
 						break;
 					}
 				}
@@ -467,6 +593,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static SyntaxHighlightingService ()
 		{
+			languageBundles.Add (userThemeBundle);
+			languageBundles.Add (extensionBundle);
 			languageBundles.Add (builtInBundle);
 
 			LoadStylesAndModes (typeof (SyntaxHighlightingService).Assembly);
@@ -489,7 +617,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (success) {
 				foreach (string file in Directory.GetFiles (LanguageBundlePath)) {
 					if (file.EndsWith (".sublime-package", StringComparison.OrdinalIgnoreCase) || file.EndsWith (".tmbundle", StringComparison.OrdinalIgnoreCase)) {
-						LoadStyleOrMode (file); 
+						LoadStyleOrMode (userThemeBundle, file); 
 					}
 				}
 			}
@@ -503,20 +631,20 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			if (args.Change == ExtensionChange.Add) {
 				try {
-					var o = LoadFile (builtInBundle, codon.Name, () => codon.Open (), () => codon);
+					var o = LoadFile (extensionBundle, codon.Name, () => codon.Open (), () => codon);
 					if (o is SyntaxHighlightingDefinition)
 						((SyntaxHighlightingDefinition)o).PrepareMatches ();
 					var bundle = o as LanguageBundle;
 					if (bundle != null) {
 						foreach (var h in bundle.Highlightings)
-							h.PrepareMatches ();
+							if (h is SyntaxHighlightingDefinition def)
+								def.PrepareMatches ();
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while loading custom editor extension file.", e);
 				}
 			}
 		}
-
 
 		public static HslColor GetColor (EditorTheme style, string key)
 		{
@@ -562,7 +690,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 						//if type is full match to filename e.g. ChangeLog, we're done
 						if (name.Length == fileType.Length) {
-							return h;
+							return h.GetSyntaxHighlightingDefinition ();
 						}
 
 						//if type didn't start with period, check filename has one in the right place
@@ -576,7 +704,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 							(bestType.Length == fileType.Length && bestPosition > i)) { //fileType is same... take higher on list(e.g. XAML specific will have .xaml at index 0, but XML general will have .xaml at index 68)
 							bestType = fileType;
 							bestPosition = i;
-							bestMatch = h;
+							bestMatch = h.GetSyntaxHighlightingDefinition ();
 						}
 					}
 				}
@@ -597,13 +725,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 							var uri = fe.StartsWith (".", StringComparison.Ordinal) ? "a" + fe : "a." + fe;
 							var mime = DesktopService.GetMimeTypeForUri (uri);
 							if (mimeType == mime) {
-								return h;
+								return h.GetSyntaxHighlightingDefinition ();
 							}
 						}
 					}
 				}
 			}
-
 			return null;
 		}
 
@@ -634,7 +761,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				foreach (var bundle in languageBundles) {
 					foreach (var highlight in bundle.Highlightings) {
 						if (highlight.FileTypes.Any (ext => fileName.EndsWith (ext, FilePath.PathComparison))) {
-							scope = highlight.Scope;
+							scope = highlight.GetSyntaxHighlightingDefinition ().Scope;
 							break;
 						}
 					}

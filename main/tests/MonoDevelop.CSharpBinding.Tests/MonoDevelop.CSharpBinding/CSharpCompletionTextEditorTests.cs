@@ -40,6 +40,9 @@ using NUnit.Framework;
 using MonoDevelop.Debugger;
 using Mono.Debugging.Client;
 using System.Threading;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.SourceEditor;
+using Gtk;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -152,35 +155,38 @@ namespace console61
 
 		}
 
-		Task TestCompletion (string text, Action<Document, ICompletionDataList> action)
+		Task TestCompletion (string text, Action<Document, ICompletionDataList> action, Action<Document> preCompletionAction = null)
 		{
-			return TestCompletion (text, action, CompletionTriggerInfo.CodeCompletionCommand);
+			return TestCompletion (text, action, CompletionTriggerInfo.CodeCompletionCommand, preCompletionAction);
 		}
 
-		async Task TestCompletion (string text, Action<Document, ICompletionDataList> action, CompletionTriggerInfo triggerInfo)
+		async Task TestCompletion (string text, Action<Document, ICompletionDataList> action, CompletionTriggerInfo triggerInfo, Action<Document> preCompletionAction = null)
 		{
-			DesktopService.Initialize ();
-
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
-			var doc = await SetupDocument (text, cursorPosition: Math.Max (0, endPos));
-			var compExt = doc.GetContent<CSharpCompletionTextEditorExtension> ();
-			compExt.CurrentCompletionContext = new CodeCompletionContext {
-				TriggerOffset = doc.Editor.CaretOffset,
-				TriggerWordLength = 1,
-			};
+			using (var testCase = await SetupTestCase (text, cursorPosition: Math.Max (0, endPos))) {
+				var doc = testCase.Document;
+				if (preCompletionAction != null)
+					preCompletionAction (doc);
 
-			await doc.UpdateParseDocument ();
+				var compExt = doc.GetContent<CSharpCompletionTextEditorExtension> ();
+				compExt.CurrentCompletionContext = new CodeCompletionContext {
+					TriggerOffset = doc.Editor.CaretOffset,
+					TriggerWordLength = 1,
+				};
 
-			var tmp = IdeApp.Preferences.EnableAutoCodeCompletion;
-			IdeApp.Preferences.EnableAutoCodeCompletion.Set (false);
-			var list = await compExt.HandleCodeCompletionAsync (compExt.CurrentCompletionContext, triggerInfo);
-			try {
-				action (doc, list);
-			} finally {
-				IdeApp.Preferences.EnableAutoCodeCompletion.Set (tmp);
+				await doc.UpdateParseDocument ();
+
+				var tmp = IdeApp.Preferences.EnableAutoCodeCompletion;
+				IdeApp.Preferences.EnableAutoCodeCompletion.Set (false);
+				var list = await compExt.HandleCodeCompletionAsync (compExt.CurrentCompletionContext, triggerInfo);
+				try {
+					action (doc, list);
+				} finally {
+					IdeApp.Preferences.EnableAutoCodeCompletion.Set (tmp);
+				}
 			}
 		}
 
@@ -269,8 +275,6 @@ class FooBar : ProtocolClass
 		[Test]
 		public async Task TestDebuggerCompletionProvider ()
 		{
-			DesktopService.Initialize ();
-
 			var text = @"
 namespace console61
 	{
@@ -295,23 +299,95 @@ namespace console61
 			if (endOfStatement >= 0)
 				text = text.Substring (0, endOfStatement) + text.Substring (endOfStatement + 1);
 
-			var doc = await SetupDocument (text, cursorPosition: Math.Max (0, startOfStatement));
+			using (var testCase = await SetupTestCase (text, cursorPosition: Math.Max (0, startOfStatement))) {
+				var doc = testCase.Document;
+				var compExt = doc.GetContent<IDebuggerCompletionProvider> ();
 
-			var compExt = doc.GetContent<IDebuggerCompletionProvider> ();
+				await doc.UpdateParseDocument ();
+				var startLine = doc.Editor.GetLineByOffset (startOfStatement);
+				var startColumn = startOfStatement - startLine.Offset;
+				var endLine = doc.Editor.GetLineByOffset (endOfStatement);
+				var endColumn = endOfStatement - endLine.Offset;
 
-			await doc.UpdateParseDocument ();
-			var startLine = doc.Editor.GetLineByOffset (startOfStatement);
-			var startColumn = startOfStatement - startLine.Offset;
-			var endLine = doc.Editor.GetLineByOffset (endOfStatement);
-			var endColumn = endOfStatement - endLine.Offset;
-
-			var completionResult = await compExt.GetExpressionCompletionData ("a", new StackFrame (0, new SourceLocation ("", "", startLine.LineNumber, startColumn, endLine.LineNumber, endColumn), "C#"), default (CancellationToken));
-			Assert.IsNotNull (completionResult);
-			Assert.Less (10, completionResult.Items.Count);//Just randomly high number
-			Assert.IsTrue (completionResult.Items.Any (i => i.Name == "args"));
-			Assert.IsTrue (completionResult.Items.Any (i => i.Name == "System"));
-			Assert.IsTrue (completionResult.Items.Any (i => i.Name == "Method2"));
-			Assert.AreEqual (1, completionResult.ExpressionLength);
+				var completionResult = await compExt.GetExpressionCompletionData ("a", new StackFrame (0, new SourceLocation ("", "", startLine.LineNumber, startColumn, endLine.LineNumber, endColumn), "C#"), default (CancellationToken));
+				Assert.IsNotNull (completionResult);
+				Assert.Less (10, completionResult.Items.Count);//Just randomly high number
+				Assert.IsTrue (completionResult.Items.Any (i => i.Name == "args"));
+				Assert.IsTrue (completionResult.Items.Any (i => i.Name == "System"));
+				Assert.IsTrue (completionResult.Items.Any (i => i.Name == "Method2"));
+				Assert.AreEqual (1, completionResult.ExpressionLength);
+			}
 		}
+
+
+		/// <summary>
+		/// Text loses indentation when typing #5025
+		/// </summary>
+		[Test]
+		public async Task TestIssue5025 ()
+		{
+			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = true;
+			await TestCompletion (@"
+namespace console61
+{
+    class MainClass
+    {
+        public static void Main (string[] args)
+        {
+            t$
+        }
+    }
+}
+",
+								  (doc, list) => {
+									  var extEditor = GetExtensibleEditor (doc.Editor);
+									  var compExt = doc.GetContent<CSharpCompletionTextEditorExtension> ();
+									  CompletionWindowManager.StartPrepareShowWindowSession ();
+									  extEditor.EditorExtension = compExt;
+									  extEditor.OnIMProcessedKeyPressEvent (Gdk.Key.BackSpace, '\0', Gdk.ModifierType.None);
+									  var listWindow = new CompletionListWindow ();
+									  var widget = new NamedArgumentCompletionTests.TestCompletionWidget (doc.Editor, doc);
+									  listWindow.CompletionWidget = widget;
+									  listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
+									  var item = (RoslynCompletionData)list.FirstOrDefault (d => d.CompletionText == "MainClass");
+									  KeyActions ka = KeyActions.Process;
+									  Gdk.Key key = Gdk.Key.Tab;
+									  item.InsertCompletionText (doc.Editor, doc, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None));
+									  Assert.AreEqual (@"
+namespace console61
+{
+    class MainClass
+    {
+        public static void Main (string[] args)
+        {
+            MainClass
+        }
+    }
+}
+", doc.Editor.Text);
+								  });
+		}
+
+		internal static ExtensibleTextEditor GetExtensibleEditor (TextEditor editor)
+	{
+		//Reason why we use GetNativeWidget, and navigate to ExtensibleTextEditor child
+		//and execute KeyPress on it instead something more abstract is...
+		//EditSession key processing is done inside ExtensibleTextEditor.
+		return FindChild<ExtensibleTextEditor> (editor.GetNativeWidget<Container> ());
+	}
+
+	static T FindChild<T> (Container container) where T : Widget
+	{
+		foreach (var child in container.Children)
+			if (child is T) {
+				return (T)child;
+			} else if (child is Container) {
+				var foundChild = FindChild<T> ((Container)child);
+				if (foundChild != null)
+					return foundChild;
+			}
+		return default (T);
+	}
+
 	}
 }

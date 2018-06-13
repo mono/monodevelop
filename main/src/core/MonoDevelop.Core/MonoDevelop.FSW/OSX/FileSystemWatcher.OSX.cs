@@ -46,6 +46,9 @@ namespace MonoDevelop.FSW.OSX
 				_enabled = true;
 				_cancellation = cancellation;
 				instance.Start ();
+
+				lock (fileSystemWatchers)
+					fileSystemWatchers.Add (this);
 			} catch {
 				_enabled = false;
 				_cancellation = null;
@@ -59,6 +62,9 @@ namespace MonoDevelop.FSW.OSX
 
 			if (IsSuspended ())
 				return;
+
+			lock (fileSystemWatchers)
+				fileSystemWatchers.Remove (this);
 
 			CancellationTokenSource token = _cancellation;
 			if (token != null) {

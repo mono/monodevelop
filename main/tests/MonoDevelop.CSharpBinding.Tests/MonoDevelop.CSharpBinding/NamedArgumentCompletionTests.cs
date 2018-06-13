@@ -41,13 +41,21 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharpBinding
 {
 	[TestFixture]
-	class NamedArgumentCompletionTests : ICSharpCode.NRefactory6.TestBase
+	class NamedArgumentCompletionTests : TextEditorExtensionTestBase
 	{
-		class TestCompletionWidget : ICompletionWidget
+		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharp;
+
+		protected override IEnumerable<TextEditorExtension> GetEditorExtensions ()
+		{
+			yield return new CSharpCompletionTextEditorExtension ();
+		}
+
+		internal class TestCompletionWidget : ICompletionWidget
 		{
 			DocumentContext documentContext;
 
@@ -155,52 +163,26 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 
-		static async Task Setup (string input, Action<(CSharpCompletionTextEditorExtension, TestViewContent)> test)
+		async Task Setup (string input, Func<TextEditorExtensionTestCase, Task> test)
 		{
-			var tww = new TestWorkbenchWindow ();
-			TestViewContent content = new TestViewContent ();
-			tww.ViewContent = content;
-			content.ContentName = "/a.cs";
-			content.Data.MimeType = "text/x-csharp";
-
-			var doc = new MonoDevelop.Ide.Gui.Document (tww);
-
-			var text = input;
+			string text = input;
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
-			content.Text = text;
-			content.CursorPosition = System.Math.Max (0, endPos);
+			using (var testCase = await SetupTestCase (text, Math.Max (0, endPos))) {
+				var doc = testCase.Document;
 
-			var project = MonoDevelop.Projects.Services.ProjectService.CreateProject ("C#");
-			project.Name = "test";
-			project.FileName = "test.csproj";
-			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile));
-
-			var solution = new MonoDevelop.Projects.Solution ();
-			solution.AddConfiguration ("", true);
-			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
-			content.Project = project;
-			doc.SetProject (project);
-
-			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc.Editor, doc);
-			content.Contents.Add (compExt);
-
-			await doc.UpdateParseDocument ();
-			test ((compExt, content));
-			TypeSystemService.Unload (solution);
+				await doc.UpdateParseDocument ();
+				await test (testCase);
+			}
 		}
 
 		async Task<string> Test(string input, string type, string member, Gdk.Key key = Gdk.Key.Return)
 		{
 			string result = null;
-			await Setup (input, async (s) => {
-				var ext = s.Item1;
-				TestViewContent content = s.Item2;
+			await Setup (input, async testCase => {
+				var ext = testCase.Content.GetContent<CSharpCompletionTextEditorExtension> ();
 				var listWindow = new CompletionListWindow ();
 				var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
 				listWindow.CompletionWidget = widget;
@@ -257,52 +239,29 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public async Task TestBug60365 ()
 		{
-			var tww = new TestWorkbenchWindow ();
-			TestViewContent content = new TestViewContent ();
-			tww.ViewContent = content;
-			content.ContentName = "/a.cs";
-			content.Data.MimeType = "text/x-csharp";
-
-			var doc = new MonoDevelop.Ide.Gui.Document (tww);
-
 			var text = "@c$";
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
-			content.Text = text;
-			content.CursorPosition = System.Math.Max (0, endPos);
+			using (var testCase = await SetupTestCase (text, Math.Max (0, endPos))) {
+				var doc = testCase.Document;
+				var ext = doc.GetContent<CSharpCompletionTextEditorExtension> ();
 
-			var project = MonoDevelop.Projects.Services.ProjectService.CreateProject ("C#");
-			project.Name = "test";
-			project.FileName = "test.csproj";
-			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile));
+				var listWindow = new CompletionListWindow ();
+				var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
+				listWindow.CompletionWidget = widget;
+				listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
+				
 
-			var solution = new MonoDevelop.Projects.Solution ();
-			solution.AddConfiguration ("", true);
-			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new ProgressMonitor ())
-				await TypeSystemService.Load (solution, monitor);
-			content.Project = project;
-			doc.SetProject (project);
+				Assert.AreEqual ("@class", ext.Editor.Text);
 
-			var ext = new CSharpCompletionTextEditorExtension ();
-			ext.Initialize (doc.Editor, doc);
-			var listWindow = new CompletionListWindow ();
-			var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
-			listWindow.CompletionWidget = widget;
-			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
+				var list = await ext.HandleCodeCompletionAsync (widget.CurrentCodeCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, 'c'));
+				var ka = KeyActions.Complete;
+				list.First (d => d.CompletionText == "class").InsertCompletionText (listWindow, ref ka, KeyDescriptor.Tab);
 
-			var list = await  ext.HandleCodeCompletionAsync (widget.CurrentCodeCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, 'c'));
-			var ka = KeyActions.Complete;
-			list.First (d => d.CompletionText  == "class").InsertCompletionText (listWindow, ref ka, KeyDescriptor.Tab);
-
-			Assert.AreEqual ("@class", content.Text);
-
-			content.Contents.Add (ext);
-
-			await doc.UpdateParseDocument ();
-			TypeSystemService.Unload (solution);
+				await doc.UpdateParseDocument ();
+			}
 		}
 
 	}

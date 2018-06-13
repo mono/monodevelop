@@ -129,6 +129,11 @@ namespace MonoDevelop.Core.Text
 				return InsertionLength - RemovalLength;
 			}
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[TextChange: Offset={0}, NewOffset={1}, RemovedText={2}, InsertedText={3}]", Offset, NewOffset, RemovedText?.Text, InsertedText?.Text);
+		}
 	}
 
 	/// <summary>

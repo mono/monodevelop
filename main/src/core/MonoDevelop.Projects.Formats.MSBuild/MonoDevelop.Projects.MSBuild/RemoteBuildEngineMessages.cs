@@ -221,6 +221,9 @@ namespace MonoDevelop.Projects.MSBuild
 	class BeginBuildRequest : BinaryMessage
 	{
 		[MessageDataProperty]
+		public string BinLogFilePath { get; set; }
+
+		[MessageDataProperty]
 		public int LogWriterId { get; set; }
 
 		[MessageDataProperty]

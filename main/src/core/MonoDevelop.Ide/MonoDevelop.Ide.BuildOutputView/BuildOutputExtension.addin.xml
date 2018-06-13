@@ -1,0 +1,36 @@
+﻿<ExtensionModel>
+
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding id    = "BuildLogViewer"
+						class = "MonoDevelop.Ide.BuildOutputView.BuildLogDisplayBinding" />
+	</Extension>
+	
+	<ExtensionPoint path = "/MonoDevelop/BuildOutput/ContextMenu" name = "Build output context menu">
+		<Description>Context menu for the build output.</Description>;
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+	</ExtensionPoint>
+
+	<Extension path = "/MonoDevelop/Ide/Commands/Hidden">
+		<Command id = "MonoDevelop.Ide.BuildOutputView.BuildOutputCommands.ExpandAll"
+			 _label = "_Expand All"
+		   shortcut = "Control|Right"
+		macShortcut = "Meta|Right" />
+		<Command id = "MonoDevelop.Ide.BuildOutputView.BuildOutputCommands.CollapseAll"
+			 _label = "_Collapse All"
+		   shortcut = "Control|Left"
+		macShortcut = "Meta|Left" />
+		<Command id = "MonoDevelop.Ide.BuildOutputView.BuildOutputCommands.JumpTo"
+			 _label = "_Jump To" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/BuildOutput/ContextMenu">
+		<SeparatorItem id = "Separator1" />
+		<CommandItem   id = "MonoDevelop.Ide.BuildOutputView.BuildOutputCommands.JumpTo" />
+		<SeparatorItem id = "Separator1" />
+		<CommandItem   id = "MonoDevelop.Ide.BuildOutputView.BuildOutputCommands.ExpandAll" />
+		<CommandItem   id = "MonoDevelop.Ide.BuildOutputView.BuildOutputCommands.CollapseAll" />
+		<SeparatorItem id = "Separator2" />
+		<CommandItem   id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+	</Extension>
+	
+</ExtensionModel>

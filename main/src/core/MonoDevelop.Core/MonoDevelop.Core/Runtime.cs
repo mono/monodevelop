@@ -163,7 +163,7 @@ namespace MonoDevelop.Core
 			foreach (AddinRepository rep in reps.GetRepositories ()) {
 				if (rep.Url.StartsWith ("http://go-mono.com/md/") || 
 					(rep.Url.StartsWith ("http://monodevelop.com/files/addins/")) ||
-					(rep.Url.StartsWith ("http://addins.monodevelop.com/") && !validUrls.Contains (rep.Url)))
+				    ((rep.Url.StartsWith ("http://addins.monodevelop.com/") || rep.Url.StartsWith ("https://addins.monodevelop.com/")) && !validUrls.Contains (rep.Url)))
 					reps.RemoveRepository (rep.Url);
 			}
 			
@@ -188,7 +188,7 @@ namespace MonoDevelop.Core
 			else
 				platform = "Linux";
 			
-			return "http://addins.monodevelop.com/" + quality + "/" + platform + "/" + AddinManager.CurrentAddin.Version + "/main.mrep";
+			return "https://addins.monodevelop.com/" + quality + "/" + platform + "/" + AddinManager.CurrentAddin.Version + "/main.mrep";
 		}
 		
 		static void SetupInstrumentation ()
@@ -235,6 +235,7 @@ namespace MonoDevelop.Core
 				ShuttingDown (null, EventArgs.Empty);
 			
 			PropertyService.SaveProperties ();
+			FSW.OSX.FileSystemWatcher.DisposeAll ();
 			
 			if (processService != null) {
 				processService.Dispose ();

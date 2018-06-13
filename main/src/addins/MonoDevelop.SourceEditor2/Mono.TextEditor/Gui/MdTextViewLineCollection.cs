@@ -46,6 +46,7 @@ namespace Mono.TextEditor
 		{
 			this.textEditor = textEditor;
 			this.version = this.textEditor.Document.Version;
+			textEditor.TextViewModel.VisualBuffer.ChangedLowPriority += OnVisualBufferChanged;
 		}
 
 		internal void Add (int logicalLineNumber, DocumentLine line)
@@ -102,6 +103,14 @@ namespace Mono.TextEditor
 				} else {
 					return new SnapshotSpan (start.TranslateTo (end.Snapshot, PointTrackingMode.Negative), end);
 				}
+			}
+		}
+
+		internal void OnVisualBufferChanged (object sender, TextContentChangedEventArgs e)
+		{
+			// make sure all lines are on the same snapshot after text changes
+			foreach (MdTextViewLine line in this) {
+				line.TranslateToSnapshot (e.After);
 			}
 		}
 

@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 	}
 
-	public sealed class EditorTheme
+	public sealed class EditorTheme : IEditorThemeProvider
 	{
 		public readonly static string DefaultThemeName = "Light";
 		public readonly static string DefaultDarkThemeName = "Dark";
@@ -330,5 +330,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			result.Name = newName;
 			return result;
 		}
+
+		EditorTheme IEditorThemeProvider.GetEditorTheme () => this;
 	}
 }

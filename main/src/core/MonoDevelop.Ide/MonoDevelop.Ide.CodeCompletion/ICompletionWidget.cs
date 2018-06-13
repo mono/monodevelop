@@ -59,4 +59,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		event EventHandler CompletionContextChanged;
 	}
+
+	// TODO: Join with ICompletionWidget on next public API break.
+	interface ICompletionWidget2 : ICompletionWidget
+	{
+		void NotifyCompletionWindowClosed ();
+	}
 }

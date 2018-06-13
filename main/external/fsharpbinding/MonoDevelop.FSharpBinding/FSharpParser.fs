@@ -26,12 +26,12 @@ module ParsedDocument =
     let inline private isMoreThanNLines n (range:Range.range) =
         range.EndLine - range.StartLine > n
 
-    let create (parseOptions: ParseOptions) (parseResults: ParseAndCheckResults) defines location =
+    let create (parseOptions: ParseOptions) (parseResults: ParseAndCheckResults) defines location parsedLine =
       //Try creating tokens
         async {
             let fileName = parseOptions.FileName
             let shortFilename = Path.GetFileName fileName
-            let doc = new FSharpParsedDocument(fileName, location)
+            let doc = new FSharpParsedDocument(fileName, location, Some parsedLine)
 
             doc.Tokens <- Tokens.tryGetTokens parseOptions.Content defines fileName
 
@@ -134,10 +134,12 @@ type FSharpParser() =
         
         let shortFilename = Path.GetFileName fileName
         LoggingService.logDebug "FSharpParser: Parse starting on %s" shortFilename
-        let location = doc.Value.Editor.CaretLocation
         async {
                     match tryGetFilePath fileName proj with
                     | Some filePath ->
+                        let editor = doc.Value.Editor
+                        let location = editor.CaretLocation
+                        let line = editor.GetLineText(editor.CaretLine)
                         LoggingService.logDebug "FSharpParser: Running ParseAndCheckFileInProject for %s" shortFilename
                         let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
                         let obsolete = isObsolete parseOptions.FileName parseOptions.Content.Version cancellationToken
@@ -148,10 +150,10 @@ type FSharpParser() =
                             let! results = pendingParseResults
                             //if you ever want to see the current parse tree
                             //let pt = match results.ParseTree with Some pt -> sprintf "%A" pt | _ -> ""
-                            return! ParsedDocument.create parseOptions results defines (Some location)
+                            return! ParsedDocument.create parseOptions results defines (Some location) line
                         with exn ->
                             LoggingService.LogError ("FSharpParser: Error ParsedDocument on {0}", shortFilename, exn)
-                            return FSharpParsedDocument(fileName, None) :> _
-                    | None -> return FSharpParsedDocument(fileName, None) :> _ 
+                            return FSharpParsedDocument(fileName, None, None) :> _
+                    | None -> return FSharpParsedDocument(fileName, None, None) :> _
         }
         |> StartAsyncAsTask cancellationToken

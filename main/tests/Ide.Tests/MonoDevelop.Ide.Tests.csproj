@@ -129,6 +129,7 @@
     <Compile Include="MonoDevelop.Ide.Editor\SkipCharSessionTests.cs" />
     <Compile Include="MonoDevelop.Components\PangoUtilTests.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\DotNetCoreProjectTests.cs" />
+    <Compile Include="MonoDevelop.Ide\BuildOutputTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\MockCompletionView.cs" />
     <Compile Include="MonoDevelop.Ide\MonoDocDocumentationProviderTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditorConfigTests.cs" />
@@ -143,11 +144,10 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\OptionsExtensionsTests.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\RoslynPreferencesTests.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\OptionsTestBase.cs" />
-    <Compile Include="MonoDevelop.Ide.RoslynServices.Options\MonoDevelopOptionPersisterIntegrationTests.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\MockOptionService.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\MonoDevelopOptionPersisterTests.cs" />
     <Compile Include="TypeForwarders.cs" />
-    <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopNotificationServiceIntegrationTests.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\ExportedServicesAndWorkspaceServicesTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

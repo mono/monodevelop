@@ -55,7 +55,7 @@ module TestHelpers =
         let options = ParseOptions(FileName = filename, Content = StringTextSource(source))
 
         let parsedDocument =
-            ParsedDocument.create options results [compilerDefines] (Some (new DocumentLocation(0,0))) |> Async.RunSynchronously
+            ParsedDocument.create options results [compilerDefines] (Some (new DocumentLocation(1,1))) "" |> Async.RunSynchronously
 
         let doc = TextEditorFactory.CreateNewReadonlyDocument(StringTextSource(source), filename, "text/fsharp")
         let editor = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor (doc)

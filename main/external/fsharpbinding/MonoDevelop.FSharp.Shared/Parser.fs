@@ -17,7 +17,15 @@ module Parsing =
         else
             Lexer.getSymbol lineStr 0 col lineStr lookupType [||] Lexer.singleLineQueryLexState
             |> Option.bind tryGetLexerSymbolIslands
-    
+
+    let findResidue (lineStr: string) =
+        seq { for i in (lineStr.Length - 1) .. -1 .. 0 do
+                  yield lineStr.[i] }
+        |> Seq.takeWhile System.Char.IsLetterOrDigit
+        |> Seq.rev
+        |> Array.ofSeq
+        |> String
+
     let findLongIdentsAndResidue (col, lineStr:string) =
         let lineStr = lineStr.Substring(0, col)
     

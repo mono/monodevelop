@@ -65,19 +65,21 @@ namespace MonoDevelop.Refactoring.Tests
 			registerCallback (ext);
 		}
 
-		protected async Task<Tuple<T, Ide.Gui.Document>> GatherDiagnosticsNoDispose<T> (string input, Func<Ide.Gui.Document, TaskCompletionSource<T>, Task> callback)
+		protected async Task<Tuple<T, TextEditorExtensionTestCase>> GatherDiagnosticsNoDispose<T> (string input, Func<Ide.Gui.Document, TaskCompletionSource<T>, Task> callback)
 		{
-			var doc = await SetupDocument (input);
+			var testCase = await SetupTestCase (input);
+			var doc = testCase.Document;
 
 			var tcs = new TaskCompletionSource<T> ();
 			var resultsExt = doc.GetContent<ResultsEditorExtension> ();
-			resultsExt.TasksUpdated += async (o, args) => {
+			EventHandler handler = async (object o, EventArgs args) => {
 				try {
 					await callback (doc, tcs);
 				} catch (Exception ex) {
 					tcs.TrySetException (ex);
 				}
 			};
+			resultsExt.TasksUpdated += handler;
 
 			var cts = new CancellationTokenSource ();
 			cts.Token.Register (() => tcs.TrySetCanceled ());
@@ -86,18 +88,17 @@ namespace MonoDevelop.Refactoring.Tests
 			await doc.UpdateParseDocument ();
 
 			var result = await Task.Run (() => tcs.Task).ConfigureAwait (false);
+			resultsExt.TasksUpdated -= handler;
 
-			return Tuple.Create (result, doc);
+			return Tuple.Create (result, testCase);
 		}
 
 		protected async Task<T> GatherDiagnostics<T> (string input, Func<Ide.Gui.Document, TaskCompletionSource<T>, Task> callback)
 		{
 			var tuple = await GatherDiagnosticsNoDispose (input, callback);
 
-			var doc = tuple.Item2;
-			using (var solution = doc.Project.ParentSolution) {
-				TypeSystemService.Unload (solution);
-			}
+			var testCase = tuple.Item2;
+			testCase.Dispose ();
 
 			return tuple.Item1;
 		}
