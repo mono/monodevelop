@@ -173,9 +173,7 @@ namespace MonoDevelop.VersionControl.Git
 						}
 						finally {
 							monitor.Dispose ();
-							Runtime.RunInMainThread (delegate {
-								FileService.ThawEvents ();
-							});
+							FileService.ThawEvents ();
 						}
 					});
 				}
