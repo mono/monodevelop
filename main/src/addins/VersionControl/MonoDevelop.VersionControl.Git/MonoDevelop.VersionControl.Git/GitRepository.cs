@@ -154,6 +154,11 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			FilePath fp = RootRepository.FromGitPath (path);
 			Gtk.Application.Invoke ((o, args) => {
+				if (IdeApp.IsInitialized) {
+					MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.GetDocument (fp);
+					if (doc != null)
+						doc.Reload ();
+				}
 				VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (this, fp, false));
 			});
 			return true;
