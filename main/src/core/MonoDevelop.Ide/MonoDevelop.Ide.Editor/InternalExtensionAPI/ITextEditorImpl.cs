@@ -224,6 +224,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void GrabFocus ();
 		bool HasFocus { get; }
+		bool LockFixIndentation { get; set; }
 
 		event EventHandler<LineEventArgs> LineShowing;
 		event EventHandler FocusLost;
