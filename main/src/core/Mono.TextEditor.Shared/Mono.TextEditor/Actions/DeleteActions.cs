@@ -276,7 +276,9 @@ namespace Mono.TextEditor
 				}
 
 				// Needs to be fixed after, the line may just contain the indentation
-				data.FixVirtualIndentation ();
+				// NOTE: Only in smart backspace mode otherwise the indentation tracker may not handle virtual indent correctly.
+				if (data.HasIndentationTracker && (data.IndentationTracker.SupportedFeatures & IndentationTrackerFeatures.SmartBackspace) != 0)
+					data.FixVirtualIndentation ();
 			}
 
 			if (data.Options.GenerateFormattingUndoStep && smartBackspace) {
