@@ -920,17 +920,19 @@ namespace MonoDevelop.Core
 				}
 			}
 			if (pendingEvents != null) {
-				for (int n=0; n<pendingEvents.Count; n++) {
-					EventData ev = pendingEvents [n];
-					if (ev.IsChainArgs ()) {
-						EventData next = n < pendingEvents.Count - 1 ? pendingEvents [n + 1] : null;
-						if (next != null && ev.ShouldMerge (next)) {
-							ev.MergeArgs (next);
-							continue;
+				Runtime.RunInMainThread (() => {
+					for (int n=0; n<pendingEvents.Count; n++) {
+						EventData ev = pendingEvents [n];
+						if (ev.IsChainArgs ()) {
+							EventData next = n < pendingEvents.Count - 1 ? pendingEvents [n + 1] : null;
+							if (next != null && ev.ShouldMerge (next)) {
+								ev.MergeArgs (next);
+								continue;
+							}
 						}
+						ev.Invoke ();
 					}
-					ev.Invoke ();
-				}
+				}).Ignore ();
 			}
 		}
 
