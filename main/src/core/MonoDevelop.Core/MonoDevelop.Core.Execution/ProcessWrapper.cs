@@ -11,7 +11,7 @@ namespace MonoDevelop.Core.Execution
 	[System.ComponentModel.DesignerCategory ("Code")]
 	public class ProcessWrapper : Process
 	{
-		bool disposed, done;
+		bool disposed;
 		readonly object lockObj = new object ();
 		ProcessAsyncOperation operation;
 		IDisposable customCancelToken;
@@ -105,7 +105,7 @@ namespace MonoDevelop.Core.Execution
 		public void Cancel ()
 		{
 			try {
-				if (!done) {
+				if (!HasExited) {
 					CancelRequested = true;
 					this.KillProcessTree ();
 				}
@@ -131,10 +131,6 @@ namespace MonoDevelop.Core.Execution
 				taskCompletionSource.SetResult (operation.ExitCode = ExitCode);
 			} catch {
 				// Ignore
-			} finally {
-				lock (lockObj) {
-					done = true;
-				}
 			}
 		}
 		
