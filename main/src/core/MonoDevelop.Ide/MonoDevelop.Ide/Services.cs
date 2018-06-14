@@ -101,40 +101,40 @@ namespace MonoDevelop.Ide
 	class AssetMetadata : CounterMetadata
 	{
 		public string AssetTypeId {
-			get => GetProperty ("AssetTypeId");
-			set => SetProperty ("AssetTypeId", value);
+			get => GetProperty ();
+			set => SetProperty (value);
 		}
 		public string AssetTypeName {
-			get => GetProperty ("AssetTypeName");
-			set => SetProperty ("AssetTypeName", value);
+			get => GetProperty ();
+			set => SetProperty (value);
 		}
 	}
 
 	class StartupMetadata: AssetMetadata
 	{	
 		public long CorrectedStartupTime {
-			get => GetProperty<long> ("CorrectedStartupTime");
-			set => SetProperty ("CorrectedStartupTime", value);
+			get => GetProperty<long> ();
+			set => SetProperty (value);
 		}
 		public long StartupType {
-			get => GetProperty<long> ("StartupType");
-			set => SetProperty ("StartupType", value);
+			get => GetProperty<long> ();
+			set => SetProperty (value);
 		}
 		public bool IsInitialRun {
-			get => GetProperty<bool> ("IsInitialRun");
-			set => SetProperty ("IsInitialRun", value);
+			get => GetProperty<bool> ();
+			set => SetProperty (value);
 		}
 		public bool IsInitialRunAfterUpgrade {
-			get => GetProperty<bool> ("IsInitialRunAfterUpgrade");
-			set => SetProperty ("IsInitialRunAfterUpgrade", value);
+			get => GetProperty<bool> ();
+			set => SetProperty (value);
 		}
 		public long TimeSinceMachineStart {
-			get => GetProperty<long> ("TimeSinceMachineStart");
-			set => SetProperty ("TimeSinceMachineStart", value);
+			get => GetProperty<long> ();
+			set => SetProperty (value);
 		}
 		public long TimeSinceLogin {
-			get => GetProperty<long> ("TimeSinceLogin");
-			set => SetProperty ("TimeSinceLogin", value);
+			get => GetProperty<long> ();
+			set => SetProperty (value);
 		}
 	}
 }
