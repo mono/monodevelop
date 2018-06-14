@@ -490,6 +490,8 @@ namespace MonoDevelop.Core.Assemblies
 		}
 
 		static object referenceLock = new object ();
+
+		[Obsolete ("Use RequiresFacadeAssemblies (string fileName)")]
 		public static bool ContainsReferenceToSystemRuntime (string fileName)
 		{
 			lock (referenceLock) {
@@ -498,6 +500,8 @@ namespace MonoDevelop.Core.Assemblies
 		}
 
 		static SemaphoreSlim referenceLockAsync = new SemaphoreSlim (1, 1);
+
+		[Obsolete ("Use RequiresFacadeAssembliesAsync (string fileName)")]
 		public static async System.Threading.Tasks.Task<bool> ContainsReferenceToSystemRuntimeAsync (string filename)
 		{
 			try {
