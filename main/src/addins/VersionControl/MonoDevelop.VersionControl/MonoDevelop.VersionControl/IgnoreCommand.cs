@@ -82,10 +82,6 @@ namespace MonoDevelop.VersionControl
 					list[0].Repository.Ignore (list.Paths);
 
 				Gtk.Application.Invoke ((o, args) => {
-					foreach (VersionControlItem item in items)
-						if (!item.IsDirectory)
-							FileService.NotifyFileChanged (item.Path);
-
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Ignore operation completed."));
@@ -145,10 +141,6 @@ namespace MonoDevelop.VersionControl
 					list[0].Repository.Unignore (list.Paths);
 
 				Gtk.Application.Invoke ((o, args) => {
-					foreach (VersionControlItem item in items)
-						if (!item.IsDirectory)
-							FileService.NotifyFileChanged (item.Path);
-
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Unignore operation completed."));

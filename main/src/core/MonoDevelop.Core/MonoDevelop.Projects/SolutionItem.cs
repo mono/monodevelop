@@ -119,7 +119,8 @@ namespace MonoDevelop.Projects
 		{
 			if (Disposing != null)
 				Disposing (this, EventArgs.Empty);
-			
+
+			fileStatusTracker.Dispose ();
 			base.OnDispose ();
 			Counters.ItemsLoaded--;
 
@@ -477,7 +478,6 @@ namespace MonoDevelop.Projects
 			} finally {
 				fileStatusTracker.EndSave ();
 			}
-			FileService.NotifyFileChanged (FileName);
 		}
 
 		internal bool IsSaved {
@@ -1457,6 +1457,15 @@ namespace MonoDevelop.Projects
 		{
 			if (ConfigurationRemoved != null)
 				ConfigurationRemoved (this, args);
+		}
+
+		internal event EventHandler<SolutionItemEventArgs> ReloadRequired {
+			add {
+				fileStatusTracker.ReloadRequired += value;
+			}
+			remove {
+				fileStatusTracker.ReloadRequired -= value;
+			}
 		}
 
 		protected virtual void OnReloadRequired (SolutionItemEventArgs args)

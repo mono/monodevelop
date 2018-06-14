@@ -23,7 +23,7 @@ EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
 MONOSTUB_EXTRA_SOURCES = monostub-utils.h
 
-all: monostub monostub-nogui monostub-test
+all: monostub monostub-nogui monostub-test libsystemnative.dylib
 
 render.exe: render.cs
 	mcs -r:System.Drawing render.cs
@@ -34,17 +34,21 @@ dmg: render.exe app
 System_Native.o: System_Native.cpp
 	g++ -std=c++14 -c -Wall -mmacosx-version-min=10.10 -o $@ $^
 
+libsystemnative.dylib: System_Native.o
+	clang++ -dynamiclib -undefined dynamic_lookup $^ -o $@
+	cp $@ ../bin
+
 monostub.o: monostub.mm $(MONOSTUB_EXTRA_SOURCES)
 	g++ -g $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm
 
 monostub-nogui.o: monostub.mm $(MONOSTUB_EXTRA_SOURCES)
 	g++ -g $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) -DNOGUI -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm
 
-monostub: monostub.o System_Native.o $(MONOSTUB_STATIC_LINK)
+monostub: monostub.o $(MONOSTUB_STATIC_LINK)
 	clang++ -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
 	cp $@ ../bin/MonoDevelop
 
-monostub-nogui: monostub-nogui.o System_Native.o $(MONOSTUB_STATIC_LINK)
+monostub-nogui: monostub-nogui.o $(MONOSTUB_STATIC_LINK)
 	clang++ -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
 	cp $@ ../bin/mdtool
 

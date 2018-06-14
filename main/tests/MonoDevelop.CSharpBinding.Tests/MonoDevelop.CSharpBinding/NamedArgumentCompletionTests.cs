@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharpBinding
 			yield return new CSharpCompletionTextEditorExtension ();
 		}
 
-		class TestCompletionWidget : ICompletionWidget
+		internal class TestCompletionWidget : ICompletionWidget
 		{
 			DocumentContext documentContext;
 

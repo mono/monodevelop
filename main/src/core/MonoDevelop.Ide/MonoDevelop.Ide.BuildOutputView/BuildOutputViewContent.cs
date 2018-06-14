@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			ContentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog";
 		}
 
-		void FileNameChanged (object sender, FilePath file)
+		void FileNameChanged (object sender, string file)
 		{
 			ContentName = file;
 		}
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 						control = new BuildOutputWidget (buildOutput, ContentName, toolbar);
 					else
 						control = new BuildOutputWidget (filename, toolbar);
-					control.FileSaved += FileNameChanged;
+					control.FileNameChanged += FileNameChanged;
 				});
 				return control;
 			}
@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			if (!disposed) {
 				if (control != null) {
-					control.FileSaved -= FileNameChanged;
+					control.FileNameChanged -= FileNameChanged;
 					control.Dispose ();
 				}
 				disposed = true;

@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public event EventHandler<FilePath> FileSaved;
+		public event EventHandler<string> FileNameChanged;
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 
 		public BuildOutputWidget (BuildOutput output, string viewContentName, DocumentToolbar toolbar)
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			BuildOutput = output;
 
-			BuildOutput.OutputChanged += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
+			BuildOutput.OutputChanged += OnOutputChanged;
 			ProcessLogs (false);
 
 			pathBar = new PathBar (this.CreatePathWidget, PathBarTopPadding) {
@@ -118,6 +118,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			box.PackStart (pathBar, true, true, 10);
 			box.ReorderChild (pathBar, 0);
 			box.Show ();
+		}
+
+		void OnOutputChanged (object sender, EventArgs args)
+		{
+			ProcessLogs (showDiagnosticsButton.Active);
 		}
 
 		void Initialize (DocumentToolbar toolbar)
@@ -278,7 +283,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					outputFile = outputFile.ChangeExtension (binLogExtension);
 
 				await BuildOutput.Save (outputFile);
-				FileSaved?.Invoke (this, outputFile);
+				FileNameChanged?.Invoke (this, outputFile);
 				filePathLocation = outputFile;
 				IsDirty = false;
 			}
@@ -594,6 +599,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 						// Expand root nodes and nodes with errors
 						ExpandErrorOrWarningsNodes (treeView, buildOutputDataSource, false);
 						processingCompletion.TrySetResult (null);
+
+						FileNameChanged?.Invoke (this, filePathLocation.IsEmpty ?
+													$"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog" :
+													(string) filePathLocation);
 					});
 				} catch (Exception ex) {
 					processingCompletion.TrySetException (ex);
@@ -638,15 +647,39 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		protected override void Dispose (bool disposing)
 		{
-			if (disposing) {
+			if (BuildOutput != null) {
+				BuildOutput.OutputChanged -= OnOutputChanged;
+				BuildOutput = null;
+			}
+
+			if (buttonSearchBackward != null) {
 				buttonSearchBackward.Clicked -= FindPrevious;
+				buttonSearchBackward = null;
+			}
+
+			if (buttonSearchForward != null) {
 				buttonSearchForward.Clicked -= FindNext;
+				buttonSearchForward = null;
+			}
+
+			if (searchEntry != null) {
 				searchEntry.Entry.Changed -= FindFirst;
 				searchEntry.Entry.Activated -= FindNext;
+				searchEntry = null;
+			}
+
+			if (saveButton != null) {
 				saveButton.Clicked -= SaveButtonClickedAsync;
+				saveButton = null;
+			}
+
+			if (treeView != null) {
 				treeView.SelectionChanged -= TreeView_SelectionChanged;
 				treeView.ButtonPressed -= TreeView_ButtonPressed;
+				treeView = null;
 			}
+
+			pathBar = null;
 
 			base.Dispose (disposing);
 		}

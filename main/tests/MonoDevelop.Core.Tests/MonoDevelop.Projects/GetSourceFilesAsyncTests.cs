@@ -39,6 +39,7 @@ namespace MonoDevelop.Projects
 	public class GetSourceFilesAsyncTests : TestBase
 	{
 		TaskCompletionSource<object> fileChangeNotification;
+		string waitingForFileNameChange;
 
 		[SetUp]
 		public void TestSetUp ()
@@ -114,15 +115,21 @@ namespace MonoDevelop.Projects
 				File.Delete (generatedFileName);
 			}
 
-			await project.PerformGeneratorAsync (project.Configurations[0].Selector, "UpdateGeneratedFiles");
+			try {
+				waitingForFileNameChange = generatedFileName;
+				await FileWatcherService.WatchDirectories (new [] { project.BaseDirectory });
+				await project.PerformGeneratorAsync (project.Configurations[0].Selector, "UpdateGeneratedFiles");
 
-			// we need to wait for the file notification to be posted
-			await Task.Run (() => {
-				fileChangeNotification.Task.Wait (TimeSpan.FromMilliseconds (10000));
-			});
-			          
-			Assert.IsTrue (fileChangeNotification.Task.IsCompleted, "Performing the generator should have fired a file change event");
-			project.Dispose ();
+				// we need to wait for the file notification to be posted
+				await Task.Run (() => {
+					fileChangeNotification.Task.Wait (TimeSpan.FromMilliseconds (10000));
+				});
+
+				Assert.IsTrue (fileChangeNotification.Task.IsCompleted, "Performing the generator should have fired a file change event");
+				project.Dispose ();
+			} finally {
+				await FileWatcherService.WatchDirectories (new FilePath [0]);
+			}
 		}
 
 		[Test()]
@@ -149,7 +156,8 @@ namespace MonoDevelop.Projects
 		{
 			var tcs = fileChangeNotification;
 			if (tcs != null) {
-				tcs.TrySetResult (null);
+				if (e.Any (info => info.FileName == waitingForFileNameChange))
+					tcs.TrySetResult (null);
 			}
 		}
 

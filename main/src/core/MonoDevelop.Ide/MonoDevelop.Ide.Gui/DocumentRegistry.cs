@@ -77,6 +77,8 @@ namespace MonoDevelop.Ide.Gui
 				foreach (var view in openFiles) {
 					if (SkipView (view.Document) || !string.Equals (view.Document.FileName, file.FileName, FilePath.PathComparison))
 						continue;
+					if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (file.FileName))
+						continue;
 					if (!view.Document.IsDirty)
 						view.Document.Reload ();
 					else

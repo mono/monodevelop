@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
 using UnitTests;
@@ -814,6 +815,49 @@ namespace MonoDevelop.Projects
 			string result = project.GetDefaultNamespace (null);
 
 			Assert.AreEqual (expectedDefaultNamespace, result);
+		}
+
+		[Test]
+		public async Task XamarinIOSProjectReferencesCollectionsImmutableNetStandardAssembly_GetReferencedAssembliesShouldIncludeNetStandard ()
+		{
+			if (!Platform.IsMac) {
+				// NUnit platform attribute does not seem to work.
+				Assert.Ignore ("Only supported on Mac.");
+			}
+
+			FilePath solFile = Util.GetSampleProject ("iOSImmutableCollections", "iOSImmutableCollections.sln");
+			CreateNuGetConfigFile (solFile.ParentDirectory);
+
+			var process = Process.Start ("msbuild", $"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+			Assert.AreEqual (0, process.ExitCode);
+
+			using (var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (DotNetProject) sol.Items [0];
+
+				var refs = (await p.GetReferencedAssemblies (ConfigurationSelector.Default)).ToArray ();
+
+				Assert.IsTrue (refs.Any (r => r.FilePath.FileName == "netstandard.dll"));
+			}
+		}
+
+		/// <summary>
+		/// Clear all other package sources and just use the main NuGet package source when
+		/// restoring the packages for the project tests.
+		/// </summary>
+		static void CreateNuGetConfigFile (FilePath directory)
+		{
+			var fileName = directory.Combine ("NuGet.Config");
+
+			string xml =
+				"<configuration>\r\n" +
+				"  <packageSources>\r\n" +
+				"    <clear />\r\n" +
+				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
+				"  </packageSources>\r\n" +
+				"</configuration>";
+
+			File.WriteAllText (fileName, xml);
 		}
 
 		[Test]

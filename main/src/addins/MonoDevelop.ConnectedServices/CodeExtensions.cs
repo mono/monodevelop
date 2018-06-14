@@ -134,7 +134,6 @@ namespace MonoDevelop.ConnectedServices
 		static void SaveFile (string file, string content)
 		{
 			TextFile.WriteFile (file, content, null, null, true);
-			FileService.NotifyFileChanged (file, true);
 		}
 	}
 }

@@ -27,7 +27,7 @@ namespace MonoDevelop.FSW.OSX
 		internal static partial class Libraries
 		{
 			// Shims
-			internal const string SystemNative = "__Internal";
+			internal const string SystemNative = "libsystemnative.dylib";
 #if false
 			internal const string HttpNative = "System.Net.Http.Native";
 			internal const string NetSecurityNative = "System.Net.Security.Native";
