@@ -215,8 +215,10 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			if (favorite)
 				favoriteFiles.Add (file);
-			else
-				favoriteFiles.Remove (file);
+			else if (!favoriteFiles.Remove (file)) {
+				// Nothing has changed - no need to save the properties.
+				return;
+			}
 
 			PropertyService.Set (FavoritesConfigKey, favoriteFiles);
 			PropertyService.SaveProperties ();

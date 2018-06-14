@@ -271,19 +271,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Run_OnePackageNeedsReinstalling_NotifyPackagesConfigFileIsChanged ()
-		{
-			CreateRunner ();
-			ProjectHasOnePackageReferenceNeedingReinstall ("MyPackageId");
-			FilePath expectedFilePath = ConfigurePackagesConfigFilePath ("packages.config");
-
-			Run ();
-
-			Assert.AreEqual (1, runner.EventsMonitor.FilesChanged.Count);
-			Assert.AreEqual (expectedFilePath, runner.EventsMonitor.FilesChanged [0]);
-		}
-
-		[Test]
 		public void Run_OnePackageNeedsReinstalling_PackageIsMarkedForReinstallationInPackagesConfigFile ()
 		{
 			CreateRunner ();
@@ -313,41 +300,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			Run ();
 
 			AssertPackageNotMarkedForReinstallationInPackagesConfigFile ("MyPackageId");
-		}
-
-		[Test]
-		public void Run_PackagesConfigFileHasReinstallationAttributeSetButPackageDoesNotRequireReinstall_PackageConfigFileChangedNotificationIsGenerated ()
-		{
-			CreateRunner ();
-			ProjectHasOnePackageReferenceCompatibleWithCurrentProjectTargetFramework ("MyPackageId");
-			var packageReference = new PackageReference (
-				new PackageIdentity ("MyPackageId", NuGetVersion.Parse ("1.2.3.4")),
-				NuGetFramework.Parse ("net40"),
-				false,
-				false,
-				requireReinstallation: true);
-
-			runner.PackageCompatibilityChecker.NuGetProject.InstalledPackages.Clear ();
-			runner.PackageCompatibilityChecker.NuGetProject.InstalledPackages.Add (packageReference);
-
-			FilePath expectedFilePath = ConfigurePackagesConfigFilePath ("packages.config");
-
-			Run ();
-
-			Assert.AreEqual (1, runner.EventsMonitor.FilesChanged.Count);
-			Assert.AreEqual (expectedFilePath, runner.EventsMonitor.FilesChanged [0]);
-		}
-
-		[Test]
-		public void Run_PackageDoesNotRequireReinstall_PackagesConfigIsNotUpdated ()
-		{
-			CreateRunner ();
-			ProjectHasOnePackageReferenceCompatibleWithCurrentProjectTargetFramework ("MyPackageId");
-			runner.PackageCompatibilityChecker.NuGetProject.TargetFramework = NuGetFramework.Parse ("net40");
-
-			Run ();
-
-			Assert.AreEqual (0, runner.EventsMonitor.FilesChanged.Count);
 		}
 
 		[Test]

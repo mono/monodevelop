@@ -274,23 +274,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public async Task PostProcessAsync_ProjectAssetsFile_NotifyChangeInAssetsFile ()
-		{
-			CreateNuGetProject ();
-			AddDotNetProjectPackageReference ("NUnit", "2.6.0");
-			dotNetProject.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
-			string fileNameChanged = null;
-			PackageManagementServices.PackageManagementEvents.FileChanged += (sender, e) => {
-				fileNameChanged = e.Single ().FileName;
-			};
-
-			await project.PostProcessAsync (context, CancellationToken.None);
-
-			string expectedFileNameChanged = @"d:\projects\MyProject\obj\project.assets.json".ToNativePath ();
-			Assert.AreEqual (expectedFileNameChanged, fileNameChanged);
-		}
-
-		[Test]
 		public async Task PostProcessAsync_References_NotifyReferencesChangedEventFired ()
 		{
 			CreateNuGetProject ();
@@ -322,25 +305,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (dotNetProject.ParentSolution, project.SolutionUsedToCreateBuildIntegratedRestorer);
 			Assert.AreEqual (project, buildIntegratedRestorer.ProjectRestored);
 			Assert.AreEqual ("References", modifiedHint);
-		}
-
-		[Test]
-		public async Task PostProcessAsync_RestoreRunLockFileNotChanged_NotifyChangeInAssetsFile ()
-		{
-			CreateNuGetProject ();
-			AddDotNetProjectPackageReference ("NUnit", "2.6.0");
-			dotNetProject.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
-			string fileNameChanged = null;
-			PackageManagementServices.PackageManagementEvents.FileChanged += (sender, e) => {
-				fileNameChanged = e.Single ().FileName;
-			};
-			OnAfterExecuteActions ("NUnit", "2.6.3", NuGetProjectActionType.Install);
-
-			await project.PostProcessAsync (context, CancellationToken.None);
-
-			string expectedFileNameChanged = @"d:\projects\MyProject\obj\project.assets.json".ToNativePath ();
-			Assert.AreEqual (expectedFileNameChanged, fileNameChanged);
-			Assert.AreEqual (project, buildIntegratedRestorer.ProjectRestored);
 		}
 
 		/// <summary>

@@ -438,7 +438,6 @@ namespace MonoDevelop.Projects.Text
 			}
 
 			FileService.SystemRename (tempName, fileName);
-			FileService.NotifyFileChanged (fileName);
 			return true;
 		}
 		

@@ -23,7 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+
+using System.Collections.Generic;
+using System.IO;
 using MonoDevelop.Core;
 using NUnit.Framework;
 using UnitTests;
@@ -109,6 +111,68 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (@"aa/bb", FileService.AbsoluteToRelativePath (@"", @"aa/bb"));
 			Assert.AreEqual (@"aa/bb", FileService.AbsoluteToRelativePath (@"/aa", @"aa/bb"));
 			Assert.AreEqual (@"aa", FileService.AbsoluteToRelativePath (@"/aa", @"aa"));
+		}
+
+		[Test]
+		public void ThawAfterGeneratingDifferentFileEvents_EventDataShouldMerge_DoesNotThrowInvalidCastException ()
+		{
+			FileService.FreezeEvents ();
+
+			var tmp = System.IO.Path.GetTempFileName ();
+			FileService.NotifyFileChanged (tmp);
+
+			FileService.CopyFile (tmp, tmp + ".tmp");
+			FileService.DeleteFile (tmp);
+			FileService.DeleteFile (tmp + ".tmp");
+
+			FileService.NotifyFileRemoved (tmp);
+			FileService.NotifyFileRemoved (tmp + ".tmp");
+
+			FileService.ThawEvents ();
+		}
+
+		/// <summary>
+		/// File events were being merged the wrong way so a file change event was not being fired.
+		/// </summary>
+		[Test]
+		public void ThawAfterGeneratingFileChangeEvents_File1ChangeFollowedByFile2ChangeThenFile2Change ()
+		{
+			FileService.FreezeEvents ();
+			fileChangeEvents = new List<FileEventArgs> ();
+			FileService.FileChanged += OnFileChanged;
+
+			try {
+				FilePath tmp = System.IO.Path.GetTempFileName ();
+				FilePath tmp2 = tmp + ".tmp";
+				FileService.NotifyFileChanged (tmp);
+				FileService.NotifyFileChanged (tmp2);
+				FileService.NotifyFileChanged (tmp2);
+
+				File.Delete (tmp);
+				File.Delete (tmp2);
+
+				FileService.ThawEvents ();
+
+				var allFilesChanged = new List<FilePath> ();
+				foreach (var fileChangeEvent in fileChangeEvents) {
+					foreach (var file in fileChangeEvent) {
+						allFilesChanged.Add (file.FileName);
+					}
+				}
+
+				Assert.That (allFilesChanged, Contains.Item (tmp2));
+				Assert.That (allFilesChanged, Contains.Item (tmp));
+			} finally {
+				FileService.FileChanged -= OnFileChanged;
+				fileChangeEvents = null;
+			}
+		}
+
+		List<FileEventArgs> fileChangeEvents;
+
+		void OnFileChanged (object sender, FileEventArgs e)
+		{
+			fileChangeEvents.Add (e);
 		}
 	}
 }

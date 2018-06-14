@@ -62,14 +62,12 @@ namespace MonoDevelop.PackageManagement
 
 			packageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
 			packageManagementEvents.ResolveFileConflict += ResolveFileConflict;
-			packageManagementEvents.FileChanged += FileChanged;
 			packageManagementEvents.ImportRemoved += ImportRemoved;
 		}
 
 		public void Dispose ()
 		{
 			packageManagementEvents.ImportRemoved -= ImportRemoved;
-			packageManagementEvents.FileChanged -= FileChanged;
 			packageManagementEvents.ResolveFileConflict -= ResolveFileConflict;
 			packageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
 
@@ -77,7 +75,6 @@ namespace MonoDevelop.PackageManagement
 				PackageManagementMSBuildExtension.PackageRestoreTask = null;
 			}
 
-			NotifyFilesChanged ();
 			UnloadMSBuildHost ();
 		}
 
@@ -140,28 +137,6 @@ namespace MonoDevelop.PackageManagement
 			if (taskCompletionSource != null) {
 				taskCompletionSource.TrySetResult (true);
 			}
-		}
-
-		void FileChanged (object sender, FileEventArgs e)
-		{
-			fileChangedEvents.Add (e);
-		}
-
-		void NotifyFilesChanged ()
-		{
-			GuiSyncDispatch (() => {
-				FilePath[] files = fileChangedEvents
-					.SelectMany (Enumerable.ToArray)
-					.Select (fileInfo => fileInfo.FileName)
-					.ToArray ();
-
-				NotifyFilesChanged (files);
-			});
-		}
-
-		protected virtual void NotifyFilesChanged (FilePath[] files)
-		{
-			FileService.NotifyFilesChanged (files);
 		}
 
 		public void ReportError (ProgressMonitorStatusMessage progressMessage, Exception ex, bool showPackageConsole = true)

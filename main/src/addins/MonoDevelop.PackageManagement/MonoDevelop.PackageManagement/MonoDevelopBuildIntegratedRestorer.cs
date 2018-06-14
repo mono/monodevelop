@@ -138,7 +138,6 @@ namespace MonoDevelop.PackageManagement
 			if (changedLocks.Count > 0) {
 				LockFileChanged = true;
 				await Runtime.RunInMainThread (() => {
-					FileService.NotifyFilesChanged (changedLocks);
 					foreach (var project in affectedProjects) {
 						// Restoring the entire solution so do not refresh references for
 						// transitive  project references since they should be refreshed anyway.
@@ -163,8 +162,6 @@ namespace MonoDevelop.PackageManagement
 			} else if (changedLock != null) {
 				LockFileChanged = true;
 				await Runtime.RunInMainThread (() => {
-					FileService.NotifyFileChanged (changedLock);
-
 					// Restoring a single project so ensure references are refreshed for
 					// transitive project references.
 					NotifyProjectReferencesChanged (project, includeTransitiveProjectReferences: true);
@@ -245,7 +242,6 @@ namespace MonoDevelop.PackageManagement
 			return Runtime.RunInMainThread (async () => {
 				if (changedLock != null) {
 					LockFileChanged = true;
-					FileService.NotifyFileChanged (changedLock);
 				}
 				await projectToReload.ReevaluateProject (new ProgressMonitor ());
 

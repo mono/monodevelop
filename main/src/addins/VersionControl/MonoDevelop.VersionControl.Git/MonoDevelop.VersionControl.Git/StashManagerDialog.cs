@@ -109,9 +109,12 @@ namespace MonoDevelop.VersionControl.Git
 
 		async Task ApplyStashAndRemove(int s)
 		{
-			using (IdeApp.Workspace.GetFileStatusTracker ()) {
+			try {
+				FileService.FreezeEvents ();
 				if (await GitService.ApplyStash (repository, s))
 					stashes.Remove (s);
+			} finally {
+				FileService.ThawEvents ();
 			}
 		}
 
@@ -119,7 +122,12 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			int s = GetSelectedIndex ();
 			if (s != -1) {
-				await GitService.ApplyStash (repository, s);
+				try {
+					FileService.FreezeEvents ();
+					await GitService.ApplyStash (repository, s);
+				} finally {
+					FileService.ThawEvents ();
+				}
 				Respond (ResponseType.Ok);
 			}
 		}

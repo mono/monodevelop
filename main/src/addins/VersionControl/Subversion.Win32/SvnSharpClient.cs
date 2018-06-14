@@ -740,7 +740,6 @@ namespace SubversionAddinWindows
 			string actiondesc;
 			string file = e.Path;
 			bool skipEol = false;
-			bool notifyChange = false;
 
 			switch (e.Action) {
 			case SvnNotifyAction.Skip:
@@ -786,7 +785,6 @@ namespace SubversionAddinWindows
 
 			case SvnNotifyAction.UpdateUpdate:
 				actiondesc = string.Format (GettextCatalog.GetString ("Update '{0}'"), file);
-				notifyChange = true;
 				break;
 			case SvnNotifyAction.UpdateExternal:
 				actiondesc = string.Format (GettextCatalog.GetString ("Fetching external item into '{0}'"), file);
@@ -806,7 +804,6 @@ namespace SubversionAddinWindows
 				break;
 			case SvnNotifyAction.CommitModified:
 				actiondesc = string.Format (GettextCatalog.GetString ("Sending        {0}"), file);
-				notifyChange = true;
 				break;
 			case SvnNotifyAction.CommitAdded:
 				if (e.MimeTypeIsBinary) {
@@ -817,7 +814,6 @@ namespace SubversionAddinWindows
 				break;
 			case SvnNotifyAction.CommitReplaced:
 				actiondesc = string.Format (GettextCatalog.GetString ("Replacing      {0}"), file);
-				notifyChange = true;
 				break;
 			case SvnNotifyAction.CommitSendData:
 				if (!notifData.SendingData) {
@@ -848,9 +844,6 @@ namespace SubversionAddinWindows
 						monitor.Log.WriteLine (actiondesc);
 				});
 			}
-
-			if (notifyChange && File.Exists (file))
-				FileService.NotifyFileChanged (file, true);
 		}
 
 		public override bool HasNeedLock (FilePath file)
