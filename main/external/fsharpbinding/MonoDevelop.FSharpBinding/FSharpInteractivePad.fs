@@ -261,15 +261,6 @@ type FSharpInteractivePad(editor:TextEditor) as this =
 
     let mutable session = None
 
-    let getCaretLine() =
-        let line = 
-            editor.CaretLine 
-            |> editor.GetLine 
-        if line.Length > 0 then 
-            editor.GetLineText line
-        else
-            ""
-
     let setCaretLine (s: string) =
         let line = editor.GetLineByOffset editor.CaretOffset
         editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, s)
