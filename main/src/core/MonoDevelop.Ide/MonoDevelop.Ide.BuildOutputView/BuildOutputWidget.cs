@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			BuildOutput = output;
 
-			BuildOutput.OutputChanged += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
+			BuildOutput.OutputChanged += OnOutputChanged;
 			ProcessLogs (false);
 
 			pathBar = new PathBar (this.CreatePathWidget, PathBarTopPadding) {
@@ -118,6 +118,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			box.PackStart (pathBar, true, true, 10);
 			box.ReorderChild (pathBar, 0);
 			box.Show ();
+		}
+
+		void OnOutputChanged (object sender, EventArgs args)
+		{
+			ProcessLogs (showDiagnosticsButton.Active);
 		}
 
 		void Initialize (DocumentToolbar toolbar)
@@ -638,15 +643,39 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		protected override void Dispose (bool disposing)
 		{
-			if (disposing) {
+			if (BuildOutput != null) {
+				BuildOutput.OutputChanged -= OnOutputChanged;
+				BuildOutput = null;
+			}
+
+			if (buttonSearchBackward != null) {
 				buttonSearchBackward.Clicked -= FindPrevious;
+				buttonSearchBackward = null;
+			}
+
+			if (buttonSearchForward != null) {
 				buttonSearchForward.Clicked -= FindNext;
+				buttonSearchForward = null;
+			}
+
+			if (searchEntry != null) {
 				searchEntry.Entry.Changed -= FindFirst;
 				searchEntry.Entry.Activated -= FindNext;
+				searchEntry = null;
+			}
+
+			if (saveButton != null) {
 				saveButton.Clicked -= SaveButtonClickedAsync;
+				saveButton = null;
+			}
+
+			if (treeView != null) {
 				treeView.SelectionChanged -= TreeView_SelectionChanged;
 				treeView.ButtonPressed -= TreeView_ButtonPressed;
+				treeView = null;
 			}
+
+			pathBar = null;
 
 			base.Dispose (disposing);
 		}
