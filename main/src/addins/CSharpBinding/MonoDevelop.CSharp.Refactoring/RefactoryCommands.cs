@@ -66,7 +66,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (semanticModel == null)
 				return;
 			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
-			bool added = false;
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();
 
@@ -78,13 +77,10 @@ namespace MonoDevelop.CSharp.Refactoring
 				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new Action (async delegate {
 					await new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (info.Symbol ?? info.DeclaredSymbol);
 				}));
-				added = true;
 			}
-			bool first = true;
 
 			if (ciset.CommandInfos.Count > 0) {
 				ainfo.Add (ciset, null);
-				added = true;
 			}
 
 			var gotoDeclarationSymbol = info.Symbol;
@@ -104,13 +100,11 @@ namespace MonoDevelop.CSharp.Refactoring
 				} else {
 					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration), new Action (() => GotoDeclarationHandler.Run (doc)));
 				}
-				added = true;
 			}
 
 
 			if (info.DeclaredSymbol != null && GotoBaseDeclarationHandler.CanGotoBase (info.DeclaredSymbol)) {
 				ainfo.Add (GotoBaseDeclarationHandler.GetDescription (info.DeclaredSymbol), new Action (() => GotoBaseDeclarationHandler.GotoBase (doc, info.DeclaredSymbol).Ignore ()));
-				added = true;
 			}
 
 			var sym = info.Symbol ?? info.DeclaredSymbol;
@@ -131,8 +125,6 @@ namespace MonoDevelop.CSharp.Refactoring
 					// silently ignore roslyn bug.
 				}
 			}
-			added = true;
-
 		}
 
 		static string FormatFileName (string fileName)

@@ -86,7 +86,9 @@ namespace MonoDevelop.AnalysisCore
 						case "ClrHeapAllocationAnalyzer":
 							if (!ClrHeapEnabled)
 								continue;
+							#pragma warning disable 162 // Unreachable
 							break;
+							#pragma warning restore 162
 						//blacklist
 						case "FSharpBinding":
 							continue;

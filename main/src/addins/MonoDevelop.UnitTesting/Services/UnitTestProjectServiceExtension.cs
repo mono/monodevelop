@@ -39,7 +39,6 @@ namespace MonoDevelop.UnitTesting
 {
 	public class UnitTestProjectServiceExtension: ProjectExtension
 	{
-		bool checkingCanExecute;
 		object canExecuteCheckLock = new object ();
 
 		bool unitTestChecked;

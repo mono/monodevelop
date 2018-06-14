@@ -1388,7 +1388,9 @@ namespace MonoDevelop.Debugger
 
 	class StatusBarConnectionDialog : IConnectionDialog
 	{
+		#pragma warning disable 67 //never used
 		public event EventHandler UserCancelled;
+		#pragma warning restore 67
 
 		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
 		{

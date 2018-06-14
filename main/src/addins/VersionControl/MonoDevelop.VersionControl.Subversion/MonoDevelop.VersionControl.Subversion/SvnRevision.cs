@@ -60,6 +60,11 @@ namespace MonoDevelop.VersionControl.Subversion
 			return Rev == other.Rev && Kind == other.Kind;
 		}
 
+		public override int GetHashCode ()
+		{
+			return Rev ^ (Kind << 16);
+		}
+
 		public override string ToString()
 		{
 			return Rev.ToString();

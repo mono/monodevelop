@@ -53,9 +53,6 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			object reportingLock = new object ();
 
-			private int reportedCurrent;
-			private int currentMaximum;
-
 			public StreamingFindReferencesProgress (SearchProgressMonitor monitor, MonoDevelopWorkspace workspace)
 			{
 				this.monitor = monitor;

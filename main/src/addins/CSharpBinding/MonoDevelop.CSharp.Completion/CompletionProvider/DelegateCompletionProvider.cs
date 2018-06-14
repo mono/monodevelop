@@ -374,7 +374,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					var declaringType = semanticModel.GetEnclosingSymbolMD<INamedTypeSymbol> (item.Span.Start, default (CancellationToken));
 					var insertionPoints = InsertionPointService.GetInsertionPoints (
 						document.Editor,
-						parsedDocument,
+						semanticModel,
 						declaringType,
 						editor.CaretOffset
 					);

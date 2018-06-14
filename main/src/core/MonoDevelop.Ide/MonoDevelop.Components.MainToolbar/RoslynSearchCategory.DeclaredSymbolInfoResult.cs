@@ -17,7 +17,6 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		class DeclaredSymbolInfoResult : SearchResult
 		{
-			bool useFullName;
 			readonly INavigateToSearchResult result;
 
 			public override SearchResultType SearchResultType { get { return SearchResultType.Type; } }

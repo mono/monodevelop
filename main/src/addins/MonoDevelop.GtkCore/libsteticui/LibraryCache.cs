@@ -592,7 +592,7 @@ namespace Stetic {
 					}
 					if (curDef.Module.Assembly != adef) {
 						
-						LibraryInfo li = Refresh (resolver, curDef.Module.FullyQualifiedName, basePath);
+						LibraryInfo li = Refresh (resolver, curDef.Module.FileName, basePath);
 						if (li.HasWidgets && li.GetToolboxItem (curDef.FullName, curDef.Module.Assembly.Name.Name) != null) {
 							tbinfo.BaseType = curDef.FullName;
 							break;

@@ -731,135 +731,78 @@ namespace MonoDevelop.CSharp
 			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
+
 			var caretOffset = Editor.CaretOffset;
-			var model = await analysisDocument.GetSemanticModelAsync ();
+			var loc = Editor.CaretLocation;
+
+			var model = await analysisDocument.GetSemanticModelAsync ().ConfigureAwait (false);
 			if (model == null)
 				return;
+
 			CancelUpdatePath ();
+
 			var cancellationToken = src.Token;
 			amb = new AstAmbience(TypeSystemService.Workspace.Options);
-			var loc = Editor.CaretLocation;
-			Task.Run(async delegate {
-				var unit = model.SyntaxTree;
-				SyntaxNode root;
-				SyntaxNode node;
-				try {
-					root = await unit.GetRootAsync(cancellationToken).ConfigureAwait(false);
-					if (root.FullSpan.Length <= caretOffset) {
-						var prevPath = CurrentPath;
-						CurrentPath = new PathEntry [] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
-						isPathSet = false;
-						await Runtime.RunInMainThread (delegate {
-							OnPathChanged (new DocumentPathChangedEventArgs (prevPath));
-						});
-						return;
-					}
-					node = root.FindNode(TextSpan.FromBounds(caretOffset, caretOffset));
-					if (node.SpanStart != caretOffset)
-						node = root.SyntaxTree.FindTokenOnLeftOfPosition(caretOffset, cancellationToken).Parent;
-				} catch (Exception ex ) {
-					Console.WriteLine (ex);
-					return;
-				}
 
-				var curMember = node != null ? node.AncestorsAndSelf ().FirstOrDefault (m => m is VariableDeclaratorSyntax && m.Parent != null && !(m.Parent.Parent is LocalDeclarationStatementSyntax) || (m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax))) : null;
-				var curType = node != null ? node.AncestorsAndSelf ().FirstOrDefault (IsType) : null;
-
-				var curProject = ownerProjects != null && ownerProjects.Count > 1 ? DocumentContext.Project : null;
-				if (curType == curMember || curType is DelegateDeclarationSyntax)
-					curMember = null;
-				if (isPathSet && curType == lastType && curMember == lastMember && curProject == lastProject) {
-					return;
-				}
-				var curTypeMakeup = GetEntityMarkup(curType);
-				var curMemberMarkup = GetEntityMarkup(curMember);
-				if (isPathSet && curType != null && lastType != null && curTypeMakeup == lastTypeMarkup &&
-					curMember != null && lastMember != null && curMemberMarkup == lastMemberMarkup && curProject == lastProject) {
-					return;
-				}
-
-				var regionEntry = await GetRegionEntry (DocumentContext.ParsedDocument, loc).ConfigureAwait (false);
-
-				Gtk.Application.Invoke ((o, args) => {
-					var result = new List<PathEntry>();
-
-					if (curProject != null) {
-						// Current project if there is more than one 
-						result.Add (new PathEntry (ImageService.GetIcon (curProject.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (curProject.Name)) { Tag = curProject });
-					}
-
-					if (curType == null) {
-						if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0]?.Tag is CSharpSyntaxTree)
-							return;
-						if (CurrentPath != null && CurrentPath.Length == 2 && CurrentPath [1]?.Tag is CSharpSyntaxTree)
-							return;
-						var prevPath = CurrentPath;
-						result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit });
-						if (cancellationToken.IsCancellationRequested)
-							return;
-
-						CurrentPath = result.ToArray ();
-						lastType = curType;
-						lastTypeMarkup = curTypeMakeup;
-
-						lastMember = curMember;
-						lastMemberMarkup = curMemberMarkup;
-
-						lastProject = curProject;
+			var unit = model.SyntaxTree;
+			SyntaxNode root;
+			SyntaxNode node;
+			try {
+				root = await unit.GetRootAsync(cancellationToken).ConfigureAwait(false);
+				if (root.FullSpan.Length <= caretOffset) {
+					var prevPath = CurrentPath;
+					CurrentPath = new PathEntry [] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
+					isPathSet = false;
+					await Runtime.RunInMainThread (delegate {
 						OnPathChanged (new DocumentPathChangedEventArgs (prevPath));
+					});
+					return;
+				}
+				node = root.FindNode(TextSpan.FromBounds(caretOffset, caretOffset));
+				if (node.SpanStart != caretOffset)
+					node = root.SyntaxTree.FindTokenOnLeftOfPosition(caretOffset, cancellationToken).Parent;
+			} catch (Exception ex ) {
+				Console.WriteLine (ex);
+				return;
+			}
+
+			var curMember = node != null ? node.AncestorsAndSelf ().FirstOrDefault (m => m is VariableDeclaratorSyntax && m.Parent != null && !(m.Parent.Parent is LocalDeclarationStatementSyntax) || (m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax))) : null;
+			var curType = node != null ? node.AncestorsAndSelf ().FirstOrDefault (IsType) : null;
+
+			var curProject = ownerProjects != null && ownerProjects.Count > 1 ? DocumentContext.Project : null;
+			if (curType == curMember || curType is DelegateDeclarationSyntax)
+				curMember = null;
+			if (isPathSet && curType == lastType && curMember == lastMember && curProject == lastProject) {
+				return;
+			}
+			var curTypeMakeup = GetEntityMarkup(curType);
+			var curMemberMarkup = GetEntityMarkup(curMember);
+			if (isPathSet && curType != null && lastType != null && curTypeMakeup == lastTypeMarkup &&
+				curMember != null && lastMember != null && curMemberMarkup == lastMemberMarkup && curProject == lastProject) {
+				return;
+			}
+
+			var regionEntry = await GetRegionEntry (DocumentContext.ParsedDocument, loc).ConfigureAwait (false);
+
+			await Runtime.RunInMainThread (() => {
+				var result = new List<PathEntry>();
+
+				if (curProject != null) {
+					// Current project if there is more than one 
+					result.Add (new PathEntry (ImageService.GetIcon (curProject.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (curProject.Name)) { Tag = curProject });
+				}
+
+				if (curType == null) {
+					if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0]?.Tag is CSharpSyntaxTree)
 						return;
-					}
-
-					if (curType != null) {
-						var type = curType;
-						var pos = result.Count;
-						while (type != null) {
-							if (!(type is BaseTypeDeclarationSyntax))
-								break;
-							var tag = (object)type.Ancestors ().FirstOrDefault (IsType) ?? unit;
-							result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = tag });
-							type = type.Parent;
-						}
-					}
-					if (curMember != null) {
-						result.Add (new PathEntry (ImageService.GetIcon (curMember.GetStockIcon (), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
-						if (curMember.Kind () == SyntaxKind.GetAccessorDeclaration ||
-						curMember.Kind () == SyntaxKind.SetAccessorDeclaration ||
-						curMember.Kind () == SyntaxKind.AddAccessorDeclaration ||
-						curMember.Kind () == SyntaxKind.RemoveAccessorDeclaration) {
-							var parent = curMember.Parent;
-							if (parent != null)
-								result.Insert (result.Count - 1, new PathEntry (ImageService.GetIcon (parent.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });
-						}
-					}
-
-					if (regionEntry != null)
-						result.Add(regionEntry);
-
-					PathEntry noSelection = null;
-					if (curType == null) {
-						noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
-					} else if (curMember == null && !(curType is DelegateDeclarationSyntax)) {
-						noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = curType };
-					}
-
-					if (noSelection != null)
-						result.Add(noSelection);
-					var prev = CurrentPath;
-					if (prev != null && prev.Length == result.Count) {
-						bool equals = true;
-						for (int i = 0; i < prev.Length; i++) {
-							if (prev [i].Markup != result [i].Markup) {
-								equals = false;
-								break;
-							}
-						}
-						if (equals)
-							return;
-					}
+					if (CurrentPath != null && CurrentPath.Length == 2 && CurrentPath [1]?.Tag is CSharpSyntaxTree)
+						return;
+					var prevPath = CurrentPath;
+					result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit });
 					if (cancellationToken.IsCancellationRequested)
 						return;
-					CurrentPath = result.ToArray();
+
+					CurrentPath = result.ToArray ();
 					lastType = curType;
 					lastTypeMarkup = curTypeMakeup;
 
@@ -867,9 +810,69 @@ namespace MonoDevelop.CSharp
 					lastMemberMarkup = curMemberMarkup;
 
 					lastProject = curProject;
+					OnPathChanged (new DocumentPathChangedEventArgs (prevPath));
+					return;
+				}
 
-					OnPathChanged (new DocumentPathChangedEventArgs(prev));
-				});
+				if (curType != null) {
+					var type = curType;
+					var pos = result.Count;
+					while (type != null) {
+						if (!(type is BaseTypeDeclarationSyntax))
+							break;
+						var tag = (object)type.Ancestors ().FirstOrDefault (IsType) ?? unit;
+						result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = tag });
+						type = type.Parent;
+					}
+				}
+				if (curMember != null) {
+					result.Add (new PathEntry (ImageService.GetIcon (curMember.GetStockIcon (), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
+					if (curMember.Kind () == SyntaxKind.GetAccessorDeclaration ||
+					curMember.Kind () == SyntaxKind.SetAccessorDeclaration ||
+					curMember.Kind () == SyntaxKind.AddAccessorDeclaration ||
+					curMember.Kind () == SyntaxKind.RemoveAccessorDeclaration) {
+						var parent = curMember.Parent;
+						if (parent != null)
+							result.Insert (result.Count - 1, new PathEntry (ImageService.GetIcon (parent.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });
+					}
+				}
+
+				if (regionEntry != null)
+					result.Add(regionEntry);
+
+				PathEntry noSelection = null;
+				if (curType == null) {
+					noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
+				} else if (curMember == null && !(curType is DelegateDeclarationSyntax)) {
+					noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = curType };
+				}
+
+				if (noSelection != null)
+					result.Add(noSelection);
+				var prev = CurrentPath;
+				if (prev != null && prev.Length == result.Count) {
+					bool equals = true;
+					for (int i = 0; i < prev.Length; i++) {
+						if (prev [i].Markup != result [i].Markup) {
+							equals = false;
+							break;
+						}
+					}
+					if (equals)
+						return;
+				}
+				if (cancellationToken.IsCancellationRequested)
+					return;
+				CurrentPath = result.ToArray();
+				lastType = curType;
+				lastTypeMarkup = curTypeMakeup;
+
+				lastMember = curMember;
+				lastMemberMarkup = curMemberMarkup;
+
+				lastProject = curProject;
+
+				OnPathChanged (new DocumentPathChangedEventArgs(prev));
 			});
 		}
 

@@ -51,8 +51,8 @@ namespace MonoDevelop.FSW.OSX
 			/// Adds a CFRunLoopSource object to a run loop mode.
 			/// </summary>
 			/// <param name="rl">The run loop to modify.</param>
-			/// <param name="rl">The run loop source to add. The source is retained by the run loop.</param>
-			/// <param name="rl">The run loop mode to which to add source.</param>
+			/// <param name="source">The run loop source to add. The source is retained by the run loop.</param>
+			/// <param name="mode">The run loop mode to which to add source.</param>
 			[DllImport (Interop.Libraries.CoreFoundationLibrary)]
 			internal static extern void CFRunLoopAddSource (CFRunLoopRef rl, CFRunLoopSourceRef source, CFStringRef mode);
 
@@ -60,8 +60,8 @@ namespace MonoDevelop.FSW.OSX
 			/// Removes a CFRunLoopSource object from a run loop mode.
 			/// </summary>
 			/// <param name="rl">The run loop to modify.</param>
-			/// <param name="rl">The run loop source to remove.</param>
-			/// <param name="rl">The run loop mode of rl from which to remove source.</param>
+			/// <param name="source">The run loop source to remove.</param>
+			/// <param name="mode">The run loop mode of rl from which to remove source.</param>
 			[DllImport (Interop.Libraries.CoreFoundationLibrary)]
 			internal static extern void CFRunLoopRemoveSource (CFRunLoopRef rl, CFRunLoopSourceRef source, CFStringRef mode);
 

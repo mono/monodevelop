@@ -80,15 +80,12 @@ namespace MonoDevelop.TextTemplating.Parser
 		
 		public IEnumerable<FoldingRegion> Foldings {
 			get {
-				foreach (var region in GetCommentsAsync().Result.ToFolds ()) 
-					yield return region;
 				foreach (ISegment seg in TemplateSegments) {
 					if (seg.EndLocation.Line - seg.TagStartLocation.Line < 1)
 						continue;
 					
 					string name;
-					TemplateSegment ts = seg as TemplateSegment;
-					if (ts != null) {
+					if (seg is TemplateSegment ts) {
 						if (ts.Type == SegmentType.Content) {
 							continue;
 						} else if (ts.Type == SegmentType.Expression) {
@@ -99,10 +96,10 @@ namespace MonoDevelop.TextTemplating.Parser
 							name = "<#...#>";
 						}
 					} else {
-						Directive dir = (Directive)seg;
+						var dir = (Directive)seg;
 						name = "<#@" + dir.Name + "...#>";
 					}
-					
+
 					var region = new DocumentRegion (seg.TagStartLocation.Line, seg.TagStartLocation.Column,
 				                                      seg.EndLocation.Line, seg.EndLocation.Column);
 					

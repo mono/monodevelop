@@ -27,20 +27,12 @@
 //
 
 using System;
-using System.Text;
-
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide;
-using ICSharpCode.Decompiler;
-using System.Text;
-using System.Threading;
 using System.Collections.Generic;
-using Mono.Cecil;
-using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.Decompiler.TypeSystem;
-using MonoDevelop.Ide.Editor;
 using ICSharpCode.ILSpy;
+using Mono.Cecil;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {

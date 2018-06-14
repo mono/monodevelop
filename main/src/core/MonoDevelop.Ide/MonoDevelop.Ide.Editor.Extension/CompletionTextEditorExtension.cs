@@ -612,7 +612,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public virtual Task<ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, SignatureHelpTriggerInfo triggerInfo, CancellationToken token = default (CancellationToken))
 		{
+			#pragma warning disable 618 //obsolete
 			return HandleParameterCompletionAsync (completionContext, triggerInfo.TriggerCharacter.HasValue ? triggerInfo.TriggerCharacter.Value : '\0', token);
+			#pragma warning restore 618
 		}
 
 		// return false if completion can't be shown

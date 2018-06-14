@@ -25,22 +25,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Gtk;
 using System.IO;
-using System.Diagnostics;
-using Mono.TextEditor.Highlighting;
-using Xwt.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor.Highlighting;
-using System.Threading;
-using MonoDevelop.Ide;
-using System.Linq;
-using System.Threading.Tasks;
-using MonoDevelop.Core;
+using Xwt.Drawing;
 
 namespace Mono.TextEditor
 {

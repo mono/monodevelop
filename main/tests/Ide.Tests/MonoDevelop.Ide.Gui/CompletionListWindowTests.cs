@@ -362,13 +362,13 @@ namespace MonoDevelop.Ide.Gui
 			listWindow.ShowListWindow (list, listWindow.CodeCompletionContext);
 		}
 
-		[TearDown]
-		public void TearDown ()
+		public override void TearDown ()
 		{
 			if (listWindow != null) {
 				listWindow.Destroy ();
 				listWindow = null;
 			}
+			base.TearDown ();
 		}
 
 		void AssertCompletionList (params string[] items)

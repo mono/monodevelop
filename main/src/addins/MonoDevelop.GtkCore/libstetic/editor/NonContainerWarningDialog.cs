@@ -8,11 +8,13 @@ namespace Stetic.Editor
 
 	public class NonContainerWarningDialog: IDisposable
 	{
+		#pragma warning disable 649 // never assigned
 		[Glade.Widget] Gtk.CheckButton showCheck;
 		[Glade.Widget] Gtk.Button linkButton;
 		[Glade.Widget] Gtk.Button okbutton;
 		[Glade.Widget ("AddNonContainerDialog")] Gtk.Dialog dialog;
-		
+		#pragma warning restore 649
+
 		public static ShowUrlDelegate ShowUrl;
 
 		public NonContainerWarningDialog()

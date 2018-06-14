@@ -276,7 +276,7 @@ namespace MonoDevelop.PackageManagement
 			return new Point (width, height);
 		}
 
-		protected override Size OnGetRequiredSize ()
+		protected override Size OnGetRequiredSize (SizeConstraint widthConstraint)
 		{
 			var layout = new TextLayout ();
 			layout.Text = "W";

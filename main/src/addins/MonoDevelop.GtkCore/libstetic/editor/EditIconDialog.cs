@@ -1,12 +1,12 @@
 
 using System;
-using System.Collections;
 using Mono.Unix;
 
 namespace Stetic.Editor
 {
 	public class EditIconDialog: IDisposable
 	{
+		#pragma warning disable 649 // never assigned
 		[Glade.Widget] Gtk.Entry nameEntry;
 		[Glade.Widget] Gtk.TreeView sourceList;
 		[Glade.Widget] Gtk.RadioButton radioSingle;
@@ -17,7 +17,8 @@ namespace Stetic.Editor
 		[Glade.Widget] Gtk.HBox hboxSingle;
 		[Glade.Widget] Gtk.HBox hboxMultiple;
 		[Glade.Widget ("EditIconDialog")] Gtk.Dialog dialog;
-		
+		#pragma warning restore 649
+
 		Gtk.ListStore sourceListStore;
 		
 		ProjectIconSet iconSet;

@@ -164,7 +164,8 @@ namespace MonoDevelop.ChangeLogAddIn
 				return await IdeApp.Workbench.OpenDocument (clog, (Project) null, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 			
 			Document document = IdeApp.Workbench.NewDocument (clog, "text/plain", "");
-			document.Save();
+			//it doesn't need to be saved to start using it
+			document.Save().Ignore ();
 			return document;				
 		}
 	}

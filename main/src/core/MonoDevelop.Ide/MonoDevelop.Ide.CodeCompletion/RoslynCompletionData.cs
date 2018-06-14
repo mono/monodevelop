@@ -276,7 +276,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 					// TODO: Remove Format (TextEditor editor, Gui.Document document, int start, int end)
 					// Note it's always Gui.Document in IDE case - only in the unit tests other DocumentContext implementations can happen.
 					if (context is Gui.Document) {
+						#pragma warning disable 618 // back-compat for obsolete API
 						Format (editor, (Gui.Document)context, mappedSpan.Start, endOffset);
+						#pragma warning restore 618
 					} else {
 						Format (editor, context, mappedSpan.Start, endOffset);
 					}

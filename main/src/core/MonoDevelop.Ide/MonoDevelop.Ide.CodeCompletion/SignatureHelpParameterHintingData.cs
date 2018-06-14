@@ -70,6 +70,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return Item.ToString () == other.Item.ToString ();
 		}
 
+		public override int GetHashCode ()
+		{
+			return Item.ToString ().GetHashCode ();
+		}
+
 		const int MaxParamColumnCount = 100;
 		public override Task<TooltipInformation> CreateTooltipInformation (TextEditor editor, DocumentContext ctx, int currentParameter, bool smartWrap, CancellationToken cancelToken)
 		{

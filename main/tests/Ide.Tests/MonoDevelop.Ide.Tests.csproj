@@ -223,7 +223,4 @@
     <Folder Include="MonoDevelop.Ide.RoslynServices\" />
     <Folder Include="MonoDevelop.Ide.RoslynServices.Options\" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
 </Project>

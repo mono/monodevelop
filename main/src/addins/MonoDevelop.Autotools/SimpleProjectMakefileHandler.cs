@@ -420,7 +420,7 @@ endif", s.SwitchName.Replace ('-', '_').ToUpperInvariant (), s.Define));
 					conf_vars.Append ( "\nendif\n\n" );
 				}
 
-				conf_vars.AppendFormat ("AL={0}\n", (dotnetProject.TargetFramework.ClrVersion == ClrVersion.Net_2_0) ? "al2" : "al");
+				conf_vars.AppendFormat ("AL=al\n");
 				conf_vars.AppendFormat ("SATELLITE_ASSEMBLY_NAME=$(notdir $(basename $(ASSEMBLY))).resources.dll\n");
 
 				foreach (KeyValuePair<string, DeployFileData> pair in allDeployVars) {

@@ -52,7 +52,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		TextTag errorTag;
 		TextTag consoleLogTag;
 		TextTag debugTag;
-		int ident = 0;
 		List<TextTag> tags = new List<TextTag> ();
 
 		readonly Queue<QueuedUpdate> updates = new Queue<QueuedUpdate> ();
@@ -972,7 +971,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public override void Debug (int level, string category, string message)
 			{
-				monitor.outputPad.WriteDebug (level, category, message);
+				monitor.outputPad.WriteDebug (monitor, level, category, message);
 			}
 
 			public override void Dispose ()
