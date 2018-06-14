@@ -972,7 +972,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void BuildOutputDocClosed (object sender, EventArgs e)
 		{
-			buildOutputViewContent.Dispose ();
+			buildOutputViewContent?.Dispose ();
 			buildOutputViewContent = null;
 			buildOutputDoc = null;
 		}
