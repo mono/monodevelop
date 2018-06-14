@@ -329,6 +329,7 @@ namespace MonoDevelop.Projects.MSBuild
 							Thread.ResetAbort ();
 
 							// Try to end the build here, to workaround a finalizer crash in zstream in mono
+							// https://github.com/mono/mono/issues/9142
 							Microsoft.Build.Execution.BuildManager.DefaultBuildManager.EndBuild ();
 							return;
 						} catch (Exception ex) {
