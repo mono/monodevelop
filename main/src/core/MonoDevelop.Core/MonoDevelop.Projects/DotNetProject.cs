@@ -964,7 +964,7 @@ namespace MonoDevelop.Projects
 					} else {
 						fullPath = Path.GetFullPath (refFilename.FilePath);
 					}
-					if (await SystemAssemblyService.ContainsReferenceToSystemRuntimeAsync (fullPath)) {
+					if (await SystemAssemblyService.RequiresFacadeAssembliesAsync (fullPath)) {
 						addFacadeAssemblies = true;
 						break;
 					}
