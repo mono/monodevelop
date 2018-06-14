@@ -3075,6 +3075,9 @@ namespace Mono.TextEditor
 		{
 //			double xStart = System.Math.Max (area.X, XOffset);
 //			xStart = System.Math.Max (0, xStart);
+			cr.Rectangle (XOffset, 0, textEditor.Allocation.Width - XOffset, textEditor.Allocation.Height);
+			cr.Clip ();
+
 			var correctedXOffset = System.Math.Floor (XOffset) - 1;
 			var extendingMarker = line != null ? (IExtendingTextLineMarker)textEditor.Document.GetMarkers (line).FirstOrDefault (l => l is IExtendingTextLineMarker) : null;
 			isSpaceAbove = extendingMarker != null ? extendingMarker.IsSpaceAbove : false;
@@ -3306,6 +3309,7 @@ namespace Mono.TextEditor
 			DrawScrollShadow (cr, x, y, _lineHeight);
 			if (wrapper != null && wrapper.IsUncached)
 				wrapper.Dispose ();
+			cr.ResetClip ();
 		}
 
 		void DrawScrollShadow (Cairo.Context cr, double x, double y, double _lineHeight)

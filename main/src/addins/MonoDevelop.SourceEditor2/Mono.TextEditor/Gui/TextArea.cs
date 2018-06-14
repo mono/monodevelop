@@ -2265,9 +2265,7 @@ namespace Mono.TextEditor
 				
 				cr.LineWidth = Options.Zoom;
 				textViewCr.LineWidth = Options.Zoom;
-				textViewCr.Rectangle (textViewMargin.XOffset, 0, Allocation.Width - textViewMargin.XOffset, Allocation.Height);
-				textViewCr.Clip ();
-				
+
 				RenderMargins (cr, textViewCr, cairoArea);
 			
 #if DEBUG_EXPOSE
