@@ -327,6 +327,9 @@ namespace MonoDevelop.Projects.MSBuild
 						} catch (ThreadAbortException) {
 							// Gracefully stop the thread
 							Thread.ResetAbort ();
+
+							// Try to end the build here, to workaround a finalizer crash in zstream in mono
+							Microsoft.Build.Execution.BuildManager.DefaultBuildManager.EndBuild ();
 							return;
 						} catch (Exception ex) {
 							workError = ex;
