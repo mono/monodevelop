@@ -692,5 +692,20 @@ namespace MonoDevelop.DotNetCore
 					await extension.GetTransitiveAssemblyReferences (traversedProjects, references, configuration, false, token);
 			}
 		}
+
+		/// <summary>
+		/// ASP.NET Core projects have different build actions if the file is in the wwwroot folder.
+		/// It also uses Content build actions for *.json, *.config and *.cshtml files. To support
+		/// this the default file globs for the file are found and the MSBuild item name is returned.
+		/// </summary>
+		protected override string OnGetDefaultBuildAction (string fileName)
+		{
+			string include = MSBuildProjectService.ToMSBuildPath (Project.ItemDirectory, fileName);
+			var globItems = Project.MSBuildProject.FindGlobItemsIncludingFile (include).ToList ();
+			if (globItems.Count == 1)
+				return globItems [0].Name;
+
+			return base.OnGetDefaultBuildAction (fileName);
+		}
 	}
 }
