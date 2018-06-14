@@ -60,6 +60,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Label resultInformLabel;
 		BuildOutputDataSearch currentSearch;
 		BuildOutputTreeCellView cellView;
+		MDSpinner loadingSpinner;
 
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
@@ -213,6 +214,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			cellView.ExpandErrors += (s, e) => ExpandErrorOrWarningsNodes (treeView, false);
 
 			PackStart (treeView, expand: true, fill: true);
+
+			loadingSpinner = new MDSpinner (Gtk.IconSize.Button) {
+				Visible = false
+			};
+			PackStart (loadingSpinner, expand: true, vpos: WidgetPlacement.Center, hpos: WidgetPlacement.Center);
 		}
 
 		static void ExpandErrorOrWarningsNodes (TreeView treeView, bool warnings)
@@ -570,6 +576,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
+		Task SetSpinnerVisibility (bool visible)
+		{
+			return InvokeAsync (() => {
+				loadingSpinner.Visible = loadingSpinner.Animate = visible;
+				loadingSpinner.TooltipText = visible ? GettextCatalog.GetString ("Loading build log\u2026") : String.Empty;
+				treeView.Visible = !visible;
+			});
+		}
+
 		CancellationTokenSource cts;
 		TaskCompletionSource<object> processingCompletion = new TaskCompletionSource<object> ();
 
@@ -582,6 +597,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			IsDirty = true;
 
 			Task.Run (async () => {
+				await SetSpinnerVisibility (true);
+
 				try {
 					BuildOutput.ProcessProjects ();
 
@@ -607,6 +624,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 				} catch (Exception ex) {
 					processingCompletion.TrySetException (ex);
 				}
+
+				await SetSpinnerVisibility (false);
 			}, cts.Token);
 		}
 
