@@ -211,6 +211,36 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+
+
+		[Test]
+		public async Task TestToggle_Visible_StartOfLine ()
+		{
+			//We need to create full document and not just editor
+			//so extensions are initialized which set custom C#
+			//tagger based syntax highligthing
+			const string input = @"class Foo
+{
+	void Bar ()
+$	{
+		//test
+	}
+}";
+			using (var testCase = await SetupTestCase ("", wrap: true)) {
+				var editor = testCase.Document.Editor;
+				SetupInput (editor, input);
+
+				//Call UpdateParseDocument so AdHock Roslyn Workspace is created for file
+				await testCase.Document.UpdateParseDocument ();
+
+				//Finnaly call command Update so it sets values which we assert
+				var info = new Components.Commands.CommandInfo ();
+				testCase.GetContent<DefaultCommandTextEditorExtension> ().OnUpdateToggleComment (info);
+				Assert.AreEqual (true, info.Visible);
+				Assert.AreEqual (true, info.Enabled);
+			}
+		}
+
 		[Test]
 		public async Task TestToggle_AddAsync ()
 		{
