@@ -62,11 +62,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Templates\" />
-    <Folder Include="MonoDevelop.AspNetCore.Templating\" />
-    <Folder Include="MonoDevelop.AspNetCore\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Templates\MiddlewareClass.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

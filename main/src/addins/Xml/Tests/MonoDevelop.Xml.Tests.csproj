@@ -137,12 +137,6 @@
     <Compile Include="Utils\XsltTransformTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Parser\" />
-    <Folder Include="Paths\" />
-    <Folder Include="Schema\" />
-    <Folder Include="Utils\" />
-    <Folder Include="CompletionData\" />
-    <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\schemas\XMLSchema.xsd">

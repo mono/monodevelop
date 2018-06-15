@@ -598,13 +598,5 @@
   <Import Project="..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="MonoDevelop.SourceEditor\" />
-    <Folder Include="MonoDevelop.SourceEditor.QuickTasks\" />
-    <Folder Include="MonoDevelop.SourceEditor.Wrappers\" />
-    <Folder Include="MonoDevelop.SourceEditor\TextMarker\" />
-    <Folder Include="Mono.TextEditor\" />
-    <Folder Include="Mono.TextEditor.PopupWindow\" />
-    <Folder Include="Mono.TextEditor.Theatrics\" />
-    <Folder Include="Gui\" />
   </ItemGroup>
 </Project>

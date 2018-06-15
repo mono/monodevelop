@@ -312,7 +312,5 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="templates\images\" />
-    <Folder Include="Gui\" />
   </ItemGroup>
 </Project>

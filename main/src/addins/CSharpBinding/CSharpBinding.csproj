@@ -387,8 +387,6 @@
     <InternalsVisibleTo Include="WebToolingAddin" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MonoDevelop.Ide.Completion.Presentation\" />
-    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
  </Project>

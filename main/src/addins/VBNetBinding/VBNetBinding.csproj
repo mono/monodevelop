@@ -138,6 +138,5 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="icons\" />
-    <Folder Include="MonoDevelop.VBNet\" />
   </ItemGroup>
 </Project>

@@ -128,10 +128,4 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DialogTests\" />
-    <Folder Include="Controllers\" />
-    <Folder Include="Exceptions\" />
-    <Folder Include="VersionControlTests\Git\" />
-  </ItemGroup>
 </Project>

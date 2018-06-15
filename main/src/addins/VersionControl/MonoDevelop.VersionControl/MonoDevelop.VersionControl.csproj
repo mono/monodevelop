@@ -1244,14 +1244,8 @@
     <Compile Include="Gui\MonoDevelop.VersionControl.Views.LogWidget.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile.am" />
-  </ItemGroup>
-  <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.MacDev" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

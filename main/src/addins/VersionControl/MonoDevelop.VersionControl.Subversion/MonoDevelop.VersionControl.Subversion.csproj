@@ -105,16 +105,9 @@
     <Compile Include="Gui\MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile.am" />
-  </ItemGroup>
-  <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Subversion.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Subversion.Unix" />
     <InternalsVisibleTo Include="VersionControl.Subversion.Win32" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="MonoDevelop.VersionControl.Subversion\" />
-    <Folder Include="Gui\" />
-  </ItemGroup>
 </Project>

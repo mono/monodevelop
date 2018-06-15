@@ -193,18 +193,6 @@
     <Compile Include="MonoDevelop.Refactoring\FindReferenceUsagesProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MonoDevelop.Refactoring\" />
-    <Folder Include="MonoDevelop.Refactoring.Rename\" />
-    <Folder Include="MonoDevelop.AnalysisCore\" />
-    <Folder Include="MonoDevelop.CodeIssues\" />
-    <Folder Include="MonoDevelop.CodeActions\" />
-    <Folder Include="MonoDevelop.CodeIssues\Pad\" />
-    <Folder Include="MonoDevelop.Refactoring.SignatureChange\" />
-    <Folder Include="MonoDevelop.Refactoring.GenerateType\" />
-    <Folder Include="MonoDevelop.Refactoring.PackageInstaller\" />
-    <Folder Include="MonoDevelop.Refactoring.ExtractInterface\" />
-    <Folder Include="MonoDevelop.Refactoring.PickMembersService\" />
-    <Folder Include="Gui\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">

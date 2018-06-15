@@ -601,22 +601,5 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
-    <Folder Include="WebForms\" />
-    <Folder Include="Razor\" />
-    <Folder Include="Templates\WebForms\" />
-    <Folder Include="Projects\" />
-    <Folder Include="Properties\" />
-    <Folder Include="Html\Parser\" />
-    <Folder Include="Html\Schemas\" />
-    <Folder Include="Execution\" />
-    <Folder Include="WebForms\Dom\" />
-    <Folder Include="Razor\Dom\" />
-    <Folder Include="Commands\" />
-    <Folder Include="ProjectPad\" />
-    <Folder Include="Templates\Projects\" />
-    <Folder Include="Templates\Projects\Files\" />
-    <Folder Include="Templates\images\" />
-    <Folder Include="WebForms\CSharp\" />
-    <Folder Include="Gui\" />
   </ItemGroup>
 </Project>

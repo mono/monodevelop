@@ -265,7 +265,6 @@
     <Compile Include="Gui\MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionsPanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -139,11 +139,5 @@
     <Compile Include="Gui\MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs" />
     <Compile Include="Gui\MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Makefile.am" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Gui\" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -238,10 +238,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="MonoDevelop.PackageManagement.Tests\" />
-    <Folder Include="MonoDevelop.PackageManagement.Tests.Helpers\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
 </Project>

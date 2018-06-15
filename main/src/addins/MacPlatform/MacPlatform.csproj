@@ -240,13 +240,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Dialogs\" />
-    <Folder Include="MacInterop\" />
-    <Folder Include="MacInterop\AppleEvents\" />
-    <Folder Include="icons\" />
-    <Folder Include="MainToolbar\" />
-  </ItemGroup>
-  <ItemGroup>
     <InternalsVisibleTo Include="MacPlatform.Tests" />
   </ItemGroup>
   <ItemGroup>

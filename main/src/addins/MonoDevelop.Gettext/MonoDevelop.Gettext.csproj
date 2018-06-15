@@ -276,7 +276,6 @@
     <EmbeddedResource Include="icons\prefs-language-16~sel%402x.png">
       <LogicalName>prefs-language-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\images\project-locale-template.png">
       <LogicalName>project-locale-template.png</LogicalName>
     </EmbeddedResource>
@@ -313,12 +312,6 @@
     <EmbeddedResource Include="templates\images\project-locale-32~dark~sel%402x.png">
       <LogicalName>project-locale-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Makefile.am" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

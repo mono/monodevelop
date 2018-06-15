@@ -119,8 +119,5 @@
   <ItemGroup>
     <None Include="Makefile.am" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Gui\" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

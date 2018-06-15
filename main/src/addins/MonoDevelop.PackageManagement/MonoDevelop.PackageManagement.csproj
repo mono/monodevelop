@@ -602,10 +602,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MonoDevelop.PackageManagement.NodeBuilders\" />
-    <Folder Include="NuGet.PackageManagement.UI\" />
-    <Folder Include="NuGet.Commands\" />
-    <Folder Include="Gui\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\external\nuget-binary\NuGet-LICENSE.txt">

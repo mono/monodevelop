@@ -706,11 +706,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="MonoDevelop.Debugger.Visualizer\" />
-    <Folder Include="MonoDevelop.Debugger.PreviewVisualizers\" />
-    <Folder Include="MonoDevelop.Debugger.Converters\" />
-    <Folder Include="icons\mac\" />
-    <Folder Include="Gui\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -75,9 +75,6 @@
     <Compile Include="MonoDevelop.VersionControl.Subversion.Unix\LibSvnClient2.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MonoDevelop.VersionControl.Subversion.Unix\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.VersionControl.Subversion\MonoDevelop.VersionControl.Subversion.csproj">
       <Project>{183E084F-2C3B-4A6D-A8CE-6CDF3DC499AC}</Project>
       <Name>MonoDevelop.VersionControl.Subversion</Name>

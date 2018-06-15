@@ -90,12 +90,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="Mono.MHex\" />
-    <Folder Include="Mono.MHex.Data\" />
-    <Folder Include="Mono.MHex.Rendering\" />
-    <Folder Include="MonoDevelop.HexEditor\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>

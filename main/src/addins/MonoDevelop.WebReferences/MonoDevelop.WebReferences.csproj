@@ -186,11 +186,4 @@
     <None Include="TODO" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="MonoDevelop.WebReferences.WCF\" />
-    <Folder Include="MonoDevelop.WebReferences\" />
-    <Folder Include="MonoDevelop.WebReferences.WS\" />
-    <Folder Include="icons\" />
-    <Folder Include="Gui\" />
-  </ItemGroup>
 </Project>

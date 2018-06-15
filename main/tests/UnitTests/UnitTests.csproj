@@ -70,6 +70,5 @@
   <ItemGroup>
     <None Include="Makefile.am" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

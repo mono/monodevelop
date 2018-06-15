@@ -209,8 +209,5 @@
     <None Include="packages.config" />
     <None Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MonoDevelop.CSharpBinding.Parser\" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

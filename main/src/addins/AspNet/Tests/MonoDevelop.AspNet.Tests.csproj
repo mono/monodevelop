@@ -136,11 +136,6 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Razor\" />
-    <Folder Include="Razor\Dom\" />
-    <Folder Include="Html\" />
-  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

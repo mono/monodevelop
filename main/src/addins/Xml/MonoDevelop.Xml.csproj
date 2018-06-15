@@ -238,12 +238,7 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Dom\" />
-    <Folder Include="MSBuild\" />
-    <Folder Include="Properties\" />
-    <Folder Include="Editor\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

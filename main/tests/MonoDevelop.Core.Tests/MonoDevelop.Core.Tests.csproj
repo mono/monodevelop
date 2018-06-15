@@ -111,10 +111,6 @@
     <Compile Include="MonoDevelop.Core\InstrumentationTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MonoDevelop.Core\" />
-    <Folder Include="MonoDevelop.Core.Assemblies\" />
-    <Folder Include="MonoDevelop.Projects\" />
-    <Folder Include="MonoDevelop.Core.Execution\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

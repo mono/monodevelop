@@ -181,11 +181,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Templates\" />
-    <Folder Include="MonoDevelop.Packaging.Templating\" />
-    <Folder Include="MonoDevelop.Packaging.Gui\" />
-    <Folder Include="MonoDevelop.Packaging.OptionPanels\" />
-    <Folder Include="Gui\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

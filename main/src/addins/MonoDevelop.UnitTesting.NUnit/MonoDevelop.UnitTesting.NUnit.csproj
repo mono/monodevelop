@@ -89,7 +89,6 @@
     <EmbeddedResource Include="templates\NUnitTestClass.xft.xml">
       <LogicalName>NUnitTestClass.xft.xml</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\images\project-test-template.png">
       <LogicalName>project-test-template.png</LogicalName>
     </EmbeddedResource>
@@ -138,9 +137,6 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.UnitTesting.NUnit\RemoteTestResult.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="templates\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
