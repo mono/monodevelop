@@ -77,9 +77,11 @@ namespace MonoDevelop.Platform {
 		static extern void g_object_unref (IntPtr handle);
 
 		struct GList {
+			#pragma warning disable 649 // never assigned
 			public IntPtr data;
 			public IntPtr next;
 			public IntPtr prev;
+			#pragma warning restore 649
 		}
 
 		static GnomeDesktopApplication AppFromAppInfoPtr (IntPtr handle, DesktopApplication defaultApp)
