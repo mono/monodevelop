@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide
 				ext.Initialize (doc.Editor, doc);
 				content.Contents.Add (ext);
 			}
-
+			await doc.UpdateParseDocument ();
 			return new TextEditorExtensionTestCase (doc, content, tww, data, wrap);
 		}
 	}

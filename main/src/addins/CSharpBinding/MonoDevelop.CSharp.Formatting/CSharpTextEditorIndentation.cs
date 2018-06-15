@@ -45,6 +45,10 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Refactoring;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using System.Globalization;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -316,35 +320,112 @@ namespace MonoDevelop.CSharp.Formatting
 
 		int lastInsertedSemicolon = -1;
 
+#region Xml Tag Insertion
+
 		void CheckXmlCommentCloseTag (char keyChar)
 		{
-			if (keyChar == '>' && stateTracker.IsInsideDocLineComment) {
-				var location = Editor.CaretLocation;
-				string lineText = Editor.GetLineText (Editor.CaretLine);
-				int startIndex = Math.Min (location.Column - 2, lineText.Length - 1);
-				while (startIndex >= 0 && lineText [startIndex] != '<') {
-					--startIndex;
-					if (lineText [startIndex] == '/') {
-						// already closed.
-						startIndex = -1;
-						break;
+			if (!stateTracker.IsInsideDocLineComment || (keyChar != '>' && keyChar != '/'))
+				return;
+			var analysisDocument = DocumentContext?.AnalysisDocument;
+			if (analysisDocument == null)
+				return;
+			var cancellationToken = default (CancellationToken);
+			var tree = analysisDocument.GetSyntaxTreeSynchronously (cancellationToken);
+			var token = tree.FindTokenOnLeftOfPosition (Editor.CaretOffset, cancellationToken, includeDocumentationComments: true);
+			int position = Editor.CaretOffset;
+
+			if (token.IsKind (SyntaxKind.GreaterThanToken)) {
+				var parentStartTag = token.Parent as XmlElementStartTagSyntax;
+				if (parentStartTag == null) {
+					return;
+				}
+
+				// Slightly special case: <blah><blah$$</blah>
+				// If we already have a matching end tag and we're parented by 
+				// an xml element with the same start tag and a missing/non-matching end tag, 
+				// do completion anyway. Generally, if this is the case, we have to walk
+				// up the parent elements until we find an unmatched start tag.
+
+				if (parentStartTag.Name.LocalName.ValueText.Length > 0 && HasMatchingEndTag (parentStartTag)) {
+					if (HasUnmatchedIdenticalParent (parentStartTag)) {
+						Editor.InsertAtCaret ("</" + parentStartTag.Name.LocalName.ValueText + ">");
+						Editor.CaretOffset = position;
+						return;
 					}
 				}
-				if (startIndex >= 0) {
-					int endIndex = startIndex + 1;
-					while (endIndex <= location.Column - 1 && endIndex < lineText.Length && Char.IsLetter (lineText [endIndex])) {
-						endIndex++;
-					}
-					string tag = endIndex - startIndex > 0 ? lineText.Substring (startIndex + 1, endIndex - startIndex - 1) : null;
-					if (!string.IsNullOrEmpty (tag) && ICSharpCode.NRefactory.CSharp.Completion.CSharpCompletionEngine.CommentTags.Any (t => t == tag)) {
-						var caretOffset = Editor.CaretOffset;
-						Editor.InsertText (caretOffset, "</" + tag + ">");
-						Editor.CaretOffset = caretOffset;
+
+				CheckNameAndInsertText (parentStartTag, position, "</{0}>");
+			} else if (token.IsKind (SyntaxKind.LessThanSlashToken)) {
+				// /// <summary>
+				// /// </$$
+				// /// </summary>
+				// We need to check for non-trivia XML text tokens after $$ that match the expected end tag text.
+
+				if (token.Parent.IsKind (SyntaxKind.XmlElementEndTag) &&
+					token.Parent.IsParentKind (SyntaxKind.XmlElement)) {
+					var parentElement = token.Parent.Parent as XmlElementSyntax;
+
+					if (!HasFollowingEndTagTrivia (parentElement, token)) {
+						CheckNameAndInsertText (parentElement.StartTag, null, "{0}>");
 					}
 				}
 			}
 		}
 
+		bool HasFollowingEndTagTrivia(XmlElementSyntax parentElement, SyntaxToken lessThanSlashToken)
+		{
+			var expectedEndTagText = "</" + parentElement.StartTag.Name.LocalName.ValueText + ">";
+
+			var token = lessThanSlashToken.GetNextToken (includeDocumentationComments: true);
+			while (token.Parent.IsKind (SyntaxKind.XmlText)) {
+				if (token.ValueText == expectedEndTagText)
+					return true;
+				token = token.GetNextToken (includeDocumentationComments: true);
+			}
+
+			return false;
+		}
+
+		bool HasUnmatchedIdenticalParent (XmlElementStartTagSyntax parentStartTag)
+		{
+			if (parentStartTag.Parent.Parent is XmlElementSyntax grandParentElement) {
+				if (grandParentElement.StartTag.Name.LocalName.ValueText == parentStartTag.Name.LocalName.ValueText) {
+					if (HasMatchingEndTag (grandParentElement.StartTag))
+						return HasUnmatchedIdenticalParent (grandParentElement.StartTag);
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		bool HasMatchingEndTag (XmlElementStartTagSyntax parentStartTag)
+		{
+			var parentElement = parentStartTag?.Parent as XmlElementSyntax;
+			if (parentElement == null)
+				return false;
+			var endTag = parentElement.EndTag;
+			return endTag != null && !endTag.IsMissing && endTag.Name.LocalName.ValueText == parentStartTag.Name.LocalName.ValueText;
+		}
+
+		void CheckNameAndInsertText (XmlElementStartTagSyntax startTag, int? finalCaretPosition, string formatString)
+		{
+			if (startTag == null) 
+				return;
+
+			var elementName = startTag.Name.LocalName.ValueText;
+
+			if (elementName.Length > 0) {
+				var parentElement = startTag.Parent as XmlElementSyntax;
+				if (parentElement.EndTag.Name.LocalName.ValueText != elementName) {
+					Editor.InsertAtCaret (string.Format (formatString, elementName));
+					if (finalCaretPosition.HasValue)
+						Editor.CaretOffset = finalCaretPosition.Value;
+				}
+			}
+		}
+
+#endregion
 		internal void ReindentOnTab ()
 		{
 			int cursor = Editor.CaretOffset;
