@@ -44,11 +44,11 @@ namespace MonoDevelop.FSW
 		{
 			FilePath = filePath;
 			watcher = new FileSystemWatcher (Path.GetDirectoryName (filePath), Path.GetFileName (filePath)) {
-				NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.FileName | NotifyFilters.CreationTime,
+				NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName,
 			};
 
+			// Created will always set a last write time, so use changed here to not have multiple events.
 			watcher.Changed += OnChanged;
-			watcher.Created += OnChanged;
 			watcher.Deleted += OnChanged;
 			watcher.Renamed += OnRenamed;
 			watcher.EnableRaisingEvents = true;
