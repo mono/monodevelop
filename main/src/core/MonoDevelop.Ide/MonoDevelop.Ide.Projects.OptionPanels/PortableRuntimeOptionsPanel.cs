@@ -246,8 +246,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		//TODO error handling
 		public void Store ()
 		{
-			bool needsRestore = false;
-
 			//get the new framework and netstandard version
 			var isNetStandard = netstandardRadio.Active;
 			var nsVersion = isNetStandard ? NetStandardVersion : null;
