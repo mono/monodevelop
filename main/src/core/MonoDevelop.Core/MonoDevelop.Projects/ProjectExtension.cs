@@ -217,11 +217,13 @@ namespace MonoDevelop.Projects
 			return next.OnCreateProjectItem (item);
 		}
 
+		[Obsolete ("Use MSBuild")]
 		internal protected virtual void OnPopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
 		{
 			next.OnPopulateSupportFileList (list, configuration);
 		}
 
+		[Obsolete ("Use MSBuild")]
 		internal protected virtual void OnPopulateOutputFileList (List<FilePath> list, ConfigurationSelector configuration)
 		{
 			next.OnPopulateOutputFileList (list, configuration);

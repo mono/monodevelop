@@ -26,19 +26,19 @@
 //
 
 using System;
-using System.IO;
-using System.Diagnostics;
-using System.Collections.Generic;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Projects.Extensions;
-using System.Threading.Tasks;
 using MonoDevelop.Projects.MSBuild.Conditions;
-	
+
 namespace MonoDevelop.Projects.MD1
 {
+	[Obsolete]
 	class MD1DotNetProjectHandler
 	{
 		DotNetProject project;
@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.MD1
 		{
 			project = entry;
 		}
-		
+
 		public async Task<BuildResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			switch (target)
@@ -171,7 +171,7 @@ namespace MonoDevelop.Projects.MD1
 
 		internal static Task<BuildResult> Compile (ProgressMonitor monitor, DotNetProject project, BuildData buildData)
 		{
-			return Task<BuildResult>.Run (delegate {
+			return Task.Run (delegate {
 				ProjectItemCollection items = buildData.Items;
 				BuildResult br = BuildResources (buildData.Configuration, ref items, monitor);
 				if (br != null)
@@ -330,7 +330,7 @@ namespace MonoDevelop.Projects.MD1
 		public static bool IsResgenRequired (string resx_filename, string output_filename)
 		{
 			if (String.Compare (Path.GetExtension (resx_filename), ".resx", true) != 0)
-				throw new ArgumentException (".resx file expected", "resx_filename");
+				throw new ArgumentException (".resx file expected", nameof (resx_filename));
 
 			if (File.Exists (output_filename))
 				return IsFileNewerThan (resx_filename, output_filename);
