@@ -1006,6 +1006,8 @@ namespace Mono.TextEditor
 		/// </summary>
 		public void SetNotDirtyState ()
 		{
+			if (undoStack.Count > 0 && undoStack.Peek () is KeyboardStackUndo keyboardStackUndo)
+				keyboardStackUndo.IsClosed = true;
 			savePoint = undoStack.ToArray ();
 			this.CommitUpdateAll ();
 			DiffTracker.SetBaseDocument (CreateDocumentSnapshot ());
