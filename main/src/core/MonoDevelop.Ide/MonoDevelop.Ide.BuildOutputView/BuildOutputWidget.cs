@@ -60,6 +60,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		Label resultInformLabel;
 		BuildOutputDataSearch currentSearch;
 		BuildOutputTreeCellView cellView;
+		MDSpinner loadingSpinner;
 
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
@@ -76,7 +77,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		public event EventHandler<FilePath> FileSaved;
+		public event EventHandler<string> FileNameChanged;
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 
 		public BuildOutputWidget (BuildOutput output, string viewContentName, DocumentToolbar toolbar)
@@ -103,7 +104,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			BuildOutput = output;
 
-			BuildOutput.OutputChanged += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
+			BuildOutput.OutputChanged += OnOutputChanged;
 			ProcessLogs (false);
 
 			pathBar = new PathBar (this.CreatePathWidget, PathBarTopPadding) {
@@ -118,6 +119,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			box.PackStart (pathBar, true, true, 10);
 			box.ReorderChild (pathBar, 0);
 			box.Show ();
+		}
+
+		void OnOutputChanged (object sender, EventArgs args)
+		{
+			ProcessLogs (showDiagnosticsButton.Active);
 		}
 
 		void Initialize (DocumentToolbar toolbar)
@@ -208,6 +214,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 			cellView.ExpandErrors += (s, e) => ExpandErrorOrWarningsNodes (treeView, false);
 
 			PackStart (treeView, expand: true, fill: true);
+
+			loadingSpinner = new MDSpinner (Gtk.IconSize.Button) {
+				Visible = false
+			};
+			PackStart (loadingSpinner, expand: true, vpos: WidgetPlacement.Center, hpos: WidgetPlacement.Center);
 		}
 
 		static void ExpandErrorOrWarningsNodes (TreeView treeView, bool warnings)
@@ -278,7 +289,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					outputFile = outputFile.ChangeExtension (binLogExtension);
 
 				await BuildOutput.Save (outputFile);
-				FileSaved?.Invoke (this, outputFile);
+				FileNameChanged?.Invoke (this, outputFile);
 				filePathLocation = outputFile;
 				IsDirty = false;
 			}
@@ -565,6 +576,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
+		Task SetSpinnerVisibility (bool visible)
+		{
+			return InvokeAsync (() => {
+				loadingSpinner.Visible = loadingSpinner.Animate = visible;
+				loadingSpinner.TooltipText = visible ? GettextCatalog.GetString ("Loading build log\u2026") : String.Empty;
+				treeView.Visible = !visible;
+			});
+		}
+
 		CancellationTokenSource cts;
 		TaskCompletionSource<object> processingCompletion = new TaskCompletionSource<object> ();
 
@@ -577,6 +597,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			IsDirty = true;
 
 			Task.Run (async () => {
+				await SetSpinnerVisibility (true);
+
 				try {
 					BuildOutput.ProcessProjects ();
 
@@ -594,10 +616,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 						// Expand root nodes and nodes with errors
 						ExpandErrorOrWarningsNodes (treeView, buildOutputDataSource, false);
 						processingCompletion.TrySetResult (null);
+
+						FileNameChanged?.Invoke (this, filePathLocation.IsEmpty ?
+													$"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog" :
+													(string) filePathLocation);
 					});
 				} catch (Exception ex) {
 					processingCompletion.TrySetException (ex);
 				}
+
+				await SetSpinnerVisibility (false);
 			}, cts.Token);
 		}
 
@@ -638,15 +666,39 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		protected override void Dispose (bool disposing)
 		{
-			if (disposing) {
+			if (BuildOutput != null) {
+				BuildOutput.OutputChanged -= OnOutputChanged;
+				BuildOutput = null;
+			}
+
+			if (buttonSearchBackward != null) {
 				buttonSearchBackward.Clicked -= FindPrevious;
+				buttonSearchBackward = null;
+			}
+
+			if (buttonSearchForward != null) {
 				buttonSearchForward.Clicked -= FindNext;
+				buttonSearchForward = null;
+			}
+
+			if (searchEntry != null) {
 				searchEntry.Entry.Changed -= FindFirst;
 				searchEntry.Entry.Activated -= FindNext;
+				searchEntry = null;
+			}
+
+			if (saveButton != null) {
 				saveButton.Clicked -= SaveButtonClickedAsync;
+				saveButton = null;
+			}
+
+			if (treeView != null) {
 				treeView.SelectionChanged -= TreeView_SelectionChanged;
 				treeView.ButtonPressed -= TreeView_ButtonPressed;
+				treeView = null;
 			}
+
+			pathBar = null;
 
 			base.Dispose (disposing);
 		}

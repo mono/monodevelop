@@ -72,8 +72,6 @@ namespace MonoDevelop.Ide
 					useDefaultRuntime = true;
 				}
 			};
-			
-			FileService.FileChanged += CheckWorkspaceItems;
 		}
 		
 		public RootWorkspaceItemCollection Items {
@@ -624,6 +622,7 @@ namespace MonoDevelop.Ide
 
 					item.SetShared ();
 					Items.Add (item);
+					await FileWatcherService.Add (item);
 				}
 				else {
 					item.Dispose ();
@@ -770,7 +769,8 @@ namespace MonoDevelop.Ide
 			
 			return item.SaveUserProperties ();
 		}
-		
+
+		[Obsolete ("FileService will generate events for all workspace files.")]
 		public FileStatusTracker GetFileStatusTracker ()
 		{
 			FileStatusTracker fs = new FileStatusTracker ();
@@ -800,14 +800,14 @@ namespace MonoDevelop.Ide
 				reloadingCount--;
 		}
 
-		async void CheckWorkspaceItems (object sender, FileEventArgs args)
+		void SolutionReloadRequired (object sender, WorkspaceItemEventArgs e)
 		{
-			HashSet<FilePath> files = new HashSet<FilePath> (args.Select (e => e.FileName.CanonicalPath));
-			foreach (Solution s in GetAllSolutions ().Where (sol => sol.GetItemFiles (false).Any (f => files.Contains (f.CanonicalPath))))
-				await OnCheckWorkspaceItem (s);
-			
-			foreach (Project p in GetAllProjects ().Where (proj => proj.GetItemFiles (false).Any (f => files.Contains (f.CanonicalPath))))
-				await OnCheckProject (p);
+			OnCheckWorkspaceItem (e.Item).Ignore ();
+		}
+
+		void SolutionItemReloadRequired (object sender, SolutionItemEventArgs e)
+		{
+			OnCheckProject (e.SolutionItem).Ignore ();
 		}
 		
 		async Task OnCheckWorkspaceItem (WorkspaceItem item)
@@ -1081,6 +1081,8 @@ namespace MonoDevelop.Ide
 			sol.ReferenceRemovedFromProject += NotifyReferenceRemovedFromProject;
 			sol.SolutionItemAdded += NotifyItemAddedToSolution;
 			sol.SolutionItemRemoved += NotifyItemRemovedFromSolution;
+			sol.ReloadRequired += SolutionReloadRequired;
+			sol.ItemReloadRequired += SolutionItemReloadRequired;
 		}
 		
 		void UnsubscribeSolution (Solution solution)
@@ -1094,6 +1096,8 @@ namespace MonoDevelop.Ide
 			solution.ReferenceRemovedFromProject -= NotifyReferenceRemovedFromProject;
 			solution.SolutionItemAdded -= NotifyItemAddedToSolution;
 			solution.SolutionItemRemoved -= NotifyItemRemovedFromSolution;
+			solution.ReloadRequired -= SolutionReloadRequired;
+			solution.ItemReloadRequired -= SolutionItemReloadRequired;
 		}
 		
 		void NotifyConfigurationsChanged (object s, EventArgs a)

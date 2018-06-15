@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 using Mono.Addins;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -82,8 +83,16 @@ namespace MonoDevelop.Ide.Gui
 
 		public bool CloseWindowSync ()
 		{
-			Closing?.Invoke (this, new WorkbenchWindowEventArgs (true, true));
-			Closed?.Invoke (this, new WorkbenchWindowEventArgs (true, true));
+			var e = new WorkbenchWindowEventArgs (true, true);
+			if (Closing != null) {
+				foreach (var handler in Closing.GetInvocationList ().Cast<WorkbenchWindowAsyncEventHandler> ()) {
+					handler (this, e).Wait ();
+					if (e.Cancel)
+						break;
+				}
+			}
+
+			Closed?.Invoke (this, e);;
 			return true;
 		}
 		
@@ -127,11 +136,14 @@ namespace MonoDevelop.Ide.Gui
 			throw new NotImplementedException ();
 		}
 
-		public event EventHandler DocumentChanged;
 		public event WorkbenchWindowAsyncEventHandler Closing;
 		public event WorkbenchWindowEventHandler Closed;
+
+		#pragma warning disable 67 // never used
+		public event EventHandler DocumentChanged;
 		public event ActiveViewContentEventHandler ActiveViewContentChanged;
 		public event EventHandler ViewsChanged;
+		#pragma warning restore 67
 
 		DocumentToolbar IWorkbenchWindow.GetToolbar (BaseViewContent targetView)
 		{

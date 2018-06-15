@@ -52,7 +52,9 @@ namespace MonoDevelop.Components.PropertyGrid
 
 			public class TypeHasNoProperty
 			{
+				#pragma warning disable 649 // never assigned
 				public TypeHasNoProperty Item;
+				#pragma warning restore 649
 			}
 		}
 

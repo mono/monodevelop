@@ -93,12 +93,10 @@ namespace MonoDevelop.Refactoring
 				return await compilationWithAnalyzer.GetAnalyzerDiagnosticsAsync ().ConfigureAwait (false);
 			} catch (Exception) {
 				return ImmutableArray<Diagnostic>.Empty;
-			} finally {
-				CompilationWithAnalyzers.ClearAnalyzerState (analyzers);
 			}
 		}
 
-		protected override async void Run ()
+		protected override void Run ()
 		{
 			Execute ();
 		}

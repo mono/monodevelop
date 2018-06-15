@@ -335,7 +335,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 
 		[CommandHandler (ProjectCommands.AddNewFiles)]
-		protected async void OnAddNewFiles ()
+		protected void OnAddNewFiles ()
 		{
 			var sln = (Solution)CurrentNode.DataItem;
 			if (!IdeApp.ProjectOperations.CreateSolutionFolderFile (sln.RootFolder)) {

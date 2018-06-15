@@ -122,7 +122,6 @@ namespace MonoDevelop.VersionControl
 						if (doc != null)
 							doc.Reload ();
 						VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, false));
-						FileService.NotifyFileChanged (path);
 					} else {
 						VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
 					}

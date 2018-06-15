@@ -25,18 +25,16 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using MonoDevelop.Ide.TypeSystem;
-using Microsoft.CodeAnalysis;
-using System.Text;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide;
 using System.Collections.Generic;
-using MonoDevelop.CSharp.Formatting;
-using Microsoft.CodeAnalysis.Options;
-using MonoDevelop.CSharp.Completion;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using ICSharpCode.NRefactory;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -116,11 +114,6 @@ namespace MonoDevelop.CSharp.Refactoring
 
 				return CSharpAmbience.SafeMinimalDisplayString (type, model, Editor.CaretOffset, Ambience.LabelFormat);
 			}
-		}
-
-		static void AppendLine(StringBuilder sb)
-		{
-			sb.AppendLine();
 		}
 
 		public override string WrapInRegions (string regionName, string text)
@@ -415,14 +408,14 @@ namespace MonoDevelop.CSharp.Refactoring
 				result.Append ("add {");
 				AppendIndent (result);
 				result.Append ("// TODO");
-				AppendLine (result);
+				result.AppendLine ();
 				result.Append ("}");
 
 				AppendIndent (result);
 				result.Append ("remove {");
 				AppendIndent (result);
 				result.Append ("// TODO");
-				AppendLine (result);
+				result.AppendLine ();
 				result.Append ("}}");
 			} else {
 				result.Append (";");
@@ -438,7 +431,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append (options.GetShortType ("System", "NotImplementedException"));
 			result.Append ("();");
 			bodyEndOffset = result.Length;
-			AppendLine (result);
+			result.AppendLine ();
 		}
 
 		internal static string[] MonoTouchComments = {
@@ -459,7 +452,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append("();");
 
 			bodyEndOffset = result.Length;
-			AppendLine (result);
+			result.AppendLine ();
 		}
 
 		static CodeGeneratorMemberResult GenerateCode(IMethodSymbol method, CodeGenerationOptions options)
@@ -581,7 +574,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 					result.Append (");");
 					bodyEndOffset = result.Length;
-					AppendLine (result);
+					result.AppendLine ();
 				} else if (IsMonoTouchModelMember (method)) {
 					AppendMonoTouchTodo (result, options, out bodyStartOffset, out bodyEndOffset);
 				} else if (method.IsAbstract || !(method.IsVirtual || method.IsOverride) || method.ContainingType.TypeKind == TypeKind.Interface) {
@@ -643,7 +636,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append ("throw new System.NotImplementedException ();");
 					}
 					bodyEndOffset = result.Length;
-					AppendLine (result);
+					result.AppendLine ();
 				}
 				result.Append ("}");
 			}
@@ -682,7 +675,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var typeParameters = method.TypeParameters;
 			result.AppendLine("{");
 			bodyStartOffset = result.Length;
-			AppendLine (result);
+			result.AppendLine ();
 			bodyEndOffset = result.Length;
 			result.AppendLine("}");
 			return new CodeGeneratorMemberResult(Core.StringBuilderCache.ReturnAndFree (result), bodyStartOffset, bodyEndOffset);
@@ -855,10 +848,10 @@ namespace MonoDevelop.CSharp.Refactoring
 							result.Append (";");
 						}
 						bodyEndOffset = result.Length;
-						AppendLine (result);
+						result.AppendLine ();
 					}
 					result.Append ("}");
-					AppendLine (result);
+					result.AppendLine ();
 					regions.Add (new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset));
 				}
 			}
@@ -889,10 +882,10 @@ namespace MonoDevelop.CSharp.Refactoring
 							result.Append (" = value;");
 						}
 						bodyEndOffset = result.Length;
-						AppendLine (result);
+						result.AppendLine ();
 					}
 					result.Append ("}");
-					AppendLine (result);
+					result.AppendLine ();
 					regions.Add (new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset));
 				}
 			}
@@ -1055,7 +1048,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			bodyStartOffset = result.Length;
 			result.Append ("throw new System.NotImplementedException ();");
 			bodyEndOffset = result.Length;
-			AppendLine (result);
+			result.AppendLine ();
 			result.Append ("}");
 			return new CodeGeneratorMemberResult(Core.StringBuilderCache.ReturnAndFree (result), bodyStartOffset, bodyEndOffset);
 		}

@@ -81,7 +81,7 @@ namespace MonoDevelop.DotNetCore
 			return Task.Run (() => {
 				if (CanRead (fileName, typeof(SolutionItem))) {
 					DotNetCoreSdk.EnsureInitialized ();
-					return MSBuildProjectService.LoadItem (monitor, fileName, MSBuildFileFormat.VS2017, typeGuid, itemGuid, ctx);
+					return MSBuildProjectService.LoadItem (monitor, fileName, MSBuildFileFormat.VS2012, typeGuid, itemGuid, ctx);
 				}
 
 				throw new NotSupportedException ();

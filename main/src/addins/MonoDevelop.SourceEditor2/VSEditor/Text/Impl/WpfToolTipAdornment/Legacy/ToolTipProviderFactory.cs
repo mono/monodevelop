@@ -15,6 +15,7 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
     using System.ComponentModel.Composition;
 
     [Export(typeof(IToolTipProviderFactory))]
+    [Obsolete]
     internal sealed class ToolTipProviderFactory : IToolTipProviderFactory
     {
         //Specify the view layer definitions for the view.
@@ -23,7 +24,6 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
         [Order()]
         internal SpaceReservationManagerDefinition tooltipManager;
 
-        #region IToolTipProviderFactory Members
         public IToolTipProvider GetToolTipProvider(ITextView textView)
         {
             var wpfTextView = textView as IMdTextView;
@@ -32,14 +32,13 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 
             return CreateToolTipProviderInternal(wpfTextView);
         }
-        #endregion
 
         internal static ToolTipProvider CreateToolTipProviderInternal(IMdTextView view)
         {
-            ToolTipProvider toolTipAdornmentProvider = view.Properties.GetOrCreateSingletonProperty<ToolTipProvider>(delegate
-                                                                                                                    {
-                                                                                                                        return new ToolTipProvider(view);
-                                                                                                                    });
+            ToolTipProvider toolTipAdornmentProvider = view.Properties.GetOrCreateSingletonProperty (
+                delegate {
+                    return new ToolTipProvider (view);
+                });
 
             return toolTipAdornmentProvider;
         }

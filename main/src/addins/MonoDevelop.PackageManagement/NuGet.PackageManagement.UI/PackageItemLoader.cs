@@ -238,7 +238,7 @@ namespace NuGet.PackageManagement.UI
 			return await _packageFeed.SearchAsync(_searchText, SearchFilter, cancellationToken);
 		}
 
-		private async Task UpdateStateAndReportAsync(SearchResult<IPackageSearchMetadata> searchResult, IProgress<IItemLoaderState> progress)
+		private Task UpdateStateAndReportAsync(SearchResult<IPackageSearchMetadata> searchResult, IProgress<IItemLoaderState> progress)
 		{
 			// cache installed packages here for future use
 			//_installedPackages = await _context.GetInstalledPackagesAsync();
@@ -246,6 +246,7 @@ namespace NuGet.PackageManagement.UI
 			var state = new PackageFeedSearchState(searchResult);
 			_state = state;
 			progress?.Report(state);
+			return Task.CompletedTask;
 		}
 
 		public void Reset()

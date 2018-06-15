@@ -301,7 +301,9 @@ namespace MonoDevelop.Ide.Templates
 		{
 			createFileContentFromDerivedClass = true;
 			try {
+				#pragma warning disable 618 // back-compat for obsolete API
 				return CreateFileContent (policyParent, project, language, fileName, identifier);
+				#pragma warning restore 618
 			} finally {
 				createFileContentFromDerivedClass = false;
 			}

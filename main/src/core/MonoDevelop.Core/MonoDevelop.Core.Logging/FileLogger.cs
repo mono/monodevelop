@@ -75,8 +75,9 @@ namespace MonoDevelop.Core.Logging
 				header = "LOG";
 				break;
 			}
-			
-			writer.WriteLine ("{0}[{1}]: {2}", header, DateTime.Now.ToString ("u"), message);
+
+			// Can be null if invoked from a finalizer of another object after this one has been disposed/finalized
+			writer?.WriteLine ("{0}[{1}]: {2}", header, DateTime.Now.ToString ("u"), message);
 		}
 		
 		public EnabledLoggingLevel EnabledLevel {
@@ -99,8 +100,8 @@ namespace MonoDevelop.Core.Logging
 		{
 			if (disposing && writer != null) {
 				writer.Dispose ();
-				writer = null;
 			}
+			writer = null;
 		}
 		
 		~FileLogger ()

@@ -110,10 +110,6 @@ namespace MonoDevelop.DesignerSupport
 					write (sw);
 				}
 				FileService.SystemRename (tempPath, path);
-				//mark the file as changed so it gets reparsed
-				Gtk.Application.Invoke ((o, args) => {
-					FileService.NotifyFileChanged (path);
-				});
 				WrittenCount++;
 			} catch (IOException ex) {
 				if (monitor != null)
@@ -146,9 +142,6 @@ namespace MonoDevelop.DesignerSupport
 				File.WriteAllText (tempPath, contents);
 				FileService.SystemRename (tempPath, path);
 				//mark the file as changed so it gets reparsed
-				Gtk.Application.Invoke ((o, args) => {
-					FileService.NotifyFileChanged (path);
-				});
 				WrittenCount++;
 			} catch (IOException ex) {
 				if (monitor != null)

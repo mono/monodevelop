@@ -5,13 +5,15 @@ namespace Stetic.Editor
 {
 	public class TextEditorDialog: IDisposable
 	{
+		#pragma warning disable 649 // never assigned
 		[Glade.Widget] Gtk.TextView textview;
 		[Glade.Widget] Gtk.CheckButton checkTranslatable;
 		[Glade.Widget] Gtk.Entry entryContext;
 		[Glade.Widget] Gtk.Entry entryComment;
 		[Glade.Widget] Gtk.Table translationTable;
 		[Glade.Widget ("TextEditorDialog")] Gtk.Dialog dialog;
-		
+		#pragma warning restore 649
+
 		public TextEditorDialog ()
 		{
 			Glade.XML xml = new Glade.XML (null, "stetic.glade", "TextEditorDialog", null);

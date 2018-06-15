@@ -126,7 +126,6 @@ namespace MonoDevelop.Refactoring
 			var rctx = new RefactoringOptions (null, null);
 			var handler = new RenameHandler (changes);
 			FileService.FileRenamed += handler.FileRename;
-			var fileNames = new HashSet<FilePath> ();
 			var ws = TypeSystemService.Workspace as MonoDevelopWorkspace;
 			string originalName;
 			int originalOffset;
@@ -137,7 +136,6 @@ namespace MonoDevelop.Refactoring
 						continue;
 
 					if (ws.TryGetOriginalFileFromProjection (change.FileName, change.Offset, out originalName, out originalOffset)) {
-						fileNames.Add (change.FileName);
 						change.FileName = originalName;
 						change.Offset = originalOffset;
 					}
@@ -160,8 +158,6 @@ namespace MonoDevelop.Refactoring
 						if (change == null)
 							continue;
 
-						fileNames.Add (change.FileName);
-
 						if (replaceChange.Offset >= 0 && change.Offset >= 0 && replaceChange.FileName == change.FileName) {
 							if (replaceChange.Offset < change.Offset) {
 								change.Offset -= replaceChange.RemovedChars;
@@ -174,22 +170,9 @@ namespace MonoDevelop.Refactoring
 						}
 					}
 				}
-
-				foreach (var renameChange in changes.OfType<RenameFileChange> ()) {
-					if (fileNames.Contains (renameChange.OldName)) {
-						fileNames.Remove (renameChange.OldName);
-						fileNames.Add (renameChange.NewName);
-					}
-				}
-
-				foreach (var doc in IdeApp.Workbench.Documents) {
-					fileNames.Remove (doc.FileName);
-				}
-
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while applying refactoring changes", e);
 			} finally {
-				FileService.NotifyFilesChanged (fileNames);
 				FileService.FileRenamed -= handler.FileRename;
 				TextReplaceChange.FinishRefactoringOperation ();
 			}

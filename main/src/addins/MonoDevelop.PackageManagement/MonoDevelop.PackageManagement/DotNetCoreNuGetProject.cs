@@ -291,8 +291,6 @@ namespace MonoDevelop.PackageManagement
 				DotNetProject.DotNetCoreNotifyReferencesChanged ();
 			});
 
-			packageManagementEvents.OnFileChanged (project.GetNuGetAssetsFilePath ());
-
 			return base.PostProcessAsync (nuGetProjectContext, token);
 		}
 
@@ -314,7 +312,6 @@ namespace MonoDevelop.PackageManagement
 				// Need to refresh the references since the restore did not.
 				await Runtime.RunInMainThread (() => {
 					DotNetProject.DotNetCoreNotifyReferencesChanged ();
-					packageManagementEvents.OnFileChanged (project.GetNuGetAssetsFilePath ());
 				});
 			}
 

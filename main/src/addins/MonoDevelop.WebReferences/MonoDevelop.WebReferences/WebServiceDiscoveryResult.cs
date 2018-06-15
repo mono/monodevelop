@@ -104,8 +104,7 @@ namespace MonoDevelop.WebReferences
 					Generator = ProxyGenerator
 				};
 				project.Files.Add (mapFile);
-			} else
-				FileService.NotifyFileChanged (mapSpec);
+			}
 
 			ProjectFile proxyFile = project.Files.GetFile (proxySpec);
 			if (proxyFile == null) {
@@ -115,8 +114,7 @@ namespace MonoDevelop.WebReferences
 					DependsOn = mapFile.FilePath
 				};
 				project.Files.Add (proxyFile);
-			} else
-				FileService.NotifyFileChanged (proxySpec);
+			}
 			
 			mapFile.LastGenOutput = proxyFile.FilePath.FileName;
 			

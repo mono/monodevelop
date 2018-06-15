@@ -35,7 +35,7 @@ namespace MonoDevelop.Core
 	public class RuntimeTests : TestBase
 	{
 		/// <summary>
-		/// This test works with the existing Task RunInMainThread (Func<Task> func).
+		/// This test works with the existing Task RunInMainThread (Func&lt;Task> func).
 		/// The func throws the exception so it is properly handled.
 		/// </summary>
 		[Test]
@@ -64,7 +64,7 @@ namespace MonoDevelop.Core
 		/// method would never be faulted.
 		/// 
 		/// This test fails on the Mac with an InvalidProgramException: Invalid IL code in 
-		/// MonoDevelop.Core.RuntimeTests/<RunInMainThreadWithAsyncFuncTask>
+		/// MonoDevelop.Core.RuntimeTests/&lt;RunInMainThreadWithAsyncFuncTask>
 		/// </summary>
 		[Test]
 		[Ignore ("This test fails on Mac but works on Windows.")]
@@ -114,7 +114,7 @@ namespace MonoDevelop.Core
 		}
 
 		/// <summary>
-		/// This test works with the existing Task RunInMainThread (Func<Task<T>> func).
+		/// This test works with the existing Task RunInMainThread (Func&lt;Task&lt;T>> func).
 		/// The func throws the exception so it is properly handled.
 		/// </summary>
 		[Test]
@@ -139,7 +139,7 @@ namespace MonoDevelop.Core
 
 		/// <summary>
 		/// This test was failing since using an await returns a faulted Task and the
-		/// func does not directly throw an exception. The Task<T> returned from the RunInMainThread
+		/// func does not directly throw an exception. The Task&lt;T> returned from the RunInMainThread
 		/// method would never be faulted.
 		/// </summary>
 		[Test]

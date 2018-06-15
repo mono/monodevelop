@@ -25,23 +25,20 @@
 // THE SOFTWARE.
 
 using System;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.ChangeSignature;
-using Microsoft.CodeAnalysis.Notification;
-using Microsoft.CodeAnalysis.Host.Mef;
-using Microsoft.CodeAnalysis.Host;
-using Microsoft.CodeAnalysis.Packaging;
-using System.Composition;
-using MonoDevelop.Core;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Threading;
-using MonoDevelop.Ide.TypeSystem;
-using System.Collections.Concurrent;
+using System.Composition;
 using System.Linq;
-using MonoDevelop.Ide;
-using Microsoft.CodeAnalysis.SymbolSearch;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Host;
+using Microsoft.CodeAnalysis.Host.Mef;
+using Microsoft.CodeAnalysis.Packaging;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring.PackageInstaller
 {
@@ -103,11 +100,12 @@ namespace MonoDevelop.Refactoring.PackageInstaller
 				get {
 					return PackageServices.GetSources (false, false).Select (kv => new PackageSource (kv.Key, kv.Value)) .ToImmutableArray ();
 				}
-				private set {
-				}
 			}
 
-			public event EventHandler PackageSourcesChanged;
+			public event EventHandler PackageSourcesChanged {
+				add => PackageServices.SourcesChanged += value;
+				remove => PackageServices.SourcesChanged -= value;
+			}
 
 			public ImmutableArray<string> GetInstalledVersions (string packageName)
 			{

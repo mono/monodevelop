@@ -283,11 +283,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public Type [] ColumnTypes => new Type [] { typeof (Xwt.Drawing.Image), typeof (string) };
 
+		#pragma warning disable 67 // event not used
 		public event EventHandler<TreeNodeEventArgs> NodeInserted;
 		public event EventHandler<TreeNodeChildEventArgs> NodeDeleted;
-		public event EventHandler<TreeNodeEventArgs> NodeChanged;
 		public event EventHandler<TreeNodeOrderEventArgs> NodesReordered;
 		public event EventHandler Cleared;
+		#pragma warning restore 67 //
+
+		public event EventHandler<TreeNodeEventArgs> NodeChanged;
 
 		public TreePosition GetChild (TreePosition pos, int index)
 		{

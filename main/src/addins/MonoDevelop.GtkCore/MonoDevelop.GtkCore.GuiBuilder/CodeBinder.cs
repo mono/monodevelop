@@ -96,7 +96,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (targetObject == null)
 				return;
-			FileService.NotifyFileChanged (fileName);
+
 			classFile = fileName;
 			
 			var cls = GetClass ();

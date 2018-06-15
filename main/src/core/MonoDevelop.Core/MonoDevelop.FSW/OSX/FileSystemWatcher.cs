@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.FSW.OSX
 {
@@ -76,6 +77,16 @@ namespace MonoDevelop.FSW.OSX
 			Debug.Assert (c_notifyFiltersValidMask == s_notifyFiltersValidMask, "The NotifyFilters enum has changed. The c_notifyFiltersValidMask must be updated to reflect the values of the NotifyFilters enum.");
 		}
 #endif
+		static HashSet<FileSystemWatcher> fileSystemWatchers = new HashSet<FileSystemWatcher> ();
+		public static void DisposeAll()
+		{
+			lock (fileSystemWatchers) {
+				foreach (var fsw in fileSystemWatchers) {
+					fsw.Dispose ();
+				}
+				fileSystemWatchers.Clear ();
+			}
+		}
 
 		/// <devdoc>
 		///    Initializes a new instance of the <see cref='System.IO.FileSystemWatcher'/> class.

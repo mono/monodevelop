@@ -202,25 +202,19 @@ namespace MonoDevelop.Debugger
 		
 		CodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
 		{
-			CodeCompletionContext c = new CodeCompletionContext ();
-			c.TriggerLine = 0;
-			c.TriggerOffset = triggerOffset;
-			c.TriggerLineOffset = c.TriggerOffset;
-			c.TriggerTextHeight = entry.SizeRequest ().Height;
-			c.TriggerWordLength = currentCompletionData.ExpressionLength;
-			
 			int x, y;
-			int tx, ty;
 			entry.GdkWindow.GetOrigin (out x, out y);
-			entry.GetLayoutOffsets (out tx, out ty);
+			entry.GetLayoutOffsets (out var tx, out var ty);
 			int cp = entry.TextIndexToLayoutIndex (entry.Position);
 			Pango.Rectangle rect = entry.Layout.IndexToPos (cp);
-			tx += Pango.Units.ToPixels (rect.X) + x;
+			x += Pango.Units.ToPixels (rect.X) + tx;
 			y += entry.Allocation.Height;
-			
-			c.TriggerXCoord = tx;
-			c.TriggerYCoord = y;
-			return c;
+
+			return new CodeCompletionContext (
+				x, y, entry.SizeRequest ().Height,
+				triggerOffset, 0, triggerOffset,
+				currentCompletionData.ExpressionLength
+			);
 		}
 		
 		string ICompletionWidget.GetCompletionText (CodeCompletionContext ctx)

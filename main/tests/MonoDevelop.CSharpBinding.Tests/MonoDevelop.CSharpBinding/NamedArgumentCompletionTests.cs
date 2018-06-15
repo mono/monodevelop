@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharpBinding
 			yield return new CSharpCompletionTextEditorExtension ();
 		}
 
-		class TestCompletionWidget : ICompletionWidget
+		internal class TestCompletionWidget : ICompletionWidget
 		{
 			DocumentContext documentContext;
 
@@ -94,9 +94,6 @@ namespace MonoDevelop.CSharpBinding
 					TriggerOffset = triggerOffset,
 					TriggerLine = line.LineNumber,
 					TriggerLineOffset = line.Offset,
-					TriggerXCoord = 0,
-					TriggerYCoord = 0,
-					TriggerTextHeight = 0,
 					TriggerWordLength = 0
 				};
 			}

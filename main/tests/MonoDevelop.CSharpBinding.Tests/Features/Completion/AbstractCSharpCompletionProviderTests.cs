@@ -121,8 +121,6 @@ namespace MonoDevelop.CSharpBinding.Tests.Features.Completion
 
 		internal CompletionList CreateProvider (string input, SourceCodeKind? sourceCodeKind = null, bool usePreviousCharAsTrigger = false)
 		{
-
-			string editorText;
 			int cursorPosition = input.IndexOf ("$$", StringComparison.Ordinal);
 			var parsedText = input.Substring (0, cursorPosition) + input.Substring (cursorPosition + 2);
 

@@ -298,9 +298,9 @@ namespace MonoDevelop.Projects
 				folder.ItemSaved += NotifyItemSaved;
 			}
 			
-			if (item is SolutionItem) {
-				((SolutionItem)item).Saved += NotifyItemSaved;
-//				((SolutionEntityItem)item).ReloadRequired += NotifyItemReloadRequired;
+			if (item is SolutionItem solutionItem) {
+				solutionItem.Saved += NotifyItemSaved;
+				solutionItem.ReloadRequired += NotifyItemReloadRequired;
 			}
 			item.Modified += NotifyItemModified;
 		}
@@ -385,9 +385,9 @@ namespace MonoDevelop.Projects
 				cce.ItemSaved -= NotifyItemSaved;
 			}
 			
-			if (entry is SolutionItem) {
-				((SolutionItem)entry).Saved -= NotifyItemSaved;
-//				((SolutionEntityItem)entry).ReloadRequired -= NotifyItemReloadRequired;
+			if (entry is SolutionItem solutionItem) {
+				solutionItem.Saved -= NotifyItemSaved;
+				solutionItem.ReloadRequired -= NotifyItemReloadRequired;
 			}
 			entry.Modified -= NotifyItemModified;
 		}
@@ -871,11 +871,11 @@ namespace MonoDevelop.Projects
 			OnItemSaved (e);
 		}
 		
-/*		internal void NotifyItemReloadRequired (object sender, SolutionItemEventArgs e)
+		internal void NotifyItemReloadRequired (object sender, SolutionItemEventArgs e)
 		{
 			OnItemReloadRequired (e);
 		}
-				 */
+
 		internal void NotifyItemAddedToFolder (object sender, SolutionItemChangeEventArgs e, bool newToSolution)
 		{
 			if (ParentFolder != null)
@@ -1027,14 +1027,13 @@ namespace MonoDevelop.Projects
 				SolutionItemFileRemoved (this, args);
 		}
 		
-/*		protected virtual void OnItemReloadRequired (SolutionItemEventArgs e)
+		void OnItemReloadRequired (SolutionItemEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnItemReloadRequired (e);
 			if (ItemReloadRequired != null)
 				ItemReloadRequired (this, e);
 		}
-*/
 		
 		public event SolutionItemChangeEventHandler ItemAdded;
 		public event SolutionItemChangeEventHandler ItemRemoved;
@@ -1051,7 +1050,7 @@ namespace MonoDevelop.Projects
 		public event SolutionItemSavedEventHandler ItemSaved;
 		public event EventHandler<SolutionItemFileEventArgs> SolutionItemFileAdded;
 		public event EventHandler<SolutionItemFileEventArgs> SolutionItemFileRemoved;
-//		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;
+		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;
 	}
 	
 	class DummySolutionFolderHandler

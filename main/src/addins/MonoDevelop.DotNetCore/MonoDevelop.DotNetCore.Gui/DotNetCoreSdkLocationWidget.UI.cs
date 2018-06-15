@@ -173,7 +173,6 @@ namespace MonoDevelop.DotNetCore.Gui
 			TextEntry entry;
 			FileDialog dialog;
 			string currentFolder;
-			bool enableFileChangedEvent;
 			string title;
 
 			public CustomFileSelector ()

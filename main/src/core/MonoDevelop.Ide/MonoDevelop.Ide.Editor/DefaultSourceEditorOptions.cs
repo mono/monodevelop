@@ -288,11 +288,10 @@ namespace MonoDevelop.Ide.Editor
 			return result;
 		}
 
-		[Obsolete("Will be removed in future versions.")]
-		public DefaultSourceEditorOptions WithTextStyle (MonoDevelop.Ide.Gui.Content.TextStylePolicy policy)
+		public DefaultSourceEditorOptions WithTextStyle (TextStylePolicy policy)
 		{
 			if (policy == null)
-				throw new ArgumentNullException ("policy");
+				throw new ArgumentNullException (nameof (policy));
 			var result = (DefaultSourceEditorOptions)MemberwiseClone ();
 			result.UpdateStylePolicy (policy);
 			result.Changed = null;

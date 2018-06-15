@@ -89,13 +89,14 @@ namespace MonoDevelop.CSharp.Formatting
 			return engine.GetCopyData (indent.Editor, new TextSpan (offset, length));
 		}
 
-		public override async Task PostFomatPastedText (int insertionOffset, int insertedChars)
+		public override Task PostFomatPastedText (int offset, int length)
 		{
 			if (indent.Editor.Options.IndentStyle == IndentStyle.None ||
 				indent.Editor.Options.IndentStyle == IndentStyle.Auto)
-				return;
+				return Task.CompletedTask;
+
 			// Just correct the start line of the paste operation - the text is already Formatted.
-			var curLine = indent.Editor.GetLineByOffset (insertionOffset);
+			var curLine = indent.Editor.GetLineByOffset (length);
 			var curLineOffset = curLine.Offset;
 			indent.SafeUpdateIndentEngine (curLineOffset);
 			if (!indent.stateTracker.IsInsideOrdinaryCommentOrString) {
@@ -117,7 +118,7 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 			}
 			indent.Editor.FixVirtualIndentation ();
-
+			return Task.CompletedTask;
 		}
 
 		class PasteFormattingRule : AbstractFormattingRule

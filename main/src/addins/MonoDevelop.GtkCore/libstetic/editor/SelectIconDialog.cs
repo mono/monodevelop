@@ -1,14 +1,12 @@
 
 using System;
-using System.Collections;
-using System.IO;
-using Gtk;
 using Mono.Unix;
 
 namespace Stetic.Editor
 {
 	public class SelectIconDialog: IDisposable
 	{
+		#pragma warning disable 649 // never assigned
 		[Glade.Widget] Gtk.Entry stockIconEntry;
 		[Glade.Widget] Gtk.Notebook notebook;
 		[Glade.Widget] Gtk.ScrolledWindow iconScrolledwindow;
@@ -17,7 +15,8 @@ namespace Stetic.Editor
 		[Glade.Widget] Gtk.Button okButton;
 		[Glade.Widget] Gtk.Widget labelWarningIcon;
 		[Glade.Widget ("SelectIconDialog")] Gtk.Dialog dialog;
-		
+		#pragma warning restore 649
+
 		StockIconList iconList;
 		ProjectIconList customIconList;
 		

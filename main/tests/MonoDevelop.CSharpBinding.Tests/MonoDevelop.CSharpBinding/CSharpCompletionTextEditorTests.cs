@@ -40,6 +40,9 @@ using NUnit.Framework;
 using MonoDevelop.Debugger;
 using Mono.Debugging.Client;
 using System.Threading;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.SourceEditor;
+using Gtk;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -152,12 +155,12 @@ namespace console61
 
 		}
 
-		Task TestCompletion (string text, Action<Document, ICompletionDataList> action)
+		Task TestCompletion (string text, Action<Document, ICompletionDataList> action, Action<Document> preCompletionAction = null)
 		{
-			return TestCompletion (text, action, CompletionTriggerInfo.CodeCompletionCommand);
+			return TestCompletion (text, action, CompletionTriggerInfo.CodeCompletionCommand, preCompletionAction);
 		}
 
-		async Task TestCompletion (string text, Action<Document, ICompletionDataList> action, CompletionTriggerInfo triggerInfo)
+		async Task TestCompletion (string text, Action<Document, ICompletionDataList> action, CompletionTriggerInfo triggerInfo, Action<Document> preCompletionAction = null)
 		{
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
@@ -165,6 +168,8 @@ namespace console61
 
 			using (var testCase = await SetupTestCase (text, cursorPosition: Math.Max (0, endPos))) {
 				var doc = testCase.Document;
+				if (preCompletionAction != null)
+					preCompletionAction (doc);
 
 				var compExt = doc.GetContent<CSharpCompletionTextEditorExtension> ();
 				compExt.CurrentCompletionContext = new CodeCompletionContext {
@@ -313,5 +318,55 @@ namespace console61
 				Assert.AreEqual (1, completionResult.ExpressionLength);
 			}
 		}
+
+
+		/// <summary>
+		/// Text loses indentation when typing #5025
+		/// </summary>
+		[Test]
+		public async Task TestIssue5025 ()
+		{
+			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = true;
+			await TestCompletion (@"
+namespace console61
+{
+    class MainClass
+    {
+        public static void Main (string[] args)
+        {
+            t$
+        }
+    }
+}
+",
+								  (doc, list) => {
+									  var extEditor = doc.Editor.GetContent<SourceEditorView> ().TextEditor;
+									  var compExt = doc.GetContent<CSharpCompletionTextEditorExtension> ();
+									  CompletionWindowManager.StartPrepareShowWindowSession ();
+									  extEditor.EditorExtension = compExt;
+									  extEditor.OnIMProcessedKeyPressEvent (Gdk.Key.BackSpace, '\0', Gdk.ModifierType.None);
+									  var listWindow = new CompletionListWindow ();
+									  var widget = new NamedArgumentCompletionTests.TestCompletionWidget (doc.Editor, doc);
+									  listWindow.CompletionWidget = widget;
+									  listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
+									  var item = (RoslynCompletionData)list.FirstOrDefault (d => d.CompletionText == "MainClass");
+									  KeyActions ka = KeyActions.Process;
+									  Gdk.Key key = Gdk.Key.Tab;
+									  item.InsertCompletionText (doc.Editor, doc, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None));
+									  Assert.AreEqual (@"
+namespace console61
+{
+    class MainClass
+    {
+        public static void Main (string[] args)
+        {
+            MainClass
+        }
+    }
+}
+", doc.Editor.Text);
+								  });
+		}
+
 	}
 }

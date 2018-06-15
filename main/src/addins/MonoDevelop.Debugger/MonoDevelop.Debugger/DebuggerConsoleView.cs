@@ -396,23 +396,20 @@ namespace MonoDevelop.Debugger
 
 		CodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
 		{
-			var c = new CodeCompletionContext ();
-			c.TriggerLine = 0;
-			c.TriggerOffset = triggerOffset;
-			c.TriggerLineOffset = c.TriggerOffset;
-			c.TriggerWordLength = currentCompletionData.ExpressionLength;
-
-			int height, lineY, x, y;
+			int x, y;
 			TextView.GdkWindow.GetOrigin (out x, out y);
-			TextView.GetLineYrange (Cursor, out lineY, out height);
+			TextView.GetLineYrange (Cursor, out var lineY, out var height);
 
 			var rect = GetIterLocation (Cursor);
 
-			c.TriggerYCoord = y + lineY + height - (int)Vadjustment.Value;
-			c.TriggerXCoord = x + rect.X;
-			c.TriggerTextHeight = height;
+			y += lineY + height - (int)Vadjustment.Value;
+			x += rect.X;
 
-			return c;
+			return new CodeCompletionContext (
+				x, y, height,
+				triggerOffset, 0, triggerOffset,
+				currentCompletionData.ExpressionLength
+			);
 		}
 
 		string ICompletionWidget.GetCompletionText (CodeCompletionContext ctx)

@@ -428,11 +428,9 @@ namespace MonoDevelop.Ide.Gui
 						// save backup first						
 						if (IdeApp.Preferences.CreateFileBackupCopies) {
                             await Window.ViewContent.Save (fileName + "~");
-							FileService.NotifyFileChanged (fileName + "~");
 						}
 						DocumentRegistry.SkipNextChange (fileName);
 						await Window.ViewContent.Save (fileName);
-						FileService.NotifyFileChanged (fileName);
                         OnSaved(EventArgs.Empty);
 					}
 				}
@@ -539,7 +537,6 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override void OnSaved (EventArgs e)
 		{
-			IdeApp.Workbench.SaveFileStatus ();
 			base.OnSaved (e);
 		}
 

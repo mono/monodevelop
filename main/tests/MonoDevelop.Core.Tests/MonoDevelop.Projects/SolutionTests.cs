@@ -264,58 +264,85 @@ namespace MonoDevelop.Projects
 		[Test()]
 		public async Task Reloading ()
 		{
-			Solution sol = TestProjectsChecks.CreateConsoleSolution ("reloading");
-			await sol.SaveAsync (Util.GetMonitor ());
-			Assert.IsFalse (sol.NeedsReload);
-			
-			Project p = sol.Items [0] as Project;
-			Assert.IsFalse (p.NeedsReload);
-			
-			// Changing format must reset the reload flag (it's like we just created a new solution in memory)
-			sol.ConvertToFormat (MSBuildFileFormat.VS2010);
-			Assert.IsFalse (sol.NeedsReload);
-			Assert.IsFalse (p.NeedsReload);
-			sol.ConvertToFormat (MSBuildFileFormat.VS2012);
-			Assert.IsFalse (sol.NeedsReload);
-			Assert.IsFalse (p.NeedsReload);
-			
-			sol.RootFolder.Items.Remove (p);
-			Assert.IsFalse (p.NeedsReload);
-			p.FileFormat = MSBuildFileFormat.VS2012;
-			Assert.IsFalse (p.NeedsReload);
-			sol.RootFolder.Items.Add (p);
-			Assert.IsFalse (p.NeedsReload);
-			sol.RootFolder.Items.Remove (p);
-			Assert.IsFalse (p.NeedsReload);
-			p.FileFormat = MSBuildFileFormat.VS2005;
-			Assert.IsFalse (p.NeedsReload);
-			sol.RootFolder.Items.Add (p);
-			Assert.IsFalse (p.NeedsReload);
+			using (Solution sol = TestProjectsChecks.CreateConsoleSolution ("reloading")) {
+				await sol.SaveAsync (Util.GetMonitor ());
+				Assert.IsFalse (sol.NeedsReload);
+				await FileWatcherService.Add (sol);
 
-			string solFile2 = Util.GetSampleProject ("csharp-console", "csharp-console.sln");
-			Solution sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile2);
-			Project p2 = sol2.Items [0] as Project;
-			Assert.IsFalse (sol2.NeedsReload);
-			Assert.IsFalse (p2.NeedsReload);
-			
-			// Check reloading flag in another solution
-			
-			string solFile = sol.FileName;
-			Solution sol3 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			Assert.IsFalse (sol3.NeedsReload);
-			
-			Project p3 = sol3.Items [0] as Project;
-			Assert.IsFalse (p3.NeedsReload);
-			
-			System.Threading.Thread.Sleep (1000);
-			sol.Description = "Foo"; // Small change to force the solution file save
-			await sol.SaveAsync (Util.GetMonitor ());
-			
-			Assert.IsTrue (sol3.NeedsReload);
+				Project p = sol.Items [0] as Project;
+				Assert.IsFalse (p.NeedsReload);
 
-			sol.Dispose ();
+				// Changing format must reset the reload flag (it's like we just created a new solution in memory)
+				sol.ConvertToFormat (MSBuildFileFormat.VS2010);
+				Assert.IsFalse (sol.NeedsReload);
+				Assert.IsFalse (p.NeedsReload);
+				sol.ConvertToFormat (MSBuildFileFormat.VS2012);
+				Assert.IsFalse (sol.NeedsReload);
+				Assert.IsFalse (p.NeedsReload);
+
+				sol.RootFolder.Items.Remove (p);
+				Assert.IsFalse (p.NeedsReload);
+				p.FileFormat = MSBuildFileFormat.VS2012;
+				Assert.IsFalse (p.NeedsReload);
+				sol.RootFolder.Items.Add (p);
+				Assert.IsFalse (p.NeedsReload);
+				sol.RootFolder.Items.Remove (p);
+				Assert.IsFalse (p.NeedsReload);
+				p.FileFormat = MSBuildFileFormat.VS2005;
+				Assert.IsFalse (p.NeedsReload);
+				sol.RootFolder.Items.Add (p);
+				Assert.IsFalse (p.NeedsReload);
+
+				string solFile2 = Util.GetSampleProject ("csharp-console", "csharp-console.sln");
+				using (Solution sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile2)) {
+					Project p2 = sol2.Items [0] as Project;
+					Assert.IsFalse (sol2.NeedsReload);
+					Assert.IsFalse (p2.NeedsReload);
+					await FileWatcherService.Add (sol2);
+
+					// Check reloading flag in another solution
+
+					string solFile = sol.FileName;
+					using (Solution sol3 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+						Assert.IsFalse (sol3.NeedsReload);
+						await FileWatcherService.Add (sol3);
+
+						Project p3 = sol3.Items [0] as Project;
+						Assert.IsFalse (p3.NeedsReload);
+
+						System.Threading.Thread.Sleep (1000);
+						try {
+							fileChangeNotification = new TaskCompletionSource<bool> ();
+							waitForFileChange = sol.FileName;
+							FileService.FileChanged += OnFileChanged;
+							sol.Description = "Foo"; // Small change to force the solution file save
+							await sol.SaveAsync (Util.GetMonitor ());
+
+							// we need to wait for the file notification to be posted
+							await Task.Run (() => {
+								fileChangeNotification.Task.Wait (TimeSpan.FromMilliseconds (10000));
+							});
+
+							Assert.IsTrue (fileChangeNotification.Task.IsCompleted);
+						} finally {
+							FileService.FileChanged -= OnFileChanged;
+						}
+
+						Assert.IsTrue (sol3.NeedsReload);
+					}
+				}
+			}
 		}
-		
+
+		FilePath waitForFileChange;
+		TaskCompletionSource<bool> fileChangeNotification;
+
+		void OnFileChanged (object sender, FileEventArgs e)
+		{
+			if (e.Any (info => info.FileName == waitForFileChange))
+				fileChangeNotification.TrySetResult (true);
+		}
+
 		[Test()]
 		public async Task ReloadingReferencedProject ()
 		{

@@ -75,10 +75,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			ProjectHelper.AddFile (project, fileName);
 		}
 
-		void AddDefaultCustomToolForFileName (string fileName, string customTool)
-		{
-			projectSystem.FakeProjectService.AddDefaultCustomToolForFileName (fileName, customTool);
-		}
+		//void AddDefaultCustomToolForFileName (string fileName, string customTool)
+		//{
+		//	projectSystem.FakeProjectService.AddDefaultCustomToolForFileName (fileName, customTool);
+		//}
 
 		void AddFile (string fileName)
 		{
@@ -878,7 +878,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			CreateProjectSystem (project);
 			string path = @"d:\temp\abc.tt";
-			AddDefaultCustomToolForFileName (path, "TextTemplatingFileGenerator");
+			//AddDefaultCustomToolForFileName (path, "TextTemplatingFileGenerator");
 			Stream stream = new MemoryStream ();
 
 			projectSystem.AddFile (path, stream);
@@ -895,7 +895,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			CreateProjectSystem (project);
 			string path = @"d:\temp\abc.tt".ToNativePath ();
-			AddDefaultCustomToolForFileName (path, null);
+			//AddDefaultCustomToolForFileName (path, null);
 			Stream stream = new MemoryStream ();
 
 			projectSystem.AddFile (path, stream);

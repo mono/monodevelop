@@ -47,10 +47,13 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using Mono.Addins;
 using MonoDevelop.Core.AddIns;
+using Microsoft.CodeAnalysis.Extensions;
 using Microsoft.CodeAnalysis.Internal.Log;
+using Microsoft.CodeAnalysis.Shared.Options;
 using Microsoft.CodeAnalysis.Shared.Utilities;
 using Microsoft.CodeAnalysis.SolutionCrawler;
 using MonoDevelop.Ide.Composition;
+using MonoDevelop.Ide.RoslynServices;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -88,10 +91,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		static MonoDevelopWorkspace ()
 		{
 			Tasks.CommentTasksProvider.Initialize ();
-			Logger.SetLogger (AggregateLogger.Create (
-				new RoslynLogger (),
-				Logger.GetLogger ()
-			));
 		}
 
 		/// <summary>
@@ -119,10 +118,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			// Trigger running compiler syntax and semantic errors via the diagnostic analyzer engine
 			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
 				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true)
+            // Turn on FSA on a new workspace addition
+				.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, true)
+				.WithChangedOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown, false)
+
 			// Always use persistent storage regardless of solution size, at least until a consensus is reached
 			// https://github.com/mono/monodevelop/issues/4149 https://github.com/dotnet/roslyn/issues/25453
-				.WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, MonoDevelop.Core.Platform.IsLinux ? int.MaxValue : 0)
-				.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, IdeApp.Preferences.EnableFullSolutionSourceAnalysis);
+			    .WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, MonoDevelop.Core.Platform.IsLinux ? int.MaxValue : 0);
 
 			if (IdeApp.Preferences.EnableSourceAnalysis) {
 				var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
@@ -130,11 +132,53 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			IdeApp.Preferences.EnableSourceAnalysis.Changed += OnEnableSourceAnalysisChanged;
-			IdeApp.Preferences.EnableFullSolutionSourceAnalysis.Changed += OnEnableFullSourceAnalysisChanged;
+
+			// TODO: Unhack C# here when monodevelop workspace supports more than C#
+			IdeApp.Preferences.Roslyn.CSharp.SolutionCrawlerClosedFileDiagnostic.Changed += OnEnableFullSourceAnalysisChanged;
 
 			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
 				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
 
+			if (solution != null)
+				DesktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
+		}
+
+		bool lowMemoryLogged;
+		void OnMemoryStatusChanged (object sender, PlatformMemoryStatusEventArgs args)
+		{
+			// Disable full solution analysis when the OS triggers a warning about memory pressure.
+			if (args.MemoryStatus == PlatformMemoryStatus.Normal)
+				return;
+
+			// record that we had hit critical memory barrier
+			if (!lowMemoryLogged) {
+				lowMemoryLogged = true;
+				Logger.Log (FunctionId.VirtualMemory_MemoryLow, KeyValueLogMessage.Create (m => {
+					// which message we are logging and memory left in bytes when this is called.
+					m ["MSG"] = args.MemoryStatus;
+					//m ["MemoryLeft"] = (long)wParam;
+				}));
+			}
+
+			var cacheService = Services.GetService<IWorkspaceCacheService> () as MonoDevelopWorkspaceCacheService;
+			cacheService?.FlushCaches ();
+
+			if (!ShouldTurnOffFullSolutionAnalysis ())
+				return;
+
+			Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, false);
+			if (IsUserOptionOn ()) {
+				// let user know full analysis is turned off due to memory concern.
+				// make sure we show info bar only once for the same solution.
+				Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown, true);
+
+				const string LowVMMoreInfoLink = "http://go.microsoft.com/fwlink/?LinkID=799402&clcid=0x409";
+				Services.GetService<IErrorReportingService> ().ShowGlobalErrorInfo (
+					GettextCatalog.GetString ("{0} has suspended some advanced features to improve performance", BrandingService.ApplicationName),
+					new InfoBarUI ("Learn more", InfoBarUI.UIKind.HyperLink, () => DesktopService.ShowUrl (LowVMMoreInfoLink), closeAfterAction: false),
+					new InfoBarUI ("Restore", InfoBarUI.UIKind.Button, () => Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, true))
+				);
+			}
 		}
 
 		void OnCacheFlushRequested (object sender, EventArgs args)
@@ -150,9 +194,30 @@ namespace MonoDevelop.Ide.TypeSystem
 				cacheService.CacheFlushRequested -= OnCacheFlushRequested;
 		}
 
+		bool ShouldTurnOffFullSolutionAnalysis ()
+		{
+			// conditions
+			// 1. if our full solution analysis option is on (not user full solution analysis option, but our internal one) and
+			// 2. if infobar is never shown to users for this solution
+			return Options.GetOption (RuntimeOptions.FullSolutionAnalysis) && !Options.GetOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown);
+		}
+
+		bool IsUserOptionOn ()
+		{
+			// check languages currently on solution. since we only show info bar once, we don't need to track solution changes.
+			var languages = CurrentSolution.Projects.Select (p => p.Language).Distinct ();
+			foreach (var language in languages) {
+				if (ServiceFeatureOnOffOptions.IsClosedFileDiagnosticsEnabled (Options, language)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		void OnEnableSourceAnalysisChanged(object sender, EventArgs args)
 		{
-			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 			if (IdeApp.Preferences.EnableSourceAnalysis)
 				solutionCrawler.Register (this);
 			else
@@ -161,7 +226,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void OnEnableFullSourceAnalysisChanged (object sender, EventArgs args)
 		{
-			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, IdeApp.Preferences.EnableFullSolutionSourceAnalysis);
+			if (IdeApp.Preferences.Roslyn.CSharp.SolutionCrawlerClosedFileDiagnostic.Value == true)
+				Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, true);
 		}
 
 		protected internal override bool PartialSemanticsEnabled => backgroundCompiler != null;
@@ -175,7 +241,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			disposed = true;
 
 			IdeApp.Preferences.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
-			IdeApp.Preferences.EnableFullSolutionSourceAnalysis.Changed -= OnEnableFullSourceAnalysisChanged;
+			IdeApp.Preferences.Roslyn.CSharp.SolutionCrawlerClosedFileDiagnostic.Changed -= OnEnableFullSourceAnalysisChanged;
+			DesktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
 
 			CancelLoad ();
 			if (IdeApp.Workspace != null) {
@@ -185,7 +252,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				UnloadMonoProject (prj);
 			}
 
-			ISolutionCrawlerRegistrationService solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
+			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 			solutionCrawler.Unregister (this);
 
 			if (backgroundCompiler != null) {
@@ -633,6 +700,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		Tuple<List<DocumentInfo>, List<DocumentInfo>> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile [] sourceFiles, ProjectData oldProjectData)
 		{
 			var documents = new List<DocumentInfo> ();
+			// We don' add additionalDocuments anymore because they were causing slowdown of compilation generation
+			// and no upside to setting additionalDocuments, keeping this around in case this changes in future.
 			var additionalDocuments = new List<DocumentInfo> ();
 			var duplicates = new HashSet<DocumentId> ();
 			// use given source files instead of project.Files because there may be additional files added by msbuild targets
@@ -649,11 +718,6 @@ namespace MonoDevelop.Ide.TypeSystem
 						continue;
 					documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 				} else {
-					var id = projectData.GetOrCreateDocumentId (f.Name, oldProjectData);
-					if (!duplicates.Add (id))
-						continue;
-					additionalDocuments.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
-
 					foreach (var projectedDocument in GenerateProjections (f, projectData, p, oldProjectData)) {
 						var projectedId = projectData.GetOrCreateDocumentId (projectedDocument.FilePath, oldProjectData);
 						if (!duplicates.Add (projectedId))
@@ -1022,7 +1086,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				} else {
 					OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				}
-				FileService.NotifyFileChanged (filePath);
 			} else {
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
 				var documentContext = IdeApp.Workbench.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0);

@@ -393,9 +393,10 @@ namespace MonoDevelop.Projects
 			extensions.Reverse ();
 			var defaultExts = CreateDefaultExtensions ().ToList ();
 			defaultExts.Reverse ();
-			extensionChain.SetDefaultInsertionPosition (defaultExts.FirstOrDefault ());
 			extensions.AddRange (defaultExts);
 			extensionChain = ExtensionChain.Create (extensions.ToArray ());
+			extensionChain.SetDefaultInsertionPosition (defaultExts.FirstOrDefault ());
+
 			foreach (var e in extensions)
 				e.Init (this);
 			

@@ -44,7 +44,7 @@ namespace MonoDevelop.Xml.Completion
 		{
 			name = finalEl.Name.FullName;
 			description = GettextCatalog.GetString ("Closing tag for '{0}', also closing all intermediate tags", name);
-			name = string.Format ("/{0}>...", name);
+			name = string.Format ("...</{0}>", name);
 			this.intEls = intermediateElements;
 			this.finalEl = finalEl;
 		}
@@ -91,5 +91,11 @@ namespace MonoDevelop.Xml.Completion
 		*/
 		#endregion
 		
+		public override bool IsCommitCharacter (char keyChar, string partialWord)
+		{
+			if (keyChar == '.')
+				return false;
+			return base.IsCommitCharacter (keyChar, partialWord);
+		}
 	}
 }

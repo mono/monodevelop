@@ -140,7 +140,6 @@ namespace MonoDevelop.VersionControl.Git
 		public static Task<bool> ApplyStash (GitRepository repo, int s)
 		{
 			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
-			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 			var t = Task.Run (delegate {
 				try {
 					var res = repo.ApplyStash (monitor, s);
@@ -153,7 +152,6 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				finally {
 					monitor.Dispose ();
-					statusTracker.Dispose ();
 				}
 			});
 			return t;

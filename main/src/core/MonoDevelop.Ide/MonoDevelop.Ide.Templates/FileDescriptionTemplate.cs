@@ -83,8 +83,11 @@ namespace MonoDevelop.Ide.Templates
 
 		public virtual Task<bool> AddToProjectAsync (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
 		{
+#pragma warning disable 618
 			return Task.FromResult(AddToProject (policyParent, project, language, directory, name));
+#pragma warning restore 618
 		}
+
 		public abstract void Show ();
 
 		internal string CreateCondition { get; private set; }
@@ -92,19 +95,6 @@ namespace MonoDevelop.Ide.Templates
 		public virtual bool IsValidName (string name, string language)
 		{
 			return FileService.IsValidFileName (name);
-/*			if (name.Length > 0) {
-				if (language != null && language.Length > 0) {
-					IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;
-					if (binding != null) {
-						System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
-						if (provider != null)
-							return provider.IsValidIdentifier (provider.CreateEscapedIdentifier (name));
-					}
-				}
-				return name.IndexOfAny (Path.GetInvalidFileNameChars ()) == -1;
-			}
-			else
-				return false;*/
 		}
 		
 		public virtual bool SupportsProject (Project project, string projectPath)

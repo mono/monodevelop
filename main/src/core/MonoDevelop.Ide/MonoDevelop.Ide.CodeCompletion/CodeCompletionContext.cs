@@ -34,6 +34,24 @@ namespace MonoDevelop.Ide.CodeCompletion
 {
 	public class CodeCompletionContext
 	{
+		public CodeCompletionContext ()
+		{
+		}
+
+		public CodeCompletionContext (
+			int? x = null, int? y = null, int textHeight = 0,
+			int offset = 0, int line = 0, int lineOffset = 0,
+			int wordLength = 0)
+		{
+			triggerXCoord = x;
+			triggerYCoord = y;
+			triggerTextHeight = textHeight;
+			TriggerOffset = offset;
+			TriggerLine = line;
+			TriggerLineOffset = lineOffset;
+			TriggerWordLength = wordLength;
+		}
+
 		public static readonly CodeCompletionContext Invalid = new CodeCompletionContext ();
 		int? triggerXCoord;
 		int? triggerYCoord;
@@ -44,21 +62,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public int TriggerLineOffset { get; set; }
 
 		[Obsolete ("Use GetCoordinatesAsync ()")]
-		public int TriggerXCoord { 
+		public int TriggerXCoord {
 			get {
 				EnsureCoordinatesCalculated ();
-				return triggerXCoord.Value; 
-			} 
-			set => triggerXCoord = value; 
+				return triggerXCoord.Value;
+			}
+			set => triggerXCoord = value;
 		}
 
 		[Obsolete ("Use GetCoordinatesAsync ()")]
-		public int TriggerYCoord { 
+		public int TriggerYCoord {
 			get {
 				EnsureCoordinatesCalculated ();
 				return triggerYCoord.Value;
-			} 
-			set => triggerYCoord = value; 
+			}
+			set => triggerYCoord = value;
 		}
 
 		[Obsolete ("Use GetCoordinatesAsync ()")]
@@ -67,14 +85,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				EnsureCoordinatesCalculated ();
 				return triggerTextHeight.Value;
 			}
-			set => triggerTextHeight = value; 
+			set => triggerTextHeight = value;
 		}
 
 		public int TriggerWordLength { get; set; }
 
 		public override string ToString ()
 		{
-			return string.Format ("[CodeCompletionContext: TriggerOffset={0}, TriggerLine={1}, TriggerLineOffset={2}, TriggerXCoord={3}, TriggerYCoord={4}, TriggerTextHeight={5}, TriggerWordLength={6}]", TriggerOffset, TriggerLine, TriggerLineOffset, TriggerXCoord, TriggerYCoord, TriggerTextHeight, TriggerWordLength);
+			return string.Format ("[CodeCompletionContext: TriggerOffset={0}, TriggerLine={1}, TriggerLineOffset={2}, TriggerXCoord={3}, TriggerYCoord={4}, TriggerTextHeight={5}, TriggerWordLength={6}]", TriggerOffset, TriggerLine, TriggerLineOffset, triggerXCoord, triggerYCoord, triggerTextHeight, TriggerWordLength);
 		}
 
 		void EnsureCoordinatesCalculated ()
@@ -92,7 +110,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public virtual Task<(int x, int y, int textHeight)> GetCoordinatesAsync ()
 		{
-			return Task.FromResult ((triggerXCoord.HasValue ? triggerXCoord.Value : 0, triggerYCoord.HasValue ? triggerYCoord.Value : 0, triggerTextHeight.HasValue ? triggerTextHeight.Value : 0));
+			return Task.FromResult ((triggerXCoord ?? 0, triggerYCoord ?? 0, triggerTextHeight ?? 0));
 		}
 	}
 }

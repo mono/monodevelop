@@ -421,10 +421,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (project == null)
 				throw new ArgumentNullException (nameof(project));
 			if (IsOutputTrackedProject (project)) {
-				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
-				if (!File.Exists (fileName))
-					return;
-				FileService.NotifyFileChanged (fileName);
 				if (autoUpdate) {
 					// update documents
 					foreach (var openDocument in IdeApp.Workbench.Documents) {

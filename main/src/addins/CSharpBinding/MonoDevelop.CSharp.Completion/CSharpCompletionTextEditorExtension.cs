@@ -121,33 +121,6 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		static List<CompletionData> snippets;
-
-		static CSharpCompletionTextEditorExtension ()
-		{
-			//try {
-			//	CompletionEngine.SnippetCallback = delegate (CancellationToken arg) {
-			//		if (snippets != null)
-			//			return Task.FromResult ((IEnumerable<CompletionData>)snippets);
-			//		var newSnippets = new List<CompletionData> ();
-			//		foreach (var ct in MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/x-csharp")) {
-			//			if (string.IsNullOrEmpty (ct.Shortcut) || ct.CodeTemplateContext != MonoDevelop.Ide.CodeTemplates.CodeTemplateContext.Standard)
-			//				continue;
-			//			newSnippets.Add (new RoslynCompletionData (null) {
-			//				CompletionText = ct.Shortcut,
-			//				DisplayText = ct.Shortcut,
-			//				Description = ct.Shortcut + Environment.NewLine + GettextCatalog.GetString (ct.Description),
-			//				Icon = ct.Icon
-			//			});
-			//		}
-			//		snippets = newSnippets;
-			//		return Task.FromResult ((IEnumerable<CompletionData>)newSnippets);
-			//	};
-			//} catch (Exception e) {
-			//	LoggingService.LogError ("Error while loading c# completion text editor extension.", e);
-			//}
-		}
-
 		internal static Task<Document> WithFrozenPartialSemanticsAsync (Document doc, CancellationToken token)
 		{
 			return Task.FromResult (doc.WithFrozenPartialSemantics (token));
@@ -172,14 +145,6 @@ namespace MonoDevelop.CSharp.Completion
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-
-			var parsedDocument = DocumentContext.ParsedDocument;
-			if (parsedDocument != null) {
-				//				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
-				//					this.UnresolvedFileCompilation = DocumentContext.Compilation;
-				//					this.CSharpUnresolvedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
-				//					Editor.CaretPositionChanged += HandlePositionChanged;
-			}
 
 			if (addEventHandlersInInitialization)
 				DocumentContext.DocumentParsed += HandleDocumentParsed;
@@ -512,8 +477,10 @@ namespace MonoDevelop.CSharp.Completion
 			if (completionList.SuggestionModeItem != null) {
 				if (completionList.Items.Contains (completionList.SuggestionModeItem)) {
 					result.DefaultCompletionString = completionList.SuggestionModeItem.DisplayText;
-					result.AutoSelect = false;
 				}
+				// if a suggestion mode item is present autoselection is disabled
+				// for example in the lambda case the suggestion mode item is '<lambda expression>' which is not part of the completion item list but taggs the completion list as auto select == false.
+				result.AutoSelect = false;
 			}
 			if (triggerInfo.TriggerCharacter == '_' && triggerWordLength == 1)
 				result.AutoSelect = false;

@@ -42,7 +42,6 @@ namespace ICSharpCode.ILSpy
 	{
 		public static readonly CSharpLanguage Instance = new CSharpLanguage ();
 		string name = "C#";
-		bool showAllMembers = false;
 		int transformCount = int.MaxValue;
 
 #if DEBUG
@@ -55,14 +54,12 @@ namespace ICSharpCode.ILSpy
 				yield return new CSharpLanguage {
 					transformCount = transformCount,
 					name = "C# - " + lastTransformName,
-					showAllMembers = true
 				};
 				lastTransformName = "after " + transform.GetType ().Name;
 				transformCount++;
 			}
 			yield return new CSharpLanguage {
 				name = "C# - " + lastTransformName,
-				showAllMembers = true
 			};
 		}
 #endif

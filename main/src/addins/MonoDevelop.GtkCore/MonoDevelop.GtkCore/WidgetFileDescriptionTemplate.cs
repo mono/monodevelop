@@ -28,16 +28,15 @@
 
 
 using System;
-using System.Xml;
 using System.IO;
+using System.Threading.Tasks;
+using System.Xml;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Templates;
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.TypeSystem;
-using System.Threading.Tasks;
+using MonoDevelop.Ide.Templates;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.GtkCore
 {
@@ -92,8 +91,6 @@ namespace MonoDevelop.GtkCore
 			string fileName = fileTemplate.GetFileName (policyParent, project, language, directory, name);
 			await fileTemplate.AddToProjectAsync (policyParent, project, language, directory, name);
 
-			FileService.NotifyFileChanged (fileName);
-
 			DotNetProject netProject = project as DotNetProject;
 			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "";
 			string cname = Path.GetFileNameWithoutExtension (fileName);
@@ -114,7 +111,7 @@ namespace MonoDevelop.GtkCore
 				
 				gproject.AddNewComponent (doc.DocumentElement);
 				gproject.SaveAll (false);
-				IdeApp.ProjectOperations.SaveAsync (project);
+				IdeApp.ProjectOperations.SaveAsync (project).Ignore ();
 				return true;
 			}
 			
@@ -128,7 +125,7 @@ namespace MonoDevelop.GtkCore
 				
 				gproject.SteticProject.AddNewActionGroup (doc.DocumentElement);
 				gproject.SaveAll (false);
-				IdeApp.ProjectOperations.SaveAsync (project);
+				IdeApp.ProjectOperations.SaveAsync (project).Ignore ();
 				return true;
 			}
 			

@@ -61,7 +61,7 @@ namespace MonoDevelop.Refactoring
 			info.Enabled = true;
 		}
 
-		protected async override void Run ()
+		protected override void Run ()
 		{
 			Execute ();
 		}

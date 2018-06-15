@@ -70,6 +70,10 @@
       <HintPath>..\..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Parser\ActiveElementStartPathTestFixture.cs" />
@@ -129,6 +133,8 @@
     <Compile Include="Schema\Includes\AttributeGroupRefSchemaIncludeTestFixture.cs" />
     <Compile Include="Schema\Includes\TwoElementSchemaIncludeTestFixture.cs" />
     <Compile Include="Formatting\XmlFormatterTests.cs" />
+    <Compile Include="Schema\SchemaValidationTests.cs" />
+    <Compile Include="Utils\XsltTransformTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Parser\" />
@@ -136,14 +142,20 @@
     <Folder Include="Schema\" />
     <Folder Include="Utils\" />
     <Folder Include="CompletionData\" />
+    <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\xhtml1-strict-modified.xsd">
-      <LogicalName>xhtml1-strict-modified.xsd</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\XMLSchema.xsd">
+    <EmbeddedResource Include="..\schemas\XMLSchema.xsd">
+      <Link>Resources\XMLSchema.xsd</Link>
       <LogicalName>XMLSchema.xsd</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\AspNet\Html\Schemas\xhtml1-strict.xsd">
+      <Link>Resources\xhtml1-strict.xsd</Link>
+      <LogicalName>xhtml1-strict.xsd</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

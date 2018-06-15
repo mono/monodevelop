@@ -244,8 +244,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			cr.LineWidth = 1;
 
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-				const int foldSegmentHeight = 8;
-
 				ProcessExpandAnimation (cr, lastCategory, lastCategoryYpos, backColor, area, ref ypos);
 
 				if (!area.IntersectsWith (new Gdk.Rectangle (new Gdk.Point (xpos, ypos), itemDimension)))

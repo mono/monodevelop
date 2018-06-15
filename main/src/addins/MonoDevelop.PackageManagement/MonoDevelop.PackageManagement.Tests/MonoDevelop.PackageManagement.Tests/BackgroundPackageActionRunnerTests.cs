@@ -408,25 +408,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Run_ActionChangesTwoFiles_FileServiceNotifiedOfFileChanges ()
-		{
-			CreateRunner ();
-			string file1 = @"d:\projects\MyProject\packages.config".ToNativePath ();
-			string file2 = @"d:\projects\MyProject\Scripts\jquery.js".ToNativePath ();
-			AddInstallActionWithCustomExecuteAction (() => {
-				packageManagementEvents.OnFileChanged (file1);
-				packageManagementEvents.OnFileChanged (file2);
-			});
-
-			Run ();
-
-			List<FilePath> filesChanged = runner.EventsMonitor.FilesChanged;
-			Assert.AreEqual (2, filesChanged.Count);
-			Assert.That (filesChanged, Contains.Item (new FilePath (file1)));
-			Assert.That (filesChanged, Contains.Item (new FilePath (file2)));
-		}
-
-		[Test]
 		public void IsRunning_NothingRunning_IsRunningIsFalse ()
 		{
 			CreateRunner ();

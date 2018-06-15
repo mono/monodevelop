@@ -35,7 +35,7 @@ namespace MonoDevelop.Xml.Completion
 			var absoluteUri = base.ResolveUri (baseUri, relativeUri);
 			if (absoluteUri.IsFile && absoluteUri.LocalPath.EndsWith (".xsd", StringComparison.OrdinalIgnoreCase))
 				return absoluteUri;
-			return null;
+			throw new NotSupportedException ($"URI '{absoluteUri}' not supported");
 		}
 	}
 }

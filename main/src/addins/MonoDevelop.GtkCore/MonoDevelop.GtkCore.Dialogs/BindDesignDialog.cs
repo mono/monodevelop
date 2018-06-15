@@ -39,6 +39,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 {
 	class BindDesignDialog: IDisposable
 	{
+		#pragma warning disable 649 // never assigned
 		[Glade.Widget ("BindDesignDialog")] protected Gtk.Dialog dialog;
 		[Glade.Widget] protected Gtk.Label labelMessage;
 		[Glade.Widget] protected Gtk.ComboBox comboClasses;
@@ -49,7 +50,8 @@ namespace MonoDevelop.GtkCore.Dialogs
 		[Glade.Widget] protected Gtk.Table tableNewClass;
 		[Glade.Widget] protected Gtk.Button okButton;
 		[Glade.Widget] protected Gtk.EventBox fileEntryBox;
-		
+		#pragma warning restore 649
+
 		FolderEntry fileEntry;
 		
 		ListStore store;

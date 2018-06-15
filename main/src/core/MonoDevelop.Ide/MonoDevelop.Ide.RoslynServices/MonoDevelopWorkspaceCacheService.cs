@@ -30,20 +30,20 @@ using Microsoft.CodeAnalysis.Host.Mef;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
-	[ExportWorkspaceService(typeof(IWorkspaceCacheService), ServiceLayer.Host), Shared]
+	[ExportWorkspaceService (typeof (IWorkspaceCacheService), ServiceLayer.Host), Shared]
 	sealed class MonoDevelopWorkspaceCacheService : IWorkspaceCacheService
 	{
 		/// <summary>
-        /// Called by the host to try and reduce memory occupied by caches.
-        /// </summary>
-        public void FlushCaches()
-        {
-            CacheFlushRequested?.Invoke(this, EventArgs.Empty);
-        }
- 
-        /// <summary>
-        /// Raised by the host when available memory is getting low in order to request that caches be flushed.
-        /// </summary>
-        public event EventHandler CacheFlushRequested;
+		/// Called by the host to try and reduce memory occupied by caches.
+		/// </summary>
+		public void FlushCaches ()
+		{
+			CacheFlushRequested?.Invoke (this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Raised by the host when available memory is getting low in order to request that caches be flushed.
+		/// </summary>
+		public event EventHandler CacheFlushRequested;
 	}
 }

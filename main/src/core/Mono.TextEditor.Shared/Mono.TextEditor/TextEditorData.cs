@@ -25,22 +25,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Gtk;
 using System.IO;
-using System.Diagnostics;
-using Mono.TextEditor.Highlighting;
-using Xwt.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor.Highlighting;
-using System.Threading;
-using MonoDevelop.Ide;
-using System.Linq;
-using System.Threading.Tasks;
-using MonoDevelop.Core;
+using Xwt.Drawing;
 
 namespace Mono.TextEditor
 {
@@ -80,7 +77,8 @@ namespace Mono.TextEditor
 			set {
 				var oldMode = currentMode;
 				currentMode = value;
-				currentMode.AddedToEditor (this);
+				if (currentMode != null)
+					currentMode.AddedToEditor (this);
 				if (oldMode != null)
 					oldMode.RemovedFromEditor (this);
 				OnEditModeChanged (new EditModeChangedEventArgs (oldMode, currentMode));
@@ -652,13 +650,21 @@ namespace Mono.TextEditor
 			FixVirtualIndentation (Caret.Line);
 		}
 
+		public bool LockFixIndentation { get; set; }
+
 		public void FixVirtualIndentation (int lineNumber)
 		{
-			if (!HasIndentationTracker || Options.IndentStyle != IndentStyle.Virtual)
+			if (!HasIndentationTracker || Options.IndentStyle != IndentStyle.Virtual || LockFixIndentation)
 				return;
 			var line = Document.GetLine (lineNumber);
-			if (line != null && line.Length > 0 && GetIndentationString (lineNumber, line.Length + 1) == Document.GetTextAt (line.Offset, line.Length))
+			if (line == null || line.Length == 0)
+				return;
+			var indentString = GetIndentationString (lineNumber, line.Length + 1);
+			if (indentString.Length != line.Length)
+				return;
+			if (indentString == Document.GetTextAt (line.Offset, line.Length)) {
 				Remove (line.Offset, line.Length);
+			}
 		}
 
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args)

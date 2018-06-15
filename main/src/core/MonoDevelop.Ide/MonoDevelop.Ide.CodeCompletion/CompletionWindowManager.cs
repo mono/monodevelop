@@ -89,11 +89,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return ShowWindow (list, completionContext);
 		}
 
+		internal static void StartPrepareShowWindowSession ()
+		{
+			isShowing = true;
+		}
+
 		// ext may be null, but then parameter completion don't work
 		internal static void PrepareShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
 		{
-			isShowing = true;
-
+			StartPrepareShowWindowSession ();
 			if (wnd == null) {
 				wnd = new CompletionListWindow ();
 				wnd.WordCompleted += HandleWndWordCompleted;
@@ -151,9 +155,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		static void HandleWndWordCompleted (object sender, CodeCompletionContextEventArgs e)
 		{
-			EventHandler<CodeCompletionContextEventArgs> handler = WordCompleted;
-			if (handler != null)
-				handler (sender, e);
+			WordCompleted?.Invoke (sender, e);
 		}
 		
 		public static event EventHandler<CodeCompletionContextEventArgs> WordCompleted;
@@ -182,22 +184,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (!IsVisible)
 				return;
-			if (wnd.IsInCompletion || isShowing || isInUpdate)
+			if (wnd == null || wnd.IsInCompletion || isShowing || isInUpdate)
 				return;
 			isInUpdate = true;
 			try {
 				var widget = wnd.CompletionWidget;
 				if (widget == null)
 					return;
-				var impl = widget as ITextEditorImpl;
-				if (impl != null)
-					impl.EnsureCaretIsNotVirtual ();
 				var caretOffset = widget.CaretOffset;
 				if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset + 1) {
 					HideWindow ();
 				}
-				if (impl != null)
-					impl.FixVirtualIndentation ();
 			} finally {
 				isInUpdate = false;
 			}

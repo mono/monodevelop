@@ -149,7 +149,6 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             Content.QueueForReallocate();
         }
 
-        public event EventHandler MouseLeftButtonDown;
         public event EventHandler UpButtonClick;
         public event EventHandler DownButtonClick;
 

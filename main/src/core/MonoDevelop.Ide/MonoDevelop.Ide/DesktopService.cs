@@ -1,21 +1,21 @@
-// 
+//
 // DesktopService.cs
-//  
+//
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
-// 
+//
 // Copyright (c) 2009 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -41,6 +41,7 @@ namespace MonoDevelop.Ide
 	{
 		static PlatformService platformService;
 		static Xwt.Toolkit nativeToolkit;
+		static Lazy<MemoryMonitor> memoryMonitor = new Lazy<MemoryMonitor> (() => platformService.CreateMemoryMonitor ());
 
 		static PlatformService PlatformService {
 			get {
@@ -64,7 +65,7 @@ namespace MonoDevelop.Ide
 			PlatformService.Initialize ();
 			if (PlatformService.CanOpenTerminal)
 				Runtime.ProcessService.SetExternalConsoleHandler (PlatformService.StartConsoleProcess);
-			
+
 			FileService.FileRemoved += NotifyFileRemoved;
 			FileService.FileRenamed += NotifyFileRenamed;
 
@@ -74,7 +75,7 @@ namespace MonoDevelop.Ide
 
 			FontService.Initialize ();
 		}
-		
+
 		/// <summary>
 		/// Returns the XWT toolkit for the native toolkit (Cocoa on Mac, WPF on Windows)
 		/// </summary>
@@ -111,7 +112,7 @@ namespace MonoDevelop.Ide
 		public static string DefaultMonospaceFont {
 			get { return PlatformService.DefaultMonospaceFont; }
 		}
-		
+
 		public static string PlatformName {
 			get { return PlatformService.Name; }
 		}
@@ -122,12 +123,12 @@ namespace MonoDevelop.Ide
 				return PlatformService.DefaultControlLeftRightBehavior;
 			}
 		}
-		
+
 		public static void ShowUrl (string url)
 		{
 			PlatformService.ShowUrl (url);
 		}
-		
+
 		public static void OpenFile (string filename)
 		{
 			PlatformService.OpenFile (filename);
@@ -156,12 +157,12 @@ namespace MonoDevelop.Ide
 		{
 			return PlatformService.GetMimeTypeForUri (uri);
 		}
-		
+
 		public static string GetMimeTypeDescription (string mimeType)
 		{
 			return PlatformService.GetMimeTypeDescription (mimeType);
 		}
-		
+
 		public static bool GetMimeTypeIsText (string mimeType)
 		{
 			return PlatformService.GetMimeTypeIsText (mimeType);
@@ -180,7 +181,7 @@ namespace MonoDevelop.Ide
 			if (!File.Exists (file))
 				return false;
 
-			return !MonoDevelop.Core.Text.TextFileUtility.IsBinary (file); 
+			return !MonoDevelop.Core.Text.TextFileUtility.IsBinary (file);
 		}
 
 		public async static Task<bool> GetFileIsTextAsync (string file, string mimeType = null)
@@ -212,7 +213,7 @@ namespace MonoDevelop.Ide
 		{
 			return PlatformService.GetMimeTypeIsSubtype (subMimeType, baseMimeType);
 		}
-		
+
 		public static IEnumerable<string> GetMimeTypeInheritanceChain (string mimeType)
 		{
 			return PlatformService.GetMimeTypeInheritanceChain (mimeType);
@@ -222,7 +223,7 @@ namespace MonoDevelop.Ide
 		{
 			return GetMimeTypeInheritanceChain (GetMimeTypeForUri (filename));
 		}
-		
+
 		public static Xwt.Drawing.Image GetIconForFile (string filename)
 		{
 			return PlatformService.GetIconForFile (filename);
@@ -232,7 +233,7 @@ namespace MonoDevelop.Ide
 		{
 			return PlatformService.GetIconForFile (filename).WithSize (size);
 		}
-		
+
 		public static Xwt.Drawing.Image GetIconForType (string mimeType)
 		{
 			return PlatformService.GetIconForType (mimeType);
@@ -248,14 +249,14 @@ namespace MonoDevelop.Ide
 		{
 			return PlatformService.SetGlobalMenu (commandManager, commandMenuAddinPath, appMenuAddinPath);
 		}
-		
+
 		// Used for preserve the file attributes when monodevelop opens & writes a file.
 		// This should work on unix & mac platform.
 		public static object GetFileAttributes (string fileName)
 		{
 			return PlatformService.GetFileAttributes (fileName);
 		}
-		
+
 		public static void SetFileAttributes (string fileName, object attributes)
 		{
 			PlatformService.SetFileAttributes (fileName, attributes);
@@ -265,7 +266,7 @@ namespace MonoDevelop.Ide
 		{
 			return PlatformService.GetUsableMonitorGeometry (screenNumber, monitorNumber);
 		}
-		
+
 		public static bool CanOpenTerminal {
 			get {
 				return PlatformService.CanOpenTerminal;
@@ -285,13 +286,13 @@ namespace MonoDevelop.Ide
 		{
 			PlatformService.OpenTerminal (workingDirectory, environmentVariables, windowTitle);
 		}
-		
+
 		public static RecentFiles RecentFiles {
 			get {
 				return PlatformService.RecentFiles;
 			}
 		}
-		
+
 		static void NotifyFileRemoved (object sender, FileEventArgs args)
 		{
 			foreach (FileEventInfo e in args) {
@@ -300,7 +301,7 @@ namespace MonoDevelop.Ide
 				}
 			}
 		}
-		
+
 		static void NotifyFileRenamed (object sender, FileCopyEventArgs args)
 		{
 			foreach (FileCopyEventInfo e in args) {
@@ -309,22 +310,22 @@ namespace MonoDevelop.Ide
 				}
 			}
 		}
-		
+
 		internal static string GetUpdaterUrl ()
 		{
 			return PlatformService.GetUpdaterUrl ();
 		}
-		
+
 		internal static IEnumerable<string> GetUpdaterEnvironmentFlags ()
 		{
 			return PlatformService.GetUpdaterEnviromentFlags ();
 		}
-		
+
 		internal static void StartUpdatesInstaller (FilePath installerDataFile, FilePath updatedInstallerPath)
 		{
 			PlatformService.StartUpdatesInstaller (installerDataFile, updatedInstallerPath);
 		}
-		
+
 		/// <summary>
 		/// Grab the desktop focus for the window.
 		/// </summary>
@@ -404,5 +405,7 @@ namespace MonoDevelop.Ide
 		internal static string GetNativeRuntimeDescription () => PlatformService.GetNativeRuntimeDescription ();
 
 		public static IPlatformTelemetryDetails PlatformTelemetry () => PlatformService.PlatformTelemetryDetails ();
+
+		public static MemoryMonitor MemoryMonitor => memoryMonitor.Value;
 	}
 }

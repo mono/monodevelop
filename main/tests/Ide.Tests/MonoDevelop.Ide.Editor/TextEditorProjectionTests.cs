@@ -63,16 +63,19 @@ namespace MonoDevelop.Ide.Editor
 			tww.ViewContent = content;
 
 			var originalContext = new Document (tww);
-			var projectedEditor = projection.CreateProjectedEditor (originalContext);
-			editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.All);
-			editor.InsertText (1, "foo");
-			Assert.AreEqual ("__1foo2__34__56__78__90", projectedEditor.Text);
 
-			Assert.AreEqual (2, projection.ProjectedSegments.ElementAt (0).ProjectedOffset);
-			Assert.AreEqual (2 + "foo".Length, projection.ProjectedSegments.ElementAt (0).Length);
-			for (int i = 1; i < 5; i++) {
-				Assert.AreEqual (2 + i * 4 + "foo".Length, projection.ProjectedSegments.ElementAt (i).ProjectedOffset);
-				Assert.AreEqual (2, projection.ProjectedSegments.ElementAt (i).Length);
+			using (var testCase = new TextEditorExtensionTestCase (originalContext, content, tww, null, false)) {
+				var projectedEditor = projection.CreateProjectedEditor (originalContext);
+				editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.All);
+				editor.InsertText (1, "foo");
+				Assert.AreEqual ("__1foo2__34__56__78__90", projectedEditor.Text);
+
+				Assert.AreEqual (2, projection.ProjectedSegments.ElementAt (0).ProjectedOffset);
+				Assert.AreEqual (2 + "foo".Length, projection.ProjectedSegments.ElementAt (0).Length);
+				for (int i = 1; i < 5; i++) {
+					Assert.AreEqual (2 + i * 4 + "foo".Length, projection.ProjectedSegments.ElementAt (i).ProjectedOffset);
+					Assert.AreEqual (2, projection.ProjectedSegments.ElementAt (i).Length);
+				}
 			}
 		}
 
@@ -100,13 +103,15 @@ namespace MonoDevelop.Ide.Editor
 			tww.ViewContent = content;
 
 			var originalContext = new Document (tww);
-			var projectedEditor = projection.CreateProjectedEditor (originalContext);
-			projectedEditor.SemanticHighlighting = new TestSemanticHighlighting (projectedEditor, originalContext);
-			editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.None);
+			using (var testCase = new TextEditorExtensionTestCase (originalContext, content, tww, null, false)) {
+				var projectedEditor = projection.CreateProjectedEditor (originalContext);
+				projectedEditor.SemanticHighlighting = new TestSemanticHighlighting (projectedEditor, originalContext);
+				editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.None);
 
-			var markup = editor.GetMarkup (0, editor.Length, new MarkupOptions (MarkupFormat.Pango));
-			var color = "#3363a4";
-			Assert.AreEqual ("<span foreground=\"" + color + "\">1</span><span foreground=\"#222222\">234</span><span foreground=\"" + color + "\">5</span><span foreground=\"#222222\">678</span><span foreground=\"" + color + "\">9</span><span foreground=\"#222222\">0</span>", markup);
+				var markup = editor.GetMarkup (0, editor.Length, new MarkupOptions (MarkupFormat.Pango));
+				var color = "#3363a4";
+				Assert.AreEqual ("<span foreground=\"" + color + "\">1</span><span foreground=\"#222222\">234</span><span foreground=\"" + color + "\">5</span><span foreground=\"#222222\">678</span><span foreground=\"" + color + "\">9</span><span foreground=\"#222222\">0</span>", markup);
+			}
 		}
 
 		class TestSemanticHighlighting : SemanticHighlighting

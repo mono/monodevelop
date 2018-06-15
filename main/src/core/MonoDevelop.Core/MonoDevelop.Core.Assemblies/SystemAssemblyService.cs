@@ -460,7 +460,38 @@ namespace MonoDevelop.Core.Assemblies
 			return false;
 		}
 
+		static Dictionary<string, bool> facadeReferenceDict = new Dictionary<string, bool> ();
+
+		static bool RequiresFacadeAssembliesInternal (string fileName)
+		{
+			bool result;
+			if (facadeReferenceDict.TryGetValue (fileName, out result))
+				return result;
+
+			AssemblyDefinition assembly = null;
+			try {
+				try {
+					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
+				} catch {
+					return false;
+				}
+				foreach (var r in assembly.MainModule.AssemblyReferences) {
+					// Don't compare the version number since it may change depending on the version of .net standard
+					if (r.Name.Equals ("System.Runtime") || r.Name.Equals ("netstandard")) {
+						facadeReferenceDict [fileName] = true; ;
+						return true;
+					}
+				}
+			} finally {
+				assembly?.Dispose ();
+			}
+			facadeReferenceDict [fileName] = false;
+			return false;
+		}
+
 		static object referenceLock = new object ();
+
+		[Obsolete ("Use RequiresFacadeAssemblies (string fileName)")]
 		public static bool ContainsReferenceToSystemRuntime (string fileName)
 		{
 			lock (referenceLock) {
@@ -469,11 +500,30 @@ namespace MonoDevelop.Core.Assemblies
 		}
 
 		static SemaphoreSlim referenceLockAsync = new SemaphoreSlim (1, 1);
+
+		[Obsolete ("Use RequiresFacadeAssembliesAsync (string fileName)")]
 		public static async System.Threading.Tasks.Task<bool> ContainsReferenceToSystemRuntimeAsync (string filename)
 		{
 			try {
 				await referenceLockAsync.WaitAsync ().ConfigureAwait (false);
 				return ContainsReferenceToSystemRuntimeInternal (filename);
+			} finally {
+				referenceLockAsync.Release ();
+			}
+		}
+
+		internal static bool RequiresFacadeAssemblies (string fileName)
+		{
+			lock (referenceLock) {
+				return RequiresFacadeAssembliesInternal (fileName);
+			}
+		}
+
+		internal static async System.Threading.Tasks.Task<bool> RequiresFacadeAssembliesAsync (string filename)
+		{
+			try {
+				await referenceLockAsync.WaitAsync ().ConfigureAwait (false);
+				return RequiresFacadeAssembliesInternal (filename);
 			} finally {
 				referenceLockAsync.Release ();
 			}
@@ -524,18 +574,10 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 
+		[Obsolete("Use Runtime.LoadAssemblyFrom")]
 		public Assembly LoadAssemblyFrom (string asmPath)
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
-				// MEF composition under Win32 requires that all assemblies be loaded in the
-				// Assembly.Load() context so use Assembly.Load() after getting the AssemblyName
-				// (which, on Win32, also contains the full path information so Assembly.Load()
-				// will work).
-				var asmName = AssemblyName.GetAssemblyName (asmPath);
-				return Assembly.Load (asmName);
-			}
-
-			return Assembly.LoadFrom (asmPath);
+			return Runtime.LoadAssemblyFrom (asmPath);
 		}
 	}
 }

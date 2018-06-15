@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -212,7 +213,7 @@ namespace MonoDevelop.Core.Instrumentation
 
 	public class CounterMetadata
 	{
-		IDictionary<string, string> properties;
+		readonly IDictionary<string, string> properties;
 
 		internal protected IDictionary<string, string> Properties => properties;
 
@@ -228,55 +229,36 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public CounterResult Result {
 			get {
-				if (!properties.TryGetValue ("Result", out var result) || !Enum.TryParse (result, out CounterResult res))
+				if (!properties.TryGetValue (nameof(Result), out var result) || !Enum.TryParse (result, out CounterResult res))
 					return CounterResult.Unspecified;
 				return res;
 			}
 			set {
 				if (value == CounterResult.Unspecified)
-					properties.Remove ("Result");
+					properties.Remove (nameof (Result));
 				else
-					properties ["Result"] = value.ToString ();
+					SetProperty (value.ToString ());
 			}
 		}
 
-		public void SetUserFault ()
-		{
-			Result = CounterResult.UserFault;
-		}
+		public void SetUserFault () => Result = CounterResult.UserFault;
+		public void SetFailure () => Result = CounterResult.Failure;
+		public void SetSuccess () => Result = CounterResult.Success;
+		public void SetUserCancel () => Result = CounterResult.UserCancel;
 
-		public void SetFailure ()
-		{
-			Result = CounterResult.Failure;
-		}
+		protected void SetProperty (string value, [CallerMemberName]string name = null)
+			=> properties[name] = value;
 
-		public void SetSuccess ()
-		{
-			Result = CounterResult.Success;
-		}
+		protected void SetProperty (object value, [CallerMemberName]string name = null)
+			=> properties[name] = Convert.ToString (value, CultureInfo.InvariantCulture);
 
-		public void SetUserCancel ()
-		{
-			Result = CounterResult.UserCancel;
-		}
-
-		protected void SetProperty (string name, string value)
-		{
-			properties [name] = value;
-		}
-
-		protected void SetProperty (string name, object value)
-		{
-			properties [name] = Convert.ToString (value, CultureInfo.InvariantCulture);
-		}
-
-		protected string GetProperty (string name)
+		protected string GetProperty ([CallerMemberName]string name = null)
 		{
 			properties.TryGetValue (name, out var result);
 			return result;
 		}
 
-		protected T GetProperty<T> (string name)
+		protected T GetProperty<T> ([CallerMemberName]string name = null)
 		{
 			properties.TryGetValue (name, out var result);
 			return (T) Convert.ChangeType (result, typeof (T), CultureInfo.InvariantCulture);

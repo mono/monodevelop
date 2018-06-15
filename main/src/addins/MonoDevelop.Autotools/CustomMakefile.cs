@@ -262,7 +262,6 @@ namespace MonoDevelop.Autotools
 				sw.Write (content);
 
 			UpdatedMakefiles++;
-			FileService.NotifyFileChanged (fileName);
 		}
 		
 		void ThrowMakefileVarNotFound (string var)

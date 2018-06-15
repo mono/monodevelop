@@ -41,13 +41,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 		}
 
-		public List<FilePath> FilesChanged = new List<FilePath> ();
-
-		protected override void NotifyFilesChanged (FilePath[] files)
-		{
-			FilesChanged.AddRange (files);
-		}
-
 		protected override void GuiSyncDispatch (Action action)
 		{
 			action.Invoke ();
