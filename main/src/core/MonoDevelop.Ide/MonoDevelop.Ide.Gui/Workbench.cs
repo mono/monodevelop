@@ -973,6 +973,7 @@ namespace MonoDevelop.Ide.Gui
 			WatchDirectories ();
 		}
 
+		object directoryWatchId = new object ();
 		void WatchDirectories ()
 		{
 			HashSet<FilePath> directories = null;
@@ -984,10 +985,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 
-			if (directories != null)
-				FileWatcherService.WatchDirectories (directories).Ignore ();
-			else
-				FileWatcherService.WatchDirectories (Enumerable.Empty<FilePath> ()).Ignore ();
+			FileWatcherService.WatchDirectories (directoryWatchId, directories).Ignore ();
 		}
 		
 		// When looking for the project to which the file belongs, look first
