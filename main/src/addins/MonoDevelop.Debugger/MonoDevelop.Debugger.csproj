@@ -11,7 +11,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Debugger</AssemblyName>
     <RootNamespace>MonoDevelop.Debugger</RootNamespace>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

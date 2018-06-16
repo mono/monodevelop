@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>ILAsmBinding</AssemblyName>
     <RootNamespace>ILAsmBinding</RootNamespace>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

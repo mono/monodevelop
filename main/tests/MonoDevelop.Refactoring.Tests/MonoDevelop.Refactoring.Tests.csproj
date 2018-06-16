@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.Refactoring.Tests</RootNamespace>
     <AssemblyName>MonoDevelop.Refactoring.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <TestRunnerCommand>..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
   </PropertyGroup>

@@ -21,7 +21,7 @@
     <ConfigureScriptExe>$(MSBuildProjectDirectory)\..\..\..\..\scripts\configure.exe</ConfigureScriptExe>
     <FullBuildInfo>fullbuildinfo</FullBuildInfo>
     <MonoLauncher Condition=" '$(VisualStudioVersion)' == '' ">mono </MonoLauncher>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
   </PropertyGroup>
   <Choose>
     <When Condition=" Exists('c:\Program Files\Git\bin\git.exe') ">

@@ -12,7 +12,7 @@
     <Name>MonoDevelop.FSharp</Name>
     <UsePartialTypes>False</UsePartialTypes>
     <RestorePackages>true</RestorePackages>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.3.0</TargetFSharpCoreVersion>
     <SignAssembly>true</SignAssembly>
     <OtherFlags>--publicsign</OtherFlags>

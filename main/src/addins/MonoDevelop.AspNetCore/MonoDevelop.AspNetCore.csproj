@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.AspNetCore</RootNamespace>
     <AssemblyName>MonoDevelop.AspNetCore</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <TemplatesVersion1x>1.0.0-beta2-20170430-208</TemplatesVersion1x>
     <TemplatesVersion20>1.0.0-beta2-20170727-301</TemplatesVersion20>
   </PropertyGroup>
