@@ -21,9 +21,6 @@
     <WarningLevel>4</WarningLevel>
     <ExecuteAfterBuild>postbuild.sh</ExecuteAfterBuild>
     <ConsolePause>False</ConsolePause>
-    <Execution>
-      <Execution clr-version="Net_2_0" />
-    </Execution>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\Xml\MonoDevelop.Xml.xml</DocumentationFile>
@@ -36,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
     <ExecuteAfterBuild>postbuild.sh</ExecuteAfterBuild>
     <ConsolePause>False</ConsolePause>
-    <Execution>
-      <Execution clr-version="Net_2_0" />
-    </Execution>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\Xml\MonoDevelop.Xml.xml</DocumentationFile>

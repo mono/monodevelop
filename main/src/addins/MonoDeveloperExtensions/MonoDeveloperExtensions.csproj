@@ -19,9 +19,6 @@
     <OutputPath>..\..\..\build\AddIns\MonoDeveloperExtensions\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Execution>
-      <Execution clr-version="Net_2_0" />
-    </Execution>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\MonoDeveloperExtensions\MonoDeveloperExtensions.xml</DocumentationFile>
@@ -32,9 +29,6 @@
     <OutputPath>..\..\..\build\AddIns\MonoDeveloperExtensions\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Execution>
-      <Execution clr-version="Net_2_0" />
-    </Execution>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\MonoDeveloperExtensions\MonoDeveloperExtensions.xml</DocumentationFile>
