@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Build.MSBuildLocator;
 using Microsoft.Win32;
 using MonoDevelop.Core.Execution;
 
@@ -170,21 +171,13 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override string GetMSBuildBinPath (string toolsVersion)
 		{
-			// Probe for Dev15 location and use MSBuild from there.
-			using (RegistryKey vsReg = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\VisualStudio\SxS\VS7", false)) {
-				if (vsReg != null) {
-					string vsPath = (string)vsReg.GetValue ("15.0");
-					string path = Path.Combine (vsPath, "MSBuild", toolsVersion, "Bin");
-					if (File.Exists (Path.Combine (path, "MSBuild.exe"))) {
-						return path;
-					}
-				}
-			}
+			var instance = MSBuildLocator.QueryVisualStudioInstances (new VisualStudioInstanceQueryOptions ()).MaxValueOrDefault (vs => vs.Version);
+			if (instance != null)
+				return instance.MSBuildPath;
 
 			using (RegistryKey msb = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\" + toolsVersion, false)) {
 				if (msb != null) {
-					string path = msb.GetValue ("MSBuildToolsPath") as string;
-					if (path != null && File.Exists (Path.Combine (path, "MSBuild.exe")))
+					if (msb.GetValue ("MSBuildToolsPath") is string path && File.Exists (Path.Combine (path, "MSBuild.exe")))
 						return path;
 				}
 				return null;

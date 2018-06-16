@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\..\packages\Microsoft.Build.MSBuildLocator.1.0.1-preview-g6cd9a57801\build\Microsoft.Build.MSBuildLocator.props" Condition="Exists('..\..\..\packages\Microsoft.Build.MSBuildLocator.1.0.1-preview-g6cd9a57801\build\Microsoft.Build.MSBuildLocator.props')" />
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <ReferencesVSEditorCopyToOutput>true</ReferencesVSEditorCopyToOutput>
@@ -234,6 +235,9 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.CodingConventions">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.CodingConventions.1.1.20180226.4\lib\netstandard1.3\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.MSBuildLocator">
+      <HintPath>..\..\..\packages\Microsoft.Build.MSBuildLocator.1.0.1-preview-g6cd9a57801\lib\net46\Microsoft.Build.MSBuildLocator.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
