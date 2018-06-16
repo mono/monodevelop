@@ -1,66 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E2CAB397-D00C-4D11-8F5F-E3A052092969}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>MonoDevelop.VersionControl.Subversion.Unix</RootNamespace>
-    <AssemblyName>MonoDevelop.VersionControl.Subversion.Unix</AssemblyName>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
     <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Subversion.Unix.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DebugSymbols>true</DebugSymbols>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Subversion.Unix.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
-    <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Subversion.Unix.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugSymbols>true</DebugSymbols>
-    <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Subversion.Unix.xml</DocumentationFile>
-    <DebugType>pdbonly</DebugType>
-    <ConsolePause>false</ConsolePause>
-    <NoWarn>1591;1573</NoWarn>
-  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>

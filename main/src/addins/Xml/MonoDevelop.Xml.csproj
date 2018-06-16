@@ -1,42 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>MonoDevelop.Xml</AssemblyName>
-    <RootNamespace>MonoDevelop.Xml</RootNamespace>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
     <OutputPath>..\..\..\build\AddIns\Xml</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ExecuteAfterBuild>postbuild.sh</ExecuteAfterBuild>
-    <ConsolePause>False</ConsolePause>
-    <DefineConstants>DEBUG</DefineConstants>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\Xml\MonoDevelop.Xml.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>True</Optimize>
-    <OutputPath>..\..\..\build\AddIns\Xml</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ExecuteAfterBuild>postbuild.sh</ExecuteAfterBuild>
-    <ConsolePause>False</ConsolePause>
-    <DebugSymbols>true</DebugSymbols>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\Xml\MonoDevelop.Xml.xml</DocumentationFile>
-  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.Xml.Tests" />
     <Reference Include="System" />
@@ -205,7 +178,6 @@
     <Compile Include="Editor\EncodedStringWriter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile.am" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -232,15 +204,4 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-  </ItemGroup>
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <Policies>
-          <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedHierarchical" ResourceNamePolicy="FileName" />
-        </Policies>
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
 </Project>

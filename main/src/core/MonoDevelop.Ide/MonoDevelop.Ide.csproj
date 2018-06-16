@@ -6,83 +6,20 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{27096E7F-C91C-4AC6-B289-6897A701DF21}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AssemblyName>MonoDevelop.Ide</AssemblyName>
-    <RootNamespace>MonoDevelop.Ide</RootNamespace>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+    <OutputPath>..\..\..\build\bin</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
-    <OutputPath>..\..\..\build\bin</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>3</WarningLevel>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DefineConstants>DEBUG,LINUX</DefineConstants>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
+    <DefineConstants>LINUX</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>True</Optimize>
-    <OutputPath>..\..\..\build\bin</OutputPath>
     <DefineConstants>LINUX</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>3</WarningLevel>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DebugSymbols>true</DebugSymbols>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\..\build\bin</OutputPath>
-    <DefineConstants>DEBUG,MAC</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>3</WarningLevel>
-    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NoWarn>1591;1573</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\build\bin</OutputPath>
-    <DefineConstants>MAC</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>3</WarningLevel>
-    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NoWarn>1591;1573</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\..\build\bin</OutputPath>
-    <DefineConstants>DEBUG,WIN32</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>3</WarningLevel>
-    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NoWarn>1591;1573</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\build\bin</OutputPath>
-    <DefineConstants>WIN32</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>3</WarningLevel>
-    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NoWarn>1591;1573</NoWarn>
-  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' " />
   <ItemGroup>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -123,7 +60,6 @@
     <Reference Include="Mono.Cairo" />
     <Reference Include="Mono.Posix" />
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
@@ -9814,7 +9750,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Components\InfoBar.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile.am" />
     <Data Include="options\DefaultEditingLayout.xml" />
     <Data Include="options\MonoDevelopProperties.xml" />
     <Data Include="options\MonoDevelop-templates.xml" />
@@ -9851,17 +9786,6 @@
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\OSSREADME.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\language-configuration.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\package.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
-    <Folder Include="MonoDevelop.Components\Xwt\" />
-    <Folder Include="MonoDevelop.Components.AtkCocoaHelper\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Markdown\" />
-    <Folder Include="MonoDevelop.Ide.BuildOutputView\" />
-    <Folder Include="MonoDevelop.Ide.EditorConfig\" />
-    <Folder Include="Gui\" />
-    <Folder Include="MonoDevelop.Ide.RoslynServices\" />
-    <Folder Include="MonoDevelop.Ide.RoslynServices.Options\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

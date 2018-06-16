@@ -1,43 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{50D6768C-C072-4E79-AFC5-C1C40767EF45}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AssemblyName>MacPlatform</AssemblyName>
-    <RootNamespace>MacPlatform</RootNamespace>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
     <OutputPath>..\..\..\build\bin</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\bin\MacPlatform.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\build\bin</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DebugSymbols>true</DebugSymbols>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\bin\MacPlatform.xml</DocumentationFile>
-  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -59,7 +32,6 @@
       <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="mscorlib" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -96,7 +68,6 @@
       <Name>Xwt.XamMac</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MacKeychainPasswordProvider.cs" />
@@ -145,10 +116,8 @@
     <Compile Include="MacTelemetryDetails.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile.am" />
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <EmbeddedResource Include="MacPlatform.addin.xml">
       <LogicalName>MacPlatform.addin.xml</LogicalName>
@@ -242,6 +211,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="MacPlatform.Tests" />
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <LibXammac Include="..\..\..\external\libxammac.dylib" />
   </ItemGroup>
