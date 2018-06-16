@@ -115,9 +115,10 @@ namespace MonoDevelop.Projects
 				File.Delete (generatedFileName);
 			}
 
+			var id = new object ();
 			try {
 				waitingForFileNameChange = generatedFileName;
-				await FileWatcherService.WatchDirectories (new [] { project.BaseDirectory });
+				await FileWatcherService.WatchDirectories (id, new [] { project.BaseDirectory });
 				await project.PerformGeneratorAsync (project.Configurations[0].Selector, "UpdateGeneratedFiles");
 
 				// we need to wait for the file notification to be posted
@@ -128,7 +129,7 @@ namespace MonoDevelop.Projects
 				Assert.IsTrue (fileChangeNotification.Task.IsCompleted, "Performing the generator should have fired a file change event");
 				project.Dispose ();
 			} finally {
-				await FileWatcherService.WatchDirectories (new FilePath [0]);
+				await FileWatcherService.WatchDirectories (id, null);
 			}
 		}
 

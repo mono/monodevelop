@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects
 	{
 		static readonly Dictionary<FilePath, FileWatcherWrapper> watchers = new Dictionary<FilePath, FileWatcherWrapper> ();
 		static ImmutableList<WorkspaceItem> workspaceItems = ImmutableList<WorkspaceItem>.Empty;
-		static ImmutableList<FilePath> monitoredDirectories = ImmutableList<FilePath>.Empty;
+		static Dictionary<object, ImmutableList<FilePath>> monitoredDirectories = new Dictionary<object, ImmutableList<FilePath>> ();
 		static CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
 
 		public static Task Add (WorkspaceItem item)
@@ -90,7 +90,7 @@ namespace MonoDevelop.Projects
 
 		static void UpdateWatchers (
 			ImmutableList<WorkspaceItem> currentWorkspaceItems,
-			ImmutableList<FilePath> currentMonitoredDirectories,
+			Dictionary<object, ImmutableList<FilePath>> currentMonitoredDirectories,
 			CancellationToken token)
 		{
 			List<FileWatcherWrapper> newWatchers = null;
@@ -153,7 +153,7 @@ namespace MonoDevelop.Projects
 
 		static IEnumerable<FilePath> GetRootDirectories (
 			ImmutableList<WorkspaceItem> currentWorkspaceItems,
-			ImmutableList<FilePath> currentMonitoredDirectories)
+			Dictionary<object, ImmutableList<FilePath>> currentMonitoredDirectories)
 		{
 			var directories = new HashSet<FilePath> ();
 
@@ -163,8 +163,9 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			foreach (FilePath directory in currentMonitoredDirectories) {
-				directories.Add (directory);
+			foreach (var kvp in currentMonitoredDirectories) {
+				foreach (var directory in kvp.Value)
+					directories.Add (directory);
 			}
 
 			return Normalize (directories);
@@ -188,11 +189,16 @@ namespace MonoDevelop.Projects
 			});
 		}
 
-		public static Task WatchDirectories (IEnumerable<FilePath> directories)
+		public static Task WatchDirectories (object id, IEnumerable<FilePath> directories)
 		{
 			lock (watchers) {
-				directories = directories.Where (directory => !directory.IsNullOrEmpty);
-				monitoredDirectories = ImmutableList<FilePath>.Empty.AddRange (directories);
+				if (directories == null)
+					monitoredDirectories.Remove (id);
+				else {
+					directories = directories.Where (directory => !directory.IsNullOrEmpty);
+					monitoredDirectories [id] = ImmutableList<FilePath>.Empty.AddRange (directories);
+				}
+
 				CancelUpdate ();
 				return UpdateWatchersAsync ();
 			}
