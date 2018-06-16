@@ -22,4 +22,11 @@
 	<PropertyGroup>
 		<MDBuildTasks>$(MSBuildThisFileDirectory)</MDBuildTasks>
 	</PropertyGroup>
+
+	<!-- set a bunch of default value the project can override -->
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
+		<RootNamespace>$(MSBuildProjectName)</RootNamespace>
+	</PropertyGroup>
 </Project>
