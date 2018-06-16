@@ -70,8 +70,6 @@ namespace MonoDevelop.Projects
 
 			FileService.FileChanged -= OnFileChanged;
 			FileService.FileRemoved -= OnFileRemoved;
-
-			FileWatcherService.WatchDirectories (Enumerable.Empty<FilePath> ()).Wait ();
 		}
 
 		void ClearFileEventsCaptured ()
@@ -539,33 +537,39 @@ namespace MonoDevelop.Projects
 			FilePath rootSolFile = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
 			var file1 = rootSolFile.ParentDirectory.Combine ("FileWatcherTest", "MyClass.cs");
 			var file2 = rootSolFile.ParentDirectory.Combine ("Library", "Properties", "AssemblyInfo.cs");
-			var directories = new [] {
-				file1.ParentDirectory,
-				file2.ParentDirectory
-			};
-			await FileWatcherService.WatchDirectories (directories);
+			var id = new object ();
 
-			TextFileUtility.WriteText (file1, string.Empty, Encoding.UTF8);
-			TextFileUtility.WriteText (file2, string.Empty, Encoding.UTF8);
-			await WaitForFilesChanged (new [] { file1, file2 });
+			try {
+				var directories = new [] {
+					file1.ParentDirectory,
+					file2.ParentDirectory
+				};
+				await FileWatcherService.WatchDirectories (id, directories);
 
-			AssertFileChanged (file1);
-			AssertFileChanged (file2);
+				TextFileUtility.WriteText (file1, string.Empty, Encoding.UTF8);
+				TextFileUtility.WriteText (file2, string.Empty, Encoding.UTF8);
+				await WaitForFilesChanged (new [] { file1, file2 });
 
-			// Unwatch one directory.
-			directories = new [] {
-				file1.ParentDirectory
-			};
-			await FileWatcherService.WatchDirectories (directories);
-			ClearFileEventsCaptured ();
-			fileChangesTask = new TaskCompletionSource<bool> ();
+				AssertFileChanged (file1);
+				AssertFileChanged (file2);
 
-			TextFileUtility.WriteText (file2, string.Empty, Encoding.UTF8);
-			TextFileUtility.WriteText (file1, string.Empty, Encoding.UTF8);
-			await WaitForFilesChanged (new [] { file1, file2 });
+				// Unwatch one directory.
+				directories = new [] {
+					file1.ParentDirectory
+				};
+				await FileWatcherService.WatchDirectories (id, directories);
+				ClearFileEventsCaptured ();
+				fileChangesTask = new TaskCompletionSource<bool> ();
 
-			AssertFileChanged (file1);
-			Assert.IsFalse (fileChanges.Any (f => f.FileName == file2));
+				TextFileUtility.WriteText (file2, string.Empty, Encoding.UTF8);
+				TextFileUtility.WriteText (file1, string.Empty, Encoding.UTF8);
+				await WaitForFilesChanged (new [] { file1, file2 });
+
+				AssertFileChanged (file1);
+				Assert.IsFalse (fileChanges.Any (f => f.FileName == file2));
+			} finally {
+				await FileWatcherService.WatchDirectories (id, null);
+			}
 		}
 
 		[Test]
@@ -580,19 +584,24 @@ namespace MonoDevelop.Projects
 				file1.ParentDirectory,
 				file2.ParentDirectory
 			};
-			await FileWatcherService.WatchDirectories (directories);
-			ClearFileEventsCaptured ();
-			await FileWatcherService.Add (sol);
+			var id = new object ();
+			try {
+				await FileWatcherService.WatchDirectories (id, directories);
+				ClearFileEventsCaptured ();
+				await FileWatcherService.Add (sol);
 
-			File.Delete (file1);
-			File.Delete (file2);
+				File.Delete (file1);
+				File.Delete (file2);
 
-			await WaitForFilesRemoved (new [] { file1, file2 });
+				await WaitForFilesRemoved (new [] { file1, file2 });
 
-			AssertFileRemoved (file1);
-			AssertFileRemoved (file2);
-			Assert.AreEqual (1, filesRemoved.Count (fileChange => fileChange.FileName == file1));
-			Assert.AreEqual (1, filesRemoved.Count (fileChange => fileChange.FileName == file2));
+				AssertFileRemoved (file1);
+				AssertFileRemoved (file2);
+				Assert.AreEqual (1, filesRemoved.Count (fileChange => fileChange.FileName == file1));
+				Assert.AreEqual (1, filesRemoved.Count (fileChange => fileChange.FileName == file2));
+			} finally {
+				await FileWatcherService.WatchDirectories (id, null);
+			}
 		}
 
 		[Test]
@@ -742,37 +751,45 @@ namespace MonoDevelop.Projects
 			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
 			var testFile = rootProject.ParentDirectory.Combine ("test1.txt");
 			ClearFileEventsCaptured ();
-			await FileWatcherService.WatchDirectories (new [] { rootProject.ParentDirectory });
+			var id = new object ();
+			try {
+				await FileWatcherService.WatchDirectories (id, new [] { rootProject.ParentDirectory });
 
-			File.WriteAllText (testFile, DateTime.Now.ToString ());
-			File.WriteAllText (testFile, "test1");
-			File.WriteAllText (rootProject, "test2");
+				File.WriteAllText (testFile, DateTime.Now.ToString ());
+				File.WriteAllText (testFile, "test1");
+				File.WriteAllText (rootProject, "test2");
 
-			await WaitForFilesChanged (new [] { rootProject, testFile });
+				await WaitForFilesChanged (new [] { rootProject, testFile });
 
-			AssertFileChanged (rootProject);
+				AssertFileChanged (rootProject);
 
-			// Check the delete event is not generated for the file being created and written to.
-			Assert.IsFalse (filesRemoved.Any (file => file.FileName == testFile));
+				// Check the delete event is not generated for the file being created and written to.
+				Assert.IsFalse (filesRemoved.Any (file => file.FileName == testFile));
+			} finally {
+				await FileWatcherService.WatchDirectories (id, null);
+			}
 		}
 
 		[Test]
-		public void WatchDirectories_EmptyDirectory_NoExceptionThrown ()
+		public async Task WatchDirectories_EmptyDirectory_NoExceptionThrown ()
 		{
 			var directories = new [] {
 				FilePath.Empty
 			};
 
-			Assert.DoesNotThrow (async () => {
-				await FileWatcherService.WatchDirectories (directories);
-			});
+			var id = new object ();
+			try {
+				await FileWatcherService.WatchDirectories (id, directories);
+			} finally {
+				await FileWatcherService.WatchDirectories (id, null);
+			}
 		}
 
 		/// <summary>
 		/// Native file watcher will throw an ArgumentException if the Directory does not exist.
 		/// </summary>
 		[Test]
-		public void WatchDirectories_DirectoryDoesNotExist_NoExceptionThrown ()
+		public async Task WatchDirectories_DirectoryDoesNotExist_NoExceptionThrown ()
 		{
 			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
 			var invalidDirectory = rootProject.Combine ("Invalid");
@@ -780,10 +797,13 @@ namespace MonoDevelop.Projects
 				invalidDirectory
 			};
 
-			Assert.DoesNotThrow (async () => {
-				await FileWatcherService.WatchDirectories (directories);
-			});
-			Assert.IsFalse (Directory.Exists (invalidDirectory));
+			var id = new object ();
+			try {
+				await FileWatcherService.WatchDirectories (id, directories);
+				Assert.IsFalse (Directory.Exists (invalidDirectory));
+			} finally {
+				await FileWatcherService.WatchDirectories (id, null);
+			}
 		}
 
 		/// <summary>
