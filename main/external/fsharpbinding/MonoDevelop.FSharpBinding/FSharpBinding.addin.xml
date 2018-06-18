@@ -227,6 +227,9 @@
       <CommandItem id = "MonoDevelop.FSharp.SolutionPad.DebugScriptInternal"/>
       <CommandItem id = "MonoDevelop.FSharp.SolutionPad.DebugScriptExternal"/>
     </Condition>
+    <Condition id="ItemType" value="ProjectReference|Reference">
+      <CommandItem id = "MonoDevelop.FSharp.FindReferenceUsages" />
+    </Condition>
   </Extension>
   
   <Extension path="/MonoDevelop/Ide/Commands">
@@ -245,6 +248,10 @@
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\4.0\Framework\v4.0\Microsoft.FSharp.Targets" />
       </Or>
       <Category _name = "F# Integration" id="F# Integration">
+        <Command id = "MonoDevelop.FSharp.FindReferenceUsages"
+          defaultHandler = "MonoDevelop.FSharp.FindReferenceUsagesHandler"
+          _label = "_Find Reference Usages" />
+
         <Command id="MonoDevelop.FSharp.FSharpCommands.ShowFSharpInteractive"
                  _label = "F# Interactive"
                  type="check"
