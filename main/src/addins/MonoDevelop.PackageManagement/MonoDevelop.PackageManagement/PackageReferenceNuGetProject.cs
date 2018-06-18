@@ -143,26 +143,20 @@ namespace MonoDevelop.PackageManagement
 
 		bool AddPackageReference (PackageIdentity packageIdentity, INuGetProjectContext context)
 		{
-			ProjectPackageReference packageReference = project.GetPackageReference (packageIdentity);
-			if (packageReference != null) {
+			ProjectPackageReference packageReference = project.GetPackageReference (packageIdentity, matchVersion: false);
+			if (packageReference?.Equals (packageIdentity, matchVersion: true) == true) {
 				context.Log (MessageLevel.Warning, GettextCatalog.GetString ("Package '{0}' already exists in project '{1}'", packageIdentity, project.Name));
 				return false;
 			}
 
-			RemoveExistingPackageReference (packageIdentity);
-
-			packageReference = ProjectPackageReference.Create (packageIdentity);
-			project.Items.Add (packageReference);
+			if (packageReference != null) {
+				packageReference.Version = packageIdentity.Version.ToNormalizedString ();
+			} else {
+				packageReference = ProjectPackageReference.Create (packageIdentity);
+				project.Items.Add (packageReference);
+			}
 
 			return true;
-		}
-
-		void RemoveExistingPackageReference (PackageIdentity packageIdentity)
-		{
-			ProjectPackageReference packageReference = project.GetPackageReference (packageIdentity, matchVersion: false);
-			if (packageReference != null) {
-				project.Items.Remove (packageReference);
-			}
 		}
 
 		public override async Task<bool> UninstallPackageAsync (
