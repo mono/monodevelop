@@ -1,7 +1,0 @@
-<AddinProject appVersion="3.0">
-  <Project platforms="Mac Linux Win32">
-    <AddinFile>bin/FSharpBinding.dll</AddinFile>
-    <BuildFile>MonoDevelop.FSharp.sln</BuildFile>
-    <BuildConfiguration>Debug</BuildConfiguration>
-  </Project>
-</AddinProject>
