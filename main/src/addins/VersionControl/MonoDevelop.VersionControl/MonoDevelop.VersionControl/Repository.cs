@@ -16,7 +16,7 @@ namespace MonoDevelop.VersionControl
 	[DataItem (FallbackType=typeof(UnknownRepository))]
 	public abstract class Repository: IDisposable
 	{
-		static Counter Repositories = InstrumentationService.CreateCounter ("VersionControl.RepositoryOpened", "Version Control", id:"VersionControl.RepositoryOpened");
+		static Counter<RepositoryMetadata> Repositories = InstrumentationService.CreateCounter<RepositoryMetadata> ("VersionControl.RepositoryOpened", "Version Control", id:"VersionControl.RepositoryOpened");
 
 		string name;
 		VersionControlSystem vcs;
@@ -42,10 +42,11 @@ namespace MonoDevelop.VersionControl
 		protected Repository (VersionControlSystem vcs): this ()
 		{
 			VersionControlSystem = vcs;
-			Repositories.SetValue (Repositories.Count + 1, string.Format ("Repository #{0}", Repositories.Count + 1), new Dictionary<string, string> {
-				{ "Type", vcs.Name },
-				{ "Type+Version", string.Format ("{0} {1}", vcs.Name, vcs.Version) },
-			});
+			var metadata = new RepositoryMetadata {
+				Type = vcs.Name,
+				TypeAndVersion = $"{vcs.Name} {vcs.Version}"
+			};
+			Repositories.SetValue (Repositories.Count + 1, string.Format ("Repository #{0}", Repositories.Count + 1), metadata);
 		}
 
 		public override bool Equals (object obj)
@@ -999,5 +1000,22 @@ namespace MonoDevelop.VersionControl
 		None = 0,
 		IgnoreCache = 1,
 		IncludeRemoteStatus = 2
+	}
+
+	public class RepositoryMetadata : CounterMetadata
+	{
+		public RepositoryMetadata ()
+		{
+		}
+
+		public string Type {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string TypeAndVersion {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
 	}
 }

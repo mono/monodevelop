@@ -164,7 +164,7 @@ namespace MonoDevelop.Core.Instrumentation
 			Duration = stopWatch.Elapsed;
 
 			if (metadata != null && cancellationToken != CancellationToken.None && cancellationToken.IsCancellationRequested)
-				metadata.Result = CounterResult.UserCancel;
+				metadata.SetUserCancel ();
 
 			if (counter.LogMessages) {
 				var time = stopWatch.ElapsedMilliseconds;
@@ -207,7 +207,7 @@ namespace MonoDevelop.Core.Instrumentation
 
 		// Timer metadata is stored here, since it may change while the timer is alive.
 		// CounterValue will take the metadata from here.
-		public IDictionary<string, string> Metadata;
+		public IDictionary<string, object> Metadata;
 
 		string DebuggingText {
 			get {

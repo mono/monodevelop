@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var metadata = Navigation.Counters.CreateNavigateToMetadata ("Base");
 			using (var timer = Navigation.Counters.NavigateTo.BeginTiming (metadata)) {
 				await GotoBaseInternal (doc, symbol);
-				Navigation.Counters.UpdateNavigateResult (metadata, true);
+				metadata.SetResult (true);
 			}
 		}
 

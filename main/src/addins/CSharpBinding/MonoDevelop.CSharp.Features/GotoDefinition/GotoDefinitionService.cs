@@ -82,15 +82,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Features.GotoDefinition
 		public static bool TryGoToDefinition (Document document, int position, CancellationToken cancellationToken)
 		{
 			var metadata = Counters.CreateNavigateToMetadata ("Declaration");
-
-			using (var timer = Counters.NavigateTo.BeginTiming (metadata)) {
-				try {
-					bool result = TryGoToDefinitionInternal (document, position, cancellationToken);
-					Counters.UpdateNavigateResult (metadata, result);
-					return result;
-				} finally {
-					Counters.UpdateUserCancellation (metadata, cancellationToken);
-				}
+			using (var timer = Counters.NavigateTo.BeginTiming (metadata, cancellationToken)) {
+				bool result = TryGoToDefinitionInternal (document, position, cancellationToken);
+				metadata.SetResult (result);
+				return result;
 			}
 		}
 
