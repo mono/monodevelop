@@ -46,6 +46,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Refactoring
 { 
@@ -238,10 +239,10 @@ namespace MonoDevelop.Refactoring
 					try {
 						tasks.Add ((provider.FindReferences (documentIdString, hintProject, monitor), provider));
 					} catch (OperationCanceledException) {
-						Counters.SetUserCancel (metadata);
+						metadata.SetUserCancel ();
 						return;
 					} catch (Exception ex) {
-						Counters.SetFailure (metadata);
+						metadata.SetFailure ();
 						if (monitor != null)
 							monitor.ReportError ("Error finding references", ex);
 						LoggingService.LogError ("Error finding references", ex);
@@ -252,10 +253,10 @@ namespace MonoDevelop.Refactoring
 					try {
 						await task.task;
 					} catch (OperationCanceledException) {
-						Counters.SetUserCancel (metadata);
+						metadata.SetUserCancel ();
 						return;
 					} catch (Exception ex) {
-						Counters.SetFailure (metadata);
+						metadata.SetFailure ();
 						if (monitor != null)
 							monitor.ReportError ("Error finding references", ex);
 						LoggingService.LogError ("Error finding references", ex);
@@ -284,10 +285,10 @@ namespace MonoDevelop.Refactoring
 					try {
 						tasks.Add ((provider.FindAllReferences (documentIdString, hintProject, monitor), provider));
 					} catch (OperationCanceledException) {
-						Counters.SetUserCancel (metadata);
+						metadata.SetUserCancel ();
 						return;
 					} catch (Exception ex) {
-						Counters.SetFailure (metadata);
+						metadata.SetFailure ();
 						if (monitor != null)
 							monitor.ReportError ("Error finding references", ex);
 						LoggingService.LogError ("Error finding references", ex);
@@ -298,10 +299,10 @@ namespace MonoDevelop.Refactoring
 					try {
 						await task.task;
 					} catch (OperationCanceledException) {
-						Counters.SetUserCancel (metadata);
+						metadata.SetUserCancel ();
 						return;
 					} catch (Exception ex) {
-						Counters.SetFailure (metadata);
+						metadata.SetFailure ();
 						if (monitor != null)
 							monitor.ReportError ("Error finding references", ex);
 						LoggingService.LogError ("Error finding references", ex);
@@ -337,23 +338,22 @@ namespace MonoDevelop.Refactoring
 
 	internal static class Counters
 	{
-		public static TimerCounter FindReferences = InstrumentationService.CreateTimerCounter ("Find references", "Code Navigation", id: "CodeNavigation.FindReferences");
+		public static TimerCounter<FindReferencesMetadata> FindReferences = InstrumentationService.CreateTimerCounter<FindReferencesMetadata> ("Find references", "Code Navigation", id: "CodeNavigation.FindReferences");
 
-		public static IDictionary<string, string> CreateFindReferencesMetadata ()
+		public static FindReferencesMetadata CreateFindReferencesMetadata ()
 		{
-			var metadata = new Dictionary<string, string> ();
-			metadata ["Result"] = "Success";
+			var metadata = new FindReferencesMetadata {
+				ResultString = "Success"
+			};
 			return metadata;
 		}
 
-		public static void SetFailure (IDictionary<string, string> metadata)
+		public class FindReferencesMetadata : CounterMetadata
 		{
-			metadata ["Result"] = "Failure";
-		}
-
-		public static void SetUserCancel (IDictionary<string, string> metadata)
-		{
-			metadata ["Result"] = "UserCancel";
+			public string ResultString {
+				get => (string)Properties["Result"];
+				set => Properties["Result"] = value;
+			}
 		}
 	}
 }

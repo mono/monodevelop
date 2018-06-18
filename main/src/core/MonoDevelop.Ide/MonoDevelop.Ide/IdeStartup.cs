@@ -738,7 +738,7 @@ namespace MonoDevelop.Ide
 			return new StartupMetadata {
 				CorrectedStartupTime = startupTimer.ElapsedMilliseconds,
 				StartupType = 0,
-				AssetTypeId = assetType.Id.ToString (),
+				AssetTypeId = assetType.Id,
 				AssetTypeName = assetType.Name,
 				IsInitialRun = IdeApp.IsInitialRun,
 				IsInitialRunAfterUpgrade = IdeApp.IsInitialRunAfterUpgrade,
@@ -747,10 +747,11 @@ namespace MonoDevelop.Ide
 			};
 		}
 
-		internal static IDictionary<string, string> GetOpenWorkspaceOnStartupMetadata ()
+		internal static OpenWorkspaceItemMetadata GetOpenWorkspaceOnStartupMetadata ()
 		{
-			var metadata = new Dictionary<string, string> ();
-			metadata ["OnStartup"] = bool.TrueString;
+			var metadata = new OpenWorkspaceItemMetadata {
+				OnStartup = true
+			};
 			return metadata;
 		}
 	}

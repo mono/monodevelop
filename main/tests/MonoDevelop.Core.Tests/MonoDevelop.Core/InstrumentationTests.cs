@@ -126,8 +126,8 @@ namespace MonoDevelop.Core
 			var timer = InstrumentationService.CreateTimerCounter<CustomCounterMetadata> ("TestCounter");
 			var md = new CustomCounterMetadata {
 				SomeMeasure = 5,
-				Result = CounterResult.Success
 			};
+			md.SetSuccess ();
 			var t = timer.BeginTiming (md);
 			t.Dispose ();
 			Assert.AreEqual (1, counterValues.Count);
