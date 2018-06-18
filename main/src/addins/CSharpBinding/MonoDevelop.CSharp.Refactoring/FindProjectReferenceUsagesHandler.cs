@@ -50,6 +50,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var analysisProject = TypeSystemService.GetCodeAnalysisProject (currentProject);
 			if (analysisProject == null) {
 				info.Enabled = false;
+				info.Visible = false;
 				return;
 			}
 			var pad = IdeApp.Workbench.GetPad<ProjectSolutionPad> ().Content as ProjectSolutionPad;
