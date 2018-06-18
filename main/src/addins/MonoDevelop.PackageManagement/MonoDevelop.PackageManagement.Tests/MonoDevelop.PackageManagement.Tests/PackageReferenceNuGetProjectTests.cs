@@ -54,11 +54,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			project = new TestablePackageReferenceNuGetProject (dotNetProject);
 		}
 
-		void AddDotNetProjectPackageReference (string packageId, string version)
+		ProjectPackageReference AddDotNetProjectPackageReference (string packageId, string version)
 		{
 			var packageReference = ProjectPackageReference.Create (packageId, version);
-
 			dotNetProject.Items.Add (packageReference);
+			return packageReference;
 		}
 
 		Task<bool> UninstallPackageAsync (string packageId, string version)
@@ -181,17 +181,22 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (MessageLevel.Warning, context.LastLogLevel);
 		}
 
+		/// <summary>
+		/// Original PackageReference in project should be updated with new version and not removed since this
+		/// will keep any custom metadata added to the PackageReference.
+		/// </summary>
 		[Test]
 		public async Task InstallPackageAsync_PackageAlreadyInstalledWithDifferentVersion_OldPackageReferenceIsRemoved ()
 		{
 			CreateNuGetProject ("MyProject");
-			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
+			var nunitPackageReference = AddDotNetProjectPackageReference ("NUnit", "2.6.1");
+			nunitPackageReference.Metadata.SetValue ("PrivateAssets", "All");
 
 			bool result = await InstallPackageAsync ("NUnit", "3.6.0");
 
-			var packageReference = dotNetProject.Items.OfType<ProjectPackageReference> ()
-				.Single ()
-				.CreatePackageReference ();
+			var projectPackageReference = dotNetProject.Items.OfType<ProjectPackageReference> ()
+				.Single ();
+			var packageReference = projectPackageReference.CreatePackageReference ();
 
 			Assert.AreEqual ("NUnit", packageReference.PackageIdentity.Id);
 			Assert.AreEqual ("3.6.0", packageReference.PackageIdentity.Version.ToNormalizedString ());
@@ -199,6 +204,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (project.IsSaved);
 			Assert.IsFalse (packageReference.HasAllowedVersions);
 			Assert.IsNull (packageReference.AllowedVersions);
+			Assert.AreEqual ("All", projectPackageReference.Metadata.GetValue ("PrivateAssets"));
 		}
 
 		[Test]
