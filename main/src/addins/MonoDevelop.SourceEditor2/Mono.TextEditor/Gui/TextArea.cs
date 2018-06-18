@@ -649,7 +649,7 @@ namespace Mono.TextEditor
 
 		void CommitString (string str)
 		{
-			if (!IsRealized || !IsFocus)
+			if (!IsRealized || !IsFocus || String.IsNullOrEmpty(str))
 				return;
 
 			for (int i = 0; i < str.Length; i++) {
@@ -1334,6 +1334,10 @@ namespace Mono.TextEditor
 			pressPositionX = e.X;
 			pressPositionY = e.Y;
 			base.IsFocus = true;
+
+			// If there is anything in the preedit buffer, commit it otherwise text
+			// selection may have the wrong offsets.
+			CommitPreedit ();
 			
 
 			if (lastTime != e.Time) {// filter double clicks
