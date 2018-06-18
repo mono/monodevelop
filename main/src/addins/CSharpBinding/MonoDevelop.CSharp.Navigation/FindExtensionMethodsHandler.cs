@@ -53,16 +53,16 @@ namespace MonoDevelop.CSharp.Navigation
 				var doc = IdeApp.Workbench.ActiveDocument;
 				var sym = await GetNamedTypeAtCaret (doc);
 				if (sym == null) {
-					Counters.UpdateUserFault (metadata);
+					metadata.SetUserFault ();
 					return;
 				}
 
 				using (var source = new CancellationTokenSource ()) {
 					try {
 						FindExtensionMethods (await doc.GetCompilationAsync (), sym, source);
-						Counters.UpdateNavigateResult (metadata, true);
+						metadata.SetResult (true);
 					} finally {
-						Counters.UpdateUserCancellation (metadata, source.Token);
+						metadata.UpdateUserCancellation (source.Token);
 					}
 				}
 			}

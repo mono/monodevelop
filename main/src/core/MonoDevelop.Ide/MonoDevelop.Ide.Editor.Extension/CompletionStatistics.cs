@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -83,18 +84,61 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return;
 			}
 
-			var metadata = new Dictionary<string, string> ();
-
 			var average = totalTime.TotalMilliseconds / timingsCount;
-			metadata ["AverageDuration"] = average.ToString ();
-			metadata ["FirstDuration"] = firstTime.Value.TotalMilliseconds.ToString ();
-			metadata ["MaximumDuration"] = maxTime.TotalMilliseconds.ToString ();
-			metadata ["MinimumDuration"] = minTime.TotalMilliseconds.ToString ();
-			metadata ["FailureCount"] = failureCount.ToString ();
-			metadata ["SuccessCount"] = successCount.ToString ();
-			metadata ["CancelCount"] = cancelCount.ToString ();
+
+			var metadata = new CompletionStatisticsMetadata {
+				AverageDuration = average,
+				FirstDuration = firstTime.Value.TotalMilliseconds,
+				MaximumDuration = maxTime.TotalMilliseconds,
+				MinimumDuration = minTime.TotalMilliseconds,
+				FailureCount = failureCount,
+				SuccessCount = successCount,
+				CancelCount = cancelCount
+			};
 
 			Counters.CodeCompletionStats.Inc (metadata);
+		}
+	}
+
+	class CompletionStatisticsMetadata : CounterMetadata
+	{
+		public CompletionStatisticsMetadata ()
+		{
+		}
+
+		public double AverageDuration {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public double FirstDuration {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public double MaximumDuration {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public double MinimumDuration {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public int FailureCount {
+			get => GetProperty<int> ();
+			set => SetProperty (value);
+		}
+
+		public int SuccessCount {
+			get => GetProperty<int> ();
+			set => SetProperty (value);
+		}
+
+		public int CancelCount {
+			get => GetProperty<int> ();
+			set => SetProperty (value);
 		}
 	}
 }
