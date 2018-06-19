@@ -63,15 +63,18 @@ namespace MacPlatform
 
 			result.osType = GetMediaType ("/");
 
-			var login = GetLoginTime ();
-			if (login != DateTime.MinValue) {
-				var epoch = new DateTime (1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+			try {
+				var login = GetLoginTime ();
+				if (login != DateTime.MinValue) {
+					var epoch = new DateTime (1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
-				var timeSinceEpoch = DateTime.UtcNow - epoch;
-				var loginSinceEpoch = login - epoch;
-				result.sinceLogin = timeSinceEpoch - loginSinceEpoch;
+					var timeSinceEpoch = DateTime.UtcNow - epoch;
+					var loginSinceEpoch = login - epoch;
+					result.sinceLogin = timeSinceEpoch - loginSinceEpoch;
+				}
+			} catch {
+				result.sinceLogin = TimeSpan.Zero;
 			}
-
 			return result;
 		}
 
