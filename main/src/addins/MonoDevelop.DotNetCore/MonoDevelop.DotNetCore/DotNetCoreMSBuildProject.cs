@@ -154,6 +154,7 @@ namespace MonoDevelop.DotNetCore
 			else
 				targetFrameworks[0] = shortFrameworkName;
 
+			targetFrameworkMoniker = framework;
 			project.UpdateTargetFrameworks (targetFrameworks);
 		}
 
