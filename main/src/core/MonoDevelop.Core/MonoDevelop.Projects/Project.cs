@@ -4244,16 +4244,22 @@ namespace MonoDevelop.Projects
 
 		void OnFileCreated (object sender, FileSystemEventArgs e)
 		{
-			if (Directory.Exists (e.FullPath))
-				return;
+			try {
+				if (Directory.Exists (e.FullPath))
+					return;
 
-			FilePath filePath = e.FullPath;
-			if (filePath.FileName == ".DS_Store")
-				return;
+				FilePath filePath = e.FullPath;
+				if (filePath.FileName == ".DS_Store")
+					return;
 
-			Runtime.RunInMainThread (() => {
+				// Ignore temporary files created when saving a file in the editor.
+				if (filePath.FileName.StartsWith (".#", StringComparison.OrdinalIgnoreCase))
+					return;
+
 				OnFileCreatedExternally (e.FullPath);
-			});
+			} catch (Exception ex) {
+				LoggingService.LogError ("OnFileCreated error.", ex);
+			}
 		}
 
 		void OnFileDeleted (object sender, FileSystemEventArgs e)
@@ -4291,7 +4297,16 @@ namespace MonoDevelop.Projects
 				var eit = CreateFakeEvaluatedItem (sourceProject, it, include, null);
 				var pi = CreateProjectItem (eit);
 				pi.Read (this, eit);
-				Items.Add (pi);
+				if (Runtime.IsMainThread) {
+					Items.Add (pi);
+				} else {
+					Runtime.RunInMainThread (() => {
+						// Double check the file has not been added on the UI thread by the IDE.
+						if (!Files.Any (file => file.FilePath == fileName)) {
+							Items.Add (pi);
+						}
+					}).Ignore ();
+				}
 			}
 		}
 
