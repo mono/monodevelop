@@ -83,8 +83,24 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Implementation">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Composition">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Composition.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
       <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.3.0\lib\netstandard1.0\System.Threading.Tasks.Extensions.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Implementation">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Composition">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Composition.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -145,12 +161,27 @@
     <Compile Include="MonoDevelop.Refactoring.PickMembersService\PickMembersDialog.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.OptionsTable.cs" />
     <Compile Include="Gui\MonoDevelop.CodeActions.ContextActionPanelWidget.cs" />
-    <Compile Include="Gui\MonoDevelop.CodeIssues.CodeIssuePanelWidget.cs" />
     <Compile Include="Gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Refactoring.SignatureChange.SignatureChangeDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring\CodeGenerationPanel.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindReferenceUsagesProvider.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Rename\SymbolRenamedCodeActionOperationFactoryWorkspaceService.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\Style\BooleanCodeStyleOptionViewModel.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\Style\AbstractCodeStyleOptionViewModel.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\Style\CodeStylePreference.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\Style\EnumCodeStyleOptionViewModel.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\AbstractCheckBoxViewModel.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\CheckBoxOptionViewModel.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\CheckBoxWithComboOptionViewModel.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\NotificationOptionViewModel.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\OptionBinding.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\RadioButtonViewModel.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\AbstractRadioButtonViewModel.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\AbstractNotifyPropertyChanged.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\AbstractOptionPreviewViewModel.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\UI\GridOptionPreviewControl.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Options\Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />
