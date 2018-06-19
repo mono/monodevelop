@@ -493,6 +493,13 @@ namespace MonoDevelop.Projects
 				Assert.AreEqual (0, process.ExitCode);
 
 				await p.ReevaluateProject (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				await p.SaveAsync (Util.GetMonitor ());
+
+				// Project xml should not be changed.
+				string savedProjectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (projectXml, savedProjectXml);
 			}
 		}
 	}
