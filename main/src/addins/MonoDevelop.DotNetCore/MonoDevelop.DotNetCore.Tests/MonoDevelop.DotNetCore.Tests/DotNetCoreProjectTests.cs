@@ -338,5 +338,35 @@ namespace MonoDevelop.DotNetCore.Tests
 			File.WriteAllText (fileName, string.Empty);
 			Assert.AreEqual ("None", project.GetDefaultBuildAction (fileName));
 		}
+
+		[Test]
+		public async Task ConsoleProjectNoMainPropertyGroup_ChangeToLibraryAndSaveProject_OutputTypeSavedInProject ()
+		{
+			string solutionFileName = Util.GetSampleProject ("DotNetCoreNoMainPropertyGroup", "DotNetCoreNoMainPropertyGroup.sln");
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = solution.GetAllDotNetProjects ().Single ();
+
+			// Original project does not have OutputType.
+			var globalPropertyGroup = project.MSBuildProject.GetGlobalPropertyGroup ();
+			Assert.IsFalse (globalPropertyGroup.HasProperty ("OutputType"));
+			Assert.AreEqual (CompileTarget.Exe, project.CompileTarget);
+
+			string outputTypeEvaluatedValue = project.MSBuildProject.EvaluatedProperties.GetValue ("OutputType");
+			Assert.AreEqual ("Exe", outputTypeEvaluatedValue);
+
+			project.CompileTarget = CompileTarget.Library;
+			await project.SaveAsync (Util.GetMonitor ());
+
+			// Reload project.
+			solution.Dispose ();
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			project = solution.GetAllDotNetProjects ().Single ();
+
+			globalPropertyGroup = project.MSBuildProject.GetGlobalPropertyGroup ();
+
+			string outputTypeProperty = globalPropertyGroup.GetValue ("OutputType");
+			Assert.AreEqual ("Library", outputTypeProperty);
+			Assert.AreEqual (CompileTarget.Library, project.CompileTarget);
+		}
 	}
 }
