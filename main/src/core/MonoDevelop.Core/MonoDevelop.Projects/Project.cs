@@ -201,8 +201,11 @@ namespace MonoDevelop.Projects
 		{
 			var ggroup = sourceProject.GetGlobalPropertyGroup ();
 			// Avoid crash if there is not global group
-			if (ggroup == null)
+			if (ggroup == null) {
 				ggroup = sourceProject.AddNewPropertyGroup (false);
+				// Ensure empty property group is not added on saving if it has no child properties.
+				ggroup.SkipSerializationOnNoChildren = true;
+			}
 
 			// Load the evaluated properties
 			InitMainGroupProperties (ggroup);
