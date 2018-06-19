@@ -23,7 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
+/*
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -45,36 +45,7 @@ using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.CodeIssues
 {
-	class CodeIssuePanel : OptionsPanel
-	{
-		CodeIssuePanelWidget widget;
 
-		public CodeIssuePanelWidget Widget {
-			get {
-				EnsureWidget ();
-				return widget;
-			}
-		}
-
-		void EnsureWidget ()
-		{
-			if (widget != null)
-				return;
-			widget = new CodeIssuePanelWidget ("text/x-csharp");
-		}
-		
-		public override Control CreatePanelWidget ()
-		{
-			EnsureWidget ();
-			return widget;
-		}
-		
-		public override void ApplyChanges ()
-		{
-			widget.ApplyChanges ();
-		}
-	}
-	
 	partial class CodeIssuePanelWidget : Bin
 	{
 		readonly string mimeType;
@@ -194,29 +165,6 @@ namespace MonoDevelop.CodeIssues
 			treeviewInspections.ExpandAll ();
 		}
 
-		public static void MarkupSearchResult (string filter, ref string title)
-		{
-			if (!string.IsNullOrEmpty (filter)) {
-				var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
-				if (idx >= 0) {
-					string color;
-					if (IdeTheme.UserInterfaceTheme == Theme.Light) {
-						color = "yellow";
-					}else  {
-						color = "#666600";
-					}
-
-					title =
-						Markup.EscapeText (title.Substring (0, idx)) +
-						"<span bgcolor=\"" + color + "\">" +
-						Markup.EscapeText (title.Substring (idx, filter.Length)) +
-						"</span>" +
-						Markup.EscapeText (title.Substring (idx + filter.Length));
-					return;
-				}
-			}
-			title = Markup.EscapeText (title);
-		}
 
 
 		class CustomCellRenderer : CellRendererCombo
@@ -419,3 +367,4 @@ namespace MonoDevelop.CodeIssues
 		}
 	}
 }
+*/

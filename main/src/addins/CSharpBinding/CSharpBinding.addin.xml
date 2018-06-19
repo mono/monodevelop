@@ -354,4 +354,9 @@
 	<Extension path="/MonoDevelop/Ide/TypeService/OptionProviders">
 		<Class class="MonoDevelop.CSharp.OptionProvider.EditorConfigDocumentOptionsProviderFactory"/>
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor/Analysis/C#">
+		<Panel id="CodeIssuePanel" _label="Code Rules" fill="true" class="MonoDevelop.CSharp.OptionProvider.CodeStylePage" grouping="Tab" icon="md-prefs-code-rules" insertbefore="CodeActions" />
+	</Extension>
+
 </ExtensionModel>

@@ -98,29 +98,20 @@ namespace MonoDevelop.CSharp.OptionProvider
 
 			public bool TryGetDocumentOption (OptionKey option, OptionSet underlyingOptions, out object value)
 			{
-
 				if (codingConventionsSnapshot != null) {
 					var editorConfigPersistence = option.Option.StorageLocations.OfType<IEditorConfigStorageLocation> ().SingleOrDefault ();
 					if (editorConfigPersistence != null) {
 						var allRawConventions = codingConventionsSnapshot.AllRawConventions;
 						try {
 							var underlyingOption = underlyingOptions.GetOption (option);
-							if (editorConfigPersistence.TryGetOption (underlyingOption, allRawConventions, option.Option.Type, out value))
-								return true;
+							return editorConfigPersistence.TryGetOption (underlyingOption, allRawConventions, option.Option.Type, out value);
 						} catch (Exception ex) {
 							LoggingService.LogError ("Error while getting editor config preferences.", ex);
 						}
 					}
 				}
-
-				var result = optionSet.GetOption (option);
-
-				if (result == underlyingOptions.GetOption (option)) {
-					value = null;
-					return false;
-				}
-				value = result;
-				return true;
+				value = null;
+				return false;
 			}
 		}
 	}

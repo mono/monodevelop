@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.Editor
 
 			bool ITextEditorOptions.HighlightCaretLine {
 				get {
-					return DefaultSourceEditorOptions.Instance.HighlightCaretLine;
+					return false;
 				}
 			}
 
@@ -242,6 +242,12 @@ namespace MonoDevelop.Ide.Editor
 			bool ITextEditorOptions.SmartBackspace {
 				get {
 					return DefaultSourceEditorOptions.Instance.SmartBackspace;
+				}
+			}
+
+			bool ITextEditorOptions.EnableQuickDiff {
+				get {
+					return false;
 				}
 			}
 			#endregion
