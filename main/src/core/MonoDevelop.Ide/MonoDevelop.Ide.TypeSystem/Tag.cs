@@ -88,8 +88,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			var message = item.Message;
 			var index = message.IndexOf (':');
 			var tag = message.Substring (0, index);
+			int line = item.MappedLine + 1;
+			int column = item.MappedColumn + 1;
 
-			return new Tag (tag, message, new Editor.DocumentRegion (item.MappedLine, item.MappedColumn, item.MappedLine, item.MappedColumn));
+			return new Tag (tag, message, new Editor.DocumentRegion (line, column, line, column));
 		}
 	}
 }
