@@ -478,5 +478,22 @@ namespace MonoDevelop.Projects
 				Assert.AreEqual (xamlFile, xamlCSharpFile.DependsOnFile);
 			}
 		}
+
+		[Test]
+		public async Task DotNetCoreNoMainPropertyGroup ()
+		{
+			FilePath solFile = Util.GetSampleProject ("DotNetCoreNoMainPropertyGroup", "DotNetCoreNoMainPropertyGroup.sln");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (Project)sol.Items [0];
+				Assert.AreEqual ("DotNetCoreNoMainPropertyGroup", p.Name);
+
+				var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
+				Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+				Assert.AreEqual (0, process.ExitCode);
+
+				await p.ReevaluateProject (Util.GetMonitor ());
+			}
+		}
 	}
 }
