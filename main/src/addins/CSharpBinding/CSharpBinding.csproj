@@ -366,6 +366,7 @@
     <Compile Include="Gui\MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs" />
     <Compile Include="Gui\MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.IDebuggerCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFindReferenceUsagesProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
