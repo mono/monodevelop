@@ -86,10 +86,10 @@ namespace MonoDevelop.Ide.Tasks
 					if (!withToDos)
 						yield break;
 
-					yield return ("TODO: Fill this file", "TODO", 0, 3);
-					yield return ("FIXME: This is broken", "FIXME", 1, 3);
-					yield return ("HACK: Just for the test", "HACK", 2, 3);
-					yield return ("UNDONE: Not done yet", "UNDONE", 3, 3);
+					yield return ("TODO: Fill this file", "TODO", 1, 4);
+					yield return ("FIXME: This is broken", "FIXME", 2, 4);
+					yield return ("HACK: Just for the test", "HACK", 3, 4);
+					yield return ("UNDONE: Not done yet", "UNDONE", 4, 4);
 				}
 			}
 

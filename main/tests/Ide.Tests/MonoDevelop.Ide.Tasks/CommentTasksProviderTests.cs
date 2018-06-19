@@ -111,10 +111,10 @@ namespace MonoDevelop.Ide.Tasks
 
 				await helper.LoadProject (new Controller.Options (withToDos: true) {
 					ExpectedComments = new[] {
-						("FIXME: This is broken", "FIXME", 1, 3),
-						("HACK: Just for the test", "HACK", 2, 3),
-						("UNDONE: Not done yet", "UNDONE", 3, 3),
-						("CUSTOMTAG: Shouldn't be in first", "CUSTOMTAG", 4, 3),
+						("FIXME: This is broken", "FIXME", 2, 4),
+						("HACK: Just for the test", "HACK", 3, 4),
+						("UNDONE: Not done yet", "UNDONE", 4, 4),
+						("CUSTOMTAG: Shouldn't be in first", "CUSTOMTAG", 5, 4),
 					},
 				});
 
@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.Tasks
 				};
 
 				var list = options.ExpectedComments.ToList ();
-				list.Add (("TODO: Added", "TODO", 5, 3));
+				list.Add (("TODO: Added", "TODO", 6, 4));
 				options.ExpectedComments = list.ToArray ();
 
 				await helper.ModifyToDoFile ("// TODO: Added", options);
