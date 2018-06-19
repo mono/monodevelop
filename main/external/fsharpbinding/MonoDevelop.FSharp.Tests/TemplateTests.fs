@@ -136,6 +136,12 @@ type ``Template tests``() =
             // This is because the Import is grouped with the Xamarin.Build.Download .props Import which is inserted
             // at the top of the project file.
             do! sln.SaveAsync(monitor)
+
+            projects
+            |> List.map(fun p -> p.FileName.FullPath |> string)
+            |> List.map File.ReadAllText
+            |> List.iter (printfn "%s")
+
             do! NuGetPackageInstaller.InstallPackages (sln, projectTemplate.PackageReferencesForCreatedProjects)
 
             let errors = getErrorsForProject sln |> AsyncSeq.toSeq |> List.ofSeq
