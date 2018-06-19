@@ -480,7 +480,7 @@ namespace MonoDevelop.Projects.MSBuild
 		internal MSBuildProjectInstanceInfo LoadNativeInstance (bool evaluateItems)
 		{
 			lock (readLock) {
-				var supportsMSBuild = UseMSBuildEngine && GetGlobalPropertyGroup ().GetValue ("UseMSBuildEngine", true);
+				var supportsMSBuild = UseMSBuildEngine && (GetGlobalPropertyGroup ()?.GetValue ("UseMSBuildEngine", true) ?? true);
 
 				if (engineManager == null) {
 					engineManager = new MSBuildEngineManager ();
@@ -573,7 +573,12 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public string [] ProjectTypeGuids
 		{
-			get { return GetGlobalPropertyGroup ().GetValue ("ProjectTypeGuids", "").Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select (t => t.Trim ()).ToArray (); }
+			get {
+				var propertyGroup = GetGlobalPropertyGroup ();
+				if (propertyGroup == null)
+					return Array.Empty<string> ();
+				return propertyGroup.GetValue ("ProjectTypeGuids", "").Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select (t => t.Trim ()).ToArray ();
+			}
 			set { GetGlobalPropertyGroup ().SetValue ("ProjectTypeGuids", string.Join (";", value), preserveExistingCase: true); }
 		}
 

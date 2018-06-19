@@ -1425,7 +1425,7 @@ namespace MonoDevelop.Projects
 				return null;
 
 			var propertyGroup = project.GetGlobalPropertyGroup ();
-			string propertyValue = propertyGroup.GetValue ("TargetFramework", null);
+			string propertyValue = propertyGroup?.GetValue ("TargetFramework", null);
 			if (propertyValue != null)
 				return null;
 
