@@ -170,7 +170,8 @@ namespace MonoDevelop.CSharpBinding
 				Console.WriteLine (data.Text.Replace ("\t", "\\t").Replace (" ", "."));
 			}
 			Assert.AreEqual (output, data.Text);
-			Assert.AreEqual (idx, data.CaretOffset, "Caret offset mismatch.");
+			if (idx >= 0)
+				Assert.AreEqual (idx, data.CaretOffset, "Caret offset mismatch.");
 		}
 
 		[Test]
@@ -521,6 +522,41 @@ class Foo
 	void Bar ()
 	{
 	}
+}
+", indent);
+
+			}
+		}
+
+
+		/// <summary>
+		/// Bug 634797: Pasted text indents with extra whitespace
+		/// </summary>
+		[Test]
+		public async Task TestVSTS634797 ()
+		{
+			using (var testCase = await Create (@"
+class Foo 
+{
+    void Bar()
+    {
+        $    int a;
+    }
+}
+", createWithProject: true)) {
+				var indent = new CSharpTextEditorIndentation ();
+				indent.Initialize (testCase.Document.Editor, testCase.Document);
+				var offset = testCase.Document.Editor.CaretOffset;
+				indent.SafeUpdateIndentEngine (offset);
+				var pasteHandler = new CSharpTextPasteHandler (indent, indent.stateTracker, null);
+				await pasteHandler.PostFomatPastedText (offset, "	int a;".Length);
+				CheckOutput (testCase, @"
+class Foo 
+{
+    void Bar()
+    {
+        int a;
+    }
 }
 ", indent);
 
