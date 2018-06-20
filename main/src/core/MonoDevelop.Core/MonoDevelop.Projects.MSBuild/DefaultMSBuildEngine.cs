@@ -1220,6 +1220,8 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!File.Exists (file))
 				return;
 
+			context.AddImport (file);
+
 			var pref = LoadProject (context, file);
 			project.ReferencedProjects.Add (pref);
 
@@ -1244,6 +1246,8 @@ namespace MonoDevelop.Projects.MSBuild
 				
 				project.Properties [p.Key] = p.Value;
 			}
+
+			context.RemoveImport (file);
 		}
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildChoose choose, bool evalItems)
