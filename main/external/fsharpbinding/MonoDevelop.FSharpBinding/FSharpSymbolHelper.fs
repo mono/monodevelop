@@ -198,6 +198,7 @@ module SymbolUse =
         not symbol.IsConstructor && 
         not symbol.IsPropertyGetterMethod && 
         not symbol.IsPropertySetterMethod &&
+        not symbol.IsProperty &&
         not (symbol.LogicalName = ".ctor")
 
     let (|Method|_|) (symbolUse:FSharpSymbolUse) =
