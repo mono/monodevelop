@@ -68,6 +68,9 @@ namespace MonoDevelop.Ide
 		bool initialized;
 		static readonly int ipcBasePort = 40000;
 		static Stopwatch startupTimer = new Stopwatch ();
+		static Stopwatch timeToCodeTimer = new Stopwatch ();
+
+		static TimeToCodeMetadata ttcMetadata;
 		
 		Task<int> IApplication.Run (string[] args)
 		{
@@ -314,6 +317,14 @@ namespace MonoDevelop.Ide
 
 			startupTimer.Stop ();
 
+			// Need to start this timer because we don't know yet if we've been asked to open a solution from the file manager.
+			timeToCodeTimer.Start ();
+			IdeApp.Workspace.FirstWorkspaceItemOpened += CompleteTimeToCode;
+
+			ttcMetadata = new TimeToCodeMetadata {
+				StartupTime = startupTimer.ElapsedMilliseconds
+			};
+
 			CreateStartupMetadata (startupInfo);
 
 			GLib.Idle.Add (OnIdle);
@@ -388,6 +399,27 @@ namespace MonoDevelop.Ide
 			}
 			Counters.Startup.Inc (GetStartupMetadata (startupInfo, result));
 			IdeApp.OnStartupCompleted ();
+		}
+
+		static void CompleteTimeToCode (object sender, EventArgs args)
+		{
+			IdeApp.Workspace.FirstWorkspaceItemOpened -= CompleteTimeToCode;
+
+			if (timeToCodeTimer == null) {
+				return;
+			}
+
+			timeToCodeTimer.Stop ();
+			ttcMetadata.SolutionLoadTime = timeToCodeTimer.ElapsedMilliseconds;
+
+			ttcMetadata.CorrectedDuration = ttcMetadata.StartupTime + ttcMetadata.SolutionLoadTime;
+
+			timeToCodeTimer = null;
+
+			if (IdeApp.ReportTimeToCode) {
+				Counters.TimeToCode.Inc ("SolutionLoaded", ttcMetadata);
+				IdeApp.ReportTimeToCode = false;
+			}
 		}
 
 		static DateTime lastIdle;

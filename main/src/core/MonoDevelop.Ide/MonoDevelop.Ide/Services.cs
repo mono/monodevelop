@@ -65,6 +65,7 @@ namespace MonoDevelop.Ide
 		internal static TimerCounter CompositionSave = InstrumentationService.CreateTimerCounter ("MEF Composition Save", "IDE", id: "Ide.CompositionSave");
 		internal static TimerCounter ProcessCodeCompletion = InstrumentationService.CreateTimerCounter ("Process Code Completion", "IDE", id: "Ide.ProcessCodeCompletion", logMessages:false);
 		internal static Counter CodeCompletionStats = InstrumentationService.CreateCounter ("Code Completion Statistics", "IDE", id:"Ide.CodeCompletionStatistics");
+		internal static Counter<TimeToCodeMetadata> TimeToCode = InstrumentationService.CreateCounter<TimeToCodeMetadata> ("Time To Code", "IDE", id: "Ide.TimeToCode");
 
 		internal static class ParserService {
 			public static TimerCounter FileParsed = InstrumentationService.CreateTimerCounter ("File parsed", "Parser Service");
@@ -133,6 +134,24 @@ namespace MonoDevelop.Ide
 			set => SetProperty (value);
 		}
 		public long TimeSinceLogin {
+			get => GetProperty<long> ();
+			set => SetProperty (value);
+		}
+	}
+
+	class TimeToCodeMetadata : CounterMetadata
+	{
+		public long CorrectedDuration {
+			get => GetProperty<long> ();
+			set => SetProperty (value);
+		}
+
+		public long StartupTime {
+			get => GetProperty<long> ();
+			set => SetProperty (value);
+		}
+
+		public long SolutionLoadTime {
 			get => GetProperty<long> ();
 			set => SetProperty (value);
 		}
