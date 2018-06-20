@@ -224,6 +224,7 @@ namespace MonoDevelop.CodeActions
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while context menu popup.", ex);
 			}
+
 			return true;
 		}
 
@@ -363,15 +364,27 @@ namespace MonoDevelop.CodeActions
 		[CommandHandler (RefactoryCommands.QuickFix)]
 		void OnQuickFixCommand ()
 		{
-			if (!AnalysisOptions.EnableFancyFeatures || currentSmartTag == null) {
-				//Fixes = RefactoringService.GetValidActions (Editor, DocumentContext, Editor.CaretLocation).Result;
-				currentSmartTagBegin = Editor.CaretOffset;
-				PopupQuickFixMenu (null, null);
-				return;
-			}
+			var metadata = new Counters.FixesMenuMetadata ();
+			Counters.FixesMenu.BeginTiming ("", metadata);
 
-			CancelSmartTagPopupTimeout ();
-			PopupQuickFixMenu (null, menu => { });
+			try {
+				if (!AnalysisOptions.EnableFancyFeatures || currentSmartTag == null) {
+					//Fixes = RefactoringService.GetValidActions (Editor, DocumentContext, Editor.CaretLocation).Result;
+
+					metadata.TriggeredBySmartTag = true;
+
+					currentSmartTagBegin = Editor.CaretOffset;
+					PopupQuickFixMenu (null, null);
+					return;
+				}
+
+				metadata.TriggeredBySmartTag = false;
+
+				CancelSmartTagPopupTimeout ();
+				PopupQuickFixMenu (null, menu => { });
+			} finally {
+				Counters.FixesMenu.EndTiming ();
+			}
 		}
 
 		internal bool HasCurrentFixes {

@@ -190,7 +190,10 @@ namespace MonoDevelop.Ide
 				return Runtime.Version;
 			}
 		}
-		
+
+		// This flag tells us whether or not the solution being loaded was from the file manager.
+		public static bool ReportTimeToCode { get; set; }
+
 		public static void Initialize (ProgressMonitor monitor)
 		{
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.

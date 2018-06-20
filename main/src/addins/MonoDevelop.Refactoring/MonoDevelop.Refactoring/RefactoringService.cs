@@ -338,6 +338,7 @@ namespace MonoDevelop.Refactoring
 	internal static class Counters
 	{
 		public static TimerCounter FindReferences = InstrumentationService.CreateTimerCounter ("Find references", "Code Navigation", id: "CodeNavigation.FindReferences");
+		public static TimerCounter<FixesMenuMetadata> FixesMenu = InstrumentationService.CreateTimerCounter<FixesMenuMetadata> ("Show fixes", "Code Actions", id: "CodeActions.ShowFixes");
 
 		public static IDictionary<string, string> CreateFindReferencesMetadata ()
 		{
@@ -354,6 +355,18 @@ namespace MonoDevelop.Refactoring
 		public static void SetUserCancel (IDictionary<string, string> metadata)
 		{
 			metadata ["Result"] = "UserCancel";
+		}
+
+		public class FixesMenuMetadata : CounterMetadata
+		{
+			public FixesMenuMetadata ()
+			{
+			}
+
+			public bool TriggeredBySmartTag {
+				get => GetProperty<bool> ();
+				set => SetProperty (value);
+			}
 		}
 	}
 }
