@@ -36,7 +36,6 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	interface IAssemblyBrowserNodeBuilder
 	{
-		string GetDocumentationMarkup (ITreeNavigator navigator);
 		List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator);
 		List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags);
 	}

@@ -46,25 +46,25 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Components;
+using ICSharpCode.ILSpy;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class DomMethodNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
+	class MethodDefinitionNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(IUnresolvedMethod); }
+			get { return typeof(MethodDefinition); }
 		}
 		
-		public DomMethodNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
+		public MethodDefinitionNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
 		{
-			
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var method = (IUnresolvedMethod)dataObject;
-			if (method.SymbolKind == SymbolKind.Constructor || method.SymbolKind == SymbolKind.Destructor)
-				return method.DeclaringTypeDefinition.Name;
+			var method = (MethodDefinition)dataObject;
+			if (method.IsConstructor)
+				return method.DeclaringType.Name;
 			return method.Name;
 		}
 		
@@ -72,24 +72,77 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return "<span foreground= \"#666666\">" + label + "</span>";	
 		}
+
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var method = (IUnresolvedMethod)dataObject;
-			var dt = new DefaultResolvedTypeDefinition (GetContext (treeBuilder), method.DeclaringTypeDefinition);
-			var resolved = (DefaultResolvedMethod)Resolve (treeBuilder, method, dt);
+			var method = (MethodDefinition)dataObject;
+
 			var ambience = new CSharpAmbience ();
 			try {
-				nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (ambience.ConvertSymbol (resolved));
+				nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (GetText (method));
 			} catch (Exception) {
 				nodeInfo.Label = method.Name;
 			}
 
-			if (method.IsPrivate || method.IsInternal)
-				nodeInfo.Label = DomMethodNodeBuilder.FormatPrivate (nodeInfo.Label);
+			if (method.IsPrivate || method.IsAssembly)
+				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
 			
-			nodeInfo.Icon = Context.GetIcon (resolved.GetStockIcon ());
+			nodeInfo.Icon = Context.GetIcon (GetStockIcon (method));
 		}
-		
+
+		public static IconId GetStockIcon (MethodDefinition method)
+		{
+			var isStatic = (method.Attributes & MethodAttributes.Static) != 0;
+			var global = isStatic ? "static-" : "";
+			return "md-" + GetAccess (method.Attributes) + global + "method";
+		}
+
+		static string GetAccess (MethodAttributes attributes)
+		{
+			switch (attributes & MethodAttributes.MemberAccessMask) {
+			case MethodAttributes.Private:
+				return "private-";
+			case MethodAttributes.Public:
+				return "";
+			case MethodAttributes.Family:
+				return "protected-";
+			case MethodAttributes.Assembly:
+				return "internal-";
+			case MethodAttributes.FamORAssem:
+			case MethodAttributes.FamANDAssem:
+				return "ProtectedOrInternal-";
+			default:
+				return "";
+			}
+		}
+
+		public static string GetText (MethodDefinition method)
+		{
+			var b = StringBuilderCache.Allocate ();
+			try {
+				b.Append ('(');
+				for (int i = 0; i < method.Parameters.Count; i++) {
+					if (i > 0)
+						b.Append (", ");
+					b.Append (CSharpLanguage.Instance.TypeToString (method.Parameters [i].ParameterType, false, method.Parameters [i]));
+				}
+				if (method.CallingConvention == MethodCallingConvention.VarArg) {
+					if (method.HasParameters)
+						b.Append (", ");
+					b.Append ("...");
+				}
+				if (method.IsConstructor) {
+					b.Append (')');
+				} else {
+					b.Append (") : ");
+					b.Append (CSharpLanguage.Instance.TypeToString (method.ReturnType, false, method.MethodReturnType));
+				}
+				return CSharpLanguage.Instance.FormatMethodName (method) + b;
+			} finally {
+				StringBuilderCache.Free (b);
+			}
+		}
+
 		#region IAssemblyBrowserNodeBuilder
 		internal static void PrintDeclaringType (StringBuilder result, ITreeNavigator navigator)
 		{
@@ -121,7 +174,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			var settings = DomTypeNodeBuilder.CreateDecompilerSettings (publicOnly, codePolicy);
+			var settings = TypeDefinitionNodeBuilder.CreateDecompilerSettings (publicOnly, codePolicy);
 			return settings;
 		}
 
@@ -168,13 +221,12 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
-			var method = (IUnresolvedMethod)navigator.DataItem;
 			if (HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var cecilMethod = GetCecilLoader (navigator).GetCecilObject<MethodDefinition> (method);
+			var cecilMethod = (MethodDefinition)navigator.DataItem;
 			if (cecilMethod == null)
 				return null;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (cecilMethod), flags: flags);
+			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (cecilMethod), flags: flags);
 		}
 		
 		static void AppendLink (StringBuilder sb, string link, string text)
@@ -198,45 +250,27 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		internal static bool HandleSourceCodeEntity (ITreeNavigator navigator, TextEditor data)
 		{
-			if (IsFromAssembly (navigator))
-				return false;
-			
-			var method = (IUnresolvedEntity)navigator.DataItem;
-			var source = StringTextSource.ReadFrom (method.Region.FileName);
-			data.Text = source.Text;
-			data.CaretLocation = new MonoDevelop.Ide.Editor.DocumentLocation (method.Region.BeginLine, method.Region.BeginColumn);
-			return true;
+			/*			if (IsFromAssembly (navigator))
+							return false;
+
+						var method = (MethodDefinition)navigator.DataItem;
+						var source = StringTextSource.ReadFrom (method.Region.FileName);
+						data.Text = source.Text;
+						data.CaretLocation = new MonoDevelop.Ide.Editor.DocumentLocation (method.Region.BeginLine, method.Region.BeginColumn);
+						return true;*/
+			return false;
 		}
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
-			var method = (IUnresolvedMethod)navigator.DataItem;
 			if (HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var cecilMethod = GetCecilLoader (navigator).GetCecilObject <MethodDefinition> (method);
+			var cecilMethod = (MethodDefinition)navigator.DataItem;
 			if (cecilMethod == null)
 				return null;
 			return Disassemble (data, rd => rd.DisassembleMethod (cecilMethod));
 		}
-		
-		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
-		{
-			var method = (IUnresolvedMethod)navigator.DataItem;
-			var resolved = Resolve (navigator, method);
-			if (GetMainAssembly (navigator) == null) {
-				return StringTextSource.ReadFrom (method.Region.FileName).Text;
-			}
-			StringBuilder result = new StringBuilder ();
-			result.Append ("<big>");
-			result.Append (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertSymbol (resolved)));
-			result.Append ("</big>");
-			result.AppendLine ();
 
-			//result.Append (AmbienceService.GetDocumentationMarkup (resolved, AmbienceService.GetDocumentation (resolved), options));
-			
-			return result.ToString ();
-		}
 		#endregion
-
 	}
 }

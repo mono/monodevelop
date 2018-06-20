@@ -1,5 +1,5 @@
 //
-// BaseTypeFolder.cs
+// Namespace.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,26 +27,44 @@
 //
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.Decompiler.TypeSystem;
 using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class BaseTypeFolder : IDisposable
+	class NamespaceData : IDisposable
 	{
-		public TypeDefinition Type {
+		List<(bool, object)> types = new List<(bool, object)> ();
+		
+		public string Name {
 			get;
 			private set;
 		}
+
+		public List<(bool isPublic, object typeObject)> Types {
+			get {
+				return types;
+			}
+		}
 		
-		public BaseTypeFolder (TypeDefinition type)
+		public NamespaceData (string name)
 		{
-			this.Type = type;
+			this.Name = name;
 		}
 		
 		public void Dispose ()
 		{
-			Type = null;
+			if (types != null) {
+			//	types.ForEach (t => t.Dispose ());
+				types.Clear ();
+				types = null;
+			}
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[Namespace: Name={0}, #Types={1}]", Name, Types.Count);
 		}
 	}
 }

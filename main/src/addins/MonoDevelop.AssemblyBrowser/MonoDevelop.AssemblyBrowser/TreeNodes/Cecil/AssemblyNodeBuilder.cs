@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Gui.Components;
 using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Ide.Editor;
+using ICSharpCode.Decompiler.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -78,22 +79,22 @@ namespace MonoDevelop.AssemblyBrowser
 			if (resources.Resources.Any ())
 				treeBuilder.AddChild (resources);
 			
-			var namespaces = new Dictionary<string, Namespace> ();
+			var namespaces = new Dictionary<string, NamespaceData> ();
 			bool publicOnly = Widget.PublicApiOnly;
 			
-			foreach (var type in compilationUnit.UnresolvedAssembly.TopLevelTypeDefinitions) {
+			foreach (var type in compilationUnit.ModuleDefinition.Types) {
 				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "" : type.Namespace;
 				if (!namespaces.ContainsKey (namespaceName))
-					namespaces [namespaceName] = new Namespace (namespaceName);
+					namespaces [namespaceName] = new NamespaceData (namespaceName);
 				
 				var ns = namespaces [namespaceName];
-				ns.Types.Add (type);
+				ns.Types.Add ((type.IsPublic,  type));
 			}
 
-			treeBuilder.AddChildren (namespaces.Where (ns => ns.Key != "" && (!publicOnly || ns.Value.Types.Any (t => t.IsPublic))).Select (n => n.Value));
+			treeBuilder.AddChildren (namespaces.Where (ns => ns.Key != "" && (!publicOnly || ns.Value.Types.Any (t => t.isPublic))).Select (n => n.Value));
 			if (namespaces.ContainsKey ("")) {
 				foreach (var child in namespaces [""].Types) {
-					if (child.Name == "<Module>")
+					if (((TypeDefinition)child.typeObject).Name == "<Module>")
 						continue;
 					treeBuilder.AddChild (child);
 				}
@@ -156,27 +157,22 @@ namespace MonoDevelop.AssemblyBrowser
 		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
 			var assemblyLoader = (AssemblyLoader)navigator.DataItem;
-			var assembly = assemblyLoader.UnresolvedAssembly;
 			var compilationUnit = assemblyLoader.Assembly;
 			if (compilationUnit == null) {
-				LoggingService.LogError ("Can't get cecil object for assembly:" + assembly);
+				LoggingService.LogError ("Can't get cecil object for assembly:" + assemblyLoader.Assembly.FullName);
 				return new List<ReferenceSegment> ();
 			}
-			return DomMethodNodeBuilder.Disassemble (data, rd => rd.WriteAssemblyHeader (compilationUnit));
+			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.WriteAssemblyHeader (compilationUnit));
 		}
 		
 		
 		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			var assemblyLoader = (AssemblyLoader)navigator.DataItem;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetAssemblyLoader (navigator), b => 
+			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => 
 				b.DecompileModuleAndAssemblyAttributes(), flags: flags);
 		}
 
-		public string GetDocumentationMarkup (ITreeNavigator navigator)
-		{
-			return null;
-		}
 		#endregion
 	}
 }

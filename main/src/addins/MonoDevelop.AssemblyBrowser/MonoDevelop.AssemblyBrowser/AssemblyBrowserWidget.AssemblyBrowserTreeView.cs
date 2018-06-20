@@ -1,5 +1,5 @@
-//
-// Namespace.cs
+﻿//
+// AssemblyBrowserWidget.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -26,45 +26,37 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Collections.Generic;
-using ICSharpCode.Decompiler.TypeSystem;
-using Mono.Cecil;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class Namespace : IDisposable
+	partial class AssemblyBrowserWidget
 	{
-		List<IUnresolvedTypeDefinition> types = new List<IUnresolvedTypeDefinition> ();
-		
-		public string Name {
-			get;
-			private set;
-		}
+		public class AssemblyBrowserTreeView : ExtensibleTreeView
+		{
+			bool publicApiOnly = true;
 
-		public List<IUnresolvedTypeDefinition> Types {
-			get {
-				return types;
+			public bool PublicApiOnly {
+				get {
+					return publicApiOnly;
+				}
+				set {
+					if (publicApiOnly == value)
+						return;
+					publicApiOnly = value;
+					var root = GetRootNode ();
+					if (root != null) {
+						do {
+							RefreshNode (root);
+						} while (root.MoveNext ());
+					}
+				}
 			}
-		}
-		
-		public Namespace (string name)
-		{
-			this.Name = name;
-		}
-		
-		public void Dispose ()
-		{
-			if (types != null) {
-			//	types.ForEach (t => t.Dispose ());
-				types.Clear ();
-				types = null;
+
+			public AssemblyBrowserTreeView (NodeBuilder [] builders, TreePadOption [] options) : base (builders, options)
+			{
 			}
-		}
-		
-		public override string ToString ()
-		{
-			return string.Format ("[Namespace: Name={0}, #Types={1}]", Name, Types.Count);
 		}
 	}
 }
+
