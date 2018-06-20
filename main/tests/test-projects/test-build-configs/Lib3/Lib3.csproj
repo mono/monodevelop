@@ -17,9 +17,6 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Execution>
-      <Execution clr-version="Net_2_0" xmlns="" />
-    </Execution>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release+Extra|AnyCPU' ">
@@ -28,9 +25,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <Execution>
-      <Execution clr-version="Net_2_0" xmlns="" />
-    </Execution>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="MyClass.cs" />
