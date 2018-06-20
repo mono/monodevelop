@@ -285,14 +285,14 @@ namespace MonoDevelop.Refactoring
 
 		public static async Task FindReferenceUsagesAsync(Projects.ProjectReference projectReference)
 		{
-			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			try {
-				foreach (var provider in findReferenceUsagesProviders) {
-					await provider.FindReferences(projectReference, monitor);
+			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+				try {
+					foreach (var provider in findReferenceUsagesProviders) {
+						await provider.FindReferences(projectReference, monitor);
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error finding reference usages", ex);
 				}
-			} finally {
-				if (monitor != null)
-					monitor.Dispose ();
 			}
 		}
 
