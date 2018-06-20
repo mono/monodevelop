@@ -190,6 +190,7 @@
     <Compile Include="Gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Refactoring.SignatureChange.SignatureChangeDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring\CodeGenerationPanel.cs" />
+    <Compile Include="MonoDevelop.Refactoring\FindReferenceUsagesProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

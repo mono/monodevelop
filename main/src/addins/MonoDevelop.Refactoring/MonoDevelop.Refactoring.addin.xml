@@ -24,6 +24,10 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/FindReferenceUsagesProvider">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler" defaultInsertAfter = "MidStep">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
