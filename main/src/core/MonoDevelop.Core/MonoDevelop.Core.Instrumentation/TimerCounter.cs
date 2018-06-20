@@ -124,11 +124,18 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public ITimeTracker BeginTiming (string message, IDictionary<string, string> metadata)
 		{
-			return BeginTiming (message, metadata != null ? new CounterMetadata (metadata) : null, CancellationToken.None);
+			return BeginTiming (message, TimeSpan.Zero, metadata != null ? new CounterMetadata (metadata) : null, CancellationToken.None);
 		}
 
-		internal ITimeTracker<T> BeginTiming<T> (string message, T metadata, CancellationToken cancellationToken) where T : CounterMetadata, new()
+		public ITimeTracker BeginTiming (string message, TimeSpan initialTime, IDictionary<string, string> metadata)
 		{
+			return BeginTiming (message, initialTime, metadata != null ? new CounterMetadata (metadata) : null, CancellationToken.None);
+		}
+
+		internal ITimeTracker<T> BeginTiming<T> (string message, TimeSpan initialTime, T metadata, CancellationToken cancellationToken) where T : CounterMetadata, new()
+		{
+			AddTime (initialTime);
+
 			ITimeTracker<T> timer;
 			if (!Enabled && !LogMessages) {
 				timer = new DummyTimerCounter<T> (metadata);
@@ -172,42 +179,42 @@ namespace MonoDevelop.Core.Instrumentation
 
 		new public ITimeTracker<T> BeginTiming ()
 		{
-			return base.BeginTiming<T> (null, null, CancellationToken.None);
+			return base.BeginTiming<T> (null, TimeSpan.Zero, null, CancellationToken.None);
 		}
 
 		public ITimeTracker<T> BeginTiming (CancellationToken cancellationToken)
 		{
-			return base.BeginTiming<T> (null, null, cancellationToken);
+			return base.BeginTiming<T> (null, TimeSpan.Zero, null, cancellationToken);
 		}
 
 		public ITimeTracker<T> BeginTiming (T metadata)
 		{
-			return base.BeginTiming<T> (null, metadata, CancellationToken.None);
+			return base.BeginTiming<T> (null, TimeSpan.Zero, metadata, CancellationToken.None);
 		}
 
 		public ITimeTracker<T> BeginTiming (T metadata, CancellationToken cancellationToken)
 		{
-			return base.BeginTiming<T> (null, metadata, cancellationToken);
+			return base.BeginTiming<T> (null, TimeSpan.Zero, metadata, cancellationToken);
 		}
 
 		new public ITimeTracker<T> BeginTiming (string message)
 		{
-			return base.BeginTiming<T> (message, null, CancellationToken.None);
+			return base.BeginTiming<T> (message, TimeSpan.Zero, null, CancellationToken.None);
 		}
 
 		public ITimeTracker<T> BeginTiming (string message, CancellationToken cancellationToken)
 		{
-			return base.BeginTiming<T> (message, null, cancellationToken);
+			return base.BeginTiming<T> (message, TimeSpan.Zero, null, cancellationToken);
 		}
 
 		public ITimeTracker<T> BeginTiming (string message, T metadata)
 		{
-			return base.BeginTiming<T> (message, metadata, CancellationToken.None);
+			return base.BeginTiming<T> (message, TimeSpan.Zero, metadata, CancellationToken.None);
 		}
 
 		public ITimeTracker<T> BeginTiming (string message, T metadata, CancellationToken cancellationToken)
 		{
-			return base.BeginTiming<T> (message, metadata, cancellationToken);
+			return base.BeginTiming<T> (message, TimeSpan.Zero, metadata, cancellationToken);
 		}
 	}
 

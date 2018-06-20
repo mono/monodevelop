@@ -314,6 +314,9 @@ namespace MonoDevelop.Ide
 
 			startupTimer.Stop ();
 
+			// TimeToCode is the startup time + the project load time
+			Counters.TimeToCode.BeginTiming (null, startupTimer.Elapsed, null);
+
 			CreateStartupMetadata (startupInfo);
 
 			GLib.Idle.Add (OnIdle);

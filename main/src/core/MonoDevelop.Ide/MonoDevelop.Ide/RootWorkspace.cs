@@ -510,6 +510,7 @@ namespace MonoDevelop.Ide
 			return OpenWorkspaceItemInternal (file, closeCurrent, loadPreferences, null, null);
 		}
 
+		bool calculatedTimeToCode = false;
 		internal async Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences, IDictionary<string, string> metadata, ProgressMonitor loadMonitor)
 		{
 			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
@@ -532,11 +533,21 @@ namespace MonoDevelop.Ide
 			IdeApp.Workbench.LockGui ();
 			metadata = GetOpenWorkspaceItemMetadata (metadata);
 			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming (metadata);
+
+			// Add a trace here to indicate how long the user allowed the app to sit before starting the solution load process
+			if (!calculatedTimeToCode) {
+				Counters.TimeToCode.Trace ("Started opening solution");
+			}
 			try {
 				var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading, metadata, timer);
 				return await oper;
 			} finally {
 				timer.End ();
+
+				if (!calculatedTimeToCode) {
+					Counters.TimeToCode.EndTiming ();
+					calculatedTimeToCode = true;
+				}
 				monitor.Dispose ();
 				IdeApp.Workbench.UnlockGui ();
 			}
