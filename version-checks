@@ -17,8 +17,8 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=7232bff817e6ca6fa807ac811d0ffc7f4711567d
-DEP_BRANCH_AND_REMOTE[0]="master origin/master"
+DEP_NEEDED_VERSION[0]=df567d36757cad8e9ce3cde4060a7d9148ffcdf5
+DEP_BRANCH_AND_REMOTE[0]="dev/kirillo/roslyn2.9 origin/dev/kirillo/roslyn2.9"
 
 # heap-shot
 DEP[1]=heap-shot
