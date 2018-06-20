@@ -1382,6 +1382,17 @@ namespace MonoDevelop.Projects
 
 			p.Dispose ();
 		}
+
+		[Test]
+		public async Task LoadProject_ImportHasCircularDependency ()
+		{
+			string solFile = Util.GetSampleProject ("ImportCircularDependency", "ImportCircularDependency.sln");
+
+			using (var item = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = item.Items [0] as UnknownSolutionItem;
+				Assert.That (p.LoadError, Contains.Substring ("circular dependency"));
+			}
+		}
 	}
 
 	class CustomItem : ProjectItem
