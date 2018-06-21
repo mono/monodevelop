@@ -480,7 +480,7 @@ namespace MonoDevelop.Projects.MSBuild
 		internal MSBuildProjectInstanceInfo LoadNativeInstance (bool evaluateItems)
 		{
 			lock (readLock) {
-				var supportsMSBuild = UseMSBuildEngine && GetGlobalPropertyGroup ().GetValue ("UseMSBuildEngine", true);
+				var supportsMSBuild = UseMSBuildEngine && (GetGlobalPropertyGroup ()?.GetValue ("UseMSBuildEngine", true) ?? true);
 
 				if (engineManager == null) {
 					engineManager = new MSBuildEngineManager ();
@@ -573,19 +573,25 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public string [] ProjectTypeGuids
 		{
-			get { return GetGlobalPropertyGroup ().GetValue ("ProjectTypeGuids", "").Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select (t => t.Trim ()).ToArray (); }
-			set { GetGlobalPropertyGroup ().SetValue ("ProjectTypeGuids", string.Join (";", value), preserveExistingCase: true); }
+			get {
+				var propertyGroup = GetGlobalPropertyGroup ();
+				if (propertyGroup == null)
+					return Array.Empty<string> ();
+				return propertyGroup.GetValue ("ProjectTypeGuids", "").Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select (t => t.Trim ()).ToArray ();
+			}
+			set { GetOrCreateGlobalPropertyGroup ().SetValue ("ProjectTypeGuids", string.Join (";", value), preserveExistingCase: true); }
 		}
 
 		public bool AddProjectTypeGuid (string guid)
 		{
-			var guids = GetGlobalPropertyGroup ().GetValue ("ProjectTypeGuids", "").Trim ();
+			var propertyGroup = GetOrCreateGlobalPropertyGroup ();
+			var guids = propertyGroup.GetValue ("ProjectTypeGuids", "").Trim ();
 			if (guids.IndexOf (guid, StringComparison.OrdinalIgnoreCase) == -1) {
 				if (!string.IsNullOrEmpty (guids))
 					guids += ";" + guid;
 				else
 					guids = guid;
-				GetGlobalPropertyGroup ().SetValue ("ProjectTypeGuids", guids, preserveExistingCase: true);
+				propertyGroup.SetValue ("ProjectTypeGuids", guids, preserveExistingCase: true);
 				return true;
 			}
 			return false;
@@ -705,6 +711,17 @@ namespace MonoDevelop.Projects.MSBuild
 		public MSBuildPropertyGroup GetGlobalPropertyGroup ()
 		{
 			return PropertyGroups.FirstOrDefault (g => g.Condition.Length == 0);
+		}
+
+		internal MSBuildPropertyGroup GetOrCreateGlobalPropertyGroup ()
+		{
+			var group = GetGlobalPropertyGroup ();
+			if (group == null) {
+				group = AddNewPropertyGroup (false);
+				// Ensure empty property group is not added on saving if it has no child properties.
+				group.SkipSerializationOnNoChildren = true;
+			}
+			return group;
 		}
 
 		public MSBuildPropertyGroup CreatePropertyGroup ()
