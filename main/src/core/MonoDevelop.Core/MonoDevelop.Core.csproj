@@ -725,7 +725,6 @@
     <Compile Include="MonoDevelop.Core\ConfigurationProperty.cs" />
     <Compile Include="MonoDevelop.FSW\PathTree.cs" />
     <Compile Include="MonoDevelop.FSW\PathTreeNode.cs" />
-    <Compile Include="MonoDevelop.FSW\FileChangeTracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

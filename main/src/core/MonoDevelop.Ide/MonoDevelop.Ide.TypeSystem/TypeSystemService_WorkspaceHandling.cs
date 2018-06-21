@@ -174,7 +174,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (solution != null) {
 					MonoDevelopWorkspace result = GetWorkspace (solution);
 					if (result != emptyWorkspace) {
-						result.MetadataReferenceManager.ClearCache ();
 						lock (workspaceLock)
 							workspaces = workspaces.Remove (result);
 						result.Dispose ();

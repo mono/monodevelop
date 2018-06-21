@@ -522,8 +522,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				this.projectId = projectId;
 				workspaceRef = new WeakReference<MonoDevelopWorkspace> (ws);
-				foreach (var metadataReference in metadataReferences) {
-					AddMetadataReference (metadataReference);
+
+				lock (this.metadataReferences) {
+					foreach (var metadataReference in metadataReferences) {
+						AddMetadataReference_NoLock (metadataReference);
+					}
 				}
 				documentIdMap = new Dictionary<string, DocumentId> (FilePath.PathComparer);
 			}
@@ -539,14 +542,17 @@ namespace MonoDevelop.Ide.TypeSystem
 					workspace.OnMetadataReferenceRemoved (projectId, reference.CurrentSnapshot);
 
 					reference.UpdateSnapshot ();
-
-					AddMetadataReference (reference);
+					lock (metadataReferences) {
+						AddMetadataReference_NoLock (reference);
+					}
 					workspace.OnMetadataReferenceAdded (projectId, reference.CurrentSnapshot);
 				}
 			}
 
-			internal void AddMetadataReference (MonoDevelopMetadataReference metadataReference)
+			internal void AddMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference)
 			{
+				System.Diagnostics.Debug.Assert (Monitor.IsEntered (metadataReferences));
+
 				lock (metadataReferences) {
 					metadataReferences.Add (metadataReference);
 				}
@@ -611,11 +617,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (!workspaceRef.TryGetTarget (out var workspace))
 					return;
 
-				lock (workspace.updatingProjectDataLock)
-					foreach (var reference in metadataReferences)
-						reference.UpdatedOnDisk -= OnMetadataReferenceUpdated;
-
-				throw new NotImplementedException ();
+				lock (workspace.updatingProjectDataLock) {
+					MonoDevelop.Projects.FileWatcherService.WatchDirectories (this, null).Ignore ();
+					lock (metadataReferences) {
+						foreach (var reference in metadataReferences)
+							reference.UpdatedOnDisk -= OnMetadataReferenceUpdated;
+					}
+				}
 			}
 		}
 
@@ -674,6 +682,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				//when reloading e.g. after a save, preserve document IDs
 				using (var oldProjectData = RemoveProjectData (projectId)) {
 					var projectData = CreateProjectData (projectId, references);
+
 					var documents = CreateDocuments (projectData, p, token, sourceFiles, oldProjectData);
 					if (documents == null)
 						return null;
