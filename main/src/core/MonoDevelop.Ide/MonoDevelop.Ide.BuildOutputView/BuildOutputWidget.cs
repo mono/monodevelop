@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using Xwt;
@@ -712,7 +712,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 				this.widget = widget;
 				Reset ();
 
-				list = (node == null || node.Parent == null) ? DataSource?.RootNodes : NodesWithChildren (node.Parent.Children);
+				list = (node == null || node.Parent == null) ?
+					DataSource?.RootNodes?.Where (x => x.NodeType != BuildOutputNodeType.BuildSummary).ToList () :
+				    NodesWithChildren (node.Parent.Children);
 			}
 
 			IReadOnlyList<BuildOutputNode> NodesWithChildren(IEnumerable<BuildOutputNode> nodes)
