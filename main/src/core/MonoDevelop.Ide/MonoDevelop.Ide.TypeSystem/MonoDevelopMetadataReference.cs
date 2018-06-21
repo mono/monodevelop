@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.Core;
 using MonoDevelop.FSW;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -13,9 +15,9 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		readonly MonoDevelopMetadataReferenceManager _provider;
 		readonly MetadataReferenceProperties _properties;
-		readonly FileChangeTracker _fileChangeTracker;
 
 		Snapshot _currentSnapshot;
+		public FilePath FilePath { get; }
 
 		public event EventHandler UpdatedOnDisk;
 
@@ -26,16 +28,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			Contract.Requires (properties.Kind == MetadataImageKind.Assembly);
 
+			FilePath = filePath;
 			_provider = provider;
 			_properties = properties;
 
-			// We don't track changes to netmodules linked to the assembly.
-			// Any legitimate change in a linked module will cause the assembly to change as well.
-			_fileChangeTracker = new FileChangeTracker (filePath);
-			_fileChangeTracker.UpdatedOnDisk += OnUpdatedOnDisk;
+			FileWatcherService.WatchDirectories (this, new [] { FilePath.ParentDirectory });
+			FileService.FileChanged += OnUpdatedOnDisk;
 		}
-
-		public string FilePath => _fileChangeTracker.FilePath;
 
 		public MetadataReferenceProperties Properties => _properties;
 
@@ -49,18 +48,23 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		void OnUpdatedOnDisk (object sender, EventArgs e) => UpdatedOnDisk?.Invoke (this, EventArgs.Empty);
+		void OnUpdatedOnDisk (object sender, FileEventArgs e)
+		{
+			foreach (var file in e) {
+				if (file.FileName == FilePath) {
+					UpdatedOnDisk?.Invoke (this, EventArgs.Empty);
+					return;
+				}
+			}
+		}
 
 		public void Dispose ()
 		{
-			_fileChangeTracker.Dispose ();
-			_fileChangeTracker.UpdatedOnDisk -= OnUpdatedOnDisk;
+			FileService.FileChanged -= OnUpdatedOnDisk;
+			FileWatcherService.WatchDirectories (this, null);
 		}
 
-		public void UpdateSnapshot ()
-		{
-			_currentSnapshot = new Snapshot (_provider, Properties, FilePath);
-		}
+		public void UpdateSnapshot () => _currentSnapshot = new Snapshot (_provider, Properties, FilePath);
 
 		string GetDebuggerDisplay () => Path.GetFileName (FilePath);
 	}

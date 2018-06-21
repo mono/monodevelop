@@ -111,7 +111,6 @@
     <Compile Include="MonoDevelop.Core\InstrumentationTests.cs" />
     <Compile Include="MonoDevelop.FSW\PathTreeNodeTests.cs" />
     <Compile Include="MonoDevelop.FSW\PathTreeTests.cs" />
-    <Compile Include="MonoDevelop.FSW\FileChangeTrackerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Core\" />
