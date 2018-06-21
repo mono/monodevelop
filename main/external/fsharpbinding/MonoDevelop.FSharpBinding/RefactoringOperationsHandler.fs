@@ -278,8 +278,9 @@ module Refactoring =
       with _ -> []
 
     let findReferences (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
-        let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
-        let findAsync = async {
+        async {
+            use monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
+            LoggingService.logDebug ("findReferences")
             let dependentProjects = getDependentProjects ctx.Project symbolUse
            
             let! symbolrefs =
@@ -293,13 +294,11 @@ module Refactoring =
             for (filename, startOffset, endOffset) in distinctRefs do
                 let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
                 monitor.ReportResult sr
-        }
-        let onComplete _ = monitor.Dispose()
-        Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
+        } |> Async.Start
 
     let findDerivedReferences (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
-        let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
-        let findAsync = async {
+        async {
+            use monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
             let dependentProjects = getDependentProjects ctx.Project symbolUse
 
             let! symbolrefs =
@@ -313,13 +312,11 @@ module Refactoring =
             for (filename, startOffset, endOffset) in distinctRefs do
                 let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
                 monitor.ReportResult sr
-        }
-        let onComplete _ = monitor.Dispose()
-        Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
+        } |> Async.Start
 
     let findOverloads (editor:TextEditor, _ctx:DocumentContext, symbolUse:FSharpSymbolUse, _lastIdent) =
-        let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
-        let findAsync = async {
+        async {
+            use monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
             //let dependentProjects = getDependentProjects ctx.Project symbolUse
             let overrides = languageService.GetOverridesForSymbol(symbolUse.Symbol)
 
@@ -339,9 +336,7 @@ module Refactoring =
             for (filename, startOffset, endOffset) in distinctRefs do
                 let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
                 monitor.ReportResult sr
-        }
-        let onComplete _ = monitor.Dispose()
-        Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
+        } |> Async.Start
 
     let findExtensionMethods (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
         async {
