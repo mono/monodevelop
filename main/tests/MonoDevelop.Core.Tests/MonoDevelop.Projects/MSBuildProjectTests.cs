@@ -1570,6 +1570,34 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public void ProjectHasNoMainPropertyGroup_AddRemoveProjectTypeGuid ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			var projectTypeGuids = new string[] { "{test}" };
+			p.ProjectTypeGuids = projectTypeGuids;
+			Assert.AreEqual (projectTypeGuids, p.ProjectTypeGuids);
+
+			// Reload to ensure GlobalPropertyGroups is not available.
+			p.LoadXml (projectXml);
+
+			p.AddProjectTypeGuid ("{test}");
+			Assert.AreEqual (projectTypeGuids, p.ProjectTypeGuids);
+
+			// Reload to ensure GlobalPropertyGroups is not available.
+			p.LoadXml (projectXml);
+
+			p.AddProjectTypeGuid ("{test}");
+
+			p.Dispose ();
+		}
+
+		[Test]
 		public void GlobalPropertyProvider ()
 		{
 			var prov = new CustomGlobalPropertyProvider ("Works!");

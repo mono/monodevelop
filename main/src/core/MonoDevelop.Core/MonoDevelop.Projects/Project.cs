@@ -199,10 +199,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		void InitBeforeProjectExtensionLoad ()
 		{
-			var ggroup = sourceProject.GetGlobalPropertyGroup ();
-			// Avoid crash if there is not global group
-			if (ggroup == null)
-				ggroup = sourceProject.AddNewPropertyGroup (false);
+			var ggroup = sourceProject.GetOrCreateGlobalPropertyGroup ();
 
 			// Load the evaluated properties
 			InitMainGroupProperties (ggroup);
@@ -1425,7 +1422,7 @@ namespace MonoDevelop.Projects
 				return null;
 
 			var propertyGroup = project.GetGlobalPropertyGroup ();
-			string propertyValue = propertyGroup.GetValue ("TargetFramework", null);
+			string propertyValue = propertyGroup?.GetValue ("TargetFramework", null);
 			if (propertyValue != null)
 				return null;
 

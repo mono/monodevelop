@@ -1,0 +1,17 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetCoreNoMainPropertyGroup", "DotNetCoreNoMainPropertyGroup\DotNetCoreNoMainPropertyGroup.csproj", "{32587BAB-C960-47D9-B952-FEFA8E55D76B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32587BAB-C960-47D9-B952-FEFA8E55D76B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32587BAB-C960-47D9-B952-FEFA8E55D76B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32587BAB-C960-47D9-B952-FEFA8E55D76B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32587BAB-C960-47D9-B952-FEFA8E55D76B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
