@@ -280,7 +280,6 @@ module Refactoring =
     let findReferences (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
         async {
             use monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
-            LoggingService.logDebug ("findReferences")
             let dependentProjects = getDependentProjects ctx.Project symbolUse
            
             let! symbolrefs =
