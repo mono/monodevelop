@@ -344,8 +344,8 @@ module Refactoring =
         Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
 
     let findExtensionMethods (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
-        let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
-        let findAsync = async {
+        async {
+            use monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
             let dependentProjects = getDependentProjects ctx.Project symbolUse
 
             let! symbolrefs =
@@ -359,9 +359,7 @@ module Refactoring =
             for (filename, startOffset, endOffset) in distinctRefs do
                 let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
                 monitor.ReportResult sr
-        }
-        let onComplete _ = monitor.Dispose()
-        Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
+        } |> Async.Start
 
     module Operations =
         let canRename (symbolUse:FSharpSymbolUse) fileName project =
