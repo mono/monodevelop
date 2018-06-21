@@ -273,9 +273,8 @@ namespace MonoDevelop.MacIntegration
 
 			var nc = NSNotificationCenter.DefaultCenter;
 			nc.AddObserver ((NSString)"AtkCocoaAccessibilityEnabled", (NSNotification) => {
-				Console.WriteLine ($"VoiceOver on {IdeTheme.AccessibilityEnabled}");
+				LoggingService.LogInfo ($"VoiceOver on {IdeTheme.AccessibilityEnabled}");
 				if (!IdeTheme.AccessibilityEnabled) {
-					Console.WriteLine ("Showing notice");
 					ShowVoiceOverNotice ();
 				}
 			}, NSApplication.SharedApplication);
@@ -1145,14 +1144,9 @@ namespace MonoDevelop.MacIntegration
 			proc.Start ();
 		}
 
-		MacTelemetryDetails details;
-		internal override IPlatformTelemetryDetails PlatformTelemetryDetails ()
+		internal override IPlatformTelemetryDetails CreatePlatformTelemetryDetails ()
 		{
-			if (details == null) {
-				details = MacTelemetryDetails.CreateTelemetryDetails ();
-			}
-
-			return details;
+			return MacTelemetryDetails.CreateTelemetryDetails ();
 		}
 
 		internal override MemoryMonitor CreateMemoryMonitor () => new MacMemoryMonitor ();

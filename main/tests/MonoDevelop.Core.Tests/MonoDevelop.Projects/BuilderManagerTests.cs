@@ -587,7 +587,10 @@ namespace MonoDevelop.Projects
 					// both projects started building in parallel
 
 					var syncAll = Task.WhenAll (WaitForBuildSyncEvent (dep1), WaitForBuildSyncEvent (dep2));
-					if (await Task.WhenAny (syncAll, Task.Delay (5000)) != syncAll)
+
+					//NOTE: this has a longer timeout because otherwise it sometimes times out
+					//maybe something to do with the fact it compiles tasks
+					if (await Task.WhenAny (syncAll, Task.Delay (15000)) != syncAll)
 						Assert.Fail ("Not all builds were started");
 
 					// Finish the build

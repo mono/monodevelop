@@ -53,6 +53,7 @@ namespace MonoDevelop.Refactoring
 	{
 		internal static Func<TextEditor, DocumentContext, OptionSet> OptionSetCreation;
 		static ImmutableList<FindReferencesProvider> findReferencesProvider = ImmutableList<FindReferencesProvider>.Empty;
+		static ImmutableList<FindReferenceUsagesProvider> findReferenceUsagesProviders = ImmutableList<FindReferenceUsagesProvider>.Empty;
 		static List<JumpToDeclarationHandler> jumpToDeclarationHandler = new List<JumpToDeclarationHandler> ();
 
 		static RefactoringService ()
@@ -65,6 +66,18 @@ namespace MonoDevelop.Refactoring
 					break;
 					case ExtensionChange.Remove:
 					findReferencesProvider = findReferencesProvider.Remove (provider);
+					break;
+				}
+			});
+
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/FindReferenceUsagesProvider", delegate(object sender, ExtensionNodeEventArgs args) {
+				var provider  = (FindReferenceUsagesProvider) args.ExtensionObject;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					findReferenceUsagesProviders = findReferenceUsagesProviders.Add (provider);
+					break;
+				case ExtensionChange.Remove:
+					findReferenceUsagesProviders = findReferenceUsagesProviders.Remove (provider);
 					break;
 				}
 			});
@@ -267,6 +280,19 @@ namespace MonoDevelop.Refactoring
 					monitor.Dispose ();
 				if (timer != null)
 					timer.Dispose ();
+			}
+		}
+
+		public static async Task FindReferenceUsagesAsync(Projects.ProjectReference projectReference)
+		{
+			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+				try {
+					foreach (var provider in findReferenceUsagesProviders) {
+						await provider.FindReferences(projectReference, monitor);
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error finding reference usages", ex);
+				}
 			}
 		}
 

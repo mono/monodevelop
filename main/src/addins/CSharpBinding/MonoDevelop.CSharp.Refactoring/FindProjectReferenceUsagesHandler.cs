@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -47,11 +48,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				info.Enabled = false;
 				return;
 			}
-			var analysisProject = TypeSystemService.GetCodeAnalysisProject (currentProject);
-			if (analysisProject == null) {
-				info.Enabled = false;
-				return;
-			}
+
 			var pad = IdeApp.Workbench.GetPad<ProjectSolutionPad> ().Content as ProjectSolutionPad;
 			var selectedNodes = pad.TreeView.GetSelectedNodes ();
 			if (selectedNodes == null || selectedNodes.Length != 1) {
@@ -66,9 +63,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			var currentProject = IdeApp.ProjectOperations.CurrentSelectedProject;
 			if (currentProject == null)
 				return;
-			var analysisProject = TypeSystemService.GetCodeAnalysisProject (currentProject);
-			if (analysisProject == null)
-				return;
 			var pad = IdeApp.Workbench.GetPad<ProjectSolutionPad> ().Content as ProjectSolutionPad;
 			var selectedNodes = pad.TreeView.GetSelectedNodes ();
 			if (selectedNodes == null || selectedNodes.Length != 1)
@@ -77,47 +71,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			var projectRef = dataItem as ProjectReference;
 			if (projectRef != null) {
-				await Task.Run (delegate {
-					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-						monitor.BeginTask (GettextCatalog.GetString ("Analyzing project"), analysisProject.Documents.Count ());
-						Parallel.ForEach (analysisProject.Documents, async document => {
-							try {
-								var model = await document.GetSemanticModelAsync (monitor.CancellationToken).ConfigureAwait (false);
-								if (monitor.CancellationToken.IsCancellationRequested)
-									return;
-								
-								var root = await model.SyntaxTree.GetRootAsync (monitor.CancellationToken).ConfigureAwait (false);
-								if (monitor.CancellationToken.IsCancellationRequested)
-									return;
-								
-								root.DescendantNodes (node => {
-									if (monitor.CancellationToken.IsCancellationRequested)
-										return false;
-
-									var expr = node as ExpressionSyntax;
-									if (expr != null) {
-										var info = model.GetSymbolInfo (expr);
-										if (info.Symbol == null || info.Symbol.ContainingAssembly == null)
-											return true;
-										if (projectRef.Reference.IndexOf (',') >= 0) {
-											if (!string.Equals (info.Symbol.ContainingAssembly.ToString (), projectRef.Reference, StringComparison.OrdinalIgnoreCase))
-												return true;
-										} else {
-											if (!info.Symbol.ContainingAssembly.ToString ().StartsWith (projectRef.Reference, StringComparison.OrdinalIgnoreCase))
-												return true;
-										}
-										monitor.ReportResult (new MemberReference (info.Symbol, document.FilePath, node.Span.Start, node.Span.Length));
-										return false;
-									}
-									return true;
-								}).Count ();
-							} finally {
-								monitor.Step ();
-							}
-						});
-						monitor.EndTask ();
-					}
-				}).ConfigureAwait (false);
+				await RefactoringService.FindReferenceUsagesAsync(projectRef);
 			}
 		}
 	}
