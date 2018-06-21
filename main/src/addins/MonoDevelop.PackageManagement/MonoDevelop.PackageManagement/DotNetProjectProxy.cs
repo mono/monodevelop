@@ -158,14 +158,17 @@ namespace MonoDevelop.PackageManagement
 		/// avoid duplicate package references and also to avoid old versions being
 		/// returned since the evaluated items may still have old values if the
 		/// package references have just been updated. This avoids the wrong value being
-		/// added to the project.assets.json file.
+		/// added to the project.assets.json file. Returns the project's PackageReferences
+		/// first since these should override any implicit PackageReferences. The first
+		/// PackageReference returned will be used and any duplicate ones that are returned
+		/// afterwards are ignored.
 		/// </summary>
 		public IEnumerable<ProjectPackageReference> GetPackageReferences ()
 		{
-			foreach (var item in DotNetProject.MSBuildProject.GetImportedPackageReferences (DotNetProject)) {
+			foreach (var item in DotNetProject.Items.OfType<ProjectPackageReference> ()) {
 				yield return item;
 			}
-			foreach (var item in DotNetProject.Items.OfType<ProjectPackageReference> ()) {
+			foreach (var item in DotNetProject.MSBuildProject.GetImportedPackageReferences (DotNetProject)) {
 				yield return item;
 			}
 		}
