@@ -110,8 +110,14 @@ namespace MonoDevelop.CSharp.OptionProvider
 						}
 					}
 				}
-				value = null;
-				return false;
+
+				var result = optionSet.GetOption (option);
+				if (result == underlyingOptions.GetOption (option)) {
+					value = null;
+					return false;
+				}
+				value = result;
+				return true;
 			}
 		}
 	}
