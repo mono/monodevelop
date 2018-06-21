@@ -431,6 +431,9 @@ namespace MonoDevelop.Ide.Gui
 						}
 						DocumentRegistry.SkipNextChange (fileName);
 						await Window.ViewContent.Save (fileName);
+						// Force a change notification. This is needed for FastCheckNeedsBuild to be updated
+						// when saving before a build, for example.
+						FileService.NotifyFileChanged (fileName);
                         OnSaved(EventArgs.Empty);
 					}
 				}
