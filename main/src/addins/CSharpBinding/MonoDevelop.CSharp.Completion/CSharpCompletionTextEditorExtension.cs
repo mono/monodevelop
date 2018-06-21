@@ -757,7 +757,18 @@ namespace MonoDevelop.CSharp.Completion
 
 		async Task<DebugDataTipInfo> IDebuggerExpressionResolver.ResolveExpressionAsync (IReadonlyTextDocument editor, DocumentContext doc, int offset, CancellationToken cancellationToken)
 		{
-			return await Resolver.DebuggerExpressionResolver.ResolveAsync (editor, doc, offset, cancellationToken).ConfigureAwait (false);
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return default (DebugDataTipInfo);
+			var debugInfoService = doc.RoslynWorkspace.Services.GetLanguageServices (LanguageNames.CSharp).GetService<Microsoft.CodeAnalysis.Editor.Implementation.Debugging.ILanguageDebugInfoService> ();
+			if (debugInfoService == null)
+				return default (DebugDataTipInfo);
+
+			var tipInfo = await debugInfoService.GetDataTipInfoAsync (analysisDocument, offset, cancellationToken);
+			var text = tipInfo.Text;
+			if (text == null && !tipInfo.IsDefault)
+				text = editor.GetTextAt (tipInfo.Span.Start, tipInfo.Span.Length);
+			return new DebugDataTipInfo (tipInfo.Span, text);
 		}
 
 		#endregion
