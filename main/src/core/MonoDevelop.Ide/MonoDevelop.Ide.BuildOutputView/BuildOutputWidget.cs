@@ -716,7 +716,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				this.widget = widget;
 				Reset ();
 
-				list = (node == null || node.Parent == null) ? DataSource.RootNodes : NodesWithChildren (node.Parent.Children);
+				list = (node == null || node.Parent == null) ? DataSource?.RootNodes : NodesWithChildren (node.Parent.Children);
 			}
 
 			IReadOnlyList<BuildOutputNode> NodesWithChildren(IEnumerable<BuildOutputNode> nodes)
@@ -730,7 +730,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return aux;
 			}
 
-			public int IconCount => list.Count;
+			public int IconCount => list?.Count ?? 0;
 
 			public void ActivateItem (int n)
 			{
