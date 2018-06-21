@@ -110,10 +110,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			pathBar = new PathBar (this.CreatePathWidget, PathBarTopPadding) {
 				DrawBottomBorder = false
 			};
-			var entries = new PathEntry [] {
-				new PathEntry (GettextCatalog.GetString ("No selection"))
-			};
-			UpdatePathBarEntries (entries);
 			pathBar.Show ();
 
 			box.PackStart (pathBar, true, true, 10);
