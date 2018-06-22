@@ -20,6 +20,9 @@
 			defaultHandler="PerformanceDiagnosticsAddIn.EnhanceSampleFile"
 			_label="Enhance Sample output file"
 			_description="Use this command to covert JITed method addresses to full method names of Sample tool output file." />
+		<Command id="PerformanceDiagnosticsAddIn.StartUIThreadMonitorHandler"
+			_label="Start monitoring UIThread hangs"
+			defaultHandler="PerformanceDiagnosticsAddIn.StartUIThreadMonitorHandler" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/MainMenu/Help">
 		<ItemSet id="Diagnostics" _label="_Diagnostics">
