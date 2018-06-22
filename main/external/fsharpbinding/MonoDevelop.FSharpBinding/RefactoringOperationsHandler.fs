@@ -183,7 +183,7 @@ module Refactoring =
                                    |> ignore
                 | None -> ()
             ()
-        } |> Async.Start
+        } |> Async.StartAndLogException
 
     let findDeclarationSymbol documentationIdString (symbols: FSharpSymbolUse seq) =
         symbols

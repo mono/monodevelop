@@ -265,6 +265,19 @@ module Async =
                 LoggingService.logDebug "Operation cancelled"
                 continuation()))
 
+    let StartAndLogException computation = 
+        Async.StartWithContinuations(
+            async { do! Async.SwitchToThreadPool()
+                    return! computation }, 
+            continuation=(fun _result -> ()),
+            exceptionContinuation=(fun exn -> 
+                match exn with 
+                | :? OperationCanceledException -> ()
+                | exn -> LoggingService.LogError("[F#] Uncaught exception: ", exn)
+            ),
+            cancellationContinuation=(fun _oce ->
+                LoggingService.logDebug("StartAndLogException: Operation cancelled")))
+
 [<AutoOpen>]
 module AsyncHelpers =
     let StartAsyncAsTask ct p = Async.StartAsTask(p, cancellationToken=ct)

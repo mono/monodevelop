@@ -61,7 +61,7 @@ type HighlightUnusedCode() =
                         unused |> Option.iter(fun unused' ->
                             highlightUnusedCode.highlightUnused x.Editor unused' previousUnused
                             previousUnused <- unused')
-                    } |> Async.Start) |> Some
+                    } |> Async.StartAndLogException) |> Some
 
     override x.Dispose() =
         parsedSubscription |> Option.iter(fun sub -> sub.Dispose())
