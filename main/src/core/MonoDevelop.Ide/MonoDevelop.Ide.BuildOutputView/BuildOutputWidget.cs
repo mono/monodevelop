@@ -105,6 +105,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			BuildOutput = output;
 
 			BuildOutput.OutputChanged += OnOutputChanged;
+			BuildOutput.ProjectStarted += OnProjectStarted;
+			BuildOutput.ProjectFinished += OnProjectFinished;
 			ProcessLogs (false);
 
 			pathBar = new PathBar (this.CreatePathWidget, PathBarTopPadding) {
@@ -120,6 +122,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 		void OnOutputChanged (object sender, EventArgs args)
 		{
 			ProcessLogs (showDiagnosticsButton.Active);
+		}
+
+		void OnProjectStarted (object sender, EventArgs args)
+		{
+			SetSpinnerVisibility (true);
+		}
+
+		void OnProjectFinished (object sender, EventArgs args)
+		{
+			SetSpinnerVisibility (false);
 		}
 
 		void Initialize (DocumentToolbar toolbar)
@@ -681,6 +693,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			if (BuildOutput != null) {
 				BuildOutput.OutputChanged -= OnOutputChanged;
+				BuildOutput.ProjectStarted -= OnProjectStarted;
+				BuildOutput.ProjectFinished -= OnProjectFinished;
 				BuildOutput = null;
 			}
 
