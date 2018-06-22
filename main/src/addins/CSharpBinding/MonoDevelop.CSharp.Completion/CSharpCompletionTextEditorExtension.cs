@@ -65,7 +65,7 @@ using MonoDevelop.CSharp.Completion.Provider;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	sealed partial class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IDebuggerExpressionResolver
+	sealed partial class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension
 	{
 		/*		internal protected virtual Mono.TextEditor.TextEditorData TextEditorData {
 					get {
@@ -753,25 +753,6 @@ namespace MonoDevelop.CSharp.Completion
 			return result.ParameterIndex;
 		}
 
-		#region IDebuggerExpressionResolver implementation
-
-		async Task<DebugDataTipInfo> IDebuggerExpressionResolver.ResolveExpressionAsync (IReadonlyTextDocument editor, DocumentContext doc, int offset, CancellationToken cancellationToken)
-		{
-			var analysisDocument = doc.AnalysisDocument;
-			if (analysisDocument == null)
-				return default (DebugDataTipInfo);
-			var debugInfoService = doc.RoslynWorkspace.Services.GetLanguageServices (LanguageNames.CSharp).GetService<Microsoft.CodeAnalysis.Editor.Implementation.Debugging.ILanguageDebugInfoService> ();
-			if (debugInfoService == null)
-				return default (DebugDataTipInfo);
-
-			var tipInfo = await debugInfoService.GetDataTipInfoAsync (analysisDocument, offset, cancellationToken);
-			var text = tipInfo.Text;
-			if (text == null && !tipInfo.IsDefault)
-				text = editor.GetTextAt (tipInfo.Span.Start, tipInfo.Span.Length);
-			return new DebugDataTipInfo (tipInfo.Span, text);
-		}
-
-		#endregion
 
 		[CommandHandler (RefactoryCommands.ImportSymbol)]
 		async void ImportSymbolCommand ()
