@@ -1,12 +1,10 @@
 ﻿namespace MonoDevelop.FSharp
 open System
-open System.Diagnostics
 open System.Text
 open System.IO
 open System.Threading.Tasks
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Core
-//open ExtCore
 open System.Reactive.Linq
 
 module Seq =
@@ -249,13 +247,17 @@ module LoggingService =
     let logWarning format = logWithThread LoggingService.LogWarning format
 
 module Async =
-
     let inline awaitPlainTask (task: Task) = 
         task.ContinueWith (fun task -> if task.IsFaulted then raise task.Exception)
         |> Async.AwaitTask
 
+    let StartInThreadpoolWithContinuation (continuation: unit -> unit) computation =
+        async {
+            Async.StartWithContinuations(computation, continuation, (fun _ex -> continuation()), (fun _ex -> continuation()))
+        } |> Async.Start
+
 [<AutoOpen>]
-module AsyncHelpers = 
+module AsyncHelpers =
     let StartAsyncAsTask ct p = Async.StartAsTask(p, cancellationToken=ct)
 
 [<AutoOpen>]
