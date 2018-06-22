@@ -31,6 +31,7 @@ using System.Runtime.InteropServices;
 using CoreFoundation;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace MacPlatform
 {
@@ -63,15 +64,19 @@ namespace MacPlatform
 
 			result.osType = GetMediaType ("/");
 
-			var login = GetLoginTime ();
-			if (login != DateTime.MinValue) {
-				var epoch = new DateTime (1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+			try {
+				var login = GetLoginTime ();
+				if (login != DateTime.MinValue) {
+					var epoch = new DateTime (1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
-				var timeSinceEpoch = DateTime.UtcNow - epoch;
-				var loginSinceEpoch = login - epoch;
-				result.sinceLogin = timeSinceEpoch - loginSinceEpoch;
+					var timeSinceEpoch = DateTime.UtcNow - epoch;
+					var loginSinceEpoch = login - epoch;
+					result.sinceLogin = timeSinceEpoch - loginSinceEpoch;
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error getting logintime", e);
+				result.sinceLogin = TimeSpan.Zero;
 			}
-
 			return result;
 		}
 
