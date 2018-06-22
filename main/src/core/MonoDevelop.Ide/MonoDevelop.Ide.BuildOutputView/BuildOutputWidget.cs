@@ -265,6 +265,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 						firstNode = child;
 					}
 					firstNode = ExpandChildrenWithErrorsOrWarnings (tree, dataSource, child, expandWarnings, firstNode);
+				} else if (child.NodeType == BuildOutputNodeType.Project) {
+					tree.ExpandToRow (child);
 				}
 			}
 
