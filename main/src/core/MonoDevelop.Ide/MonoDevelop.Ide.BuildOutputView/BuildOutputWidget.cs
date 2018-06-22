@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using Xwt;
@@ -110,10 +110,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			pathBar = new PathBar (this.CreatePathWidget, PathBarTopPadding) {
 				DrawBottomBorder = false
 			};
-			var entries = new PathEntry [] {
-				new PathEntry (GettextCatalog.GetString ("No selection"))
-			};
-			UpdatePathBarEntries (entries);
 			pathBar.Show ();
 
 			box.PackStart (pathBar, true, true, 10);
@@ -728,7 +724,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 				this.widget = widget;
 				Reset ();
 
-				list = (node == null || node.Parent == null) ? DataSource.RootNodes : NodesWithChildren (node.Parent.Children);
+				list = (node == null || node.Parent == null) ?
+					DataSource?.RootNodes?.Where (x => x.NodeType != BuildOutputNodeType.BuildSummary).ToList () :
+				    NodesWithChildren (node.Parent.Children);
 			}
 
 			IReadOnlyList<BuildOutputNode> NodesWithChildren(IEnumerable<BuildOutputNode> nodes)
@@ -742,7 +740,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return aux;
 			}
 
-			public int IconCount => list.Count;
+			public int IconCount => list?.Count ?? 0;
 
 			public void ActivateItem (int n)
 			{
