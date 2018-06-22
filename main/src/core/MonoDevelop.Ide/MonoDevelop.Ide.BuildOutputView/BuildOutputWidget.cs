@@ -232,12 +232,37 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		static void ExpandErrorOrWarningsNodes (TreeView treeView, BuildOutputDataSource dataSource, bool warnings)
 		{
+			BuildOutputNode firstNodeFound = null;
+
 			int rootsCount = dataSource.GetChildrenCount (null);
 			for (int i = 0; i < rootsCount; i++) {
 				var root = dataSource.GetChild (null, i) as BuildOutputNode;
 				treeView.ExpandRow (root, false);
-				ExpandChildrenWithErrorsOrWarnings (treeView, dataSource, root, warnings);
+				firstNodeFound = ExpandChildrenWithErrorsOrWarnings (treeView, dataSource, root, warnings, firstNodeFound);
 			}
+
+			if (firstNodeFound != null) {
+				treeView.ScrollToRow (firstNodeFound);
+				treeView.SelectRow (firstNodeFound);
+			}
+		}
+
+		static BuildOutputNode ExpandChildrenWithErrorsOrWarnings (TreeView tree, BuildOutputDataSource dataSource, BuildOutputNode parent, bool expandWarnings, BuildOutputNode firstNode)
+		{
+			int totalChildren = dataSource.GetChildrenCount (parent);
+			for (int i = 0; i < totalChildren; i++) {
+				var child = dataSource.GetChild (parent, i) as BuildOutputNode;
+				var containNodes = expandWarnings ? (child?.HasWarnings ?? false) : (child?.HasErrors ?? false);
+				if (containNodes) {
+					tree.ExpandToRow (child);
+					if (child.NodeType == (expandWarnings ? BuildOutputNodeType.Warning : BuildOutputNodeType.Error) && firstNode == null) {
+						firstNode = child;
+					}
+					firstNode = ExpandChildrenWithErrorsOrWarnings (tree, dataSource, child, expandWarnings, firstNode);
+				}
+			}
+
+			return firstNode;
 		}
 
 		internal Task GoToError (string description, string project)
@@ -561,19 +586,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return "";
 			var nextShortcut = KeyBindingManager.BindingToDisplayLabel (key, false);
 			return includeParen ? "(" + nextShortcut + ")" : nextShortcut;
-		}
-
-		static void ExpandChildrenWithErrorsOrWarnings (TreeView tree, BuildOutputDataSource dataSource, BuildOutputNode parent, bool expandWarnings)
-		{
-			int totalChildren = dataSource.GetChildrenCount (parent);
-			for (int i = 0; i < totalChildren; i++) {
-				var child = dataSource.GetChild (parent, i) as BuildOutputNode;
-				var containNodes = expandWarnings ? (child?.HasWarnings ?? false) : (child?.HasErrors ?? false);
-				if (containNodes) {
-					tree.ExpandToRow (child);
-					ExpandChildrenWithErrorsOrWarnings (tree, dataSource, child, expandWarnings);
-				}
-			}
 		}
 
 		Task SetSpinnerVisibility (bool visible)
