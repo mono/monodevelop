@@ -26,6 +26,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -41,15 +42,16 @@ namespace UIThreadMonitorDaemon
 	{
 		static int tcpPort;
 		static int processId;
+		static bool profile = true;
+		static string hangFile;
+		static bool hangFileCreated;
 
 		public static int Main (string [] args)
 		{
-			if (args.Length != 2)
-				return 1;
-			if (!int.TryParse (args [0], out tcpPort))
-				return 2;
-			if (!int.TryParse (args [1], out processId))
-				return 3;
+			int result = ParseArguments (args);
+			if (result != 0)
+				return result;
+
 			var thread = new Thread (new ParameterizedThreadStart (Loop));
 			thread.Start (tcpPort);
 			var sw = Stopwatch.StartNew ();
@@ -58,18 +60,62 @@ namespace UIThreadMonitorDaemon
 				sw.Restart ();
 				if (!responseEvent.WaitOne (100)) {
 					Console.Error.WriteLine ($"Timeout({seq}):" + sw.Elapsed);
-					StartCollectingStacks ();
-					if (!responseEvent.WaitOne (10000))
+					if (profile)
+						StartCollectingStacks ();
+					if (!responseEvent.WaitOne (10000)) {
 						Console.Error.WriteLine ($"No response({seq}) in 10sec");
-					else
+						CreateHangFile ();
+					} else
 						Console.Error.WriteLine ($"Response({seq}) in {sw.Elapsed}");
-					StopCollectingStacks ();
+					if (profile)
+						StopCollectingStacks ();
 				} else {
 					if (sw.ElapsedMilliseconds > 20)
 						Console.Error.WriteLine ($"In time({seq}):" + sw.Elapsed);
+					RemoveHangFile ();
 				}
 			}
 			return 0;
+		}
+
+		static int ParseArguments (string[] args)
+		{
+			if (args.Length < 2)
+				return 1;
+			if (!int.TryParse (args [0], out tcpPort))
+				return 2;
+			if (!int.TryParse (args [1], out processId))
+				return 3;
+
+			if (args.Length > 2) {
+				const string hangFileOption = "--hangFile:";
+				foreach (string arg in args.Skip (2)) {
+					if (arg == "--noProfile")
+						profile = false;
+					else if (arg.StartsWith (hangFileOption, StringComparison.OrdinalIgnoreCase))
+						hangFile = arg.Substring (hangFileOption.Length);
+				}
+			}
+
+			return 0;
+		}
+
+		static void CreateHangFile ()
+		{
+			if (hangFileCreated)
+				return;
+
+			File.WriteAllText (hangFile, string.Empty);
+			hangFileCreated = true;
+		}
+
+		static void RemoveHangFile ()
+		{
+			if (!hangFileCreated)
+				return;
+
+			File.Delete (hangFile);
+			hangFileCreated = false;
 		}
 
 		static Process sampleProcess;

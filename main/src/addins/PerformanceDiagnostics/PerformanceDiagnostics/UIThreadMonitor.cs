@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PerformanceDiagnosticsAddIn
@@ -89,11 +90,18 @@ namespace PerformanceDiagnosticsAddIn
 
 		public void Start ()
 		{
+			Start (null);
+		}
+
+		public void Start (string hangFileName, bool profile = true)
+		{
 			if (IsListening)
 				return;
-			if (!(Environment.GetEnvironmentVariable ("MONO_DEBUG")?.Contains ("disable_omit_fp") ?? false)) {
-				MessageService.ShowWarning ("Set environment variable",
-											$@"It is highly recommended to set environment variable ""MONO_DEBUG"" to ""disable_omit_fp"" and restart {BrandingService.ApplicationName} to have better results.");
+			if (profile) {
+				if (!(Environment.GetEnvironmentVariable ("MONO_DEBUG")?.Contains ("disable_omit_fp") ?? false)) {
+					MessageService.ShowWarning ("Set environment variable",
+												$@"It is highly recommended to set environment variable ""MONO_DEBUG"" to ""disable_omit_fp"" and restart {BrandingService.ApplicationName} to have better results.");
+				}
 			}
 			IsListening = true;
 			//start listening on random port
@@ -112,7 +120,7 @@ namespace PerformanceDiagnosticsAddIn
 			var port = ((IPEndPoint)listener.LocalEndpoint).Port;
 			process = new Process ();
 			process.StartInfo.FileName = "mono";
-			process.StartInfo.Arguments = $"{typeof (UIThreadMonitorDaemon.MainClass).Assembly.Location} {port} {Process.GetCurrentProcess ().Id}";
+			process.StartInfo.Arguments = GetArguments (port, hangFileName, profile);
 			process.StartInfo.UseShellExecute = false;
 			process.StartInfo.RedirectStandardOutput = true;
 			process.StartInfo.RedirectStandardError = true;//Ignore it, otherwise it goes to IDE logging
@@ -125,6 +133,20 @@ namespace PerformanceDiagnosticsAddIn
 			pumpErrorThread = new Thread (new ThreadStart (PumpErrorStream));//We need to read this...
 			pumpErrorThread.IsBackground = true;
 			pumpErrorThread.Start ();
+		}
+
+		static string GetArguments (int port, string hangFileName, bool profile)
+		{
+			var arguments = new StringBuilder ();
+			arguments.Append ($"{typeof (UIThreadMonitorDaemon.MainClass).Assembly.Location} {port} {Process.GetCurrentProcess ().Id}");
+
+			if (!profile)
+				arguments.Append (" --noProfile");
+
+			if (!string.IsNullOrEmpty (hangFileName))
+				arguments.Append ($" --hangFile:\"{hangFileName}\"");
+
+			return arguments.ToString ();
 		}
 
 		[DllImport ("__Internal")]
