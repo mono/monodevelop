@@ -251,10 +251,19 @@ module Async =
         task.ContinueWith (fun task -> if task.IsFaulted then raise task.Exception)
         |> Async.AwaitTask
 
-    let StartInThreadpoolWithContinuation (continuation: unit -> unit) computation =
-        async {
-            Async.StartWithContinuations(computation, continuation, (fun _ex -> continuation()), (fun _ex -> continuation()))
-        } |> Async.Start
+    let StartInThreadpoolWithContinuation continuation computation =
+        Async.StartWithContinuations(
+            async {
+                do! Async.SwitchToThreadPool()
+                return! computation
+            },
+            continuation,
+            exceptionContinuation = (fun ex ->
+                LoggingService.LogError("Exception:", ex)
+                continuation()),
+            cancellationContinuation = (fun _ex ->
+                LoggingService.logDebug "Operation cancelled"
+                continuation()))
 
 [<AutoOpen>]
 module AsyncHelpers =
