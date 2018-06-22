@@ -162,9 +162,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				buttonSearchForward.Clicked += FindNext;
 				buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext, true));
 				buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious, true));
-				buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
-				buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
-				buttonSearchBackward.Sensitive = buttonSearchForward.Sensitive = false;
+				SetSearchButtonsSensitivity (false);
 			});
 
 			box = new Gtk.VBox ();
@@ -572,7 +570,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 			resultInformLabel.Show ();
 
-			buttonSearchForward.Sensitive = buttonSearchBackward.Sensitive = currentSearch?.MatchesCount > 0; 
+			SetSearchButtonsSensitivity (currentSearch?.MatchesCount > 0);
 		}
 
 		static string GetShortcut (object commandId, bool includeParen)
@@ -582,6 +580,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return "";
 			var nextShortcut = KeyBindingManager.BindingToDisplayLabel (key, false);
 			return includeParen ? "(" + nextShortcut + ")" : nextShortcut;
+		}
+
+		void SetSearchButtonsSensitivity (bool sensitive)
+		{
+			buttonSearchForward.Sensitive = buttonSearchBackward.Sensitive = sensitive;
+			buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu).WithStyles (sensitive ? "" : "disabled");
+			buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu).WithStyles (sensitive ? "" : "disabled");
 		}
 
 		Task SetSpinnerVisibility (bool visible)
