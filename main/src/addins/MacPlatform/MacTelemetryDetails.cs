@@ -66,10 +66,10 @@ namespace MacPlatform
 
 			try {
 				var login = GetLoginTime ();
-				if (login != DateTime.MinValue) {
-					var epoch = new DateTime (1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+				if (login != DateTimeOffset.MinValue) {
+					var epoch = new DateTimeOffset (1970, 1, 1, 0, 0, 0, 0, TimeSpan.Zero);
 
-					var timeSinceEpoch = DateTime.UtcNow - epoch;
+					var timeSinceEpoch = DateTimeOffset.UtcNow - epoch;
 					var loginSinceEpoch = login - epoch;
 					result.sinceLogin = timeSinceEpoch - loginSinceEpoch;
 				}
@@ -225,7 +225,7 @@ namespace MacPlatform
 			LastLogX ll = new LastLogX ();
 			if (IntPtr.Zero == getlastlogxbyname (Environment.UserName, ref ll)) {
 				// getlastlogxbyname doesn't work if SIP is disabled
-				return DateTime.MinValue;
+				return DateTimeOffset.MinValue;
 			}
 
 			var dt = DateTimeOffset.FromUnixTimeSeconds (ll.ll_tv_tv_sec);
