@@ -53,21 +53,28 @@ namespace UIThreadMonitorDaemon
 			if (result != 0)
 				return result;
 
+			var events = new [] { responseEvent, disconnectEvent };
 			var thread = new Thread (new ParameterizedThreadStart (Loop));
 			thread.Start (tcpPort);
 			var sw = Stopwatch.StartNew ();
-			while (!disonnected) {
+			while (!disconnected) {
 				sentEvent.WaitOne ();
 				sw.Restart ();
 				if (!responseEvent.WaitOne (100)) {
 					Console.Error.WriteLine ($"Timeout({seq}):" + sw.Elapsed);
 					if (sample)
 						StartCollectingStacks ();
-					if (!responseEvent.WaitOne (10000)) {
+
+					int waitResult = WaitHandle.WaitAny (events, 10000);
+					if (waitResult == 0) // Got a response.
+						Console.Error.WriteLine ($"Response({seq}) in {sw.Elapsed}");
+					else if (waitResult == 1) { // Disconnect
+						// Do nothing. The while loop checks for a disconnect.
+					} else { // Timeout
 						Console.Error.WriteLine ($"No response({seq}) in 10sec");
 						CreateHangFile ();
-					} else
-						Console.Error.WriteLine ($"Response({seq}) in {sw.Elapsed}");
+					}
+
 					if (sample)
 						StopCollectingStacks ();
 				} else {
@@ -151,7 +158,7 @@ namespace UIThreadMonitorDaemon
 		static AutoResetEvent sentEvent = new AutoResetEvent (false);
 		static ManualResetEvent responseEvent = new ManualResetEvent (false);
 		static ManualResetEvent disconnectEvent = new ManualResetEvent (false);
-		static bool disonnected;
+		static bool disconnected;
 		static byte seq;
 		static void Loop (object portObj)
 		{
@@ -166,7 +173,7 @@ namespace UIThreadMonitorDaemon
 				sentEvent.Set ();
 				var readBytes = socket.Receive (response, 1, SocketFlags.None);
 				if (readBytes != 1) {
-					disonnected = true;
+					disconnected = true;
 					disconnectEvent.Set ();
 					return;
 				}
