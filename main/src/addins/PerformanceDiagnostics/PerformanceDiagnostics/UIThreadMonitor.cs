@@ -124,9 +124,12 @@ namespace PerformanceDiagnosticsAddIn
 			process.StartInfo.RedirectStandardError = true;//Ignore it, otherwise it goes to IDE logging
 			process.Start ();
 			process.StandardError.ReadLine ();
-			dumpsReaderThread = new Thread (new ParameterizedThreadStart (DumpsReader));
-			dumpsReaderThread.IsBackground = true;
-			dumpsReaderThread.Start (process);
+
+			if (IsSampling) {
+				dumpsReaderThread = new Thread (new ParameterizedThreadStart (DumpsReader));
+				dumpsReaderThread.IsBackground = true;
+				dumpsReaderThread.Start (process);
+			}
 
 			pumpErrorThread = new Thread (new ParameterizedThreadStart (PumpErrorStream));//We need to read this...
 			pumpErrorThread.IsBackground = true;
