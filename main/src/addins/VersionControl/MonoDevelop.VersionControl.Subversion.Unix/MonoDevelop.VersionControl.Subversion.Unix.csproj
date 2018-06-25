@@ -53,9 +53,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.VersionControl.Subversion.Unix.addin.xml">
-      <LogicalName>MonoDevelop.VersionControl.Subversion.Unix.addin.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.VersionControl.Subversion.Unix.addin.xml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="MonoDevelop.VersionControl.Subversion.Unix.dll.config">

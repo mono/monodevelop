@@ -87,24 +87,12 @@
     <Compile Include="Gui\MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="templates\EmptyVBFile.xft.xml">
-      <LogicalName>EmptyVBFile.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\EmptyVBProject.xpt.xml">
-      <LogicalName>EmptyVBProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\VBConsoleApplicationProject.xpt.xml">
-      <LogicalName>VBConsoleApplicationProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\VBGtkSharp2Project.xpt.xml">
-      <LogicalName>VBGtkSharp2Project.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VBNetBinding.addin.xml">
-      <LogicalName>VBNetBinding.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\AssemblyInfo.xft.xml">
-      <LogicalName>AssemblyInfo.xft.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="templates\EmptyVBFile.xft.xml" />
+    <EmbeddedResource Include="templates\EmptyVBProject.xpt.xml" />
+    <EmbeddedResource Include="templates\VBConsoleApplicationProject.xpt.xml" />
+    <EmbeddedResource Include="templates\VBGtkSharp2Project.xpt.xml" />
+    <EmbeddedResource Include="VBNetBinding.addin.xml" />
+    <EmbeddedResource Include="templates\AssemblyInfo.xft.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -40,9 +40,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="GnomePlatform.addin.xml">
-      <LogicalName>GnomePlatform.addin.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="GnomePlatform.addin.xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GnomePlatform.cs" />

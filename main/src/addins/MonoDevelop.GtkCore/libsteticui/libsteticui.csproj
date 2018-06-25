@@ -107,12 +107,8 @@
     <Compile Include="Windows\WindowsTheme.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="action.png">
-      <LogicalName>action.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="missing.png">
-      <LogicalName>missing.png</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="action.png" />
+    <EmbeddedResource Include="missing.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="libsteticui.dll.config">

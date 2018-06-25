@@ -55,9 +55,7 @@
     <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ExtensionModel.addin.xml">
-      <LogicalName>ExtensionModel.addin.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="ExtensionModel.addin.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

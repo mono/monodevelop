@@ -119,51 +119,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="templates\ConsoleProject.xpt.xml">
-      <LogicalName>ConsoleProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\EmptyCSharpFile.xft.xml">
-      <LogicalName>EmptyCSharpFile.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\EmptyProject.xpt.xml">
-      <LogicalName>EmptyProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\GtkSharp2Project.xpt.xml">
-      <LogicalName>GtkSharp2Project.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\Library.xpt.xml">
-      <LogicalName>Library.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CSharpBinding.addin.xml">
-      <LogicalName>CSharpBinding.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\AssemblyInfo.xft.xml">
-      <LogicalName>AssemblyInfo.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\AllmanCSharpPolicy.xml">
-      <LogicalName>AllmanCSharpPolicy.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\InvariantTextStylePolicy.xml">
-      <LogicalName>InvariantTextStylePolicy.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\KRCSharpPolicy.xml">
-      <LogicalName>KRCSharpPolicy.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoCSharpPolicy.xml">
-      <LogicalName>MonoCSharpPolicy.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\PortableLibrary.xpt.xml">
-      <LogicalName>PortableLibrary.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\SharedAssetsProject.xpt.xml">
-      <LogicalName>SharedAssetsProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoDevelopCSharpPolicy.xml">
-      <LogicalName>MonoDevelopCSharpPolicy.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoTextStylePolicy.xml">
-      <LogicalName>MonoTextStylePolicy.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="templates\ConsoleProject.xpt.xml" />
+    <EmbeddedResource Include="templates\EmptyCSharpFile.xft.xml" />
+    <EmbeddedResource Include="templates\EmptyProject.xpt.xml" />
+    <EmbeddedResource Include="templates\GtkSharp2Project.xpt.xml" />
+    <EmbeddedResource Include="templates\Library.xpt.xml" />
+    <EmbeddedResource Include="CSharpBinding.addin.xml" />
+    <EmbeddedResource Include="templates\AssemblyInfo.xft.xml" />
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\AllmanCSharpPolicy.xml" />
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\InvariantTextStylePolicy.xml" />
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\KRCSharpPolicy.xml" />
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoCSharpPolicy.xml" />
+    <EmbeddedResource Include="templates\PortableLibrary.xpt.xml" />
+    <EmbeddedResource Include="templates\SharedAssetsProject.xpt.xml" />
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoDevelopCSharpPolicy.xml" />
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoTextStylePolicy.xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />

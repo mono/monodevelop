@@ -149,51 +149,21 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\MonoDevelop.AspNet.addin.xml">
-      <LogicalName>MonoDevelop.AspNet.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\project-aspnet-template.png">
-      <LogicalName>project-aspnet-template.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\project-aspnet-template%402x.png">
-      <LogicalName>project-aspnet-template@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\project-aspnet-template~dark.png">
-      <LogicalName>project-aspnet-template~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\project-aspnet-template~dark%402x.png">
-      <LogicalName>project-aspnet-template~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\project-aspnet-32.png">
-      <LogicalName>project-aspnet-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\project-aspnet-32%402x.png">
-      <LogicalName>project-aspnet-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark.png">
-      <LogicalName>project-aspnet-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark%402x.png">
-      <LogicalName>project-aspnet-32~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\project-aspnet-32~sel.png">
-      <LogicalName>project-aspnet-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\project-aspnet-32~sel%402x.png">
-      <LogicalName>project-aspnet-32~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark~sel.png">
-      <LogicalName>project-aspnet-32~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark~sel%402x.png">
-      <LogicalName>project-aspnet-32~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\aspnet-wizard-page.png">
-      <LogicalName>aspnet-wizard-page.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\aspnet-wizard-page%402x.png">
-      <LogicalName>aspnet-wizard-page@2x.png</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\MonoDevelop.AspNet.addin.xml" />
+    <EmbeddedResource Include="Templates\images\project-aspnet-template.png" />
+    <EmbeddedResource Include="Templates\images\project-aspnet-template%402x.png" />
+    <EmbeddedResource Include="Templates\images\project-aspnet-template~dark.png" />
+    <EmbeddedResource Include="Templates\images\project-aspnet-template~dark%402x.png" />
+    <EmbeddedResource Include="Templates\images\project-aspnet-32.png" />
+    <EmbeddedResource Include="Templates\images\project-aspnet-32%402x.png" />
+    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark.png" />
+    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark%402x.png" />
+    <EmbeddedResource Include="Templates\images\project-aspnet-32~sel.png" />
+    <EmbeddedResource Include="Templates\images\project-aspnet-32~sel%402x.png" />
+    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark~sel.png" />
+    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark~sel%402x.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-wizard-page.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-wizard-page%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Html\HtmlSchemaService.cs" />

@@ -111,14 +111,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.VersionControl.Git.addin.xml">
-      <LogicalName>MonoDevelop.VersionControl.Git.addin.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.VersionControl.Git.addin.xml" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'DebugWin32' OR '$(Configuration)' == 'ReleaseWin32' ">
-    <EmbeddedResource Include="MonoDevelop.VersionControl.Git.Win32.addin.xml">
-      <LogicalName>MonoDevelop.VersionControl.Git.Win32.addin.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.VersionControl.Git.Win32.addin.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GitIgnore.txt">

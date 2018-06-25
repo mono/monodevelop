@@ -26,9 +26,7 @@
     <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Manifest.addin.xml">
-      <LogicalName>Manifest.addin.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Manifest.addin.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">

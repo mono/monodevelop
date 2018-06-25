@@ -31,9 +31,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\MonoDevelop.Core.Tests.addin.xml">
-      <LogicalName>MonoDevelop.Core.Tests.addin.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\MonoDevelop.Core.Tests.addin.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
