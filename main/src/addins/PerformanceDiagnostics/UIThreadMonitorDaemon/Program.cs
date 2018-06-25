@@ -45,6 +45,7 @@ namespace UIThreadMonitorDaemon
 		static bool sample = true;
 		static string hangFile;
 		static bool hangFileCreated;
+		static int sendInterval;
 
 		public static int Main (string [] args)
 		{
@@ -87,11 +88,16 @@ namespace UIThreadMonitorDaemon
 			if (!int.TryParse (args [1], out processId))
 				return 3;
 
+			sendInterval = 100; // Default time (ms) to wait before sending message to IDE.
+
 			if (args.Length > 2) {
 				const string hangFileOption = "--hangFile:";
 				foreach (string arg in args.Skip (2)) {
-					if (arg == "--noSample")
+					if (arg == "--noSample") {
 						sample = false;
+						// Increase the send interval if no sampling is being done.
+						sendInterval = 1000; // 1 second.
+					}
 					else if (arg.StartsWith (hangFileOption, StringComparison.OrdinalIgnoreCase))
 						hangFile = arg.Substring (hangFileOption.Length);
 				}
@@ -154,7 +160,7 @@ namespace UIThreadMonitorDaemon
 			socket.Connect (ipe);
 			var response = new byte [1];
 			while (true) {
-				Thread.Sleep (100);
+				Thread.Sleep (sendInterval);
 				socket.Send (new byte [1] { ++seq });
 				responseEvent.Reset ();
 				sentEvent.Set ();
