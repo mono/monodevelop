@@ -33,9 +33,7 @@ namespace PerformanceDiagnosticsAddIn
 			var socket = (Socket)param;
 			byte [] buffer = new byte [1];
 			ManualResetEvent waitUIThread = new ManualResetEvent (false);
-			var sw = Stopwatch.StartNew ();
 			while (true) {
-				sw.Restart ();
 				var readBytes = socket.Receive (buffer, 1, SocketFlags.None);
 				if (readBytes != 1)
 					return;
