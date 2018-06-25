@@ -57,3 +57,10 @@ NUGET
     System.Text.Encoding (4.3)
     System.Threading (4.3)
     System.ValueTuple (4.4)
+GITHUB
+  remote: fsprojects/Roslyn.FSharp
+    Roslyn.FSharp/FSharpSymbol.fs (c3d5b50e0ec08d6349281f8ece746caa4fa3910b)
+    Roslyn.FSharp/FSharpTypeSymbol.fs (c3d5b50e0ec08d6349281f8ece746caa4fa3910b)
+    Roslyn.FSharp/Helpers.fs (c3d5b50e0ec08d6349281f8ece746caa4fa3910b)
+    Roslyn.FSharp/ICompilation.fs (c3d5b50e0ec08d6349281f8ece746caa4fa3910b)
+    Roslyn.FSharp/XmlDocumentation.fs (c3d5b50e0ec08d6349281f8ece746caa4fa3910b)

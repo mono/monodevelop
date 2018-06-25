@@ -7,3 +7,8 @@ Newtonsoft.Json
 System.ValueTuple
 StrongNamer
 System.Reactive.Linq
+File: FSharpSymbol.fs
+File: FSharpTypeSymbol.fs
+File: Helpers.fs
+File: ICompilation.fs
+File: XmlDocumentation.fs

@@ -71,6 +71,26 @@
   <Import Project="..\.paket\paket.targets" />
   <Import Project="templates.targets" />
   <ItemGroup>
+    <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\FSharpSymbol.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/FSharpSymbol.fs</Link>
+    </Compile>
+    <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\FSharpTypeSymbol.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/FSharpTypeSymbol.fs</Link>
+    </Compile>
+    <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\Helpers.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/Helpers.fs</Link>
+    </Compile>
+    <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\ICompilation.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/ICompilation.fs</Link>
+    </Compile>
+    <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\XmlDocumentation.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/XmlDocumentation.fs</Link>
+    </Compile>
     <Compile Include="Services\Extensions.fs" />
     <Compile Include="Services\CompilerLocationUtils.fs" />
     <Compile Include="Services\OrderAssemblyReferences.fs" />
