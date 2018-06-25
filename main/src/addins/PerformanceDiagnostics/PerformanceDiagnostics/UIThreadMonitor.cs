@@ -20,7 +20,19 @@ namespace PerformanceDiagnosticsAddIn
 	{
 		public static UIThreadMonitor Instance { get; } = new UIThreadMonitor ();
 
-		UIThreadMonitor () { }
+		UIThreadMonitor ()
+		{
+			IdeApp.Exited += IdeAppExited;
+		}
+
+		void IdeAppExited (object sender, EventArgs e)
+		{
+			try {
+				Instance.Stop ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("UIThreadMonitor stop error.", ex);
+			}
+		}
 
 		Thread tcpLoopThread;
 		Thread dumpsReaderThread;
