@@ -2,6 +2,7 @@
 open System
 open System.Text
 open System.IO
+open System.Threading
 open System.Threading.Tasks
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Core
@@ -265,9 +266,62 @@ module Async =
                 LoggingService.logDebug "Operation cancelled"
                 continuation()))
 
+    let StartAndLogException computation = 
+        Async.StartWithContinuations(
+            async { do! Async.SwitchToThreadPool()
+                    return! computation }, 
+            continuation=(fun _result -> ()),
+            exceptionContinuation=(fun exn -> 
+                match exn with 
+                | :? OperationCanceledException -> ()
+                | exn -> LoggingService.LogError("[F#] Uncaught exception: ", exn)
+            ),
+            cancellationContinuation=(fun _oce ->
+                LoggingService.logDebug("StartAndLogException: Operation cancelled")))
+
+type VolatileBarrier() =
+    [<VolatileField>]
+    let mutable isStopped = false
+    member __.Proceed = not isStopped
+    member __.Stop() = isStopped <- true
+
 [<AutoOpen>]
 module AsyncHelpers =
-    let StartAsyncAsTask ct p = Async.StartAsTask(p, cancellationToken=ct)
+    // This is like Async.StartAsTask, but
+    //  1. if cancellation occurs we explicitly associate the cancellation with cancellationToken
+    //  2. if exception occurs then set result to Unchecked.defaultof<_>
+    let StartAsyncAsTask (cancellationToken: CancellationToken) computation =
+        let tcs = new TaskCompletionSource<_>(TaskCreationOptions.None)
+        let barrier = VolatileBarrier()
+        let reg = cancellationToken.Register(fun _ -> if barrier.Proceed then tcs.TrySetCanceled(cancellationToken) |> ignore)
+        let task = tcs.Task
+        let disposeReg() = barrier.Stop(); if not task.IsCanceled then reg.Dispose()
+        Async.StartWithContinuations(
+            async { do! Async.SwitchToThreadPool()
+                    return! computation }, 
+            continuation=(fun result -> 
+                disposeReg()
+                tcs.TrySetResult(result) |> ignore
+            ), 
+            exceptionContinuation=(fun exn -> 
+                disposeReg()
+                match exn with 
+                | :? OperationCanceledException -> 
+                    tcs.TrySetCanceled(cancellationToken)  |> ignore
+                | exn ->
+                    LoggingService.LogError("[F#] Uncaught exception", exn)
+                    let res = Unchecked.defaultof<_>
+                    tcs.TrySetResult(res) |> ignore
+            ),
+            cancellationContinuation=(fun _oce -> 
+                disposeReg()
+                tcs.TrySetCanceled(cancellationToken) |> ignore
+            ),
+            cancellationToken=cancellationToken)
+        task
+
+    let StartAsyncUnitAsTask cancellationToken (computation:Async<unit>) = 
+        StartAsyncAsTask cancellationToken computation  :> Task   
 
 [<AutoOpen>]
 module AsyncTaskBind =

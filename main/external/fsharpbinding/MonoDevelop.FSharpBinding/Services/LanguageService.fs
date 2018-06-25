@@ -224,7 +224,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                     with exn ->
                         LoggingService.LogDebug(sprintf "LanguageService: Error", exn)
                     | None -> () }
-        Async.Start computation
+        Async.StartAndLogException computation
 
     let loadingProjects = HashSet<string>()
 
