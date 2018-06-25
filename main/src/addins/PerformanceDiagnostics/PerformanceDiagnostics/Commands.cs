@@ -10,15 +10,15 @@ namespace PerformanceDiagnosticsAddIn
 	{
 		protected override void Run ()
 		{
-			if (UIThreadMonitor.Instance.IsListening)
-				UIThreadMonitor.Instance.Stop ();
+			if (UIThreadMonitor.Instance.IsSampling)
+				UIThreadMonitor.Instance.Start (sample: false);
 			else
-				UIThreadMonitor.Instance.Start ();
+				UIThreadMonitor.Instance.Start (sample: true);
 		}
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Text = UIThreadMonitor.Instance.IsListening ? GettextCatalog.GetString ("Stop monitoring UIThread hangs") : GettextCatalog.GetString ("Start monitoring UIThread hangs");
+			info.Text = UIThreadMonitor.Instance.IsSampling ? GettextCatalog.GetString ("Stop monitoring UIThread hangs") : GettextCatalog.GetString ("Start monitoring UIThread hangs");
 			base.Update (info);
 		}
 	}
@@ -34,7 +34,8 @@ namespace PerformanceDiagnosticsAddIn
 			if (UIThreadMonitor.Instance.IsListening)
 				UIThreadMonitor.Instance.Stop ();
 
-			UIThreadMonitor.Instance.Start (hangFileName, profile: false);
+			UIThreadMonitor.Instance.HangFileName = hangFileName;
+			UIThreadMonitor.Instance.Start (sample: false);
 		}
 	}
 

@@ -42,7 +42,7 @@ namespace UIThreadMonitorDaemon
 	{
 		static int tcpPort;
 		static int processId;
-		static bool profile = true;
+		static bool sample = true;
 		static string hangFile;
 		static bool hangFileCreated;
 
@@ -60,14 +60,14 @@ namespace UIThreadMonitorDaemon
 				sw.Restart ();
 				if (!responseEvent.WaitOne (100)) {
 					Console.Error.WriteLine ($"Timeout({seq}):" + sw.Elapsed);
-					if (profile)
+					if (sample)
 						StartCollectingStacks ();
 					if (!responseEvent.WaitOne (10000)) {
 						Console.Error.WriteLine ($"No response({seq}) in 10sec");
 						CreateHangFile ();
 					} else
 						Console.Error.WriteLine ($"Response({seq}) in {sw.Elapsed}");
-					if (profile)
+					if (sample)
 						StopCollectingStacks ();
 				} else {
 					if (sw.ElapsedMilliseconds > 20)
@@ -90,8 +90,8 @@ namespace UIThreadMonitorDaemon
 			if (args.Length > 2) {
 				const string hangFileOption = "--hangFile:";
 				foreach (string arg in args.Skip (2)) {
-					if (arg == "--noProfile")
-						profile = false;
+					if (arg == "--noSample")
+						sample = false;
 					else if (arg.StartsWith (hangFileOption, StringComparison.OrdinalIgnoreCase))
 						hangFile = arg.Substring (hangFileOption.Length);
 				}

@@ -22,15 +22,15 @@ namespace PerformanceDiagnosticsAddIn
 
 		UIThreadMonitor () { }
 
-		Socket socket;
 		Thread tcpLoopThread;
 		Thread dumpsReaderThread;
 		Thread pumpErrorThread;
 		TcpListener listener;
 		Process process;
 
-		void TcpLoop ()
+		void TcpLoop (object param)
 		{
+			var socket = (Socket)param;
 			byte [] buffer = new byte [1];
 			ManualResetEvent waitUIThread = new ManualResetEvent (false);
 			var sw = Stopwatch.StartNew ();
@@ -87,32 +87,32 @@ namespace PerformanceDiagnosticsAddIn
 		}
 
 		public bool IsListening { get; private set; }
+		public bool IsSampling { get; private set; }
+		public string HangFileName { get; set; }
 
-		public void Start ()
+		public void Start (bool sample)
 		{
-			Start (null);
-		}
-
-		public void Start (string hangFileName, bool profile = true)
-		{
-			if (IsListening)
-				return;
-			if (profile) {
+			if (IsListening) {
+				if (IsSampling == sample)
+					return;
+				Stop ();
+			}
+			if (sample) {
 				if (!(Environment.GetEnvironmentVariable ("MONO_DEBUG")?.Contains ("disable_omit_fp") ?? false)) {
 					MessageService.ShowWarning ("Set environment variable",
 												$@"It is highly recommended to set environment variable ""MONO_DEBUG"" to ""disable_omit_fp"" and restart {BrandingService.ApplicationName} to have better results.");
 				}
 			}
 			IsListening = true;
+			IsSampling = sample;
 			//start listening on random port
 			listener = new TcpListener (IPAddress.Loopback, 0);
 			listener.Start ();
 			listener.AcceptSocketAsync ().ContinueWith (t => {
 				if (!t.IsFaulted && !t.IsCanceled) {
-					socket = t.Result;
-					tcpLoopThread = new Thread (new ThreadStart (TcpLoop));
+					tcpLoopThread = new Thread (new ParameterizedThreadStart (TcpLoop));
 					tcpLoopThread.IsBackground = true;
-					tcpLoopThread.Start ();
+					tcpLoopThread.Start (t.Result);
 					listener.Stop ();
 				}
 			});
@@ -120,7 +120,7 @@ namespace PerformanceDiagnosticsAddIn
 			var port = ((IPEndPoint)listener.LocalEndpoint).Port;
 			process = new Process ();
 			process.StartInfo.FileName = "mono";
-			process.StartInfo.Arguments = GetArguments (port, hangFileName, profile);
+			process.StartInfo.Arguments = GetArguments (port, sample);
 			process.StartInfo.UseShellExecute = false;
 			process.StartInfo.RedirectStandardOutput = true;
 			process.StartInfo.RedirectStandardError = true;//Ignore it, otherwise it goes to IDE logging
@@ -135,16 +135,16 @@ namespace PerformanceDiagnosticsAddIn
 			pumpErrorThread.Start ();
 		}
 
-		static string GetArguments (int port, string hangFileName, bool profile)
+		string GetArguments (int port, bool sample)
 		{
 			var arguments = new StringBuilder ();
 			arguments.Append ($"{typeof (UIThreadMonitorDaemon.MainClass).Assembly.Location} {port} {Process.GetCurrentProcess ().Id}");
 
-			if (!profile)
-				arguments.Append (" --noProfile");
+			if (!sample)
+				arguments.Append (" --noSample");
 
-			if (!string.IsNullOrEmpty (hangFileName))
-				arguments.Append ($" --hangFile:\"{hangFileName}\"");
+			if (!string.IsNullOrEmpty (HangFileName))
+				arguments.Append ($" --hangFile:\"{HangFileName}\"");
 
 			return arguments.ToString ();
 		}
@@ -173,6 +173,7 @@ namespace PerformanceDiagnosticsAddIn
 			if (!IsListening)
 				return;
 			IsListening = false;
+			IsSampling = false;
 			listener.Stop ();
 			listener = null;
 			process.Kill ();
