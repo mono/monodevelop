@@ -124,13 +124,13 @@ namespace PerformanceDiagnosticsAddIn
 			process.StartInfo.RedirectStandardError = true;//Ignore it, otherwise it goes to IDE logging
 			process.Start ();
 			process.StandardError.ReadLine ();
-			dumpsReaderThread = new Thread (new ThreadStart (DumpsReader));
+			dumpsReaderThread = new Thread (new ParameterizedThreadStart (DumpsReader));
 			dumpsReaderThread.IsBackground = true;
-			dumpsReaderThread.Start ();
+			dumpsReaderThread.Start (process);
 
-			pumpErrorThread = new Thread (new ThreadStart (PumpErrorStream));//We need to read this...
+			pumpErrorThread = new Thread (new ParameterizedThreadStart (PumpErrorStream));//We need to read this...
 			pumpErrorThread.IsBackground = true;
-			pumpErrorThread.Start ();
+			pumpErrorThread.Start (process);
 		}
 
 		string GetArguments (int port, bool sample)
@@ -151,16 +151,18 @@ namespace PerformanceDiagnosticsAddIn
 		extern static string mono_pmip (long offset);
 		static Dictionary<long, string> methodsCache = new Dictionary<long, string> ();
 
-		void PumpErrorStream ()
+		static void PumpErrorStream (object param)
 		{
-			while (!(process?.HasExited ?? true)) {
-				process?.StandardError?.ReadLine ();
+			var process = (Process)param;
+			while (!process.HasExited) {
+				process.StandardError.ReadLine ();
 			}
 		}
 
-		void DumpsReader ()
+		static void DumpsReader (object param)
 		{
-			while (!(process?.HasExited ?? true)) {
+			var process = (Process)param;
+			while (!process.HasExited) {
 				var fileName = process.StandardOutput.ReadLine ();
 				ConvertJITAddressesToMethodNames (fileName, "UIThreadHang");
 			}
