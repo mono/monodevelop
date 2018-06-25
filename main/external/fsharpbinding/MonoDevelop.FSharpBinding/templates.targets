@@ -21,7 +21,7 @@
     <None Include="Templates/FSharpTutorialProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Templates/FSharpGtkProject.xpt.xml">
+    <None Include="Templates/FSharpGtk2Project.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Templates/AssemblyInfo.xft.xml">
