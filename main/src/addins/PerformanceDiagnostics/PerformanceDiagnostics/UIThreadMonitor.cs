@@ -43,18 +43,27 @@ namespace PerformanceDiagnosticsAddIn
 		void TcpLoop (object param)
 		{
 			var socket = (Socket)param;
-			byte [] buffer = new byte [1];
-			ManualResetEvent waitUIThread = new ManualResetEvent (false);
-			while (true) {
-				var readBytes = socket.Receive (buffer, 1, SocketFlags.None);
-				if (readBytes != 1)
-					return;
-				waitUIThread.Reset ();
-				Runtime.RunInMainThread (delegate {
-					waitUIThread.Set ();
-				});
-				waitUIThread.WaitOne ();
-				socket.Send (buffer);
+			try {
+				var buffer = new byte [1];
+				var waitUIThread = new ManualResetEvent (false);
+				while (true) {
+					var readBytes = socket.Receive (buffer, 1, SocketFlags.None);
+					if (readBytes != 1)
+						return;
+					waitUIThread.Reset ();
+					Runtime.RunInMainThread (delegate {
+						waitUIThread.Set ();
+					});
+					waitUIThread.WaitOne ();
+					socket.Send (buffer);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("UIThreadMonitor TcpLoop error.", ex);
+			} finally {
+				try {
+					socket.Dispose ();
+				} catch (Exception) {
+				}
 			}
 		}
 
