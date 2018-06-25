@@ -677,6 +677,12 @@ namespace MonoDevelop.Debugger
 
 		internal static ProcessAsyncOperation InternalRun (ExecutionCommand cmd, DebuggerEngine factory, OperationConsole c)
 		{
+			// Start assuming success, update on failure
+			var metadata = new DebuggerStartMetadata {
+				Result = Core.Instrumentation.CounterResult.Success
+			};
+			Counters.DebuggerStart.BeginTiming (metadata);
+
 			if (factory == null) {
 				factory = GetFactoryForCommand (cmd);
 				if (factory == null)
@@ -707,6 +713,7 @@ namespace MonoDevelop.Debugger
 			} catch {
 				sessionManager.SessionError = true;
 				Cleanup (sessionManager);
+				metadata.Result = Core.Instrumentation.CounterResult.Failure;
 				throw;
 			}
 			return sessionManager.debugOperation;
