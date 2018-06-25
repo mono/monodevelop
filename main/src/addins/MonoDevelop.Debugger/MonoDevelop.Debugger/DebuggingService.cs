@@ -48,6 +48,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Debugger
 {
@@ -606,7 +607,7 @@ namespace MonoDevelop.Debugger
 		{
 			var session = debugger.CreateSession ();
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (proc.Name);
-			var sessionManager = new SessionManager (session, monitor.Console, debugger);
+			var sessionManager = new SessionManager (session, monitor.Console, debugger, null, null);
 			SetupSession (sessionManager);
 			session.TargetExited += delegate {
 				monitor.Dispose ();
@@ -677,10 +678,19 @@ namespace MonoDevelop.Debugger
 
 		internal static ProcessAsyncOperation InternalRun (ExecutionCommand cmd, DebuggerEngine factory, OperationConsole c)
 		{
+			// Start assuming success, update on failure
+			var metadata = new DebuggerStartMetadata {
+				Result = CounterResult.Success
+			};
+			var timer = Counters.DebuggerStart.BeginTiming (metadata);
+
 			if (factory == null) {
 				factory = GetFactoryForCommand (cmd);
-				if (factory == null)
+				if (factory == null) {
+					metadata.SetFailure ();
+					timer.Dispose ();
 					throw new InvalidOperationException ("Unsupported command: " + cmd);
+				}
 			}
 
 			DebuggerStartInfo startInfo = factory.CreateDebuggerStartInfo (cmd);
@@ -694,9 +704,9 @@ namespace MonoDevelop.Debugger
 			// When using an external console, create a new internal console which will be used
 			// to show the debugger log
 			if (startInfo.UseExternalConsole)
-				sessionManager = new SessionManager (session, IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (System.IO.Path.GetFileNameWithoutExtension (startInfo.Command)).Console, factory);
+				sessionManager = new SessionManager (session, IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (System.IO.Path.GetFileNameWithoutExtension (startInfo.Command)).Console, factory, timer, metadata);
 			else
-				sessionManager = new SessionManager (session, c, factory);
+				sessionManager = new SessionManager (session, c, factory, timer, metadata);
 			SetupSession (sessionManager);
 
 			SetDebugLayout ();
@@ -707,6 +717,7 @@ namespace MonoDevelop.Debugger
 			} catch {
 				sessionManager.SessionError = true;
 				Cleanup (sessionManager);
+				metadata.SetFailure ();
 				throw;
 			}
 			return sessionManager.debugOperation;
@@ -732,14 +743,19 @@ namespace MonoDevelop.Debugger
 			public readonly DebuggerSession Session;
 			public readonly DebugAsyncOperation debugOperation;
 			public readonly DebuggerEngine Engine;
+			internal readonly ITimeTracker timer;
+			internal readonly DebuggerStartMetadata sessionMetadata;
 
-			public SessionManager (DebuggerSession session, OperationConsole console, DebuggerEngine engine)
+			public SessionManager (DebuggerSession session, OperationConsole console, DebuggerEngine engine, ITimeTracker timeTracker, DebuggerStartMetadata metadata)
 			{
 				Engine = engine;
 				Session = session;
 				session.ExceptionHandler = ExceptionHandler;
 				session.AssemblyLoaded += OnAssemblyLoaded;
 				this.console = console;
+				this.sessionMetadata = metadata;
+				timer = timeTracker;
+
 				cancelRegistration = console.CancellationToken.Register (Cancel);
 				debugOperation = new DebugAsyncOperation (session);
 			}
@@ -747,6 +763,7 @@ namespace MonoDevelop.Debugger
 			void Cancel ()
 			{
 				Session.Exit ();
+				sessionMetadata.SetUserCancel ();
 				Cleanup (this);
 			}
 
@@ -789,13 +806,22 @@ namespace MonoDevelop.Debugger
 				debugOperation.Cleanup ();
 				cancelRegistration?.Dispose ();
 				cancelRegistration = null;
+
+				timer?.Dispose ();
 			}
 
+			bool sessionError;
 			/// <summary>
 			/// Indicates whether the debug session failed to an exception or any debugger
 			/// operation failed and was reported to the user.
 			/// </summary>
-			public bool SessionError { get; set; }
+			public bool SessionError {
+				get => sessionError;
+				set {
+					sessionError = value;
+					sessionMetadata.SetFailure ();
+				}
+			}
 
 			void UpdateDebugSessionCounter ()
 			{
