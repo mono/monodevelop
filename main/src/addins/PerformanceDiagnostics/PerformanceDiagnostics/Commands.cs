@@ -23,22 +23,6 @@ namespace PerformanceDiagnosticsAddIn
 		}
 	}
 
-	class StartUIThreadMonitorHandler : CommandHandler
-	{
-		protected override void Run (object dataItem)
-		{
-			var hangFileName = dataItem as string;
-			if (string.IsNullOrEmpty (hangFileName))
-				return;
-
-			if (UIThreadMonitor.Instance.IsListening)
-				UIThreadMonitor.Instance.Stop ();
-
-			UIThreadMonitor.Instance.HangFileName = hangFileName;
-			UIThreadMonitor.Instance.Start (sample: false);
-		}
-	}
-
 	public class ProfileFor5SecondsHandler : CommandHandler
 	{
 		protected override void Run ()
