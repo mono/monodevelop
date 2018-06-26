@@ -144,7 +144,7 @@ namespace PerformanceDiagnosticsAddIn
 				dumpsReaderThread = new Thread (new ParameterizedThreadStart (DumpsReader));
 				dumpsReaderThread.IsBackground = true;
 				dumpsReaderThread.Start (process);
-				PumpErrorStream (process).Ignore ();
+				Task.Run (() => PumpErrorStream (process)).Ignore ();
 			}
 		}
 
