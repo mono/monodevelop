@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 			return null;
 		}
 
-		class DocumentOptions : IDocumentOptions
+		internal class DocumentOptions : IDocumentOptions
 		{
 			readonly OptionSet optionSet;
 			readonly ICodingConventionsSnapshot codingConventionsSnapshot;
