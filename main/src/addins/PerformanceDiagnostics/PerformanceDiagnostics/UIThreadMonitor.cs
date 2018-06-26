@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace PerformanceDiagnosticsAddIn
 {
-	class UIThreadMonitor
+	public class UIThreadMonitor
 	{
 		public static UIThreadMonitor Instance { get; } = new UIThreadMonitor ();
 
