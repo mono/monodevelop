@@ -34,7 +34,7 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Ide.RoslynServices
 {
 	[ExportWorkspaceServiceFactory (typeof (IErrorReportingService), ServiceLayer.Host), Shared]
-	sealed class VisualStudioErrorReportingServiceFactory : IWorkspaceServiceFactory
+	sealed class MonoDevelopErrorReportingServiceFactory : IWorkspaceServiceFactory
 	{
 		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
 		{
