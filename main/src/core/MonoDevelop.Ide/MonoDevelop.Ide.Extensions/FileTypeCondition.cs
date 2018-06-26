@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
 
@@ -32,14 +33,13 @@ namespace MonoDevelop.Ide.Extensions
 	public class FileTypeCondition: ConditionType
 	{
 		string fileName;
-		string mimeType;
+		List<string> mimeTypeChain;
 		
 		public void SetFileName (string file)
 		{
 			if (file != fileName) {
 				fileName = file;
-				if (fileName != null)
-					mimeType = DesktopService.GetMimeTypeForUri (fileName);
+				mimeTypeChain = null;
 				NotifyChanged ();
 			}
 		}
@@ -48,25 +48,42 @@ namespace MonoDevelop.Ide.Extensions
 		{
 			if (fileName == null)
 				return false;
+
 			
-			string[] fileExtensions = conditionNode.GetAttribute ("fileExtensions").Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
-			string[] mimeTypes = conditionNode.GetAttribute ("mimeTypes").Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
-			string[] names = conditionNode.GetAttribute ("name").Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
-			
-			if (fileExtensions.Length > 0) {
+			string [] allowedExtensions = conditionNode.GetAttribute ("fileExtensions").Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
+			if (allowedExtensions.Length > 0) {
 				string ext = System.IO.Path.GetExtension (fileName);
-				if (fileExtensions.Any (fe => string.Compare (fe, ext, StringComparison.OrdinalIgnoreCase) == 0))
-					return true;
+				foreach (var allowedExtension in allowedExtensions) {
+					if (string.Equals (ext, allowedExtension, StringComparison.OrdinalIgnoreCase)) {
+						return true;
+					}
+				}
 			}
-			if (mimeTypes.Length > 0) {
-				if (mimeTypes.Any (t => DesktopService.GetMimeTypeIsSubtype (mimeType, t)))
-					return true;
+
+			string[] allowedMimes = conditionNode.GetAttribute ("mimeTypes").Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
+			if (allowedMimes.Length > 0) {
+				if (mimeTypeChain == null) {
+					mimeTypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (fileName).ToList ();
+				}
+				foreach (var mimeType in mimeTypeChain) {
+					foreach (var allowedMime in allowedMimes) {
+						if (mimeType == allowedMime) {
+							return true;
+						}
+					}
+				}
 			}
-			if (names.Length > 0) {
+
+			string[] allowedNames = conditionNode.GetAttribute ("name").Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
+			if (allowedNames.Length > 0) {
 				string name = System.IO.Path.GetFileName (fileName);
-				if (names.Any (fn => string.Compare (fn, name, StringComparison.OrdinalIgnoreCase) == 0))
-					return true;
+				foreach (var allowedName in allowedNames) {
+					if (string.Equals (name, allowedName, StringComparison.OrdinalIgnoreCase)) {
+						return true;
+					}
+				}
 			}
+
 			return false;
 		}
 	}
