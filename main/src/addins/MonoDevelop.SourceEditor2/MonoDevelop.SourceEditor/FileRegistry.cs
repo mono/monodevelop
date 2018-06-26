@@ -41,17 +41,11 @@ namespace MonoDevelop.SourceEditor
 	/// </summary>
 	static class FileRegistry
 	{
-
 		#region EOL markers
 		public static bool HasMultipleIncorrectEolMarkers {
 			get {
 				int count = 0;
-				foreach (var doc in DocumentRegistry.OpenFiles) {
-					if (DocumentRegistry.SkipView (doc))
-						continue;
-					var view = doc.GetContent<SourceEditorView> ();
-					if (!view.SourceEditorWidget.HasIncorrectEolMarker)
-						continue;
+				foreach (var view in EnumerateViewsWithIncorrectEolMarkers ()) {
 					count++;
 					if (count > 1)
 						return true;
@@ -63,13 +57,7 @@ namespace MonoDevelop.SourceEditor
 		public static void ConvertLineEndingsInAllFiles ()
 		{
 			DefaultSourceEditorOptions.Instance.LineEndingConversion = LineEndingConversion.ConvertAlways;
-			foreach (var doc in DocumentRegistry.OpenFiles) {
-				if (DocumentRegistry.SkipView (doc))
-					continue;
-				var view = doc.GetContent<SourceEditorView> ();
-				if (!view.SourceEditorWidget.HasIncorrectEolMarker)
-					continue;
-
+			foreach (var view in EnumerateViewsWithIncorrectEolMarkers ()) {
 				view.SourceEditorWidget.ConvertLineEndings ();
 				view.SourceEditorWidget.RemoveMessageBar ();
 				view.WorkbenchWindow.ShowNotification = false;
@@ -81,13 +69,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			DefaultSourceEditorOptions.Instance.LineEndingConversion = LineEndingConversion.LeaveAsIs;
 
-			foreach (var doc in DocumentRegistry.OpenFiles) {
-				if (DocumentRegistry.SkipView (doc))
-					continue;
-				var view = doc.GetContent<SourceEditorView> ();
-				if (!view.SourceEditorWidget.HasIncorrectEolMarker)
-					continue;
-
+			foreach (var view in EnumerateViewsWithIncorrectEolMarkers ()) {
 				view.SourceEditorWidget.UseIncorrectMarkers = true;
 				view.SourceEditorWidget.RemoveMessageBar ();
 				view.WorkbenchWindow.ShowNotification = false;
@@ -98,15 +80,22 @@ namespace MonoDevelop.SourceEditor
 		public static void UpdateEolMessages ()
 		{
 			var multiple = HasMultipleIncorrectEolMarkers;
-			foreach (var doc in DocumentRegistry.OpenFiles) {
-				if (DocumentRegistry.SkipView (doc))
-					continue;
-				var view = doc.GetContent<SourceEditorView> ();
-				if (!view.SourceEditorWidget.HasIncorrectEolMarker)
-					continue;
+			foreach (var view in EnumerateViewsWithIncorrectEolMarkers ()) {
 				view.SourceEditorWidget.UpdateEolMarkerMessage (multiple);
 			}
 		}
 		#endregion
+
+		static IEnumerable<SourceEditorView> EnumerateViewsWithIncorrectEolMarkers ()
+		{
+			foreach (var doc in DocumentRegistry.OpenFiles) {
+				if (DocumentRegistry.SkipView (doc))
+					continue;
+				var view = doc.GetContent<SourceEditorView> ();
+				if (view?.SourceEditorWidget == null || !view.SourceEditorWidget.HasIncorrectEolMarker)
+					continue;
+				yield return view;
+			}
+		}
 	}
 }
