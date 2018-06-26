@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			};
 			pathBar.Show ();
 
-			box.PackStart (pathBar, true, true, 10);
+			box.PackStart (pathBar, true, true, 2);
 			box.ReorderChild (pathBar, 0);
 			box.Show ();
 		}
@@ -142,12 +142,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			// Toolbar items must use Gtk, for now
 			Xwt.Toolkit.Load (ToolkitType.Gtk).Invoke (() => {
 				showDiagnosticsButton = new CheckBox (GettextCatalog.GetString ("Diagnostic log verbosity"));
+				showDiagnosticsButton.HeightRequest = 17;
 				showDiagnosticsButton.Accessible.Identifier = "BuildOutputWidget.ShowDiagnosticsButton";
 				showDiagnosticsButton.TooltipText = GettextCatalog.GetString ("Show full (diagnostics enabled) or reduced log");
 				showDiagnosticsButton.Accessible.Description = GettextCatalog.GetString ("Diagnostic log verbosity");
 				showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 
 				saveButton = new Button (GettextCatalog.GetString ("Save"));
+				saveButton.HeightRequest = 17;
 				saveButton.Accessible.Identifier = "BuildOutputWidget.SaveButton";
 				saveButton.TooltipText = GettextCatalog.GetString ("Save build output");
 				saveButton.Accessible.Description = GettextCatalog.GetString ("Save build output");
@@ -159,10 +161,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 				searchEntry.Accessible.Name = "BuildOutputWidget.Search";
 				searchEntry.Accessible.Description = GettextCatalog.GetString ("Search the build log");
 				searchEntry.WidthRequest = 200;
+				searchEntry.Entry.HeightRequest = 17;
 				searchEntry.Visible = true;
 				searchEntry.EmptyMessage = GettextCatalog.GetString ("Search Build Output");
 
 				resultInformLabel = new Label ();
+				resultInformLabel.HeightRequest = 17;
 				searchEntry.AddLabelWidget ((Gtk.Label)resultInformLabel.ToGtkWidget ());
 
 				searchEntry.Entry.Changed += FindFirst;
@@ -174,6 +178,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				buttonSearchForward.Clicked += FindNext;
 				buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext, true));
 				buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious, true));
+				buttonSearchForward.HeightRequest = buttonSearchBackward.HeightRequest = 17;
 				SetSearchButtonsSensitivity (false);
 			});
 
