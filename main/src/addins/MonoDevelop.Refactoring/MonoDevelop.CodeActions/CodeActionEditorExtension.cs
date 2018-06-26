@@ -372,7 +372,6 @@ namespace MonoDevelop.CodeActions
 					//Fixes = RefactoringService.GetValidActions (Editor, DocumentContext, Editor.CaretLocation).Result;
 
 					metadata.TriggeredBySmartTag = true;
-
 					currentSmartTagBegin = Editor.CaretOffset;
 					PopupQuickFixMenu (null, null);
 					return;
