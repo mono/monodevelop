@@ -1024,6 +1024,10 @@ namespace MonoDevelop.Debugger
 
 		public static void StepInto ()
 		{
+			var metadata = new DebuggerActionMetadata {
+				Type = DebuggerActionMetadata.ActionType.StepInto
+			};
+			Counters.DebuggerAction.BeginTiming (metadata);
 			Runtime.AssertMainThread ();
 
 			if (!IsDebugging || !IsPaused || CheckIsBusy ())
@@ -1031,10 +1035,15 @@ namespace MonoDevelop.Debugger
 			currentSession.Session.StepLine ();
 			NotifyLocationChanged ();
 			DelayHandleStopQueue ();
+			Counters.DebuggerAction.EndTiming ();
 		}
 
 		public static void StepOver ()
 		{
+			var metadata = new DebuggerActionMetadata {
+				Type = DebuggerActionMetadata.ActionType.StepOver
+			};
+			Counters.DebuggerAction.BeginTiming (metadata);
 			Runtime.AssertMainThread ();
 
 			if (!IsDebugging || !IsPaused || CheckIsBusy ())
@@ -1042,10 +1051,15 @@ namespace MonoDevelop.Debugger
 			currentSession.Session.NextLine ();
 			NotifyLocationChanged ();
 			DelayHandleStopQueue ();
+			Counters.DebuggerAction.EndTiming ();
 		}
 
 		public static void StepOut ()
 		{
+			var metadata = new DebuggerActionMetadata {
+				Type = DebuggerActionMetadata.ActionType.StepOut
+			};
+			Counters.DebuggerAction.BeginTiming (metadata);
 			Runtime.AssertMainThread ();
 
 			if (!IsDebugging || !IsPaused || CheckIsBusy ())
@@ -1053,6 +1067,7 @@ namespace MonoDevelop.Debugger
 			currentSession.Session.Finish ();
 			NotifyLocationChanged ();
 			DelayHandleStopQueue ();
+			Counters.DebuggerAction.EndTiming ();
 		}
 
 		static CancellationTokenSource stepSwitchCts;
