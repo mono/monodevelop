@@ -126,8 +126,7 @@ namespace MonoDevelop.Ide.Gui
 			var memento = PropertyService.Get (workbenchMemento, new Properties ());
 			Counters.Initialization.Trace ("Setting memento");
 			workbench.Memento = memento;
-			Counters.Initialization.Trace ("Making Visible");
-			RootWindow.Visible = true;
+			Counters.Initialization.Trace ("Setting layout");
 			workbench.CurrentLayout = "Solution";
 			
 			// now we have an layout set notify it
@@ -137,7 +136,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			Counters.Initialization.Trace ("Initializing monitors");
 			monitors.Initialize ();
-			
+
+			Counters.Initialization.Trace ("Making visible");
 			Present ();
 		}
 		
