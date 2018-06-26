@@ -746,6 +746,10 @@ namespace MonoDevelop.Debugger
 			internal readonly ITimeTracker timer;
 			internal readonly DebuggerStartMetadata sessionMetadata;
 
+			internal bool TrackActionTelemetry { get; set; }
+			internal DebuggerActionMetadata.ActionType CurrentAction { get; set; }
+			internal ITimeTracker ActionTimeTracker { get; set; }
+
 			public SessionManager (DebuggerSession session, OperationConsole console, DebuggerEngine engine, ITimeTracker timeTracker, DebuggerStartMetadata metadata)
 			{
 				Engine = engine;
@@ -960,16 +964,23 @@ namespace MonoDevelop.Debugger
 						SessionManager sessionManager;
 						if (!sessions.TryGetValue (session, out sessionManager))
 							return false;
+
+						if (sessionManager.TrackActionTelemetry) {
+							var metadata = new DebuggerActionMetadata () {
+								Type = sessionManager.CurrentAction
+							};
+							sessionManager.ActionTimeTracker = Counters.DebuggerAction.BeginTiming ("Debugger action", metadata);
+						}
 						Breakpoints.RemoveRunToCursorBreakpoints ();
 						currentSession = sessionManager;
 						ActiveThread = args.Thread;
-						NotifyPaused ();
+						NotifyPaused (currentSession);
 						NotifyException (args);
 						return true;
 					});
 					if (currentSession != null && currentSession != sessions [session]) {
 						StopsQueue.Enqueue (action);
-						NotifyPaused ();//Notify about pause again, so ThreadsPad can update, to show all processes
+						NotifyPaused (null);//Notify about pause again, so ThreadsPad can update, to show all processes
 					} else {
 						action ();
 					}
@@ -987,7 +998,7 @@ namespace MonoDevelop.Debugger
 				handler (null, e);
 		}
 
-		static void NotifyPaused ()
+		static void NotifyPaused (SessionManager sessionManager)
 		{
 			Runtime.RunInMainThread (delegate {
 				stepSwitchCts?.Cancel ();
@@ -995,6 +1006,9 @@ namespace MonoDevelop.Debugger
 					PausedEvent (null, EventArgs.Empty);
 				NotifyLocationChanged ();
 				IdeApp.Workbench.GrabDesktopFocus ();
+
+				sessionManager.ActionTimeTracker.Dispose ();
+				sessionManager.TrackActionTelemetry = false;
 			});
 		}
 
@@ -1043,13 +1057,19 @@ namespace MonoDevelop.Debugger
 
 		public static void StepInto ()
 		{
+
 			Runtime.AssertMainThread ();
 
 			if (!IsDebugging || !IsPaused || CheckIsBusy ())
 				return;
+
+			currentSession.TrackActionTelemetry = true;
+			currentSession.CurrentAction = DebuggerActionMetadata.ActionType.StepInto;
+
 			currentSession.Session.StepLine ();
 			NotifyLocationChanged ();
 			DelayHandleStopQueue ();
+			Counters.DebuggerAction.EndTiming ();
 		}
 
 		public static void StepOver ()
@@ -1058,9 +1078,14 @@ namespace MonoDevelop.Debugger
 
 			if (!IsDebugging || !IsPaused || CheckIsBusy ())
 				return;
+
+			currentSession.TrackActionTelemetry = true;
+			currentSession.CurrentAction = DebuggerActionMetadata.ActionType.StepOver;
+
 			currentSession.Session.NextLine ();
 			NotifyLocationChanged ();
 			DelayHandleStopQueue ();
+			Counters.DebuggerAction.EndTiming ();
 		}
 
 		public static void StepOut ()
@@ -1069,9 +1094,14 @@ namespace MonoDevelop.Debugger
 
 			if (!IsDebugging || !IsPaused || CheckIsBusy ())
 				return;
+
+			currentSession.TrackActionTelemetry = true;
+			currentSession.CurrentAction = DebuggerActionMetadata.ActionType.StepOut;
+
 			currentSession.Session.Finish ();
 			NotifyLocationChanged ();
 			DelayHandleStopQueue ();
+			Counters.DebuggerAction.EndTiming ();
 		}
 
 		static CancellationTokenSource stepSwitchCts;
