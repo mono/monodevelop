@@ -24,52 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Diagnostics;
-using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using MonoDevelop.Core;
+using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
+using NuGet.Versioning;
 using NUnit.Framework;
 using UnitTests;
-using MonoDevelop.PackageManagement.Tests.Helpers;
-using NuGet.Versioning;
-using NuGet.PackageManagement;
-using System.Threading;
-using System.Linq;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
 	[TestFixture]
-	public class UpdateXamarinFormsBuildTest : TestBase
+	public class UpdateXamarinFormsBuildTest : RestoreTestBase
 	{
-		Solution solution;
-
-		[TearDown]
-		public void TearDownTest ()
-		{
-			solution?.Dispose ();
-		}
-
-		/// <summary>
-		/// Clear all other package sources and just use the main NuGet package source when
-		/// restoring the packages for the project temlate tests.
-		/// </summary>
-		protected static void CreateNuGetConfigFile (FilePath directory)
-		{
-			var fileName = directory.Combine ("NuGet.Config");
-
-			string xml =
-				"<configuration>\r\n" +
-				"  <packageSources>\r\n" +
-				"    <clear />\r\n" +
-				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
-				"  </packageSources>\r\n" +
-				"</configuration>";
-
-			File.WriteAllText (fileName, xml);
-		}
-
 		/// <summary>
 		/// Tests that a build error due to a mismatched Xamarin.Forms NuGet package used
 		/// in two projects can be fixed by updating the NuGet package to match without
@@ -132,25 +100,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			result = await solution.Build (Util.GetMonitor (), ConfigurationSelector.Default);
 			buildError = result.Errors.FirstOrDefault ();
 			Assert.IsFalse (result.HasErrors, "Build failed: {0}", buildError);
-		}
-
-		static Task<PackageRestoreResult> RestoreNuGetPackages (Solution solution)
-		{
-			var solutionManager = new MonoDevelopSolutionManager (solution);
-			var context = new FakeNuGetProjectContext {
-				LogToConsole = true
-			};
-
-			var restoreManager = new PackageRestoreManager (
-				solutionManager.CreateSourceRepositoryProvider (),
-				solutionManager.Settings,
-				solutionManager
-			);
-
-			return restoreManager.RestoreMissingPackagesInSolutionAsync (
-				solutionManager.SolutionDirectory,
-				new FakeNuGetProjectContext (),
-				CancellationToken.None);
 		}
 
 		Task UpdateNuGetPackage (DotNetProject project, string packageId, string packageVersion)

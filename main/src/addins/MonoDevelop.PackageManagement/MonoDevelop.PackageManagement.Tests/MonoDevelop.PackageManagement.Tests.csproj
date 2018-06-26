@@ -209,6 +209,8 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectJsonBuildIntegratedNuGetProjectTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ItemTemplateNuGetPackageInstallerTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\UpdateXamarinFormsBuildTest.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\DotNetCoreRestoreTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\RestoreTestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
