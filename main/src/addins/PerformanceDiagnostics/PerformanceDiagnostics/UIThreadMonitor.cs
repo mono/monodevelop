@@ -36,7 +36,6 @@ namespace PerformanceDiagnosticsAddIn
 
 		Thread tcpLoopThread;
 		Thread dumpsReaderThread;
-		Thread pumpErrorThread;
 		TcpListener listener;
 		Process process;
 
@@ -145,11 +144,8 @@ namespace PerformanceDiagnosticsAddIn
 				dumpsReaderThread = new Thread (new ParameterizedThreadStart (DumpsReader));
 				dumpsReaderThread.IsBackground = true;
 				dumpsReaderThread.Start (process);
+				PumpErrorStream (process).Ignore ();
 			}
-
-			pumpErrorThread = new Thread (new ParameterizedThreadStart (PumpErrorStream));//We need to read this...
-			pumpErrorThread.IsBackground = true;
-			pumpErrorThread.Start (process);
 		}
 
 		void AcceptClientConnection (TcpListener tcpListener)
@@ -182,11 +178,10 @@ namespace PerformanceDiagnosticsAddIn
 		extern static string mono_pmip (long offset);
 		static Dictionary<long, string> methodsCache = new Dictionary<long, string> ();
 
-		static void PumpErrorStream (object param)
+		static async Task PumpErrorStream (Process process)
 		{
-			var process = (Process)param;
 			while (!process.HasExited) {
-				process.StandardError.ReadLine ();
+				await process.StandardError.ReadLineAsync ().ConfigureAwait (false);
 			}
 		}
 
