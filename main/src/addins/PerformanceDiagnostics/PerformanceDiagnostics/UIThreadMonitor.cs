@@ -42,11 +42,12 @@ namespace PerformanceDiagnosticsAddIn
 
 		void TcpLoop (object param)
 		{
-			var socket = (Socket)param;
+			var connection = (ConnectionInfo)param;
+			var socket = connection.Socket;
 			try {
 				var buffer = new byte [1];
 				var waitUIThread = new ManualResetEvent (false);
-				while (true) {
+				while (connection.ListenerActive) {
 					var readBytes = socket.Receive (buffer, 1, SocketFlags.None);
 					if (readBytes != 1)
 						return;
@@ -61,7 +62,9 @@ namespace PerformanceDiagnosticsAddIn
 				LoggingService.LogError ("UIThreadMonitor TcpLoop error.", ex);
 			} finally {
 				try {
-					socket.Dispose ();
+					if (connection.ListenerActive)
+						AcceptClientConnection (connection.Listener);
+					socket.Close ();
 				} catch (Exception) {
 				}
 			}
@@ -127,14 +130,7 @@ namespace PerformanceDiagnosticsAddIn
 			//start listening on random port
 			listener = new TcpListener (IPAddress.Loopback, 0);
 			listener.Start ();
-			listener.AcceptSocketAsync ().ContinueWith (t => {
-				if (!t.IsFaulted && !t.IsCanceled) {
-					tcpLoopThread = new Thread (new ParameterizedThreadStart (TcpLoop));
-					tcpLoopThread.IsBackground = true;
-					tcpLoopThread.Start (t.Result);
-					listener.Stop ();
-				}
-			});
+			AcceptClientConnection (listener);
 			//get random port provided by OS
 			var port = ((IPEndPoint)listener.LocalEndpoint).Port;
 			process = new Process ();
@@ -155,6 +151,18 @@ namespace PerformanceDiagnosticsAddIn
 			pumpErrorThread = new Thread (new ParameterizedThreadStart (PumpErrorStream));//We need to read this...
 			pumpErrorThread.IsBackground = true;
 			pumpErrorThread.Start (process);
+		}
+
+		void AcceptClientConnection (TcpListener tcpListener)
+		{
+			tcpListener.AcceptSocketAsync ().ContinueWith (t => {
+				if (!t.IsFaulted && !t.IsCanceled) {
+					currentConnection = new ConnectionInfo (t.Result, tcpListener);
+					tcpLoopThread = new Thread (new ParameterizedThreadStart (TcpLoop));
+					tcpLoopThread.IsBackground = true;
+					tcpLoopThread.Start (currentConnection);
+				}
+			});
 		}
 
 		string GetArguments (int port, bool sample)
@@ -196,12 +204,14 @@ namespace PerformanceDiagnosticsAddIn
 		{
 			if (!IsListening)
 				return;
+			if (currentConnection != null)
+				currentConnection.ListenerActive = false;
+			process.Kill ();
+			process = null;
 			IsListening = false;
 			IsSampling = false;
 			listener.Stop ();
 			listener = null;
-			process.Kill ();
-			process = null;
 		}
 
 		internal static void ConvertJITAddressesToMethodNames (string fileName, string profilingType)
@@ -229,6 +239,22 @@ namespace PerformanceDiagnosticsAddIn
 						sw.WriteLine (line);
 					}
 				}
+			}
+		}
+
+		ConnectionInfo currentConnection;
+
+		class ConnectionInfo
+		{
+			public Socket Socket { get; }
+			public TcpListener Listener { get; }
+			public bool ListenerActive { get; set; }
+
+			public ConnectionInfo (Socket socket, TcpListener listener)
+			{
+				Socket = socket;
+				Listener = listener;
+				ListenerActive = true;
 			}
 		}
 	}
