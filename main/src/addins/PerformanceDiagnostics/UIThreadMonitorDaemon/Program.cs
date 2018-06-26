@@ -68,26 +68,29 @@ namespace UIThreadMonitorDaemon
 
 				sw.Restart ();
 				if (!responseEvent.WaitOne (100)) {
-					Console.Error.WriteLine ($"Timeout({seq}):" + sw.Elapsed);
-					if (sample)
+					if (sample) {
+						Console.Error.WriteLine ($"Timeout({seq}):" + sw.Elapsed);
 						StartCollectingStacks ();
+					}
 
 					waitResult = WaitHandle.WaitAny (events, 10000);
-					if (waitResult == 0) // Got a response.
-						Console.Error.WriteLine ($"Response({seq}) in {sw.Elapsed}");
-					else if (waitResult == 1) { // Disconnected
+					if (waitResult == 0) {// Got a response.
+						if (sample)
+							Console.Error.WriteLine ($"Response({seq}) in {sw.Elapsed}");
+					} else if (waitResult == 1) { // Disconnected
 						// Do nothing. The while loop will wait for the next send event.
 					} else if (waitResult == 2) { // Parent process exited
 						// Do nothing. The while loop checks for an exit.
 					} else { // Timeout
-						Console.Error.WriteLine ($"No response({seq}) in 10sec");
+						if (sample)
+							Console.Error.WriteLine ($"No response({seq}) in 10sec");
 						CreateHangFile ();
 					}
 
 					if (sample)
 						StopCollectingStacks ();
 				} else {
-					if (sw.ElapsedMilliseconds > 20)
+					if (sample && sw.ElapsedMilliseconds > 20)
 						Console.Error.WriteLine ($"In time({seq}):" + sw.Elapsed);
 					RemoveHangFile ();
 				}
@@ -189,7 +192,8 @@ namespace UIThreadMonitorDaemon
 						throw new InvalidOperationException ($"Expected {seq}, got {response [0]}.");
 					responseEvent.Set ();
 				} catch (Exception ex) {
-					Console.Error.WriteLine ($"Error communicating with parent. {ex.Message}");
+					if (sample)
+						Console.Error.WriteLine ($"Error communicating with parent. {ex.Message}");
 					try {
 						socket.Close ();
 					} catch (Exception) {
@@ -216,7 +220,8 @@ namespace UIThreadMonitorDaemon
 
 					return socket;
 				} catch (Exception ex) {
-					Console.Error.WriteLine ($"Could not connect. {ex.Message}");
+					if (sample)
+						Console.Error.WriteLine ($"Could not connect. {ex.Message}");
 					if (!parentProcess.HasExited) {
 						Thread.Sleep (connectRetryInterval);
 					}

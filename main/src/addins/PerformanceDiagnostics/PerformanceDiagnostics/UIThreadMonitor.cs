@@ -140,7 +140,6 @@ namespace PerformanceDiagnosticsAddIn
 			process.StartInfo.RedirectStandardOutput = true;
 			process.StartInfo.RedirectStandardError = true;//Ignore it, otherwise it goes to IDE logging
 			process.Start ();
-			process.StandardError.ReadLine ();
 
 			if (IsSampling) {
 				dumpsReaderThread = new Thread (new ParameterizedThreadStart (DumpsReader));
