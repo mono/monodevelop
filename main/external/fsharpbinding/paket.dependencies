@@ -16,5 +16,5 @@ nuget System.Reactive.Linq
 github fsprojects/Roslyn.FSharp Roslyn.FSharp/FSharpSymbol.fs
 github fsprojects/Roslyn.FSharp Roslyn.FSharp/FSharpTypeSymbol.fs
 github fsprojects/Roslyn.FSharp Roslyn.FSharp/Helpers.fs
-github fsprojects/Roslyn.FSharp Roslyn.FSharp/ICompilation.fs
+github fsprojects/Roslyn.FSharp Roslyn.FSharp/FSharpCompilation.fs
 github fsprojects/Roslyn.FSharp Roslyn.FSharp/XmlDocumentation.fs

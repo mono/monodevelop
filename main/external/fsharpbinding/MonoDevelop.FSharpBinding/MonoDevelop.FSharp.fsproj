@@ -40,7 +40,7 @@
   </Target>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>..\..\..\build\AddIns\FSharpBinding</OutputPath>
     <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
@@ -71,6 +71,14 @@
   <Import Project="..\.paket\paket.targets" />
   <Import Project="templates.targets" />
   <ItemGroup>
+    <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\Helpers.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/Helpers.fs</Link>
+    </Compile>
+    <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\XmlDocumentation.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/XmlDocumentation.fs</Link>
+    </Compile>
     <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\FSharpSymbol.fs">
       <Paket>True</Paket>
       <Link>paket-files/FSharpSymbol.fs</Link>
@@ -78,18 +86,6 @@
     <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\FSharpTypeSymbol.fs">
       <Paket>True</Paket>
       <Link>paket-files/FSharpTypeSymbol.fs</Link>
-    </Compile>
-    <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\Helpers.fs">
-      <Paket>True</Paket>
-      <Link>paket-files/Helpers.fs</Link>
-    </Compile>
-    <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\ICompilation.fs">
-      <Paket>True</Paket>
-      <Link>paket-files/ICompilation.fs</Link>
-    </Compile>
-    <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\XmlDocumentation.fs">
-      <Paket>True</Paket>
-      <Link>paket-files/XmlDocumentation.fs</Link>
     </Compile>
     <Compile Include="Services\Extensions.fs" />
     <Compile Include="Services\CompilerLocationUtils.fs" />
@@ -144,6 +140,7 @@
     <Compile Include="FSharpProjectCompilerOptions.fs" />
     <Compile Include="TypeSignatureHelp.fs" />
     <Compile Include="FindReferenceUsages.fs" />
+    <Compile Include="RoslynCompilation.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

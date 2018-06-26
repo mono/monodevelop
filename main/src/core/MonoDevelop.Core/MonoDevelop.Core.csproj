@@ -723,6 +723,7 @@
     <Compile Include="MonoDevelop.Projects\FileWatcherService.cs" />
     <Compile Include="MonoDevelop.Core\SynchronizationContextTaskScheduler.cs" />
     <Compile Include="MonoDevelop.Core\ConfigurationProperty.cs" />
+    <Compile Include="MonoDevelop.Core\ICompilation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
