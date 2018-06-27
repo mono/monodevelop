@@ -48,3 +48,16 @@ type FSharpCompilation (checkProjectResults: FSharpCheckProjectResults, outputFi
 
         member x.Assembly =
             FSharpAssemblySymbol(assemblySignature, outputFile) :> _
+
+type FSharpGetRoslynCompilation() =
+    inherit RoslynCompilationProvider()
+
+    override x.GetFromProject(project) =
+        match languageService.GetCachedProjectCheckResult(project) with
+        | Some checkResults ->
+            FSharpCompilation(checkResults, project.GetOutputFileName(project.ParentSolution.DefaultConfigurationSelector).ToString()) :> _
+        | None -> failwithf "No checkresults for %s" project.Name
+
+    override x.LanguageName = "F#"
+
+

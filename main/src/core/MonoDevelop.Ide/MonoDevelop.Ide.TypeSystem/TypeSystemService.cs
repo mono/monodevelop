@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.IO;
 using MonoDevelop.Projects;
@@ -49,6 +50,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		const string CurrentVersion = "1.1.9";
 		static IEnumerable<TypeSystemParserNode> parsers;
+		internal static ImmutableList<RoslynCompilationProvider> compilationProviders;
 		static string[] filesSkippedInParseThread = new string[0];
 		public static Microsoft.CodeAnalysis.SyntaxAnnotation InsertionModeAnnotation = new Microsoft.CodeAnalysis.SyntaxAnnotation();
 
@@ -80,6 +82,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				//refresh entire list to respect insertbefore/insertafter ordering
 				if (!initialLoad)
 					parsers = AddinManager.GetExtensionNodes<TypeSystemParserNode> ("/MonoDevelop/TypeSystem/Parser");
+			});
+
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/TypeSystem/CompilationProvider", delegate(object sender, ExtensionNodeEventArgs args) {
+				var provider  = (RoslynCompilationProvider) args.ExtensionObject;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					compilationProviders = compilationProviders.Add (provider);
+					break;
+				case ExtensionChange.Remove:
+					compilationProviders = compilationProviders.Remove (provider);
+					break;
+				}
 			});
 			initialLoad = false;
 

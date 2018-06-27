@@ -242,6 +242,10 @@
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path="/MonoDevelop/Ide/TypeSystem/CompilationProvider">
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+
   <!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">

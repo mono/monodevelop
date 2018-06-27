@@ -36,6 +36,10 @@
      <PackageRepository path="Packages" />
   </Extension>
 
+  <Extension path = "/MonoDevelop/Ide/TypeService/CompilationProvider">
+     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpRoslynCompilationProvider" />
+  </Extension>
+
   <Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
     <DotNetProjectType language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" type="MonoDevelop.FSharp.FSharpProject"/>
   </Extension>

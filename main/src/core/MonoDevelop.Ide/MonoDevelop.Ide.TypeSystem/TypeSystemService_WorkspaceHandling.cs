@@ -303,6 +303,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Task.FromResult<Compilation> (null);
 		}
 
+		public static async Task<IRoslynCompilation> GetICompilationAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (project == null)
+				throw new ArgumentNullException (nameof(project));
+			if (project.SupportedLanguages.Contains("F#")) {
+				var compilationProvider = compilationProviders.First(cp => cp.LanguageName == "F#");
+				return compilationProvider.GetFromProject(project);
+			}
+			else if (project.SupportedLanguages.Contains("C#")) {
+				var compilation = await GetCompilationAsync(project, cancellationToken);
+				return new CompilationWrapper(compilation);
+			}
+			throw new ArgumentException("Invalid project type", nameof(project));
+		}
+
 		static void OnWorkspaceItemAdded (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
 			TypeSystemService.Load (args.Item, null).Ignore ();

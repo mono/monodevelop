@@ -26,6 +26,7 @@
 
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Core
 {
@@ -37,7 +38,13 @@ namespace MonoDevelop.Core
 		IAssemblySymbol Assembly { get; }
 	}
 
-	class CompilationWrapper : IRoslynCompilation
+	public abstract class RoslynCompilationProvider
+	{
+		public abstract IRoslynCompilation GetFromProject(Projects.Project project);
+		public abstract string LanguageName { get; }
+	}
+
+	public class CompilationWrapper : IRoslynCompilation
 	{
 		private readonly Compilation compilation;
 
