@@ -131,9 +131,135 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public EventHandler<BuildOutputNode> ExpandErrors;
 		public EventHandler<BuildOutputNode> ExpandWarnings;
 
+		class RootNodeView : ViewStatus
+		{
+			public RootNodeView (BuildOutputNode node) : base (node)
+			{
+
+			}
+
+			internal override void OnDraw (Context ctx, BuildOutputTreeCellView cellView, Rectangle cellArea, BuildOutputNode buildOutputNode, double padding, bool isSelected, int imageSize, int imagePadding, ViewStatus status)
+			{
+				if (!buildOutputNode.HasChildren) {
+					if (buildOutputNode.NodeType == BuildOutputNodeType.Error || buildOutputNode.NodeType == BuildOutputNodeType.Warning) {
+						if (isSelected) {
+							ctx.SetColor (Styles.CellTextSelectionColor);
+						} else {
+							ctx.SetColor (Styles.LinkForegroundColor);
+						}
+						var text = string.Format ("{0}, line {1}", buildOutputNode.File, buildOutputNode.LineNumber);
+
+						status.TaskLinkRenderRectangle.X = cellView.lastErrorPanelStartX + 5;
+						status.TaskLinkRenderRectangle.Y = cellArea.Y + padding;
+
+						var cellLayout = cellView.DrawText (ctx, cellArea, status.TaskLinkRenderRectangle.X, text, padding, font: defaultFont, trimming: TextTrimming.Word, underline: true);
+						status.TaskLinkRenderRectangle.Size = cellLayout.GetSize ();
+						return;
+					}
+					return;
+				}
+
+				cellView.UpdateInformationTextColor (ctx, isSelected);
+
+				var textStartX = cellArea.X + (cellArea.Width - DefaultInformationContainerWidth);
+
+				Size size = Size.Zero;
+
+				//Duration text
+				var duration = buildOutputNode.GetDurationAsString (cellView.contextProvider.IsShowingDiagnostics);
+				if (duration != "") {
+					size = cellView.DrawText (ctx, cellArea, textStartX, duration, padding, defaultFont, DefaultInformationContainerWidth).GetSize ();
+					textStartX += size.Width + 10;
+				}
+
+				if (textStartX > cellView.lastErrorPanelStartX) {
+					cellView.lastErrorPanelStartX = textStartX;
+				} else {
+					textStartX = cellView.lastErrorPanelStartX;
+				}
+
+				status.TaskLinkRenderRectangle.X = status.TaskLinkRenderRectangle.Y = status.TaskLinkRenderRectangle.Width = status.TaskLinkRenderRectangle.Height = 0;
+
+				//Error and Warnings count
+				if (!cellView.IsRowExpanded (buildOutputNode) &&
+					(buildOutputNode.NodeType == BuildOutputNodeType.Task || buildOutputNode.NodeType == BuildOutputNodeType.Target) &&
+					(buildOutputNode.ErrorCount > 0 || buildOutputNode.WarningCount > 0)) {
+
+					if (buildOutputNode.ErrorCount > 0) {
+						cellView.DrawImage (ctx, cellArea, Resources.ErrorIconSmall, textStartX, imageSize, isSelected, imagePadding);
+						textStartX += ImageSize + 2;
+						var errors = buildOutputNode.ErrorCount.ToString ();
+
+						var cellLayout = cellView.DrawText (ctx, cellArea, textStartX, errors, padding, defaultFont, trimming: TextTrimming.Word);
+						textStartX += cellLayout.GetSize ().Width;
+					}
+
+					if (buildOutputNode.WarningCount > 0) {
+						cellView.DrawImage (ctx, cellArea, Resources.WarningIconSmall, textStartX, imageSize, isSelected, imagePadding);
+						textStartX += ImageSize + 2;
+						cellView.DrawText (ctx, cellArea, textStartX, buildOutputNode.WarningCount.ToString (), padding, defaultFont, 10, trimming: TextTrimming.Word);
+					}
+				}
+			}
+		}
+
+		class BuildSummaryNodeView : ViewStatus
+		{
+			public BuildSummaryNodeView (BuildOutputNode node) : base (node)
+			{
+			}
+
+			internal override void OnDraw (Context ctx, BuildOutputTreeCellView cellView, Rectangle cellArea, BuildOutputNode buildOutputNode, double padding, bool isSelected, int imageSize, int imagePadding, ViewStatus status)
+			{
+				// For build summary, display error/warning summary
+				var startX = LastRenderLayoutBounds.X + layout.GetSize ().Width + 24;
+
+				status.ErrorsRectangle.X = startX;
+				status.ErrorsRectangle.Y = cellArea.Y;
+				cellView.DrawImage (ctx, cellArea, Resources.ErrorIconSmall, startX, ImageSize, isSelected, ImagePadding);
+
+				startX += ImageSize + 2;
+				var errors = GettextCatalog.GetString ("{0} errors", buildOutputNode.ErrorCount.ToString ());
+				layout = cellView.DrawText (ctx, cellArea, startX, errors, status.LayoutYPadding, defaultFont, LastRenderLayoutBounds.Width);
+
+				var size = layout.GetSize ();
+				//Our error rectangle includes text + image + margin
+				status.ErrorsRectangle.Width = size.Width + ImageSize + 2;
+				status.ErrorsRectangle.Height = size.Height;
+
+				startX += size.Width + 24;
+
+				status.WarningsRectangle.X = startX;
+				status.WarningsRectangle.Y = cellArea.Y;
+
+				cellView.DrawImage (ctx, cellArea, Resources.WarningIconSmall, startX, ImageSize, isSelected, ImagePadding);
+
+				var warnings = GettextCatalog.GetString ("{0} warnings", buildOutputNode.WarningCount.ToString ());
+				startX += ImageSize + 2;
+				layout = cellView.DrawText (ctx, cellArea, startX, warnings, status.LayoutYPadding, font: defaultFont);
+
+				size = layout.GetSize ();
+				status.WarningsRectangle.Width = size.Width + ImageSize + 2;
+				status.WarningsRectangle.Height = size.Height;
+			}
+		}
+
+		class BuildHeaderNodeView : ViewStatus
+		{
+			public BuildHeaderNodeView (BuildOutputNode node) : base (node)
+			{
+			}
+
+			internal override void OnDraw (Context ctx, BuildOutputTreeCellView cellView, Rectangle cellArea, BuildOutputNode buildOutputNode, double padding, bool isSelected, int imageSize, int imagePadding, ViewStatus status)
+			{
+				var textStartX = LastRenderLayoutBounds.X + layout.GetSize ().Width + 24;
+				cellView.DrawText (ctx, cellArea, textStartX, cellView.GetInformationMessage (buildOutputNode), status.LayoutYPadding, defaultFont, cellArea.Width - textStartX);
+			}
+		}
+
 		class ViewStatus
 		{
-			TextLayout layout = new TextLayout ();
+			protected TextLayout layout = new TextLayout ();
 
 			bool expanded;
 			public Rectangle LastRenderBounds = Rectangle.Zero;
@@ -215,8 +341,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			public BuildOutputNode Node { get; private set; }
 
-			public bool IsRootNode => Node.Parent == null;
-
 			public ViewStatus (BuildOutputNode node)
 			{
 				if (node == null)
@@ -227,7 +351,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			Font GetFont (BuildOutputNode node)
 			{
-				if (IsRootNode) {
+				if (node.IsRootNode) {
 					return defaultBoldFont;
 				} else if (node.IsCommandLine) {
 					return monospaceFont;
@@ -272,6 +396,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 				DrawsTopLine = Node.Previous == null || !(Node.Previous.NodeType == BuildOutputNodeType.Error || Node.Previous.NodeType == BuildOutputNodeType.Warning);
 
 				Reload ();
+			}
+
+			internal virtual void OnDraw (Context ctx, BuildOutputTreeCellView cellView, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode, double padding, bool isSelected, int imageSize, int imagePadding, ViewStatus status) 
+			{
+			//Don't draw
 			}
 		}
 
@@ -369,7 +498,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-
 		void FillCellBackground (Context ctx, BuildOutputNode buildOutputNode, ViewStatus status)
 		{
 			if (!buildOutputNode.HasChildren) {
@@ -464,109 +592,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				ctx.DrawImage (icon, expanderRect.X, expanderRect.Y);
 			}
 
-			//Information section
-			if (!status.IsRootNode) {
-				DrawNodeInformation (ctx, cellArea, buildOutputNode, status.LayoutYPadding, isSelected, ImageSize, ImagePadding, status);
-			} else if (buildOutputNode.NodeType == BuildOutputNodeType.BuildSummary) {
-				// For build summary, display error/warning summary
-				var startX = layoutBounds.X + layout.GetSize ().Width + 24;
-
-				status.ErrorsRectangle.X = startX;
-				status.ErrorsRectangle.Y = cellArea.Y;
-				DrawImage (ctx, cellArea, Resources.ErrorIconSmall, startX, ImageSize, isSelected, ImagePadding);
-
-				startX += ImageSize + 2;
-				var errors = GettextCatalog.GetString ("{0} errors", buildOutputNode.ErrorCount.ToString ());
-				layout = DrawText (ctx, cellArea, startX, errors, status.LayoutYPadding, defaultFont, layoutBounds.Width);
-
-				var size = layout.GetSize ();
-				//Our error rectangle includes text + image + margin
-				status.ErrorsRectangle.Width = size.Width + ImageSize + 2;
-				status.ErrorsRectangle.Height = size.Height;
-
-				startX += size.Width + 24;
-
-				status.WarningsRectangle.X = startX;
-				status.WarningsRectangle.Y = cellArea.Y;
-
-				DrawImage (ctx, cellArea, Resources.WarningIconSmall, startX, ImageSize, isSelected, ImagePadding);
-
-				var warnings = GettextCatalog.GetString ("{0} warnings", buildOutputNode.WarningCount.ToString ());
-				startX += ImageSize + 2;
-				layout = DrawText (ctx, cellArea, startX, warnings, status.LayoutYPadding, font: defaultFont);
-
-				size = layout.GetSize ();
-				status.WarningsRectangle.Width = size.Width + ImageSize + 2;
-				status.WarningsRectangle.Height = size.Height;
-
-			} else if (buildOutputNode.NodeType == BuildOutputNodeType.Build) {
-				var textStartX = layoutBounds.X + layout.GetSize ().Width + 24;
-				DrawText (ctx, cellArea, textStartX, GetInformationMessage (buildOutputNode), status.LayoutYPadding, defaultFont, cellArea.Width - textStartX);
-			}
-		}
-
-		void DrawNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode, double padding, bool isSelected, int imageSize, int imagePadding, ViewStatus status)
-		{
-			if (!buildOutputNode.HasChildren) {
-				if (buildOutputNode.NodeType == BuildOutputNodeType.Error || buildOutputNode.NodeType == BuildOutputNodeType.Warning) {
-					if (isSelected) {
-						ctx.SetColor (Styles.CellTextSelectionColor);
-					} else {
-						ctx.SetColor (Styles.LinkForegroundColor);
-					}
-					var text = string.Format ("{0}, line {1}", buildOutputNode.File, buildOutputNode.LineNumber);
-
-					status.TaskLinkRenderRectangle.X = lastErrorPanelStartX + 5;
-					status.TaskLinkRenderRectangle.Y = cellArea.Y + padding;
-
-					var layout = DrawText (ctx, cellArea, status.TaskLinkRenderRectangle.X, text, padding, font: defaultFont, trimming: TextTrimming.Word, underline: true);
-					status.TaskLinkRenderRectangle.Size = layout.GetSize ();
-					return;
-				}
-				return;
-			}
-
-			UpdateInformationTextColor (ctx, isSelected);
-
-			var textStartX = cellArea.X + (cellArea.Width - DefaultInformationContainerWidth);
-
-			Size size = Size.Zero;
-
-			//Duration text
-			var duration = buildOutputNode.GetDurationAsString (contextProvider.IsShowingDiagnostics);
-			if (duration != "") {
-				size = DrawText (ctx, cellArea, textStartX, duration, padding, defaultFont, DefaultInformationContainerWidth).GetSize ();
-				textStartX += size.Width + 10;
-			}
-
-			if (textStartX > lastErrorPanelStartX) {
-				lastErrorPanelStartX = textStartX;
-			} else {
-				textStartX = lastErrorPanelStartX;
-			}
-
-			status.TaskLinkRenderRectangle.X = status.TaskLinkRenderRectangle.Y = status.TaskLinkRenderRectangle.Width = status.TaskLinkRenderRectangle.Height = 0;
-
-			//Error and Warnings count
-			if (!IsRowExpanded (buildOutputNode) &&
-			    (buildOutputNode.NodeType == BuildOutputNodeType.Task || buildOutputNode.NodeType == BuildOutputNodeType.Target) &&
-			    (buildOutputNode.ErrorCount > 0 || buildOutputNode.WarningCount > 0)) {
-
-				if (buildOutputNode.ErrorCount > 0) {
-					DrawImage (ctx, cellArea, Resources.ErrorIconSmall, textStartX, imageSize, isSelected, imagePadding);
-					textStartX += ImageSize + 2;
-					var errors = buildOutputNode.ErrorCount.ToString ();
-
-					var layout = DrawText (ctx, cellArea, textStartX, errors, padding, defaultFont, trimming: TextTrimming.Word);
-					textStartX += layout.GetSize ().Width;
-				}
-
-				if (buildOutputNode.WarningCount > 0) {
-					DrawImage (ctx, cellArea, Resources.WarningIconSmall, textStartX, imageSize, isSelected, imagePadding);
-					textStartX += ImageSize + 2;
-					DrawText (ctx, cellArea, textStartX, buildOutputNode.WarningCount.ToString (), padding, defaultFont, 10, trimming: TextTrimming.Word);
-				}
-			}
+			status.OnDraw (ctx, this, cellArea, buildOutputNode, status.LayoutYPadding, isSelected, ImageSize, ImagePadding, status);
 		}
 
 		TextLayout DrawText (Context ctx, Xwt.Rectangle cellArea, double x, string text, double padding, Font font, double width = 0, TextTrimming trimming = TextTrimming.WordElipsis, bool underline = false) 
@@ -644,10 +670,25 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return GetValue (HasBackgroundColorField, false);
 		}
 
+		ViewStatus CreateViewStatus (BuildOutputNode node)
+		{
+			if (!node.IsRootNode) {
+				return new RootNodeView (node);
+			}
+			if (node.NodeType == BuildOutputNodeType.BuildSummary) {
+				return new BuildSummaryNodeView (node);
+			} 
+			if (node.NodeType == BuildOutputNodeType.Build) {
+				return new BuildHeaderNodeView (node);
+			}
+			return new ViewStatus (node);
+		}
+
 		ViewStatus GetViewStatus (BuildOutputNode node)
 		{
-			if (!viewStatus.TryGetValue (node, out var status))
-				status = viewStatus [node] = new ViewStatus (node);
+			if (!viewStatus.TryGetValue (node, out var status)) {
+				status = viewStatus [node] = CreateViewStatus (node);
+			}
 			return status;
 		}
 
