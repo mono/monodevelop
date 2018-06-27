@@ -125,7 +125,6 @@ namespace MonoDevelop.CSharp.Formatting
 			if (input is IReadonlyTextDocument doc) {
 				try {
 					var conventions = EditorConfigService.GetEditorConfigContext (doc.FileName).WaitAndGetResult ();
-					Console.WriteLine (doc.FileName +":ctx=" + conventions);
 					if (conventions != null)
 						optionSet = new FormattingDocumentOptionSet (optionSet, new CSharpDocumentOptionsProvider.DocumentOptions (optionSet, conventions.CurrentConventions));
 				} catch (Exception e) {

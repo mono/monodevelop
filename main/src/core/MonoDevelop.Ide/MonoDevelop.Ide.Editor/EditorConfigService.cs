@@ -43,6 +43,8 @@ namespace MonoDevelop.Ide.Editor
 
 		public static Task<ICodingConventionContext> GetEditorConfigContext (string fileName, CancellationToken token = default (CancellationToken))
 		{
+			if (!string.IsNullOrEmpty (fileName))
+				return TaskUtil.Default<ICodingConventionContext> ();
 			lock (contextCacheLock) {
 				if (contextCache.TryGetValue (fileName, out Task<ICodingConventionContext> result))
 					return result;
