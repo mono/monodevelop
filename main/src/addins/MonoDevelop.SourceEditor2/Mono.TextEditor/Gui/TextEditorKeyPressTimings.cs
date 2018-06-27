@@ -31,6 +31,7 @@ using Microsoft.VisualStudio.Text.Implementation;
 using System.Linq;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.Ide;
+using System.Collections.Immutable;
 
 namespace Mono.TextEditor
 {
@@ -53,6 +54,15 @@ namespace Mono.TextEditor
 		int activeCountIndex = 0;
 		int droppedEvents = 0;
 
+		const int numberOfBuckets = 9;
+		readonly int[] buckets = new int[numberOfBuckets];
+
+		// One less than buckets because the last bucket is everything else.
+		// This number is the max time a keystroke can take to be placed into this bucket
+		static readonly ImmutableArray<int> bucketUpperLimit = ImmutableArray.Create<int> (
+			8, 16, 32, 64, 128, 256, 512, 1024
+		);
+
 		public void StartTimer (Gdk.EventKey evt)
 		{
 			if (activeCountIndex == numberOfCountSpaces) {
@@ -67,6 +77,18 @@ namespace Mono.TextEditor
 			activeCounts[activeCountIndex++] = evt.Time;
 		}
 
+		int CalculateBucket (TimeSpan duration)
+		{
+			long ms = (long)duration.TotalMilliseconds;
+			for (var bucket = 0; bucket < bucketUpperLimit.Length; bucket++) {
+				if (ms <= bucketUpperLimit[bucket]) {
+					return bucket;
+				}
+			}
+
+			return numberOfBuckets - 1;
+		}
+
 		void AddTime (TimeSpan duration)
 		{
 			if (duration > maxTime) {
@@ -79,6 +101,9 @@ namespace Mono.TextEditor
 
 			totalTime += duration;
 			count++;
+
+			var bucketNumber = CalculateBucket (duration);
+			buckets[bucketNumber]++;
 		}
 
 		/// <summary>
@@ -143,6 +168,11 @@ namespace Mono.TextEditor
 			// Do we want to track the number of dropped events?
 			// If there are any dropped events, something major happened to halt the event loop
 			metadata ["Dropped"] = droppedEvents.ToString ();
+
+			// Add the buckets
+			for (var bucket = 0; bucket < numberOfBuckets; bucket++) {
+				metadata [$"Bucket{bucket}"] = buckets[bucket].ToString ();
+			}
 			MonoDevelop.SourceEditor.Counters.Typing.Inc (metadata);
 		}
 	}
