@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 
 			var window = new TooltipPopoverWindow ();
-			window.Markup = "<span size=\"larger\" font='" + FontService.MonospaceFontName + "'>" + sb.ToString () + "</span>";
+			window.Markup = "<span font='" + FontService.MonospaceFontName + "'>" + sb.ToString () + "</span>";
 			editor.ShowTooltipWindow (window);
 		}
 	}
