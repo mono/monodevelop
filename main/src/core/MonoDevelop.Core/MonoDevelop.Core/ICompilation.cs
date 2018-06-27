@@ -36,6 +36,7 @@ namespace MonoDevelop.Core
 		IEnumerable<MetadataReference> References { get; }
 		ISymbol GetAssemblyOrModuleSymbol(MetadataReference reference);
 		IAssemblySymbol Assembly { get; }
+		INamespaceSymbol GlobalNamespace { get; }
 	}
 
 	public abstract class RoslynCompilationProvider
@@ -61,5 +62,7 @@ namespace MonoDevelop.Core
 
 		public INamedTypeSymbol GetTypeByMetadataName (string fullyQualifiedMetadataName) =>
 			compilation.GetTypeByMetadataName(fullyQualifiedMetadataName);
+
+		public INamespaceSymbol GlobalNamespace => compilation.GlobalNamespace;
 	}
 }

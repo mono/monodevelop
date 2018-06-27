@@ -49,6 +49,8 @@ type FSharpCompilation (checkProjectResults: FSharpCheckProjectResults, outputFi
         member x.Assembly =
             FSharpAssemblySymbol(assemblySignature, outputFile) :> _
 
+        member x.GlobalNamespace = (x :> IRoslynCompilation).Assembly.GlobalNamespace
+
 type FSharpGetRoslynCompilation() =
     inherit RoslynCompilationProvider()
 
