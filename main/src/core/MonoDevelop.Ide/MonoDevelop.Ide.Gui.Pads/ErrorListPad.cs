@@ -55,6 +55,7 @@ using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
 using MonoDevelop.Ide.BuildOutputView;
 using System.Threading.Tasks;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -65,11 +66,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		PadTreeView view;
 		BuildOutputViewContent buildOutputViewContent;
 		BuildOutput buildOutput;
+		LogView logView;
 		TreeStore store;
 		TreeModelFilter filter;
 		TreeModelSort sort;
 		ToggleButton errorBtn, warnBtn, msgBtn;
-		Button logBtn;
+		Button buildLogBtn;
+		ToggleButton logBtn;
 		Label errorBtnLbl, warnBtnLbl, msgBtnLbl, logBtnLbl;
 		SearchEntry searchEntry;
 		string currentSearchPattern = null;
@@ -89,6 +92,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public readonly ConfigurationProperty<bool> ShowErrors = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowErrors", true);
 		public readonly ConfigurationProperty<bool> ShowWarnings = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowWarnings", true);
 		public readonly ConfigurationProperty<bool> ShowMessages = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowMessages", true);
+		public readonly ConfigurationProperty<double> LogSeparatorPosition = ConfigurationProperty.Create ("SharpDevelop.TaskList.LogSeparatorPosition", 0.5d);
+		public readonly ConfigurationProperty<bool> OutputViewVisible = ConfigurationProperty.Create ("SharpDevelop.TaskList.OutputViewVisible", false);
 
 		static class DataColumns
 		{
@@ -196,16 +201,25 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sep.Accessible.SetShouldIgnore (true);
 			toolbar.Add (sep);
 
-			logBtn = MakeButton ("md-message-log", "toggleBuildOutput", out logBtnLbl);
+			logBtn = MakeButton ("md-message-log", "toggleBuildOutput", false, out logBtnLbl);
 			logBtn.Accessible.Name = "ErrorPad.LogButton";
-			logBtn.TooltipText = GettextCatalog.GetString ("Show build output");
-			logBtn.Accessible.Description = GettextCatalog.GetString ("Show build output");
-
+			logBtn.TooltipText = GettextCatalog.GetString ("Build Output");
+			logBtn.Accessible.Description = GettextCatalog.GetString ("Build Output");
 			logBtnLbl.Text = GettextCatalog.GetString ("Build Output");
 			logBtn.Accessible.SetTitle (logBtnLbl.Text);
-
-			logBtn.Clicked += HandleLogBtnClicked;
+			logBtn.Toggled += HandleTextLogToggled;
 			toolbar.Add (logBtn);
+
+			buildLogBtn = MakeButton ("md-message-log", "toggleBuildOutput", out logBtnLbl);
+			buildLogBtn.Accessible.Name = "ErrorPad.BuildLogButton";
+			buildLogBtn.TooltipText = GettextCatalog.GetString ("Structured Build Output");
+			buildLogBtn.Accessible.Description = GettextCatalog.GetString ("Structured Build Output");
+
+			logBtnLbl.Text = GettextCatalog.GetString ("Structured Build Output");
+			buildLogBtn.Accessible.SetTitle (logBtnLbl.Text);
+
+			buildLogBtn.Clicked += HandleBinLogClicked;
+			toolbar.Add (buildLogBtn);
 
 			buildOutput = new BuildOutput ();
 
@@ -291,12 +305,24 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			control.Add1 (sw);
 
+			logView = new LogView { Name = "buildOutput" };
+			control.Add2 (logView);
+
 			control.ShowAll ();
+
+			if (OutputViewVisible) {
+				logView.Visible = true;
+				logBtn.Active = true;
+			} else {
+				logBtn.Active = false;
+			}
 
 			// Load existing tasks
 			foreach (TaskListEntry t in TaskService.Errors) {
 				AddTask (t);
 			}
+
+			control.FocusChain = new Gtk.Widget [] { logView };
 		}
 
 		public override void Dispose ()
@@ -321,8 +347,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{ 
 			if (control == null)
 				CreateControl ();
-			
-			return buildOutput.GetProgressMonitor ();
+
+			var monitor = new AggregatedProgressMonitor ();
+			monitor.AddFollowerMonitor (buildOutput.GetProgressMonitor ());
+			monitor.AddFollowerMonitor (logView.GetProgressMonitor ());
+
+			return monitor;
 		}
 
 		void HandleTaskServiceErrorsCurrentLocationTaskChanged (object sender, EventArgs e)
@@ -950,11 +980,18 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		internal void FocusOutputView ()
 		{
-			HandleLogBtnClicked (this, EventArgs.Empty);
+			HandleBinLogClicked (this, EventArgs.Empty);
+		}
+
+		void HandleTextLogToggled (object sender, EventArgs e)
+		{
+			var visible = logBtn.Active;
+			OutputViewVisible.Value = visible;
+			logView.Visible = visible;
 		}
 
 		Document buildOutputDoc;
-		void HandleLogBtnClicked (object sender, EventArgs e)
+		void HandleBinLogClicked (object sender, EventArgs e)
 		{
 			OpenBuildOutputViewDocument ();
 		}
