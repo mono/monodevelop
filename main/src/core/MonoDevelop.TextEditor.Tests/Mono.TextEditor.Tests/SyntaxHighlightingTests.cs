@@ -213,14 +213,5 @@ namespace Mono.TextEditor.Tests
 			  			"<span foreground=\"#e5da73\">$\"{</span><span foreground=\"#eeeeec\">foo</span><span foreground=\"#e5da73\">}\"</span>");
 		}
 
-		//	Bug 595108: [Feedback] VS for MAC 7.4 and 7.5 preview: javascript syntax highlighting breaks when passing parameter to a function
-		[Test]
-		public void TestVSTS595108 ()
-		{
-			var regex = new MonoDevelop.Ide.Editor.Highlighting.RegexEngine.Regex ("(?=^)");
-			var input = "// test";
-			var match = regex.Match (input, 2, input.Length - 2);
-			Assert.AreEqual (false, match.Success);
-		}
 	}
 }
