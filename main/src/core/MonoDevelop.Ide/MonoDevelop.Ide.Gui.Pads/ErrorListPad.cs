@@ -80,6 +80,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		int errorCount;
 		int warningCount;
 		int infoCount;
+		bool initialLogShow = true;
 
 		Clipboard clipboard;
 
@@ -310,6 +311,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			control.ShowAll ();
 
+			control.SizeAllocated += HandleControlSizeAllocated;
+			sw.SizeAllocated += HandleSwSizeAllocated;
+
 			if (OutputViewVisible) {
 				logView.Visible = true;
 				logBtn.Active = true;
@@ -349,11 +353,36 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			// Set the model to null as it makes Gtk clean up faster
 			if (view != null) {
-				view.RowActivated += OnRowActivated;
+				view.RowActivated -= OnRowActivated;
 				view.Model = null;
 			}
 
+			if (control != null) {
+				control.SizeAllocated -= HandleControlSizeAllocated;
+			}
+
+			if (sw != null) {
+				sw.SizeAllocated -= HandleSwSizeAllocated;
+			}
+
 			base.Dispose ();
+		}
+
+		void HandleSwSizeAllocated (object o, SizeAllocatedArgs args)
+		{
+			if (!initialLogShow && OutputViewVisible) {
+				var val = (double)((double)control.Position / (double)control.Allocation.Width);
+				LogSeparatorPosition.Value = val;
+			}
+		}
+
+		[GLib.ConnectBefore]
+		void HandleControlSizeAllocated (object o, SizeAllocatedArgs args)
+		{
+			if (initialLogShow && OutputViewVisible) {
+				SetInitialOutputViewSize (args.Allocation.Width);
+				initialLogShow = false;
+			}
 		}
 
 		public ProgressMonitor GetBuildProgressMonitor ()
@@ -1001,6 +1030,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 			var visible = logBtn.Active;
 			OutputViewVisible.Value = visible;
 			logView.Visible = visible;
+
+			SetInitialOutputViewSize (control.Allocation.Width);
+		}
+
+		void SetInitialOutputViewSize (int controlWidth)
+		{
+			double relPos = LogSeparatorPosition;
+			int pos = (int)(controlWidth * relPos);
+			pos = Math.Max(30, Math.Min(pos, controlWidth - 30));
+			control.Position = pos;
 		}
 
 		Document buildOutputDoc;
