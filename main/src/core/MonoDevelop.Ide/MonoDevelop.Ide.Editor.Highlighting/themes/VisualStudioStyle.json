@@ -66,7 +66,7 @@
 		{ "name": "Html Element Name", "fore": "#800000" },
 		{ "name": "Html Entity", "fore": "#FF0000" },
 		{ "name": "Html Operator", "fore": "keyword-blue" },
-		{ "name": "Html Server-Side Script", "back": "#FEFF00" },
+		{ "name": "Html Server-Side Script", "fore": "black", "back": "#FFFF33" },
 		{ "name": "Html Tag Delimiter", "fore": "keyword-blue" },
 		{ "name": "Razor Code", "back": "#E7EFF2" },
 
