@@ -296,7 +296,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed += OnCombineClosed;
 
-			view.RowActivated += new RowActivatedHandler (OnRowActivated);
+			view.RowActivated += OnRowActivated;
 
 			iconWarning = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 			iconError = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
@@ -332,10 +332,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 			msgBtn.Toggled -= FilterChanged;
 			logBtn.Toggled -= HandleTextLogToggled;
 			buildLogBtn.Clicked -= HandleBinLogClicked;
+			searchEntry.Entry.Changed -= searchPatternChanged;
 
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
 			IdeApp.ProjectOperations.StartBuild -= OnBuildStarted;
+
+			TaskService.Errors.TasksRemoved -= ShowResults;
+			TaskService.Errors.TasksAdded -= TaskAdded;
+			TaskService.Errors.TasksChanged -= TaskChanged;
+			TaskService.Errors.CurrentLocationTaskChanged -= HandleTaskServiceErrorsCurrentLocationTaskChanged;
 
 			buildOutput?.Dispose ();
 			buildOutputViewContent?.Dispose ();
@@ -343,6 +349,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			// Set the model to null as it makes Gtk clean up faster
 			if (view != null) {
+				view.RowActivated += OnRowActivated;
 				view.Model = null;
 			}
 
@@ -1016,6 +1023,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void BuildOutputDocClosed (object sender, EventArgs e)
 		{
 			buildOutputViewContent?.Dispose ();
+			buildOutputDoc.Closed -= BuildOutputDocClosed;
 			buildOutputViewContent = null;
 			buildOutputDoc = null;
 		}
