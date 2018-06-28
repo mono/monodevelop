@@ -89,10 +89,20 @@ namespace MonoDevelop.Ide.Editor
 			var editor = TextEditorFactory.CreateNewEditor ();
 			editor.Text = "// FooBar\nusing System;";
 
-			var r = new Regex ("^\\s*(using)\\s+([^ ;]*);");
+			var r = new Regex ("^\\s*(using)\\s+([^ ;]*);", RegexOptions.Multiline);
 			var line = editor.GetLine (2);
 			var match = r.Match (editor.Text, line.Offset, line.Length);
 			Assert.IsTrue (match.Success);
+		}
+
+		//	Bug 595108: [Feedback] VS for MAC 7.4 and 7.5 preview: javascript syntax highlighting breaks when passing parameter to a function
+		[Test]
+		public void TestVSTS595108 ()
+		{
+			var regex = new MonoDevelop.Ide.Editor.Highlighting.RegexEngine.Regex ("(?=^)");
+			var input = "// test";
+			var match = regex.Match (input, 2, input.Length - 2);
+			Assert.AreEqual (false, match.Success);
 		}
 	}
 }
