@@ -8,7 +8,8 @@
 // expression.
 using MonoDevelop.Core.Text;
 
-namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
+namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine
+{
 
     using System;
     using System.Threading;
@@ -825,31 +826,24 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
             return Run(false, -1, input, 0, input.Length, startat, internalMatchTimeout);
         }
 
-        /*
+		/*
          * Finds the first match, restricting the search to the specified interval of
          * the char array.
          */
-        /// <devdoc>
-        ///    <para>
-        ///       Matches a
-        ///       regular expression with a string and returns the precise result as a
-        ///       RegexMatch object.
-        ///    </para>
-        /// </devdoc>
-        public Match Match (string input, int beginning, int length)
-		{
-			if (input == null)
-				throw new ArgumentNullException ("input");
-
-			return Run (false, -1, input, beginning, length, UseOptionR () ? beginning + length : beginning, internalMatchTimeout);
-		}
+		/// <devdoc>
+		///    <para>
+		///       Matches a
+		///       regular expression with a string and returns the precise result as a
+		///       RegexMatch object.
+		///    </para>
+		/// </devdoc>
+		public Match Match (string input, int beginning, int length) => Match (input, beginning, length, internalMatchTimeout);
 
 		public Match Match (string input, int beginning, int length, TimeSpan matchTimeout)
 		{
 			if (input == null)
-				throw new ArgumentNullException ("input");
-
-			return Run (false, -1, input, beginning, length, UseOptionR () ? beginning + length : beginning, matchTimeout);
+				throw new ArgumentNullException (nameof (input));
+			return Run (false, -1, input, 0, input.Length, UseOptionR () ? beginning + length : beginning, matchTimeout);
 		}
 
         /*
