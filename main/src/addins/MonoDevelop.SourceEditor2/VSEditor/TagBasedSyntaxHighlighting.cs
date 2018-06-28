@@ -299,7 +299,7 @@ namespace Microsoft.VisualStudio.Platform
 				styleName = "punctuation.separator.key-value.html";
 				break;
 			case "HTML Server-Side Script":
-				styleName = "server.side.script.html";
+				styleName = "source.server.html";
 				break;
 			case "HTML Tag Delimiter":
 				styleName = "punctuation.definition.tag.begin.html";
