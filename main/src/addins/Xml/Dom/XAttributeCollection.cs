@@ -32,8 +32,10 @@ namespace MonoDevelop.Xml.Dom
 	public class XAttributeCollection : IEnumerable<XAttribute>
 	{
 		readonly XObject parent;
-		XAttribute firstChild;
-		XAttribute lastChild;
+
+		public XAttribute Last { get; private set; }
+		public XAttribute First { get; private set; }
+		public int Count { get; private set; }
 
 		public XAttributeCollection (XObject parent)
 		{
@@ -43,7 +45,7 @@ namespace MonoDevelop.Xml.Dom
 		public Dictionary<XName, XAttribute> ToDictionary ()
 		{
 			var dict = new Dictionary<XName,XAttribute> ();
-			XAttribute current = firstChild;
+			XAttribute current = First;
 			while (current != null) {
 				dict.Add (current.Name, current);
 				current = current.NextSibling;
@@ -53,7 +55,7 @@ namespace MonoDevelop.Xml.Dom
 
 		public XAttribute this [XName name] {
 			get {
-				XAttribute current = firstChild;
+				XAttribute current = First;
 				while (current != null) {
 					if (current.Name == name)
 						return current;
@@ -65,7 +67,7 @@ namespace MonoDevelop.Xml.Dom
 
 		public XAttribute this [int index] {
 			get {
-				XAttribute current = firstChild;
+				XAttribute current = First;
 				while (current != null) {
 					if (index == 0)
 						return current;
@@ -78,7 +80,7 @@ namespace MonoDevelop.Xml.Dom
 
 		public XAttribute Get (XName name, bool ignoreCase)
 		{
-			XAttribute current = firstChild;
+			XAttribute current = First;
 			while (current != null) {
 				if (XName.Equals (current.Name, name, ignoreCase))
 					return current;
@@ -96,17 +98,18 @@ namespace MonoDevelop.Xml.Dom
 		public void AddAttribute (XAttribute newChild)
 		{
 			newChild.Parent = parent;
-			if (lastChild != null) {
-				lastChild.NextSibling = newChild;
+			if (Last != null) {
+				Last.NextSibling = newChild;
 			}
-			if (firstChild == null)
-				firstChild = newChild;
-			lastChild = newChild;
+			if (First == null)
+				First = newChild;
+			Last = newChild;
+			Count++;
 		}
 
 		public IEnumerator<XAttribute> GetEnumerator ()
 		{
-			XAttribute current = firstChild;
+			XAttribute current = First;
 			while (current != null) {
 				yield return current;
 				current = current.NextSibling;

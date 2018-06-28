@@ -32,6 +32,14 @@
       <Name>MonoDevelop.Xml</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\tests\IdeUnitTests\IdeUnitTests.csproj">
+      <Project>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</Project>
+      <Name>IdeUnitTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\tests\UnitTests\UnitTests.csproj">
+      <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
+      <Name>UnitTests</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -105,6 +113,7 @@
     <Compile Include="Formatting\XmlFormatterTests.cs" />
     <Compile Include="Schema\SchemaValidationTests.cs" />
     <Compile Include="Utils\XsltTransformTest.cs" />
+    <Compile Include="ExpandSelectionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\schemas\XMLSchema.xsd">
