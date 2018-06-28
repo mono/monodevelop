@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			errorBtn = MakeButton (Stock.Error, "toggleErrors", ShowErrors, out errorBtnLbl);
 			errorBtn.Accessible.Name = "ErrorPad.ErrorButton";
 
-			errorBtn.Toggled += new EventHandler (FilterChanged);
+			errorBtn.Toggled += FilterChanged;
 			errorBtn.TooltipText = GettextCatalog.GetString ("Show Errors");
 			errorBtn.Accessible.Description = GettextCatalog.GetString ("Show Errors");
 			UpdateErrorsNum ();
@@ -183,7 +183,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			warnBtn = MakeButton (Stock.Warning, "toggleWarnings", ShowWarnings, out warnBtnLbl);
 			warnBtn.Accessible.Name = "ErrorPad.WarningButton";
-			warnBtn.Toggled += new EventHandler (FilterChanged);
+			warnBtn.Toggled += FilterChanged;
 			warnBtn.TooltipText = GettextCatalog.GetString ("Show Warnings");
 			warnBtn.Accessible.Description = GettextCatalog.GetString ("Show Warnings");
 			UpdateWarningsNum ();
@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			msgBtn = MakeButton (Stock.Information, "toggleMessages", ShowMessages, out msgBtnLbl);
 			msgBtn.Accessible.Name = "ErrorPad.MessageButton";
-			msgBtn.Toggled += new EventHandler (FilterChanged);
+			msgBtn.Toggled += FilterChanged;
 			msgBtn.TooltipText = GettextCatalog.GetString ("Show Messages");
 			msgBtn.Accessible.Description = GettextCatalog.GetString ("Show Messages");
 			UpdateMessagesNum ();
@@ -327,6 +327,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		public override void Dispose ()
 		{
+			errorBtn.Toggled -= FilterChanged;
+			warnBtn.Toggled -= FilterChanged;
+			msgBtn.Toggled -= FilterChanged;
+			logBtn.Toggled -= HandleTextLogToggled;
+			buildLogBtn.Clicked -= HandleBinLogClicked;
+
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
 			IdeApp.ProjectOperations.StartBuild -= OnBuildStarted;
