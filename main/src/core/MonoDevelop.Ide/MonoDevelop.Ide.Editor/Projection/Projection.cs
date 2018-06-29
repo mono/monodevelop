@@ -30,6 +30,7 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
@@ -121,8 +122,12 @@ namespace MonoDevelop.Ide.Editor.Projection
 				var change = e.TextChanges[i];
 				foreach (var segment in originalProjections) {
 					if (segment.Contains (change.Offset)) {
-						var projectedOffset = change.Offset - segment.Offset + segment.LinkedTo.Offset;
-						projectedEditor.ReplaceText (projectedOffset, change.RemovalLength, change.InsertedText);
+						try {
+							var projectedOffset = change.Offset - segment.Offset + segment.LinkedTo.Offset;
+							projectedEditor.ReplaceText (projectedOffset, change.RemovalLength, change.InsertedText);
+						} catch (Exception ex) {
+							LoggingService.LogError ($"Error while replacing in projected edidtor {projectedOffset} with length {projectedEditor.Length} change: {change}", ex);
+						}
 					}
 				}
 			}
