@@ -238,6 +238,11 @@ namespace MonoDevelop.Core.Instrumentation
 			this.properties = properties;
 		}
 
+		public CounterMetadata (CounterMetadata original)
+		{
+			this.properties = new Dictionary<string, object> (original.properties);
+		}
+
 		public CounterResult Result {
 			get {
 				var rs = GetProperty<string> ();
