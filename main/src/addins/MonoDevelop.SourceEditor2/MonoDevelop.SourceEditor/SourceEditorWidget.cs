@@ -361,8 +361,9 @@ namespace MonoDevelop.SourceEditor
 			
 			void OptionsChanged (object sender, EventArgs e)
 			{
-				var editor = (Mono.TextEditor.MonoTextEditor)scrolledWindow.Child;
-
+				var editor = parent?.TextEditor;
+				if (editor == null)
+					return;
 				scrolledBackground.ModifyBg (StateType.Normal, SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Background));
 			}
 			
