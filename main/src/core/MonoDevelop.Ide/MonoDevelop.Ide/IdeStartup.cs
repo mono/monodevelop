@@ -319,11 +319,13 @@ namespace MonoDevelop.Ide
 
 			// Need to start this timer because we don't know yet if we've been asked to open a solution from the file manager.
 			timeToCodeTimer.Start ();
-			IdeApp.Workspace.FirstWorkspaceItemOpened += CompleteTimeToCode;
-
 			ttcMetadata = new TimeToCodeMetadata {
 				StartupTime = startupTimer.ElapsedMilliseconds
 			};
+
+			// Start this timer to limit the time to decide if the app was opened by a file manager
+			IdeApp.StartFMOpenTimer (FMOpenTimerExpired);
+			IdeApp.Workspace.FirstWorkspaceItemOpened += CompleteTimeToCode;
 
 			CreateStartupMetadata (startupInfo);
 
@@ -345,6 +347,14 @@ namespace MonoDevelop.Ide
 			MonoDevelop.Components.GtkWorkarounds.Terminate ();
 			
 			return 0;
+		}
+
+		void FMOpenTimerExpired ()
+		{
+			IdeApp.Workspace.FirstWorkspaceItemOpened -= CompleteTimeToCode;
+			timeToCodeTimer.Stop ();
+			timeToCodeTimer = null;
+			ttcMetadata = null;
 		}
 
 		/// <summary>
