@@ -1722,7 +1722,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			var location = textViewMargin.PointToLocation (x - startPos, y, snapCharacters: true);
+			var location = textViewMargin.PointToLocation (x - startPos, y);
 			if (oldMargin != margin && oldMargin != null)
 				oldMargin.MouseLeft ();
 
