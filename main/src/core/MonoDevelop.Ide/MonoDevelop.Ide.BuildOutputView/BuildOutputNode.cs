@@ -76,6 +76,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public virtual BuildOutputNode Previous { get; set; }
 		public virtual BuildOutputNode Next { get; set; }
 
+		public bool IsRootNode => Parent == null;
+
 		static string [] KnownTools = new string[] {
 			"AL",
 			"Csc",
