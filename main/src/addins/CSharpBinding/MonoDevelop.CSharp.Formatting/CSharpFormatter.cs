@@ -125,7 +125,6 @@ namespace MonoDevelop.CSharp.Formatting
 			if (input is IReadonlyTextDocument doc) {
 				try {
 					var conventions = EditorConfigService.GetEditorConfigContext (doc.FileName).WaitAndGetResult ();
-					Console.WriteLine (doc.FileName +":ctx=" + conventions);
 					if (conventions != null)
 						optionSet = new FormattingDocumentOptionSet (optionSet, new CSharpDocumentOptionsProvider.DocumentOptions (optionSet, conventions.CurrentConventions));
 				} catch (Exception e) {
@@ -149,7 +148,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 			public override object GetOption (OptionKey optionKey)
 			{
-				if (optionsProvider.TryGetDocumentOption (optionKey, fallbackOptionSet, out object value))
+				if (optionsProvider.TryGetDocumentOption (null, optionKey, fallbackOptionSet, out object value))
 					return value;
 				return fallbackOptionSet.GetOption (optionKey);
 			}
