@@ -151,7 +151,7 @@
 		{ "name": "Html Element Name", "fore": "skyblue2" },
 		{ "name": "Html Entity", "fore": "#c12dad" },
 		{ "name": "Html Operator", "fore": "skyblue2" },
-		{ "name": "Html Server-Side Script", "fore": "text-black", "back": "#fdf0bd" },
+		{ "name": "Html Server-Side Script", "fore": "text-black", "back": "#ffff33" },
 		{ "name": "Html Tag Delimiter", "fore": "skyblue2" },
 		{ "name": "Razor Code", "fore": "text-black", "back": "#fdfaed" },
 
