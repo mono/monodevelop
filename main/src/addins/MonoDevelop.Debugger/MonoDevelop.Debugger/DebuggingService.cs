@@ -1005,8 +1005,13 @@ namespace MonoDevelop.Debugger
 				NotifyLocationChanged ();
 				IdeApp.Workbench.GrabDesktopFocus ();
 
-				sessionManager.ActionTimeTracker.Dispose ();
-				sessionManager.TrackActionTelemetry = false;
+			}).ContinueWith ((arg) => {
+				// PausedEventHandlers may queue additional UI events that can cause a freeze.
+				// Ensure those UI events have completed before we stop tracking the time.
+				Runtime.RunInMainThread (() => {
+					sessionManager.ActionTimeTracker.Dispose ();
+					sessionManager.TrackActionTelemetry = false;
+				});
 			});
 		}
 
@@ -1067,7 +1072,6 @@ namespace MonoDevelop.Debugger
 			currentSession.Session.StepLine ();
 			NotifyLocationChanged ();
 			DelayHandleStopQueue ();
-			Counters.DebuggerAction.EndTiming ();
 		}
 
 		public static void StepOver ()
@@ -1083,7 +1087,6 @@ namespace MonoDevelop.Debugger
 			currentSession.Session.NextLine ();
 			NotifyLocationChanged ();
 			DelayHandleStopQueue ();
-			Counters.DebuggerAction.EndTiming ();
 		}
 
 		public static void StepOut ()
@@ -1099,7 +1102,6 @@ namespace MonoDevelop.Debugger
 			currentSession.Session.Finish ();
 			NotifyLocationChanged ();
 			DelayHandleStopQueue ();
-			Counters.DebuggerAction.EndTiming ();
 		}
 
 		static CancellationTokenSource stepSwitchCts;
