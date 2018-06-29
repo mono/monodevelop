@@ -1,21 +1,21 @@
-// 
+//
 // CSharpFormatter.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
-// 
+//
 // Copyright (c) 2009 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (!tracker.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && editor.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
 					// Possibly replace the indent
 					string newIndent = tracker.ThisLineIndent;
-					if (newIndent != curIndent) 
+					if (newIndent != curIndent)
 						editor.ReplaceText (lineSegment.Offset, nlwsp, newIndent);
 				}
 			} catch (Exception e) {
@@ -115,7 +115,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return result.Substring (startOffset, endOffset + result.Length - input.Length - startOffset);
 		}
 
-		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length) 
+		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length)
 		{
 			var chain = DesktopService.GetMimeTypeInheritanceChain (mimeType);
 			var policy = policyParent.Get<CSharpFormattingPolicy> (chain);
@@ -148,7 +148,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 			public override object GetOption (OptionKey optionKey)
 			{
-				if (optionsProvider.TryGetDocumentOption (null, optionKey, fallbackOptionSet, out object value))
+				if (optionsProvider.TryGetDocumentOption (optionKey, fallbackOptionSet, out object value))
 					return value;
 				return fallbackOptionSet.GetOption (optionKey);
 			}
