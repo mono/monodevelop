@@ -607,7 +607,7 @@ namespace MonoDevelop.Debugger
 		{
 			var session = debugger.CreateSession ();
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (proc.Name);
-			var sessionManager = new SessionManager (session, monitor.Console, debugger, null, null);
+			var sessionManager = new SessionManager (session, monitor.Console, debugger, null);
 			SetupSession (sessionManager);
 			session.TargetExited += delegate {
 				monitor.Dispose ();
@@ -704,9 +704,9 @@ namespace MonoDevelop.Debugger
 			// When using an external console, create a new internal console which will be used
 			// to show the debugger log
 			if (startInfo.UseExternalConsole)
-				sessionManager = new SessionManager (session, IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (System.IO.Path.GetFileNameWithoutExtension (startInfo.Command)).Console, factory, timer, metadata);
+				sessionManager = new SessionManager (session, IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (System.IO.Path.GetFileNameWithoutExtension (startInfo.Command)).Console, factory, timer);
 			else
-				sessionManager = new SessionManager (session, c, factory, timer, metadata);
+				sessionManager = new SessionManager (session, c, factory, timer);
 			SetupSession (sessionManager);
 
 			SetDebugLayout ();
@@ -743,22 +743,20 @@ namespace MonoDevelop.Debugger
 			public readonly DebuggerSession Session;
 			public readonly DebugAsyncOperation debugOperation;
 			public readonly DebuggerEngine Engine;
-			internal readonly ITimeTracker timer;
-			internal readonly DebuggerStartMetadata sessionMetadata;
+			internal readonly ITimeTracker<DebuggerStartMetadata> startTimer;
 
 			internal bool TrackActionTelemetry { get; set; }
 			internal DebuggerActionMetadata.ActionType CurrentAction { get; set; }
 			internal ITimeTracker ActionTimeTracker { get; set; }
 
-			public SessionManager (DebuggerSession session, OperationConsole console, DebuggerEngine engine, ITimeTracker timeTracker, DebuggerStartMetadata metadata)
+			public SessionManager (DebuggerSession session, OperationConsole console, DebuggerEngine engine, ITimeTracker<DebuggerStartMetadata> timeTracker)
 			{
 				Engine = engine;
 				Session = session;
 				session.ExceptionHandler = ExceptionHandler;
 				session.AssemblyLoaded += OnAssemblyLoaded;
 				this.console = console;
-				this.sessionMetadata = metadata;
-				timer = timeTracker;
+				startTimer = timeTracker;
 
 				cancelRegistration = console.CancellationToken.Register (Cancel);
 				debugOperation = new DebugAsyncOperation (session);
@@ -767,7 +765,7 @@ namespace MonoDevelop.Debugger
 			void Cancel ()
 			{
 				Session.Exit ();
-				sessionMetadata.SetUserCancel ();
+				startTimer?.Metadata.SetUserCancel ();
 				Cleanup (this);
 			}
 
@@ -811,7 +809,7 @@ namespace MonoDevelop.Debugger
 				cancelRegistration?.Dispose ();
 				cancelRegistration = null;
 
-				timer?.Dispose ();
+				startTimer?.Dispose ();
 			}
 
 			bool sessionError;
@@ -823,7 +821,7 @@ namespace MonoDevelop.Debugger
 				get => sessionError;
 				set {
 					sessionError = value;
-					sessionMetadata.SetFailure ();
+					startTimer?.Metadata.SetFailure ();
 				}
 			}
 
